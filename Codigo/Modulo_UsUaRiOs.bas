@@ -941,7 +941,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
                 End If
     
 142             If .Invent.ArmourEqpObjIndex > 0 Then
-144                 .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
+144                 .Char.Body = ObtenerRopaje(UserIndex, ObjData(.Invent.ArmourEqpObjIndex))
         
 146                 If ObjData(.Invent.ArmourEqpObjIndex).CreaGRH <> "" Then
 148                     .Char.Body_Aura = ObjData(.Invent.ArmourEqpObjIndex).CreaGRH

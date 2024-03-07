@@ -215,6 +215,10 @@ Function RazaPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer
             End Select
         End If
         
+        If RazaPuedeUsarItem And Objeto.OBJType = e_OBJType.otArmadura Then
+            RazaPuedeUsarItem = ObtenerRopaje(UserIndex, Objeto) <> 0
+        End If
+        
         Exit Function
 
 RazaPuedeUsarItem_Err:
@@ -1465,7 +1469,11 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                         Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
-372                 If obj.Ropaje = 0 Then
+                
+                    Dim Ropaje As Integer
+                    Ropaje = ObtenerRopaje(UserIndex, Obj)
+
+372                 If Ropaje = 0 Then
 374                     Call WriteConsoleMsg(UserIndex, "Hay un error con este objeto. Infórmale a un administrador.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
@@ -1505,7 +1513,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 406                 .Invent.ArmourEqpSlot = Slot
 
 408                 If .flags.Montado = 0 And .flags.Navegando = 0 Then
-410                     .Char.Body = obj.Ropaje
+410                     .Char.Body = Ropaje
 
 412                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
                     End If
@@ -3675,7 +3683,7 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
             .Char.WeaponAnim = 0
         End If
         If .invent.ArmourEqpObjIndex > 0 Then
-            .Char.body = ObjData(.invent.ArmourEqpObjIndex).Ropaje
+            .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.ArmourEqpObjIndex))
         Else
             Call SetNakedBody(UserList(UserIndex))
         End If
@@ -3713,3 +3721,64 @@ Sub AddGold(ByVal UserIndex As Integer, ByVal Amount As Long)
         Call WriteUpdateGold(UserIndex)
     End With
 End Sub
+
+Function ObtenerRopaje(ByVal UserIndex As Integer, ByRef Obj As t_ObjData) As Integer
+    Dim Race As e_Raza
+    Race = UserList(UserIndex).raza
+    
+    Dim EsMujer As Boolean
+    EsMujer = UserList(UserIndex).genero = e_Genero.Mujer
+
+    Select Case Race
+        Case e_Raza.Humano
+            If EsMujer And Obj.RopajeHumana > 0 Then
+                ObtenerRopaje = Obj.RopajeHumana
+                Exit Function
+            ElseIf Obj.RopajeHumano > 0 Then
+                ObtenerRopaje = Obj.RopajeHumano
+                Exit Function
+            End If
+        Case e_Raza.Elfo
+            If EsMujer And Obj.RopajeElfa > 0 Then
+                ObtenerRopaje = Obj.RopajeElfa
+                Exit Function
+            ElseIf Obj.RopajeElfo > 0 Then
+                ObtenerRopaje = Obj.RopajeElfo
+                Exit Function
+            End If
+        Case e_Raza.Drow
+            If EsMujer And Obj.RopajeElfaOscura > 0 Then
+                ObtenerRopaje = Obj.RopajeElfaOscura
+                Exit Function
+            ElseIf Obj.RopajeElfoOscuro > 0 Then
+                ObtenerRopaje = Obj.RopajeElfoOscuro
+                Exit Function
+            End If
+        Case e_Raza.Orco
+            If EsMujer And Obj.RopajeOrca > 0 Then
+                ObtenerRopaje = Obj.RopajeOrca
+                Exit Function
+            ElseIf Obj.RopajeOrco > 0 Then
+                ObtenerRopaje = Obj.RopajeOrco
+                Exit Function
+            End If
+        Case e_Raza.Enano
+            If EsMujer And Obj.RopajeEnana > 0 Then
+                ObtenerRopaje = Obj.RopajeEnana
+                Exit Function
+            ElseIf Obj.RopajeEnano > 0 Then
+                ObtenerRopaje = Obj.RopajeEnano
+                Exit Function
+            End If
+        Case e_Raza.Gnomo
+            If EsMujer And Obj.RopajeGnoma > 0 Then
+                ObtenerRopaje = Obj.RopajeGnoma
+                Exit Function
+            ElseIf Obj.RopajeGnomo > 0 Then
+                ObtenerRopaje = Obj.RopajeGnomo
+                Exit Function
+            End If
+    End Select
+    
+    ObtenerRopaje = Obj.Ropaje
+End Function
