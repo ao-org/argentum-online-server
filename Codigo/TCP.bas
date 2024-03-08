@@ -386,9 +386,9 @@ Sub RellenarInventario(ByVal UserIndex As String)
 220             If .raza = Enano Or .raza = Gnomo Then
 222                Select Case .clase
                           Case e_Class.Trabajador, e_Class.Thief, e_Class.Paladin, e_Class.Cleric, e_Class.Assasin, e_Class.Bandit, e_Class.Pirat, e_Class.Warrior, e_Class.Hunter
-                          .invent.Object(NumItems).ObjIndex = 3499 ' Armadura de Principiante (Bajos)
+                          .invent.Object(NumItems).objIndex = 3500 ' Armadura de Principiante
                           Case e_Class.Mage, e_Class.Druid, e_Class.Bard
-                         .invent.Object(NumItems).ObjIndex = 3501 ' Túnica del Principiante (Bajos)
+                         .invent.Object(NumItems).objIndex = 3502 ' Túnica del Principiante
                    End Select
 
 
