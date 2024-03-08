@@ -69,7 +69,7 @@ Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
 368         If Not RS Is Nothing Then
 372             While Not RS.EOF
 374                 With .BancoInvent.Object(RS!Number)
-376                     .ObjIndex = IIf(RS!item_id < UBound(ObjData), RS!item_id, 0)
+376                     .ObjIndex = IIf(RS!item_id <= UBound(ObjData), RS!item_id, 0)
 378                     If .ObjIndex <> 0 Then
 380                         If LenB(ObjData(.ObjIndex).name) Then
                                 counter = counter + 1
@@ -101,7 +101,7 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
 106         If Not RS Is Nothing Then
 108             While Not RS.EOF
 110                 With .invent.Object(RS!Number)
-112                     .ObjIndex = IIf(RS!item_id < UBound(ObjData), RS!item_id, 0)
+112                     .ObjIndex = IIf(RS!item_id <= UBound(ObjData), RS!item_id, 0)
 114                     If .ObjIndex <> 0 Then
 116                         If LenB(ObjData(.ObjIndex).name) Then
 118                             counter = counter + 1
