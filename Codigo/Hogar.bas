@@ -129,8 +129,15 @@ Public Sub HomeArrival(ByVal UserIndex As Integer)
 112             .Char.CascoAnim = NingunCasco
             
 114             .flags.Navegando = 0
+115             .flags.Nadando = 0
+
+                Call TargetUpdateTerrain(.EffectOverTime)
+
+154             .invent.BarcoObjIndex = 0
+156             .invent.BarcoSlot = 0
             
 116             Call WriteNavigateToggle(UserIndex, .flags.Navegando)
+117             Call WriteNadarToggle(UserIndex, False)
 
                 'Le sacamos el navegando, pero no le mostramos a los demas porque va a ser sumoneado hasta ulla.
             End If
