@@ -12,11 +12,15 @@ Crear una nueva carpeta llamada `C:\AO20` y entrar a la misma, en ella seguir lo
 
 2. Renombrar el archivo `Example.Server.ini` a `Server.ini`
 
-3. Clonar `Recursos`
+3. Renombrar el archivo `Example.feature_toggle.ini` a `feature_toggle.ini`
 
-4. Abrir Visual Basic 6 como administrador
+4. Renombrar el archivo `Empty_db.db` a `Database.db`
 
-5. Abrir el archivo `Server.VBP`
+5. Clonar `Recursos`
+
+6. Abrir Visual Basic 6 como administrador
+
+7. Abrir el archivo `Server.VBP`
 
 # 🛡️ Pull Requests
 
