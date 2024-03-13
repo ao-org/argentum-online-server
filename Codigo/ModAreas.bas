@@ -361,7 +361,7 @@ Private Sub NotifyUser(ByVal UserNotificado As Integer, ByVal UserIngresante As 
         If sendChar Then
             Call MakeUserChar(False, UserNotificado, UserIngresante, UserList(UserIngresante).Pos.map, UserList(UserIngresante).Pos.X, UserList(UserIngresante).Pos.y, 0)
             If UserList(UserIngresante).flags.invisible Or UserList(UserIngresante).flags.Oculto Then
-                Call WriteSetInvisible(UserNotificado, UserList(UserIngresante).Char.charindex, True)
+                Call WriteSetInvisible(UserNotificado, UserIngresante, True)
             End If
         End If
     End With

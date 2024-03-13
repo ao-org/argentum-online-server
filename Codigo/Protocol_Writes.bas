@@ -2861,17 +2861,17 @@ End Sub
 ' Writes the "SetInvisible" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
-' @param    CharIndex The char turning visible / invisible.
+' @param    TargetIndex The user turning visible / invisible.
 ' @param    invisible True if the char is no longer visible, False otherwise.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteSetInvisible(ByVal UserIndex As Integer, _
-                             ByVal CharIndex As Integer, _
+                             ByVal TargetIndex As Integer, _
                              ByVal invisible As Boolean)
         '<EhHeader>
         On Error GoTo WriteSetInvisible_Err
         '</EhHeader>
-100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageSetInvisible(CharIndex, _
-                invisible, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
+100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageSetInvisible(UserList(TargetIndex).Char.charindex, _
+                invisible, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
         '<EhFooter>
         Exit Sub
 
