@@ -2705,7 +2705,7 @@ Public Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
         On Error GoTo HandleDestroyAllItemsInArea_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
-102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then
+102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster)) Then
 104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
