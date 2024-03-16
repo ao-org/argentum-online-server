@@ -1541,7 +1541,6 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 126                 Call SendData(SendTarget.ToSuperioresArea, userIndex, PrepareMessageChatOverHead(chat, .Char.charindex, RGB(157, 226, 20), , .pos.x, .pos.y))
 128                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareConsoleCharText(chat, RGB(157, 226, 20), UserList(UserIndex).name, UserList(UserIndex).Faccion.Status, UserList(UserIndex).flags.Privilegios))
 130                 Call SendData(SendTarget.ToIndex, TargetUser.ArrayIndex, PrepareConsoleCharText(chat, RGB(157, 226, 20), UserList(UserIndex).name, UserList(UserIndex).Faccion.Status, UserList(UserIndex).flags.Privilegios))
-132                 Call WritePlayWave(targetUser.ArrayIndex, e_FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
                 End If
             Else
                 Call WriteConsoleMsg(UserIndex, "El usuario esta muy lejos o desconectado.", e_FontTypeNames.FONTTYPE_INFO)
