@@ -214,8 +214,12 @@ On Error GoTo error_load_stats
     Debug.Assert FileExist(strFile)
     n = FreeFile()
     Open strFile For Input Shared As n
-    Line Input #n, str
-    RecordUsuarios = val(str)
+    If EOF(n) Then
+        RecordUsuarios = 1
+    Else
+        Line Input #n, str
+        RecordUsuarios = val(str)
+    End If
     Close #n
     
     Exit Sub
