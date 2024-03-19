@@ -37,19 +37,19 @@ Global LeerNPCs As New clsIniManager
 
 
 Sub SetNakedBody(ByRef user As t_User)
-        Const man_human_naked_body As Integer = 21
-        Const man_drow_naked_body As Integer = 32
-        Const man_elf_naked_body As Integer = 510
-        Const man_gnome_naked_body As Integer = 508
-        Const man_dwarf_naked_body As Integer = 53
-        Const man_orc_naked_body As Integer = 248
+        Const man_human_naked_body As Integer = 3000
+        Const man_drow_naked_body As Integer = 3001
+        Const man_elf_naked_body As Integer = 3002
+        Const man_gnome_naked_body As Integer = 3003
+        Const man_dwarf_naked_body As Integer = 3004
+        Const man_orc_naked_body As Integer = 3005
         
-        Const woman_human_naked_body As Integer = 39
-        Const woman_drow_naked_body As Integer = 40
-        Const woman_elf_naked_body As Integer = 511
-        Const woman_gnome_naked_body As Integer = 509
-        Const woman_dwarf_naked_body As Integer = 60
-        Const woman_orc_naked_body As Integer = 249
+        Const woman_human_naked_body As Integer = 3006
+        Const woman_drow_naked_body As Integer = 3007
+        Const woman_elf_naked_body As Integer = 3008
+        Const woman_gnome_naked_body As Integer = 3009
+        Const woman_dwarf_naked_body As Integer = 3010
+        Const woman_orc_naked_body As Integer = 3011
         
         user.flags.Desnudo = 1
         Select Case user.genero
