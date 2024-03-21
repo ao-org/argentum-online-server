@@ -210,47 +210,47 @@ Public Const CHAT_COLOR_GM_YELL   As Long = &HF82FF
 ' Coordinates for normal sounds (not 3D, like rain)
 Public Const NO_3D_SOUND          As Byte = 0
 
-Public Const iFragataFantasmal = 3035 'ok
+Public Const iFragataFantasmal = 87 'ok
 
-Public Const iTraje = 3012 'Traje +25
-Public Const iTrajeAltoNw = 3013 'Traje -25 alto
-Public Const iTrajeBajoNw = 3014 'Traje -25 enano
+Public Const iTraje = 694 'Traje +25
+Public Const iTrajeAltoNw = 1295 'Traje -25 alto
+Public Const iTrajeBajoNw = 1296 'Traje -25 enano
 
-Public Const iObjTraje = 3015
-Public Const iObjTrajeAltoNw = 3016
-Public Const iObjTrajeBajoNw = 3018
+Public Const iObjTraje = 197
+Public Const iObjTrajeAltoNw = 199
+Public Const iObjTrajeBajoNw = 200
 
-Public Const iBarca = 3018
+Public Const iBarca = 84
 
-Public Const iBarcaCiuda = 3019
+Public Const iBarcaCiuda = 1265
 
-Public Const iBarcaCrimi = 3020
+Public Const iBarcaCrimi = 1266
 
-Public Const iGalera = 3021
+Public Const iGalera = 85
 
-Public Const iGaleraCiuda = 3022
+Public Const iGaleraCiuda = 1267
 
-Public Const iGaleraCrimi = 3023
+Public Const iGaleraCrimi = 1268
 
-Public Const iGaleon = 3024
+Public Const iGaleon = 86
 
-Public Const iGaleonCiuda = 3025
+Public Const iGaleonCiuda = 1269
 
-Public Const iGaleonCrimi = 3026
+Public Const iGaleonCrimi = 1270
 
-Public Const iBarcaArmada = 3027
+Public Const iBarcaArmada = 1273
 
-Public Const iBarcaCaos = 3028
+Public Const iBarcaCaos = 1274
 
-Public Const iGaleraArmada = 3029
+Public Const iGaleraArmada = 1271
 
-Public Const iGaleraCaos = 3030
+Public Const iGaleraCaos = 1272
 
-Public Const iGaleonArmada = 3031
+Public Const iGaleonArmada = 1264
 
-Public Const iGaleonCaos = 3032
+Public Const iGaleonCaos = 1263
 
-Public Const iRopaBuceoMuerto = 3033
+Public Const iRopaBuceoMuerto = 772
 
 Public MapasInterdimensionales() As Integer
 
@@ -660,7 +660,7 @@ Public Enum e_Block
 End Enum
 
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
-Public Const iCuerpoMuerto As Integer = 3034
+Public Const iCuerpoMuerto As Integer = 829
 
 Public Const iCabezaMuerto As Integer = 0 ' El nuevo casper no usa cabeza. El viejo es: 621
 
@@ -890,7 +890,7 @@ Public Enum e_MagicItemSubType
 End Enum
 
 Public Enum e_MagicItemEffect
-    eMagicresistance = 1
+    eMagicResistance = 1
     eModifyAttributes = 2
     eModifySkills = 3
     eRegenerateHealth = 4
@@ -1044,7 +1044,7 @@ Public Type t_Hechizo
     Duration As Integer
     RequiredHP As Integer
     
-    Cooldown As Integer
+    CoolDown As Integer
     CdEffectId As Integer
     
     ScreenColor As Long
@@ -1187,7 +1187,7 @@ Public Type t_EffectOverTime
     TickFX As Integer
     OnHitFx As Integer
     OnHitWav As Integer
-    buffType As e_EffectType
+    BuffType As e_EffectType
     Override As Boolean
     PhysicalDamageReduction As Single
     MagicDamageReduction As Single
@@ -1204,11 +1204,11 @@ Public Type t_EffectOverTime
     ClientEffectTypeId As Integer
     Area As Integer
     Aura As String
-    ApplyEffectId As Integer
+    ApplyeffectID As Integer
     SecondaryEffectId As Integer
     SpellRequirementMask As Long
     RequireWeaponType As Integer
-    NpcId As Integer
+    npcId As Integer
     ApplyStatusMask As Long
     SecondaryTargetModifier As Single
     RequireTransform As Integer
@@ -1278,14 +1278,14 @@ End Type
 
 Public Type t_WorldPos
     Map As Integer
-    x As Integer
-    y As Integer
+    X As Integer
+    Y As Integer
 End Type
 
 Public Type t_Position
 
-    x As Integer
-    y As Integer
+    X As Integer
+    Y As Integer
 
 End Type
 
@@ -1301,8 +1301,8 @@ End Enum
 
 Public Type t_Transport
     Map As Integer
-    startX As Integer
-    startY As Integer
+    StartX As Integer
+    StartY As Integer
     EndX As Integer
     EndY As Integer
     DestX As Byte
@@ -1319,8 +1319,8 @@ End Type
 Public Type t_CityWorldPos
 
     Map As Integer
-    x As Integer
-    y As Integer
+    X As Integer
+    Y As Integer
     MapaViaje As Integer
     ViajeX As Byte
     ViajeY As Byte
@@ -1347,10 +1347,10 @@ End Enum
 'Datos de user o npc
 Public Type t_Char
 
-    charindex As Integer
+    CharIndex As Integer
     charindex_bk As Integer
-    head As Integer
-    body As Integer
+    Head As Integer
+    Body As Integer
     
     WeaponAnim As Integer
     ShieldAnim As Integer
@@ -1462,7 +1462,7 @@ Public Type t_SolicitudJugador
 End Type
 
 Public Type t_SolicitudReto
-    Estado As e_SolicitudRetoEstado
+    estado As e_SolicitudRetoEstado
     Jugadores() As t_SolicitudJugador
     Apuesta As Long
     PocionesMaximas As Integer
@@ -1525,7 +1525,7 @@ Public Type t_ObjData
     Jerarquia As Long
     ClaseTipo As Byte
     TipoRuna As Byte
-    name As String 'Nombre del obj
+    Name As String 'Nombre del obj
     OBJType As e_OBJType 'Tipo enum que determina cuales son las caract del obj
     GrhIndex As Long ' Indice del grafico que representa el obj
     GrhSecundario As Integer
@@ -1604,7 +1604,7 @@ Public Type t_ObjData
     MinSta As Integer ' Minimo puntos de stamina
     
     Cooldown As Long
-    cdType As Integer
+    CdType As Integer
     ImprovedRangedHitChance As Integer
     ImprovedMeleeHitChance As Integer
     
@@ -1859,7 +1859,7 @@ Public Type t_UserStats
     
     MaxHp As Integer
     MinHp As Integer
-    shield As Long
+    Shield As Long
     
     MaxSta As Integer
     MinSta As Integer
@@ -2179,7 +2179,7 @@ Public Type t_UserCounters
     PiqueteC As Long
     Pena As Long
     SendMapCounter As t_WorldPos
-    pasos As Integer
+    Pasos As Integer
     '[Gonzalo]
     Saliendo As Boolean
     Salir As Integer
@@ -2370,7 +2370,7 @@ Public Const HotKeyCount As Integer = 10
 'Tipo de los Usuarios
 Public Type t_User
 
-    name As String
+    Name As String
     Cuenta As String
     
     'User types are created at startup and reused every time,
@@ -2378,7 +2378,7 @@ Public Type t_User
     'this value should be updated every time we reuse this instance
     VersionId As Integer
     InUse As Boolean 'Mark if the slot is un use, should be set when players connect and clear on dc, used for debug and error handling
-    Id As Long
+    ID As Long
     Trabajo As t_UserTrabajo
     AccountID As Long
     Grupo As Tgrupo
@@ -2402,10 +2402,10 @@ Public Type t_User
     PosibleHogar As e_Ciudad
     MENSAJEINFORMACION As String
         
-    invent As t_Inventario
+    Invent As t_Inventario
     Invent_bk As t_Inventario
     
-    pos As t_WorldPos
+    Pos As t_WorldPos
     
     ConnectionDetails As t_ConnectionInfo
     
@@ -2494,7 +2494,7 @@ Public Type t_NPCStats
     MinHp As Long
     MaxHit As Integer
     MinHIT As Integer
-    shield As Long
+    Shield As Long
     def As Integer
     defM As Integer 'direct magic reduction
     MagicResistance As Integer 'magic skill required to do full damage to npc
@@ -2584,7 +2584,7 @@ Public Type t_NPCFlags
 
     BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
-    team As Byte
+    Team As Byte
 End Type
 
 Public Type t_CriaturasEntrenador
@@ -2618,7 +2618,7 @@ Public Type t_NpcPathFindingInfo
 End Type
 
 Public Type t_Caminata
-    offset As t_Position
+    Offset As t_Position
     Espera As Long
 End Type
 
@@ -2672,7 +2672,7 @@ Public Type t_Npc
     DropQuest() As t_QuestObj
     
     InformarRespawn As Byte
-    name As String
+    Name As String
     SubName As String
     Char As t_Char 'Define como se vera
     Desc As String
@@ -2680,7 +2680,7 @@ Public Type t_Npc
     showName As Byte
     GobernadorDe As Byte
 
-    npcType As e_NPCType
+    NPCtype As e_NPCType
     Numero As Integer
 
     nivel As Integer
@@ -2699,7 +2699,7 @@ Public Type t_Npc
 
     Veneno As Byte
 
-    pos As t_WorldPos 'Posicion
+    Pos As t_WorldPos 'Posicion
     Orig As t_WorldPos
 
     Movement As e_TipoAI
@@ -2729,7 +2729,7 @@ Public Type t_Npc
     Modifiers As t_ActiveModifiers
     EffectOverTime As t_EffectOverTimeList
     
-    invent As t_Inventario
+    Invent As t_Inventario
     
     NroExpresiones As Byte
     Expresiones() As String ' le da vida ;)
@@ -2757,7 +2757,7 @@ Public Type t_Npc
     SubeSupervivencia As Byte
     
     NumDestinos As Byte
-    dest() As String
+    Dest() As String
     Interface As Byte
     
     'Para diferenciar entre clanes
@@ -2850,7 +2850,7 @@ Type t_MapInfo
 End Type
 
 Public Type t_IndexHeap
-    currentIndex As Integer
+    CurrentIndex As Integer
     IndexInfo() As Integer
 End Type
 
@@ -2859,7 +2859,7 @@ Public Type t_GlobalDrop
     MaxPercent As Single
     MinPercent As Single
     RequiredHPForMaxChance As Long
-    amount As Integer
+    Amount As Integer
 End Type
 
 '********** V A R I A B L E S     P U B L I C A S ***********
@@ -2983,16 +2983,16 @@ Public TotalMapasCiudades()               As String
 Public Ayuda                              As New cCola
 Public TiempoPesca As Long
 Public BotinInicial As Double
-Public segundos As Long
+Public Segundos As Long
 
-Public Declare Function writeprivateprofilestring Lib "Kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpString As String, ByVal lpfilename As String) As Long
-Public Declare Function GetPrivateProfileString Lib "Kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nSize As Long, ByVal lpfilename As String) As Long
-Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal length As Long)
+Public Declare Function writeprivateprofilestring Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpString As String, ByVal lpfilename As String) As Long
+Public Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nSize As Long, ByVal lpfilename As String) As Long
+Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal Length As Long)
 Public Declare Function AOT_CheckIdErrors Lib "AoServerTools.dll" (ByVal TelemetryId As Long, ByRef OutBuffer As Byte, ByVal BuffLength As Long) As Long
 Public Declare Function AOT_GetTelemetryCode Lib "AoServerTools.dll" (ByVal TelemetryId As Long, ByVal name As String, ByRef OutBuffer As Byte, ByVal BuffLength As Long) As Long
 Public Declare Function AOT_GetTelemetryResult Lib "AoServerTools.dll" (ByRef Data As Byte, ByVal DataSize As Long, ByVal TelemetryId As Long, ByRef OutBuffer As Byte, ByVal BuffLength As Long) As Long
-Public Declare Function AOT_UpdateUserKey Lib "AoServerTools.dll" (ByVal Id As Long, ByVal level As Long, ByVal Exp As Long, ByVal gold As Long, ByVal BankGold As Long, ByVal PrevKey As String, ByVal PrevKeySize As Long, ByRef OutBuffer As Byte, ByVal OutBufferSize As Byte) As Long
-Public Declare Function AOT_SetUserKey Lib "AoServerTools.dll" (ByVal Id As Long, ByVal level As Long, ByVal Exp As Long, ByVal gold As Long, ByVal BankGold As Long, ByVal PrevKey As String, ByVal PrevKeySize As Long, ByRef OutBuffer As Byte, ByVal OutBufferSize As Byte) As Long
+Public Declare Function AOT_UpdateUserKey Lib "AoServerTools.dll" (ByVal id As Long, ByVal level As Long, ByVal Exp As Long, ByVal gold As Long, ByVal BankGold As Long, ByVal PrevKey As String, ByVal PrevKeySize As Long, ByRef OutBuffer As Byte, ByVal OutBufferSize As Byte) As Long
+Public Declare Function AOT_SetUserKey Lib "AoServerTools.dll" (ByVal id As Long, ByVal level As Long, ByVal Exp As Long, ByVal gold As Long, ByVal BankGold As Long, ByVal PrevKey As String, ByVal PrevKeySize As Long, ByRef OutBuffer As Byte, ByVal OutBufferSize As Byte) As Long
 ' Los Objetos Criticos nunca desaparecen del inventario de los npcs vendedores, una vez que
 ' se venden los 10.000 (max. cantidad de items x slot) vuelven a reabastecer.
 Public Enum e_ObjetosCriticos
@@ -3035,13 +3035,13 @@ End Enum
 Public Type tPaso
 
     CantPasos As Byte
-    wav() As Integer
+    Wav() As Integer
 
 End Type
 
 Public Const NUM_PASOS       As Byte = 6
 
-Public pasos()               As tPaso
+Public Pasos()               As tPaso
 
 Public DBError As String
 
@@ -3100,7 +3100,7 @@ Public Sub UpdateUserTelemetryKey(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim TelemetryOut(128) As Byte
         Dim TelemetryLen As Long
-        TelemetryLen = AOT_UpdateUserKey(.Id, .Stats.ELV, .Stats.Exp, .Stats.GLD, .Stats.Banco, .TelemetryInfo, Len(.TelemetryInfo), TelemetryOut(0), 128)
+        TelemetryLen = AOT_UpdateUserKey(.id, .Stats.ELV, .Stats.Exp, .Stats.GLD, .Stats.Banco, .TelemetryInfo, Len(.TelemetryInfo), TelemetryOut(0), 128)
         .TelemetryInfo = StrConv(TelemetryOut, vbUnicode)
         .TelemetryInfo = Left(.TelemetryInfo, TelemetryLen)
     End With
@@ -3111,7 +3111,7 @@ Public Sub SetUserTelemetryKey(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim TelemetryOut(128) As Byte
         Dim TelemetryLen As Long
-        TelemetryLen = AOT_SetUserKey(.Id, .Stats.ELV, .Stats.Exp, .Stats.GLD, .Stats.Banco, .TelemetryInfo, Len(.TelemetryInfo), TelemetryOut(0), 128)
+        TelemetryLen = AOT_SetUserKey(.id, .Stats.ELV, .Stats.Exp, .Stats.GLD, .Stats.Banco, .TelemetryInfo, Len(.TelemetryInfo), TelemetryOut(0), 128)
         .TelemetryInfo = StrConv(TelemetryOut, vbUnicode)
         .TelemetryInfo = Left(.TelemetryInfo, TelemetryLen)
     End With
@@ -3165,21 +3165,21 @@ Public Function IsValidRef(ByRef Ref As t_AnyReference) As Boolean
     End If
 End Function
 
-Public Function SetRef(ByRef Ref As t_AnyReference, ByVal Index As Integer, ByVal RefType As e_ReferenceType) As Boolean
+Public Function SetRef(ByRef Ref As t_AnyReference, ByVal index As Integer, ByVal RefType As e_ReferenceType) As Boolean
     SetRef = False
     Ref.RefType = RefType
-    Ref.ArrayIndex = Index
+    Ref.ArrayIndex = index
     If RefType = eUser Then
-        If Index <= 0 Or Ref.ArrayIndex > UBound(UserList) Then
+        If index <= 0 Or Ref.ArrayIndex > UBound(UserList) Then
             Exit Function
         End If
-        Ref.VersionId = UserList(Index).VersionId
-        Ref.UserId = UserList(Index).Id
+        Ref.VersionId = UserList(index).VersionId
+        Ref.UserId = UserList(Index).ID
     Else
-        If Index <= 0 Or Ref.ArrayIndex > UBound(NpcList) Then
+        If index <= 0 Or Ref.ArrayIndex > UBound(NpcList) Then
             Exit Function
         End If
-        Ref.VersionId = NpcList(Index).VersionId
+        Ref.VersionId = NpcList(index).VersionId
         Ref.UserId = 0
     End If
     SetRef = True
@@ -3194,7 +3194,7 @@ Public Function CastUserToAnyRef(ByRef UserRef As t_UserReference, ByRef AnyRef 
     AnyRef.ArrayIndex = UserRef.ArrayIndex
     AnyRef.RefType = eUser
     AnyRef.VersionId = UserRef.VersionId
-    AnyRef.UserId = UserList(UserRef.ArrayIndex).Id
+    AnyRef.userID = UserList(UserRef.ArrayIndex).ID
     CastUserToAnyRef = True
 End Function
 
@@ -3241,8 +3241,8 @@ Public Sub IncreaseLong(ByRef dest As Long, ByVal amount As Long)
     dest = dest + amount
 End Sub
 
-Public Sub PerformanceTestStart(ByRef timer As Long)
-    timer = GetTickCount()
+Public Sub PerformanceTestStart(ByRef Timer As Long)
+    Timer = GetTickCount()
 End Sub
 
 ' Test the time since last call and update the time
