@@ -1444,7 +1444,7 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
                     End If
                 End If
                 
-                UserList(UserIndex).Stats.MinSta = 45
+                UserList(UserIndex).Stats.MinSta = 0
             End If
             
 132         Call WriteUpdateMana(UserIndex)
