@@ -1443,8 +1443,7 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
                         Call UserMod.ModifyHealth(UserIndex, -costoVidaResu, 1)
                     End If
                 End If
-                
-                UserList(UserIndex).Stats.MinSta = 0
+            
             End If
             
 132         Call WriteUpdateMana(UserIndex)
