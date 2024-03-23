@@ -66,3 +66,16 @@ Please note this is not free software and you will have to buy your own license 
 
 # 🛡️ Logs
 Los logs están en la carpeta de Logs, Errores y en Windows Events.
+
+
+## Star History
+
+<a href="https://star-history.com/#ao-org/argentum-online-server&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=ao-org/argentum-online-server&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=ao-org/argentum-online-server&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=ao-org/argentum-online-server&type=Date" />
+  </picture>
+</a>
+
+
