@@ -210,47 +210,47 @@ Public Const CHAT_COLOR_GM_YELL   As Long = &HF82FF
 ' Coordinates for normal sounds (not 3D, like rain)
 Public Const NO_3D_SOUND          As Byte = 0
 
-Public Const iFragataFantasmal = 3035 'ok
+Public Const iFragataFantasmal = 87 'ok
 
-Public Const iTraje = 3012 'Traje +25
-Public Const iTrajeAltoNw = 3013 'Traje -25 alto
-Public Const iTrajeBajoNw = 3014 'Traje -25 enano
+Public Const iTraje = 694 'Traje +25
+Public Const iTrajeAltoNw = 1295 'Traje -25 alto
+Public Const iTrajeBajoNw = 1296 'Traje -25 enano
 
-Public Const iObjTraje = 3015
-Public Const iObjTrajeAltoNw = 3016
-Public Const iObjTrajeBajoNw = 3017
+Public Const iObjTraje = 197
+Public Const iObjTrajeAltoNw = 199
+Public Const iObjTrajeBajoNw = 200
 
-Public Const iBarca = 3018
+Public Const iBarca = 84
 
-Public Const iBarcaCiuda = 3019
+Public Const iBarcaCiuda = 1265
 
-Public Const iBarcaCrimi = 3020
+Public Const iBarcaCrimi = 1266
 
-Public Const iGalera = 3021
+Public Const iGalera = 85
 
-Public Const iGaleraCiuda = 3022
+Public Const iGaleraCiuda = 1267
 
-Public Const iGaleraCrimi = 3032
+Public Const iGaleraCrimi = 1268
 
-Public Const iGaleon = 3024
+Public Const iGaleon = 86
 
-Public Const iGaleonCiuda = 3025
+Public Const iGaleonCiuda = 1269
 
-Public Const iGaleonCrimi = 3026
+Public Const iGaleonCrimi = 1270
 
-Public Const iBarcaArmada = 3027
+Public Const iBarcaArmada = 1273
 
-Public Const iBarcaCaos = 3028
+Public Const iBarcaCaos = 1274
 
-Public Const iGaleraArmada = 3029
+Public Const iGaleraArmada = 1271
 
-Public Const iGaleraCaos = 3030
+Public Const iGaleraCaos = 1272
 
-Public Const iGaleonArmada = 3031
+Public Const iGaleonArmada = 1264
 
-Public Const iGaleonCaos = 3032
+Public Const iGaleonCaos = 1263
 
-Public Const iRopaBuceoMuerto = 3033
+Public Const iRopaBuceoMuerto = 772
 
 Public MapasInterdimensionales() As Integer
 
@@ -660,7 +660,7 @@ Public Enum e_Block
 End Enum
 
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
-Public Const iCuerpoMuerto As Integer = 3034
+Public Const iCuerpoMuerto As Integer = 829
 
 Public Const iCabezaMuerto As Integer = 0 ' El nuevo casper no usa cabeza. El viejo es: 621
 
