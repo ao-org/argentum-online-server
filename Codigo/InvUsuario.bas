@@ -1549,7 +1549,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     'Lo equipa
 436                 If Len(obj.CreaGRH) <> 0 Then
 438                     .Char.Head_Aura = obj.CreaGRH
-440                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Head_Aura, False, 4))
+440                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Head_Aura, False, 4))
                     End If
             
 442                 .Invent.Object(Slot).Equipped = 1
