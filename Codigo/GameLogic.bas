@@ -2141,6 +2141,7 @@ Public Function PacketIdToString(ByVal PacketId As Long) As String
             Exit Function
         Case 15
             PacketIdToString = "ChangeHeading"
+            Exit Function
         Case 16
             PacketIdToString = "Hide"
             Exit Function
