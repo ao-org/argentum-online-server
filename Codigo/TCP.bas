@@ -1926,7 +1926,7 @@ Function ValidarCabeza(ByVal UserRaza As e_Raza, ByVal UserSexo As e_Genero, ByV
 112                     ValidarCabeza = Head >= 200 And Head <= 229
                     
 114                 Case e_Raza.Enano
-116                     ValidarCabeza = Head >= 300 And Head <= 329
+116                     ValidarCabeza = head >= 300 And head <= 344
                     
 118                 Case e_Raza.Gnomo
 120                     ValidarCabeza = Head >= 400 And Head <= 429
