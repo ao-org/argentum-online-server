@@ -1538,7 +1538,7 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
     On Error GoTo EfectoIncineramiento_Err
             Dim damage As Integer
 100         With UserList(UserIndex)
-                ' 5 Mini intervalitos, dentro del intervalo total de incineracion
+                ' 4 Mini intervalitos, dentro del intervalo total de incineracion
 102             If .Counters.Incineracion Mod (IntervaloIncineracion \ 4) = 0 Then
                     ' "Te estás incinerando, si no te curas morirás.
 104                 Call WriteLocaleMsg(UserIndex, "392", e_FontTypeNames.FONTTYPE_FIGHT)
