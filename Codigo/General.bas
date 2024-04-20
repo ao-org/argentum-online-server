@@ -1538,12 +1538,12 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
     On Error GoTo EfectoIncineramiento_Err
             Dim damage As Integer
 100         With UserList(UserIndex)
-                ' 5 Mini intervalitos, dentro del intervalo total de incineracion
-102             If .Counters.Incineracion Mod (IntervaloIncineracion \ 5) = 0 Then
+                ' 4 Mini intervalitos, dentro del intervalo total de incineracion
+102             If .Counters.Incineracion Mod (IntervaloIncineracion \ 4) = 0 Then
                     ' "Te estás incinerando, si no te curas morirás.
 104                 Call WriteLocaleMsg(UserIndex, "392", e_FontTypeNames.FONTTYPE_FIGHT)
                     UserList(userindex).Counters.timeFx = 3
-106                 Damage = RandomNumber(35, 45)
+106                 Damage = RandomNumber(20, 30)
 108                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 73, 0, .pos.x, .pos.y))
 112                 If .ChatCombate = 1 Then
 114                     Call WriteLocaleMsg(UserIndex, "391", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(damage))
