@@ -2549,6 +2549,7 @@ Public Type t_NPCFlags
     NPCIdle As Boolean
     Summoner As t_NpcReference
     EffectInmunity As Long
+    NoMapInfo As Boolean
     ' Invasiones
     InvasionIndex As Integer
     SpawnBox As Integer

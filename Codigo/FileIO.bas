@@ -3025,6 +3025,7 @@ Sub CargarNpcBackUp(npcIndex As Integer, ByVal NpcNumber As Integer)
 172     NpcList(npcIndex).flags.backup = val(GetVar(npcfile, "NPC" & NpcNumber, "BackUp"))
 174     NpcList(npcIndex).flags.Domable = val(GetVar(npcfile, "NPC" & NpcNumber, "Domable"))
 176     NpcList(npcIndex).flags.RespawnOrigPos = val(GetVar(npcfile, "NPC" & NpcNumber, "OrigPos"))
+        NpcList(npcIndex).flags.NoMapInfo = CBool(val(GetVar(npcfile, "NPC" & NpcNumber, "NoMapInfo")))
 
         'Tipo de items con los que comercia
 178     NpcList(npcIndex).TipoItems = val(GetVar(npcfile, "NPC" & NpcNumber, "TipoItems"))
