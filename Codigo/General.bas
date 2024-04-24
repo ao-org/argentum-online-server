@@ -563,8 +563,6 @@ Sub Main()
     
 116     frmCargando.Show
     
-118     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
-    
 120     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
 
         Call InitializeNpcIndexHeap
