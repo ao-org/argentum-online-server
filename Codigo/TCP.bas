@@ -1917,16 +1917,15 @@ Function ValidarCabeza(ByVal UserRaza As e_Raza, ByVal UserSexo As e_Genero, ByV
 102             Select Case UserRaza
                 
                     Case e_Raza.Humano
-104                     ValidarCabeza = Head >= 1 And Head <= 41
+104                     ValidarCabeza = head >= 1 And head <= 41 Or head >= 778 And head <= 791
                     
 106                 Case e_Raza.Elfo
-108                     ValidarCabeza = Head >= 101 And Head <= 132
+108                     ValidarCabeza = head >= 101 And head <= 132 Or head >= 531 And head <= 545
                     
 110                 Case e_Raza.Drow
-112                     ValidarCabeza = Head >= 200 And Head <= 229
-                    
+112                     ValidarCabeza = head >= 200 And head <= 229 Or head >= 792 And head <= 810
 114                 Case e_Raza.Enano
-116                     ValidarCabeza = Head >= 300 And Head <= 329
+116                     ValidarCabeza = head >= 300 And head <= 344
                     
 118                 Case e_Raza.Gnomo
 120                     ValidarCabeza = Head >= 400 And Head <= 429
@@ -1941,10 +1940,10 @@ Function ValidarCabeza(ByVal UserRaza As e_Raza, ByVal UserSexo As e_Genero, ByV
 128             Select Case UserRaza
                 
                     Case e_Raza.Humano
-130                     ValidarCabeza = Head >= 50 And Head <= 80
+130                     ValidarCabeza = head >= 50 And head <= 80 Or head >= 187 And head <= 190 Or head >= 230 And head <= 246
                     
 132                 Case e_Raza.Elfo
-134                     ValidarCabeza = Head >= 150 And Head <= 179
+134                     ValidarCabeza = head >= 150 And head <= 179 Or head >= 758 And head <= 777
                     
 136                 Case e_Raza.Drow
 138                     ValidarCabeza = Head >= 250 And Head <= 279

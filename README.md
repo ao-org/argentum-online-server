@@ -22,6 +22,10 @@ Crear una nueva carpeta llamada `C:\AO20` y entrar a la misma, en ella seguir lo
 
 7. Abrir el archivo `Server.VBP`
 
+# SQL Migrations
+
+To modify the schema of the database or make alterations to existing tables, it is essential to create a new SQL migration file within the `ScriptsDB` directory. The project is configured to automatically detect and execute the required migration scripts. This process ensures that the database is systematically updated to reflect the latest schema changes without manual intervention. This approach not only maintains database integrity but also streamlines the update process, enabling seamless transitions between different database schema versions.
+
 # 🛡️ Pull Requests
 
 <a href="https://imgbb.com/"><img src="https://i.ibb.co/QfZznrw/Screenshot-2023-12-02-211157.png" alt="Precommit-hook" border="0"></a>
