@@ -1977,6 +1977,8 @@ Public Sub resetPj(ByVal UserIndex As Integer)
 224     .Faccion.Status = 1
         
         Call ResetUserSpells(UserIndex)
+        Call ResetUserSkills(UserIndex)
+        Call ResetUserFlags(UserIndex)
         Call UpdateUserHechizos(True, UserIndex, 0)
 900     Call WriteUpdateUserStats(UserIndex)
 905     Call WriteUpdateHungerAndThirst(UserIndex)
