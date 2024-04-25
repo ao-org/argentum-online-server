@@ -1988,7 +1988,7 @@ Public Sub resetPj(ByVal UserIndex As Integer)
         
         Call ResetQuestStats(UserIndex)
         
-        Call WarpUserChar(UserIndex, .pos.Map, .pos.x, .pos.y, True)
+        Call WarpUserChar(UserIndex, 168, 53, 33, True)
         
     End With
 End Sub
