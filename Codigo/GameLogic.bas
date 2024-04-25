@@ -1924,7 +1924,7 @@ Public Function EsMapaEvento(ByVal destMap As Long) As Boolean
 End Function
 
 Public Sub resetPj(ByVal UserIndex As Integer)
-    
+    Dim CiudadNewbie As t_WorldPos
     'Agrego cosas extra para reset
     With UserList(UserIndex)
         Call ConnectUser(UserIndex, .name, True)
@@ -1990,7 +1990,11 @@ Public Sub resetPj(ByVal UserIndex As Integer)
         
         Call ResetQuestStats(UserIndex)
         
-        Call WarpUserChar(UserIndex, 168, 53, 33, True)
+        CiudadNewbie.Map = 168
+        CiudadNewbie.X = 53
+        CiudadNewbie.Y = 33
+        
+        Call WarpUserChar(UserIndex, CiudadNewbie.Map, CiudadNewbie.X, CiudadNewbie.Y, True)
         
     End With
 End Sub
