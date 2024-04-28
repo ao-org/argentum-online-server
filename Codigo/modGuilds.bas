@@ -1573,11 +1573,11 @@ Public Function GetRequiredExpForGuildLevel(ByVal CurrentLevel As Integer) As Lo
 132         ElseIf CurrentLevel = 2 Then
 134             GetRequiredExpForGuildLevel = 1000
 136         ElseIf CurrentLevel = 3 Then
-138             GetRequiredExpForGuildLevel = 2000
+138             GetRequiredExpForGuildLevel = 1500
 140         ElseIf CurrentLevel = 4 Then
-142             GetRequiredExpForGuildLevel = 4000
+142             GetRequiredExpForGuildLevel = 2000
 143         ElseIf CurrentLevel = 5 Then
-145             GetRequiredExpForGuildLevel = 8000
+145             GetRequiredExpForGuildLevel = 3000
             Else
 144             GetRequiredExpForGuildLevel = 0
             End If
@@ -1597,19 +1597,19 @@ Public Function MiembrosPermite(ByVal GI As Integer) As Byte
 104             MiembrosPermite = 5 ' 5 miembros
 
 106         Case 2
-108             MiembrosPermite = 7 ' 2 miembros + pedir ayuda
+108             MiembrosPermite = 8 ' 3 miembros + pedir ayuda
 
 110         Case 3
-112             MiembrosPermite = 7 ' ver invi (SEGURO DE CLAN)
+112             MiembrosPermite = 11 ' 3 miembros + seguro de clan
 
 114         Case 4
-116             MiembrosPermite = 12 ' 5 miembros
+116             MiembrosPermite = 14 ' 3 miembros
 
             Case 5
-                MiembrosPermite = 15 ' 3 miembros + seguro de clan(BARRA DE VIDA Y MANA)
+                MiembrosPermite = 17 ' 3 miembros + barra de vida y de mana
                 
             Case 6
-                MiembrosPermite = 20 ' 5 miembros + barra de vida y mana entre miembros(VER INVI)
+                MiembrosPermite = 20 ' 3 miembros + verse invisible
 
         End Select
 
