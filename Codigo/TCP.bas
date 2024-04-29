@@ -182,12 +182,12 @@ Sub RellenarInventario(ByVal UserIndex As String)
 150         .invent.Object(NumItems).amount = 50
 152         NumItems = NumItems + 1
 
-153         .invent.Object(NumItems).ObjIndex = 3791 ' Pasaje a Jourmut
-154         .invent.Object(NumItems).amount = 2
-155         NumItems = NumItems + 1
+            .invent.Object(NumItems).ObjIndex = 3791 ' Pasaje a Jourmut
+            .invent.Object(NumItems).amount = 2
+             NumItems = NumItems + 1
         
             ' Armas
-154         Select Case .clase
+           Select Case .clase
                 Case e_Class.Cleric
                  .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
                  .invent.Object(NumItems).amount = 1
