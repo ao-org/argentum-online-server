@@ -1,17 +1,37 @@
 VERSION 5.00
 Begin VB.Form frmServidor 
-   BackColor       =   &H00E0E0E0&
+   BackColor       =   &H00FFFF00&
    Caption         =   "Servidor"
-   ClientHeight    =   4905
+   ClientHeight    =   5100
    ClientLeft      =   60
    ClientTop       =   345
-   ClientWidth     =   7530
+   ClientWidth     =   7845
    ControlBox      =   0   'False
    LinkTopic       =   "Form1"
-   ScaleHeight     =   327
+   ScaleHeight     =   340
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   502
+   ScaleWidth      =   523
    StartUpPosition =   3  'Windows Default
+   Begin VB.CommandButton btnResetPersonajes 
+      BackColor       =   &H000000C0&
+      Caption         =   "RESET PERSONAJES - PRECAUCION"
+      BeginProperty Font 
+         Name            =   "Comic Sans MS"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   4200
+      MaskColor       =   &H000000FF&
+      MousePointer    =   14  'Arrow and Question
+      TabIndex        =   29
+      Top             =   2880
+      Width           =   3255
+   End
    Begin VB.Frame Frame4 
       Caption         =   "Apagar - Save"
       BeginProperty Font 
@@ -23,10 +43,10 @@ Begin VB.Form frmServidor
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   1575
-      Left            =   3840
+      Height          =   1455
+      Left            =   4080
       TabIndex        =   22
-      Top             =   2880
+      Top             =   3480
       Width           =   3615
       Begin VB.CommandButton Command4 
          Caption         =   "Hacer un Backup del mundo"
@@ -108,10 +128,10 @@ Begin VB.Form frmServidor
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   2775
-      Left            =   3840
+      Height          =   3135
+      Left            =   4080
       TabIndex        =   14
-      Top             =   0
+      Top             =   120
       Width           =   3615
       Begin VB.CommandButton cmdReloadGuilds 
          Caption         =   "Recargar base de datos de clanes"
@@ -279,10 +299,10 @@ Begin VB.Form frmServidor
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   2415
+      Height          =   1695
       Left            =   120
       TabIndex        =   9
-      Top             =   2400
+      Top             =   2640
       Width           =   3735
       Begin VB.CommandButton Command20 
          Caption         =   "Reset sockets"
@@ -298,7 +318,7 @@ Begin VB.Form frmServidor
          Height          =   255
          Left            =   240
          TabIndex        =   13
-         Top             =   1800
+         Top             =   1320
          Width           =   3255
       End
       Begin VB.CommandButton Command10 
@@ -332,7 +352,7 @@ Begin VB.Form frmServidor
          Height          =   255
          Left            =   240
          TabIndex        =   11
-         Top             =   1080
+         Top             =   720
          Width           =   3255
       End
       Begin VB.CommandButton Command27 
@@ -349,7 +369,7 @@ Begin VB.Form frmServidor
          Height          =   255
          Left            =   240
          TabIndex        =   10
-         Top             =   1560
+         Top             =   1080
          Width           =   3255
       End
    End
@@ -367,7 +387,7 @@ Begin VB.Form frmServidor
       Height          =   2415
       Left            =   120
       TabIndex        =   1
-      Top             =   0
+      Top             =   120
       Width           =   3735
       Begin VB.CommandButton Command14 
          Caption         =   "Update MOTD"
@@ -383,7 +403,7 @@ Begin VB.Form frmServidor
          Height          =   255
          Left            =   240
          TabIndex        =   8
-         Top             =   1920
+         Top             =   2040
          Width           =   3255
       End
       Begin VB.CommandButton Command9 
@@ -434,7 +454,7 @@ Begin VB.Form frmServidor
          Height          =   255
          Left            =   240
          TabIndex        =   5
-         Top             =   1440
+         Top             =   1320
          Width           =   3255
       End
       Begin VB.CommandButton Command1 
@@ -502,7 +522,7 @@ Begin VB.Form frmServidor
          Strikethrough   =   0   'False
       EndProperty
       Height          =   255
-      Left            =   6480
+      Left            =   1800
       TabIndex        =   0
       Top             =   4560
       Width           =   945
@@ -577,6 +597,31 @@ Command10_Click_Err:
 
         
 End Sub
+
+Private Sub btnResetPersonajes_Click()
+    ' Cambiamos MaxUsers a 5000.
+    Dim response As Integer
+    Dim tempMaxUsers As Long
+    
+    ' Display the MsgBox with Yes and No buttons
+    response = MsgBox("Seguro que queres resetear todos los personajes?", vbYesNo + vbQuestion, "Confirmation")
+    
+    ' Check the response from MsgBox
+    If response = vbYes Then
+        'Guardamos el valor de MaxUsers para reestablecerlo luego de resetear los pjs.
+        tempMaxUsers = MaxUsers
+        MaxUsers = 5000
+        
+        Dim i As Integer
+        For i = 1 To MaxUsers
+            Call resetPj(i)
+        Next i
+        
+        MaxUsers = tempMaxUsers
+    End If
+
+End Sub
+
 
 Private Sub Command12_Click()
         

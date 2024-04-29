@@ -3814,3 +3814,108 @@ Public Function GetUserMR(ByVal UserIndex As Integer) As Integer
         GetUserMR = MR + 100 * ModClase(.clase).ResistenciaMagica
     End With
 End Function
+
+
+Public Function SetInitStatsCharacter(ByVal UserIndex As Long, _
+                                      ByVal UserRaza As e_Raza, _
+                                      ByVal UserSexo As e_Genero, _
+                                      ByVal name As String, _
+                                      ByVal UserClase As e_Class, _
+                                      ByVal head As Integer, _
+                                      ByVal Hogar As e_Ciudad) As Long
+    On Error GoTo ErrorHandler
+
+    With UserList(UserIndex)
+        .Stats.UserAtributos(e_Atributos.Fuerza) = 18 + ModRaza(UserRaza).Fuerza
+        .Stats.UserAtributos(e_Atributos.Agilidad) = 18 + ModRaza(UserRaza).Agilidad
+        .Stats.UserAtributos(e_Atributos.Inteligencia) = 18 + ModRaza(UserRaza).Inteligencia
+        .Stats.UserAtributos(e_Atributos.Constitucion) = 18 + ModRaza(UserRaza).Constitucion
+        .Stats.UserAtributos(e_Atributos.Carisma) = 18 + ModRaza(UserRaza).Carisma
+        
+        ' Backup initial attributes
+        .Stats.UserAtributosBackUP(e_Atributos.Fuerza) = .Stats.UserAtributos(e_Atributos.Fuerza)
+        .Stats.UserAtributosBackUP(e_Atributos.Agilidad) = .Stats.UserAtributos(e_Atributos.Agilidad)
+        .Stats.UserAtributosBackUP(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia)
+        .Stats.UserAtributosBackUP(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion)
+        .Stats.UserAtributosBackUP(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma)
+        
+        ' Reset flags and stats
+        .flags.Muerto = 0
+        .flags.Escondido = 0
+        .flags.Casado = 0
+        .flags.SpouseId = 0
+        
+        .name = name
+        .clase = Min(max(0, UserClase), NUMCLASES)
+        .raza = UserRaza
+        .Char.head = head
+        .genero = UserSexo
+        .Hogar = Hogar
+        .Stats.SkillPts = 10
+        .Char.Heading = e_Heading.SOUTH
+        Call DarCuerpo(UserIndex)
+        .OrigChar = .Char
+        Call ClearClothes(.Char)
+        .Stats.MaxHp = .Stats.UserAtributos(e_Atributos.Constitucion)
+        .Stats.MinHp = .Stats.MaxHp
+        .Stats.MaxMAN = .Stats.UserAtributos(e_Atributos.Inteligencia) * ModClase(.clase).ManaInicial
+        .Stats.MinMAN = .Stats.MaxMAN
+        .Stats.MaxSta = 20 * RandomNumber(1, .Stats.UserAtributos(e_Atributos.Agilidad) \ 6)
+        .Stats.MinSta = .Stats.MaxSta
+        .Stats.MaxAGU = 100
+        .Stats.MinAGU = 100
+        .Stats.MaxHam = 100
+        .Stats.MinHam = 100
+        .flags.VecesQueMoriste = 0
+        .flags.Montado = 0
+        .Stats.MaxHit = 2
+        .Stats.MinHIT = 1
+        .Stats.GLD = 0
+        .Stats.Exp = 0
+        .Stats.ELV = 1
+        Call RellenarInventario(UserIndex)
+        .LogOnTime = Now
+        .UpTime = 0
+        Call ResetCd(UserList(UserIndex))
+        Call ResetFacciones(UserIndex)
+        .Faccion.Status = 1
+        .ChatCombate = 1
+        .ChatGlobal = 1
+        Call UpdateUserTelemetryKey(UserIndex)
+
+        ' Set position based on home city
+        Select Case .Hogar
+            Case e_Ciudad.cUllathorpe
+                .pos.Map = 1
+                .pos.x = 56
+                .pos.y = 44
+            Case e_Ciudad.cArghal
+                .pos.Map = 151
+                .pos.x = 46
+                .pos.y = 34
+            Case e_Ciudad.cNix
+                .pos.Map = 34
+                .pos.x = 40
+                .pos.y = 86
+            Case e_Ciudad.cLindos
+                .pos.Map = 62
+                .pos.x = 62
+                .pos.y = 44
+            Case e_Ciudad.cBanderbill
+                .pos.Map = 59
+                .pos.x = 54
+                .pos.y = 42
+            Case e_Ciudad.cArkhein
+                .pos.Map = 196
+                .pos.x = 49
+                .pos.y = 64
+        End Select
+    End With
+
+    Exit Function
+
+ErrorHandler:
+    Debug.Print "Error Number: " & Err.Number & "; Description: " & Err.Description
+    Resume Next
+End Function
+
