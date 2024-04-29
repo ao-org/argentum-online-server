@@ -2482,6 +2482,20 @@ Sub CargarCiudades()
 212         .NecesitaNave = val(Lector.GetValue("Arghal", "NecesitaNave"))
             MapasCiudades = MapasCiudades & Lector.GetValue("Arghal", "Mapas") & ","
         End With
+        
+        With CityForgat
+           .Map = val(Lector.GetValue("Forgat", "Mapa"))
+            .x = val(Lector.GetValue("Forgat", "X"))
+            .y = val(Lector.GetValue("Forgat", "Y"))
+            .MapaViaje = val(Lector.GetValue("Forgat", "MapaViaje"))
+            .ViajeX = val(Lector.GetValue("Forgat", "ViajeX"))
+            .ViajeY = val(Lector.GetValue("Forgat", "ViajeY"))
+            .MapaResu = val(Lector.GetValue("Forgat", "MapaResu"))
+            .ResuX = val(Lector.GetValue("Forgat", "ResuX"))
+            .ResuY = val(Lector.GetValue("Forgat", "ResuY"))
+            .NecesitaNave = val(Lector.GetValue("Forgat", "NecesitaNave"))
+               MapasCiudades = MapasCiudades & Lector.GetValue("Forgat", "Mapas") & ","
+           End With
     
 214     With CityArkhein
 216         .map = val(Lector.GetValue("Arkhein", "Mapa"))
@@ -2606,6 +2620,10 @@ Sub CargarCiudades()
 278     Arghal.map = CityArghal.map
 280     Arghal.x = CityArghal.x
 282     Arghal.y = CityArghal.y
+
+        Forgat.Map = CityForgat.Map
+        Forgat.x = CityForgat.x
+        Forgat.y = CityForgat.y
     
 284     Arkhein.map = CityArkhein.map
 286     Arkhein.x = CityArkhein.x
@@ -2617,6 +2635,7 @@ Sub CargarCiudades()
 294     Ciudades(e_Ciudad.cBanderbill) = Banderbill
 296     Ciudades(e_Ciudad.cLindos) = Lindos
 298     Ciudades(e_Ciudad.cArghal) = Arghal
+        Ciudades(e_Ciudad.cForgat) = Forgat
 300     Ciudades(e_Ciudad.cArkhein) = Arkhein
         
         Exit Sub
