@@ -301,6 +301,9 @@ Sub RellenarInventario(ByVal UserIndex As String)
                  .invent.Object(NumItems).ObjIndex = 3492 ' Flecha del Principiante
                  .invent.Object(NumItems).amount = 300
                  NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
 
             Case e_Class.Thief
                  .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
