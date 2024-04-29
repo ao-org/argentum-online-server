@@ -355,7 +355,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
                  NumItems = NumItems + 1
 
              Case e_Class.Druid
-                 .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
+                 .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
                  .invent.Object(NumItems).amount = 1
                 NumItems = NumItems + 1
                  .invent.Object(NumItems).ObjIndex = 3494 ' Flauta del Principiante
