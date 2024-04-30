@@ -2237,6 +2237,11 @@ Sub LoadSini()
     
 100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando info de inicio del server."
     
+        If Not FileExist(IniPath & "Server.ini", vbArchive) Then
+            MsgBox "Se requiere de la configuración en Server.ini", vbCritical + vbOKOnly
+            End
+        End If
+
 102     Set Lector = New clsIniManager
 104     Call Lector.Initialize(IniPath & "Server.ini")
     
