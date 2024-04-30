@@ -288,9 +288,6 @@ Public Sub HandleGamble(ByVal UserIndex As Integer)
 112         ElseIf Distancia(NpcList(.flags.TargetNPC.ArrayIndex).Pos, .Pos) > 10 Then
 114             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                 
-116         ElseIf NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Timbero Then
-118             Call WriteChatOverHead(UserIndex, "No tengo ningún interés en apostar.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
-
 120         ElseIf amount < 1 Then
 122             Call WriteChatOverHead(UserIndex, "El mínimo de apuesta es 1 moneda.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
 
