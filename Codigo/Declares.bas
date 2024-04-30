@@ -313,6 +313,7 @@ Public Enum e_Ciudad
     cBanderbill
     cLindos
     cArghal
+    cForgat
     cArkhein
 
 End Enum
@@ -2963,11 +2964,13 @@ Public Ullathorpe                         As t_WorldPos
 Public Banderbill                         As t_WorldPos
 Public Lindos                             As t_WorldPos
 Public Arghal                             As t_WorldPos
+Public Forgat                             As t_WorldPos
 Public Arkhein                            As t_WorldPos
 Public CityNix                            As t_CityWorldPos
 Public CityUllathorpe                     As t_CityWorldPos
 Public CityBanderbill                     As t_CityWorldPos
 Public CityArghal                         As t_CityWorldPos
+Public CityForgat                         As t_CityWorldPos
 Public CityPenthar                        As t_CityWorldPos
 Public CityLindos                         As t_CityWorldPos
 Public CityEleusis                        As t_CityWorldPos
@@ -2975,8 +2978,8 @@ Public CityArkhein                        As t_CityWorldPos
 Public Prision                            As t_WorldPos
 Public Libertad                           As t_WorldPos
 Public Renacimiento                       As t_WorldPos
-Public NixDock                       As t_Transport
-Public ForgatDock                     As t_Transport
+Public NixDock                            As t_Transport
+Public ForgatDock                         As t_Transport
 Public BarcoNavegando                     As t_Transport
 
 Public TotalMapasCiudades()               As String
