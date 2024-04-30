@@ -152,7 +152,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 126         Select Case .clase
 
                  Case e_Class.Mage, e_Class.Cleric, e_Class.Druid, e_Class.Bard, e_Class.Paladin, e_Class.Bandit, e_Class.Assasin
-128                 .Stats.UserHechizos(1) = 291 ' Onda mágica
+128                 .Stats.UserHechizos(1) = 1 ' Dardo mágico
 
 
             End Select
@@ -181,9 +181,13 @@ Sub RellenarInventario(ByVal UserIndex As String)
 148         .invent.Object(NumItems).ObjIndex = 4334 ' Pocion violeta
 150         .invent.Object(NumItems).amount = 50
 152         NumItems = NumItems + 1
+
+            .invent.Object(NumItems).ObjIndex = 3791 ' Pasaje a Jourmut
+            .invent.Object(NumItems).amount = 2
+             NumItems = NumItems + 1
         
             ' Armas
-154         Select Case .clase
+           Select Case .clase
                 Case e_Class.Cleric
                  .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
                  .invent.Object(NumItems).amount = 1
@@ -224,6 +228,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
                  .invent.Object(NumItems).amount = 1
                 NumItems = NumItems + 1
                 
+                 .invent.Object(NumItems).ObjIndex = 3491 ' Arco del principiante
                  .invent.Object(NumItems).amount = 1
                 NumItems = NumItems + 1
 
@@ -295,6 +300,9 @@ Sub RellenarInventario(ByVal UserIndex As String)
                  NumItems = NumItems + 1
                  .invent.Object(NumItems).ObjIndex = 3492 ' Flecha del Principiante
                  .invent.Object(NumItems).amount = 300
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
+                 .invent.Object(NumItems).amount = 1
                  NumItems = NumItems + 1
 
             Case e_Class.Thief
