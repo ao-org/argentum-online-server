@@ -16,11 +16,15 @@ Crear una nueva carpeta llamada `C:\AO20` y entrar a la misma, en ella seguir lo
 
 4. Renombrar el archivo `Empty_db.db` a `Database.db`
 
-5. Clonar `Recursos`
+5. Clonar `Recursos` (https://github.com/ao-org/Recursos)
 
 6. Abrir Visual Basic 6 como administrador
 
 7. Abrir el archivo `Server.VBP`
+
+# Escenarios de juego / Game Scenarios
+En la siguiente carpetas podras encontrar archivos de configuracion para los eventos. Al programar un nuevo tipo de evento el mismo debe de tener su archivo de configuracion.
+https://github.com/ao-org/Recursos/tree/master/Dat/Scenarios
 
 # SQL Migrations
 
