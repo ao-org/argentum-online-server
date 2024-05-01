@@ -1,32 +1,36 @@
-### ⚔️ Por favor considera apoyarnos en [https://www.patreon.com/nolandstudios](https://www.patreon.com/nolandstudios) ⚔️ 
+### ⚔️ Please consider supporting us at [https://www.patreon.com/nolandstudios](https://www.patreon.com/nolandstudios) ⚔️ 
 
 ![ao20 logo](https://www.ao20.com.ar/_nuxt/img/argentum20_logo.562a0aa.png)
 
-# 🛡️ Server Argentum Online
-Código fuente de Argentum Online
+# 🛡️ Argentum Online Server
+Source code for Argentum Online
 
-# 🛡️ Cómo correr mi server:
-Crear una nueva carpeta llamada `C:\AO20` y entrar a la misma, en ella seguir lo siguientes pasos:
+# 🛡️ How to Run My Server:
+Create a new folder named `C:\AO20` and navigate to it. Follow these steps:
 
-1. Clonar repositorio `git clone https://github.com/ao-org/argentum-online-server.git`
+1. Clone the repository `git clone https://github.com/ao-org/argentum-online-server.git`
 
-2. Renombrar el archivo `Example.Server.ini` a `Server.ini`
+2. Rename the file `Example.Server.ini` to `Server.ini`
 
-3. Renombrar el archivo `Example.feature_toggle.ini` a `feature_toggle.ini`
+3. Rename the file `Example.feature_toggle.ini` to `feature_toggle.ini`
 
-4. Renombrar el archivo `Empty_db.db` a `Database.db`
+4. Rename the file `Empty_db.db` to `Database.db`
 
-5. Clonar `Recursos` (https://github.com/ao-org/Recursos)
+5. Clone `Recursos` (https://github.com/ao-org/Recursos)
 
-6. Abrir Visual Basic 6 como administrador
+6. Open Visual Basic 6 as an administrator
 
-7. Abrir el archivo `Server.VBP`
+7. Open the file `Server.VBP`
 
-# Escenarios de juego / Game Scenarios
-En la siguiente carpetas podras encontrar archivos de configuracion para los eventos. Al programar un nuevo tipo de evento el mismo debe de tener su archivo de configuracion.
+# 🔛 Feature Toggle/Flag (Turn ON/OFF features)
+
+When introducing new functionality to the server, it should include the capability to be disabled. To achieve this, we implement the feature flags design pattern, which is configured within the file `Example.feature_toggle.ini`.
+
+# 🎬 Game Scenarios
+In the following folders, you will find configuration files for events. When programming a new type of event, it must have its own configuration file.
 https://github.com/ao-org/Recursos/tree/master/Dat/Scenarios
 
-# SQL Migrations
+# 🗄️ SQL Migrations
 
 To modify the schema of the database or make alterations to existing tables, it is essential to create a new SQL migration file within the `ScriptsDB` directory. The project is configured to automatically detect and execute the required migration scripts. This process ensures that the database is systematically updated to reflect the latest schema changes without manual intervention. This approach not only maintains database integrity but also streamlines the update process, enabling seamless transitions between different database schema versions.
 
