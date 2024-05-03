@@ -1371,7 +1371,6 @@ Public Type t_Char
     speeding As Single
     BodyIdle As Integer
     Ataque1 As Integer
-    Ataque2 As Integer
     Animation() As Integer
     CastAnimation As Integer
 End Type
