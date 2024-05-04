@@ -298,7 +298,7 @@ Public Sub HandleGamble(ByVal UserIndex As Integer)
 130             Call WriteChatOverHead(UserIndex, "No tienes esa cantidad.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
 
             Else
-132             If RandomNumber(1, 100) <= 45 Then
+132             If RandomNumber(1, 100) <= 35 Then
 134                 .Stats.GLD = .Stats.GLD + amount
 136                 Call WriteChatOverHead(UserIndex, "¡Felicidades! Has ganado " & PonerPuntos(amount) & " monedas de oro!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                 
