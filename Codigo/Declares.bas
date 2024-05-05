@@ -1297,7 +1297,8 @@ End Enum
 Public Enum e_TripState
     eNixToForgat = 1
     eForgatToNix
-    
+    eArghalToForgat
+    eForgatToArghal
 End Enum
 
 Public Type t_Transport
@@ -2980,6 +2981,7 @@ Public Libertad                           As t_WorldPos
 Public Renacimiento                       As t_WorldPos
 Public NixDock                            As t_Transport
 Public ForgatDock                         As t_Transport
+Public ArghalDock                         As t_Transport
 Public BarcoNavegando                     As t_Transport
 
 Public TotalMapasCiudades()               As String
