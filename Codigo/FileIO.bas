@@ -2601,6 +2601,19 @@ Sub CargarCiudades()
             .RequiredPassID = val(Lector.GetValue("BarcoNavegando", "RequiredPassID"))
         End With
         
+        With ArghalDock
+            .Map = val(Lector.GetValue("ArghalDock", "Mapa"))
+            .startX = val(Lector.GetValue("ArghalDock", "StartX"))
+            .startY = val(Lector.GetValue("ArghalDock", "StartY"))
+            .EndX = val(Lector.GetValue("ArghalDock", "EndX"))
+            .EndY = val(Lector.GetValue("ArghalDock", "EndY"))
+            .DestX = val(Lector.GetValue("ArghalDock", "DestX"))
+            .DestY = val(Lector.GetValue("ArghalDock", "DestY"))
+            .DockX = val(Lector.GetValue("ArghalDock", "DockX"))
+            .DockY = val(Lector.GetValue("ArghalDock", "DockY"))
+            .RequiredPassID = val(Lector.GetValue("BarcoNavegando", "RequiredPassID"))
+        End With
+        
         
         TotalMapasCiudades = Split(MapasCiudades, ",")
     

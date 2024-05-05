@@ -897,6 +897,7 @@ Private Sub TimerBarco_Timer()
     Call PerformanceTestStart(PerformanceTimer)
     Call UpdateDock
     Call MsnEnbarque(ForgatDock)
+    Call MsnEnbarque(ArghalDock)
     Call MsnEnbarque(NixDock)
     Call PerformTimeLimitCheck(PerformanceTimer, "TimerBarco_Timer", 100)
 End Sub
@@ -943,24 +944,35 @@ Private Sub UpdateDock()
     Dim PassFound As Boolean
     Dim PassSlot As Integer
     
+    ' Verificar si el barco está en un muelle
     If MapData(BarcoNavegando.map, BarcoNavegando.DockX, BarcoNavegando.DockY).npcIndex = 0 Then
         BarcoNavegando.IsSailing = True
         Exit Sub
     End If
     
+    ' Si el barco no está navegando, no hay nada que hacer
     If Not BarcoNavegando.IsSailing Then
         Exit Sub
     End If
     
+    ' Marcar que el barco no está navegando más
     BarcoNavegando.IsSailing = False
 
+    ' Para cada azulejo en el área del barco
     For TileX = BarcoNavegando.startX To BarcoNavegando.EndX
         For TileY = BarcoNavegando.startY To BarcoNavegando.EndY
             user = MapData(BarcoNavegando.map, TileX, TileY).UserIndex
+            ' Si hay un usuario en el azulejo
             If user > 0 Then
+                ' Dependiendo del destino actual del barco
                 If BarcoNavegando.CurrenDest = e_TripState.eForgatToNix Then
+                    ' Enviar al usuario a Nix
                     Call WarpToLegalPos(user, NixDock.map, NixDock.DestX, NixDock.DestY, True)
                     Call WriteLocaleMsg(user, MsgThanksForTravelNix, e_FontTypeNames.FONTTYPE_GUILD)
+                ElseIf BarcoNavegando.CurrenDest = e_TripState.eForgatToArghal Then
+                    ' Enviar al usuario a Nix
+                    Call WarpToLegalPos(user, ArghalDock.Map, ArghalDock.DestX, ArghalDock.DestY, True)
+                    Call WriteLocaleMsg(user, MsgThanksForTravelArghal, e_FontTypeNames.FONTTYPE_GUILD)
                 Else
                     Call WarpToLegalPos(user, ForgatDock.map, ForgatDock.DestX, ForgatDock.DestY, True)
                     Call WriteLocaleMsg(user, MsgThanksForTravelForgat, e_FontTypeNames.FONTTYPE_GUILD)
@@ -969,8 +981,8 @@ Private Sub UpdateDock()
         Next TileY
     Next TileX
     
+    ' Verificar el destino actual del barco y procesar el muelle correspondiente
     If BarcoNavegando.CurrenDest = e_TripState.eForgatToNix Then
-    
         For TileX = NixDock.startX To NixDock.EndX
             For TileY = NixDock.startY To NixDock.EndY
                 user = MapData(NixDock.map, TileX, TileY).UserIndex
@@ -988,6 +1000,25 @@ Private Sub UpdateDock()
             Next TileY
         Next TileX
         BarcoNavegando.CurrenDest = e_TripState.eNixToForgat
+    
+        For TileX = ArghalDock.startX To ArghalDock.EndX
+            For TileY = ArghalDock.startY To ArghalDock.EndY
+                user = MapData(ArghalDock.Map, TileX, TileY).UserIndex
+                If user > 0 Then
+                    PassSlot = GetPassSlot(user)
+                    If PassSlot > 0 Then
+                       Call WriteLocaleMsg(user, MsgPassNix, e_FontTypeNames.FONTTYPE_GUILD)
+                       Call QuitarUserInvItem(user, PassSlot, 1)
+                       Call UpdateUserInv(False, user, PassSlot)
+                       Call WarpToLegalPos(user, BarcoNavegando.Map, BarcoNavegando.DestX, BarcoNavegando.DestY, True)
+                    Else
+                       Call WriteLocaleMsg(user, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
+                    End If
+                End If
+            Next TileY
+        Next TileX
+        BarcoNavegando.CurrenDest = e_TripState.eArghalToForgat
+        
     Else
         For TileX = ForgatDock.startX To ForgatDock.EndX
             For TileY = ForgatDock.startY To ForgatDock.EndY
@@ -1005,7 +1036,9 @@ Private Sub UpdateDock()
                 End If
             Next TileY
         Next TileX
+
         BarcoNavegando.CurrenDest = e_TripState.eForgatToNix
+
     
     End If
 
