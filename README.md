@@ -54,9 +54,24 @@ In case you have problems setting locally your pre-commit hook you can run the f
 # 🛡️ Requisitos
 
 ## Database SQLite
-- [http://www.ch-werner.de/sqliteodbc/](http://www.ch-werner.de/sqliteodbc/)
-Mejorar velocidad de la base de datos con `PRAGMA journal_mode=WAL;`
-Para mas detalles visiten https://www.sqlite.org/wal.html
+
+### Installing SQLite ODBC Driver for 32-bit Systems
+
+To integrate SQLite with ODBC on a 32-bit system, please download the appropriate driver from the following link:
+- [SQLite ODBC Driver - 32 bits](http://www.ch-werner.de/sqliteodbc/)
+
+### Optimizing Database Performance
+
+To enhance the performance of your SQLite database, consider changing the journal mode to Write-Ahead Logging (WAL) by executing the following SQL command:
+
+```sql
+PRAGMA journal_mode=WAL;
+```
+
+Write-Ahead Logging can significantly improve the write performance and concurrency of your database. For more information on how WAL mode benefits your database operations, please visit the SQLite WAL documentation:
+- [SQLite Write-Ahead Logging](https://www.sqlite.org/wal.html)
+
+This mode enables most read operations to proceed without locking and allows updates to occur without interfering with reads, thus increasing the performance and scalability of your application when using SQLite.
 
 ## Networking
 - Liberia de networking - [https://github.com/Wolftein/Aurora.Network](https://github.com/Wolftein/Aurora.Network)
