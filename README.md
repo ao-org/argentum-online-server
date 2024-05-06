@@ -3,7 +3,7 @@
 ![ao20 logo](https://www.ao20.com.ar/_nuxt/img/argentum20_logo.562a0aa.png)
 
 # 🛡️ Argentum Online Server
-Source code for Argentum Online
+![image](https://github.com/ao-org/argentum-online-server/assets/5874806/d0f29237-6bd3-4a90-a2d6-fc67b34f1c85)
 
 # 🛡️ How to Run My Server:
 Create a new folder named `C:\AO20` and navigate to it. Follow these steps:
@@ -53,12 +53,10 @@ In case you have problems setting locally your pre-commit hook you can run the f
 
 # 🛡️ Requisitos
 
-## Database
+## Database SQLite
 - [http://www.ch-werner.de/sqliteodbc/](http://www.ch-werner.de/sqliteodbc/)
 Mejorar velocidad de la base de datos con `PRAGMA journal_mode=WAL;`
 Para mas detalles visiten https://www.sqlite.org/wal.html
-
-- [https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.22-win32.msi](https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.22-win32.msi)
 
 ## Networking
 - Liberia de networking - [https://github.com/Wolftein/Aurora.Network](https://github.com/Wolftein/Aurora.Network)
