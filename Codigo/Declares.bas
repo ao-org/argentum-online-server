@@ -2844,6 +2844,7 @@ Type t_MapInfo
     Salida As t_WorldPos
     NoMascotas As Boolean
     OnlyGroups As Boolean
+    OnlyPatreon As Boolean
     DropItems As Boolean
     SafeFightMap As Boolean
     FriendlyFire As Boolean

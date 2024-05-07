@@ -337,8 +337,16 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
                 End If
                 Exit Function
             End If
+            
+            If MapInfo(Map).OnlyPatreon Then
+157             If .flags.UltimoMensaje <> 107 Then
+158                 Call WriteConsoleMsg(UserIndex, "Necesitas ser Patreon para entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+159                 .flags.UltimoMensaje = 107
+                End If
+                Exit Function
+            End If
 
-157         CheckMapRestrictions = True
+160         CheckMapRestrictions = True
 
         End With
 
