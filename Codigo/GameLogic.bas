@@ -338,7 +338,8 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
                 Exit Function
             End If
             
-            If MapInfo(Map).OnlyPatreon And Not .Stats.tipoUsuario = tAventurero Or .Stats.tipoUsuario = tHeroe Or .Stats.tipoUsuario = tLeyenda Then
+            If MapInfo(Map).OnlyPatreon And Not (.Stats.tipoUsuario = tAventurero Or .Stats.tipoUsuario = tHeroe Or .Stats.tipoUsuario = tLeyenda) Then
+            
 157             If .flags.UltimoMensaje <> 107 Then
 158                 Call WriteConsoleMsg(UserIndex, "Necesitas ser Patreon para entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
 159                 .flags.UltimoMensaje = 107
