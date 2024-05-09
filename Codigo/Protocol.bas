@@ -1083,13 +1083,6 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionId As Long)
         UserList(UserIndex).public_key = mid$(decrypted_session_token, 1, 16)
         
         user_name = AO20CryptoSysWrapper.DECRYPT(cnvHexStrFromString(UserList(UserIndex).public_key), encrypted_username)
-        #If DEBUGGING = False Then
-            If Not VersionOK(Version) Then
-                Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-                Call CloseSocket(UserIndex)
-                Exit Sub
-            End If
-        #End If
          
         If Not EntrarCuenta(UserIndex, CuentaEmail, MD5) Then
             Call CloseSocket(UserIndex)
@@ -1194,17 +1187,6 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
 
         End If
 
-        #If DEBUGGING = False Then
-
-142         If Not VersionOK(Version) Then
-144             Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-146             Call CloseSocket(UserIndex)
-                Exit Sub
-
-            End If
-
-        #End If
-        
 148     If EsGmChar(UserName) Then
             
 150         If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
