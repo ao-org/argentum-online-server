@@ -2157,6 +2157,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 358     MapInfo(map).SoloClanes = (val(MapDat.restrict_mode) And 32) <> 0
 359     MapInfo(map).NoMascotas = (val(MapDat.restrict_mode) And 64) <> 0
         MapInfo(Map).OnlyGroups = (val(MapDat.restrict_mode) And 128) <> 0
+        MapInfo(Map).OnlyPatreon = (val(MapDat.restrict_mode) And 256) <> 0
 360     MapInfo(map).ResuCiudad = val(GetVar(DatPath & "Map.dat", "RESUCIUDAD", map)) <> 0
 362     MapInfo(map).letter_grh = MapDat.letter_grh
 364     MapInfo(map).lluvia = MapDat.lluvia
