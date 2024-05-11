@@ -2804,6 +2804,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                     = ObjData(MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
                                     UserList(UserIndex).flags.TargetObj = MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex
                                     Call WriteConsoleMsg(UserIndex, "Has abierto la puerta.", e_FontTypeNames.FONTTYPE_INFO)
+                                    Call EliminarLlaves(ClaveLlave, UserIndex)
                                     Exit Sub
                                  Else
                                     Call WriteConsoleMsg(UserIndex, "La llave no sirve.", e_FontTypeNames.FONTTYPE_INFO)
@@ -3782,3 +3783,38 @@ Function ObtenerRopaje(ByVal UserIndex As Integer, ByRef Obj As t_ObjData) As In
     
     ObtenerRopaje = Obj.Ropaje
 End Function
+Sub EliminarLlaves(ByVal ClaveLlave As Integer, ByVal UserIndex As Integer)
+    ' Abrir el archivo "Eliminarllaves.dat" para lectura
+    Open "Eliminarllaves.dat" For Input As #1
+
+    ' Variables para el almacenamiento temporal de datos
+    Dim Linea As String
+    Dim Clave As Integer
+    Dim Objeto As Integer
+    Dim LlaveEncontrada As Boolean
+    LlaveEncontrada = False
+
+    ' Leer cada línea del archivo
+    Do Until EOF(1) Or LlaveEncontrada
+        Line Input #1, Linea
+        If InStr(Linea, "Clave=" & ClaveLlave) > 0 Then
+            ' Se encontró la llave con la clave buscada
+            LlaveEncontrada = True
+            Do Until EOF(1)
+                Line Input #1, Linea
+                If InStr(Linea, "Objeto=") > 0 Then
+                    Objeto = val(mid(Linea, InStr(Linea, "=") + 1))
+                    ' Llamar a QuitarObjeto con el objeto encontrado
+                    Call QuitarObjetos(Objeto, 1000, UserIndex)
+                ElseIf InStr(Linea, "[Llave") > 0 Then
+                    ' Se ha alcanzado el final de la sección de la llave actual
+                    Exit Do
+                End If
+            Loop
+        End If
+    Loop
+
+    ' Cerrar el archivo
+    Close #1
+End Sub
+
