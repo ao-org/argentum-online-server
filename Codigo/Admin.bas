@@ -174,23 +174,6 @@ Public IpList                       As New Collection
 
 Public Baneos     As New Collection
 
-'Public ResetThread As New clsThreading
-
-Function VersionOK(ByVal Ver As String) As Boolean
-        
-        On Error GoTo VersionOK_Err
-        
-100     VersionOK = (Ver = ULTIMAVERSION)
-
-        
-        Exit Function
-
-VersionOK_Err:
-102     Call TraceError(Err.Number, Err.Description, "Admin.VersionOK", Erl)
-
-        
-End Function
-
 Sub ReSpawnOrigPosNpcs()
         On Error GoTo Handler
         Dim i     As Integer
