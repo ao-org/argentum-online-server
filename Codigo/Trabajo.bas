@@ -770,14 +770,14 @@ HerreroQuitarMateriales_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.HerreroQuitarMateriales", Erl)
 End Sub
 
-Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal cantidad As Integer)
+Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal Cantidad As Integer, ByVal CantidadElfica As Integer, ByVal CantidadPino As Integer)
         
         On Error GoTo CarpinteroQuitarMateriales_Err
         
 
 100     If ObjData(ItemIndex).Madera > 0 Then Call QuitarObjetos(Wood, Cantidad, UserIndex)
-102     If ObjData(ItemIndex).MaderaElfica > 0 Then Call QuitarObjetos(ElvenWood, Cantidad, UserIndex)
-104     If ObjData(ItemIndex).MaderaPino > 0 Then Call QuitarObjetos(PinoWood, Cantidad, UserIndex)
+102     If ObjData(ItemIndex).MaderaElfica > 0 Then Call QuitarObjetos(ElvenWood, CantidadElfica, UserIndex)
+104     If ObjData(ItemIndex).MaderaPino > 0 Then Call QuitarObjetos(PinoWood, CantidadPino, UserIndex)
         Exit Sub
 CarpinteroQuitarMateriales_Err:
 106     Call TraceError(Err.Number, Err.Description, "Trabajo.CarpinteroQuitarMateriales", Erl)
@@ -1468,6 +1468,8 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         
         Dim cantidad_a_construir As Long
         Dim madera_requerida As Long
+        Dim madera_elfica_requerida As Long
+        Dim madera_pino_requerida As Long
         cantidad_a_construir = IIf(UserList(UserIndex).Trabajo.cantidad >= cantidad_maxima, cantidad_maxima, UserList(UserIndex).Trabajo.cantidad)
         
         If cantidad_a_construir <= 0 Then
@@ -1492,16 +1494,12 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
 
             End If
             
-            If ObjData(ItemIndex).Madera > 0 Then
-                madera_requerida = ObjData(ItemIndex).Madera
-            ElseIf ObjData(ItemIndex).MaderaElfica > 0 Then
-                madera_requerida = ObjData(ItemIndex).MaderaElfica
-            ElseIf ObjData(ItemIndex).MaderaPino > 0 Then
-                madera_requerida = ObjData(ItemIndex).MaderaPino
-            End If
+            If ObjData(ItemIndex).Madera > 0 Then madera_requerida = ObjData(ItemIndex).Madera * cantidad_a_construir
+            If ObjData(ItemIndex).MaderaElfica > 0 Then madera_elfica_requerida = ObjData(ItemIndex).MaderaElfica * cantidad_a_construir
+            If ObjData(ItemIndex).MaderaPino > 0 Then madera_pino_requerida = ObjData(ItemIndex).MaderaPino * cantidad_a_construir
             
     
-122         Call CarpinteroQuitarMateriales(UserIndex, ItemIndex, madera_requerida * cantidad_a_construir)
+122         Call CarpinteroQuitarMateriales(UserIndex, ItemIndex, madera_requerida, madera_elfica_requerida, madera_pino_requerida)
 
             UserList(UserIndex).Trabajo.cantidad = UserList(UserIndex).Trabajo.cantidad - cantidad_a_construir
             
