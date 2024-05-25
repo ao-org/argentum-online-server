@@ -53,7 +53,7 @@ In case you have problems setting locally your pre-commit hook you can run the f
 
 # 🗺️ Maps Limitation 512 with VB6 Debugger
 
-There is a limitation when running and debugging the game within Visual Basic 6. Due to VB6's constraints, it cannot load more than 512 maps during debugging. As a result, cities such as Forgat (Map 790) will not function properly.
+There is a limitation when running and debugging the game within Visual Basic 6. Due to VB6's constraints, it cannot load more than 512 maps during debugging. As a result, maps such as Dungeon Dinosaurios (Map 577) will not function properly and it will throw overflow error
 
 # 🛡️ Requirements
 
