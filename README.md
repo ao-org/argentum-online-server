@@ -42,6 +42,11 @@ We have a pre-commit hook for the project, Visual Basic 6 IDE changes the names 
 
 Please run the following commands with `git bash` or the client you are using.
 
+# 🗺️ Maps Limitation 512 with VB6 Debugger
+
+There is a limitation when running and debugging the game within Visual Basic 6. Due to VB6's constraints, it cannot load more than 512 maps during debugging. As a result, cities such as Forgat (Map 790) will not function properly.
+
+
 ```
 chmod +x .githooks/pre-commit
 git config core.hooksPath .githooks
