@@ -118,7 +118,7 @@ On Error GoTo Kick_ErrHandler:
     End If
         
     Call Server.Flush(Connection)
-    Call Server.Kick(Connection, True)
+    Call Server.Kick(Connection, "Kick Server.kick")
     Exit Sub
     
 Kick_ErrHandler:
@@ -235,7 +235,7 @@ On Error GoTo OnServerSend_Err:
     Exit Sub
     
 OnServerSend_Err:
-    Call Kick(Connection)
+    Call Kick(Connection, "OnServerClose kick")
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerSend", Erl)
 End Sub
 
@@ -250,7 +250,7 @@ On Error GoTo OnServerRecv_Err:
     Exit Sub
     
 OnServerRecv_Err:
-    Call Kick(Connection)
+    Call Kick(Connection, "OnServerRecv kick")
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerRecv", Erl)
 End Sub
 
@@ -259,7 +259,7 @@ On Error GoTo ForcedClose_Err:
 100     UserList(UserIndex).ConnectionDetails.ConnIDValida = False
 102     UserList(UserIndex).ConnectionDetails.ConnID = 0
 104     Call Server.Flush(Connection)
-106     Call Server.Kick(Connection, True)
+106     Call Server.Kick(Connection, "ForcedClose kick")
 108     Call ClearUserRef(Mapping(Connection).UserRef)
 110     Call IncreaseVersionId(userIndex)
         Exit Sub
@@ -270,7 +270,7 @@ End Sub
 Public Sub KickConnection(Connection As Long)
 On Error GoTo ForcedClose_Err:
 104     Call Server.Flush(Connection)
-106     Call Server.Kick(Connection, True)
+106     Call Server.Kick(Connection, "KickConnection kick")
 108     Call ClearConnection(Connection)
 110     If PendingConnections.Exists(Connection) Then
 112         Call PendingConnections.Remove(Connection)
