@@ -939,6 +939,8 @@ Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_W
 132     Index = MapData(TargetPos.map, TargetPos.X, TargetPos.Y).UserIndex
         'Look for user
 134     If Index > 0 Then
+            'El RemoveUserInvisibility saca el ocultar al pegar hit melee
+            'Para el resto de ataques, se requiere feature toggle
             Call RemoveUserInvisibility(UserIndex)
 136         Call UsuarioAtacaUsuario(UserIndex, Index, Melee)
             'Look for NPC

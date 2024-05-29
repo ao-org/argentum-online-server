@@ -3611,29 +3611,40 @@ End Function
 Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim RemoveHiddenState As Boolean
+             
+        ' Volver visible
+190     If .flags.Oculto = 1 And .flags.AdminInvisible = 0 And .flags.invisible = 0 Then
+192         .flags.Oculto = 0
+194         .Counters.TiempoOculto = 0
+
+            'Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", e_FontTypeNames.FONTTYPE_INFO)
+196         Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
+198         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+        End If
+          
         If IsFeatureEnabled("remove-inv-on-attack") And Not MapInfo(.pos.Map).KeepInviOnAttack Then
             RemoveHiddenState = .flags.Oculto > 0 Or .flags.invisible > 0
         End If
             'I see you...
-         If RemoveHiddenState And .flags.AdminInvisible = 0 Then
+        If RemoveHiddenState And .flags.AdminInvisible = 0 Then
              .flags.Oculto = 0
              .flags.invisible = 0
              .Counters.Invisibilidad = 0
              .Counters.TiempoOculto = 0
              .Counters.LastAttackTime = GlobalFrameTime
-             If .flags.Navegando = 1 Then
-                 If .clase = e_Class.Pirat Then
+            If .flags.Navegando = 1 Then
+                If .clase = e_Class.Pirat Then
                         ' Pierde la apariencia de fragata fantasmal
                      Call EquiparBarco(UserIndex)
                      Call WriteConsoleMsg(UserIndex, "¡Has recuperado tu apariencia normal!", e_FontTypeNames.FONTTYPE_INFO)
                      Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
                      Call RefreshCharStatus(UserIndex)
-                    End If
-                Else
-                    If .flags.invisible = 0 Then
+                End If
+            Else
+                If .flags.invisible = 0 Then
                         Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
-                    End If
+                End If
             End If
         End If
     End With
