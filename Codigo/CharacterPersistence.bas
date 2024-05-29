@@ -402,21 +402,28 @@ ErrorHandler:
 End Function
 
 
+''' <summary>
+''' Returns the maximum number of characters allowed for a given user tier.
+''' </summary>
+''' <param name="tier">The user tier.</param>
+''' <returns>The maximum number of characters allowed.</returns>
 Public Function MaxCharacterForTier(ByVal tier As e_TipoUsuario)
- Select Case tier
-        Case e_TipoUsuario.tAventurero
-                    MaxCharacterForTier = 3
-        Case e_TipoUsuario.tHeroe
-                    MaxCharacterForTier = 5
-        Case e_TipoUsuario.tLeyenda
-                    MaxCharacterForTier = 10
-        Case e_TipoUsuario.tNormal
-                    MaxCharacterForTier = 1
-        Case Else
-                   MaxCharacterForTier = 1
- End Select
-End Function
 
+#If DEBUGGING Then
+    MaxCharacterForTier = 10
+#Else
+    Select Case tier
+        Case e_TipoUsuario.tAventurero
+            MaxCharacterForTier = 3
+        Case e_TipoUsuario.tHeroe
+            MaxCharacterForTier = 5
+        Case e_TipoUsuario.tLeyenda
+            MaxCharacterForTier = 10
+        Case Else
+            MaxCharacterForTier = 1
+    End Select
+#End If
+End Function
 
 Public Function GetPatronTierFromAccountID(ByVal account_id) As e_TipoUsuario
 On Error GoTo ErrorHandler_GetPatronTierFromAccountID
