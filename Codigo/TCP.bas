@@ -213,6 +213,9 @@ Sub RellenarInventario(ByVal UserIndex As String)
                  .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
                  .invent.Object(NumItems).amount = 1
                  NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
                  .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
                 .invent.Object(NumItems).amount = 1
                  NumItems = NumItems + 1
@@ -295,6 +298,9 @@ Sub RellenarInventario(ByVal UserIndex As String)
                  .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
                 .invent.Object(NumItems).amount = 1
                 NumItems = NumItems + 1
+                .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
                 .invent.Object(NumItems).ObjIndex = 3491 ' Arco del Principiante
                 .invent.Object(NumItems).amount = 1
                  NumItems = NumItems + 1
@@ -369,7 +375,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
                  .invent.Object(NumItems).ObjIndex = 3494 ' Flauta del Principiante
                  .invent.Object(NumItems).amount = 1
                  NumItems = NumItems + 1
-                 .invent.Object(NumItems).ObjIndex = 3504  'Casco de Lobo (Resistencia Magica 1)
+                 .invent.Object(NumItems).ObjIndex = 1778  'Casco de Lobo (Resistencia Magica 1)
                  .invent.Object(NumItems).amount = 1
                  NumItems = NumItems + 1
 
@@ -393,25 +399,16 @@ Sub RellenarInventario(ByVal UserIndex As String)
 
                   End Select
         
-            
-220             If .raza = Enano Or .raza = Gnomo Then
+                ' Armadura o túnica de principiante
 222                Select Case .clase
+                        ' Todas menos mago, druida y bardo:
                           Case e_Class.Trabajador, e_Class.Thief, e_Class.Paladin, e_Class.Cleric, e_Class.Assasin, e_Class.Bandit, e_Class.Pirat, e_Class.Warrior, e_Class.Hunter
                           .invent.Object(NumItems).objIndex = 3500 ' Armadura de Principiante
+                        ' Mago, druida y bardo:
                           Case e_Class.Mage, e_Class.Druid, e_Class.Bard
-                         .invent.Object(NumItems).objIndex = 3502 ' Túnica del Principiante
+                         .invent.Object(NumItems).ObjIndex = 3502 ' Túnica del Principiante
+                         
                    End Select
-
-
-                 
-                Else
-                Select Case .clase
-                         Case e_Class.Trabajador, e_Class.Thief, e_Class.Paladin, e_Class.Cleric, e_Class.Assasin, e_Class.Bandit, e_Class.Pirat, e_Class.Warrior, e_Class.Hunter
-                          .invent.Object(NumItems).ObjIndex = 3500 ' Armadura de Principiante
-                         Case e_Class.Mage, e_Class.Druid, e_Class.Bard
-                          .invent.Object(NumItems).ObjIndex = 3502 ' Túnica del Principiante
-                   End Select
-                    End If
 
             
             .Invent.Object(NumItems).Equipped = 0
