@@ -1295,10 +1295,9 @@ Public Enum e_TrapEffect
 End Enum
 
 Public Enum e_TripState
-    eNixToForgat = 1
     eForgatToNix
+    eNixToArghal
     eArghalToForgat
-    eForgatToArghal
 End Enum
 
 Public Type t_Transport
@@ -2983,7 +2982,9 @@ Public Renacimiento                       As t_WorldPos
 Public NixDock                            As t_Transport
 Public ForgatDock                         As t_Transport
 Public ArghalDock                         As t_Transport
-Public BarcoNavegando                     As t_Transport
+Public BarcoNavegandoForgatNix            As t_Transport
+Public BarcoNavegandoNixArghal            As t_Transport
+Public BarcoNavegandoArghalForgat         As t_Transport
 
 Public TotalMapasCiudades()               As String
 Public Ayuda                              As New cCola
