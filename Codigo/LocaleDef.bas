@@ -115,7 +115,10 @@ Public Const MsgNavalBattleRewardBroadcast = 486
 Public Const MsgBoardcastInscriptionPrice = 487
 Public Const MsgMatchComplete = 488
 Public Const MsgInvalidPassword = 489
-Public Const MsgThanksForTravelArghal = 490
+Public Const MsgPassArghal = 490
+Public Const MsgThanksForTravelArghal = 491
+
+
 
 Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer
     Select Case WeaponType

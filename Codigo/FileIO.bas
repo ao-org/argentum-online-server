@@ -2563,17 +2563,43 @@ Sub CargarCiudades()
             .y = val(Lector.GetValue("Renacimiento", "Y"))
         End With
         
-        With BarcoNavegando
-            .Map = val(Lector.GetValue("BarcoNavegando", "Mapa"))
-            .StartX = val(Lector.GetValue("BarcoNavegando", "StartX"))
-            .StartY = val(Lector.GetValue("BarcoNavegando", "StartY"))
-            .EndX = val(Lector.GetValue("BarcoNavegando", "EndX"))
-            .EndY = val(Lector.GetValue("BarcoNavegando", "EndY"))
-            .DestX = val(Lector.GetValue("BarcoNavegando", "DestX"))
-            .DestY = val(Lector.GetValue("BarcoNavegando", "DestY"))
-            .DockX = val(Lector.GetValue("BarcoNavegando", "DockX"))
-            .DockY = val(Lector.GetValue("BarcoNavegando", "DockY"))
-            .RequiredPassID = val(Lector.GetValue("BarcoNavegando", "RequiredPassID"))
+        With BarcoNavegandoForgatNix
+            .Map = val(Lector.GetValue("BarcoNavegandoForgatNix", "Mapa"))
+            .startX = val(Lector.GetValue("BarcoNavegandoForgatNix", "StartX"))
+            .startY = val(Lector.GetValue("BarcoNavegandoForgatNix", "StartY"))
+            .EndX = val(Lector.GetValue("BarcoNavegandoForgatNix", "EndX"))
+            .EndY = val(Lector.GetValue("BarcoNavegandoForgatNix", "EndY"))
+            .DestX = val(Lector.GetValue("BarcoNavegandoForgatNix", "DestX"))
+            .DestY = val(Lector.GetValue("BarcoNavegandoForgatNix", "DestY"))
+            .DockX = val(Lector.GetValue("BarcoNavegandoForgatNix", "DockX"))
+            .DockY = val(Lector.GetValue("BarcoNavegandoForgatNix", "DockY"))
+            .RequiredPassID = val(Lector.GetValue("BarcoNavegandoForgatNix", "RequiredPassID"))
+        End With
+        
+        With BarcoNavegandoNixArghal
+            .Map = val(Lector.GetValue("BarcoNavegandoNixArghal", "Mapa"))
+            .startX = val(Lector.GetValue("BarcoNavegandoNixArghal", "StartX"))
+            .startY = val(Lector.GetValue("BarcoNavegandoNixArghal", "StartY"))
+            .EndX = val(Lector.GetValue("BarcoNavegandoNixArghal", "EndX"))
+            .EndY = val(Lector.GetValue("BarcoNavegandoNixArghal", "EndY"))
+            .DestX = val(Lector.GetValue("BarcoNavegandoNixArghal", "DestX"))
+            .DestY = val(Lector.GetValue("BarcoNavegandoNixArghal", "DestY"))
+            .DockX = val(Lector.GetValue("BarcoNavegandoNixArghal", "DockX"))
+            .DockY = val(Lector.GetValue("BarcoNavegandoNixArghal", "DockY"))
+            .RequiredPassID = val(Lector.GetValue("BarcoNavegandoNixArghal", "RequiredPassID"))
+        End With
+        
+        With BarcoNavegandoArghalForgat
+            .Map = val(Lector.GetValue("BarcoNavegandoArghalForgat", "Mapa"))
+            .startX = val(Lector.GetValue("BarcoNavegandoArghalForgat", "StartX"))
+            .startY = val(Lector.GetValue("BarcoNavegandoArghalForgat", "StartY"))
+            .EndX = val(Lector.GetValue("BarcoNavegandoArghalForgat", "EndX"))
+            .EndY = val(Lector.GetValue("BarcoNavegandoArghalForgat", "EndY"))
+            .DestX = val(Lector.GetValue("BarcoNavegandoArghalForgat", "DestX"))
+            .DestY = val(Lector.GetValue("BarcoNavegandoArghalForgat", "DestY"))
+            .DockX = val(Lector.GetValue("BarcoNavegandoArghalForgat", "DockX"))
+            .DockY = val(Lector.GetValue("BarcoNavegandoArghalForgat", "DockY"))
+            .RequiredPassID = val(Lector.GetValue("BarcoNavegandoArghalForgat", "RequiredPassID"))
         End With
         
         With ForgatDock
@@ -2586,7 +2612,7 @@ Sub CargarCiudades()
             .DestY = val(Lector.GetValue("ForgatDock", "DestY"))
             .DockX = val(Lector.GetValue("ForgatDock", "DockX"))
             .DockY = val(Lector.GetValue("ForgatDock", "DockY"))
-            .RequiredPassID = val(Lector.GetValue("BarcoNavegando", "RequiredPassID"))
+            .RequiredPassID = val(Lector.GetValue("BarcoNavegandoForgatNix", "RequiredPassID"))
         End With
         
         With NixDock
@@ -2599,7 +2625,7 @@ Sub CargarCiudades()
             .DestY = val(Lector.GetValue("NixDock", "DestY"))
             .DockX = val(Lector.GetValue("NixDock", "DockX"))
             .DockY = val(Lector.GetValue("NixDock", "DockY"))
-            .RequiredPassID = val(Lector.GetValue("BarcoNavegando", "RequiredPassID"))
+            .RequiredPassID = val(Lector.GetValue("BarcoNavegandoNixArghal", "RequiredPassID"))
         End With
         
         With ArghalDock
@@ -2612,7 +2638,7 @@ Sub CargarCiudades()
             .DestY = val(Lector.GetValue("ArghalDock", "DestY"))
             .DockX = val(Lector.GetValue("ArghalDock", "DockX"))
             .DockY = val(Lector.GetValue("ArghalDock", "DockY"))
-            .RequiredPassID = val(Lector.GetValue("BarcoNavegando", "RequiredPassID"))
+            .RequiredPassID = val(Lector.GetValue("BarcoNavegandoArghalForgat", "RequiredPassID"))
         End With
         
         
