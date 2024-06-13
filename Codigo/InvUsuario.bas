@@ -250,17 +250,12 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
         End If
     
         'Si el usuario dejó de ser Newbie, y estaba en el Newbie Dungeon
-
-112     If MapInfo(UserList(UserIndex).pos.map).Newbie Then
-                   
-            'Mandamos a la isla de renacimiento
-            Call WarpUserChar(UserIndex, Renacimiento.map, Renacimiento.X, Renacimiento.y, True)
-            Call WriteConsoleMsg(UserIndex, "Has dejado de ser Newbie, Te orientaremos que hacer ahora.", e_FontTypeNames.FONTTYPE_INFO)
-            
-    
-        End If
-
         
+        'Mandamos a la Isla de la Fortuna
+        
+        Call WarpUserChar(UserIndex, Renacimiento.Map, Renacimiento.x, Renacimiento.y, True)
+        Call WriteConsoleMsg(UserIndex, "Has dejado de ser Newbie, Te orientaremos que hacer ahora.", e_FontTypeNames.FONTTYPE_INFO)
+
         Exit Sub
 
 QuitarNewbieObj_Err:
