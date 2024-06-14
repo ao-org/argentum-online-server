@@ -750,12 +750,12 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
                     .Pos.Y = 44
                 Case e_Ciudad.cArghal
                     .Pos.map = 151
-                    .Pos.X = 46
-                    .Pos.Y = 34
+                    .Pos.x = 52
+                    .Pos.y = 36
                 Case e_Ciudad.cForgat
-                    .pos.Map = 751
-                    .pos.x = 58
-                    .pos.y = 65
+                    .Pos.Map = 517
+                    .Pos.x = 48
+                    .Pos.y = 64
                 Case e_Ciudad.cNix
                     .Pos.map = 34
                     .Pos.X = 40
