@@ -909,7 +909,8 @@ Dim i As Integer
     With UserList(UserIndex)
         For i = 1 To UBound(.invent.Object)
             
-            ' Le saco el item requerido de Forgat a Nix, que es igual que de Nix a Arghal y de Arghal a Forgat
+            ' Le saco el item requerido de Forgat a Nix
+            ' Es el mismo item que de Nix a Arghal y de Arghal a Forgat
             If .invent.Object(i).ObjIndex = BarcoNavegandoForgatNix.RequiredPassID Then
                 GetPassSlot = i
                 Exit Function
