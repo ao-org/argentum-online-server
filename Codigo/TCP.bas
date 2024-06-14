@@ -761,17 +761,17 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
                     .Pos.X = 40
                     .Pos.Y = 86
                 Case e_Ciudad.cLindos
-                    .Pos.map = 62
-                    .Pos.X = 62
-                    .Pos.Y = 44
+                    .Pos.Map = 408
+                    .Pos.x = 63
+                    .Pos.y = 39
                 Case e_Ciudad.cBanderbill
                     .Pos.map = 59
-                    .Pos.X = 54
-                    .Pos.Y = 42
+                    .Pos.x = 47
+                    .Pos.y = 41
                 Case e_Ciudad.cArkhein
                     .Pos.map = 196
-                    .Pos.X = 49
-                    .Pos.Y = 64
+                    .Pos.x = 43
+                    .Pos.y = 58
             End Select
         
 254         UltimoChar = UCase$(name)
