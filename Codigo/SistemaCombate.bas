@@ -476,7 +476,7 @@ On Error GoTo UserDamageNpc_Err
             ' Golpe crítico
 124         If PuedeGolpeCritico(UserIndex) Then
                 ' Si acertó - Doble chance contra NPCs
-126             If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(UserIndex) * 1.5 Then
+126             If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(UserIndex) Then
                     ' Daño del golpe crítico (usamos el daño base)
 128                 DamageExtra = DamageBase * 0.33
                     DamageExtra = DamageExtra * UserMod.GetPhysicalDamageModifier(UserList(UserIndex))
@@ -1308,7 +1308,10 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
 
                 ' Sube skills en apuñalar
 210             Call SubirSkill(AtacanteIndex, Apuñalar)
-212         ElseIf PuedeDesequiparDeUnGolpe(AtacanteIndex) Then
+
+            End If
+            
+212         If PuedeDesequiparDeUnGolpe(AtacanteIndex) Then
 214             If RandomNumber(1, 100) <= ProbabilidadDesequipar(AtacanteIndex) Then
 216                 Call DesequiparObjetoDeUnGolpe(AtacanteIndex, VictimaIndex, Lugar)
                 End If
@@ -2156,7 +2159,11 @@ Private Function PuedeDesequiparDeUnGolpe(ByVal UserIndex As Integer) As Boolean
 102         Select Case .clase
     
             Case e_Class.Bandit, e_Class.Thief
-104             PuedeDesequiparDeUnGolpe = (.Stats.UserSkills(e_Skill.Wrestling) >= 100)
+104             ' PuedeDesequiparDeUnGolpe = (.Stats.UserSkills(e_Skill.Wrestling) >= 100)
+
+                ' Shugar: Hago que pueda desequipar desde nivel 1 y modifico
+                ' la probabilidad de desequipar en ProbabilidadDesequipar
+                PuedeDesequiparDeUnGolpe = True
 
 106         Case Else
 108             PuedeDesequiparDeUnGolpe = False
@@ -2271,7 +2278,8 @@ End Function
 Private Function ProbabilidadGolpeCritico(ByVal UserIndex As Integer) As Integer
         On Error GoTo ProbabilidadGolpeCritico_Err
 
-100     ProbabilidadGolpeCritico = 0.2 * UserList(UserIndex).Stats.UserSkills(GetSkillRequiredForWeapon(UserList(UserIndex).invent.WeaponEqpObjIndex))
+        
+100     ProbabilidadGolpeCritico = 0.25 * UserList(UserIndex).Stats.UserSkills(GetSkillRequiredForWeapon(UserList(UserIndex).invent.WeaponEqpObjIndex))
 
         Exit Function
 
@@ -2290,9 +2298,13 @@ Private Function ProbabilidadDesequipar(ByVal UserIndex As Integer) As Integer
     
             Case e_Class.Bandit
                 If IsFeatureEnabled("bandit_unequip_bonus") Then
-                    ProbabilidadDesequipar = 0.25 * 100
+                
+                    ' Shugar: Hago que la probabilidad de desequipar sea proporcional a los skills
+                    ' requeridos por el arma, en este caso combate sin armas para nudillos
+                    
+                    ProbabilidadDesequipar = 0.2 * UserList(UserIndex).Stats.UserSkills(GetSkillRequiredForWeapon(UserList(UserIndex).invent.WeaponEqpObjIndex))
                 Else
-104                 ProbabilidadDesequipar = 0.2 * 100
+104                 ProbabilidadDesequipar = 0.15 * UserList(UserIndex).Stats.UserSkills(GetSkillRequiredForWeapon(UserList(UserIndex).invent.WeaponEqpObjIndex))
                 End If
 106         Case e_Class.Thief
 108             ProbabilidadDesequipar = 0.33 * 100
