@@ -178,6 +178,10 @@ Public MaximoSpeedHack      As Integer
 Public LastRecordUsuarios   As Integer
 Public GlobalFrameTime      As Long
 
+Public FISHING_REQUIRED_PERCENT As Integer
+Public FISHING_TILES_ON_MAP     As Integer
+Public FISHING_POOL_ID          As Integer
+
 Type t_EstadisticasDiarias
 
     segundos As Double
