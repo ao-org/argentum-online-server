@@ -317,7 +317,7 @@ On Error GoTo Complete_ConnectUser_Err
             .Stats.MaxSta = UserMod.GetMaxStamina(UserIndex)
             .Stats.MinHIT = UserMod.GetHitModifier(UserIndex) + 1
             .Stats.MaxHit = UserMod.GetHitModifier(UserIndex) + 2
-            .Stats.MaxHp = UserMod.GetMaxHp(UserIndex)
+            '.Stats.MaxHp = UserMod.GetMaxHp(UserIndex)
             .Stats.MinHp = Min(.Stats.MinHp, UserMod.GetMaxHp(UserIndex))
             .Stats.MinMAN = Min(.Stats.MinMAN, UserMod.GetMaxMana(UserIndex))
             'Obtiene el indice-objeto del arma
@@ -1298,7 +1298,10 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
                 .Stats.MaxSta = UserMod.GetMaxStamina(UserIndex)
                 .Stats.MinHIT = UserMod.GetHitModifier(UserIndex) + 1
                 .Stats.MaxHit = UserMod.GetHitModifier(UserIndex) + 2
-                .Stats.MaxHp = UserMod.GetMaxHp(UserIndex)
+                '.Stats.MaxHp = UserMod.GetMaxHp(UserIndex)
+                
+                .Stats.MaxHp = 20 + .Stats.MaxHp
+                
                 AumentoHP = .Stats.MaxHp - AumentoHP
                 AumentoSta = .Stats.MaxSta - AumentoSta
                 AumentoMANA = .Stats.MaxMAN - AumentoMANA
