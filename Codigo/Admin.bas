@@ -139,6 +139,8 @@ Public RequiredSpellDisplayTime     As Integer
 Public MaxInvisibleSpellDisplayTime As Integer
 Public DesbalancePromedioVidas      As Single
 Public RangoVidas                   As Single
+Public CapVidaMax                   As Single
+Public CapVidaMin                   As Single
 Public ExpLevelUp(1 To STAT_MAXELV) As Long
 Public InfluenciaPromedioVidas      As Single
 Public ModDañoGolpeCritico          As Single

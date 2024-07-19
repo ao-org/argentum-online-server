@@ -317,8 +317,7 @@ On Error GoTo Complete_ConnectUser_Err
             .Stats.MaxSta = UserMod.GetMaxStamina(UserIndex)
             .Stats.MinHIT = UserMod.GetHitModifier(UserIndex) + 1
             .Stats.MaxHit = UserMod.GetHitModifier(UserIndex) + 2
-            '.Stats.MaxHp = UserMod.GetMaxHp(UserIndex)
-            .Stats.MinHp = Min(.Stats.MinHp, UserMod.GetMaxHp(UserIndex))
+            .Stats.MinHp = Min(.Stats.MinHp, .Stats.MaxHp)
             .Stats.MinMAN = Min(.Stats.MinMAN, UserMod.GetMaxMana(UserIndex))
             'Obtiene el indice-objeto del arma
 175         If .Invent.WeaponEqpSlot > 0 Then
@@ -1238,7 +1237,8 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
         '24/01/2007 Pablo (ToxicWaste) - Agrego modificaciones de la subida de mana de los magos por lvl.
         '13/03/2007 Pablo (ToxicWaste) - Agrego diferencias entre el 18 y el 19 en Constitución.
         '09/01/2008 Pablo (ToxicWaste) - Ahora el incremento de vida por Consitución se controla desde Balance.dat
-        '17/12/2020 WyroX: Distribución normal de las vidas
+        '17/12/2020 WyroX - Distribución normal de las vidas
+        '15/07/2024 Shugar - Vuelvo a implementar vidas variables y les agrego un capeo min/max
         '*************************************************
 
         On Error GoTo ErrHandler
@@ -1255,11 +1255,11 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 
         Dim WasNewbie        As Boolean
 
-        Dim Promedio         As Double
+        Dim PromBias         As Double
         
-        Dim PromedioObjetivo As Double
+        Dim PromClaseRaza    As Double
         
-        Dim PromedioUser     As Double
+        Dim PromPersonaje    As Double
 
         Dim aux              As Integer
     
@@ -1290,7 +1290,6 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 134             .Stats.ELV = .Stats.ELV + 1
 136             experienceToLevelUp = ExpLevelUp(.Stats.ELV)
 
-                AumentoHP = .Stats.MaxHp
                 AumentoSta = .Stats.MaxSta
                 AumentoMANA = .Stats.MaxMAN
                 AumentoHIT = .Stats.MaxHit
@@ -1298,14 +1297,44 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
                 .Stats.MaxSta = UserMod.GetMaxStamina(UserIndex)
                 .Stats.MinHIT = UserMod.GetHitModifier(UserIndex) + 1
                 .Stats.MaxHit = UserMod.GetHitModifier(UserIndex) + 2
-                '.Stats.MaxHp = UserMod.GetMaxHp(UserIndex)
-                
-                .Stats.MaxHp = 20 + .Stats.MaxHp
-                
-                AumentoHP = .Stats.MaxHp - AumentoHP
                 AumentoSta = .Stats.MaxSta - AumentoSta
                 AumentoMANA = .Stats.MaxMAN - AumentoMANA
                 AumentoHIT = .Stats.MaxHit - AumentoHIT
+                
+                ' Shugar 15/7/2024
+                ' Devuelvo el aumento de vida variable pero con capeo min/max
+                
+                ' Promedio sin vida variable
+138             PromClaseRaza = ModClase(.clase).Vida - (21 - .Stats.UserAtributos(e_Atributos.Constitucion)) * 0.5
+
+                ' Promedio real del personaje
+140             PromPersonaje = CalcularPromedioVida(UserIndex)
+
+                ' Sesgo a favor del promedio sin vida variable
+                ' Si DesbalancePromedioVidas = 0, el PromBias es el PromClaseRaza del manual
+142             PromBias = PromClaseRaza + (PromClaseRaza - PromPersonaje) * DesbalancePromedioVidas
+
+                ' Aumenta la vida un número entero al azar en un rango dado
+                ' Min: PromClaseRaza - RangoVidas
+                ' Max: PromClaseRaza + RangoVidas
+                ' Media: PromBias
+                ' Desviación: InfluenciaPromedioVidas
+                
+144             AumentoHP = RandomIntBiased(PromClaseRaza - RangoVidas, PromClaseRaza + RangoVidas, PromBias, InfluenciaPromedioVidas)
+                
+                ' Capeo de vida máxima a +10
+146             If .Stats.MaxHp + AumentoHP > UserMod.GetMaxHp(UserIndex) + CapVidaMax Then
+                    AumentoHP = (UserMod.GetMaxHp(UserIndex) + CapVidaMax) - .Stats.MaxHp
+                End If
+                
+                ' Capeo de vida mínima a -10
+148             If .Stats.MaxHp + AumentoHP < UserMod.GetMaxHp(UserIndex) + CapVidaMin Then
+                    AumentoHP = (UserMod.GetMaxHp(UserIndex) + CapVidaMin) - .Stats.MaxHp
+                End If
+                
+                ' Aumento la vida máxima del personaje
+150             .Stats.MaxHp = .Stats.MaxHp + AumentoHP
+
         
                 'Notificamos al user
 154             If AumentoHP > 0 Then

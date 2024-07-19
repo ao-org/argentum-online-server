@@ -183,7 +183,7 @@ Private Sub ConstruirQuery_CrearPersonaje()
 194     QueryBuilder.Append "status, "
 195     QueryBuilder.Append "user_key) VALUES ("
         Dim i As Long
-        For i = 0 To 25
+        For i = 0 To 26
             QueryBuilder.Append "?,"
         Next i
         QueryBuilder.Append "?)"

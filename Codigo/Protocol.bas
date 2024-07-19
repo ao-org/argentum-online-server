@@ -10376,7 +10376,7 @@ Private Sub HandleResetChar(ByVal UserIndex As Integer)
                     .Stats.MinHIT = 1
                     .Stats.MaxMAN = UserMod.GetMaxMana(UserIndex)
                     .Stats.MaxSta = UserMod.GetMaxStamina(UserIndex)
-                    .Stats.MaxHp = UserMod.GetMaxHp(UserIndex)
+                    .Stats.MaxHp = .Stats.UserAtributos(e_Atributos.Constitucion)
                     
                     .Stats.MinHp = .Stats.MaxHp
                     .Stats.MinMAN = .Stats.MaxMAN
