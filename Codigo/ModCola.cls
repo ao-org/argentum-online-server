@@ -158,13 +158,12 @@ End Function
 Public Sub Push(ByVal nombre As String, ByVal Consulta As String, ByVal TipoDeConsulta As String)
         
         On Error GoTo Push_Err
-    
         
-
+        Dim FechaHoraDeConsulta As Date
+        FechaHoraDeConsulta = Now
         
-
         'Mete elemento en la cola
-100     Call Cola.Add(nombre & "Ø" & Consulta & "Ø" & TipoDeConsulta)
+100     Call Cola.Add(nombre & "Ø" & Consulta & "Ø" & TipoDeConsulta & "Ø" & FechaHoraDeConsulta)
 
         
         Exit Sub
