@@ -86,6 +86,7 @@ Private Sub ConstruirQuery_CargarPersonaje()
         QueryBuilder.Append "helmet_id,"
         QueryBuilder.Append "shield_id,"
         QueryBuilder.Append "Heading,"
+        QueryBuilder.Append "max_hp,"
         QueryBuilder.Append "min_hp,"
         QueryBuilder.Append "min_man,"
         QueryBuilder.Append "min_sta,"
@@ -172,6 +173,7 @@ Private Sub ConstruirQuery_CrearPersonaje()
 136     QueryBuilder.Append "weapon_id, "
 138     QueryBuilder.Append "helmet_id, "
 140     QueryBuilder.Append "shield_id, "
+167     QueryBuilder.Append "max_hp, "
 168     QueryBuilder.Append "min_hp, "
 172     QueryBuilder.Append "min_man, "
 176     QueryBuilder.Append "min_sta, "
@@ -181,7 +183,7 @@ Private Sub ConstruirQuery_CrearPersonaje()
 194     QueryBuilder.Append "status, "
 195     QueryBuilder.Append "user_key) VALUES ("
         Dim i As Long
-        For i = 0 To 25
+        For i = 0 To 26
             QueryBuilder.Append "?,"
         Next i
         QueryBuilder.Append "?)"
@@ -311,6 +313,7 @@ Private Sub ConstruirQuery_GuardarPersonaje()
 142     QueryBuilder.Append "helmet_id = ?, "
 144     QueryBuilder.Append "shield_id = ?, "
 146     QueryBuilder.Append "heading = ?, "
+173     QueryBuilder.Append "max_hp = ?, "
 174     QueryBuilder.Append "min_hp = ?, "
 178     QueryBuilder.Append "min_man = ?, "
 182     QueryBuilder.Append "min_sta = ?, "

@@ -2321,9 +2321,19 @@ Function RandomIntBiased(ByVal Min As Double, ByVal max As Double, ByVal Bias As
 
         Dim RandomRango As Double, Mix As Double
     
+        ' Rnd: número pseudo-aleatorio entre 0 y 1
+        
+        ' RandomRango: Nuevo aumento de vida
 100     RandomRango = Rnd * (max - Min) + Min
+
+        ' Mix: Qué tanto afectamos a la vida random que salió con el sesgo Bias
+        ' El bias hace tender el promedio actual del personaje al promedio de manual
 102     Mix = Rnd * Influence
     
+        ' RandomIntBiased: Valor final de vida
+        ' Ejemplo:
+        ' Si Mix=0.1, 10% de influencia del Bias sobre el valor final de vida
+        ' RandomIntBiased = RandomRango 0.9 + Bias 0.1
 104     RandomIntBiased = RandomRango * (1 - Mix) + Bias * Mix
     
         Exit Function

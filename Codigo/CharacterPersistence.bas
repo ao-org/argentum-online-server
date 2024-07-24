@@ -192,6 +192,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
 144         .OrigChar.CascoAnim = RS!helmet_id
 146         .OrigChar.ShieldAnim = RS!shield_id
 148         .OrigChar.Heading = RS!Heading
+175         .Stats.MaxHp = RS!max_hp
 176         .Stats.MinHp = RS!min_hp
 180         .Stats.MinMAN = RS!min_man
 184         .Stats.MinSta = RS!min_sta
@@ -480,7 +481,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
             End If
             Call SetUserTelemetryKey(UserIndex)
               
-104         ReDim Params(64)
+104         ReDim Params(65)
 
             Dim i As Integer
         
@@ -506,6 +507,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 144         Params(post_increment(i)) = .Char.CascoAnim
 146         Params(post_increment(i)) = .Char.ShieldAnim
 148         Params(post_increment(i)) = .Char.Heading
+175         Params(post_increment(i)) = .Stats.MaxHp
 176         Params(post_increment(i)) = .Stats.MinHp
 180         Params(post_increment(i)) = .Stats.MinMAN
 184         Params(post_increment(i)) = .Stats.MinSta
@@ -754,7 +756,7 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
         
             Dim i As Integer
             i = 0
-104         ReDim Params(0 To 26)
+104         ReDim Params(0 To 27)
 
             '  ************ Basic user data *******************
 106         Params(post_increment(i)) = .Name
@@ -776,6 +778,7 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
 138         Params(post_increment(i)) = .Char.WeaponAnim
 140         Params(post_increment(i)) = .Char.CascoAnim
 142         Params(post_increment(i)) = .Char.ShieldAnim
+169         Params(post_increment(i)) = .Stats.MaxHp
 170         Params(post_increment(i)) = .Stats.MinHp
 174         Params(post_increment(i)) = .Stats.MinMAN
 178         Params(post_increment(i)) = .Stats.MinSta
