@@ -1,0 +1,1 @@
+ALTER TABLE "user_new_maxhp" RENAME TO "user";
