@@ -1,0 +1,1 @@
+UPDATE user SET max_hp = 10 WHERE max_hp IS NULL;
