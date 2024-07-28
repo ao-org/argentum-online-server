@@ -3055,8 +3055,8 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
                 Exit Sub
             End If
 
-112         If (.flags.Oculto = 1 Or .flags.invisible = 1) And .flags.AdminInvisible = 0 Then
-114             Call WriteConsoleMsg(UserIndex, "No podés montar estando oculto o invisible.", e_FontTypeNames.FONTTYPE_INFO)
+114         If .flags.Montado = 0 And (MapData(.pos.Map, .pos.x, .pos.y).trigger > 10) Then
+116             Call WriteConsoleMsg(UserIndex, "No podés montar aquí.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             
@@ -3066,11 +3066,15 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
                 .flags.Mimetizado = e_EstadoMimetismo.Desactivado
                 Call RefreshCharStatus(UserIndex)
             End If
-
-116         If .flags.Montado = 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger > 10) Then
-118             Call WriteConsoleMsg(UserIndex, "No podés montar aquí.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
+            
+            ' Si está oculto o invisible, hago que pueda montar pero se haga visible
+118         If (.flags.Oculto = 1 Or .flags.invisible = 1) And .flags.AdminInvisible = 0 Then
+             .flags.Oculto = 0
+             .flags.invisible = 0
+             .Counters.TiempoOculto = 0
+             .Counters.DisabledInvisibility = 0
+             Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
+             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
             End If
 
 120         If .flags.Meditando Then
