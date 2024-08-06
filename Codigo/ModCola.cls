@@ -137,9 +137,6 @@ Public Function VerElemento(ByVal Index As Integer) As String
         
 
 100     If IndexValido(Index) Then
-            'Pablo
-            'VerElemento = UCase$(Cola.Item(index))
-            '/Pablo
 102         VerElemento = Cola(Index)
         Else
 104         VerElemento = 0
@@ -265,21 +262,16 @@ Public Sub Quitar(ByVal nombre As String)
 
         
 
-        Dim V                  As String
-
-        Dim i                  As Integer
-
-        Dim NombreEnMayusculas As String
- 
-        'NombreEnMayusculas = UCase$(Nombre)
- 
+        Dim mensajeEncoladoCompleto As String
+        Dim mensajeSinTimestamp As String
+        Dim posicionUltimoDelimitador As Integer
+        Dim i As Integer
+  
 100     For i = 1 To Me.Longitud
-            'Pablo
-            'V = mid$(Me.VerElemento(i), 10, Len(Me.VerElemento(i)))
-            '/Pablo
-102         V = Me.VerElemento(i)
-
-104         If V = nombre Then
+102         mensajeEncoladoCompleto = Me.VerElemento(i)
+            posicionUltimoDelimitador = InStrRev(mensajeEncoladoCompleto, "Ø")
+            mensajeSinTimestamp = Left(mensajeEncoladoCompleto, posicionUltimoDelimitador - 1)
+104         If mensajeSinTimestamp = nombre Then
 106             Call Cola.Remove(i)
                 Exit Sub
 
