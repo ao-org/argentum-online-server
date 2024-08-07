@@ -1019,11 +1019,9 @@ Sub LoadBalance()
         Dim BalanceIni As clsIniManager
 
 100     Set BalanceIni = New clsIniManager
-        If IsFeatureEnabled("balance-2") Then
-101         BalanceIni.Initialize DatPath & "Balance2.dat"
-        Else
-102         BalanceIni.Initialize DatPath & "Balance.dat"
-        End If
+        
+102     BalanceIni.Initialize DatPath & "Balance.dat"
+        
         Dim i, j As Long
 
         Dim SearchVar As String

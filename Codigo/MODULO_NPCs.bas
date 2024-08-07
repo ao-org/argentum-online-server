@@ -1354,9 +1354,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 208         .InformarRespawn = val(Leer.GetValue("NPC" & NpcNumber, "InformarRespawn"))
     
 210         .QuizaProb = val(Leer.GetValue("NPC" & NpcNumber, "QuizaProb"))
-    
-212         .SubeSupervivencia = val(Leer.GetValue("NPC" & NpcNumber, "SubeSupervivencia"))
-    
+        
 214         If .IntervaloMovimiento = 0 Then
 216             .IntervaloMovimiento = 380
 218             .Char.speeding = frmMain.TIMER_AI.Interval / 330

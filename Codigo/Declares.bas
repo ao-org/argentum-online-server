@@ -2758,9 +2758,7 @@ Public Type t_Npc
     NumQuiza As Byte
     QuizaDropea() As String
     QuizaProb As Integer
-    
-    SubeSupervivencia As Byte
-    
+        
     NumDestinos As Byte
     Dest() As String
     Interface As Byte
