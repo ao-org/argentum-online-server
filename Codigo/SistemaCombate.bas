@@ -495,11 +495,8 @@ On Error GoTo UserDamageNpc_Err
                 ' Si acertó - Doble chance contra NPCs
 138             If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex) Then
                     ' Daño del apuñalamiento
-                    If IsFeatureEnabled("balance-2") Then
-                        DamageExtra = Damage * ModicadorApuñalarClase(UserList(UserIndex).clase)
-                    Else
-140                     DamageExtra = Damage * 2
-                    End If
+                    DamageExtra = Damage * ModicadorApuñalarClase(UserList(UserIndex).clase)
+                    
                     ' Mostramos en consola el daño
 142                 If .ChatCombate = 1 Then
 144                     Call WriteLocaleMsg(UserIndex, 212, e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(Damage) & "¬" & PonerPuntos(DamageExtra))
