@@ -1089,6 +1089,8 @@ Sub LoadBalance()
         HideAfterHitTime = val(BalanceIni.GetValue("EXTRA", "HideAfterHitTime"))
         FactionReKillTime = val(BalanceIni.GetValue("EXTRA", "FactionReKillTime"))
         AirHitReductParalisisTime = val(BalanceIni.GetValue("EXTRA", "AirHitReductParalisisTime"))
+        PorcentajePescaSegura = val(BalanceIni.GetValue("EXTRA", "PorcentajePescaSegura"))
+        
         'stun
         PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
         NpcStunTime = val(BalanceIni.GetValue("STUN", "NpcStunTime"))
@@ -3249,8 +3251,8 @@ Public Sub LoadPesca()
 102         ReDim Peces(0) As t_Obj
             ReDim PecesEspeciales(0) As t_Obj
 104         ReDim PesoPeces(0) As Long
+            ReDim PoderCanas(0) As Integer
             Exit Sub
-
         End If
 
         Dim IniFile As clsIniManager
@@ -3265,6 +3267,11 @@ Public Sub LoadPesca()
 112     MaxLvlCania = val(IniFile.GetValue("PECES", "Maxlvlcaña"))
         CountEspecial = 1
 114     ReDim PesoPeces(0 To MaxLvlCania) As Long
+
+        ReDim PoderCanas(0 To MaxLvlCania) As Integer
+        For i = 1 To MaxLvlCania
+            PoderCanas(i) = val(IniFile.GetValue("POWERCANAS", "Power" & i))
+        Next i
     
 116     If Count > 0 Then
 118         ReDim Peces(1 To Count) As t_Obj
