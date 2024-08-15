@@ -2960,6 +2960,8 @@ Public ModClase(1 To NUMCLASES)           As t_ModClase
 Public ModRaza(1 To NUMRAZAS)             As t_ModRaza
 Public Crafteos                           As New Dictionary
 Public GlobalDropTable()                  As t_GlobalDrop
+Public PoderCanas()                       As Integer
+
 '*********************************************************
 
 Public Nix                                As t_WorldPos

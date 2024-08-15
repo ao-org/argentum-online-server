@@ -158,6 +158,7 @@ Public AssistHelpValidTime          As Long 'valid time for helpful spell to cou
 Public HideAfterHitTime             As Long 'required time to hide again after a hit remove us from this state
 Public FactionReKillTime            As Long 'required time between killing the same user to get factions points
 Public AirHitReductParalisisTime    As Integer 'you can hit to the air to reduce inmo/paralisis time
+Public PorcentajePescaSegura        As Integer 'Porcentaje de reducción a la pesca en zona segura
 
 Public Puerto                       As Long
 Public ListenIp                     As String

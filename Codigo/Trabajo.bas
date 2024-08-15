@@ -1996,7 +1996,12 @@ On Error GoTo ErrHandler
     Dim Reward As Double
     Dim esEspecial As Boolean
     Dim i As Integer
-    
+        
+        
+        ' Shugar - 13/8/2024
+        ' Paso los poderes de las cañas al dateo de pesca.dat
+        ' Paso la reducción de pesca en zona segura a balance.dat
+        
     
         With UserList(UserIndex)
         
@@ -2067,115 +2072,99 @@ On Error GoTo ErrHandler
             bonificacionPescaLvl(45) = 1.8
             bonificacionPescaLvl(46) = 2#
             bonificacionPescaLvl(47) = 2.5
+            
+            'Bonificación según el nivel
+121         bonificacionLvl = 1 + bonificacionPescaLvl(.Stats.ELV)
         
-                If MapInfo(.pos.Map).Seguro Then
-                    Select Case ObjData(.Invent.HerramientaEqpObjIndex).Power
-                        Case 1 'Caña comun
-                            bonificacionCaña = 1
-                        Case 2 'Caña reforzada
-                            bonificacionCaña = 1.5
-                        Case 3 'Caña de hierro
-                            bonificacionCaña = 1.9
-                        Case 4 'Caña de plata
-                            bonificacionCaña = 2.2
-                    End Select
-                Else
-                    Select Case ObjData(.Invent.HerramientaEqpObjIndex).Power
-                        Case 1 'Caña comun
-                            bonificacionCaña = 1.3
-                        Case 2 'Caña reforzada
-                            bonificacionCaña = 1.65
-                        Case 3 'Caña de hierro
-                            bonificacionCaña = 3
-                        Case 4 'Caña de plata
-                            bonificacionCaña = 6
-                        Case 5 'Red de pesca
-                            bonificacionCaña = 6.5
-                        Case 6 'Red de pesca reforzada
-                            bonificacionCaña = 9
-                    End Select
-                End If
-                
-                
-                bonificacionLvl = 1 + bonificacionPescaLvl(.Stats.ELV) 'Segun el nivel se le bonifica extra
-                bonificacionClase = IIf(.clase = Trabajador, 1, RandomNumber(1, 3) / 3) 'Si no es pescador va a pescar menos al azar.
-                bonificacionTotal = bonificacionCaña * bonificacionLvl * bonificacionClase * RecoleccionMult
-                
-                'Calculo el botin esperado por iteracción. 'La base del calculo son 8000 por hora + 20% de chances de no pescar + un +/- 10%
-                Reward = (IntervaloTrabajarExtraer / 3600000) * 8000 * bonificacionTotal * 1.2 * (1 + (RandomNumber(0, 20) - 10) / 100)
-                
-                
-                'Calculo la suerte de pescar o no pescar y aplico eso sobre el reward para promediar.
-                Dim Suerte As Integer
-                Dim Pesco As Boolean
-                If .Stats.UserSkills(e_Skill.Pescar) < 20 Then
-                    Suerte = 20
-                ElseIf .Stats.UserSkills(e_Skill.Pescar) < 40 Then
-                    Suerte = 35
-                ElseIf .Stats.UserSkills(e_Skill.Pescar) < 70 Then
-                    Suerte = 55
-                ElseIf .Stats.UserSkills(e_Skill.Pescar) < 100 Then
-                    Suerte = 68
-                Else
-                    Suerte = 80
-                End If
-                
-                Pesco = RandomNumber(1, 100) <= Suerte '80% de posibilidad de pescar
+            'Bonificacion de la caña dependiendo de su poder:
+122         bonificacionCaña = PoderCanas(ObjData(.invent.HerramientaEqpObjIndex).Power) / 10
             
-                If Pesco Then
+            'Bonificación total
+123         bonificacionTotal = bonificacionCaña * bonificacionLvl * RecoleccionMult
             
-                    
-                    
-                    Dim nPos  As t_WorldPos
-                    Dim MiObj As t_Obj
-                    Dim objValue As Integer
-                    
-                    ' Genero el obj pez que pesqué y su cantidad
-124                 MiObj.objIndex = ObtenerPezRandom(ObjData(.Invent.HerramientaEqpObjIndex).Power)
-125                 objValue = max(ObjData(MiObj.objIndex).Valor / 3, 1)
-126                 MiObj.amount = Round(Reward / objValue)
+            'Si es zona segura se aplica una penalización
+            If MapInfo(.pos.Map).Seguro Then
+124             bonificacionTotal = bonificacionTotal * PorcentajePescaSegura / 100
+            End If
+            
+            'Shugar: La reward ya estaba hardcodeada así...
+            'no la voy a tocar, pero ahora por lo menos puede ajustarse desde dateo con la bonificación de las cañas!
+            
+            'Calculo el botin esperado por iteracción. 'La base del calculo son 8000 por hora + 20% de chances de no pescar + un +/- 10%
+125         Reward = (IntervaloTrabajarExtraer / 3600000) * 8000 * bonificacionTotal * 1.2 * (1 + (RandomNumber(0, 20) - 10) / 100)
+                
+                
+            'Calculo la suerte de pescar o no pescar y aplico eso sobre el reward para promediar.
+            Dim Suerte As Integer
+            Dim Pesco As Boolean
+            
+            If .Stats.UserSkills(e_Skill.Pescar) < 20 Then
+                Suerte = 20
+            ElseIf .Stats.UserSkills(e_Skill.Pescar) < 40 Then
+                Suerte = 35
+            ElseIf .Stats.UserSkills(e_Skill.Pescar) < 70 Then
+                Suerte = 55
+            ElseIf .Stats.UserSkills(e_Skill.Pescar) < 100 Then
+                Suerte = 68
+            Else
+                Suerte = 80
+            End If
+                
+            Pesco = RandomNumber(1, 100) <= Suerte '80% de posibilidad de pescar
+        
+            If Pesco Then
+              
+                Dim nPos  As t_WorldPos
+                Dim MiObj As t_Obj
+                Dim objValue As Integer
+                
+                ' Shugar: al final no importa el valor del pez ya que se ajusta la cantidad...
+                ' Genero el obj pez que pesqué y su cantidad
+126             MiObj.ObjIndex = ObtenerPezRandom(ObjData(.invent.HerramientaEqpObjIndex).Power)
+127             objValue = max(ObjData(MiObj.ObjIndex).Valor / 3, 1)
+128             MiObj.amount = Round(Reward / objValue)
 
-                    If MiObj.amount <= 0 Then
-                        MiObj.amount = 1
+                If MiObj.amount <= 0 Then
+                    MiObj.amount = 1
+                End If
+                
+                Dim StopWorking As Boolean
+                StopWorking = False
+                
+                ' Si es insegura y es un fishing pool:
+                If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 And FISHING_POOL_ID = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex Then
+                
+                    ' Si se está por vaciar el fishing pool:
+134                 If MiObj.amount > MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount Then
+136                     MiObj.amount = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount
+                        Call CreateFishingPool(.pos.Map)
+                        Call EraseObj(MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount, .pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y)
+137                     Call WriteConsoleMsg(UserIndex, "No hay mas peces aqui.", e_FontTypeNames.FONTTYPE_INFO)
+                        StopWorking = True
                     End If
                     
-                    Dim StopWorking As Boolean
-                    StopWorking = False
-                    
-                    ' Si es insegura y es un fishing pool:
-                    If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 And FISHING_POOL_ID = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex Then
-                    
-                        ' Si se está por vaciar el fishing pool:
-134                     If MiObj.amount > MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount Then
-136                         MiObj.amount = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount
-                            Call CreateFishingPool(.pos.Map)
-                            Call EraseObj(MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount, .pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y)
-137                         Call WriteConsoleMsg(UserIndex, "No hay mas peces aqui.", e_FontTypeNames.FONTTYPE_INFO)
-                            StopWorking = True
+                    ' Resto los recursos que saqué
+                    MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount - MiObj.amount
+                End If
+                
+                ' Verifico si el pescado es especial o no
+                If Not RedDePesca Then
+                    esEspecial = False
+                    For i = 1 To UBound(PecesEspeciales)
+                        If PecesEspeciales(i).ObjIndex = MiObj.ObjIndex Then
+                            esEspecial = True
                         End If
-                        
-                        ' Resto los recursos que saqué
-                        MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount - MiObj.amount
-                        
-                    End If
+                    Next i
+                End If
+                
+                ' Si no es especial, actualizo el UserIndex
+                If Not esEspecial Then
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
                     
-                    ' Verifico si el pescado es especial o no
-                    If Not RedDePesca Then
-                        esEspecial = False
-                        For i = 1 To UBound(PecesEspeciales)
-                            If PecesEspeciales(i).objIndex = MiObj.objIndex Then
-                                esEspecial = True
-                            End If
-                        Next i
-                    End If
-                    
-                    ' Si no es especial, actualizo el UserIndex
-                    If Not esEspecial Then
-                        Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.objIndex).GrhIndex))
-                        
-                    ' Si es especial, corto el macro y activo el minijuego
-                    ElseIf Not RedDePesca Then
-                        .flags.PescandoEspecial = True
+                ' Si es especial, corto el macro y activo el minijuego
+                ' Solo aplica a cañas, no a red de pesca
+                ElseIf Not RedDePesca Then
+                    .flags.PescandoEspecial = True
 156                     Call WriteMacroTrabajoToggle(UserIndex, False)
                         .Stats.NumObj_PezEspecial = MiObj.objIndex
                         Call WritePelearConPezEspecial(UserIndex)
@@ -2196,45 +2185,48 @@ On Error GoTo ErrHandler
                     ' Por cada drop posible
                     Dim res As Long
 168                 For i = 1 To UBound(EspecialesPesca)
-                        ' Tiramos al azar entre 1 y la probabilidad
+                    ' Tiramos al azar entre 1 y la probabilidad
 170                     res = RandomNumber(1, IIf(RedDePesca, EspecialesPesca(i).Data * 2, EspecialesPesca(i).Data)) ' Red de pesca chance x2 (revisar)
-                
-                        ' Si tiene suerte y le pega
+            
+                    ' Si tiene suerte y le pega
 172                     If res = 1 Then
 174                         MiObj.objIndex = EspecialesPesca(i).objIndex
 176                         MiObj.amount = 1 ' Solo un item por vez
-                    
+                
 178                         If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
-                        
-                            ' Le mandamos un mensaje
+                    
+                        ' Le mandamos un mensaje
 180                         Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
-                        End If
-    
-                    Next
-    
-                Else
-                     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, GRH_FALLO_PESCA))
-                End If
-    
-182             Call SubirSkill(UserIndex, e_Skill.Pescar)
+                    End If
 
-                If StopWorking Then
-184                 Call WriteWorkRequestTarget(UserIndex, 0)
-186                 Call WriteMacroTrabajoToggle(UserIndex, False)
-                    Exit Sub
-                End If
+                Next
+
+            Else
+                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, GRH_FALLO_PESCA))
+            End If
+            
+            
+            If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Then
+182             Call SubirSkill(UserIndex, e_Skill.Pescar)
+            End If
+
+
+            If StopWorking Then
+184             Call WriteWorkRequestTarget(UserIndex, 0)
+186             Call WriteMacroTrabajoToggle(UserIndex, False)
+                Exit Sub
+            End If
     
-188             .Counters.Trabajando = .Counters.Trabajando + 1
-                .Counters.LastTrabajo = Int(IntervaloTrabajarExtraer / 1000)
+188         .Counters.Trabajando = .Counters.Trabajando + 1
+            .Counters.LastTrabajo = Int(IntervaloTrabajarExtraer / 1000)
     
                 'Ladder 06/07/14 Activamos el macro de trabajo
-190             If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
-                    Call WriteMacroTrabajoToggle(UserIndex, True)
-                End If
-        
+190         If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
+                Call WriteMacroTrabajoToggle(UserIndex, True)
+            End If
         
     End With
-    Exit Sub
+Exit Sub
 
 ErrHandler:
 192     Call LogError("Error en DoPescar. Error " & Err.Number & " - " & Err.Description & " Line number: " & Erl)
