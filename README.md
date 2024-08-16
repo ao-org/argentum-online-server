@@ -62,7 +62,7 @@ There is a limitation when running and debugging the game within Visual Basic 6.
 ### Installing SQLite ODBC Driver for 32-bit Systems
 
 To integrate SQLite with ODBC on a 32-bit system, please download the appropriate driver from the following link:
-- [SQLite ODBC Driver - 32 bits](http://www.ch-werner.de/sqliteodbc/)
+- [SQLite ODBC Driver - 32 bits](http://www.ch-werner.de/sqliteodbc/sqliteodbc.exe)
 
 ### Optimizing Database Performance
 
