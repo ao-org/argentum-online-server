@@ -1256,26 +1256,6 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 140                 .Invent.WeaponEqpObjIndex = .Invent.Object(Slot).ObjIndex
 142                 .Invent.WeaponEqpSlot = Slot
             
-144                 If obj.Proyectil = 1 And obj.Municion > 0 Then 'Si es un arco, desequipa el escudo.
-
-146                     If .Invent.EscudoEqpObjIndex = 1700 Or _
-                           .Invent.EscudoEqpObjIndex = 1730 Or _
-                           .Invent.EscudoEqpObjIndex = 1724 Or _
-                           .Invent.EscudoEqpObjIndex = 1717 Or _
-                           .Invent.EscudoEqpObjIndex = 1699 Then
-                           ' Estos escudos SI pueden ser usados con arco.
-                        Else
-
-148                         If .Invent.EscudoEqpObjIndex > 0 Then
-150                             Call Desequipar(UserIndex, .Invent.EscudoEqpSlot)
-152                             Call WriteConsoleMsg(UserIndex, "No podes tirar flechas si tenés un escudo equipado. Tu escudo fue desequipado.", e_FontTypeNames.FONTTYPE_INFOIAO)
-
-                            End If
-
-                        End If
-
-                    End If
-
 154                 If obj.DosManos = 1 Then
 156                     If .Invent.EscudoEqpObjIndex > 0 Then
 158                         Call Desequipar(UserIndex, .Invent.EscudoEqpSlot)
@@ -1585,23 +1565,6 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 472                     Call Desequipar(UserIndex, .Invent.EscudoEqpSlot)
                     End If
      
-                    'Lo equipa
-474                 If .Invent.Object(Slot).ObjIndex = 1700 Or _
-                       .Invent.Object(Slot).ObjIndex = 1730 Or _
-                       .Invent.Object(Slot).ObjIndex = 1724 Or _
-                       .Invent.Object(Slot).ObjIndex = 1717 Or _
-                       .Invent.Object(Slot).ObjIndex = 1699 Then
-             
-                    Else
-
-476                     If .Invent.WeaponEqpObjIndex > 0 Then
-478                         If ObjData(.invent.WeaponEqpObjIndex).Proyectil = 1 And ObjData(.invent.WeaponEqpObjIndex).Municion > 0 Then
-480                             Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
-482                             Call WriteConsoleMsg(UserIndex, "No podes sostener el escudo si tenes que tirar flechas. Tu arco fue desequipado.", e_FontTypeNames.FONTTYPE_INFOIAO)
-                            End If
-                        End If
-
-                    End If
 
 484                 If .Invent.WeaponEqpObjIndex > 0 Then
 486                     If ObjData(.Invent.WeaponEqpObjIndex).DosManos = 1 Then
