@@ -163,10 +163,10 @@ Sub RellenarInventario(ByVal UserIndex As String)
             Case e_Class.Assasin, e_Class.Bard, e_Class.Cleric, e_Class.Hunter, e_Class.Paladin, e_Class.Trabajador, e_Class.Warrior, e_Class.Bandit, e_Class.Pirat, e_Class.Thief
 
                  .invent.Object(NumItems).ObjIndex = 4337 ' Pocion Amarilla
-                 .invent.Object(NumItems).amount = 100
+                 .invent.Object(NumItems).amount = 50
                  NumItems = NumItems + 1
                  .invent.Object(NumItems).ObjIndex = 4338 ' Pocion Verde
-                 .invent.Object(NumItems).amount = 100
+                 .invent.Object(NumItems).amount = 40
                  NumItems = NumItems + 1
 
              Case e_Class.Mage, e_Class.Druid
@@ -179,7 +179,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
             
             ' Poción violeta
 148         .invent.Object(NumItems).ObjIndex = 4334 ' Pocion violeta
-150         .invent.Object(NumItems).amount = 50
+150         .invent.Object(NumItems).amount = 15
 152         NumItems = NumItems + 1
 
             .invent.Object(NumItems).ObjIndex = 3791 ' Pasaje a Jourmut
