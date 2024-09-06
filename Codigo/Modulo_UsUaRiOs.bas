@@ -2044,7 +2044,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 144             Call WriteConsoleMsg(UserIndex, "¡Has mejorado tu skill " & SkillsNames(Skill) & " en un punto!. Ahora tienes " & UserList(UserIndex).Stats.UserSkills(Skill) & " pts.", e_FontTypeNames.FONTTYPE_INFO)
             
                 Dim BonusExp As Long
-146             BonusExp = 50& * ExpMult
+146             BonusExp = 5& * ExpMult
         
                 Call WriteConsoleMsg(UserIndex, "¡Has ganado " & BonusExp & " puntos de experiencia!", e_FontTypeNames.FONTTYPE_INFOIAO)
                 
