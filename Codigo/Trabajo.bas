@@ -3533,5 +3533,5 @@ Public Function GetExtractResourceForLevel(ByVal level As Integer) As Integer
     Dim lower As Long
     lower = Int(CDbl(level + 0.000001) / 3.6)
     upper = Int(CDbl(level + 0.000001) / 2)
-    GetExtractResourceForLevel = 5 + RandomNumber(lower, upper)
+    GetExtractResourceForLevel = RandomNumber(lower, upper)
 End Function
