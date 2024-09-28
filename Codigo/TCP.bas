@@ -163,10 +163,10 @@ Sub RellenarInventario(ByVal UserIndex As String)
             Case e_Class.Assasin, e_Class.Bard, e_Class.Cleric, e_Class.Hunter, e_Class.Paladin, e_Class.Trabajador, e_Class.Warrior, e_Class.Bandit, e_Class.Pirat, e_Class.Thief
 
                  .invent.Object(NumItems).ObjIndex = 4337 ' Pocion Amarilla
-                 .invent.Object(NumItems).amount = 50
+                 .invent.Object(NumItems).amount = 60
                  NumItems = NumItems + 1
                  .invent.Object(NumItems).ObjIndex = 4338 ' Pocion Verde
-                 .invent.Object(NumItems).amount = 40
+                 .invent.Object(NumItems).amount = 60
                  NumItems = NumItems + 1
 
              Case e_Class.Mage, e_Class.Druid
@@ -236,7 +236,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
                 NumItems = NumItems + 1
 
                  .invent.Object(NumItems).ObjIndex = 3492 ' Flecha del Principiante
-                 .invent.Object(NumItems).amount = 650
+                 .invent.Object(NumItems).amount = 1050
                  NumItems = NumItems + 1
 
                  .invent.Object(NumItems).ObjIndex = 3489  ' Casco de Principiante
@@ -265,7 +265,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
                  .invent.Object(NumItems).amount = 1
                  NumItems = NumItems + 1
                  .invent.Object(NumItems).ObjIndex = 3492 ' Flecha del Principiante
-                 .invent.Object(NumItems).amount = 300
+                 .invent.Object(NumItems).amount = 600
                  NumItems = NumItems + 1
 
                 Case e_Class.Pirat
@@ -305,7 +305,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
                 .invent.Object(NumItems).amount = 1
                  NumItems = NumItems + 1
                  .invent.Object(NumItems).ObjIndex = 3492 ' Flecha del Principiante
-                 .invent.Object(NumItems).amount = 300
+                 .invent.Object(NumItems).amount = 600
                  NumItems = NumItems + 1
                  .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
                  .invent.Object(NumItems).amount = 1
