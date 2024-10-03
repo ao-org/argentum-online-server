@@ -3311,7 +3311,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 116             If .clase = e_Class.Druid Then
 118                 puntosDomar = puntosDomar / 6 'original es 6
                 Else
-120                 puntosDomar = puntosDomar / 11
+120                 puntosDomar = puntosDomar / 118 'para que solo el druida dome
                 End If
 
 122             If NpcList(NpcIndex).flags.Domable <= puntosDomar And RandomNumber(1, 5) = 1 Then
