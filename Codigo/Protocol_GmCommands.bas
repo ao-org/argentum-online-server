@@ -35,8 +35,6 @@ Public Sub HandleOnline(ByVal UserIndex As Integer)
         
         Dim i         As Long
         Dim count     As Long
-        Dim Time      As Long
-        Dim UpTimeStr As String
     
 100     With UserList(UserIndex)
 102         For i = 1 To LastUser
@@ -47,30 +45,15 @@ Public Sub HandleOnline(ByVal UserIndex As Integer)
                 End If
 
 112         Next i
-        
-            'Get total time in seconds
-114         Time = ((GetTickCount()) - tInicioServer) \ 1000
-        
-            'Get times in dd:hh:mm:ss format
-116         UpTimeStr = (Time Mod 60) & " segundos."
-118         Time = Time \ 60
-        
-120         UpTimeStr = (Time Mod 60) & " minutos, " & UpTimeStr
-122         Time = Time \ 60
-        
-124         UpTimeStr = (Time Mod 24) & " horas, " & UpTimeStr
-126         Time = Time \ 24
-        
-128         If Time = 1 Then
-130             UpTimeStr = Time & " día, " & UpTimeStr
+    
+            
+135         If EsGM(UserIndex) Then
+136             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(count) & " conectados.", e_FontTypeNames.FONTTYPE_INFOIAO)
+                Call WriteConsoleMsg(UserIndex, "Record de usuarios en simultaneo: " & RecordUsuarios & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
             Else
-132             UpTimeStr = Time & " días, " & UpTimeStr
-    
+                Call WriteConsoleMsg(UserIndex, "Comando deshabilitado para tu rango.", e_FontTypeNames.FONTTYPE_INFOIAO)
             End If
-    
-134         Call WriteConsoleMsg(UserIndex, "Server Online: " & UpTimeStr, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados.", e_FontTypeNames.FONTTYPE_INFOIAO)
-            Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+            
         End With
         
         Exit Sub
