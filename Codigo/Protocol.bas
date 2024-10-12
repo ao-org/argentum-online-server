@@ -8209,8 +8209,8 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 130                     .Invent.Object(SlotViejo).Equipped = 0
                     
                         'Cambiamos si alguno es un anillo
-132                     If .Invent.DañoMagicoEqpSlot = SlotViejo Then
-134                         .Invent.DañoMagicoEqpSlot = SlotNuevo
+132                     If .invent.DañoMagicoEqpSlot = SlotViejo Then
+134                         .invent.DañoMagicoEqpSlot = SlotNuevo
 
                         End If
 
@@ -8318,10 +8318,10 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                     End If
     
                     'Cambiamos si alguno es un anillo
-214                 If .Invent.DañoMagicoEqpSlot = SlotViejo Then
-216                     .Invent.DañoMagicoEqpSlot = SlotNuevo
-218                 ElseIf .Invent.DañoMagicoEqpSlot = SlotNuevo Then
-220                     .Invent.DañoMagicoEqpSlot = SlotViejo
+214                 If .invent.DañoMagicoEqpSlot = SlotViejo Then
+216                     .invent.DañoMagicoEqpSlot = SlotNuevo
+218                 ElseIf .invent.DañoMagicoEqpSlot = SlotNuevo Then
+220                     .invent.DañoMagicoEqpSlot = SlotViejo
 
                     End If
 
@@ -10492,12 +10492,13 @@ HandleBuyShopItem_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBuyShopItem", Erl)
 End Sub
 
-Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
+Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer, ByVal paymentMethod As String)
 
     On Error GoTo HandlePublicarPersonajeMAO_Err:
     Dim Valor As Long
         
     Valor = Reader.ReadInt32
+    paymentMethod = Reader.ReadString8()
     
     If Valor <= MinimumPriceMao Then
         Call WriteConsoleMsg(UserIndex, "El valor de venta del personaje debe ser mayor que $" & MinimumPriceMao, e_FontTypeNames.FONTTYPE_INFOBOLD)
@@ -10505,7 +10506,7 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
     End If
     
     With UserList(UserIndex)
-        ' Para recibir el ID del user
+        ' Check if the character is eligible for sale
         Dim RS As ADODB.Recordset
         Set RS = Query("select is_locked_in_mao from user where id = ?;", .ID)
                     
@@ -10513,6 +10514,7 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
             Call WriteConsoleMsg(UserIndex, "No podes vender un gm.", e_FontTypeNames.FONTTYPE_INFOBOLD)
             Exit Sub
         End If
+        
         If CBool(RS!is_locked_in_mao) Then
             Call WriteConsoleMsg(UserIndex, "El personaje ya está publicado.", e_FontTypeNames.FONTTYPE_INFOBOLD)
             Exit Sub
@@ -10523,22 +10525,48 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
             Exit Sub
         End If
         
-        If .Stats.GLD < GoldPriceMao Then
-            Call WriteConsoleMsg(UserIndex, "El costo para vender tu personajes es de " & GoldPriceMao & " monedas de oro, no tienes esa cantidad.", e_FontTypeNames.FONTTYPE_INFOBOLD)
-            Exit Sub
-        Else
-            .Stats.GLD = .Stats.GLD - GoldPriceMao
-            Call WriteUpdateGold(UserIndex)
+        ' Load Patreon Credits if needed
+        If paymentMethod = "Patreon Credits" Then
+            Call LoadPatronCreditsFromDB(UserIndex)
         End If
+        
+        ' Payment handling
+        Select Case paymentMethod
+            Case "Oro"
+                If .Stats.GLD < GoldPriceMao Then
+                    Call WriteConsoleMsg(UserIndex, "El costo para vender tu personaje es de " & GoldPriceMao & " monedas de oro, no tienes esa cantidad.", e_FontTypeNames.FONTTYPE_INFOBOLD)
+                    Exit Sub
+                Else
+                    .Stats.GLD = .Stats.GLD - GoldPriceMao
+                    Call WriteUpdateGold(UserIndex)
+                End If
+                
+            Case "CreditOs Patreon"
+                If .Stats.Creditos < PatreonCreditsPrice Then
+                    Call WriteConsoleMsg(UserIndex, "El costo para vender tu personaje es de " & PatreonCreditsPrice & " Créditos Patreon, no tienes esa cantidad.", e_FontTypeNames.FONTTYPE_INFOBOLD)
+                    Exit Sub
+                Else
+                    .Stats.Creditos = .Stats.Creditos - PatreonCreditsPrice
+                    Call writeUpdateShopClienteCredits(UserIndex)
+                End If
+                
+            Case Else
+                Call WriteConsoleMsg(UserIndex, "Método de pago no válido.", e_FontTypeNames.FONTTYPE_INFOBOLD)
+                Exit Sub
+        End Select
+
+        ' Update character as published for sale
         Call Execute("update user set price_in_mao = ?, is_locked_in_mao = 1 where id = ?;", Valor, .ID)
-        Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID, "El personaje fue publicado.")
+        Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID, "El personaje fue publicado con exito.")
     End With
         
     Exit Sub
 
 HandlePublicarPersonajeMAO_Err:
-102     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePublicarPersonajeMAO", Erl)
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandlePublicarPersonajeMAO", Erl)
 End Sub
+
+
 
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     On Error GoTo HandleDeleteItem_Err:
