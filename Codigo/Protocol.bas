@@ -7419,7 +7419,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
                 Exit Sub
             End If
 
-118         If .Faccion.Status = e_Facciones.Ciudadano Or .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Or .Faccion.Status = e_Facciones.concilio Or .Faccion.Status = e_Facciones.Caos Or .Faccion.ciudadanosMatados = 0 Then
+118         If .Faccion.Status = e_Facciones.Ciudadano Or .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Or .Faccion.Status = e_Facciones.concilio Or .Faccion.Status = e_Facciones.Caos Then
 120             Call WriteChatOverHead(UserIndex, "No puedo aceptar tu donación en este momento...", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                 Exit Sub
             End If
@@ -7440,7 +7440,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
             If .Faccion.ciudadanosMatados > 0 Then
 132             Donacion = .Faccion.ciudadanosMatados * OroMult * CostoPerdonPorCiudadano
             Else
-                Donacion = 10000
+                Donacion = CostoPerdonPorCiudadano / 2
             End If
             
 134         If Oro < Donacion Then

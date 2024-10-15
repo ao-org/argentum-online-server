@@ -2017,7 +2017,9 @@ Public Sub HandleForgive(ByVal UserIndex As Integer)
 132             Call WriteChatOverHead(UserIndex, "Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. " & "Pero si haces una generosa donación de, digamos, " & PonerPuntos(Donacion) & " monedas de oro, tal vez cambie de opinión...", priest.Char.charindex, vbWhite)
                 Exit Sub
             Else
-                Call WriteChatOverHead(UserIndex, "Para volver a ser un ciudadano deberás donar 10.000 monedas de oro.", priest.Char.charindex, vbWhite)
+            Donacion = CostoPerdonPorCiudadano / 2
+                Call WriteChatOverHead(UserIndex, "Para volver a ser un ciudadano deberás Donar " & Donacion & " monedas de oro.", priest.Char.charindex, vbWhite)
+                Exit Sub
             End If
                         
             Dim permitePerdon As Boolean
