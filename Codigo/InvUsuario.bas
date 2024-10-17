@@ -2051,17 +2051,6 @@ Case 4 'Poción azul, restaura MANA
     End If
 
                     
-                            'Quitamos del inv el item
-316                         Call QuitarUserInvItem(UserIndex, Slot, 1)
-    
-318                         If obj.Snd1 <> 0 Then
-320                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
-                        
-                            Else
-322                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.y))
-    
-                            End If
-                    
 324                     Case 5 ' Pocion violeta
     
 326                         If .flags.Envenenado > 0 Then
