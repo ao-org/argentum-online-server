@@ -2027,13 +2027,14 @@ Case 3 'Poción roja, restaura HP
 Case 4 'Poción azul, restaura MANA
     Dim porcentajeRec As Byte
     porcentajeRec = obj.Porcentaje
+    Dim T_Arena As e_Trigger6 ' Usamos una variable diferente para evitar conflicto
 
     ' Usa el ítem: restaura el MANA
     .Stats.MinMAN = IIf(.Stats.MinMAN > 20000, 20000, .Stats.MinMAN + Porcentaje(.Stats.MaxMAN, porcentajeRec))
     If .Stats.MinMAN > .Stats.MaxMAN Then .Stats.MinMAN = .Stats.MaxMAN
 
     ' Verifica si el jugador está en la ARENA
-    Dim T_Arena As e_Trigger6 ' Usamos una variable diferente para evitar conflicto
+    
     T_Arena = TriggerZonaPelea(UserIndex, UserIndex)
 
     ' Si NO está en un mapa entre 600 y 749 o NO está en la ARENA, se consume la poción
