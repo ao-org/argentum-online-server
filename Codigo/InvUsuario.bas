@@ -1996,28 +1996,58 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
 292                         Call WriteFYA(UserIndex)
     
-294                     Case 3 'Pocion roja, restaura HP
-                    
-                            'Usa el item
-                            Dim HealingAmount As Long
-                            HealingAmount = RandomNumber(obj.MinModificador, obj.MaxModificador) * UserMod.GetSelfHealingBonus(UserList(UserIndex))
-296                         Call UserMod.ModifyHealth(UserIndex, HealingAmount)
-                            'Quitamos del inv el item
-300                         Call QuitarUserInvItem(UserIndex, Slot, 1)
-302                         If obj.Snd1 <> 0 Then
-304                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
-                            Else
-306                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.y))
-                            End If
+Case 3 'Poción roja, restaura HP
+    ' Usa el ítem
+    Dim HealingAmount As Long
+    Dim Source As Integer
+    Dim T As e_Trigger6
+
+    ' Calcula la cantidad de curación
+    HealingAmount = RandomNumber(obj.MinModificador, obj.MaxModificador) * UserMod.GetSelfHealingBonus(UserList(UserIndex))
+
+    ' Modifica la salud del jugador
+    Call UserMod.ModifyHealth(UserIndex, HealingAmount)
+
+    ' Verifica si el jugador está en la ARENA
+    T = TriggerZonaPelea(UserIndex, UserIndex)
+
+    ' Si NO está en un mapa entre 600 y 749 o NO está en la ARENA, se consume la poción
+    If Not (UserList(UserIndex).pos.Map >= 600 And UserList(UserIndex).pos.Map <= 749 And T = e_Trigger6.TRIGGER6_PERMITE) Then
+        Call QuitarUserInvItem(UserIndex, Slot, 1)
+    End If
+
+    ' Reproduce sonido al usar la poción
+    If obj.Snd1 <> 0 Then
+        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
+    Else
+        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .pos.x, .pos.y))
+    End If
+
                 
-308                     Case 4 'Pocion azul, restaura MANA
-                
-                            Dim porcentajeRec As Byte
-310                         porcentajeRec = obj.Porcentaje
-                    
-                            'Usa el item
-312                          .Stats.MinMAN = IIf(.Stats.MinMAN > 20000, 20000, .Stats.MinMAN + Porcentaje(.Stats.MaxMAN, porcentajeRec))
-314                         If .Stats.MinMAN > .Stats.MaxMAN Then .Stats.MinMAN = .Stats.MaxMAN
+Case 4 'Poción azul, restaura MANA
+    Dim porcentajeRec As Byte
+    porcentajeRec = obj.Porcentaje
+
+    ' Usa el ítem: restaura el MANA
+    .Stats.MinMAN = IIf(.Stats.MinMAN > 20000, 20000, .Stats.MinMAN + Porcentaje(.Stats.MaxMAN, porcentajeRec))
+    If .Stats.MinMAN > .Stats.MaxMAN Then .Stats.MinMAN = .Stats.MaxMAN
+
+    ' Verifica si el jugador está en la ARENA
+    Dim T_Arena As e_Trigger6 ' Usamos una variable diferente para evitar conflicto
+    T_Arena = TriggerZonaPelea(UserIndex, UserIndex)
+
+    ' Si NO está en un mapa entre 600 y 749 o NO está en la ARENA, se consume la poción
+    If Not (UserList(UserIndex).pos.Map >= 600 And UserList(UserIndex).pos.Map <= 749 And T_Arena = e_Trigger6.TRIGGER6_PERMITE) Then
+        ' Quitamos el ítem del inventario
+        Call QuitarUserInvItem(UserIndex, Slot, 1)
+    End If
+
+    ' Reproduce sonido al usar la poción
+    If obj.Snd1 <> 0 Then
+        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
+    Else
+        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .pos.x, .pos.y))
+    End If
 
                     
                             'Quitamos del inv el item
