@@ -1823,6 +1823,7 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 150     Call WriteConsoleMsg(sendIndex, "Dados: " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Fuerza) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Inteligencia) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Constitucion) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Carisma), e_FontTypeNames.FONTTYPE_INFO)
 152     Call WriteConsoleMsg(sendIndex, "Veces que Moriste: " & UserList(UserIndex).flags.VecesQueMoriste, e_FontTypeNames.FONTTYPE_INFO)
 154     Call WriteLocaleMsg(sendIndex, MsgFactionScore, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Faccion.FactionScore)
+        Call WriteConsoleMsg(sendIndex, "Creditos Patreon: " & UserList(UserIndex).Stats.Creditos, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
 
 SendUserStatsTxt_Err:
