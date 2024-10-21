@@ -2022,10 +2022,9 @@ Case 3 'Poción roja, restaura HP
     T = TriggerZonaPelea(UserIndex, UserIndex)
 
     ' Si NO está en un mapa entre 600 y 749 o NO está en la ARENA, se consume la poción
-If Not ((UserList(UserIndex).pos.Map >= 600 And UserList(UserIndex).pos.Map <= 749 And T = e_Trigger6.TRIGGER6_PERMITE) Or _
-        (UserList(UserIndex).pos.Map = 275 Or UserList(UserIndex).pos.Map = 276 Or UserList(UserIndex).pos.Map = 277)) Then
-    Call QuitarUserInvItem(UserIndex, Slot, 1)
-End If
+    If Not (UserList(UserIndex).pos.Map >= 600 And UserList(UserIndex).pos.Map <= 749 And T = e_Trigger6.TRIGGER6_PERMITE) Then
+        Call QuitarUserInvItem(UserIndex, Slot, 1)
+    End If
 
     ' Reproduce sonido al usar la poción
     If obj.Snd1 <> 0 Then
@@ -2048,9 +2047,8 @@ Case 4 'Poción azul, restaura MANA
     
     T_Arena = TriggerZonaPelea(UserIndex, UserIndex)
 
-    ' Lógica para determinar si se consume la poción
-    If Not ((UserList(UserIndex).pos.Map >= 600 And UserList(UserIndex).pos.Map <= 749 And T_Arena = e_Trigger6.TRIGGER6_PERMITE) Or _
-            (UserList(UserIndex).pos.Map = 275 Or UserList(UserIndex).pos.Map = 276 Or UserList(UserIndex).pos.Map = 277)) Then
+    ' Si NO está en un mapa entre 600 y 749 o NO está en la ARENA, se consume la poción
+    If Not (UserList(UserIndex).pos.Map >= 600 And UserList(UserIndex).pos.Map <= 749 And T_Arena = e_Trigger6.TRIGGER6_PERMITE) Then
         ' Quitamos el ítem del inventario
         Call QuitarUserInvItem(UserIndex, Slot, 1)
     End If
