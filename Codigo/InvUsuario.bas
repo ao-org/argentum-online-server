@@ -248,15 +248,16 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
     
 110         Next j
         ' Eliminar items newbie de la boveda
-    For j = 1 To MAX_BANCOINVENTORY_SLOTS
-        If UserList(UserIndex).BancoInvent.Object(j).ObjIndex > 0 Then
-            If ObjData(UserList(UserIndex).BancoInvent.Object(j).ObjIndex).Newbie = 1 Then
-                UserList(UserIndex).BancoInvent.Object(j).ObjIndex = 0
-                UserList(UserIndex).BancoInvent.Object(j).amount = 0
-                Call UpdateBanUserInv(False, UserIndex, j, "QuitarNewbieObj")
-            End If
+For j = 1 To MAX_BANCOINVENTORY_SLOTS
+    If UserList(UserIndex).BancoInvent.Object(j).ObjIndex > 0 Then
+        If ObjData(UserList(UserIndex).BancoInvent.Object(j).ObjIndex).Newbie = 1 Then
+            UserList(UserIndex).BancoInvent.Object(j).ObjIndex = 0
+            UserList(UserIndex).BancoInvent.Object(j).amount = 0
+            Call UpdateBanUserInv(False, UserIndex, j, "QuitarNewbieObj")
         End If
-    Next j
+    End If
+Next j
+
     
         'Si el usuario dejó de ser Newbie, y estaba en el Newbie Dungeon
         
