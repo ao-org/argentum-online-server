@@ -248,23 +248,21 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
     
 110         Next j
     ' Eliminar items newbie de la boveda
-    For j = 1 To MAX_BANCOINVENTORY_SLOTS
-        If UserList(UserIndex).BancoInvent.Object(j).ObjIndex > 0 Then
-            If ObjData(UserList(UserIndex).BancoInvent.Object(j).ObjIndex).Newbie = 1 Then
-                UserList(UserIndex).BancoInvent.Object(j).ObjIndex = 0
-                UserList(UserIndex).BancoInvent.Object(j).amount = 0
-                Call UpdateBanUserInv(False, UserIndex, j, "QuitarNewbieObj")
+        For j = 1 To MAX_BANCOINVENTORY_SLOTS
+            If UserList(UserIndex).BancoInvent.Object(j).ObjIndex > 0 Then
+                 If ObjData(UserList(UserIndex).BancoInvent.Object(j).ObjIndex).Newbie = 1 Then
+                     UserList(UserIndex).BancoInvent.Object(j).ObjIndex = 0
+                       UserList(UserIndex).BancoInvent.Object(j).amount = 0
+                    Call UpdateBanUserInv(False, UserIndex, j, "QuitarNewbieObj")
+                 End If
             End If
-        End If
-    Next j
+        Next j
     
         'Si el usuario dejó de ser Newbie, y estaba en el Newbie Dungeon
-        
         'Mandamos a la Isla de la Fortuna
         
         Call WarpUserChar(UserIndex, Renacimiento.Map, Renacimiento.x, Renacimiento.y, True)
-        Call WriteConsoleMsg(UserIndex, "Has dejado de ser Newbie, Te orientaremos que hacer ahora.", e_FontTypeNames.FONTTYPE_INFO)
-    Call WriteConsoleMsg(UserIndex, "Has dejado de ser Newbie.", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, "Has dejado de ser Newbie.", e_FontTypeNames.FONTTYPE_INFO)
 
         Exit Sub
 
