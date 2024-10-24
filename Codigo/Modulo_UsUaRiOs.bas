@@ -881,9 +881,13 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal AttackerIndex As Integer)
         End If
     
 130     Call UserMod.UserDie(VictimIndex)
-132     If UserList(AttackerIndex).Stats.UsuariosMatados < MAXUSERMATADOS Then
-134         UserList(AttackerIndex).Stats.UsuariosMatados = UserList(AttackerIndex).Stats.UsuariosMatados + 1
+
+        If TriggerZonaPelea(attackerIndex, attackerIndex) <> TRIGGER6_PERMITE Then
+132         If UserList(attackerIndex).Stats.UsuariosMatados < MAXUSERMATADOS Then
+134             UserList(attackerIndex).Stats.UsuariosMatados = UserList(attackerIndex).Stats.UsuariosMatados + 1
+            End If
         End If
+        
         Exit Sub
 
 ActStats_Err:
@@ -2185,8 +2189,10 @@ Sub UserDie(ByVal UserIndex As Integer)
 186             .Char.loops = 0
     
             End If
-        
-188         .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
+         
+            If TriggerZonaPelea(UserIndex, UserIndex) <> TRIGGER6_PERMITE Then
+    .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
+End If
         
             ' << Restauramos los atributos >>
 190         If .flags.TomoPocion Then
