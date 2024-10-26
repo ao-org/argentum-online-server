@@ -881,9 +881,13 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal AttackerIndex As Integer)
         End If
     
 130     Call UserMod.UserDie(VictimIndex)
-132     If UserList(AttackerIndex).Stats.UsuariosMatados < MAXUSERMATADOS Then
-134         UserList(AttackerIndex).Stats.UsuariosMatados = UserList(AttackerIndex).Stats.UsuariosMatados + 1
+
+        If TriggerZonaPelea(attackerIndex, attackerIndex) <> TRIGGER6_PERMITE Then
+132      If UserList(attackerIndex).Stats.UsuariosMatados < MAXUSERMATADOS Then
+134             UserList(attackerIndex).Stats.UsuariosMatados = UserList(attackerIndex).Stats.UsuariosMatados + 1
+            End If
         End If
+        
         Exit Sub
 
 ActStats_Err:
@@ -1819,6 +1823,7 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 146         Call WriteConsoleMsg(sendIndex, "Total: " & TempStr, e_FontTypeNames.FONTTYPE_INFO)
         #End If
 
+        Call LoadPatronCreditsFromDB(UserIndex)
 148     Call WriteConsoleMsg(sendIndex, "Oro: " & UserList(UserIndex).Stats.GLD, e_FontTypeNames.FONTTYPE_INFO)
 150     Call WriteConsoleMsg(sendIndex, "Dados: " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Fuerza) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Inteligencia) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Constitucion) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Carisma), e_FontTypeNames.FONTTYPE_INFO)
 152     Call WriteConsoleMsg(sendIndex, "Veces que Moriste: " & UserList(UserIndex).flags.VecesQueMoriste, e_FontTypeNames.FONTTYPE_INFO)
@@ -2186,7 +2191,9 @@ Sub UserDie(ByVal UserIndex As Integer)
     
             End If
         
-188         .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
+            If TriggerZonaPelea(UserIndex, UserIndex) <> TRIGGER6_PERMITE Then
+                .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
+            End If
         
             ' << Restauramos los atributos >>
 190         If .flags.TomoPocion Then
