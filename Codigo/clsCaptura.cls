@@ -119,10 +119,10 @@ Public Sub PasarSegundo()
         ElseIf tiempo_espera = 0 Then
             If participantes.Count < max_participantes / 2 Then
                 reintentos = reintentos + 1
-                If reintentos >= 5 Then
+                If reintentos >= 2 Then
                     Call finalizarCaptura(-2)
                 Else
-                    tiempo_espera = 60
+                    tiempo_espera = 30
                     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» Se extendieron las inscripciones por falta de participantes.", e_FontTypeNames.FONTTYPE_GUILD))
                 End If
             Else
@@ -490,10 +490,22 @@ Public Sub finalizarCaptura(Optional Team As Integer = -1)
     ElseIf Team = 0 Then 'Hubo empate
         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» ¡El evento de captura la bandera ha terminado en empate!.", e_FontTypeNames.FONTTYPE_GUILD))
     Else
-    
-        'Hay premios???
-    
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» ¡El evento de captura la bandera ha terminado! Ganador el equipo " & colorEquipo(team) & ".", e_FontTypeNames.FONTTYPE_GUILD))
+        ' La recompensa para cada ganador será su inscripción de vuelta + el precio de inscripción de un perdedor
+        Dim recompensa As Long
+        recompensa = precio * 2  ' Tu inscripción + la inscripción de un perdedor
+        
+        ' Entregamos premio al equipo ganador
+        For Each participante In participantes
+            If participante.IsValid Then
+                If participante.Team = Team Then
+                    UserList(participante.PlayerIndex).Stats.GLD = UserList(participante.PlayerIndex).Stats.GLD + recompensa
+                    Call WriteUpdateGold(participante.PlayerIndex)
+                    Call WriteConsoleMsg(participante.PlayerIndex, "¡Has recuperado tu inscripción y ganado " & PonerPuntos(precio) & " monedas de oro adicionales por ganar el evento!", e_FontTypeNames.FONTTYPE_GUILD)
+                End If
+            End If
+        Next participante
+        
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> ¡El evento de captura la bandera ha terminado! Ganador el equipo " & colorEquipo(Team) & ".", e_FontTypeNames.FONTTYPE_GUILD))
     End If
 
     
@@ -516,17 +528,10 @@ Public Sub finalizarRonda(ByVal Team As Byte)
     
     
     rondasGanadas(Team) = rondasGanadas(Team) + 1
-    If ronda_actual >= cantidad_rondas Then
-        'Se termina la joda
-        
-        If rondasGanadas(1) > rondasGanadas(2) Then
-            Team = 1
-        ElseIf rondasGanadas(2) > rondasGanadas(1) Then
-            Team = 2
-        Else
-            Team = 0
-        End If
-        
+    Dim rondasParaGanar As Integer
+    rondasParaGanar = (cantidad_rondas \ 2) + 1  ' División entera + 1 (ejemplo: en mejor de 3, necesitas 2 victorias)
+    
+    If rondasGanadas(Team) >= rondasParaGanar Then  ' Si un equipo alcanza las rondas necesarias
         Call finalizarCaptura(CInt(Team))
     Else
         Call iniciarRonda
