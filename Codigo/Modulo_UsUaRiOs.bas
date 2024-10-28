@@ -3338,6 +3338,17 @@ Public Function CanAttackUser(ByVal AttackerIndex As Integer, ByVal AttackerVers
         CanAttackUser = eSameTeam
         Exit Function
     End If
+    
+    
+    ' Nueva verificación específica para Captura la Bandera
+    If UserList(attackerIndex).flags.jugando_captura = 1 And UserList(TargetIndex).flags.jugando_captura = 1 Then
+        If UserList(attackerIndex).flags.CurrentTeam = UserList(TargetIndex).flags.CurrentTeam Then
+            Call WriteConsoleMsg(attackerIndex, "¡No puedes atacar a miembros de tu propio equipo!", e_FontTypeNames.FONTTYPE_INFO)
+            CanAttackUser = eSameTeam
+            Exit Function
+        End If
+    End If
+    
     Dim T    As e_Trigger6
     
     'Estamos en una Arena? o un trigger zona segura?

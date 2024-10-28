@@ -874,13 +874,20 @@ Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByV
 
 104     puerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex)
 106     If puerta.Llave = 1 And Not SinDistancia Then
-108         Call WriteConsoleMsg(UserIndex, "La puerta esta cerrada con llave.", e_FontTypeNames.FONTTYPE_INFO)
+            If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = 59878 Or puerta.GrhIndex = 59877 Then
+                Call WriteConsoleMsg(UserIndex, "Al parecer, alguien cerró esta puerta. Debe haber algún interruptor por algún lado...", e_FontTypeNames.FONTTYPE_INFO)
+            Else
+                Call WriteConsoleMsg(UserIndex, "La puerta esta cerrada con llave.", e_FontTypeNames.FONTTYPE_INFO)
+            End If
             Exit Sub
         End If
 
 110     If puerta.Cerrada = 1 Then 'Abre la puerta
 112         MapData(Map, X, Y).ObjInfo.ObjIndex = puerta.IndexAbierta
 114         Call BloquearPuerta(Map, X, Y, False)
+            If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = 59878 Or puerta.GrhIndex = 59877 Then
+                Call WriteConsoleMsg(UserIndex, "Has abierto la compuerta del ducto.", e_FontTypeNames.FONTTYPE_INFO)
+            End If
 
         Else 'Cierra puerta
 116         MapData(Map, X, Y).ObjInfo.ObjIndex = puerta.IndexCerrada
