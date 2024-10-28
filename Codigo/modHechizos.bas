@@ -717,6 +717,16 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                     End If
                 End If
             End If
+            
+            If .clase = e_Class.Druid Then
+                If Hechizos(HechizoIndex).RequiereInstrumento > 0 Then
+                    If .invent.DañoMagicoEqpSlot = 0 Or ObjData(.invent.DañoMagicoEqpObjIndex).InstrumentoRequerido <> 1 Then
+                        Call WriteConsoleMsg(UserIndex, "Necesitás una flauta para invocar o desinvocar a tus mascotas.", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Function
+                    End If
+                End If
+            End If
+            
             If Hechizos(HechizoIndex).RequireWeaponType > 0 Then
                 If .invent.WeaponEqpObjIndex = 0 Then
                     Call WriteLocaleMsg(UserIndex, GetRequiredWeaponLocaleId(Hechizos(HechizoIndex).RequireWeaponType), e_FontTypeNames.FONTTYPE_INFO)
