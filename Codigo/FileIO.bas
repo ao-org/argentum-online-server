@@ -766,6 +766,7 @@ Public Sub CargarHechizos()
 278         frmCargando.cargar.value = frmCargando.cargar.value + 1
     
 280         Hechizos(Hechizo).NeedStaff = val(Leer.GetValue("Hechizo" & Hechizo, "NeedStaff"))
+            Hechizos(Hechizo).RequiereInstrumento = val(Leer.GetValue("Hechizo" & Hechizo, "RequiereInstrumento"))
 281         Hechizos(Hechizo).StaffAffected = CBool(val(Leer.GetValue("Hechizo" & Hechizo, "StaffAffected")))
 282         Hechizos(Hechizo).EotId = val(Leer.GetValue("Hechizo" & Hechizo, "EOTID"))
 
@@ -1288,6 +1289,7 @@ Sub LoadOBJData()
 146             .QueAtributo = val(Leer.GetValue(ObjKey, "queatributo"))
 148             .CuantoAumento = val(Leer.GetValue(ObjKey, "cuantoaumento"))
 150             .MinELV = val(Leer.GetValue(ObjKey, "MinELV"))
+                .InstrumentoRequerido = val(Leer.GetValue(ObjKey, "InstrumentoRequerido"))
 152             .Subtipo = val(Leer.GetValue(ObjKey, "Subtipo"))
 154             .Dorada = val(Leer.GetValue(ObjKey, "Dorada"))
 155             .Blodium = val(Leer.GetValue(ObjKey, "Blodium"))

@@ -1142,6 +1142,7 @@ Public Type t_Hechizo
     Target As e_TargetType
     RequireTransform As Integer
     NeedStaff As Integer
+    RequiereInstrumento As Integer
     StaffAffected As Boolean
     EotId As Integer
     SpellRequirementMask As Long
@@ -1575,7 +1576,7 @@ Public Type t_ObjData
     MinELV As Byte
     SkillIndex As Byte     ' El indice de Skill para equipar el item
     SkillRequerido As Byte ' El valor MINIMO requerido de skillIndex para equipar el item
-    
+    InstrumentoRequerido As Integer
     CreaGRH As String
     SndAura As Integer
     Intirable As Byte
