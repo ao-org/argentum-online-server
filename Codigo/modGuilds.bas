@@ -1569,15 +1569,15 @@ End Sub
 
 Public Function GetRequiredExpForGuildLevel(ByVal CurrentLevel As Integer) As Long
 128         If CurrentLevel = 1 Then
-130             GetRequiredExpForGuildLevel = 500
+130             GetRequiredExpForGuildLevel = 1000
 132         ElseIf CurrentLevel = 2 Then
-134             GetRequiredExpForGuildLevel = 1000
+134             GetRequiredExpForGuildLevel = 2000
 136         ElseIf CurrentLevel = 3 Then
-138             GetRequiredExpForGuildLevel = 1500
+138             GetRequiredExpForGuildLevel = 4000
 140         ElseIf CurrentLevel = 4 Then
-142             GetRequiredExpForGuildLevel = 2000
+142             GetRequiredExpForGuildLevel = 8000
 143         ElseIf CurrentLevel = 5 Then
-145             GetRequiredExpForGuildLevel = 3000
+145             GetRequiredExpForGuildLevel = 16000
             Else
 144             GetRequiredExpForGuildLevel = 0
             End If
