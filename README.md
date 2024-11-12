@@ -115,4 +115,14 @@ Los logs están en la carpeta de Logs, Errores y en Windows Events.
   </picture>
 </a>
 
+## Thank you
+
+A big thank you ❤️ to these amazing people for contributing to this project!
+
+<a href="https://github.com/ao-org/argentum-online-server/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=ao-org/argentum-online-server" />
+</a>
+
+
+
 
