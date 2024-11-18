@@ -294,8 +294,8 @@ Public Sub HandleGamble(ByVal UserIndex As Integer)
 120         ElseIf amount < 1 Then
 122             Call WriteChatOverHead(UserIndex, "El mínimo de apuesta es 1 moneda.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
 
-124         ElseIf amount > 10000 Then
-126             Call WriteChatOverHead(UserIndex, "El máximo de apuesta es 10.000 monedas.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+124         ElseIf amount > 5000 Then
+126             Call WriteChatOverHead(UserIndex, "El máximo de apuesta es 5.000 monedas.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
 
 128         ElseIf .Stats.GLD < amount Then
 130             Call WriteChatOverHead(UserIndex, "No tienes esa cantidad.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
