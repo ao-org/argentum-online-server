@@ -1315,7 +1315,6 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             End If
             
 218         If BonusDamage > 0 Then
-220             Damage = Damage + BonusDamage
                 Damage = Damage + BonusDamage
                 ' Solo si la victima se encuentra en vida completa, generamos la condicion
                 If .Stats.MinHp = .Stats.MaxHp Then
