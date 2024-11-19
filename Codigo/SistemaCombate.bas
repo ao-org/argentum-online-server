@@ -1220,7 +1220,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                     End If
             End Select
 
-            ' Defensa del barco de la víctima
+            ' Defensa del barco de la ima
 130         If .Invent.BarcoObjIndex > 0 Then
                 Dim Barco As t_ObjData
 132             Barco = ObjData(.Invent.BarcoObjIndex)
@@ -1316,9 +1316,9 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             
 218         If BonusDamage > 0 Then
                 Damage = Damage + BonusDamage
-                ' Solo si la víctima se encuentra en vida completa, generamos la condición
+                ' Solo si la victima se encuentra en vida completa, generamos la condición
                 If .Stats.MinHp = .Stats.MaxHp Then
-                ' Si el daño total es superior a su vida máxima, la víctima muere
+                ' Si el daño total es superior a su vida máxima, la victima muere
                     If Damage >= .Stats.MaxHp Then
                         Damage = .Stats.MinHp ' Esto simula la muerte (vida mínima)
                     Else
