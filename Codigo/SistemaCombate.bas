@@ -709,7 +709,7 @@ NpcAtacaUser_Err:
         
 End Function
 
-Private Function NpcImpactoNpc(ByVal Atacante As Integer, ByVal Victima As Integer) As Boolean
+Private Function NpcImpactoNpc(ByVal Atacante As Integer, ByVal  As Integer) As Boolean
         
         On Error GoTo NpcImpactoNpc_Err
         
@@ -719,7 +719,7 @@ Private Function NpcImpactoNpc(ByVal Atacante As Integer, ByVal Victima As Integ
         Dim ProbExito As Long
 
 100     PoderAtt = NpcList(Atacante).PoderAtaque
-102     PoderEva = NpcList(Victima).PoderEvasion
+102     PoderEva = NpcList().PoderEvasion
 104     ProbExito = Maximo(10, Minimo(90, 50 + ((PoderAtt - PoderEva) * 0.4)))
 106     NpcImpactoNpc = (RandomNumber(1, 100) <= ProbExito)
 
@@ -732,9 +732,9 @@ NpcImpactoNpc_Err:
         
 End Function
 
-Private Sub NpcDamageNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
+Private Sub NpcDamageNpc(ByVal Atacante As Integer, ByVal  As Integer)
     With NpcList(Atacante)
-        Call NpcDamageToNpc(Atacante, Victima, RandomNumber(.Stats.MinHIT, .Stats.MaxHit) + NPCs.GetLinearDamageBonus(Atacante) - NPCs.GetDefenseBonus(Victima) - NpcList(Victima).Stats.def)
+        Call NpcDamageToNpc(Atacante, , RandomNumber(.Stats.MinHIT, .Stats.MaxHit) + NPCs.GetLinearDamageBonus(Atacante) - NPCs.GetDefenseBonus() - NpcList().Stats.def)
     End With
 End Sub
 
@@ -781,13 +781,13 @@ Public Function NpcPerformAttackNpc(ByVal AttackerIndex As Integer, ByVal Target
     End If
 End Function
 
-Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Optional ByVal cambiarMovimiento As Boolean = True)
+Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal  As Integer, Optional ByVal cambiarMovimiento As Boolean = True)
         
         On Error GoTo NpcAtacaNpc_Err
         
 100     If Not IntervaloPermiteAtacarNPC(Atacante) Then Exit Sub
         Dim Heading As e_Heading
-102     Heading = GetHeadingFromWorldPos(NpcList(Atacante).Pos, NpcList(Victima).Pos)
+102     Heading = GetHeadingFromWorldPos(NpcList(Atacante).Pos, NpcList().Pos)
         If Heading <> NpcList(Atacante).Char.Heading And NpcList(Atacante).flags.Inmovilizado = 1 Then
             Call ClearNpcRef(NpcList(Atacante).TargetNPC)
             Call SetMovement(Atacante, e_TipoAI.MueveAlAzar)
@@ -795,23 +795,23 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
         End If
 
 104     Call ChangeNPCChar(Atacante, NpcList(Atacante).Char.Body, NpcList(Atacante).Char.Head, Heading)
-103     Heading = GetHeadingFromWorldPos(NpcList(Victima).Pos, NpcList(Atacante).Pos)
-        If Heading <> NpcList(Victima).Char.Heading Then
-            If NpcList(Victima).flags.Inmovilizado > 0 Then
+103     Heading = GetHeadingFromWorldPos(NpcList().Pos, NpcList(Atacante).Pos)
+        If Heading <> NpcList().Char.Heading Then
+            If NpcList().flags.Inmovilizado > 0 Then
                 cambiarMovimiento = False
             End If
         End If
         
 106     If cambiarMovimiento Then
-108         Call SetNpcRef(NpcList(Victima).TargetNPC, Atacante)
-110         Call SetMovement(Victima, e_TipoAI.NpcAtacaNpc)
+108         Call SetNpcRef(NpcList().TargetNPC, Atacante)
+110         Call SetMovement(, e_TipoAI.NpcAtacaNpc)
         End If
 
 112     If NpcList(Atacante).flags.Snd1 > 0 Then
 114         Call SendData(SendTarget.ToNPCAliveArea, Atacante, PrepareMessagePlayWave(NpcList(Atacante).flags.Snd1, NpcList(Atacante).Pos.X, NpcList(Atacante).Pos.y))
         End If
 
-        Call NpcPerformAttackNpc(Atacante, Victima)
+        Call NpcPerformAttackNpc(Atacante, )
         
         Exit Sub
 
@@ -1028,7 +1028,7 @@ UsuarioAtaca_Err:
 156     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtaca", Erl)
 End Sub
 
-Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType) As Boolean
+Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal Index As Integer, ByVal aType As AttackType) As Boolean
 
         On Error GoTo UsuarioImpacto_Err
 
@@ -1049,8 +1049,8 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 
         End If
 
-106     SkillTacticas = UserList(VictimaIndex).Stats.UserSkills(e_Skill.Tacticas)
-108     SkillDefensa = UserList(VictimaIndex).Stats.UserSkills(e_Skill.Defensa)
+106     SkillTacticas = UserList(Index).Stats.UserSkills(e_Skill.Tacticas)
+108     SkillDefensa = UserList(Index).Stats.UserSkills(e_Skill.Defensa)
 
 110     Arma = UserList(AtacanteIndex).Invent.WeaponEqpObjIndex
 
@@ -1067,11 +1067,11 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         End If
 
         'Calculamos el poder de evasion...
-126     UserPoderEvasion = PoderEvasion(VictimaIndex)
+126     UserPoderEvasion = PoderEvasion(Index)
 
-128     If UserList(VictimaIndex).Invent.EscudoEqpObjIndex > 0 Then
-          If ObjData(UserList(VictimaIndex).Invent.EscudoEqpObjIndex).Porcentaje > 0 Then
-130         UserPoderEvasion = UserPoderEvasion + PoderEvasionEscudo(VictimaIndex)
+128     If UserList(Index).Invent.EscudoEqpObjIndex > 0 Then
+          If ObjData(UserList(Index).Invent.EscudoEqpObjIndex).Porcentaje > 0 Then
+130         UserPoderEvasion = UserPoderEvasion + PoderEvasionEscudo(Index)
 132         If SkillDefensa > 0 Then
 134             ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (Maximo(SkillDefensa + SkillTacticas, 1)))))
             Else
@@ -1095,7 +1095,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 140     ProbExito = Maximo(10, Minimo(90, 50 + ((PoderAtaque - UserPoderEvasion) * 0.4) + WeaponHitModifier))
 
         ' Se reduce la evasion un 25%
-        If UserList(VictimaIndex).flags.Meditando Then
+        If UserList(Index).flags.Meditando Then
             ProbEvadir = (100 - ProbExito) * 0.75
             ProbExito = MinimoInt(90, 100 - ProbEvadir)
         End If
@@ -1108,18 +1108,18 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         Else ' Falló
 148         If RandomNumber(1, 100) <= ProbRechazo Then
                 'Se rechazo el ataque con el escudo
-150             Call SendData(SendTarget.toPCAliveArea, VictimaIndex, PrepareMessagePlayWave(SND_ESCUDO, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
-152             Call SendData(SendTarget.toPCAliveArea, VictimaIndex, PrepareMessageEscudoMov(UserList(VictimaIndex).Char.charindex))
+150             Call SendData(SendTarget.toPCAliveArea, Index, PrepareMessagePlayWave(SND_ESCUDO, UserList(Index).Pos.X, UserList(Index).Pos.y))
+152             Call SendData(SendTarget.toPCAliveArea, Index, PrepareMessageEscudoMov(UserList(Index).Char.charindex))
 
 154             If UserList(AtacanteIndex).ChatCombate = 1 Then
 156                 Call Write_BlockedWithShieldOther(AtacanteIndex)
                 End If
 
-158             If UserList(VictimaIndex).ChatCombate = 1 Then
-160                 Call Write_BlockedWithShieldUser(VictimaIndex)
+158             If UserList(Index).ChatCombate = 1 Then
+160                 Call Write_BlockedWithShieldUser(Index)
                 End If
-                UserList(VictimaIndex).Counters.timeFx = 3
-162             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, 88, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
+                UserList(Index).Counters.timeFx = 3
+162             Call SendData(SendTarget.ToPCAliveArea, Index, PrepareMessageCreateFX(UserList(Index).Char.charindex, 88, 0, UserList(Index).Pos.X, UserList(Index).Pos.y))
 164             Call SubirSkill(VictimaIndex, e_Skill.Defensa)
             Else
 166             Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te atacó y falló! ", e_FontTypeNames.FONTTYPE_FIGHT)
@@ -1220,7 +1220,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                     End If
             End Select
 
-            ' Defensa del barco de la ima
+            ' Defensa del barco de la victima
 130         If .Invent.BarcoObjIndex > 0 Then
                 Dim Barco As t_ObjData
 132             Barco = ObjData(.Invent.BarcoObjIndex)
@@ -1316,11 +1316,11 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             
 218         If BonusDamage > 0 Then
                 Damage = Damage + BonusDamage
-                ' Solo si la victima se encuentra en vida completa, generamos la condición
+                ' Solo si la victima se encuentra en vida completa, generamos la condicion
                 If .Stats.MinHp = .Stats.MaxHp Then
-                ' Si el daño total es superior a su vida máxima, la victima muere
+                ' Si el daño total es superior a su vida maxima, la victima muere
                     If Damage >= .Stats.MaxHp Then
-                        Damage = .Stats.MinHp ' Esto simula la muerte (vida mínima)
+                        Damage = .Stats.MinHp ' Esto simula la muerte (vida minima)
                     Else
                         ' Sino, restamos el daño normalmente
                     End If
