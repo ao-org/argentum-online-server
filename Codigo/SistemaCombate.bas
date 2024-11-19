@@ -1316,23 +1316,18 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             
 218         If BonusDamage > 0 Then
 220             Damage = Damage + BonusDamage
+                Damage = Damage + BonusDamage
                 ' Solo si la victima se encuentra en vida completa, generamos la condicion
                 If .Stats.MinHp = .Stats.MaxHp Then
-                    ' Si el daño total es superior a su vida maxima, lo dejamos en uno de vida y mostrar un mensaje por consola
-                    Select Case Damage
-                        Case Is >= .Stats.MaxHp * 1.1
-                            Damage = .Stats.MinHp
-                        Case Is < .Stats.MaxHp * 1.1 And Damage >= .Stats.MaxHp
-                            Damage = .Stats.MinHp - 1
-                            'Enviamos mensaje al atacante
-                            Call WriteConsoleMsg(AtacanteIndex, "Has dejado agonizando a tu oponente", e_FontTypeNames.FONTTYPE_INFOBOLD)
-                            'Enviamos mensaje a la victima
-                            Call WriteConsoleMsg(VictimaIndex, "Has quedado agonizando", e_FontTypeNames.FONTTYPE_INFOBOLD)
-                        Case Else
-                            ' Sino, restamos el daño normalmente
-                    End Select
+                ' Si el daño total es superior a su vida maxima, la victima muere
+                    If Damage >= .Stats.MaxHp Then
+                        Damage = .Stats.MinHp ' Esto simula la muerte (vida minima)
+                    Else
+                        ' Sino, restamos el daño normalmente
+                    End If
                 End If
             End If
+            
 240         If UserMod.DoDamageOrHeal(VictimaIndex, AtacanteIndex, e_ReferenceType.eUser, -Damage, e_DamageSourceType.e_phisical, .invent.WeaponEqpObjIndex, -1, -1, Color) = eStillAlive Then
 444             Call SendData(SendTarget.ToPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(AtacanteIndex).pos.X, UserList(AtacanteIndex).pos.y))
                 ' Intentamos aplicar algún efecto de estado
