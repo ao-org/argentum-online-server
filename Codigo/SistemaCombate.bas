@@ -1316,13 +1316,13 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             
 218         If BonusDamage > 0 Then
                 Damage = Damage + BonusDamage
+
                 ' Solo si la victima se encuentra en vida completa, generamos la condicion
                 If .Stats.MinHp = .Stats.MaxHp Then
+
                 ' Si el daño total es superior a su vida maxima, la victima muere
                     If Damage >= .Stats.MaxHp Then
                         Damage = .Stats.MinHp ' Esto simula la muerte (vida minima)
-                    Else
-                        ' Sino, restamos el daño normalmente
                     End If
                 End If
             End If
