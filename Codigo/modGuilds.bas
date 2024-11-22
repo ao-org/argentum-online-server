@@ -464,28 +464,28 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
             Exit Function
         End If
     
-106     If UserList(UserIndex).Stats.ELV < 25 Or UserList(UserIndex).Stats.UserSkills(e_Skill.liderazgo) < 35 Then
-108         refError = "Para fundar un clan debes ser nivel 25, tener 35 puntos en liderazgo y tener en tu inventario las Gemas Azul, Polar, Roja y Verde (Fundación)."
+106     If UserList(UserIndex).Stats.ELV < 23 Or UserList(UserIndex).Stats.UserSkills(e_Skill.liderazgo) < 50 Then
+108         refError = "Para fundar un clan debes ser Nivel 23, tener 50 puntos en liderazgo y tener en tu inventario las Gemas de Fundación Verde, Roja, Azul y Polar."
             Exit Function
         End If
     
 110     If Not TieneObjetos(407, 1, UserIndex) Then
-112         refError = "Para fundar un clan debes ser nivel 25, tener 35 puntos en liderazgo y tener en tu inventario las Gemas Azul, Polar, Roja y Verde (Fundación)."
+112         refError = "Para fundar un clan debes ser nivel 23, tener 50 puntos en liderazgo y tener en tu inventario las Gemas de Fundación Verde, Roja, Azul y Polar."
             Exit Function
         End If
     
 114     If Not TieneObjetos(408, 1, UserIndex) Then
-116         refError = "Para fundar un clan debes ser nivel 25, tener 35 puntos en liderazgo y tener en tu inventario las Gemas Azul, Polar, Roja y Verde (Fundación)."
+116         refError = "Para fundar un clan debes ser nivel 23, tener 50 puntos en liderazgo y tener en tu inventario las Gemas de Fundación Verde, Roja, Azul y Polar."
             Exit Function
         End If
         
 121             If Not TieneObjetos(409, 1, UserIndex) Then
-122         refError = "Para fundar un clan debes ser nivel 25, tener 35 puntos en liderazgo y tener en tu inventario las Gemas Azul, Polar, Roja y Verde (Fundación)."
+122         refError = "Para fundar un clan debes ser nivel 23, tener 50 puntos en liderazgo y tener en tu inventario las Gemas de Fundación Verde, Roja, Azul y Polar."
             Exit Function
         End If
     
 123     If Not TieneObjetos(412, 1, UserIndex) Then
-124         refError = "Para fundar un clan debes ser nivel 25, tener 35 puntos en liderazgo y tener en tu inventario las Gemas Azul, Polar, Roja y Verde (Fundación)."
+124         refError = "Para fundar un clan debes ser nivel 23, tener 50 puntos en liderazgo y tener en tu inventario las Gemas de Fundación Verde, Roja, Azul y Polar."
             Exit Function
         End If
         
