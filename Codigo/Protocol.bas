@@ -8496,13 +8496,13 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
                 Exit Sub
             End If
 
-108         If UserList(UserIndex).Stats.ELV < 25 Or UserList(UserIndex).Stats.UserSkills(e_Skill.liderazgo) < 35 Then
-110             Call WriteConsoleMsg(UserIndex, "Para fundar un clan debes ser nivel 25, tener 35 en liderazgo y tener en tu inventario las 4 gemas: Gema Polar(1), Gema Roja(1), Gema Azul (1), Gema Verde (1).", e_FontTypeNames.FONTTYPE_INFOIAO)
+108         If UserList(UserIndex).Stats.ELV < 23 Or UserList(UserIndex).Stats.UserSkills(e_Skill.liderazgo) < 50 Then
+110             Call WriteConsoleMsg(UserIndex, "Para fundar un clan debes ser Nivel 23, tener 50 en liderazgo y tener en tu inventario las 4 Gemas de Fundación: Gema Verde, Gema Roja, Gema Azul y Gema Polar.", e_FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
             End If
 
 112         If Not TieneObjetos(407, 1, UserIndex) Or Not TieneObjetos(408, 1, UserIndex) Or Not TieneObjetos(409, 1, UserIndex) Or Not TieneObjetos(412, 1, UserIndex) Then
-114             Call WriteConsoleMsg(UserIndex, "Para fundar un clan debes tener en tu inventario las 4 gemas: Gema Polar(1), Gema Roja(1), Gema Azul (1), Gema Verde (1).", e_FontTypeNames.FONTTYPE_INFOIAO)
+114             Call WriteConsoleMsg(UserIndex, "Para fundar un clan debes tener en tu inventario las 4 Gemas de Fundación: Gema Verde, Gema Roja, Gema Azul y Gema Polar.", e_FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
             End If
 
