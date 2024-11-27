@@ -103,13 +103,14 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
                 Case tLeyenda
                     SQLQuery = "SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;"
                 Case tHeroe
-                    SQLQuery = "SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE number > 31 AND user_id = ?;"
+                    SQLQuery = "SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE number <= " & MAX_USERINVENTORY_HERO_SLOTS & " AND user_id = ?;"
                 Case Else
-                    SQLQuery = "SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE number > 25 AND user_id = ?;"
+                    SQLQuery = "SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE number <= " & MAX_USERINVENTORY_SLOTS & " AND user_id = ?;"
             End Select
+
             
             ' Execute the query
-            Set RS = Query(SQLQuery, .d)
+            Set RS = Query(SQLQuery, .Id)
 
 104         counter = 0
 106         If Not RS Is Nothing Then
@@ -585,10 +586,18 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
                 Call Execute(QUERY_UPSERT_SPELLS, Params)
             
             ' ************************** User inventory *********************************
-366             ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
-368             ParamC = 0
+350	    ' First determine Inventory Slot Limit so we do not delete items in case they remove the subscription
+351	     Dim InventorySlots As Long
+	     Select Case .Stats.tipoUsuario
+		Case tLeyenda
+354	    		InventorySlots = MAX_INVENTORY_SLOTS
+355             Case tHeroe
+356             	InventorySlots = MAX_USERINVENTORY_HERO_SLOTS
+357     	Case Else
+358     	        InventorySlots = MAX_USERINVENTORY_SLOTS
+359          End Select
             
-370             For LoopC = 1 To MAX_INVENTORY_SLOTS
+370             For LoopC = 1 To InventorySlots
 372                 Params(ParamC) = .ID
 374                 Params(ParamC + 1) = LoopC
 376                 Params(ParamC + 2) = .Invent.Object(LoopC).objIndex
@@ -598,7 +607,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 382                 ParamC = ParamC + 5
 384             Next LoopC
 
-                Call Execute(QUERY_UPSERT_INVENTORY, Params)
+            Call Execute(QUERY_UPSERT_INVENTORY, Params)
 
             ' ************************** User bank inventory *********************************
 402             ReDim Params(MAX_BANCOINVENTORY_SLOTS * 4 - 1)
