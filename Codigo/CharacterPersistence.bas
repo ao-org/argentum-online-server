@@ -60,7 +60,7 @@ GetCharacterName_Err:
 End Function
 
 Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
-    On Error GoTo LoadCharacterInventory_Err
+    On Error GoTo LoadCharacterBank_Err
 100     With UserList(UserIndex)
             Dim RS As ADODB.Recordset
             Dim counter As Long
@@ -87,7 +87,7 @@ Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
         LoadCharacterBank = True
         Exit Function
 
-LoadCharacterInventory_Err:
+LoadCharacterBank_Err:
     Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterBank: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 End Function
 
@@ -96,7 +96,21 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
 100     With UserList(UserIndex)
             Dim RS As ADODB.Recordset
             Dim counter As Long
-102         Set RS = Query("SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;", .id)
+            Dim SQLQuery As String
+            
+            ' Determine SQL query based on user type for inventory items
+            Select Case .Stats.tipoUsuario
+                Case tLeyenda
+                    SQLQuery = "SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;"
+                Case tHeroe
+                    SQLQuery = "SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE number > 31 AND user_id = ?;"
+                Case Else
+                    SQLQuery = "SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE number > 25 AND user_id = ?;"
+            End Select
+            
+            ' Execute the query
+            Set RS = Query(SQLQuery, .d)
+
 104         counter = 0
 106         If Not RS Is Nothing Then
 108             While Not RS.EOF
