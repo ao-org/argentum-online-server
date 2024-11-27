@@ -616,7 +616,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
                 ParamC = ParamC + 5
             Next LoopC
 
-            Call Execute(QUERY_UPSERT_INVENTORY, Params)
+            Call Execute(TruncatedQuery, Params)
             
 
             ' ************************** User bank inventory *********************************
