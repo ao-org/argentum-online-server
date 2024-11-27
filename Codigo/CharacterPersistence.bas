@@ -616,6 +616,8 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
                 ParamC = ParamC + 5
             Next LoopC
 
+            Call Execute(QUERY_UPSERT_INVENTORY, Params)
+            
 
             ' ************************** User bank inventory *********************************
 402             ReDim Params(MAX_BANCOINVENTORY_SLOTS * 4 - 1)
