@@ -406,6 +406,7 @@ Private Sub ConstruirQuery_GuardarPersonaje()
         ' ******************* INVENTORY *******************
         QueryBuilder.Append "REPLACE INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
 
+        ' Use MAX_INVENTORY_SLOTS to build the query initially
         For LoopC = 1 To MAX_INVENTORY_SLOTS
             QueryBuilder.Append "(?, ?, ?, ?, ?)"
 
