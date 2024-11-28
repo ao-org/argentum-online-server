@@ -586,26 +586,18 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
                 Call Execute(QUERY_UPSERT_SPELLS, Params)
             
             ' ************************** User inventory *********************************
-350	    ' First determine Inventory Slot Limit so we do not delete items in case they remove the subscription
-351	     Dim InventorySlots As Long
-	     Select Case .Stats.tipoUsuario
-		Case tLeyenda
-354	    		InventorySlots = MAX_INVENTORY_SLOTS
-355             Case tHeroe
-356             	InventorySlots = MAX_USERINVENTORY_HERO_SLOTS
-357     	Case Else
-358     	        InventorySlots = MAX_USERINVENTORY_SLOTS
-359          End Select
-            
-370             For LoopC = 1 To InventorySlots
-372                 Params(ParamC) = .ID
-374                 Params(ParamC + 1) = LoopC
-376                 Params(ParamC + 2) = .Invent.Object(LoopC).objIndex
-378                 Params(ParamC + 3) = .Invent.Object(LoopC).amount
-380                 Params(ParamC + 4) = .Invent.Object(LoopC).Equipped
+            ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
+            ParamC = 0            
+
+370         For LoopC = 1 To MAX_INVENTORY_SLOTS
+372             Params(ParamC) = .ID
+374             Params(ParamC + 1) = LoopC
+376             Params(ParamC + 2) = .Invent.Object(LoopC).objIndex
+378             Params(ParamC + 3) = .Invent.Object(LoopC).amount
+379             Params(ParamC + 4) = .Invent.Object(LoopC).Equipped
                 
-382                 ParamC = ParamC + 5
-384             Next LoopC
+382             ParamC = ParamC + 5
+384         Next LoopC
 
             Call Execute(QUERY_UPSERT_INVENTORY, Params)
 
