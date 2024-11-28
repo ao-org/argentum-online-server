@@ -806,13 +806,13 @@ Public Const MAX_INVENTORY_OBJS      As Integer = 10000
 
 ''
 ' Cantidad de "slots" en el inventario con todos los slots desbloqueados
-Public Const MAX_INVENTORY_SLOTS     As Byte = 42
+Public Const MAX_INVENTORY_SLOTS     As Byte = 24
 
 ' Cantidad de "slots" en el inventario básico
 Public Const MAX_USERINVENTORY_SLOTS As Byte = 24
 
 ' Cantidad de "slots" en el inventario heroe
-Public Const MAX_USERINVENTORY_HERO_SLOTS As Byte = 31
+Public Const MAX_USERINVENTORY_HERO_SLOTS As Byte = 24
 
 ' Cantidad de "slots" en el inventario por fila
 Public Const SLOTS_PER_ROW_INVENTORY As Byte = 6
