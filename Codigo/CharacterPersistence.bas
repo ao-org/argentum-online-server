@@ -481,8 +481,8 @@ End Sub
 Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 
         On Error GoTo ErrorHandler
-        Dim PerformanceTimer As Long
-        Call PerformanceTestStart(PerformanceTimer)
+'        Dim PerformanceTimer As Long
+'        Call PerformanceTestStart(PerformanceTimer)
         Dim Params() As Variant
         Dim LoopC As Long
         Dim ParamC As Long
@@ -587,7 +587,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
             
             ' ************************** User inventory *********************************
             ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
-            ParamC = 0            
+            ParamC = 0
 
 370         For LoopC = 1 To MAX_INVENTORY_SLOTS
 372             Params(ParamC) = .ID
@@ -751,7 +751,6 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 
 626                 Call Builder.Clear
                 End If
-        Call PerformTimeLimitCheck(PerformanceTimer, "save character id:" & .id, 50)
         End With
         
         Exit Sub

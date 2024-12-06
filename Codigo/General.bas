@@ -729,8 +729,6 @@ Sub Main()
         '           Configuracion de los sockets
         ' ----------------------------------------------------
     
-314     Call GetHoraActual
-    
 316     HoraMundo = GetTickCount() - DuracionDia \ 2
 
 318     frmCargando.Visible = False
@@ -760,23 +758,45 @@ Sub Main()
                     Call UnitClient.Connect("127.0.0.1", "7667")
         #End If
         
-            
+        Static time_dt As New clsElapsedTime
+    
         While (True)
             GlobalFrameTime = GetTickCount()
-            Dim PerformanceTimer As Long
-            Call PerformanceTestStart(PerformanceTimer)
-#If PYMMO = 1 Then
-            Call modNetwork.close_not_logged_sockets_if_timeout
-#End If
-            Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.close_not_logged_sockets_if_timeout")
+    
+            time_dt.Start
+    #If PYMMO = 1 Then
+                Call modNetwork.close_not_logged_sockets_if_timeout
+    #End If
+            If time_dt.ElapsedTime > 1000 Then
+                Call LogPerformance("General modNetwork.close_not_logged_sockets_if_timeout: " & time_dt.ElapsedTime)
+            End If
+            
+            time_dt.Start
             Call modNetwork.Tick(GetElapsed())
-            Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.Tick")
+            If time_dt.ElapsedTime > 1000 Then
+                Call LogPerformance("General modNetwork.Tick: " & time_dt.ElapsedTime)
+            End If
+            
+            
+            time_dt.Start
             Call UpdateEffectOverTime
-            Call PerformTimeLimitCheck(PerformanceTimer, "General Update Effects over time")
+            If time_dt.ElapsedTime > 1000 Then
+                Call LogPerformance("General Update Effects over time" & time_dt.ElapsedTime)
+            End If
+            
+            time_dt.Start
             DoEvents
-            Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
+            If time_dt.ElapsedTime > 1000 Then
+                Call LogPerformance("Do events" & time_dt.ElapsedTime)
+            End If
+            
+            
+            time_dt.Start
             Call AntiCheatUpdate
-            Call PerformTimeLimitCheck(PerformanceTimer, "Update anti cheat")
+            If time_dt.ElapsedTime > 1000 Then
+                Call LogPerformance("AntiCheatUpdate" & time_dt.ElapsedTime)
+            End If
+            
             ' Unlock main loop for maximum throughput but it can hog weak CPUs.
             #If UNLOCK_CPU = 0 Then
                 Call Sleep(1)

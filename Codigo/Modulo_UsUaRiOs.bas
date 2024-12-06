@@ -3240,7 +3240,7 @@ Public Function CanMove(ByRef flags As t_UserFlags, ByRef Counters As t_UserCoun
 End Function
 
 Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserCounters) As Boolean
-    Dim currTime As Long
+    Dim currTime As Double
     StunPlayer = False
     If Not CanMove(UserList(UserIndex).flags, Counters) Then Exit Function
     If IsSet(UserList(UserIndex).flags.StatusMask, eCCInmunity) Then Exit Function
@@ -3363,7 +3363,7 @@ Public Function CanAttackUser(ByVal AttackerIndex As Integer, ByVal AttackerVers
     ' Nueva verificación específica para Captura la Bandera
     If UserList(attackerIndex).flags.jugando_captura = 1 And UserList(TargetIndex).flags.jugando_captura = 1 Then
         If UserList(attackerIndex).flags.CurrentTeam = UserList(TargetIndex).flags.CurrentTeam Then
-            Call WriteConsoleMsg(attackerIndex, "¡No puedes atacar a miembros de tu propio equipo!", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(AttackerIndex, "¡No puedes atacar a miembros de tu propio equipo!", e_FontTypeNames.FONTTYPE_INFO)
             CanAttackUser = eSameTeam
             Exit Function
         End If

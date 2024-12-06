@@ -708,13 +708,13 @@ End Sub
 Private Sub Segundo_Timer()
 
     On Error GoTo errhand
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
-    ' WyroX - Control de estabilidad del servidor
+   
+    Static time_dt As New clsElapsedTime
+    time_dt.Start
+    
     Static LastTime As Currency
     Static Frequency As Currency
     Dim CurTime As Currency
-    
     'Get the timer frequency
     If Frequency = 0 Then
         Call QueryPerformanceFrequency(Frequency)
@@ -727,11 +727,16 @@ Private Sub Segundo_Timer()
     End If
 
     LastTime = CurTime
-    ' -----------------------------------
 
-    Call PasarSegundo 'sistema de desconexion de 10 segs
+    Call PasarSegundo
     Call CheckDisconnectedUsers
-    Call PerformTimeLimitCheck(PerformanceTimer, "Segundo_Timer", 100)
+    
+    
+        
+    If time_dt.ElapsedTime > 100 Then
+        Call LogPerformance("Performance warning at: Segundo_Timer elapsed time: " & time_dt.ElapsedTime)
+    End If
+
     Exit Sub
 
 errhand:
@@ -818,15 +823,19 @@ Handler:
 End Sub
 
 Private Sub t_Extraer_Timer()
+    Static time_dt As New clsElapsedTime
+    time_dt.Start
     Dim i As Long
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
     For i = 1 To LastUser
         If UserList(i).Counters.Trabajando > 0 Then
             Call Trabajar(i, UserList(i).Trabajo.TargetSkill)
         End If
     Next i
-    Call PerformTimeLimitCheck(PerformanceTimer, "t_Extraer_Timer", 100)
+        
+            
+    If time_dt.ElapsedTime > 500 Then
+        Call LogPerformance("Performance warning at: t_Extraer_Timer: " & time_dt.ElapsedTime)
+    End If
 End Sub
 
 Private Sub T_UsersOnline_Timer()
@@ -893,15 +902,17 @@ Handler:
 End Sub
 
 Private Sub TimerBarco_Timer()
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
+    Static time_dt As New clsElapsedTime
+    time_dt.Start
     Call UpdateBarcoForgatNix
     Call UpdateBarcoNixArghal
     Call UpdateBarcoArghalForgat
     Call MsnEnbarque(ForgatDock)
     Call MsnEnbarque(ArghalDock)
     Call MsnEnbarque(NixDock)
-    Call PerformTimeLimitCheck(PerformanceTimer, "TimerBarco_Timer", 100)
+    If time_dt.ElapsedTime > 100 Then
+        Call LogPerformance("TimerBarco_Timer: " & time_dt.ElapsedTime)
+    End If
 End Sub
 
 Private Function GetPassSlot(ByVal UserIndex As Integer) As Integer
@@ -1140,10 +1151,10 @@ Private Sub TimerGuardarUsuarios_Timer()
 
 On Error GoTo Handler
     If IsFeatureEnabled("auto_save_chars") Then
-        ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
         Dim UserIndex As Integer, UserGuardados As Integer
-        Dim PerformanceTimer As Long
-        Call PerformanceTestStart(PerformanceTimer)
+        Static time_dt As New clsElapsedTime
+        time_dt.Start
+
         For UserIndex = 1 To LastUser
             With UserList(UserIndex)
                 If .flags.UserLogged Then
@@ -1152,12 +1163,17 @@ On Error GoTo Handler
                         UserGuardados = UserGuardados + 1
                         If UserGuardados > NumUsers Then Exit For
                         'limit the amount of time we block the only thread we have here, lets save some user on the next loop
-                        If (GetTickCount - PerformanceTimer) > 100 Then Exit For
+                        If time_dt.ElapsedTime > 100 Then Exit For
                     End If
                 End If
             End With
         Next
-        Call PerformTimeLimitCheck(PerformanceTimer, "TimerGuardarUsuarios_Timer", 100)
+                  
+        If time_dt.ElapsedTime > 100 Then
+            Call LogPerformance("TimerGuardarUsuarios_Timer: " & time_dt.ElapsedTime)
+        End If
+    
+
     End If
     Exit Sub
 Handler:
@@ -1168,16 +1184,16 @@ Private Sub Minuto_Timer()
 
     On Error GoTo ErrHandler
 
-    'fired every minute
-    Static minutos          As Long
+    Static time_dt As New clsElapsedTime
+    Call time_dt.Start
 
+    Static minutos          As Long
     Static MinutosLatsClean As Long
 
     Dim i                   As Integer
 
     Dim Num                 As Long
     Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
     MinsRunning = MinsRunning + 1
 
     If MinsRunning = 60 Then
@@ -1207,13 +1223,15 @@ Private Sub Minuto_Timer()
 
     Call PurgarPenas
 
-   ' If IdleLimit > 0 Then
-   '     Call CheckIdleUser
-   ' End If
-
-
+ 
     Call dump_stats
-    Call PerformTimeLimitCheck(PerformanceTimer, "Minuto_Timer", 500)
+    
+            
+    If time_dt.ElapsedTime > 500 Then
+        Call LogPerformance("Performance warning at: Minuto_Timer elapsed time: " & time_dt.ElapsedTime)
+    End If
+
+ 
     Exit Sub
         
 ErrHandler:
@@ -1435,77 +1453,32 @@ Command9_Click_Err:
 End Sub
 
 Private Sub EstadoTimer_Timer()
-    On Error GoTo EstadoTimer_Timer_Err
-    Call GetHoraActual
+
+    On Error GoTo ErrorHandler
+    Static time_dt As New clsElapsedTime
+    time_dt.Start
+    
     Dim i As Long
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
     For i = 1 To Baneos.Count
         If Baneos(i).FechaLiberacion <= Now Then
             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", e_FontTypeNames.FONTTYPE_SERVER))
-            Call UnBan(Baneos(i).Name)
+            Call UnBan(Baneos(i).name)
             Call Baneos.Remove(i)
             Call SaveBans
         End If
     Next
 
-    Select Case frmMain.lblhora.Caption
-        Case "0:00:00"
-            HoraEvento = 0
-        Case "1:00:00"
-            HoraEvento = 1
-        Case "2:00:00"
-            HoraEvento = 2
-        Case "3:00:00"
-            HoraEvento = 3
-        Case "4:00:00"
-            HoraEvento = 4
-        Case "5:00:00"
-            HoraEvento = 5
-        Case "6:00:00"
-            HoraEvento = 6
-        Case "7:00:00"
-            HoraEvento = 7
-        Case "8:00:00"
-            HoraEvento = 8
-        Case "9:00:00"
-            HoraEvento = 9
-        Case "10:00:00"
-            HoraEvento = 10
-        Case "11:00:00"
-            HoraEvento = 11
-        Case "12:00:00"
-            HoraEvento = 12
-        Case "13:00:00"
-            HoraEvento = 13
-        Case "14:00:00"
-            HoraEvento = 14
-        Case "15:00:00"
-            HoraEvento = 15
-        Case "16:00:00"
-            HoraEvento = 16
-        Case "17:00:00"
-            HoraEvento = 17
-        Case "18:00:00"
-            HoraEvento = 18
-        Case "19:00:00"
-            HoraEvento = 19
-        Case "20:00:00"
-            HoraEvento = 20
-        Case "21:00:00"
-            HoraEvento = 21
-        Case "22:00:00"
-            HoraEvento = 22
-        Case "23:00:00"
-            HoraEvento = 23
-        Case Else
-            Exit Sub
-    End Select
-    Call CheckEvento(HoraEvento)
-    Call PerformTimeLimitCheck(PerformanceTimer, "FrmMain EstadoTimer_Timer", 100)
+    Call CheckEvento(Hour(Now))
+   
+    If time_dt.ElapsedTime > 100 Then
+        Call LogPerformance("FrmMain EstadoTimer_Timer: " & time_dt.ElapsedTime)
+    End If
+    
     Exit Sub
-EstadoTimer_Timer_Err:
+    
+ErrorHandler:
     Call TraceError(Err.Number, Err.Description, "frmMain.EstadoTimer_Timer", Erl)
+    
 End Sub
 
 Private Sub Evento_Timer()
@@ -1614,9 +1587,11 @@ End Sub
 
 Private Sub GameTimer_Timer()
 On Error GoTo HayError
+    Static time_dt As New clsElapsedTime
+    time_dt.Start
+    
     Dim iUserIndex   As Long
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
+
     '<<<<<< Procesa eventos de los usuarios >>>>>>
     For iUserIndex = 1 To LastUser
         With UserList(iUserIndex)
@@ -1641,9 +1616,17 @@ On Error GoTo HayError
             End If 'UserLogged
         End With
     Next iUserIndex
-    Call PerformTimeLimitCheck(PerformanceTimer, "GameTimer_Timer User loop", 400)
+
+
+    If time_dt.ElapsedTime > 400 Then
+        Call LogPerformance("GameTimer_Timer User loop: " & time_dt.ElapsedTime)
+    End If
+    time_dt.Start
     Call CustomScenarios.UpdateAll
-    Call PerformTimeLimitCheck(PerformanceTimer, "GameTimer_Timer customScenarios", 100)
+    If time_dt.ElapsedTime > 100 Then
+        Call LogPerformance("GameTimer_Timer customScenarios: " & time_dt.ElapsedTime)
+    End If
+
     Exit Sub
 HayError:
     Call TraceError(Err.Number, Err.Description & vbNewLine & "UserIndex:" & iUserIndex, "frmMain.GameTimer", Erl)
@@ -1651,7 +1634,8 @@ End Sub
 
 Private Sub HoraFantasia_Timer()
         
-    On Error GoTo HoraFantasia_Timer_Err
+    On Error GoTo ErrorHandler
+    
     If Lloviendo Then
         Label6.Caption = "Lloviendo"
     Else
@@ -1663,10 +1647,13 @@ Private Sub HoraFantasia_Timer()
     Else
         Label7.Caption = "Sin nubes"
     End If
-    frmMain.Label4.Caption = GetTimeFormated
+    
+    frmMain.Label4.Caption = Format(Now, "hh:mm")
     Exit Sub
-HoraFantasia_Timer_Err:
+    
+ErrorHandler:
     Call TraceError(Err.Number, Err.Description, "frmMain.HoraFantasia_Timer", Erl)
+    
 End Sub
 
 
@@ -1730,8 +1717,6 @@ End Sub
 
 Private Sub KillLog_Timer()
     On Error GoTo KillLog_Timer_Err
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
     If FileExist(App.Path & "\logs\connect.log", vbNormal) Then Kill App.Path & "\logs\connect.log"
     If FileExist(App.Path & "\logs\haciendo.log", vbNormal) Then Kill App.Path & "\logs\haciendo.log"
     If FileExist(App.Path & "\logs\stats.log", vbNormal) Then Kill App.Path & "\logs\stats.log"
@@ -1740,7 +1725,6 @@ Private Sub KillLog_Timer()
     If Not FileExist(App.Path & "\logs\nokillwsapi.txt") Then
         If FileExist(App.Path & "\logs\wsapi.log", vbNormal) Then Kill App.Path & "\logs\wsapi.log"
     End If
-    Call PerformTimeLimitCheck(PerformanceTimer, "KillLog_Timer", 100)
     Exit Sub
 KillLog_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.KillLog_Timer", Erl)
@@ -1790,8 +1774,6 @@ End Sub
 Private Sub SubastaTimer_Timer()
         
     On Error GoTo SubastaTimer_Timer_Err
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
     'Si ya paso un minuto y todavia no hubo oferta, avisamos que se cancela en un minuto
     If Subasta.TiempoRestanteSubasta = 240 And Subasta.HuboOferta = False Then
         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información. La subasta será cancelada si no hay ofertas en el próximo minuto.", e_FontTypeNames.FONTTYPE_SUBASTA))
@@ -1838,7 +1820,7 @@ Private Sub SubastaTimer_Timer()
         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡La subasta a terminado! El ganador fue: " & Subasta.Comprador, e_FontTypeNames.FONTTYPE_SUBASTA))
         Call FinalizarSubasta
     End If
-    Call PerformTimeLimitCheck(PerformanceTimer, "SubastaTimer_Timer")
+
         
     Exit Sub
 
@@ -1855,9 +1837,10 @@ End Sub
 
 Private Sub TIMER_AI_Timer()
     On Error GoTo ErrorHandler
+    Static time_dt As New clsElapsedTime
+    time_dt.Start
     Dim NpcIndex As Long
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
+
     If Not haciendoBK And Not EnPausa Then
         For NpcIndex = 1 To LastNPC
             With NpcList(NpcIndex)
@@ -1877,7 +1860,12 @@ Private Sub TIMER_AI_Timer()
             End With
         Next NpcIndex
     End If
-    Call PerformTimeLimitCheck(PerformanceTimer, "TIMER_AI_Timer", 600)
+    
+ 
+    If time_dt.ElapsedTime > 600 Then
+        Call LogPerformance("TIMER_AI_Timer: " & time_dt.ElapsedTime)
+    End If
+
     Exit Sub
 
 ErrorHandler:
@@ -1979,12 +1967,11 @@ End Sub
 Private Sub TimerRespawn_Timer()
 
     On Error GoTo ErrorHandler
+    Static time_dt As New clsElapsedTime
+    time_dt.Start
+    
     Dim NpcIndex As Long
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
-    'Update NPCs
     For NpcIndex = 1 To MaxRespawn
-        'Debug.Print RespawnList(NpcIndex).name
         If RespawnList(NpcIndex).flags.NPCActive Then  'Nos aseguramos que este muerto
             If RespawnList(NpcIndex).Contadores.IntervaloRespawn > 0 Then
                 RespawnList(NpcIndex).Contadores.IntervaloRespawn = RespawnList(NpcIndex).Contadores.IntervaloRespawn - 1
@@ -1998,7 +1985,11 @@ Private Sub TimerRespawn_Timer()
             End If
         End If
     Next NpcIndex
-    Call PerformTimeLimitCheck(PerformanceTimer, "TimerRespawn_Timer")
+    
+    If time_dt.ElapsedTime > 1000 Then
+        Call LogPerformance("TimerRespawn_Timer: " & time_dt.ElapsedTime)
+    End If
+
     Exit Sub
 
 ErrorHandler:
@@ -2013,14 +2004,14 @@ Private Sub tPiqueteC_Timer()
 
     On Error GoTo ErrHandler
 
+    Static time_dt As New clsElapsedTime
+    time_dt.Start
+    
     Static segundos As Integer
     Dim NuevaA      As Boolean
     Dim NuevoL      As Boolean
     Dim GI          As Integer
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
     segundos = segundos + 6
-
     Dim i As Long
     For i = 1 To LastUser
         If UserList(i).flags.UserLogged Then
@@ -2047,8 +2038,14 @@ Private Sub tPiqueteC_Timer()
             End If
         End If
     Next i
-    Call PerformTimeLimitCheck(PerformanceTimer, "tPiqueteC_Timer", 100)
+    
     If segundos >= 18 Then segundos = 0
+    
+    If time_dt.ElapsedTime > 100 Then
+        Call LogPerformance("Performance warning at: tPiqueteC_Timer elapsed time: " & time_dt.ElapsedTime)
+    End If
+    
+    
     Exit Sub
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "frmMain.tPiqueteC_Timer", Erl)

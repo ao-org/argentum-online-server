@@ -33,7 +33,7 @@ Private Const TIME_SEND_FREQUENCY As Long = 0 ' In milliseconds
 Public Type t_ConnectionMapping
     UserRef As t_UserReference
     ConnectionDetails As t_ConnectionInfo
-    TimeLastReset As Long
+    TimeLastReset As Double
     PacketCount As Long
 End Type
 
@@ -61,23 +61,33 @@ Public Sub Disconnect()
 End Sub
 
 Public Sub Tick(ByVal Delta As Single)
+    Static time_dt As New clsElapsedTime
+    time_dt.Start
+    
     Time(0) = Time(0) + Delta
     Time(1) = Time(1) + Delta
-    Dim PerformanceTimer As Long
     FramePacketCount = 0
     NewFrameConnections = 0
-    Call PerformanceTestStart(PerformanceTimer)
+    
     If (Time(0) >= TIME_RECV_FREQUENCY) Then
         Time(0) = 0
         Call Server.Poll
     End If
-    Call PerformTimeLimitCheck(PerformanceTimer, "modNetwork Poll, packets: " & FramePacketCount & " new connections: " & NewFrameConnections, 200)
+        
+    If time_dt.ElapsedTime > 200 Then
+        Call LogPerformance("modNetwork Poll, packets: " & FramePacketCount & " new connections: " & NewFrameConnections & " time: " & time_dt.ElapsedTime)
+    End If
+    
+    time_dt.Start
     If (Time(1) >= TIME_SEND_FREQUENCY) Then
         Time(1) = 0
         
         Call Server.Flush
     End If
-    Call PerformTimeLimitCheck(PerformanceTimer, "modNetwork flush", 200)
+   
+    If time_dt.ElapsedTime > 200 Then
+        Call LogPerformance("modNetwork flush: " & time_dt.ElapsedTime)
+    End If
 End Sub
 
 Public Sub Poll()
@@ -134,7 +144,7 @@ Public Sub close_not_logged_sockets_if_timeout()
 On Error GoTo close_not_logged_sockets_if_timeout_ErrHandler:
         Dim i As Integer
         Dim key As Variant
-        Dim Ticks As Long, Delta As Long
+        Dim Ticks As Double, Delta As Double
 100     Ticks = GetTickCount
 102     For Each key In PendingConnections.Keys
 104         With Mapping(key)

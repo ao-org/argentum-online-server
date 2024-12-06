@@ -27,7 +27,7 @@ Attribute VB_Name = "EffectsOverTime"
 '
 Option Explicit
 
-Private LastUpdateTime As Long
+Private LastUpdateTime As Double
 Private UniqueIdCounter As Long
 Const ACTIVE_EFFECTS_MIN_SIZE As Integer = 500
 Private ActiveEffects As t_EffectOverTimeList
@@ -70,8 +70,8 @@ End Sub
 
 Public Sub UpdateEffectOverTime()
 On Error GoTo Update_Err
-    Dim CurrTime As Long
-    Dim ElapsedTime As Long
+    Dim currTime As Double
+    Dim ElapsedTime As Double
 100 CurrTime = GetTickCount()
 102 If CurrTime < LastUpdateTime Then ' GetTickCount can overflow se we take care of that
 104     ElapsedTime = 0

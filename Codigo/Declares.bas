@@ -155,7 +155,8 @@ End Enum
 
 Public Md5Cliente           As String
 Public PrivateKey           As String
-Public HoraMundo            As Long
+Public HoraMundo            As Double
+Public GlobalFrameTime      As Double
 Public HoraActual           As Integer
 Public UltimoChar           As String
 Public ExpMult              As Integer
@@ -176,7 +177,7 @@ Public PENDIENTE            As Integer
 Public CostoPerdonPorCiudadano As Long
 Public MaximoSpeedHack      As Integer
 Public LastRecordUsuarios   As Integer
-Public GlobalFrameTime      As Long
+
 
 Public FISHING_REQUIRED_PERCENT As Integer
 Public FISHING_TILES_ON_MAP     As Integer
@@ -2178,7 +2179,7 @@ Public Type t_UserCounters
 
     ' Anticheat
     SpeedHackCounter As Single
-    LastStep As Long
+    LastStep As Double
     
     Invisibilidad As Integer
     DisabledInvisibility As Integer
@@ -2198,51 +2199,47 @@ Public Type t_UserCounters
     
     Maldicion As Byte
 
-    TimerLanzarSpell As Long
-    TimerPuedeAtacar As Long
-    TimerPuedeUsarArco As Long
-    TimerPuedeTrabajar As Long
-    TimerUsar As Long
-    TimerUsarClick As Long
-    TimerMagiaGolpe As Long
-    TimerGolpeMagia As Long
-    TimerGolpeUsar As Long
-    TimerCaminar As Long
-    TimerTirar As Long
-    TimerMeditar As Long
-    TiempoInicioMeditar As Long
-    'Nuevos de AoLibre
-    TimerPuedeSerAtacado As Long
-    TimerPerteneceNpc As Long
-
-    Trabajando As Long  ' Para el centinela
-    LastTrabajo As Integer
-    Ocultando As Long   ' Unico trabajo no revisado por el centinela
-
+    TimerLanzarSpell As Double
+    TimerPuedeAtacar As Double
+    TimerPuedeUsarArco As Double
+    TimerPuedeTrabajar As Double
+    TimerUsar As Double
+    TimerUsarClick As Double
+    TimerMagiaGolpe As Double
+    TimerGolpeMagia As Double
+    TimerGolpeUsar As Double
+    TimerCaminar As Double
+    TimerTirar As Double
+    TimerMeditar As Double
+    TiempoInicioMeditar As Double
+    TimerPuedeSerAtacado As Double
+    TimerPerteneceNpc As Double
+    Trabajando As Double
+    LastTrabajo As Double
+    Ocultando As Double
     goHome As Long
-
-    LastSave As Long
+    LastSave As Double
     
     CuentaRegresiva As Integer
     TimerBarra As Integer
-    LastResetTick As Long
-    LastTransferGold As Long
+    LastResetTick As Double
+    LastTransferGold As Double
     
 End Type
 
 Public Type t_UserIntervals
 
-    Magia As Long
-    Golpe As Long
-    Arco As Long
-    UsarU As Long
-    UsarClic As Long
-    Caminar As Long
-    GolpeMagia As Long
-    MagiaGolpe As Long
-    GolpeUsar As Long
-    TrabajarExtraer As Long
-    TrabajarConstruir As Long
+    Magia As Double
+    Golpe As Double
+    Arco As Double
+    UsarU As Double
+    UsarClic As Double
+    Caminar As Double
+    GolpeMagia As Double
+    MagiaGolpe As Double
+    GolpeUsar As Double
+    TrabajarExtraer As Double
+    TrabajarConstruir As Double
 
 End Type
 
@@ -2372,7 +2369,7 @@ Public Type t_ConnectionInfo
     IP As String
     ConnIDValida As Boolean
     ConnID As Long
-    OnConnectTimestamp As Long
+    OnConnectTimestamp As Double
 End Type
 
 Public Const HotKeyCount As Integer = 10
@@ -2430,7 +2427,7 @@ Public Type t_User
     Modifiers As t_ActiveModifiers
     flags As t_UserFlags
     Accion As t_AccionPendiente
-    CdTimes(e_CdTypes.CDCount) As Long
+    CdTimes(e_CdTypes.CDCount) As Double
     LastTransportNetwork As t_LastNetworkUssage
     EffectOverTime As t_EffectOverTimeList
 
@@ -2478,13 +2475,13 @@ Public Type t_User
     encrypted_session_token As String
     encrypted_session_token_db_id As Long
     
-    MacroIterations(1 To MAX_PACKET_COUNTERS) As Long
-    PacketTimers(1 To MAX_PACKET_COUNTERS) As Long
-    PacketCounters(1 To MAX_PACKET_COUNTERS) As Long
+    MacroIterations(1 To MAX_PACKET_COUNTERS) As Double
+    PacketTimers(1 To MAX_PACKET_COUNTERS) As Double
+    PacketCounters(1 To MAX_PACKET_COUNTERS) As Double
 End Type
 
-Public MacroIterations(1 To MAX_PACKET_COUNTERS) As Long
-Public PacketTimerThreshold(1 To MAX_PACKET_COUNTERS) As Long
+Public MacroIterations(1 To MAX_PACKET_COUNTERS) As Double
+Public PacketTimerThreshold(1 To MAX_PACKET_COUNTERS) As Double
     
 
 '*********************************************************
@@ -2517,16 +2514,16 @@ End Type
 
 Public Type t_NpcCounters
 
-    Paralisis              As Long
-    Inmovilizado           As Long
-    StunEndTime            As Long
-    TiempoExistencia       As Long
-    IntervaloAtaque        As Long
-    IntervaloMovimiento    As Long
-    IntervaloLanzarHechizo As Long
-    IntervaloRespawn       As Long
-    UltimoAtaque           As Long
-    CriaturasInvocadas     As Long
+    Paralisis              As Double
+    Inmovilizado           As Double
+    StunEndTime            As Double
+    TiempoExistencia       As Double
+    IntervaloAtaque        As Double
+    IntervaloMovimiento    As Double
+    IntervaloLanzarHechizo As Double
+    IntervaloRespawn       As Double
+    UltimoAtaque           As Double
+    CriaturasInvocadas     As Double
     
 End Type
 
@@ -3256,17 +3253,3 @@ Public Sub IncreaseLong(ByRef dest As Long, ByVal amount As Long)
     dest = dest + amount
 End Sub
 
-Public Sub PerformanceTestStart(ByRef Timer As Long)
-    Timer = GetTickCount()
-End Sub
-
-' Test the time since last call and update the time
-' log if there time betwen calls exced the limit
-Public Sub PerformTimeLimitCheck(ByRef timer As Long, ByRef TestText As String, Optional ByVal TimeLimit As Long = 1000)
-    Dim CurrTime As Long
-    CurrTime = GetTickCount() - timer
-    If CurrTime > TimeLimit Then
-        Call LogPerformance("Performance warning at: " & TestText & " elapsed time: " & CurrTime)
-    End If
-    timer = GetTickCount()
-End Sub
