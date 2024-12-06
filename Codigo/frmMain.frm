@@ -1435,77 +1435,30 @@ Command9_Click_Err:
 End Sub
 
 Private Sub EstadoTimer_Timer()
-    On Error GoTo EstadoTimer_Timer_Err
-    Call GetHoraActual
-    Dim i As Long
-    Dim PerformanceTimer As Long
+
+    On Error GoTo ErrorHandler
+    
+    Dim PerformanceTimer    As Long
     Call PerformanceTestStart(PerformanceTimer)
+    
+    Dim i                   As Long
     For i = 1 To Baneos.Count
         If Baneos(i).FechaLiberacion <= Now Then
             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", e_FontTypeNames.FONTTYPE_SERVER))
-            Call UnBan(Baneos(i).Name)
+            Call UnBan(Baneos(i).name)
             Call Baneos.Remove(i)
             Call SaveBans
         End If
     Next
 
-    Select Case frmMain.lblhora.Caption
-        Case "0:00:00"
-            HoraEvento = 0
-        Case "1:00:00"
-            HoraEvento = 1
-        Case "2:00:00"
-            HoraEvento = 2
-        Case "3:00:00"
-            HoraEvento = 3
-        Case "4:00:00"
-            HoraEvento = 4
-        Case "5:00:00"
-            HoraEvento = 5
-        Case "6:00:00"
-            HoraEvento = 6
-        Case "7:00:00"
-            HoraEvento = 7
-        Case "8:00:00"
-            HoraEvento = 8
-        Case "9:00:00"
-            HoraEvento = 9
-        Case "10:00:00"
-            HoraEvento = 10
-        Case "11:00:00"
-            HoraEvento = 11
-        Case "12:00:00"
-            HoraEvento = 12
-        Case "13:00:00"
-            HoraEvento = 13
-        Case "14:00:00"
-            HoraEvento = 14
-        Case "15:00:00"
-            HoraEvento = 15
-        Case "16:00:00"
-            HoraEvento = 16
-        Case "17:00:00"
-            HoraEvento = 17
-        Case "18:00:00"
-            HoraEvento = 18
-        Case "19:00:00"
-            HoraEvento = 19
-        Case "20:00:00"
-            HoraEvento = 20
-        Case "21:00:00"
-            HoraEvento = 21
-        Case "22:00:00"
-            HoraEvento = 22
-        Case "23:00:00"
-            HoraEvento = 23
-        Case Else
-            Exit Sub
-    End Select
-    Call CheckEvento(HoraEvento)
+    Call CheckEvento(Hour(Now))
+    
     Call PerformTimeLimitCheck(PerformanceTimer, "FrmMain EstadoTimer_Timer", 100)
     Exit Sub
-EstadoTimer_Timer_Err:
+    
+ErrorHandler:
     Call TraceError(Err.Number, Err.Description, "frmMain.EstadoTimer_Timer", Erl)
+    
 End Sub
 
 Private Sub Evento_Timer()
@@ -1651,7 +1604,8 @@ End Sub
 
 Private Sub HoraFantasia_Timer()
         
-    On Error GoTo HoraFantasia_Timer_Err
+    On Error GoTo ErrorHandler
+    
     If Lloviendo Then
         Label6.Caption = "Lloviendo"
     Else
@@ -1663,10 +1617,13 @@ Private Sub HoraFantasia_Timer()
     Else
         Label7.Caption = "Sin nubes"
     End If
-    frmMain.Label4.Caption = GetTimeFormated
+    
+    frmMain.Label4.Caption = Format(Now, "hh:mm")
     Exit Sub
-HoraFantasia_Timer_Err:
+    
+ErrorHandler:
     Call TraceError(Err.Number, Err.Description, "frmMain.HoraFantasia_Timer", Erl)
+    
 End Sub
 
 

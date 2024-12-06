@@ -26,7 +26,6 @@ Attribute VB_Name = "ModEventos"
 '
 '
 '
-Public HoraEvento           As Byte
 
 Public TiempoRestanteEvento As Byte
 

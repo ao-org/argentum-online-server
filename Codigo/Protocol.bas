@@ -9191,67 +9191,52 @@ HandleCancelarExit_Err:
 End Sub
 
 Private Sub HandleEventoInfo(ByVal UserIndex As Integer)
-        'Author: Pablo Mercavides
+
+        On Error GoTo ErrorHandler
+
+102     If EventoActivo Then
+104         Call WriteConsoleMsg(UserIndex, PublicidadEvento & ". Tiempo restante: " & TiempoRestanteEvento & " minuto(s).", e_FontTypeNames.FONTTYPE_New_Eventos)
+        Else
+106         Call WriteConsoleMsg(UserIndex, "Eventos> Actualmente no hay ningun evento en curso.", e_FontTypeNames.FONTTYPE_New_Eventos)
+        End If
         
-        On Error GoTo HandleEventoInfo_Err
-
-100     With UserList(UserIndex)
-
-102         If EventoActivo Then
-104             Call WriteConsoleMsg(UserIndex, PublicidadEvento & ". Tiempo restante: " & TiempoRestanteEvento & " minuto(s).", e_FontTypeNames.FONTTYPE_New_Eventos)
-            Else
-106             Call WriteConsoleMsg(UserIndex, "Eventos> Actualmente no hay ningun evento en curso.", e_FontTypeNames.FONTTYPE_New_Eventos)
-
-            End If
+        Dim foundNextEvent  As Boolean
+        Dim nextEventHour   As Long
         
-            Dim i           As Byte
-            Dim encontre    As Boolean
-            Dim HoraProximo As Byte
-   
-108         If Not HoraEvento + 1 >= 24 Then
-   
-110             For i = HoraEvento + 1 To 23
+        Dim i               As Long
 
-112                 If Evento(i).Tipo <> 0 Then
-114                     encontre = True
-116                     HoraProximo = i
-                        Exit For
-
-                    End If
-
-118             Next i
-
+        'Check if there's another event before the day ends.
+110     For i = Hour(Now) + 1 To 23
+112         If Evento(i).Tipo <> 0 Then
+114             foundNextEvent = True
+116             nextEventHour = i
+                Exit For
             End If
+118     Next i
         
-120         If encontre = False Then
-
-122             For i = 0 To HoraEvento
-
-124                 If Evento(i).Tipo <> 0 Then
-126                     encontre = True
-128                     HoraProximo = i
-                        Exit For
-
-                    End If
-
-130             Next i
-
-            End If
+        'We couldn't find any. Check if there's an event on
+        'the next day.
+120     If Not foundNextEvent Then
+122         For i = 0 To Hour(Now)
+124             If Evento(i).Tipo <> 0 Then
+126                 foundNextEvent = True
+128                 nextEventHour = i
+                    Exit For
+                End If
+130         Next i
+        End If
         
-132         If encontre Then
-134             Call WriteConsoleMsg(UserIndex, "Eventos> El proximo evento " & DescribirEvento(HoraProximo) & " iniciara a las " & HoraProximo & ":00 horas.", e_FontTypeNames.FONTTYPE_New_Eventos)
-            Else
-136             Call WriteConsoleMsg(UserIndex, "Eventos> No hay eventos proximos.", e_FontTypeNames.FONTTYPE_New_Eventos)
-
-            End If
-
-        End With
+132     If foundNextEvent Then
+134         Call WriteConsoleMsg(UserIndex, "Eventos> El proximo evento " & DescribirEvento(nextEventHour) & " iniciara a las " & nextEventHour & ":00 horas.", e_FontTypeNames.FONTTYPE_New_Eventos)
+        Else
+136         Call WriteConsoleMsg(UserIndex, "Eventos> No hay eventos proximos.", e_FontTypeNames.FONTTYPE_New_Eventos)
+        End If
         
         Exit Sub
 
-HandleEventoInfo_Err:
+ErrorHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEventoInfo", Erl)
-140
+
 End Sub
 
 Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
