@@ -729,8 +729,6 @@ Sub Main()
         '           Configuracion de los sockets
         ' ----------------------------------------------------
     
-314     Call GetHoraActual
-    
 316     HoraMundo = GetTickCount() - DuracionDia \ 2
 
 318     frmCargando.Visible = False
