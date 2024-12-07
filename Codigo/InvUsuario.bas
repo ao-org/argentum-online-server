@@ -266,7 +266,8 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
         'Mandamos a la Isla de la Fortuna
         
         Call WarpUserChar(UserIndex, Renacimiento.Map, Renacimiento.x, Renacimiento.y, True)
-        Call WriteConsoleMsg(UserIndex, "Has dejado de ser Newbie.", e_FontTypeNames.FONTTYPE_INFO)
+        ' Msg671=Has dejado de ser Newbie.
+        Call WriteLocaleMsg(UserIndex, "671", e_FontTypeNames.FONTTYPE_INFO)
 
         Exit Sub
 
@@ -753,7 +754,8 @@ Sub PickObj(ByVal UserIndex As Integer)
 102         If ObjData(MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex).Agarrable <> 1 Then
 
 104             If UserList(UserIndex).flags.Montado = 1 Then
-106                 Call WriteConsoleMsg(UserIndex, "Debes descender de tu montura para agarrar objetos del suelo.", e_FontTypeNames.FONTTYPE_INFO)
+106                 ' Msg672=Debes descender de tu montura para agarrar objetos del suelo.
+                    Call WriteLocaleMsg(UserIndex, "672", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If Not UserCanPickUpItem(UserIndex) Then
@@ -955,7 +957,8 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
                     Case e_MagicItemEffect.eTalkToDead
                         Call UnsetMask(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTalkToDead)
-                        Call WriteConsoleMsg(UserIndex, "Dejas el mundo de los muertos, ya no podrás comunicarte con ellos.", e_FontTypeNames.FONTTYPE_WARNING)
+                        ' Msg673=Dejas el mundo de los muertos, ya no podrás comunicarte con ellos.
+                        Call WriteLocaleMsg(UserIndex, "673", e_FontTypeNames.FONTTYPE_WARNING)
                         Call SendData(SendTarget.ToPCDeadAreaButIndex, UserIndex, PrepareMessageCharacterRemove(4, UserList(UserIndex).Char.charindex, False, True))
                 End Select
         
@@ -1226,7 +1229,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 106     With UserList(UserIndex)
 
 108          If .flags.Muerto = 1 Then
-                 'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
+                 'Msg77=¡¡Estás muerto!!.
 110              Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                  Exit Sub
 
@@ -1271,7 +1274,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 154                 If obj.DosManos = 1 Then
 156                     If .Invent.EscudoEqpObjIndex > 0 Then
 158                         Call Desequipar(UserIndex, .Invent.EscudoEqpSlot)
-160                         Call WriteConsoleMsg(UserIndex, "No puedes usar armas dos manos si tienes un escudo equipado. Tu escudo fue desequipado.", e_FontTypeNames.FONTTYPE_INFOIAO)
+160                         ' Msg674=No puedes usar armas dos manos si tienes un escudo equipado. Tu escudo fue desequipado.
+                            Call WriteLocaleMsg(UserIndex, "674", e_FontTypeNames.FONTTYPE_INFOIAO)
                         End If
                     End If
 
@@ -1416,7 +1420,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
                         Case e_MagicItemEffect.eTalkToDead
                             Call SetMask(.flags.StatusMask, e_StatusMask.eTalkToDead)
-                            Call WriteConsoleMsg(UserIndex, "Entras al mundo de los muertos, ahora podrás comunicarte con ellos.", e_FontTypeNames.FONTTYPE_WARNING)
+                            ' Msg675=Entras al mundo de los muertos, ahora podrás comunicarte con ellos.
+                            Call WriteLocaleMsg(UserIndex, "675", e_FontTypeNames.FONTTYPE_WARNING)
                             Call CheckUpdateNeededUser(UserIndex, USER_NUEVO, True, 1)
                     End Select
             
@@ -1461,7 +1466,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     Ropaje = ObtenerRopaje(UserIndex, Obj)
 
 372                 If Ropaje = 0 Then
-374                     Call WriteConsoleMsg(UserIndex, "Hay un error con este objeto. Infórmale a un administrador.", e_FontTypeNames.FONTTYPE_INFO)
+374                     ' Msg676=Hay un error con este objeto. Infórmale a un administrador.
+                        Call WriteLocaleMsg(UserIndex, "676", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
 
@@ -1581,7 +1587,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 484                 If .Invent.WeaponEqpObjIndex > 0 Then
 486                     If ObjData(.Invent.WeaponEqpObjIndex).DosManos = 1 Then
 488                         Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
-490                         Call WriteConsoleMsg(UserIndex, "No puedes equipar un escudo si tienes un arma dos manos equipada. Tu arma fue desequipada.", e_FontTypeNames.FONTTYPE_INFOIAO)
+490                         ' Msg677=No puedes equipar un escudo si tienes un arma dos manos equipada. Tu arma fue desequipada.
+                            Call WriteLocaleMsg(UserIndex, "677", e_FontTypeNames.FONTTYPE_INFOIAO)
                         End If
                     End If
 
@@ -1628,8 +1635,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                         .Invent.ResistenciaEqpObjIndex = .Invent.Object(Slot).ObjIndex
 530                     .Invent.ResistenciaEqpSlot = Slot
                         Call WriteUpdateRM(userindex)
-                    ElseIf ObjData(.invent.Object(Slot).objIndex).OBJType = e_OBJType.otDañoMagico Then
-528                     .invent.DañoMagicoEqpObjIndex = .invent.Object(Slot).objIndex
+                    ElseIf ObjData(.invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otDañoMagico Then
+528                     .invent.DañoMagicoEqpObjIndex = .invent.Object(Slot).ObjIndex
                         .invent.DañoMagicoEqpSlot = Slot
 538                     Call WriteUpdateDM(userindex)
                         
@@ -1762,7 +1769,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             
             If IsSet(obj.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly) Then
                 If MapInfo(.pos.Map).Seguro = 0 Then
-                    Call WriteConsoleMsg(UserIndex, "Solo podes usar este objeto en mapas seguros.", e_FontTypeNames.FONTTYPE_INFO)
+                    ' Msg678=Solo podes usar este objeto en mapas seguros.
+                    Call WriteLocaleMsg(UserIndex, "678", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             End If
@@ -1800,7 +1808,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             End If
     
 126         If obj.Newbie = 1 And Not EsNewbie(UserIndex) And Not EsGM(UserIndex) Then
-128             Call WriteConsoleMsg(UserIndex, "Solo los newbies pueden usar estos objetos.", e_FontTypeNames.FONTTYPE_INFO)
+128             ' Msg679=Solo los newbies pueden usar estos objetos.
+                Call WriteLocaleMsg(UserIndex, "679", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
     
             End If
@@ -1844,8 +1853,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 160             Case e_OBJType.otGuita
     
 162                 If .flags.Muerto = 1 Then
+                        'Msg77=¡¡Estás muerto!!.
 164                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                        ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
@@ -1863,8 +1872,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 178             Case e_OBJType.otWeapon
     
 180                 If .flags.Muerto = 1 Then
+                        'Msg77=¡¡Estás muerto!!.
 182                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                        ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
+                        'Msg77=¡¡Estás muerto!!.
                         Exit Sub
     
                     End If
@@ -1898,7 +1908,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
 202                 If .flags.Muerto = 1 Then
 204                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                        'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
+                        'Msg77=¡¡Estás muerto!!.
                         Exit Sub
     
                     End If
@@ -1937,7 +1947,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 236                         Call WriteWorkRequestTarget(UserIndex, e_Skill.Talar)
     
 238                     Case 7     ' Herramientas de Herrero - Martillo
-240                         Call WriteConsoleMsg(UserIndex, "Debes hacer click derecho sobre el yunque.", e_FontTypeNames.FONTTYPE_INFOIAO)
+240                         ' Msg680=Debes hacer click derecho sobre el yunque.
+                            Call WriteLocaleMsg(UserIndex, "680", e_FontTypeNames.FONTTYPE_INFOIAO)
     
 242                     Case 8     ' Herramientas de Mineria - Piquete
 244                         Call WriteWorkRequestTarget(UserIndex, e_Skill.Mineria)
@@ -1952,13 +1963,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
 254                 If .flags.Muerto = 1 Then
 256                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                        'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
+                        'Msg77=¡¡Estás muerto!!.
                         Exit Sub
     
                     End If
                     
                     If Not IntervaloPermiteGolpeUsar(UserIndex, False) Then
-                        Call WriteConsoleMsg(UserIndex, "¡¡Debes esperar unos momentos para tomar otra poción!!", e_FontTypeNames.FONTTYPE_INFO)
+                        ' Msg681=¡¡Debes esperar unos momentos para tomar otra poción!!
+                        Call WriteLocaleMsg(UserIndex, "681", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     
@@ -2071,7 +2083,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
 326                         If .flags.Envenenado > 0 Then
 328                             .flags.Envenenado = 0
-330                             Call WriteConsoleMsg(UserIndex, "Te has curado del envenenamiento.", e_FontTypeNames.FONTTYPE_INFO)
+330                             ' Msg682=Te has curado del envenenamiento.
+                                Call WriteLocaleMsg(UserIndex, "682", e_FontTypeNames.FONTTYPE_INFO)
                                 'Quitamos del inv el item
 332                             Call QuitarUserInvItem(UserIndex, Slot, 1)
     
@@ -2084,7 +2097,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 End If
     
                             Else
-340                             Call WriteConsoleMsg(UserIndex, "¡No te encuentras envenenado!", e_FontTypeNames.FONTTYPE_INFO)
+340                             ' Msg683=¡No te encuentras envenenado!
+                                Call WriteLocaleMsg(UserIndex, "683", e_FontTypeNames.FONTTYPE_INFO)
     
                             End If
                     
@@ -2116,9 +2130,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
                                 End If
     
-368                             Call WriteConsoleMsg(UserIndex, "Te has removido la paralizis.", e_FontTypeNames.FONTTYPE_INFOIAO)
+368                             ' Msg684=Te has removido la paralizis.
+                                Call WriteLocaleMsg(UserIndex, "684", e_FontTypeNames.FONTTYPE_INFOIAO)
                             Else
-370                             Call WriteConsoleMsg(UserIndex, "No estas paralizado.", e_FontTypeNames.FONTTYPE_INFOIAO)
+370                             ' Msg685=No estas paralizado.
+                                Call WriteLocaleMsg(UserIndex, "685", e_FontTypeNames.FONTTYPE_INFOIAO)
     
                             End If
                     
@@ -2203,7 +2219,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 448                         If CabezaActual <> CabezaFinal Then
 450                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                             Else
-452                             Call WriteConsoleMsg(UserIndex, "¡Rayos! Te tocó la misma cabeza, item no consumido. Tienes otra oportunidad.", e_FontTypeNames.FONTTYPE_INFOIAO)
+452                             ' Msg686=¡Rayos! Te tocó la misma cabeza, item no consumido. Tienes otra oportunidad.
+                                Call WriteLocaleMsg(UserIndex, "686", e_FontTypeNames.FONTTYPE_INFOIAO)
     
                             End If
     
@@ -2292,7 +2309,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 
 536                         If .flags.invisible = 0 And .Counters.DisabledInvisibility = 0 Then
                                 If IsSet(.flags.StatusMask, eTaunting) Then
-                                    Call WriteConsoleMsg(UserIndex, "No tiene efecto.", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+                                    ' Msg687=No tiene efecto.
+                                    Call WriteLocaleMsg(UserIndex, "687", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
                                     Exit Sub
                                 End If
 538                             .flags.invisible = 1
@@ -2309,10 +2327,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
                                 End If
     
-554                             Call WriteConsoleMsg(UserIndex, "Te has escondido entre las sombras...", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+554                             ' Msg688=Te has escondido entre las sombras...
+                                Call WriteLocaleMsg(UserIndex, "688", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
                             
                             Else
-556                             Call WriteConsoleMsg(UserIndex, "Ya estas invisible.", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+556                             ' Msg689=Ya estás invisible.
+                                Call WriteLocaleMsg(UserIndex, "689", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
                                 Exit Sub
                             End If
                             
@@ -2359,7 +2379,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         
                         
 674                         Call WriteUpdateHungerAndThirst(UserIndex)
-676                         Call WriteConsoleMsg(UserIndex, "Donador> Te sentis sano y lleno.", e_FontTypeNames.FONTTYPE_WARNING)
+676                         ' Msg690=Donador> Te sentís sano y lleno.
+                            Call WriteLocaleMsg(UserIndex, "690", e_FontTypeNames.FONTTYPE_WARNING)
     
 678                         If obj.Snd1 <> 0 Then
 680                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
@@ -2373,7 +2394,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 684                     Case 14
                                        
 686                         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
-688                             Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", e_FontTypeNames.FONTTYPE_INFO)
+688                             ' Msg691=No podés usar la runa estando en la cárcel.
+                                Call WriteLocaleMsg(UserIndex, "691", e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
     
                             End If
@@ -2689,7 +2711,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
 1004                 If .flags.Muerto = 1 Then
 1006                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                            'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
+                            'Msg77=¡¡Estás muerto!!.
                             Exit Sub
     
                         End If
@@ -2861,7 +2883,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
 1082                 If .flags.Muerto = 1 Then
 1084                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                              ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
+                              'Msg77=¡¡Estás muerto!!.
                               Exit Sub
     
                           End If
@@ -2885,7 +2907,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
 1108                 If .flags.Muerto = 1 Then
 1110                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                              ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
+                              'Msg77=¡¡Estás muerto!!.
                               Exit Sub
     
                           End If
@@ -2917,7 +2939,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
 1126                 If .flags.Muerto = 1 Then
 1128                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                              'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
+                              'Msg77=¡¡Estás muerto!!.
                               Exit Sub
     
                           End If
@@ -2928,7 +2950,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
 1134                 If .flags.Muerto = 1 Then
 1136                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                              'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
+                              'Msg77=¡¡Estás muerto!!.
                               Exit Sub
     
                           End If
@@ -3022,7 +3044,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
         
 1196                If .flags.Muerto = 1 Then
 1198                    Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                           'Call WriteConsoleMsg(UserIndex, "¡Estas muerto! Los fantasmas no pueden montar.", e_FontTypeNames.FONTTYPE_INFO)
+                           'Msg77=¡¡Estás muerto!!.
                            Exit Sub
     
                        End If
@@ -3045,12 +3067,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Select Case obj.Subtipo
                         Case 1
 1214                        If .Counters.Pena <> 0 Then
-1216                            Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", e_FontTypeNames.FONTTYPE_INFO)
+1216                            ' Msg691=No podés usar la runa estando en la cárcel.
+                                Call WriteLocaleMsg(UserIndex, "691", e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
                             End If
                             
 1218                        If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
-1220                            Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", e_FontTypeNames.FONTTYPE_INFO)
+1220                            ' Msg691=No podés usar la runa estando en la cárcel.
+                                Call WriteLocaleMsg(UserIndex, "691", e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
                             End If
 
@@ -3067,6 +3091,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 1262             Case e_OBJType.otpasajes
     
 1264                 If .flags.Muerto = 1 Then
+                        'Msg77=¡¡Estás muerto!!.
 1266                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                               Exit Sub
                           End If
@@ -3109,19 +3134,22 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 1308             Case e_OBJType.otRunas
         
 1310                If .Counters.Pena <> 0 Then
-1312                    Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", e_FontTypeNames.FONTTYPE_INFO)
+1312                    ' Msg691=No podés usar la runa estando en la cárcel.
+                        Call WriteLocaleMsg(UserIndex, "691", e_FontTypeNames.FONTTYPE_INFO)
                            Exit Sub
     
                        End If
             
 1314                If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
-1316                    Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", e_FontTypeNames.FONTTYPE_INFO)
+1316                    ' Msg691=No podés usar la runa estando en la cárcel.
+                        Call WriteLocaleMsg(UserIndex, "691", e_FontTypeNames.FONTTYPE_INFO)
                            Exit Sub
     
                        End If
                         
 1318                If MapInfo(.Pos.Map).Seguro = 0 And .flags.Muerto = 0 Then
-1320                    Call WriteConsoleMsg(UserIndex, "Solo podes usar tu runa en zonas seguras.", e_FontTypeNames.FONTTYPE_INFO)
+1320                    ' Msg692=Solo podes usar tu runa en zonas seguras.
+                        Call WriteLocaleMsg(UserIndex, "692", e_FontTypeNames.FONTTYPE_INFO)
                            Exit Sub
     
                        End If
@@ -3482,8 +3510,9 @@ On Error GoTo ResurrectWithItem_Err
         End If
 106     CanHelpResult = UserMod.CanHelpUser(UserIndex, targetUser)
         If UserList(TargetUser).flags.SeguroResu Then
-            Call WriteConsoleMsg(UserIndex, "El usuario tiene el seguro de resurrección activado.", e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(TargetUser, UserList(UserIndex).Name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
+            ' Msg693=El usuario tiene el seguro de resurrección activado.
+            Call WriteLocaleMsg(UserIndex, "693", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(TargetUser, UserList(UserIndex).name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If CanHelpResult <> eInteractionOk Then
