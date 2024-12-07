@@ -361,7 +361,8 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
             
                 '
          Case e_AccionBarra.Resucitar
-             Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
+             ' Msg585=¡Has sido resucitado!
+             Call WriteLocaleMsg(UserIndex, "585", e_FontTypeNames.FONTTYPE_INFO)
              Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, e_ParticulasIndex.Resucitar, 250, True))
              Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("117", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
              Call RevivirUsuario(UserIndex, True)
@@ -515,7 +516,8 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
       
                     'Revivimos si es necesario
 178                 If UserList(UserIndex).flags.Muerto = 1 And (NpcList(TempCharIndex).NPCtype = e_NPCType.Revividor Or EsNewbie(UserIndex)) Then
-180                     Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
+180                     ' Msg585=¡Has sido resucitado!
+                        Call WriteLocaleMsg(UserIndex, "585", e_FontTypeNames.FONTTYPE_INFO)
 182                     Call RevivirUsuario(UserIndex)
 184                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, e_ParticulasIndex.Resucitar, 30, False))
 186                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("117", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
@@ -761,7 +763,8 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
 346                 Case e_OBJType.OtCorreo 'Es un cartel
                         'Call AccionParaCorreo(Map, x, Y, UserIndex)
-                        Call WriteConsoleMsg(UserIndex, "El correo está temporalmente deshabilitado.", e_FontTypeNames.FONTTYPE_EJECUCION)
+                        ' Msg586=El correo está temporalmente deshabilitado.
+                        Call WriteLocaleMsg(UserIndex, "586", e_FontTypeNames.FONTTYPE_EJECUCION)
 
 356                 Case e_OBJType.otYunque 'Pozos
 358                     Call AccionParaYunque(Map, X, Y, UserIndex)
@@ -833,7 +836,8 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 
 106     If Distancia(Pos, UserList(UserIndex).Pos) > 2 Then
 108         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
+            ' Msg8=Estas demasiado lejos.
+            Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -984,8 +988,8 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 106     With UserList(UserIndex)
     
 108         If Distancia(Pos, .Pos) > 2 Then
-110             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                ' Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
+110             ' Msg8=Estas demasiado lejos.
+                Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
