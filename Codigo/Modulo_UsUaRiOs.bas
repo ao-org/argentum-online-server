@@ -165,7 +165,8 @@ On Error GoTo Check_ConnectUser_Err
     
     If EnPausa Then
         Call WritePauseToggle(userIndex)
-        Call WriteConsoleMsg(UserIndex, "Servidor » Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.", e_FontTypeNames.FONTTYPE_SERVER)
+        ' Msg520=Servidor » Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.
+        Call WriteLocaleMsg(UserIndex, "520", e_FontTypeNames.FONTTYPE_SERVER)
         Call CloseSocket(userIndex)
         Exit Function
     End If
@@ -772,7 +773,8 @@ On Error GoTo Complete_ConnectUser_Err
 
                  'welcome to the show baby...
 1085            If Not modGuilds.m_ConectarMiembroAClan(UserIndex, .GuildIndex) Then
-1090                Call WriteConsoleMsg(UserIndex, "Tu estado no te permite entrar al clan.", e_FontTypeNames.FONTTYPE_GUILD)
+1090                ' Msg521=Tu estado no te permite entrar al clan.
+                    Call WriteLocaleMsg(UserIndex, "521", e_FontTypeNames.FONTTYPE_GUILD)
                  End If
 
              End If
@@ -792,7 +794,9 @@ On Error GoTo Complete_ConnectUser_Err
 1120        Call WriteLoggedMessage(UserIndex, newUser)
         
 1125        If .Stats.ELV = 1 Then
-1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de Argentum Online! ¡" & .name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1130            ' Msg522=¡Bienvenido a las tierras de Argentum Online! ¡<nombre> que tengas buen viaje y mucha suerte!
+                Call WriteLocaleMsg(UserIndex, "522", e_FontTypeNames.FONTTYPE_GUILD, .name)
+
 
 1135        ElseIf .Stats.ELV < 14 Then
 1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & get_map_name(.pos.Map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
@@ -1403,7 +1407,8 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 203                 Call QuitarNewbieObj(UserIndex)
 204             ElseIf .Stats.ELV >= MapInfo(.pos.Map).MaxLevel And Not EsGM(UserIndex) Then
 206                 If MapInfo(.Pos.Map).Salida.Map <> 0 Then
-208                     Call WriteConsoleMsg(UserIndex, "Tu nivel no te permite seguir en el mapa.", e_FontTypeNames.FONTTYPE_INFO)
+208                     ' Msg523=Tu nivel no te permite seguir en el mapa.
+                        Call WriteLocaleMsg(UserIndex, "523", e_FontTypeNames.FONTTYPE_INFO)
 210                     Call WarpUserChar(UserIndex, MapInfo(.Pos.Map).Salida.Map, MapInfo(.Pos.Map).Salida.X, MapInfo(.Pos.Map).Salida.Y, True)
                     End If
                 End If
@@ -2260,7 +2265,8 @@ Sub UserDie(ByVal UserIndex As Integer)
 228         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
 
 230         If MapInfo(.Pos.Map).Seguro = 0 Then
-232             Call WriteConsoleMsg(UserIndex, "Escribe /HOGAR si deseas regresar rápido a tu hogar.", e_FontTypeNames.FONTTYPE_New_Naranja)
+232             ' Msg524=Escribe /HOGAR si deseas regresar rápido a tu hogar.
+                Call WriteLocaleMsg(UserIndex, "524", e_FontTypeNames.FONTTYPE_New_Naranja)
             End If
             
 234         If .flags.EnReto Then

@@ -541,7 +541,8 @@ Sub AgregarHechizo(ByVal UserIndex As Integer, ByVal Slot As Integer)
             
             UserList(UserIndex).flags.ModificoHechizos = True
         Else
-120         Call WriteConsoleMsg(UserIndex, "Ya tenes ese hechizo.", e_FontTypeNames.FONTTYPE_INFO)
+120         ' Msg525=Ya tenes ese hechizo.
+            Call WriteLocaleMsg(UserIndex, "525", e_FontTypeNames.FONTTYPE_INFO)
 
         End If
 
