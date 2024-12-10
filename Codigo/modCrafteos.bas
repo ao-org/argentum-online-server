@@ -160,7 +160,8 @@ Public Sub DoCraftItem(ByVal UserIndex As Integer)
 
 102         If Not .CraftResult Is Nothing Then
 104             If .CraftResult.Precio > .Stats.GLD Then
-106                 Call WriteConsoleMsg(UserIndex, "No tienes el oro suficiente.", e_FontTypeNames.FONTTYPE_INFO)
+106                 ' Msg588=No tienes el oro suficiente.
+                    Call WriteLocaleMsg(UserIndex, "588", e_FontTypeNames.FONTTYPE_INFO)
                     ' TODO: Mensaje en la ventana de crafteo
                     Exit Sub
                 End If
@@ -174,12 +175,14 @@ Public Sub DoCraftItem(ByVal UserIndex As Integer)
 114                 TmpObj.amount = 1
                 
 116                 If Not MeterItemEnInventario(UserIndex, TmpObj) Then
-118                     Call WriteConsoleMsg(UserIndex, "No tenés espacio suficiente en el inventario.", e_FontTypeNames.FONTTYPE_WARNING)
+118                     ' Msg589=No tenés espacio suficiente en el inventario.
+                        Call WriteLocaleMsg(UserIndex, "589", e_FontTypeNames.FONTTYPE_WARNING)
                         ' TODO: Mensaje en la ventana de crafteo
                         Exit Sub
                     End If
                 
-120                 Call WriteConsoleMsg(UserIndex, "La combinación ha sido exitosa.", e_FontTypeNames.FONTTYPE_INFO)
+120                 ' Msg590=La combinación ha sido exitosa.
+                    Call WriteLocaleMsg(UserIndex, "590", e_FontTypeNames.FONTTYPE_INFO)
                     ' TODO: Mensaje en la ventana de crafteo y sonido (?
                 Else
 122                 Call WriteConsoleMsg(UserIndex, "La combinación ha fallado.", e_FontTypeNames.FONTTYPE_FIGHT)

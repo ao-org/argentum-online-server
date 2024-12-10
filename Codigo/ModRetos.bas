@@ -111,7 +111,8 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
 124         If Not PuedeRetoConMensaje(UserIndex) Then Exit Sub
 
 126         If .Stats.GLD < Apuesta Then
-128             Call WriteConsoleMsg(UserIndex, "No tienes el oro suficiente.", e_FontTypeNames.FONTTYPE_INFO)
+128             ' Msg588=No tienes el oro suficiente.
+                Call WriteLocaleMsg(UserIndex, "588", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         

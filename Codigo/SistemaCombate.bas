@@ -2470,7 +2470,8 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
     
         If AmunitionState <> 0 Then
             If AmunitionState = 1 Then
-                Call WriteConsoleMsg(UserIndex, "No tenés municiones.", e_FontTypeNames.FONTTYPE_INFO)
+                ' Msg709=No tenés municiones.
+                Call WriteLocaleMsg(UserIndex, "709", e_FontTypeNames.FONTTYPE_INFO)
             End If
             Call Desequipar(UserIndex, .MunicionEqpSlot)
             Call WriteWorkRequestTarget(UserIndex, 0)

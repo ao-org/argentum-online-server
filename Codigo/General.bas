@@ -1008,7 +1008,8 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
 110             .Counters.Frio = .Counters.Frio + 1
             Else
 112             If MapInfo(.Pos.Map).terrain = Nieve Then
-114                 Call WriteConsoleMsg(UserIndex, "¡Estás muriendo de frío, abrígate o morirás!", e_FontTypeNames.FONTTYPE_INFO)
+114                 ' Msg512=¡Estás muriendo de frío, abrígate o morirás!
+                    Call WriteLocaleMsg(UserIndex, "512", e_FontTypeNames.FONTTYPE_INFO)
                     ' WyroX: Sin ropa perdés vida más rápido que con una ropa no-invernal
                     Dim MinDamage As Integer, MaxDamage As Integer
 116                 If .flags.Desnudo = 0 Then
@@ -1023,7 +1024,8 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
                     Dim Damage As Integer
 126                 Damage = Porcentaje(.Stats.MaxHp, RandomNumber(MinDamage, MaxDamage))
 128                 If UserMod.ModifyHealth(UserIndex, -Damage, 0) Then
-132                     Call WriteConsoleMsg(UserIndex, "¡Has muerto de frío!", e_FontTypeNames.FONTTYPE_INFO)
+132                     ' Msg513=¡Has muerto de frío!
+                        Call WriteLocaleMsg(UserIndex, "513", e_FontTypeNames.FONTTYPE_INFO)
 134                     Call UserMod.UserDie(UserIndex)
                     End If
                 End If
@@ -1066,7 +1068,8 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
             'termina de descansar automaticamente
 124         If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
 126             Call WriteRestOK(UserIndex)
-128             Call WriteConsoleMsg(UserIndex, "Has terminado de descansar.", e_FontTypeNames.FONTTYPE_INFO)
+128             ' Msg514=Has terminado de descansar.
+                Call WriteLocaleMsg(UserIndex, "514", e_FontTypeNames.FONTTYPE_INFO)
 130             .flags.Descansar = False
             End If
         
@@ -1089,9 +1092,11 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
 104             .Counters.Lava = .Counters.Lava + 1
             Else
 106             If HayLava(.Pos.Map, .Pos.X, .Pos.Y) Then
-108                 Call WriteConsoleMsg(UserIndex, "¡Quítate de la lava, te estás quemando!", e_FontTypeNames.FONTTYPE_INFO)
+108                 ' Msg515=¡Quítate de la lava, te estás quemando!
+                    Call WriteLocaleMsg(UserIndex, "515", e_FontTypeNames.FONTTYPE_INFO)
 110                 If UserMod.ModifyHealth(UserIndex, -Porcentaje(.Stats.MaxHp, 5)) Then
-114                     Call WriteConsoleMsg(UserIndex, "¡Has muerto quemado!", e_FontTypeNames.FONTTYPE_INFO)
+114                     ' Msg516=¡Has muerto quemado!
+                        Call WriteLocaleMsg(UserIndex, "516", e_FontTypeNames.FONTTYPE_INFO)
                         Call CustomScenarios.UserDie(UserIndex)
 116                     Call UserMod.UserDie(UserIndex)
                     End If
@@ -1128,7 +1133,8 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
 
             Else
                 'restore old char
-106             Call WriteConsoleMsg(UserIndex, "Recuperas tu apariencia normal.", e_FontTypeNames.FONTTYPE_INFO)
+106             ' Msg517=Recuperas tu apariencia normal.
+                Call WriteLocaleMsg(UserIndex, "517", e_FontTypeNames.FONTTYPE_INFO)
             
 108             If .flags.Navegando Then
 110                 Call EquiparBarco(UserIndex)
@@ -1180,7 +1186,7 @@ Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
             .flags.invisible = 0
             .Counters.DisabledInvisibility = 0
             If .flags.Oculto = 0 Then
-                ' Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", e_FontTypeNames.FONTTYPE_INFO)
+                ' Msg307=Has vuelto a ser visible
                 Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, .pos.x, .pos.y))
                 Call WriteContadores(UserIndex)
@@ -1344,7 +1350,8 @@ Public Sub EfectoMaldicionUser(ByVal UserIndex As Integer)
     
         Else
 104         UserList(UserIndex).flags.Maldicion = 0
-106         Call WriteConsoleMsg(UserIndex, "¡La magia perdió su efecto! Ya puedes atacar.", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+106         ' Msg518=¡La magia perdió su efecto! Ya puedes atacar.
+            Call WriteLocaleMsg(UserIndex, "518", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
         End If
 
         
@@ -1511,7 +1518,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
         Else
 104         Call CancelExit(UserIndex)
 106         With UserList(UserIndex)
-              'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas morirás.", e_FontTypeNames.FONTTYPE_VENENO)
+              'Msg47=Estás envenenado, si no te curas morirás.
 108           Call WriteLocaleMsg(UserIndex, "47", e_FontTypeNames.FONTTYPE_VENENO)
               UserList(userindex).Counters.timeFx = 3
 110           Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Envenena, 30, False, , UserList(userindex).Pos.X, UserList(userindex).Pos.y))
@@ -1680,7 +1687,8 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         
 114             UserList(UserIndex).Counters.HPCounter = 0
 116             Call UserMod.ModifyHealth(UserIndex, mashit)
-120             Call WriteConsoleMsg(UserIndex, "Has sanado.", e_FontTypeNames.FONTTYPE_INFO)
+120             ' Msg519=Has sanado.
+                Call WriteLocaleMsg(UserIndex, "519", e_FontTypeNames.FONTTYPE_INFO)
 122             EnviarStats = True
             End If
         Exit Sub
