@@ -541,7 +541,8 @@ Sub AgregarHechizo(ByVal UserIndex As Integer, ByVal Slot As Integer)
             
             UserList(UserIndex).flags.ModificoHechizos = True
         Else
-120         Call WriteConsoleMsg(UserIndex, "Ya tenes ese hechizo.", e_FontTypeNames.FONTTYPE_INFO)
+120         ' Msg525=Ya tenes ese hechizo.
+            Call WriteLocaleMsg(UserIndex, "525", e_FontTypeNames.FONTTYPE_INFO)
 
         End If
 
@@ -1699,7 +1700,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 104     If IsSet(Hechizos(h).Effects, e_SpellEffects.Invisibility) Then
    
 106         If UserList(tU).flags.Muerto = 1 Then
-                'Call WriteConsoleMsg(UserIndex, "¡Está muerto!", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg77=¡¡Estás muerto!!.
 108             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 110             b = False
                 Exit Sub
@@ -1722,11 +1723,13 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
     
 128         If UserList(tU).Counters.Saliendo Then
 130             If UserIndex <> tU Then
-132                 Call WriteConsoleMsg(UserIndex, "¡El hechizo no tiene efecto!", e_FontTypeNames.FONTTYPE_INFO)
+132                 ' Msg666=¡El hechizo no tiene efecto!
+                    Call WriteLocaleMsg(UserIndex, "666", e_FontTypeNames.FONTTYPE_INFO)
 134                 b = False
                     Exit Sub
                 Else
-136                 Call WriteConsoleMsg(UserIndex, "¡No podés ponerte invisible mientras te encuentres saliendo!", e_FontTypeNames.FONTTYPE_WARNING)
+136                 ' Msg667=¡No podés ponerte invisible mientras te encuentres saliendo!
+                    Call WriteLocaleMsg(UserIndex, "667", e_FontTypeNames.FONTTYPE_WARNING)
 138                 b = False
                     Exit Sub
                 End If
@@ -1737,12 +1740,14 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                         Case 1, 3, 5 'Ciudadano o armada
                             If Status(tU) <> e_Facciones.Ciudadano And Status(tU) <> e_Facciones.Armada And Status(tU) <> e_Facciones.consejo Then
                                 If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
-                                    Call WriteConsoleMsg(UserIndex, "No puedes ayudar criminales.", e_FontTypeNames.FONTTYPE_INFO)
+                                    ' Msg662=No puedes ayudar criminales.
+                                    Call WriteLocaleMsg(UserIndex, "662", e_FontTypeNames.FONTTYPE_INFO)
                                     b = False
                                     Exit Sub
                                 ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
                                     If UserList(UserIndex).flags.Seguro = True Then
-                                        Call WriteConsoleMsg(UserIndex, "Para ayudar criminales deberás desactivar el seguro.", e_FontTypeNames.FONTTYPE_INFO)
+                                        ' Msg663=Para ayudar criminales deberás desactivar el seguro.
+                                        Call WriteLocaleMsg(UserIndex, "663", e_FontTypeNames.FONTTYPE_INFO)
                                         b = False
                                         Exit Sub
                                     Else
@@ -1751,7 +1756,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                                             'Si el clan es de alineación ciudadana.
                                             If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
                                                 'No lo dejo resucitarlo
-                                                Call WriteConsoleMsg(UserIndex, "No puedes ayudar a un usuario criminal pertenenciendo a un clan ciudadano.", e_FontTypeNames.FONTTYPE_INFO)
+                                                ' Msg664=No puedes ayudar a un usuario criminal perteneciendo a un clan ciudadano.
+                                                Call WriteLocaleMsg(UserIndex, "664", e_FontTypeNames.FONTTYPE_INFO)
                                                 b = False
                                                 Exit Sub
                                             'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
@@ -1985,7 +1991,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             'Verificamos que el usuario no este muerto
 336         If UserList(tU).flags.Muerto = 1 Then
-                'Call WriteConsoleMsg(UserIndex, "¡Está muerto!", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg77=¡¡Estás muerto!!.
 338             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 340             b = False
                 Exit Sub
@@ -2085,7 +2091,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 Exit Sub
             End If
             If Not UserMod.CanMove(UserList(tU).flags, UserList(tU).Counters) Then
-428             Call WriteConsoleMsg(UserIndex, "No podes inmovilizar un objetivo que no puede moverse.", e_FontTypeNames.FONTTYPE_FIGHT)
+428             ' Msg661=No podes inmovilizar un objetivo que no puede moverse.
+                Call WriteLocaleMsg(UserIndex, "661", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
             If IsSet(UserList(tU).flags.StatusMask, eCCInmunity) Then
@@ -2121,7 +2128,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 452      If Hechizos(h).velocidad <> 0 Then
             'Verificamos que el usuario no este muerto
 454         If UserList(tU).flags.Muerto = 1 Then
-                'Call WriteConsoleMsg(UserIndex, "¡Está muerto!", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg77=¡¡Estás muerto!!.
 456             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 458             b = False
                 Exit Sub
@@ -2191,7 +2198,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 Exit Sub
             End If
             If Not UserMod.CanMove(UserList(tU).flags, UserList(tU).Counters) Then
-510             Call WriteConsoleMsg(UserIndex, "No podes inmovilizar un objetivo que no puede moverse.", e_FontTypeNames.FONTTYPE_FIGHT)
+510             ' Msg661=No podes inmovilizar un objetivo que no puede moverse.
+                Call WriteLocaleMsg(UserIndex, "661", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
             
@@ -2237,12 +2245,14 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                         Case 1, 3, 5 'Ciudadano o armada
                             If Status(tU) <> e_Facciones.Ciudadano And Status(tU) <> e_Facciones.Armada And Status(tU) <> e_Facciones.consejo Then
                                 If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
-                                    Call WriteConsoleMsg(UserIndex, "No puedes ayudar criminales.", e_FontTypeNames.FONTTYPE_INFO)
+                                    ' Msg662=No puedes ayudar criminales.
+                                    Call WriteLocaleMsg(UserIndex, "662", e_FontTypeNames.FONTTYPE_INFO)
                                     b = False
                                     Exit Sub
                                 ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
                                     If UserList(UserIndex).flags.Seguro = True Then
-                                        Call WriteConsoleMsg(UserIndex, "Para ayudar criminales deberás desactivar el seguro.", e_FontTypeNames.FONTTYPE_INFO)
+                                        ' Msg663=Para ayudar criminales deberás desactivar el seguro.
+                                        Call WriteLocaleMsg(UserIndex, "663", e_FontTypeNames.FONTTYPE_INFO)
                                         b = False
                                         Exit Sub
                                     Else
@@ -2251,7 +2261,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                                             'Si el clan es de alineación ciudadana.
                                             If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
                                                 'No lo dejo resucitarlo
-                                                Call WriteConsoleMsg(UserIndex, "No puedes ayudar a un usuario criminal pertenenciendo a un clan ciudadano.", e_FontTypeNames.FONTTYPE_INFO)
+                                                ' Msg664=No puedes ayudar a un usuario criminal perteneciendo a un clan ciudadano.
+                                                Call WriteLocaleMsg(UserIndex, "664", e_FontTypeNames.FONTTYPE_INFO)
                                                 b = False
                                                 Exit Sub
                                             'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
@@ -2402,8 +2413,9 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 654             If Not PeleaSegura(UserIndex, tU) Then
                     
                     If UserList(tU).flags.SeguroResu Then
-                        Call WriteConsoleMsg(UserIndex, "El usuario tiene el seguro de resurrección activado.", e_FontTypeNames.FONTTYPE_INFO)
-                        Call WriteConsoleMsg(tU, UserList(UserIndex).Name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
+                        ' Msg693=El usuario tiene el seguro de resurrección activado.
+                        Call WriteLocaleMsg(UserIndex, "693", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteConsoleMsg(tU, UserList(UserIndex).name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
                         b = False
                         Exit Sub
                     End If
@@ -3100,12 +3112,14 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
                         Case 1, 3, 5 'Ciudadano o armada
                             If Status(tempChr) <> e_Facciones.Ciudadano And Status(tempChr) <> e_Facciones.Armada And Status(tempChr) <> e_Facciones.consejo Then
                                 If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
-                                    Call WriteConsoleMsg(UserIndex, "No puedes ayudar criminales.", e_FontTypeNames.FONTTYPE_INFO)
+                                    ' Msg662=No puedes ayudar criminales.
+                                    Call WriteLocaleMsg(UserIndex, "662", e_FontTypeNames.FONTTYPE_INFO)
                                     b = False
                                     Exit Sub
                                 ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
                                     If UserList(UserIndex).flags.Seguro = True Then
-                                        Call WriteConsoleMsg(UserIndex, "Para ayudar criminales deberás desactivar el seguro.", e_FontTypeNames.FONTTYPE_INFO)
+                                        ' Msg663=Para ayudar criminales deberás desactivar el seguro.
+                                        Call WriteLocaleMsg(UserIndex, "663", e_FontTypeNames.FONTTYPE_INFO)
                                         b = False
                                         Exit Sub
                                     Else
@@ -3114,7 +3128,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
                                             'Si el clan es de alineación ciudadana.
                                             If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
                                                 'No lo dejo resucitarlo
-                                                Call WriteConsoleMsg(UserIndex, "No puedes ayudar a un usuario criminal pertenenciendo a un clan ciudadano.", e_FontTypeNames.FONTTYPE_INFO)
+                                                ' Msg664=No puedes ayudar a un usuario criminal perteneciendo a un clan ciudadano.
+                                                Call WriteLocaleMsg(UserIndex, "664", e_FontTypeNames.FONTTYPE_INFO)
                                                 b = False
                                                 Exit Sub
                                             'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
@@ -3191,12 +3206,14 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
                     Case 1, 3, 5 'Ciudadano o armada
                             If Status(tempChr) <> e_Facciones.Ciudadano And Status(tempChr) <> e_Facciones.Armada And Status(tempChr) <> e_Facciones.consejo Then
                                 If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
-                                Call WriteConsoleMsg(UserIndex, "No puedes ayudar criminales.", e_FontTypeNames.FONTTYPE_INFO)
+                                ' Msg662=No puedes ayudar criminales.
+                                Call WriteLocaleMsg(UserIndex, "662", e_FontTypeNames.FONTTYPE_INFO)
                                 b = False
                                 Exit Sub
                             ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
                                 If UserList(UserIndex).flags.Seguro = True Then
-                                    Call WriteConsoleMsg(UserIndex, "Para ayudar criminales deberás desactivar el seguro.", e_FontTypeNames.FONTTYPE_INFO)
+                                    ' Msg663=Para ayudar criminales deberás desactivar el seguro.
+                                    Call WriteLocaleMsg(UserIndex, "663", e_FontTypeNames.FONTTYPE_INFO)
                                     b = False
                                     Exit Sub
                                 Else
@@ -3205,7 +3222,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
                                         'Si el clan es de alineación ciudadana.
                                         If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
                                             'No lo dejo resucitarlo
-                                            Call WriteConsoleMsg(UserIndex, "No puedes ayudar a un usuario criminal pertenenciendo a un clan ciudadano.", e_FontTypeNames.FONTTYPE_INFO)
+                                            ' Msg664=No puedes ayudar a un usuario criminal perteneciendo a un clan ciudadano.
+                                            Call WriteLocaleMsg(UserIndex, "664", e_FontTypeNames.FONTTYPE_INFO)
                                             b = False
                                             Exit Sub
                                         'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
@@ -3222,7 +3240,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
                         End If
                     Case 2, 4 'Caos
                         If Status(tempChr) <> e_Facciones.Caos And Status(tempChr) <> e_Facciones.Criminal And Status(tempChr) <> e_Facciones.concilio Then
-                            Call WriteConsoleMsg(UserIndex, "No podés ayudar ciudadanos.", e_FontTypeNames.FONTTYPE_INFO)
+                            ' Msg665=No podés ayudar ciudadanos.
+                            Call WriteLocaleMsg(UserIndex, "665", e_FontTypeNames.FONTTYPE_INFO)
                             b = False
                             Exit Sub
                         End If
@@ -3276,6 +3295,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
     
             'Verifica que el usuario no este muerto
 334         If UserList(tempChr).flags.Muerto = 1 Then
+                'Msg77=¡¡Estás muerto!!.
 336             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 338             b = False
                 Exit Sub
@@ -3603,6 +3623,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 222     If IsSet(Hechizos(h).Effects, e_SpellEffects.eDoHeal) Then
             'Verifica que el usuario no este muerto
 224         If UserList(tempChr).flags.Muerto = 1 Then
+                'Msg77=¡¡Estás muerto!!.
 226             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 228             b = False
                 Exit Sub
@@ -3696,6 +3717,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 338     tU = tempChr
 340     If IsSet(Hechizos(h).Effects, e_SpellEffects.Invisibility) Then
 342         If UserList(tU).flags.Muerto = 1 Then
+                'Msg77=¡¡Estás muerto!!.
 344             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 346             b = False
                 Exit Sub
@@ -3703,17 +3725,20 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
     
 348         If UserList(tU).Counters.Saliendo Then
 350             If UserIndex <> tU Then
-352                 Call WriteConsoleMsg(UserIndex, "¡El hechizo no tiene efecto!", e_FontTypeNames.FONTTYPE_INFO)
+352                 ' Msg666=¡El hechizo no tiene efecto!
+                    Call WriteLocaleMsg(UserIndex, "666", e_FontTypeNames.FONTTYPE_INFO)
 354                 b = False
                     Exit Sub
                 Else
-356                 Call WriteConsoleMsg(UserIndex, "¡No podés ponerte invisible mientras te encuentres saliendo!", e_FontTypeNames.FONTTYPE_WARNING)
+356                 ' Msg667=¡No podés ponerte invisible mientras te encuentres saliendo!
+                    Call WriteLocaleMsg(UserIndex, "667", e_FontTypeNames.FONTTYPE_WARNING)
 358                 b = False
                     Exit Sub
                 End If
             End If
            If IsSet(UserList(tU).flags.StatusMask, eTaunting) Then
-               Call WriteConsoleMsg(UserIndex, "¡El hechizo no tiene efecto!", e_FontTypeNames.FONTTYPE_INFO)
+               ' Msg666=¡El hechizo no tiene efecto!
+                Call WriteLocaleMsg(UserIndex, "666", e_FontTypeNames.FONTTYPE_INFO)
                b = False
                Exit Sub
            End If
@@ -3723,12 +3748,14 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
                         Case 1, 3, 5 'Ciudadano o armada
                             If Status(tU) <> e_Facciones.Ciudadano And Status(tU) <> e_Facciones.Armada And Status(tU) <> e_Facciones.consejo Then
                                 If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
-                                    Call WriteConsoleMsg(UserIndex, "No puedes ayudar criminales.", e_FontTypeNames.FONTTYPE_INFO)
+                                    ' Msg662=No puedes ayudar criminales.
+                                    Call WriteLocaleMsg(UserIndex, "662", e_FontTypeNames.FONTTYPE_INFO)
                                     b = False
                                     Exit Sub
                                 ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
                                     If UserList(UserIndex).flags.Seguro = True Then
-                                        Call WriteConsoleMsg(UserIndex, "Para ayudar criminales deberás desactivar el seguro.", e_FontTypeNames.FONTTYPE_INFO)
+                                        ' Msg663=Para ayudar criminales deberás desactivar el seguro.
+                                        Call WriteLocaleMsg(UserIndex, "663", e_FontTypeNames.FONTTYPE_INFO)
                                         b = False
                                         Exit Sub
                                     Else
@@ -3737,7 +3764,8 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
                                             'Si el clan es de alineación ciudadana.
                                             If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
                                                 'No lo dejo resucitarlo
-                                                Call WriteConsoleMsg(UserIndex, "No puedes ayudar a un usuario criminal pertenenciendo a un clan ciudadano.", e_FontTypeNames.FONTTYPE_INFO)
+                                                ' Msg664=No puedes ayudar a un usuario criminal perteneciendo a un clan ciudadano.
+                                                Call WriteLocaleMsg(UserIndex, "664", e_FontTypeNames.FONTTYPE_INFO)
                                                 b = False
                                                 Exit Sub
                                             'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
@@ -3754,7 +3782,8 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
                             End If
                         Case 2, 4 'Caos
                             If Status(tU) <> e_Facciones.Caos And Status(tU) <> e_Facciones.Criminal And Status(tU) <> e_Facciones.concilio Then
-                                Call WriteConsoleMsg(UserIndex, "No podés ayudar ciudadanos.", e_FontTypeNames.FONTTYPE_INFO)
+                                ' Msg668=No podés ayudar ciudadanos.
+                                Call WriteLocaleMsg(UserIndex, "668", e_FontTypeNames.FONTTYPE_INFO)
                                 b = False
                                 Exit Sub
                             End If
@@ -3789,7 +3818,8 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         End If
 
 408     If Hechizos(h).desencantar = 1 Then
-410         Call WriteConsoleMsg(UserIndex, "Has sido desencantado.", e_FontTypeNames.FONTTYPE_INFO)
+410         ' Msg669=Has sido desencantado.
+            Call WriteLocaleMsg(UserIndex, "669", e_FontTypeNames.FONTTYPE_INFO)
 412         UserList(UserIndex).flags.Envenenado = 0
 414         UserList(UserIndex).flags.Incinerado = 0
 416         If UserList(UserIndex).flags.Inmovilizado = 1 Then
@@ -3857,6 +3887,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 480     If IsSet(Hechizos(h).Effects, e_SpellEffects.CurePoison) Then
             'Verificamos que el usuario no este muerto
 482         If UserList(tU).flags.Muerto = 1 Then
+                'Msg77=¡¡Estás muerto!!.
 484             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 486             b = False
                 Exit Sub
@@ -4135,7 +4166,8 @@ Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, B
 104         If Dire = 1 Then 'Mover arriba
 
 106             If CualHechizo = 1 Then
-108                 Call WriteConsoleMsg(UserIndex, "No podés mover el hechizo en esa direccion.", e_FontTypeNames.FONTTYPE_INFO)
+108                 ' Msg670=No podés mover el hechizo en esa direccion.
+                    Call WriteLocaleMsg(UserIndex, "670", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 
                 Else
@@ -4161,7 +4193,8 @@ Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, B
             Else 'mover abajo
 
 124             If CualHechizo = MAXUSERHECHIZOS Then
-126                 Call WriteConsoleMsg(UserIndex, "No podés mover el hechizo en esa direccion.", e_FontTypeNames.FONTTYPE_INFO)
+126                 ' Msg670=No podés mover el hechizo en esa direccion.
+                    Call WriteLocaleMsg(UserIndex, "670", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 
                 Else

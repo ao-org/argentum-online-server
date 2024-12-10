@@ -998,7 +998,7 @@ Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
 102     If n < 30 Then
 104         UserList(UserIndex).flags.Envenenado = VenenoNivel
 
-            'Call WriteConsoleMsg(UserIndex, "¡¡La criatura te ha envenenado!!", e_FontTypeNames.FONTTYPE_FIGHT)
+            'Msg182=¡¡La criatura te ha envenenado!!
 106         If UserList(UserIndex).ChatCombate = 1 Then
 108             Call WriteLocaleMsg(UserIndex, "182", e_FontTypeNames.FONTTYPE_FIGHT)
 

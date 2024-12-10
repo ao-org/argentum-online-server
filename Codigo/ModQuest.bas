@@ -606,7 +606,8 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
 102     NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
         'Esta el personaje en la distancia correcta?
 104     If Distancia(UserList(UserIndex).Pos, NpcList(NpcIndex).Pos) > 5 Then
-106         Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
+106         ' Msg8=Estas demasiado lejos.
+            Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
     

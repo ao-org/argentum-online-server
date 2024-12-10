@@ -182,7 +182,8 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
                 Exit Sub
                 
 186         ElseIf UserList(UserIndex).flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios) Then
-188             Call WriteConsoleMsg(UserIndex, "No podés vender items.", e_FontTypeNames.FONTTYPE_WARNING)
+188             ' Msg767=No podés vender items.
+                Call WriteLocaleMsg(UserIndex, "767", e_FontTypeNames.FONTTYPE_WARNING)
                 Exit Sub
 
             End If
@@ -243,7 +244,8 @@ Public Sub IniciarComercioNPC(ByVal UserIndex As Integer)
         On Error GoTo IniciarComercioNPC_Err
         
         If Not IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-            Call WriteConsoleMsg(UserIndex, "El comerciante no esta disponible.", e_FontTypeNames.FONTTYPE_WARNING)
+            ' Msg770=El comerciante no está disponible.
+            Call WriteLocaleMsg(UserIndex, "770", e_FontTypeNames.FONTTYPE_WARNING)
             Exit Sub
         End If
 100     Call UpdateNpcInv(True, UserIndex, UserList(UserIndex).flags.TargetNPC.ArrayIndex, 0)
