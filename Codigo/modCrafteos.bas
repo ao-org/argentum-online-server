@@ -185,7 +185,8 @@ Public Sub DoCraftItem(ByVal UserIndex As Integer)
                     Call WriteLocaleMsg(UserIndex, "590", e_FontTypeNames.FONTTYPE_INFO)
                     ' TODO: Mensaje en la ventana de crafteo y sonido (?
                 Else
-122                 Call WriteConsoleMsg(UserIndex, "La combinación ha fallado.", e_FontTypeNames.FONTTYPE_FIGHT)
+                    'Msg923= La combinación ha fallado.
+                    Call WriteLocaleMsg(UserIndex, "923", e_FontTypeNames.FONTTYPE_FIGHT)
                     ' TODO: Mensaje en la ventana de crafteo y sonido (?
                 End If
 

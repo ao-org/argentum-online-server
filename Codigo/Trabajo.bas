@@ -3490,7 +3490,8 @@ Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
             End If
 
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(obj.ObjIndex).GrhIndex))
-            Call WriteConsoleMsg(UserIndex, "Felicitaciones has pescado un pez de gran porte ( " & ObjData(obj.ObjIndex).Name & " )", e_FontTypeNames.FONTTYPE_INFOBOLD)
+            'Msg922=Felicitaciones has pescado un pez de gran porte ( " & ObjData(obj.ObjIndex).name & " )
+            Call WriteLocaleMsg(UserIndex, "922", e_FontTypeNames.FONTTYPE_FIGHT, ObjData(obj.ObjIndex).name)
             .Stats.NumObj_PezEspecial = 0
             .flags.PescandoEspecial = False
 
