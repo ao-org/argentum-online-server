@@ -123,6 +123,7 @@ Class=IInventoryInterface; Codigo\Scenearios\IInventoryInterface.cls
 Module=PacketId; Codigo\PacketId.bas
 Module=AntiCheat; Codigo\AntiCheat.bas
 Module=InstanceManager; Codigo\InstanceManager.bas
+Class=clsElapsedTime; Codigo\clsElapsedTime.cls
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""

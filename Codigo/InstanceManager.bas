@@ -61,9 +61,7 @@ Public Sub CloneMapWithTranslations(ByVal SourceMapIndex As Integer, ByVal DestM
     MapInfo(DestMapIndex).MapResource = SourceMapIndex
     Dim PosX As Integer
     Dim PosY As Integer
-    Dim PerformanceTimer As Long
     Dim i As Integer
-    Call PerformanceTestStart(PerformanceTimer)
     For PosY = YMinMapSize To YMaxMapSize
         For PosX = XMinMapSize To XMaxMapSize
             MapData(DestMapIndex, PosX, PosY) = MapData(SourceMapIndex, PosX, PosY)
@@ -76,5 +74,4 @@ Public Sub CloneMapWithTranslations(ByVal SourceMapIndex As Integer, ByVal DestM
             End If
         Next PosX
     Next PosY
-    Call PerformTimeLimitCheck(PerformanceTimer, "CloneMapWithTranslations time", 50)
 End Sub

@@ -300,17 +300,9 @@ IntervaloPermiteUsar_Err:
 
         
 End Function
-' USAR OBJETOS CON CLICK
 Public Function IntervaloPermiteUsarClick(ByVal UserIndex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
-'**
-'Author: Unknown
-'Last Modification: 25/01/2010 (ZaMa)
-'25/01/2010: ZaMa - General adjustments.
-'**
-
-    Dim TActual As Long
-    TActual = GetTickCount() And &H7FFFFFFF
-
+    Dim TActual As Double
+    TActual = GetTickCount()
     If TActual - UserList(UserIndex).Counters.TimerUsarClick >= UserList(UserIndex).Intervals.UsarClic Then
         If Actualizar Then
             UserList(UserIndex).Counters.TimerUsarClick = TActual
@@ -383,29 +375,20 @@ IntervaloPermiteCaminar_Err:
 End Function
 
 Public Function IntervaloPermiteMoverse(ByVal NpcIndex As Integer) As Boolean
-        
-        On Error GoTo IntervaloPermiteMoverse_Err
-        
-
-        Dim TActual As Long
-
-100     TActual = GetTickCount()
-
-102     If TActual - NpcList(NpcIndex).Contadores.IntervaloMovimiento >= (NpcList(NpcIndex).IntervaloMovimiento / GetNpcSpeedModifiers(NpcIndex)) Then
-    
-            '  Call AddtoRichTextBox(frmMain.RecTxt, "Usar OK.", 255, 0, 0, True, False, False)
-104         NpcList(NpcIndex).Contadores.IntervaloMovimiento = TActual
-106         IntervaloPermiteMoverse = True
-        Else
-108         IntervaloPermiteMoverse = False
-
-        End If
-
-        
-        Exit Function
+ On Error GoTo IntervaloPermiteMoverse_Err
+      
+      Dim TActual As Double
+      TActual = GetTickCount()
+      If TActual - NpcList(NpcIndex).Contadores.IntervaloMovimiento >= (NpcList(NpcIndex).IntervaloMovimiento / GetNpcSpeedModifiers(NpcIndex)) Then
+         NpcList(NpcIndex).Contadores.IntervaloMovimiento = TActual
+         IntervaloPermiteMoverse = True
+      Else
+         IntervaloPermiteMoverse = False
+      End If
+      Exit Function
 
 IntervaloPermiteMoverse_Err:
-110     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteMoverse", Erl)
+     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteMoverse", Erl)
 
         
 End Function
@@ -435,8 +418,7 @@ Public Function IntervaloPermiteAtacarNPC(ByVal NpcIndex As Integer) As Boolean
 100     TActual = GetTickCount()
 
 102     If TActual - NpcList(NpcIndex).Contadores.IntervaloAtaque >= NpcList(NpcIndex).IntervaloAtaque Then
-    
-            '  Call AddtoRichTextBox(frmMain.RecTxt, "Usar OK.", 255, 0, 0, True, False, False)
+ 
 104         NpcList(NpcIndex).Contadores.IntervaloAtaque = TActual
 106         IntervaloPermiteAtacarNPC = True
         Else
