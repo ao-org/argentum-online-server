@@ -139,7 +139,8 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 300                                 .flags.PescandoEspecial = False
                                     Call DoPescar(UserIndex, False)
                                 Else
-304                                 Call WriteConsoleMsg(UserIndex, "Acércate a la costa para pescar.", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1021= Acércate a la costa para pescar.
+Call WriteLocaleMsg(UserIndex, "1021", e_FontTypeNames.FONTTYPE_INFO)
 306                                 Call WriteMacroTrabajoToggle(UserIndex, False)
 
                                 End If
@@ -213,7 +214,8 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                                             Call WriteWorkRequestTarget(UserIndex, 0)
                                             Exit Sub
                                         Else
-                                            Call WriteConsoleMsg(UserIndex, "El pico dorado solo puede extraer minerales del yacimiento de Oro.", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1022= El pico dorado solo puede extraer minerales del yacimiento de Oro.
+Call WriteLocaleMsg(UserIndex, "1022", e_FontTypeNames.FONTTYPE_INFO)
 480                                         Call WriteWorkRequestTarget(UserIndex, 0)
                                             Exit Sub
 
@@ -440,7 +442,8 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
 
 128                 If .flags.invisible = 0 And .flags.AdminInvisible = 0 Then
 130                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-132                     Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1023= ¡Has vuelto a ser visible!
+Call WriteLocaleMsg(UserIndex, "1023", e_FontTypeNames.FONTTYPE_INFO)
 
                     End If
 
@@ -513,7 +516,8 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
 144                     .flags.Oculto = 1
 146                     .Counters.TiempoOculto = IntervaloOculto
 148                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
-150                     Call WriteConsoleMsg(UserIndex, "¡Te has camuflado como barco fantasma!", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1024= ¡Te has camuflado como barco fantasma!
+Call WriteLocaleMsg(UserIndex, "1024", e_FontTypeNames.FONTTYPE_INFO)
                         Call RefreshCharStatus(UserIndex)
 
                     End If
@@ -564,7 +568,8 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
                         Case 2  'Galera
 
 108                         If .clase <> e_Class.Trabajador And .clase <> e_Class.Pirat Then
-110                             Call WriteConsoleMsg(UserIndex, "¡Solo Piratas y trabajadores pueden usar galera!", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1025= ¡Solo Piratas y trabajadores pueden usar galera!
+Call WriteLocaleMsg(UserIndex, "1025", e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
 
                             End If
@@ -572,7 +577,8 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 112                     Case 3  'Galeón
 
 114                         If .clase <> e_Class.Pirat Then
-116                             Call WriteConsoleMsg(UserIndex, "Solo los Piratas pueden usar Galeón!!", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1026= Solo los Piratas pueden usar Galeón!!
+Call WriteLocaleMsg(UserIndex, "1026", e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
 
                             End If
@@ -608,7 +614,8 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
                 End If
 
 138             If .flags.Mimetizado <> e_EstadoMimetismo.Desactivado Then
-140                 Call WriteConsoleMsg(UserIndex, "Pierdes el efecto del mimetismo.", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1027= Pierdes el efecto del mimetismo.
+Call WriteLocaleMsg(UserIndex, "1027", e_FontTypeNames.FONTTYPE_INFO)
 142                 .Counters.Mimetismo = 0
 144                 .flags.Mimetizado = e_EstadoMimetismo.Desactivado
                     Call RefreshCharStatus(UserIndex)
@@ -2331,13 +2338,15 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 100     If UserList(LadronIndex).flags.Privilegios And (e_PlayerType.Consejero) Then Exit Sub
 102     If MapInfo(UserList(VictimaIndex).Pos.Map).Seguro = 1 Then Exit Sub
         If Not UserMod.CanMove(UserList(VictimaIndex).flags, UserList(VictimaIndex).Counters) Then
-            Call WriteConsoleMsg(LadronIndex, "No podes robarle a objetivos inmovilizados.", e_FontTypeNames.FONTTYPE_FIGHT)
+'Msg1028= No podes robarle a objetivos inmovilizados.
+Call WriteLocaleMsg(LadronIndex, "1028", e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
 
         End If
 
 104     If UserList(VictimaIndex).flags.EnConsulta Then
-106         Call WriteConsoleMsg(LadronIndex, "¡No puedes robar a usuarios en consulta!", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1029= ¡No puedes robar a usuarios en consulta!
+Call WriteLocaleMsg(LadronIndex, "1029", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -2348,7 +2357,8 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 
             If esCiudadano(LadronIndex) Then
                 If (.flags.Seguro) Then
-114                 Call WriteConsoleMsg(LadronIndex, "Debes quitarte el seguro para robarle a un ciudadano o a un miembro del Ejército Real", e_FontTypeNames.FONTTYPE_FIGHT)
+'Msg1030= Debes quitarte el seguro para robarle a un ciudadano o a un miembro del Ejército Real
+Call WriteLocaleMsg(LadronIndex, "1030", e_FontTypeNames.FONTTYPE_FIGHT)
                     Exit Sub
 
                 End If
@@ -2356,7 +2366,8 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             ElseIf esArmada(LadronIndex) Then ' Armada robando a armada or ciudadano?
 
 122             If (esCiudadano(VictimaIndex) Or esArmada(VictimaIndex)) Then
-124                 Call WriteConsoleMsg(LadronIndex, "Los miembros del Ejército Real no tienen permitido robarle a ciudadanos o a otros miembros del Ejército Real", e_FontTypeNames.FONTTYPE_FIGHT)
+'Msg1031= Los miembros del Ejército Real no tienen permitido robarle a ciudadanos o a otros miembros del Ejército Real
+Call WriteLocaleMsg(LadronIndex, "1031", e_FontTypeNames.FONTTYPE_FIGHT)
                     Exit Sub
 
                 End If
@@ -2364,7 +2375,8 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             ElseIf esCaos(LadronIndex) Then ' Caos robando a caos?
 
                 If (esCaos(VictimaIndex)) Then
-                    Call WriteConsoleMsg(LadronIndex, "No puedes robar a otros miembros de la Legión Oscura.", e_FontTypeNames.FONTTYPE_FIGHT)
+'Msg1032= No puedes robar a otros miembros de la Legión Oscura.
+Call WriteLocaleMsg(LadronIndex, "1032", e_FontTypeNames.FONTTYPE_FIGHT)
                     Exit Sub
 
                 End If
@@ -2377,7 +2389,8 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                 'Si tiene clan me fijo si su clan es de alineación ciudadana
                 If esCiudadano(LadronIndex) And GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
                     If PersonajeEsLeader(.Id) Then
-                        Call WriteConsoleMsg(LadronIndex, "No puedes robar siendo lider de un clan ciudadano.", e_FontTypeNames.FONTTYPE_FIGHT)
+'Msg1033= No puedes robar siendo lider de un clan ciudadano.
+Call WriteLocaleMsg(LadronIndex, "1033", e_FontTypeNames.FONTTYPE_FIGHT)
                         Exit Sub
 
                     End If
@@ -2391,9 +2404,11 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             ' Tiene energia?
 128         If .Stats.MinSta < 15 Then
 130             If .genero = e_Genero.Hombre Then
-132                 Call WriteConsoleMsg(LadronIndex, "Estás muy cansado para robar.", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1034= Estás muy cansado para robar.
+Call WriteLocaleMsg(LadronIndex, "1034", e_FontTypeNames.FONTTYPE_INFO)
                 Else
-134                 Call WriteConsoleMsg(LadronIndex, "Estás muy cansada para robar.", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1035= Estás muy cansada para robar.
+Call WriteLocaleMsg(LadronIndex, "1035", e_FontTypeNames.FONTTYPE_INFO)
 
                 End If
 
@@ -2404,7 +2419,8 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 136         If .GuildIndex > 0 Then
 138             If .flags.SeguroClan And NivelDeClan(.GuildIndex) >= 3 Then
 140                 If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
-142                     Call WriteConsoleMsg(LadronIndex, "No podes robarle a un miembro de tu clan.", e_FontTypeNames.FONTTYPE_INFOIAO)
+'Msg1036= No podes robarle a un miembro de tu clan.
+Call WriteLocaleMsg(LadronIndex, "1036", e_FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
 
                     End If
@@ -2456,8 +2472,10 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 198                     OtroUserIndex = UserList(VictimaIndex).ComUsu.DestUsu.ArrayIndex
 
 200                     If OtroUserIndex > 0 And OtroUserIndex <= MaxUsers Then
-202                         Call WriteConsoleMsg(VictimaIndex, "Comercio cancelado, ¡te están robando!", e_FontTypeNames.FONTTYPE_TALK)
-204                         Call WriteConsoleMsg(OtroUserIndex, "Comercio cancelado, al otro usuario le robaron.", e_FontTypeNames.FONTTYPE_TALK)
+'Msg1037= Comercio cancelado, ¡te están robando!
+Call WriteLocaleMsg(VictimaIndex, "1037", e_FontTypeNames.FONTTYPE_TALK)
+'Msg1038= Comercio cancelado, al otro usuario le robaron.
+Call WriteLocaleMsg(OtroUserIndex, "1038", e_FontTypeNames.FONTTYPE_TALK)
 206                         Call LimpiarComercioSeguro(VictimaIndex)
 
                         End If
@@ -2559,7 +2577,8 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 
 270                 Call SubirSkill(LadronIndex, e_Skill.Robar)
                 Else
-272                 Call WriteConsoleMsg(LadronIndex, "¡No has logrado robar nada!", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1039= ¡No has logrado robar nada!
+Call WriteLocaleMsg(LadronIndex, "1039", e_FontTypeNames.FONTTYPE_INFO)
 274                 Call WriteConsoleMsg(VictimaIndex, "¡" & .name & " ha intentado robarte!", e_FontTypeNames.FONTTYPE_INFO)
 276                 Call SubirSkill(LadronIndex, e_Skill.Robar)
 
@@ -2689,7 +2708,8 @@ Private Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Inte
                 End If
 
             Else
-160             Call WriteConsoleMsg(LadronIndex, "No has logrado robar ningun objeto.", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1040= No has logrado robar ningun objeto.
+Call WriteLocaleMsg(LadronIndex, "1040", e_FontTypeNames.FONTTYPE_INFO)
 
             End If
 
