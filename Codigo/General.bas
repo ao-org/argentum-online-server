@@ -1802,7 +1802,8 @@ Sub PasarSegundo()
 128                         .flags.SegundosPasados = 0
 130                         .flags.Silenciado = 0
 132                         .flags.MinutosRestantes = 0
-134                         Call WriteConsoleMsg(i, "Has sido liberado del silencio.", e_FontTypeNames.FONTTYPE_SERVER)
+                            'Msg1018= Has sido liberado del silencio.
+                            Call WriteLocaleMsg(i, "1018", e_FontTypeNames.FONTTYPE_SERVER)
         
                         End If
         
@@ -1858,7 +1859,8 @@ Sub PasarSegundo()
 206                     If .Counters.CuentaRegresiva > 0 Then
 208                         Call WriteConsoleMsg(i, ">>>  " & .Counters.CuentaRegresiva & "  <<<", e_FontTypeNames.FONTTYPE_New_Gris)
                         Else
-210                         Call WriteConsoleMsg(i, ">>> YA! <<<", e_FontTypeNames.FONTTYPE_FIGHT)
+                            'Msg1019= >>> YA! <<<
+                            Call WriteLocaleMsg(i, "1019", e_FontTypeNames.FONTTYPE_FIGHT)
 212                         Call WriteStopped(i, False)
                         End If
                         
@@ -1931,7 +1933,8 @@ Sub PasarSegundo()
 286                     Call WriteLocaleMsg(i, "203", e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
         
 288                     If .Counters.Salir <= 0 Then
-290                         Call WriteConsoleMsg(i, "Gracias por jugar Argentum 20.", e_FontTypeNames.FONTTYPE_INFO)
+                            'Msg1020= Gracias por jugar Argentum 20.
+                            Call WriteLocaleMsg(i, "1020", e_FontTypeNames.FONTTYPE_INFO)
 292                         Call WriteDisconnect(i)
                             
 294                         Call CloseSocket(i)
