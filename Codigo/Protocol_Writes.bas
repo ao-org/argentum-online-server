@@ -1110,20 +1110,47 @@ End Sub
 Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, _
                           ByVal ID As Integer, _
                           ByVal FontIndex As e_FontTypeNames, _
-                          Optional ByVal strExtra As String = vbNullString)
-        '<EhHeader>
-        On Error GoTo WriteLocaleMsg_Err
-        '</EhHeader>
-100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageLocaleMsg(ID, strExtra, _
-                FontIndex))
-        '<EhFooter>
-        Exit Sub
+                          ParamArray Args() As Variant)
+    '<EhHeader>
+    On Error GoTo WriteLocaleMsg_Err
+    '</EhHeader>
+
+    Dim messageTemplate As String
+    Dim formattedMessage As String
+
+    ' Obtener el mensaje base desde el archivo de recursos (esto es un ejemplo, reemplaza con tu método real)
+    'messageTemplate = GetLocaleMessage(Id) ' Supongamos que devuelve "Ubicación de ¬0: ¬1, ¬2, ¬3."
+
+    ' Formatear el mensaje con los parámetros
+    formattedMessage = FormatLocaleMessage(messageTemplate, Args)
+
+    ' Enviar el mensaje formateado
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageLocaleMsg(Id, formattedMessage, FontIndex))
+
+    '<EhFooter>
+    Exit Sub
 
 WriteLocaleMsg_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLocaleMsg", Erl)
-        '</EhFooter>
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLocaleMsg", Erl)
+    '</EhFooter>
 End Sub
+
+
+Public Function FormatLocaleMessage(ByVal template As String, ByVal Args As Variant) As String
+    Dim i As Integer
+    Dim Result As String
+
+    Result = template
+    ' Reemplazar los marcadores en el mensaje
+    For i = LBound(Args) To UBound(Args)
+        Result = Replace(Result, "¬" & i, CStr(Args(i)))
+    Next i
+
+    FormatLocaleMessage = Result
+End Function
+
+
 
 ''
 ' Writes the "GuildChat" message to the given user's outgoing data .incomingData.
