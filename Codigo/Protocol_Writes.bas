@@ -1110,45 +1110,29 @@ End Sub
 Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, _
                           ByVal ID As Integer, _
                           ByVal FontIndex As e_FontTypeNames, _
-                          ParamArray Args() As Variant)
-    '<EhHeader>
-    On Error GoTo WriteLocaleMsg_Err
-    '</EhHeader>
+                          Optional ByVal strExtra1 As String = vbNullString, _
+                          Optional ByVal strExtra2 As String = vbNullString, _
+                          Optional ByVal strExtra3 As String = vbNullString, _
+                          Optional ByVal strExtra4 As String = vbNullString, _
+                          Optional ByVal strExtra5 As String = vbNullString, _
+                          Optional ByVal strExtra6 As String = vbNullString, _
+                          Optional ByVal strExtra7 As String = vbNullString, _
+                          Optional ByVal strExtra8 As String = vbNullString)
 
-    Dim messageTemplate As String
-    Dim formattedMessage As String
+    Dim combinedExtra As String
 
-    ' Obtener el mensaje base desde el archivo de recursos (esto es un ejemplo, reemplaza con tu método real)
-    'messageTemplate = GetLocaleMessage(Id) ' Supongamos que devuelve "Ubicación de ¬0: ¬1, ¬2, ¬3."
+    combinedExtra = strExtra1 & strExtra2 & strExtra3 & strExtra4
 
-    ' Formatear el mensaje con los parámetros
-    formattedMessage = FormatLocaleMessage(messageTemplate, Args)
+    ' Si combinedExtra está vacío, se establece en vbNullString
+    If combinedExtra = vbNullString Then combinedExtra = vbNullString
 
-    ' Enviar el mensaje formateado
-    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageLocaleMsg(Id, formattedMessage, FontIndex))
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageLocaleMsg(Id, combinedExtra, FontIndex))
 
-    '<EhFooter>
-    Exit Sub
-
-WriteLocaleMsg_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLocaleMsg", Erl)
-    '</EhFooter>
 End Sub
 
 
-Public Function FormatLocaleMessage(ByVal template As String, ByVal Args As Variant) As String
-    Dim i As Integer
-    Dim Result As String
 
-    Result = template
-    ' Reemplazar los marcadores en el mensaje
-    For i = LBound(Args) To UBound(Args)
-        Result = Replace(Result, "¬" & i, CStr(Args(i)))
-    Next i
 
-    FormatLocaleMessage = Result
-End Function
 
 
 
@@ -1161,18 +1145,19 @@ End Function
 Public Sub WriteGuildChat(ByVal UserIndex As Integer, _
                           ByVal chat As String, _
                           ByVal Status As Byte)
-        '<EhHeader>
-        On Error GoTo WriteGuildChat_Err
-        '</EhHeader>
+    '<EhHeader>
+    On Error GoTo WriteGuildChat_Err
+    '</EhHeader>
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageGuildChat(chat, Status))
-        '<EhFooter>
-        Exit Sub
+    '<EhFooter>
+    Exit Sub
 
 WriteGuildChat_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildChat", Erl)
-        '</EhFooter>
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildChat", Erl)
+    '</EhFooter>
 End Sub
+
 
 ''
 ' Writes the "ShowMessageBox" message to the given user's outgoing data .incomingData.
@@ -4494,21 +4479,22 @@ End Function
 Public Function PrepareMessageLocaleMsg(ByVal ID As Integer, _
                                         ByVal chat As String, _
                                         ByVal FontIndex As e_FontTypeNames)
-        '<EhHeader>
-        On Error GoTo PrepareMessageLocaleMsg_Err
-        '</EhHeader>
+    '<EhHeader>
+    On Error GoTo PrepareMessageLocaleMsg_Err
+    '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.eLocaleMsg)
 102     Call Writer.WriteInt16(ID)
 104     Call Writer.WriteString8(chat)
 106     Call Writer.WriteInt8(FontIndex)
-        '<EhFooter>
-        Exit Function
+    '<EhFooter>
+    Exit Function
 
 PrepareMessageLocaleMsg_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageLocaleMsg", Erl)
-        '</EhFooter>
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageLocaleMsg", Erl)
+    '</EhFooter>
 End Function
+
 
 ''
 ' Prepares the "CharAtaca" message and returns it.
