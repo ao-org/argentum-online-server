@@ -1121,7 +1121,7 @@ Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, _
 
     Dim combinedExtra As String
 
-    combinedExtra = strExtra1 & strExtra2 & strExtra3 & strExtra4
+    combinedExtra = strExtra1 & strExtra2 & strExtra3 & strExtra4 & strExtra5 & strExtra6 & strExtra7 & strExtra8
 
     ' Si combinedExtra está vacío, se establece en vbNullString
     If combinedExtra = vbNullString Then combinedExtra = vbNullString
