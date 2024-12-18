@@ -1110,24 +1110,19 @@ End Sub
 Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, _
                           ByVal ID As Integer, _
                           ByVal FontIndex As e_FontTypeNames, _
-                          Optional ByVal strExtra1 As String = vbNullString, _
-                          Optional ByVal strExtra2 As String = vbNullString, _
-                          Optional ByVal strExtra3 As String = vbNullString, _
-                          Optional ByVal strExtra4 As String = vbNullString, _
-                          Optional ByVal strExtra5 As String = vbNullString, _
-                          Optional ByVal strExtra6 As String = vbNullString, _
-                          Optional ByVal strExtra7 As String = vbNullString, _
-                          Optional ByVal strExtra8 As String = vbNullString)
+                          Optional ByVal strExtra As String = vbNullString)
+        '<EhHeader>
+        On Error GoTo WriteLocaleMsg_Err
+        '</EhHeader>
+100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageLocaleMsg(ID, strExtra, _
+                FontIndex))
+        '<EhFooter>
+        Exit Sub
 
-    Dim combinedExtra As String
-
-    combinedExtra = strExtra1 & strExtra2 & strExtra3 & strExtra4 & strExtra5 & strExtra6 & strExtra7 & strExtra8
-
-    ' Si combinedExtra está vacío, se establece en vbNullString
-    If combinedExtra = vbNullString Then combinedExtra = vbNullString
-
-    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageLocaleMsg(Id, combinedExtra, FontIndex))
-
+WriteLocaleMsg_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLocaleMsg", Erl)
+        '</EhFooter>
 End Sub
 
 
