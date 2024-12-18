@@ -509,9 +509,9 @@ Public Sub HandleWhere(ByVal UserIndex As Integer)
 110                 ' Msg540=Usuario offline.
                     Call WriteLocaleMsg(UserIndex, "540", e_FontTypeNames.FONTTYPE_INFO)
                 Else
-112                 If CompararPrivilegiosUser(userIndex, tUser.ArrayIndex) >= 0 Then
-114                     Call WriteConsoleMsg(UserIndex, "Ubicación  " & username & ": " & UserList(tUser.ArrayIndex).Pos.Map & ", " & UserList(tUser.ArrayIndex).Pos.X & ", " & UserList(tUser.ArrayIndex).Pos.Y & ".", e_FontTypeNames.FONTTYPE_INFO)
-116                     Call LogGM(.name, "/Donde " & username)
+112                 If CompararPrivilegiosUser(UserIndex, tUser.ArrayIndex) >= 0 Then
+                        Call WriteLocaleMsg(UserIndex, "1090", e_FontTypeNames.FONTTYPE_FIGHT, username & ": " & UserList(tUser.ArrayIndex).pos.Map & ", " & UserList(tUser.ArrayIndex).pos.x & ", " & UserList(tUser.ArrayIndex).pos.y & ".")
+                        Call LogGM(.name, "/Donde " & username)
                     End If
                 End If
             Else
