@@ -745,33 +745,33 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
             
             Select Case .Hogar
                 Case e_Ciudad.cUllathorpe
-                    .Pos.map = 1
-                    .Pos.X = 56
-                    .Pos.Y = 44
+                    .pos.Map = 168
+                    .pos.x = 46
+                    .pos.y = 70
                 Case e_Ciudad.cArghal
-                    .Pos.map = 151
-                    .Pos.x = 52
-                    .Pos.y = 36
+                    .pos.Map = 168
+                    .pos.x = 46
+                    .pos.y = 70
                 Case e_Ciudad.cForgat
-                    .Pos.Map = 517
-                    .Pos.x = 48
-                    .Pos.y = 64
+                    .pos.Map = 168
+                    .pos.x = 46
+                    .pos.y = 70
                 Case e_Ciudad.cNix
-                    .Pos.map = 34
-                    .Pos.X = 40
-                    .Pos.Y = 86
+                    .pos.Map = 168
+                    .pos.x = 46
+                    .pos.y = 70
                 Case e_Ciudad.cLindos
-                    .Pos.Map = 408
-                    .Pos.x = 63
-                    .Pos.y = 39
+                    .pos.Map = 168
+                    .pos.x = 46
+                    .pos.y = 70
                 Case e_Ciudad.cBanderbill
-                    .Pos.map = 59
-                    .Pos.x = 47
-                    .Pos.y = 41
+                    .pos.Map = 168
+                    .pos.x = 46
+                    .pos.y = 70
                 Case e_Ciudad.cArkhein
-                    .Pos.map = 196
-                    .Pos.x = 43
-                    .Pos.y = 58
+                    .pos.Map = 168
+                    .pos.x = 46
+                    .pos.y = 70
             End Select
         
 254         UltimoChar = UCase$(name)
