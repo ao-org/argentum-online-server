@@ -230,8 +230,8 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                 
                      Call FindLegalPos(UserIndex, map, X, y)
                      Call WarpUserChar(UserIndex, map, X, y, True)
-'Msg1065= Has regresado a tu ciudad de origen.
-Call WriteLocaleMsg(UserIndex, "1065", e_FontTypeNames.FONTTYPE_WARNING)
+                        'Msg1065= Has regresado a tu ciudad de origen.
+                        Call WriteLocaleMsg(UserIndex, "1065", e_FontTypeNames.FONTTYPE_WARNING)
 
                         'Call WriteFlashScreen(UserIndex, &HA4FFFF, 150, True)
                      If UserList(UserIndex).flags.Navegando = 1 Then
@@ -279,22 +279,22 @@ Call WriteLocaleMsg(UserIndex, "1065", e_FontTypeNames.FONTTYPE_WARNING)
                      If obj.DesdeMap = 0 Then
                          Call FindLegalPos(UserIndex, map, X, y)
                          Call WarpUserChar(UserIndex, map, X, y, True)
-'Msg1066= Te has teletransportado por el mundo.
-Call WriteLocaleMsg(UserIndex, "1066", e_FontTypeNames.FONTTYPE_WARNING)
+                            'Msg1066= Te has teletransportado por el mundo.
+                            Call WriteLocaleMsg(UserIndex, "1066", e_FontTypeNames.FONTTYPE_WARNING)
                          Call QuitarUserInvItem(UserIndex, Slot, 1)
                          Call UpdateUserInv(False, UserIndex, Slot)
                         Else
 
                          If UserList(UserIndex).Pos.map <> obj.DesdeMap Then
-'Msg1067= Esta runa no puede ser usada desde aquí.
-Call WriteLocaleMsg(UserIndex, "1067", e_FontTypeNames.FONTTYPE_INFO)
+                            'Msg1067= Esta runa no puede ser usada desde aquí.
+                            Call WriteLocaleMsg(UserIndex, "1067", e_FontTypeNames.FONTTYPE_INFO)
                             Else
                              Call QuitarUserInvItem(UserIndex, Slot, 1)
                              Call UpdateUserInv(False, UserIndex, Slot)
                              Call FindLegalPos(UserIndex, map, X, y)
                              Call WarpUserChar(UserIndex, map, X, y, True)
-'Msg1068= Te has teletransportado por el mundo.
-Call WriteLocaleMsg(UserIndex, "1068", e_FontTypeNames.FONTTYPE_WARNING)
+                            'Msg1068= Te has teletransportado por el mundo.
+                            Call WriteLocaleMsg(UserIndex, "1068", e_FontTypeNames.FONTTYPE_WARNING)
 
                             End If
 
@@ -332,8 +332,8 @@ Call WriteLocaleMsg(UserIndex, "1068", e_FontTypeNames.FONTTYPE_WARNING)
                  Yf = Hechizos(uh).TeleportXY
     
                  Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(uh).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))  'Esta linea faltaba. Pablo (ToxicWaste)
-'Msg1069= ¡Has abierto la puerta a intermundia!
-Call WriteLocaleMsg(UserIndex, "1069", e_FontTypeNames.FONTTYPE_INFO)
+                 'Msg1069= ¡Has abierto la puerta a intermundia!
+                 Call WriteLocaleMsg(UserIndex, "1069", e_FontTypeNames.FONTTYPE_INFO)
                  Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, e_ParticulasIndex.Runa, -1, True))
                  UserList(UserIndex).flags.Portal = 10
                  UserList(UserIndex).flags.PortalMDestino = Mapaf
@@ -491,8 +491,8 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
             
 152                 If Distancia(NpcList(TempCharIndex).Pos, UserList(userindex).Pos) > 4 Then
 154                     Call WriteLocaleMsg(userindex, "8", e_FontTypeNames.FONTTYPE_INFO)
-'Msg1070= Estas demasiado lejos del vendedor de pasajes.
-Call WriteLocaleMsg(userindex, "1070", e_FontTypeNames.FONTTYPE_INFO)
+                        'Msg1070= Estas demasiado lejos del vendedor de pasajes.
+                        Call WriteLocaleMsg(UserIndex, "1070", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
@@ -860,14 +860,14 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         End If
     
 110     If UserList(UserIndex).Invent.HerramientaEqpObjIndex = 0 Then
-'Msg1071= Debes tener equipado un martillo de herrero para trabajar con el yunque.
-Call WriteLocaleMsg(UserIndex, "1071", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1071= Debes tener equipado un martillo de herrero para trabajar con el yunque.
+            Call WriteLocaleMsg(UserIndex, "1071", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
 114     If ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo <> 7 Then
-'Msg1072= La herramienta que tienes no es la correcta, necesitas un martillo de herrero para poder trabajar.
-Call WriteLocaleMsg(UserIndex, "1072", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1072= La herramienta que tienes no es la correcta, necesitas un martillo de herrero para poder trabajar.
+            Call WriteLocaleMsg(UserIndex, "1072", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -898,11 +898,11 @@ Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByV
 104     puerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex)
 106     If puerta.Llave = 1 And Not SinDistancia Then
             If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = 59878 Or puerta.GrhIndex = 59877 Then
-'Msg1073= Al parecer, alguien cerró esta puerta. Debe haber algún interruptor por algún lado...
-Call WriteLocaleMsg(UserIndex, "1073", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1073= Al parecer, alguien cerró esta puerta. Debe haber algún interruptor por algún lado...
+            Call WriteLocaleMsg(UserIndex, "1073", e_FontTypeNames.FONTTYPE_INFO)
             Else
-'Msg1074= La puerta esta cerrada con llave.
-Call WriteLocaleMsg(UserIndex, "1074", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1074= La puerta esta cerrada con llave.
+            Call WriteLocaleMsg(UserIndex, "1074", e_FontTypeNames.FONTTYPE_INFO)
             End If
             Exit Sub
         End If
@@ -911,8 +911,8 @@ Call WriteLocaleMsg(UserIndex, "1074", e_FontTypeNames.FONTTYPE_INFO)
 112         MapData(Map, X, Y).ObjInfo.ObjIndex = puerta.IndexAbierta
 114         Call BloquearPuerta(Map, X, Y, False)
             If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = 59878 Or puerta.GrhIndex = 59877 Then
-'Msg1075= Has abierto la compuerta del ducto.
-Call WriteLocaleMsg(UserIndex, "1075", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1075= Has abierto la compuerta del ducto.
+            Call WriteLocaleMsg(UserIndex, "1075", e_FontTypeNames.FONTTYPE_INFO)
             End If
 
         Else 'Cierra puerta
@@ -1017,14 +1017,14 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
             End If
 
 112         If MapInfo(Map).lluvia And Lloviendo Then
-'Msg1076= Esta lloviendo, no podés encender una fogata aquí.
-Call WriteLocaleMsg(UserIndex, "1076", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg1076= Esta lloviendo, no podés encender una fogata aquí.
+                Call WriteLocaleMsg(UserIndex, "1076", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 
 116         If MapData(Map, X, Y).trigger = e_Trigger.ZONASEGURA Or MapInfo(Map).Seguro = 1 Then
-'Msg1077= En zona segura no podés hacer fogatas.
-Call WriteLocaleMsg(UserIndex, "1077", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg1077= En zona segura no podés hacer fogatas.
+                Call WriteLocaleMsg(UserIndex, "1077", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 
@@ -1033,8 +1033,8 @@ Call WriteLocaleMsg(UserIndex, "1077", e_FontTypeNames.FONTTYPE_INFO)
                MapData(Map, X, Y - 1).ObjInfo.ObjIndex = FOGATA Or _
                MapData(Map, X, Y + 1).ObjInfo.ObjIndex = FOGATA Then
            
-'Msg1078= Debes alejarte un poco de la otra fogata.
-Call WriteLocaleMsg(UserIndex, "1078", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg1078= Debes alejarte un poco de la otra fogata.
+                Call WriteLocaleMsg(UserIndex, "1078", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -1060,15 +1060,15 @@ Call WriteLocaleMsg(UserIndex, "1078", e_FontTypeNames.FONTTYPE_INFO)
 142                 obj.ObjIndex = FOGATA
 144                 obj.amount = 1
         
-'Msg1079= Has prendido la fogata.
-Call WriteLocaleMsg(UserIndex, "1079", e_FontTypeNames.FONTTYPE_INFO)
+                    'Msg1079= Has prendido la fogata.
+                    Call WriteLocaleMsg(UserIndex, "1079", e_FontTypeNames.FONTTYPE_INFO)
         
 148                 Call MakeObj(obj, Map, X, Y)
 
                 Else
         
-'Msg1080= La ley impide realizar fogatas en las ciudades.
-Call WriteLocaleMsg(UserIndex, "1080", e_FontTypeNames.FONTTYPE_INFO)
+                    'Msg1080= La ley impide realizar fogatas en las ciudades.
+                    Call WriteLocaleMsg(UserIndex, "1080", e_FontTypeNames.FONTTYPE_INFO)
             
                     Exit Sub
 
@@ -1076,8 +1076,8 @@ Call WriteLocaleMsg(UserIndex, "1080", e_FontTypeNames.FONTTYPE_INFO)
 
             Else
         
-'Msg1081= No has podido hacer fuego.
-Call WriteLocaleMsg(UserIndex, "1081", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg1081= No has podido hacer fuego.
+                Call WriteLocaleMsg(UserIndex, "1081", e_FontTypeNames.FONTTYPE_INFO)
 
             End If
     

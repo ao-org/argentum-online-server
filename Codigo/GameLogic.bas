@@ -126,8 +126,8 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
                         'Le avisamos al que estaba comerciando que se tuvo que ir.
 136                     If UserList(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
 138                         Call FinComerciarUsu(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex)
-'Msg1104= Comercio cancelado. El otro usuario se ha desconectado.
-Call WriteLocaleMsg(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex, "1104", e_FontTypeNames.FONTTYPE_TALK)
+                            'Msg1104= Comercio cancelado. El otro usuario se ha desconectado.
+                            Call WriteLocaleMsg(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex, "1104", e_FontTypeNames.FONTTYPE_TALK)
                         
 
                         End If
@@ -1537,8 +1537,8 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 384                     UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
 
                     Else
-'Msg1105= Ves a ??? <Game Master>
-Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_GM)
+                        'Msg1105= Ves a ??? <Game Master>
+                        Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_GM)
     
 388                     Call SetUserRef(UserList(userIndex).flags.targetUser, TempCharIndex)
 390                     Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
@@ -1730,8 +1730,8 @@ Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_GM)
 552             UserList(UserIndex).flags.TargetObjX = 0
 554             UserList(UserIndex).flags.TargetObjY = 0
 
-'Msg1106= No ves nada interesante.
-Call WriteLocaleMsg(UserIndex, "1106", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg1106= No ves nada interesante.
+                Call WriteLocaleMsg(UserIndex, "1106", e_FontTypeNames.FONTTYPE_INFO)
             End If
 
         End If

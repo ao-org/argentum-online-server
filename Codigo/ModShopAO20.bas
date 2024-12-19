@@ -37,16 +37,16 @@ On Error GoTo init_transaction_Err
         
         'Me fijo si es un item de shop
 104     If Not is_purchaseable_item(obj) Then
-'Msg1087= Error al realizar la transacción
-Call WriteLocaleMsg(UserIndex, "1087", e_FontTypeNames.FONTTYPE_INFO)
-108         Call LogShopErrors("El usuario " & .Name & " intentó comprar un objeto que no es de shop (REVISAR) | " & obj.Name)
+            'Msg1087= Error al realizar la transacción
+            Call WriteLocaleMsg(UserIndex, "1087", e_FontTypeNames.FONTTYPE_INFO)
+108         Call LogShopErrors("El usuario " & .name & " intentó comprar un objeto que no es de shop (REVISAR) | " & obj.name)
             Exit Sub
         End If
         Call LoadPatronCreditsFromDB(UserIndex)
 110     If obj.Valor > .Stats.Creditos Then
-'Msg1088= Error al realizar la transacción.
-Call WriteLocaleMsg(UserIndex, "1088", e_FontTypeNames.FONTTYPE_INFO)
-114         Call LogShopErrors("El usuario " & .Name & " intentó editar el valor del objeto (REVISAR) | " & obj.Name)
+            'Msg1088= Error al realizar la transacción.
+            Call WriteLocaleMsg(UserIndex, "1088", e_FontTypeNames.FONTTYPE_INFO)
+114         Call LogShopErrors("El usuario " & .name & " intentó editar el valor del objeto (REVISAR) | " & obj.name)
             Exit Sub
         End If
         
@@ -57,15 +57,15 @@ Call WriteLocaleMsg(UserIndex, "1088", e_FontTypeNames.FONTTYPE_INFO)
 118     objInventario.objIndex = obj.ObjNum
         
         If GetSlotForItemInInventory(UserIndex, objInventario) <= 0 Then
-'Msg1089= Asegurate de tener espacio suficiente en tu inventario.
-Call WriteLocaleMsg(userIndex, "1089", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1089= Asegurate de tener espacio suficiente en tu inventario.
+            Call WriteLocaleMsg(UserIndex, "1089", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 120     'Descuento los créditos
 124     .Stats.Creditos = .Stats.Creditos - obj.Valor
           
         'Genero un log de los créditos que gastó y cuantos le quedan luego de la transacción.
-126     Call LogShopTransactions(.Name & " | Compró -> " & ObjData(obj.ObjNum).Name & " | Valor -> " & obj.Valor)
+126     Call LogShopTransactions(.name & " | Compró -> " & ObjData(obj.ObjNum).name & " | Valor -> " & obj.Valor)
 128     Call Query("update account set offline_patron_credits = ? where id = ?;", .Stats.Creditos, .AccountID)
 130     Call writeUpdateShopClienteCredits(UserIndex)
 132     Call RegisterTransaction(.AccountID, .ID, obj.ObjNum, obj.Valor, .Stats.Creditos)

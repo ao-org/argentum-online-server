@@ -945,14 +945,14 @@ Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_W
 140         Index = MapData(TargetPos.map, TargetPos.X, TargetPos.Y).npcIndex
 142         If NpcList(Index).Attackable Then
 144             If IsValidUserRef(NpcList(Index).MaestroUser) And MapInfo(NpcList(Index).pos.map).Seguro = 1 Then
-'Msg1041= No podés atacar mascotas en zonas seguras
-Call WriteLocaleMsg(UserIndex, "1041", e_FontTypeNames.FONTTYPE_FIGHT)
+                    'Msg1041= No podés atacar mascotas en zonas seguras
+                    Call WriteLocaleMsg(UserIndex, "1041", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
                 End If
 148             Call UsuarioAtacaNpc(UserIndex, Index, Melee)
             Else
-'Msg1042= No podés atacar a este NPC
-Call WriteLocaleMsg(UserIndex, "1042", e_FontTypeNames.FONTTYPE_FIGHT)
+                'Msg1042= No podés atacar a este NPC
+                Call WriteLocaleMsg(UserIndex, "1042", e_FontTypeNames.FONTTYPE_FIGHT)
             End If
             Exit Sub
         Else
@@ -1125,8 +1125,8 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 164             Call SubirSkill(VictimaIndex, e_Skill.Defensa)
             Else
 166             Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te atacó y falló! ", e_FontTypeNames.FONTTYPE_FIGHT)
-'Msg1043= ¡Has fallado el golpe!
-Call WriteLocaleMsg(AtacanteIndex, "1043", e_FontTypeNames.FONTTYPE_FIGHT)
+                'Msg1043= ¡Has fallado el golpe!
+                Call WriteLocaleMsg(AtacanteIndex, "1043", e_FontTypeNames.FONTTYPE_FIGHT)
             End If
         End If
 
@@ -1494,8 +1494,8 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
 106     If UserList(AttackerIndex).flags.EnReto Then
 108         If Retos.Salas(UserList(AttackerIndex).flags.SalaReto).TiempoItems > 0 Then
-'Msg1044= No podés atacar en este momento.
-Call WriteLocaleMsg(AttackerIndex, "1044", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg1044= No podés atacar en este momento.
+                Call WriteLocaleMsg(attackerIndex, "1044", e_FontTypeNames.FONTTYPE_INFO)
 112             PuedeAtacar = False
                 Exit Function
             End If
@@ -1503,24 +1503,24 @@ Call WriteLocaleMsg(AttackerIndex, "1044", e_FontTypeNames.FONTTYPE_INFO)
 
         'No podes atacar a alguien muerto
 114     If UserList(VictimIndex).flags.Muerto = 1 Then
-'Msg1045= No podés atacar a un espiritu.
-Call WriteLocaleMsg(AttackerIndex, "1045", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1045= No podés atacar a un espiritu.
+            Call WriteLocaleMsg(attackerIndex, "1045", e_FontTypeNames.FONTTYPE_INFO)
 118         PuedeAtacar = False
             Exit Function
         End If
         
         If UserList(AttackerIndex).Grupo.Id > 0 And UserList(VictimIndex).Grupo.Id > 0 And _
            UserList(AttackerIndex).Grupo.Id = UserList(VictimIndex).Grupo.Id Then
-'Msg1046= No podés atacar a un miembro de tu grupo.
-Call WriteLocaleMsg(AttackerIndex, "1046", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1046= No podés atacar a un miembro de tu grupo.
+            Call WriteLocaleMsg(attackerIndex, "1046", e_FontTypeNames.FONTTYPE_INFO)
            PuedeAtacar = False
            Exit Function
         End If
         
         ' No podes atacar si estas en consulta
 120     If UserList(AttackerIndex).flags.EnConsulta Then
-'Msg1047= No podés atacar usuarios mientras estás en consulta.
-Call WriteLocaleMsg(AttackerIndex, "1047", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1047= No podés atacar usuarios mientras estás en consulta.
+            Call WriteLocaleMsg(attackerIndex, "1047", e_FontTypeNames.FONTTYPE_INFO)
 124         PuedeAtacar = False
             Exit Function
     
@@ -1528,16 +1528,16 @@ Call WriteLocaleMsg(AttackerIndex, "1047", e_FontTypeNames.FONTTYPE_INFO)
         
         ' No podes atacar si esta en consulta
 126     If UserList(VictimIndex).flags.EnConsulta Then
-'Msg1048= No podés atacar usuarios mientras estan en consulta.
-Call WriteLocaleMsg(AttackerIndex, "1048", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1048= No podés atacar usuarios mientras estan en consulta.
+            Call WriteLocaleMsg(attackerIndex, "1048", e_FontTypeNames.FONTTYPE_INFO)
 130         PuedeAtacar = False
             Exit Function
     
         End If
         
 132     If UserList(AttackerIndex).flags.Maldicion = 1 Then
-'Msg1049= ¡Estás maldito! No podes atacar.
-Call WriteLocaleMsg(AttackerIndex, "1049", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1049= ¡Estás maldito! No podes atacar.
+            Call WriteLocaleMsg(attackerIndex, "1049", e_FontTypeNames.FONTTYPE_INFO)
 136         PuedeAtacar = False
             Exit Function
 
@@ -1554,8 +1554,8 @@ Call WriteLocaleMsg(AttackerIndex, "1050", e_FontTypeNames.FONTTYPE_INFO)
         If Not MapInfo(UserList(VictimIndex).pos.map).FriendlyFire And _
             UserList(VictimIndex).flags.CurrentTeam > 0 And _
             UserList(VictimIndex).flags.CurrentTeam = UserList(attackerIndex).flags.CurrentTeam Then
-'Msg1051= No podes atacar un miembro de tu equipo.
-Call WriteLocaleMsg(attackerIndex, "1051", e_FontTypeNames.FONTTYPE_WARNING)
+            'Msg1051= No podes atacar un miembro de tu equipo.
+            Call WriteLocaleMsg(attackerIndex, "1051", e_FontTypeNames.FONTTYPE_WARNING)
             PuedeAtacar = False
             Exit Function
         End If
@@ -1576,8 +1576,8 @@ Call WriteLocaleMsg(attackerIndex, "1051", e_FontTypeNames.FONTTYPE_WARNING)
 
             'Si no estamos en el Trigger 6 entonces es imposible atacar un gm
             ' If Not UserList(VictimIndex).flags.Privilegios And e_PlayerType.User Then
-'Msg1052= El ser es demasiado poderoso
-Call WriteLocaleMsg(attackerIndex, "1052", e_FontTypeNames.FONTTYPE_WARNING)
+                'Msg1052= El ser es demasiado poderoso
+                Call WriteLocaleMsg(attackerIndex, "1052", e_FontTypeNames.FONTTYPE_WARNING)
             ' PuedeAtacar = False
             '    Exit Function
             ' End If
@@ -1593,8 +1593,8 @@ Call WriteLocaleMsg(attackerIndex, "1052", e_FontTypeNames.FONTTYPE_WARNING)
 160     rank = e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero
 
 162     If (UserList(VictimIndex).flags.Privilegios And rank) > (UserList(AttackerIndex).flags.Privilegios And rank) Then
-'Msg1053= El ser es demasiado poderoso
-Call WriteLocaleMsg(AttackerIndex, "1053", e_FontTypeNames.FONTTYPE_WARNING)
+            'Msg1053= El ser es demasiado poderoso
+            Call WriteLocaleMsg(attackerIndex, "1053", e_FontTypeNames.FONTTYPE_WARNING)
 166         PuedeAtacar = False
             Exit Function
 
@@ -1604,8 +1604,8 @@ Call WriteLocaleMsg(AttackerIndex, "1053", e_FontTypeNames.FONTTYPE_WARNING)
          If UserList(AttackerIndex).GuildIndex > 0 Then
              If UserList(AttackerIndex).flags.SeguroClan And NivelDeClan(UserList(AttackerIndex).GuildIndex) >= 3 Then
                  If UserList(AttackerIndex).GuildIndex = UserList(VictimIndex).GuildIndex Then
-'Msg1054= No podes atacar a un miembro de tu clan.
-Call WriteLocaleMsg(AttackerIndex, "1054", e_FontTypeNames.FONTTYPE_INFOIAO)
+                    'Msg1054= No podes atacar a un miembro de tu clan.
+                    Call WriteLocaleMsg(attackerIndex, "1054", e_FontTypeNames.FONTTYPE_INFOIAO)
                     PuedeAtacar = False
                     Exit Function
                 End If
@@ -1616,14 +1616,14 @@ Call WriteLocaleMsg(AttackerIndex, "1054", e_FontTypeNames.FONTTYPE_INFOIAO)
         If esArmada(AttackerIndex) Then
             ' Si ataca otro armada
             If esArmada(VictimIndex) Then
-'Msg1055= Los miembros del Ejercito Real tienen prohibido atacarse entre sí.
-Call WriteLocaleMsg(AttackerIndex, "1055", e_FontTypeNames.FONTTYPE_WARNING)
+                'Msg1055= Los miembros del Ejercito Real tienen prohibido atacarse entre sí.
+                Call WriteLocaleMsg(attackerIndex, "1055", e_FontTypeNames.FONTTYPE_WARNING)
                 PuedeAtacar = False
                 Exit Function
             ' Si ataca un ciudadano
             ElseIf esCiudadano(VictimIndex) Then
-'Msg1056= Los miembros del Ejercito Real tienen prohibido atacar ciudadanos.
-Call WriteLocaleMsg(AttackerIndex, "1056", e_FontTypeNames.FONTTYPE_WARNING)
+                'Msg1056= Los miembros del Ejercito Real tienen prohibido atacar ciudadanos.
+                Call WriteLocaleMsg(attackerIndex, "1056", e_FontTypeNames.FONTTYPE_WARNING)
                 PuedeAtacar = False
                 Exit Function
             End If
@@ -1634,20 +1634,20 @@ Call WriteLocaleMsg(AttackerIndex, "1056", e_FontTypeNames.FONTTYPE_WARNING)
             If (esCiudadano(AttackerIndex)) Then
                 If (UserList(AttackerIndex).flags.Seguro) Then
 176                 If esCiudadano(VictimIndex) Then
-'Msg1057= No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.
-Call WriteLocaleMsg(AttackerIndex, "1057", e_FontTypeNames.FONTTYPE_WARNING)
+                        'Msg1057= No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.
+                        Call WriteLocaleMsg(attackerIndex, "1057", e_FontTypeNames.FONTTYPE_WARNING)
 180                     PuedeAtacar = False
                         Exit Function
                     ElseIf esArmada(VictimIndex) Then
-'Msg1058= No podés atacar miembros del Ejercito Real, para hacerlo debes desactivar el seguro.
-Call WriteLocaleMsg(AttackerIndex, "1058", e_FontTypeNames.FONTTYPE_WARNING)
+                        'Msg1058= No podés atacar miembros del Ejercito Real, para hacerlo debes desactivar el seguro.
+                        Call WriteLocaleMsg(attackerIndex, "1058", e_FontTypeNames.FONTTYPE_WARNING)
                         PuedeAtacar = False
                         Exit Function
                     End If
                 End If
             ElseIf esCaos(AttackerIndex) And esCaos(VictimIndex) Then
-'Msg1059= Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.
-Call WriteLocaleMsg(AttackerIndex, "1059", e_FontTypeNames.FONTTYPE_WARNING)
+                'Msg1059= Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.
+                Call WriteLocaleMsg(attackerIndex, "1059", e_FontTypeNames.FONTTYPE_WARNING)
 194             PuedeAtacar = False
                 Exit Function
             End If
@@ -1658,8 +1658,8 @@ Call WriteLocaleMsg(AttackerIndex, "1059", e_FontTypeNames.FONTTYPE_WARNING)
 198         If esArmada(AttackerIndex) Then
 200             If UserList(AttackerIndex).Faccion.RecompensasReal >= 3 Then
 202                 If UserList(VictimIndex).Pos.Map = 58 Or UserList(VictimIndex).Pos.Map = 59 Or UserList(VictimIndex).Pos.Map = 60 Then
-'Msg1060= Huye de la ciudad! estas siendo atacado y no podrás defenderte.
-Call WriteLocaleMsg(VictimIndex, "1060", e_FontTypeNames.FONTTYPE_WARNING)
+                        'Msg1060= Huye de la ciudad! estas siendo atacado y no podrás defenderte.
+                        Call WriteLocaleMsg(VictimIndex, "1060", e_FontTypeNames.FONTTYPE_WARNING)
 206                     PuedeAtacar = True 'Beneficio de Armadas que atacan en su ciudad.
                         Exit Function
                     End If
@@ -1669,23 +1669,23 @@ Call WriteLocaleMsg(VictimIndex, "1060", e_FontTypeNames.FONTTYPE_WARNING)
 208         If esCaos(AttackerIndex) Then
 210             If UserList(AttackerIndex).Faccion.RecompensasCaos >= 3 Then
 212                 If UserList(VictimIndex).Pos.Map = 195 Or UserList(VictimIndex).Pos.Map = 196 Then
-'Msg1061= Huye de la ciudad! estas siendo atacado y no podrás defenderte.
-Call WriteLocaleMsg(VictimIndex, "1061", e_FontTypeNames.FONTTYPE_WARNING)
+                        'Msg1061= Huye de la ciudad! estas siendo atacado y no podrás defenderte.
+                        Call WriteLocaleMsg(VictimIndex, "1061", e_FontTypeNames.FONTTYPE_WARNING)
 216                     PuedeAtacar = True 'Beneficio de Caos que atacan en su ciudad.
                         Exit Function
                     End If
                 End If
             End If
-'Msg1062= Esta es una zona segura, aqui no podes atacar otros usuarios.
-Call WriteLocaleMsg(AttackerIndex, "1062", e_FontTypeNames.FONTTYPE_WARNING)
+            'Msg1062= Esta es una zona segura, aqui no podes atacar otros usuarios.
+            Call WriteLocaleMsg(attackerIndex, "1062", e_FontTypeNames.FONTTYPE_WARNING)
 220         PuedeAtacar = False
             Exit Function
         End If
 
         'Estas atacando desde un trigger seguro? o tu victima esta en uno asi?
 222     If MapData(UserList(VictimIndex).Pos.Map, UserList(VictimIndex).Pos.X, UserList(VictimIndex).Pos.Y).trigger = e_Trigger.ZonaSegura Or MapData(UserList(AttackerIndex).Pos.Map, UserList(AttackerIndex).Pos.X, UserList(AttackerIndex).Pos.Y).trigger = e_Trigger.ZonaSegura Then
-'Msg1063= No podes pelear aqui.
-Call WriteLocaleMsg(AttackerIndex, "1063", e_FontTypeNames.FONTTYPE_WARNING)
+            'Msg1063= No podes pelear aqui.
+            Call WriteLocaleMsg(attackerIndex, "1063", e_FontTypeNames.FONTTYPE_WARNING)
 226         PuedeAtacar = False
             Exit Function
         End If
@@ -1881,8 +1881,8 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                         End If
                     Else
 194                     If UserList(Index).ChatCombate = 1 Then
-'Msg1064= Estás muerto, no has ganado experencia del grupo.
-Call WriteLocaleMsg(Index, "1064", e_FontTypeNames.FONTTYPE_New_GRUPO)
+                            'Msg1064= Estás muerto, no has ganado experencia del grupo.
+                            Call WriteLocaleMsg(Index, "1064", e_FontTypeNames.FONTTYPE_New_GRUPO)
                         End If
                     End If
                 End If

@@ -256,8 +256,8 @@ Public Sub PurgarPenas()
 108                 If UserList(i).Counters.Pena < 1 Then
 110                     UserList(i).Counters.Pena = 0
 112                     Call WarpUserChar(i, Libertad.Map, Libertad.X, Libertad.Y, True)
-'Msg1103= Has sido liberado.
-Call WriteLocaleMsg(i, "1103", e_FontTypeNames.FONTTYPE_INFO)
+                        'Msg1103= Has sido liberado.
+                        Call WriteLocaleMsg(i, "1103", e_FontTypeNames.FONTTYPE_INFO)
                     End If
 
                 End If
