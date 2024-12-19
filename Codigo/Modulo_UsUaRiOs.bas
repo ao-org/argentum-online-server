@@ -1790,14 +1790,16 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
             End If
 
         Else
-120         Call WriteConsoleMsg(sendIndex, "(CUERPO) Min Def/Max Def: 0", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1098= (CUERPO) Min Def/Max Def: 0
+            Call WriteLocaleMsg(sendIndex, "1098", e_FontTypeNames.FONTTYPE_INFO)
 
         End If
     
 122     If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then
 124         Call WriteConsoleMsg(sendIndex, "(CABEZA) Min Def/Max Def: " & ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex).MinDef & "/" & ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex).MaxDef, e_FontTypeNames.FONTTYPE_INFO)
         Else
-126         Call WriteConsoleMsg(sendIndex, "(CABEZA) Min Def/Max Def: 0", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1099= (CABEZA) Min Def/Max Def: 0
+            Call WriteLocaleMsg(sendIndex, "1099", e_FontTypeNames.FONTTYPE_INFO)
 
         End If
     
@@ -1807,7 +1809,8 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 132         Call WriteConsoleMsg(sendIndex, "Clan: " & modGuilds.GuildName(GuildI), e_FontTypeNames.FONTTYPE_INFO)
 
 134         If UCase$(modGuilds.GuildLeader(GuildI)) = UCase$(UserList(sendIndex).Name) Then
-136             Call WriteConsoleMsg(sendIndex, "Status: Líder", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg1100= Status: Líder
+                Call WriteLocaleMsg(sendIndex, "1100", e_FontTypeNames.FONTTYPE_INFO)
 
             End If
 
@@ -2555,7 +2558,8 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 104             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
 
 106                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = userIndex Then
-108                     Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, "Comercio cancelado por el otro usuario", e_FontTypeNames.FONTTYPE_TALK)
+                        'Msg1101= Comercio cancelado por el otro usuario
+                        Call WriteLocaleMsg(.ComUsu.DestUsu.ArrayIndex, "1101", e_FontTypeNames.FONTTYPE_TALK)
 110                     Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
 
                     End If
@@ -3363,7 +3367,8 @@ Public Function CanAttackUser(ByVal AttackerIndex As Integer, ByVal AttackerVers
     ' Nueva verificación específica para Captura la Bandera
     If UserList(attackerIndex).flags.jugando_captura = 1 And UserList(TargetIndex).flags.jugando_captura = 1 Then
         If UserList(attackerIndex).flags.CurrentTeam = UserList(TargetIndex).flags.CurrentTeam Then
-            Call WriteConsoleMsg(attackerIndex, "¡No puedes atacar a miembros de tu propio equipo!", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1102= ¡No puedes atacar a miembros de tu propio equipo!
+            Call WriteLocaleMsg(attackerIndex, "1102", e_FontTypeNames.FONTTYPE_INFO)
             CanAttackUser = eSameTeam
             Exit Function
         End If
