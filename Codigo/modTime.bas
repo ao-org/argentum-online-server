@@ -28,11 +28,12 @@ Attribute VB_Name = "modTime"
 '
 Option Explicit
 
+Private Declare Function GetTickCount64 Lib "kernel32.dll" () As Currency
+
 Private Declare Function timeGetTime Lib "winmm.dll" () As Long
 Private Declare Sub GetSystemTime Lib "kernel32.dll" (lpSystemTime As t_SYSTEMTIME)
 
 Private theTime      As t_SYSTEMTIME
-
 
 Private Type t_SYSTEMTIME
 
@@ -53,43 +54,11 @@ Public Type t_Timer
     Occurrences As Integer
 End Type
 
-Public Function GetTickCount() As Long
-        On Error GoTo GetTickCount_Err
-        GetTickCount = timeGetTime And &H7FFFFFFF
-        Exit Function
-GetTickCount_Err:
-        Call TraceError(Err.Number, Err.Description, "ModLadder.GetTickCount", Erl)
-End Function
 
-Function GetTimeFormated() As String
-        On Error GoTo GetTimeFormated_Err
-        Dim Elapsed As Long
-        Elapsed = (GetTickCount() - HoraMundo) / DuracionDia
-        Dim Mins As Long
-        Mins = (Elapsed - Fix(Elapsed)) * 1440
-        Dim Horita    As Byte
-        Dim Minutitos As Byte
-        Horita = Fix(Mins / 60)
-        Minutitos = Mins Mod 60
-        GetTimeFormated = Right$("00" & Horita, 2) & ":" & Right$("00" & Minutitos, 2)
-        Exit Function
-GetTimeFormated_Err:
-     Call TraceError(Err.Number, Err.Description, "ModLadder.GetTimeFormated - " + Erl, Erl)
+Public Function GetTickCount() As Double
+    GetTickCount = GetTickCount64 * 10000
+    Exit Function
 End Function
-
-Public Sub GetHoraActual()
-        On Error GoTo GetHoraActual_Err
-        GetSystemTime theTime
-        HoraActual = (theTime.wHour - 3)
-        If HoraActual = -3 Then HoraActual = 21
-        If HoraActual = -2 Then HoraActual = 22
-        If HoraActual = -1 Then HoraActual = 23
-        frmMain.lblhora.Caption = HoraActual & ":" & Format(theTime.wMinute, "00") & ":" & Format(theTime.wSecond, "00")
-        HoraEvento = HoraActual
-        Exit Sub
-GetHoraActual_Err:
-     Call TraceError(Err.Number, Err.Description, "ModLadder.GetHoraActual", Erl)
-End Sub
 
 Public Function SumarTiempo(segundos As Integer) As String
         On Error GoTo SumarTiempo_Err
@@ -107,7 +76,7 @@ Public Function SumarTiempo(segundos As Integer) As String
         SumarTiempo = T 'a la funcion le damos el valor que hallamos en T
         Exit Function
 SumarTiempo_Err:
-     Call TraceError(Err.Number, Err.Description, "ModLadder.SumarTiempo", Erl)
+     Call TraceError(Err.Number, Err.Description, "modTime.SumarTiempo", Erl)
 End Function
 
 Public Sub SetTimer(ByRef timer As t_Timer, ByVal Interval As Long)

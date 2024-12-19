@@ -123,23 +123,13 @@ End Sub
  
 Public Sub AreasOptimizacion()
         
-        On Error GoTo AreasOptimizacion_Err
+On Error GoTo AreasOptimizacion_Err
         
-
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
-        'Es la función de autooptimizacion.... la idea es no mandar redimensionando arrays grandes todo el tiempo
-        '**************************************************************
         Dim LoopC      As Long
-
         Dim tCurDay    As Byte
-
         Dim tCurHour   As Byte
-
         Dim EntryValue As Long
-        Dim PerformanceTimer As Long
-        Call PerformanceTestStart(PerformanceTimer)
+
 100     If (CurDay <> IIf(Weekday(Date) > 6, 1, 2)) Or (CurHour <> Fix(Hour(Time) \ 3)) Then
         
 102         tCurDay = IIf(Weekday(Date) > 6, 1, 2) 'A ke tipo de dia pertenece?
@@ -160,7 +150,6 @@ Public Sub AreasOptimizacion()
 
         End If
 
-        Call PerformTimeLimitCheck(PerformanceTimer, "ModAreas.AreasOptimizacion")
         Exit Sub
 
 AreasOptimizacion_Err:

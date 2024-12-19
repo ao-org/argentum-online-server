@@ -60,9 +60,8 @@ Public dias                         As Long
 
 Public MinsRunning                  As Long
 
-Public ReiniciarServer              As Long
 
-Public tInicioServer                As Long
+Public tInicioServer                As Double
 
 'INTERVALOS
 Public SanaIntervaloSinDescansar    As Integer
@@ -73,13 +72,9 @@ Public IntervaloPerderStamina       As Integer
 Public IntervaloSed                 As Integer
 Public IntervaloHambre              As Integer
 Public IntervaloVeneno              As Integer
-
-'Ladder
 Public IntervaloIncineracion        As Integer
 Public IntervaloInmovilizado        As Integer
 Public IntervaloMaldicion           As Integer
-'Ladder
-
 Public IntervaloParalizado          As Integer
 Public IntervaloInvisible           As Integer
 Public IntervaloFrio                As Integer
@@ -87,48 +82,30 @@ Public IntervaloWavFx               As Integer
 Public IntervaloNPCPuedeAtacar      As Integer
 Public IntervaloNPCAI               As Integer
 Public IntervaloInvocacion          As Integer
-Public IntervaloOculto              As Integer '[Nacho]
+Public IntervaloOculto              As Integer
 Public IntervaloUserPuedeAtacar     As Long
 Public IntervaloMagiaGolpe          As Long
 Public IntervaloGolpeMagia          As Long
 Public IntervaloUserPuedeCastear    As Long
 Public IntervaloTrabajarExtraer     As Long
 Public IntervaloNpcOwner            As Long
-
 Public IntervaloTrabajarConstruir   As Long
-
-Public IntervaloCerrarConexion      As Long '[Gonzalo]
-
+Public IntervaloCerrarConexion      As Long
 Public IntervaloUserPuedeUsarU      As Long
-
 Public IntervaloUserPuedeUsarClic   As Long
-
 Public IntervaloGolpeUsar           As Long
-
 Public IntervaloFlechasCazadores    As Long
-
 Public TimeoutPrimerPaquete         As Long
-
 Public TimeoutEsperandoLoggear      As Long
-
 Public IntervaloTirar               As Long
-
 Public IntervaloMeditar             As Long
-
 Public IntervaloCaminar             As Long
-
 Public IntervaloEnCombate           As Long
-
 Public IntervaloPuedeSerAtacado     As Long
-
 Public IntervaloGuardarUsuarios     As Long
-
 Public LimiteGuardarUsuarios        As Integer
-
 Public IntervaloTimerGuardarUsuarios As Integer
-
 Public IntervaloMensajeGlobal       As Long
-
 Public Const IntervaloConsultaGM    As Long = 300000
 
 'BALANCE
@@ -145,9 +122,9 @@ Public ExpLevelUp(1 To STAT_MAXELV) As Long
 Public InfluenciaPromedioVidas      As Single
 Public ModDañoGolpeCritico          As Single
 Public MinutosWs                    As Long
-Public PlayerStunTime               As Long
-Public NpcStunTime                  As Long
-Public PlayerInmuneTime             As Long
+Public PlayerStunTime               As Double
+Public NpcStunTime                  As Double
+Public PlayerInmuneTime             As Double
 Public MultiShotReduction           As Single
 Public HomeTimer                    As Integer
 Public MagicSkillBonusDamageModifier As Single
