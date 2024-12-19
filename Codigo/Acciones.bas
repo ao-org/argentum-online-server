@@ -255,7 +255,7 @@ Call WriteLocaleMsg(UserIndex, "1065", e_FontTypeNames.FONTTYPE_WARNING)
                          UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.Resucitar
 
                          Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
-                            'Call WriteConsoleMsg(UserIndex, "El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...", e_FontTypeNames.FONTTYPE_INFO)
+                            'Msg82=El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...
                          Call WriteLocaleMsg(UserIndex, "82", e_FontTypeNames.FONTTYPE_INFOIAO)
 
                         End If
@@ -509,7 +509,7 @@ Call WriteLocaleMsg(userindex, "1070", e_FontTypeNames.FONTTYPE_INFO)
 164             ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.Revividor Or NpcList(TempCharIndex).NPCtype = e_NPCType.ResucitadorNewbie Then
 
 166                 If Distancia(UserList(UserIndex).Pos, NpcList(TempCharIndex).Pos) > 5 Then
-                        'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede curarte debido a que estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
+                        'Msg8=El sacerdote no puede curarte debido a que estas demasiado lejos.
 168                     Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
@@ -537,7 +537,7 @@ Call WriteLocaleMsg(userindex, "1070", e_FontTypeNames.FONTTYPE_INFO)
 188                     If UserList(UserIndex).Stats.MinHp <> UserList(UserIndex).Stats.MaxHp Then
 190                         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
 192                         Call WritePlayWave(UserIndex, "117", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
-                            'Call WriteConsoleMsg(UserIndex, "El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...¡Has sido curado!", e_FontTypeNames.FONTTYPE_INFO)
+                            'Msg83=El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...¡Has sido curado!"
 194                         Call WriteLocaleMsg(UserIndex, "83", e_FontTypeNames.FONTTYPE_INFOIAO)
                     
 196                         Call WriteUpdateUserStats(UserIndex)
@@ -625,7 +625,7 @@ Call WriteLocaleMsg(userindex, "1070", e_FontTypeNames.FONTTYPE_INFO)
             
 262                 If Distancia(NpcList(TempCharIndex).Pos, UserList(UserIndex).Pos) > 3 Then
 264                     Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                        'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del gobernador.", e_FontTypeNames.FONTTYPE_INFO)
+                        'Msg8=Estas demasiado lejos del gobernador.
                         Exit Sub
 
                     End If
