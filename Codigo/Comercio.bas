@@ -116,8 +116,8 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 126         Precio = Ceil(ObjData(Objeto_A_Comprar.ObjIndex).Valor / Descuento(UserIndex) * Cantidad)
         
 128         If UserList(UserIndex).Stats.GLD < Precio Then
-'Msg1082= No tienes suficiente dinero.
-Call WriteLocaleMsg(UserIndex, "1082", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg1082= No tienes suficiente dinero.
+                Call WriteLocaleMsg(UserIndex, "1082", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -150,18 +150,18 @@ Call WriteLocaleMsg(UserIndex, "1082", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
                 
 166         ElseIf ObjData(Objeto.ObjIndex).Newbie = 1 Then
-'Msg1083= Lo siento, no comercio objetos para newbies.
-Call WriteLocaleMsg(UserIndex, "1083", e_FontTypeNames.FONTTYPE_TALK)
+                'Msg1083= Lo siento, no comercio objetos para newbies.
+                Call WriteLocaleMsg(UserIndex, "1083", e_FontTypeNames.FONTTYPE_TALK)
                 Exit Sub
                 
 170         ElseIf ObjData(Objeto.ObjIndex).Destruye = 1 Then
-'Msg1084= Lo siento, no puedo comprarte ese item.
-Call WriteLocaleMsg(UserIndex, "1084", e_FontTypeNames.FONTTYPE_TALK)
+                'Msg1084= Lo siento, no puedo comprarte ese item.
+                Call WriteLocaleMsg(UserIndex, "1084", e_FontTypeNames.FONTTYPE_TALK)
                 Exit Sub
             
 174         ElseIf ObjData(Objeto.ObjIndex).Instransferible = 1 Then
-'Msg1085= Lo siento, no puedo comprarte ese item.
-Call WriteLocaleMsg(UserIndex, "1085", e_FontTypeNames.FONTTYPE_TALK)
+                'Msg1085= Lo siento, no puedo comprarte ese item.
+                Call WriteLocaleMsg(UserIndex, "1085", e_FontTypeNames.FONTTYPE_TALK)
                 Exit Sub
           
 178         ElseIf (NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> e_OBJType.otCualquiera) Or Objeto.ObjIndex = iORO Then
@@ -175,8 +175,8 @@ Call WriteLocaleMsg(UserIndex, "1085", e_FontTypeNames.FONTTYPE_TALK)
                     End If
                 Next i
                 If Not LoVende Then
-'Msg1086= Lo siento, no estoy interesado en este tipo de objetos.
-Call WriteLocaleMsg(UserIndex, "1086", e_FontTypeNames.FONTTYPE_TALK)
+                    'Msg1086= Lo siento, no estoy interesado en este tipo de objetos.
+                    Call WriteLocaleMsg(UserIndex, "1086", e_FontTypeNames.FONTTYPE_TALK)
                     Exit Sub
                 End If
 

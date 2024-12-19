@@ -126,7 +126,8 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
                         'Le avisamos al que estaba comerciando que se tuvo que ir.
 136                     If UserList(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
 138                         Call FinComerciarUsu(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex)
-140                         Call WriteConsoleMsg(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex, "Comercio cancelado. El otro usuario se ha desconectado.", e_FontTypeNames.FONTTYPE_TALK)
+                            'Msg1104= Comercio cancelado. El otro usuario se ha desconectado.
+                            Call WriteLocaleMsg(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex, "1104", e_FontTypeNames.FONTTYPE_TALK)
                         
 
                         End If
@@ -320,7 +321,8 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
 
 138         If MapInfo(Map).MinLevel <> 0 And .Stats.ELV < MapInfo(Map).MinLevel Then
 140             If .flags.UltimoMensaje <> 105 Then
-142                 Call WriteConsoleMsg(UserIndex, "Necesitas ser al menos nivel " & MapInfo(Map).MinLevel & " para entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1108= Necesitas ser al menos nivel ¬1
+Call WriteLocaleMsg(UserIndex, "1108", e_FontTypeNames.FONTTYPE_INFO, MapInfo(Map).MinLevel)
 144                 .flags.UltimoMensaje = 105
                 End If
                 Exit Function
@@ -328,7 +330,8 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
 
 146         If MapInfo(Map).MaxLevel <> 0 And .Stats.ELV >= MapInfo(Map).MaxLevel Then
 148             If .flags.UltimoMensaje <> 106 Then
-150                 Call WriteConsoleMsg(UserIndex, "Sólo los personajes inferiores a nivel " & MapInfo(Map).MaxLevel & " pueden entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1109= Sólo los personajes inferiores a nivel ¬1
+Call WriteLocaleMsg(UserIndex, "1109", e_FontTypeNames.FONTTYPE_INFO, MapInfo(Map).MaxLevel)
 152                 .flags.UltimoMensaje = 106
                 End If
                 Exit Function
@@ -1536,7 +1539,8 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 384                     UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
 
                     Else
-386                     Call WriteConsoleMsg(UserIndex, "Ves a ??? <Game Master>", e_FontTypeNames.FONTTYPE_GM)
+                        'Msg1105= Ves a ??? <Game Master>
+                        Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_GM)
     
 388                     Call SetUserRef(UserList(userIndex).flags.targetUser, TempCharIndex)
 390                     Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
@@ -1644,7 +1648,8 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     End If
                 Else
                     If UserList(UserIndex).flags.Muerto = 0 Then
-474                     Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "*" & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
+'Msg1113= NPCNAME*¬1
+Call WriteLocaleMsg(UserIndex, "1113", e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Numero)
                     End If
                 End If
                ' End If
@@ -1714,7 +1719,8 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 536             UserList(UserIndex).flags.TargetObjX = 0
 538             UserList(UserIndex).flags.TargetObjY = 0
 
-                ' Call WriteConsoleMsg(UserIndex, "No ves nada interesante.", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1114= No ves nada interesante.
+Call WriteLocaleMsg(UserIndex, "1114", e_FontTypeNames.FONTTYPE_INFO)
             End If
 
         Else
@@ -1728,7 +1734,8 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 552             UserList(UserIndex).flags.TargetObjX = 0
 554             UserList(UserIndex).flags.TargetObjY = 0
 
-                '  Call WriteConsoleMsg(UserIndex, "No ves nada interesante.", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg1106= No ves nada interesante.
+                Call WriteLocaleMsg(UserIndex, "1106", e_FontTypeNames.FONTTYPE_INFO)
             End If
 
         End If

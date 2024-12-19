@@ -256,7 +256,8 @@ Public Sub PurgarPenas()
 108                 If UserList(i).Counters.Pena < 1 Then
 110                     UserList(i).Counters.Pena = 0
 112                     Call WarpUserChar(i, Libertad.Map, Libertad.X, Libertad.Y, True)
-114                     Call WriteConsoleMsg(i, "Has sido liberado.", e_FontTypeNames.FONTTYPE_INFO)
+                        'Msg1103= Has sido liberado.
+                        Call WriteLocaleMsg(i, "1103", e_FontTypeNames.FONTTYPE_INFO)
                     End If
 
                 End If
@@ -286,7 +287,8 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
 104     Call WarpUserChar(UserIndex, Prision.Map, Prision.X, Prision.Y, True)
         
 106     If LenB(GmName) = 0 Then
-108         Call WriteConsoleMsg(UserIndex, "Has sido encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1107= Has sido encarcelado, deberas permanecer en la carcel  ¬1 minutos.
+Call WriteLocaleMsg(UserIndex, "1107", e_FontTypeNames.FONTTYPE_INFO, minutos)
         Else
 110         Call WriteConsoleMsg(UserIndex, GmName & " te ha encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", e_FontTypeNames.FONTTYPE_INFO)
 
