@@ -6612,7 +6612,7 @@ Private Sub HandleOnlineRoyalArmy(ByVal UserIndex As Integer)
     
 116     If Len(list) > 0 Then
 'Msg1289= Armadas conectados: ¬1
-Call WriteLocaleMsg(UserIndex, "1289", e_FontTypeNames.FONTTYPE_INFO, ())
+Call WriteLocaleMsg(UserIndex, "1289", e_FontTypeNames.FONTTYPE_INFO, Left$(list, Len(list) - 2))
         Else
 'Msg1182= No hay Armadas conectados
 Call WriteLocaleMsg(UserIndex, "1182", e_FontTypeNames.FONTTYPE_INFO)
@@ -6667,7 +6667,7 @@ Private Sub HandleOnlineChaosLegion(ByVal UserIndex As Integer)
 
 116     If Len(list) > 0 Then
 'Msg1290= Caos conectados: ¬1
-Call WriteLocaleMsg(UserIndex, "1290", e_FontTypeNames.FONTTYPE_INFO, ())
+Call WriteLocaleMsg(UserIndex, "1290", e_FontTypeNames.FONTTYPE_INFO, Left$(list, Len(list) - 2))
         
         Else
 'Msg1184= No hay Caos conectados
