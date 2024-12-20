@@ -1648,8 +1648,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     End If
                 Else
                     If UserList(UserIndex).flags.Muerto = 0 Then
-'Msg1113= NPCNAME*¬1
-Call WriteLocaleMsg(UserIndex, "1113", e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Numero)
+                        Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "*" & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
                ' End If

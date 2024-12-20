@@ -1367,7 +1367,8 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 166             If AumentoHIT > 0 Then
 168                 Call WriteLocaleMsg(UserIndex, "200", e_FontTypeNames.FONTTYPE_INFO, AumentoHIT)
 
-                    'Call WriteConsoleMsg(UserIndex, "Tu golpe aumento en " & AumentoHIT & " puntos.", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1292= Tu golpe aumento en ¬1 puntos.
+Call WriteLocaleMsg(UserIndex, "1292", e_FontTypeNames.FONTTYPE_INFO, AumentoHIT)
                 End If
 
 170             PasoDeNivel = True
@@ -1382,7 +1383,8 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
     
 178                     OroRecompenza = OroPorNivel * .Stats.ELV * OroMult
 180                     .Stats.GLD = .Stats.GLD + OroRecompenza
-                        'Call WriteConsoleMsg(UserIndex, "Has ganado " & OroRecompenza & " monedas de oro.", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1293= Has ganado ¬1 monedas de oro.
+Call WriteLocaleMsg(UserIndex, "1293", e_FontTypeNames.FONTTYPE_INFO, OroRecompenza)
 182                     Call WriteLocaleMsg(UserIndex, "29", e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(OroRecompenza))
                     End If
                 End If
@@ -1401,7 +1403,8 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 200                 Call WriteLevelUp(UserIndex, .Stats.SkillPts)
 202                 Call WriteLocaleMsg(UserIndex, "187", e_FontTypeNames.FONTTYPE_INFO, Pts)
 
-                    'Call WriteConsoleMsg(UserIndex, "Has ganado un total de " & Pts & " skillpoints.", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1294= Has ganado un total de ¬1 skillpoints.
+Call WriteLocaleMsg(UserIndex, "1294", e_FontTypeNames.FONTTYPE_INFO, Pts)
                 End If
                 
                 If Not EsNewbie(UserIndex) And WasNewbie Then
@@ -1771,7 +1774,8 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 
         Dim GuildI As Integer
 
-100     Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & UserList(UserIndex).Name, e_FontTypeNames.FONTTYPE_INFO)
+'Msg1295= Estadisticas de: ¬1
+Call WriteLocaleMsg(sendIndex, "1295", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Name)
 102     Call WriteConsoleMsg(sendIndex, "Nivel: " & UserList(UserIndex).Stats.ELV & "  EXP: " & UserList(UserIndex).Stats.Exp & "/" & ExpLevelUp(UserList(UserIndex).Stats.ELV), e_FontTypeNames.FONTTYPE_INFO)
 104     Call WriteConsoleMsg(sendIndex, "Salud: " & UserList(UserIndex).Stats.MinHp & "/" & UserList(UserIndex).Stats.MaxHp & "  Mana: " & UserList(UserIndex).Stats.MinMAN & "/" & UserList(UserIndex).Stats.MaxMAN & "  Vitalidad: " & UserList(UserIndex).Stats.MinSta & "/" & UserList(UserIndex).Stats.MaxSta, e_FontTypeNames.FONTTYPE_INFO)
 106     If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
@@ -1806,7 +1810,8 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 128     GuildI = UserList(UserIndex).GuildIndex
 
 130     If GuildI > 0 Then
-132         Call WriteConsoleMsg(sendIndex, "Clan: " & modGuilds.GuildName(GuildI), e_FontTypeNames.FONTTYPE_INFO)
+'Msg1296= Clan: ¬1
+Call WriteLocaleMsg(sendIndex, "1296", e_FontTypeNames.FONTTYPE_INFO, modGuilds.GuildName(GuildI))
 
 134         If UCase$(modGuilds.GuildLeader(GuildI)) = UCase$(UserList(sendIndex).Name) Then
                 'Msg1100= Status: Líder
@@ -1829,15 +1834,19 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 140         TempSecs = (UserList(UserIndex).UpTime + (Abs(Day(TempDate) - 30) * 24 * 3600) + (Hour(TempDate) * 3600) + (Minute(TempDate) * 60) + Second(TempDate))
 142         TempStr = (TempSecs \ 86400) & " Dias, " & ((TempSecs Mod 86400) \ 3600) & " Horas, " & ((TempSecs Mod 86400) Mod 3600) \ 60 & " Minutos, " & (((TempSecs Mod 86400) Mod 3600) Mod 60) & " Segundos."
 144         Call WriteConsoleMsg(sendIndex, "Logeado hace: " & Hour(TempDate) & ":" & Minute(TempDate) & ":" & Second(TempDate), e_FontTypeNames.FONTTYPE_INFO)
-146         Call WriteConsoleMsg(sendIndex, "Total: " & TempStr, e_FontTypeNames.FONTTYPE_INFO)
+'Msg1297= Total: ¬1
+Call WriteLocaleMsg(sendIndex, "1297", e_FontTypeNames.FONTTYPE_INFO, TempStr)
         #End If
 
         Call LoadPatronCreditsFromDB(UserIndex)
-148     Call WriteConsoleMsg(sendIndex, "Oro: " & UserList(UserIndex).Stats.GLD, e_FontTypeNames.FONTTYPE_INFO)
+'Msg1298= Oro: ¬1
+Call WriteLocaleMsg(sendIndex, "1298", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.GLD)
 150     Call WriteConsoleMsg(sendIndex, "Dados: " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Fuerza) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Inteligencia) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Constitucion) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Carisma), e_FontTypeNames.FONTTYPE_INFO)
-152     Call WriteConsoleMsg(sendIndex, "Veces que Moriste: " & UserList(UserIndex).flags.VecesQueMoriste, e_FontTypeNames.FONTTYPE_INFO)
+'Msg1299= Veces que Moriste: ¬1
+Call WriteLocaleMsg(sendIndex, "1299", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).flags.VecesQueMoriste)
 154     Call WriteLocaleMsg(sendIndex, MsgFactionScore, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Faccion.FactionScore)
-        Call WriteConsoleMsg(sendIndex, "Creditos Patreon: " & UserList(UserIndex).Stats.Creditos, e_FontTypeNames.FONTTYPE_INFO)
+'Msg1300= Creditos Patreon: ¬1
+Call WriteLocaleMsg(sendIndex, "1300", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.Creditos)
         Exit Sub
 
 SendUserStatsTxt_Err:
@@ -1858,21 +1867,31 @@ Sub SendUserMiniStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         '23/01/2007 Pablo (ToxicWaste) - Agrego de funciones y mejora de distribución de parámetros.
         '*************************************************
 100     With UserList(UserIndex)
-102         Call WriteConsoleMsg(sendIndex, "Pj: " & .Name, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(sendIndex, "Ciudadanos Matados: " & .Faccion.ciudadanosMatados, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(sendIndex, "Criminales Matados: " & .Faccion.CriminalesMatados, e_FontTypeNames.FONTTYPE_INFO)
-104         Call WriteConsoleMsg(sendIndex, "UsuariosMatados: " & .Stats.UsuariosMatados, e_FontTypeNames.FONTTYPE_INFO)
-106         Call WriteConsoleMsg(sendIndex, "NPCsMuertos: " & .Stats.NPCsMuertos, e_FontTypeNames.FONTTYPE_INFO)
-108         Call WriteConsoleMsg(sendIndex, "Clase: " & ListaClases(.clase), e_FontTypeNames.FONTTYPE_INFO)
-110         Call WriteConsoleMsg(sendIndex, "Pena: " & .Counters.Pena, e_FontTypeNames.FONTTYPE_INFO)
+'Msg1301= Pj: ¬1
+Call WriteLocaleMsg(sendIndex, "1301", e_FontTypeNames.FONTTYPE_INFO, .Name)
+'Msg1302= Ciudadanos Matados: ¬1
+Call WriteLocaleMsg(sendIndex, "1302", e_FontTypeNames.FONTTYPE_INFO, .Faccion.ciudadanosMatados)
+'Msg1303= Criminales Matados: ¬1
+Call WriteLocaleMsg(sendIndex, "1303", e_FontTypeNames.FONTTYPE_INFO, .Faccion.CriminalesMatados)
+'Msg1304= UsuariosMatados: ¬1
+Call WriteLocaleMsg(sendIndex, "1304", e_FontTypeNames.FONTTYPE_INFO, .Stats.UsuariosMatados)
+'Msg1305= NPCsMuertos: ¬1
+Call WriteLocaleMsg(sendIndex, "1305", e_FontTypeNames.FONTTYPE_INFO, .Stats.NPCsMuertos)
+'Msg1306= Clase: ¬1
+Call WriteLocaleMsg(sendIndex, "1306", e_FontTypeNames.FONTTYPE_INFO, ListaClases(.clase))
+'Msg1307= Pena: ¬1
+Call WriteLocaleMsg(sendIndex, "1307", e_FontTypeNames.FONTTYPE_INFO, .Counters.Pena)
 
 112         If .GuildIndex > 0 Then
-114             Call WriteConsoleMsg(sendIndex, "Clan: " & GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_INFO)
+'Msg1308= Clan: ¬1
+Call WriteLocaleMsg(sendIndex, "1308", e_FontTypeNames.FONTTYPE_INFO, GuildName(.GuildIndex))
 
             End If
 
-116         Call WriteConsoleMsg(sendIndex, "Oro en billetera: " & .Stats.GLD, e_FontTypeNames.FONTTYPE_INFO)
-118         Call WriteConsoleMsg(sendIndex, "Oro en banco: " & .Stats.Banco, e_FontTypeNames.FONTTYPE_INFO)
+'Msg1309= Oro en billetera: ¬1
+Call WriteLocaleMsg(sendIndex, "1309", e_FontTypeNames.FONTTYPE_INFO, .Stats.GLD)
+'Msg1310= Oro en banco: ¬1
+Call WriteLocaleMsg(sendIndex, "1310", e_FontTypeNames.FONTTYPE_INFO, .Stats.Banco)
 
         End With
 
@@ -1896,7 +1915,8 @@ Sub SendUserInvTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         Dim j As Long
     
 100     Call WriteConsoleMsg(sendIndex, UserList(UserIndex).Name, e_FontTypeNames.FONTTYPE_INFO)
-102     Call WriteConsoleMsg(sendIndex, "Tiene " & UserList(UserIndex).Invent.NroItems & " objetos.", e_FontTypeNames.FONTTYPE_INFO)
+'Msg1311= Tiene ¬1 objetos.
+Call WriteLocaleMsg(sendIndex, "1311", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Invent.NroItems)
     
 104     For j = 1 To UserList(UserIndex).CurrentInventorySlots
 
@@ -1931,7 +1951,8 @@ Sub SendUserSkillsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 102     For j = 1 To NUMSKILLS
 104         Call WriteConsoleMsg(sendIndex, SkillsNames(j) & " = " & UserList(UserIndex).Stats.UserSkills(j), e_FontTypeNames.FONTTYPE_INFO)
         Next
-106     Call WriteConsoleMsg(sendIndex, " SkillLibres:" & UserList(UserIndex).Stats.SkillPts, e_FontTypeNames.FONTTYPE_INFO)
+'Msg1312=  SkillLibres:¬1
+Call WriteLocaleMsg(sendIndex, "1312", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.SkillPts)
 
         
         Exit Sub
@@ -2061,7 +2082,8 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
                 Dim BonusExp As Long
 146             BonusExp = 5& * ExpMult
         
-                Call WriteConsoleMsg(UserIndex, "¡Has ganado " & BonusExp & " puntos de experiencia!", e_FontTypeNames.FONTTYPE_INFOIAO)
+'Msg1313= ¡Has ganado ¬1 puntos de experiencia!
+Call WriteLocaleMsg(UserIndex, "1313", e_FontTypeNames.FONTTYPE_INFOIAO, BonusExp)
                 
 152             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
 154                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + BonusExp

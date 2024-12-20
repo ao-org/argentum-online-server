@@ -10795,7 +10795,8 @@ Call WriteLocaleMsg(UserIndex, "1284", e_FontTypeNames.FONTTYPE_INFO, MinimumLev
         End If
         
         If .Stats.GLD < GoldPriceMao Then
-            Call WriteConsoleMsg(UserIndex, "El costo para vender tu personajes es de " & GoldPriceMao & " monedas de oro, no tienes esa cantidad.", e_FontTypeNames.FONTTYPE_INFOBOLD)
+'Msg1291= El costo para vender tu personajes es de ¬1 monedas de oro, no tienes esa cantidad.
+Call WriteLocaleMsg(UserIndex, "1291", e_FontTypeNames.FONTTYPE_INFOBOLD, GoldPriceMao)
             Exit Sub
         Else
             .Stats.GLD = .Stats.GLD - GoldPriceMao
