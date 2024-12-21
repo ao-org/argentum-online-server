@@ -202,7 +202,8 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 164                 Call CheckUserLevel(UserIndex)
 166                 Call WriteLocaleMsg(UserIndex, "140", e_FontTypeNames.FONTTYPE_EXP, (.RewardEXP * ExpMult))
                 Else
-168                 Call WriteConsoleMsg(UserIndex, "No se te ha dado experiencia porque eres nivel máximo.", e_FontTypeNames.FONTTYPE_INFO)
+                    'Msg1314= No se te ha dado experiencia porque eres nivel máximo.
+                    Call WriteLocaleMsg(UserIndex, "1314", e_FontTypeNames.FONTTYPE_INFO)
                 End If
             End If
         
@@ -212,11 +213,13 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                 GiveGLD = (.RewardGLD * OroMult)
                 If GiveGLD < 100000 Then
 172                 UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + GiveGLD
-174                 Call WriteConsoleMsg(UserIndex, "Has ganado " & PonerPuntos(GiveGLD) & " monedas de oro como recompensa.", e_FontTypeNames.FONTTYPE_INFOIAO)
+                    'Msg1315= Has ganado ¬1 monedas de oro como recompensa.
+                    Call WriteLocaleMsg(UserIndex, "1315", e_FontTypeNames.FONTTYPE_INFOIAO, PonerPuntos(GiveGLD))
 176                 Call WriteUpdateGold(UserIndex)
                 Else
                     UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco + GiveGLD
-                    Call WriteConsoleMsg(UserIndex, "Has ganado " & PonerPuntos(GiveGLD) & " monedas de oro como recompensa. La recompensa ha sido depositada en su cuenta del Banco Goliath.", e_FontTypeNames.FONTTYPE_INFOIAO)
+                    'Msg1316= Has ganado ¬1 monedas de oro como recompensa. La recompensa ha sido depositada en su cuenta del Banco Goliath.
+                    Call WriteLocaleMsg(UserIndex, "1316", e_FontTypeNames.FONTTYPE_INFOIAO, PonerPuntos(GiveGLD))
                 End If
             End If
         
@@ -225,7 +228,8 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 180             For i = 1 To .RewardOBJs
 182                 If .RewardOBJ(i).amount Then
 184                     Call MeterItemEnInventario(UserIndex, .RewardOBJ(i))
-186                     Call WriteConsoleMsg(UserIndex, "Has recibido " & QuestList(QuestIndex).RewardOBJ(i).amount & " " & ObjData(QuestList(QuestIndex).RewardOBJ(i).ObjIndex).Name & " como recompensa.", e_FontTypeNames.FONTTYPE_INFOIAO)
+186                     'Msg1318=Has recibido ¬1 como recompensa.
+                        Call WriteLocaleMsg(UserIndex, "1318", e_FontTypeNames.FONTTYPE_FIGHT, QuestList(QuestIndex).RewardOBJ(i).amount & " " & ObjData(QuestList(QuestIndex).RewardOBJ(i).ObjIndex).name)
                     End If
 188             Next i
             End If
@@ -234,16 +238,17 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                 For i = 1 To .RewardSpellCount
                     If Not TieneHechizo(.RewardSpellList(i), UserIndex) Then
                         'Buscamos un slot vacio
-204                      For j = 1 To MAXUSERHECHIZOS
+204                     For j = 1 To MAXUSERHECHIZOS
 206                          If UserList(UserIndex).Stats.UserHechizos(j) = 0 Then Exit For
-208                      Next j
-210                      If UserList(UserIndex).Stats.UserHechizos(j) <> 0 Then
-212                          Call WriteConsoleMsg(UserIndex, "No tenes espacio para mas hechizos.", e_FontTypeNames.FONTTYPE_INFO)
-                         Else
-214                          UserList(UserIndex).Stats.UserHechizos(j) = .RewardSpellList(i)
-216                          Call UpdateUserHechizos(False, UserIndex, CByte(j))
-                         End If
-                         UserList(UserIndex).flags.ModificoHechizos = True
+208                     Next j
+210                     If UserList(UserIndex).Stats.UserHechizos(j) <> 0 Then
+                            'Msg1317= No tenes espacio para mas hechizos.
+                            Call WriteLocaleMsg(UserIndex, "1317", e_FontTypeNames.FONTTYPE_INFO)
+                        Else
+214                         UserList(UserIndex).Stats.UserHechizos(j) = .RewardSpellList(i)
+216                         Call UpdateUserHechizos(False, UserIndex, CByte(j))
+                        End If
+                        UserList(UserIndex).flags.ModificoHechizos = True
                     End If
                 Next i
             End If
