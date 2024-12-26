@@ -241,8 +241,8 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                                 End If
 
                             Else
-496                             ' Msg600=Ahí no hay ningún yacimiento.
-                                Call WriteLocaleMsg(UserIndex, "600", e_FontTypeNames.FONTTYPE_INFO)
+496                             ' Msg599=Ahí no hay ningún yacimiento.
+                                Call WriteLocaleMsg(UserIndex, "599", e_FontTypeNames.FONTTYPE_INFO)
 498                             Call WriteWorkRequestTarget(UserIndex, 0)
 
                             End If
