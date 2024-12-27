@@ -9797,8 +9797,8 @@ Call WriteLocaleMsg(UserIndex, "1263", e_FontTypeNames.FONTTYPE_INFO)
 158             If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
 160             UserList(UserIndex).flags.ModificoQuests = True
                 
-'Msg1264= Has aceptado la misión ¬1
-Call WriteLocaleMsg(UserIndex, "1264", e_FontTypeNames.FONTTYPE_INFO, Chr(34))
+                    'Msg1264= Has aceptado la misión ¬1
+                    Call WriteLocaleMsg(UserIndex, "1264", e_FontTypeNames.FONTTYPE_INFOIAO, Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".")
 
 164             If (FinishQuestCheck(UserIndex, .QuestIndex, QuestSlot)) Then
 166                 Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 3)
