@@ -7676,7 +7676,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
             End If
 
             'Msg1221= Vida actual: ¬1
-            Call WriteLocaleMsg(UserIndex, "1221", e_FontTypeNames.e_FontTypeNames.FONTTYPE_INFO, .Stats.MaxHp & " (" & Signo & Abs(Diff) & "). Promedio: " & Round(Promedio, 2) & Color)
+            Call WriteLocaleMsg(UserIndex, "1221", e_FontTypeNames.e_FontTypeNames.FONTTYPE_INFOBOLD, .Stats.MaxHp & " (" & Signo & Abs(Diff) & "). Promedio: " & Round(Promedio, 2) & Color)
         End With
         
         Exit Sub
