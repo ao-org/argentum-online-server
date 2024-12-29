@@ -106,7 +106,7 @@ Public Sub LogThis(nErrNo As Long, sLogMsg As String, eventType As LogEventTypeC
     If eventType = vbLogEventTypeWarning Or eventType = vbLogEventTypeError Then
         Call AddLogToCircularBuffer(sLogMsg)
     End If
-    Call ReportEvent(hEvent, eventType, 0, 1001, 0, 1, Len(sLogMsg), nErrNo & " - " & sLogMsg, 0)
+    Call ReportEvent(hEvent, eventType, 0, 0, 0, 1, Len(sLogMsg), nErrNo & " - " & sLogMsg, 0)
 End Sub
 
 Public Sub LogearEventoDeSubasta(s As String)
