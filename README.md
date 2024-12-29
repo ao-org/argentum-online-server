@@ -103,17 +103,13 @@ Please note this is not free software and you will have to buy your own license 
 - [https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)
 
 # 🛡️ Logs
-Here's the improved documentation with the full error message included:
-
-**# 🛡️ Logs**
 * **Location:**
     * Logs folder
     * Errors folder
     * Windows Event Viewer
 
 * **Handling "The description for Event ID:0..." error:**
-    Run the `RegistrarEvento.bat` script.
-    To resolve this error message within the Windows Event Viewer: 
+    Run the `RegistrarEvento.bat` script to resolve this error message within the Windows Event Viewer: 
 
     ```
     The description for Event ID:0 in Source:'Argentum20' cannot be found. 
