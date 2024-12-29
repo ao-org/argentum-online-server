@@ -103,7 +103,28 @@ Please note this is not free software and you will have to buy your own license 
 - [https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)
 
 # 🛡️ Logs
-Los logs están en la carpeta de Logs, Errores y en Windows Events.
+Here's the improved documentation with the full error message included:
+
+**# 🛡️ Logs**
+* **Location:**
+    * Logs folder
+    * Errors folder
+    * Windows Event Viewer
+
+* **Handling "The description for Event ID:0..." error:**
+    Run the `RegistrarEvento.bat` script.
+    To resolve this error message within the Windows Event Viewer: 
+
+    ```
+    The description for Event ID:0 in Source:'Argentum20' cannot be found. 
+    Either the component that raises this event is not installed on your local computer 
+    or the installation is corrupted. 
+    You can install or repair the component on the local computer. 
+    If the event originated on another computer, 
+    the display information had to be saved with the event. 
+    The following information was included with the event: 
+    ```
+
 
 ## Star History
 
