@@ -28,43 +28,39 @@ Attribute VB_Name = "InvUsuario"
 
 Option Explicit
 
-Public Function TieneObjEnInv(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional ObjIndex2 As Integer = 0) As Boolean
-        On Error GoTo TieneObjEnInv_Err
-        
-        'Devuelve el slot del inventario donde se encuentra el obj
-        'Creaado por Ladder 25/09/2014
-        Dim i As Byte
-
-     For i = 1 To 36
-
-         If UserList(UserIndex).Invent.Object(i).ObjIndex = ObjIndex Then
-             TieneObjEnInv = True
+Public Function IsObjecIndextInInventory(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Boolean
+On Error GoTo IsObjecIndextInInventory_Err
+    Debug.Assert UserIndex >= LBound(UserList) And UserIndex <= UBound(UserList)
+    ' If no match is found, return False
+    IsObjecIndextInInventory = False
+    Dim i As Byte
+    Dim maxItemsInventory As Byte
+    Dim currentObjIndex As Integer
+    With UserList(UserIndex)
+        ' Determine inventory slots based on user type
+        Select Case .Stats.tipoUsuario
+            Case tLeyenda
+                maxItemsInventory = MAX_INVENTORY_SLOTS
+            Case tHeroe
+                maxItemsInventory = MAX_USERINVENTORY_HERO_SLOTS
+            Case Else
+                maxItemsInventory = MAX_USERINVENTORY_SLOTS
+        End Select
+    
+        ' Search inventory for the object
+        For i = 1 To maxItemsInventory
+            currentObjIndex = .invent.Object(i).ObjIndex
+            If currentObjIndex = ObjIndex Then
+                IsObjecIndextInInventory = True
                 Exit Function
-
             End If
+        Next i
+    End With
+    Exit Function
 
-         If ObjIndex2 > 0 Then
-             If UserList(UserIndex).Invent.Object(i).ObjIndex = ObjIndex2 Then
-                 TieneObjEnInv = True
-                    Exit Function
-
-                End If
-
-            End If
-
-     Next i
-
-     TieneObjEnInv = False
-
-        
-        Exit Function
-
-TieneObjEnInv_Err:
-     Call TraceError(Err.Number, Err.Description, "ModLadder.TieneObjEnInv", Erl)
-
-        
+IsObjecIndextInInventory_Err:
+    Call TraceError(Err.Number, Err.Description, "IsObjecIndextInInventory", Erl)
 End Function
-
 
 Public Function CantidadObjEnInv(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Integer
         On Error GoTo CantidadObjEnInv_Err
