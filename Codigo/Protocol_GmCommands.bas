@@ -3974,7 +3974,13 @@ Public Sub HandleGlobalMessage(ByVal UserIndex As Integer)
 126                         .flags.ChatHistory(i) = .flags.ChatHistory(i + 1)
                         Next
 128                     .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
-130                     Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("[" & .name & "] " & chat, e_FontTypeNames.FONTTYPE_GLOBAL))
+
+                        Dim MessageChat As String
+                        MessageChat = "[" & .name & "] " & chat
+
+130                     Call modSendData.SendData(SendTarget.ToAll, 0, MessageChat, PrepareMessageConsoleMsg(MessageChat, e_FontTypeNames.FONTTYPE_GLOBAL))
+131                     Call LogThis(0, MessageChat, vbLogEventTypeInformation)
+
                         'TODO : Con la 0.12.1 se debe definir si esto vuelve o se borra (/CMSG overhead)
                     End If
                 Else
