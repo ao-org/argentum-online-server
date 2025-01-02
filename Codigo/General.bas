@@ -674,7 +674,8 @@ Sub Main()
 246     frmCargando.Label1(2).Caption = "Cargando Quests"
 252     Call LoadQuests
 
-254     EstadoGlobal = False
+' TODO: Add variable to Server.ini or Configuracion.ini
+254     EstadoGlobal = True
     
         Call ResetLastLogoutAndIsLogged
 
