@@ -633,10 +633,13 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
 
-122         If Hechizos(HechizoIndex).NecesitaObj > 0 Then
-124             If Not TieneObjEnInv(UserIndex, Hechizos(HechizoIndex).NecesitaObj, Hechizos(HechizoIndex).NecesitaObj2) Then
-126                 Call WriteConsoleMsg(UserIndex, "Necesitas un " & ObjData(Hechizos(HechizoIndex).NecesitaObj).Name & " para lanzar el hechizo.", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Function
+            If Hechizos(HechizoIndex).NecesitaObj > 0 Then
+              If Not IsObjecIndextInInventory(UserIndex, Hechizos(HechizoIndex).NecesitaObj) And _
+                 Not IsObjecIndextInInventory(UserIndex, Hechizos(HechizoIndex).NecesitaObj2) Then
+                    If Not IsObjecIndextInInventory(UserIndex, Hechizos(HechizoIndex).NecesitaObj) And Not IsObjecIndextInInventory(UserIndex, Hechizos(HechizoIndex).NecesitaObj2) Then
+                        Call WriteConsoleMsg(UserIndex, "Necesitas un " & ObjData(Hechizos(HechizoIndex).NecesitaObj).name & " para lanzar el hechizo.", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Function
+                    End If
                 End If
             End If
             
