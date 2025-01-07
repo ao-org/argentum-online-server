@@ -346,7 +346,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
         
             ' GM's (excepto Dioses y Admins) no pueden tirar oro
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-104             Call LogGM(.Name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y)
+104             Call LogGM(.name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .pos.Map & "-" & .pos.x & "-" & .pos.y)
                 Exit Sub
             End If
          
@@ -792,7 +792,7 @@ Sub PickObj(ByVal UserIndex As Integer)
 124                 If BusquedaTesoroActiva Then
 126                     If UserList(UserIndex).Pos.Map = TesoroNumMapa And UserList(UserIndex).Pos.X = TesoroX And UserList(UserIndex).Pos.Y = TesoroY Then
     
-128                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).Name & " encontro el tesoro ¡Felicitaciones!", e_FontTypeNames.FONTTYPE_TALK))
+128                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).name & " encontro el tesoro ¡Felicitaciones!", e_FontTypeNames.FONTTYPE_TALK))
 130                         BusquedaTesoroActiva = False
 
                         End If
@@ -801,7 +801,7 @@ Sub PickObj(ByVal UserIndex As Integer)
                 
 132                 If BusquedaRegaloActiva Then
 134                     If UserList(UserIndex).Pos.Map = RegaloNumMapa And UserList(UserIndex).Pos.X = RegaloX And UserList(UserIndex).Pos.Y = RegaloY Then
-136                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).Name & " fue el valiente que encontro el gran item magico ¡Felicitaciones!", e_FontTypeNames.FONTTYPE_TALK))
+136                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).name & " fue el valiente que encontro el gran item magico ¡Felicitaciones!", e_FontTypeNames.FONTTYPE_TALK))
 138                         BusquedaRegaloActiva = False
 
                         End If
@@ -2606,7 +2606,7 @@ Call WriteLocaleMsg(UserIndex, "888", e_FontTypeNames.FONTTYPE_INFOIAO)
                             Dim S As Byte
                     
 922                         If .Stats.UserSkills(e_Skill.liderazgo) >= 80 Then
-'Msg889= Has fundado un clan, no podes resetar tus skills. 
+'Msg889= Has fundado un clan, no podes resetar tus skills.
 Call WriteLocaleMsg(UserIndex, "889", e_FontTypeNames.FONTTYPE_INFOIAO)
                                 Exit Sub
     
@@ -2805,7 +2805,7 @@ Call WriteLocaleMsg(UserIndex, "894", e_FontTypeNames.FONTTYPE_INFO)
         
 1054             Case e_OBJType.otLlaves
                     If UserList(UserIndex).flags.Muerto = 1 Then
-'Msg895= ¡¡Estas muerto!! Solo podes usar items cuando estas vivo. 
+'Msg895= ¡¡Estas muerto!! Solo podes usar items cuando estas vivo.
 Call WriteLocaleMsg(UserIndex, "895", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
@@ -2976,7 +2976,7 @@ Call WriteLocaleMsg(UserIndex, "906", e_FontTypeNames.FONTTYPE_INFO)
 1138                 If obj.Real Then '¿Es el Cuerno Real?
 1140                     If FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
 1142                         If MapInfo(.Pos.Map).Seguro = 1 Then
-'Msg907= No hay Peligro aquí. Es Zona Segura 
+'Msg907= No hay Peligro aquí. Es Zona Segura
 Call WriteLocaleMsg(UserIndex, "907", e_FontTypeNames.FONTTYPE_INFO)
                                       Exit Sub
     
@@ -2995,7 +2995,7 @@ Call WriteLocaleMsg(UserIndex, "908", e_FontTypeNames.FONTTYPE_INFO)
     
 1152                     If FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
 1154                         If MapInfo(.Pos.Map).Seguro = 1 Then
-'Msg909= No hay Peligro aquí. Es Zona Segura 
+'Msg909= No hay Peligro aquí. Es Zona Segura
 Call WriteLocaleMsg(UserIndex, "909", e_FontTypeNames.FONTTYPE_INFO)
                                       Exit Sub
     
@@ -3389,7 +3389,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
             If ((.Pos.map = 58 Or .Pos.map = 59 Or .Pos.map = 60 Or .Pos.map = 61) And EnEventoFaccionario) Then Exit Sub
             ' Tambien se cae el oro de la billetera
             Dim GoldToDrop As Long
-            GoldToDrop = .Stats.GLD - (OroPorNivelBilletera * .Stats.ELV)
+            GoldToDrop = .Stats.GLD - (SvrConfig.GetValue("OroPorNivelBilletera") * .Stats.ELV)
 102         If GoldToDrop > 0 And Not EsGM(UserIndex) Then
 104             Call TirarOro(GoldToDrop, UserIndex)
             End If

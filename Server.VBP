@@ -123,6 +123,7 @@ Class=IInventoryInterface; Codigo\Scenearios\IInventoryInterface.cls
 Module=PacketId; Codigo\PacketId.bas
 Module=AntiCheat; Codigo\AntiCheat.bas
 Module=InstanceManager; Codigo\InstanceManager.bas
+Class=ServerConfig; Codigo\ServerConfig.cls
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""

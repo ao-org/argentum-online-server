@@ -1306,7 +1306,7 @@ Private Sub Command12_Click()
         
         On Error GoTo Command12_Click_Err
         
-100     Call LoadConfiguraciones
+100     Call LoadMainConfigFile
         
         Exit Sub
 

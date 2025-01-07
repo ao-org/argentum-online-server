@@ -1743,8 +1743,8 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
 
             End If
     
-122         If ExpMult > 0 Then
-124             ExpaDar = ExpaDar * ExpMult
+122         If SvrConfig.GetValue("ExpMult") > 0 Then
+124             ExpaDar = ExpaDar * SvrConfig.GetValue("ExpMult")
             End If
 
 130         If ExpaDar > 0 Then
@@ -1840,8 +1840,8 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         
 138     If CantidadMiembrosValidos = 0 Then Exit Sub
         
-140     If ExpMult > 0 Then
-142         ExpaDar = ExpaDar * ExpMult
+140     If SvrConfig.GetValue("ExpMult") > 0 Then
+142         ExpaDar = ExpaDar * SvrConfig.GetValue("ExpMult")
         End If
 
 144     ExpaDar = ExpaDar / CantidadMiembrosValidos
@@ -1863,7 +1863,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 170                                 DeltaLevel = UserList(Index).Stats.ELV - NpcList(npcIndex).nivel
 172                                 If Abs(DeltaLevel) > 5 Then ' Qué pereza da desharcodear
 174                                     ExpUser = ExpUser * Math.Exp(15 - Abs(3 * DeltaLevel))
-176                                     Call WriteConsoleMsg(Index, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", e_FontTypeNames.FONTTYPE_WARNING)
+176                                     Call WriteConsoleMsg(index, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", e_FontTypeNames.FONTTYPE_WARNING)
                                     End If
                                 End If
 178                             UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
@@ -1909,7 +1909,7 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
         '***************************************************
         Dim OroDar            As Long
 
-100     OroDar = GiveGold * OroMult
+100     OroDar = GiveGold * SvrConfig.GetValue("GoldMult")
 
         Dim orobackup As Long
 
@@ -1930,7 +1930,7 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
 114                     If OroDar > 0 Then
 116                         UserList(Index).Stats.GLD = UserList(Index).Stats.GLD + OroDar
 118                         If UserList(Index).ChatCombate = 1 Then
-120                             Call WriteConsoleMsg(Index, "¡El grupo ha ganado " & PonerPuntos(OroDar) & " monedas de oro!", e_FontTypeNames.FONTTYPE_New_GRUPO)
+120                             Call WriteConsoleMsg(index, "¡El grupo ha ganado " & PonerPuntos(OroDar) & " monedas de oro!", e_FontTypeNames.FONTTYPE_New_GRUPO)
                             End If
 122                         Call WriteUpdateGold(Index)
                         End If

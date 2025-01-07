@@ -581,7 +581,7 @@ Sub Main()
 #If PYMMO = 1 Then
 133     Call LoadPrivateKey
 #End If
-138     Call LoadConfiguraciones
+138     Call LoadMainConfigFile
 140     Call LoadIntervalos
 142     Call CargarForbidenWords
 144     Call CargaApuestas
@@ -674,8 +674,7 @@ Sub Main()
 246     frmCargando.Label1(2).Caption = "Cargando Quests"
 252     Call LoadQuests
 
-254     EstadoGlobal = False
-    
+   
         Call ResetLastLogoutAndIsLogged
 
         'Comentado porque hay worldsave en ese mapa!
@@ -731,7 +730,7 @@ Sub Main()
     
 314     Call GetHoraActual
     
-316     HoraMundo = GetTickCount() - DuracionDia \ 2
+316     HoraMundo = GetTickCount() - SvrConfig.GetValue("DayLength") \ 2
 
 318     frmCargando.Visible = False
 320     Unload frmCargando

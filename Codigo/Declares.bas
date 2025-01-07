@@ -153,34 +153,23 @@ Public Enum e_SoundIndex
 
 End Enum
 
+
+Public SvrConfig As ServerConfig
+
+
 Public Md5Cliente           As String
 Public PrivateKey           As String
 Public HoraMundo            As Long
 Public HoraActual           As Integer
 Public UltimoChar           As String
-Public ExpMult              As Integer
-Public OroMult              As Integer
-Public DropMult             As Integer
-Public RecoleccionMult      As Double
-Public OroPorNivelBilletera As Long
+Public LastRecordUsuarios   As Integer
+Public GlobalFrameTime      As Long
 Public EventoExpMult        As Integer
 Public EventoOroMult        As Integer
-Public EstadoGlobal         As Boolean
-Public TimerLimpiarObjetos  As Byte
-Public DuracionDia          As Long
-Public OroPorNivel          As Integer
-Public DropActive           As Byte
 Public CuentaRegresivaTimer As Byte
 Public cuentaregresivaOrcos As Integer
 Public PENDIENTE            As Integer
-Public CostoPerdonPorCiudadano As Long
-Public MaximoSpeedHack      As Integer
-Public LastRecordUsuarios   As Integer
-Public GlobalFrameTime      As Long
 
-Public FISHING_REQUIRED_PERCENT As Integer
-Public FISHING_TILES_ON_MAP     As Integer
-Public FISHING_POOL_ID          As Integer
 
 Type t_EstadisticasDiarias
 

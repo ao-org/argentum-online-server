@@ -64,7 +64,7 @@ End Function
 Function GetTimeFormated() As String
         On Error GoTo GetTimeFormated_Err
         Dim Elapsed As Long
-        Elapsed = (GetTickCount() - HoraMundo) / DuracionDia
+        Elapsed = (GetTickCount() - HoraMundo) / SvrConfig.GetValue("DayLength")
         Dim Mins As Long
         Mins = (Elapsed - Fix(Elapsed)) * 1440
         Dim Horita    As Byte

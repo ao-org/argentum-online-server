@@ -93,7 +93,7 @@ Sub HandleFishingNet(ByVal UserIndex As Integer)
 
                 End If
 
-                If FISHING_POOL_ID <> MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex Then
+                If SvrConfig.GetValue("FISHING_POOL_ID") <> MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex Then
 126                 ' Msg595=Para pescar con red deberás buscar un área de pesca.
                     Call WriteLocaleMsg(UserIndex, "595", e_FontTypeNames.FONTTYPE_INFO)
 128                 Call WriteWorkRequestTarget(UserIndex, 0)
@@ -2143,8 +2143,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
             'Bonificacion de la caña dependiendo de su poder:
 122         bonificacionCaña = PoderCanas(ObjData(.invent.HerramientaEqpObjIndex).Power) / 10
             'Bonificación total
-123         bonificacionTotal = bonificacionCaña * bonificacionLvl * RecoleccionMult
-
+123         bonificacionTotal = bonificacionCaña * bonificacionLvl * SvrConfig.GetValue("RecoleccionMult")
             'Si es zona segura se aplica una penalización
             If MapInfo(.pos.Map).Seguro Then
 124             bonificacionTotal = bonificacionTotal * PorcentajePescaSegura / 100
@@ -2200,7 +2199,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
                 StopWorking = False
 
                 ' Si es insegura y es un fishing pool:
-                If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 And FISHING_POOL_ID = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex Then
+                If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 And SvrConfig.GetValue("FISHING_POOL_ID") = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex Then
 
                     ' Si se está por vaciar el fishing pool:
 134                 If MiObj.amount > MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount Then
@@ -2529,19 +2528,19 @@ Call WriteLocaleMsg(LadronIndex, "1029", e_FontTypeNames.FONTTYPE_INFO)
                                 'Si no tiene puestos los guantes de hurto roba un 50% menos.
 240                             If .invent.WeaponEqpObjIndex > 0 Then
 242                                 If ObjData(.invent.WeaponEqpObjIndex).Subtipo = 5 Then
-244                                     n = RandomNumber(.Stats.ELV * 50 * Extra, .Stats.ELV * 100 * Extra) * OroMult
+244                                     n = RandomNumber(.Stats.ELV * 50 * Extra, .Stats.ELV * 100 * Extra) * SvrConfig.GetValue("GoldMult")
                                     Else
-246                                     n = RandomNumber(.Stats.ELV * 25 * Extra, .Stats.ELV * 50 * Extra) * OroMult
+246                                     n = RandomNumber(.Stats.ELV * 25 * Extra, .Stats.ELV * 50 * Extra) * SvrConfig.GetValue("GoldMult")
 
                                     End If
 
                                 Else
-248                                 n = RandomNumber(.Stats.ELV * 25 * Extra, .Stats.ELV * 50 * Extra) * OroMult
+248                                 n = RandomNumber(.Stats.ELV * 25 * Extra, .Stats.ELV * 50 * Extra) * SvrConfig.GetValue("GoldMult")
 
                                 End If
 
                             Else
-250                             n = RandomNumber(1, 100) * OroMult
+250                             n = RandomNumber(1, 100) * SvrConfig.GetValue("GoldMult")
 
                             End If
 
@@ -2553,7 +2552,7 @@ Call WriteLocaleMsg(LadronIndex, "1029", e_FontTypeNames.FONTTYPE_INFO)
 
                             Dim ProtectedGold As Long
 
-                            ProtectedGold = OroPorNivelBilletera * UserList(VictimaIndex).Stats.ELV
+                            ProtectedGold = SvrConfig.GetValue("OroPorNivelBilletera") * UserList(VictimaIndex).Stats.ELV
 
                             If prevGold >= ProtectedGold And UserList(VictimaIndex).Stats.GLD < ProtectedGold Then
                                 n = prevGold - ProtectedGold
@@ -2786,7 +2785,7 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
                 ' Else
 122             MiObj.amount = RandomNumber(5, 7)
                 ' End If
-128             MiObj.amount = Round(MiObj.amount * 2.5 * RecoleccionMult)
+128             MiObj.amount = Round(MiObj.amount * 2.5 * SvrConfig.GetValue("RecoleccionMult"))
 130             MiObj.ObjIndex = Raices
 132             MapData(.Pos.Map, X, Y).ObjInfo.amount = MapData(.Pos.Map, X, Y).ObjInfo.amount - MiObj.amount
 
@@ -2885,7 +2884,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, _
 
                 End If
 
-128             MiObj.amount = MiObj.amount * RecoleccionMult
+128             MiObj.amount = MiObj.amount * SvrConfig.GetValue("RecoleccionMult")
 
 129             If ObjData(MapData(.pos.map, x, y).ObjInfo.objIndex).Elfico = 1 Then
 130                 MiObj.objIndex = ElvenWood
@@ -3027,7 +3026,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, _
 
                 End If
 
-132             MiObj.amount = MiObj.amount * RecoleccionMult
+132             MiObj.amount = MiObj.amount * SvrConfig.GetValue("RecoleccionMult")
 
 133             If MiObj.amount > MapData(.pos.map, X, y).ObjInfo.amount Then
 134                 MiObj.amount = MapData(.Pos.Map, X, Y).ObjInfo.amount
