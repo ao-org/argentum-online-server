@@ -760,7 +760,7 @@ Public Sub WriteUpdateGold(ByVal UserIndex As Integer)
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.eUpdateGold)
 102     Call Writer.WriteInt32(UserList(UserIndex).Stats.GLD)
-103     Call Writer.WriteInt32(OroPorNivelBilletera)
+103     Call Writer.WriteInt32(SvrConfig.GetValue("OroPorNivelBilletera"))
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -1768,7 +1768,7 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
 114     Call Writer.WriteInt16(UserList(UserIndex).Stats.MaxSta)
 116     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinSta)
 118     Call Writer.WriteInt32(UserList(UserIndex).Stats.GLD)
-119     Call Writer.WriteInt32(OroPorNivelBilletera)
+119     Call Writer.WriteInt32(SvrConfig.GetValue("OroPorNivelBilletera"))
 120     Call Writer.WriteInt8(UserList(UserIndex).Stats.ELV)
 122     Call Writer.WriteInt32(ExpLevelUp(UserList(UserIndex).Stats.ELV))
 124     Call Writer.WriteInt32(UserList(UserIndex).Stats.Exp)
@@ -3700,8 +3700,8 @@ Public Sub WriteShowFrmMapa(ByVal UserIndex As Integer)
         On Error GoTo WriteShowFrmMapa_Err
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.eShowFrmMapa)
-102     Call Writer.WriteInt16(ExpMult)
-104     Call Writer.WriteInt16(OroMult)
+102     Call Writer.WriteInt16(SvrConfig.GetValue("ExpMult"))
+104     Call Writer.WriteInt16(SvrConfig.GetValue("GoldMult"))
 106     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3896,8 +3896,8 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, _
         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.RequiredValue)
 
         'Enviamos la recompensa de oro y experiencia.
-140     Call Writer.WriteInt32((QuestList(QuestIndex).RewardGLD * OroMult))
-142     Call Writer.WriteInt32((QuestList(QuestIndex).RewardEXP * ExpMult))
+140     Call Writer.WriteInt32((QuestList(QuestIndex).RewardGLD * SvrConfig.GetValue("GoldMult")))
+142     Call Writer.WriteInt32((QuestList(QuestIndex).RewardEXP * SvrConfig.GetValue("ExpMult")))
         'Enviamos la cantidad de objs de recompensa
 144     Call Writer.WriteInt8(QuestList(QuestIndex).RewardOBJs)
 
@@ -4018,8 +4018,8 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
 137         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.SkillType)
             Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.RequiredValue)
             'Enviamos la recompensa de oro y experiencia.
-138         Call Writer.WriteInt32(QuestList(QuestIndex).RewardGLD * OroMult)
-140         Call Writer.WriteInt32(QuestList(QuestIndex).RewardEXP * ExpMult)
+138         Call Writer.WriteInt32(QuestList(QuestIndex).RewardGLD * SvrConfig.GetValue("GoldMult"))
+140         Call Writer.WriteInt32(QuestList(QuestIndex).RewardEXP * SvrConfig.GetValue("ExpMult"))
             'Enviamos la cantidad de objs de recompensa
 142         Call Writer.WriteInt8(QuestList(QuestIndex).RewardOBJs)
 
@@ -5032,8 +5032,8 @@ Public Function PrepareMessageHora()
         On Error GoTo PrepareMessageHora_Err
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.eHora)
-102     Call Writer.WriteInt32((GetTickCount() - HoraMundo) Mod DuracionDia)
-104     Call Writer.WriteInt32(DuracionDia)
+102     Call Writer.WriteInt32((GetTickCount() - HoraMundo) Mod SvrConfig.GetValue("DayLength"))
+104     Call Writer.WriteInt32(SvrConfig.GetValue("DayLength"))
         '<EhFooter>
         Exit Function
 
@@ -5701,8 +5701,8 @@ Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Int
 137     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.SkillType)
         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.RequiredValue)
             'Enviamos la recompensa de oro y experiencia.
-138     Call Writer.WriteInt32(QuestList(QuestIndex).RewardGLD * OroMult)
-140     Call Writer.WriteInt32(QuestList(QuestIndex).RewardEXP * ExpMult)
+138     Call Writer.WriteInt32(QuestList(QuestIndex).RewardGLD * SvrConfig.GetValue("GoldMult"))
+140     Call Writer.WriteInt32(QuestList(QuestIndex).RewardEXP * SvrConfig.GetValue("ExpMult"))
             'Enviamos la cantidad de objs de recompensa
 142     Call Writer.WriteInt8(QuestList(QuestIndex).RewardOBJs)
 

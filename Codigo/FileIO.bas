@@ -2142,7 +2142,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
             End If
         End If
         
-        If SailingTiles * 100 / TotalTiles > FISHING_REQUIRED_PERCENT And Not MapDat.Seguro Then
+        If SailingTiles * 100 / TotalTiles > SvrConfig.GetValue("FISHING_REQUIRED_PERCENT") And Not MapDat.Seguro Then
             Call AddFishingPoolsToMap(Map)
         End If
     
@@ -2203,7 +2203,7 @@ End Sub
 
 Sub AddFishingPoolsToMap(ByVal Map As Integer)
     Dim i As Integer
-    For i = 1 To FISHING_TILES_ON_MAP
+    For i = 1 To SvrConfig.GetValue("FISHING_TILES_ON_MAP")
         Call CreateFishingPool(Map)
     Next i
 End Sub
@@ -2214,8 +2214,8 @@ Public Sub CreateFishingPool(ByVal Map As Integer)
         x = RandomNumber(12, 88)
         y = RandomNumber(12, 88)
     Loop While MapData(Map, x, y).ObjInfo.objIndex <> 0 Or Not HayAgua(Map, x, y)
-    MapData(Map, x, y).ObjInfo.objIndex = FISHING_POOL_ID
-    MapData(Map, x, y).ObjInfo.amount = ObjData(FISHING_POOL_ID).VidaUtil
+    MapData(Map, x, y).ObjInfo.ObjIndex = SvrConfig.GetValue("FISHING_POOL_ID")
+    MapData(Map, x, y).ObjInfo.amount = ObjData(SvrConfig.GetValue("FISHING_POOL_ID")).VidaUtil
     MapData(Map, x, y).ObjInfo.Data = &H7FFFFFFF ' Ultimo uso = Max Long
 End Sub
 
@@ -2824,36 +2824,13 @@ LoadIntervalos_Err:
         
 End Sub
 
-Sub LoadConfiguraciones()
+Sub LoadMainConfigFile()
         
-        On Error GoTo LoadConfiguraciones_Err
+On Error GoTo LoadMainConfigFile_Err
         
-        Dim Leer As clsIniManager
-100     Set Leer = New clsIniManager
-
-102     Call Leer.Initialize(IniPath & "Configuracion.ini")
-
-104     ExpMult = val(Leer.GetValue("CONFIGURACIONES", "ExpMult"))
-106     OroMult = val(Leer.GetValue("CONFIGURACIONES", "OroMult"))
-108     DropMult = val(Leer.GetValue("DROPEO", "DropMult"))
-110     DropActive = val(Leer.GetValue("DROPEO", "DropActive"))
-112     RecoleccionMult = val(Leer.GetValue("CONFIGURACIONES", "RecoleccionMult"))
-113     OroPorNivelBilletera = val(Leer.GetValue("CONFIGURACIONES", "OroPorNivelBilletera"))
-
-114     TimerLimpiarObjetos = val(Leer.GetValue("CONFIGURACIONES", "TimerLimpiarObjetos"))
-116     OroPorNivel = val(Leer.GetValue("CONFIGURACIONES", "OroPorNivel"))
-
-118     DuracionDia = val(Leer.GetValue("CONFIGURACIONES", "DuracionDia")) * 60 * 1000 ' De minutos a milisegundos
-
-120     CostoPerdonPorCiudadano = val(Leer.GetValue("CONFIGURACIONES", "CostoPerdonPorCiudadano"))
-
-122     MaximoSpeedHack = val(Leer.GetValue("ANTICHEAT", "MaximoSpeedHack"))
-
-123     FISHING_REQUIRED_PERCENT = val(Leer.GetValue("PESCA", "MinAgua"))
-124     FISHING_TILES_ON_MAP = val(Leer.GetValue("PESCA", "MaxZonas"))
-125     FISHING_POOL_ID = val(Leer.GetValue("PESCA", "FishingID"))
-
-126     Set Leer = Nothing
+        Set SvrConfig = New ServerConfig
+        Call SvrConfig.LoadSettings(IniPath & "Configuracion.ini")
+        
 
 128     Call CargarEventos
 130     Call CargarInfoRetos
@@ -2862,8 +2839,8 @@ Sub LoadConfiguraciones()
 
         Exit Sub
 
-LoadConfiguraciones_Err:
-136     Call TraceError(Err.Number, Err.Description, "ES.LoadConfiguraciones", Erl)
+LoadMainConfigFile_Err:
+136     Call TraceError(Err.Number, Err.Description, "ES.LoadMainConfigFile", Erl)
 
         
 End Sub

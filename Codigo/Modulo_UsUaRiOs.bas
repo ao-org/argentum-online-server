@@ -1377,11 +1377,11 @@ Call WriteLocaleMsg(UserIndex, "1292", e_FontTypeNames.FONTTYPE_INFO, AumentoHIT
             
                 ' Call UpdateUserInv(True, UserIndex, 0)
             
-174             If OroPorNivel > 0 Then
+174             If SvrConfig.GetValue("OroPorNivel") > 0 Then
 176                 If EsNewbie(UserIndex) Then
                         Dim OroRecompenza As Long
     
-178                     OroRecompenza = OroPorNivel * .Stats.ELV * OroMult
+178                     OroRecompenza = SvrConfig.GetValue("OroPorNivel") * .Stats.ELV * SvrConfig.GetValue("GoldMult")
 180                     .Stats.GLD = .Stats.GLD + OroRecompenza
 'Msg1293= Has ganado ¬1 monedas de oro.
 Call WriteLocaleMsg(UserIndex, "1293", e_FontTypeNames.FONTTYPE_INFO, OroRecompenza)
@@ -2080,7 +2080,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 144             Call WriteConsoleMsg(UserIndex, "¡Has mejorado tu skill " & SkillsNames(Skill) & " en un punto!. Ahora tienes " & UserList(UserIndex).Stats.UserSkills(Skill) & " pts.", e_FontTypeNames.FONTTYPE_INFO)
             
                 Dim BonusExp As Long
-146             BonusExp = 5& * ExpMult
+146             BonusExp = 5& * SvrConfig.GetValue("ExpMult")
         
 'Msg1313= ¡Has ganado ¬1 puntos de experiencia!
 Call WriteLocaleMsg(UserIndex, "1313", e_FontTypeNames.FONTTYPE_INFOIAO, BonusExp)

@@ -297,7 +297,7 @@ Public Sub NpcDropeo(ByRef npc As t_Npc, ByRef UserIndex As Integer)
         On Error GoTo ErrHandler
 
 100     If npc.NumQuiza = 0 Then Exit Sub
-102     If DropActive = 0 Then Exit Sub 'Esta el Dropeo activado?
+102     If SvrConfig.GetValue("DropActive") = 0 Then Exit Sub 'Esta el Dropeo activado?
 
         Dim Dropeo       As t_Obj
 
@@ -310,7 +310,7 @@ Public Sub NpcDropeo(ByRef npc As t_Npc, ByRef UserIndex As Integer)
         Dim nfile        As Integer
 
 104     If npc.QuizaProb = 0 Then
-106         Probabilidad = RandomNumber(1, DropMult) 'Tiro Item?
+106         Probabilidad = RandomNumber(1, SvrConfig.GetValue("DropMult"))
         Else
 108         Probabilidad = RandomNumber(1, npc.QuizaProb) 'Tiro Item?
 

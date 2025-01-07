@@ -248,7 +248,7 @@ Sub FinalizarInvasion(ByVal Index As Integer)
             ' Entregamos premios y limpiamos el top
             Dim tUser As t_UserReference, OroGanado As Long, PremioStr As String
     
-138         OroGanado = 50000 * OroMult
+138         OroGanado = 50000 * SvrConfig.GetValue("GoldMult")
 140         PremioStr = "¡La ciudad te entrega " & PonerPuntos(OroGanado) & " monedas de oro por tu ayuda durante la invasión!"
         
 142         For i = 1 To UBound(.Top10Users)
@@ -389,7 +389,7 @@ Public Sub EnviarInfoInvasion(ByVal index As Integer)
 
 End Sub
 
-Public Sub HacerDañoMuralla(ByVal Index As Integer, ByVal Daño As Long)
+Public Sub HacerDañoMuralla(ByVal index As Integer, ByVal Daño As Long)
     
 100     With Invasiones(index)
     

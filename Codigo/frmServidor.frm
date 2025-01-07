@@ -839,7 +839,7 @@ Private Sub Command28_Click()
         
         On Error GoTo Command28_Click_Err
         
-100     Call LoadConfiguraciones
+100     Call LoadMainConfigFile
 
         
         Exit Sub

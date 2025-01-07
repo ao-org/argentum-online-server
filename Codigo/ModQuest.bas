@@ -197,10 +197,10 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             'Se entrega la experiencia.
 156         If .RewardEXP Then
 158             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
-160                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + (.RewardEXP * ExpMult)
+160                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + (.RewardEXP * SvrConfig.GetValue("ExpMult"))
 162                 Call WriteUpdateExp(UserIndex)
 164                 Call CheckUserLevel(UserIndex)
-166                 Call WriteLocaleMsg(UserIndex, "140", e_FontTypeNames.FONTTYPE_EXP, (.RewardEXP * ExpMult))
+166                 Call WriteLocaleMsg(UserIndex, "140", e_FontTypeNames.FONTTYPE_EXP, (.RewardEXP * SvrConfig.GetValue("ExpMult")))
                 Else
                     'Msg1314= No se te ha dado experiencia porque eres nivel máximo.
                     Call WriteLocaleMsg(UserIndex, "1314", e_FontTypeNames.FONTTYPE_INFO)
@@ -210,7 +210,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             'Se entrega el oro.
 170         If .RewardGLD > 0 Then
                 Dim GiveGLD As Long
-                GiveGLD = (.RewardGLD * OroMult)
+                GiveGLD = (.RewardGLD * SvrConfig.GetValue("GoldMult"))
                 If GiveGLD < 100000 Then
 172                 UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + GiveGLD
                     'Msg1315= Has ganado ¬1 monedas de oro como recompensa.

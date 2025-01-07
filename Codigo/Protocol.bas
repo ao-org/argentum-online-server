@@ -1034,7 +1034,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionId As Long)
         MD5 = Reader.ReadString8()
 
         If Len(encrypted_session_token) <> 88 Then
-            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
@@ -1047,7 +1047,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionId As Long)
         decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
                 
         If Not IsBase64(decrypted_session_token) Then
-            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización"))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización"))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
@@ -1057,7 +1057,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionId As Long)
         Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
                 
         If RS Is Nothing Or RS.RecordCount = 0 Then
-            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Sesión inválida, conéctese nuevamente."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Sesión inválida, conéctese nuevamente."))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
@@ -1065,7 +1065,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionId As Long)
         CuentaEmail = CStr(RS!UserName)
                     
         If RS!encrypted_token <> encrypted_session_token Then
-            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
@@ -1126,7 +1126,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
 118     Hogar = Reader.ReadInt8()
 
         If Len(encrypted_session_token) <> 88 Then
-            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
             Exit Sub
         End If
 
@@ -1137,7 +1137,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
         decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
                 
         If Not IsBase64(decrypted_session_token) Then
-            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
@@ -1146,14 +1146,14 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
         Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
                 
         If RS Is Nothing Or RS.RecordCount = 0 Then
-            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Sesión inválida, conectese nuevamente."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Sesión inválida, conectese nuevamente."))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
         
         CuentaEmail = CStr(RS!UserName)
         If RS!encrypted_token <> encrypted_session_token Then
-            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
@@ -1605,13 +1605,10 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 
 128                     .Counters.SpeedHackCounter = .Counters.SpeedHackCounter + DeltaStep
                 
-130                     If .Counters.SpeedHackCounter > MaximoSpeedHack Then
-                            'Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Administración » Posible uso de SpeedHack del usuario " & .name & ".", e_FontTypeNames.FONTTYPE_SERVER))
+130                     If .Counters.SpeedHackCounter > SvrConfig.GetValue("MaximoSpeedHack") Then
 132                         Call WritePosUpdate(UserIndex)
                             Exit Sub
-
                         End If
-
                     Else
                 
 134                     .Counters.SpeedHackCounter = .Counters.SpeedHackCounter + DeltaStep * 5
@@ -5182,7 +5179,7 @@ Call WriteLocaleMsg(tUser, "1157", e_FontTypeNames.FONTTYPE_INFO)
 
                 End If
             
-'Msg1158= Comercio cancelado. 
+'Msg1158= Comercio cancelado.
 Call WriteLocaleMsg(UserIndex, "1158", e_FontTypeNames.FONTTYPE_INFO)
 120             Call FinComerciarUsu(UserIndex)
 
@@ -7611,9 +7608,9 @@ Call WriteLocaleMsg(UserIndex, "1218", e_FontTypeNames.FONTTYPE_INFO)
 
             Dim Donacion As Long
             If .Faccion.ciudadanosMatados > 0 Then
-132             Donacion = .Faccion.ciudadanosMatados * OroMult * CostoPerdonPorCiudadano
+132             Donacion = .Faccion.ciudadanosMatados * SvrConfig.GetValue("GoldMult") * SvrConfig.GetValue("CostoPerdonPorCiudadano")
             Else
-                Donacion = CostoPerdonPorCiudadano / 2
+                Donacion = SvrConfig.GetValue("CostoPerdonPorCiudadano") / 2
             End If
             
 134         If Oro < Donacion Then
@@ -8398,8 +8395,8 @@ Call WriteLocaleMsg(UserIndex, "1235", e_FontTypeNames.FONTTYPE_INFO)
 130                     .Invent.Object(SlotViejo).Equipped = 0
                     
                         'Cambiamos si alguno es un anillo
-132                     If .Invent.DañoMagicoEqpSlot = SlotViejo Then
-134                         .Invent.DañoMagicoEqpSlot = SlotNuevo
+132                     If .invent.DañoMagicoEqpSlot = SlotViejo Then
+134                         .invent.DañoMagicoEqpSlot = SlotNuevo
 
                         End If
 
@@ -8507,10 +8504,10 @@ Call WriteLocaleMsg(UserIndex, "1235", e_FontTypeNames.FONTTYPE_INFO)
                     End If
     
                     'Cambiamos si alguno es un anillo
-214                 If .Invent.DañoMagicoEqpSlot = SlotViejo Then
-216                     .Invent.DañoMagicoEqpSlot = SlotNuevo
-218                 ElseIf .Invent.DañoMagicoEqpSlot = SlotNuevo Then
-220                     .Invent.DañoMagicoEqpSlot = SlotViejo
+214                 If .invent.DañoMagicoEqpSlot = SlotViejo Then
+216                     .invent.DañoMagicoEqpSlot = SlotNuevo
+218                 ElseIf .invent.DañoMagicoEqpSlot = SlotNuevo Then
+220                     .invent.DañoMagicoEqpSlot = SlotViejo
 
                     End If
 
