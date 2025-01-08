@@ -1390,6 +1390,11 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 245         .flags.AIAlineacion = val(Leer.GetValue("NPC" & NpcNumber, "Alineacion"))
     
 246         .invent.NroItems = val(Leer.GetValue("NPC" & NpcNumber, "NROITEMS"))
+            If .invent.NroItems > UBound(.invent.Object) Then
+                Debug.Print "Error in NPC " & .name & " configuration, too many items in inventory! Max possible is " & UBound(.invent.Object)
+            End If
+            Debug.Assert .invent.NroItems <= UBound(.invent.Object) ' NPC not properly configured, it cannot have more so many items in the inventory
+            .invent.NroItems = Min(UBound(.invent.Object), .invent.NroItems) 'Clamp the number of items to make sure it's not too big
             
 247         .Humanoide = CBool(val(Leer.GetValue("NPC" & NpcNumber, "Humanoide")))
             
