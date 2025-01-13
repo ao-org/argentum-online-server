@@ -612,7 +612,7 @@ Const WM_MOUSEMOVE = &H200
 Const WM_LBUTTONDBLCLK = &H203
 Const WM_RBUTTONUP = &H205
 
-Private GuardarYCerrar As Boolean
+Public GuardarYCerrar As Boolean
 Private tHechizosMinutesCounter As Byte
 
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long

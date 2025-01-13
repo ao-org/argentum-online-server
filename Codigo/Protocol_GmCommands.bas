@@ -4965,12 +4965,20 @@ On Error GoTo HandleFeatureToggle_Err:
         Exit Sub
     End If
     If (UserList(UserIndex).flags.Privilegios And (e_PlayerType.Admin)) Then
-        Call SetFeatureToggle(name, value > 0)
-'Msg1006= variable configurada correctamente.
-Call WriteLocaleMsg(UserIndex, "1006", e_FontTypeNames.FONTTYPE_INFO)
+        If Name = "SGRACEFULLY" Then
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Server » closing down now.", e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR))
+                Call GuardarUsuarios
+                Call EcharPjsNoPrivilegiados
+                frmMain.GuardarYCerrar = True
+                Unload frmMain
+        Else
+            Call SetFeatureToggle(Name, Value > 0)
+            'Msg1006= variable configurada correctamente.
+            Call WriteLocaleMsg(UserIndex, "1006", e_FontTypeNames.FONTTYPE_INFO)
+        End If
     Else
-'Msg1007= no tienes permisos para realizar esta accion.
-Call WriteLocaleMsg(UserIndex, "1007", e_FontTypeNames.FONTTYPE_INFO)
+        'Msg1007= no tienes permisos para realizar esta accion.
+        Call WriteLocaleMsg(UserIndex, "1007", e_FontTypeNames.FONTTYPE_INFO)
     End If
     Exit Sub
 HandleFeatureToggle_Err:
