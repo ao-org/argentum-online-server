@@ -541,7 +541,10 @@ InicializarConstantes_Err:
 End Sub
 
 Sub Main()
-        On Error GoTo Handler
+On Error GoTo Handler
+#If DIRECT_PLAY = 1 Then
+        InitDPlay
+#End If
         Call InitializeCircularLogBuffer
         Call LogThis(0, "Starting the server " & Now, vbLogEventTypeInformation)
 
@@ -686,8 +689,6 @@ Sub Main()
 262         UserList(LoopC).ConnectionDetails.ConnIDValida = False
 268     Next LoopC
     
-        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-    
 270     With frmMain
 272         .Minuto.Enabled = True
 274         .TimerGuardarUsuarios.Enabled = True
@@ -712,16 +713,13 @@ Sub Main()
             
         End With
     
-290     Subasta.SubastaHabilitada = True
-292     Subasta.HaySubastaActiva = False
-294     Call ResetMeteo
-    
-        ' ----------------------------------------------------
-        '           Configuracion de los sockets
-        ' ----------------------------------------------------
-296     Call InitializePacketList
+        Subasta.SubastaHabilitada = True
+        Subasta.HaySubastaActiva = False
+        Call ResetMeteo
+        Call InitializePacketList
 
-302     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
+
+        Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
 
 312     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
         ' ----------------------------------------------------
@@ -768,7 +766,9 @@ Sub Main()
             Call modNetwork.close_not_logged_sockets_if_timeout
 #End If
             Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.close_not_logged_sockets_if_timeout")
+#If DIRECT_PLAY = 0 Then
             Call modNetwork.Tick(GetElapsed())
+#End If
             Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.Tick")
             Call UpdateEffectOverTime
             Call PerformTimeLimitCheck(PerformanceTimer, "General Update Effects over time")
@@ -867,16 +867,10 @@ MapaValido_Err:
 End Function
 
 Sub MostrarNumUsers()
-
-        On Error GoTo MostrarNumUsers_Err
-        
-        
-100         Call SendData(SendTarget.ToAll, 0, PrepareMessageOnlineUser(NumUsers))
-
-102         frmMain.CantUsuarios.Caption = "Numero de usuarios jugando: " & NumUsers
-        
-
-        Exit Sub
+On Error GoTo MostrarNumUsers_Err
+        'Call SendData(SendTarget.ToAll, 0, PrepareMessageOnlineUser(NumUsers))
+        frmMain.CantUsuarios.Caption = "Numero de usuarios jugando: " & NumUsers
+         Exit Sub
 
 MostrarNumUsers_Err:
 106     Call TraceError(Err.Number, Err.Description, "General.MostrarNumUsers", Erl)
