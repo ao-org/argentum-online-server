@@ -26,7 +26,9 @@ Attribute VB_Name = "modNetwork"
 '
 '
 Option Explicit
+Public DisconnectTimeout As Long
 
+#If DIRECT_PLAY = 0 Then
 Private Const TIME_RECV_FREQUENCY As Long = 0  ' In milliseconds
 Private Const TIME_SEND_FREQUENCY As Long = 0 ' In milliseconds
 
@@ -42,7 +44,7 @@ Private Time(2) As Single
 Public Mapping() As t_ConnectionMapping
 Private FramePacketCount As Long
 Private NewFrameConnections As Long
-Public DisconnectTimeout As Long
+
 Const MaxActiveConnections = 10000
 
 Private PendingConnections As New Dictionary
@@ -361,3 +363,94 @@ Public Sub ClearConnection(ByVal Connection)
         Call ClearUserRef(.UserRef)
     End With
 End Sub
+#Else
+'DirectPlay
+Public Sub CheckDisconnectedUsers()
+'Debug.Assert 0
+End Sub
+
+
+Public Sub Listen(ByVal Limit As Long, ByVal Address As String, ByVal Service As String)
+    Err.Clear
+    Dim AppDesc As DPN_APPLICATION_DESC
+    dpa.SetSP DP8SP_TCPIP  ' Set the service provider to TCP/IP
+    dpa.AddComponentLong DPN_KEY_PORT, CLng(Service)
+    Debug.Assert Err.Number = 0
+    
+    
+    'Save our current session name for later runs
+    'SaveSetting  "ArgentumOnline", "Defaults", "ServerGameName", txtSession.Text
+    
+    'Now set up the app description
+    With AppDesc
+        .guidApplication = AppGuid
+        .lMaxPlayers = 800
+        .SessionName = "vbArgentumServer"
+        .lFlags = DPNSESSION_CLIENT_SERVER 'We must pass the client server flags if we are a server
+    End With
+    
+    'Now set up our address value
+    dpa.SetSP dps.GetServiceProvider(1).Guid
+    
+    
+    'Now start the server
+    dps.Host AppDesc, dpa
+    
+    gfStarted = True
+    
+    
+    
+End Sub
+Public Sub close_not_logged_sockets_if_timeout()
+
+End Sub
+Public Sub CreatePlayer(ByVal lPlayerID As Long, fRejectMsg As Boolean)
+    On Error GoTo create_player_err
+    If lPlayerID > 0 Then
+        Dim dpPeer As DPN_PLAYER_INFO
+        dpPeer = dps.GetClientInfo(lPlayerID, 0)
+        If Err Then Exit Sub
+        glNumPlayers = glNumPlayers + 1
+    End If
+    Exit Sub
+create_player_err:
+
+End Sub
+
+Public Sub DestroyPlayer(ByVal lPlayerID As Long, ByVal lReason As Long, fRejectMsg As Boolean)
+On Error GoTo create_player_err
+    Debug.Print "DestroyPlayer"
+    Exit Sub
+create_player_err:
+
+End Sub
+
+Public Sub Receive(dpnotify As DxVBLibA.DPNMSG_RECEIVE, fRejectMsg As Boolean)
+    Dim oNewMsg() As Byte, lOffset As Long
+    Dim lMsg As Long
+    Debug.Print "Receive"
+    
+    'The only message we will receive from our client is one to make faces to everyone
+    'else on the server, if there is someone else to make faces at, do it, otherwise let
+    'them know
+    If glNumPlayers > 1 Then
+        lOffset = NewBuffer(oNewMsg)
+        lMsg = Msg_SendWave
+        AddDataToBuffer oNewMsg, lMsg, LenB(lMsg), lOffset
+        AddStringToBuffer oNewMsg, dps.GetClientInfo(dpnotify.idSender).Name, lOffset
+        dps.sendto DPNID_ALL_PLAYERS_GROUP, oNewMsg, 0, DPNSEND_NOLOOPBACK
+    Else
+        lOffset = NewBuffer(oNewMsg)
+        lMsg = Msg_NoOtherPlayers
+        AddDataToBuffer oNewMsg, lMsg, LenB(lMsg), lOffset
+        dps.sendto DPNID_ALL_PLAYERS_GROUP, oNewMsg, 0, DPNSEND_NOLOOPBACK
+    End If
+End Sub
+
+Public Sub Send(ByVal UserIndex As Long, ByRef Buffer As Network.Writer)
+    Debug.Print "ModNetworking.send"
+End Sub
+
+#End If
+
+

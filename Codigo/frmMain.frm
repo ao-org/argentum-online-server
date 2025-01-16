@@ -620,6 +620,101 @@ Private Declare Function Shell_NotifyIconA Lib "SHELL32" (ByVal dwMessage As Lon
 
 Private SERVER_UPTIME As Long
 
+#If DIRECT_PLAY = 1 Then
+Implements DirectPlay8Event
+Private mfExit As Boolean
+Private Enum MsgTypes
+    Msg_NoOtherPlayers
+    Msg_NumPlayers
+    Msg_SendWave
+End Enum
+
+Private Sub Form_Load()
+    Dim lCount As Long
+    Dim dpn As DPN_SERVICE_PROVIDER_INFO
+    dps.RegisterMessageHandler Me
+    'First load our list of Service Providers into our box
+    For lCount = 1 To dps.GetCountServiceProviders
+        dpn = dps.GetServiceProvider(lCount)
+        Debug.Print dpn.Name; " " & dpn.Guid
+    Next
+End Sub
+
+Private Sub DirectPlay8Event_AddRemovePlayerGroup(ByVal lMsgID As Long, ByVal lPlayerID As Long, ByVal lGroupID As Long, fRejectMsg As Boolean)
+    'VB requires that we must implement *every* member of this interface
+End Sub
+
+Private Sub DirectPlay8Event_AppDesc(fRejectMsg As Boolean)
+    'VB requires that we must implement *every* member of this interface
+End Sub
+
+Private Sub DirectPlay8Event_AsyncOpComplete(dpnotify As DxVBLibA.DPNMSG_ASYNC_OP_COMPLETE, fRejectMsg As Boolean)
+    'VB requires that we must implement *every* member of this interface
+End Sub
+
+Private Sub DirectPlay8Event_ConnectComplete(dpnotify As DxVBLibA.DPNMSG_CONNECT_COMPLETE, fRejectMsg As Boolean)
+    'VB requires that we must implement *every* member of this interface
+    Debug.Print "DirectPlay8Event_ConnectComplete"
+End Sub
+
+Private Sub DirectPlay8Event_CreateGroup(ByVal lGroupID As Long, ByVal lOwnerID As Long, fRejectMsg As Boolean)
+    'VB requires that we must implement *every* member of this interface
+End Sub
+
+Private Sub DirectPlay8Event_CreatePlayer(ByVal lPlayerID As Long, fRejectMsg As Boolean)
+   Call modNetwork.CreatePlayer(lPlayerID, fRejectMsg)
+End Sub
+
+Private Sub DirectPlay8Event_DestroyGroup(ByVal lGroupID As Long, ByVal lReason As Long, fRejectMsg As Boolean)
+    'VB requires that we must implement *every* member of this interface
+End Sub
+
+Private Sub DirectPlay8Event_DestroyPlayer(ByVal lPlayerID As Long, ByVal lReason As Long, fRejectMsg As Boolean)
+    Call modNetwork.DestroyPlayer(lPlayerID, lReason, fRejectMsg)
+End Sub
+
+Private Sub DirectPlay8Event_EnumHostsQuery(dpnotify As DxVBLibA.DPNMSG_ENUM_HOSTS_QUERY, fRejectMsg As Boolean)
+    'VB requires that we must implement *every* member of this interface
+End Sub
+
+Private Sub DirectPlay8Event_EnumHostsResponse(dpnotify As DxVBLibA.DPNMSG_ENUM_HOSTS_RESPONSE, fRejectMsg As Boolean)
+    'VB requires that we must implement *every* member of this interface
+End Sub
+
+Private Sub DirectPlay8Event_HostMigrate(ByVal lNewHostID As Long, fRejectMsg As Boolean)
+    'VB requires that we must implement *every* member of this interface
+End Sub
+
+Private Sub DirectPlay8Event_IndicateConnect(dpnotify As DxVBLibA.DPNMSG_INDICATE_CONNECT, fRejectMsg As Boolean)
+    'VB requires that we must implement *every* member of this interface
+End Sub
+
+Private Sub DirectPlay8Event_IndicatedConnectAborted(fRejectMsg As Boolean)
+    'VB requires that we must implement *every* member of this interface
+End Sub
+
+Private Sub DirectPlay8Event_InfoNotify(ByVal lMsgID As Long, ByVal lNotifyID As Long, fRejectMsg As Boolean)
+    'VB requires that we must implement *every* member of this interface
+    Debug.Print "DirectPlay8Event_InfoNotify"
+End Sub
+
+Private Sub DirectPlay8Event_Receive(dpnotify As DxVBLibA.DPNMSG_RECEIVE, fRejectMsg As Boolean)
+    Call modNetwork.Receive(dpnotify, fRejectMsg)
+End Sub
+
+Private Sub DirectPlay8Event_SendComplete(dpnotify As DxVBLibA.DPNMSG_SEND_COMPLETE, fRejectMsg As Boolean)
+    'VB requires that we must implement *every* member of this interface
+    Debug.Print "DirectPlay8Event_SendComplete"
+End Sub
+
+Private Sub DirectPlay8Event_TerminateSession(dpnotify As DxVBLibA.DPNMSG_TERMINATE_SESSION, fRejectMsg As Boolean)
+    'VB requires that we must implement *every* member of this interface
+    Debug.Print "DirectPlay8Event_TerminateSession"
+End Sub
+#End If
+
+
+
 Private Function setNOTIFYICONDATA(hwnd As Long, ID As Long, flags As Long, CallbackMessage As Long, Icon As Long, Tip As String) As NOTIFYICONDATA
         
         On Error GoTo setNOTIFYICONDATA_Err
@@ -703,6 +798,8 @@ End Sub
 Private Sub Command3_Click()
     Call CargarDonadores
 End Sub
+
+
 
 
 Private Sub Segundo_Timer()
@@ -1442,7 +1539,7 @@ Private Sub EstadoTimer_Timer()
     Call PerformanceTestStart(PerformanceTimer)
     For i = 1 To Baneos.Count
         If Baneos(i).FechaLiberacion <= Now Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", e_FontTypeNames.FONTTYPE_SERVER))
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", e_FontTypeNames.FONTTYPE_SERVER))
             Call UnBan(Baneos(i).Name)
             Call Baneos.Remove(i)
             Call SaveBans
