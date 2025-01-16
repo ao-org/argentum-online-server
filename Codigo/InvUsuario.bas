@@ -28,25 +28,28 @@ Attribute VB_Name = "InvUsuario"
 
 Option Explicit
 
+Public Function get_max_items_inventory(ByVal user_type As e_TipoUsuario) As Integer
+    ' Determine inventory slots based on user type
+    Select Case user_type
+            Case tLeyenda
+                get_max_items_inventory = MAX_INVENTORY_SLOTS
+            Case tHeroe
+                get_max_items_inventory = MAX_USERINVENTORY_HERO_SLOTS
+            Case Else
+                get_max_items_inventory = MAX_USERINVENTORY_SLOTS
+    End Select
+End Function
+
 Public Function IsObjecIndextInInventory(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Boolean
 On Error GoTo IsObjecIndextInInventory_Err
     Debug.Assert UserIndex >= LBound(UserList) And UserIndex <= UBound(UserList)
     ' If no match is found, return False
     IsObjecIndextInInventory = False
-    Dim i As Byte
-    Dim maxItemsInventory As Byte
+    Dim i As Integer
+    Dim maxItemsInventory As Integer
     Dim currentObjIndex As Integer
     With UserList(UserIndex)
-        ' Determine inventory slots based on user type
-        Select Case .Stats.tipoUsuario
-            Case tLeyenda
-                maxItemsInventory = MAX_INVENTORY_SLOTS
-            Case tHeroe
-                maxItemsInventory = MAX_USERINVENTORY_HERO_SLOTS
-            Case Else
-                maxItemsInventory = MAX_USERINVENTORY_SLOTS
-        End Select
-    
+        maxItemsInventory = get_max_items_inventory(.Stats.tipoUsuario)
         ' Search inventory for the object
         For i = 1 To maxItemsInventory
             currentObjIndex = .invent.Object(i).ObjIndex
@@ -62,31 +65,26 @@ IsObjecIndextInInventory_Err:
     Call TraceError(Err.Number, Err.Description, "IsObjecIndextInInventory", Erl)
 End Function
 
-Public Function CantidadObjEnInv(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Integer
-        On Error GoTo CantidadObjEnInv_Err
-        'Devuelve el amount si tiene el ObjIndex en el inventario, sino devuelve 0
-        'Creaado por Ladder 25/09/2014
-        Dim i As Byte
-
-     For i = 1 To 36
-
-         If UserList(UserIndex).Invent.Object(i).ObjIndex = ObjIndex Then
-             CantidadObjEnInv = UserList(UserIndex).Invent.Object(i).amount
+Public Function get_object_amount_from_inventory(ByVal user_index, ByVal obj_index As Integer) As Integer
+On Error GoTo get_object_amount_from_inventory_Err
+    Debug.Assert user_index >= LBound(UserList) And user_index <= UBound(UserList)
+    ' If no match is found, return 0
+    get_object_amount_from_inventory = 0
+    Dim i As Integer
+    Dim maxItemsInventory As Integer
+    With UserList(user_index)
+        maxItemsInventory = get_max_items_inventory(.Stats.tipoUsuario)
+        ' Search inventory for the object
+        For i = 1 To maxItemsInventory
+            If .invent.Object(i).ObjIndex = obj_index Then
+                get_object_amount_from_inventory = .invent.Object(i).amount
                 Exit Function
             End If
-
-
-     Next i
-
-     CantidadObjEnInv = 0
-
-        
-        Exit Function
-
-CantidadObjEnInv_Err:
-     Call TraceError(Err.Number, Err.Description, "ModLadder.CantidadObjEnInv", Erl)
-
-        
+        Next i
+    End With
+    Exit Function
+get_object_amount_from_inventory_Err:
+    Call TraceError(Err.Number, Err.Description, "get_object_amount_from_inventory", Erl)
 End Function
 
 

@@ -3887,7 +3887,7 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, _
 132             Call Writer.WriteInt16(QuestList(QuestIndex).RequiredOBJ(i).amount)
 134             Call Writer.WriteInt16(QuestList(QuestIndex).RequiredOBJ(i).ObjIndex)
                 'escribe si tiene ese objeto en el inventario y que cantidad
-136             Call Writer.WriteInt16(CantidadObjEnInv(UserIndex, QuestList( _
+136             Call Writer.WriteInt16(get_object_amount_from_inventory(userindex, QuestList( _
                         QuestIndex).RequiredOBJ(i).ObjIndex))
                 ' Call Writer.WriteInt16(0)
 138         Next i
