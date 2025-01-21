@@ -9141,8 +9141,8 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 210                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
 212                         Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                         Else
-'Msg1244= ¡Gracias ¬1
-Call WriteLocaleMsg(UserIndex, "1244", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).name)
+                            'Msg1244= ¡Gracias ¬1
+                            Call WriteLocaleMsg(UserIndex, "1244", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).name)
 
                         End If
 216                 Case 4
@@ -9171,6 +9171,7 @@ Call WriteLocaleMsg(UserIndex, "1244", e_FontTypeNames.FONTTYPE_INFO, UserList(U
                             ' Invalid reference; send error message
                             ' Msg726=Servidor » Solicitud de comercio invalida, reintente...
 232                          Call WriteLocaleMsg(UserIndex, "726", e_FontTypeNames.FONTTYPE_SERVER)
+                        End If
                 
                     Case 5
                         Dim i As Integer, j As Integer
