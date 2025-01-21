@@ -9164,10 +9164,12 @@ Call WriteLocaleMsg(UserIndex, "1244", e_FontTypeNames.FONTTYPE_INFO, UserList(U
 230                              Call IniciarComercioConUsuario(userIndex, targetIndex)
                             Else
                                 ' Invalid index; send error message
+                                ' Msg726=Servidor » Solicitud de comercio invalida, reintente...
 231                               Call WriteLocaleMsg(UserIndex, "726", e_FontTypeNames.FONTTYPE_SERVER)
                             End If
                         Else
                             ' Invalid reference; send error message
+                            ' Msg726=Servidor » Solicitud de comercio invalida, reintente...
 232                          Call WriteLocaleMsg(UserIndex, "726", e_FontTypeNames.FONTTYPE_SERVER)
                         End If
                 
