@@ -9148,20 +9148,29 @@ Call WriteLocaleMsg(UserIndex, "1244", e_FontTypeNames.FONTTYPE_INFO, UserList(U
 216                 Case 4
 218                     Log = "Repuesta Afirmativa 4"
                 
-220                     If IsValidUserRef(UserList(userIndex).flags.targetUser) Then
-                
-222                         UserList(userIndex).ComUsu.DestUsu = UserList(userIndex).flags.targetUser
-224                         UserList(userIndex).ComUsu.DestNick = UserList(UserList(userIndex).flags.targetUser.ArrayIndex).name
-226                         UserList(UserIndex).ComUsu.cant = 0
-228                         UserList(UserIndex).ComUsu.Objeto = 0
-230                         UserList(UserIndex).ComUsu.Acepto = False
-                    
-                            'Rutina para comerciar con otro usuario
-232                         Call IniciarComercioConUsuario(userIndex, UserList(userIndex).flags.targetUser.ArrayIndex)
+220                      If IsValidUserRef(UserList(userIndex).flags.targetUser) Then
+221                          Dim targetIndex As Integer
+222                          targetIndex = UserList(userIndex).flags.targetUser.ArrayIndex
+
+                            ' Ensure the target index is within bounds
+223                          If targetIndex >= LBound(UserList) And targetIndex <= UBound(UserList) Then
+224                              UserList(userIndex).ComUsu.DestUsu = UserList(userIndex).flags.targetUser
+225                              UserList(userIndex).ComUsu.DestNick = UserList(targetIndex).name
+226                              UserList(UserIndex).ComUsu.cant = 0
+227                              UserList(UserIndex).ComUsu.Objeto = 0
+228                              UserList(UserIndex).ComUsu.Acepto = False
+
+                                ' Routine to start trading with another user
+230                              Call IniciarComercioConUsuario(userIndex, targetIndex)
+                            Else
+                                ' Invalid index; send error message
+                                ' Msg726=Servidor » Solicitud de comercio invalida, reintente...
+231                               Call WriteLocaleMsg(UserIndex, "726", e_FontTypeNames.FONTTYPE_SERVER)
+                            End If
                         Else
-234                         ' Msg726=Servidor » Solicitud de comercio invalida, reintente...
-                            Call WriteLocaleMsg(UserIndex, "726", e_FontTypeNames.FONTTYPE_SERVER)
-                        End If
+                            ' Invalid reference; send error message
+                            ' Msg726=Servidor » Solicitud de comercio invalida, reintente...
+232                          Call WriteLocaleMsg(UserIndex, "726", e_FontTypeNames.FONTTYPE_SERVER)
                 
                     Case 5
                         Dim i As Integer, j As Integer
@@ -9170,7 +9179,7 @@ Call WriteLocaleMsg(UserIndex, "1244", e_FontTypeNames.FONTTYPE_INFO, UserList(U
                             For i = 1 To MAX_INVENTORY_SLOTS
                                 For j = 1 To UBound(PecesEspeciales)
                                     If .Invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
-                                        .Stats.PuntosPesca = .Stats.PuntosPesca + (ObjData(.Invent.Object(i).ObjIndex).PuntosPesca * .Invent.Object(i).amount)
+                                        .Stats.PuntosPesca = .Sats.PuntosPesca + (ObjData(.Invent.Object(i).ObjIndex).PuntosPesca * .Invent.Object(i).amount)
                                         .Stats.GLD = .Stats.GLD + (ObjData(.Invent.Object(i).ObjIndex).Valor * .Invent.Object(i).amount * 1.2)
                                         Call WriteUpdateGold(userindex)
                                         Call QuitarUserInvItem(UserIndex, i, .Invent.Object(i).amount)
