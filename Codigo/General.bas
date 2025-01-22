@@ -716,7 +716,9 @@ On Error GoTo Handler
         Subasta.SubastaHabilitada = True
         Subasta.HaySubastaActiva = False
         Call ResetMeteo
-        Call InitializePacketList
+#If DIRECT_PLAY = 0 Then
+        Call Protocol_Writes.InitializeAuxiliaryBuffer
+#End If
 
 
         Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))

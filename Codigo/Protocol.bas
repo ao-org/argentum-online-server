@@ -133,21 +133,40 @@ Public Type t_PersonajeCuenta
 
 End Type
 
+
+
+#If DIRECT_PLAY = 0 Then
 Public Reader  As Network.Reader
 
 Public Sub InitializePacketList()
     Call Protocol_Writes.InitializeAuxiliaryBuffer
 End Sub
 
-''
-' Handles incoming data.
-'
-' @param    UserIndex The index of the user sending the message.
 
-Public Function HandleIncomingData(ByVal UserIndex As Integer, ByVal ConnectionId As Long, ByVal Message As Network.Reader) As Boolean
+
+Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As Network.Reader, Optional ByVal optional_user_index As Variant) As Boolean
+
+#Else
+
+Public Reader  As New clsNetReader
+Public Function HandleIncomingData(ByVal ConnectionID As Long, Message As DxVBLibA.DPNMSG_RECEIVE, Optional ByVal optional_user_index As Variant) As Boolean
+
+#End If
 
 On Error Resume Next
+    Dim UserIndex As Integer
+    If Not IsMissing(optional_user_index) Then
+        UserIndex = CInt(optional_user_index)
+    Else
+        UserIndex = 0
+    End If
+    
+    
+#If DIRECT_PLAY = 0 Then
     Set Reader = Message
+#Else
+    Reader.set_data Message
+#End If
     
     Dim PacketId As Long
     PacketId = Reader.ReadInt16
@@ -156,32 +175,34 @@ On Error Resume Next
     Debug.Print "Paquete: " & PacketID
 #End If
 
-    
     Dim actual_time As Long
     Dim performance_timer As Long
     actual_time = GetTickCount()
     performance_timer = actual_time
-    
+#If DIRECT_PLAY = 0 Then
     If actual_time - Mapping(ConnectionId).TimeLastReset >= 5000 Then
         Mapping(ConnectionId).TimeLastReset = actual_time
         Mapping(ConnectionId).PacketCount = 0
     End If
     
     If PacketId <> ClientPacketID.eSendPosSeguimiento Then
-      '  Debug.Print PacketId
         Mapping(ConnectionId).PacketCount = Mapping(ConnectionId).PacketCount + 1
     End If
     
     If Mapping(ConnectionId).PacketCount > 100 Then
         'Lo kickeo
         If UserIndex > 0 Then
-            Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & UserList(UserIndex).name & " | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
+            If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
+                Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & UserList(UserIndex).Name & " | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
+            End If
             Mapping(ConnectionId).PacketCount = 0
             If IsFeatureEnabled("kick_packet_overflow") Then
-                Call CloseSocket(UserIndex)
+                Call KickConnection(ConnectionID)
             End If
         Else
-            Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> Usuario desconocido | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
+            If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
+                Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> Usuario desconocido | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
+            End If
             Mapping(ConnectionId).PacketCount = 0
             If IsFeatureEnabled("kick_packet_overflow") Then
                 Call KickConnection(ConnectionId)
@@ -189,27 +210,41 @@ On Error Resume Next
         End If
         Exit Function
     End If
+#End If
 
     If PacketId < ClientPacketID.eMinPacket Or PacketId >= ClientPacketID.PacketCount Then
-        Call LogEdicionPaquete("El usuario " & UserList(UserIndex).ConnectionDetails.IP & " mando fake paquet " & PacketId)
-        Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & UserList(UserIndex).name & " | IP: " & UserList(UserIndex).ConnectionDetails.IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
-        Call CloseSocket(UserIndex)
+        If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
+            Call LogEdicionPaquete("El usuario " & UserList(UserIndex).ConnectionDetails.IP & " mando fake paquet " & PacketId)
+            Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & UserList(UserIndex).Name & " | IP: " & UserList(UserIndex).ConnectionDetails.IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
+        End If
+        Call KickConnection(ConnectionID)
         Exit Function
     End If
     
     #If PYMMO = 1 Then
         'Does the packet requires a logged user??
-        If Not (PacketId = ClientPacketID.eLoginExistingChar Or _
-                PacketId = ClientPacketID.eLoginNewChar) Then
-                   
-            'Is the user actually logged?
-            If Not UserList(userindex).flags.UserLogged Then
-                Call CloseSocket(userindex)
-                Exit Function
-            
-            'He is logged. Reset idle counter if id is valid.
-            ElseIf PacketId <= ClientPacketID.[PacketCount] Then
-                UserList(userindex).Counters.IdleCount = 0
+        If Not (PacketId = ClientPacketID.eLoginExistingChar Or PacketId = ClientPacketID.eLoginNewChar) Then
+            ' All these packets require a logged user with a valid user_index
+            Debug.Assert Not IsMissing(optional_user_index)
+            If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
+                'Is the user actually logged?
+                If Not UserList(UserIndex).flags.UserLogged Then
+                    Call CloseSocket(UserIndex)
+                    Exit Function
+                'He is logged. Reset idle counter if id is valid.
+                ElseIf PacketId <= ClientPacketID.[PacketCount] Then
+                    UserList(UserIndex).Counters.IdleCount = 0
+                End If
+            Else
+                'If UserIndex is missing then kick out
+                Call KickConnection(ConnectionID)
+            End If
+        Else
+            'Got eLoginExistingChar/eLoginNewChar, here UserIndex must not be assigned
+            Debug.Assert IsMissing(optional_user_index)
+            If Not IsMissing(optional_user_index) Then
+                'If UserIndex is not missing then kick out
+                Call KickConnection(ConnectionID)
             End If
         End If
     #ElseIf PYMMO = 0 Then
@@ -885,10 +920,17 @@ On Error Resume Next
             Err.raise -1, "Invalid Message"
     End Select
     
-    If (Message.GetAvailable() > 0) Then
-        Err.raise &HDEADBEEF, "HandleIncomingData", "El paquete '" & PacketID & "' se encuentra en mal estado con '" & Message.GetAvailable() & "' bytes de mas por el usuario '" & UserList(UserIndex).Name & "'"
+    'If (Message.GetAvailable() > 0) Then
+    If (Reader.GetAvailable() > 0) Then
+         If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
+                Err.raise &HDEADBEEF, "HandleIncomingData", "The client message with ID: '" & PacketId & "' has the wrong size '" & Reader.GetAvailable() & "' bytes de mas por el usuario '" & UserList(UserIndex).Name & "'"
+         Else
+                Err.raise &HDEADBEEF, "HandleIncomingData", "The client message with ID: '" & PacketId & "' has the wrong size '" & Reader.GetAvailable() & "' bytes de mas por el usuario '"
+         End If
     End If
+    
     Call PerformTimeLimitCheck(performance_timer, "Protocol handling message " & PacketId, 100)
+
 HandleIncomingData_Err:
     
     Set Reader = Nothing
@@ -896,7 +938,6 @@ HandleIncomingData_Err:
     If Err.Number <> 0 Then
         Call TraceError(Err.Number, Err.Description & vbNewLine & "PackedID: " & PacketID & vbNewLine & IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).name, "UserIndex: " & UserIndex), "Protocol.HandleIncomingData", Erl)
         'Call CloseSocket(UserIndex)
-        
         HandleIncomingData = False
     End If
 End Function
@@ -1007,18 +1048,9 @@ End Sub
 
 #End If
 #If PYMMO = 1 Then
-''
-' Handles the "LoginExistingChar" message.
-'
-' @param    UserIndex The index of the user sending the message.
 
-Private Sub HandleLoginExistingChar(ByVal ConnectionId As Long)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        ''Last Modification: 01/12/08 Ladder
-        '***************************************************
-
+Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
         On Error GoTo ErrHandler
 
         Dim user_name    As String
@@ -2358,7 +2390,7 @@ Call WriteLocaleMsg(userindex, "1126", e_FontTypeNames.FONTTYPE_INFO)
                 Else
                     'ver de banear al usuario
                     'Call BanearIP(0, UserList(UserIndex).name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
-                    Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el slot del inventario | Valor: " & Slot & ".")
+                    Call LogEdicionPaquete("El usuario " & UserList(UserIndex).Name & " editó el slot del inventario | Valor: " & Slot & ".")
                 End If
         
                 '04-05-08 Ladder
@@ -2394,7 +2426,7 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount As Lo
     'Controlamos secuencia para ver que no haya paquetes duplicados.
     If ActualCount <= LastCount Then
         Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & UserList(UserIndex).ConnectionDetails.IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
-        Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el paquete " & PacketName & ".")
+        Call LogEdicionPaquete("El usuario " & UserList(UserIndex).Name & " editó el paquete " & PacketName & ".")
         LastCount = ActualCount
         Call CloseSocket(UserIndex)
         Exit Function
@@ -2407,7 +2439,7 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount As Lo
             'Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
             verifyTimeStamp = False
             'Call LogMacroServidor("El usuario " & UserList(UserIndex).name & " iteró el paquete " & PacketName & " " & MaxIterations & " veces.")
-            Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).name & "| Revisar --> " & PacketName & " (Envíos: " & Iterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
+            Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).Name & "| Revisar --> " & PacketName & " (Envíos: " & Iterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
             'Call WriteCerrarleCliente(UserIndex)
             'Call CloseSocket(UserIndex)
             LastCount = ActualCount
@@ -2679,7 +2711,7 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
             DesdeInventario = Reader.ReadInt8
             
             If Not DesdeInventario Then
-                Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("El usuario " & .name & " está tomando pociones con click estando en hechizos... raaaaaro, poleeeeemico. BAN?", e_FontTypeNames.FONTTYPE_INFOBOLD))
+                Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("El usuario " & .Name & " está tomando pociones con click estando en hechizos... raaaaaro, poleeeeemico. BAN?", e_FontTypeNames.FONTTYPE_INFOBOLD))
             End If
             
             Dim PacketCounter As Long
@@ -3553,7 +3585,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
             
             
                 
-118             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.name & " ha fundado el clan <" & GuildName & "> de alineación " & GuildAlignment(.GuildIndex) & ".", e_FontTypeNames.FONTTYPE_GUILD))
+118             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.Name & " ha fundado el clan <" & GuildName & "> de alineación " & GuildAlignment(.GuildIndex) & ".", e_FontTypeNames.FONTTYPE_GUILD))
 120             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
                 'Update tag
 122             Call RefreshCharStatus(UserIndex)
@@ -3751,7 +3783,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
 104             points(i) = Reader.ReadInt8()
             
 106             If points(i) < 0 Then
-108                 Call LogSecurity(.name & " IP:" & .ConnectionDetails.IP & " trató de hackear los skills.")
+108                 Call LogSecurity(.Name & " IP:" & .ConnectionDetails.IP & " trató de hackear los skills.")
 110                 .Stats.SkillPts = 0
 112                 Call CloseSocket(UserIndex)
                     Exit Sub
@@ -3762,7 +3794,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
 116         Next i
         
 118         If Count > .Stats.SkillPts Then
-120             Call LogSecurity(.name & " IP:" & .ConnectionDetails.IP & " trató de hackear los skills.")
+120             Call LogSecurity(.Name & " IP:" & .ConnectionDetails.IP & " trató de hackear los skills.")
 122             Call CloseSocket(UserIndex)
                 Exit Sub
 
@@ -6802,7 +6834,7 @@ Call WriteLocaleMsg(tUser.ArrayIndex, "1187", e_FontTypeNames.FONTTYPE_INFO, .na
 
 'Msg1188= Mensaje enviado a ¬1
 Call WriteLocaleMsg(UserIndex, "1188", e_FontTypeNames.FONTTYPE_INFO, UserName)
-126                 Call LogGM(.name, "Envió mensaje como GM a " & username & ": " & mensaje)
+126                 Call LogGM(.Name, "Envió mensaje como GM a " & username & ": " & mensaje)
 
                 End If
 
@@ -8046,7 +8078,7 @@ Call WriteLocaleMsg(UserIndex, "1228", e_FontTypeNames.FONTTYPE_INFO)
 130             UserList(UserIndex).Counters.TiempoParaSubastar = 0
 132             Subasta.OfertaInicial = Oferta
 134             Subasta.MejorOferta = 0
-136             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " está subastando: " & ObjData(Subasta.ObjSubastado).name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas. Escribe /OFERTAR (cantidad) para participar.", e_FontTypeNames.FONTTYPE_SUBASTA))
+136             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " está subastando: " & ObjData(Subasta.ObjSubastado).Name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas. Escribe /OFERTAR (cantidad) para participar.", e_FontTypeNames.FONTTYPE_SUBASTA))
 138             .flags.Subastando = False
 140             Subasta.HaySubastaActiva = True
 142             Subasta.Subastador = .Name
@@ -8123,7 +8155,7 @@ Call WriteLocaleMsg(UserIndex, "1231", e_FontTypeNames.FONTTYPE_INFO)
 132             Call WriteUpdateGold(UserIndex)
             
 134             If Subasta.TiempoRestanteSubasta < 60 Then
-136                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
+136                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
 138                 Call LogearEventoDeSubasta(.Name & ": Mejoro la oferta en el ultimo minuto ofreciendo " & PonerPuntos(Oferta) & " monedas.")
 140                 Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta + 30
                 Else
@@ -8213,7 +8245,7 @@ Private Sub HandleCancelDuel(ByVal UserIndex As Integer)
 106             Call CancelarSolicitudReto(UserIndex, .Name & " ha cancelado la solicitud.")
 
 108         ElseIf IsValidUserRef(.flags.AceptoReto) Then
-110             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .name & " ha cancelado su admisión.")
+110             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .Name & " ha cancelado su admisión.")
 
             End If
 
@@ -8726,7 +8758,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 104             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 
 106             If clan_nivel >= 2 Then
-108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & get_map_name(.pos.Map) & " (" & .pos.Map & "-" & .pos.x & "-" & .pos.y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
+108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .Name & "] solicita apoyo de su clan en " & get_map_name(.pos.Map) & " (" & .pos.Map & "-" & .pos.x & "-" & .pos.y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
 110                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
 112                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.X, .Pos.Y))
 
@@ -9139,7 +9171,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         End Select
                     
 210                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-212                         Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+212                         Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).Name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                         Else
 'Msg1244= ¡Gracias ¬1
 Call WriteLocaleMsg(UserIndex, "1244", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).name)
@@ -9248,7 +9280,7 @@ Call WriteLocaleMsg(UserIndex, "1247", e_FontTypeNames.FONTTYPE_INFO)
                         End Select
                     
 320                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-322                         Call WriteChatOverHead(UserIndex, "¡No hay problema " & UserList(UserIndex).name & "! Sos bienvenido en " & DeDonde & " cuando gustes.", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+322                         Call WriteChatOverHead(UserIndex, "¡No hay problema " & UserList(UserIndex).Name & "! Sos bienvenido en " & DeDonde & " cuando gustes.", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                         End If
 324                     UserList(UserIndex).PosibleHogar = UserList(UserIndex).Hogar
 326                 Case 4
@@ -10203,16 +10235,16 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
             Select Case tipoMacro
             
                 Case tMacro.Coordenadas
-102                 mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de COORDENADAS."
+102                 mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).Name & "| está utilizando macro de COORDENADAS."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.dobleclick
-                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
+                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).Name & "| está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.inasistidoPosFija
-                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de INASISTIDO."
+                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).Name & "| está utilizando macro de INASISTIDO."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.borrarCartel
-                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de CARTELEO."
+                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).Name & "| está utilizando macro de CARTELEO."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
             End Select
             
