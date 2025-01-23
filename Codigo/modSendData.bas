@@ -70,53 +70,63 @@ Public Enum SendTarget
 End Enum
 
 Public Sub SendToConnection(ByVal ConnectionId, Optional Args As Variant)
-    On Error GoTo SendToConnection_Err
-        Dim Buffer As Network.Writer
-100     Set Buffer = Protocol_Writes.GetWriterBuffer()
-102     Call modNetwork.SendToConnection(ConnectionId, Buffer)
-104     Buffer.Clear
-        Exit Sub
+On Error GoTo SendToConnection_Err
+#If DIRECT_PLAY = 0 Then
+    Dim writer As Network.writer
+    Set writer = Protocol_Writes.GetWriterBuffer()
+#Else
+    Dim writer As clsNetWriter
+    Set writer = Protocol_Writes.writer
+#End If
+
+    Call modNetwork.SendToConnection(ConnectionID, writer)
+    writer.Clear
+    Exit Sub
 SendToConnection_Err:
-106     Call TraceError(Err.Number, Err.Description, "modSendData.SendToConnection", Erl)
-108     Call Buffer.Clear
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToConnection", Erl)
+    Call writer.Clear
 End Sub
 
 Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Optional Args As Variant, Optional ByVal validateInvi As Boolean = False)
-        
-        On Error GoTo SendData_Err
+On Error GoTo SendData_Err
+
     
-        '**************************************************************
-        'Author: Juan  Martín Sotuyo Dodero (Maraxus) - Rewrite of original
-        'Last Modify Date: 01/08/2007
-        'Last modified by: (liquid)
-        '**************************************************************
-        
-        Dim LoopC As Long
-        Dim Map   As Integer
-        
-        Dim Buffer As Network.Writer
+    
+#If DIRECT_PLAY = 0 Then
+     Dim buffer As Network.writer
         Set Buffer = Protocol_Writes.GetWriterBuffer()
+#Else
+    Dim buffer As clsNetWriter
+    Set buffer = Protocol_Writes.writer
+#End If
     
-100     Select Case sndRoute
+   Dim LoopC As Long
+   Dim Map   As Integer
+    
+   Select Case sndRoute
             Case SendTarget.ToIndex
-                If (UserList(sndIndex).ConnectionDetails.ConnIDValida) Then
-                    Call modNetwork.Send(sndIndex, Buffer)
-                    If IsValidUserRef(UserList(sndIndex).flags.GMMeSigue) Then
-                        Call modNetwork.Send(UserList(sndIndex).flags.GMMeSigue.ArrayIndex, Buffer)
+                Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
+                With UserList(sndIndex)
+                    If (.ConnectionDetails.ConnIDValida) Then
+                        Call modNetwork.Send(sndIndex, buffer)
                     End If
-                End If
+                End With
 
 104         Case SendTarget.ToPCArea
+                Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
 106             Call SendToUserArea(sndIndex, Buffer, validateInvi)
 
 109         Case SendTarget.ToPCAliveArea
-111             Call SendToUserAliveArea(sndIndex, Buffer, validateInvi)
+111             Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
+                Call SendToUserAliveArea(sndIndex, Buffer, ValidateInvi)
 
             
 105         Case SendTarget.ToPCAreaButFollowerAndIndex
+                Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
 107             Call SendToUserAreaButFollowerAndIndex(sndIndex, Buffer)
 
 108         Case SendTarget.ToPCAreaButGMs
+                Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
 110             Call SendToUserAreaButGMs(sndIndex, Buffer)
 
 112         Case SendTarget.ToPCDeadArea
@@ -371,13 +381,7 @@ End Sub
 Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer, Optional ByVal validateInvi As Boolean)
         
         On Error GoTo SendToUserArea_Err
-        
 
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
-        '
-        '**************************************************************
         Dim LoopC     As Long
         Dim tempIndex As Integer
         Dim Map       As Integer
@@ -436,15 +440,7 @@ End Sub
 
 
 Private Sub SendToUserAreaButFollowerAndIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
-        
-        On Error GoTo SendToUserAreaButFollower_Err
-        
-
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
-        '
-        '**************************************************************
+On Error GoTo SendToUserAreaButFollower_Err
         Dim LoopC     As Long
         Dim tempIndex As Integer
         Dim map       As Integer
@@ -487,15 +483,7 @@ SendToUserAreaButFollower_Err:
 End Sub
 
 Private Sub SendToPCDeadArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
-        
-        On Error GoTo SendToUserArea_Err
-        
-
-        '**************************************************************
-        'Author: Jopi
-        'Last Modify Date: 23/06/2021
-        'Envio la data a los que estan muertos y a los GMs en el area.
-        '**************************************************************
+ On Error GoTo SendToUserArea_Err
         Dim LoopC     As Long
         Dim tempIndex As Integer
         Dim Map       As Integer

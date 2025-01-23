@@ -26,11 +26,9 @@ Attribute VB_Name = "modNetwork"
 '
 '
 Option Explicit
-Public DisconnectTimeout As Long
 
-#If DIRECT_PLAY = 0 Then
-Private Const TIME_RECV_FREQUENCY As Long = 0  ' In milliseconds
-Private Const TIME_SEND_FREQUENCY As Long = 0 ' In milliseconds
+
+Public DisconnectTimeout As Long
 
 Public Type t_ConnectionMapping
     UserRef As t_UserReference
@@ -39,9 +37,18 @@ Public Type t_ConnectionMapping
     PacketCount As Long
 End Type
 
+
+
+
+#If DIRECT_PLAY = 0 Then
+Public Mapping() As t_ConnectionMapping
+
+Private Const TIME_RECV_FREQUENCY As Long = 0  ' In milliseconds
+Private Const TIME_SEND_FREQUENCY As Long = 0 ' In milliseconds
+
 Private Server  As Network.Server
 Private Time(2) As Single
-Public Mapping() As t_ConnectionMapping
+
 Private FramePacketCount As Long
 Private NewFrameConnections As Long
 
@@ -247,7 +254,16 @@ On Error GoTo OnServerRecv_Err:
     Dim UserRef As t_UserReference
     UserRef = Mapping(Connection).UserRef
     FramePacketCount = FramePacketCount + 1
-    Call Protocol.HandleIncomingData(UserRef.ArrayIndex, Connection, Message)
+    
+    If IsValidUserRef(UserRef) Then
+        ' The user index is assigned to the connection in:
+        '       HandleLoginExistingChar(ConnectionID)
+        '       HandleLoginNewChar(ConnectionID)
+        ' It does not make sense to pass the index if it has not being assigned
+        Call Protocol.HandleIncomingData(connection, Message, UserRef.ArrayIndex)
+    Else
+        Call Protocol.HandleIncomingData(connection, Message)
+    End If
     
     Exit Sub
     
@@ -364,6 +380,56 @@ Public Sub ClearConnection(ByVal Connection)
     End With
 End Sub
 #Else
+'DIRECT_PLAY
+
+Public Mapping As New Dictionary
+
+
+Public Function MapConnectionToUser(ByVal ConnectionID As Long) As Integer
+On Error GoTo CheckDisconnectedUsers_Err:
+        Dim FreeUser As Long
+        FreeUser = NextOpenUser()
+        If IsFeatureEnabled("debug_id_assign") Then
+            Call LogError("Assign userId: " & FreeUser & " to connection: " & ConnectionID)
+        End If
+        
+        If FreeUser < 0 Then
+            If IsFeatureEnabled("debug_connections") Then
+                Call LogError("Failed to find slot for new user, connection: " & connection & " LastUser: " & LastUser)
+            End If
+            KickConnection (ConnectionID)
+            Exit Function
+        End If
+        
+        If UserList(FreeUser).InUse Then
+            Call LogError("Trying to use an user slot marked as in use! slot: " & FreeUser)
+            FreeUser = NextOpenUser()
+        End If
+        
+
+        Mapping.Add ConnectionID, FreeUser
+        
+        
+        Dim cdetail As t_ConnectionInfo
+        With cdetail
+             .ConnIDValida = True
+             .IP = "127.0.0.1"
+             .ConnID = ConnectionID
+             .OnConnectTimestamp = GetTickCount()
+        End With
+        UserList(FreeUser).ConnectionDetails = cdetail
+ 
+        MapConnectionToUser = FreeUser
+        If FreeUser > LastUser Then
+           LastUser = FreeUser
+        End If
+        Exit Function
+        
+CheckDisconnectedUsers_Err:
+136     Call TraceError(Err.Number, Err.Description, "modNetwork.MapConnectionToUser", Erl)
+End Function
+
+
 'DirectPlay
 Public Sub CheckDisconnectedUsers()
 'Debug.Assert 0
@@ -372,8 +438,11 @@ End Sub
 
 Public Sub Listen(ByVal Limit As Long, ByVal Address As String, ByVal Service As String)
     Err.Clear
+    
+    
+
     Dim AppDesc As DPN_APPLICATION_DESC
-    dpa.SetSP DP8SP_TCPIP  ' Set the service provider to TCP/IP
+    dpa.SetSP DP8SP_TCPIP
     dpa.AddComponentLong DPN_KEY_PORT, CLng(Service)
     Debug.Assert Err.Number = 0
     
@@ -392,6 +461,11 @@ Public Sub Listen(ByVal Limit As Long, ByVal Address As String, ByVal Service As
     'Now set up our address value
     dpa.SetSP dps.GetServiceProvider(1).Guid
     
+    Dim pInfo As DPN_PLAYER_INFO
+    pInfo.Name = "server"
+    pInfo.lInfoFlags = DPNINFO_NAME
+    dps.SetServerInfo pInfo, DPNOP_SYNC
+    
     
     'Now start the server
     dps.Host AppDesc, dpa
@@ -406,51 +480,92 @@ Public Sub close_not_logged_sockets_if_timeout()
 End Sub
 Public Sub CreatePlayer(ByVal lPlayerID As Long, fRejectMsg As Boolean)
     On Error GoTo create_player_err
-    If lPlayerID > 0 Then
-        Dim dpPeer As DPN_PLAYER_INFO
-        dpPeer = dps.GetClientInfo(lPlayerID, 0)
-        If Err Then Exit Sub
-        glNumPlayers = glNumPlayers + 1
+    
+    Debug.Print "DPLAY > CreatePlayer ID:" & lPlayerID
+    'try to get player info
+    Dim dpPeer As DPN_PLAYER_INFO
+    dpPeer = dps.GetClientInfo(lPlayerID, 0)
+    If Err.Number <> 0 Then
+        Debug.Print ("Error " & DPNERR_INVALIDPLAYER)
+                ''                 DPNERR_INVALIDPARAM
     End If
+    If Err Then Exit Sub
+    
+    Dim addr As DirectPlay8Address
+    Set addr = dps.GetClientAddress(lPlayerID)
+    Dim port As Long
+    port = addr.GetComponentLong(DPN_KEY_PORT)
+    Dim IP As String
+    IP = addr.GetComponentString(DPN_KEY_HOSTNAME)
+    Dim Address As String
+    Address = IP & ":" & port
+    If IsFeatureEnabled("debug_connections") Then
+        Call AddLogToCircularBuffer("OnServerConnect connecting new user on id: " & lPlayerID & " ip: " & Address)
+    End If
+       
+    If Mapping.Exists(lPlayerID) Then
+        With Mapping.Item(lPlayerID)
+          Call TraceError(Err.Number, Err.Description, "OnServerConnect Mapping(lPlayerID).UserRef.ArrayIndex > 0, connection: " & lPlayerID & " value: " & .UserRef.ArrayIndex, Erl)
+        End With
+    End If
+       
+   
+    Call modSendData.SendToConnection(lPlayerID, PrepareConnected())
     Exit Sub
+
 create_player_err:
+     Call KickConnection(connection)
+     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerConnect", Erl)
 
 End Sub
 
 Public Sub DestroyPlayer(ByVal lPlayerID As Long, ByVal lReason As Long, fRejectMsg As Boolean)
 On Error GoTo create_player_err
-    Debug.Print "DestroyPlayer"
+    Debug.Print "DPLAY > DestroyPlayer ID:" & lPlayerID
     Exit Sub
 create_player_err:
 
 End Sub
-
 Public Sub Receive(dpnotify As DxVBLibA.DPNMSG_RECEIVE, fRejectMsg As Boolean)
-    Dim oNewMsg() As Byte, lOffset As Long
-    Dim lMsg As Long
-    Debug.Print "Receive"
-    
-    'The only message we will receive from our client is one to make faces to everyone
-    'else on the server, if there is someone else to make faces at, do it, otherwise let
-    'them know
-    If glNumPlayers > 1 Then
-        lOffset = NewBuffer(oNewMsg)
-        lMsg = Msg_SendWave
-        AddDataToBuffer oNewMsg, lMsg, LenB(lMsg), lOffset
-        AddStringToBuffer oNewMsg, dps.GetClientInfo(dpnotify.idSender).Name, lOffset
-        dps.sendto DPNID_ALL_PLAYERS_GROUP, oNewMsg, 0, DPNSEND_NOLOOPBACK
-    Else
-        lOffset = NewBuffer(oNewMsg)
-        lMsg = Msg_NoOtherPlayers
-        AddDataToBuffer oNewMsg, lMsg, LenB(lMsg), lOffset
-        dps.sendto DPNID_ALL_PLAYERS_GROUP, oNewMsg, 0, DPNSEND_NOLOOPBACK
-    End If
+On Error GoTo receive_error:
+    With dpnotify
+            If Mapping.Exists(.idSender) Then
+                Dim user_index As Integer
+                user_index = Mapping.Item(dpnotify.idSender)
+                Call Protocol.HandleIncomingData(.idSender, dpnotify, user_index)
+            Else
+                Call Protocol.HandleIncomingData(.idSender, dpnotify)
+            End If
+    End With
+    Exit Sub
+receive_error:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Receive", Erl)
+End Sub
+Public Sub Send(ByVal user_index As Long, ByRef writer As clsNetWriter)
+    Debug.Assert user_index >= LBound(UserList) And user_index <= UBound(UserList)
+    With UserList(user_index)
+        Call SendToConnection(.ConnectionDetails.ConnID, writer)
+    End With
+End Sub
+Public Sub SendToConnection(ByVal ConnectionID As Long, ByRef writer As clsNetWriter)
+    Call writer.Send(ConnectionID)
+End Sub
+Public Sub Flush(ByVal user_index As Long)
 End Sub
 
-Public Sub Send(ByVal UserIndex As Long, ByRef Buffer As Network.Writer)
-    Debug.Print "ModNetworking.send"
+Public Sub KickConnection(ByVal connection As Long)
+On Error GoTo ForcedClose_Err:
+'     Call Server.Flush(connection)
+'     Call Server.Kick(connection, True)
+'     Call ClearConnection(connection)
+     Exit Sub
+ForcedClose_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.KickConnection", Erl)
 End Sub
 
+Public Sub Poll()
+    'Nothing to do here when using DPLAY
+End Sub
 #End If
 
 
