@@ -27,15 +27,24 @@ Attribute VB_Name = "Protocol_Writes"
 '
 Option Explicit
 
+#If DIRECT_PLAY = 0 Then
 Private Writer  As Network.Writer
 
 Public Sub InitializeAuxiliaryBuffer()
-100     Set Writer = New Network.Writer
+    Set writer = New Network.writer
 End Sub
     
 Public Function GetWriterBuffer() As Network.Writer
-100     Set GetWriterBuffer = Writer
+    Set GetWriterBuffer = writer
 End Function
+
+#Else
+
+Public writer As New clsNetWriter
+
+#End If
+
+
 #If PYMMO = 0 Then
 Public Sub WriteAccountCharacterList(ByVal UserIndex As Integer, ByRef Personajes() As t_PersonajeCuenta, ByVal Count As Long)
         '<EhHeader>
@@ -3762,7 +3771,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 
 124                     If i = 1 Then
 126                         Call Writer.WriteString8(UserList(UserList( _
-                                    .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name & "(Líder)")
+                                    .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).Name & "(Líder)")
                         Else
 128                         Call Writer.WriteString8(UserList(UserList( _
                                     .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name)
