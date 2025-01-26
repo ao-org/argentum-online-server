@@ -40,7 +40,7 @@ End Sub
 Public Sub WriteInt16(ByVal v As Integer)
     AddDataToBuffer oMsg, v, SIZE_INTEGER, lOffset
 End Sub
-Public Sub WriteInt32(ByVal v As Integer)
+Public Sub WriteInt32(ByVal V As Long)
     AddDataToBuffer oMsg, v, SIZE_LONG, lOffset
 End Sub
 Public Sub WriteReal32(ByVal v As Single)
@@ -55,7 +55,7 @@ End Sub
 Public Sub Send(ByVal idSend As Long)
 On Error GoTo send_error
     
-    dps.sendto idSend, oMsg, 0, DPNSEND_GUARANTEED Or DPNSEND_NOLOOPBACK Or DPNSEND_GUARANTEED
+    dps.sendto idSend, oMsg, 0, DPNSEND_GUARANTEED Or DPNSEND_NOLOOPBACK Or DPNSEND_PRIORITY_HIGH
     Me.Clear
     
     Exit Sub
@@ -74,6 +74,11 @@ send_error:
 
 End Sub
 Public Sub WriteString8(ByVal v As String)
+    Debug.Assert Len(V) > 0
+    If Len(V) = 0 Then
+        ' this is a workaround because the game is trying to send empty strings and DP will crash if we call AddStringToBuffer with an empty str
+        V = "0"
+    End If
     AddStringToBuffer oMsg, v, lOffset
 End Sub
 Private Sub Class_Initialize()

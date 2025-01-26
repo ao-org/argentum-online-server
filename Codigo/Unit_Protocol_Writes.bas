@@ -26,6 +26,7 @@ Attribute VB_Name = "Unit_Protocol_Writes"
 '
 '
 Option Explicit
+#If UNIT_TEST = 1 Then
 Private Writer As Network.Writer
 
 Public Function writer_is_nothing() As Boolean
@@ -110,3 +111,4 @@ End Sub
 
 
 
+#End If

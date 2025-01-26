@@ -852,7 +852,7 @@ ErrHandler:
 
 End Sub
 
-'[Alejo-21-5]: Cierra un socket sin limpiar el slot
+
 Sub CloseSocketSL(ByVal UserIndex As Integer)
         
         On Error GoTo CloseSocketSL_Err
@@ -1737,7 +1737,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
                 Call WriteUserCharIndexInServer(.flags.GMMeSigue.ArrayIndex)
                 Call UpdateUserInv(True, .flags.GMMeSigue.ArrayIndex, 1)
                 Call WriteUpdateUserStats(.flags.GMMeSigue.ArrayIndex)
-                Call WriteConsoleMsg(.flags.GMMeSigue.ArrayIndex, "El usuario " & UserList(UserIndex).name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(.flags.GMMeSigue.ArrayIndex, "El usuario " & UserList(UserIndex).Name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
                 Call SetUserRef(.flags.GMMeSigue, 0)
                 'Falta revertir inventario del GM
             End If

@@ -26,6 +26,7 @@ Attribute VB_Name = "UnitTesting"
 '
 '
 Option Explicit
+#If UNIT_TEST = 1 Then
 
 Public public_key As String
 Public private_key As String
@@ -188,3 +189,4 @@ Function test_suite() As Boolean
     test_suite = result
 End Function
 
+#End If

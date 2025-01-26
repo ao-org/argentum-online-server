@@ -646,10 +646,12 @@ End Sub
 
 Private Sub DirectPlay8Event_AppDesc(fRejectMsg As Boolean)
     'VB requires that we must implement *every* member of this interface
+    Debug.Print "DirectPlay8Event_AppDesc"
 End Sub
 
 Private Sub DirectPlay8Event_AsyncOpComplete(dpnotify As DxVBLibA.DPNMSG_ASYNC_OP_COMPLETE, fRejectMsg As Boolean)
     'VB requires that we must implement *every* member of this interface
+    Debug.Print "DirectPlay8Event_AsyncOpComplete"
 End Sub
 
 Private Sub DirectPlay8Event_ConnectComplete(dpnotify As DxVBLibA.DPNMSG_CONNECT_COMPLETE, fRejectMsg As Boolean)
@@ -670,27 +672,34 @@ Private Sub DirectPlay8Event_DestroyGroup(ByVal lGroupID As Long, ByVal lReason 
 End Sub
 
 Private Sub DirectPlay8Event_DestroyPlayer(ByVal lPlayerID As Long, ByVal lReason As Long, fRejectMsg As Boolean)
+    Debug.Print "DirectPlay8Event_DestroyPlayer"
     Call modNetwork.DestroyPlayer(lPlayerID, lReason, fRejectMsg)
+    
 End Sub
 
 Private Sub DirectPlay8Event_EnumHostsQuery(dpnotify As DxVBLibA.DPNMSG_ENUM_HOSTS_QUERY, fRejectMsg As Boolean)
     'VB requires that we must implement *every* member of this interface
+     Debug.Print "DirectPlay8Event_EnumHostsQuery"
 End Sub
 
 Private Sub DirectPlay8Event_EnumHostsResponse(dpnotify As DxVBLibA.DPNMSG_ENUM_HOSTS_RESPONSE, fRejectMsg As Boolean)
     'VB requires that we must implement *every* member of this interface
+     Debug.Print "DirectPlay8Event_EnumHostsResponse"
 End Sub
 
 Private Sub DirectPlay8Event_HostMigrate(ByVal lNewHostID As Long, fRejectMsg As Boolean)
     'VB requires that we must implement *every* member of this interface
+     Debug.Print "DirectPlay8Event_HostMigrate"
 End Sub
 
 Private Sub DirectPlay8Event_IndicateConnect(dpnotify As DxVBLibA.DPNMSG_INDICATE_CONNECT, fRejectMsg As Boolean)
     'VB requires that we must implement *every* member of this interface
+    Debug.Print "DirectPlay8Event_IndicateConnect"
 End Sub
 
 Private Sub DirectPlay8Event_IndicatedConnectAborted(fRejectMsg As Boolean)
     'VB requires that we must implement *every* member of this interface
+     Debug.Print "DirectPlay8Event_IndicatedConnectAborted"
 End Sub
 
 Private Sub DirectPlay8Event_InfoNotify(ByVal lMsgID As Long, ByVal lNotifyID As Long, fRejectMsg As Boolean)
