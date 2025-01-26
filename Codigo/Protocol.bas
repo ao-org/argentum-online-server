@@ -9173,26 +9173,36 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 210                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
 212                         Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).Name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                         Else
-'Msg1244= ¡Gracias ¬1
-Call WriteLocaleMsg(UserIndex, "1244", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).name)
+                            'Msg1244= ¡Gracias ¬1
+                            Call WriteLocaleMsg(UserIndex, "1244", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).name)
 
                         End If
 216                 Case 4
 218                     Log = "Repuesta Afirmativa 4"
                 
-220                     If IsValidUserRef(UserList(userIndex).flags.targetUser) Then
-                
-222                         UserList(userIndex).ComUsu.DestUsu = UserList(userIndex).flags.targetUser
-224                         UserList(userIndex).ComUsu.DestNick = UserList(UserList(userIndex).flags.targetUser.ArrayIndex).name
-226                         UserList(UserIndex).ComUsu.cant = 0
-228                         UserList(UserIndex).ComUsu.Objeto = 0
-230                         UserList(UserIndex).ComUsu.Acepto = False
-                    
-                            'Rutina para comerciar con otro usuario
-232                         Call IniciarComercioConUsuario(userIndex, UserList(userIndex).flags.targetUser.ArrayIndex)
+220                      If IsValidUserRef(UserList(userIndex).flags.targetUser) Then
+221                          Dim targetIndex As Integer
+222                          targetIndex = UserList(userIndex).flags.targetUser.ArrayIndex
+
+                            ' Ensure the target index is within bounds
+223                          If targetIndex >= LBound(UserList) And targetIndex <= UBound(UserList) Then
+224                              UserList(userIndex).ComUsu.DestUsu = UserList(userIndex).flags.targetUser
+225                              UserList(userIndex).ComUsu.DestNick = UserList(targetIndex).name
+226                              UserList(UserIndex).ComUsu.cant = 0
+227                              UserList(UserIndex).ComUsu.Objeto = 0
+228                              UserList(UserIndex).ComUsu.Acepto = False
+
+                                ' Routine to start trading with another user
+230                              Call IniciarComercioConUsuario(userIndex, targetIndex)
+                            Else
+                                ' Invalid index; send error message
+                                ' Msg726=Servidor » Solicitud de comercio invalida, reintente...
+231                               Call WriteLocaleMsg(UserIndex, "726", e_FontTypeNames.FONTTYPE_SERVER)
+                            End If
                         Else
-234                         ' Msg726=Servidor » Solicitud de comercio invalida, reintente...
-                            Call WriteLocaleMsg(UserIndex, "726", e_FontTypeNames.FONTTYPE_SERVER)
+                            ' Invalid reference; send error message
+                            ' Msg726=Servidor » Solicitud de comercio invalida, reintente...
+232                          Call WriteLocaleMsg(UserIndex, "726", e_FontTypeNames.FONTTYPE_SERVER)
                         End If
                 
                     Case 5
