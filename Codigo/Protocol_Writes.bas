@@ -5041,8 +5041,8 @@ Public Function PrepareMessageHora()
         On Error GoTo PrepareMessageHora_Err
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.eHora)
-102     Call Writer.WriteInt32((GetTickCount() - HoraMundo) Mod SvrConfig.GetValue("DayLength"))
-104     Call Writer.WriteInt32(SvrConfig.GetValue("DayLength"))
+102     Call Writer.WriteInt32(CLng((GetTickCount() - HoraMundo) Mod CLng(SvrConfig.GetValue("DayLength"))))
+104     Call Writer.WriteInt32(CLng(SvrConfig.GetValue("DayLength")))
         '<EhFooter>
         Exit Function
 

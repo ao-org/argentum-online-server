@@ -48,10 +48,13 @@ End Sub
 Public Function ReadInt16() As Integer
     Call GetDataFromBuffer(rcv_data.ReceivedData, ReadInt16, SIZE_INTEGER, loffset)
 End Function
-Public Function ReadBool() As Integer
+Public Function ReadInt32() As Long
+    Call GetDataFromBuffer(rcv_data.ReceivedData, ReadInt32, SIZE_LONG, lOffset)
+End Function
+Public Function ReadBool() As Boolean
     Call GetDataFromBuffer(rcv_data.ReceivedData, ReadBool, SIZE_BOOLEAN, lOffset)
 End Function
-Public Function ReadReal32() As Integer
+Public Function ReadReal32() As Single
     Call GetDataFromBuffer(rcv_data.ReceivedData, ReadReal32, SIZE_SINGLE, lOffset)
 End Function
 Public Function ReadInt8() As Byte

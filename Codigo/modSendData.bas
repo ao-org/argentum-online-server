@@ -29,7 +29,6 @@ Attribute VB_Name = "modSendData"
 Option Explicit
 
 Public Enum SendTarget
-
     ToAll = 1
     ToIndex
     toMap
@@ -89,8 +88,6 @@ End Sub
 
 Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Optional Args As Variant, Optional ByVal validateInvi As Boolean = False)
 On Error GoTo SendData_Err
-
-    
     
 #If DIRECT_PLAY = 0 Then
      Dim buffer As Network.writer
@@ -312,16 +309,13 @@ SendData_Err:
         End If
 End Sub
 
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToUserAliveArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer, Optional ByVal validateInvi As Boolean = False)
-        
-        On Error GoTo SendToUserArea_Err
-        
+#Else
+Private Sub SendToUserAliveArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean = False)
+#End If
+On Error GoTo SendToUserArea_Err
 
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
-        '
-        '**************************************************************
         Dim LoopC     As Long
         Dim tempIndex As Integer
         Dim map       As Integer
@@ -378,7 +372,12 @@ SendToUserArea_Err:
 
         
 End Sub
+
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer, Optional ByVal validateInvi As Boolean)
+#Else
+Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean)
+#End If
         
         On Error GoTo SendToUserArea_Err
 
@@ -438,8 +437,11 @@ SendToUserArea_Err:
         
 End Sub
 
-
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToUserAreaButFollowerAndIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+#Else
+Private Sub SendToUserAreaButFollowerAndIndex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
+#End If
 On Error GoTo SendToUserAreaButFollower_Err
         Dim LoopC     As Long
         Dim tempIndex As Integer
@@ -482,7 +484,11 @@ SendToUserAreaButFollower_Err:
         
 End Sub
 
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToPCDeadArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+#Else
+Private Sub SendToPCDeadArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
+#End If
  On Error GoTo SendToUserArea_Err
         Dim LoopC     As Long
         Dim tempIndex As Integer
@@ -527,17 +533,14 @@ SendToUserArea_Err:
         
 End Sub
 
-
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToPCDeadAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+#Else
+Private Sub SendToPCDeadAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
+#End If
         
-        On Error GoTo SendToUserArea_Err
-        
+On Error GoTo SendToUserArea_Err
 
-        '**************************************************************
-        'Author: Jopi
-        'Last Modify Date: 23/06/2021
-        'Envio la data a los que estan muertos y a los GMs en el area.
-        '**************************************************************
         Dim LoopC     As Long
         Dim tempIndex As Integer
         Dim Map       As Integer
@@ -579,15 +582,13 @@ SendToUserArea_Err:
 End Sub
 
 
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToSuperioresArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+#Else
+Private Sub SendToSuperioresArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
+#End If
+On Error GoTo SendToSuperioresArea_Err
         
-        On Error GoTo SendToSuperioresArea_Err
-
-        '**************************************************************
-        'Author: Jopi
-        'Last Modify Date: 27/12/2020
-        '
-        '**************************************************************
         Dim LoopC     As Long
         Dim TempInt   As Integer
         Dim tempIndex As Integer
@@ -636,16 +637,15 @@ SendToSuperioresArea_Err:
         
 End Sub
 
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer, Optional ByVal validateInvi As Boolean = False)
+#Else
+Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean = False)
+#End If
         
-        On Error GoTo SendToUserAreaButindex_Err
+On Error GoTo SendToUserAreaButindex_Err
         
 
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
-        '
-        '**************************************************************
         Dim LoopC     As Long
         Dim TempInt   As Integer
         Dim tempIndex As Integer
@@ -710,7 +710,11 @@ SendToUserAreaButindex_Err:
         
 End Sub
 
+#If DIRECT_PLAY = 0 Then
 Private Function CanSendToUser(ByRef SourceUser As t_User, ByRef TargetUser As t_User, ByVal TargetIndex As Integer, ByRef Buffer As Network.Writer, ByVal ValidateInvi As Boolean) As Boolean
+#Else
+Private Function CanSendToUser(ByRef SourceUser As t_User, ByRef TargetUser As t_User, ByVal TargetIndex As Integer, ByRef Buffer As clsNetWriter, ByVal ValidateInvi As Boolean) As Boolean
+#End If
     If (TargetUser.AreasInfo.AreaReciveX And SourceUser.AreasInfo.AreaPerteneceX) = 0 Then Exit Function
     If (TargetUser.AreasInfo.AreaReciveY And SourceUser.AreasInfo.AreaPerteneceY) = 0 Then Exit Function
     If Not TargetUser.ConnectionDetails.ConnIDValida Then Exit Function
@@ -739,16 +743,12 @@ Public Function CheckGuildSend(ByRef SourceUser As t_User, ByRef TargetUser As t
     CheckGuildSend = True
 End Function
 
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToUserAliveAreaButindex(ByVal UserIndex As Integer, ByRef Buffer As Network.Writer, Optional ByVal ValidateInvi As Boolean = False)
-        
-        On Error GoTo SendToUserAliveAreaButindex_Err
-        
-
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
-        '
-        '**************************************************************
+#Else
+Private Sub SendToUserAliveAreaButindex(ByVal UserIndex As Integer, ByRef Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean = False)
+#End If
+On Error GoTo SendToUserAliveAreaButindex_Err
         Dim LoopC     As Long
         Dim tempIndex As Integer
         Dim Map       As Integer
@@ -772,16 +772,13 @@ Private Sub SendToUserAliveAreaButindex(ByVal UserIndex As Integer, ByRef Buffer
 SendToUserAliveAreaButindex_Err:
 124     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAliveAreaButindex", Erl)
 End Sub
-Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
-        
-        On Error GoTo SendToUserAreaButindex_Err
-        
 
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
-        '
-        '**************************************************************
+#If DIRECT_PLAY = 0 Then
+Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+#Else
+Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
+#End If
+On Error GoTo SendToUserAreaButindex_Err
         Dim LoopC     As Long
         Dim TempInt   As Integer
         Dim tempIndex As Integer
@@ -794,7 +791,6 @@ Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As 
 102     Map = UserList(UserIndex).Pos.Map
 104     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
 106     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
-        'sndData = sndData & ENDC
 
 108     If Not MapaValido(Map) Then Exit Sub
     
@@ -834,16 +830,13 @@ SendToUserAreaButindex_Err:
         
 End Sub
 
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+#Else
+Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
+#End If
         
         On Error GoTo SendToUserAreaButindex_Err
-        
-
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
-        '
-        '**************************************************************
         Dim LoopC     As Long
         
         Dim TempInt   As Integer
@@ -896,17 +889,12 @@ SendToUserAreaButindex_Err:
         
 End Sub
 
-
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
-        
-        On Error GoTo SendToUserGuildArea_Err
-        
-
-        '**************************************************************
-        'Author: Juan  Martín Sotuyo Dodero (Maraxus)
-        'Last Modify Date: Unknow
-        '
-        '**************************************************************
+#Else
+Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
+#End If
+On Error GoTo SendToUserGuildArea_Err
         Dim LoopC     As Long
         Dim tempIndex As Integer
         Dim Map       As Integer
@@ -949,17 +937,12 @@ SendToUserGuildArea_Err:
         
 End Sub
 
-
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal Buffer As Network.Writer)
-        
-        On Error GoTo SendToNpcArea_Err
-        
-
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
-        '
-        '**************************************************************
+#Else
+Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal Buffer As clsNetWriter)
+#End If
+On Error GoTo SendToNpcArea_Err
         Dim LoopC     As Long
         Dim TempInt   As Integer
         Dim tempIndex As Integer
@@ -1007,17 +990,12 @@ SendToNpcArea_Err:
 
         
 End Sub
-
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToNpcAliveArea(ByVal NpcIndex As Long, ByVal Buffer As Network.Writer)
-        
-        On Error GoTo SendToNpcArea_Err
-        
-
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
-        '
-        '**************************************************************
+#Else
+Private Sub SendToNpcAliveArea(ByVal NpcIndex As Long, ByVal Buffer As clsNetWriter)
+#End If
+On Error GoTo SendToNpcArea_Err
         Dim LoopC     As Long
         Dim TempInt   As Integer
         Dim tempIndex As Integer
@@ -1079,9 +1057,14 @@ Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal A
 102     AreaY = 2 ^ (AreaY \ 12)
    
 104     If Not MapaValido(Map) Then Exit Sub
-      
+
+#If DIRECT_PLAY = 0 Then
         Dim Buffer As Network.Writer
         Set Buffer = Protocol_Writes.GetWriterBuffer()
+#Else
+        Dim Buffer As clsNetWriter
+        Set Buffer = Protocol_Writes.Writer
+#End If
         
 106     For LoopC = 1 To ConnGroups(Map).CountEntrys
 108         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
@@ -1114,22 +1097,15 @@ SendToAreaByPos_Err:
 124         Call TraceError(Err.Number, Err.Description, "modSendData.SendToAreaByPos", Erl)
         End If
 End Sub
-
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToMap(ByVal Map As Integer, ByVal Buffer As Network.Writer)
-        
-        On Error GoTo SendToMap_Err
-        
-        '**************************************************************
-        'Author: Juan  Martín Sotuyo Dodero (Maraxus)
-        'Last Modify Date: 5/24/2007
-        '
-        '**************************************************************
+#Else
+Private Sub SendToMap(ByVal Map As Integer, ByVal Buffer As clsNetWriter)
+#End If
+On Error GoTo SendToMap_Err
         Dim LoopC     As Long
-
         Dim tempIndex As Integer
-    
 100     If Not MapaValido(Map) Then Exit Sub
-
 102     For LoopC = 1 To ConnGroups(Map).CountEntrys
 104         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
         
@@ -1150,17 +1126,13 @@ SendToMap_Err:
 
         
 End Sub
-
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToMapButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+#Else
+Private Sub SendToMapButIndex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
+#End If
         
         On Error GoTo SendToMapButIndex_Err
-        
-
-        '**************************************************************
-        'Author: Juan  Martín Sotuyo Dodero (Maraxus)
-        'Last Modify Date: 5/24/2007
-        '
-        '**************************************************************
         Dim LoopC     As Long
         Dim Map       As Integer
         Dim tempIndex As Integer
@@ -1192,8 +1164,11 @@ SendToMapButIndex_Err:
 
         
 End Sub
-
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToGroup(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+#Else
+Private Sub SendToGroup(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
+#End If
 On Error GoTo SendToGroup_Err
         Dim LoopC     As Long
 100     If UserIndex = 0 Then Exit Sub
@@ -1209,8 +1184,11 @@ On Error GoTo SendToGroup_Err
 SendToGroup_Err:
     Call TraceError(Err.Number, Err.Description, "modSendData.SendToGroup", Erl)
 End Sub
-
+#If DIRECT_PLAY = 0 Then
 Private Sub SendToGroupButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+#Else
+Private Sub SendToGroupButIndex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
+#End If
 On Error GoTo SendToGroupButIndex_Err
         Dim LoopC     As Long
 100     If UserIndex = 0 Then Exit Sub

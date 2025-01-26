@@ -27,6 +27,8 @@ Attribute VB_Name = "UnitClient"
 '
 Option Explicit
 
+#If UNIT_TEST = 1 Then
+
 Public Enum ClientTests
     TestInvalidBigPacketID = 100
     TestInvalidNegativePacketID
@@ -199,4 +201,4 @@ Private Sub OnClientRecv(ByVal Message As Network.Reader)
     
 End Sub
 
-
+#End If

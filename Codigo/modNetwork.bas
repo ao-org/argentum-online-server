@@ -551,18 +551,47 @@ Public Sub SendToConnection(ByVal ConnectionID As Long, ByRef writer As clsNetWr
     Call writer.Send(ConnectionID)
 End Sub
 Public Sub Flush(ByVal user_index As Long)
+    'Nothing
 End Sub
 
 Public Sub KickConnection(ByVal connection As Long)
 On Error GoTo ForcedClose_Err:
-'     Call Server.Flush(connection)
-'     Call Server.Kick(connection, True)
-'     Call ClearConnection(connection)
+    Call dps.DestroyClient(connection, 0, 0, 0)
      Exit Sub
 ForcedClose_Err:
     Call TraceError(Err.Number, Err.Description, "modNetwork.KickConnection", Erl)
 End Sub
 
+Public Sub Kick(ByVal connection As Long, Optional ByVal Message As String = vbNullString)
+On Error GoTo Kick_ErrHandler:
+    If IsFeatureEnabled("debug_connections") Then
+        If (Message <> vbNullString) Then
+            Call AddLogToCircularBuffer("Kick connection: " & connection & " reason: " & Message)
+        Else
+            Call AddLogToCircularBuffer("Kick connection: " & connection)
+        End If
+    End If
+    If (Message <> vbNullString) Then
+        Dim user_index As Integer
+        
+        If Mapping.Exists(connection) Then
+            user_index = Mapping.Item(connection)
+            Call Protocol_Writes.WriteErrorMsg(user_index, Message)
+            If UserList(user_index).flags.UserLogged Then
+                Call Cerrar_Usuario(user_index)
+            End If
+        End If
+    End If
+    KickConnection connection
+    Exit Sub
+    
+Kick_ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Kick", Erl)
+End Sub
+
+Public Sub Disconnect()
+    'Nothing
+End Sub
 Public Sub Poll()
     'Nothing to do here when using DPLAY
 End Sub
