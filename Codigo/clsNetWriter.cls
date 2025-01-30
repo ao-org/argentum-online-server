@@ -54,24 +54,16 @@ Public Sub WriteBool(ByVal v As Boolean)
 End Sub
 Public Sub Send(ByVal idSend As Long)
 On Error GoTo send_error
-    
-    dps.sendto idSend, oMsg, 0, DPNSEND_GUARANTEED Or DPNSEND_NOLOOPBACK Or DPNSEND_PRIORITY_HIGH
+    Err.Clear
+    Debug.Assert lOffset > 0 ' No data in the buffer?
+    dps.sendto idSend, oMsg, 0, DPNSEND_GUARANTEED Or DPNSEND_NOLOOPBACK Or DPNSEND_PRIORITY_HIGH Or DPNSEND_NOLOOPBACK
     Me.Clear
-    
     Exit Sub
 send_error:
-    Select Case Err.Number
-        Case DPNERR_INVALIDFLAGS
-                Call TraceError(Err.Number, "DPNERR_INVALIDFLAGS", "clsNetWriter.Send", Erl)
-                Debug.Print "DPNERR_INVALIDFLAGS"
-        Case DPNERR_TIMEDOUT
-                Call TraceError(Err.Number, "DPNERR_TIMEDOUT", "clsNetWriter.Send", Erl)
-                Debug.Print "DPNERR_TIMEDOUT"
-        Case Else
-                Call TraceError(Err.Number, "Unknown error in clsNetWriter.send", "clsNetWriter.Send", Erl)
-                Debug.Print "Unknown error in clsNetWriter.send"
-    End Select
-
+    'If there is an error, handle it
+    If Err.Number <> 0 Then
+        Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.CreatePlayer", Erl)
+    End If
 End Sub
 Public Sub WriteString8(ByVal v As String)
     Debug.Assert Len(V) > 0

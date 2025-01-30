@@ -713,7 +713,7 @@ End Sub
 
 Private Sub DirectPlay8Event_SendComplete(dpnotify As DxVBLibA.DPNMSG_SEND_COMPLETE, fRejectMsg As Boolean)
     'VB requires that we must implement *every* member of this interface
-    Debug.Print "DirectPlay8Event_SendComplete"
+  
 End Sub
 
 Private Sub DirectPlay8Event_TerminateSession(dpnotify As DxVBLibA.DPNMSG_TERMINATE_SESSION, fRejectMsg As Boolean)

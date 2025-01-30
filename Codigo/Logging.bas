@@ -256,6 +256,8 @@ ErrHandler:
 End Sub
 
 Public Sub TraceError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
-    'Start append text to file
+    #If DEBUGGING = 1 Then
+        Debug.Print "TraceError: " & Descripcion & " " & Componente
+    #End If
     Call LogThis(Numero, "Error number: " & Numero & " | Description: " & Descripcion & vbNewLine & "Component: " & Componente & " | Line number: " & Linea, vbLogEventTypeError)
 End Sub

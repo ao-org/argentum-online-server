@@ -43,7 +43,7 @@ Public Sub set_data(data As DxVBLibA.DPNMSG_RECEIVE)
 End Sub
 
 Public Sub Clear()
-    loffset = NewBuffer(oMsg)
+    lOffset = NewBuffer(rcv_data.ReceivedData)
 End Sub
 Public Function ReadInt16() As Integer
     Call GetDataFromBuffer(rcv_data.ReceivedData, ReadInt16, SIZE_INTEGER, loffset)
