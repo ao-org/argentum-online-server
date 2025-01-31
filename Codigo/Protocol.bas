@@ -920,7 +920,7 @@ On Error Resume Next
             Err.raise -1, "Invalid Message"
     End Select
     
-    'If (Message.GetAvailable() > 0) Then
+
     If (Reader.GetAvailable() > 0) Then
          If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
                 Err.raise &HDEADBEEF, "HandleIncomingData", "The client message with ID: '" & PacketId & "' has the wrong size '" & Reader.GetAvailable() & "' bytes de mas por el usuario '" & UserList(UserIndex).Name & "'"
@@ -928,6 +928,10 @@ On Error Resume Next
                 Err.raise &HDEADBEEF, "HandleIncomingData", "The client message with ID: '" & PacketId & "' has the wrong size '" & Reader.GetAvailable() & "' bytes de mas por el usuario '"
          End If
     End If
+    
+    #If DIRECT_PLAY = 1 Then
+        Reader.Clear
+    #End If
     
     Call PerformTimeLimitCheck(performance_timer, "Protocol handling message " & PacketId, 100)
 

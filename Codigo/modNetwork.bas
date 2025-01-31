@@ -426,30 +426,22 @@ On Error GoTo CheckDisconnectedUsers_Err:
         Exit Function
         
 CheckDisconnectedUsers_Err:
-136     Call TraceError(Err.Number, Err.Description, "modNetwork.MapConnectionToUser", Erl)
+        Call TraceError(Err.Number, Err.Description, "modNetwork.MapConnectionToUser", Erl)
 End Function
 
 
 'DirectPlay
 Public Sub CheckDisconnectedUsers()
-'Debug.Assert 0
 End Sub
 
 
 Public Sub Listen(ByVal Limit As Long, ByVal Address As String, ByVal Service As String)
+On Error GoTo listen_err
     Err.Clear
-    
-    
-
     Dim AppDesc As DPN_APPLICATION_DESC
     dpa.SetSP DP8SP_TCPIP
     dpa.AddComponentLong DPN_KEY_PORT, CLng(Service)
     Debug.Assert Err.Number = 0
-    
-    
-    'Save our current session name for later runs
-    'SaveSetting  "ArgentumOnline", "Defaults", "ServerGameName", txtSession.Text
-    
     'Now set up the app description
     With AppDesc
         .guidApplication = AppGuid
@@ -466,31 +458,27 @@ Public Sub Listen(ByVal Limit As Long, ByVal Address As String, ByVal Service As
     pInfo.lInfoFlags = DPNINFO_NAME
     dps.SetServerInfo pInfo, DPNOP_SYNC
     
-    
     'Now start the server
     dps.Host AppDesc, dpa
     
     gfStarted = True
-    
-    
-    
+    Exit Sub
+listen_err:
+    If Err.Number <> 0 Then
+        Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.CreatePlayer", Erl)
+    End If
 End Sub
 Public Sub close_not_logged_sockets_if_timeout()
 
 End Sub
+
 Public Sub CreatePlayer(ByVal lPlayerID As Long, fRejectMsg As Boolean)
-    On Error GoTo create_player_err
-    
+On Error GoTo create_player_err
     Debug.Print "DPLAY > CreatePlayer ID:" & lPlayerID
-    'try to get player info
+    Err.Clear
     Dim dpPeer As DPN_PLAYER_INFO
+    'Try to get player info, note this will fail if this is LOCAL_PLAYER aka server and that's okay
     dpPeer = dps.GetClientInfo(lPlayerID, 0)
-    If Err.Number <> 0 Then
-        Debug.Print ("Error " & DPNERR_INVALIDPLAYER)
-                ''                 DPNERR_INVALIDPARAM
-    End If
-    If Err Then Exit Sub
-    
     Dim addr As DirectPlay8Address
     Set addr = dps.GetClientAddress(lPlayerID)
     Dim port As Long
@@ -502,64 +490,113 @@ Public Sub CreatePlayer(ByVal lPlayerID As Long, fRejectMsg As Boolean)
     If IsFeatureEnabled("debug_connections") Then
         Call AddLogToCircularBuffer("OnServerConnect connecting new user on id: " & lPlayerID & " ip: " & Address)
     End If
-       
+    'Mapping maps ConnectionID -> UserIndex
     If Mapping.Exists(lPlayerID) Then
+        'Check if the connection already has a UserIndex assigned, then raise an error and kick it out
         With Mapping.Item(lPlayerID)
-          Call TraceError(Err.Number, Err.Description, "OnServerConnect Mapping(lPlayerID).UserRef.ArrayIndex > 0, connection: " & lPlayerID & " value: " & .UserRef.ArrayIndex, Erl)
+          Call TraceError(Err.Number, Err.Description, "OnServerConnect Mapping(lPlayerID) > 0, connection: " & lPlayerID & " value: " & Mapping.Item(lPlayerID), Erl)
         End With
+        Call KickConnection(lPlayerID)
+        Exit Sub
     End If
        
-   
+    'Upong connection send PrepareConnected msg
     Call modSendData.SendToConnection(lPlayerID, PrepareConnected())
     Exit Sub
 
 create_player_err:
-     Call KickConnection(connection)
-     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerConnect", Erl)
+    'If there is an error, handle it and kick out
+    If Err.Number <> 0 Then
+        Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.CreatePlayer", Erl)
+    End If
+    Call KickConnection(lPlayerID)
 
 End Sub
 
 Public Sub DestroyPlayer(ByVal lPlayerID As Long, ByVal lReason As Long, fRejectMsg As Boolean)
-On Error GoTo create_player_err
+On Error GoTo OnServerClose_Err:
     Debug.Print "DPLAY > DestroyPlayer ID:" & lPlayerID
+    Err.Clear
+    If Mapping.Exists(lPlayerID) Then
+        Dim user_index As Integer
+        user_index = Mapping.Item(lPlayerID)
+        With UserList(user_index)
+            ' With UPD there is no way to send a msg after DirectPlay8Event.DestroyPlayer has been called so
+            ' we set ConnIDValida to false to prevent sending msg and getting errors
+            .ConnectionDetails.ConnIDValida = False
+            If .flags.UserLogged Then
+                Call Cerrar_Usuario(user_index)
+            End If
+        End With
+        Mapping.Remove lPlayerID
+    End If
+    
     Exit Sub
-create_player_err:
-
+OnServerClose_Err:
+    If Err.Number <> 0 Then
+        Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.DestroyPlayer", Erl)
+    End If
 End Sub
 Public Sub Receive(dpnotify As DxVBLibA.DPNMSG_RECEIVE, fRejectMsg As Boolean)
 On Error GoTo receive_error:
+    Err.Clear
     With dpnotify
+            'Two cases here
+            ' A) The client has not yet been assigned a UserIndex, so we receive a message which can be only LoginExistingChar/LoginNewChar
+            ' B) The client has already got a valid UserIndex
+            ' HandleIncomingData uses IsMissing(UserIndex) to test which case we are dealing with.
             If Mapping.Exists(.idSender) Then
+                ' Case B: we got a UserIndex, retrieve it and pass it to HandleIncomingData
                 Dim user_index As Integer
                 user_index = Mapping.Item(dpnotify.idSender)
                 Call Protocol.HandleIncomingData(.idSender, dpnotify, user_index)
             Else
+                ' Case A: Client has not yet been assgined a UserIndex
                 Call Protocol.HandleIncomingData(.idSender, dpnotify)
             End If
     End With
     Exit Sub
 receive_error:
-    Call TraceError(Err.Number, Err.Description, "modNetwork.Receive", Erl)
+     If Err.Number <> 0 Then
+        Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.Receive", Erl)
+    End If
 End Sub
 Public Sub Send(ByVal user_index As Long, ByRef writer As clsNetWriter)
+On Error GoTo send_error:
     Debug.Assert user_index >= LBound(UserList) And user_index <= UBound(UserList)
+    Err.Clear
     With UserList(user_index)
         Call SendToConnection(.ConnectionDetails.ConnID, writer)
     End With
+    Exit Sub
+send_error:
+     If Err.Number <> 0 Then
+        Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.Send", Erl)
+    End If
 End Sub
 Public Sub SendToConnection(ByVal ConnectionID As Long, ByRef writer As clsNetWriter)
+On Error GoTo sendtoconnection_error:
+    Err.Clear
     Call writer.Send(ConnectionID)
+    Exit Sub
+sendtoconnection_error:
+     If Err.Number <> 0 Then
+        Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.SendToConnection", Erl)
+    End If
 End Sub
 Public Sub Flush(ByVal user_index As Long)
     'Nothing
 End Sub
 
 Public Sub KickConnection(ByVal connection As Long)
-On Error GoTo ForcedClose_Err:
+On Error GoTo KickConnection_err:
+    Err.Clear
     Call dps.DestroyClient(connection, 0, 0, 0)
-     Exit Sub
-ForcedClose_Err:
-    Call TraceError(Err.Number, Err.Description, "modNetwork.KickConnection", Erl)
+    Exit Sub
+KickConnection_err:
+    If Err.Number <> 0 Then
+        Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.KickConnection", Erl)
+    End If
 End Sub
 
 Public Sub Kick(ByVal connection As Long, Optional ByVal Message As String = vbNullString)
