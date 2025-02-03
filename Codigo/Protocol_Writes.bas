@@ -85,8 +85,18 @@ End Sub
 ' \Begin: [Writes]
 
 Public Function PrepareConnected()
-        On Error GoTo WriteConnected_Err
-100     Call Writer.WriteInt16(ServerPacketID.eConnected)
+On Error GoTo WriteConnected_Err
+        Call Writer.WriteInt16(ServerPacketID.eConnected)
+        
+#If DEBUGGING = 1 Then
+        Dim i As Integer
+        Dim values(1 To 10) As Byte
+        For i = LBound(values) To UBound(values)
+         values(i) = i
+        Next i
+        Writer.WriteSafeArrayInt8 values
+#End If
+
         Exit Function
 WriteConnected_Err:
         Call Writer.Clear
@@ -5829,7 +5839,7 @@ Public Sub WriteRequestTelemetry(ByVal UserIndex As Integer)
         CodeSize = AOT_GetTelemetryCode(UserList(UserIndex).ID, UserList(UserIndex).name, Code(0), 8)
         Dim i As Integer
         For i = 0 To 7
-            Call Writer.WriteInt(Code(i))
+            Call Writer.WriteInt8(Code(i))
         Next i
         Call modSendData.SendData(ToIndex, UserIndex)
         Exit Sub
