@@ -56,7 +56,8 @@ Public Sub Send(ByVal idSend As Long)
 On Error GoTo send_error
     Err.Clear
     Debug.Assert lOffset > 0 ' No data in the buffer?
-    dps.sendto idSend, oMsg, 0, DPNSEND_GUARANTEED Or DPNSEND_NOLOOPBACK Or DPNSEND_PRIORITY_HIGH Or DPNSEND_NOLOOPBACK
+    ReDim Preserve oMsg(0 To lOffset - 1)
+    dps.sendto idSend, oMsg, 0, DPNSEND_GUARANTEED Or DPNSEND_PRIORITY_HIGH Or DPNSEND_NOLOOPBACK
     Me.Clear
     Exit Sub
 send_error:
@@ -73,6 +74,17 @@ Public Sub WriteString8(ByVal v As String)
     End If
     AddStringToBuffer oMsg, v, lOffset
 End Sub
+
+Public Sub WriteSafeArrayInt8(value() As Byte)
+    Debug.Assert (UBound(value) - LBound(value)) + 1 > 0
+    WriteInt32 LBound(value)
+    WriteInt32 UBound(value)
+    Dim i As Integer
+    For i = LBound(value) To UBound(value)
+        WriteInt8 value(i)
+    Next i
+End Sub
+
 Private Sub Class_Initialize()
  lOffset = NewBuffer(oMsg)
 End Sub

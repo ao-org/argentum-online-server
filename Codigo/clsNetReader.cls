@@ -64,4 +64,16 @@ Public Function ReadString8() As String
     ReadString8 = GetStringFromBuffer(rcv_data.ReceivedData, loffset)
 End Function
 
+Public Function ReadSafeArrayInt8(value() As Byte)
+    Dim lower_b As Integer
+    Dim upper_b As Integer
+    lower_b = ReadInt32
+    upper_b = ReadInt32
+    Dim i As Integer
+    ReDim value(lower_b To upper_b)
+    For i = lower_b To upper_b
+        value(i) = ReadInt8
+    Next i
+End Function
+
 #End If
