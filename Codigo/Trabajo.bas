@@ -1687,6 +1687,77 @@ AlquimistaConstruirItem_Err:
 
 End Sub
 
+Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+    On Error GoTo AlquimistaConstruirItem_Err
+
+100     If Not UserList(UserIndex).Stats.MinSta > 0 Then
+102         Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
+    ' === [ Validate Array Bounds Before Accessing Elements ] ===
+
+    ' Check if UserIndex is valid
+    If UserIndex < LBound(UserList) Or UserIndex > UBound(UserList) Then
+        Err.Raise 1001, "AlquimistaConstruirItem", "UserIndex out of range: " & UserIndex
+    End If
+
+    ' Check if ItemIndex is valid
+    If ItemIndex < LBound(ObjData) Or ItemIndex > UBound(ObjData) Then
+        Err.Raise 1002, "AlquimistaConstruirItem", "ItemIndex out of range: " & ItemIndex
+    End If
+
+    ' Check if the equipped tool index is valid
+    If UserList(UserIndex).Invent.HerramientaEqpObjIndex < LBound(ObjData) Or _
+       UserList(UserIndex).Invent.HerramientaEqpObjIndex > UBound(ObjData) Then
+        Err.Raise 1003, "AlquimistaConstruirItem", "HerramientaEqpObjIndex out of range: " & UserList(UserIndex).Invent.HerramientaEqpObjIndex
+    End If
+
+    ' === [ Main Logic ] ===
+104     If AlquimistaTieneMateriales(UserIndex, ItemIndex) And _
+           UserList(UserIndex).Stats.UserSkills(e_Skill.Alquimia) >= ObjData(ItemIndex).SkPociones And _
+           PuedeConstruirAlquimista(ItemIndex) And _
+           ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = e_OBJType.otHerramientas And _
+           ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo = 4 Then
+
+            ' Debug: Log construction event
+            Debug.Print "Building item:", ItemIndex
+
+            ' Assign spell index
+            Dim hIndex As Integer
+            hIndex = ObjData(ItemIndex).Hechizo
+
+            If TieneHechizo(hIndex, UserIndex) Then
+106             UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 1
+108             Call WriteUpdateSta(UserIndex)
+110             Call AlquimistaQuitarMateriales(UserIndex, ItemIndex)
+112             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(1152, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+
+                Dim MiObj As t_Obj
+114             MiObj.amount = 1
+116             MiObj.ObjIndex = ItemIndex
+
+118             If Not MeterItemEnInventario(UserIndex, MiObj) Then
+120                 Call TirarItemAlPiso(UserList(UserIndex).pos, MiObj)
+                End If
+
+122             Call SubirSkill(UserIndex, e_Skill.Alquimia)
+124             Call UpdateUserInv(True, UserIndex, 0)
+126             UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
+            Else
+                ' Msg644=Lamentablemente no aprendiste la receta para crear esta poción.
+                Call WriteLocaleMsg(UserIndex, "644", e_FontTypeNames.FONTTYPE_INFOBOLD)
+            End If
+        End If
+
+        Exit Sub
+
+AlquimistaConstruirItem_Err:
+128     Call TraceError(Err.Number, Err.Description & " | UserIndex: " & UserIndex & " | ItemIndex: " & ItemIndex, "Trabajo.AlquimistaConstruirItem", Erl)
+End Sub
+
+
+
 Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
 
         On Error GoTo SastreConstruirItem_Err
