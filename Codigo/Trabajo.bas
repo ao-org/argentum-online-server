@@ -1664,9 +1664,6 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
            ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = e_OBJType.otHerramientas And _
            ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo = 4 Then
 
-            ' Debug: Log construction event
-            Debug.Print "Building item:", ItemIndex
-
             ' Assign spell index
             Dim hIndex As Integer
             hIndex = ObjData(ItemIndex).Hechizo
