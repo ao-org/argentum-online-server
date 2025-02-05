@@ -1632,62 +1632,6 @@ CarpinteroConstruirItem_Err:
 End Sub
 
 Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
-
-        On Error GoTo AlquimistaConstruirItem_Err
-
-        Rem Debug.Print UserList(UserIndex).Invent.HerramientaEqpObjIndex
-100     If Not UserList(UserIndex).Stats.MinSta > 0 Then
-102         Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-
-104     If AlquimistaTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(e_Skill.Alquimia) >= ObjData(ItemIndex).SkPociones And PuedeConstruirAlquimista(ItemIndex) And ObjData(UserList(UserIndex).invent.HerramientaEqpObjIndex).OBJType = e_OBJType.otHerramientas And ObjData(UserList(UserIndex).invent.HerramientaEqpObjIndex).Subtipo = 4 Then
-
-            'si tiene el hechizoAlquimista salgo
-            Dim hIndex As Integer
-
-            hIndex = ObjData(ItemIndex).Hechizo  'cambiar por la variable del Obj en Hechizo
-
-            If TieneHechizo(hIndex, UserIndex) Then
-106             UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 1
-108             Call WriteUpdateSta(UserIndex)
-                ' AGREGAR FX
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
-110             Call AlquimistaQuitarMateriales(UserIndex, ItemIndex)
-                'Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", e_FontTypeNames.FONTTYPE_INFO)
-112             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(1152, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
-
-                Dim MiObj As t_Obj
-
-114             MiObj.amount = 1
-116             MiObj.ObjIndex = ItemIndex
-
-118             If Not MeterItemEnInventario(UserIndex, MiObj) Then
-120                 Call TirarItemAlPiso(UserList(UserIndex).pos, MiObj)
-
-                End If
-
-122             Call SubirSkill(UserIndex, e_Skill.Alquimia)
-124             Call UpdateUserInv(True, UserIndex, 0)
-                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-126             UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
-            Else
-                ' Msg644=Lamentablemente no aprendiste la receta para crear esta poción.
-                Call WriteLocaleMsg(UserIndex, "644", e_FontTypeNames.FONTTYPE_INFOBOLD)
-
-            End If
-
-        End If
-
-        Exit Sub
-AlquimistaConstruirItem_Err:
-128     Call TraceError(Err.Number, Err.Description, "Trabajo.AlquimistaConstruirItem", Erl)
-130
-
-End Sub
-
-Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
     On Error GoTo AlquimistaConstruirItem_Err
 
 100     If Not UserList(UserIndex).Stats.MinSta > 0 Then
