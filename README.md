@@ -122,6 +122,9 @@ Please note this is not free software and you will have to buy your own license 
     ```
 
 
+## Repo Activity
+![Alt](https://repobeats.axiom.co/api/embed/f0d51db011fb97750321324a10936f4f7bcf2b87.svg "Repobeats analytics image")
+
 ## Star History
 
 <a href="https://star-history.com/#ao-org/argentum-online-server&Date">
