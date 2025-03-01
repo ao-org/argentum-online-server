@@ -493,7 +493,7 @@ On Error GoTo UserDamageNpc_Err
             ' Stab
 136         ElseIf PuedeApuñalar(UserIndex) Then
                 ' Si acertó - Doble chance contra NPCs
-138             If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex) Then
+138             If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex, NpcIndex) Then
                     ' Daño del apuñalamiento
                     DamageExtra = Damage * ModicadorApuñalarClase(UserList(UserIndex).clase)
                     
@@ -2235,7 +2235,7 @@ PuedeGolpeCritico_Err:
         
 End Function
 
-Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer) As Integer
+Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer, Optional ByVal NpcIndex As Integer) As Integer
 
         ' Autor: WyroX - 16/01/2021
         
@@ -2248,10 +2248,12 @@ Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer) As Integer
         
 104         Select Case .clase
         
-                Case e_Class.Assasin '25%
-                    
-106                 ProbabilidadApuñalar = 0.25 * Skill
-        
+                Case e_Class.Assasin
+                    If NpcIndex <> 0 Then
+106                 ProbabilidadApuñalar = 0.33 * Skill '33% vs npcs
+                    Else
+                    ProbabilidadApuñalar = 0.25 * Skill '25% vs users
+                    End If
 108             Case e_Class.Bard, e_Class.Hunter  '15%
                     ProbabilidadApuñalar = 0.15 * Skill
     
