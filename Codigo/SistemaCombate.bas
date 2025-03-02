@@ -483,7 +483,7 @@ On Error GoTo UserDamageNpc_Err
                     DamageExtra = DamageExtra * NPCs.GetPhysicDamageReduction(NpcList(NpcIndex))
                     ' Mostramos en consola el daño
 130                 If .ChatCombate = 1 Then
-132                     Call WriteLocaleMsg(UserIndex, 383, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage) & "¬" & (DamageExtra))
+132                     Call WriteLocaleMsg(UserIndex, 383, e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(Damage) & "¬" & (DamageExtra))
                     End If
 
                     ' Color naranja
@@ -1265,11 +1265,11 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
 
                     ' Mostramos en consola el daño al atacante
 170                 If UserList(AtacanteIndex).ChatCombate = 1 Then
-172                     Call WriteLocaleMsg(AtacanteIndex, 383, e_FontTypeNames.FONTTYPE_FIGHT, Damage & "¬" & DamageStr)
+172                     Call WriteLocaleMsg(AtacanteIndex, 383, e_FontTypeNames.FONTTYPE_INFOBOLD, Damage & "¬" & DamageStr)
                     End If
                     ' Y a la víctima
 174                 If .ChatCombate = 1 Then
-176                     Call WriteLocaleMsg(VictimaIndex, 385, e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DamageStr)
+176                     Call WriteLocaleMsg(VictimaIndex, 385, e_FontTypeNames.FONTTYPE_INFOBOLD, UserList(AtacanteIndex).name & "¬" & DamageStr)
                     End If
 178                 Call SendData(SendTarget.toPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO_CRITICO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.y))
                     ' Color naranja
