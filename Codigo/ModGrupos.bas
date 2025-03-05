@@ -42,8 +42,9 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
 100     Dim Remitente        As t_User: Remitente = UserList(UserIndex)
 102     Dim Invitado         As t_User: Invitado = UserList(InvitadoIndex)
 
-        ' Fundar un party require 15 puntos de liderazgo, pero el carisma ayuda
-104     skillsNecesarios = 15 - Remitente.Stats.UserAtributos(e_Atributos.Carisma) \ 2
+104     ' Comentando linea importante abajo, solo temporalmente hasta que el sistema de grupo nuevo este implementado 3/5/2025 - ako
+        ' skillsNecesarios = 15 - Remitente.Stats.UserAtributos(e_Atributos.Carisma) \ 2
+          skillsNecesarios = 0
     
 106     If Remitente.Stats.UserSkills(e_Skill.liderazgo) < skillsNecesarios Then
 108         Call WriteConsoleMsg(UserIndex, "Te faltan " & (skillsNecesarios - Remitente.Stats.UserSkills(e_Skill.liderazgo)) & " puntos en Liderazgo para liderar un grupo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
