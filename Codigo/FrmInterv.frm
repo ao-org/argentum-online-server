@@ -805,13 +805,11 @@ Attribute VB_Exposed = False
 '
 '
 '
-
 Option Explicit
 
 Public Sub AplicarIntervalos()
-        
+
         On Error GoTo AplicarIntervalos_Err
-        
 
         '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿ Intervalos del main loop ¿?¿?¿?¿?¿?¿?¿?¿?¿
 100     SanaIntervaloSinDescansar = val(txtSanaIntervaloSinDescansar.Text)
@@ -833,37 +831,29 @@ Public Sub AplicarIntervalos()
 132     IntervaloTirar = val(txtintervalotirar.Text)
 134     IntervaloMeditar = val(txtIntervaloMeditar.Text)
 136     IntervaloCaminar = val(txtintervalocaminar.Text)
-
         '///////////////// TIMERS \\\\\\\\\\\\\\\\\\\
-
 138     IntervaloUserPuedeCastear = val(txtIntervaloLanzaHechizo.Text)
 140     frmMain.TIMER_AI.Interval = val(txtAI.Text)
 142     IntervaloTrabajarExtraer = val(txtTrabajoExtraer.Text)
 144     IntervaloTrabajarConstruir = val(txtTrabajoConstruir.Text)
 146     IntervaloUserPuedeAtacar = val(txtPuedeAtacar.Text)
         'frmMain.tLluvia.Interval = val(txtIntervaloPerdidaStaminaLluvia.Text)
-
-        
         Exit Sub
-
 AplicarIntervalos_Err:
 148     Call TraceError(Err.Number, Err.Description, "FrmInterv.AplicarIntervalos", Erl)
 150
-        
+
 End Sub
 
 Private Sub Command1_Click()
-        
+
         On Error GoTo Command1_Click_Err
 
 100     Call AplicarIntervalos
-     
         Exit Sub
-
 Command1_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "FrmInterv.Command1_Click", Erl)
 
-        
 End Sub
 
 Private Sub Command2_Click()
@@ -890,7 +880,6 @@ Private Sub Command2_Click()
 132     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTirar", CStr(IntervaloTirar))
 134     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloMeditar", CStr(IntervaloMeditar))
         '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
-
 136     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloLanzaHechizo", CStr(IntervaloUserPuedeCastear))
 138     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcAI", frmMain.TIMER_AI.Interval)
 140     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajarExtraer", CStr(IntervaloTrabajarExtraer))
@@ -898,28 +887,21 @@ Private Sub Command2_Click()
 144     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloUserPuedeAtacar", CStr(IntervaloUserPuedeAtacar))
 145     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcOwner", CStr(IntervaloNpcOwner))
         'Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloPerdidaStaminaLluvia", frmMain.tLluvia.Interval)
-
 146     MsgBox "Los intervalos se han guardado sin problemas"
-
         Exit Sub
 Err:
 148     MsgBox "Error al intentar grabar los intervalos"
 
 End Sub
 
-
 Private Sub ok_Click()
-        
+
         On Error GoTo ok_Click_Err
-        
+
 100     Me.Visible = False
-
-        
         Exit Sub
-
 ok_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "FrmInterv.ok_Click", Erl)
 104
-        
-End Sub
 
+End Sub

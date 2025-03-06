@@ -87,17 +87,14 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
-        
+
         On Error GoTo Command1_Click_Err
-        
 
         Dim LoopC As Integer
-
 100     Text2.Text = "MaxUsers: " & MaxUsers & vbCrLf
 102     Text2.Text = Text2.Text & "LastUser: " & LastUser & vbCrLf
 104     Text2.Text = Text2.Text & "NumUsers: " & NumUsers & vbCrLf
         'Text2.Text = Text2.Text & "" & vbCrLf
-
 106     List1.Clear
 
 108     For LoopC = 1 To MaxUsers
@@ -105,19 +102,16 @@ Private Sub Command1_Click()
 112         List1.ItemData(List1.NewIndex) = LoopC
 114     Next LoopC
 
-        
         Exit Sub
-
 Command1_Click_Err:
 116     Call TraceError(Err.Number, Err.Description, "frmUserList.Command1_Click", Erl)
 118
-        
+
 End Sub
 
 Private Sub Command2_Click()
-        
+
         On Error GoTo Command2_Click_Err
-        
 
         Dim LoopC As Integer
 
@@ -130,19 +124,16 @@ Private Sub Command2_Click()
 
 106     Next LoopC
 
-        
         Exit Sub
-
 Command2_Click_Err:
 108     Call TraceError(Err.Number, Err.Description, "frmUserList.Command2_Click", Erl)
 110
-        
+
 End Sub
 
 Private Sub List1_Click()
-        
+
         On Error GoTo List1_Click_Err
-        
 
         Dim UserIndex As Integer
 
@@ -162,11 +153,9 @@ Private Sub List1_Click()
 
         End If
 
-        
         Exit Sub
-
 List1_Click_Err:
 116     Call TraceError(Err.Number, Err.Description, "frmUserList.List1_Click", Erl)
 118
-        
+
 End Sub

@@ -25,22 +25,18 @@ Attribute VB_Exposed = False
 '    GNU Affero General Public License for more details.
 '    You should have received a copy of the GNU Affero General Public License
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 #If DIRECT_PLAY = 1 Then
-
-Option Base 0
-
-Option Explicit
-
-Private oMsg() As Byte
-Private lOffset As Long
+    Option Base 0
+    Option Explicit
+    Private oMsg()  As Byte
+    Private lOffset As Long
 Public Sub Clear()
     lOffset = NewBuffer(oMsg)
 End Sub
 Public Sub WriteInt16(ByVal v As Integer)
     AddDataToBuffer oMsg, v, SIZE_INTEGER, lOffset
 End Sub
-Public Sub WriteInt32(ByVal V As Long)
+Public Sub WriteInt32(ByVal v As Long)
     AddDataToBuffer oMsg, v, SIZE_LONG, lOffset
 End Sub
 Public Sub WriteReal32(ByVal v As Single)
@@ -66,10 +62,10 @@ send_error:
     End If
 End Sub
 Public Sub WriteString8(ByVal v As String)
-    Debug.Assert Len(V) > 0
-    If Len(V) = 0 Then
+    Debug.Assert Len(v) > 0
+    If Len(v) = 0 Then
         ' this is a workaround because the game is trying to send empty strings and DP will crash if we call AddStringToBuffer with an empty str
-        V = "0"
+        v = "0"
     End If
     AddStringToBuffer oMsg, v, lOffset
 End Sub

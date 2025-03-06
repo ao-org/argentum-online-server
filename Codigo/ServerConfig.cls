@@ -39,33 +39,39 @@ Attribute VB_Exposed = False
 '
 Option Explicit
 Option Base 0
-
 Private mSettings As Dictionary
 
 Public Function GetValue(ByVal key As String) As Variant
     Debug.Assert Not mSettings Is Nothing
     Debug.Assert mSettings.Exists(key)
+
     If mSettings.Exists(key) Then
         GetValue = mSettings.Item(key)
+
     End If
+
 End Function
 
 Private Sub DumpSettings()
     Debug.Assert Not mSettings Is Nothing
+
     Dim key
     Dim value
+
     For Each key In mSettings.Keys
+
         value = mSettings.Item(key)
         Debug.Print "[Settings] " & key & " -> " & value
     Next key
+
 End Sub
 
 Public Function LoadSettings(ByVal Filename As String) As Long
     LoadSettings = -1
+
     Dim reader As clsIniManager
     Set reader = New clsIniManager
     Call reader.Initialize(Filename)
-    
     mSettings.Add "ExpMult", CInt(val(reader.GetValue("CONFIGURACIONES", "ExpMult")))
     mSettings.Add "GoldMult", CInt(val(reader.GetValue("CONFIGURACIONES", "OroMult")))
     mSettings.Add "RecoleccionMult", CDbl(val(reader.GetValue("CONFIGURACIONES", "RecoleccionMult")))
@@ -74,22 +80,19 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "DayLength", CLng(val(reader.GetValue("CONFIGURACIONES", "DuracionDia"))) * 60 * 1000
     mSettings.Add "CostoPerdonPorCiudadano", CLng(val(reader.GetValue("CONFIGURACIONES", "CostoPerdonPorCiudadano")))
     mSettings.Add "ChatGlobal", CInt(val(reader.GetValue("CONFIGURACIONES", "ChatGlobal", "1")))
-    
     mSettings.Add "DropMult", CInt(val(reader.GetValue("DROPEO", "DropMult")))
     mSettings.Add "DropActive", CInt(val(reader.GetValue("DROPEO", "DropActive")))
-    
     mSettings.Add "MaximoSpeedHack", CInt(val(reader.GetValue("ANTICHEAT", "MaximoSpeedHack")))
-    
     mSettings.Add "FISHING_REQUIRED_PERCENT", CInt(val(reader.GetValue("PESCA", "MinAgua")))
     mSettings.Add "FISHING_TILES_ON_MAP", CInt(val(reader.GetValue("PESCA", "MaxZonas")))
     mSettings.Add "FISHING_POOL_ID", CInt(val(reader.GetValue("PESCA", "FishingID")))
-
     Set reader = Nothing
-    
     LoadSettings = 0
     DumpSettings
+
 End Function
 
 Private Sub Class_Initialize()
     Set mSettings = New Dictionary
+
 End Sub

@@ -49,10 +49,19 @@ Public Sub UserDidPickupItem(ByVal UserIndex As Integer, ByVal ItemIndex As Inte
 End Sub
 
 'request if user can drop item at position
-Public Function UserCanDropItemAt(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer) As Boolean
+Public Function UserCanDropItemAt(ByVal UserIndex As Integer, _
+                                  ByVal Slot As Integer, _
+                                  ByVal Map As Integer, _
+                                  ByVal TileX As Integer, _
+                                  ByVal TileY As Integer) As Boolean
 
 End Function
 
 'inform that user drop an item
-Public Sub UserDropItem(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
+Public Sub UserDropItem(ByVal UserIndex As Integer, _
+                        ByVal Slot As Integer, _
+                        ByVal Map As Integer, _
+                        ByVal TileX As Integer, _
+                        ByVal TileY As Integer)
+
 End Sub

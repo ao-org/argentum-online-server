@@ -38,29 +38,17 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-
 Private participantes     As Collection
-
 Private cantidad_rondas   As Byte
-
 Private nivel_minimo      As Byte
-
 Private nivel_maximo      As Byte
-
 Private max_participantes As Byte
-
 Private tiempo_espera     As Integer
-
 Private tiempo_ronda      As Integer
-
 Private precio            As Long
-
 Private ronda_actual      As Byte
-
 Private reintentos        As Byte
-
 Private Enum estadoCaptura
-
     Inscripcion = 1
     IniciaRonda = 2
     EnJuego = 3
@@ -69,19 +57,12 @@ Private Enum estadoCaptura
 End Enum
 
 Private Estado                  As estadoCaptura
-
 Private contadorBandera(1 To 2) As Integer
-
 Private rondasGanadas(1 To 2)   As Integer
-
 Private colorEquipo(1 To 2)     As String
-
 Private mapaEquipo(1 To 2)      As Integer
-
 Private xEquipo(1 To 2)         As Byte
-
 Private yEquipo(1 To 2)         As Byte
-
 Private objEquipo(1 To 2)       As Integer
 
 Private Sub Class_Initialize()
@@ -100,7 +81,7 @@ Private Sub Class_Initialize()
 End Sub
 
 Public Function GetPlayer(ByVal UserIndex As Integer) As clsCapturaParticipante
-    Set GetPlayer = Participantes.Item(CStr(UserIndex))
+    Set GetPlayer = participantes.Item(CStr(UserIndex))
 
 End Function
 
@@ -119,7 +100,7 @@ Public Sub eliminarParticipante(ByRef player As clsCapturaParticipante)
 
     End If
 
-    Call Participantes.Remove(CStr(player.PlayerIndex))
+    Call participantes.Remove(CStr(player.PlayerIndex))
 
 End Sub
 
@@ -136,7 +117,7 @@ Public Sub PasarSegundo()
             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» Cerramos inscripciones en " & tiempo_espera & ".", e_FontTypeNames.FONTTYPE_GUILD))
         ElseIf tiempo_espera = 0 Then
 
-            If participantes.Count < max_participantes / 2 Then
+            If participantes.count < max_participantes / 2 Then
                 reintentos = reintentos + 1
 
                 If reintentos >= 2 Then
@@ -181,7 +162,6 @@ Public Sub PasarSegundo()
     ElseIf Estado = EnJuego Then
 
         Dim team                  As Byte
-
         Dim estaEnBandera(1 To 2) As Boolean
 
         For Each participante In participantes
@@ -241,21 +221,16 @@ End Sub
 Private Function sortParticipantes() As Collection
 
     Dim i     As Integer
-
     Dim e     As Integer
-
     Dim UI    As Integer
-
     Dim added As Boolean
-
     Set sortParticipantes = New Collection
 
-    For i = 1 To participantes.Count
+    For i = 1 To participantes.count
         added = False
 
         Dim participante As clsCapturaParticipante
-
-        Set participante = Participantes.Item(i)
+        Set participante = participantes.Item(i)
 
         If participante.IsValid Then
 
@@ -287,16 +262,13 @@ Private Sub iniciarCaptura()
 
     'Ordenar equipos
     Dim team         As Byte
-
     Dim counter      As Byte
-
     Dim participante As clsCapturaParticipante
 
-    If participantes.Count Mod 2 <> 0 Then
+    If participantes.count Mod 2 <> 0 Then
 
         Dim player As clsCapturaParticipante
-
-        Set player = Participantes(Participantes.Count)
+        Set player = participantes(participantes.count)
         Call eliminarParticipante(player)
 
         If player.IsValid Then
@@ -310,16 +282,15 @@ Private Sub iniciarCaptura()
     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» El evento captura la bandera ha iniciado.", e_FontTypeNames.FONTTYPE_GUILD))
 
     Dim sortedParticipantes As Collection
-
     Set sortedParticipantes = sortParticipantes()
-    Team = 1
+    team = 1
     counter = 1
 
     'Armamos los equipos segun level para que sea lo mas parejo.
     For Each participante In sortedParticipantes
 
         If participante.IsValid Then
-            participante.Team = Team
+            participante.team = team
             UserList(participante.PlayerIndex).flags.CurrentTeam = team
             UserList(participante.PlayerIndex).flags.tiene_bandera = 0
             Call SendData(SendTarget.ToAll, participante.PlayerIndex, PrepareMessageUpdateFlag(UserList(participante.PlayerIndex).flags.tiene_bandera, UserList(participante.PlayerIndex).Char.charindex))
@@ -327,7 +298,7 @@ Private Sub iniciarCaptura()
             counter = counter + 1
 
             If counter = 2 Then
-                Team = IIf(Team = 1, 2, 1)
+                team = IIf(team = 1, 2, 1)
                 counter = 0
 
             End If
@@ -368,9 +339,9 @@ Public Function tomaBandera(ByVal UserIndex As Integer, _
 
         Dim banderaTeam As Byte
 
-        If objIndex = OBJ_CAPTURA_BANDERA_1 Then
+        If ObjIndex = OBJ_CAPTURA_BANDERA_1 Then
             banderaTeam = 1
-        ElseIf objIndex = OBJ_CAPTURA_BANDERA_2 Then
+        ElseIf ObjIndex = OBJ_CAPTURA_BANDERA_2 Then
             banderaTeam = 2
         Else
             tomaBandera = True
@@ -403,15 +374,15 @@ Public Function tomaBandera(ByVal UserIndex As Integer, _
 
 End Function
 
-Public Sub quitarBandera(ByVal UserIndex As Integer, ByVal objIndex As Integer)
+Public Sub quitarBandera(ByVal UserIndex As Integer, ByVal ObjIndex As Integer)
 
     With UserList(UserIndex)
 
         Dim banderaTeam As Byte
 
-        If objIndex = OBJ_CAPTURA_BANDERA_1 Then
+        If ObjIndex = OBJ_CAPTURA_BANDERA_1 Then
             banderaTeam = 1
-        ElseIf objIndex = OBJ_CAPTURA_BANDERA_2 Then
+        ElseIf ObjIndex = OBJ_CAPTURA_BANDERA_2 Then
             banderaTeam = 2
         Else
             Exit Sub
@@ -424,7 +395,7 @@ Public Sub quitarBandera(ByVal UserIndex As Integer, ByVal objIndex As Integer)
         Else
             UserList(UserIndex).flags.tiene_bandera = 0
             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageUpdateFlag(0, UserList(UserIndex).Char.charindex))
-            Call QuitarObjetos(objIndex, 1, UserIndex)
+            Call QuitarObjetos(ObjIndex, 1, UserIndex)
             Call restaurarBandera(banderaTeam)
             Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! La bandera del equipo " & colorEquipo(banderaTeam) & " ha sido recuperada.", e_FontTypeNames.FONTTYPE_GUILD))
 
@@ -434,23 +405,23 @@ Public Sub quitarBandera(ByVal UserIndex As Integer, ByVal objIndex As Integer)
 
 End Sub
 
-Public Sub tiraBandera(ByVal UserIndex As Integer, ByVal objIndex As Integer)
+Public Sub tiraBandera(ByVal UserIndex As Integer, ByVal ObjIndex As Integer)
 
     'El usuario tira la bandera
     With UserList(UserIndex)
 
-        Dim Team As Byte
+        Dim team As Byte
 
-        If objIndex = OBJ_CAPTURA_BANDERA_1 Then
-            Team = 1
-        ElseIf objIndex = OBJ_CAPTURA_BANDERA_2 Then
-            Team = 2
+        If ObjIndex = OBJ_CAPTURA_BANDERA_1 Then
+            team = 1
+        ElseIf ObjIndex = OBJ_CAPTURA_BANDERA_2 Then
+            team = 2
         Else
             Exit Sub
 
         End If
 
-        contadorBandera(Team) = 0
+        contadorBandera(team) = 0
         UserList(UserIndex).flags.tiene_bandera = 0
         Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageUpdateFlag(UserList(UserIndex).flags.tiene_bandera, UserList(UserIndex).Char.charindex))
         Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! la bandera del equipo " & colorEquipo(team) & " se encuentra en (" & .pos.Map & "," & .pos.x & "," & .pos.y & ")", e_FontTypeNames.FONTTYPE_GUILD))
@@ -463,17 +434,16 @@ Public Sub tirarBandera(ByVal UserIndex As Integer)
 
     'Verificamos si tiene la bandera
     Dim team       As Byte
-
     Dim objBandera As Integer
 
     With UserList(UserIndex)
         team = .flags.CurrentTeam
 
-        If Team = 0 Then
+        If team = 0 Then
             Exit Sub
-        ElseIf Team = 1 Then
+        ElseIf team = 1 Then
             objBandera = OBJ_CAPTURA_BANDERA_2
-        ElseIf Team = 2 Then
+        ElseIf team = 2 Then
             objBandera = OBJ_CAPTURA_BANDERA_1
 
         End If
@@ -486,10 +456,9 @@ Public Sub tirarBandera(ByVal UserIndex As Integer)
             If Estado = EnJuego Then
 
                 Dim MiObj As t_Obj
-
                 MiObj.amount = 1
-                MiObj.objIndex = objBandera
-                Call TirarItemAlPiso(.Pos, MiObj, False)
+                MiObj.ObjIndex = objBandera
+                Call TirarItemAlPiso(.pos, MiObj, False)
                 Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! la bandera del equipo " & colorEquipo(team) & " se encuentra en (" & .pos.Map & "," & .pos.x & "," & .pos.y & ")", e_FontTypeNames.FONTTYPE_GUILD))
 
             End If
@@ -503,9 +472,7 @@ End Sub
 Private Sub enviarUsuarioBase(ByVal UserIndex As Integer)
 
     Dim pos_map As Integer
-
     Dim pos_X   As Byte
-
     Dim pos_Y   As Byte
 
     If UserList(UserIndex).flags.CurrentTeam = 1 Then
@@ -529,7 +496,6 @@ End Sub
 Private Sub enviarUsuarioSala(ByVal UserIndex As Integer)
 
     Dim pos_X As Byte, pos_Y As Byte
-
     pos_X = RandomNumber(MIN_SALA_ESPERA_X, MAX_SALA_ESPERA_X)
     pos_Y = RandomNumber(MIN_SALA_ESPERA_Y, MAX_SALA_ESPERA_Y)
     'No.
@@ -565,34 +531,31 @@ Private Sub iniciarRonda()
 
 End Sub
 
-Private Sub restaurarBandera(ByVal Team As Byte)
+Private Sub restaurarBandera(ByVal team As Byte)
 
     Dim MiObj As t_Obj
-
     Dim MiPos As t_WorldPos
-
     MiObj.amount = 1
-    MiObj.objIndex = objEquipo(Team)
-    MiPos.map = mapaEquipo(Team)
-    MiPos.X = xEquipo(Team)
-    MiPos.Y = yEquipo(Team)
+    MiObj.ObjIndex = objEquipo(team)
+    MiPos.Map = mapaEquipo(team)
+    MiPos.x = xEquipo(team)
+    MiPos.y = yEquipo(team)
 
-    If MapData(MiPos.map, MiPos.X, MiPos.Y).ObjInfo.amount <= 0 Then
+    If MapData(MiPos.Map, MiPos.x, MiPos.y).ObjInfo.amount <= 0 Then
         Call TirarItemAlPiso(MiPos, MiObj, False)
 
     End If
 
 End Sub
 
-Public Sub finalizarCaptura(Optional Team As Integer = -1)
+Public Sub finalizarCaptura(Optional team As Integer = -1)
 
     Dim participante As clsCapturaParticipante
-
     Estado = Finalizado
 
-    If Team = -2 Then
+    If team = -2 Then
         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» Se ha cancelado el evento de captura la bandera por falta de participantes.", e_FontTypeNames.FONTTYPE_GUILD))
-    ElseIf Team = -1 Then 'Se aborto el evento
+    ElseIf team = -1 Then 'Se aborto el evento
         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» El evento de captura la bandera ha sido cancelado. Se te ha devuelto el precio de inscripción.", e_FontTypeNames.FONTTYPE_GUILD))
 
         For Each participante In participantes
@@ -605,20 +568,19 @@ Public Sub finalizarCaptura(Optional Team As Integer = -1)
 
         Next participante
 
-    ElseIf Team = 0 Then 'Hubo empate
+    ElseIf team = 0 Then 'Hubo empate
         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» ¡El evento de captura la bandera ha terminado en empate!.", e_FontTypeNames.FONTTYPE_GUILD))
     Else
 
         ' La recompensa para cada ganador será su inscripción de vuelta + el precio de inscripción de un perdedor
         Dim recompensa As Long
-
         recompensa = precio * 2  ' Tu inscripción + la inscripción de un perdedor
 
         ' Entregamos premio al equipo ganador
         For Each participante In participantes
 
             If participante.IsValid Then
-                If participante.Team = Team Then
+                If participante.team = team Then
                     UserList(participante.PlayerIndex).Stats.GLD = UserList(participante.PlayerIndex).Stats.GLD + recompensa
                     Call WriteUpdateGold(participante.PlayerIndex)
                     Call WriteConsoleMsg(participante.PlayerIndex, "¡Has recuperado tu inscripción y ganado " & PonerPuntos(precio) & " monedas de oro adicionales por ganar el evento!", e_FontTypeNames.FONTTYPE_GUILD)
@@ -643,20 +605,19 @@ Public Sub finalizarCaptura(Optional Team As Integer = -1)
 
 End Sub
 
-Public Sub finalizarRonda(ByVal Team As Byte)
+Public Sub finalizarRonda(ByVal team As Byte)
     Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡El equipo " & colorEquipo(team) & " ha ganado la ronda " & ronda_actual & "!", e_FontTypeNames.FONTTYPE_GUILD))
     'El sonido de fundar clan para hacerlo mas magestuoso, mirar si hay un sonido mejor
     Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
     contadorBandera(1) = 0
     contadorBandera(2) = 0
-    rondasGanadas(Team) = rondasGanadas(Team) + 1
+    rondasGanadas(team) = rondasGanadas(team) + 1
 
     Dim rondasParaGanar As Integer
-
     rondasParaGanar = (cantidad_rondas \ 2) + 1  ' División entera + 1 (ejemplo: en mejor de 3, necesitas 2 victorias)
 
-    If rondasGanadas(Team) >= rondasParaGanar Then  ' Si un equipo alcanza las rondas necesarias
-        Call finalizarCaptura(CInt(Team))
+    If rondasGanadas(team) >= rondasParaGanar Then  ' Si un equipo alcanza las rondas necesarias
+        Call finalizarCaptura(CInt(team))
     Else
         Call iniciarRonda
 
@@ -721,7 +682,7 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
         End If
 
         'Zona segura
-        If MapInfo(.Pos.map).Seguro = 0 Then
+        If MapInfo(.pos.Map).Seguro = 0 Then
             'Msg928= Solamente podrás ingresar al evento en zona segura.
             Call WriteLocaleMsg(UserIndex, "928", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
@@ -729,7 +690,7 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
         End If
 
         'cupos completos
-        If participantes.Count >= max_participantes Then
+        If participantes.count >= max_participantes Then
             'Msg929= Los cupos ya están completos.
             Call WriteLocaleMsg(UserIndex, "929", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
@@ -775,19 +736,18 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
         End If
 
         Dim participante As clsCapturaParticipante
-
         Set participante = New clsCapturaParticipante
         Call participante.SetPlayer(UserIndex)
-        participante.LastPosMap = UserList(UserIndex).Pos.map
-        participante.LastPosX = UserList(UserIndex).Pos.X
-        participante.LastPosY = UserList(UserIndex).Pos.Y
+        participante.LastPosMap = UserList(UserIndex).pos.Map
+        participante.LastPosX = UserList(UserIndex).pos.x
+        participante.LastPosY = UserList(UserIndex).pos.y
         Call participantes.Add(participante, CStr(UserIndex))
         UserList(UserIndex).flags.jugando_captura = 1
         UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - precio
         Call WriteUpdateGold(UserIndex)
         Call enviarUsuarioSala(UserIndex)
 
-        If participantes.Count >= max_participantes Then
+        If participantes.count >= max_participantes Then
             Call iniciarCaptura
 
         End If

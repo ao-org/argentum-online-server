@@ -11,6 +11,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+
 ' Argentum 20 Game Server
 '
 '    Copyright (C) 2023 Noland Studios LTD
@@ -41,16 +42,20 @@ Dim UserRef As t_UserReference
 
 Public Sub SetFromIndex(ByVal UserIndex As Integer)
     Call SetUserRef(UserRef, UserIndex)
+
 End Sub
 
 Public Function IsValid() As Boolean
     IsValid = IsValidUserRef(UserRef)
+
 End Function
 
 Public Function PlayerIndex() As Integer
     PlayerIndex = UserRef.ArrayIndex
+
 End Function
 
 Public Function VersionId() As Integer
     VersionId = UserRef.VersionId
+
 End Function

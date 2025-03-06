@@ -11,6 +11,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+
 ' Argentum 20 Game Server
 '
 '    Copyright (C) 2023 Noland Studios LTD
@@ -37,7 +38,6 @@ Attribute VB_Exposed = False
 '
 '
 '
-
 Public name            As String
 
 Public Causa           As String

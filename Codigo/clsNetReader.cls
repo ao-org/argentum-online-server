@@ -25,28 +25,24 @@ Attribute VB_Exposed = False
 '    GNU Affero General Public License for more details.
 '    You should have received a copy of the GNU Affero General Public License
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 #If DIRECT_PLAY = 1 Then
-
-Option Base 0
-
-Option Explicit
-
-Private rcv_data As DxVBLibA.DPNMSG_RECEIVE
-Private loffset As Long
+    Option Base 0
+    Option Explicit
+    Private rcv_data As DxVBLibA.DPNMSG_RECEIVE
+    Private lOffset  As Long
 Public Function GetAvailable() As Integer
-    GetAvailable = rcv_data.lDataSize - loffset
+    GetAvailable = rcv_data.lDataSize - lOffset
 End Function
 Public Sub set_data(data As DxVBLibA.DPNMSG_RECEIVE)
     rcv_data = data
-    loffset = 0
+    lOffset = 0
 End Sub
 
 Public Sub Clear()
     lOffset = NewBuffer(rcv_data.ReceivedData)
 End Sub
 Public Function ReadInt16() As Integer
-    Call GetDataFromBuffer(rcv_data.ReceivedData, ReadInt16, SIZE_INTEGER, loffset)
+    Call GetDataFromBuffer(rcv_data.ReceivedData, ReadInt16, SIZE_INTEGER, lOffset)
 End Function
 Public Function ReadInt32() As Long
     Call GetDataFromBuffer(rcv_data.ReceivedData, ReadInt32, SIZE_LONG, lOffset)
@@ -58,10 +54,10 @@ Public Function ReadReal32() As Single
     Call GetDataFromBuffer(rcv_data.ReceivedData, ReadReal32, SIZE_SINGLE, lOffset)
 End Function
 Public Function ReadInt8() As Byte
-    Call GetDataFromBuffer(rcv_data.ReceivedData, ReadInt8, SIZE_BYTE, loffset)
+    Call GetDataFromBuffer(rcv_data.ReceivedData, ReadInt8, SIZE_BYTE, lOffset)
 End Function
 Public Function ReadString8() As String
-    ReadString8 = GetStringFromBuffer(rcv_data.ReceivedData, loffset)
+    ReadString8 = GetStringFromBuffer(rcv_data.ReceivedData, lOffset)
 End Function
 
 Public Function ReadSafeArrayInt8(value() As Byte)

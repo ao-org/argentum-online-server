@@ -28,15 +28,17 @@ Attribute VB_Name = "UnitTesting"
 Option Explicit
 #If UNIT_TEST = 1 Then
 
-Public public_key As String
-Public private_key As String
+    Public public_key      As String
 
-Public encrypted_token As String
-Public decrypted_token As String
+    Public private_key     As String
 
-Public character_name As String
+    Public encrypted_token As String
 
-Public Sub init()
+    Public decrypted_token As String
+
+    Public character_name  As String
+
+Public Sub Init()
     'We can mock the key value to test errors...
     private_key = PrivateKey
     character_name = "seneca"
@@ -56,11 +58,11 @@ Public Sub shutdown()
     Call UnitClient.Disconnect
 End Sub
 
-Sub test_make_user(ByVal UserIndex As Integer, ByVal map As Integer, ByVal X As Integer, ByVal y As Integer)
-    UserList(UserIndex).Pos.map = map
-    UserList(UserIndex).Pos.X = X
-    UserList(UserIndex).Pos.y = y
-    Call MakeUserChar(True, 17, UserIndex, map, X, y, 1)
+Sub test_make_user(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
+    UserList(UserIndex).pos.Map = Map
+    UserList(UserIndex).pos.x = x
+    UserList(UserIndex).pos.y = y
+    Call MakeUserChar(True, 17, UserIndex, Map, x, y, 1)
 End Sub
 
 Function test_percentage() As Boolean
@@ -132,15 +134,15 @@ Function test_make_user_char() As Boolean
     'Create first User
     Call test_make_user(1, 1, 54, 51)
     Debug.Assert (MapData(1, 54, 51).UserIndex = 1)
-    Debug.Assert (UserList(1).Char.CharIndex <> 0)
+    Debug.Assert (UserList(1).Char.charindex <> 0)
     'Delete first user
     Call EraseUserChar(1, False, False)
     Debug.Assert (MapData(1, 54, 55).UserIndex = 0)
-    Debug.Assert (UserList(1).Char.CharIndex = 0)
+    Debug.Assert (UserList(1).Char.charindex = 0)
     'Delete all NPCs5
     Dim i
     For i = 1 To UBound(NpcList)
-            If NpcList(i).Char.CharIndex <> 0 Then
+            If NpcList(i).Char.charindex <> 0 Then
                 Call EraseNPCChar(1)
             End If
     Next i
@@ -148,45 +150,45 @@ Function test_make_user_char() As Boolean
     'Create two users on the same map pos
     Call test_make_user(2, 1, 54, 56)
     Debug.Assert (MapData(1, 54, 56).UserIndex = 2)
-    Debug.Assert (UserList(2).Char.CharIndex <> 0)
+    Debug.Assert (UserList(2).Char.charindex <> 0)
     
     Call test_make_user(1, 1, 50, 46)
     Debug.Assert (MapData(1, 50, 46).UserIndex = 1)
-    Debug.Assert (UserList(1).Char.CharIndex <> 0)
-    Debug.Assert (UserList(2).Char.CharIndex <> UserList(1).Char.CharIndex)
+    Debug.Assert (UserList(1).Char.charindex <> 0)
+    Debug.Assert (UserList(2).Char.charindex <> UserList(1).Char.charindex)
     
     'Delete user 2
     Call EraseUserChar(2, False, False)
     Debug.Assert (MapData(1, 54, 56).UserIndex = 0)
-    Debug.Assert (UserList(2).Char.CharIndex = 0)
+    Debug.Assert (UserList(2).Char.charindex = 0)
     'Create user 2 again
     Call test_make_user(2, 1, 54, 56)
     Debug.Assert (MapData(1, 54, 56).UserIndex = 2)
-    Debug.Assert (UserList(2).Char.CharIndex <> 0)
+    Debug.Assert (UserList(2).Char.charindex <> 0)
     
     For i = 1 To UBound(UserList)
-        If UserList(i).Char.CharIndex <> 0 Then
+        If UserList(i).Char.charindex <> 0 Then
             Call EraseUserChar(i, False, True)
         End If
     Next i
     
     Call test_make_user(1, 1, 64, 66)
     Debug.Assert (MapData(1, 64, 66).UserIndex = 1)
-    Debug.Assert (UserList(1).Char.CharIndex <> 0)
-    Debug.Assert (UserList(1).Char.CharIndex = 1)
+    Debug.Assert (UserList(1).Char.charindex <> 0)
+    Debug.Assert (UserList(1).Char.charindex = 1)
     
     
     Call test_make_user(1, 1, 68, 66)
     Debug.Assert (MapData(1, 68, 66).UserIndex = 1)
-    Debug.Assert (UserList(1).Char.CharIndex <> 0)
+    Debug.Assert (UserList(1).Char.charindex <> 0)
     test_make_user_char = True
 End Function
 
 Function test_suite() As Boolean
-    Dim result As Boolean
-    result = test_make_user_char()
-    result = result And test_maths()
-    test_suite = result
+    Dim Result As Boolean
+    Result = test_make_user_char()
+    Result = Result And test_maths()
+    test_suite = Result
 End Function
 
 #End If

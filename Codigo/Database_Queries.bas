@@ -26,41 +26,48 @@ Attribute VB_Name = "Database_Queries"
 '
 '
 Option Explicit
-
 'Constructor de queries.
 'Me permite concatenar strings MUCHO MAS rapido
-Private QueryBuilder As cStringBuilder
+Private QueryBuilder          As cStringBuilder
 
-Public QUERY_LOAD_MAINPJ As String
+Public QUERY_LOAD_MAINPJ      As String
 
 ' DYNAMIC QUERIES
-Public QUERY_SAVE_MAINPJ As String
-Public QUERY_SAVE_SPELLS As String
-Public QUERY_SAVE_INVENTORY As String
-Public QUERY_SAVE_BANCOINV As String
-Public QUERY_SAVE_SKILLS As String
-Public QUERY_SAVE_QUESTS As String
-Public QUERY_SAVE_PETS As String
+Public QUERY_SAVE_MAINPJ      As String
 
-Public QUERY_UPDATE_MAINPJ As String
-Public QUERY_UPSERT_SPELLS As String
+Public QUERY_SAVE_SPELLS      As String
+
+Public QUERY_SAVE_INVENTORY   As String
+
+Public QUERY_SAVE_BANCOINV    As String
+
+Public QUERY_SAVE_SKILLS      As String
+
+Public QUERY_SAVE_QUESTS      As String
+
+Public QUERY_SAVE_PETS        As String
+
+Public QUERY_UPDATE_MAINPJ    As String
+
+Public QUERY_UPSERT_SPELLS    As String
+
 Public QUERY_UPSERT_INVENTORY As String
-Public QUERY_UPSERT_SKILLS As String
-Public QUERY_UPSERT_PETS As String
 
+Public QUERY_UPSERT_SKILLS    As String
 
+Public QUERY_UPSERT_PETS      As String
 
 Public Sub Contruir_Querys()
         Call ConstruirQuery_CargarPersonaje
 100     Call ConstruirQuery_CrearPersonaje
 102     Call ConstruirQuery_GuardarPersonaje
+
 End Sub
 
 Private Sub ConstruirQuery_CargarPersonaje()
+
         Dim LoopC As Long
-    
 100     Set QueryBuilder = New cStringBuilder
-    
         ' ************************** Basic user data ********************************
 102     QueryBuilder.Append "SELECT "
         QueryBuilder.Append "account_id,"
@@ -138,20 +145,17 @@ Private Sub ConstruirQuery_CargarPersonaje()
         QueryBuilder.Append "is_locked_in_mao,"
         QueryBuilder.Append "user_key"
         QueryBuilder.Append " FROM user WHERE name= ?"
-    
         ' Guardo la query ensamblada
 198     QUERY_LOAD_MAINPJ = QueryBuilder.ToString
-    
         ' Limpio el constructor de querys
 200     Call QueryBuilder.Clear
 
 End Sub
 
 Private Sub ConstruirQuery_CrearPersonaje()
+
         Dim LoopC As Long
-    
 100     Set QueryBuilder = New cStringBuilder
-    
         ' ************************** Basic user data ********************************
 102     QueryBuilder.Append "INSERT INTO user ("
 104     QueryBuilder.Append "name, "
@@ -182,18 +186,18 @@ Private Sub ConstruirQuery_CrearPersonaje()
 192     QueryBuilder.Append "is_naked, "
 194     QueryBuilder.Append "status, "
 195     QueryBuilder.Append "user_key) VALUES ("
+
         Dim i As Long
+
         For i = 0 To 26
             QueryBuilder.Append "?,"
         Next i
-        QueryBuilder.Append "?)"
 
+        QueryBuilder.Append "?)"
         ' Guardo la query ensamblada
 198     QUERY_SAVE_MAINPJ = QueryBuilder.ToString
-    
         ' Limpio el constructor de querys
 200     Call QueryBuilder.Clear
-
         ' ************************** User spells ************************************
 218     QueryBuilder.Append "INSERT INTO spell (user_id, number, spell_id) VALUES "
 
@@ -202,16 +206,15 @@ Private Sub ConstruirQuery_CrearPersonaje()
 
 224         If LoopC < MAXUSERHECHIZOS Then
 226             QueryBuilder.Append ", "
+
             End If
 
 228     Next LoopC
-    
+
         ' Guardo la query ensamblada
 230     QUERY_SAVE_SPELLS = QueryBuilder.ToString
-    
         ' Limpio el constructor de querys
 232     Call QueryBuilder.Clear
-    
         ' ******************* INVENTORY *******************
 234     QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
 
@@ -220,16 +223,15 @@ Private Sub ConstruirQuery_CrearPersonaje()
 
 240         If LoopC < MAX_INVENTORY_SLOTS Then
 242             QueryBuilder.Append ", "
+
             End If
 
 244     Next LoopC
-    
+
         ' Guardo la query ensamblada
 246     QUERY_SAVE_INVENTORY = QueryBuilder.ToString
-    
         ' Limpio el constructor de querys
 248     Call QueryBuilder.Clear
-
         ' ************************** User skills ************************************
 250     QueryBuilder.Append "INSERT INTO skillpoint (user_id, number, value) VALUES "
 
@@ -238,16 +240,15 @@ Private Sub ConstruirQuery_CrearPersonaje()
 
 256         If LoopC < NUMSKILLS Then
 258             QueryBuilder.Append ", "
+
             End If
 
 260     Next LoopC
 
         ' Guardo la query ensamblada
 262     QUERY_SAVE_SKILLS = QueryBuilder.ToString
-    
         ' Limpio el constructor de querys
 264     Call QueryBuilder.Clear
-
         ' ************************** User quests ************************************
 266     QueryBuilder.Append "INSERT INTO quest (user_id, number) VALUES "
 
@@ -256,16 +257,15 @@ Private Sub ConstruirQuery_CrearPersonaje()
 
 272         If LoopC < MAXUSERQUESTS Then
 274             QueryBuilder.Append ", "
+
             End If
 
 276     Next LoopC
-    
+
         ' Guardo la query ensamblada
 278     QUERY_SAVE_QUESTS = QueryBuilder.ToString
-    
         ' Limpio el constructor de querys
 280     Call QueryBuilder.Clear
-    
         ' ************************** User pets **************************************
 282     QueryBuilder.Append "INSERT INTO pet (user_id, number, pet_id) VALUES "
 
@@ -274,22 +274,21 @@ Private Sub ConstruirQuery_CrearPersonaje()
 
 288         If LoopC < MAXMASCOTAS Then
 290             QueryBuilder.Append ", "
+
             End If
 
 292     Next LoopC
-    
+
         ' Guardo la query ensamblada
 294     QUERY_SAVE_PETS = QueryBuilder.ToString
-    
         ' Limpio el constructor de querys
 296     Call QueryBuilder.Clear
-    
+
 End Sub
 
 Private Sub ConstruirQuery_GuardarPersonaje()
 
         Dim LoopC As Long
-    
 100     QueryBuilder.Append "UPDATE user SET "
 102     QueryBuilder.Append "name = ?, "
 104     QueryBuilder.Append "level = ?, "
@@ -358,13 +357,10 @@ Private Sub ConstruirQuery_GuardarPersonaje()
         QueryBuilder.Append "last_logout = strftime('%s','now'), "
         QueryBuilder.Append "user_key = ? "
 278     QueryBuilder.Append "WHERE id = ?"
-    
         ' Guardo la query ensamblada
 280     QUERY_UPDATE_MAINPJ = QueryBuilder.ToString
-    
         ' Limpio el constructor de querys
 282     Call QueryBuilder.Clear
-    
         ' ************************** User bank inventory **************************************
 284     QueryBuilder.Append "REPLACE INTO bank_item (user_id, number, item_id, amount) VALUES "
 
@@ -380,10 +376,8 @@ Private Sub ConstruirQuery_GuardarPersonaje()
 
         ' Guardo la query ensamblada
 298     QUERY_SAVE_BANCOINV = QueryBuilder.ToString
-    
         ' Limpio el constructor de querys
 300     Call QueryBuilder.Clear
-    
         ' ************************** User spells ************************************
         QueryBuilder.Append "REPLACE INTO spell (user_id, number, spell_id) VALUES "
 
@@ -399,10 +393,8 @@ Private Sub ConstruirQuery_GuardarPersonaje()
 
         ' Guardo la query ensamblada
         QUERY_UPSERT_SPELLS = QueryBuilder.ToString
-    
         ' Limpio el constructor de querys
         Call QueryBuilder.Clear
-    
         ' ******************* INVENTORY *******************
         QueryBuilder.Append "REPLACE INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
 
@@ -418,10 +410,8 @@ Private Sub ConstruirQuery_GuardarPersonaje()
 
         ' Guardo la query ensamblada
         QUERY_UPSERT_INVENTORY = QueryBuilder.ToString
-    
         ' Limpio el constructor de querys
         Call QueryBuilder.Clear
-   
         ' ************************** User skills ************************************
         QueryBuilder.Append "REPLACE INTO skillpoint (user_id, number, value) VALUES "
 
@@ -437,10 +427,8 @@ Private Sub ConstruirQuery_GuardarPersonaje()
 
         ' Guardo la query ensamblada
         QUERY_UPSERT_SKILLS = QueryBuilder.ToString
-    
         ' Limpio el constructor de querys
         Call QueryBuilder.Clear
-
         ' ************************** User pets **************************************
         QueryBuilder.Append "REPLACE INTO pet (user_id, number, pet_id) VALUES "
 
@@ -456,7 +444,6 @@ Private Sub ConstruirQuery_GuardarPersonaje()
 
         ' Guardo la query ensamblada
         QUERY_UPSERT_PETS = QueryBuilder.ToString
-    
         ' Limpio el constructor de querys
         Call QueryBuilder.Clear
 
