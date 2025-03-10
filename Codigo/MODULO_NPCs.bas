@@ -1327,6 +1327,8 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 180         .Veneno = val(Leer.GetValue("NPC" & NpcNumber, "Veneno"))
     
 182         .flags.Domable = val(Leer.GetValue("NPC" & NpcNumber, "Domable"))
+
+            .flags.AttackableByEveryone = val(Leer.GetValue("NPC" & NpcNumber, "AttackableByEveryone")) 'makes the NPC attackable by ciudadanos and crimis
     
 184         .GiveGLD = val(Leer.GetValue("NPC" & NpcNumber, "GiveGLD"))
     
@@ -2090,19 +2092,24 @@ UserCanAttackNpc.TurnPK = False
         UserCanAttackNpc.Result = eSafeArea
         Exit Function
      End If
-     ' El seguro es SOLO para ciudadanos. La armada debe desenlistarse antes de querer atacar y se checkea arriba.
-     ' Los criminales o Caos, ya estan mas alla del seguro.
-164  If Status(UserIndex) = Ciudadano Then
-166     If NpcList(NpcIndex).flags.Faccion = Armada Or NpcList(NpcIndex).flags.Faccion = Consejo Then
-168         If UserList(UserIndex).flags.Seguro Then
-172             UserCanAttackNpc.Result = eRemoveSafe
-                Exit Function
-            Else
-                UserCanAttackNpc.Result = eAttackSameFaction
-                UserCanAttackNpc.TurnPK = True
+     
+     If NpcList(NpcIndex).flags.AttackableByEveryone = 1 Then
                 UserCanAttackNpc.CanAttack = True
-                Exit Function
-             End If
+     Else
+         ' El seguro es SOLO para ciudadanos. La armada debe desenlistarse antes de querer atacar y se checkea arriba.
+         ' Los criminales o Caos, ya estan mas alla del seguro.
+164      If Status(UserIndex) = Ciudadano Then
+166         If NpcList(NpcIndex).flags.Faccion = Armada Or NpcList(NpcIndex).flags.Faccion = consejo Then
+168             If UserList(UserIndex).flags.Seguro Then
+172                 UserCanAttackNpc.Result = eRemoveSafe
+                    Exit Function
+                Else
+                    UserCanAttackNpc.Result = eAttackSameFaction
+                    UserCanAttackNpc.TurnPK = True
+                    UserCanAttackNpc.CanAttack = True
+                    Exit Function
+                 End If
+            End If
         End If
     End If
     If Status(UserIndex) = Ciudadano Or Status(UserIndex) = Armada Or Status(UserIndex) = Consejo Then
