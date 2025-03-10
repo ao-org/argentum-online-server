@@ -65,9 +65,7 @@ Declare Function SetWindowsHookEx _
                                    ByVal hmod As Long, _
                                    ByVal dwThreadId As Long) As Long
 Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
-
 Public Const WH_CALLWNDPROC = 4
-
 Public Const WM_CREATE = &H1
 
 Public hHook As Long

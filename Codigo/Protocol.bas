@@ -26,7 +26,6 @@ Attribute VB_Name = "Protocol"
 '
 '
 Option Explicit
-
 ''
 'When we have a list of strings, we use this to separate them and prevent
 'having too many string lengths in the queue. Yes, each string is NULL-terminated :P

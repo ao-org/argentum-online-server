@@ -41,7 +41,6 @@ Public Database_Name                    As String
 Public Database_Username                As String
 
 Public Database_Password                As String
-
 Public Const MAX_ASYNC                  As Byte = 20
 
 Public Current_async                    As Byte

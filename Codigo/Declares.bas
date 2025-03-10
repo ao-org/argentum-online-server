@@ -156,7 +156,6 @@ End Enum
 Public lstUsuariosDonadores()        As String
 
 Public Administradores               As clsIniManager
-
 Public Const TIEMPO_MINIMO_CENTINELA As Long = 300
 
 Public Enum e_SoundIndex
@@ -208,69 +207,40 @@ Public DayStats       As t_EstadisticasDiarias
 Public aClon          As New clsAntiMassClon
 
 Public TrashCollector As New Collection
-
 Public Const MAXSPAWNATTEMPS = 15
-
 Public Const INFINITE_LOOPS As Integer = -1
-
 Public Const FXSANGRE = 14
-
 ''
 ' The color of chats over head of dead characters.
 Public Const CHAT_COLOR_DEAD_CHAR As Long = &HC0C0C0
-
 ''
 ' The color of yells made by any kind of game administrator.
 Public Const CHAT_COLOR_GM_YELL   As Long = &HF82FF
-
 ''
 ' Coordinates for normal sounds (not 3D, like rain)
 Public Const NO_3D_SOUND          As Byte = 0
-
 Public Const iFragataFantasmal = 87 'ok
-
 Public Const iTraje = 694 'Traje +25
-
 Public Const iTrajeAltoNw = 1295 'Traje -25 alto
-
 Public Const iTrajeBajoNw = 1296 'Traje -25 enano
-
 Public Const iObjTraje = 197
-
 Public Const iObjTrajeAltoNw = 199
-
 Public Const iObjTrajeBajoNw = 200
-
 Public Const iBarca = 84
-
 Public Const iBarcaCiuda = 1265
-
 Public Const iBarcaCrimi = 1266
-
 Public Const iGalera = 85
-
 Public Const iGaleraCiuda = 1267
-
 Public Const iGaleraCrimi = 1268
-
 Public Const iGaleon = 86
-
 Public Const iGaleonCiuda = 1269
-
 Public Const iGaleonCrimi = 1270
-
 Public Const iBarcaArmada = 1273
-
 Public Const iBarcaCaos = 1274
-
 Public Const iGaleraArmada = 1271
-
 Public Const iGaleraCaos = 1272
-
 Public Const iGaleonArmada = 1264
-
 Public Const iGaleonCaos = 1263
-
 Public Const iRopaBuceoMuerto = 772
 
 Public MapasInterdimensionales() As Integer
@@ -393,17 +363,11 @@ Public Type t_Cabecera 'Cabecera de los con
 End Type
 
 Public MiCabecera                    As t_Cabecera
-
 Public Const NingunEscudo            As Integer = 2
-
 Public Const NingunCasco             As Integer = 2
-
 Public Const NingunArma              As Integer = 2
-
 Public Const NoCart                  As Integer = 2
-
 Public Const EspadaMataDragonesIndex As Integer = 402
-
 Public Const MAXMASCOTASENTRENADOR   As Byte = 7
 
 Public Enum e_FXSound
@@ -451,9 +415,7 @@ Public Enum e_ParticulasIndex ' Particulas FX
 End Enum
 
 Public Const VelocidadNormal       As Single = 1
-
 Public Const VelocidadMuerto       As Single = 1.4
-
 Public Const TIEMPO_CARCEL_PIQUETE As Long = 5
 
 ''
@@ -507,15 +469,10 @@ End Enum
 
 'TODO : Reemplazar por un enum
 Public Const Bosque = "BOSQUE"
-
 Public Const Nieve = "NIEVE"
-
 Public Const Desierto = "DESIERTO"
-
 Public Const Ciudad = "CIUDAD"
-
 Public Const Campo = "CAMPO"
-
 Public Const Dungeon = "DUNGEON"
 
 ' <<<<<< Targets >>>>>>
@@ -552,11 +509,8 @@ Public Enum e_TipoHechizo
 End Enum
 
 Public Const MAX_MENSAJES_FORO   As Byte = 35
-
 Public Const MAXUSERHECHIZOS     As Byte = 40
-
 Public Const FX_TELEPORT_INDEX   As Integer = 1
-
 Public Const HiddenSpellTextTime As Integer = 500
 
 ' La utilidad de esto es casi nula, sólo se revisa si fue a la cabeza...
@@ -572,103 +526,54 @@ Public Enum e_PartesCuerpo
 End Enum
 
 Public Const MAX_PERSONAJES = 10
-
 Public Const Guardias         As Integer = 6
-
 Public Const MAXORO           As Long = 90000000
-
 Public Const MAXEXP           As Long = 1999999999
-
 Public Const MAXUSERMATADOS   As Long = 65000
-
 Public Const MINATRIBUTOS     As Byte = 6
-
 Public Const LingoteHierro    As Integer = 386 'OK
-
 Public Const LingotePlata     As Integer = 387 'OK
-
 Public Const LingoteOro       As Integer = 388 'OK
-
 Public Const Wood             As Integer = 58 'OK
-
 Public Const ElvenWood        As Integer = 2781 'OK
-
 Public Const Raices           As Integer = 888 'OK
-
 Public Const Botella          As Integer = 2097 'OK
-
 Public Const Cuchara          As Integer = 163 'OK
-
 Public Const Mortero          As Integer = 4304
-
 Public Const FrascoAlq        As Integer = 4305
-
 Public Const FrascoElixir     As Integer = 4306
-
 Public Const Dosificador      As Integer = 4307
-
 Public Const Orquidea         As Integer = 4308
-
 Public Const Carmesi          As Integer = 4309
-
 Public Const HongoDeLuz       As Integer = 4310
-
 Public Const Esporas          As Integer = 4311
-
 Public Const Tuna             As Integer = 4312
-
 Public Const Cala             As Integer = 4313
-
 Public Const ColaDeZorro      As Integer = 4314
-
 Public Const FlorOceano       As Integer = 4315
-
 Public Const FlorRoja         As Integer = 4316
-
 Public Const Hierva           As Integer = 4317
-
 Public Const HojasDeRin       As Integer = 4318
-
 Public Const HojasRojas       As Integer = 4319
-
 Public Const SemillasPros     As Integer = 4320
-
 Public Const Pimiento         As Integer = 4321
-
 Public Const PieldeLobo       As Integer = 414 'OK
-
 Public Const PieldeOsoPardo   As Integer = 415 'OK
-
 Public Const PieldeOsoPolar   As Integer = 416 'OK
-
 Public Const PielLoboNegro    As Integer = 1146
-
 Public Const PielTigre        As Integer = 4339
-
 Public Const PielTigreBengala As Integer = 1145
-
 Public Const MaxNPCs          As Integer = 10000
-
 Public Const MAXCHARS         As Integer = 10000
-
 Public Const DAGA             As Integer = 15 'OK
-
 Public Const FOGATA_APAG      As Integer = 136 'OK
-
 Public Const FOGATA           As Integer = 63 'OK
-
 Public Const ORO_MINA         As Integer = 194 'OK
-
 Public Const PLATA_MINA       As Integer = 193 'OK
-
 Public Const HIERRO_MINA      As Integer = 192 'OK
-
 Public Const ObjArboles       As Integer = 4 'OK
-
 Public Const FishSubType      As Integer = 1
-
 Public Const PinoWood         As Integer = 3788 'OK
-
 Public Const BLODIUM_MINA     As Integer = 3787 'OK
 
 Public Enum e_NPCType
@@ -699,32 +604,25 @@ Public Enum e_NPCType
 End Enum
 
 Public Const MIN_APUÑALAR As Byte = 10
-
 '********** CONSTANTANTES ***********
 ''
 ' Cantidad de skills
 Public Const NUMSKILLS      As Byte = 24
-
 ''
 ' Cantidad de Atributos
 Public Const NUMATRIBUTOS   As Byte = 5
-
 ''
 ' Cantidad de Clases
 Public Const NUMCLASES      As Byte = 12
-
 ''
 ' Cantidad de Razas
 Public Const NUMRAZAS       As Byte = 6
-
 ''
 ' Valor maximo de cada skill
 Public Const MAXSKILLPOINTS As Byte = 100
-
 ''
 ' Cantidad maxima de mascotas
 Public Const MAXMASCOTAS    As Byte = 3
-
 Public Const MAXUSERTRAP    As Byte = 3
 
 ''
@@ -757,9 +655,7 @@ End Enum
 
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
 Public Const iCuerpoMuerto As Integer = 829
-
 Public Const iCabezaMuerto As Integer = 0 ' El nuevo casper no usa cabeza. El viejo es: 621
-
 Public Const iORO          As Byte = 12
 
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
@@ -809,112 +705,66 @@ Public Enum e_Atributos
 End Enum
 
 Public Const AdicionalHPGuerrero As Byte = 2 'HP adicionales cuando sube de nivel
-
 Public Const AdicionalHPCazador  As Byte = 1 'HP adicionales cuando sube de nivel
-
 Public Const AumentoSTDef        As Byte = 15
-
 Public Const AumentoSTLadron     As Byte = AumentoSTDef + 3
-
 Public Const AumentoSTMago       As Byte = AumentoSTDef - 1
-
 Public Const AumentoStBandido    As Byte = AumentoSTDef + 3
-
 'Tamaño del mapa
 Public Const XMaxMapSize         As Byte = 100
-
 Public Const XMinMapSize         As Byte = 1
-
 Public Const YMaxMapSize         As Byte = 100
-
 Public Const YMinMapSize         As Byte = 1
-
 'Tamaño del tileset
 Public Const TileSizeX           As Byte = 32
-
 Public Const TileSizeY           As Byte = 32
-
 'Tamaño en Tiles de la pantalla de visualizacion
 Public Const XWindow             As Byte = 23
-
 Public Const YWindow             As Byte = 18
-
 'Sonidos
 Public Const SND_SWING           As Byte = 2
-
 Public Const SND_TALAR           As Byte = 13
-
 Public Const SND_TIJERAS         As Byte = 211
-
 Public Const SND_PESCAR          As Byte = 14
-
 Public Const SND_MINERO          As Byte = 15
-
 Public Const SND_WARP            As Byte = 3
-
 Public Const SND_PUERTA          As Integer = 5
-
 Public Const SND_PUERTA_DUCTO    As Integer = 380
-
 Public Const SND_NIVEL           As Integer = 554
-
 Public Const SND_USERMUERTE      As Byte = 11
-
 Public Const SND_IMPACTO         As Byte = 10
-
 Public Const SND_IMPACTO_APU     As Integer = 2187
-
 Public Const SND_IMPACTO_CRITICO As Integer = 2186
-
 Public Const SND_IMPACTO2        As Byte = 12
-
 Public Const SND_DOPA            As Byte = 77
-
 Public Const SND_LEÑADOR         As Byte = 13
-
 Public Const SND_FOGATA                   As Byte = 116
-
 Public Const SND_SACARARMA                As Byte = 25
-
 Public Const SND_ESCUDO                   As Byte = 37
-
 Public Const MARTILLOHERRERO              As Byte = 41
-
 Public Const LABUROCARPINTERO             As Byte = 42
-
 Public Const SND_BEBER                    As Byte = 135
-
 Public Const GRH_FALLO_PESCA              As Long = 48974
-
 'Numero de objeto de la poción de reset
 Public Const POCION_RESET                 As Long = 3378
-
 ''
 ' Cantidad maxima de objetos por slot de inventario
 Public Const MAX_INVENTORY_OBJS           As Integer = 10000
-
 ''
 ' Cantidad de "slots" en el inventario con todos los slots desbloqueados
 Public Const MAX_INVENTORY_SLOTS          As Byte = 24
-
 ' Cantidad de "slots" en el inventario básico
 Public Const MAX_USERINVENTORY_SLOTS      As Byte = 24
-
 ' Cantidad de "slots" en el inventario heroe
 Public Const MAX_USERINVENTORY_HERO_SLOTS As Byte = 24
-
 ' Cantidad de "slots" en el inventario por fila
 Public Const SLOTS_PER_ROW_INVENTORY      As Byte = 6
-
 ' Cantidad máxima de filas a desbloquear en el inventario
 Public Const INVENTORY_EXTRA_ROWS         As Byte = 3
-
 ''
 ' Constante para indicar que se esta usando ORO
 Public Const FLAGORO                      As Integer = 200
-
 Public Const FLAG_AGUA                    As Byte = &H20
-
 Public Const FLAG_ARBOL                   As Byte = &H40
 
 ' CATEGORIAS PRINCIPALES
@@ -1055,17 +905,11 @@ End Enum
 
 'Estadisticas
 Public Const STAT_MAXELV As Byte = 47
-
 Public Const STAT_MAXHP  As Integer = 32000
-
 Public Const STAT_MAXMP  As Integer = 32000
-
 Public Const STAT_MAXSTA As Integer = 32000
-
 Public Const STAT_MAXMAN As Integer = 32000
-
 Public Const STAT_MAXHIT As Integer = 999
-
 Public Const STAT_MAXDEF As Byte = 99
 
 ' **************************************************************
@@ -1897,9 +1741,7 @@ Public Type t_BancoInventario
 End Type
 
 Public Const patron_tier_aventurero As Long = 6057393
-
 Public Const patron_tier_heroe      As Long = 6057394
-
 Public Const patron_tier_leyenda    As Long = 6057395
 
 Public Enum e_TipoUsuario

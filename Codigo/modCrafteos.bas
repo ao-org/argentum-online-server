@@ -26,7 +26,6 @@ Attribute VB_Name = "modCrafteos"
 '
 '
 Option Explicit
-
 Public Const MAX_SLOTS_CRAFTEO = 5
 
 Public Sub SortIntegerArray(data() As Integer, _

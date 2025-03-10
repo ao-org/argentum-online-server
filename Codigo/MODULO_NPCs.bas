@@ -1,5 +1,4 @@
 Attribute VB_Name = "NPCs"
-
 ' Argentum 20 Game Server
 '
 '    Copyright (C) 2023 Noland Studios LTD
@@ -27,7 +26,6 @@ Attribute VB_Name = "NPCs"
 '
 '
 Public Const MaxRespawn             As Integer = 255
-
 Public Const NpcIndexHeapSize       As Integer = 10000
 
 Public RespawnList(1 To MaxRespawn) As t_Npc

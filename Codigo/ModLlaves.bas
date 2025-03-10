@@ -26,7 +26,6 @@ Attribute VB_Name = "ModLlaves"
 '
 '
 Option Explicit
-
 ' Cantidad máxima de llaves
 Public Const MAXKEYS As Byte = 10
 

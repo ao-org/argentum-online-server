@@ -22,270 +22,150 @@ Attribute VB_Name = "basCryptoSys"
 '****************** END OF COPYRIGHT NOTICE*****************
 Option Explicit
 Option Base 0
-
 ' CONSTANTS
 Public Const ENCRYPT                As Boolean = True
-
 Public Const DECRYPT                As Boolean = False
-
 ' Maximum number of bytes in hash digest byte array
 Public Const API_MAX_HASH_BYTES     As Long = 64
-
 Public Const API_SHA1_BYTES         As Long = 20
-
 Public Const API_SHA224_BYTES       As Long = 28
-
 Public Const API_SHA256_BYTES       As Long = 32
-
 Public Const API_SHA384_BYTES       As Long = 48
-
 Public Const API_SHA512_BYTES       As Long = 64
-
 Public Const API_MD5_BYTES          As Long = 16
-
 Public Const API_MD2_BYTES          As Long = 16
-
 Public Const API_RMD160_BYTES       As Long = 20
-
 Public Const API_ASCON_HASH_BYTES   As Long = 32
-
 ' Maximum number of hex characters in hash digest
 Public Const API_MAX_HASH_CHARS     As Long = (2 * API_MAX_HASH_BYTES)
-
 Public Const API_SHA1_CHARS         As Long = (2 * API_SHA1_BYTES)
-
 Public Const API_SHA224_CHARS       As Long = (2 * API_SHA224_BYTES)
-
 Public Const API_SHA256_CHARS       As Long = (2 * API_SHA256_BYTES)
-
 Public Const API_SHA384_CHARS       As Long = (2 * API_SHA384_BYTES)
-
 Public Const API_SHA512_CHARS       As Long = (2 * API_SHA512_BYTES)
-
 Public Const API_MD5_CHARS          As Long = (2 * API_MD5_BYTES)
-
 Public Const API_MD2_CHARS          As Long = (2 * API_MD2_BYTES)
-
 Public Const API_RMD160_CHARS       As Long = (2 * API_RMD160_BYTES)
-
 Public Const API_ASCON_HASH_CHARS   As Long = (2 * API_ASCON_HASH_BYTES)
-
 ' Maximum lengths of MAC tags
 Public Const API_MAX_MAC_BYTES      As Long = 64
-
 Public Const API_MAX_HMAC_BYTES     As Long = 64
-
 Public Const API_MAX_CMAC_BYTES     As Long = 16
-
 Public Const API_MAX_GMAC_BYTES     As Long = 16
-
 Public Const API_POLY1305_BYTES     As Long = 16
-
 Public Const API_AEAD_TAG_MAX_BYTES As Long = 16
-
 Public Const API_MAX_MAC_CHARS      As Long = (2 * API_MAX_MAC_BYTES)
-
 Public Const API_MAX_HMAC_CHARS     As Long = (2 * API_MAX_HMAC_BYTES)
-
 Public Const API_MAX_CMAC_CHARS     As Long = (2 * API_MAX_CMAC_BYTES)
-
 Public Const API_MAX_GMAC_CHARS     As Long = (2 * API_MAX_GMAC_BYTES)
-
 Public Const API_POLY1305_CHARS     As Long = (2 * API_POLY1305_BYTES)
-
 ' Synonyms retained for backwards compatibility
 Public Const API_MAX_SHA1_BYTES     As Long = 20
-
 Public Const API_MAX_SHA2_BYTES     As Long = 32  ' (This was for SHA-256)
-
 Public Const API_MAX_MD5_BYTES      As Long = 16
-
 Public Const API_MAX_SHA1_CHARS     As Long = (2 * API_MAX_SHA1_BYTES)
-
 Public Const API_MAX_SHA2_CHARS     As Long = (2 * API_MAX_SHA2_BYTES)
-
 Public Const API_MAX_MD5_CHARS      As Long = (2 * API_MAX_MD5_BYTES)
-
 ' Encryption block sizes in bytes
 Public Const API_BLK_DES_BYTES      As Long = 8
-
 Public Const API_BLK_TDEA_BYTES     As Long = 8
-
 Public Const API_BLK_BLF_BYTES      As Long = 8
-
 Public Const API_BLK_AES_BYTES      As Long = 16
-
 ' Key size in bytes
 Public Const API_KEYSIZE_TDEA_BYTES As Long = 24
-
 ' Required size for RNG seed file
 Public Const API_RNG_SEED_BYTES     As Long = 64
-
 ' Maximum number of characters in an error lookup message
 Public Const API_MAX_ERRORLOOKUP_CHARS = 127
-
 ' Options for HASH functions
 Public Const API_HASH_SHA1              As Long = 0
-
 Public Const API_HASH_MD5               As Long = 1
-
 Public Const API_HASH_MD2               As Long = 2
-
 Public Const API_HASH_SHA256            As Long = 3
-
 Public Const API_HASH_SHA384            As Long = 4
-
 Public Const API_HASH_SHA512            As Long = 5
-
 Public Const API_HASH_SHA224            As Long = 6
-
 Public Const API_HASH_RMD160            As Long = 7
-
 Public Const API_HASH_SHA3_224          As Long = &HA&
-
 Public Const API_HASH_SHA3_256          As Long = &HB&
-
 Public Const API_HASH_SHA3_384          As Long = &HC&
-
 Public Const API_HASH_SHA3_512          As Long = &HD&
-
 ' ASCON-HASH added [v6.21]
 Public Const API_HASH_ASCON_HASH        As Long = &HAF&
-
 Public Const API_HASH_ASCON_HASHA       As Long = &HBF&
-
 Public Const API_HASH_MODE_TEXT         As Long = &H10000
-
 ' HMAC algorithms
 Public Const API_HMAC_SHA1              As Long = 0
-
 Public Const API_HMAC_SHA224            As Long = 6
-
 Public Const API_HMAC_SHA256            As Long = 3
-
 Public Const API_HMAC_SHA384            As Long = 4
-
 Public Const API_HMAC_SHA512            As Long = 5
-
 Public Const API_HMAC_SHA3_224          As Long = &HA&
-
 Public Const API_HMAC_SHA3_256          As Long = &HB&
-
 Public Const API_HMAC_SHA3_384          As Long = &HC&
-
 Public Const API_HMAC_SHA3_512          As Long = &HD&
-
 ' Options for MAC/PRF/XOF functions
 Public Const API_CMAC_TDEA              As Long = &H100  ' ) synonyms
-
 Public Const API_CMAC_DESEDE            As Long = &H100  ' ) synonyms
-
 Public Const API_CMAC_AES128            As Long = &H101
-
 Public Const API_CMAC_AES192            As Long = &H102
-
 Public Const API_CMAC_AES256            As Long = &H103
-
 Public Const API_MAC_POLY1305           As Long = &H200
-
 Public Const API_KMAC_128               As Long = &H201
-
 Public Const API_KMAC_256               As Long = &H202
-
 Public Const API_XOF_SHAKE128           As Long = &H203
-
 Public Const API_XOF_SHAKE256           As Long = &H204
-
 ' New in [v6.21]
 Public Const API_XOF_MGF1_SHA1          As Long = &H210
-
 Public Const API_XOF_MGF1_SHA256        As Long = &H213
-
 Public Const API_XOF_MGF1_SHA512        As Long = &H215
-
 Public Const API_XOF_ASCON_XOF          As Long = &H20A
-
 Public Const API_XOF_ASCON_XOFA         As Long = &H20B
-
 ' Options for RNG functions
 Public Const API_RNG_STRENGTH_112       As Long = &H0
-
 Public Const API_RNG_STRENGTH_128       As Long = &H1
-
 ' Block cipher (BC) algorithm options
 Public Const API_BC_TDEA                As Long = &H10  ' )
-
 Public Const API_BC_DESEDE3             As Long = &H10  ' ) equiv. synonyms for Triple DES
-
 Public Const API_BC_3DES                As Long = &H10  ' )
-
 Public Const API_BC_AES128              As Long = &H20
-
 Public Const API_BC_AES192              As Long = &H30
-
 Public Const API_BC_AES256              As Long = &H40
-
 ' Block cipher mode options
 Public Const API_MODE_ECB               As Long = &H0
-
 Public Const API_MODE_CBC               As Long = &H100
-
 Public Const API_MODE_OFB               As Long = &H200
-
 Public Const API_MODE_CFB               As Long = &H300
-
 Public Const API_MODE_CTR               As Long = &H400
-
 ' Block cipher option flags
 Public Const API_IV_PREFIX              As Long = &H1000
-
 Public Const API_PAD_LEAVE              As Long = &H2000
-
 ' Block cipher padding options
 Public Const API_PAD_DEFAULT            As Long = &H0
-
 Public Const API_PAD_NOPAD              As Long = &H10000
-
 Public Const API_PAD_PKCS5              As Long = &H20000
-
 Public Const API_PAD_1ZERO              As Long = &H30000
-
 Public Const API_PAD_AX923              As Long = &H40000
-
 Public Const API_PAD_W3C                As Long = &H50000
-
 ' Stream cipher (SC) algorithm options (NB no zero default)
 Public Const API_SC_ARCFOUR             As Long = 1
-
 Public Const API_SC_SALSA20             As Long = 2
-
 Public Const API_SC_CHACHA20            As Long = 3
-
 ' AEAD algorithm options
 Public Const API_AEAD_AES_128_GCM       As Long = 1
-
 Public Const API_AEAD_AES_256_GCM       As Long = 2
-
 Public Const API_AEAD_CHACHA20_POLY1305 As Long = 29
-
 ' Ascon aead added [v6.21]
 Public Const API_AEAD_ASCON_128         As Long = &H1A
-
 Public Const API_AEAD_ASCON_128A        As Long = &H1B
-
 ' Wipefile options
 Public Const API_WIPEFILE_DOD7          As Long = &H0    ' Default
-
 Public Const API_WIPEFILE_SIMPLE        As Long = &H1
-
 ' Compression algorithm options - added [v6.20]
 Public Const API_COMPR_ZLIB             As Long = &H0    ' Default
-
 Public Const API_COMPR_ZSTD             As Long = &H1
-
 ' General
 Public Const API_GEN_PLATFORM           As Long = &H40
-
 ' *********************
 ' FUNCTION DECLARATIONS
 ' *********************

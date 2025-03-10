@@ -1,5 +1,4 @@
 Attribute VB_Name = "Database"
-
 ' Argentum 20 Game Server
 '
 '    Copyright (C) 2023 Noland Studios LTD

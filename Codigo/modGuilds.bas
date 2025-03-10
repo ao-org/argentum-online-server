@@ -44,10 +44,8 @@ Public CANTIDADDECLANES           As Integer
 Private guilds(1 To MAX_GUILDS)   As clsClan
 'array global de guilds, se indexa por userlist().guildindex
 Private Const CANTIDADMAXIMACODEX As Byte = 8
-
 'cantidad maxima de codecs que se pueden definir
 Public Const MAXASPIRANTES        As Byte = 10
-
 'cantidad maxima de aspirantes que puede tener un clan acumulados a la vez
 Private Const MAXANTIFACCION      As Byte = 5
 

@@ -150,7 +150,6 @@ Public LimiteGuardarUsuarios         As Integer
 Public IntervaloTimerGuardarUsuarios As Integer
 
 Public IntervaloMensajeGlobal        As Long
-
 Public Const IntervaloConsultaGM     As Long = 300000
 
 'BALANCE

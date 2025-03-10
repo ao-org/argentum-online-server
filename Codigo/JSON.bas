@@ -38,12 +38,9 @@ Private Declare Function GetLocaleInfo _
                                         ByVal lpLCData As String, _
                                         ByVal cchData As Long) As Long
 Private Declare Function GetUserDefaultLCID% Lib "Kernel32" ()
-
 ' CONSTANTES LOCALE API
 Public Const LOCALE_SDECIMAL = &HE
-
 Public Const LOCALE_SGROUPING = &H10
-
 ' CONSTANTES JSON
 Private Const A_CURLY_BRACKET_OPEN   As Integer = 123       ' AscW("{")
 Private Const A_CURLY_BRACKET_CLOSE  As Integer = 125       ' AscW("}")

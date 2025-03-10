@@ -26,9 +26,7 @@ Attribute VB_Name = "SistemaCombate"
 '
 '
 Option Explicit
-
 Public Const MAXDISTANCIAARCO  As Byte = 18
-
 Public Const MAXDISTANCIAMAGIA As Byte = 18
 
 Public Enum AttackType
