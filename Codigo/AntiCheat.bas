@@ -113,7 +113,10 @@ End Sub
 Public Sub AntiCheatUpdate()
     If EnableAnticheat Then
         Call Update
+#If DIRECT_PLAY = 0 Then
+        'Needs debugging to understand why this does not work with DPLAY, suspect the problem is in Read/Write/SafeArray
         Call KickUnregisteredPlayers
+#End If
     End If
 End Sub
 

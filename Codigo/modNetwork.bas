@@ -387,6 +387,7 @@ Public Mapping As New Dictionary
 
 Public Function MapConnectionToUser(ByVal ConnectionID As Long) As Integer
 On Error GoTo CheckDisconnectedUsers_Err:
+        MapConnectionToUser = 0
         Dim FreeUser As Long
         FreeUser = NextOpenUser()
         If IsFeatureEnabled("debug_id_assign") Then
