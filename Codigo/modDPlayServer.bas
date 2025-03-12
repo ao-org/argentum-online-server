@@ -55,7 +55,7 @@ End Sub
 Public Sub HandleDPlayError(ByVal ErrNumber As Long, ByVal ErrDescription As String, ByVal place As String, ByVal line As String)
        Select Case Err.Number
             Case DPNERR_INVALIDPLAYER
-                    Call TraceError(ErrNumber, "The player ID is not recognized as a valid player ID for this game session.", place, line)
+                    Call TraceError(ErrNumber, "DPNERR_INVALIDPLAYER: The player ID is not recognized as a valid player ID for this game session.", place, line)
             Case DPNERR_INVALIDPARAM
                     Call TraceError(ErrNumber, "One or more of the parameters passed to the method are invalid.", place, line)
             Case DPNERR_NOTHOST:
