@@ -1327,6 +1327,8 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 180         .Veneno = val(Leer.GetValue("NPC" & NpcNumber, "Veneno"))
     
 182         .flags.Domable = val(Leer.GetValue("NPC" & NpcNumber, "Domable"))
+
+            .flags.AttackableByEveryone = val(Leer.GetValue("NPC" & NpcNumber, "AttackableByEveryone", 0)) 'makes the NPC attackable by ciudadanos and crimis -ako
     
 184         .GiveGLD = val(Leer.GetValue("NPC" & NpcNumber, "GiveGLD"))
     
@@ -2090,22 +2092,20 @@ UserCanAttackNpc.TurnPK = False
         UserCanAttackNpc.Result = eSafeArea
         Exit Function
      End If
-     ' El seguro es SOLO para ciudadanos. La armada debe desenlistarse antes de querer atacar y se checkea arriba.
-     ' Los criminales o Caos, ya estan mas alla del seguro.
-164  If Status(UserIndex) = Ciudadano Then
-166     If NpcList(NpcIndex).flags.Faccion = Armada Or NpcList(NpcIndex).flags.Faccion = Consejo Then
-168         If UserList(UserIndex).flags.Seguro Then
-172             UserCanAttackNpc.Result = eRemoveSafe
-                Exit Function
-            Else
-                UserCanAttackNpc.Result = eAttackSameFaction
-                UserCanAttackNpc.TurnPK = True
-                UserCanAttackNpc.CanAttack = True
-                Exit Function
-             End If
-        End If
-    End If
-    If Status(UserIndex) = Ciudadano Or Status(UserIndex) = Armada Or Status(UserIndex) = Consejo Then
+        If Status(UserIndex) = Ciudadano Then
+166         If NpcList(NpcIndex).flags.Faccion = Armada Or NpcList(NpcIndex).flags.Faccion = consejo Then
+168             If UserList(UserIndex).flags.Seguro Then
+172                 UserCanAttackNpc.Result = eRemoveSafe
+                   Exit Function
+                Else
+                   UserCanAttackNpc.Result = eAttackSameFaction
+                   UserCanAttackNpc.TurnPK = True
+                   UserCanAttackNpc.CanAttack = True
+                   Exit Function
+                End If
+           End If
+       End If
+    If Status(UserIndex) = Ciudadano Or Status(UserIndex) = Armada Or Status(UserIndex) = consejo Then
         'Es el NPC mascota de alguien?
 180     If IsPet Then
 182         Select Case UserList(NpcList(NpcIndex).MaestroUser.ArrayIndex).Faccion.Status
@@ -2137,30 +2137,31 @@ UserCanAttackNpc.TurnPK = False
                      Exit Function
              End Select
          End If
-         
-         If NpcList(NpcIndex).flags.team = 0 Then
-            Dim CurrentOwnerIndex As Integer: CurrentOwnerIndex = GetOwnedBy(NpcIndex)
-            If CurrentOwnerIndex <> 0 Then
-                If CurrentOwnerIndex <> UserIndex And IsValidNpcRef(UserList(CurrentOwnerIndex).flags.NPCAtacado) Then
-                    If UserList(CurrentOwnerIndex).flags.NPCAtacado.ArrayIndex = NpcIndex And _
-                        UserList(CurrentOwnerIndex).flags.Muerto = 0 And _
-                        (Status(CurrentOwnerIndex) = Ciudadano Or Status(CurrentOwnerIndex) = Armada Or Status(CurrentOwnerIndex) = consejo) And _
-                        (UserList(UserIndex).GuildIndex = 0 Or UserList(UserIndex).GuildIndex <> UserList(CurrentOwnerIndex).GuildIndex) And _
-                        (UserList(UserIndex).Grupo.EnGrupo = False Or UserList(UserIndex).Grupo.Id <> UserList(CurrentOwnerIndex).Grupo.Id) Then
-                        
-                        If UserList(UserIndex).flags.Seguro Then
-                            UserCanAttackNpc.Result = eRemoveSafeCitizenNpc
-                            Exit Function
-                        Else
-                            UserCanAttackNpc.TurnPK = True
-                            UserCanAttackNpc.CanAttack = True
-                            UserCanAttackNpc.Result = eAttackCitizenNpc
-                            Exit Function
-                        End If
-                    End If
+             If NpcList(NpcIndex).flags.AttackableByEveryone = 0 Then
+                If NpcList(NpcIndex).flags.team = 0 Then
+                   Dim CurrentOwnerIndex As Integer: CurrentOwnerIndex = GetOwnedBy(NpcIndex)
+                   If CurrentOwnerIndex <> 0 Then
+                       If CurrentOwnerIndex <> UserIndex And IsValidNpcRef(UserList(CurrentOwnerIndex).flags.NPCAtacado) Then
+                           If UserList(CurrentOwnerIndex).flags.NPCAtacado.ArrayIndex = NpcIndex And _
+                               UserList(CurrentOwnerIndex).flags.Muerto = 0 And _
+                               (Status(CurrentOwnerIndex) = Ciudadano Or Status(CurrentOwnerIndex) = Armada Or Status(CurrentOwnerIndex) = consejo) And _
+                               (UserList(UserIndex).GuildIndex = 0 Or UserList(UserIndex).GuildIndex <> UserList(CurrentOwnerIndex).GuildIndex) And _
+                               (UserList(UserIndex).Grupo.EnGrupo = False Or UserList(UserIndex).Grupo.Id <> UserList(CurrentOwnerIndex).Grupo.Id) Then
+                               
+                               If UserList(UserIndex).flags.Seguro Then
+                                   UserCanAttackNpc.Result = eRemoveSafeCitizenNpc
+                                   Exit Function
+                               Else
+                                   UserCanAttackNpc.TurnPK = True
+                                   UserCanAttackNpc.CanAttack = True
+                                   UserCanAttackNpc.Result = eAttackCitizenNpc
+                                   Exit Function
+                               End If
+                           End If
+                       End If
+                  End If
                 End If
-           End If
-        End If
+               End If
      End If
      UserCanAttackNpc.CanAttack = True
      UserCanAttackNpc.Result = eCanAttack

@@ -2536,6 +2536,7 @@ End Enum
 
 Public Type t_NPCFlags
 
+    AttackableByEveryone As Byte 'el NPC puede ser atacado indistintamente por PKs y Ciudadanos / ako
     AfectaParalisis As Byte
     GolpeExacto As Byte
     Domable As Integer
