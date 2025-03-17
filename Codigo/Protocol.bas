@@ -2331,13 +2331,6 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             'If the user is trading, he can't drop items => He's cheating, we kick him.
 112         If .flags.Comerciando Then Exit Sub
     
-            'Si esta navegando y no es pirata, no dejamos tirar items al agua.
-114         If .flags.Navegando = 1 And Not .clase = e_Class.Pirat Then
-                'Msg1126= Solo los Piratas pueden tirar items en altamar
-                Call WriteLocaleMsg(UserIndex, "1126", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
             
 118         If .flags.Montado = 1 Then
 120             ' Msg699=Debes descender de tu montura para dejar objetos en el suelo.
