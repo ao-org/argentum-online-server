@@ -4005,6 +4005,7 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
 108         Call Writer.WriteInt16(QuestIndex)
 110         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
 112         Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
+            Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClass)
             'Enviamos la cantidad de npcs requeridos
 114         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredNPCs)
 
