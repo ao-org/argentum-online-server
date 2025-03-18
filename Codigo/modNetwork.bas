@@ -457,7 +457,7 @@ On Error GoTo listen_err
     Dim pInfo As DPN_PLAYER_INFO
     pInfo.Name = "server"
     pInfo.lInfoFlags = DPNINFO_NAME
-    dps.SetServerInfo pInfo, DPNOP_SYNC
+    dps.SetServerInfo pInfo
     
     'Now start the server
     dps.Host AppDesc, dpa
