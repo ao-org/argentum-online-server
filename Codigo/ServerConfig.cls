@@ -66,6 +66,24 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     Set reader = New clsIniManager
     Call reader.Initialize(Filename)
     
+    'The number of outstanding receive buffers allocated for each DirectPlay thread. If you increase the number of receive buffers, DirectPlay can pull more data out of the operating system buffers. However, you may also increase latency if data is arriving faster than your application can process it.
+    mSettings.Add "DP_BuffersPerThread", CLng(val(reader.GetValue("DIRECTPLAY", "BuffersPerThread", 5)))
+    
+    mSettings.Add "DP_DefaultEnumCount", CLng(val(reader.GetValue("DIRECTPLAY", "DefaultEnumCount", 5)))
+    'Long value that specifies the default retry interval, in milliseconds.
+    mSettings.Add "DP_DefaultEnumRetryInterval", CLng(val(reader.GetValue("DIRECTPLAY", "DefaultEnumRetryInterval", 100)))
+    mSettings.Add "DP_DefaultEnumTimeout", CLng(val(reader.GetValue("DIRECTPLAY", "DefaultEnumTimeout", 500)))
+    mSettings.Add "DP_MaxEnumPayloadSize", CLng(val(reader.GetValue("DIRECTPLAY", "MaxEnumPayloadSize", 1024)))
+
+    'Number of threads the service provider will use for servicing network requests. The default value is based on an algorithm that takes into account the number of processors on the system.
+    'Most applications will not need to modify this value. After a service provider is active in your process you may only increase this value.
+    'Decreasing the value will have no effect. The setting is process wide, meaning it will effect your current Microsoft® DirectPlay® object and any other DirectPlay objects in your process.
+    mSettings.Add "DP_NumThreads", CLng(val(reader.GetValue("DIRECTPLAY", "NumThreads", 48)))
+    mSettings.Add "DP_SystemBufferSizeAs", CLng(val(reader.GetValue("DIRECTPLAY", "SystemBufferSizeAs", 65536)))
+     
+    
+
+    
     mSettings.Add "ExpMult", CInt(val(reader.GetValue("CONFIGURACIONES", "ExpMult")))
     mSettings.Add "GoldMult", CInt(val(reader.GetValue("CONFIGURACIONES", "OroMult")))
     mSettings.Add "RecoleccionMult", CDbl(val(reader.GetValue("CONFIGURACIONES", "RecoleccionMult")))
