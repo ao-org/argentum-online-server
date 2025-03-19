@@ -461,6 +461,21 @@ On Error GoTo listen_err
     
     'Now start the server
     dps.Host AppDesc, dpa
+    Dim scaps As DPN_SP_CAPS
+    
+    scaps = dps.GetSPCaps(DP8SP_TCPIP)
+    
+     With scaps
+        .lBuffersPerThread = SvrConfig.GetValue("DP_BuffersPerThread")
+        .lDefaultEnumCount = SvrConfig.GetValue("DP_DefaultEnumCount")
+        .lDefaultEnumRetryInterval = SvrConfig.GetValue("DP_DefaultEnumRetryInterval")
+        .lDefaultEnumTimeout = SvrConfig.GetValue("DP_DefaultEnumTimeout")
+        .lMaxEnumPayloadSize = SvrConfig.GetValue("DP_MaxEnumPayloadSize")
+        .lNumThreads = SvrConfig.GetValue("DP_NumThreads")
+        .lSystemBufferSize = SvrConfig.GetValue("DP_SystemBufferSizeAs")
+        .lFlags = 0
+    End With
+    dps.SetSPCaps DP8SP_TCPIP, scaps
     
     gfStarted = True
     Exit Sub
