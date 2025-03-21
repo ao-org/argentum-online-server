@@ -780,6 +780,11 @@ Sub PickObj(ByVal UserIndex As Integer)
 
 122                 If Not UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then Call LogGM(UserList(UserIndex).Name, "Agarro:" & MiObj.amount & " Objeto:" & ObjData(MiObj.ObjIndex).Name)
                     
+                    'Si el obj es oro (12), se muestra la cantidad que agarro arriba del personaje
+                    If MiObj.ObjIndex = 12 Then
+                        Call WriteTextOverTile(UserIndex, "+" & PonerPuntos(MiObj.amount), UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, RGB(212, 175, 55))
+                    End If
+                    
                     Call UserDidPickupItem(UserIndex, MiObj.ObjIndex)
                     If UserList(UserIndex).flags.jugando_captura = 1 Then
                     If Not InstanciaCaptura Is Nothing Then
