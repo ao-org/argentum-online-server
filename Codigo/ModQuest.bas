@@ -462,7 +462,8 @@ Public Sub LoadQuests()
 116             .RequiredLevel = val(Reader.GetValue("QUEST" & i, "RequiredLevel"))
                 .RequiredClass = val(Reader.GetValue("QUEST" & i, "RequiredClass"))
 118             .RequiredQuest = val(Reader.GetValue("QUEST" & i, "RequiredQuest"))
-            
+                .LimitLevel = val(reader.GetValue("QUEST" & i, "LimitLevel"))
+                
 120             .DescFinal = Reader.GetValue("QUEST" & i, "DescFinal")
             
 122             .NextQuest = Reader.GetValue("QUEST" & i, "NextQuest")
