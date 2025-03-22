@@ -852,14 +852,6 @@ Call WriteLocaleMsg(UserIndex, "785", e_FontTypeNames.FONTTYPE_INFO)
                         If .MascotasIndex(j).ArrayIndex > 0 Then
                             If IsValidNpcRef(.MascotasIndex(j)) Then
                                 If NpcList(.MascotasIndex(j).ArrayIndex).flags.NPCActive Then
-                                    
-                                    'Si se quiere invocar un elemental de fuego, fatuo o viento, se reemplaza uno ya existente, asi solo se permite 1.
-                                    If (Hechizos(h).NumNpc = ELEMENTAL_FUEGO Or Hechizos(h).NumNpc = ELEMENTAL_VIENTO Or Hechizos(h).NumNpc = FUEGOFATUO) And _
-                                       (NpcList(.MascotasIndex(j).ArrayIndex).Numero = ELEMENTAL_FUEGO Or NpcList(.MascotasIndex(j).ArrayIndex).Numero = ELEMENTAL_VIENTO Or NpcList(.MascotasIndex(j).ArrayIndex).Numero = FUEGOFATUO) Then
-                                        Index = j
-                                        Exit For
-                                    End If
-                                
                                     If NpcList(.MascotasIndex(j).ArrayIndex).Contadores.TiempoExistencia > 0 And NpcList(.MascotasIndex(j).ArrayIndex).Contadores.TiempoExistencia < MinTiempo Then
                                         Index = j
                                         MinTiempo = NpcList(.MascotasIndex(j).ArrayIndex).Contadores.TiempoExistencia
