@@ -80,7 +80,17 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     'Decreasing the value will have no effect. The setting is process wide, meaning it will effect your current Microsoft® DirectPlay® object and any other DirectPlay objects in your process.
     mSettings.Add "DP_NumThreads", CLng(val(reader.GetValue("DIRECTPLAY", "NumThreads", 48)))
     mSettings.Add "DP_SystemBufferSizeAs", CLng(val(reader.GetValue("DIRECTPLAY", "SystemBufferSizeAs", 65536)))
-     
+    
+    'Number of milliseconds DirectPlay should wait, since the last time it received a packet from an endpoint, before it sends a keep-alive message. You can catch the KeepAlive up to 2 times of what you specify.
+    mSettings.Add "DP_TimeoutUntilKeepAlive", CLng(val(reader.GetValue("DIRECTPLAY", "TimeoutUntilKeepAlive", 500)))
+    
+    'Number of connection retries DirectPlay should make during the connection process.
+    mSettings.Add "DP_ConnectRetries", CLng(val(reader.GetValue("DIRECTPLAY", "ConnectRetries", 20)))
+    
+    'Number of milliseconds DirectPlay should wait before it retries a connection request.
+    mSettings.Add "DP_ConnectTimeout", CLng(val(reader.GetValue("DIRECTPLAY", "ConnectTimeout", 500)))
+
+
     
 
     

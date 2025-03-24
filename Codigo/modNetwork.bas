@@ -448,11 +448,13 @@ On Error GoTo listen_err
         .guidApplication = AppGuid
         .lMaxPlayers = 800
         .SessionName = "vbArgentumServer"
-        .lFlags = DPNSESSION_CLIENT_SERVER 'We must pass the client server flags if we are a server
+        .lFlags = DPNSESSION_CLIENT_SERVER Or DPNSESSION_NODPNSVR
     End With
     
     'Now set up our address value
-    dpa.SetSP dps.GetServiceProvider(1).Guid
+    Dim sp As DPN_SERVICE_PROVIDER_INFO
+    sp = dps.GetServiceProvider(1)
+    dpa.SetSP sp.Guid
     
     Dim pInfo As DPN_PLAYER_INFO
     pInfo.Name = "server"
@@ -476,6 +478,15 @@ On Error GoTo listen_err
         .lFlags = 0
     End With
     dps.SetSPCaps DP8SP_TCPIP, scaps
+    
+    Dim svr_caps As DPN_CAPS
+    svr_caps = dps.GetCaps
+    With svr_caps
+        svr_caps.lTimeoutUntilKeepAlive = SvrConfig.GetValue("DP_TimeoutUntilKeepAlive")
+        svr_caps.lConnectRetries = SvrConfig.GetValue("DP_ConnectRetries")
+        svr_caps.lConnectTimeout = SvrConfig.GetValue("DP_ConnectTimeout")
+    End With
+    dps.SetCaps svr_caps
     
     gfStarted = True
     Exit Sub
