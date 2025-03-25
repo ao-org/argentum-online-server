@@ -57,7 +57,7 @@ On Error GoTo send_error
     Err.Clear
     Debug.Assert lOffset > 0 ' No data in the buffer?
     ReDim Preserve oMsg(0 To lOffset - 1)
-    dps.sendto idSend, oMsg, 0, DPNSEND_NOCOPY Or DPNSEND_PRIORITY_HIGH Or DPNSEND_NOLOOPBACK
+    dps.sendto idSend, oMsg, 0, DPNSEND_GUARANTEED Or DPNSEND_NOLOOPBACK
     Exit Sub
 send_error:
     'If there is an error, handle it
