@@ -101,6 +101,36 @@ ModicadorApuñalarClase_Err:
 
         
 End Function
+Private Function ModicadorApuñalarNPCMinClase(ByVal clase As e_Class) As Single
+        
+        On Error GoTo ModicadorApuñalarNPCMinClase
+        
+    
+100     ModicadorApuñalarNPCMinClase = ModClase(clase).ModApuñalarNPCMin
+
+        
+        Exit Function
+
+ModicadorApuñalarNPCMinClase:
+102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorApuñalarNPCMinClase", Erl)
+
+        
+End Function
+Private Function ModicadorApuñalarNPCMaxClase(ByVal clase As e_Class) As Single
+        
+        On Error GoTo ModicadorApuñalarNPCMaxClase
+        
+    
+100     ModicadorApuñalarNPCMaxClase = ModClase(clase).ModApuñalarNPCMax
+
+        
+        Exit Function
+
+ModicadorApuñalarNPCMaxClase:
+102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorApuñalarNPCMaxClase", Erl)
+
+        
+End Function
 
 Private Function ModicadorDañoClaseProyectiles(ByVal clase As e_Class) As Single
         
@@ -494,8 +524,11 @@ On Error GoTo UserDamageNpc_Err
 136         ElseIf PuedeApuñalar(UserIndex) Then
                 ' Si acertó - Doble chance contra NPCs
 138             If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex, NpcIndex) Then
-                    ' Daño del apuñalamiento
-                    DamageExtra = Damage * ModicadorApuñalarClase(UserList(UserIndex).clase)
+                    ' Daño del apuñalamiento (formula original)
+                    'DamageExtra = Damage * ModicadorApuñalarClase(UserList(UserIndex).clase)
+                    
+                    ' Daño del apuñalamiento (formula con valor oscilante en contra de NPCs)
+                    DamageExtra = Damage * (Rnd * (ModicadorApuñalarNPCMaxClase(UserList(UserIndex).clase) - ModicadorApuñalarNPCMinClase(UserList(UserIndex).clase)) + ModicadorApuñalarNPCMinClase(UserList(UserIndex).clase))
                     
                     ' Mostramos en consola el daño
 142                 If .ChatCombate = 1 Then

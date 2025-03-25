@@ -1768,6 +1768,8 @@ Public Type t_ModClase
     DañoProyectiles As Double
     DañoWrestling As Double
     ModApuñalar As Double
+    ModApuñalarNPCMin As Double
+    ModApuñalarNPCMax As Double
     Escudo As Double
     ManaInicial As Double
     AumentoSta As Integer
