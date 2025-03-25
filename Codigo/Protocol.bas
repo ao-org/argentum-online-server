@@ -9756,6 +9756,14 @@ Call WriteLocaleMsg(UserIndex, "1263", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             
+            'El personaje es nivel muy alto?
+            If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).LimitLevel > 0 Then 'Si el nivel limite es mayor a 0, por si no esta asignada la propiedad en quest.dat
+                If UserList(UserIndex).Stats.ELV > QuestList(NpcList(NpcIndex).QuestNumber(Indice)).LimitLevel Then
+                    Call WriteChatOverHead(UserIndex, "Tu nivel es demasiado alto para emprender esta misión.", NpcList(NpcIndex).Char.charindex, vbYellow)
+                    Exit Sub
+                End If
+            End If
+            
 130         If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredSkill.SkillType > 0 Then
 132             If UserList(UserIndex).Stats.UserSkills(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredSkill.SkillType) < QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredSkill.RequiredValue Then
 134                 Call WriteLocaleChatOverHead(UserIndex, MsgRequiredSkill, SkillsNames(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredSkill.SkillType), NpcList(NpcIndex).Char.charindex, vbYellow)
