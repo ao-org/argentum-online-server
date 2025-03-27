@@ -3880,7 +3880,7 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, _
 104     Call Writer.WriteInt16(QuestIndex)
 106     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
 108     Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
-        Call Writer.WriteInt8(QuestList(QuestIndex).LimitLevel)
+    
         'Enviamos la cantidad de npcs requeridos
 110     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredNPCs)
 
