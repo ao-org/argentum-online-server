@@ -230,9 +230,8 @@ Public Function GetMemberList() As Long()
             Dim i As Integer
             For i = 0 To MemberCount - 1
                 Members(i) = MemberList(i)
-                GetMemberList = Members
-                Exit Function
             Next i
+            GetMemberList = Members
         Else
 110         GetMemberList = MemberList
         End If
