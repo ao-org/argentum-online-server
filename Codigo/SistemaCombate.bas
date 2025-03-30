@@ -87,17 +87,39 @@ ModicadorDañoClaseArmas_Err:
 End Function
 
 Private Function ModicadorApuñalarClase(ByVal clase As e_Class) As Single
-        
         On Error GoTo ModicadorApuñalarClase_Err
+     ModicadorApuñalarClase = ModClase(clase).ModApunalar
+        Exit Function
+ModicadorApuñalarClase_Err:
+     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorApuñalarClase", Erl)
+End Function
+Private Function GetStabbingNPCMinForClass(ByVal clase As e_Class) As Single
+        
+        On Error GoTo GetStabbingNPCMinForClass
         
     
-100     ModicadorApuñalarClase = ModClase(clase).ModApuñalar
+     GetStabbingNPCMinForClass = ModClase(clase).ModStabbingNPCMin
 
         
         Exit Function
 
-ModicadorApuñalarClase_Err:
-102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorApuñalarClase", Erl)
+GetStabbingNPCMinForClass:
+     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingNPCMinForClass", Erl)
+
+        
+End Function
+Private Function GetStabbingNPCMaxForClass(ByVal clase As e_Class) As Single
+        
+        On Error GoTo GetStabbingNPCMaxForClass
+        
+    
+     GetStabbingNPCMaxForClass = ModClase(clase).ModStabbingNPCMax
+
+        
+        Exit Function
+
+GetStabbingNPCMaxForClass:
+     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingNPCMaxForClass", Erl)
 
         
 End Function
@@ -494,9 +516,12 @@ On Error GoTo UserDamageNpc_Err
 136         ElseIf PuedeApuñalar(UserIndex) Then
                 ' Si acertó - Doble chance contra NPCs
 138             If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex, NpcIndex) Then
-                    ' Daño del apuñalamiento
-                    DamageExtra = Damage * ModicadorApuñalarClase(UserList(UserIndex).clase)
-                    
+                    Dim min_stab_npc As Double
+                    Dim max_stab_npc As Double
+                    min_stab_npc = GetStabbingNPCMinForClass(UserList(UserIndex).clase)
+                    max_stab_npc = GetStabbingNPCMaxForClass(UserList(UserIndex).clase)
+                    ' Daño del apunalamiento (formula con valor oscilante en contra de NPCs)
+                    DamageExtra = Damage * (Rnd * (max_stab_npc - min_stab_npc) + min_stab_npc)
                     ' Mostramos en consola el daño
 142                 If .ChatCombate = 1 Then
 144                     Call WriteLocaleMsg(UserIndex, 212, e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(Damage) & "¬" & PonerPuntos(DamageExtra))
