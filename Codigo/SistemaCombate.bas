@@ -88,38 +88,38 @@ End Function
 
 Private Function ModicadorApuñalarClase(ByVal clase As e_Class) As Single
         On Error GoTo ModicadorApuñalarClase_Err
-100     ModicadorApuñalarClase = ModClase(clase).ModApuñalar
+100     ModicadorApuñalarClase = ModClase(clase).ModApunalar
         Exit Function
 ModicadorApuñalarClase_Err:
 102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorApuñalarClase", Erl)
 End Function
-Private Function GetStabbingMinForClass(ByVal clase As e_Class) As Single
+Private Function GetStabbingNPCMinForClass(ByVal clase As e_Class) As Single
         
-        On Error GoTo GetStabbingMinForClass
+        On Error GoTo GetStabbingNPCMinForClass
         
     
-100     GetStabbingMinForClass = ModClase(clase).ModStabbingNPCMin
+100     GetStabbingNPCMinForClass = ModClase(clase).ModStabbingNPCMin
 
         
         Exit Function
 
-GetStabbingMinForClass:
-102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingMinForClass", Erl)
+GetStabbingNPCMinForClass:
+102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingNPCMinForClass", Erl)
 
         
 End Function
-Private Function GetStabbingMaxForClass(ByVal clase As e_Class) As Single
+Private Function GetStabbingNPCMaxForClass(ByVal clase As e_Class) As Single
         
-        On Error GoTo GetStabbingMaxForClass
+        On Error GoTo GetStabbingNPCMaxForClass
         
     
-100     GetStabbingMaxForClass = ModClase(clase).ModStabbingNPCMax
+100     GetStabbingNPCMaxForClass = ModClase(clase).ModStabbingNPCMax
 
         
         Exit Function
 
-GetStabbingMaxForClass:
-102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingMaxForClass", Erl)
+GetStabbingNPCMaxForClass:
+102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingNPCMaxForClass", Erl)
 
         
 End Function
@@ -518,8 +518,8 @@ On Error GoTo UserDamageNpc_Err
 138             If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex, NpcIndex) Then
                     Dim min_stab_npc As Double
                     Dim max_stab_npc As Double
-                    min_stab_npc = GetStabbingMinForClass(UserList(UserIndex).clase)
-                    max_stab_npc = GetStabbingMaxForClass(UserList(UserIndex).clase)
+                    min_stab_npc = GetStabbingNPCMinForClass(UserList(UserIndex).clase)
+                    max_stab_npc = GetStabbingNPCMaxForClass(UserList(UserIndex).clase)
                     ' Daño del apunalamiento (formula con valor oscilante en contra de NPCs)
                     DamageExtra = Damage * (Rnd * (max_stab_npc - min_stab_npc) + min_stab_npc)
                     ' Mostramos en consola el daño
