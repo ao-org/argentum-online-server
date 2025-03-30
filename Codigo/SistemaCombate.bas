@@ -88,23 +88,23 @@ End Function
 
 Private Function ModicadorApuñalarClase(ByVal clase As e_Class) As Single
         On Error GoTo ModicadorApuñalarClase_Err
-100     ModicadorApuñalarClase = ModClase(clase).ModApunalar
+     ModicadorApuñalarClase = ModClase(clase).ModApunalar
         Exit Function
 ModicadorApuñalarClase_Err:
-102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorApuñalarClase", Erl)
+     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorApuñalarClase", Erl)
 End Function
 Private Function GetStabbingNPCMinForClass(ByVal clase As e_Class) As Single
         
         On Error GoTo GetStabbingNPCMinForClass
         
     
-100     GetStabbingNPCMinForClass = ModClase(clase).ModStabbingNPCMin
+     GetStabbingNPCMinForClass = ModClase(clase).ModStabbingNPCMin
 
         
         Exit Function
 
 GetStabbingNPCMinForClass:
-102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingNPCMinForClass", Erl)
+     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingNPCMinForClass", Erl)
 
         
 End Function
@@ -113,13 +113,13 @@ Private Function GetStabbingNPCMaxForClass(ByVal clase As e_Class) As Single
         On Error GoTo GetStabbingNPCMaxForClass
         
     
-100     GetStabbingNPCMaxForClass = ModClase(clase).ModStabbingNPCMax
+     GetStabbingNPCMaxForClass = ModClase(clase).ModStabbingNPCMax
 
         
         Exit Function
 
 GetStabbingNPCMaxForClass:
-102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingNPCMaxForClass", Erl)
+     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingNPCMaxForClass", Erl)
 
         
 End Function
