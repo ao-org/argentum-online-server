@@ -1585,6 +1585,16 @@ Call WriteLocaleMsg(AttackerIndex, "1050", e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
         
+        'Admins y GMs no pueden ser atacados
+        rank = e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero
+
+        If (UserList(VictimIndex).flags.Privilegios And rank) > (UserList(attackerIndex).flags.Privilegios And rank) Then
+            'Msg1053= El ser es demasiado poderoso
+            Call WriteLocaleMsg(attackerIndex, "1053", e_FontTypeNames.FONTTYPE_WARNING)
+            PuedeAtacar = False
+            Exit Function
+        End If
+        
         'Estamos en una Arena? o un trigger zona segura?
 144     T = TriggerZonaPelea(AttackerIndex, VictimIndex)
 
@@ -1597,32 +1607,12 @@ Call WriteLocaleMsg(AttackerIndex, "1050", e_FontTypeNames.FONTTYPE_INFO)
 150     ElseIf T = e_Trigger6.TRIGGER6_PROHIBE Then
 152         PuedeAtacar = False
             Exit Function
-154     ElseIf T = e_Trigger6.TRIGGER6_AUSENTE Then
-
-            'Si no estamos en el Trigger 6 entonces es imposible atacar un gm
-            ' If Not UserList(VictimIndex).flags.Privilegios And e_PlayerType.User Then
-                'Msg1052= El ser es demasiado poderoso
-                Call WriteLocaleMsg(attackerIndex, "1052", e_FontTypeNames.FONTTYPE_WARNING)
-            ' PuedeAtacar = False
-            '    Exit Function
-            ' End If
         End If
         
         'Solo administradores pueden atacar a usuarios (PARA TESTING)
 156     If (UserList(AttackerIndex).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin)) = 0 Then
 158         PuedeAtacar = False
             Exit Function
-        End If
-        
-        'Estas queriendo atacar a un GM?
-160     rank = e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero
-
-162     If (UserList(VictimIndex).flags.Privilegios And rank) > (UserList(AttackerIndex).flags.Privilegios And rank) Then
-            'Msg1053= El ser es demasiado poderoso
-            Call WriteLocaleMsg(attackerIndex, "1053", e_FontTypeNames.FONTTYPE_WARNING)
-166         PuedeAtacar = False
-            Exit Function
-
         End If
         
         ' Seguro Clan
