@@ -463,6 +463,11 @@ Public Sub HandleGoNearby(ByVal UserIndex As Integer)
 122                         For x = UserList(tUser.ArrayIndex).pos.x - i To UserList(tUser.ArrayIndex).pos.x + i
 124                             For y = UserList(tUser.ArrayIndex).pos.y - i To UserList(tUser.ArrayIndex).pos.y + i
 126                                 If MapData(UserList(tUser.ArrayIndex).pos.map, x, y).userIndex = 0 Then
+                                        If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios)) And MapInfo(UserList(tUser.ArrayIndex).pos.Map).Seguro = 0 Then
+                                            ' Msg1319=No puedes ir en este momento al Usuario esta en zona insegura. Intenta mas tarde, puedes responderle con un mensaje.
+                                            Call WriteLocaleMsg(UserIndex, "1319", e_FontTypeNames.FONTTYPE_INFO)
+                                            Exit Sub
+                                        End If
 128                                     If LegalPos(UserList(tUser.ArrayIndex).pos.map, x, y, True, True) Then
 130                                         Call WriteConsoleMsg(userIndex, "Te teletransportaste cerca de " & UserList(tUser.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
 132                                         Call WarpUserChar(userIndex, UserList(tUser.ArrayIndex).pos.map, x, y, True)
