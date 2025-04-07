@@ -1535,9 +1535,19 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
             Exit Sub
         End If
 
-110     If UserList(UserIndex).ChatCombate = 1 Then
-112         Call SendData(SendTarget.ToGuildMembers, UserList(UserIndex).GuildIndex, PrepareMessageConsoleMsg("Clan> El clan ha ganado " & ExpDar & " puntos de experiencia.", e_FontTypeNames.FONTTYPE_GUILD))
-        End If
+        Dim memberIndex As Byte
+        memberIndex = modGuilds.m_Iterador_ProximoUserIndex(UserList(UserIndex).GuildIndex)
+        
+        While memberIndex > 0
+            If UserList(memberIndex).ConnectionDetails.ConnIDValida Then
+                If UserList(memberIndex).ChatCombate = 1 Then
+                    Call SendData(SendTarget.ToIndex, memberIndex, PrepareMessageConsoleMsg("Clan> El clan ha ganado " & ExpDar & " puntos de experiencia.", e_FontTypeNames.FONTTYPE_GUILD))
+                End If
+            End If
+        
+            memberIndex = modGuilds.m_Iterador_ProximoUserIndex(UserList(UserIndex).GuildIndex)
+        Wend
+
 114     ExpActual = ExpActual + ExpDar
 
 116     If ExpActual >= ExpNecesaria Then
