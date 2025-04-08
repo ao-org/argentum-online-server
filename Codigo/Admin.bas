@@ -393,7 +393,7 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
 
 110     Call Baneos.Add(tBan)
 112     Call SaveBan(Baneos.Count)
-114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & nombre & " fue baneado por " & Causa & " durante los próximos " & dias & " días. La medida fue tomada por: " & Baneador, e_FontTypeNames.FONTTYPE_SERVER))
+114     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg("Servidor » " & nombre & " fue baneado por " & Causa & " durante los próximos " & dias & " días. La medida fue tomada por: " & Baneador, e_FontTypeNames.FONTTYPE_SERVER))
 
         
         Exit Sub

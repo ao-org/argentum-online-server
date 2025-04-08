@@ -106,7 +106,7 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef R
 112     Call LogBanFromName(UserName, BannerIndex, Razon)
 
         ' Le buchoneamos al mundo.
-114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).name & " ha baneado a " & username & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
+114     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).name & " ha baneado a " & username & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
 
         ' Si estaba online, lo echamos.
 116     Dim tUser As t_UserReference: tUser = NameIndex(username)
@@ -141,7 +141,7 @@ Public Sub BanPJWithoutGM(ByVal UserName As String, ByRef Razon As String)
 100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", username, "BannedBy", "Ban automático (Posible BOT).")
         Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", UserName, "Reason", Razon)
         ' Le buchoneamos al mundo.
-114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Ha baneado a " & username & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
+114     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg("Servidor » Ha baneado a " & username & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
 
         ' Si estaba online, lo echamos.
 116     Dim tUser As t_UserReference: tUser = NameIndex(username)
@@ -176,7 +176,7 @@ Public Sub BanearCuenta(ByVal BannerIndex As Integer, ByVal UserName As String, 
 112     Call SaveBanCuentaDatabase(CuentaID, Reason, UserList(BannerIndex).Name)
 
         ' Le buchoneamos al mundo.
-114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).name & " ha baneado la cuenta de " & username & " debido a: " & Reason & ".", e_FontTypeNames.FONTTYPE_SERVER))
+114     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).name & " ha baneado la cuenta de " & username & " debido a: " & Reason & ".", e_FontTypeNames.FONTTYPE_SERVER))
 
         ' Registramos el baneo en los logs.
 116     Call LogGM(UserList(BannerIndex).name, "Baneó la cuenta de " & username & " por: " & Reason)

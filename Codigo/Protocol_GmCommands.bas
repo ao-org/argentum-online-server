@@ -2135,7 +2135,7 @@ Public Sub HandleKick(ByVal UserIndex As Integer)
 116                     ' Msg558=No podes echar a alguien con jerarquia mayor a la tuya.
                         Call WriteLocaleMsg(UserIndex, "558", e_FontTypeNames.FONTTYPE_INFO)
                     Else
-118                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " echo a " & username & ".", e_FontTypeNames.FONTTYPE_INFO))
+118                     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(.name & " echo a " & username & ".", e_FontTypeNames.FONTTYPE_INFO))
 120                     Call CloseSocket(tUser.ArrayIndex)
 122                     Call LogGM(.name, "Echo a " & username)
                     End If
@@ -4286,7 +4286,7 @@ Public Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
         
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 116             If DesbanearCuenta(UserIndex, UserNameOEmail) Then
-118                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & .name & " ha desbaneado la cuenta de " & UserNameOEmail & ".", e_FontTypeNames.FONTTYPE_SERVER))
+118                 Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg("Servidor » " & .name & " ha desbaneado la cuenta de " & UserNameOEmail & ".", e_FontTypeNames.FONTTYPE_SERVER))
                 Else
                     ' Msg556=No se ha podido desbanear la cuenta.
                     Call WriteLocaleMsg(UserIndex, "556", e_FontTypeNames.FONTTYPE_INFO)
