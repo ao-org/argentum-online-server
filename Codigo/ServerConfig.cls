@@ -111,6 +111,10 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "FISHING_REQUIRED_PERCENT", CInt(val(reader.GetValue("PESCA", "MinAgua")))
     mSettings.Add "FISHING_TILES_ON_MAP", CInt(val(reader.GetValue("PESCA", "MaxZonas")))
     mSettings.Add "FISHING_POOL_ID", CInt(val(reader.GetValue("PESCA", "FishingID")))
+    mSettings.Add "FISHING_MAP_SPECIAL_FISH1_ID", CInt(val(reader.GetValue("PESCA", "FishingMapSpecialFishID")))
+    mSettings.Add "FISHING_SPECIALFISH1_ID", CInt(val(reader.GetValue("PESCA", "UniqueMapfish")))
+    mSettings.Add "FISHING_SPECIALFISH1_REMPLAZO_ID", CInt(val(reader.GetValue("PESCA", "ReplacementSpecialFish")))
+    mSettings.Add "NPC_WATCHMAN_ID", CInt(val(reader.GetValue("PESCA", "NPCFishingWatcher")))
 
     Set reader = Nothing
     
