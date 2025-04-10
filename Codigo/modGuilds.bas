@@ -1517,48 +1517,54 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
         
         On Error GoTo CheckClanExp_Err
         
-
         Dim ExpActual    As Integer
-
         Dim ExpNecesaria As Integer
-
         Dim GI           As Integer
-
         Dim nivel        As Byte
-
-100     GI = UserList(UserIndex).GuildIndex
-102     ExpActual = guilds(GI).GetExpActual
-104     nivel = guilds(GI).GetNivelDeClan
-106     ExpNecesaria = GetRequiredExpForGuildLevel(nivel)
-
-108     If nivel >= 6 Then
-            Exit Sub
-        End If
-
-110     If UserList(UserIndex).ChatCombate = 1 Then
-112         Call SendData(SendTarget.ToGuildMembers, UserList(UserIndex).GuildIndex, PrepareMessageConsoleMsg("Clan> El clan ha ganado " & ExpDar & " puntos de experiencia.", e_FontTypeNames.FONTTYPE_GUILD))
-        End If
-114     ExpActual = ExpActual + ExpDar
-
-116     If ExpActual >= ExpNecesaria Then
-            'Checkea otra vez, esto sucede si tiene mas EXP y puede saltarse el maximo
-            'nivel
-118         If nivel >= 6 Then
-120             ExpActual = 0
-122             ExpNecesaria = 0
+        
+        With UserList(UserIndex)
+100         GI = .GuildIndex
+102         ExpActual = guilds(GI).GetExpActual
+104         nivel = guilds(GI).GetNivelDeClan
+106         ExpNecesaria = GetRequiredExpForGuildLevel(nivel)
+    
+108         If nivel >= 6 Then
                 Exit Sub
             End If
 
-124         Call SendData(SendTarget.ToGuildMembers, UserList(UserIndex).GuildIndex, PrepareMessagePlayWave(SND_NIVEL, NO_3D_SOUND, NO_3D_SOUND))
-126         ExpActual = ExpActual - ExpNecesaria
-128         nivel = nivel + 1
-130         Call SendData(SendTarget.ToGuildMembers, UserList(UserIndex).GuildIndex, PrepareMessageConsoleMsg("Clan> El clan ha subido a nivel " & nivel & ". Nuevos beneficios disponibles.", e_FontTypeNames.FONTTYPE_GUILD))
+            Dim MemberIndex As Byte
+            MemberIndex = modGuilds.m_Iterador_ProximoUserIndex(.GuildIndex)
+            
+            While MemberIndex > 0
+                If UserList(MemberIndex).ConnectionDetails.ConnIDValida Then
+                    If UserList(MemberIndex).ChatCombate = 1 Then
+                        Call SendData(SendTarget.ToIndex, MemberIndex, PrepareMessageConsoleMsg("Clan> El clan ha ganado " & ExpDar & " puntos de experiencia.", e_FontTypeNames.FONTTYPE_GUILD))
+                    End If
+                End If
+            
+                MemberIndex = modGuilds.m_Iterador_ProximoUserIndex(.GuildIndex)
+            Wend
+114         ExpActual = ExpActual + ExpDar
     
-132         If nivel > 5 Then
-146             ExpActual = 0
+116         If ExpActual >= ExpNecesaria Then
+                'Checkea otra vez, esto sucede si tiene mas EXP y puede saltarse el maximo
+                'nivel
+118             If nivel >= 6 Then
+120                 ExpActual = 0
+122                 ExpNecesaria = 0
+                    Exit Sub
+                End If
+    
+124             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave(SND_NIVEL, NO_3D_SOUND, NO_3D_SOUND))
+126             ExpActual = ExpActual - ExpNecesaria
+128             nivel = nivel + 1
+130             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> El clan ha subido a nivel " & nivel & ". Nuevos beneficios disponibles.", e_FontTypeNames.FONTTYPE_GUILD))
+        
+132             If nivel > 5 Then
+146                 ExpActual = 0
+                End If
             End If
-        End If
-
+        End With
 150     guilds(GI).SetExpActual (ExpActual)
 152     guilds(GI).SetNivelDeClan (nivel)
         Exit Sub
