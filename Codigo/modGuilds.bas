@@ -1542,7 +1542,7 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
                     End If
                 End If
             
-                MemberIndex = modGuilds.m_Iterador_ProximoUserIndex(UserList(UserIndex).GuildIndex)
+                MemberIndex = modGuilds.m_Iterador_ProximoUserIndex(.GuildIndex)
             Wend
 114         ExpActual = ExpActual + ExpDar
     
