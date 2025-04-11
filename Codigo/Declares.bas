@@ -1567,6 +1567,7 @@ Public Type t_ObjData
     CreaWav As Integer
     
     MinELV As Byte
+    MaxLEV As Byte
     SkillIndex As Byte     ' El indice de Skill para equipar el item
     SkillRequerido As Byte ' El valor MINIMO requerido de skillIndex para equipar el item
     InstrumentoRequerido As Integer

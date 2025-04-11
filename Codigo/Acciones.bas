@@ -44,46 +44,52 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer, Option
         Dim Msg As String, i As Long
      Objeto = ObjData(ObjIndex)
                 
-     If EsGM(UserIndex) Then
-         PuedeUsarObjeto = 0
-         Msg = ""
-
-     ElseIf Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
-         PuedeUsarObjeto = 7
-         Msg = "Solo los newbies pueden usar este objeto."
-            
-     ElseIf UserList(UserIndex).Stats.ELV < Objeto.MinELV Then
-         PuedeUsarObjeto = 6
-         Msg = "Necesitas ser nivel " & Objeto.MinELV & " para usar este objeto."
-
-     ElseIf Not FaccionPuedeUsarItem(userindex, ObjIndex) And JerarquiaPuedeUsarItem(userindex, ObjIndex) Then
-         PuedeUsarObjeto = 3
-         Msg = "Tu facción no te permite utilizarlo."
-
-     ElseIf Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-         PuedeUsarObjeto = 2
-         Msg = "Tu clase no puede utilizar este objeto."
-
-     ElseIf Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
-         PuedeUsarObjeto = 1
-         Msg = "Tu sexo no puede utilizar este objeto."
-
-     ElseIf Not RazaPuedeUsarItem(UserIndex, ObjIndex) Then
-         PuedeUsarObjeto = 5
-         Msg = "Tu raza no puede utilizar este objeto."
-     ElseIf (Objeto.SkillIndex > 0) Then
-         If (UserList(UserIndex).Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
-             PuedeUsarObjeto = 4
-             Msg = "Necesitas " & Objeto.SkillRequerido & " puntos en " & SkillsNames(Objeto.SkillIndex) & " para usar este item."
+     With UserList(UserIndex)
+     
+         If EsGM(UserIndex) Then
+             PuedeUsarObjeto = 0
+             Msg = ""
+    
+         ElseIf Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
+             PuedeUsarObjeto = 7
+             Msg = "Solo los newbies pueden usar este objeto."
+                
+         ElseIf .Stats.ELV < Objeto.MinELV Then
+             PuedeUsarObjeto = 6
+             Msg = "Necesitas ser nivel " & Objeto.MinELV & " para usar este objeto."
+             
+         ElseIf .Stats.ELV > Objeto.MaxLEV And Objeto.MaxLEV > 0 Then
+             PuedeUsarObjeto = 6
+             Msg = "Este objeto no puede ser utilizado por personajes de nivel " & Objeto.MaxLEV & " o superior."
+     
+         ElseIf Not FaccionPuedeUsarItem(UserIndex, ObjIndex) And JerarquiaPuedeUsarItem(UserIndex, ObjIndex) Then
+             PuedeUsarObjeto = 3
+             Msg = "Tu facción no te permite utilizarlo."
+    
+         ElseIf Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+             PuedeUsarObjeto = 2
+             Msg = "Tu clase no puede utilizar este objeto."
+    
+         ElseIf Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
+             PuedeUsarObjeto = 1
+             Msg = "Tu sexo no puede utilizar este objeto."
+    
+         ElseIf Not RazaPuedeUsarItem(UserIndex, ObjIndex) Then
+             PuedeUsarObjeto = 5
+             Msg = "Tu raza no puede utilizar este objeto."
+         ElseIf (Objeto.SkillIndex > 0) Then
+             If (.Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
+                 PuedeUsarObjeto = 4
+                 Msg = "Necesitas " & Objeto.SkillRequerido & " puntos en " & SkillsNames(Objeto.SkillIndex) & " para usar este item."
+                Else
+                 PuedeUsarObjeto = 0
+                 Msg = ""
+                End If
             Else
              PuedeUsarObjeto = 0
              Msg = ""
             End If
-        Else
-         PuedeUsarObjeto = 0
-         Msg = ""
-        End If
-
+    End With
      If writeInConsole And Msg <> "" Then Call WriteConsoleMsg(UserIndex, Msg, e_FontTypeNames.FONTTYPE_INFO)
 
         Exit Function

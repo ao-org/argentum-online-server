@@ -1818,6 +1818,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 Exit Sub
     
             End If
+            
+            If .Stats.ELV > obj.MaxLEV And obj.MaxLEV > 0 Then
+                Call WriteConsoleMsg(UserIndex, "Este objeto no puede ser utilizado por personajes de nivel " & obj.MaxLEV & " o superior.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
     
 134         ObjIndex = .Invent.Object(Slot).ObjIndex
 136         .flags.TargetObjInvIndex = ObjIndex
