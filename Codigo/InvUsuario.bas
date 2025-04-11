@@ -672,6 +672,15 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
         Dim Y    As Integer
 
         Dim Slot As Integer
+        
+        If MiObj.ObjIndex = SvrConfig.GetValue("OBJ_QUEST1_ID") Then
+            If Slot <= 0 Then
+               Call WriteLocaleMsg(UserIndex, MsgInventoryIsFull, e_FontTypeNames.FONTTYPE_FIGHT)
+               MeterItemEnInventario = False
+               Exit Function
+            End If
+        End If
+        
         If MiObj.ObjIndex = 12 Then
             UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + MiObj.amount
             MeterItemEnInventario = True
