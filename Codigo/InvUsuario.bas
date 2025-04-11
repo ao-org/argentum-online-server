@@ -672,6 +672,8 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
         Dim Y    As Integer
 
         Dim Slot As Integer
+        
+       
         If MiObj.ObjIndex = 12 Then
             UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + MiObj.amount
             MeterItemEnInventario = True

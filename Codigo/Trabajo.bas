@@ -2208,9 +2208,12 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
 126             MiObj.ObjIndex = ObtenerPezRandom(ObjData(.invent.HerramientaEqpObjIndex).Power)
 127             objValue = max(ObjData(MiObj.ObjIndex).Valor / 3, 1)
                 'si esta macreando y para que esten mas atentos les mando un NPC
-                If MiObj.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH1_ID") And (UserList(UserIndex).pos.Map) <> SvrConfig.GetValue("FISHING_MAP_SPECIAL_FISH1_ID") Then
+                If MiObj.ObjIndex = (SvrConfig.GetValue("FISHING_SPECIALFISH1_ID") Or MiObj.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH2_ID")) And (UserList(UserIndex).pos.Map) <> SvrConfig.GetValue("FISHING_MAP_SPECIAL_FISH1_ID") Then
                     MiObj.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH1_REMPLAZO_ID")
                     If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Then NpcIndex = SpawnNpc(SvrConfig.GetValue("NPC_WATCHMAN_ID"), .pos, True, False)
+                    Call HandleRomperCania(UserIndex)
+                    Call WriteLocaleMsg(UserIndex, "1320", e_FontTypeNames.FONTTYPE_INFO)
+                    
                 End If
                 
 128             MiObj.amount = Round(Reward / objValue)
@@ -2244,8 +2247,6 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
                 End If
 
                 ' Verifico si el pescado es especial o no
-                If Not RedDePesca Then
-                    esEspecial = False
 
                     For i = 1 To UBound(PecesEspeciales)
 
@@ -2256,14 +2257,13 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
 
                     Next i
 
-                End If
 
                 ' Si no es especial, actualizo el UserIndex
                 If Not esEspecial Then
                     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
                     ' Si es especial, corto el macro y activo el minijuego
                     ' Solo aplica a cañas, no a red de pesca
-                ElseIf Not RedDePesca Then
+                Else
                     .flags.PescandoEspecial = True
 156                 Call WriteMacroTrabajoToggle(UserIndex, False)
                     .Stats.NumObj_PezEspecial = MiObj.ObjIndex
@@ -2274,10 +2274,9 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
 
 158             If MiObj.ObjIndex = 0 Then Exit Sub
 
-                ' Si no entra en el inventario se cae al piso
+                ' Si no entra en el inventario dejo de pescar
 160             If Not MeterItemEnInventario(UserIndex, MiObj) Then
-162                 Call TirarItemAlPiso(.pos, MiObj)
-
+                    StopWorking = True
                 End If
 
 164             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)
