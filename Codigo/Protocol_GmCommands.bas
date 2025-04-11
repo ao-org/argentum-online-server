@@ -2334,7 +2334,7 @@ Call WriteLocaleMsg(tUser.ArrayIndex, "969", e_FontTypeNames.FONTTYPE_INFO)
 148             Call WarpToLegalPos(tUser.ArrayIndex, .pos.map, .pos.x, .pos.y + 1, True, True)
                 Call WriteConsoleMsg(UserIndex, "Has traído a " & UserList(tUser.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
 152             Call LogGM(.name, "/SUM " & username & " Map:" & .Pos.map & " X:" & .Pos.X & " Y:" & .Pos.y)
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " ha trasladado al usuario ''" & UserList(tUser.ArrayIndex).name & "'' al Mapa " & .pos.Map, e_FontTypeNames.FONTTYPE_INFO))
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " ha trasladado al usuario " & username & " al Mapa " & .pos.Map, e_FontTypeNames.FONTTYPE_INFO))
             End If
         Else
 154             'Msg528=Servidor » Comando deshabilitado para tu cargo.
