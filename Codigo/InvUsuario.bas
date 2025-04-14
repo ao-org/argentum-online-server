@@ -28,17 +28,6 @@ Attribute VB_Name = "InvUsuario"
 
 Option Explicit
 
-Public Function get_max_items_inventory(ByVal user_type As e_TipoUsuario) As Integer
-    ' Determine inventory slots based on user type
-    Select Case user_type
-            Case tLeyenda
-                get_max_items_inventory = MAX_INVENTORY_SLOTS
-            Case tHeroe
-                get_max_items_inventory = MAX_USERINVENTORY_HERO_SLOTS
-            Case Else
-                get_max_items_inventory = MAX_USERINVENTORY_SLOTS
-    End Select
-End Function
 
 Public Function IsObjecIndextInInventory(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Boolean
 On Error GoTo IsObjecIndextInInventory_Err
@@ -49,7 +38,7 @@ On Error GoTo IsObjecIndextInInventory_Err
     Dim maxItemsInventory As Integer
     Dim currentObjIndex As Integer
     With UserList(UserIndex)
-        maxItemsInventory = get_max_items_inventory(.Stats.tipoUsuario)
+        maxItemsInventory = get_num_inv_slots_from_tier(.Stats.tipoUsuario)
         ' Search inventory for the object
         For i = 1 To maxItemsInventory
             currentObjIndex = .invent.Object(i).ObjIndex
@@ -73,7 +62,7 @@ On Error GoTo get_object_amount_from_inventory_Err
     Dim i As Integer
     Dim maxItemsInventory As Integer
     With UserList(user_index)
-        maxItemsInventory = get_max_items_inventory(.Stats.tipoUsuario)
+        maxItemsInventory = get_num_inv_slots_from_tier(.Stats.tipoUsuario)
         ' Search inventory for the object
         For i = 1 To maxItemsInventory
             If .invent.Object(i).ObjIndex = obj_index Then
@@ -272,55 +261,42 @@ QuitarNewbieObj_Err:
 End Sub
 
 Sub LimpiarInventario(ByVal UserIndex As Integer)
-        
-        On Error GoTo LimpiarInventario_Err
-        
-
+On Error GoTo LimpiarInventario_Err
         Dim j As Integer
-
-        If UserList(UserIndex).CurrentInventorySlots > 0 Then
-100         For j = 1 To UserList(UserIndex).CurrentInventorySlots
-102             UserList(UserIndex).Invent.Object(j).ObjIndex = 0
-104             UserList(UserIndex).Invent.Object(j).amount = 0
-106             UserList(UserIndex).Invent.Object(j).Equipped = 0
-            Next
-        End If
-
-108     UserList(UserIndex).Invent.NroItems = 0
-
-110     UserList(UserIndex).Invent.ArmourEqpObjIndex = 0
-112     UserList(UserIndex).Invent.ArmourEqpSlot = 0
-
-114     UserList(UserIndex).Invent.WeaponEqpObjIndex = 0
-116     UserList(UserIndex).Invent.WeaponEqpSlot = 0
-
-118     UserList(UserIndex).Invent.HerramientaEqpObjIndex = 0
-120     UserList(UserIndex).Invent.HerramientaEqpSlot = 0
-
-122     UserList(UserIndex).Invent.CascoEqpObjIndex = 0
-124     UserList(UserIndex).Invent.CascoEqpSlot = 0
-
-126     UserList(UserIndex).Invent.EscudoEqpObjIndex = 0
-128     UserList(UserIndex).Invent.EscudoEqpSlot = 0
-
-130     UserList(UserIndex).invent.DañoMagicoEqpObjIndex = 0
-132     UserList(UserIndex).invent.DañoMagicoEqpSlot = 0
-
-134     UserList(UserIndex).Invent.ResistenciaEqpObjIndex = 0
-136     UserList(UserIndex).Invent.ResistenciaEqpSlot = 0
-
-142     UserList(UserIndex).Invent.MunicionEqpObjIndex = 0
-144     UserList(UserIndex).Invent.MunicionEqpSlot = 0
-
-146     UserList(UserIndex).Invent.BarcoObjIndex = 0
-148     UserList(UserIndex).Invent.BarcoSlot = 0
-
-150     UserList(UserIndex).Invent.MonturaObjIndex = 0
-152     UserList(UserIndex).Invent.MonturaSlot = 0
-
-154     UserList(UserIndex).Invent.MagicoObjIndex = 0
-156     UserList(UserIndex).Invent.MagicoSlot = 0
-
+        With UserList(UserIndex)
+            If .CurrentInventorySlots > 0 Then
+                 For j = 1 To .CurrentInventorySlots
+                    If j > 0 And j <= UBound(.invent.Object) Then 'Make sure the slot is valid
+                         .invent.Object(j).ObjIndex = 0
+                         .invent.Object(j).amount = 0
+                         .invent.Object(j).Equipped = 0
+                    End If
+                Next
+            End If
+            .invent.NroItems = 0
+            .invent.ArmourEqpObjIndex = 0
+            .invent.ArmourEqpSlot = 0
+            .invent.WeaponEqpObjIndex = 0
+            .invent.WeaponEqpSlot = 0
+            .invent.HerramientaEqpObjIndex = 0
+            .invent.HerramientaEqpSlot = 0
+            .invent.CascoEqpObjIndex = 0
+            .invent.CascoEqpSlot = 0
+            .invent.EscudoEqpObjIndex = 0
+            .invent.EscudoEqpSlot = 0
+            .invent.DañoMagicoEqpObjIndex = 0
+            .invent.DañoMagicoEqpSlot = 0
+            .invent.ResistenciaEqpObjIndex = 0
+            .invent.ResistenciaEqpSlot = 0
+            .invent.MunicionEqpObjIndex = 0
+            .invent.MunicionEqpSlot = 0
+            .invent.BarcoObjIndex = 0
+            .invent.BarcoSlot = 0
+            .invent.MonturaObjIndex = 0
+            .invent.MonturaSlot = 0
+            .invent.MagicoObjIndex = 0
+            .invent.MagicoSlot = 0
+        End With
         
         Exit Sub
 
@@ -457,12 +433,9 @@ QuitarUserInvItem_Err:
 End Sub
 
 Public Sub UpdateUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal Slot As Byte)
-        
-        On Error GoTo UpdateUserInv_Err
-        
+ On Error GoTo UpdateUserInv_Err
 
         Dim NullObj As t_UserOBJ
-
         Dim LoopC   As Byte
 
         'Actualiza un solo slot
@@ -482,10 +455,12 @@ Public Sub UpdateUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer,
             If UserList(UserIndex).CurrentInventorySlots > 0 Then
 108             For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
                     'Actualiza el inventario
-110                 If UserList(UserIndex).Invent.Object(LoopC).ObjIndex > 0 Then
-112                     Call ChangeUserInv(UserIndex, LoopC, UserList(UserIndex).Invent.Object(LoopC))
-                    Else
-114                     Call ChangeUserInv(UserIndex, LoopC, NullObj)
+                    If LoopC > 0 And LoopC <= UBound(UserList(UserIndex).invent.Object) Then 'Make sure the slot is valid
+                      If UserList(UserIndex).invent.Object(LoopC).ObjIndex > 0 Then
+                         Call ChangeUserInv(UserIndex, LoopC, UserList(UserIndex).invent.Object(LoopC))
+                      Else
+                         Call ChangeUserInv(UserIndex, LoopC, NullObj)
+                      End If
                     End If
 116             Next LoopC
             End If
@@ -2645,23 +2620,7 @@ Call WriteLocaleMsg(UserIndex, "889", e_FontTypeNames.FONTTYPE_INFOIAO)
 Call WriteLocaleMsg(UserIndex, "890", e_FontTypeNames.FONTTYPE_INFOIAO)
 942                         Call QuitarUserInvItem(UserIndex, Slot, 1)
     
-                        ' Mochila
-944                     Case 20
-                    
-946                         If .Stats.InventLevel < INVENTORY_EXTRA_ROWS Then
-948                             .Stats.InventLevel = .Stats.InventLevel + 1
-950                             .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
-952                             Call WriteInventoryUnlockSlots(UserIndex)
-'Msg891= Has aumentado el espacio de tu inventario!
-Call WriteLocaleMsg(UserIndex, "891", e_FontTypeNames.FONTTYPE_INFO)
-956                             Call QuitarUserInvItem(UserIndex, Slot, 1)
-                            Else
-'Msg892= Ya has desbloqueado todos los casilleros disponibles.
-Call WriteLocaleMsg(UserIndex, "892", e_FontTypeNames.FONTTYPE_INFO)
-                                Exit Sub
-    
-                            End If
-                            
+                           
                         ' Poción negra (suicidio)
 960                     Case 21
                             'Quitamos del inv el item

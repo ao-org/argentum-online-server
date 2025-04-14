@@ -799,7 +799,7 @@ On Error GoTo Complete_ConnectUser_Err
 
 
 1135        ElseIf .Stats.ELV < 14 Then
-1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .Name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & get_map_name(.pos.Map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & get_map_name(.pos.Map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
 
              End If
 
@@ -2913,29 +2913,14 @@ VolverCiudadano_Err:
 End Sub
 
 Public Function getMaxInventorySlots(ByVal UserIndex As Integer) As Byte
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 30/09/2020
-        '
-        '***************************************************
-        
-        On Error GoTo getMaxInventorySlots_Err
-        
-
-100     If UserList(UserIndex).Stats.InventLevel > 0 Then
-102         getMaxInventorySlots = MAX_USERINVENTORY_SLOTS + UserList(UserIndex).Stats.InventLevel * SLOTS_PER_ROW_INVENTORY
-        Else
-104         getMaxInventorySlots = MAX_USERINVENTORY_SLOTS
-
-        End If
-
-        
-        Exit Function
-
+On Error GoTo getMaxInventorySlots_Err
+    getMaxInventorySlots = MAX_USERINVENTORY_SLOTS
+    With UserList(UserIndex)
+        getMaxInventorySlots = get_num_inv_slots_from_tier(.Stats.tipoUsuario)
+    End With
+    Exit Function
 getMaxInventorySlots_Err:
-106     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.getMaxInventorySlots", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "UsUaRiOs.getMaxInventorySlots", Erl)
 End Function
 
 Private Sub WarpMascotas(ByVal UserIndex As Integer)
@@ -3580,10 +3565,10 @@ On Error GoTo DoDamageOrHeal_Err
         DamageStr = PonerPuntos(Math.Abs(Amount))
         If SourceType = eUser Then
             If UserList(SourceIndex).ChatCombate = 1 And DoDamageText > 0 Then
-                Call WriteLocaleMsg(SourceIndex, DoDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).Name & "¬" & DamageStr)
+                Call WriteLocaleMsg(SourceIndex, DoDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).name & "¬" & DamageStr)
             End If
             If UserList(UserIndex).ChatCombate = 1 And GotDamageText > 0 Then
-                Call WriteLocaleMsg(UserIndex, GotDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(SourceIndex).Name & "¬" & DamageStr)
+                Call WriteLocaleMsg(UserIndex, GotDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(SourceIndex).name & "¬" & DamageStr)
             End If
         End If
         amount = EffectsOverTime.TargetApplyDamageReduction(UserList(UserIndex).EffectOverTime, amount, SourceIndex, SourceType, DamageSourceType)

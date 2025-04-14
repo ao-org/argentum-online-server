@@ -1925,24 +1925,27 @@ WriteWorkRequestTarget_Err:
         '</EhFooter>
 End Sub
 
-' Writes the "InventoryUnlockSlots" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteInventoryUnlockSlots(ByVal UserIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WriteInventoryUnlockSlots_Err
-        '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.eInventoryUnlockSlots)
-102     Call Writer.WriteInt8(UserList(UserIndex).Stats.InventLevel)
-104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+On Error GoTo WriteInventoryUnlockSlots_Err
+        With UserList(UserIndex)
+            If .Stats.tipoUsuario <> tNormal Then
+                Call Writer.WriteInt16(ServerPacketID.eInventoryUnlockSlots)
+                Select Case .Stats.tipoUsuario
+                    Case tLeyenda
+                        Call Writer.WriteInt8(3)
+                    Case tHeroe
+                        Call Writer.WriteInt8(2)
+                    Case tAventurero
+                        Call Writer.WriteInt8(1)
+                End Select
+                Call modSendData.SendData(ToIndex, UserIndex)
+            End If
+        End With
         Exit Sub
 
 WriteInventoryUnlockSlots_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteInventoryUnlockSlots", Erl)
-        '</EhFooter>
 End Sub
 
 Public Sub WriteIntervals(ByVal UserIndex As Integer)
@@ -3781,7 +3784,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 
 124                     If i = 1 Then
 126                         Call Writer.WriteString8(UserList(UserList( _
-                                    .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).Name & "(Líder)")
+                                    .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name & "(Líder)")
                         Else
 128                         Call Writer.WriteString8(UserList(UserList( _
                                     .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name)

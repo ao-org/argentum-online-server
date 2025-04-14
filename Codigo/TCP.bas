@@ -1038,7 +1038,7 @@ On Error GoTo ErrHandler
             Exit Function
         End If
         Call ConnectUser_Prepare(userIndex, name)
-        If LoadUser(userIndex) Then
+        If LoadCharacterFromDB(UserIndex) Then
             If ConnectUser_Complete(userIndex, name, newUser) Then
                 ConnectUser = True
                 Exit Function
@@ -1270,7 +1270,6 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 132         .EmpoCont = 0
 
 154         With .Stats
-156             .InventLevel = 0
 158             .Banco = 0
 160             .ELV = 0
 162             .Exp = 0
@@ -1737,7 +1736,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
                 Call WriteUserCharIndexInServer(.flags.GMMeSigue.ArrayIndex)
                 Call UpdateUserInv(True, .flags.GMMeSigue.ArrayIndex, 1)
                 Call WriteUpdateUserStats(.flags.GMMeSigue.ArrayIndex)
-                Call WriteConsoleMsg(.flags.GMMeSigue.ArrayIndex, "El usuario " & UserList(UserIndex).Name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(.flags.GMMeSigue.ArrayIndex, "El usuario " & UserList(UserIndex).name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
                 Call SetUserRef(.flags.GMMeSigue, 0)
                 'Falta revertir inventario del GM
             End If

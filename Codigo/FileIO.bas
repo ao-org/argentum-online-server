@@ -2867,21 +2867,6 @@ WriteVar_Err:
         
 End Sub
 
-Function LoadUser(ByVal userIndex As Integer) As Boolean
-
-
-        On Error GoTo ErrorHandler
-    
-        LoadUser = LoadCharacterFromDB(userIndex)
-            
-        Exit Function
-
-ErrorHandler:
-        Call TraceError(Err.Number, Err.Description & " UserName: " & UserList(userIndex).Name, "ES.LoadUser", Erl)
-        LoadUser = False
-        
-End Function
-
 Sub SaveUser(ByVal userIndex As Integer, Optional ByVal Logout As Boolean = False)
 On Error GoTo SaveUser_Err
         If Logout Then

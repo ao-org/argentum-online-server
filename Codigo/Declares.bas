@@ -795,19 +795,14 @@ Public Const MAX_INVENTORY_OBJS      As Integer = 10000
 
 ''
 ' Cantidad de "slots" en el inventario con todos los slots desbloqueados
-Public Const MAX_INVENTORY_SLOTS     As Byte = 24
+Public Const MAX_INVENTORY_SLOTS     As Byte = 42
 
 ' Cantidad de "slots" en el inventario básico
 Public Const MAX_USERINVENTORY_SLOTS As Byte = 24
 
-' Cantidad de "slots" en el inventario heroe
-Public Const MAX_USERINVENTORY_HERO_SLOTS As Byte = 24
-
 ' Cantidad de "slots" en el inventario por fila
 Public Const SLOTS_PER_ROW_INVENTORY As Byte = 6
 
-' Cantidad máxima de filas a desbloquear en el inventario
-Public Const INVENTORY_EXTRA_ROWS    As Byte = 3
 
 ''
 ' Constante para indicar que se esta usando ORO
@@ -1794,18 +1789,12 @@ End Type
 
 '[/Pablo ToxicWaste]
 
-'[KEVIN]
-'Banco Objs
+
 Public Const MAX_BANCOINVENTORY_SLOTS As Byte = 42
 
-'[/KEVIN]
-
-'[KEVIN]
 Public Type t_BancoInventario
-
     Object(1 To MAX_BANCOINVENTORY_SLOTS) As t_UserOBJ
     NroItems As Integer
-
 End Type
 
 Public Const patron_tier_aventurero As Long = 6057393
@@ -1814,7 +1803,6 @@ Public Const patron_tier_leyenda As Long = 6057395
 
 Public Enum e_TipoUsuario
     tNormal = 0
-    tCafecito
     tAventurero
     tHeroe
     tLeyenda
@@ -1856,7 +1844,6 @@ Public Type t_UserStats
 
     tipoUsuario As e_TipoUsuario
     GLD As Long 'Dinero
-    InventLevel As Byte 'Filas extra desbloqueadas en el inventario
     Banco As Long
     
     MaxHp As Integer
