@@ -10829,7 +10829,7 @@ Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     Slot = Reader.ReadInt8()
 
     With UserList(UserIndex)
-        If Slot >= getMaxInventorySlots(UserIndex) Or Slot <= 0 Then Exit Sub
+        If Slot > getMaxInventorySlots(UserIndex) Or Slot <= 0 Then Exit Sub
         
         If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
 'Msg1285= Solo puedes eliminar items en zona segura.
