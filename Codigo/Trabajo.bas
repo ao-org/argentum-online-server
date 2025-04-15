@@ -3426,6 +3426,13 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 120                 puntosDomar = puntosDomar / 118 'para que solo el druida dome
 
                 End If
+                
+                'No tiene nivel suficiente?
+                If NpcList(NpcIndex).MinLVLDomable > .Stats.ELV Then
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg("Debes ser nivel " & NpcList(NpcIndex).MinLVLDomable & " o superior para domar esta criatura.", e_FontTypeNames.FONTTYPE_INFO))
+                    Exit Sub
+                End If
+
 
 122             If NpcList(NpcIndex).flags.Domable <= puntosDomar And RandomNumber(1, 5) = 1 Then
 
