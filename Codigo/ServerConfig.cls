@@ -116,8 +116,7 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "FISHING_SPECIALFISH2_ID", CInt(val(reader.GetValue("PESCA", "UniqueMapfish2")))
     mSettings.Add "FISHING_SPECIALFISH1_REMPLAZO_ID", CInt(val(reader.GetValue("PESCA", "ReplacementSpecialFish")))
     mSettings.Add "NPC_WATCHMAN_ID", CInt(val(reader.GetValue("PESCA", "NPCFishingWatcher")))
-    mSettings.Add "OBJ_QUEST1_ID", CInt(val(reader.GetValue("PESCA", "OBJQuest1")))
-
+   
     Set reader = Nothing
     
     LoadSettings = 0
