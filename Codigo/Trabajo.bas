@@ -3529,8 +3529,9 @@ Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
             obj.ObjIndex = .Stats.NumObj_PezEspecial
 
             If Not MeterItemEnInventario(UserIndex, obj) Then
-                Call TirarItemAlPiso(.Pos, obj)
-
+                .Stats.NumObj_PezEspecial = 0
+                .flags.PescandoEspecial = False
+                Exit Function
             End If
 
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(obj.ObjIndex).GrhIndex))
