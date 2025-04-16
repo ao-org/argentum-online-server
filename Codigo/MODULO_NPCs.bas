@@ -1356,7 +1356,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 208         .InformarRespawn = val(Leer.GetValue("NPC" & NpcNumber, "InformarRespawn"))
     
 210         .QuizaProb = val(Leer.GetValue("NPC" & NpcNumber, "QuizaProb"))
-            .MinLVLDomable = val(Leer.GetValue("NPC" & NpcNumber, "MinLVLDomable"))
+            .MinTameLevel = val(Leer.GetValue("NPC" & NpcNumber, "MinTameLevel", 1))
         
 214         If .IntervaloMovimiento = 0 Then
 216             .IntervaloMovimiento = 380
