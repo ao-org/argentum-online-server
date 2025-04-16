@@ -10685,7 +10685,7 @@ HandleResetearPersonaje_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetearPersonaje", Erl)
 End Sub
 
-Public Sub HandleRomperCania(ByVal UserIndex As Integer)
+Private Sub HandleRomperCania(ByVal UserIndex As Integer)
 
     On Error GoTo HandleRomperCania_Err:
     
