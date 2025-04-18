@@ -2743,6 +2743,7 @@ Public Type t_Npc
     NumQuiza As Byte
     QuizaDropea() As String
     QuizaProb As Integer
+    MinTameLevel As Byte
         
     NumDestinos As Byte
     Dest() As String
