@@ -258,69 +258,81 @@ ErrHandler:
 End Sub
 
 Public Sub HandleGamble(ByVal UserIndex As Integer)
-        
-        On Error GoTo HandleGamble_Err
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-100     With UserList(UserIndex)
+    On Error GoTo HandleGamble_Err
 
-            Dim amount As Integer
-102             amount = Reader.ReadInt16()
-        
-104         If .flags.Muerto = 1 Then
-                'Msg77=¡¡Estás muerto!!.
-106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                
-108         ElseIf Not IsValidNpcRef(.flags.TargetNPC) Then
-                'Validate target NPC
-110             ' Msg530=Primero tenés que seleccionar un personaje, haz click izquierdo sobre él.
+    With UserList(UserIndex)
+
+        Dim amount As Integer
+        amount = reader.ReadInt16()
+
+        Dim npcIndex As Integer
+        Dim charIndex As Integer
+
+        If Not IsValidNpcRef(.flags.TargetNPC) Then
             Call WriteLocaleMsg(UserIndex, "530", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
 
-112         ElseIf Distancia(NpcList(.flags.TargetNPC.ArrayIndex).Pos, .Pos) > 10 Then
-114             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                
-116         ElseIf NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Timbero Then
-118             Call WriteChatOverHead(UserIndex, "No tengo ningún interés en apostar.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+        npcIndex = .flags.TargetNPC.ArrayIndex
+        charIndex = NpcList(npcIndex).Char.charIndex
 
-120         ElseIf amount < 1 Then
-122             Call WriteChatOverHead(UserIndex, "El mínimo de apuesta es 1 moneda.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+        If .flags.Muerto = 1 Then
+            Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 
-124         ElseIf amount > 5000 Then
-126             Call WriteChatOverHead(UserIndex, "El máximo de apuesta es 5.000 monedas.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+        ElseIf Distancia(NpcList(npcIndex).pos, .pos) > 10 Then
+            Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 
-128         ElseIf .Stats.GLD < amount Then
-130             Call WriteChatOverHead(UserIndex, "No tienes esa cantidad.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+        ElseIf NpcList(npcIndex).npcType <> e_NPCType.Timbero Then
+            Call WriteLocaleChatOverHead(UserIndex, 1322, vbNullString, charIndex, vbWhite)
 
+        ElseIf amount < 1 Then
+            Call WriteLocaleChatOverHead(UserIndex, 1323, vbNullString, charIndex, vbWhite)
+
+        ElseIf amount > 5000 Then
+            Call WriteLocaleChatOverHead(UserIndex, 1324, vbNullString, charIndex, vbWhite)
+
+        ElseIf .Stats.GLD < amount Then
+            Call WriteLocaleChatOverHead(UserIndex, 1325, vbNullString, charIndex, vbWhite)
+
+        Else
+            If RandomNumber(1, 100) <= 10 Then
+                ' GANADOR
+                .Stats.GLD = .Stats.GLD + amount
+                Call WriteLocaleChatOverHead(UserIndex, ElegirMensajeGanadorID(), PonerPuntos(amount), charIndex, vbWhite)
+
+                Apuestas.Perdidas = Apuestas.Perdidas + amount
+                Call WriteVar(DatPath & "apuestas.dat", "Main", "Perdidas", CStr(Apuestas.Perdidas))
             Else
-132             If RandomNumber(1, 100) <= 10 Then
-134                 .Stats.GLD = .Stats.GLD + amount
-136                 Call WriteChatOverHead(UserIndex, "¡Felicidades! Has ganado " & PonerPuntos(amount) & " monedas de oro!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
-                
-138                 Apuestas.Perdidas = Apuestas.Perdidas + amount
-140                 Call WriteVar(DatPath & "apuestas.dat", "Main", "Perdidas", CStr(Apuestas.Perdidas))
-                Else
-142                 .Stats.GLD = .Stats.GLD - amount
-144                 Call WriteChatOverHead(UserIndex, "Lo siento, has perdido " & PonerPuntos(amount) & " monedas de oro.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
-                
-146                 Apuestas.Ganancias = Apuestas.Ganancias + amount
-148                 Call WriteVar(DatPath & "apuestas.dat", "Main", "Ganancias", CStr(Apuestas.Ganancias))
+                ' PERDEDOR
+                .Stats.GLD = .Stats.GLD - amount
+                Call WriteLocaleChatOverHead(UserIndex, ElegirMensajePerdedorID(), PonerPuntos(amount), charIndex, vbRed)
 
-                End If
-            
-150             Apuestas.Jugadas = Apuestas.Jugadas + 1
-152             Call WriteVar(DatPath & "apuestas.dat", "Main", "Jugadas", CStr(Apuestas.Jugadas))
-154             Call WriteUpdateGold(UserIndex)
-
+                Apuestas.Ganancias = Apuestas.Ganancias + amount
+                Call WriteVar(DatPath & "apuestas.dat", "Main", "Ganancias", CStr(Apuestas.Ganancias))
             End If
 
-        End With
+            Apuestas.Jugadas = Apuestas.Jugadas + 1
+            Call WriteVar(DatPath & "apuestas.dat", "Main", "Jugadas", CStr(Apuestas.Jugadas))
+            Call WriteUpdateGold(UserIndex)
+        End If
 
-        Exit Sub
+    End With
+
+    Exit Sub
 
 HandleGamble_Err:
-156     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGamble", Erl)
-158
-        
+    MsgBox "Desbordamiento detectado en la operación de apuestas. Error: " & Err.Description
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGamble", Erl)
 End Sub
+
+Public Function ElegirMensajeGanadorID() As Integer
+    ElegirMensajeGanadorID = 1328 + Int(Rnd * 4)
+End Function
+
+Public Function ElegirMensajePerdedorID() As Integer
+    ElegirMensajePerdedorID = 1332 + Int(Rnd * 4)
+End Function
+
  
 Public Sub HandleDenounce(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler

@@ -1034,16 +1034,16 @@ Public Sub WriteLocaleChatOverHead(ByVal UserIndex As Integer, _
                              ByVal charindex As Integer, _
                              ByVal Color As Long)
         '<EhHeader>
-        On Error GoTo WriteChatOverHead_Err
+        On Error GoTo WriteLocaleChatOverHead_Err
         '</EhHeader>
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareLocaleChatOverHead(ChatId, Params, _
                 charindex, Color, , UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         '<EhFooter>
         Exit Sub
 
-WriteChatOverHead_Err:
+WriteLocaleChatOverHead_Err:
         Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChatOverHead", Erl)
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLocaleChatOverHead", Erl)
         '</EhFooter>
 End Sub
 
