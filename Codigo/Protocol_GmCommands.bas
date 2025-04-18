@@ -298,14 +298,14 @@ Public Sub HandleGamble(ByVal UserIndex As Integer)
             If RandomNumber(1, 100) <= 10 Then
                 ' GANADOR
                 .Stats.GLD = .Stats.GLD + amount
-                Call WriteLocaleChatOverHead(UserIndex, ElegirMensajeGanadorID(), PonerPuntos(amount), charIndex, vbWhite)
+                Call WriteLocaleChatOverHead(UserIndex, GetWinnerMsgID(), PonerPuntos(amount), charindex, vbWhite)
 
                 Apuestas.Perdidas = Apuestas.Perdidas + amount
                 Call WriteVar(DatPath & "apuestas.dat", "Main", "Perdidas", CStr(Apuestas.Perdidas))
             Else
                 ' PERDEDOR
                 .Stats.GLD = .Stats.GLD - amount
-                Call WriteLocaleChatOverHead(UserIndex, ElegirMensajePerdedorID(), PonerPuntos(amount), charIndex, vbRed)
+                Call WriteLocaleChatOverHead(UserIndex, GetLoserMsgID(), PonerPuntos(amount), charindex, vbRed)
 
                 Apuestas.Ganancias = Apuestas.Ganancias + amount
                 Call WriteVar(DatPath & "apuestas.dat", "Main", "Ganancias", CStr(Apuestas.Ganancias))
@@ -321,16 +321,15 @@ Public Sub HandleGamble(ByVal UserIndex As Integer)
     Exit Sub
 
 HandleGamble_Err:
-    MsgBox "Desbordamiento detectado en la operación de apuestas. Error: " & Err.Description
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGamble", Erl)
 End Sub
 
-Public Function ElegirMensajeGanadorID() As Integer
-    ElegirMensajeGanadorID = 1328 + Int(Rnd * 4)
+Public Function GetWinnerMsgID() As Integer
+    GetWinnerMsgID = 1328 + Int(Rnd * 4)
 End Function
 
-Public Function ElegirMensajePerdedorID() As Integer
-    ElegirMensajePerdedorID = 1332 + Int(Rnd * 4)
+Public Function GetLoserMsgID() As Integer
+    GetLoserMsgID = 1332 + Int(Rnd * 4)
 End Function
 
  
