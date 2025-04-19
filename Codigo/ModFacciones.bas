@@ -37,44 +37,44 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 102             charIndexStr = str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
                 
 104             If .Faccion.status = e_Facciones.Armada Or .Faccion.status = e_Facciones.consejo Then
-106                 Call WriteChatOverHead(UserIndex, "Ya perteneces a mi ejército jóven soldado. Ve a combatir el caos en mis tierras para subir de rango en el Ejército Real.", charIndexStr, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1357, vbNullString, charindexstr, vbWhite)  ' Msg1357=Ya perteneces a mi ejército jóven soldado. Ve a combatir el caos en mis tierras para subir de rango en el Ejército Real.
                     Exit Sub
 
                 End If
 
 108             If .Faccion.status = e_Facciones.Caos Or .Faccion.status = e_Facciones.concilio Then
-110                 Call WriteChatOverHead(UserIndex, "¡Has llegado al lugar equivocado maldita escoria! Vete de aquí antes de ser encarcelado e interrogado.", charIndexStr, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1358, vbNullString, charindexstr, vbWhite)  ' Msg1358=¡Has llegado al lugar equivocado maldita escoria! Vete de aquí antes de ser encarcelado e interrogado.
                     Exit Sub
 
                 End If
 
 112             If status(UserIndex) = e_Facciones.Criminal Then
-114                 Call WriteChatOverHead(UserIndex, "No se permiten criminales en el Ejército Real.", charIndexStr, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1359, vbNullString, charindexstr, vbWhite)  ' Msg1359=No se permiten criminales en el Ejército Real.
                     Exit Sub
                 End If
                 
 
 120             If .clase = e_Class.Thief Then
-122                 Call WriteChatOverHead(UserIndex, "No hay lugar para escoria en el Ejército Real.", charIndexStr, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1360, vbNullString, charindexstr, vbWhite)  ' Msg1360=No hay lugar para escoria en el Ejército Real.
                     Exit Sub
 
                 End If
 
                 'Si fue miembro de la Legión del Caos no se puede enlistar
 124             If .Faccion.ciudadanosMatados > 0 Then
-126                 Call WriteChatOverHead(UserIndex, "Has derramado sangre inocente. Solo aceptamos almas nobles en el Ejército Real.", charIndexStr, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1361, vbNullString, charindexstr, vbWhite)  ' Msg1361=Has derramado sangre inocente. Solo aceptamos almas nobles en el Ejército Real.
                     Exit Sub
 
                 End If
                 
 128             If Not HayLugarEnInventario(UserIndex, -1, 999) Then
-130                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charIndexStr, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1362, vbNullString, charindexstr, vbWhite)  ' Msg1362=¡No tienes lugar suficiente en el inventario.
                     Exit Sub
                 End If
                 
 
 132             If .Faccion.Reenlistadas > 0 Then
-134                 Call WriteChatOverHead(UserIndex, "Ya has desertado el Ejército Real. No serás aceptado otra vez.", charIndexStr, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1363, vbNullString, charindexstr, vbWhite)  ' Msg1363=Ya has desertado el Ejército Real. No serás aceptado otra vez.
                     Exit Sub
 
                 End If
@@ -99,7 +99,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 148                 If PersonajeEsLeader(.id) Then
                         'Si el clan es neutral no lo dejo, le digo que tiene que salir del clan para poder enlistarse
                         If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
-                            Call WriteChatOverHead(UserIndex, "No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar el Ejército Real.", charIndexStr, vbWhite)
+                            Call WriteLocaleChatOverHead(UserIndex, 1364, vbNullString, charindexstr, vbWhite)  ' Msg1364=No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar el Ejército Real.
                             Exit Sub
                         End If
                     Else
@@ -115,8 +115,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 160             .Faccion.status = e_Facciones.Armada
 
 162             If .Faccion.RecibioArmaduraReal = 0 Then
-164                 Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al Ejercito Imperial!!!, aqui tienes tus vestimentas. Cumple bien tu labor exterminando Criminales y me encargaré de recompensarte.", charIndexStr, vbWhite)
-
+                    Call WriteLocaleChatOverHead(UserIndex, 1365, vbNullString, charindexstr, vbWhite)  ' Msg1365=¡¡¡Bienvenido al Ejercito Imperial!!!, aqui tienes tus vestimentas. Cumple bien tu labor exterminando Criminales y me encargaré de recompensarte.
 166                 .Faccion.NivelIngreso = .Stats.ELV
 168                 .Faccion.MatadosIngreso = .Faccion.ciudadanosMatados
 
@@ -149,12 +148,12 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
 104             npcCharIndex = str(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
 
 106             If .Faccion.RecompensasReal >= MaxRangoFaccion Then
-108                 Call WriteChatOverHead(UserIndex, "Has alcanzado el máximo rango dentro de mis soldados. Demuestra tu bondad y liderazgo en el campo de batalla para algún día pertenecer al Consejo de Banderbill.", npcCharIndex, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1366, vbNullString, npcCharIndex, vbWhite)  ' Msg1366=Has alcanzado el máximo rango dentro de mis soldados. Demuestra tu bondad y liderazgo en el campo de batalla para algún día pertenecer al Consejo de Banderbill.
                     Exit Sub
                 End If
                 
 110             If Not HayLugarEnInventario(UserIndex, -1, 999) Then
-112                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", npcCharIndex, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1367, vbNullString, npcCharIndex, vbWhite)  ' Msg1367=¡No tienes lugar suficiente en el inventario.
                     Exit Sub
                 End If
 
@@ -248,30 +247,30 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 102             charIndexStr = str(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
 
 104             If status(UserIndex) = e_Facciones.Caos Or status(UserIndex) = e_Facciones.concilio Then
-106                 Call WriteChatOverHead(UserIndex, "Ya perteneces a la Legión Oscura.", charIndexStr, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1368, vbNullString, charindexstr, vbWhite)  ' Msg1368=Ya perteneces a la Legión Oscura.
                     Exit Sub
 
                 End If
 
 116             If status(UserIndex) = e_Facciones.Armada Or status(UserIndex) = e_Facciones.Ciudadano Or status(UserIndex) = e_Facciones.consejo Then
-118                 Call WriteChatOverHead(UserIndex, "¡¡Ja ja ja!! Tu no eres bienvenido aquí asqueroso Ciudadano", charIndexStr, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1369, vbNullString, charindexstr, vbWhite)  ' Msg1369=¡¡Ja ja ja!! Tu no eres bienvenido aquí asqueroso Ciudadano
                     Exit Sub
 
                 End If
                 
 120             If Not HayLugarEnInventario(UserIndex, -1, 999) Then
-122                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charIndexStr, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1370, vbNullString, charindexstr, vbWhite)  ' Msg1370=¡No tienes lugar suficiente en el inventario.
                     Exit Sub
                 End If
 
 124             If .clase = e_Class.Thief Then
-126                 Call WriteChatOverHead(UserIndex, "¡La legión oscura no tiene lugar para escorias como tú! Los ladrones no son dignos de llevar nuestras armaduras.", charIndexStr, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1371, vbNullString, charindexstr, vbWhite)  ' Msg1371=¡La legión oscura no tiene lugar para escorias como tú! Los ladrones no son dignos de llevar nuestras armaduras.
                     Exit Sub
 
                 End If
 
 128             If UserList(UserIndex).Faccion.Reenlistadas > 0 Then
-130                 Call WriteChatOverHead(UserIndex, "Has sido expulsado de las fuerzas oscuras y durante tu rebeldía has atacado a mi ejército. ¡Vete de aquí!", charIndexStr, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1372, vbNullString, charindexstr, vbWhite)  ' Msg1372=Has sido expulsado de las fuerzas oscuras y durante tu rebeldía has atacado a mi ejército. ¡Vete de aquí!
                     Exit Sub
 
                 End If
@@ -297,7 +296,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 148                 If PersonajeEsLeader(.Id) Then
                         'Si el clan es neutral no lo dejo, le digo que tiene que salir del clan para poder enlistarse
                         If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
-                            Call WriteChatOverHead(UserIndex, "No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar la Legión Oscura.", charIndexStr, vbWhite)
+                            Call WriteLocaleChatOverHead(UserIndex, 1373, vbNullString, charindexstr, vbWhite)  ' Msg1373=No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar la Legión Oscura.
                             Exit Sub
                         End If
                     Else
@@ -313,7 +312,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 156             .Faccion.status = e_Facciones.Caos
 
 158             If .Faccion.RecibioArmaduraCaos = 0 Then
-160                 Call WriteChatOverHead(UserIndex, "Aquí tienes tu armadura legionario, ve a derramar sangre de los súbditos de Tancredo. Esta guerra será larga y cruel.", charIndexStr, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1374, vbNullString, charindexstr, vbWhite)  ' Msg1374=Aquí tienes tu armadura legionario, ve a derramar sangre de los súbditos de Tancredo. Esta guerra será larga y cruel.
 162                 .Faccion.NivelIngreso = .Stats.ELV
                 End If
 
@@ -345,12 +344,12 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 104             npcCharIndex = str(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
 
 106             If .Faccion.RecompensasCaos >= MaxRangoFaccion Then
-108                 Call WriteChatOverHead(UserIndex, "¡Has alcanzado uno de los mejores lugares en mis filas. Mantén firme tu liderazgo y crueldad para algún día formar parte del Concilio de las Sombras.", npcCharIndex, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1375, vbNullString, npcCharIndex, vbWhite)  ' Msg1375=¡Has alcanzado uno de los mejores lugares en mis filas. Mantén firme tu liderazgo y crueldad para algún día formar parte del Concilio de las Sombras.
                     Exit Sub
                 End If
                 
 110             If Not HayLugarEnInventario(UserIndex, -1, 999) Then
-112                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", npcCharIndex, vbWhite)
+                    Call WriteLocaleChatOverHead(UserIndex, 1376, vbNullString, npcCharIndex, vbWhite)  ' Msg1376=¡No tienes lugar suficiente en el inventario.
                     Exit Sub
                 End If
 

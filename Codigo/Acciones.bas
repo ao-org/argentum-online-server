@@ -641,14 +641,14 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 266                     Gobernador = NpcList(TempCharIndex)
             
 268                 If UserList(UserIndex).Hogar = Gobernador.GobernadorDe Then
-270                     Call WriteChatOverHead(UserIndex, "Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.", Gobernador.Char.charindex, vbWhite)
+270                     Call WriteLocaleChatOverHead(UserIndex, "1349", "", Gobernador.Char.charindex, vbWhite) ' Msg1349=Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.
                         Exit Sub
 
                     End If
             
 272                 If UserList(UserIndex).Faccion.Status = 0 Or UserList(UserIndex).Faccion.Status = 2 Then
 274                     If Gobernador.GobernadorDe = e_Ciudad.cBanderbill Then
-276                         Call WriteChatOverHead(UserIndex, "Aquí no aceptamos criminales.", Gobernador.Char.charindex, vbWhite)
+276                         Call WriteLocaleChatOverHead(UserIndex, "1350", "", Gobernador.Char.charindex, vbWhite) ' Msg1350=Aquí no aceptamos criminales.
                             Exit Sub
 
                         End If
@@ -657,7 +657,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
             
 278                 If UserList(UserIndex).Faccion.Status = 3 Or UserList(UserIndex).Faccion.Status = 1 Then
 280                     If Gobernador.GobernadorDe = e_Ciudad.cArkhein Then
-282                         Call WriteChatOverHead(UserIndex, "¡¡Sal de aquí ciudadano asqueroso!!", Gobernador.Char.charindex, vbWhite)
+282                         Call WriteLocaleChatOverHead(UserIndex, "1351", "", Gobernador.Char.charindex, vbWhite) ' Msg1351=¡¡Sal de aquí ciudadano asqueroso!!
                             Exit Sub
 
                         End If
@@ -725,7 +725,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     Else
                         Dim charIndexstr As Integer
                         charIndexStr = str(NpcList(TempCharIndex).Char.charindex)
-                        Call WriteChatOverHead(UserIndex, "No tienes ningún trofeo de pesca para entregar.", charIndexStr, &HFFFF00)
+                        Call WriteLocaleChatOverHead(UserIndex, "1352", "", charindexstr, &HFFFF00) ' Msg1352=No tienes ningún trofeo de pesca para entregar.
                     End If
                 ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.AO20Shop Then
 322                 If UserList(UserIndex).flags.Muerto = 1 Then
