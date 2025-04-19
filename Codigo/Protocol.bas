@@ -1539,8 +1539,8 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
         
 108         targetUser = NameIndex(targetCharIndex)
             If UserList(UserIndex).flags.Muerto = 1 Then
-'Msg1117= No puedes susurrar estando muerto.
-Call WriteLocaleMsg(UserIndex, "1117", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg1117= No puedes susurrar estando muerto.
+                Call WriteLocaleMsg(UserIndex, "1117", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             
@@ -1822,8 +1822,8 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
 106         If .Invent.WeaponEqpObjIndex > 0 Then
 
 108             If ObjData(.Invent.WeaponEqpObjIndex).Proyectil = 1 And ObjData(.Invent.WeaponEqpObjIndex).Municion > 0 Then
-'Msg1125= No podés usar así esta arma.
-Call WriteLocaleMsg(UserIndex, "1125", e_FontTypeNames.FONTTYPE_INFO)
+                    'Msg1125= No podés usar así esta arma.
+                    Call WriteLocaleMsg(UserIndex, "1125", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
 
@@ -2602,8 +2602,8 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
                         '[CDT 17-02-2004]
 126                     If Not .flags.UltimoMensaje = 2 Then
 128                         Call WriteLocaleMsg(UserIndex, "55", e_FontTypeNames.FONTTYPE_INFO)
-'Msg1127= Ya estás oculto.
-Call WriteLocaleMsg(UserIndex, "1127", e_FontTypeNames.FONTTYPE_INFO)
+                            'Msg1127= Ya estás oculto.
+                            Call WriteLocaleMsg(UserIndex, "1127", e_FontTypeNames.FONTTYPE_INFO)
 130                         .flags.UltimoMensaje = 2
 
                         End If
@@ -3629,8 +3629,8 @@ Private Sub HandleSpellInfo(ByVal UserIndex As Integer)
         
             'Validate slot
 104         If spellSlot < 1 Or spellSlot > MAXUSERHECHIZOS Then
-'Msg1134= ¡Primero selecciona el hechizo!
-Call WriteLocaleMsg(UserIndex, "1134", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg1134= ¡Primero selecciona el hechizo!
+                Call WriteLocaleMsg(UserIndex, "1134", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -3923,8 +3923,8 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
         
             'Only if in commerce mode....
 116         If Not .flags.Comerciando Then
-'Msg1137= No estás comerciando
-Call WriteLocaleMsg(UserIndex, "1137", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg1137= No estás comerciando
+                Call WriteLocaleMsg(UserIndex, "1137", e_FontTypeNames.FONTTYPE_INFO)
 120             Call WriteCommerceEnd(UserIndex)
                 Exit Sub
 
@@ -8135,8 +8135,8 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
                 End If
 
             Else
-'Msg1232= No posees esa cantidad de oro.
-Call WriteLocaleMsg(UserIndex, "1232", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg1232= No posees esa cantidad de oro.
+                Call WriteLocaleMsg(UserIndex, "1232", e_FontTypeNames.FONTTYPE_INFO)
 
             End If
 
@@ -9970,8 +9970,8 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
 108             UserConsulta = NameIndex(Nick)
                 'Se asegura que el target exista
 110             If Not IsValidUserRef(UserConsulta) Then
-'Msg1265= El usuario se encuentra offline.
-Call WriteLocaleMsg(UserIndex, "1265", e_FontTypeNames.FONTTYPE_INFO)
+                    'Msg1265= El usuario se encuentra offline.
+                    Call WriteLocaleMsg(UserIndex, "1265", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             Else
