@@ -83,13 +83,14 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 136                 primerRango = RangosFaccion(1)
 
 138             If .Faccion.FactionScore < primerRango.RequiredScore Then
-140                 Call WriteChatOverHead(UserIndex, "Para unirte a nuestras fuerzas debes tener al menos " & primerRango.RequiredScore & " puntos de faccion, solo tienes " & .Faccion.FactionScore, charindexstr, vbWhite)
+140                 Call WriteLocaleChatOverHead(UserIndex, 1378, primerRango.RequiredScore & "¬" & .Faccion.FactionScore, charIndexStr, vbWhite) ' Msg1378=Para unirte a nuestras fuerzas debes tener al menos ¬1 puntos de faccion, solo tienes ¬2
+
                     Exit Sub
 
                 End If
 
 142             If .Stats.ELV < primerRango.NivelRequerido Then
-144                 Call WriteChatOverHead(UserIndex, "¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel " & primerRango.NivelRequerido & "!!!", charIndexStr, vbWhite)
+144                 Call WriteLocaleChatOverHead(UserIndex, 1379, primerRango.NivelRequerido, charIndexStr, vbWhite) ' Msg1379=¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel ¬1!!!
                     Exit Sub
 
                 End If
@@ -160,18 +161,18 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
 114             proxRango = ProximoRango(UserIndex)
 
 116             If .Faccion.FactionScore < proxRango.RequiredScore Then
-118                 Call WriteChatOverHead(UserIndex, "Te faltan " & proxRango.RequiredScore - .Faccion.FactionScore & " Puntos de faccion para subir de rango.", npcCharIndex, vbWhite)
+118                 Call WriteLocaleChatOverHead(UserIndex, 1380, proxRango.RequiredScore - .Faccion.FactionScore, npcCharIndex, vbWhite) ' Msg1380=Te faltan ¬1 Puntos de faccion para subir de rango.
                     Exit Sub
 
                 End If
 
 120             If proxRango.NivelRequerido > .Stats.ELV Then
-122               Call WriteChatOverHead(UserIndex, "Has matado suficientes criminales pero, te faltan " & (proxRango.NivelRequerido - .Stats.ELV) & " niveles para poder recibir la próxima recompensa.", npcCharIndex, vbWhite)
+122               Call WriteLocaleChatOverHead(UserIndex, 1381, proxRango.NivelRequerido - .Stats.ELV, npcCharIndex, vbWhite) ' Msg1381=Has matado suficientes criminales pero, te faltan ¬1 niveles para poder recibir la próxima recompensa.
 
                 Else ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
 124               .Faccion.RecompensasReal = proxRango.rank
 
-126               Call WriteChatOverHead(UserIndex, "¡¡¡Aqui tienes tu recompensa " + proxRango.Titulo + "!!!", npcCharIndex, vbWhite)
+126               Call WriteLocaleChatOverHead(UserIndex, 1382, proxRango.Titulo, npcCharIndex, vbWhite) ' Msg1382=¡¡¡Aquí tienes tu recompensa ¬1!!!
 128               Call DarRecompensas(UserIndex)
                   '.Stats.Exp = .Stats.Exp + ExpX100
                 End If
@@ -280,13 +281,14 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 132                 primerRango = RangosFaccion(2) ' 2 es el primer rango del caos
 
 134             If .Faccion.FactionScore < primerRango.RequiredScore Then
-136                 Call WriteChatOverHead(UserIndex, "Para unirte a nuestras fuerzas debes tener al menos " & primerRango.RequiredScore & " puntos de faccion, solo tienes " & .Faccion.FactionScore, charindexstr, vbWhite)
+136                 Call WriteLocaleChatOverHead(UserIndex, 1383, primerRango.RequiredScore & "," & .Faccion.FactionScore, charIndexStr, vbWhite) ' Msg1383=Para unirte a nuestras fuerzas debes tener al menos ¬1 puntos de facción, solo tienes ¬2
+
                     Exit Sub
 
                 End If
 
 138             If .Stats.ELV < primerRango.NivelRequerido Then
-140                 Call WriteChatOverHead(UserIndex, "¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel " & primerRango.NivelRequerido & "!!!", charIndexStr, vbWhite)
+140                 Call WriteLocaleChatOverHead(UserIndex, 1384, primerRango.NivelRequerido, charIndexStr, vbWhite) ' Msg1384=¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel ¬1!!!
                     Exit Sub
                 End If
                 
@@ -355,17 +357,18 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 
 114             proxRango = ProximoRango(UserIndex)
 116             If .Faccion.FactionScore < proxRango.RequiredScore Then
-118                 Call WriteChatOverHead(UserIndex, "Te faltan " & proxRango.RequiredScore - .Faccion.FactionScore & " Puntos de faccion para subir de rango.", npcCharIndex, vbWhite)
+118                 Call WriteLocaleChatOverHead(UserIndex, 1385, proxRango.RequiredScore - .Faccion.FactionScore, npcCharIndex, vbWhite) ' Msg1385=Te faltan ¬1 Puntos de faccion para subir de rango.
                     Exit Sub
                 End If
 
 120             If proxRango.NivelRequerido > .Stats.ELV Then
-122               Call WriteChatOverHead(UserIndex, "Has acabado con la vida de suficientes enemigos pero aún te faltan " & (proxRango.NivelRequerido - .Stats.ELV) & " niveles para alcanzar el siguiente rango.", npcCharIndex, vbWhite)
+122               Call WriteLocaleChatOverHead(UserIndex, 1386, proxRango.NivelRequerido - .Stats.ELV, npcCharIndex, vbWhite) ' Msg1386=Has acabado con la vida de suficientes enemigos pero aún te faltan ¬1 niveles para alcanzar el siguiente rango.
 
                 Else ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
 124               .Faccion.RecompensasCaos = proxRango.rank
 
-126               Call WriteChatOverHead(UserIndex, "¡¡¡Bien hecho " + proxRango.Titulo + ", aquí tienes tu recompensa, sigue pregonando el caos a lo largo de estas tierras.!!! ", npcCharIndex, vbWhite)
+126               Call WriteLocaleChatOverHead(UserIndex, 1387, proxRango.Titulo, npcCharIndex, vbWhite) ' Msg1387=¡¡¡Bien hecho ¬1, aquí tienes tu recompensa, sigue pregonando el caos a lo largo de estas tierras.!!!
+
 128               Call DarRecompensas(UserIndex)
                   '.Stats.Exp = .Stats.Exp + ExpX100
                 End If
