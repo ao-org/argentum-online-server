@@ -50,7 +50,8 @@ Public Sub IniciarSubasta(ByVal userindex As Integer)
         
         On Error GoTo IniciarSubasta_Err
 100     If UserList(UserIndex).flags.Subastando = True And Not Subasta.HaySubastaActiva Then
-102         Call WriteChatOverHead(UserIndex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. Te quedan: " & UserList(UserIndex).Counters.TiempoParaSubastar & " segundos... ¡Apurate!", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+102         Call WriteLocaleChatOverHead(UserIndex, 1427, UserList(UserIndex).Counters.TiempoParaSubastar, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite) ' Msg1427=Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. Te quedan: ¬1 segundos... ¡Apurate!
+
             Exit Sub
         End If
 
