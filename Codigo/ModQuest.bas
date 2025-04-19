@@ -106,7 +106,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 104         If .RequiredOBJs > 0 Then
 106             For i = 1 To .RequiredOBJs
 108                 If TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex) = False Then
-110                     Call WriteChatOverHead(UserIndex, "No has conseguido todos los objetos que te he pedido.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+110                     Call WriteLocaleChatOverHead(UserIndex, "1336", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1336=No has conseguido todos los objetos que te he pedido.
                         Exit Sub
                     End If
 112             Next i
@@ -115,7 +115,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 114         If .RequiredNPCs > 0 Then
 116             For i = 1 To .RequiredNPCs
 118                 If .RequiredNPC(i).amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i) Then
-120                     Call WriteChatOverHead(UserIndex, "No has matado todas las criaturas que te he pedido.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+120                     Call WriteLocaleChatOverHead(UserIndex, "1337", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1337=No has matado todas las criaturas que te he pedido.
                         Exit Sub
                     End If
 122             Next i
@@ -123,7 +123,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             If .RequiredSpellCount > 0 Then
                 For i = 1 To .RequiredSpellCount
                     If Not UserHasSpell(UserIndex, .RequiredSpellList(i)) Then
-                        Call WriteLocaleChatOverHead(UserIndex, MsgRequiredSpell, Hechizos(.RequiredSpellList(i)).nombre, NpcList(NpcIndex).Char.charindex, vbYellow)
+                        Call WriteLocaleChatOverHead(UserIndex, "1338", Hechizos(.RequiredSpellList(i)).nombre, NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1338=Necesitas aprender el hechizo: {0}.
                         Exit Sub
                     End If
                 Next i
@@ -132,7 +132,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 124          If .RequiredTargetNPCs > 0 Then
 126              For i = 1 To .RequiredTargetNPCs
 128                  If .RequiredTargetNPC(i).amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsTarget(i) Then
-130                      Call WriteChatOverHead(UserIndex, "No has visitado al npc que te pedi.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+130                      Call WriteLocaleChatOverHead(UserIndex, "1339", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1339=No has visitado al npc que te pedi.
                         Exit Sub
                         End If
 132              Next i
@@ -152,7 +152,8 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 140             Next i
                 'Nos fijamos si entra
 142             If InvSlotsLibres < .RewardOBJs Then
-144                 Call WriteChatOverHead(UserIndex, "No tienes suficiente espacio en el inventario para recibir la recompensa. Vuelve cuando hayas hecho mas espacio.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+144                 Call WriteLocaleChatOverHead(UserIndex, "1340", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1340=No tienes suficiente espacio en el inventario para recibir la recompensa. Vuelve cuando hayas hecho mas espacio.
+
                     Exit Sub
                 End If
             End If
@@ -619,7 +620,7 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
     
         'El NPC hace quests?
 108     If NpcList(NpcIndex).NumQuest = 0 Then
-110         Call WriteChatOverHead(UserIndex, "No tengo ninguna misión para ti.", NpcList(NpcIndex).Char.charindex, vbYellow)
+110         Call WriteLocaleChatOverHead(UserIndex, "1341", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1341=No tengo ninguna misión para ti.
             Exit Sub
         End If
         
