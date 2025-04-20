@@ -2388,7 +2388,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
                 Else
                     'ver de banear al usuario
                     'Call BanearIP(0, UserList(UserIndex).name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
-                    Call LogEdicionPaquete("El usuario " & UserList(UserIndex).Name & " editó el slot del inventario | Valor: " & Slot & ".")
+                    Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el slot del inventario | Valor: " & Slot & ".")
                 End If
         
                 '04-05-08 Ladder
@@ -3794,7 +3794,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
 116         Next i
         
 118         If Count > .Stats.SkillPts Then
-120             Call LogSecurity(.Name & " IP:" & .ConnectionDetails.IP & " trató de hackear los skills.")
+120             Call LogSecurity(.name & " IP:" & .ConnectionDetails.IP & " trató de hackear los skills.")
 122             Call CloseSocket(UserIndex)
                 Exit Sub
 
@@ -3868,7 +3868,7 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
                     End If
                 End If
             Else
-120             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No puedo traer más criaturas, mata las existentes!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
+120             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No puedo traer más criaturas, mata las existentes!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite))
             End If
 
         End With
@@ -3916,7 +3916,7 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
             
             'íEl NPC puede comerciar?
 112         If NpcList(.flags.TargetNPC.ArrayIndex).Comercia = 0 Then
-114             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
+114             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite))
                 Exit Sub
 
             End If
@@ -5851,7 +5851,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 'Does the NPC want to trade??
 116             If NpcList(.flags.TargetNPC.ArrayIndex).Comercia = 0 Then
 118                 If LenB(NpcList(.flags.TargetNPC.ArrayIndex).Desc) <> 0 Then
-120                     Call WriteChatOverHead(UserIndex, "No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+120                     Call WriteChatOverHead(UserIndex, "No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)
                     End If
                     Exit Sub
                 End If
@@ -6542,11 +6542,11 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
                 'substract first in case there is overflow we don't dup gold
                 .Stats.GLD = .Stats.GLD - amount
                 .Stats.Banco = .Stats.Banco + amount
-                Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+                Call WriteLocaleChatOverHead(UserIndex, 1418, .Stats.Banco, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite) ' Msg1418=Tenés ¬1 monedas de oro en tu cuenta.
 124             Call WriteUpdateGold(UserIndex)
                 Call WriteUpdateBankGld(UserIndex)
             Else
-128             Call WriteChatOverHead(UserIndex, "No tenés esa cantidad.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+128             Call WriteLocaleChatOverHead(UserIndex, 1419, "", NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite) ' Msg1419=No tenés esa cantidad.
             End If
         End With
         Exit Sub
@@ -8050,7 +8050,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
 130             UserList(UserIndex).Counters.TiempoParaSubastar = 0
 132             Subasta.OfertaInicial = Oferta
 134             Subasta.MejorOferta = 0
-136             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " está subastando: " & ObjData(Subasta.ObjSubastado).Name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas. Escribe /OFERTAR (cantidad) para participar.", e_FontTypeNames.FONTTYPE_SUBASTA))
+136             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " está subastando: " & ObjData(Subasta.ObjSubastado).name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas. Escribe /OFERTAR (cantidad) para participar.", e_FontTypeNames.FONTTYPE_SUBASTA))
 138             .flags.Subastando = False
 140             Subasta.HaySubastaActiva = True
 142             Subasta.Subastador = .Name
@@ -8124,7 +8124,7 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
 132             Call WriteUpdateGold(UserIndex)
             
 134             If Subasta.TiempoRestanteSubasta < 60 Then
-136                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
+136                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
 138                 Call LogearEventoDeSubasta(.Name & ": Mejoro la oferta en el ultimo minuto ofreciendo " & PonerPuntos(Oferta) & " monedas.")
 140                 Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta + 30
                 Else
@@ -8214,7 +8214,7 @@ Private Sub HandleCancelDuel(ByVal UserIndex As Integer)
 106             Call CancelarSolicitudReto(UserIndex, .Name & " ha cancelado la solicitud.")
 
 108         ElseIf IsValidUserRef(.flags.AceptoReto) Then
-110             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .Name & " ha cancelado su admisión.")
+110             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .name & " ha cancelado su admisión.")
 
             End If
 
@@ -8307,7 +8307,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                  UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
                  UserList(tUser.ArrayIndex).Stats.Banco = UserList(tUser.ArrayIndex).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
                 End If
-152             Call WriteChatOverHead(UserIndex, "¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+152             Call WriteChatOverHead(UserIndex, "¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath", NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)
             Else
                 Call WriteLocaleChatOverHead(UserIndex, 1413, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1413=Los administradores no pueden transferir oro.
 158             Call LogGM(.Name, "Quizo transferirle oro a: " & UserName)
@@ -8725,7 +8725,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 104             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 
 106             If clan_nivel >= 2 Then
-108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .Name & "] solicita apoyo de su clan en " & get_map_name(.pos.Map) & " (" & .pos.Map & "-" & .pos.x & "-" & .pos.y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
+108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & get_map_name(.pos.Map) & " (" & .pos.Map & "-" & .pos.x & "-" & .pos.y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
 110                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
 112                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.X, .Pos.Y))
 
@@ -8791,7 +8791,7 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
                                 Call WriteLocaleChatOverHead(UserIndex, 1414, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1414=Los declaro unidos en legal matrimonio ¡Felicidades!
                                 Call WriteLocaleChatOverHead(tUser.ArrayIndex, 1415, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1415=Los declaro unidos en legal matrimonio ¡Felicidades!
                             Else
-150                             Call WriteChatOverHead(UserIndex, "La solicitud de casamiento a sido enviada a " & username & ".", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+150                             Call WriteLocaleChatOverHead(UserIndex, 1420, username, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite) ' Msg1420=La solicitud de casamiento a sido enviada a ¬1.
 152                             Call WriteConsoleMsg(tUser.ArrayIndex, .name & " desea casarse contigo, para permitirlo haz click en el sacerdote y escribe /PROPONER " & .name & ".", e_FontTypeNames.FONTTYPE_TALK)
 154                             .flags.Candidato = tUser
                             End If
@@ -9138,7 +9138,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         End Select
                     
 210                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-212                         Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).Name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+212                         Call WriteLocaleChatOverHead(UserIndex, 1421, UserList(UserIndex).name & "¬" & DeDonde, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite) ' Msg1421=¡Gracias ¬1! Ahora perteneces a la ciudad de ¬2.
                         Else
                             'Msg1244= ¡Gracias ¬1
                             Call WriteLocaleMsg(UserIndex, "1244", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).name)
@@ -9190,7 +9190,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                             Dim charindexstr As Integer
                             charIndexStr = str(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex)
                             If charindexstr > 0 Then
-                                Call WriteChatOverHead(UserIndex, "Felicitaciones! Ahora tienes un total de " & .Stats.PuntosPesca & " puntos de pesca.", charindexstr, &HFFFF00)
+                                Call WriteLocaleChatOverHead(UserIndex, 1422, .Stats.PuntosPesca, charIndexStr, &HFFFF00) ' Msg1422=¡Felicitaciones! Ahora tienes un total de ¬1 puntos de pesca.
                             End If
                             .flags.pregunta = 0
                         End With
@@ -9258,7 +9258,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         End Select
                     
 320                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-322                         Call WriteChatOverHead(UserIndex, "¡No hay problema " & UserList(UserIndex).Name & "! Sos bienvenido en " & DeDonde & " cuando gustes.", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+322                         Call WriteLocaleChatOverHead(UserIndex, 1423, UserList(UserIndex).name & "¬" & DeDonde, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite) ' Msg1423=¡No hay problema ¬1! Sos bienvenido en ¬2 cuando gustes.
                         End If
 324                     UserList(UserIndex).PosibleHogar = UserList(UserIndex).Hogar
 326                 Case 4
@@ -9690,7 +9690,7 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
     
         'El NPC hace quests?
 108     If NpcList(NpcIndex).NumQuest = 0 Then
-110         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("No tengo ninguna misión para ti.", NpcList(NpcIndex).Char.charindex, vbWhite))
+110         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("No tengo ninguna misión para ti.", NpcList(NpcIndex).Char.charIndex, vbWhite))
             Exit Sub
 
         End If
@@ -9745,7 +9745,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
             'El personaje completo la quest que requiere?
 120         If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest > 0 Then
 122             If Not UserDoneQuest(UserIndex, QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest) Then
-124                 Call WriteChatOverHead(UserIndex, "Debes completar la quest " & QuestList(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest).nombre & " para emprender esta misión.", NpcList(NpcIndex).Char.charindex, vbYellow)
+124                 Call WriteLocaleChatOverHead(UserIndex, 1424, QuestList(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest).nombre, NpcList(NpcIndex).Char.charIndex, vbYellow) ' Msg1424=Debes completar la quest ¬1 para emprender esta misión.
                     Exit Sub
     
                 End If
@@ -9754,7 +9754,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
     
             'El personaje tiene suficiente nivel?
 126         If UserList(UserIndex).Stats.ELV < QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel Then
-128             Call WriteChatOverHead(UserIndex, "Debes ser por lo menos nivel " & QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel & " para emprender esta misión.", NpcList(NpcIndex).Char.charindex, vbYellow)
+128             Call WriteLocaleChatOverHead(UserIndex, 1425, QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel, NpcList(NpcIndex).Char.charIndex, vbYellow) ' Msg1425=Debes ser por lo menos nivel ¬1 para emprender esta misión.
                 Exit Sub
             End If
             
@@ -9776,7 +9776,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
             'El personaje no es la clase requerida?
 136         If UserList(UserIndex).clase <> QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredClass And _
                 QuestList(NpcList(npcIndex).QuestNumber(Indice)).RequiredClass > 0 Then
-138              Call WriteChatOverHead(UserIndex, "Debes ser " & ListaClases(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredClass) & " para emprender esta misión.", NpcList(NpcIndex).Char.charindex, vbYellow)
+138              Call WriteLocaleChatOverHead(UserIndex, 1426, ListaClases(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredClass), NpcList(NpcIndex).Char.charIndex, vbYellow) ' Msg1426=Debes ser ¬1 para emprender esta misión.
                 Exit Sub
 
             End If
