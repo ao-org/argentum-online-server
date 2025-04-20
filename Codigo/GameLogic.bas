@@ -1681,7 +1681,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 502                                         If QuestList(.QuestIndex).RequiredTargetNPC(j).amount = .NPCsTarget(j) Then
 504                                             Call FinishQuest(UserIndex, .QuestIndex, i)
 506                                             Call WriteUpdateNPCSimbolo(UserIndex, TempCharIndex, 1)
-508                                             Call WriteLocaleChatOverHead(UserIndex, 1432, "", NpcList(TempCharIndex).Char.charIndex, vbYellow) ' Msg1432=¡Quest Finalizada!)
+508                                             Call WriteLocaleChatOverHead(UserIndex, "1353", "", NpcList(TempCharIndex).Char.charindex, vbYellow) ' Msg1353=¡Quest Finalizada!
 510                                             ' Msg494=Quest Finalizada!
                                                 Call WriteLocaleMsg(UserIndex, "494", e_FontTypeNames.FONTTYPE_INFOIAO)
 

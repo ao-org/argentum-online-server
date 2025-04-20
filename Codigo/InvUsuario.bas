@@ -3098,8 +3098,8 @@ Call WriteLocaleMsg(UserIndex, "914", e_FontTypeNames.FONTTYPE_INFO)
                           End If
             
 1268                 If .flags.TargetNpcTipo <> Pirata Then
-'Msg920= Primero debes hacer click sobre el pirata.
-Call WriteLocaleMsg(UserIndex, "920", e_FontTypeNames.FONTTYPE_INFO)
+                            'Msg920= Primero debes hacer click sobre el pirata.
+                            Call WriteLocaleMsg(UserIndex, "920", e_FontTypeNames.FONTTYPE_INFO)
                               Exit Sub
                           End If
             
@@ -3109,30 +3109,30 @@ Call WriteLocaleMsg(UserIndex, "920", e_FontTypeNames.FONTTYPE_INFO)
                           End If
             
 1276                 If .Pos.Map <> obj.DesdeMap Then
-1278                     Call WriteChatOverHead(UserIndex, "El pasaje no lo compraste aquí! Largate!", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite)
+1278                     Call WriteLocaleChatOverHead(UserIndex, "1354", "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1354=El pasaje no lo compraste aquí! Largate!
                               Exit Sub
                           End If
             
 1280                 If Not MapaValido(obj.HastaMap) Then
-1282                     Call WriteChatOverHead(UserIndex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite)
+1282                     Call WriteLocaleChatOverHead(UserIndex, "1355", "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1355=El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.
                               Exit Sub
                           End If
     
 1284                 If obj.NecesitaNave > 0 Then
 1286                     If .Stats.UserSkills(e_Skill.Navegacion) < 80 Then
-1288                         Call WriteChatOverHead(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite)
+1288                         Call WriteLocaleChatOverHead(UserIndex, "1356", "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1356=Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.
                                   Exit Sub
                               End If
                           End If
                 
-1290                 Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
-'Msg921= Has viajado por varios días, te sientes exhausto!
-Call WriteLocaleMsg(UserIndex, "921", e_FontTypeNames.FONTTYPE_WARNING)
-1294                 .Stats.MinAGU = 0
-1296                 .Stats.MinHam = 0
-1302                 Call WriteUpdateHungerAndThirst(UserIndex)
-1304                 Call QuitarUserInvItem(UserIndex, Slot, 1)
-1306                 Call UpdateUserInv(False, UserIndex, Slot)
+1290                Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
+                    'Msg921= Has viajado por varios días, te sientes exhausto!
+                    Call WriteLocaleMsg(UserIndex, "921", e_FontTypeNames.FONTTYPE_WARNING)
+1294                .Stats.MinAGU = 0
+1296                .Stats.MinHam = 0
+1302                Call WriteUpdateHungerAndThirst(UserIndex)
+1304                Call QuitarUserInvItem(UserIndex, Slot, 1)
+1306                Call UpdateUserInv(False, UserIndex, Slot)
             
 1308             Case e_OBJType.otRunas
         
