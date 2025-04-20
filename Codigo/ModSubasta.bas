@@ -56,22 +56,22 @@ Public Sub IniciarSubasta(ByVal userindex As Integer)
         End If
 
 104     If Subasta.HaySubastaActiva = True Then
-106         Call WriteChatOverHead(UserIndex, "Oye amigo, espera tu turno, estoy subastando en este momento.", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+106         Call WriteLocaleChatOverHead(UserIndex, 1428, "", str$(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charIndex), vbWhite) ' Msg1428=Oye amigo, espera tu turno, estoy subastando en este momento.
             Exit Sub
         End If
 
 108     If Not MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex > 0 Then
-110         Call WriteChatOverHead(UserIndex, "¿Pues Acaso el aire está en venta ahora? ¡Bribón!", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+110         Call WriteLocaleChatOverHead(UserIndex, 1429, "", str$(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charIndex), vbWhite) ' Msg1429=¿Pues Acaso el aire está en venta ahora? ¡Bribón!
             Exit Sub
         End If
     
 112     If Not ObjData(MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex).Subastable = 1 Then
-114         Call WriteChatOverHead(UserIndex, "Aquí solo subastamos items que sean valiosos. ¡Largate de acá Bribón!", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+114         Call WriteLocaleChatOverHead(UserIndex, 1430, "", str$(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charIndex), vbWhite) ' Msg1430=Aquí solo subastamos items que sean valiosos. ¡Largate de acá Bribón!
             Exit Sub
         End If
     
 116     If UserList(UserIndex).flags.Subastando = True Then 'Practicamente imposible que pase... pero por si las dudas
-118         Call WriteChatOverHead(UserIndex, "Tu ya estas subastando! Esto a quedado logeado.", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbRed)
+118         Call WriteLocaleChatOverHead(UserIndex, 1431, "", str$(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charIndex), vbRed) ' Msg1431=Tu ya estas subastando! Esto a quedado logeado.
 120         Logear = "El usuario que ya estaba subastando pudo subastar otro item" & Date & " - " & Time
 122         Call LogearEventoDeSubasta(Logear)
             Exit Sub
@@ -82,7 +82,7 @@ Public Sub IniciarSubasta(ByVal userindex As Integer)
 128         Subasta.ObjSubastadoCantidad = MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.amount
 130         Subasta.Subastador = UserList(UserIndex).Name
 132         UserList(UserIndex).Counters.TiempoParaSubastar = 15
-134         Call WriteChatOverHead(UserIndex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. ¡Tienes 15 segundos!", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+134         Call WriteLocaleChatOverHead(UserIndex, 1432, "", str$(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charIndex), vbWhite) ' Msg1432=Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. ¡Tienes 15 segundos!
 136         Call EraseObj(Subasta.ObjSubastadoCantidad, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
 138         UserList(UserIndex).flags.Subastando = True
             Exit Sub

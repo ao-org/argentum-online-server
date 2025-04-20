@@ -5306,7 +5306,8 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
         
 114         Select Case NpcList(.flags.TargetNPC.ArrayIndex).npcType
                 Case e_NPCType.Banquero
-116                 Call WriteChatOverHead(UserIndex, "Tenes " & PonerPuntos(.Stats.Banco) & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+116                 Call WriteLocaleChatOverHead(UserIndex, 1433, "", str$(PonerPuntos(.Stats.Banco)), vbWhite) ' Msg1433=Tenes ¬1 monedas de oro en tu cuenta.
+
             
 118             Case e_NPCType.Timbero
 120                 If Not .flags.Privilegios And e_PlayerType.user Then
@@ -5851,7 +5852,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 'Does the NPC want to trade??
 116             If NpcList(.flags.TargetNPC.ArrayIndex).Comercia = 0 Then
 118                 If LenB(NpcList(.flags.TargetNPC.ArrayIndex).Desc) <> 0 Then
-120                     Call WriteChatOverHead(UserIndex, "No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)
+120                     Call WriteLocaleChatOverHead(UserIndex, 1434, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex), vbWhite) ' Msg1434=No tengo ningún interés en comerciar.
                     End If
                     Exit Sub
                 End If
@@ -8307,7 +8308,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                  UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
                  UserList(tUser.ArrayIndex).Stats.Banco = UserList(tUser.ArrayIndex).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
                 End If
-152             Call WriteChatOverHead(UserIndex, "¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath", NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)
+152             Call WriteLocaleChatOverHead(UserIndex, 1435, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex), vbWhite) ' Msg1435=¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath
             Else
                 Call WriteLocaleChatOverHead(UserIndex, 1413, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1413=Los administradores no pueden transferir oro.
 158             Call LogGM(.Name, "Quizo transferirle oro a: " & UserName)
