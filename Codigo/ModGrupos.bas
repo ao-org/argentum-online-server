@@ -89,8 +89,8 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
             
         End If
 
-130     If Abs(CInt(Invitado.Stats.ELV) - CInt(Remitente.Stats.ELV)) > 3 Then
-132         Call WriteConsoleMsg(UserIndex, "No podes crear un grupo con personajes con diferencia de más de 3 niveles.", e_FontTypeNames.FONTTYPE_New_GRUPO)
+130     If Abs(CInt(Invitado.Stats.ELV) - CInt(Remitente.Stats.ELV)) > SvrConfig.GetValue("PartyELV") Then
+132         Call WriteConsoleMsg(UserIndex, "No podes crear un grupo con personajes con diferencia de más de " & SvrConfig.GetValue("PartyELV") & " niveles.", e_FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub
             
         End If

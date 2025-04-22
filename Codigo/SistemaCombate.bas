@@ -1837,72 +1837,91 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         Else
 120         NpcList(NpcIndex).flags.ExpCount = NpcList(NpcIndex).flags.ExpCount - ExpaDar
         End If
-        If Not IsValidUserRef(UserList(userIndex).Grupo.Lider) Then Exit Sub
-        Dim LiderIndex As Integer
-        LiderIndex = UserList(userIndex).Grupo.Lider.ArrayIndex
-122     For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
-123         If IsValidUserRef(UserList(LiderIndex).Grupo.Miembros(i)) Then
-124             Index = UserList(LiderIndex).Grupo.Miembros(i).ArrayIndex
-126             If UserList(Index).flags.Muerto = 0 Then
-128                 If UserList(userIndex).pos.map = UserList(Index).pos.map Then
-130                     If Distancia(UserList(UserIndex).pos, UserList(Index).pos) < 20 Then
-134                         CantidadMiembrosValidos = CantidadMiembrosValidos + 1
+        
+        With UserList(UserIndex)
+            If Not IsValidUserRef(.Grupo.Lider) Then Exit Sub
+            Dim LiderIndex As Integer
+            LiderIndex = .Grupo.Lider.ArrayIndex
+122         For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
+123             If IsValidUserRef(UserList(LiderIndex).Grupo.Miembros(i)) Then
+124                 Index = UserList(LiderIndex).Grupo.Miembros(i).ArrayIndex
+126                 If UserList(Index).flags.Muerto = 0 Then
+128                     If .pos.Map = UserList(Index).pos.Map Then
+130                         If Distancia(.pos, UserList(Index).pos) < 20 Then
+134                             CantidadMiembrosValidos = CantidadMiembrosValidos + 1
+                            End If
                         End If
                     End If
                 End If
+            Next
+            
+            ' Verificar si el líder está en otro mapa
+            If UserList(LiderIndex).pos.Map <> .pos.Map Then
+                CantidadMiembrosValidos = CantidadMiembrosValidos + 1 ' Se cuenta como un miembro más para dividir la exp
+                ' Avisamos a los miembros del grupo
+                For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
+                    If IsValidUserRef(UserList(LiderIndex).Grupo.Miembros(i)) Then
+                        Index = UserList(LiderIndex).Grupo.Miembros(i).ArrayIndex
+                        ' Enviar el mensaje solo si el miembro no está muerto y tiene el chat de combate activado
+                        If UserList(Index).flags.Muerto = 0 And UserList(Index).ChatCombate = 1 Then
+                            'Msg1436=El líder del grupo está demasiado lejos, su experiencia se pierde.
+                            Call WriteLocaleMsg(Index, "1436", e_FontTypeNames.FONTTYPE_EXP)
+                        End If
+                    End If
+                Next i
             End If
-        Next
-        
-138     If CantidadMiembrosValidos = 0 Then Exit Sub
-        
-140     If SvrConfig.GetValue("ExpMult") > 0 Then
-142         ExpaDar = ExpaDar * SvrConfig.GetValue("ExpMult")
-        End If
-
-144     ExpaDar = ExpaDar / CantidadMiembrosValidos
-
-        Dim ExpUser As Long, DeltaLevel As Integer
-
-146     If ExpaDar > 0 Then
-148         For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
-                If IsValidUserRef(UserList(LiderIndex).Grupo.Miembros(i)) Then
-150                 Index = UserList(LiderIndex).Grupo.Miembros(i).ArrayIndex
+            
+138         If CantidadMiembrosValidos = 0 Then Exit Sub
+            
+140         If SvrConfig.GetValue("ExpMult") > 0 Then
+142             ExpaDar = ExpaDar * SvrConfig.GetValue("ExpMult")
+            End If
     
-152                 If UserList(Index).flags.Muerto = 0 Then
-154                     If Distancia(UserList(userIndex).pos, UserList(Index).pos) < 20 Then
-
-158                         ExpUser = ExpaDar
-                
-166                         If UserList(Index).Stats.ELV < STAT_MAXELV Then
-168                             If NpcList(npcIndex).nivel Then
-170                                 DeltaLevel = UserList(Index).Stats.ELV - NpcList(npcIndex).nivel
-172                                 If Abs(DeltaLevel) > 5 Then ' Qué pereza da desharcodear
-174                                     ExpUser = ExpUser * Math.Exp(15 - Abs(3 * DeltaLevel))
-176                                     Call WriteConsoleMsg(index, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", e_FontTypeNames.FONTTYPE_WARNING)
+144         ExpaDar = ExpaDar / CantidadMiembrosValidos
+    
+            Dim ExpUser As Long, DeltaLevel As Integer
+    
+146         If ExpaDar > 0 Then
+148             For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
+                    If IsValidUserRef(UserList(LiderIndex).Grupo.Miembros(i)) Then
+150                     Index = UserList(LiderIndex).Grupo.Miembros(i).ArrayIndex
+        
+152                     If UserList(Index).flags.Muerto = 0 Then
+154                         If Distancia(.pos, UserList(Index).pos) < 20 Then
+    
+158                             ExpUser = ExpaDar
+                    
+166                             If UserList(Index).Stats.ELV < STAT_MAXELV Then
+168                                 If NpcList(NpcIndex).nivel Then
+170                                     DeltaLevel = UserList(Index).Stats.ELV - NpcList(NpcIndex).nivel
+172                                     If Abs(DeltaLevel) > 5 Then ' Qué pereza da desharcodear
+174                                         ExpUser = ExpUser * Math.Exp(15 - Abs(3 * DeltaLevel))
+176                                         Call WriteConsoleMsg(Index, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", e_FontTypeNames.FONTTYPE_WARNING)
+                                        End If
                                     End If
+178                                 UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
+180                                 If UserList(Index).Stats.Exp > MAXEXP Then UserList(Index).Stats.Exp = MAXEXP
+182                                 If UserList(Index).ChatCombate = 1 Then
+184                                     Call WriteLocaleMsg(Index, "141", e_FontTypeNames.FONTTYPE_EXP, ExpUser)
+                                    End If
+186                                 Call WriteUpdateExp(Index)
+188                                 Call CheckUserLevel(Index)
                                 End If
-178                             UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
-180                             If UserList(Index).Stats.Exp > MAXEXP Then UserList(Index).Stats.Exp = MAXEXP
-182                             If UserList(Index).ChatCombate = 1 Then
-184                                 Call WriteLocaleMsg(Index, "141", e_FontTypeNames.FONTTYPE_EXP, ExpUser)
+                            Else
+190                             If UserList(Index).ChatCombate = 1 Then
+192                                 Call WriteLocaleMsg(Index, "69", e_FontTypeNames.FONTTYPE_New_GRUPO)
                                 End If
-186                             Call WriteUpdateExp(Index)
-188                             Call CheckUserLevel(Index)
                             End If
                         Else
-190                         If UserList(Index).ChatCombate = 1 Then
-192                             Call WriteLocaleMsg(Index, "69", e_FontTypeNames.FONTTYPE_New_GRUPO)
+194                         If UserList(Index).ChatCombate = 1 Then
+                                'Msg1064= Estás muerto, no has ganado experencia del grupo.
+                                Call WriteLocaleMsg(Index, "1064", e_FontTypeNames.FONTTYPE_New_GRUPO)
                             End If
                         End If
-                    Else
-194                     If UserList(Index).ChatCombate = 1 Then
-                            'Msg1064= Estás muerto, no has ganado experencia del grupo.
-                            Call WriteLocaleMsg(Index, "1064", e_FontTypeNames.FONTTYPE_New_GRUPO)
-                        End If
                     End If
-                End If
-198         Next i
-        End If
+198             Next i
+            End If
+        End With
         Exit Sub
 
 CalcularDarExpGrupal_Err:
