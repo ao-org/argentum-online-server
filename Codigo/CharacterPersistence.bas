@@ -280,6 +280,8 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .ChatCombate = RS!chat_combate
         .Stats.Advertencias = RS!warnings
         .TelemetryInfo = RS!user_key
+        .GuildIndex = SanitizeNullValue(RS!Guild_Index, 0)
+        .LastGuildRejection = SanitizeNullValue(RS!guild_rejected_because, vbNullString)
     End With
 End Sub
 
