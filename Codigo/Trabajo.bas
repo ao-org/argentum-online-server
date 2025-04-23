@@ -3433,7 +3433,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                 'No tiene nivel suficiente?
                 If NpcList(NpcIndex).MinTameLevel > .Stats.ELV Then
                     ' Msg1321=Debes ser nivel ¬1 o superior para domar esta criatura.
-                    Call WriteLocaleMsg(UserIndex, "1321", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, "1321", e_FontTypeNames.FONTTYPE_INFO, NpcList(NpcIndex).MinTameLevel)
                     Exit Sub
                 End If
 

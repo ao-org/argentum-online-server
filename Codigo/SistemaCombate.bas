@@ -1864,8 +1864,8 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                         Index = UserList(LiderIndex).Grupo.Miembros(i).ArrayIndex
                         ' Enviar el mensaje solo si el miembro no está muerto y tiene el chat de combate activado
                         If UserList(Index).flags.Muerto = 0 And UserList(Index).ChatCombate = 1 Then
-                            'Msg1436=El líder del grupo está demasiado lejos, su experiencia se pierde.
-                            Call WriteLocaleMsg(Index, "1436", e_FontTypeNames.FONTTYPE_EXP)
+                            'Msg1437=El líder del grupo está demasiado lejos, su experiencia se pierde.
+                            Call WriteLocaleMsg(Index, "1437", e_FontTypeNames.FONTTYPE_EXP)
                         End If
                     End If
                 Next i
