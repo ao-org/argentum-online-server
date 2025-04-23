@@ -741,8 +741,6 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
 226         .ChatCombate = 1
 228         .ChatGlobal = 1
             
-            Call UpdateUserTelemetryKey(UserIndex)
-            
             Select Case .Hogar
                 Case e_Ciudad.cUllathorpe
                     .Pos.map = 1

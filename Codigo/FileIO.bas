@@ -2281,7 +2281,6 @@ Sub LoadSini()
 140     DisconnectTimeout = val(Lector.GetValue("INIT", "DisconnectTimeout"))
 142     InstanceMapCount = val(Lector.GetValue("INIT", "InstanceMaps"))
 144     EnTesting = val(Lector.GetValue("INIT", "Testing"))
-145     EnableTelemetry = val(Lector.GetValue("INIT", "EnableTelemetry"))
 146     PendingConnectionTimeout = val(Lector.GetValue("INIT", "PendingConnectionTimeout"))
         If PendingConnectionTimeout = 0 Then
             PendingConnectionTimeout = 1000

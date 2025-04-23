@@ -134,8 +134,7 @@ Private Sub ConstruirQuery_CargarPersonaje()
         QueryBuilder.Append "warnings,"
         QueryBuilder.Append "last_logout,"
         QueryBuilder.Append "is_reset,"
-        QueryBuilder.Append "is_locked_in_mao,"
-        QueryBuilder.Append "user_key"
+        QueryBuilder.Append "is_locked_in_mao "
         QueryBuilder.Append " FROM user WHERE name= ?"
     
         ' Guardo la query ensamblada
@@ -179,10 +178,9 @@ Private Sub ConstruirQuery_CrearPersonaje()
 180     QueryBuilder.Append "min_ham, "
 184     QueryBuilder.Append "min_sed, "
 192     QueryBuilder.Append "is_naked, "
-194     QueryBuilder.Append "status, "
-195     QueryBuilder.Append "user_key) VALUES ("
+194     QueryBuilder.Append "status) VALUES ( "
         Dim i As Long
-        For i = 0 To 26
+        For i = 0 To 25
             QueryBuilder.Append "?,"
         Next i
         QueryBuilder.Append "?)"
@@ -353,8 +351,7 @@ Private Sub ConstruirQuery_GuardarPersonaje()
         QueryBuilder.Append "return_map = ?,"
         QueryBuilder.Append "return_x = ?,"
         QueryBuilder.Append "return_y = ?, "
-        QueryBuilder.Append "last_logout = strftime('%s','now'), "
-        QueryBuilder.Append "user_key = ? "
+        QueryBuilder.Append "last_logout = strftime('%s','now') "
 278     QueryBuilder.Append "WHERE id = ?"
     
         ' Guardo la query ensamblada
