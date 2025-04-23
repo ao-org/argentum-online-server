@@ -321,8 +321,8 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
 
 138         If MapInfo(Map).MinLevel <> 0 And .Stats.ELV < MapInfo(Map).MinLevel Then
 140             If .flags.UltimoMensaje <> 105 Then
-'Msg1108= Necesitas ser al menos nivel ¬1
-Call WriteLocaleMsg(UserIndex, "1108", e_FontTypeNames.FONTTYPE_INFO, MapInfo(Map).MinLevel)
+                    'Msg1108= Necesitas ser al menos nivel ¬1
+                    Call WriteLocaleMsg(UserIndex, "1108", e_FontTypeNames.FONTTYPE_INFO, MapInfo(Map).MinLevel)
 144                 .flags.UltimoMensaje = 105
                 End If
                 Exit Function
@@ -330,8 +330,8 @@ Call WriteLocaleMsg(UserIndex, "1108", e_FontTypeNames.FONTTYPE_INFO, MapInfo(Ma
 
 146         If MapInfo(Map).MaxLevel <> 0 And .Stats.ELV >= MapInfo(Map).MaxLevel Then
 148             If .flags.UltimoMensaje <> 106 Then
-'Msg1109= Sólo los personajes inferiores a nivel ¬1
-Call WriteLocaleMsg(UserIndex, "1109", e_FontTypeNames.FONTTYPE_INFO, MapInfo(Map).MaxLevel)
+                    'Msg1109= Sólo los personajes inferiores a nivel ¬1
+                    Call WriteLocaleMsg(UserIndex, "1109", e_FontTypeNames.FONTTYPE_INFO, MapInfo(Map).MaxLevel)
 152                 .flags.UltimoMensaje = 106
                 End If
                 Exit Function
@@ -1717,9 +1717,8 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 534             UserList(UserIndex).flags.TargetObjMap = 0
 536             UserList(UserIndex).flags.TargetObjX = 0
 538             UserList(UserIndex).flags.TargetObjY = 0
-
-'Msg1114= No ves nada interesante.
-Call WriteLocaleMsg(UserIndex, "1114", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg1114= No ves nada interesante.
+                Call WriteLocaleMsg(UserIndex, "1114", e_FontTypeNames.FONTTYPE_INFO)
             End If
 
         Else
@@ -1732,7 +1731,6 @@ Call WriteLocaleMsg(UserIndex, "1114", e_FontTypeNames.FONTTYPE_INFO)
 550             UserList(UserIndex).flags.TargetObjMap = 0
 552             UserList(UserIndex).flags.TargetObjX = 0
 554             UserList(UserIndex).flags.TargetObjY = 0
-
                 'Msg1106= No ves nada interesante.
                 Call WriteLocaleMsg(UserIndex, "1106", e_FontTypeNames.FONTTYPE_INFO)
             End If
@@ -2088,8 +2086,7 @@ Public Sub ResucitarOCurar(ByVal UserIndex As Integer)
     
         UserList(UserIndex).Counters.timeFx = 3
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.charindex, 35, 1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-    
-        
+   
         ' Msg495=¡¡Hás sido resucitado!!
         Call WriteLocaleMsg(UserIndex, "495", e_FontTypeNames.FONTTYPE_INFO)
 
@@ -2258,9 +2255,8 @@ End Function
 Public Sub SendrequiredItemMessage(ByVal UserIndex As Integer, ByVal itemMask As e_SpellRequirementMask, ByVal Message As String)
     Select Case itemMask
         Case e_SpellRequirementMask.eArmor
-             ' Msg497=Necesitás una armadura
-                Call WriteLocaleMsg(UserIndex, "497", Message, e_FontTypeNames.FONTTYPE_INFO)
-
+            ' Msg497=Necesitás una armadura
+            Call WriteLocaleMsg(UserIndex, "497", Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eHelm
              ' Msg564=Necesitás un casco
             Call WriteLocaleMsg(UserIndex, "564", Message, e_FontTypeNames.FONTTYPE_INFO)

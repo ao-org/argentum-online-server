@@ -118,7 +118,7 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
         
 130         If PocionesMaximas >= 0 Then
 132             If TieneObjetos(38, PocionesMaximas + 1, UserIndex) Then
-134                 Call WriteConsoleMsg(UserIndex, "Tienes demasiadas pociones rojas (Cantidad máxima: " & PocionesMaximas & ").", e_FontTypeNames.FONTTYPE_INFO)
+134                 Call WriteLocaleMsg(UserIndex, "1443", e_FontTypeNames.FONTTYPE_INFO, PocionesMaximas) ' Msg1443=Tienes demasiadas pociones rojas (Cantidad máxima: ¬1).
                     Exit Sub
                 End If
             End If
@@ -137,19 +137,20 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
 148             For i = 0 To UBound(.Jugadores)
 150                 With .Jugadores(i)
 152                     If EsGmChar(Jugadores(i)) Then
-154                         Call WriteConsoleMsg(UserIndex, "¡No puedes jugar retos con administradores!", e_FontTypeNames.FONTTYPE_INFO)
+154                         Call WriteLocaleMsg(UserIndex, "1444", e_FontTypeNames.FONTTYPE_INFO) ' Msg1444=¡No puedes jugar retos con administradores!
                             Exit Sub
                         End If
 
 156                     tIndex = NameIndex(Jugadores(i))
                                                                                 
 158                     If Not IsValidUserRef(tIndex) Then
-160                         Call WriteConsoleMsg(UserIndex, "El usuario " & Jugadores(i) & " no puede jugar un reto en este momento.", e_FontTypeNames.FONTTYPE_INFO)
+160                         Call WriteLocaleMsg(UserIndex, "1445", e_FontTypeNames.FONTTYPE_INFO, Jugadores(i)) ' Msg1445=El usuario ¬1 no puede jugar un reto en este momento.
+
                             Exit Sub
                         End If
                     
 162                     If Not PuedeReto(tIndex.ArrayIndex) Then
-164                         Call WriteConsoleMsg(UserIndex, "El usuario " & UserList(tIndex.ArrayIndex).name & " no puede jugar un reto en este momento.", e_FontTypeNames.FONTTYPE_INFO)
+164                         Call WriteLocaleMsg(UserIndex, "1445", e_FontTypeNames.FONTTYPE_INFO, UserList(tIndex.ArrayIndex).name) ' Msg1445=El usuario ¬1 no puede jugar un reto en este momento.
                             Exit Sub
                         End If
 
@@ -189,9 +190,9 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
 202             .estado = e_SolicitudRetoEstado.Enviada
             End With
 
-204         Call WriteConsoleMsg(UserIndex, "Has enviado una solicitud para el siguiente reto:", e_FontTypeNames.FONTTYPE_INFO)
+204         Call WriteLocaleMsg(UserIndex, "1446", e_FontTypeNames.FONTTYPE_INFO) ' Msg1446=Has enviado una solicitud para el siguiente reto:
 206         Call WriteConsoleMsg(UserIndex, Texto2, e_FontTypeNames.FONTTYPE_New_Naranja)
-208         Call WriteConsoleMsg(UserIndex, "Escribe /CANCELAR para anular la solicitud.", e_FontTypeNames.FONTTYPE_New_Gris)
+208         Call WriteLocaleMsg(UserIndex, "1447", e_FontTypeNames.FONTTYPE_New_Gris) ' Msg1447=Escribe /CANCELAR para anular la solicitud.
     
         End With
     
