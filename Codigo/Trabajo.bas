@@ -598,7 +598,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 
                 ' Tiene el skill necesario?
 120             If .Stats.UserSkills(e_Skill.Navegacion) < SkillNecesario Then
-122                 Call WriteConsoleMsg(UserIndex, "Necesitas al menos " & SkillNecesario & " puntos en navegación para poder usar este " & IIf(Barco.Subtipo = 0, "traje", "barco") & ".", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, "1448", "traje", "barco")  ' Msg1448=Necesitas al menos ¬1 puntos en navegación para poder usar este ¬2
                     Exit Sub
 
                 End If
@@ -717,7 +717,7 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
 116             ' Msg608=Los mortales no pueden fundir este mineral.
                 Call WriteLocaleMsg(UserIndex, "608", e_FontTypeNames.FONTTYPE_INFO)
             Else
-118             Call WriteConsoleMsg(UserIndex, "No tenés conocimientos de minería suficientes para trabajar este mineral. Necesitas " & SkillRequerido & " puntos en minería.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, "1449", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1449=No tenés conocimientos de minería suficientes para trabajar este mineral. Necesitas ¬1 puntos en minería.
 
             End If
 
@@ -1445,16 +1445,16 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
 
 112         If ObjData(ItemIndex).OBJType = e_OBJType.otWeapon Then
-                ' Call WriteConsoleMsg(UserIndex, "Has construido el arma!", e_FontTypeNames.FONTTYPE_INFO)
+                'Call WriteLocaleMsg(UserIndex, "1450", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1450=Has construido el arma!
 114             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
 116         ElseIf ObjData(ItemIndex).OBJType = e_OBJType.otEscudo Then
-                ' Call WriteConsoleMsg(UserIndex, "Has construido el escudo!", e_FontTypeNames.FONTTYPE_INFO)
+                'Call WriteLocaleMsg(UserIndex, "1451", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1451=Has construido el escudo!
 118             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
 120         ElseIf ObjData(ItemIndex).OBJType = e_OBJType.otCasco Then
-                ' Call WriteConsoleMsg(UserIndex, "Has construido el casco!", e_FontTypeNames.FONTTYPE_INFO)
+                'Call WriteLocaleMsg(UserIndex, "1452", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1452=Has construido el casco!
 122             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
 124         ElseIf ObjData(ItemIndex).OBJType = e_OBJType.otArmadura Then
-                'Call WriteConsoleMsg(UserIndex, "Has construido la armadura!", e_FontTypeNames.FONTTYPE_INFO)
+                'Call WriteLocaleMsg(UserIndex, "1453", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1453=Has construido la armadura!
 126             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
 
             End If
@@ -1607,7 +1607,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, _
             If ObjData(ItemIndex).MaderaPino > 0 Then madera_pino_requerida = ObjData(ItemIndex).MaderaPino * cantidad_a_construir
 122         Call CarpinteroQuitarMateriales(UserIndex, ItemIndex, madera_requerida, madera_elfica_requerida, madera_pino_requerida)
             UserList(UserIndex).Trabajo.cantidad = UserList(UserIndex).Trabajo.cantidad - cantidad_a_construir
-            'Call WriteConsoleMsg(UserIndex, "Has construido un objeto!", e_FontTypeNames.FONTTYPE_INFO)
+            'Call WriteLocaleMsg(UserIndex, "1454", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1454=Has construido un objeto!
             'Call WriteOroOverHead(UserIndex, 1, UserList(UserIndex).Char.CharIndex)
 124         Call WriteTextCharDrop(UserIndex, "+" & cantidad_a_construir, UserList(UserIndex).Char.charindex, vbWhite)
 
@@ -2014,7 +2014,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, _
 
 114     If Distancia(posMadera, UserList(UserIndex).Pos) > 2 Then
 116         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-            ' Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos para prender la fogata.", e_FontTypeNames.FONTTYPE_INFO)
+            'Call WriteLocaleMsg(UserIndex, "1455", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1455=Estás demasiado lejos para prender la fogata.
             Exit Sub
 
         End If
@@ -2047,7 +2047,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, _
 140     If exito = 1 Then
 142         obj.ObjIndex = FOGATA_APAG
 144         obj.amount = MapData(Map, X, Y).ObjInfo.amount \ 3
-146         Call WriteConsoleMsg(UserIndex, "Has hecho " & obj.amount & " ramitas.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, "1456", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1456=Has hecho ¬1 ramitas.
 148         Call MakeObj(obj, Map, X, Y)
             'Seteamos la fogata como el nuevo TargetObj del user
 150         UserList(UserIndex).flags.TargetObj = FOGATA_APAG
@@ -2300,7 +2300,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
 
 178                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
                         ' Le mandamos un mensaje
-180                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, "1457", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1457=¡Has conseguido ¬1!
 
                     End If
 
@@ -2365,15 +2365,15 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 100     If UserList(LadronIndex).flags.Privilegios And (e_PlayerType.Consejero) Then Exit Sub
 102     If MapInfo(UserList(VictimaIndex).Pos.Map).Seguro = 1 Then Exit Sub
         If Not UserMod.CanMove(UserList(VictimaIndex).flags, UserList(VictimaIndex).Counters) Then
-'Msg1028= No podes robarle a objetivos inmovilizados.
-Call WriteLocaleMsg(LadronIndex, "1028", e_FontTypeNames.FONTTYPE_FIGHT)
+            'Msg1028= No podes robarle a objetivos inmovilizados.
+            Call WriteLocaleMsg(LadronIndex, "1028", e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
 
         End If
 
 104     If UserList(VictimaIndex).flags.EnConsulta Then
-'Msg1029= ¡No puedes robar a usuarios en consulta!
-Call WriteLocaleMsg(LadronIndex, "1029", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1029= ¡No puedes robar a usuarios en consulta!
+            Call WriteLocaleMsg(LadronIndex, "1029", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -2591,7 +2591,7 @@ Call WriteLocaleMsg(LadronIndex, "1029", e_FontTypeNames.FONTTYPE_INFO)
 256                         .Stats.GLD = .Stats.GLD + n
 
 258                         If .Stats.GLD > MAXORO Then .Stats.GLD = MAXORO
-260                         Call WriteConsoleMsg(LadronIndex, "Le has robado " & PonerPuntos(n) & " monedas de oro a " & UserList(VictimaIndex).Name, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon)
+                            Call WriteLocaleMsg(LadronIndex, "1458", e_FontTypeNames.FONTTYPE_New_Rojo_Salmon)  ' Msg1458=Le has robado ¬1 monedas de oro a ¬2
 262                         Call WriteConsoleMsg(VictimaIndex, UserList(LadronIndex).Name & " te ha robado " & PonerPuntos(n) & " monedas de oro.", e_FontTypeNames.FONTTYPE_New_Rojo_Salmon)
 264                         Call WriteUpdateGold(LadronIndex) 'Le actualizamos la billetera al ladron
 266                         Call WriteUpdateGold(VictimaIndex) 'Le actualizamos la billetera a la victima
@@ -2606,7 +2606,7 @@ Call WriteLocaleMsg(LadronIndex, "1029", e_FontTypeNames.FONTTYPE_INFO)
                 Else
                     'Msg1039= ¡No has logrado robar nada!
                     Call WriteLocaleMsg(LadronIndex, "1039", e_FontTypeNames.FONTTYPE_INFO)
-274                 Call WriteConsoleMsg(VictimaIndex, "¡" & .name & " ha intentado robarte!", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(VictimaIndex, "1459", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1459=¡¬1 ha intentado robarte!
 276                 Call SubirSkill(LadronIndex, e_Skill.Robar)
 
                 End If
@@ -2727,10 +2727,10 @@ Private Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Inte
                 End If
 
 152             If UserList(LadronIndex).clase = e_Class.Thief Then
-154                 Call WriteConsoleMsg(LadronIndex, "Has robado " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).Name, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon)
+                    Call WriteLocaleMsg(LadronIndex, "1460", e_FontTypeNames.FONTTYPE_New_Rojo_Salmon)  ' Msg1460=Has robado ¬1 ¬2
 156                 Call WriteConsoleMsg(VictimaIndex, UserList(LadronIndex).Name & " te ha robado " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).Name, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon)
                 Else
-158                 Call WriteConsoleMsg(LadronIndex, "Has hurtado " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).Name, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon)
+                    Call WriteLocaleMsg(LadronIndex, "1461", e_FontTypeNames.FONTTYPE_New_Rojo_Salmon)  ' Msg1461=Has hurtado ¬1 ¬2
 
                 End If
 
@@ -2827,7 +2827,7 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
 
                 End If
 
-                'Call WriteConsoleMsg(UserIndex, "¡Has conseguido algunas raices!", e_FontTypeNames.FONTTYPE_INFO)
+                'Call WriteLocaleMsg(UserIndex, "1462", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1462=¡Has conseguido algunas raices!
 144             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
 146             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .pos.x, .pos.y))
             Else
@@ -2875,7 +2875,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, _
 106             Call QuitarSta(UserIndex, 5)
             Else
 108             Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para talar.", e_FontTypeNames.FONTTYPE_INFO)
+                'Call WriteLocaleMsg(UserIndex, "1463", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1463=Estás muy cansado para talar.
 110             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Sub
 
@@ -3014,7 +3014,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, _
 106             Call QuitarSta(UserIndex, 5)
             Else
 108             Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para excavar.", e_FontTypeNames.FONTTYPE_INFO)
+                'Call WriteLocaleMsg(UserIndex, "1464", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1464=Estás muy cansado para excavar.
 110             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Sub
 
@@ -3093,7 +3093,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, _
 
 154                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
                         ' Le mandamos un mensaje
-156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).ObjIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, "1465", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1465=¡Has conseguido ¬1!
 
                     End If
 
@@ -3175,7 +3175,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, _
             End If
 
 104         If .flags.Montado = 0 And .Counters.EnCombate > 0 Then
-106             Call WriteConsoleMsg(UserIndex, "Estás en combate, debes aguardar " & .Counters.EnCombate & " segundo(s) para montar...", e_FontTypeNames.FONTTYPE_INFOBOLD)
+                Call WriteLocaleMsg(UserIndex, "1466", e_FontTypeNames.FONTTYPE_INFOBOLD)  ' Msg1466=Estás en combate, debes aguardar ¬1 segundo(s) para montar...
                 Exit Sub
 
             End If
