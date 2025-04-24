@@ -1738,17 +1738,17 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
     
                 Dim ExpaDar As Double
         
-                '[Nacho] Chekeamos que las variables sean validas para las operaciones
+                'Chekeamos que las variables sean validas para las operaciones
 106             If ElDaño <= 0 Then ElDaño = 0
 108             If NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
     
-                '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
+                'La experiencia a dar es la porcion de vida quitada * toda la experiencia
                 
 110             ExpaDar = CDbl(ElDaño) * CDbl(NpcList(NpcIndex).GiveEXP) / NpcList(NpcIndex).Stats.MaxHp
     
 112             If ExpaDar <= 0 Then Exit Sub
     
-                '[Nacho] Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
+                'Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
                 'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
                 'Podria dar un numero fraccionario, esas fracciones se acumulan hasta formar enteros ;P
 114             If ExpaDar > NpcList(NpcIndex).flags.ExpCount Then
@@ -1833,19 +1833,19 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         Dim Index                   As Integer
 
         'If UserList(UserIndex).Grupo.EnGrupo Then
-        '[Nacho] Chekeamos que las variables sean validas para las operaciones
+        'Chekeamos que las variables sean validas para las operaciones
 100     If NpcIndex = 0 Then Exit Sub
 102     If UserIndex = 0 Then Exit Sub
 104     If ElDaño <= 0 Then ElDaño = 0
 106     If NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
 108     If ElDaño > NpcList(NpcIndex).Stats.MinHp Then ElDaño = NpcList(NpcIndex).Stats.MinHp
     
-        '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
+        'La experiencia a dar es la porcion de vida quitada * toda la experiencia
 110     ExpaDar = CLng((ElDaño) * (NpcList(NpcIndex).GiveEXP / NpcList(NpcIndex).Stats.MaxHp))
 
 112     If ExpaDar <= 0 Then Exit Sub
 
-        '[Nacho] Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
+        'Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
         'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
         'Podria dar un numero fraccionario, esas fracciones se acumulan hasta formar enteros ;P
 114     If ExpaDar > NpcList(NpcIndex).flags.ExpCount Then
