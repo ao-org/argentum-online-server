@@ -287,8 +287,8 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
 104     Call WarpUserChar(UserIndex, Prision.Map, Prision.X, Prision.Y, True)
         
 106     If LenB(GmName) = 0 Then
-'Msg1107= Has sido encarcelado, deberas permanecer en la carcel  ¬1 minutos.
-Call WriteLocaleMsg(UserIndex, "1107", e_FontTypeNames.FONTTYPE_INFO, minutos)
+            'Msg1107= Has sido encarcelado, deberas permanecer en la carcel  ¬1 minutos.
+            Call WriteLocaleMsg(UserIndex, "1107", e_FontTypeNames.FONTTYPE_INFO, minutos)
         Else
 110         Call WriteConsoleMsg(UserIndex, GmName & " te ha encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", e_FontTypeNames.FONTTYPE_INFO)
 

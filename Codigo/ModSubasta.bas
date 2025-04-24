@@ -164,7 +164,7 @@ Public Sub FinalizarSubasta()
             End If
 
 158         Call LogearEventoDeSubasta("Se entrego el item en mano.")
-160         Call WriteConsoleMsg(tUser.ArrayIndex, "Felicitaciones, has ganado la subasta.", e_FontTypeNames.FONTTYPE_SUBASTA)
+160         Call WriteLocaleMsg(tUser.ArrayIndex, "1440", e_FontTypeNames.FONTTYPE_SUBASTA) ' Msg1440=Felicitaciones, has ganado la subasta.
 
         End If
 
@@ -182,7 +182,7 @@ Public Sub FinalizarSubasta()
         Else
 178         UserList(Subastador.ArrayIndex).Stats.GLD = UserList(Subastador.ArrayIndex).Stats.GLD + Subasta.MejorOferta
         
-180         Call WriteConsoleMsg(Subastador.ArrayIndex, "Felicitaciones, has ganado " & PonerPuntos(Subasta.MejorOferta) & " monedas de oro de tú subasta.", e_FontTypeNames.FONTTYPE_SUBASTA)
+180         Call WriteLocaleMsg(Subastador.ArrayIndex, "1441", e_FontTypeNames.FONTTYPE_SUBASTA, PonerPuntos(Subasta.MejorOferta)) ' Msg1441=Felicitaciones, has ganado ¬1 monedas de oro de tú subasta.
         
 182         Call WriteUpdateGold(Subastador.ArrayIndex)
 184         Call LogearEventoDeSubasta("Oro entregado en la billetera")
