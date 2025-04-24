@@ -901,7 +901,7 @@ On Error Resume Next
         Case ClientPacketID.eActionOnGroupFrame
             Call HandleActionOnGroupFrame(UserIndex)
         Case ClientPacketID.eSendTelemetry
-            Call HandleSendTelemetry(UserIndex)
+            'TODO: remove eSendTelemetry
         Case ClientPacketID.eSetHotkeySlot
             Call HandleSetHotkeySlot(UserIndex)
         Case ClientPacketID.eUseHKeySlot
@@ -10910,25 +10910,6 @@ HandleActionOnGroupFrame_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleActionOnGroupFrame UserId:" & UserIndex, Erl)
 End Sub
 
-Public Sub HandleSendTelemetry(ByVal UserIndex As Integer)
-On Error GoTo HandleSendTelemetry_Err:
-    Dim TelemetryData(256) As Byte
-    Dim TelemetrySize As Long
-    Dim TelemetryIndex As Long
-    TelemetrySize = Reader.ReadInt32
-    Dim i As Long
-    For i = 0 To TelemetrySize - 1
-        TelemetryData(i) = Reader.ReadInt8
-    Next i
-    Dim TelemetryErrors(512) As Byte
-    TelemetrySize = AOT_GetTelemetryResult(TelemetryData(0), TelemetrySize, UserList(UserIndex).ID, TelemetryErrors(0), 512)
-    If TelemetrySize > 0 Then
-        Call AddLogToCircularBuffer(StrConv(TelemetryErrors, vbUnicode))
-    End If
-    Exit Sub
-HandleSendTelemetry_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleSendTelemetry", Erl)
-End Sub
 
 Public Sub HandleSetHotkeySlot(ByVal UserIndex As Integer)
 On Error GoTo HandleSetHotkeySlot_Err:

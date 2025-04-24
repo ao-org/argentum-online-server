@@ -834,9 +834,6 @@ On Error GoTo Complete_ConnectUser_Err
         
 1225        Call WriteContadores(UserIndex)
 1227        Call WritePrivilegios(UserIndex)
-            If EnableTelemetry Then
-                Call WriteRequestTelemetry(UserIndex)
-            End If
             Call RestoreDCUserCache(UserIndex)
             Call CustomScenarios.UserConnected(userIndex)
             Call AntiCheat.OnNewPlayerConnect(UserIndex)

@@ -205,9 +205,6 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
         Call SetupUserFlags(UserList(UserIndex), RS)
         Call SetupUserFactionInfo(UserList(UserIndex), RS)
         
-        ' Update telemetry key.
-        Call UpdateUserTelemetryKey(UserIndex)
-        
         ' Refactored sections: load spells, pets, bank inventory, skills, quests, and completed quests.
         Call SetupUserSpells(UserList(UserIndex))
         Call SetupUserPets(UserList(UserIndex))
@@ -279,7 +276,6 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .ChatGlobal = RS!chat_global
         .ChatCombate = RS!chat_combate
         .Stats.Advertencias = RS!warnings
-        .TelemetryInfo = RS!user_key
         .GuildIndex = SanitizeNullValue(RS!Guild_Index, 0)
         .LastGuildRejection = SanitizeNullValue(RS!guild_rejected_because, vbNullString)
     End With
@@ -518,9 +514,8 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
                 Call LogDatabaseError("Error trying to save an user not logged in SaveCharacterDB")
                 Exit Sub
             End If
-            Call SetUserTelemetryKey(UserIndex)
               
-104         ReDim Params(64)
+104         ReDim Params(63)
 
             Dim i As Integer
         
@@ -587,7 +582,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 282         Params(post_increment(i)) = .flags.ReturnPos.map
 284         Params(post_increment(i)) = .flags.ReturnPos.x
 286         Params(post_increment(i)) = .flags.ReturnPos.y
-287         Params(post_increment(i)) = .TelemetryInfo
+
 
             ' WHERE block
 288         Params(post_increment(i)) = .ID
@@ -794,7 +789,7 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
         
             Dim i As Integer
             i = 0
-104         ReDim Params(0 To 27)
+104         ReDim Params(0 To 26)
 
             '  ************ Basic user data *******************
 106         Params(post_increment(i)) = .Name
@@ -824,7 +819,6 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
 186         Params(post_increment(i)) = .Stats.MinAGU
 194         Params(post_increment(i)) = .flags.Desnudo
 196         Params(post_increment(i)) = .Faccion.Status
-197         Params(post_increment(i)) = .TelemetryInfo
 198         Call Query(QUERY_SAVE_MAINPJ, Params)
 
             ' Para recibir el ID del user
