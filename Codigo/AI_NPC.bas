@@ -54,7 +54,6 @@ End Sub
 Public Sub NpcAI(ByVal NpcIndex As Integer)
         On Error GoTo ErrorHandler
 
-        'Debug.Print "NPC: " & NpcList(NpcIndex).Name
 100     With NpcList(NpcIndex)
 
 102         Select Case .Movement
