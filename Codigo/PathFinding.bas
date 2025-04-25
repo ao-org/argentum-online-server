@@ -39,16 +39,16 @@ Private OpenVertices(1000) As t_Position
 Private VertexCount As Integer
 
 Private Table(XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As t_IntermidiateWork
-
-Private DirOffset(e_Heading.NORTH To e_Heading.WEST) As t_Position
-
-Private ClosestVertex As t_Position
-Private ClosestDistance As Single
-
-Private Const MAXINT As Integer = 32767
-
-' WyroX: Usada para mover memoria... VB6 es un desastre en cuanto a contenedores dinámicos
-Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDest As Any, pSource As Any, ByVal Length As Long)
+Private DirOffset(e_Heading.NORTH To e_Heading.WEST)                  As t_Position
+Private ClosestVertex                                                 As t_Position
+Private ClosestDistance                                               As Single
+Private Const MAXINT                                                  As Integer = 32767
+'Usada para mover memoria... VB6 es un desastre en cuanto a contenedores dinámicos
+Private Declare Sub MoveMemory _
+                Lib "Kernel32" _
+                Alias "RtlMoveMemory" (pDest As Any, _
+                                       pSource As Any, _
+                                       ByVal length As Long)
 
 Public Sub InitPathFinding()
         

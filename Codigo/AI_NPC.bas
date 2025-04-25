@@ -26,12 +26,9 @@ Attribute VB_Name = "AI"
 '
 '
 Option Explicit
-
-' WyroX: Hardcodeada de la vida...
-Public Const FUEGOFATUO      As Integer = 964
-Public Const ELEMENTAL_VIENTO      As Integer = 963
-Public Const ELEMENTAL_FUEGO      As Integer = 962
-
+Public Const FUEGOFATUO       As Integer = 964
+Public Const ELEMENTAL_VIENTO As Integer = 963
+Public Const ELEMENTAL_FUEGO  As Integer = 962
 'Damos a los NPCs el mismo rango de vison que un PJ
 Public Const RANGO_VISION_X  As Byte = 11
 Public Const RANGO_VISION_Y  As Byte = 9
@@ -50,7 +47,7 @@ End Sub
 
 Public Sub NpcAI(ByVal NpcIndex As Integer)
         On Error GoTo ErrorHandler
-        'Debug.Print "NPC: " & NpcList(NpcIndex).Name
+
 100     With NpcList(NpcIndex)
 102         Select Case .Movement
                 Case e_TipoAI.Estatico
@@ -1254,12 +1251,9 @@ NpcLanzaUnSpellSobreNpc_Err:
 
 End Sub
 
-
-' ---------------------------------------------------------------------------------------------------
 '                                       HELPERS
-' ---------------------------------------------------------------------------------------------------
-
-Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+Private Function EsObjetivoValido(ByVal NpcIndex As Integer, _
+                                  ByVal UserIndex As Integer) As Boolean
 100     If UserIndex = 0 Then Exit Function
 
         ' Esta condicion debe ejecutarse independiemente de el modo de busqueda.

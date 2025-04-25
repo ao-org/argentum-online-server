@@ -65,17 +65,13 @@ Public Function NameIndex(ByRef username As String) As t_UserReference
         NameIndex = UserRef
 End Function
 
-Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef X As Byte, ByRef Y As Byte)
-        '***************************************************
-        'Autor: ZaMa
-        'Last Modification: 26/03/2009
         'Search for a Legal pos for the user who is being teleported.
-        '***************************************************
-        
+Public Sub FindLegalPos(ByVal UserIndex As Integer, _
+                        ByVal Map As Integer, _
+                        ByRef x As Byte, _
+                        ByRef y As Byte)
         On Error GoTo FindLegalPos_Err
-
-100     If MapData(Map, X, Y).UserIndex <> 0 Or MapData(Map, X, Y).NpcIndex <> 0 Then
-                    
+100     If MapData(Map, x, y).UserIndex <> 0 Or MapData(Map, x, y).NpcIndex <> 0 Then
             ' Se teletransporta a la misma pos a la que estaba
 102         If MapData(Map, X, Y).UserIndex = UserIndex Then Exit Sub
                             
@@ -252,11 +248,6 @@ End Select
 End Function
 
 Public Function EsGM(ByVal UserIndex As Integer) As Boolean
-        '***************************************************
-        'Autor: Pablo (ToxicWaste)
-        'Last Modification: 23/01/2007
-        '***************************************************
-        
         On Error GoTo EsGM_Err
         
 100     If UserIndex = 0 Then
@@ -378,24 +369,18 @@ End Function
 Public Function GetExitTransport(ByVal Map As Integer, ByVal ExcludeIndex As Integer) As Integer
     Dim output As Integer
     Do
-        output = RandomNumber(0, UBound(MapInfo(Map).TransportNetwork))
-    Loop While output = excludeIndex
-    GetExitTransport = output
+        Output = RandomNumber(0, UBound(MapInfo(Map).TransportNetwork))
+    Loop While Output = ExcludeIndex
+
+    GetExitTransport = Output
+
 End Function
 
-Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
-
-        '***************************************************
-        'Autor: Pablo (ToxicWaste) & Unknown (orginal version)
-        'Last Modification: 23/01/2007
-        'Handles the Map passage of Users. Allows the existance
-        'of exclusive maps for Newbies, Royal Army and Caos Legion members
-        'and enables GMs to enter every map without restriction.
-        'Uses: Mapinfo(map).Restringir = "NEWBIE" (newbies), "ARMADA", "CAOS", "FACCION" or "NO".
-        '***************************************************
+Public Sub DoTileEvents(ByVal UserIndex As Integer, _
+                        ByVal Map As Integer, _
+                        ByVal x As Integer, _
+                        ByVal y As Integer)
         On Error GoTo ErrHandler
-
-        Dim nPos   As t_WorldPos
 
         Dim EsTeleport As Boolean
         Dim TelepRadio As Byte
@@ -672,13 +657,11 @@ Private Function ValidNPCSpawnPos(OutPos As t_WorldPos, ByVal map As Integer, By
 
 End Function
 
-Sub ClosestLegalPos(Pos As t_WorldPos, ByRef nPos As t_WorldPos, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True)
-        '*****************************************************************
-        'Author: Unknown (original version)
-        'Last Modification: 24/01/2007 (ToxicWaste)
         'Encuentra la posicion legal mas cercana y la guarda en nPos
-        '*****************************************************************
-        
+Sub ClosestLegalPos(pos As t_WorldPos, _
+                    ByRef nPos As t_WorldPos, _
+                    Optional ByVal PuedeAgua As Boolean = False, _
+                    Optional ByVal PuedeTierra As Boolean = True)
         On Error GoTo ClosestLegalPos_Err
         
 
@@ -731,11 +714,8 @@ ClosestLegalPos_Err:
         
 End Sub
 
-Sub ClosestStablePos(Pos As t_WorldPos, ByRef nPos As t_WorldPos)
-        '*****************************************************************
         'Encuentra la posicion legal mas cercana que no sea un portal y la guarda en nPos
-        '*****************************************************************
-        
+Sub ClosestStablePos(pos As t_WorldPos, ByRef nPos As t_WorldPos)
         On Error GoTo ClosestStablePos_Err
         
 
@@ -836,11 +816,10 @@ End Function
 
 Sub HeadtoPos(ByVal Head As e_Heading, ByRef Pos As t_WorldPos)
         On Error GoTo HeadtoPos_Err
-        '*****************************************************************
+
         'Toma una posicion y se mueve hacia donde esta perfilado
-        '*****************************************************************
-        Dim X  As Integer
-        Dim Y  As Integer
+        Dim x  As Integer
+        Dim y  As Integer
         Dim nX As Integer
         Dim nY As Integer
 100     X = Pos.X
@@ -930,12 +909,14 @@ Function Rotate_Heading(ByVal Heading As e_Heading, ByVal R As Integer) As e_Hea
     
 End Function
 
-Function LegalPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal Montado As Boolean = False, Optional ByVal PuedeTraslado As Boolean = True, Optional ByVal PuedeBloqueoParcial As Boolean = True) As Boolean
-        '***************************************************
-        'Autor: Pablo (ToxicWaste) & Unknown (orginal version)
-        'Last Modification: 23/01/2007
-        'Checks if the position is Legal.
-        '***************************************************
+Function LegalPos(ByVal Map As Integer, _
+                  ByVal x As Integer, _
+                  ByVal y As Integer, _
+                  Optional ByVal PuedeAgua As Boolean = False, _
+                  Optional ByVal PuedeTierra As Boolean = True, _
+                  Optional ByVal Montado As Boolean = False, _
+                  Optional ByVal PuedeTraslado As Boolean = True, _
+                  Optional ByVal PuedeBloqueoParcial As Boolean = True) As Boolean
         '¿Es un mapa valido?
         
         On Error GoTo LegalPos_Err
@@ -1978,8 +1959,7 @@ Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As 
             ' WyroX: Vida inicial
 174         .Stats.MaxHp = .Stats.UserAtributos(e_Atributos.Constitucion)
 176         .Stats.MinHp = .Stats.MaxHp
-
-            ' WyroX: Maná inicial
+            'Maná inicial
 178         .Stats.MaxMAN = .Stats.UserAtributos(e_Atributos.Inteligencia) * ModClase(.clase).ManaInicial
 180         .Stats.MinMAN = .Stats.MaxMAN
 

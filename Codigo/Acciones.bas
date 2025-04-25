@@ -520,8 +520,8 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         Exit Sub
 
                     End If
-                    
-                    ' WyroX: Hacemos que se detenga a hablar un momento :P
+
+                    ' Hacemos que se detenga a hablar un momento :P
 170                 If NpcList(TempCharIndex).Movement = Caminata Then
 172                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - NpcList(TempCharIndex).IntervaloMovimiento ' 5 segundos
                     End If

@@ -1095,13 +1095,8 @@ Sub RefreshCharStatus(ByVal UserIndex As Integer)
         On Error GoTo RefreshCharStatus_Err
         
 
-        '*************************************************
-        'Author: Tararira
-        'Last modified: 6/04/2007
         'Refreshes the status and tag of UserIndex.
-        '*************************************************
-        Dim klan As String, Name As String
-
+        Dim klan As String, name As String
 100     If UserList(UserIndex).showName Then
 
 102         If UserList(UserIndex).flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
@@ -1239,21 +1234,6 @@ HayError:
 End Sub
 
 Sub CheckUserLevel(ByVal UserIndex As Integer)
-        '*************************************************
-        'Author: Unknown
-        'Last modified: 01/10/2007
-        'Chequea que el usuario no halla alcanzado el siguiente nivel,
-        'de lo contrario le da la vida, mana, etc, correspodiente.
-        '07/08/2006 Integer - Modificacion de los valores
-        '01/10/2007 Tavo - Corregido el BUG de STAT_MAXELV
-        '24/01/2007 Pablo (ToxicWaste) - Agrego modificaciones en ELU al subir de nivel.
-        '24/01/2007 Pablo (ToxicWaste) - Agrego modificaciones de la subida de mana de los magos por lvl.
-        '13/03/2007 Pablo (ToxicWaste) - Agrego diferencias entre el 18 y el 19 en Constitución.
-        '09/01/2008 Pablo (ToxicWaste) - Ahora el incremento de vida por Consitución se controla desde Balance.dat
-        '17/12/2020 WyroX - Distribución normal de las vidas
-        '15/07/2024 Shugar - Vuelvo a implementar vidas variables y les agrego un capeo min/max
-        '*************************************************
-
         On Error GoTo ErrHandler
 
         Dim Pts              As Integer
@@ -1676,11 +1656,7 @@ Public Function InvertHeading(ByVal nHeading As e_Heading) As e_Heading
     
         
 
-        '*************************************************
-        'Author: ZaMa
-        'Last modified: 30/03/2009
         'Returns the heading opposite to the one passed by val.
-        '*************************************************
 100     Select Case nHeading
 
             Case e_Heading.EAST
@@ -2149,12 +2125,7 @@ End Sub
 '
 
 Sub UserDie(ByVal UserIndex As Integer)
-
-        '************************************************
-        'Author: Uknown
-        'Last Modified: 04/15/2008 (NicoNZ)
         'Ahora se resetea el counter del invi
-        '************************************************
         On Error GoTo ErrorHandler
 
         Dim i  As Long
@@ -2779,13 +2750,6 @@ End Sub
 Public Sub CancelExit(ByVal UserIndex As Integer)
         
         On Error GoTo CancelExit_Err
-        
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 04/02/08
-        '
-        '***************************************************
 100     If UserList(UserIndex).Counters.Saliendo And UserList(UserIndex).ConnectionDetails.ConnIDValida Then
 
             ' Is the user still connected?
@@ -2823,47 +2787,37 @@ CancelExit_Err:
 End Sub
 
 Sub VolverCriminal(ByVal UserIndex As Integer)
-        
-    On Error GoTo VolverCriminal_Err
-        
+        On Error GoTo VolverCriminal_Err
 
-    '**************************************************************
-    'Author: Unknown
-    'Last Modify Date: 21/06/2006
-    'Nacho: Actualiza el tag al cliente
-    '**************************************************************
-        
-100 With UserList(UserIndex)
-        
-102     If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = 6 Then Exit Sub
+100     With UserList(UserIndex)
+102         If MapData(.pos.Map, .pos.x, .pos.y).trigger = 6 Then Exit Sub
+104         If .flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero) Then
+106             If .Faccion.Status = e_Facciones.Armada Then
+                    'NUNCA debería pasar, pero dejo un log por si las...
+                    Call TraceError(111, "Un personaje de la Armada Real atacó un ciudadano.", "UsUaRiOs.VolverCriminal")
 
-104     If .flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero) Then
-   
-106         If .Faccion.Status = e_Facciones.Armada Then
-                ' WyroX: NUNCA debería pasar, pero dejo un log por si las...
-                Call TraceError(111, "Un personaje de la Armada Real atacó un ciudadano.", "UsUaRiOs.VolverCriminal")
-                'Call ExpulsarFaccionReal(UserIndex)
+                    'Call ExpulsarFaccionReal(UserIndex)
+                End If
+
             End If
 
-        End If
+108         If .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then Exit Sub
+            If .Faccion.Status = e_Facciones.Ciudadano Then
+                .Faccion.FactionScore = 0
 
-108     If .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then Exit Sub
-        If .Faccion.Status = e_Facciones.Ciudadano Then
-            .Faccion.FactionScore = 0
-        End If
-110     .Faccion.Status = 0
-        
-112     If MapInfo(.Pos.Map).NoPKs And Not EsGM(UserIndex) And MapInfo(.Pos.Map).Salida.Map <> 0 Then
-114         ' Msg580=En este mapa no se admiten criminales.
-            Call WriteLocaleMsg(UserIndex, "580", e_FontTypeNames.FONTTYPE_INFO)
-116         Call WarpUserChar(UserIndex, MapInfo(.Pos.Map).Salida.Map, MapInfo(.Pos.Map).Salida.X, MapInfo(.Pos.Map).Salida.Y, True)
-        Else
-118         Call RefreshCharStatus(UserIndex)
-        End If
+            End If
 
-    End With
-        
-    Exit Sub
+110         .Faccion.Status = 0
+112         If MapInfo(.pos.Map).NoPKs And Not EsGM(UserIndex) And MapInfo(.pos.Map).Salida.Map <> 0 Then
+114             ' Msg580=En este mapa no se admiten criminales.
+                Call WriteLocaleMsg(UserIndex, "580", e_FontTypeNames.FONTTYPE_INFO)
+116             Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
+            Else
+118             Call RefreshCharStatus(UserIndex)
+
+            End If
+
+        End With
 
 VolverCriminal_Err:
 120     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.VolverCriminal", Erl)
@@ -2872,37 +2826,31 @@ VolverCriminal_Err:
 End Sub
 
 Sub VolverCiudadano(ByVal UserIndex As Integer)
-    '**************************************************************
-    'Author: Unknown
-    'Last Modify Date: 21/06/2006
-    'Nacho: Actualiza el tag al cliente.
-    '**************************************************************
-        
-    On Error GoTo VolverCiudadano_Err
-        
-100 With UserList(UserIndex)
+        On Error GoTo VolverCiudadano_Err
 
-102     If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = 6 Then Exit Sub
-        If .Faccion.Status = e_Facciones.Criminal Or .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then
-            .Faccion.FactionScore = 0
-        End If
-104     .Faccion.Status = e_Facciones.Ciudadano
+100     With UserList(UserIndex)
+102         If MapData(.pos.Map, .pos.x, .pos.y).trigger = 6 Then Exit Sub
+            If .Faccion.Status = e_Facciones.Criminal Or .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then
+                .Faccion.FactionScore = 0
 
-106     If MapInfo(.Pos.Map).NoCiudadanos And Not EsGM(UserIndex) And MapInfo(.Pos.Map).Salida.Map <> 0 Then
-108         ' Msg581=En este mapa no se admiten ciudadanos.
-            Call WriteLocaleMsg(UserIndex, "581", e_FontTypeNames.FONTTYPE_INFO)
-110         Call WarpUserChar(UserIndex, MapInfo(.Pos.Map).Salida.Map, MapInfo(.Pos.Map).Salida.X, MapInfo(.Pos.Map).Salida.Y, True)
-        Else
-112         Call RefreshCharStatus(UserIndex)
-        End If
+            End If
 
-        Call WriteSafeModeOn(UserIndex)
-        .flags.Seguro = True
+104         .Faccion.Status = e_Facciones.Ciudadano
+106         If MapInfo(.pos.Map).NoCiudadanos And Not EsGM(UserIndex) And MapInfo(.pos.Map).Salida.Map <> 0 Then
+108             ' Msg581=En este mapa no se admiten ciudadanos.
+                Call WriteLocaleMsg(UserIndex, "581", e_FontTypeNames.FONTTYPE_INFO)
+110             Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
+            Else
+112             Call RefreshCharStatus(UserIndex)
 
-    End With
-        
-    Exit Sub
+            End If
 
+            Call WriteSafeModeOn(UserIndex)
+            .flags.Seguro = True
+
+        End With
+
+        Exit Sub
 VolverCiudadano_Err:
 114     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.VolverCiudadano", Erl)
 
@@ -3022,11 +2970,6 @@ TieneArmaduraCazador_Err:
 End Function
 
 Public Sub SetModoConsulta(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Torres Patricio (Pato)
-        'Last Modification: 05/06/10
-        '
-        '***************************************************
 
         Dim sndNick As String
 

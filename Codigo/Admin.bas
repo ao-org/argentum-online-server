@@ -350,13 +350,7 @@ End Function
 Public Function UserDarPrivilegioLevel(ByVal Name As String) As e_PlayerType
         
         On Error GoTo UserDarPrivilegioLevel_Err
-        
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 03/02/07
-        'Last Modified By: Juan Martín Sotuyo Dodero (Maraxus)
-        '***************************************************
-100     If EsAdmin(Name) Then
+100     If EsAdmin(name) Then
 102         UserDarPrivilegioLevel = e_PlayerType.Admin
 104     ElseIf EsDios(Name) Then
 106         UserDarPrivilegioLevel = e_PlayerType.Dios
@@ -510,17 +504,13 @@ CompararPrivilegiosUser_Err:
         
 End Function
 
-Public Function CompararPrivilegios(ByVal Izquierda As e_PlayerType, ByVal Derecha As e_PlayerType) As Integer
-    '**************************************************************************************************************************
-    'Author: Jopi
-    'Last Modification: 05/07/2020
-    '   Funcion encargada de comparar los privilegios entre 2 Game Masters.
-    '   Funciona de la misma forma que el operador spaceship de PHP.
-    '       - Si los privilegios de el de la izquierda son MAYORES que el de la derecha, devuelve 1
-    '       - Si los privilegios de el de la izquierda son IGUALES que el de la derecha, devuelve 0
-    '       - Si los privilegios de el de la izquierda son MENORES que el de la derecha, devuelve -1
-    '**************************************************************************************************************************
-        
+Public Function CompararPrivilegios(ByVal Izquierda As e_PlayerType, _
+                                    ByVal Derecha As e_PlayerType) As Integer
+        '           Funcion encargada de comparar los privilegios entre 2 Game Masters.
+        '           Funciona de la misma forma que el operador spaceship de PHP.
+        '               - Si los privilegios de el de la izquierda son MAYORES que el de la derecha, devuelve 1
+        '               - Si los privilegios de el de la izquierda son IGUALES que el de la derecha, devuelve 0
+        '               - Si los privilegios de el de la izquierda son MENORES que el de la derecha, devuelve -1
         On Error GoTo CompararPrivilegios_Err
         
         Dim PrivilegiosGM As e_PlayerType

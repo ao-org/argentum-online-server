@@ -919,8 +919,6 @@ On Error GoTo Handler
 Handler:
     Call TraceError(Err.Number, Err.Description, "frmMain.Invasion_Timer")
 
-    
-    ' **********************************
 End Sub
 
 Private Sub t_Extraer_Timer()
@@ -965,7 +963,7 @@ Private Sub tControlHechizos_Timer()
         
 End Sub
 
-' WyroX: Comprobamos cada 10 segundos, porque no es necesaria tanta precisión
+'Comprobamos cada 10 segundos, porque no es necesaria tanta precisión
 Private Sub TiempoRetos_Timer()
 
 On Error GoTo Handler
@@ -2132,7 +2130,7 @@ Private Sub tPiqueteC_Timer()
         If UserList(i).flags.UserLogged Then
             If MapData(UserList(i).Pos.Map, UserList(i).Pos.X, UserList(i).Pos.Y).trigger = e_Trigger.ANTIPIQUETE Then
                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
-                'WyroX: Le empiezo a avisar a partir de los 18 segundos, para no spamear
+                'Le empiezo a avisar a partir de los 18 segundos, para no spamear
                 If UserList(i).Counters.PiqueteC > 3 Then
                     Call WriteLocaleMsg(i, "70", e_FontTypeNames.FONTTYPE_INFO)
                 End If
@@ -2140,7 +2138,7 @@ Private Sub tPiqueteC_Timer()
                 If UserList(i).Counters.PiqueteC > 10 Then
                     UserList(i).Counters.PiqueteC = 0
                     'Call Encarcelar(i, TIEMPO_CARCEL_PIQUETE)
-                    'WyroX: En vez de encarcelarlo, lo sacamos del juego.
+                    'En vez de encarcelarlo, lo sacamos del juego.
                     'Ojo! No sï¿½ si se puede abusar de esto para evitar los 10 segundos al salir
                     Call WriteDisconnect(i)
                     Call CloseSocket(i)

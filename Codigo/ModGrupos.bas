@@ -50,8 +50,8 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
 108         Call WriteConsoleMsg(UserIndex, "Te faltan " & (skillsNecesarios - Remitente.Stats.UserSkills(e_Skill.liderazgo)) & " puntos en Liderazgo para liderar un grupo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub
         End If
-        
-        'HarThaoS: Si invita a un gm no lo dejo
+
+        'Si invita a un gm no lo dejo
 110     If EsGM(InvitadoIndex) Then
 112         Call WriteConsoleMsg(UserIndex, "No puedes invitar a un grupo a un GM.", e_FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub

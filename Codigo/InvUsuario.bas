@@ -1712,14 +1712,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 
         On Error GoTo hErr
 
-        '*************************************************
-        'Author: Unknown
-        'Last modified: 24/01/2007
-        'Handels the usage of items from inventory box.
-        '24/01/2007 Pablo (ToxicWaste) - Agrego el Cuerno de la Armada y la Legión.
-        '24/01/2007 Pablo (ToxicWaste) - Utilización nueva de Barco en lvl 20 por clase Pirata y Pescador.
-        '*************************************************
-
         Dim obj      As t_ObjData
 
         Dim ObjIndex As Integer
