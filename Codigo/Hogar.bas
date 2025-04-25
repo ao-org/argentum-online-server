@@ -78,7 +78,15 @@ End Sub
 '
 
 Public Sub TravelingEffect(ByVal UserIndex As Integer)
+        '******************************************************
+        'Author: ZaMa
+        'Last Update: 01/06/2010 (ZaMa)
+        '******************************************************
+        
         On Error GoTo TravelingEffect_Err
+    
+        
+
         ' Si ya paso el tiempo de penalizacion
 100     If IntervaloGoHome(UserIndex) Then
 102         Call HomeArrival(UserIndex)
@@ -95,9 +103,17 @@ End Sub
 
 
 Public Sub HomeArrival(ByVal UserIndex As Integer)
+        '**************************************************************
+        'Author: ZaMa
+        'Last Modify by: ZaMa
+        'Last Modify Date: 01/06/2010
         'Teleports user to its home.
+        '**************************************************************
+        
         On Error GoTo HomeArrival_Err
-
+    
+        
+    
         Dim tX   As Integer
         Dim tY   As Integer
         Dim tMap As Integer
@@ -154,7 +170,16 @@ Public Function IntervaloGoHome(ByVal UserIndex As Integer, _
                                 Optional ByVal Actualizar As Boolean = False) As Boolean
         
         On Error GoTo IntervaloGoHome_Err
+    
+        
 
+        '**************************************************************
+        'Author: ZaMa
+        'Last Modify by: ZaMa
+        'Last Modify Date: 01/06/2010
+        '01/06/2010: ZaMa - Add the Timer which determines wether the user can be teleported to its home or not
+        '**************************************************************
+    
         Dim TActual As Long
 100         TActual = GetTickCount()
     

@@ -140,6 +140,14 @@ QuitarMascotaNpc_Err:
 End Sub
 
 Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
+
+        '********************************************************
+        'Author: Unknown
+        'Llamado cuando la vida de un NPC llega a cero.
+        'Last Modify Date: 24/01/2007
+        '22/06/06: (Nacho) Chequeamos si es pretoriano
+        '24/01/2007: Pablo (ToxicWaste): Agrego para actualización de tag si cambia de status.
+        '********************************************************
         On Error GoTo ErrHandler
         
         Dim MiNPC As t_Npc
@@ -1749,7 +1757,15 @@ ErrHandler:
 End Function
 
 Sub QuitarMascota(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+        '***************************************************
+        'Author: Unknown
+        'Last Modification: -
+        '
+        '***************************************************
+        
         On Error GoTo QuitarMascota_Err
+    
+        
 
         Dim i As Integer
     

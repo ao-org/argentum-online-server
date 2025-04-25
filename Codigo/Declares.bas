@@ -947,7 +947,11 @@ Public Const STAT_MAXHIT              As Integer = 999
 
 Public Const STAT_MAXDEF              As Byte = 99
 
+' **************************************************************
+' **************************************************************
 ' ************************ TIPOS *******************************
+' **************************************************************
+' **************************************************************
 'these two types are basically the same but intended to be used for different array, I'll keep them like this to prevent mixing refences
 Public Type t_UserReference
     'hold and index to a UserIndex, this elements are reused all the time so we also keep a
@@ -1494,6 +1498,7 @@ Public Type t_Retos
     AnchoSala As Integer
     AltoSala As Integer
 End Type
+' **************************************************
 
 Public Enum e_ObjFlags
     e_Bindable = 1
@@ -2461,8 +2466,15 @@ Public MacroIterations(1 To MAX_PACKET_COUNTERS) As Long
 Public PacketTimerThreshold(1 To MAX_PACKET_COUNTERS) As Long
     
 
+'*********************************************************
+'*********************************************************
+'*********************************************************
+'*********************************************************
 '**  T I P O S   D E    N P C S **************************
-Public PacketTimerThreshold(1 To MAX_PACKET_COUNTERS) As Long
+'*********************************************************
+'*********************************************************
+'*********************************************************
+'*********************************************************
 
 Public Type t_NPCStats
 

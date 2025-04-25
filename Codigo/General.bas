@@ -377,8 +377,14 @@ End Function
 Private Function HayLava(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
         
         On Error GoTo HayLava_Err
-100     If Map > 0 And Map < NumMaps + 1 And x > 0 And x < 101 And y > 0 And y < 101 Then
-102         If MapData(Map, x, y).Graphic(1) >= 5837 And MapData(Map, x, y).Graphic(1) <= 5852 Then
+        
+
+        '***************************************************
+        'Autor: Nacho (Integer)
+        'Last Modification: 03/12/07
+        '***************************************************
+100     If Map > 0 And Map < NumMaps + 1 And X > 0 And X < 101 And Y > 0 And Y < 101 Then
+102         If MapData(Map, X, Y).Graphic(1) >= 5837 And MapData(Map, X, Y).Graphic(1) <= 5852 Then
 104             HayLava = True
             Else
 106             HayLava = False
@@ -787,8 +793,11 @@ Handler:
 334     Call TraceError(Err.Number, Err.Description, "General.Main", Erl)
 End Sub
 
-Function FileExist(ByVal File As String, _
-                   Optional FileType As VbFileAttribute = vbNormal) As Boolean
+Function FileExist(ByVal File As String, Optional FileType As VbFileAttribute = vbNormal) As Boolean
+        '*****************************************************************
+        'Se fija si existe el archivo
+        '*****************************************************************
+        
         On Error GoTo FileExist_Err
         
 100     FileExist = LenB(dir$(File, FileType)) <> 0
@@ -807,7 +816,12 @@ Function ReadField(ByVal Pos As Integer, ByRef Text As String, ByVal SepASCII As
         On Error GoTo ReadField_Err
         
 
+        '*****************************************************************
+        'Gets a field from a string
+        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last Modify Date: 11/15/2004
         'Gets a field from a delimited string
+        '*****************************************************************
         Dim i          As Long
 
         Dim LastPos    As Long
@@ -1001,7 +1015,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
 124                     MaxDamage = 33
                     End If
 
-                    'Agrego aleatoriedad
+                    ' WyroX: Agrego aleatoriedad
                     Dim Damage As Integer
 126                 Damage = Porcentaje(.Stats.MaxHp, RandomNumber(MinDamage, MaxDamage))
 128                 If UserMod.ModifyHealth(UserIndex, -Damage, 0) Then
@@ -1097,6 +1111,12 @@ End Sub
 '
 
 Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
+    '******************************************************
+    'Author: Unknown
+    'Last Update: 04/11/2008 (NicoNZ)
+    '
+    '******************************************************
+        
         On Error GoTo EfectoMimetismo_Err
     
         
@@ -2028,7 +2048,11 @@ Public Sub FreeNPCs()
         On Error GoTo FreeNPCs_Err
         
 
+        '***************************************************
+        'Autor: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last Modification: 05/17/06
         'Releases all NPC Indexes
+        '***************************************************
         Dim LoopC As Long
     
         ' Free all NPC indexes
@@ -2046,7 +2070,11 @@ FreeNPCs_Err:
 End Sub
 
 Public Sub FreeCharIndexes()
+        '***************************************************
+        'Autor: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last Modification: 05/17/06
         'Releases all char indexes
+        '***************************************************
         ' Free all char indexes (set them all to 0)
         
         On Error GoTo FreeCharIndexes_Err
@@ -2134,7 +2162,7 @@ End Function
 '
 '  Función para chequear el email
 '
-'  Para que reconozca como válidas casillas con puntos antes de la arroba y evitar un chequeo innecesario
+'  Corregida por Maraxus para que reconozca como válidas casillas con puntos antes de la arroba y evitar un chequeo innecesario
 Public Function CheckMailString(ByVal sString As String) As Boolean
 
         On Error GoTo errHnd
@@ -2174,7 +2202,7 @@ errHnd:
 
 End Function
 
-'  Para que reconozca como válidas casillas con puntos antes de la arroba
+'  Corregida por Maraxus para que reconozca como válidas casillas con puntos antes de la arroba
 Private Function CMSValidateChar_(ByVal iAsc As Integer) As Boolean
         
         On Error GoTo CMSValidateChar__Err
@@ -2292,10 +2320,9 @@ Function CalcularPromedioVida(ByVal UserIndex As Integer) As Double
 End Function
 
 ' Adaptado desde https://stackoverflow.com/questions/29325069/how-to-generate-random-numbers-biased-towards-one-value-in-a-range/29325222#29325222
-Function RandomIntBiased(ByVal Min As Double, _
-                         ByVal max As Double, _
-                         ByVal Bias As Double, _
-                         ByVal Influence As Double) As Double
+' By WyroX
+Function RandomIntBiased(ByVal Min As Double, ByVal max As Double, ByVal Bias As Double, ByVal Influence As Double) As Double
+
         On Error GoTo handle
 
         Dim RandomRango As Double, Mix As Double
@@ -2329,7 +2356,7 @@ Public Function RunningInVB(Optional ByRef b As Boolean = True) As Boolean
 100     If b Then Debug.Assert Not RunningInVB(RunningInVB) Else b = True
 End Function
 
-'Mensaje a todo el mundo
+' WyroX: Mensaje a todo el mundo
 Public Sub MensajeGlobal(texto As String, Fuente As e_FontTypeNames)
 100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(texto, Fuente))
 End Sub

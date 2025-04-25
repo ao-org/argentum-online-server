@@ -275,7 +275,13 @@ CargarSpawnList_Err:
         
 End Sub
 
-Function EsAdmin(ByRef name As String) As Boolean
+Function EsAdmin(ByRef Name As String) As Boolean
+        '***************************************************
+        'Author: Unknown
+        'Last Modification: 27/03/2011
+        '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
+        '***************************************************
+        
         On Error GoTo EsAdmin_Err
         
 100     EsAdmin = (val(Administradores.GetValue("Admin", Name)) = 1)
@@ -289,7 +295,13 @@ EsAdmin_Err:
         
 End Function
 
-Function EsDios(ByRef name As String) As Boolean
+Function EsDios(ByRef Name As String) As Boolean
+        '***************************************************
+        'Author: Unknown
+        'Last Modification: 27/03/2011
+        '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
+        '***************************************************
+        
         On Error GoTo EsDios_Err
         
 100     EsDios = (val(Administradores.GetValue("Dios", Name)) = 1)
@@ -303,7 +315,13 @@ EsDios_Err:
         
 End Function
 
-Function EsSemiDios(ByRef name As String) As Boolean
+Function EsSemiDios(ByRef Name As String) As Boolean
+        '***************************************************
+        'Author: Unknown
+        'Last Modification: 27/03/2011
+        '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
+        '***************************************************
+        
         On Error GoTo EsSemiDios_Err
         
 100     EsSemiDios = (val(Administradores.GetValue("SemiDios", Name)) = 1)
@@ -317,7 +335,13 @@ EsSemiDios_Err:
         
 End Function
 
-Function EsConsejero(ByRef name As String) As Boolean
+Function EsConsejero(ByRef Name As String) As Boolean
+        '***************************************************
+        'Author: Unknown
+        'Last Modification: 27/03/2011
+        '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
+        '***************************************************
+        
         On Error GoTo EsConsejero_Err
         
 100     EsConsejero = (val(Administradores.GetValue("Consejero", Name)) = 1)
@@ -331,7 +355,13 @@ EsConsejero_Err:
         
 End Function
 
-Function EsRolesMaster(ByRef name As String) As Boolean
+Function EsRolesMaster(ByRef Name As String) As Boolean
+        '***************************************************
+        'Author: Unknown
+        'Last Modification: 27/03/2011
+        '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
+        '***************************************************
+        
         On Error GoTo EsRolesMaster_Err
         
 100     EsRolesMaster = (val(Administradores.GetValue("RM", Name)) = 1)
@@ -346,7 +376,12 @@ EsRolesMaster_Err:
 End Function
 
 Public Function EsGmChar(ByRef Name As String) As Boolean
+        '***************************************************
+        'Author: ZaMa
+        'Last Modification: 27/03/2011
         'Returns true if char is administrative user.
+        '***************************************************
+        
         On Error GoTo EsGmChar_Err
         
     
