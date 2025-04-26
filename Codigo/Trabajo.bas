@@ -394,12 +394,9 @@ End Sub
 
 Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
 
-        '********************************************************
-        'Autor: Nacho (Integer)
-        'Last Modif: 28/01/2007
         'Chequea si ya debe mostrarse
-        'Pablo (ToxicWaste): Cambie los ordenes de prioridades porque sino no andaba.
-        '********************************************************
+        'Cambie los ordenes de prioridades porque sino no andaba.
+
         On Error GoTo DoPermanecerOculto_Err
 
 100     With UserList(UserIndex)
@@ -2346,18 +2343,15 @@ End Sub
 ' @param VictimaIndex Specifies reference to user that is being stolen
 Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 
-        '*************************************************
-        'Author: Unknown
-        'Last modified: 05/04/2010
-        'Last Modification By: ZaMa
-        '24/07/08: Marco - Now it calls to WriteUpdateGold(VictimaIndex and LadronIndex) when the thief stoles gold. (MarKoxX)
-        '27/11/2009: ZaMa - Optimizacion de codigo.
-        '18/12/2009: ZaMa - Los ladrones ciudas pueden robar a pks.
-        '01/04/2010: ZaMa - Los ladrones pasan a robar oro acorde a su nivel.
-        '05/04/2010: ZaMa - Los armadas no pueden robarle a ciudadanos jamas.
-        '23/04/2010: ZaMa - No se puede robar mas sin energia.
-        '23/04/2010: ZaMa - El alcance de robo pasa a ser de 1 tile.
-        '*************************************************
+
+        'Now it calls to WriteUpdateGold(VictimaIndex and LadronIndex) when the thief stoles gold. (MarKoxX)
+        'Optimizacion de codigo.
+        'Los ladrones ciudas pueden robar a pks.
+        'Los ladrones pasan a robar oro acorde a su nivel.
+        'Los armadas no pueden robarle a ciudadanos jamas.
+        'No se puede robar mas sin energia.
+        'El alcance de robo pasa a ser de 1 tile.
+
         On Error GoTo ErrHandler
 
         Dim OtroUserIndex As Integer
@@ -2649,11 +2643,8 @@ End Function
 ' @param VictimaIndex Specifies reference to user that is being stolen
 Private Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 02/04/2010
-        '02/04/2010: ZaMa - Modifico la cantidad de items robables por el ladron.
-        '***************************************************
+        'Modifico la cantidad de items robables por el ladron.
+
         On Error GoTo RobarObjeto_Err
 
         Dim flag As Boolean
@@ -3324,11 +3315,6 @@ Function ModDomar(ByVal clase As e_Class) As Integer
 
         On Error GoTo ModDomar_Err
 
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: -
-        '
-        '***************************************************
 100     Select Case clase
 
             Case e_Class.Druid
@@ -3355,11 +3341,8 @@ Function FreeMascotaIndex(ByVal UserIndex As Integer) As Integer
 
         On Error GoTo FreeMascotaIndex_Err
 
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 02/03/09
-        '02/03/09: ZaMa - Busca un indice libre de mascotas, revisando los types y no los indices de los npcs
-        '***************************************************
+        ' Busca un indice libre de mascotas, revisando los types y no los indices de los npcs
+
         Dim j As Integer
 
 100     For j = 1 To MAXMASCOTAS
@@ -3386,13 +3369,10 @@ End Function
 
 Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
-        '***************************************************
-        'Author: Nacho (Integer)
-        'Last Modification: 01/05/2010
-        '12/15/2008: ZaMa - Limits the number of the same type of pet to 2.
-        '02/03/2009: ZaMa - Las criaturas domadas en zona segura, esperan afuera (desaparecen).
-        '01/05/2010: ZaMa - Agrego bonificacion 11% para domar con flauta magica.
-        '***************************************************
+        'Limits the number of the same type of pet to 2.
+        'Las criaturas domadas en zona segura, esperan afuera (desaparecen).
+        'Agrego bonificacion 11% para domar con flauta magica.
+
         On Error GoTo ErrHandler
 
         Dim puntosDomar As Integer
@@ -3502,12 +3482,10 @@ Private Function PuedeDomarMascota(ByVal UserIndex As Integer, _
 
         On Error GoTo PuedeDomarMascota_Err
 
-        '***************************************************
-        'Author: ZaMa
         'This function checks how many NPCs of the same type have
         'been tamed by the user.
         'Returns True if that amount is less than two.
-        '***************************************************
+
         Dim i           As Long
 
         Dim numMascotas As Long

@@ -807,12 +807,8 @@ End Function
 ' @param b  Indica si se termino la operación.
 
 Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
-        '***************************************************
-        'Author: Uknown
-        'Modification: 06/15/2008 (NicoNZ)
-        'Last modification: 01/12/2020 (WyroX)
+
         'Sale del sub si no hay una posición valida.
-        '***************************************************
     
         On Error GoTo HechizoInvocacion_Err
     
@@ -1161,9 +1157,9 @@ Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 140                 b = True
                 Else
-'Msg788= No podés lanzar mas de un portal a la vez.
-Call WriteLocaleMsg(UserIndex, "788", e_FontTypeNames.FONTTYPE_INFO)
-144                 b = False
+                    'Msg788= No podés lanzar mas de un portal a la vez.
+                    Call WriteLocaleMsg(UserIndex, "788", e_FontTypeNames.FONTTYPE_INFO)
+144                                     b = False
 
                 End If
 
@@ -1215,15 +1211,9 @@ End Sub
 Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
         
         On Error GoTo HandleHechizoTerreno_Err
-        
 
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 01/10/07
-        'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
-        'Antes de procesar cualquier hechizo chequea de que este en modo de combate el
-        'usuario
-        '***************************************************
+        'Antes de procesar cualquier hechizo chequea de que este en modo de combate el usuario
+
         Dim b As Boolean
 
 100     Select Case Hechizos(uh).Tipo
@@ -1388,13 +1378,8 @@ Function HandlePhysicalSkill(ByVal SourceIndex As Integer, ByVal SourceType As e
 End Function
 
 Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 01/10/07
-        'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
-        'Antes de procesar cualquier hechizo chequea de que este en modo de combate el
-        'usuario
-        '***************************************************
+
+        'Antes de procesar cualquier hechizo chequea de que este en modo de combate el usuario
         
         On Error GoTo HandleHechizoUsuario_Err
         
@@ -1512,15 +1497,9 @@ End Function
 Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
         
         On Error GoTo HandleHechizoNPC_Err
-        
 
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 01/10/07
-        'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
-        'Antes de procesar cualquier hechizo chequea de que este en modo de combate el
-        'usuario
-        '***************************************************
+        'Antes de procesar cualquier hechizo chequea de que este en modo de combate el usuario
+
         Dim b As Boolean
         Dim Effect As IBaseEffectOverTime
         Dim IsAlive As Boolean
@@ -1688,15 +1667,12 @@ LanzarHechizo_Err:
 End Sub
 
 Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
-        '***************************************************
-        'Autor: Unknown (orginal version)
-        'Last Modification: 02/01/2008
+
         'Handles the Spells that afect the Stats of an User
-        '24/01/2007 Pablo (ToxicWaste) - Invisibilidad no permitida en Mapas con InviSinEfecto
-        '26/01/2007 Pablo (ToxicWaste) - Cambios que permiten mejor manejo de ataques en los rings.
-        '26/01/2007 Pablo (ToxicWaste) - Revivir no permitido en Mapas con ResuSinEfecto
-        '02/01/2008 Marcos (ByVal) - Curar Veneno no permitido en usuarios muertos.
-        '***************************************************
+        'Invisibilidad no permitida en Mapas con InviSinEfecto
+        'Cambios que permiten mejor manejo de ataques en los rings.
+        'Revivir no permitido en Mapas con ResuSinEfecto
+        'Curar Veneno no permitido en usuarios muertos.
         
         On Error GoTo HechizoEstadoUsuario_Err
         
@@ -2756,12 +2732,8 @@ HechizoEstadoNPC_Err:
 End Sub
 
 Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAlive As Boolean)
-        '***************************************************
-        'Autor: Unknown (orginal version)
-        'Last Modification: 14/08/2007
+
         'Handles the Spells that afect the Life NPC
-        '14/08/2007 Pablo (ToxicWaste) - Orden general.
-        '***************************************************
         
         On Error GoTo HechizoPropNPC_Err
         
@@ -3519,11 +3491,8 @@ HechizoPropUsuario_Err:
 End Sub
 
 Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAlive As Boolean)
-        '***************************************************
-        'Autor: Unknown (orginal version)
-        'Last Modification: 02/01/2008
-        '02/01/2008 Marcos (ByVal) - No permite tirar curar heridas a usuarios muertos.
-        '***************************************************
+
+        'No permite tirar curar heridas a usuarios muertos.
         
         On Error GoTo HechizoCombinados_Err
         

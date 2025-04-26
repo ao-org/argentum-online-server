@@ -919,8 +919,6 @@ On Error GoTo Handler
 Handler:
     Call TraceError(Err.Number, Err.Description, "frmMain.Invasion_Timer")
 
-    
-    ' **********************************
 End Sub
 
 Private Sub t_Extraer_Timer()

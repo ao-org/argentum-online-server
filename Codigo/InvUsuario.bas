@@ -308,11 +308,8 @@ End Sub
 
 Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Autor: Unknown (orginal version)
-        'Last Modification: 23/01/2007
-        '23/01/2007 -> Pablo (ToxicWaste): Billetera invertida y explotar oro en el agua.
-        '***************************************************
+        'Billetera invertida y explotar oro en el agua.
+
         On Error GoTo ErrHandler
         Dim OriginalAmount As Long
         OriginalAmount = Cantidad
@@ -362,8 +359,8 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
                     'info debug
 140                 loops = loops + 1
 
-142                 If loops > 100000 Then 'si entra aca y se cuelga mal el server revisen al tipo porque tiene much oro (NachoP) seguramente es dupero
-144                     Call LogError("Se ha superado el limite de iteraciones(100000) permitido en el Sub TirarOro() - posible Nacho P")
+142                 If loops > 100000 Then 'si entra aca y se cuelga mal el server revisen al tipo porque tiene mucho oro seguramente es dupero
+144                     Call LogError("Se ha superado el limite de iteraciones(100000) permitido en el Sub TirarOro() ")
                         Exit Sub
 
                     End If
@@ -1712,13 +1709,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 
         On Error GoTo hErr
 
-        '*************************************************
-        'Author: Unknown
-        'Last modified: 24/01/2007
         'Handels the usage of items from inventory box.
-        '24/01/2007 Pablo (ToxicWaste) - Agrego el Cuerno de la Armada y la Legión.
-        '24/01/2007 Pablo (ToxicWaste) - Utilización nueva de Barco en lvl 20 por clase Pirata y Pescador.
-        '*************************************************
+        'Agrego el Cuerno de la Armada y la Legión.
+        'Utilización nueva de Barco en lvl 20 por clase Pirata y Pescador.
 
         Dim obj      As t_ObjData
 

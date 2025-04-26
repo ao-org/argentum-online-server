@@ -30,13 +30,9 @@ Option Explicit
 Sub DarCuerpo(ByVal UserIndex As Integer)
         
         On Error GoTo DarCuerpo_Err
-        
 
-        '*************************************************
-        'Author: Nacho (Integer)
-        'Last modified: 14/03/2007
         'Elije una cabeza para el usuario y le da un body
-        '*************************************************
+
         Dim NewBody    As Integer
 
         Dim UserRaza   As Byte
@@ -1080,15 +1076,11 @@ End Sub
 Sub ResetFacciones(ByVal UserIndex As Integer)
         
         On Error GoTo ResetFacciones_Err
-        
 
-        '*************************************************
-        'Author: Unknown
-        'Last modified: 23/01/2007
         'Resetea todos los valores generales y las stats
-        '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
-        '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, MatadosIngreso y NextRecompensa.
-        '*************************************************
+        'Uso de With para mayor performance y claridad.
+        'Agrego NivelIngreso, MatadosIngreso y NextRecompensa.
+
 100     With UserList(UserIndex).Faccion
             If .status = e_Facciones.Armada Or .status = e_Facciones.concilio Then
                 .status = e_Facciones.Ciudadano
@@ -1116,15 +1108,11 @@ End Sub
 Sub ResetContadores(ByVal UserIndex As Integer)
         
         On Error GoTo ResetContadores_Err
-        
 
-        '*************************************************
-        'Author: Unknown
-        'Last modified: 03/15/2006
         'Resetea todos los valores generales y las stats
-        '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
-        '05/20/2007 Integer - Agregue todas las variables que faltaban.
-        '*************************************************
+        'Uso de With para mayor performance y claridad.
+        'Agregue todas las variables que faltaban.
+
 100     With UserList(UserIndex).Counters
 102         .AGUACounter = 0
 104         .AttackCounter = 0
@@ -1192,12 +1180,9 @@ ResetContadores_Err:
 End Sub
 
 Sub ResetCharInfo(ByVal UserIndex As Integer)
-        '*************************************************
-        'Author: Unknown
-        'Last modified: 03/15/2006
+
         'Resetea todos los valores generales y las stats
-        '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
-        '*************************************************
+        'Uso de With para mayor performance y claridad.
         
         On Error GoTo ResetCharInfo_Err
         
@@ -1238,15 +1223,11 @@ End Sub
 Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
         
         On Error GoTo ResetBasicUserInfo_Err
-        
 
-        '*************************************************
-        'Author: Unknown
-        'Last modified: 03/15/2006
         'Resetea todos los valores generales y las stats
-        '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
+        'Uso de With para mayor performance y claridad.
         'Agregue que se resetee el maná
-        '*************************************************
+
         Dim LoopC As Integer
 
 100     With UserList(UserIndex)
@@ -1360,12 +1341,9 @@ ResetPacketRateData_Err:
 End Sub
 
 Sub ResetUserFlags(ByVal UserIndex As Integer)
-        '*************************************************
-        'Author: Unknown
-        'Last modified: 03/29/2006
+
         'Resetea todos los valores generales y las stats
-        '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
-        '*************************************************
+        'Uso de With para mayor performance y claridad.
         
         On Error GoTo ResetUserFlags_Err
         
@@ -1492,10 +1470,7 @@ End Sub
 Sub ResetAccionesPendientes(ByVal UserIndex As Integer)
         
         On Error GoTo ResetAccionesPendientes_Err
-        
 
-        '*************************************************
-        '*************************************************
 100     With UserList(UserIndex).Accion
 102         .AccionPendiente = False
 104         .HechizoPendiente = 0
