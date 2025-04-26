@@ -1440,12 +1440,8 @@ DesequiparObjetoDeUnGolpe_Err:
 End Sub
 
 Sub UsuarioAtacadoPorUsuario(ByVal AttackerIndex As Integer, ByVal VictimIndex As Integer)
-        '***************************************************
-        'Autor: Unknown
-        'Last Modification: 10/01/08
-        'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
-        ' 10/01/2008: Tavo - Se cancela la salida del juego si el user esta saliendo
-        '***************************************************
+
+        'Se cancela la salida del juego si el user esta saliendo
 
         On Error GoTo UsuarioAtacadoPorUsuario_Err
 
@@ -1497,14 +1493,10 @@ End Sub
 Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As Integer) As Boolean
         
         On Error GoTo PuedeAtacar_Err
-        
 
-        '***************************************************
-        'Autor: Unknown
-        'Last Modification: 24/01/2007
         'Returns true if the AttackerIndex is allowed to attack the VictimIndex.
-        '24/01/2007 Pablo (ToxicWaste) - Ordeno todo y agrego situacion de Defensa en ciudad Armada y Caos.
-        '***************************************************
+        'Ordeno todo y agrego situacion de Defensa en ciudad Armada y Caos.
+
         Dim T    As e_Trigger6
         Dim rank As Integer
 
@@ -1718,12 +1710,8 @@ End Function
 
 
 Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
-        '***************************************************
-        'Autor: Nacho (Integer)
-        'Last Modification: 03/09/06 Nacho
-        'Reescribi gran parte del Sub
+
         'Ahora, da toda la experiencia del npc mientras este vivo.
-        '***************************************************
         
         On Error GoTo CalcularDarExp_Err
         
@@ -1737,17 +1725,17 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
 
             Dim ExpaDar As Double
     
-            '[Nacho] Chekeamos que las variables sean validas para las operaciones
+            'Chekeamos que las variables sean validas para las operaciones
 106         If ElDaño <= 0 Then ElDaño = 0
 108         If NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
 
-            '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
+            'La experiencia a dar es la porcion de vida quitada * toda la experiencia
             
 110         ExpaDar = CDbl(ElDaño) * CDbl(NpcList(NpcIndex).GiveEXP) / NpcList(NpcIndex).Stats.MaxHp
 
 112         If ExpaDar <= 0 Then Exit Sub
 
-            '[Nacho] Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
+            'Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
             'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
             'Podria dar un numero fraccionario, esas fracciones se acumulan hasta formar enteros ;P
 114         If ExpaDar > NpcList(NpcIndex).flags.ExpCount Then
@@ -1801,14 +1789,9 @@ End Sub
 Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
         
         On Error GoTo CalcularDarExpGrupal_Err
-        
 
-        '***************************************************
-        'Autor: Nacho (Integer)
-        'Last Modification: 03/09/06 Nacho
-        'Reescribi gran parte del Sub
         'Ahora, da toda la experiencia del npc mientras este vivo.
-        '***************************************************
+
         Dim ExpaDar                 As Long
         Dim BonificacionGrupo       As Single
         Dim CantidadMiembrosValidos As Integer
@@ -1816,21 +1799,23 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         Dim Index                   As Integer
 
         'If UserList(UserIndex).Grupo.EnGrupo Then
-        '[Nacho] Chekeamos que las variables sean validas para las operaciones
+        'Chekeamos que las variables sean validas para las operaciones
+        
 100     If NpcIndex = 0 Then Exit Sub
 102     If UserIndex = 0 Then Exit Sub
 104     If ElDaño <= 0 Then ElDaño = 0
 106     If NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
 108     If ElDaño > NpcList(NpcIndex).Stats.MinHp Then ElDaño = NpcList(NpcIndex).Stats.MinHp
     
-        '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
+        'La experiencia a dar es la porcion de vida quitada * toda la experiencia
 110     ExpaDar = CLng((ElDaño) * (NpcList(NpcIndex).GiveEXP / NpcList(NpcIndex).Stats.MaxHp))
 
 112     If ExpaDar <= 0 Then Exit Sub
 
-        '[Nacho] Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
+        'Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
         'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
         'Podria dar un numero fraccionario, esas fracciones se acumulan hasta formar enteros ;P
+        
 114     If ExpaDar > NpcList(NpcIndex).flags.ExpCount Then
 116         ExpaDar = NpcList(NpcIndex).flags.ExpCount
 118         NpcList(NpcIndex).flags.ExpCount = 0
@@ -1933,14 +1918,9 @@ End Sub
 Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As Long)
         
         On Error GoTo CalcularDarOroGrupal_Err
-        
 
-        '***************************************************
-        'Autor: Nacho (Integer)
-        'Last Modification: 03/09/06 Nacho
-        'Reescribi gran parte del Sub
         'Ahora, da toda la experiencia del npc mientras este vivo.
-        '***************************************************
+
         Dim OroDar            As Long
 
 100     OroDar = GiveGold * SvrConfig.GetValue("GoldMult")
@@ -1964,7 +1944,7 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
 114                     If OroDar > 0 Then
 116                         UserList(Index).Stats.GLD = UserList(Index).Stats.GLD + OroDar
 118                         If UserList(Index).ChatCombate = 1 Then
-120                             Call WriteConsoleMsg(index, "¡El grupo ha ganado " & PonerPuntos(OroDar) & " monedas de oro!", e_FontTypeNames.FONTTYPE_New_GRUPO)
+120                             Call WriteConsoleMsg(Index, "¡El grupo ha ganado " & PonerPuntos(OroDar) & " monedas de oro!", e_FontTypeNames.FONTTYPE_New_GRUPO)
                             End If
 122                         Call WriteUpdateGold(Index)
                         End If
