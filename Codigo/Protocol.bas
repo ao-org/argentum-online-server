@@ -1273,11 +1273,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleLoginNewChar(ByVal userindex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
         On Error GoTo ErrHandler
 
@@ -1336,11 +1331,7 @@ End Sub
 
 Private Sub HandleTalk(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '13/01/2010: ZaMa - Now hidden on boat pirats recover the proper boat body.
-        '***************************************************
+        'Now hidden on boat pirats recover the proper boat body.
     
         On Error GoTo ErrHandler
 
@@ -1412,13 +1403,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleYell(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-        
+      
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -1518,12 +1503,6 @@ End Sub
 
 Private Sub HandleWhisper(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -1586,11 +1565,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleWalk(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
         
         On Error GoTo HandleWalk_Err
 
@@ -1759,11 +1733,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleRequestPositionUpdate(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
         On Error GoTo HandleRequestPositionUpdate_Err
         If UserList(userIndex).flags.SigueUsuario.ArrayIndex > 0 Then
@@ -1790,12 +1759,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
         
         On Error GoTo HandleAttack_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 10/01/08
-        'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
-        ' 10/01/2008: Tavo - Se cancela la salida del juego si el user esta saliendo
-        '***************************************************
+        'Se cancela la salida del juego si el user esta saliendo
         
 100     With UserList(UserIndex)
         
@@ -1870,11 +1834,6 @@ Private Sub HandlePickUp(ByVal UserIndex As Integer)
         
         On Error GoTo HandlePickUp_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 100     With UserList(UserIndex)
 
             'If dead, it can't pick up objects
@@ -1914,11 +1873,6 @@ Private Sub HandleSafeToggle(ByVal UserIndex As Integer)
         
         On Error GoTo HandleSafeToggle_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 100     With UserList(UserIndex)
             
             Dim cambiaSeguro As Boolean
@@ -1966,10 +1920,6 @@ Private Sub HandlePartyToggle(ByVal UserIndex As Integer)
         
         On Error GoTo HandlePartyToggle_Err
         
-        '***************************************************
-        'Author: Rapsodius
-        'Creation Date: 10/10/07
-        '***************************************************
 100     With UserList(UserIndex)
         
 102         .flags.SeguroParty = Not .flags.SeguroParty
@@ -1996,10 +1946,6 @@ Private Sub HandleSeguroClan(ByVal UserIndex As Integer)
         
         On Error GoTo HandleSeguroClan_Err
 
-        '***************************************************
-        'Author: Ladder
-        'Date: 31/10/20
-        '***************************************************
 100     With UserList(UserIndex)
 
 102         .flags.SeguroClan = Not .flags.SeguroClan
@@ -2022,11 +1968,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleRequestGuildLeaderInfo(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
         On Error GoTo HandleRequestGuildLeaderInfo_Err
 
@@ -2046,12 +1987,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleRequestAtributes(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
         
         On Error GoTo HandleRequestAtributes_Err
 
@@ -2071,12 +2006,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleRequestSkills(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
         
         On Error GoTo HandleRequestSkills_Err
 
@@ -2096,13 +2025,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleRequestMiniStats(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
-        
+
         On Error GoTo HandleRequestMiniStats_Err
 
 100     Call WriteMiniStats(UserIndex)
@@ -2121,11 +2044,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleCommerceEnd(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
         On Error GoTo HandleCommerceEnd_Err
 
@@ -2158,15 +2076,7 @@ Private Sub HandleUserCommerceEnd(ByVal UserIndex As Integer)
         
         On Error GoTo HandleUserCommerceEnd_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 100     With UserList(UserIndex)
-
-        
-        
         
             'Quits commerce mode with user
             
@@ -2223,13 +2133,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleUserCommerceOk(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
-        
+
         On Error GoTo HandleUserCommerceOk_Err
 
         'Trade accepted
@@ -2252,11 +2156,6 @@ Private Sub HandleUserCommerceReject(ByVal UserIndex As Integer)
         
         On Error GoTo HandleUserCommerceReject_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
         Dim otherUser As Integer
     
 100     With UserList(UserIndex)
@@ -2297,12 +2196,8 @@ End Sub
 Private Sub HandleDrop(ByVal UserIndex As Integer)
         
         On Error GoTo HandleDrop_Err
-        
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 07/25/09
-        '07/25/09: Marco - Agregue un checkeo para patear a los usuarios que tiran items mientras comercian.
-        '***************************************************
+
+        'Agregue un checkeo para patear a los usuarios que tiran items mientras comercian.
 
         Dim Slot   As Byte
         Dim amount As Long
@@ -2482,12 +2377,6 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
         
         On Error GoTo HandleLeftClick_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
 100     With UserList(UserIndex)
 
             Dim X As Byte
@@ -2524,12 +2413,6 @@ End Sub
 Private Sub HandleDoubleClick(ByVal UserIndex As Integer)
         
         On Error GoTo HandleDoubleClick_Err
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
 100     With UserList(UserIndex)
 
@@ -2664,11 +2547,6 @@ Private Sub HandleUseSpellMacro(ByVal UserIndex As Integer)
         
         On Error GoTo HandleUseSpellMacro_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 100     With UserList(UserIndex)
 #If STRESSER = 1 Then
     Exit Sub
@@ -2694,12 +2572,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleUseItem(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-        
+
         On Error GoTo HandleUseItem_Err
     
 100     With UserList(UserIndex)
@@ -2787,12 +2660,6 @@ Private Sub HandleCraftBlacksmith(ByVal UserIndex As Integer)
         
         On Error GoTo HandleCraftBlacksmith_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
             Dim Item As Integer
 102             Item = Reader.ReadInt16()
         
@@ -2818,12 +2685,6 @@ End Sub
 Private Sub HandleCraftCarpenter(ByVal UserIndex As Integer)
         
         On Error GoTo HandleCraftCarpenter_Err
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
             Dim Item As Integer
 102         Item = Reader.ReadInt16()
@@ -2881,12 +2742,6 @@ Private Sub HandleCraftSastre(ByVal UserIndex As Integer)
         
         On Error GoTo HandleCraftSastre_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
             Dim Item As Integer
 102             Item = Reader.ReadInt16()
         
@@ -2909,11 +2764,6 @@ End Sub
 Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         
         On Error GoTo HandleWorkLeftClick_Err
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
 100     With UserList(UserIndex)
         
@@ -3557,12 +3407,6 @@ End Sub
 
 Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    '
-    '***************************************************
-
     On Error GoTo ErrHandler
 
 100 With UserList(UserIndex)
@@ -3614,12 +3458,6 @@ Private Sub HandleSpellInfo(ByVal UserIndex As Integer)
         
         On Error GoTo HandleSpellInfo_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
 100     With UserList(UserIndex)
         
             Dim spellSlot As Byte
@@ -3666,12 +3504,6 @@ Private Sub HandleEquipItem(ByVal UserIndex As Integer)
         
         On Error GoTo HandleEquipItem_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
 100     With UserList(UserIndex)
         
             Dim itemSlot As Byte
@@ -3719,12 +3551,7 @@ Private Sub HandleChange_Heading(ByVal UserIndex As Integer)
         
         On Error GoTo HandleChange_Heading_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 10/01/08
-        'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
-        ' 10/01/2008: Tavo - Se cancela la salida del juego si el user esta saliendo
-        '***************************************************
+        'Se cancela la salida del juego si el user esta saliendo
     
 100     With UserList(UserIndex)
         
@@ -3764,12 +3591,6 @@ End Sub
 Private Sub HandleModifySkills(ByVal UserIndex As Integer)
         
         On Error GoTo HandleModifySkills_Err
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
 100     With UserList(UserIndex)
 
@@ -3841,12 +3662,6 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
         
         On Error GoTo HandleTrain_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
 100     With UserList(UserIndex)
         
             Dim SpawnedNpc As Integer
@@ -3890,12 +3705,6 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
         
         On Error GoTo HandleCommerceBuy_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
 100     With UserList(UserIndex)
         
             Dim Slot   As Byte
@@ -3952,12 +3761,6 @@ Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
         
         On Error GoTo HandleBankExtractItem_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
 100     With UserList(UserIndex)
 
             Dim Slot        As Byte
@@ -4002,13 +3805,7 @@ End Sub
 Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
         
         On Error GoTo HandleCommerceSell_Err
-        
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
+
 100     With UserList(UserIndex)
 
             Dim Slot   As Byte
@@ -4056,12 +3853,6 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
         
         On Error GoTo HandleBankDeposit_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
 100     With UserList(UserIndex)
         
             Dim Slot        As Byte
@@ -4110,12 +3901,6 @@ End Sub
 
 Private Sub HandleForumPost(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -4189,12 +3974,6 @@ Private Sub HandleMoveSpell(ByVal UserIndex As Integer)
         
         On Error GoTo HandleMoveSpell_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
             Dim dir As Integer
         
 102         If Reader.ReadBool() Then
@@ -4221,12 +4000,6 @@ End Sub
 
 Private Sub HandleClanCodexUpdate(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-        
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -4256,12 +4029,6 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
         
         On Error GoTo HandleUserCommerceOffer_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
 100     With UserList(UserIndex)
 
             Dim tUser  As Integer
@@ -4432,12 +4199,6 @@ End Sub
 
 Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -4475,12 +4236,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
         On Error GoTo ErrHandler
 
@@ -4521,12 +4276,6 @@ End Sub
 
 Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -4565,12 +4314,6 @@ End Sub
 
 Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -4600,12 +4343,6 @@ End Sub
 
 Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -4636,12 +4373,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildAllianceDetails(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
         On Error GoTo ErrHandler
 
@@ -4679,12 +4410,6 @@ End Sub
 
 Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -4714,12 +4439,6 @@ End Sub
 
 Private Sub HandleGuildRequestJoinerInfo(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -4755,12 +4474,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildAlliancePropList(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-        
+
         On Error GoTo HandleGuildAlliancePropList_Err
 
         'Msg1149= Relaciones de clan desactivadas por el momento.
@@ -4778,12 +4492,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildPeacePropList(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-      
+
         On Error GoTo HandleGuildPeacePropList_Err
 
         'Msg1150= Relaciones de clan desactivadas por el momento.
@@ -4802,12 +4511,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
         On Error GoTo ErrHandler
 
@@ -4850,12 +4553,6 @@ End Sub
 
 Private Sub HandleGuildNewWebsite(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-        
         On Error GoTo ErrHandler
 
 100     Call modGuilds.ActualizarWebSite(UserIndex, Reader.ReadString8())
@@ -4874,12 +4571,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
         On Error GoTo ErrHandler
 
@@ -4927,13 +4618,6 @@ End Sub
 
 Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 01/08/07
-        'Last Modification by: (liquid)
-        '
-        '***************************************************
-
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -4971,12 +4655,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
         On Error GoTo ErrHandler
 
@@ -5021,12 +4699,6 @@ End Sub
 
 Private Sub HandleGuildUpdateNews(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
         On Error GoTo ErrHandler
 
 100     Call modGuilds.ActualizarNoticias(UserIndex, Reader.ReadString8())
@@ -5046,12 +4718,6 @@ End Sub
 
 Private Sub HandleGuildMemberInfo(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
         On Error GoTo ErrHandler
 
 100     Call modGuilds.SendDetallesPersonaje(UserIndex, Reader.ReadString8())
@@ -5072,12 +4738,7 @@ End Sub
 Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
         
         On Error GoTo HandleGuildOpenElections_Err
-        
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
+
 100     With UserList(UserIndex)
 
             Dim Error As String
@@ -5101,12 +4762,6 @@ End Sub
 
 Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -5144,12 +4799,6 @@ End Sub
 
 Private Sub HandleGuildRequestDetails(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
         On Error GoTo ErrHandler
  
 100     Call modGuilds.SendGuildDetails(UserIndex, Reader.ReadString8())
@@ -5173,14 +4822,10 @@ Private Sub HandleQuit(ByVal UserIndex As Integer)
         
         On Error GoTo HandleQuit_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 04/15/2008 (NicoNZ)
         'If user is invisible, it automatically becomes
         'visible before doing the countdown to exit
-        '04/15/2008 - No se reseteaban los contadores de invi ni de ocultar. (NicoNZ)
-        '***************************************************
-        
+        'No se reseteaban los contadores de invi ni de ocultar.
+ 
     Dim tUser        As Integer
     
 100     With UserList(UserIndex)
@@ -5234,11 +4879,6 @@ Private Sub HandleGuildLeave(ByVal UserIndex As Integer)
         
         On Error GoTo HandleGuildLeave_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
         Dim GuildIndex As Integer
     
 100     With UserList(UserIndex)
@@ -5274,12 +4914,7 @@ End Sub
 Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
         
         On Error GoTo HandleRequestAccountState_Err
-        
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
+
         Dim earnings   As Integer
         Dim percentage As Integer
     
@@ -5341,12 +4976,7 @@ End Sub
 ' @param    userIndex The index of the user sending the message.
 
 Private Sub HandlePetStand(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-        
+
         On Error GoTo HandlePetStand_Err
         
 100     With UserList(UserIndex)
@@ -5395,12 +5025,7 @@ End Sub
 ' @param    userIndex The index of the user sending the message.
 
 Private Sub HandlePetFollow(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-        
+
         On Error GoTo HandlePetFollow_Err
         
 100     With UserList(UserIndex)
@@ -5451,7 +5076,6 @@ End Sub
 ' @param    userIndex The index of the user sending the message.
 
 Private Sub HandlePetLeave(ByVal UserIndex As Integer)
-        '***************************************************
         
         On Error GoTo HandlePetLeave_Err
         
@@ -5565,11 +5189,6 @@ Private Sub HandleRest(ByVal UserIndex As Integer)
         
         On Error GoTo HandleRest_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 100     With UserList(UserIndex)
 
             'Dead users can't use pets
@@ -5629,12 +5248,8 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
         
         On Error GoTo HandleMeditate_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 04/15/08 (NicoNZ)
         'Arreglí un bug que mandaba un index de la meditacion diferente
         'al que decia el server.
-        '***************************************************
         
 100     With UserList(UserIndex)
 
@@ -5734,11 +5349,6 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
         
         On Error GoTo HandleResucitate_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 100     With UserList(UserIndex)
 
             'Se asegura que el target es un npc
@@ -5814,12 +5424,7 @@ End Sub
 Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
         
         On Error GoTo HandleCommerceStart_Err
-        
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
+
 100     With UserList(UserIndex)
 
             'Dead people can't commerce
@@ -6070,11 +5675,6 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
         
         On Error GoTo HandleReward_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 100     With UserList(UserIndex)
 
             'Validate target NPC
@@ -6120,12 +5720,6 @@ End Sub
 
 Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-        
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -6186,11 +5780,6 @@ Private Sub HandleGuildOnline(ByVal UserIndex As Integer)
         
         On Error GoTo HandleGuildOnline_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 100     With UserList(UserIndex)
 
             Dim onlineList As String
@@ -6221,12 +5810,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
         On Error GoTo ErrHandler
 
@@ -6270,12 +5853,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleChangeDescription(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
         On Error GoTo ErrHandler
 
@@ -6324,12 +5901,6 @@ End Sub
 
 Private Sub HandleGuildVote(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -6359,12 +5930,6 @@ End Sub
 Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
         
         On Error GoTo HandleBankExtractGold_Err
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 
 100     With UserList(UserIndex)
 
@@ -6561,11 +6126,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -6610,11 +6170,6 @@ Private Sub HandleOnlineRoyalArmy(ByVal UserIndex As Integer)
         
         On Error GoTo HandleOnlineRoyalArmy_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 100     With UserList(UserIndex)
 
 102         If .flags.Privilegios And e_PlayerType.user Then Exit Sub
@@ -6665,11 +6220,6 @@ Private Sub HandleOnlineChaosLegion(ByVal UserIndex As Integer)
         
         On Error GoTo HandleOnlineChaosLegion_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 100     With UserList(UserIndex)
 
 102         If .flags.Privilegios And e_PlayerType.user Then Exit Sub
@@ -6718,12 +6268,6 @@ End Sub
 
 Private Sub HandleComment(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -6757,11 +6301,6 @@ Private Sub HandleServerTime(ByVal UserIndex As Integer)
         
         On Error GoTo HandleServerTime_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 01/08/07
-        'Last Modification by: (liquid)
-        '***************************************************
 100     With UserList(UserIndex)
 
 102         If .flags.Privilegios And e_PlayerType.user Then Exit Sub
@@ -6852,11 +6391,6 @@ End Sub
 
 Private Sub HandleTraerBoveda(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Ladder
-        'Last Modification: 04/jul/2014
-        '
-        '***************************************************
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -6884,10 +6418,6 @@ End Sub
 
 Private Sub HandleNotifyInventariohechizos(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Martín Trionfetti - HarThaoS
-        'Last Modification: 6/6/2022
-        '***************************************************
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -6998,12 +6528,6 @@ End Sub
 
 Private Sub HandleGuildOnlineMembers(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/29/06
-        '
-        '***************************************************
-
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -7046,11 +6570,6 @@ End Sub
 
 Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/29/06
-        '
-        '***************************************************
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -7079,12 +6598,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/29/06
-        '
-        '***************************************************
 
         On Error GoTo ErrHandler
 
@@ -7115,11 +6628,6 @@ End Sub
 
 Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/30/06
-        '
-        '***************************************************
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -7168,12 +6676,6 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/30/06
-        '
-        '***************************************************
 
         On Error GoTo ErrHandler
 
@@ -7229,12 +6731,6 @@ End Sub
 
 Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/30/06
-        '
-        '***************************************************
-  
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -7299,12 +6795,6 @@ End Sub
 
 Private Sub HandleGuildBan(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/30/06
-        '
-        '***************************************************
-
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -7361,11 +6851,6 @@ End Sub
 
 Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/30/06
-        '
-        '***************************************************
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -7446,11 +6931,6 @@ End Sub
 
 Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/30/06
-        '
-        '***************************************************
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -7533,12 +7013,7 @@ Public Sub HandleChatColor(ByVal UserIndex As Integer)
         
         On Error GoTo HandleChatColor_Err
 
-        '***************************************************
-        'Author: Lucas Tavolaro Ortiz (Tavo)
-        'Last Modification: 12/23/06
-        'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
         'Change the user`s chat color
-        '***************************************************
 
 100     With UserList(UserIndex)
 
@@ -7694,12 +7169,7 @@ End Sub
 
 Public Sub HandleShowGuildMessages(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Lucas Tavolaro Ortiz (Tavo)
-        'Last Modification: 12/24/06
-        'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
         'Allows admins to read guild messages
-        '***************************************************
     
         On Error GoTo ErrHandler
 
@@ -7732,11 +7202,8 @@ Public Sub HandleDoBackUp(ByVal UserIndex As Integer)
         
         On Error GoTo HandleDoBackUp_Err
 
-        '***************************************************
-        'Author: Lucas Tavolaro Ortiz (Tavo)
-        'Last Modification: 12/24/06
         'Show guilds messages
-        '***************************************************
+
 100     With UserList(UserIndex)
         
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
@@ -7764,11 +7231,6 @@ Public Sub HandleNavigateToggle(ByVal UserIndex As Integer)
         
         On Error GoTo HandleNavigateToggle_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 01/12/07
-        '
-        '***************************************************
 100     With UserList(UserIndex)
         
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then
@@ -7808,14 +7270,8 @@ Public Sub HandleServerOpenToUsersToggle(ByVal UserIndex As Integer)
         
         On Error GoTo HandleServerOpenToUsersToggle_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 12/24/06
-        '
-        '***************************************************
 100     With UserList(UserIndex)
-        
-        
+            
         
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
         
@@ -7885,12 +7341,6 @@ End Sub
 
 Public Sub HandleResetFactions(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 12/26/06
-        '
-        '***************************************************
-
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -7925,12 +7375,6 @@ End Sub
 ' @param UserIndex The index of the user sending the message
 
 Public Sub HandleRemoveCharFromGuild(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 12/26/06
-        '
-        '***************************************************
 
         On Error GoTo ErrHandler
 
@@ -7975,12 +7419,8 @@ End Sub
 
 Public Sub HandleSystemMessage(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Lucas Tavolaro Ortiz (Tavo)
-        'Last Modification: 12/29/06
         'Send a message to all the users
-        '***************************************************
-
+        
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -9497,10 +8937,6 @@ End Sub
 
 Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Pablo Mercavides
-        '***************************************************
-
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -9949,13 +9385,10 @@ End Sub
 ' @param    userIndex The index of the user sending the message.
 
 Private Sub HandleConsulta(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: ZaMa
-        'Last Modification: 01/05/2010
+
         'Habilita/Deshabilita el modo consulta.
-        '01/05/2010: ZaMa - Agrego validaciones.
-        '16/09/2010: ZaMa - No se hace visible en los clientes si estaba navegando (porque ya lo estaba).
-        '***************************************************
+        'Agrego validaciones.
+        'No se hace visible en los clientes si estaba navegando (porque ya lo estaba).
 
         Dim UserConsulta As t_UserReference
     
@@ -10240,16 +9673,9 @@ End Sub
 Private Sub HandleHome(ByVal UserIndex As Integer)
         
         On Error GoTo HandleHome_Err
-    
-        
 
-        '***************************************************
-        'Author: Budi
-        'Creation Date: 06/01/2010
-        'Last Modification: 05/06/10
-        'Pato - 05/06/10: Add the UCase$ to prevent problems.
-        '***************************************************
-    
+        'Add the UCase$ to prevent problems.
+
 100     With UserList(UserIndex)
 
 104         If .flags.Muerto = 0 Then
