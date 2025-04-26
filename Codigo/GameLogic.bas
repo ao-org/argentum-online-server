@@ -66,11 +66,8 @@ Public Function NameIndex(ByRef username As String) As t_UserReference
 End Function
 
 Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef X As Byte, ByRef Y As Byte)
-        '***************************************************
-        'Autor: ZaMa
-        'Last Modification: 26/03/2009
+
         'Search for a Legal pos for the user who is being teleported.
-        '***************************************************
         
         On Error GoTo FindLegalPos_Err
 
@@ -252,10 +249,6 @@ End Select
 End Function
 
 Public Function EsGM(ByVal UserIndex As Integer) As Boolean
-        '***************************************************
-        'Autor: Pablo (ToxicWaste)
-        'Last Modification: 23/01/2007
-        '***************************************************
         
         On Error GoTo EsGM_Err
         
@@ -385,14 +378,11 @@ End Function
 
 Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
 
-        '***************************************************
-        'Autor: Pablo (ToxicWaste) & Unknown (orginal version)
-        'Last Modification: 23/01/2007
         'Handles the Map passage of Users. Allows the existance
         'of exclusive maps for Newbies, Royal Army and Caos Legion members
         'and enables GMs to enter every map without restriction.
         'Uses: Mapinfo(map).Restringir = "NEWBIE" (newbies), "ARMADA", "CAOS", "FACCION" or "NO".
-        '***************************************************
+
         On Error GoTo ErrHandler
 
         Dim nPos   As t_WorldPos
@@ -673,11 +663,8 @@ Private Function ValidNPCSpawnPos(OutPos As t_WorldPos, ByVal map As Integer, By
 End Function
 
 Sub ClosestLegalPos(Pos As t_WorldPos, ByRef nPos As t_WorldPos, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True)
-        '*****************************************************************
-        'Author: Unknown (original version)
-        'Last Modification: 24/01/2007 (ToxicWaste)
+
         'Encuentra la posicion legal mas cercana y la guarda en nPos
-        '*****************************************************************
         
         On Error GoTo ClosestLegalPos_Err
         
@@ -732,9 +719,8 @@ ClosestLegalPos_Err:
 End Sub
 
 Sub ClosestStablePos(Pos As t_WorldPos, ByRef nPos As t_WorldPos)
-        '*****************************************************************
+
         'Encuentra la posicion legal mas cercana que no sea un portal y la guarda en nPos
-        '*****************************************************************
         
         On Error GoTo ClosestStablePos_Err
         
@@ -836,9 +822,9 @@ End Function
 
 Sub HeadtoPos(ByVal Head As e_Heading, ByRef Pos As t_WorldPos)
         On Error GoTo HeadtoPos_Err
-        '*****************************************************************
+
         'Toma una posicion y se mueve hacia donde esta perfilado
-        '*****************************************************************
+
         Dim X  As Integer
         Dim Y  As Integer
         Dim nX As Integer
@@ -931,11 +917,8 @@ Function Rotate_Heading(ByVal Heading As e_Heading, ByVal R As Integer) As e_Hea
 End Function
 
 Function LegalPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal Montado As Boolean = False, Optional ByVal PuedeTraslado As Boolean = True, Optional ByVal PuedeBloqueoParcial As Boolean = True) As Boolean
-        '***************************************************
-        'Autor: Pablo (ToxicWaste) & Unknown (orginal version)
-        'Last Modification: 23/01/2007
+
         'Checks if the position is Legal.
-        '***************************************************
         '¿Es un mapa valido?
         
         On Error GoTo LegalPos_Err
@@ -1681,7 +1664,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 502                                         If QuestList(.QuestIndex).RequiredTargetNPC(j).amount = .NPCsTarget(j) Then
 504                                             Call FinishQuest(UserIndex, .QuestIndex, i)
 506                                             Call WriteUpdateNPCSimbolo(UserIndex, TempCharIndex, 1)
-508                                             Call WriteLocaleChatOverHead(UserIndex, "1353", "", NpcList(TempCharIndex).Char.charindex, vbYellow) ' Msg1353=¡Quest Finalizada!
+508                                             Call WriteLocaleChatOverHead(UserIndex, "1353", "", NpcList(TempCharIndex).Char.charIndex, vbYellow) ' Msg1353=¡Quest Finalizada!
 510                                             ' Msg494=Quest Finalizada!
                                                 Call WriteLocaleMsg(UserIndex, "494", e_FontTypeNames.FONTTYPE_INFOIAO)
 
@@ -1752,12 +1735,10 @@ End Sub
 Function FindDirection(Pos As t_WorldPos, Target As t_WorldPos) As e_Heading
         
         On Error GoTo FindDirection_Err
-        
 
-        '*****************************************************************
         'Devuelve la direccion en la cual el target se encuentra
         'desde pos, 0 si la direc es igual
-        '*****************************************************************
+
         Dim X As Integer
 
         Dim Y As Integer
@@ -1837,7 +1818,7 @@ FindDirection_Err:
         
 End Function
 
-'[Barrin 30-11-03]
+
 Public Function ItemNoEsDeMapa(ByVal Index As Integer) As Boolean
         
         On Error GoTo ItemNoEsDeMapa_Err
@@ -1854,7 +1835,6 @@ ItemNoEsDeMapa_Err:
         
 End Function
 
-'[/Barrin 30-11-03]
 
 Public Function MostrarCantidad(ByVal Index As Integer) As Boolean
         

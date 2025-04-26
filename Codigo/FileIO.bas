@@ -276,11 +276,8 @@ CargarSpawnList_Err:
 End Sub
 
 Function EsAdmin(ByRef Name As String) As Boolean
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 27/03/2011
-        '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
-        '***************************************************
+
+        'Utilizo la clase para saber los datos.
         
         On Error GoTo EsAdmin_Err
         
@@ -296,11 +293,8 @@ EsAdmin_Err:
 End Function
 
 Function EsDios(ByRef Name As String) As Boolean
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 27/03/2011
-        '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
-        '***************************************************
+
+        'Utilizo la clase para saber los datos.
         
         On Error GoTo EsDios_Err
         
@@ -316,11 +310,8 @@ EsDios_Err:
 End Function
 
 Function EsSemiDios(ByRef Name As String) As Boolean
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 27/03/2011
-        '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
-        '***************************************************
+
+        'Utilizo la clase para saber los datos.
         
         On Error GoTo EsSemiDios_Err
         
@@ -336,11 +327,9 @@ EsSemiDios_Err:
 End Function
 
 Function EsConsejero(ByRef Name As String) As Boolean
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 27/03/2011
-        '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
-        '***************************************************
+
+        'Utilizo la clase para saber los datos.
+
         
         On Error GoTo EsConsejero_Err
         
@@ -356,11 +345,9 @@ EsConsejero_Err:
 End Function
 
 Function EsRolesMaster(ByRef Name As String) As Boolean
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 27/03/2011
-        '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
-        '***************************************************
+
+        'Utilizo la clase para saber los datos.
+
         
         On Error GoTo EsRolesMaster_Err
         
@@ -376,11 +363,9 @@ EsRolesMaster_Err:
 End Function
 
 Public Function EsGmChar(ByRef Name As String) As Boolean
-        '***************************************************
-        'Author: ZaMa
-        'Last Modification: 27/03/2011
+
         'Returns true if char is administrative user.
-        '***************************************************
+
         
         On Error GoTo EsGmChar_Err
         
@@ -1227,9 +1212,9 @@ Sub LoadOBJData()
 
 100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando base de datos de los objetos."
 
-        '*****************************************************************
+
         'Carga la lista de objetos
-        '*****************************************************************
+
         Dim Object As Integer
 
         Dim Leer   As clsIniManager
@@ -2848,9 +2833,9 @@ LoadMainConfigFile_Err:
 End Sub
 
 Sub WriteVar(ByVal File As String, ByVal Main As String, ByVal Var As String, ByVal value As String)
-        '*****************************************************************
+
         'Escribe VAR en un archivo
-        '*****************************************************************
+
         
         On Error GoTo WriteVar_Err
         
@@ -3557,10 +3542,9 @@ End Function
 
 Public Function GetElapsedTime() As Single
 
-        '***********************************************************************
-        'Author: Wyrox
+
         'Obenemos el tiempo (en milisegundos) que pasó desde la ultima llamada.
-        '***********************************************************************
+
     
         Dim end_time As Currency
         Static start_time As Currency

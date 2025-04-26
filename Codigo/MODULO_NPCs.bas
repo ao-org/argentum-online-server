@@ -141,13 +141,10 @@ End Sub
 
 Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
-        '********************************************************
-        'Author: Unknown
         'Llamado cuando la vida de un NPC llega a cero.
-        'Last Modify Date: 24/01/2007
-        '22/06/06: (Nacho) Chequeamos si es pretoriano
-        '24/01/2007: Pablo (ToxicWaste): Agrego para actualización de tag si cambia de status.
-        '********************************************************
+        'Chequeamos si es pretoriano
+        'Agrego para actualización de tag si cambia de status.
+
         On Error GoTo ErrHandler
         
         Dim MiNPC As t_Npc
@@ -158,7 +155,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
         ' Objetivo de pruebas nunca muere
 100     If NpcList(NpcIndex).NPCtype = DummyTarget Then
-102         Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageChatOverHead("¡¡Auch!!", NpcList(NpcIndex).Char.charindex, vbRed))
+102         Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageChatOverHead("¡¡Auch!!", NpcList(NpcIndex).Char.charIndex, vbRed))
 
 104         If UBound(NpcList(NpcIndex).Char.Animation) > 0 Then
 106             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(NpcList(NpcIndex).Char.charindex, NpcList(NpcIndex).Char.Animation(1)))
@@ -1020,11 +1017,8 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As t_WorldPos, ByVal FX As Bool
         On Error GoTo SpawnNpc_Err
         
 
-        '***************************************************
-        'Autor: Unknown (orginal version)
-        'Last Modification: 23/01/2007
-        '23/01/2007 -> Pablo (ToxicWaste): Creates an NPC of the type Npcindex
-        '***************************************************
+        ' Creates an NPC of the type Npcindex
+
         Dim newpos         As t_WorldPos
 
         Dim altpos         As t_WorldPos
@@ -1757,15 +1751,9 @@ ErrHandler:
 End Function
 
 Sub QuitarMascota(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: -
-        '
-        '***************************************************
+
         
         On Error GoTo QuitarMascota_Err
-    
-        
 
         Dim i As Integer
     
