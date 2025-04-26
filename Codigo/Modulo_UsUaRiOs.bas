@@ -798,8 +798,8 @@ On Error GoTo Complete_ConnectUser_Err
                 Call WriteLocaleMsg(UserIndex, "522", e_FontTypeNames.FONTTYPE_GUILD, .name)
 
 
-1135        ElseIf .Stats.ELV < 14 Then
-1140            Call WriteLocaleMsg(UserIndex, "1439", e_FontTypeNames.FONTTYPE_GUILD, .name) ' Msg1439=¡Bienvenido de nuevo ¬1! Actualmente estas en el nivel ¬2 en ¬3, ¡buen viaje y mucha suerte!
+1135        ElseIf .Stats.ELV < 25 Then
+1140            Call WriteLocaleMsg(UserIndex, "1439", e_FontTypeNames.FONTTYPE_GUILD, .name & "¬" & .Stats.ELV & "¬" & get_map_name(.pos.Map)) ' Msg1439=¡Bienvenido de nuevo ¬1! Actualmente estas en el nivel ¬2 en ¬3, ¡buen viaje y mucha suerte!
 
              End If
 

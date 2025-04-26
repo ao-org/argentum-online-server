@@ -2490,7 +2490,7 @@ Public Sub HandleNickToIP(ByVal UserIndex As Integer)
             
 116             If IsValidUserRef(tUser) Then
 118                 If UserList(tUser.ArrayIndex).flags.Privilegios And priv Then
-                        Call WriteLocaleMsg(UserIndex, "1494", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1494=El ip de ¬1 es ¬2
+                        Call WriteLocaleMsg(UserIndex, "1494", e_FontTypeNames.FONTTYPE_INFO, username & "¬" & UserList(tUser.ArrayIndex).ConnectionDetails.IP)  ' Msg1494=El ip de ¬1 es ¬2
                         Dim IP    As String
                         Dim lista As String
                         Dim LoopC As Long
@@ -2505,8 +2505,9 @@ Public Sub HandleNickToIP(ByVal UserIndex As Integer)
                             End If
 134                     Next LoopC
 136                     If LenB(lista) <> 0 Then lista = Left$(lista, Len(lista) - 2)
-                
-                        Call WriteLocaleMsg(UserIndex, "1495", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1495=Los personajes con ip ¬1 son: ¬2
+
+                        Call WriteLocaleMsg(UserIndex, "1495", e_FontTypeNames.FONTTYPE_INFO, IP & "¬" & lista)   ' Msg1495=Los personajes con ip ¬1 son: ¬2
+
                     End If
                 Else
                     'Msg972= No hay ningun personaje con ese nick
@@ -2559,8 +2560,7 @@ Public Sub HandleIPToNick(ByVal UserIndex As Integer)
                 End If
 132         Next LoopC
 134         If LenB(lista) <> 0 Then lista = Left$(lista, Len(lista) - 2)
-                Call WriteLocaleMsg(UserIndex, "1496", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1496=Los personajes con ip ¬1 son: ¬2
-
+                Call WriteLocaleMsg(UserIndex, "1496", e_FontTypeNames.FONTTYPE_INFO, IP & "¬" & lista)  ' Msg1496=Los personajes con ip ¬1 son: ¬2
         End With
         Exit Sub
 HandleIPToNick_Err:
@@ -2999,7 +2999,9 @@ Public Sub HandleCreateItem(ByVal UserIndex As Integer)
                     ' Si no hay espacio y es Admin, lo tiro al piso.
 130                 If (.flags.Privilegios And e_PlayerType.Admin) <> 0 Then
 132                     Call TirarItemAlPiso(.Pos, Objeto)
-                        'Call WriteLocaleMsg(UserIndex, "1501", TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", e_FontTypeNames.FONTTYPE_GUILD)  ' Msg1501=ATENCION: CREASTE [¬1¬2 ver ReyarB
+
+                        Call WriteLocaleMsg(UserIndex, "1501", e_FontTypeNames.FONTTYPE_GUILD, Cuantos & "¬" & " ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!")    ' Msg1501=ATENCION: CREASTE [¬1¬2 ver ReyarB
+
                     End If
                 End If
             Else
@@ -3007,7 +3009,9 @@ Public Sub HandleCreateItem(ByVal UserIndex As Integer)
                 ' Si no hay espacio y es Admin, lo tiro al piso.
 136             If (.flags.Privilegios And e_PlayerType.Admin) <> 0 Then
 138                 Call TirarItemAlPiso(.Pos, Objeto)
-'                   Call WriteLocaleMsg(UserIndex, "1502", TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", e_FontTypeNames.FONTTYPE_GUILD)  ' Msg1502=ATENCION: CREASTE [¬1¬2 ver ReyarB
+
+                    Call WriteLocaleMsg(UserIndex, "1502", e_FontTypeNames.FONTTYPE_GUILD, Cuantos & "¬" & " ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!")  ' Msg1502=ATENCION: CREASTE [¬1¬2 ver ReyarB
+
                 End If
             End If
 
@@ -3484,17 +3488,21 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
         tUser = NameIndex(username)
         If IsValidUserRef(tUser) Then
             If UserList(tUser.ArrayIndex).GuildIndex > 0 Then
-                'Call WriteLocaleMsg(UserIndex, "1503", debe salir del mismo con /salirclan para ser transferido.", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1503=El personaje ¬1¬2 ver ReyarB
+                Call WriteLocaleMsg(UserIndex, "1503", e_FontTypeNames.FONTTYPE_INFO, username)   ' Msg1503=El personaje ¬1¬2 ver ReyarB
                 Exit Sub
             End If
         Else
             If Not PersonajeExiste(username) Then
-                Call WriteLocaleMsg(UserIndex, "1504", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1504=El personaje ¬1 es inexistente.
+
+                Call WriteLocaleMsg(UserIndex, "1504", e_FontTypeNames.FONTTYPE_INFO, username) ' Msg1504=El personaje ¬1 es inexistente.
+
                 Exit Sub
             End If
             GuildIndex = GetUserGuildIndexDatabase(username)
             If GuildIndex > 0 Then
-                'Call WriteLocaleMsg(UserIndex, "1505", debe salir del mismo con /salirclan para ser transferido.", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1505=El personaje ¬1¬2 ver ReyarB
+
+                Call WriteLocaleMsg(UserIndex, "1505", e_FontTypeNames.FONTTYPE_INFO, username)    ' Msg1505=El personaje ¬1¬2 ver ReyarB
+
                 Exit Sub
             End If
         End If
@@ -4206,7 +4214,8 @@ Public Sub HandlePossUser(ByVal UserIndex As Integer)
                     Call ClosestLegalPos(UserList(tUser.ArrayIndex).pos, nPos, False, True)
 150                 Call FindLegalPos(tUser.ArrayIndex, UserList(tUser.ArrayIndex).pos.map, CByte(UserList(tUser.ArrayIndex).pos.x), CByte(UserList(tUser.ArrayIndex).pos.y))
 152                 Call WarpUserChar(tUser.ArrayIndex, nPos.map, nPos.x, nPos.y, True)
-                    Call WriteLocaleMsg(UserIndex, "1517", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1517=Servidor » Acción realizada con exito! La nueva posicion de ¬1 es: ¬2-¬3-¬4.
+                    Call WriteLocaleMsg(UserIndex, "1517", e_FontTypeNames.FONTTYPE_INFO, username & "¬" & nPos.Map & "¬" & nPos.x & "¬" & nPos.y) ' Msg1517=Servidor » Acción realizada con exito! La nueva posicion de ¬1 es: ¬2-¬3-¬4.
+
                     'ver porque si el usuario esta online lo dice igual
                 Else
 118                 ' Msg554=Servidor » El usuario debe estar deslogueado para dicha solicitud!
@@ -4386,7 +4395,7 @@ Public Sub HandleEventoInfo(ByVal UserIndex As Integer)
 130             Next i
             End If
 132         If encontre Then
-                Call WriteLocaleMsg(UserIndex, "1518", e_FontTypeNames.FONTTYPE_New_Eventos)  ' Msg1518=Eventos> El proximo evento ¬1 iniciara a las ¬2:00 horas.
+                Call WriteLocaleMsg(UserIndex, "1518", e_FontTypeNames.FONTTYPE_New_Eventos, PublicidadEvento & "¬" & HoraProximo)  ' Msg1518=Eventos> El proximo evento ¬1 iniciara a las ¬2:00 horas.
             Else
 136             ' Msg730=Eventos> No hay eventos próximos.
                 Call WriteLocaleMsg(UserIndex, "730", e_FontTypeNames.FONTTYPE_New_Eventos)
