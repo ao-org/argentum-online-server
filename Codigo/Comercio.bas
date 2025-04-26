@@ -48,16 +48,11 @@ Public Const REDUCTOR_PRECIOVENTA As Byte = 3
 Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal Slot As Integer, ByVal Cantidad As Integer)
         
         On Error GoTo Comercio_Err
-        
 
-        '*************************************************
-        'Author: Nacho (Integer)
-        'Last modified: 27/07/08 (MarKoxX) |
-        '27/07/08 (MarKoxX) - New changes in the way of trading (now when you buy it rounds to ceil and when you sell it rounds to floor)
-        '06/13/08 (NicoNZ)
-        '24/01/2020: WyroX = Reduzco la cantidad de paquetes que se envian, actualizo solo los slots necesarios y solo el oro, no todos los stats.
-        '*************************************************
-        Dim Precio       As Long
+        ' New changes in the way of trading (now when you buy it rounds to ceil and when you sell it rounds to floor)
+        'Reduzco la cantidad de paquetes que se envian, actualizo solo los slots necesarios y solo el oro, no todos los stats.
+
+        Dim precio       As Long
         Dim Objeto       As t_Obj
         Dim objquedo     As t_Obj
         Dim precioenvio  As Single
@@ -241,10 +236,6 @@ Comercio_Err:
 End Sub
 
 Public Sub IniciarComercioNPC(ByVal UserIndex As Integer)
-        '*************************************************
-        'Author: Nacho (Integer)
-        'Last modified: 2/8/06
-        '*************************************************
         
         On Error GoTo IniciarComercioNPC_Err
         
@@ -273,10 +264,9 @@ IniciarComercioNPC_Err:
 End Sub
 
 Private Function SlotEnNPCInv(ByVal NpcIndex As Integer, ByVal Objeto As Integer, ByVal Cantidad As Integer) As Integer
-        '*************************************************
-        'Devuelve el slot en el cual se debe agregar el nuevo objeto, o 0 si no se debe asignar en ningun lado
-        '*************************************************
         
+        'Devuelve el slot en el cual se debe agregar el nuevo objeto, o 0 si no se debe asignar en ningun lado
+
         On Error GoTo SlotEnNPCInv_Err
                        
 100     With NpcList(NpcIndex).Invent
@@ -319,10 +309,6 @@ SlotEnNPCInv_Err:
 End Function
 
 Private Function Descuento(ByVal UserIndex As Integer) As Single
-        '*************************************************
-        'Author: Nacho (Integer)
-        'Last modified: 2/8/06
-        '*************************************************
         
         On Error GoTo Descuento_Err
         
@@ -407,7 +393,7 @@ End Sub
 ' @param slot The slot to update
 
 Public Sub UpdateNpcInvToAll(ByVal UpdateAll As Boolean, ByVal NpcIndex As Integer, ByVal Slot As Byte)
-    '***************************************************
+
     On Error GoTo ErrHandler:
 
         Dim LoopC As Long
@@ -449,12 +435,7 @@ End Sub
 Public Function SalePrice(ByVal ObjIndex As Integer) As Single
         
         On Error GoTo SalePrice_Err
-        
 
-        '*************************************************
-        'Author: Nicolás (NicoNZ)
-        '
-        '*************************************************
 100     If ObjIndex < 1 Or ObjIndex > UBound(ObjData) Then Exit Function
 102     If ItemNewbie(ObjIndex) Then Exit Function
     
