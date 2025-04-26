@@ -377,12 +377,7 @@ End Function
 Private Function HayLava(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
         
         On Error GoTo HayLava_Err
-        
 
-        '***************************************************
-        'Autor: Nacho (Integer)
-        'Last Modification: 03/12/07
-        '***************************************************
 100     If Map > 0 And Map < NumMaps + 1 And X > 0 And X < 101 And Y > 0 And Y < 101 Then
 102         If MapData(Map, X, Y).Graphic(1) >= 5837 And MapData(Map, X, Y).Graphic(1) <= 5852 Then
 104             HayLava = True
@@ -794,9 +789,9 @@ Handler:
 End Sub
 
 Function FileExist(ByVal File As String, Optional FileType As VbFileAttribute = vbNormal) As Boolean
-        '*****************************************************************
+
         'Se fija si existe el archivo
-        '*****************************************************************
+
         
         On Error GoTo FileExist_Err
         
@@ -815,13 +810,8 @@ Function ReadField(ByVal Pos As Integer, ByRef Text As String, ByVal SepASCII As
         
         On Error GoTo ReadField_Err
         
-
-        '*****************************************************************
-        'Gets a field from a string
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modify Date: 11/15/2004
         'Gets a field from a delimited string
-        '*****************************************************************
+
         Dim i          As Long
 
         Dim LastPos    As Long
@@ -1111,11 +1101,6 @@ End Sub
 '
 
 Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
-    '******************************************************
-    'Author: Unknown
-    'Last Update: 04/11/2008 (NicoNZ)
-    '
-    '******************************************************
         
         On Error GoTo EfectoMimetismo_Err
     
@@ -1972,7 +1957,7 @@ Sub PasarSegundo()
             
             End With
         Next
-        ' **********************************
+
 
         Exit Sub
 
@@ -2046,13 +2031,9 @@ End Sub
 Public Sub FreeNPCs()
         
         On Error GoTo FreeNPCs_Err
-        
 
-        '***************************************************
-        'Autor: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
         'Releases all NPC Indexes
-        '***************************************************
+
         Dim LoopC As Long
     
         ' Free all NPC indexes
@@ -2070,11 +2051,8 @@ FreeNPCs_Err:
 End Sub
 
 Public Sub FreeCharIndexes()
-        '***************************************************
-        'Autor: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
+
         'Releases all char indexes
-        '***************************************************
         ' Free all char indexes (set them all to 0)
         
         On Error GoTo FreeCharIndexes_Err
@@ -2158,7 +2136,6 @@ RandomString_Err:
         
 End Function
 
-'[CODE 002]:MatuX
 '
 '  Función para chequear el email
 '
