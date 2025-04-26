@@ -47,9 +47,9 @@ Public writer As New clsNetWriter
 
 #If PYMMO = 0 Then
 Public Sub WriteAccountCharacterList(ByVal UserIndex As Integer, ByRef Personajes() As t_PersonajeCuenta, ByVal Count As Long)
-        '<EhHeader>
+        
         On Error GoTo WriteAccountCharacterList_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eAccountCharacterList)
         
         Call Writer.WriteInt(Count)
@@ -73,13 +73,13 @@ Public Sub WriteAccountCharacterList(ByVal UserIndex As Integer, ByRef Personaje
         Next i
 
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteAccountCharacterList_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAccountCharacterList", Erl)
-        '</EhFooter>
+        
 End Sub
 #End If
 ' \Begin: [Writes]
@@ -109,33 +109,33 @@ End Function
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteLoggedMessage(ByVal UserIndex As Integer, Optional ByVal newUser As Boolean = False)
-        '<EhHeader>
+        
         On Error GoTo WriteLoggedMessage_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.elogged)
 101     Call Writer.WriteBool(newUser)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteLoggedMessage_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLoggedMessage", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteHora(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteHora_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageHora())
-        '<EhFooter>
+        
         Exit Sub
 
 WriteHora_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteHora", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -144,18 +144,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteRemoveAllDialogs(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteRemoveAllDialogs_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eRemoveDialogs)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteRemoveAllDialogs_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRemoveAllDialogs", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -165,18 +165,18 @@ End Sub
 ' @param    CharIndex Character whose dialog will be removed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteRemoveCharDialog(ByVal UserIndex As Integer, ByVal CharIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteRemoveCharDialog_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageRemoveCharDialog( _
                 CharIndex))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteRemoveCharDialog_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRemoveCharDialog", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ' Writes the "NavigateToggle" message to the given user's outgoing data .incomingData.
@@ -184,75 +184,75 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteNavigateToggle(ByVal UserIndex As Integer, ByVal NewState As Boolean)
-        '<EhHeader>
+        
         On Error GoTo WriteNavigateToggle_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eNavigateToggle)
         Call Writer.WriteBool(NewState)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteNavigateToggle_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNavigateToggle", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteNadarToggle(ByVal UserIndex As Integer, _
                             ByVal Puede As Boolean, _
                             Optional ByVal esTrajeCaucho As Boolean = False)
-        '<EhHeader>
+        
         On Error GoTo WriteNadarToggle_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eNadarToggle)
 102     Call Writer.WriteBool(Puede)
 104     Call Writer.WriteBool(esTrajeCaucho)
 106     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteNadarToggle_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNadarToggle", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteEquiteToggle(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteEquiteToggle_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eEquiteToggle)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteEquiteToggle_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteEquiteToggle", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteVelocidadToggle(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteVelocidadToggle_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eVelocidadToggle)
 102     Call Writer.WriteReal32(UserList(UserIndex).Char.speeding)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteVelocidadToggle_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteVelocidadToggle", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteMacroTrabajoToggle(ByVal UserIndex As Integer, ByVal Activar As Boolean)
-        '<EhHeader>
+        
         On Error GoTo WriteMacroTrabajoToggle_Err
-        '</EhHeader>
+        
 
 100     If Not Activar Then
 102         UserList(UserIndex).flags.TargetObj = 0 ' Sacamos el targer del objeto
@@ -271,13 +271,13 @@ Public Sub WriteMacroTrabajoToggle(ByVal UserIndex As Integer, ByVal Activar As 
 118     Call Writer.WriteInt16(ServerPacketID.eMacroTrabajoToggle)
 120     Call Writer.WriteBool(Activar)
 122     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteMacroTrabajoToggle_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMacroTrabajoToggle", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -287,22 +287,22 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteDisconnect(ByVal UserIndex As Integer, _
                            Optional ByVal FullLogout As Boolean = False)
-        '<EhHeader>
+        
         On Error GoTo WriteDisconnect_Err
-        '</EhHeader>
+        
 100     Call ClearAndSaveUser(UserIndex)
 102     UserList(UserIndex).flags.YaGuardo = True
 
 110     Call Writer.WriteInt16(ServerPacketID.eDisconnect)
         Call Writer.WriteBool(FullLogout)
 112     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteDisconnect_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDisconnect", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -311,18 +311,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteCommerceEnd(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteCommerceEnd_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCommerceEnd)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteCommerceEnd_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCommerceEnd", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -331,18 +331,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteBankEnd(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteBankEnd_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eBankEnd)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteBankEnd_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBankEnd", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -351,19 +351,19 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteCommerceInit(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteCommerceInit_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCommerceInit)
 102     Call Writer.WriteString8(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Name)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteCommerceInit_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCommerceInit", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -372,18 +372,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteBankInit(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteBankInit_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eBankInit)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteBankInit_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBankInit", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -392,18 +392,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteUserCommerceInit(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUserCommerceInit_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eUserCommerceInit)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUserCommerceInit_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserCommerceInit", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -412,18 +412,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteUserCommerceEnd(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUserCommerceEnd_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eUserCommerceEnd)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUserCommerceEnd_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserCommerceEnd", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -432,18 +432,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteShowBlacksmithForm(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteShowBlacksmithForm_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eShowBlacksmithForm)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteShowBlacksmithForm_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowBlacksmithForm", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -452,48 +452,48 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteShowCarpenterForm(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteShowCarpenterForm_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eShowCarpenterForm)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteShowCarpenterForm_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowCarpenterForm", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteShowAlquimiaForm(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteShowAlquimiaForm_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eShowAlquimiaForm)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteShowAlquimiaForm_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowAlquimiaForm", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteShowSastreForm(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteShowSastreForm_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eShowSastreForm)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteShowSastreForm_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowSastreForm", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -502,18 +502,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteNPCKillUser(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteNPCKillUser_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eNPCKillUser)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteNPCKillUser_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNPCKillUser", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -522,18 +522,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub Write_BlockedWithShieldUser(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo Write_BlockedWithShieldUser_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eBlockedWithShieldUser)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 Write_BlockedWithShieldUser_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.Write_BlockedWithShieldUser", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -542,18 +542,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub Write_BlockedWithShieldOther(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo Write_BlockedWithShieldOther_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eBlockedWithShieldOther)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 Write_BlockedWithShieldOther_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.Write_BlockedWithShieldOther", Erl)
-        '</EhFooter>
+        
 End Sub
 
 
@@ -563,18 +563,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteSafeModeOn(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteSafeModeOn_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eSafeModeOn)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteSafeModeOn_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSafeModeOn", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -583,18 +583,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteSafeModeOff(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteSafeModeOff_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eSafeModeOff)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteSafeModeOff_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSafeModeOff", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -603,18 +603,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WritePartySafeOn(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WritePartySafeOn_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.ePartySafeOn)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WritePartySafeOn_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePartySafeOn", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -623,50 +623,50 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WritePartySafeOff(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WritePartySafeOff_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.ePartySafeOff)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WritePartySafeOff_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePartySafeOff", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteClanSeguro(ByVal UserIndex As Integer, ByVal estado As Boolean)
-        '<EhHeader>
+        
         On Error GoTo WriteClanSeguro_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eClanSeguro)
 102     Call Writer.WriteBool(estado)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteClanSeguro_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteClanSeguro", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteSeguroResu(ByVal UserIndex As Integer, ByVal estado As Boolean)
-        '<EhHeader>
+        
         On Error GoTo WriteSeguroResu_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eSeguroResu)
 102     Call Writer.WriteBool(estado)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteSeguroResu_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSeguroResu", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -675,18 +675,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteCantUseWhileMeditating(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteCantUseWhileMeditating_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCantUseWhileMeditating)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteCantUseWhileMeditating_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCantUseWhileMeditating", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -695,20 +695,20 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteUpdateSta(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUpdateSta_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eUpdateSta)
 102     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinSta)
 104     Call modSendData.SendData(ToIndex, UserIndex)
 
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUpdateSta_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateSta", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -717,9 +717,9 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteUpdateMana(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUpdateMana_Err
-        '</EhHeader>
+        
 100     Call SendData(SendTarget.ToAdminsYDioses, UserList(userindex).GuildIndex, _
                 PrepareMessageCharUpdateMAN(userindex))
 10     Call SendData(SendTarget.ToClanArea, UserList(userindex).GuildIndex, _
@@ -728,13 +728,13 @@ Public Sub WriteUpdateMana(ByVal UserIndex As Integer)
 104     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinMAN)
 106     Call modSendData.SendData(ToIndex, UserIndex)
 
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUpdateMana_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateMana", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -744,9 +744,9 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteUpdateHP(ByVal UserIndex As Integer)
         'Call SendData(SendTarget.ToDiosesYclan, UserIndex, PrepareMessageCharUpdateHP(UserIndex))
-        '<EhHeader>
+        
         On Error GoTo WriteUpdateHP_Err
-        '</EhHeader>
+        
 100     Call SendData(SendTarget.ToAdminsYDioses, UserList(userindex).GuildIndex, _
                 PrepareMessageCharUpdateHP(userindex))
 101     Call SendData(SendTarget.ToClanArea, UserList(userindex).GuildIndex, _
@@ -759,13 +759,13 @@ Public Sub WriteUpdateHP(ByVal UserIndex As Integer)
 
 106     Call modSendData.SendData(ToIndex, UserIndex)
 
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUpdateHP_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateHP", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -774,20 +774,20 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteUpdateGold(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUpdateGold_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eUpdateGold)
 102     Call Writer.WriteInt32(UserList(UserIndex).Stats.GLD)
 103     Call Writer.WriteInt32(SvrConfig.GetValue("OroPorNivelBilletera"))
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUpdateGold_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateGold", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -796,19 +796,19 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteUpdateExp(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUpdateExp_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eUpdateExp)
 102     Call Writer.WriteInt32(UserList(UserIndex).Stats.Exp)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUpdateExp_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateExp", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -819,20 +819,20 @@ End Sub
 ' @param    version The version of the map in the server to check if client is properly updated.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteChangeMap(ByVal UserIndex As Integer, ByVal Map As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteChangeMap_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.echangeMap)
 102     Call Writer.WriteInt16(Map)
 104     Call Writer.WriteInt16(MapInfo(Map).MapResource)
 106     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteChangeMap_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeMap", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -841,9 +841,9 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WritePosUpdate(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WritePosUpdate_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.ePosUpdate)
 102     Call Writer.WriteInt8(UserList(UserIndex).Pos.X)
 104     Call Writer.WriteInt8(UserList(UserIndex).Pos.Y)
@@ -852,13 +852,13 @@ Public Sub WritePosUpdate(ByVal UserIndex As Integer)
         If IsValidUserRef(UserList(UserIndex).flags.GMMeSigue) Then
             Call WritePosUpdateCharIndex(UserList(UserIndex).flags.GMMeSigue.ArrayIndex, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y, UserList(UserIndex).Char.charindex)
         End If
-        '<EhFooter>
+        
         Exit Sub
 
 WritePosUpdate_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePosUpdate", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -867,22 +867,22 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WritePosUpdateCharIndex(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal charindex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WritePosUpdateCharIndex_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.ePosUpdateUserChar)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 105     Call Writer.WriteInt16(charindex)
 106     Call modSendData.SendData(ToIndex, UserIndex)
 
-        '<EhFooter>
+        
         Exit Sub
 
 WritePosUpdateCharIndex_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePosUpdateCharIndex", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -891,22 +891,22 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WritePosUpdateChar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal y As Byte, ByVal charindex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WritePosUpdateChar_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.ePosUpdateChar)
 105     Call Writer.WriteInt16(charindex)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(y)
 106     Call modSendData.SendData(ToIndex, UserIndex)
 
-        '<EhFooter>
+        
         Exit Sub
 
 WritePosUpdateChar_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePosUpdateChar", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -919,20 +919,20 @@ End Sub
 Public Sub WriteNPCHitUser(ByVal UserIndex As Integer, _
                            ByVal Target As e_PartesCuerpo, _
                            ByVal damage As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteNPCHitUser_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eNPCHitUser)
 102     Call Writer.WriteInt8(Target)
 104     Call Writer.WriteInt16(damage)
 106     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteNPCHitUser_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNPCHitUser", Erl)
-        '</EhFooter>
+        
 End Sub
 
  
@@ -948,21 +948,21 @@ Public Sub WriteUserHittedByUser(ByVal UserIndex As Integer, _
                                  ByVal Target As e_PartesCuerpo, _
                                  ByVal attackerChar As Integer, _
                                  ByVal damage As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUserHittedByUser_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eUserHittedByUser)
 102     Call Writer.WriteInt16(attackerChar)
 104     Call Writer.WriteInt8(Target)
 106     Call Writer.WriteInt16(damage)
 108     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUserHittedByUser_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserHittedByUser", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -977,21 +977,21 @@ Public Sub WriteUserHittedUser(ByVal UserIndex As Integer, _
                                ByVal Target As e_PartesCuerpo, _
                                ByVal attackedChar As Integer, _
                                ByVal damage As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUserHittedUser_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eUserHittedUser)
 102     Call Writer.WriteInt16(attackedChar)
 104     Call Writer.WriteInt8(Target)
 106     Call Writer.WriteInt16(damage)
 108     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUserHittedUser_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserHittedUser", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1006,18 +1006,18 @@ Public Sub WriteChatOverHead(ByVal UserIndex As Integer, _
                              ByVal chat As String, _
                              ByVal CharIndex As Integer, _
                              ByVal Color As Long)
-        '<EhHeader>
+        
         On Error GoTo WriteChatOverHead_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageChatOverHead(chat, _
                 charindex, Color, , UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteChatOverHead_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChatOverHead", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1033,36 +1033,36 @@ Public Sub WriteLocaleChatOverHead(ByVal UserIndex As Integer, _
                              ByVal Params As String, _
                              ByVal charindex As Integer, _
                              ByVal Color As Long)
-        '<EhHeader>
+        
         On Error GoTo WriteLocaleChatOverHead_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareLocaleChatOverHead(ChatId, Params, _
                 charindex, Color, , UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteLocaleChatOverHead_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLocaleChatOverHead", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteTextOverChar(ByVal UserIndex As Integer, _
                              ByVal chat As String, _
                              ByVal CharIndex As Integer, _
                              ByVal Color As Long)
-        '<EhHeader>
+        
         On Error GoTo WriteTextOverChar_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageTextOverChar(chat, _
                 CharIndex, Color))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteTextOverChar_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTextOverChar", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteTextOverTile(ByVal UserIndex As Integer, _
@@ -1070,36 +1070,36 @@ Public Sub WriteTextOverTile(ByVal UserIndex As Integer, _
                              ByVal X As Integer, _
                              ByVal Y As Integer, _
                              ByVal Color As Long)
-        '<EhHeader>
+        
         On Error GoTo WriteTextOverTile_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageTextOverTile(chat, X, _
                 Y, Color))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteTextOverTile_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTextOverTile", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteTextCharDrop(ByVal UserIndex As Integer, _
                              ByVal chat As String, _
                              ByVal CharIndex As Integer, _
                              ByVal Color As Long)
-        '<EhHeader>
+        
         On Error GoTo WriteTextCharDrop_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageTextCharDrop(chat, _
                 CharIndex, Color))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteTextCharDrop_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTextCharDrop", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1112,36 +1112,36 @@ End Sub
 Public Sub WriteConsoleMsg(ByVal UserIndex As Integer, _
                            ByVal chat As String, _
                            Optional ByVal FontIndex As e_FontTypeNames = FONTTYPE_INFO)
-        '<EhHeader>
+        
         On Error GoTo WriteConsoleMsg_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageConsoleMsg(chat, _
                 FontIndex))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteConsoleMsg_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteConsoleMsg", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, _
                           ByVal ID As Integer, _
                           ByVal FontIndex As e_FontTypeNames, _
                           Optional ByVal strExtra As String = vbNullString)
-        '<EhHeader>
+        
         On Error GoTo WriteLocaleMsg_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageLocaleMsg(ID, strExtra, _
                 FontIndex))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteLocaleMsg_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLocaleMsg", Erl)
-        '</EhFooter>
+        
 End Sub
 
 
@@ -1159,17 +1159,17 @@ End Sub
 Public Sub WriteGuildChat(ByVal UserIndex As Integer, _
                           ByVal chat As String, _
                           ByVal Status As Byte)
-    '<EhHeader>
+    
     On Error GoTo WriteGuildChat_Err
-    '</EhHeader>
+    
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageGuildChat(chat, Status))
-    '<EhFooter>
+    
     Exit Sub
 
 WriteGuildChat_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildChat", Erl)
-    '</EhFooter>
+    
 End Sub
 
 
@@ -1202,18 +1202,18 @@ WriteShowMessageBox_Err:
 End Function
 
 Public Sub WriteMostrarCuenta(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteMostrarCuenta_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eMostrarCuenta)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteMostrarCuenta_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMostrarCuenta", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1222,19 +1222,19 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteUserIndexInServer(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUserIndexInServer_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eUserIndexInServer)
 102     Call Writer.WriteInt16(UserIndex)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUserIndexInServer_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserIndexInServer", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1243,19 +1243,19 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteUserCharIndexInServer(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUserCharIndexInServer_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eUserCharIndexInServer)
 102     Call Writer.WriteInt16(UserList(UserIndex).Char.CharIndex)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUserCharIndexInServer_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserCharIndexInServer", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1287,66 +1287,66 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal body As Intege
                                 ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, _
                                 Optional ByVal Navegando As Boolean = False, Optional ByVal tipoUsuario As e_TipoUsuario = 0, _
                                 Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal AnimAtaque1 As Integer = 0)
-        '<EhHeader>
+        
         On Error GoTo WriteCharacterCreate_Err
-        '</EhHeader>
+        
 100 Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterCreate(Body, Head, _
             Heading, charindex, x, y, weapon, shield, Cart, FX, FXLoops, helmet, name, Status, _
             privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, _
             Otra_Aura, Escudo_Aura, speeding, EsNPC, appear, group_index, _
             clan_index, clan_nivel, UserMinHp, UserMaxHp, UserMinMAN, UserMaxMAN, Simbolo, _
             Idle, Navegando, tipoUsuario, TeamCaptura, TieneBandera, AnimAtaque1))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteCharacterCreate_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterCreate", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteCharacterUpdateFlag(ByVal UserIndex As Integer, ByVal Flag As Byte, ByVal charindex As Integer)
    On Error GoTo WriteCharacterUpdateFlag_Err
-        '</EhHeader>
+        
 100 Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageUpdateFlag(Flag, charindex))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteCharacterUpdateFlag_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterUpdateFlag", Erl)
-        '</EhFooter>
+        
 End Sub
 
 
 Public Sub WriteForceCharMove(ByVal UserIndex As Integer, ByVal Direccion As e_Heading)
-        '<EhHeader>
+        
         On Error GoTo WriteForceCharMove_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageForceCharMove(Direccion))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteForceCharMove_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteForceCharMove", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteForceCharMoveSiguiendo(ByVal UserIndex As Integer, ByVal Direccion As e_Heading)
-        '<EhHeader>
+        
         On Error GoTo WriteForceCharMoveSiguiendo_Err
-        '</EhHeader>
+        
 98      Call Writer.WriteInt16(ServerPacketID.eForceCharMoveSiguiendo)
 100     Call Writer.WriteInt8(Direccion)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteForceCharMoveSiguiendo_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteForceCharMoveSiguiendo", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1376,19 +1376,19 @@ Public Sub WriteCharacterChange(ByVal UserIndex As Integer, _
                                 ByVal helmet As Integer, _
                                 Optional ByVal Idle As Boolean = False, _
                                 Optional ByVal Navegando As Boolean = False)
-        '<EhHeader>
+        
         On Error GoTo WriteCharacterChange_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterChange(Body, _
                 head, Heading, charindex, weapon, shield, Cart, FX, FXLoops, helmet, Idle, _
                 Navegando))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteCharacterChange_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterChange", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1404,18 +1404,18 @@ Public Sub WriteObjectCreate(ByVal UserIndex As Integer, _
                              ByVal amount As Integer, _
                              ByVal X As Byte, _
                              ByVal Y As Byte)
-        '<EhHeader>
+        
         On Error GoTo WriteObjectCreate_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageObjectCreate(ObjIndex, _
                 amount, X, Y))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteObjectCreate_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteObjectCreate", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteUpdateTrapState(ByVal UserIndex As Integer, State As Integer, ByVal x As Integer, ByVal y As Integer)
@@ -1434,22 +1434,22 @@ Public Sub WriteParticleFloorCreate(ByVal UserIndex As Integer, _
                                     ByVal Map As Integer, _
                                     ByVal X As Byte, _
                                     ByVal Y As Byte)
-        '<EhHeader>
+        
         On Error GoTo WriteParticleFloorCreate_Err
-        '</EhHeader>
+        
 
 100     If Particula = 0 Then
 102         Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageParticleFXToFloor( _
                     X, Y, Particula, ParticulaTime))
         End If
 
-        '<EhFooter>
+        
         Exit Sub
 
 WriteParticleFloorCreate_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteParticleFloorCreate", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteLightFloorCreate(ByVal UserIndex As Integer, _
@@ -1458,9 +1458,9 @@ Public Sub WriteLightFloorCreate(ByVal UserIndex As Integer, _
                                  ByVal Map As Integer, _
                                  ByVal X As Byte, _
                                  ByVal Y As Byte)
-        '<EhHeader>
+        
         On Error GoTo WriteLightFloorCreate_Err
-        '</EhHeader>
+        
 100     MapData(Map, X, Y).Luz.Color = LuzColor
 102     MapData(Map, X, Y).Luz.Rango = Rango
 
@@ -1469,30 +1469,30 @@ Public Sub WriteLightFloorCreate(ByVal UserIndex As Integer, _
                     Y, LuzColor, Rango))
         End If
 
-        '<EhFooter>
+        
         Exit Sub
 
 WriteLightFloorCreate_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLightFloorCreate", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteFxPiso(ByVal UserIndex As Integer, _
                        ByVal GrhIndex As Integer, _
                        ByVal X As Byte, _
                        ByVal Y As Byte)
-        '<EhHeader>
+        
         On Error GoTo WriteFxPiso_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageFxPiso(GrhIndex, X, Y))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteFxPiso_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteFxPiso", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1503,17 +1503,17 @@ End Sub
 ' @param    Y Y coord of the character's new position.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteObjectDelete(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
-        '<EhHeader>
+        
         On Error GoTo WriteObjectDelete_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageObjectDelete(X, Y))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteObjectDelete_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteObjectDelete", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1528,21 +1528,21 @@ Public Sub Write_BlockPosition(ByVal UserIndex As Integer, _
                               ByVal X As Byte, _
                               ByVal Y As Byte, _
                               ByVal Blocked As Byte)
-        '<EhHeader>
+        
         On Error GoTo Write_BlockPosition_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eBlockPosition)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 106     Call Writer.WriteInt8(Blocked)
 108     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 Write_BlockPosition_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.Write_BlockPosition", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1555,17 +1555,17 @@ End Sub
 Public Sub WritePlayMidi(ByVal UserIndex As Integer, _
                          ByVal midi As Byte, _
                          Optional ByVal loops As Integer = -1)
-        '<EhHeader>
+        
         On Error GoTo WritePlayMidi_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessagePlayMidi(midi, loops))
-        '<EhFooter>
+        
         Exit Sub
 
 WritePlayMidi_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePlayMidi", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1581,17 +1581,17 @@ Public Sub WritePlayWave(ByVal UserIndex As Integer, _
                          ByVal X As Byte, _
                          ByVal Y As Byte, _
                          Optional ByVal CancelLastWave As Byte = 0)
-        '<EhHeader>
+        
         On Error GoTo WritePlayWave_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, userindex, PrepareMessagePlayWave(wave, X, Y, CancelLastWave))
-        '<EhFooter>
+        
         Exit Sub
 
 WritePlayWave_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePlayWave", Erl)
-        '</EhFooter>
+        
 End Sub
 Public Sub WritePlayWaveStep(ByVal UserIndex As Integer, _
                          ByVal CharIndex As Integer, _
@@ -1600,9 +1600,9 @@ Public Sub WritePlayWaveStep(ByVal UserIndex As Integer, _
                          ByVal distance As Byte, _
                          ByVal balance As Integer, _
                          ByVal step As Boolean)
-        '<EhHeader>
+        
         On Error GoTo WritePlayWaveStep_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.ePlayWaveStep)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt32(grh)
@@ -1611,13 +1611,13 @@ Public Sub WritePlayWaveStep(ByVal UserIndex As Integer, _
 109     Call Writer.WriteInt16(balance)
 110     Call Writer.WriteBool(step)
 132     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WritePlayWaveStep_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePlayWaveStep", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1627,9 +1627,9 @@ End Sub
 ' @param    GuildList List of guilds to be sent.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteGuildList(ByVal UserIndex As Integer, ByRef guildList() As String)
-        '<EhHeader>
+        
         On Error GoTo WriteGuildList_Err
-        '</EhHeader>
+        
 
         Dim Tmp As String
 
@@ -1645,13 +1645,13 @@ Public Sub WriteGuildList(ByVal UserIndex As Integer, ByRef guildList() As Strin
 108     If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
 110     Call Writer.WriteString8(Tmp)
 112     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteGuildList_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildList", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1660,20 +1660,20 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteAreaChanged(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
-        '<EhHeader>
+        
         On Error GoTo WriteAreaChanged_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eAreaChanged)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 106     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteAreaChanged_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAreaChanged", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1682,17 +1682,17 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WritePauseToggle(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WritePauseToggle_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessagePauseToggle())
-        '<EhFooter>
+        
         Exit Sub
 
 WritePauseToggle_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePauseToggle", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1701,32 +1701,32 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteRainToggle(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteRainToggle_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageRainToggle())
-        '<EhFooter>
+        
         Exit Sub
 
 WriteRainToggle_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRainToggle", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteNubesToggle(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteNubesToggle_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageNieblandoToggle( _
                 IntensidadDeNubes))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteNubesToggle_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNubesToggle", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1741,23 +1741,21 @@ Public Sub WriteCreateFX(ByVal UserIndex As Integer, _
                          ByVal CharIndex As Integer, _
                          ByVal FX As Integer, _
                          ByVal FXLoops As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
+
         'Writes the "CreateFX" message to the given user's outgoing data buffer
-        '***************************************************
-        '<EhHeader>
+
+
         On Error GoTo WriteCreateFX_Err
-        '</EhHeader>
+
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCreateFX(CharIndex, FX, _
                 FXLoops, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
-        '<EhFooter>
+
         Exit Sub
 
 WriteCreateFX_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCreateFX", Erl)
-        '</EhFooter>
+
 End Sub
 
 ''
@@ -1766,14 +1764,11 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
+
         'Writes the "UpdateUserStats" message to the given user's outgoing data buffer
-        '***************************************************
-        '<EhHeader>
+
         On Error GoTo WriteUpdateUserStats_Err
-        '</EhHeader>
+
 100     Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, _
                 PrepareMessageCharUpdateHP(UserIndex))
 102     Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, _
@@ -1794,39 +1789,39 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
 126     Call Writer.WriteInt8(UserList(UserIndex).clase)
 128     Call modSendData.SendData(ToIndex, UserIndex)
 
-        '<EhFooter>
+
         Exit Sub
 
 WriteUpdateUserStats_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateUserStats", Erl)
-        '</EhFooter>
+
 End Sub
 
 Public Sub WriteUpdateUserKey(ByVal UserIndex As Integer, _
                               ByVal Slot As Integer, _
                               ByVal Llave As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUpdateUserKey_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eUpdateUserKey)
 102     Call Writer.WriteInt16(Slot)
 104     Call Writer.WriteInt16(Llave)
 106     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUpdateUserKey_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateUserKey", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ' Actualiza el indicador de daño mágico
 Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUpdateDM_Err
-        '</EhHeader>
+        
 
         Dim Valor As Integer
 
@@ -1847,20 +1842,20 @@ Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
         End With
 
 114     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUpdateDM_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateDM", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ' Actualiza el indicador de resistencia mágica
 Public Sub WriteUpdateRM(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUpdateRM_Err
-        '</EhHeader>
+        
 
         Dim Valor As Integer
 
@@ -1892,13 +1887,13 @@ Public Sub WriteUpdateRM(ByVal UserIndex As Integer)
         End With
 
 124     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUpdateRM_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateRM", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -1908,21 +1903,21 @@ End Sub
 ' @param    Skill The skill for which we request a target.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteWorkRequestTarget(ByVal UserIndex As Integer, ByVal Skill As e_Skill, Optional ByVal CasteaArea As Boolean = False, Optional ByVal Radio As Byte = 0)
-        '<EhHeader>
+        
         On Error GoTo WriteWorkRequestTarget_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eWorkRequestTarget)
 102     Call Writer.WriteInt8(Skill)
         Call Writer.WriteBool(CasteaArea)
         Call Writer.WriteInt8(Radio)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteWorkRequestTarget_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteWorkRequestTarget", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteInventoryUnlockSlots(ByVal UserIndex As Integer)
@@ -1949,9 +1944,9 @@ WriteInventoryUnlockSlots_Err:
 End Sub
 
 Public Sub WriteIntervals(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteIntervals_Err
-        '</EhHeader>
+        
 
 100     With UserList(UserIndex)
 102         Call Writer.WriteInt16(ServerPacketID.eIntervals)
@@ -1970,19 +1965,19 @@ Public Sub WriteIntervals(ByVal UserIndex As Integer)
         End With
 
 128     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteIntervals_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteIntervals", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
-        '<EhHeader>
+        
         On Error GoTo WriteChangeInventorySlot_Err
-        '</EhHeader>
+        
 
         Dim ObjIndex    As Integer
 
@@ -2007,13 +2002,13 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As By
             Call Writer.WriteBool(False)
         End If
 120     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteChangeInventorySlot_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeInventorySlot", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2023,9 +2018,9 @@ End Sub
 ' @param    slot Inventory slot which needs to be updated.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
-        '<EhHeader>
+        
         On Error GoTo WriteChangeBankSlot_Err
-        '</EhHeader>
+        
 
         Dim ObjIndex    As Integer
 
@@ -2047,13 +2042,13 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
 116     Call Writer.WriteInt32(Valor)
 118     Call Writer.WriteInt8(PodraUsarlo)
 120     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteChangeBankSlot_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeBankSlot", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2063,9 +2058,9 @@ End Sub
 ' @param    slot Spell slot to update.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal Slot As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteChangeSpellSlot_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eChangeSpellSlot)
 102     Call Writer.WriteInt8(Slot)
 104     Call Writer.WriteInt16(UserList(UserIndex).Stats.UserHechizos(Slot))
@@ -2079,13 +2074,13 @@ Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal Slot As Intege
         End If
         
 112     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteChangeSpellSlot_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeSpellSlot", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2094,9 +2089,9 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteAttributes(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteAttributes_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eAtributes)
 102     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(e_Atributos.Fuerza))
 104     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))
@@ -2106,13 +2101,13 @@ Public Sub WriteAttributes(ByVal UserIndex As Integer)
                 e_Atributos.Constitucion))
 110     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(e_Atributos.Carisma))
 112     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteAttributes_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAttributes", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2121,9 +2116,9 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteBlacksmithWeapons_Err
-        '</EhHeader>
+        
 
         Dim i              As Long
 
@@ -2162,13 +2157,13 @@ Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
 128     Next i
 
 130     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteBlacksmithWeapons_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlacksmithWeapons", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2177,9 +2172,9 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteBlacksmithArmors_Err
-        '</EhHeader>
+        
 
         Dim i              As Long
 
@@ -2219,13 +2214,13 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
 130     Next i
 
 132     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteBlacksmithArmors_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlacksmithArmors", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2234,9 +2229,9 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteCarpenterObjects(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteCarpenterObjects_Err
-        '</EhHeader>
+        
 
         Dim i              As Long
 
@@ -2273,19 +2268,19 @@ Public Sub WriteCarpenterObjects(ByVal UserIndex As Integer)
 122     Next i
 
 124     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteCarpenterObjects_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCarpenterObjects", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteAlquimistaObjects(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteAlquimistaObjects_Err
-        '</EhHeader>
+        
 
         Dim i              As Long
 
@@ -2316,19 +2311,19 @@ Public Sub WriteAlquimistaObjects(ByVal UserIndex As Integer)
 120     Next i
 
 122     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteAlquimistaObjects_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAlquimistaObjects", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteSastreObjects(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteSastreObjects_Err
-        '</EhHeader>
+        
 
         Dim i              As Long
 
@@ -2359,13 +2354,13 @@ Public Sub WriteSastreObjects(ByVal UserIndex As Integer)
 120     Next i
 
 122     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteSastreObjects_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSastreObjects", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2374,18 +2369,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteRestOK(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteRestOK_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eRestOK)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteRestOK_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRestOK", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2395,22 +2390,19 @@ End Sub
 ' @param    message The error message to be displayed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal Message As String)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
+
         'Writes the "ErrorMsg" message to the given user's outgoing data buffer
-        '***************************************************
-        '<EhHeader>
+        
         On Error GoTo WriteErrorMsg_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageErrorMsg(Message))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteErrorMsg_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteErrorMsg", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2419,18 +2411,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteBlind(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteBlind_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eBlind)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteBlind_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlind", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2439,18 +2431,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteDumb(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteDumb_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eDumb)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteDumb_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDumb", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2461,20 +2453,20 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 'Optimizacion de protocolo por Ladder
 Public Sub WriteShowSignal(ByVal UserIndex As Integer, ByVal ObjIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteShowSignal_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eShowSignal)
 102     Call Writer.WriteInt16(ObjIndex)
 104     Call Writer.WriteInt16(ObjData(ObjIndex).GrhSecundario)
 106     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteShowSignal_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowSignal", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2489,9 +2481,9 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, _
                                        ByVal Slot As Byte, _
                                        ByRef obj As t_Obj, _
                                        ByVal price As Single)
-        '<EhHeader>
+        
         On Error GoTo WriteChangeNPCInventorySlot_Err
-        '</EhHeader>
+        
 
         Dim PodraUsarlo As Byte
 
@@ -2506,13 +2498,13 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, _
 112     Call Writer.WriteReal32(price)
 114     Call Writer.WriteInt8(PodraUsarlo)
 116     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteChangeNPCInventorySlot_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeNPCInventorySlot", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2521,111 +2513,111 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteUpdateHungerAndThirst(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUpdateHungerAndThirst_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eUpdateHungerAndThirst)
 102     Call Writer.WriteInt8(UserList(UserIndex).Stats.MaxAGU)
 104     Call Writer.WriteInt8(UserList(UserIndex).Stats.MinAGU)
 106     Call Writer.WriteInt8(UserList(UserIndex).Stats.MaxHam)
 108     Call Writer.WriteInt8(UserList(UserIndex).Stats.MinHam)
 110     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUpdateHungerAndThirst_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateHungerAndThirst", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteLight(ByVal UserIndex As Integer, ByVal Map As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteLight_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.elight)
 102     Call Writer.WriteString8(MapInfo(Map).base_light)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteLight_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLight", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteFlashScreen(ByVal UserIndex As Integer, _
                             ByVal Color As Long, _
                             ByVal Time As Long, _
                             Optional ByVal Ignorar As Boolean = False)
-        '<EhHeader>
+        
         On Error GoTo WriteFlashScreen_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eFlashScreen)
 102     Call Writer.WriteInt32(Color)
 104     Call Writer.WriteInt32(Time)
 106     Call Writer.WriteBool(Ignorar)
 108     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteFlashScreen_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteFlashScreen", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteFYA(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteFYA_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eFYA)
 102     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(1))
 104     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(2))
 106     Call Writer.WriteInt16(UserList(UserIndex).flags.DuracionEfecto)
 108     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteFYA_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteFYA", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteCerrarleCliente(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteCerrarleCliente_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCerrarleCliente)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteCerrarleCliente_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCerrarleCliente", Erl)
-        '</EhFooter>
+        
 End Sub
 
 
 Public Sub WriteContadores(ByVal UserIndex As Integer)
- '<EhHeader>
+ 
         On Error GoTo WriteContadores_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eContadores)
 102     Call Writer.WriteInt16(UserList(UserIndex).Counters.Invisibilidad)
 110     Call Writer.WriteInt16(UserList(UserIndex).flags.DuracionEfecto)
         
 112     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteContadores_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteContadores", Erl)
-        '</EhFooter>
+        
         
 End Sub
 
@@ -2654,9 +2646,9 @@ End Sub
 
 Public Sub WritePrivilegios(ByVal UserIndex As Integer)
 
-        '<EhHeader>
+        
         On Error GoTo WritePrivilegios_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.ePrivilegios)
         
         If UserList(UserIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero) Then
@@ -2666,108 +2658,108 @@ Public Sub WritePrivilegios(ByVal UserIndex As Integer)
         End If
         
 112     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WritePrivilegios_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePrivilegios", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteBindKeys(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteBindKeys_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eBindKeys)
 102     Call Writer.WriteInt8(UserList(UserIndex).ChatCombate)
 104     Call Writer.WriteInt8(UserList(UserIndex).ChatGlobal)
 106     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteBindKeys_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBindKeys", Erl)
-        '</EhFooter>
+        
 End Sub
 Public Sub WriteNotificarClienteSeguido(ByVal UserIndex As Integer, ByVal siguiendo As Byte)
     
-        '<EhHeader>
+        
         On Error GoTo WriteNotificarClienteSeguido_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eNotificarClienteSeguido)
 102     Call Writer.WriteInt8(siguiendo)
 120     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteNotificarClienteSeguido_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNotificarClienteSeguido", Erl)
-        '</EhFooter>
+        
 End Sub
 Public Sub WriteRecievePosSeguimiento(ByVal UserIndex As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
     
-        '<EhHeader>
+        
         On Error GoTo WriteNotificarClienteSeguido_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eRecievePosSeguimiento)
 102     Call Writer.WriteInt16(PosX)
 103     Call Writer.WriteInt16(PosY)
 120     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteNotificarClienteSeguido_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNotificarClienteSeguido", Erl)
-        '</EhFooter>
+        
 End Sub
 Public Sub WriteGetInventarioHechizos(ByVal UserIndex As Integer, ByVal Value As Byte, ByVal hechiSel As Byte, ByVal scrollSel As Byte)
     
-        '<EhHeader>
+        
         On Error GoTo GetInventarioHechizos_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eGetInventarioHechizos)
 101     Call Writer.WriteInt8(Value)
         Call Writer.WriteInt8(hechiSel)
         Call Writer.WriteInt8(scrollSel)
 120     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 GetInventarioHechizos_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.GetInventarioHechizos", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteNofiticarClienteCasteo(ByVal UserIndex As Integer, ByVal Value As Byte)
 
-        '<EhHeader>
+        
         On Error GoTo NofiticarClienteCasteo_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eNotificarClienteCasteo)
 101     Call Writer.WriteInt8(Value)
 120     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 NofiticarClienteCasteo_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.NofiticarClienteCasteo", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteCancelarSeguimiento(ByVal UserIndex As Integer)
     
-        '<EhHeader>
+        
         On Error GoTo WriteCancelarSeguimiento_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCancelarSeguimiento)
 120     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteCancelarSeguimiento_Err:
@@ -2776,14 +2768,14 @@ WriteCancelarSeguimiento_Err:
 End Sub
 Public Sub WriteSendFollowingCharindex(ByVal UserIndex As Integer, ByVal charindex As Integer)
 
-        '<EhHeader>
+        
         On Error GoTo WriteSendFollowingCharindex_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eSendFollowingCharIndex)
 102     Call Writer.WriteInt16(charindex)
         
 120     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteSendFollowingCharindex_Err:
@@ -2796,9 +2788,9 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteMiniStats(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteMiniStats_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eMiniStats)
 102     Call Writer.WriteInt32(UserList(UserIndex).Faccion.ciudadanosMatados)
 104     Call Writer.WriteInt32(UserList(UserIndex).Faccion.CriminalesMatados)
@@ -2811,13 +2803,13 @@ Public Sub WriteMiniStats(ByVal UserIndex As Integer)
 115     Call Writer.WriteInt32(UserList(UserIndex).Stats.PuntosPesca)
 118     Call Writer.WriteInt8(UserList(UserIndex).raza)
 120     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteMiniStats_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMiniStats", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2826,19 +2818,19 @@ End Sub
 ' @param    skillPoints The number of free skill points the player has.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteLevelUp(ByVal UserIndex As Integer, ByVal skillPoints As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteLevelUp_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eLevelUp)
 102     Call Writer.WriteInt16(skillPoints)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteLevelUp_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLevelUp", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2850,20 +2842,20 @@ End Sub
 Public Sub WriteAddForumMsg(ByVal UserIndex As Integer, _
                             ByVal title As String, _
                             ByVal Message As String)
-        '<EhHeader>
+        
         On Error GoTo WriteAddForumMsg_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eAddForumMsg)
 102     Call Writer.WriteString8(title)
 104     Call Writer.WriteString8(Message)
 106     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteAddForumMsg_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAddForumMsg", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2872,18 +2864,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteShowForumForm(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteShowForumForm_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eShowForumForm)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteShowForumForm_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowForumForm", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2896,18 +2888,18 @@ End Sub
 Public Sub WriteSetInvisible(ByVal UserIndex As Integer, _
                              ByVal TargetIndex As Integer, _
                              ByVal invisible As Boolean)
-        '<EhHeader>
+        
         On Error GoTo WriteSetInvisible_Err
-        '</EhHeader>
+        
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageSetInvisible(UserList(TargetIndex).Char.charindex, _
                 invisible, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
-        '<EhFooter>
+        
         Exit Sub
 
 WriteSetInvisible_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSetInvisible", Erl)
-        '</EhFooter>
+        
 End Sub
 
 
@@ -2917,18 +2909,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteMeditateToggle(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteMeditateToggle_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eMeditateToggle)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteMeditateToggle_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMeditateToggle", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2937,18 +2929,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteBlindNoMore(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteBlindNoMore_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eBlindNoMore)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteBlindNoMore_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlindNoMore", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2957,18 +2949,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteDumbNoMore(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteDumbNoMore_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eDumbNoMore)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteDumbNoMore_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDumbNoMore", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -2977,9 +2969,9 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteSendSkills(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteSendSkills_Err
-        '</EhHeader>
+        
 
         Dim i As Long
 
@@ -2990,13 +2982,13 @@ Public Sub WriteSendSkills(ByVal UserIndex As Integer)
 106     Next i
 
 108     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteSendSkills_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSendSkills", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3006,9 +2998,9 @@ End Sub
 ' @param    npcIndex The index of the requested trainer.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteTrainerCreatureList(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteTrainerCreatureList_Err
-        '</EhHeader>
+        
 
         Dim i   As Long
 
@@ -3023,13 +3015,13 @@ Public Sub WriteTrainerCreatureList(ByVal UserIndex As Integer, ByVal NpcIndex A
 108     If LenB(str) > 0 Then str = Left$(str, Len(str) - 1)
 110     Call Writer.WriteString8(str)
 112     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteTrainerCreatureList_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTrainerCreatureList", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3047,9 +3039,9 @@ Public Sub WriteGuildNews(ByVal UserIndex As Integer, _
                           ByVal ClanNivel As Byte, _
                           ByVal ExpAcu As Integer, _
                           ByVal ExpNe As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteGuildNews_Err
-        '</EhHeader>
+        
 
         Dim i   As Long
 
@@ -3078,13 +3070,13 @@ Public Sub WriteGuildNews(ByVal UserIndex As Integer, _
 128     Call Writer.WriteInt16(ExpAcu)
 130     Call Writer.WriteInt16(ExpNe)
 132     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteGuildNews_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildNews", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3094,20 +3086,20 @@ End Sub
 ' @param    details Th details of the Peace proposition.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteOfferDetails(ByVal UserIndex As Integer, ByVal details As String)
-        '<EhHeader>
+        
         On Error GoTo WriteOfferDetails_Err
-        '</EhHeader>
+        
 
 100     Call Writer.WriteInt16(ServerPacketID.eOfferDetails)
 102     Call Writer.WriteString8(details)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteOfferDetails_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteOfferDetails", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3117,9 +3109,9 @@ End Sub
 ' @param    guilds The list of guilds which propossed an alliance.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteAlianceProposalsList(ByVal UserIndex As Integer, ByRef guilds() As String)
-        '<EhHeader>
+        
         On Error GoTo WriteAlianceProposalsList_Err
-        '</EhHeader>
+        
 
         Dim i   As Long
 
@@ -3135,13 +3127,13 @@ Public Sub WriteAlianceProposalsList(ByVal UserIndex As Integer, ByRef guilds() 
 108     If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
 110     Call Writer.WriteString8(Tmp)
 112     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteAlianceProposalsList_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAlianceProposalsList", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3151,9 +3143,9 @@ End Sub
 ' @param    guilds The list of guilds which propossed peace.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WritePeaceProposalsList(ByVal UserIndex As Integer, ByRef guilds() As String)
-        '<EhHeader>
+        
         On Error GoTo WritePeaceProposalsList_Err
-        '</EhHeader>
+        
 
         Dim i   As Long
 
@@ -3169,13 +3161,13 @@ Public Sub WritePeaceProposalsList(ByVal UserIndex As Integer, ByRef guilds() As
 108     If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
 110     Call Writer.WriteString8(Tmp)
 112     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WritePeaceProposalsList_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePeaceProposalsList", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3203,9 +3195,9 @@ Public Sub WriteCharacterInfo(ByVal UserIndex As Integer, ByVal CharName As Stri
         ByVal currentGuild As String, ByVal previousGuilds As String, ByVal _
         RoyalArmy As Boolean, ByVal CaosLegion As Boolean, ByVal citicensKilled As _
         Long, ByVal criminalsKilled As Long)
-        '<EhHeader>
+        
         On Error GoTo WriteCharacterInfo_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCharacterInfo)
 102     Call Writer.WriteInt8(gender)
 104     Call Writer.WriteString8(CharName)
@@ -3222,13 +3214,13 @@ Public Sub WriteCharacterInfo(ByVal UserIndex As Integer, ByVal CharName As Stri
 126     Call Writer.WriteInt32(citicensKilled)
 128     Call Writer.WriteInt32(criminalsKilled)
 130     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteCharacterInfo_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterInfo", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3248,9 +3240,9 @@ Public Sub WriteGuildLeaderInfo(ByVal UserIndex As Integer, _
                                 ByVal NivelDeClan As Byte, _
                                 ByVal ExpActual As Integer, _
                                 ByVal ExpNecesaria As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteGuildLeaderInfo_Err
-        '</EhHeader>
+        
 
         Dim i   As Long
 
@@ -3289,13 +3281,13 @@ Public Sub WriteGuildLeaderInfo(ByVal UserIndex As Integer, _
 140     Call Writer.WriteInt16(ExpActual)
 142     Call Writer.WriteInt16(ExpNecesaria)
 144     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteGuildLeaderInfo_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildLeaderInfo", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3325,9 +3317,9 @@ Public Sub WriteGuildDetails(ByVal UserIndex As Integer, _
                              ByVal alignment As String, _
                              ByVal guildDesc As String, _
                              ByVal NivelDeClan As Byte)
-        '<EhHeader>
+        
         On Error GoTo WriteGuildDetails_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eGuildDetails)
 102     Call Writer.WriteString8(GuildName)
 104     Call Writer.WriteString8(founder)
@@ -3338,13 +3330,13 @@ Public Sub WriteGuildDetails(ByVal UserIndex As Integer, _
 114     Call Writer.WriteString8(guildDesc)
 116     Call Writer.WriteInt8(NivelDeClan)
 118     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteGuildDetails_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildDetails", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3353,18 +3345,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteShowGuildFundationForm(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteShowGuildFundationForm_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eShowGuildFundationForm)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteShowGuildFundationForm_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowGuildFundationForm", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3373,18 +3365,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteParalizeOK(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteParalizeOK_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eParalizeOK)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteParalizeOK_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteParalizeOK", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteStunStart(ByVal userIndex As Integer, ByVal duration As Integer)
@@ -3399,34 +3391,34 @@ WriteStunStart_Err:
 End Sub
 
 Public Sub WriteInmovilizaOK(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteInmovilizaOK_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eInmovilizadoOK)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteInmovilizaOK_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteInmovilizaOK", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteStopped(ByVal UserIndex As Integer, ByVal Stopped As Boolean)
-        '<EhHeader>
+        
         On Error GoTo WriteStopped_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eStopped)
 102     Call Writer.WriteBool(Stopped)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteStopped_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteStopped", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3436,19 +3428,19 @@ End Sub
 ' @param    details DEtails of the char's request.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteShowUserRequest(ByVal UserIndex As Integer, ByVal details As String)
-        '<EhHeader>
+        
         On Error GoTo WriteShowUserRequest_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eShowUserRequest)
 102     Call Writer.WriteString8(details)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteShowUserRequest_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowUserRequest", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3462,9 +3454,9 @@ Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, _
                                     ByRef itemsAenviar() As t_Obj, _
                                     ByVal gold As Long, _
                                     ByVal miOferta As Boolean)
-        '<EhHeader>
+        
         On Error GoTo WriteChangeUserTradeSlot_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eChangeUserTradeSlot)
 102     Call Writer.WriteBool(miOferta)
 104     Call Writer.WriteInt32(gold)
@@ -3490,13 +3482,13 @@ Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, _
 124     Next i
 
 126     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteChangeUserTradeSlot_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeUserTradeSlot", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3506,19 +3498,19 @@ End Sub
 ' @param    npcNames The names of the creatures that can be spawned.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteSpawnList(ByVal UserIndex As Integer, ByVal ListaCompleta As Boolean)
-        '<EhHeader>
+        
         On Error GoTo WriteSpawnList_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eSpawnListt)
 102     Call Writer.WriteBool(ListaCompleta)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteSpawnList_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSpawnList", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3527,9 +3519,9 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteShowSOSForm(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteShowSOSForm_Err
-        '</EhHeader>
+        
 
         Dim i   As Long
 
@@ -3544,13 +3536,13 @@ Public Sub WriteShowSOSForm(ByVal UserIndex As Integer)
 108     If LenB(Tmp) <> 0 Then Tmp = Left$(Tmp, Len(Tmp) - 1)
 110     Call Writer.WriteString8(Tmp)
 112     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteShowSOSForm_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowSOSForm", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3561,19 +3553,19 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteShowMOTDEditionForm(ByVal UserIndex As Integer, _
                                     ByVal currentMOTD As String)
-        '<EhHeader>
+        
         On Error GoTo WriteShowMOTDEditionForm_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eShowMOTDEditionForm)
 102     Call Writer.WriteString8(currentMOTD)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteShowMOTDEditionForm_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowMOTDEditionForm", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3582,9 +3574,9 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteShowGMPanelForm(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteShowGMPanelForm_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eShowGMPanelForm)
 102     Call Writer.WriteInt16(UserList(UserIndex).Char.Head)
 104     Call Writer.WriteInt16(UserList(UserIndex).Char.Body)
@@ -3592,28 +3584,28 @@ Public Sub WriteShowGMPanelForm(ByVal UserIndex As Integer)
 108     Call Writer.WriteInt16(UserList(UserIndex).Char.WeaponAnim)
 110     Call Writer.WriteInt16(UserList(UserIndex).Char.ShieldAnim)
 112     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteShowGMPanelForm_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowGMPanelForm", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteShowFundarClanForm(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteShowFundarClanForm_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eShowFundarClanForm)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteShowFundarClanForm_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowFundarClanForm", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ''
@@ -3626,9 +3618,9 @@ End Sub
 Public Sub WriteUserNameList(ByVal UserIndex As Integer, _
                              ByRef userNamesList() As String, _
                              ByVal cant As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUserNameList_Err
-        '</EhHeader>
+        
 
         Dim i   As Long
 
@@ -3644,117 +3636,117 @@ Public Sub WriteUserNameList(ByVal UserIndex As Integer, _
 108     If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
 110     Call Writer.WriteString8(Tmp)
 112     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUserNameList_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserNameList", Erl)
-        '</EhFooter>
+        
 End Sub
 
 
 Public Sub WriteGoliathInit(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteGoliathInit_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eGoliath)
 102     Call Writer.WriteInt32(UserList(UserIndex).Stats.Banco)
 104     Call Writer.WriteInt8(UserList(UserIndex).BancoInvent.NroItems)
 106     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteGoliathInit_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGoliathInit", Erl)
-        '</EhFooter>
+        
 End Sub
 Public Sub WritePelearConPezEspecial(ByVal UserIndex As Integer)
-            '<EhHeader>
+            
         On Error GoTo WritePelearConPezEspecial_Err
-        '</EhHeader>
+        
         
 100     Call Writer.WriteInt16(ServerPacketID.ePelearConPezEspecial)
 106     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WritePelearConPezEspecial_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePelearConPezEspecial", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteUpdateBankGld(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUpdateBankGld_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eUpdateBankGld)
 102     Call Writer.WriteInt32(UserList(UserIndex).Stats.Banco)
 106     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUpdateBankGld_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateBankGld", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteShowFrmLogear(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteShowFrmLogear_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eShowFrmLogear)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteShowFrmLogear_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowFrmLogear", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteShowFrmMapa(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteShowFrmMapa_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eShowFrmMapa)
 102     Call Writer.WriteInt16(SvrConfig.GetValue("ExpMult"))
 104     Call Writer.WriteInt16(SvrConfig.GetValue("GoldMult"))
 106     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteShowFrmMapa_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowFrmMapa", Erl)
-        '</EhFooter>
+        
 End Sub
 
 
 Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal Message As String)
-        '<EhHeader>
+        
         On Error GoTo WritePreguntaBox_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eShowPregunta)
 102     Call Writer.WriteString8(Message)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WritePreguntaBox_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePreguntaBox", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteDatosGrupo_Err
-        '</EhHeader>
+        
 
         Dim i As Byte
 
@@ -3798,21 +3790,21 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
         End With
 
 132     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteDatosGrupo_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDatosGrupo", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteUbicacion(ByVal UserIndex As Integer, _
                           ByVal Miembro As Byte, _
                           ByVal GPS As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteUbicacion_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eubicacion)
 102     Call Writer.WriteInt8(Miembro)
 
@@ -3827,19 +3819,19 @@ Public Sub WriteUbicacion(ByVal UserIndex As Integer, _
         End If
 
 118     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUbicacion_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUbicacion", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteViajarForm(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteViajarForm_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eViajarForm)
 
         Dim destinos As Byte
@@ -3855,21 +3847,21 @@ Public Sub WriteViajarForm(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
 
 112     Call Writer.WriteInt8(NpcList(NpcIndex).Interface)
 114     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteViajarForm_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteViajarForm", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteQuestDetails(ByVal UserIndex As Integer, _
                              ByVal QuestIndex As Integer, _
                              Optional QuestSlot As Byte = 0)
-        '<EhHeader>
+        
         On Error GoTo WriteQuestDetails_Err
-        '</EhHeader>
+        
 
         Dim i As Integer
 
@@ -3938,19 +3930,19 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, _
         Next i
         
 156     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteQuestDetails_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteQuestDetails", Erl)
-        '</EhFooter>
+        
 End Sub
  
 Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteQuestListSend_Err
-        '</EhHeader>
+        
 
         Dim i       As Integer
 
@@ -3981,19 +3973,19 @@ Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
         End With
 
 120     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteQuestListSend_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteQuestListSend", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteNpcQuestListSend_Err
-        '</EhHeader>
+        
 
         Dim i          As Integer
 
@@ -4106,115 +4098,115 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
 180     Next j
 
 182     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteNpcQuestListSend_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcQuestListSend", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal Message As String)
-        '<EhHeader>
+        
         On Error GoTo WriteCommerceRecieveChatMessage_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCommerceRecieveChatMessage)
 102     Call Writer.WriteString8(Message)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteCommerceRecieveChatMessage_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCommerceRecieveChatMessage", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Sub WriteInvasionInfo(ByVal UserIndex As Integer, _
                       ByVal Invasion As Integer, _
                       ByVal PorcentajeVida As Byte, _
                       ByVal PorcentajeTiempo As Byte)
-        '<EhHeader>
+        
         On Error GoTo WriteInvasionInfo_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eInvasionInfo)
 102     Call Writer.WriteInt8(Invasion)
 104     Call Writer.WriteInt8(PorcentajeVida)
 106     Call Writer.WriteInt8(PorcentajeTiempo)
 108     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteInvasionInfo_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteInvasionInfo", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Sub WriteOpenCrafting(ByVal UserIndex As Integer, ByVal Tipo As Byte)
-        '<EhHeader>
+        
         On Error GoTo WriteOpenCrafting_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eOpenCrafting)
 102     Call Writer.WriteInt8(Tipo)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteOpenCrafting_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteOpenCrafting", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Sub WriteCraftingItem(ByVal UserIndex As Integer, _
                       ByVal Slot As Byte, _
                       ByVal ObjIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteCraftingItem_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCraftingItem)
 102     Call Writer.WriteInt8(Slot)
 104     Call Writer.WriteInt16(ObjIndex)
 106     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteCraftingItem_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCraftingItem", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Sub WriteCraftingCatalyst(ByVal UserIndex As Integer, _
                           ByVal ObjIndex As Integer, _
                           ByVal amount As Integer, _
                           ByVal Porcentaje As Byte)
-        '<EhHeader>
+        
         On Error GoTo WriteCraftingCatalyst_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCraftingCatalyst)
 102     Call Writer.WriteInt16(ObjIndex)
 104     Call Writer.WriteInt16(amount)
 106     Call Writer.WriteInt8(Porcentaje)
 108     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteCraftingCatalyst_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCraftingCatalyst", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Sub WriteCraftingResult(ByVal UserIndex As Integer, _
                         ByVal Result As Integer, _
                         Optional ByVal Porcentaje As Byte = 0, _
                         Optional ByVal Precio As Long = 0)
-        '<EhHeader>
+        
         On Error GoTo WriteCraftingResult_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCraftingResult)
 102     Call Writer.WriteInt16(Result)
 
@@ -4224,62 +4216,62 @@ Sub WriteCraftingResult(ByVal UserIndex As Integer, _
         End If
 
 110     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteCraftingResult_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCraftingResult", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Sub WriteForceUpdate(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteForceUpdate_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eForceUpdate)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteForceUpdate_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteForceUpdate", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteUpdateNPCSimbolo(ByVal UserIndex As Integer, _
                                  ByVal NpcIndex As Integer, _
                                  ByVal Simbolo As Byte)
-        '<EhHeader>
+        
         On Error GoTo WriteUpdateNPCSimbolo_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eUpdateNPCSimbolo)
 102     Call Writer.WriteInt16(NpcList(NpcIndex).Char.CharIndex)
 104     Call Writer.WriteInt8(Simbolo)
 106     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteUpdateNPCSimbolo_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateNPCSimbolo", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteGuardNotice(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo WriteGuardNotice_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eGuardNotice)
 102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteGuardNotice_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuardNotice", Erl)
-        '</EhFooter>
+        
 End Sub
 
 ' \Begin: [Prepares]
@@ -4287,21 +4279,21 @@ Public Function PrepareMessageCharSwing(ByVal CharIndex As Integer, _
                                         Optional ByVal FX As Boolean = True, _
                                         Optional ByVal ShowText As Boolean = True, _
                                         Optional ByVal NotificoTexto As Boolean = True)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageCharSwing_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCharSwing)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteBool(FX)
 106     Call Writer.WriteBool(ShowText)
 107     Call Writer.WriteBool(NotificoTexto)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageCharSwing_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharSwing", Erl)
-        '</EhFooter>
+        
 End Function
 
 ''
@@ -4315,21 +4307,21 @@ Public Function PrepareMessageSetInvisible(ByVal CharIndex As Integer, _
                                            ByVal invisible As Boolean, _
                                            Optional ByVal X As Byte = 0, _
                                            Optional ByVal y As Byte = 0)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageSetInvisible_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eSetInvisible)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteBool(invisible)
 105     Call Writer.WriteInt8(X)
 106     Call Writer.WriteInt8(y)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageSetInvisible_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageSetInvisible", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareLocaleChatOverHead(ByVal chat As Integer, _
@@ -4390,26 +4382,26 @@ Public Function PrepareMessageChatOverHead(ByVal chat As String, _
 PrepareMessageChatOverHead_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageChatOverHead", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageTextOverChar(ByVal chat As String, _
                                            ByVal CharIndex As Integer, _
                                            ByVal Color As Long)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageTextOverChar_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eTextOverChar)
 102     Call Writer.WriteString8(chat)
 104     Call Writer.WriteInt16(CharIndex)
 106     Call Writer.WriteInt32(Color)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageTextOverChar_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageTextOverChar", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageTextCharDrop(ByVal chat As String, _
@@ -4417,22 +4409,22 @@ Public Function PrepareMessageTextCharDrop(ByVal chat As String, _
                                            ByVal Color As Long, _
                                            Optional ByVal Duration As Integer = 1300, _
                                            Optional ByVal Animated As Boolean = True)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageTextCharDrop_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eTextCharDrop)
 102     Call Writer.WriteString8(chat)
 104     Call Writer.WriteInt16(CharIndex)
 106     Call Writer.WriteInt32(Color)
 110     Call Writer.WriteInt16(Duration)
 114     Call Writer.WriteBool(Animated)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageTextCharDrop_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageTextCharDrop", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageTextOverTile(ByVal chat As String, _
@@ -4442,9 +4434,9 @@ Public Function PrepareMessageTextOverTile(ByVal chat As String, _
                                            Optional ByVal Duration As Integer = 1300, _
                                            Optional ByVal OffsetY As Integer = 0, _
                                            Optional ByVal Animated As Boolean = True)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageTextOverTile_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eTextOverTile)
 102     Call Writer.WriteString8(chat)
 104     Call Writer.WriteInt16(X)
@@ -4453,13 +4445,13 @@ Public Function PrepareMessageTextOverTile(ByVal chat As String, _
 110     Call Writer.WriteInt16(Duration)
 112     Call Writer.WriteInt16(OffsetY)
 114     Call Writer.WriteBool(Animated)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageTextOverTile_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageTextOverTile", Erl)
-        '</EhFooter>
+        
 End Function
 
 
@@ -4487,38 +4479,38 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Function PrepareMessageConsoleMsg(ByVal chat As String, _
                                          ByVal FontIndex As e_FontTypeNames)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageConsoleMsg_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eConsoleMsg)
 102     Call Writer.WriteString8(chat)
 104     Call Writer.WriteInt8(FontIndex)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageConsoleMsg_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageConsoleMsg", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageLocaleMsg(ByVal ID As Integer, _
                                         ByVal chat As String, _
                                         ByVal FontIndex As e_FontTypeNames)
-    '<EhHeader>
+    
     On Error GoTo PrepareMessageLocaleMsg_Err
-    '</EhHeader>
+    
 100     Call Writer.WriteInt16(ServerPacketID.eLocaleMsg)
 102     Call Writer.WriteInt16(ID)
 104     Call Writer.WriteString8(chat)
 106     Call Writer.WriteInt8(FontIndex)
-    '<EhFooter>
+    
     Exit Function
 
 PrepareMessageLocaleMsg_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageLocaleMsg", Erl)
-    '</EhFooter>
+    
 End Function
 
 
@@ -4526,9 +4518,9 @@ End Function
 ' Prepares the "CharAtaca" message and returns it.
 '
 Public Function PrepareMessageCharAtaca(ByVal charindex As Integer, ByVal attackerIndex As Integer, ByVal danio As Long, ByVal AnimAttack As Integer)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageCharAtaca_Err
-        '</EhHeader>
+        
         
 100     Call Writer.WriteInt16(ServerPacketID.eCharAtaca)
 102     Call Writer.WriteInt16(charindex)
@@ -4536,13 +4528,13 @@ Public Function PrepareMessageCharAtaca(ByVal charindex As Integer, ByVal attack
 106     Call Writer.WriteInt32(danio)
 108     Call Writer.WriteInt16(AnimAttack)
 
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageCharAtaca_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharAtaca", Erl)
-        '</EhFooter>
+        
 End Function
 
 ''
@@ -4559,43 +4551,43 @@ Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, _
                                        ByVal FXLoops As Integer, _
                                        Optional ByVal X As Byte = 0, _
                                        Optional ByVal y As Byte = 0)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageCreateFX_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCreateFX)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(FX)
 106     Call Writer.WriteInt16(FXLoops)
 107     Call Writer.WriteInt8(X)
 108     Call Writer.WriteInt8(y)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageCreateFX_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCreateFX", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageMeditateToggle(ByVal CharIndex As Integer, _
                                              ByVal FX As Integer, _
                                              Optional ByVal X As Byte = 0, _
                                              Optional ByVal y As Byte = 0)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageMeditateToggle_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eMeditateToggle)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(FX)
 105     Call Writer.WriteInt8(X)
 106     Call Writer.WriteInt8(y)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageMeditateToggle_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageMeditateToggle", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, _
@@ -4605,9 +4597,9 @@ Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, _
                                          Optional ByVal grh As Long = 0, _
                                          Optional ByVal X As Byte = 0, _
                                          Optional ByVal y As Byte = 0)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageParticleFX_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eParticleFX)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(Particula)
@@ -4616,13 +4608,13 @@ Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, _
 110     Call Writer.WriteInt32(grh)
         Call Writer.WriteInt8(X)
         Call Writer.WriteInt8(y)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageParticleFX_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageParticleFX", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, _
@@ -4634,9 +4626,9 @@ Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, _
                                                     ByVal FX As Integer, _
                                                     Optional ByVal X As Byte = 0, _
                                                     Optional ByVal y As Byte = 0)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageParticleFXWithDestino_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eParticleFXWithDestino)
 102     Call Writer.WriteInt16(Emisor)
 104     Call Writer.WriteInt16(Receptor)
@@ -4648,13 +4640,13 @@ Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, _
 115     Call Writer.WriteInt8(X)
 116     Call Writer.WriteInt8(y)
     
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageParticleFXWithDestino_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageParticleFXWithDestino", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageParticleFXWithDestinoXY(ByVal Emisor As Integer, _
@@ -4665,9 +4657,9 @@ Public Function PrepareMessageParticleFXWithDestinoXY(ByVal Emisor As Integer, _
                                                       ByVal FX As Integer, _
                                                       ByVal X As Byte, _
                                                       ByVal Y As Byte)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageParticleFXWithDestinoXY_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eParticleFXWithDestinoXY)
 102     Call Writer.WriteInt16(Emisor)
 104     Call Writer.WriteInt16(ParticulaViaje)
@@ -4677,93 +4669,93 @@ Public Function PrepareMessageParticleFXWithDestinoXY(ByVal Emisor As Integer, _
 112     Call Writer.WriteInt16(FX)
 114     Call Writer.WriteInt8(X)
 116     Call Writer.WriteInt8(Y)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageParticleFXWithDestinoXY_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageParticleFXWithDestinoXY", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageAuraToChar(ByVal CharIndex As Integer, _
                                          ByVal Aura As String, _
                                          ByVal Remove As Boolean, _
                                          ByVal Tipo As Byte)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageAuraToChar_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eAuraToChar)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteString8(Aura)
 106     Call Writer.WriteBool(Remove)
 108     Call Writer.WriteInt8(Tipo)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageAuraToChar_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageAuraToChar", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageSpeedingACT(ByVal CharIndex As Integer, _
                                           ByVal speeding As Single)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageSpeedingACT_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eSpeedToChar)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteReal32(speeding)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageSpeedingACT_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageSpeedingACT", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageParticleFXToFloor(ByVal X As Byte, _
                                                 ByVal Y As Byte, _
                                                 ByVal Particula As Integer, _
                                                 ByVal Time As Long)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageParticleFXToFloor_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eParticleFXToFloor)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 106     Call Writer.WriteInt16(Particula)
 108     Call Writer.WriteInt32(Time)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageParticleFXToFloor_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageParticleFXToFloor", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageLightFXToFloor(ByVal X As Byte, _
                                              ByVal Y As Byte, _
                                              ByVal LuzColor As Long, _
                                              ByVal Rango As Byte)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageLightFXToFloor_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eLightToFloor)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 106     Call Writer.WriteInt32(LuzColor)
 108     Call Writer.WriteInt8(Rango)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageLightFXToFloor_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageLightFXToFloor", Erl)
-        '</EhFooter>
+        
 End Function
 
 ''
@@ -4778,163 +4770,163 @@ Public Function PrepareMessagePlayWave(ByVal wave As Integer, _
                                        ByVal X As Byte, _
                                        ByVal Y As Byte, _
                                        Optional ByVal CancelLastWave As Byte = False)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessagePlayWave_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.ePlayWave)
 102     Call Writer.WriteInt16(wave)
 104     Call Writer.WriteInt8(X)
 106     Call Writer.WriteInt8(Y)
 108     Call Writer.WriteInt8(CancelLastWave)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessagePlayWave_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessagePlayWave", Erl)
-        '</EhFooter>
+        
 End Function
 
 
 Public Function PrepareMessageUbicacionLlamada(ByVal Mapa As Integer, _
                                                ByVal X As Byte, _
                                                ByVal Y As Byte)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageUbicacionLlamada_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.ePosLLamadaDeClan)
 102     Call Writer.WriteInt16(Mapa)
 104     Call Writer.WriteInt8(X)
 106     Call Writer.WriteInt8(Y)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageUbicacionLlamada_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageUbicacionLlamada", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageCharUpdateHP_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCharUpdateHP)
 102     Call Writer.WriteInt16(UserList(UserIndex).Char.CharIndex)
 104     Call Writer.WriteInt32(UserList(UserIndex).Stats.MinHp)
 106     Call Writer.WriteInt32(UserList(UserIndex).Stats.MaxHp)
         Call Writer.WriteInt32(UserList(UserIndex).Stats.Shield)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageCharUpdateHP_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharUpdateHP", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageCharUpdateMAN(ByVal UserIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageCharUpdateMAN_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCharUpdateMAN)
 102     Call Writer.WriteInt16(UserList(UserIndex).Char.CharIndex)
 104     Call Writer.WriteInt32(UserList(UserIndex).Stats.MinMAN)
 106     Call Writer.WriteInt32(UserList(UserIndex).Stats.MaxMAN)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageCharUpdateMAN_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharUpdateMAN", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageNpcUpdateHP(ByVal NpcIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageNpcUpdateHP_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCharUpdateHP)
 102     Call Writer.WriteInt16(NpcList(NpcIndex).Char.CharIndex)
 104     Call Writer.WriteInt32(NpcList(NpcIndex).Stats.MinHp)
 106     Call Writer.WriteInt32(NpcList(NpcIndex).Stats.MaxHp)
         Call Writer.WriteInt32(NpcList(NpcIndex).Stats.Shield)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageNpcUpdateHP_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageNpcUpdateHP", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageArmaMov(ByVal charindex As Integer, Optional ByVal isRanged As Byte = 0)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageArmaMov_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eArmaMov)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt8(isRanged)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageArmaMov_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageArmaMov", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareCreateProjectile(ByVal startX As Byte, ByVal startY As Byte, ByVal targetX As Byte, ByVal targetY As Byte, ByVal ProjectileType As Byte)
-    '<EhHeader>
+    
         On Error GoTo PrepareCreateProjectile_Err
-        '</EhHeader>
+        
         Call Writer.WriteInt16(ServerPacketID.eCreateProjectile)
         Call Writer.WriteInt8(startX)
         Call Writer.WriteInt8(startY)
         Call Writer.WriteInt8(targetX)
         Call Writer.WriteInt8(targetY)
         Call Writer.WriteInt8(ProjectileType)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareCreateProjectile_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareCreateProjectile", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageEscudoMov(ByVal CharIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageEscudoMov_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eEscudoMov)
 102     Call Writer.WriteInt16(CharIndex)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageEscudoMov_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageEscudoMov", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageFlashScreen(ByVal Color As Long, _
                                           ByVal Duracion As Long, _
                                           Optional ByVal Ignorar As Boolean = False)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageFlashScreen_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eFlashScreen)
 102     Call Writer.WriteInt32(Color)
 104     Call Writer.WriteInt32(Duracion)
 106     Call Writer.WriteBool(Ignorar)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageFlashScreen_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageFlashScreen", Erl)
-        '</EhFooter>
+        
 End Function
 
 ''
@@ -4944,19 +4936,19 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Function PrepareMessageGuildChat(ByVal chat As String, ByVal Status As Byte)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageGuildChat_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eGuildChat)
 102     Call Writer.WriteInt8(Status)
 104     Call Writer.WriteString8(chat)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageGuildChat_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageGuildChat", Erl)
-        '</EhFooter>
+        
 End Function
 
 ''
@@ -4966,18 +4958,18 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Function PrepareMessageShowMessageBox(ByVal chat As String)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageShowMessageBox_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eShowMessageBox)
 102     Call Writer.WriteString8(chat)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageShowMessageBox_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageShowMessageBox", Erl)
-        '</EhFooter>
+        
 End Function
 
 ''
@@ -4989,34 +4981,34 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Function PrepareMessagePlayMidi(ByVal midi As Byte, _
                                        Optional ByVal loops As Integer = -1)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessagePlayMidi_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.ePlayMIDI)
 102     Call Writer.WriteInt8(midi)
 104     Call Writer.WriteInt16(loops)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessagePlayMidi_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessagePlayMidi", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageOnlineUser(ByVal UserOnline As Integer)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageOnlineUser_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eUserOnline)
 102     Call Writer.WriteInt16(UserOnline)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageOnlineUser_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageOnlineUser", Erl)
-        '</EhFooter>
+        
 End Function
 
 ''
@@ -5025,17 +5017,17 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Function PrepareMessagePauseToggle()
-        '<EhHeader>
+        
         On Error GoTo PrepareMessagePauseToggle_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.ePauseToggle)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessagePauseToggle_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessagePauseToggle", Erl)
-        '</EhFooter>
+        
 End Function
 
 ''
@@ -5044,34 +5036,34 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Function PrepareMessageRainToggle()
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageRainToggle_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eRainToggle)
         Call Writer.WriteBool(Lloviendo)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageRainToggle_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageRainToggle", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageHora()
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageHora_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eHora)
 102     Call Writer.WriteInt32(CLng((GetTickCount() - HoraMundo) Mod CLng(SvrConfig.GetValue("DayLength"))))
 104     Call Writer.WriteInt32(CLng(SvrConfig.GetValue("DayLength")))
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageHora_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageHora", Erl)
-        '</EhFooter>
+        
 End Function
 
 ''
@@ -5082,19 +5074,19 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Function PrepareMessageObjectDelete(ByVal X As Byte, ByVal Y As Byte)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageObjectDelete_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eObjectDelete)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageObjectDelete_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageObjectDelete", Erl)
-        '</EhFooter>
+        
 End Function
 
 ''
@@ -5108,20 +5100,20 @@ End Function
 Public Function PrepareMessage_BlockPosition(ByVal X As Byte, _
                                             ByVal Y As Byte, _
                                             ByVal Blocked As Byte)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessage_BlockPosition_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eBlockPosition)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 106     Call Writer.WriteInt8(Blocked)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessage_BlockPosition_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessage_BlockPosition", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareTrapUpdate(ByVal State As Byte, ByVal x As Byte, ByVal y As Byte)
@@ -5173,40 +5165,40 @@ Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, _
                                            ByVal amount As Integer, _
                                            ByVal X As Byte, _
                                            ByVal Y As Byte)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageObjectCreate_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eObjectCreate)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 106     Call Writer.WriteInt16(ObjIndex)
 108     Call Writer.WriteInt16(amount)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageObjectCreate_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageObjectCreate", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageFxPiso(ByVal GrhIndex As Integer, _
                                      ByVal X As Byte, _
                                      ByVal Y As Byte)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageFxPiso_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.efxpiso)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 106     Call Writer.WriteInt16(GrhIndex)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageFxPiso_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageFxPiso", Erl)
-        '</EhFooter>
+        
 End Function
 
 ''
@@ -5218,20 +5210,20 @@ End Function
 Public Function PrepareMessageCharacterRemove(ByVal dbgid As Integer, ByVal CharIndex As Integer, _
                                               ByVal Desvanecido As Boolean, _
                                               Optional ByVal FueWarp As Boolean = False)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageCharacterRemove_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCharacterRemove)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteBool(Desvanecido)
 106     Call Writer.WriteBool(FueWarp)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageCharacterRemove_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharacterRemove", Erl)
-        '</EhFooter>
+        
 End Function
 
 ''
@@ -5241,18 +5233,18 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Function PrepareMessageRemoveCharDialog(ByVal CharIndex As Integer)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageRemoveCharDialog_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eRemoveCharDialog)
 102     Call Writer.WriteInt16(CharIndex)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageRemoveCharDialog_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageRemoveCharDialog", Erl)
-        '</EhFooter>
+        
 End Function
 
 ''
@@ -5283,9 +5275,9 @@ Public Function PrepareMessageCharacterCreate(ByVal body As Integer, ByVal head 
                                               ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, _
                                               ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, _
                                               ByVal Navegando As Boolean, ByVal tipoUsuario As e_TipoUsuario, Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal AnimAtaque1 As Integer = 0)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageCharacterCreate_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCharacterCreate)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(Body)
@@ -5330,13 +5322,13 @@ Public Function PrepareMessageCharacterCreate(ByVal body As Integer, ByVal head 
 173     Call Writer.WriteInt8(TeamCaptura)
 174     Call Writer.WriteInt8(TieneBandera)
 175     Call Writer.WriteInt16(AnimAtaque1)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageCharacterCreate_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharacterCreate", Erl)
-        '</EhFooter>
+        
 End Function
 
 
@@ -5390,7 +5382,7 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, _
 PrepareMessageCharacterChange_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharacterChange", Erl)
-        '</EhFooter>
+        
 End Function
 
 
@@ -5420,7 +5412,7 @@ Public Function PrepareMessageUpdateFlag(ByVal Flag As Byte, ByVal charindex As 
 PrepareMessageUpdateFlag_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageUpdateFlag", Erl)
-        '</EhFooter>
+        
 End Function
 ''
 ' Prepares the "CharacterMove" message and returns it.
@@ -5433,20 +5425,20 @@ End Function
 Public Function PrepareMessageCharacterMove(ByVal CharIndex As Integer, _
                                             ByVal X As Byte, _
                                             ByVal Y As Byte)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageCharacterMove_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eCharacterMove)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt8(X)
 106     Call Writer.WriteInt8(Y)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageCharacterMove_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharacterMove", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareCharacterTranslate(ByVal CharIndexm As Integer, ByVal NewX As Byte, ByVal NewY As Byte, ByVal TranslationTime As Long)
@@ -5464,33 +5456,33 @@ End Function
 
 
 Public Function PrepareMessageForceCharMove(ByVal Direccion As e_Heading)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageForceCharMove_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eForceCharMove)
 102     Call Writer.WriteInt8(Direccion)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageForceCharMove_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageForceCharMove", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageForceCharMoveSiguiendo(ByVal Direccion As e_Heading)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageForceCharMoveSiguiendo_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eForceCharMoveSiguiendo)
 102     Call Writer.WriteInt8(Direccion)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageForceCharMoveSiguiendo_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageForceCharMoveSiguiendo", Erl)
-        '</EhFooter>
+        
 End Function
 ''
 ' Prepares the "UpdateTagAndStatus" message and returns it.
@@ -5503,21 +5495,21 @@ End Function
 Public Function PrepareMessageUpdateTagAndStatus(ByVal UserIndex As Integer, _
                                                  Status As Byte, _
                                                  Tag As String)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageUpdateTagAndStatus_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eUpdateTagAndStatus)
 102     Call Writer.WriteInt16(UserList(UserIndex).Char.CharIndex)
 104     Call Writer.WriteInt8(Status)
 106     Call Writer.WriteString8(Tag)
 108     Call Writer.WriteInt16(UserList(userIndex).Grupo.Lider.ArrayIndex)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageUpdateTagAndStatus_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageUpdateTagAndStatus", Erl)
-        '</EhFooter>
+        
 End Function
 
 ''
@@ -5526,67 +5518,67 @@ End Function
 ' @param    message The error message to be displayed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Function PrepareMessageErrorMsg(ByVal Message As String)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageErrorMsg_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eErrorMsg)
 102     Call Writer.WriteString8(Message)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageErrorMsg_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageErrorMsg", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageBarFx(ByVal CharIndex As Integer, _
                                     ByVal BarTime As Integer, _
                                     ByVal BarAccion As Byte)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageBarFx_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eBarFx)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(BarTime)
 106     Call Writer.WriteInt8(BarAccion)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageBarFx_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageBarFx", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageNieblandoToggle(ByVal IntensidadMax As Byte)
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageNieblandoToggle_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eNieblaToggle)
 102     Call Writer.WriteInt8(IntensidadMax)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageNieblandoToggle_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageNieblandoToggle", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageNevarToggle()
-        '<EhHeader>
+        
         On Error GoTo PrepareMessageNevarToggle_Err
-        '</EhHeader>
+        
 100     Call Writer.WriteInt16(ServerPacketID.eNieveToggle)
         Call Writer.WriteBool(Nebando)
-        '<EhFooter>
+        
         Exit Function
 
 PrepareMessageNevarToggle_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageNevarToggle", Erl)
-        '</EhFooter>
+        
 End Function
 
 Public Function PrepareMessageDoAnimation(ByVal CharIndex As Integer, _
@@ -5625,7 +5617,7 @@ Public Sub writeAnswerReset(ByVal UserIndex As Integer)
 writeAnswerReset_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.writeAnswerReset", Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteShopInit(ByVal UserIndex As Integer)
@@ -5692,9 +5684,9 @@ WriteSendSkillCdUpdate_Err:
 End Sub
 
 Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal Slot As Byte)
-        '<EhHeader>
+        
         On Error GoTo WriteNpcQuestListSend_Err
-        '</EhHeader>
+        
         Dim i As Integer
 
 100     Call Writer.WriteInt16(ServerPacketID.eObjQuestListSend)
@@ -5787,13 +5779,13 @@ Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Int
         UserList(UserIndex).flags.QuestItemSlot = Slot
         UserList(UserIndex).flags.QuestOpenByObj = True
 182     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
+        
         Exit Sub
 
 WriteNpcQuestListSend_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcQuestListSend for quest: " & QuestIndex, Erl)
-        '</EhFooter>
+        
 End Sub
 
 Public Sub WriteDebugLogResponse(ByVal UserIndex As Integer, ByVal debugType, ByRef args() As String, ByVal argc As Integer)

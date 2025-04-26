@@ -534,10 +534,6 @@ End Sub
 
 Public Sub SaveBanDatabase(username As String, Reason As String, BannedBy As String)
 
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 10/10/2018
-        '***************************************************
         On Error GoTo ErrorHandler
         
         Call Execute("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?;", BannedBy, Reason, UCase$(username))
@@ -553,10 +549,6 @@ End Sub
 
 Public Sub SaveWarnDatabase(username As String, Reason As String, WarnedBy As String)
 
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 10/10/2018
-        '***************************************************
         On Error GoTo ErrorHandler
         
         Call Execute("UPDATE user SET warnings = warnings + 1 WHERE UPPER(name) = ?;", UCase$(username))
@@ -697,10 +689,6 @@ End Sub
 
 Public Function GetUserAmountOfPunishmentsDatabase(ByVal username As String) As Integer
 
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 10/10/2018
-        '***************************************************
         On Error GoTo ErrorHandler
         
         Dim RS As ADODB.Recordset
@@ -718,10 +706,6 @@ End Function
 
 Public Sub SendUserPunishmentsDatabase(ByVal userIndex As Integer, ByVal username As String)
 
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 10/10/2018
-        '***************************************************
         On Error GoTo ErrorHandler
 
         Dim RS As ADODB.Recordset
@@ -755,10 +739,6 @@ End Function
 
 Public Function GetUserGuildMemberDatabase(username As String) As String
 
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 11/10/2018
-        '***************************************************
         On Error GoTo ErrorHandler
         Dim user_id As Long
         user_id = GetCharacterIdWithName(username)
@@ -789,10 +769,6 @@ End Function
 
 Public Function GetUserGuildAspirantDatabase(username As String) As Integer
 
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 11/10/2018
-        '***************************************************
         On Error GoTo ErrorHandler
 
 100     GetUserGuildAspirantDatabase = SanitizeNullValue(GetUserValue(LCase$(username), "guild_aspirant_index"), 0)
@@ -806,10 +782,6 @@ End Function
 
 Public Function GetUserGuildPedidosDatabase(username As String) As String
 
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 11/10/2018
-        '***************************************************
         On Error GoTo ErrorHandler
         Dim user_id As Long
         user_id = GetCharacterIdWithName(username)
@@ -840,10 +812,6 @@ End Function
 
 Public Sub SaveUserGuildRejectionReasonDatabase(username As String, Reason As String)
 
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 11/10/2018
-        '***************************************************
         On Error GoTo ErrorHandler
 
 100     Call SetUserValue(username, "guild_rejected_because", Reason)
@@ -879,10 +847,6 @@ End Sub
 
 Public Sub SaveUserGuildPedidosDatabase(ByVal username As String, ByVal Pedidos As String)
 
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 11/10/2018
-        '***************************************************
         On Error GoTo ErrorHandler
         Dim user_id As Long
         user_id = GetCharacterIdWithName(username)
@@ -896,10 +860,6 @@ End Sub
 
 Public Sub SendCharacterInfoDatabase(ByVal userIndex As Integer, ByVal username As String)
 
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 11/10/2018
-        '***************************************************
         On Error GoTo ErrorHandler
 
         Dim gName       As String

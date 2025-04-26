@@ -76,13 +76,7 @@ Public ConnGroups()                   As t_ConnGroup
 Public Sub InitAreas()
         
         On Error GoTo InitAreas_Err
-        
 
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
-        '
-        '**************************************************************
         Dim LoopC As Long
 
         Dim LoopX As Long
@@ -124,13 +118,9 @@ End Sub
 Public Sub AreasOptimizacion()
         
         On Error GoTo AreasOptimizacion_Err
-        
 
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
         'Es la función de autooptimizacion.... la idea es no mandar redimensionando arrays grandes todo el tiempo
-        '**************************************************************
+
         Dim LoopC      As Long
 
         Dim tCurDay    As Byte
@@ -172,13 +162,8 @@ End Sub
 Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte, ByVal appear As Byte, Optional ByVal Muerto As Byte = 0)
 
         On Error GoTo CheckUpdateNeededUser_Err
-        
 
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
         'Es la función clave del sistema de areas... Es llamada al mover un user
-        '**************************************************************
 100     If UserList(UserIndex).AreasInfo.AreaID = AreasInfo(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y) And Muerto = 0 Then Exit Sub
     
         Dim MinX    As Long, MaxX As Long, MinY As Long, MaxY As Long, X As Long, Y As Long
@@ -371,13 +356,9 @@ End Sub
 Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal Head As Byte)
         
         On Error GoTo CheckUpdateNeededNpc_Err
-        
 
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
         ' Se llama cuando se mueve un Npc
-        '**************************************************************
+
 100     If NpcList(NpcIndex).AreasInfo.AreaID = AreasInfo(NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y) Then Exit Sub
     
         Dim MinX    As Long, MaxX As Long, MinY As Long, MaxY As Long, X As Long, Y As Long
@@ -478,13 +459,7 @@ End Sub
 Public Sub QuitarUser(ByVal UserIndex As Integer, ByVal Map As Integer)
         
         On Error GoTo QuitarUser_Err
-        
 
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
-        '
-        '**************************************************************
         Dim TempVal As Long
 
         Dim LoopC   As Long
@@ -514,15 +489,10 @@ End Sub
 Public Sub AgregarUser(ByVal UserIndex As Integer, ByVal Map As Integer, Optional ByVal appear As Byte = 0)
         
         On Error GoTo AgregarUser_Err
-        
 
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: 04/01/2007
-        'Modified by Juan Martín Sotuyo Dodero (Maraxus)
-        '   - Now the method checks for repetead users instead of trusting parameters.
-        '   - If the character is new to the map, update it
-        '**************************************************************
+        'Now the method checks for repetead users instead of trusting parameters.
+        'If the character is new to the map, update it
+
         Dim TempVal As Long
 
         Dim EsNuevo As Boolean

@@ -2505,8 +2505,9 @@ Public Sub HandleNickToIP(ByVal UserIndex As Integer)
                             End If
 134                     Next LoopC
 136                     If LenB(lista) <> 0 Then lista = Left$(lista, Len(lista) - 2)
-                
+
                         Call WriteLocaleMsg(UserIndex, "1495", e_FontTypeNames.FONTTYPE_INFO, IP & "¬" & lista)   ' Msg1495=Los personajes con ip ¬1 son: ¬2
+
                     End If
                 Else
                     'Msg972= No hay ningun personaje con ese nick
@@ -2560,7 +2561,6 @@ Public Sub HandleIPToNick(ByVal UserIndex As Integer)
 132         Next LoopC
 134         If LenB(lista) <> 0 Then lista = Left$(lista, Len(lista) - 2)
                 Call WriteLocaleMsg(UserIndex, "1496", e_FontTypeNames.FONTTYPE_INFO, IP & "¬" & lista)  ' Msg1496=Los personajes con ip ¬1 son: ¬2
-
         End With
         Exit Sub
 HandleIPToNick_Err:
@@ -2999,7 +2999,9 @@ Public Sub HandleCreateItem(ByVal UserIndex As Integer)
                     ' Si no hay espacio y es Admin, lo tiro al piso.
 130                 If (.flags.Privilegios And e_PlayerType.Admin) <> 0 Then
 132                     Call TirarItemAlPiso(.Pos, Objeto)
+
                         Call WriteLocaleMsg(UserIndex, "1501", e_FontTypeNames.FONTTYPE_GUILD, Cuantos & "¬" & " ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!")    ' Msg1501=ATENCION: CREASTE [¬1¬2 ver ReyarB
+
                     End If
                 End If
             Else
@@ -3007,7 +3009,9 @@ Public Sub HandleCreateItem(ByVal UserIndex As Integer)
                 ' Si no hay espacio y es Admin, lo tiro al piso.
 136             If (.flags.Privilegios And e_PlayerType.Admin) <> 0 Then
 138                 Call TirarItemAlPiso(.Pos, Objeto)
+
                     Call WriteLocaleMsg(UserIndex, "1502", e_FontTypeNames.FONTTYPE_GUILD, Cuantos & "¬" & " ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!")  ' Msg1502=ATENCION: CREASTE [¬1¬2 ver ReyarB
+
                 End If
             End If
 
@@ -3489,12 +3493,16 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
             End If
         Else
             If Not PersonajeExiste(username) Then
+
                 Call WriteLocaleMsg(UserIndex, "1504", e_FontTypeNames.FONTTYPE_INFO, username) ' Msg1504=El personaje ¬1 es inexistente.
+
                 Exit Sub
             End If
             GuildIndex = GetUserGuildIndexDatabase(username)
             If GuildIndex > 0 Then
+
                 Call WriteLocaleMsg(UserIndex, "1505", e_FontTypeNames.FONTTYPE_INFO, username)    ' Msg1505=El personaje ¬1¬2 ver ReyarB
+
                 Exit Sub
             End If
         End If
@@ -4207,6 +4215,7 @@ Public Sub HandlePossUser(ByVal UserIndex As Integer)
 150                 Call FindLegalPos(tUser.ArrayIndex, UserList(tUser.ArrayIndex).pos.map, CByte(UserList(tUser.ArrayIndex).pos.x), CByte(UserList(tUser.ArrayIndex).pos.y))
 152                 Call WarpUserChar(tUser.ArrayIndex, nPos.map, nPos.x, nPos.y, True)
                     Call WriteLocaleMsg(UserIndex, "1517", e_FontTypeNames.FONTTYPE_INFO, username & "¬" & nPos.Map & "¬" & nPos.x & "¬" & nPos.y) ' Msg1517=Servidor » Acción realizada con exito! La nueva posicion de ¬1 es: ¬2-¬3-¬4.
+
                     'ver porque si el usuario esta online lo dice igual
                 Else
 118                 ' Msg554=Servidor » El usuario debe estar deslogueado para dicha solicitud!
