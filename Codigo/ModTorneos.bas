@@ -91,9 +91,9 @@ Public Sub IniciarTorneo()
 138         Next i
         End If
 
-140     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> Están abiretas las inscripciones para: " & Torneo.nombre & ": características: Nivel entre: " & Torneo.NivelMinimo & "/" & Torneo.NivelMaximo & ". Inscriptos: " & inscriptos & "/" & Torneo.cupos & ". Precio de inscripción: " & PonerPuntos(Torneo.costo) & " monedas de oro. Reglas: " & Torneo.reglas & ".", e_FontTypeNames.FONTTYPE_CITIZEN))
-142     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> Clases participantes: " & Torneo.ClasesTexto & ". Escribí /PARTICIPAR para ingresar al evento. ", e_FontTypeNames.FONTTYPE_CITIZEN))
+        Call SendLocalizedMsgToAll("1564", e_FontTypeNames.FONTTYPE_CITIZEN, Torneo.nombre & "¬" & Torneo.NivelMinimo & "¬" & Torneo.NivelMaximo & "¬" & inscriptos & "¬" & Torneo.cupos & "¬" & PonerPuntos(Torneo.costo) & "¬" & Torneo.reglas) ' Msg1564=Evento> Están abiertas las inscripciones para: ¬1: características: Nivel entre: ¬2/¬3. Inscriptos: ¬4/¬5. Precio de inscripción: ¬6 monedas de oro. Reglas: ¬7.
 
+        Call SendLocalizedMsgToAll("1565", e_FontTypeNames.FONTTYPE_CITIZEN, Torneo.ClasesTexto) ' Msg1565=Evento> Clases participantes: ¬1. Escribí /PARTICIPAR para ingresar al evento.
         
         Exit Sub
 
@@ -202,9 +202,8 @@ Public Sub ComenzarTorneoOk()
             ' Call WriteConsoleMsg(Torneo.IndexParticipantes(i), "¡Ya estas participado! Solo debes aguardar aquí hasta que seas convocado al torneo.", e_FontTypeNames.FONTTYPE_INFO)
 112     Next i
 
-114     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> Los elegidos para participar son: " & nombres & " damos inicio al evento.", e_FontTypeNames.FONTTYPE_CITIZEN))
+        Call SendLocalizedMsgToAll("1566", e_FontTypeNames.FONTTYPE_CITIZEN, nombres) ' Msg1566=Evento> Los elegidos para participar son: ¬1 damos inicio al evento.
 
-        
         Exit Sub
 
 ComenzarTorneoOk_Err:
@@ -251,9 +250,8 @@ Public Sub ResetearTorneo()
 
 152     Torneo.Participantes = 0
 154     ReDim Torneo.IndexParticipantes(1 To 1)
-156     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Evento Finalizado. ", e_FontTypeNames.FONTTYPE_CITIZEN))
+        Call SendLocalizedMsgToAll("1563", e_FontTypeNames.FONTTYPE_CITIZEN) ' Msg1563=Eventos> Evento Finalizado.
 
-        
         Exit Sub
 
 ResetearTorneo_Err:

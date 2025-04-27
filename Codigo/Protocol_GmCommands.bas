@@ -4030,11 +4030,9 @@ Public Sub HandleGlobalOnOff(ByVal UserIndex As Integer)
 102         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then Exit Sub
 104         Call LogGM(.name, " activo al Chat Global a las " & Now)
 106         If SvrConfig.GetValue("ChatGlobal") = 0 Then
-108             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Chat general habilitado. Escribe" & Chr(34) & "/CONSOLA" & Chr(34) & " o " & Chr(34) & ";" & Chr(34) & " y su mensaje para utilizarlo.", e_FontTypeNames.FONTTYPE_SERVER))
-
+108             Call SendLocalizedMsgToAll("1573", e_FontTypeNames.FONTTYPE_SERVER) ' Msg1573=Servidor » Chat general habilitado. Escribe "/CONSOLA" o ";" y su mensaje para utilizarlo.
             Else
-112             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Chat General deshabilitado.", e_FontTypeNames.FONTTYPE_SERVER))
-
+                Call SendLocalizedMsgToAll("1574", e_FontTypeNames.FONTTYPE_SERVER) ' Msg1574=Servidor » Chat General deshabilitado.
             End If
         End With
         Exit Sub

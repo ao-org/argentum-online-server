@@ -3426,15 +3426,12 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
 112         Call QuitarObjetos(408, 1, UserIndex)
 114         Call QuitarObjetos(409, 1, UserIndex)
 116         Call QuitarObjetos(412, 1, UserIndex)
-            
-            
-                
-118             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.Name & " ha fundado el clan <" & GuildName & "> de alineación " & GuildAlignment(.GuildIndex) & ".", e_FontTypeNames.FONTTYPE_GUILD))
-120             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
+            Call SendLocalizedMsgToAll("1536", e_FontTypeNames.FONTTYPE_GUILD, UserList(UserIndex).name & "¬" & GuildName & "¬" & GuildAlignment(.GuildIndex)) ' Msg1536=¬1 ha fundado el clan <¬2> de alineación ¬3.
+120         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
                 'Update tag
-122             Call RefreshCharStatus(UserIndex)
-            Else
-124             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
+122         Call RefreshCharStatus(UserIndex)
+        Else
+124         Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
 
         End If
 
@@ -6653,7 +6650,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
                         End If
                     End If
             
-112                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue aceptado en el honorable Consejo Real de Banderbill.", e_FontTypeNames.FONTTYPE_CONSEJO))
+                         Call SendLocalizedMsgToAll("1537", e_FontTypeNames.FONTTYPE_CONSEJO, username) ' Msg1537=¬1 fue aceptado en el honorable Consejo Real de Banderbill.
 
 114                 With UserList(tUser.ArrayIndex)
                         .Faccion.Status = e_Facciones.consejo
@@ -6701,9 +6698,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
 
                         End If
                     End If
-                    
-112                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(username & " fue aceptado en el Consejo de la Legión Oscura.", e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
-                
+                        Call SendLocalizedMsgToAll("1538", e_FontTypeNames.FONTTYPE_CONSEJOCAOS, username) ' Msg1538=¬1 fue aceptado en el Consejo de la Legión Oscura.
 114                 With UserList(tUser.ArrayIndex)
                         .Faccion.Status = e_Facciones.concilio
 120                     Call WarpUserChar(tUser.ArrayIndex, .pos.map, .pos.x, .pos.y, False)
@@ -6766,7 +6761,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
                             Call WriteLocaleMsg(tUser.ArrayIndex, "1204", e_FontTypeNames.FONTTYPE_INFO)
 130                         .Faccion.status = e_Facciones.Armada
 132                         Call WarpUserChar(tUser.ArrayIndex, .pos.map, .pos.x, .pos.y)
-134                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue expulsado del consejo de Banderbill", e_FontTypeNames.FONTTYPE_CONSEJO))
+134                         Call SendLocalizedMsgToAll("1539", e_FontTypeNames.FONTTYPE_CONSEJO, username) ' Msg1539=¬1 fue expulsado del consejo de Banderbill.
                         End If
                     
                         If .Faccion.Status = e_Facciones.concilio Then
@@ -6774,7 +6769,8 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
                             Call WriteLocaleMsg(tUser.ArrayIndex, "1205", e_FontTypeNames.FONTTYPE_INFO)
 140                         .Faccion.Status = e_Facciones.Caos
 142                         Call WarpUserChar(tUser.ArrayIndex, .pos.map, .pos.x, .pos.y)
-144                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(username & " fue expulsado del consejo de la Legión Oscura", e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
+                            Call SendLocalizedMsgToAll("1540", e_FontTypeNames.FONTTYPE_CONSEJOCAOS, username) ' Msg1540=¬1 fue expulsado del consejo de la Legión Oscura.
+
                         End If
                         Call RefreshCharStatus(tUser.ArrayIndex)
                     End With
@@ -6824,7 +6820,8 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
                         'member es la victima
 120                     member = GetVar(tFile, "Members", "Member" & LoopC)
 122                     Call Ban(member, "Administracion del servidor", "Clan Banned")
-124                     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("   " & member & "<" & GuildName & "> ha sido expulsado del servidor.", e_FontTypeNames.FONTTYPE_FIGHT))
+124                     Call SendLocalizedMsgToAll("1541", e_FontTypeNames.FONTTYPE_FIGHT, member & "¬" & GuildName) ' Msg1541=   ¬1<¬2> ha sido expulsado del servidor.
+
 126                     tUser = NameIndex(member)
 128                     If IsValidUserRef(tUser) Then
                             'esta online
@@ -7491,7 +7488,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
 130             UserList(UserIndex).Counters.TiempoParaSubastar = 0
 132             Subasta.OfertaInicial = Oferta
 134             Subasta.MejorOferta = 0
-136             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " está subastando: " & ObjData(Subasta.ObjSubastado).name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas. Escribe /OFERTAR (cantidad) para participar.", e_FontTypeNames.FONTTYPE_SUBASTA))
+136             Call SendLocalizedMsgToAll("1542", e_FontTypeNames.FONTTYPE_SUBASTA, .name & "¬" & ObjData(Subasta.ObjSubastado).name & "¬" & Subasta.ObjSubastadoCantidad & "¬" & PonerPuntos(Subasta.OfertaInicial)) ' Msg1542=¬1 está subastando: ¬2 (Cantidad: ¬3 ) - con un precio inicial de ¬4 monedas. Escribe /OFERTAR (cantidad) para participar.
 138             .flags.Subastando = False
 140             Subasta.HaySubastaActiva = True
 142             Subasta.Subastador = .Name
@@ -7565,7 +7562,7 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
 132             Call WriteUpdateGold(UserIndex)
             
 134             If Subasta.TiempoRestanteSubasta < 60 Then
-136                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
+136                 Call SendLocalizedMsgToAll("1543", e_FontTypeNames.FONTTYPE_SUBASTA, .name & "¬" & PonerPuntos(Oferta)) ' Msg1543=Oferta mejorada por: ¬1 (Ofrece ¬2 monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para más información.
 138                 Call LogearEventoDeSubasta(.Name & ": Mejoro la oferta en el ultimo minuto ofreciendo " & PonerPuntos(Oferta) & " monedas.")
 140                 Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta + 30
                 Else
@@ -8228,7 +8225,7 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 138                             .flags.Casado = 1
 140                             .flags.SpouseId = UserList(tUser.ArrayIndex).id
 142                             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_FXSound.Casamiento_sound, NO_3D_SOUND, NO_3D_SOUND))
-144                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("El sacerdote de " & get_map_name(.pos.map) & " celebra el casamiento entre " & UserList(userIndex).name & " y " & UserList(tUser.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_WARNING))
+144                             Call SendLocalizedMsgToAll("1544", e_FontTypeNames.FONTTYPE_WARNING, get_map_name(.pos.Map) & "¬" & UserList(UserIndex).name & "¬" & UserList(tUser.ArrayIndex).name) ' Msg1544=Aviso: En el mapa ¬1, los jugadores ¬2 y ¬3 están involucrados en un evento.
                                 Call WriteLocaleChatOverHead(UserIndex, 1414, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1414=Los declaro unidos en legal matrimonio ¡Felicidades!
                                 Call WriteLocaleChatOverHead(tUser.ArrayIndex, 1415, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1415=Los declaro unidos en legal matrimonio ¡Felicidades!
                             Else
@@ -8298,7 +8295,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Else
 
 112                         If BusquedaTesoroActiva Then
-114                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavia nadie fue capaz de encontar el tesoro, recorda que se encuentra en " & get_map_name(TesoroNumMapa) & "(" & TesoroNumMapa & "). ¿Quien sera el valiente que lo encuentre?", e_FontTypeNames.FONTTYPE_TALK))
+114                             Call SendLocalizedMsgToAll("1545", e_FontTypeNames.FONTTYPE_TALK, get_map_name(TesoroNumMapa) & "¬" & TesoroNumMapa) ' Msg1545=Eventos> Todavía nadie fue capaz de encontrar el tesoro, recuerda que se encuentra en ¬1(¬2). ¿Quién será el valiente que lo encuentre?
                                 'Msg1241= Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: ¬1
                                 Call WriteLocaleMsg(UserIndex, "1241", e_FontTypeNames.FONTTYPE_INFO, TesoroNumMapa)
                             Else
@@ -8316,7 +8313,9 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Else
 
 126                         If BusquedaRegaloActiva Then
-128                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Ningún valiente fue capaz de encontrar el item misterioso, recuerda que se encuentra en " & get_map_name(RegaloNumMapa) & "(" & RegaloNumMapa & "). ¡Ten cuidado!", e_FontTypeNames.FONTTYPE_TALK))
+
+                                Call SendLocalizedMsgToAll("1546", e_FontTypeNames.FONTTYPE_TALK, get_map_name(RegaloNumMapa) & "¬" & RegaloNumMapa) ' Msg1546=Eventos> Ningún valiente fue capaz de encontrar el item misterioso, recuerda que se encuentra en ¬1(¬2). ¡Ten cuidado!
+
                                 'Msg1242= Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: ¬1
                                 Call WriteLocaleMsg(UserIndex, "1242", e_FontTypeNames.FONTTYPE_INFO, RegaloNumMapa)
                             Else
@@ -8339,7 +8338,9 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Else
 
 148                         If BusquedaNpcActiva Then
-150                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).pos.Map & ".", e_FontTypeNames.FONTTYPE_TALK))
+
+                                Call SendLocalizedMsgToAll("1547", e_FontTypeNames.FONTTYPE_TALK, get_map_name(NpcList(npc_index_evento).pos.Map)) ' Msg1547=Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa ¬1.
+
                                 'Msg1243= Ya hay una busqueda de npc activo. El tesoro se encuentra en: ¬1
                                 Call WriteLocaleMsg(UserIndex, "1243", e_FontTypeNames.FONTTYPE_INFO, NpcList(npc_index_evento).pos.Map)
                             Else

@@ -770,8 +770,7 @@ Sub PickObj(ByVal UserIndex As Integer)
     
 124                 If BusquedaTesoroActiva Then
 126                     If UserList(UserIndex).Pos.Map = TesoroNumMapa And UserList(UserIndex).Pos.X = TesoroX And UserList(UserIndex).Pos.Y = TesoroY Then
-    
-128                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).name & " encontro el tesoro ¡Felicitaciones!", e_FontTypeNames.FONTTYPE_TALK))
+                            Call SendLocalizedMsgToAll(1533, e_FontTypeNames.FONTTYPE_TALK, UserList(UserIndex).name) ' Msg1533=Eventos> ¬1 encontro el tesoro ¡Felicitaciones!
 130                         BusquedaTesoroActiva = False
 
                         End If
@@ -780,7 +779,7 @@ Sub PickObj(ByVal UserIndex As Integer)
                 
 132                 If BusquedaRegaloActiva Then
 134                     If UserList(UserIndex).Pos.Map = RegaloNumMapa And UserList(UserIndex).Pos.X = RegaloX And UserList(UserIndex).Pos.Y = RegaloY Then
-136                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).name & " fue el valiente que encontro el gran item magico ¡Felicitaciones!", e_FontTypeNames.FONTTYPE_TALK))
+                            Call SendLocalizedMsgToAll("1534", e_FontTypeNames.FONTTYPE_TALK, UserList(UserIndex).name) ' Msg1534=Eventos> ¬1 fue el valiente que encontró el gran ítem mágico ¡Felicitaciones!
 138                         BusquedaRegaloActiva = False
 
                         End If

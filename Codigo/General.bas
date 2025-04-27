@@ -2536,3 +2536,25 @@ Public Function IsArrayInitialized(ByRef arr) As Boolean
   rv = UBound(arr)
   IsArrayInitialized = (Err.Number = 0) And rv >= 0
 End Function
+
+Public Sub SendLocalizedMsgToAll(ByVal MsgID As Integer, ByVal FontType As e_FontTypeNames, Optional ByVal strExtra As String = vbNullString)
+    Dim i As Long
+    For i = 1 To LastUser
+        If UserList(i).flags.UserLogged Then
+            Call WriteLocaleMsg(i, MsgID, FontType, strExtra)
+        End If
+    Next i
+End Sub
+
+Public Sub SendLocalizedMsgToJugadoresCaptura(ByVal MsgID As Integer, ByVal FontType As e_FontTypeNames, Optional ByVal strExtra As String = vbNullString)
+    Dim LoopC As Long
+    For LoopC = 1 To LastUser
+        If UserList(LoopC).ConnectionDetails.ConnIDValida Then
+            If UserList(LoopC).flags.jugando_captura = 1 Then
+                ' Solo enviar mensaje a los jugadores en captura
+                Call WriteLocaleMsg(LoopC, MsgID, FontType, strExtra)
+            End If
+        End If
+    Next LoopC
+End Sub
+

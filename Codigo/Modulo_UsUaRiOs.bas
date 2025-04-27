@@ -739,7 +739,7 @@ On Error GoTo Complete_ConnectUser_Err
 965         If NumUsers > DayStats.MaxUsuarios Then DayStats.MaxUsuarios = NumUsers
         
 970         If NumUsers > RecordUsuarios Then
-975             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultáneamente: " & NumUsers & " usuarios.", e_FontTypeNames.FONTTYPE_INFO))
+975             Call SendLocalizedMsgToAll("1550", e_FontTypeNames.FONTTYPE_INFO, NumUsers) ' Msg1550=Record de usuarios conectados simultáneamente: ¬1 usuarios.
 980             RecordUsuarios = NumUsers
             End If
 

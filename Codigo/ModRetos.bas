@@ -679,7 +679,8 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                 Next
             
                 ' Anuncio global
-164             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » " & Equipo1 & " vs " & Equipo2 & ". Ninguno pudo vencer a su rival.", e_FontTypeNames.FONTTYPE_INFO))
+                Call SendLocalizedMsgToAll("1560", e_FontTypeNames.FONTTYPE_INFO, Equipo1 & "¬" & Equipo2) ' Msg1560=Retos » ¬1 vs ¬2. Ninguno pudo vencer a su rival.
+
 166             Call SalaLiberada(Sala)
             ' Hubo un ganador
             Else
@@ -758,10 +759,10 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
 
                 ' Anuncio global
 246             If UBound(.Jugadores) > 1 Then
-248                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » El equipo " & equipoGanador & " venció al equipo " & equipoPerdedor & " y se quedo con el botín de: " & PonerPuntos(.Apuesta) & " monedas de oro. ", e_FontTypeNames.FONTTYPE_INFO))
+                    Call SendLocalizedMsgToAll("1561", e_FontTypeNames.FONTTYPE_INFO, equipoGanador & "¬" & equipoPerdedor & "¬" & PonerPuntos(.Apuesta)) ' Msg1561=Retos » El equipo ¬1 venció al equipo ¬2 y se quedó con el botín de: ¬3 monedas de oro.
         
                 Else ' 1 vs 1
-250                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » " & equipoGanador & " venció a " & equipoPerdedor & " y se quedo con el botín de: " & PonerPuntos(.Apuesta) & " monedas de oro. ", e_FontTypeNames.FONTTYPE_INFO))
+                    Call SendLocalizedMsgToAll("1562", e_FontTypeNames.FONTTYPE_INFO, equipoGanador & "¬" & equipoPerdedor & "¬" & PonerPuntos(.Apuesta)) ' Msg1562=Retos » ¬1 venció a ¬2 y se quedó con el botín de: ¬3 monedas de oro.
 
                 End If
             

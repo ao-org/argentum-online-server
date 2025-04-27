@@ -114,7 +114,7 @@ Private Sub Command1_Click()
 100     uUser = NameIndex(cboPjs.Text)
 
 102     If IsValidUserRef(uUser) Then
-104         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(uUser.ArrayIndex).Name & " ha sido hechado. ", e_FontTypeNames.FONTTYPE_SERVER))
+            Call SendLocalizedMsgToAll("1535", e_FontTypeNames.FONTTYPE_SERVER, UserList(uUser.ArrayIndex).name) ' Msg1535=Servidor » ¬1 ha sido hechado.
 106         Call CloseSocket(uUser.ArrayIndex)
 
         End If
