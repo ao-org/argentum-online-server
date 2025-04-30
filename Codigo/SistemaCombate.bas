@@ -1773,8 +1773,18 @@ On Error GoTo GetExpForUser_Err
                 Dim DeltaLevel As Integer
                 DeltaLevel = .Stats.ELV - NpcList(NpcIndex).nivel
             
-                If DeltaLevel > 4 Then
+                If DeltaLevel > CInt(SvrConfig.GetValue("DeltaLevelExpPenalty")) Then
                     ExpaDar = ExpaDar * GetExpPenalty(UserIndex, NpcIndex, DeltaLevel)
+                                                               
+                    ' Mostrar porcentaje final de experiencia como número entero
+                     Dim PorcentajeFinal As Integer
+                     PorcentajeFinal = GetExpPenalty(UserIndex, NpcIndex, DeltaLevel) * 100
+                     
+                     ' Si tiene el chat activado, enviamos el mensaje
+                     If UserList(UserIndex).ChatCombate = 1 Then
+                         'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
+                         Call WriteLocaleMsg(UserIndex, "1467", e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
+                     End If
                 End If
             End If
             If .Stats.ELV < STAT_MAXELV Then
@@ -1883,8 +1893,17 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
                                     If NpcList(NpcIndex).nivel Then
                                         DeltaLevel = UserList(Index).Stats.ELV - NpcList(NpcIndex).nivel
-                                        If DeltaLevel > 4 Then
+                                        If DeltaLevel > CInt(SvrConfig.GetValue("DeltaLevelExpPenalty")) Then
                                            ExpUser = ExpUser * GetExpPenalty(Index, NpcIndex, DeltaLevel)
+                                           ' Mostrar porcentaje final de experiencia como número entero
+                                            Dim PorcentajeFinal As Integer
+                                            PorcentajeFinal = GetExpPenalty(Index, NpcIndex, DeltaLevel) * 100
+                                            
+                                            ' Si tiene el chat activado, enviamos el mensaje
+                                            If UserList(Index).ChatCombate = 1 Then
+                                                'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
+                                                Call WriteLocaleMsg(Index, "1467", e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
+                                            End If
                                         End If
                                     End If
                                         
@@ -1922,8 +1941,13 @@ Function GetExpPenalty(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, De
 
     On Error GoTo GetExpPenalty_Err
     
+'    This function computes an experience-gain multiplier (between 0.0 and 1.0) based on how far above the NPC’s level the player is.
+'    Why “DeltaLevel – 4”? No penalty for small over-leveling (up to 4 levels). Beyond that, each extra level reduces your XP by the configured percentage.
+'    Summary
+'    Output: a multiplier from 1.0 down to 0.0.
+'    Use it to scale whatever EXP your damage routine calculated.
+
     Dim NivelesExtra As Integer
-    Dim ExpUser As Integer
     
     NivelesExtra = DeltaLevel - 4
     
@@ -1933,17 +1957,6 @@ Function GetExpPenalty(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, De
     
     ' Nos aseguramos de que nunca sea menos del 0%
     If Penalizacion < 0 Then Penalizacion = 0
-        ExpUser = ExpUser * Penalizacion
-    
-        ' Mostrar porcentaje final de experiencia como número entero
-        Dim PorcentajeFinal As Integer
-        PorcentajeFinal = Penalizacion * 100
-        
-        ' Si tiene el chat activado, enviamos el mensaje
-        If UserList(UserIndex).ChatCombate = 1 Then
-            'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
-            Call WriteLocaleMsg(UserIndex, "1467", e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
-        End If
     
     GetExpPenalty = Penalizacion
     Exit Function
