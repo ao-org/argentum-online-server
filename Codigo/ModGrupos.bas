@@ -113,7 +113,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
 146             .flags.pregunta = 1
 148             Call SetUserRef(.Grupo.Lider, userIndex)
             End With
-150         Call WritePreguntaBox(InvitadoIndex, Remitente.Name & " te invito a unirse a su grupo. ¿Deseas unirte?")
+150         Call WritePreguntaBox(InvitadoIndex, 1595, Remitente.name) 'Msg1595= ¬1 te invito a unirse a su grupo. ¿Deseas unirte?
             UserList(InvitadoIndex).flags.RespondiendoPregunta = True
         Else
             Call WriteConsoleMsg(UserIndex, "El usuario tiene una solicitud pendiente.", e_FontTypeNames.FONTTYPE_INFO)

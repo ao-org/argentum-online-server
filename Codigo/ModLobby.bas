@@ -603,9 +603,9 @@ Public Sub UpdateWaitingForPlayers(ByVal FrameTime As Long, ByRef Instance As t_
                         Minutes = Seconds / 60
                         Seconds = Seconds - (Minutes * 60)
                         Call SendData(SendTarget.ToIndex, Instance.Players(i).user.ArrayIndex, _
-                                      PrepareMessageConsoleMsg("Esperando jugadores, La partida iniciara en " & GetTimeString(Minutes, Seconds) & " o cuando se llene la sala", e_FontTypeNames.FONTTYPE_GUILD))
+                                    PrepareMessageLocaleMsg(1727, GetTimeString(Minutes, Seconds), e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1727=Esperando jugadores, La partida iniciara en ¬1 o cuando se llene la sala
                         Call SendData(SendTarget.ToIndex, Instance.Players(i).user.ArrayIndex, _
-                                      PrepareMessageConsoleMsg("En este momento hay " & Instance.RegisteredPlayers & " / " & Instance.MaxPlayers & " y se requiere un minimo de " & Instance.MinPlayers & " para que pueda iniciar", e_FontTypeNames.FONTTYPE_GUILD))
+                                    PrepareMessageLocaleMsg(1728, instance.RegisteredPlayers & "¬" & instance.MaxPlayers & "¬" & instance.MinPlayers, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1728=En este momento hay ¬1 / ¬2 y se requiere un minimo de ¬3 para que pueda iniciar
                     End If
                 Next i
             End If
@@ -619,7 +619,8 @@ Public Sub UpdateWaitingForPlayers(ByVal FrameTime As Long, ByRef Instance As t_
             
             For i = 0 To Instance.RegisteredPlayers - 1
                 If IsValidUserRef(Instance.Players(i).user) Then
-                    Call SendData(SendTarget.ToIndex, Instance.Players(i).user.ArrayIndex, PrepareMessageConsoleMsg("Evento cancelador por falta de jugadores", e_FontTypeNames.FONTTYPE_GUILD))
+                    Call SendData(SendTarget.ToIndex, instance.Players(i).User.ArrayIndex, _
+                                PrepareMessageLocaleMsg(1729, "", e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1729=Evento cancelado por falta de jugadores
                 End If
             Next i
             Call CancelLobby(Instance)
