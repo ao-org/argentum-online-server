@@ -740,7 +740,7 @@ On Error GoTo Complete_ConnectUser_Err
 965         If NumUsers > DayStats.MaxUsuarios Then DayStats.MaxUsuarios = NumUsers
         
 970         If NumUsers > RecordUsuarios Then
-975             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultáneamente: " & NumUsers & " usuarios.", e_FontTypeNames.FONTTYPE_INFO))
+975             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1550", e_FontTypeNames.FONTTYPE_INFO, NumUsers)) ' Msg1550=Record de usuarios conectados simultáneamente: ¬1 usuarios.
 980             RecordUsuarios = NumUsers
             End If
 
@@ -830,7 +830,7 @@ On Error GoTo Complete_ConnectUser_Err
              End If
 
 1215        If EventoActivo Then
-1220            Call WriteConsoleMsg(UserIndex, PublicidadEvento & ". Tiempo restante: " & TiempoRestanteEvento & " minuto(s).", e_FontTypeNames.FONTTYPE_New_Eventos)
+1220            Call WriteLocaleMsg(UserIndex, 1625, e_FontTypeNames.FONTTYPE_New_Eventos, PublicidadEvento & "¬" & TiempoRestanteEvento) 'Msg1625=¬1. Tiempo restante: ¬2 minuto(s).
              End If
         
 1225        Call WriteContadores(UserIndex)
@@ -2083,7 +2083,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 140         If Aumenta < Menor Then
 142             UserList(UserIndex).Stats.UserSkills(Skill) = UserList(UserIndex).Stats.UserSkills(Skill) + 1
     
-144             Call WriteConsoleMsg(UserIndex, "¡Has mejorado tu skill " & SkillsNames(Skill) & " en un punto!. Ahora tienes " & UserList(UserIndex).Stats.UserSkills(Skill) & " pts.", e_FontTypeNames.FONTTYPE_INFO)
+144             Call WriteLocaleMsg(UserIndex, 1626, e_FontTypeNames.FONTTYPE_INFO, SkillsNames(Skill) & "¬" & UserList(UserIndex).Stats.UserSkills(Skill)) 'Msg1626=¡Has mejorado tu habilidad ¬1 en un punto! Ahora tienes ¬2 pts.
             
                 Dim BonusExp As Long
 146             BonusExp = 5& * SvrConfig.GetValue("ExpMult")

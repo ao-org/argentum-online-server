@@ -254,13 +254,13 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
 138     For i = 1 To UBound(UserList(OtroUserIndex).ComUsu.itemsAenviar)
 140         objOfrecido = UserList(OtroUserIndex).ComUsu.itemsAenviar(i)
 142         If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, OtroUserIndex) Then
-144             Call WriteConsoleMsg(OtroUserIndex, "El otro usuario no tiene esa cantidad disponible para ofrecer.", e_FontTypeNames.FONTTYPE_INFO)
+144             Call WriteLocaleMsg(OtroUserIndex, 1599, e_FontTypeNames.FONTTYPE_INFO) 'Msg1599= El otro usuario no tiene esa cantidad disponible para ofrecer.
 146             GoTo FinalizarComercio
             End If
         
 148         objOfrecido = UserList(UserIndex).ComUsu.itemsAenviar(i)
 150         If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, UserIndex) Then
-152             Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad disponible para ofrecer.", e_FontTypeNames.FONTTYPE_INFO)
+152             Call WriteLocaleMsg(UserIndex, 1598, e_FontTypeNames.FONTTYPE_INFO) 'Msg1598= No tienes esa cantidad disponible para ofrecer.
 154             GoTo FinalizarComercio
             End If
 156     Next i
