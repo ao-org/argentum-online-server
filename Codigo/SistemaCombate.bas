@@ -1774,29 +1774,9 @@ On Error GoTo GetExpForUser_Err
                 DeltaLevel = .Stats.ELV - NpcList(NpcIndex).nivel
             
                 If DeltaLevel > 4 Then
-                    Dim NivelesExtra As Integer
-                    NivelesExtra = DeltaLevel - 4
-                    
-                    ' Calculamos el porcentaje de penalización (5% por nivel excedido)
-                    Dim Penalizacion As Single
-                    Penalizacion = 1 - (0.05 * NivelesExtra)
-                    
-                    ' Nos aseguramos de que nunca sea menos del 0%
-                    If Penalizacion < 0 Then Penalizacion = 0
-                        ExpaDar = ExpaDar * Penalizacion
-                
-                        ' Mostrar porcentaje final de experiencia como número entero
-                        Dim PorcentajeFinal As Integer
-                        PorcentajeFinal = Penalizacion * 100
-                        
-                        ' Si tiene el chat activado, enviamos el mensaje
-                        If .ChatCombate = 1 Then
-                            'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
-                            Call WriteLocaleMsg(UserIndex, "1467", e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
-                        End If
-                    End If
+                    ExpaDar = ExpaDar * GetExpPenalty(UserIndex, NpcIndex, DeltaLevel)
                 End If
-
+            End If
             If .Stats.ELV < STAT_MAXELV Then
                .Stats.Exp = .Stats.Exp + ExpaDar
                
@@ -1809,6 +1789,7 @@ On Error GoTo GetExpForUser_Err
             Call WriteTextOverTile(UserIndex, "+" & PonerPuntos(ExpaDar), .pos.x, .pos.y, RGB(0, 169, 255))
         End If
     End With
+    Exit Sub
 GetExpForUser_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetExpForUser", Erl)
 End Sub
@@ -1899,31 +1880,13 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 158                             ExpUser = ExpaDar
                     
 166                             If UserList(Index).Stats.ELV < STAT_MAXELV Then
+
                                     If NpcList(NpcIndex).nivel Then
                                         DeltaLevel = UserList(Index).Stats.ELV - NpcList(NpcIndex).nivel
                                         If DeltaLevel > 4 Then
-                                            Dim NivelesExtra As Integer
-                                            NivelesExtra = DeltaLevel - 4
-                                            
-                                            ' Calculamos el porcentaje de penalización (5% por nivel excedido)
-                                            Dim Penalizacion As Single
-                                            Penalizacion = 1 - (0.05 * NivelesExtra)
-                                            
-                                            ' Nos aseguramos de que nunca sea menos del 0%
-                                            If Penalizacion < 0 Then Penalizacion = 0
-                                                ExpUser = ExpUser * Penalizacion
-                                        
-                                                ' Mostrar porcentaje final de experiencia como número entero
-                                                Dim PorcentajeFinal As Integer
-                                                PorcentajeFinal = Penalizacion * 100
-                                                
-                                                ' Si tiene el chat activado, enviamos el mensaje
-                                                If UserList(Index).ChatCombate = 1 Then
-                                                    'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
-                                                    Call WriteLocaleMsg(Index, "1467", e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
-                                                End If
-                                            End If
+                                           ExpUser = ExpUser * GetExpPenalty(Index, NpcIndex, DeltaLevel)
                                         End If
+                                    End If
                                         
 178                                 UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
 180                                 If UserList(Index).Stats.Exp > MAXEXP Then UserList(Index).Stats.Exp = MAXEXP
@@ -1955,7 +1918,39 @@ CalcularDarExpGrupal_Err:
 
         
 End Sub
+Function GetExpPenalty(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, DeltaLevel As Integer) As Single
 
+    On Error GoTo GetExpPenalty_Err
+    
+    Dim NivelesExtra As Integer
+    Dim ExpUser As Integer
+    
+    NivelesExtra = DeltaLevel - 4
+    
+    ' Calculamos el porcentaje de penalización
+    Dim Penalizacion As Single
+    Penalizacion = 1 - (CSng(SvrConfig.GetValue("PenaltyExpUserPerLevel")) * NivelesExtra)
+    
+    ' Nos aseguramos de que nunca sea menos del 0%
+    If Penalizacion < 0 Then Penalizacion = 0
+        ExpUser = ExpUser * Penalizacion
+    
+        ' Mostrar porcentaje final de experiencia como número entero
+        Dim PorcentajeFinal As Integer
+        PorcentajeFinal = Penalizacion * 100
+        
+        ' Si tiene el chat activado, enviamos el mensaje
+        If UserList(UserIndex).ChatCombate = 1 Then
+            'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
+            Call WriteLocaleMsg(UserIndex, "1467", e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
+        End If
+    
+    GetExpPenalty = Penalizacion
+    Exit Function
+    
+GetExpPenalty_Err:
+        Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetExpPenalty", Erl)
+End Function
 Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As Long)
         
         On Error GoTo CalcularDarOroGrupal_Err
