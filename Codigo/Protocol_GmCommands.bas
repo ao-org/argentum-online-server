@@ -1815,7 +1815,7 @@ Public Sub HandleRequestCharGold(ByVal UserIndex As Integer)
 108             Call LogGM(.name, "/BAL " & username)
             
 110             If IsValidUserRef(tUser) Then
-116                 Call WriteConsoleMsg(userIndex, "El usuario " & username & " tiene " & UserList(tUser.ArrayIndex).Stats.Banco & " en el banco", e_FontTypeNames.FONTTYPE_TALK)
+116                 Call WriteLocaleMsg(UserIndex, 1612, e_FontTypeNames.FONTTYPE_TALK, username & "¬" & UserList(tUser.ArrayIndex).Stats.Banco) 'Msg1612=El usuario ¬1 tiene ¬2 en el banco
                 End If
 
             Else
@@ -2085,7 +2085,7 @@ Public Sub HandleForgive(ByVal UserIndex As Integer)
             End If
         
 118         If .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.consejo Then
-120             Call WriteLocaleChatOverHead(UserIndex, "1343", vbNullString, priest.Char.charindex, vbWhite) ' Msg1343=¡¡Dios no te perdonará mientras seas fiel al Demonio!!
+120             Call WriteLocaleChatOverHead(UserIndex, "1343", vbNullString, priest.Char.charIndex, vbWhite) ' Msg1343=¡¡Dios no te perdonará mientras seas fiel al Demonio!!
                 Exit Sub
             End If
 
@@ -2099,11 +2099,11 @@ Public Sub HandleForgive(ByVal UserIndex As Integer)
 128         If .Faccion.ciudadanosMatados > 0 Then
                 Dim Donacion As Long
 130             Donacion = .Faccion.ciudadanosMatados * SvrConfig.GetValue("GoldMult") * SvrConfig.GetValue("CostoPerdonPorCiudadano")
-132             Call WriteLocaleChatOverHead(UserIndex, "1345", vbNullString, priest.Char.charindex, vbWhite) ' Msg1345=Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. Pero si haces una generosa donación de, digamos, ¬1 monedas de oro, tal vez cambie de opinión...
+132             Call WriteLocaleChatOverHead(UserIndex, "1345", vbNullString, priest.Char.charIndex, vbWhite) ' Msg1345=Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. Pero si haces una generosa donación de, digamos, ¬1 monedas de oro, tal vez cambie de opinión...
                 Exit Sub
             Else
             Donacion = SvrConfig.GetValue("CostoPerdonPorCiudadano") / 2
-                Call WriteLocaleChatOverHead(UserIndex, 1346, Donacion, priest.Char.charindex, vbWhite)  ' Msg1346=Para volver a ser un ciudadano deberás Donar ¬1 monedas de oro.
+                Call WriteLocaleChatOverHead(UserIndex, 1346, Donacion, priest.Char.charIndex, vbWhite)  ' Msg1346=Para volver a ser un ciudadano deberás Donar ¬1 monedas de oro.
                 Exit Sub
             End If
                         
@@ -2117,11 +2117,11 @@ Public Sub HandleForgive(ByVal UserIndex As Integer)
             End If
             
             If Not permitePerdon Then
-                Call WriteLocaleChatOverHead(UserIndex, "1347", "", priest.Char.charindex, vbYellow) ' Msg1347=No podrás ser perdonado perteneciendo a un clan de alineación Criminal o de Alineación Oscura.
+                Call WriteLocaleChatOverHead(UserIndex, "1347", "", priest.Char.charIndex, vbYellow) ' Msg1347=No podrás ser perdonado perteneciendo a un clan de alineación Criminal o de Alineación Oscura.
                 Exit Sub
             End If
 
-134         Call WriteLocaleChatOverHead(UserIndex, "1348", "", priest.Char.charindex, vbYellow) ' Msg1348=Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!
+134         Call WriteLocaleChatOverHead(UserIndex, "1348", "", priest.Char.charIndex, vbYellow) ' Msg1348=Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!
 136         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, "80", 100, False))
 138         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
 140         Call VolverCiudadano(UserIndex)
@@ -2236,9 +2236,9 @@ Public Sub HandleUnbanChar(ByVal UserIndex As Integer)
 114                     Call UnBanDatabase(username)
 
 116                     Call LogGM(.name, "/UNBAN a " & username)
-118                     Call WriteConsoleMsg(UserIndex, username & " desbaneado.", e_FontTypeNames.FONTTYPE_INFO)
+118                     Call WriteLocaleMsg(UserIndex, 1613, e_FontTypeNames.FONTTYPE_INFO, username) 'Msg1613=¬1 desbaneado.
                     Else
-120                     Call WriteConsoleMsg(UserIndex, username & " no esta baneado. Imposible desbanear.", e_FontTypeNames.FONTTYPE_INFO)
+120                     Call WriteLocaleMsg(UserIndex, 1614, e_FontTypeNames.FONTTYPE_INFO, username) 'Msg1614=¬1 no esta baneado. Imposible desbanear.
                     End If
                 End If
             Else
@@ -4189,7 +4189,7 @@ Public Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
 102         Seconds = Reader.ReadInt8()
 104         If Not .flags.Privilegios And e_PlayerType.user Then
 106             CuentaRegresivaTimer = Seconds
-108             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Empezando cuenta regresiva desde: " & Seconds & " segundos...!", e_FontTypeNames.FONTTYPE_GUILD))
+108             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1689, Seconds, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1689=¡Empezando cuenta regresiva desde: ¬1 segundos...!
             End If
         End With
         Exit Sub
@@ -4365,7 +4365,7 @@ Public Sub HandleEventoInfo(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 102         If EventoActivo Then
-104             Call WriteConsoleMsg(UserIndex, PublicidadEvento & ". Tiempo restante: " & TiempoRestanteEvento & " minuto(s).", e_FontTypeNames.FONTTYPE_New_Eventos)
+104             Call WriteLocaleMsg(UserIndex, 1615, e_FontTypeNames.FONTTYPE_New_Eventos, PublicidadEvento & "¬" & TiempoRestanteEvento) 'Msg1615=¬1. Tiempo restante: ¬2 minuto(s).
             Else
 106             ' Msg729=Eventos> Actualmente no hay ningún evento en curso.
                 Call WriteLocaleMsg(UserIndex, "729", e_FontTypeNames.FONTTYPE_New_Eventos)
@@ -4709,7 +4709,7 @@ Public Sub HandleCreateEvent(ByVal UserIndex As Integer)
 118                 Call IniciarEvento(TipoEvento.Invasion, 2)
 120                 Call LogGM(.name, "Forzó el evento Invasión en Carcel.")
 122             Case Else
-124                 Call WriteConsoleMsg(UserIndex, "No existe el evento """ & name & """.", e_FontTypeNames.FONTTYPE_INFO)
+124                 Call WriteLocaleMsg(UserIndex, 1616, e_FontTypeNames.FONTTYPE_INFO, name) 'Msg1616=No existe el evento "¬1".
             End Select
         End With
         Exit Sub

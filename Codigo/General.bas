@@ -1729,9 +1729,9 @@ Sub PasarSegundo()
         
 100     If CuentaRegresivaTimer > 0 Then
 102         If CuentaRegresivaTimer > 1 Then
-104             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(CuentaRegresivaTimer - 1 & " segundos...!", e_FontTypeNames.FONTTYPE_GUILD))
+104             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1655, CuentaRegresivaTimer - 1, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1655=¬1 segundos...!
             Else
-106             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Ya!!!", e_FontTypeNames.FONTTYPE_FIGHT))
+106             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1656, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1656=¡Ya!!
 
             End If
 
@@ -1992,7 +1992,7 @@ Sub GuardarUsuarios()
 100     haciendoBK = True
     
 102     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-104     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Grabando Personajes", e_FontTypeNames.FONTTYPE_SERVER))
+104     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1657, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1657=Servidor » Grabando Personajes
     
         Dim i As Long
         
@@ -2014,7 +2014,7 @@ Sub GuardarUsuarios()
 
 120     Next i
     
-122     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Personajes Grabados", e_FontTypeNames.FONTTYPE_SERVER))
+122     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1658, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1658=Servidor » Personajes Grabados
 124     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
 
 126     haciendoBK = False
