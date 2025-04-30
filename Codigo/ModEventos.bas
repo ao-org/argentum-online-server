@@ -184,7 +184,7 @@ Public Sub FinalizarEvento()
         End Select
 
 146     Call AgregarAConsola("Eventos > Evento finalizado.")
-148     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos > Evento finalizado.", e_FontTypeNames.FONTTYPE_New_Eventos))
+148     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1673, vbNullString, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1673=Eventos > Evento finalizado.
 150     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(551, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
 
         

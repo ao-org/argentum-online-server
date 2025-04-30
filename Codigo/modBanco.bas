@@ -224,7 +224,8 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
 132                 Slot = Slot + 1
 
 134                 If Slot > UserList(UserIndex).CurrentInventorySlots Then
-136                     Call WriteConsoleMsg(UserIndex, "No podés tener mas objetos.", e_FontTypeNames.FONTTYPE_INFO)
+136                     Call WriteLocaleMsg(UserIndex, 1600, e_FontTypeNames.FONTTYPE_INFO) 'Msg1600= No podés tener más objetos.
+
                         Exit Function
 
                     End If
@@ -253,7 +254,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
     
 152         Call QuitarBancoInvItem(UserIndex, CByte(ObjIndex), Cantidad)
         Else
-154         Call WriteConsoleMsg(UserIndex, "No podés tener mas objetos.", e_FontTypeNames.FONTTYPE_INFO)
+154         Call WriteLocaleMsg(UserIndex, 1600, e_FontTypeNames.FONTTYPE_INFO) 'Msg1600= No podés tener más objetos.
 
         End If
 
@@ -393,7 +394,7 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
 132                 Slot = Slot + 1
             
 134                 If Slot > MAX_BANCOINVENTORY_SLOTS Then
-136                     Call WriteConsoleMsg(UserIndex, "No tienes mas espacio en el banco.", e_FontTypeNames.FONTTYPE_INFOIAO)
+136                     Call WriteLocaleMsg(UserIndex, 1601, e_FontTypeNames.FONTTYPE_INFOIAO) 'Msg1601= No tienes más espacio en el banco.
                         Exit Function
 
                     End If
@@ -426,8 +427,7 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
 154             Call QuitarUserInvItem(UserIndex, CByte(ObjIndex), Cantidad)
 
             Else
-156             Call WriteConsoleMsg(UserIndex, "El banco no puede cargar tantos objetos.", e_FontTypeNames.FONTTYPE_INFO)
-
+156             Call WriteLocaleMsg(UserIndex, 1602, e_FontTypeNames.FONTTYPE_INFO) 'Msg1602= El banco no puede cargar tantos objetos.
             End If
 
         End If

@@ -1301,16 +1301,15 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
 164                 If ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otYacimiento Then
 166                     Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
-168                     Call WriteConsoleMsg(UserIndex, ObjData(UserList(UserIndex).flags.TargetObj).Name & " - (Minerales disponibles: " & MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount & ")", e_FontTypeNames.FONTTYPE_INFO)
+168                     Call WriteLocaleMsg(UserIndex, 1618, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount))   'Msg1618=¬1 - (Minerales disponibles: ¬2)
 
 170                 ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otArboles Then
 172                     Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
-174                     Call WriteConsoleMsg(UserIndex, ObjData(UserList(UserIndex).flags.TargetObj).Name & " - (Recursos disponibles: " & MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount & ")", e_FontTypeNames.FONTTYPE_INFO)
-                    
+174                     Call WriteLocaleMsg(UserIndex, 1619, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount)) 'Msg1619=¬1 - (Recursos disponibles: ¬2)
 176                 ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otTeleport Then
 178                     If MapData(Map, X, Y).TileExit.Map > 0 Then
 180                         If LenB(MapInfo(MapData(Map, X, Y).TileExit.Map).map_name) <> 0 Then
-182                             Call WriteConsoleMsg(UserIndex, "Portal a " & MapInfo(MapData(Map, X, Y).TileExit.Map).map_name, e_FontTypeNames.FONTTYPE_INFO)
+182                             Call WriteLocaleMsg(UserIndex, 1620, e_FontTypeNames.FONTTYPE_INFO, MapInfo(MapData(Map, x, y).TileExit.Map).map_name) 'Msg1620=Portal a ¬1
                             Else
 184                             'Msg492=Portal a un mapa desconocido...
                                 Call WriteLocaleMsg(UserIndex, "492", e_FontTypeNames.FONTTYPE_INFO)
@@ -1644,11 +1643,11 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     End If
 470             ElseIf IsValidUserRef(NpcList(TempCharIndex).MaestroUser) Then
                     If UserList(UserIndex).flags.Muerto = 0 Then
-472                     Call WriteConsoleMsg(userIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).name & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
+472                     Call WriteLocaleMsg(UserIndex, 1621, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Numero & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).name & "¬" & estatus) 'Msg1621=NPC ¬1 es mascota de ¬2 ¬3
                     End If
                 Else
                     If UserList(UserIndex).flags.Muerto = 0 Then
-                        Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "*" & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, 1622, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Numero & "¬" & estatus) 'Msg1622=NPC ¬1 ¬2
                     End If
                 End If
                ' End If

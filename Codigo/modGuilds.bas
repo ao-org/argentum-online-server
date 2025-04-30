@@ -1005,7 +1005,7 @@ Public Function GMEscuchaClan(ByVal UserIndex As Integer, ByVal GuildName As Str
         'listen to no guild at all
 100     If LenB(GuildName) = 0 And UserList(UserIndex).EscucheClan <> 0 Then
             'Quit listening to previous guild!!
-102         Call WriteConsoleMsg(UserIndex, "Dejas de escuchar a : " & guilds(UserList(UserIndex).EscucheClan).GuildName, e_FontTypeNames.FONTTYPE_GUILD)
+102         Call WriteLocaleMsg(UserIndex, 1603, guilds(UserList(UserIndex).EscucheClan).GuildName, e_FontTypeNames.FONTTYPE_GUILD) 'Msg1603= Dejas de escuchar a : ¬1
 104         guilds(UserList(UserIndex).EscucheClan).DesconectarGM (UserIndex)
             Exit Function
 

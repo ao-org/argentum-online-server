@@ -850,7 +850,7 @@ Private Sub CerrarYForzarActualizar_Click()
 
 100     If MsgBox("¿Está seguro que desea guardar, forzar actualización a los usuarios y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
         
-102     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Cerrando servidor y lanzando nuevo parche.", e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR))
+102     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1659, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1659=Servidor » Cerrando servidor y lanzando nuevo parche.
 
 104     Call ForzarActualizar
 106     Call GuardarUsuarios
@@ -1458,7 +1458,7 @@ Private Sub Command4_Click()
 
 100     If MsgBox("¿Está seguro que desea guardar y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
         
-102     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Cerrando servidor.", e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR))
+102     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1661, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1661=Servidor » Cerrando servidor.
 
 104     Call GuardarUsuarios
 106     Call EcharPjsNoPrivilegiados
@@ -1900,7 +1900,7 @@ Private Sub SubastaTimer_Timer()
     Call PerformanceTestStart(PerformanceTimer)
     'Si ya paso un minuto y todavia no hubo oferta, avisamos que se cancela en un minuto
     If Subasta.TiempoRestanteSubasta = 240 And Subasta.HuboOferta = False Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información. La subasta será cancelada si no hay ofertas en el próximo minuto.", e_FontTypeNames.FONTTYPE_SUBASTA))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1662, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1662=¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información. La subasta será cancelada si no hay ofertas en el próximo minuto.
         Subasta.MinutosDeSubasta = 4
         Subasta.PosibleCancelo = True
     End If
@@ -1908,7 +1908,7 @@ Private Sub SubastaTimer_Timer()
     'Si ya pasaron dos minutos y no hubo ofertas, cancelamos la subasta
     If Subasta.TiempoRestanteSubasta = 180 And Subasta.HuboOferta = False Then
         Subasta.HaySubastaActiva = False
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Subasta cancelada por falta de ofertas.", e_FontTypeNames.FONTTYPE_SUBASTA))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1663, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1663=Subasta cancelada por falta de ofertas.
         'Devolver item antes de resetear datos
         Call DevolverItem
         Exit Sub
@@ -1920,22 +1920,22 @@ Private Sub SubastaTimer_Timer()
     
     If Subasta.TiempoRestanteSubasta > 0 And Subasta.PosibleCancelo = False Then
         If Subasta.TiempoRestanteSubasta = 240 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1664, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1664=¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
             Subasta.MinutosDeSubasta = "4"
         End If
         If Subasta.TiempoRestanteSubasta = 180 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1665, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1665=¡Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
             Subasta.MinutosDeSubasta = "3"
         End If
 
         If Subasta.TiempoRestanteSubasta = 120 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1666, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1666=¡Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
             Subasta.MinutosDeSubasta = "2"
         End If
 
         If Subasta.TiempoRestanteSubasta = 60 Then
             Subasta.MinutosDeSubasta = "1"
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1667, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1667=¡Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
         End If
         Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta - 1
     End If

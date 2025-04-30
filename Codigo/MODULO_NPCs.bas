@@ -256,10 +256,10 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 182                             If QuestList(.QuestIndex).RequiredNPC(j).NpcIndex = MiNPC.Numero Then
 184                                 If QuestList(.QuestIndex).RequiredNPC(j).amount >= .NPCsKilled(j) Then
 186                                     .NPCsKilled(j) = .NPCsKilled(j) + 1 '
-188                                     Call WriteConsoleMsg(UserIndex, MiNPC.Name & " matados/as: " & .NPCsKilled(j) & " de " & QuestList(.QuestIndex).RequiredNPC(j).amount, e_FontTypeNames.FONTTYPE_INFOIAO)
+188                                     Call WriteLocaleMsg(UserIndex, 1623, e_FontTypeNames.FONTTYPE_INFOIAO, MiNPC.name & "¬" & .NPCsKilled(j) & "¬" & QuestList(.QuestIndex).RequiredNPC(j).amount) 'Msg1623=¬1 matados/as: ¬2 de ¬3
 190                                     Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.Name, UserList(UserIndex).Char.CharIndex, RGB(180, 180, 180))
                                     Else
-192                                     Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.name & " que la misión " & QuestList(.QuestIndex).nombre & " requería. Revisa si ya estás listo para recibir la recompensa.", e_FontTypeNames.FONTTYPE_INFOIAO)
+192                                     Call WriteLocaleMsg(UserIndex, 1624, e_FontTypeNames.FONTTYPE_INFOIAO, MiNPC.name & "¬" & QuestList(.QuestIndex).nombre) 'Msg1624=Ya has matado todos los ¬1 que la misión ¬2 requería. Revisa si ya estás listo para recibir la recompensa.
 194                                     Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & QuestList(.QuestIndex).RequiredNPC(j).amount & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.Name, UserList(UserIndex).Char.CharIndex, RGB(180, 180, 180))
                                     End If
                                 End If
@@ -286,7 +286,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
 210     If NpcIndex = npc_index_evento Then
 212         BusquedaNpcActiva = False
-214         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> El NPC ha sido asesinado.", e_FontTypeNames.FONTTYPE_CITIZEN))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1549", vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN)) ' Msg1549=Evento> El NPC ha sido asesinado.
             npc_index_evento = 0
         End If
         
@@ -1085,7 +1085,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As t_WorldPos, ByVal FX As Bool
         End If
 
 142     If Avisar Then
-144         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(NpcList(nIndex).name & " ha aparecido en " & get_map_name(Map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.", e_FontTypeNames.FONTTYPE_CITIZEN))
+144         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1548", NpcList(nIndex).name & "¬" & get_map_name(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
         End If
 
 146     SpawnNpc = nIndex

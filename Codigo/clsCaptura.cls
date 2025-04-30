@@ -131,9 +131,9 @@ Public Sub PasarSegundo()
         tiempo_espera = tiempo_espera - 1
 
         If tiempo_espera Mod 30 = 0 And tiempo_espera > 5 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» En " & tiempo_espera & " segundos se cierran las inscripciones para el evento captura de bandera, escribe /PARTICIPAR para anotarte.", e_FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1680, tiempo_espera, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1680=Eventos» En ¬1 segundos se cierran las inscripciones para el evento captura de bandera, escribe /PARTICIPAR para anotarte.
         ElseIf tiempo_espera <= 5 And tiempo_espera > 0 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» Cerramos inscripciones en " & tiempo_espera & ".", e_FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1681, tiempo_espera, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1681=Eventos» Cerramos inscripciones en ¬1 segundos.
         ElseIf tiempo_espera = 0 Then
 
             If participantes.Count < max_participantes / 2 Then
@@ -143,7 +143,7 @@ Public Sub PasarSegundo()
                     Call finalizarCaptura(-2)
                 Else
                     tiempo_espera = 30
-                    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» Se extendieron las inscripciones por falta de participantes.", e_FontTypeNames.FONTTYPE_GUILD))
+                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1682, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1682=Eventos» Se extendieron las inscripciones por falta de participantes.
 
                 End If
 
@@ -307,7 +307,7 @@ Private Sub iniciarCaptura()
 
     End If
 
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» El evento captura la bandera ha iniciado.", e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1683, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1683=Eventos» El evento captura la bandera ha iniciado.
 
     Dim sortedParticipantes As Collection
 
@@ -591,10 +591,9 @@ Public Sub finalizarCaptura(Optional Team As Integer = -1)
     Estado = Finalizado
 
     If Team = -2 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» Se ha cancelado el evento de captura la bandera por falta de participantes.", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1684, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1684=Eventos» Se ha cancelado el evento de captura la bandera por falta de participantes.
     ElseIf Team = -1 Then 'Se aborto el evento
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» El evento de captura la bandera ha sido cancelado. Se te ha devuelto el precio de inscripción.", e_FontTypeNames.FONTTYPE_GUILD))
-
+       Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1685, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1685=Eventos» El evento de captura la bandera ha sido cancelado. Se te ha devuelto el precio de inscripción.
         For Each participante In participantes
 
             If participante.IsValid Then
@@ -606,7 +605,7 @@ Public Sub finalizarCaptura(Optional Team As Integer = -1)
         Next participante
 
     ElseIf Team = 0 Then 'Hubo empate
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» ¡El evento de captura la bandera ha terminado en empate!.", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1686, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1686=Eventos» ¡El evento de captura la bandera ha terminado en empate!
     Else
 
         ' La recompensa para cada ganador será su inscripción de vuelta + el precio de inscripción de un perdedor
@@ -629,7 +628,7 @@ Public Sub finalizarCaptura(Optional Team As Integer = -1)
 
         Next participante
 
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> ¡El evento de captura la bandera ha terminado! Ganador el equipo " & colorEquipo(team) & ".", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1687, colorEquipo(team), e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1687=Eventos> ¡El evento de captura la bandera ha terminado! Ganador el equipo ¬1.
 
     End If
 
@@ -670,7 +669,7 @@ Public Function inicializar(ByVal MaxParticipantes As Long, _
                             ByVal NivelMaximo, _
                             ByVal precio_ As Long) As Boolean
     'Agregar random en comando para que no lo macreen rr-magax
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» Se ha iniciado un Captura de la bandera de " & MaxParticipantes & " participantes, el precio de inscripción es de " & PonerPuntos(precio_) & ", el nivel mínimo para ingresar es " & NivelMinimo & " y el maximo es " & NivelMaximo & ", para participar envía /PARTICIPAR Las inscripciones se cerraran en 3 minutos.", e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1688, MaxParticipantes & "¬" & PonerPuntos(precio_) & "¬" & NivelMinimo & "¬" & NivelMaximo, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1688=Eventos» Se ha iniciado un Captura de la bandera de ¬1 participantes, el precio de inscripción es de ¬2, el nivel mínimo para ingresar es ¬3 y el máximo es ¬4, para participar envía /PARTICIPAR Las inscripciones se cerrarán en 3 minutos.
     max_participantes = MaxParticipantes
     cantidad_rondas = CantidadRondas
     nivel_minimo = NivelMinimo
