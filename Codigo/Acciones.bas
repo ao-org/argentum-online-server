@@ -698,7 +698,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         End Select
                     
 316                     UserList(UserIndex).flags.pregunta = 3
-318                     Call WritePreguntaBox(UserIndex, "¿Te gustaria ser ciudadano de " & DeDonde & "?")
+318                     Call WritePreguntaBox(UserIndex, 1592, DeDonde)
                 
                     End If
                 ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.EntregaPesca Then
@@ -722,7 +722,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     
                     If PuntosTotales > 0 Then
 319                     UserList(UserIndex).flags.pregunta = 5
-                        Call WritePreguntaBox(UserIndex, "Tienes un total de " & PuntosTotales & " puntos y " & PonerPuntos(OroTotal * 1.2) & " monedas de oro para reclamar, ¿Desea aceptar?")
+                        Call WritePreguntaBox(UserIndex, 1593, PuntosTotales & "¬" & PonerPuntos(OroTotal * 1.2)) 'Msg1593= Tienes un total de ¬1 puntos y ¬2 monedas de oro para reclamar, ¿Deseas aceptar?
                     Else
                         Dim charIndexstr As Integer
                         charIndexStr = str(NpcList(TempCharIndex).Char.charindex)

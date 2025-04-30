@@ -3726,7 +3726,7 @@ WriteShowFrmMapa_Err:
         
 End Sub
 
-Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal MsgID As Integer, Optional ByVal Param As String = "")
+Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal MsgID As Integer, Optional ByVal Param As String = vbNullString)
     On Error GoTo WritePreguntaBox_Err
 
     Call Writer.WriteInt16(ServerPacketID.eShowPregunta)
