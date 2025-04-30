@@ -1441,8 +1441,7 @@ Private Sub Command2_Click()
         
         On Error GoTo Command2_Click_Err
         
-100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & BroadMsg.Text, e_FontTypeNames.FONTTYPE_SERVER))
-
+100     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1660, BroadMsg.Text, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1660=Servidor » ¬1
         
         Exit Sub
 
@@ -1941,7 +1940,8 @@ Private Sub SubastaTimer_Timer()
     End If
     
     If Subasta.TiempoRestanteSubasta = 1 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡La subasta a terminado! El ganador fue: " & Subasta.Comprador, e_FontTypeNames.FONTTYPE_SUBASTA))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1668, Subasta.Comprador, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1668=¡La subasta ha terminado! El ganador fue: ¬1
+
         Call FinalizarSubasta
     End If
     Call PerformTimeLimitCheck(PerformanceTimer, "SubastaTimer_Timer")
