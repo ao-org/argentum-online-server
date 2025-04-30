@@ -2087,8 +2087,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
                 Dim BonusExp As Long
 146             BonusExp = 5& * SvrConfig.GetValue("ExpMult")
         
-'Msg1313= ¡Has ganado ¬1 puntos de experiencia!
-Call WriteLocaleMsg(UserIndex, "1313", e_FontTypeNames.FONTTYPE_INFOIAO, BonusExp)
+                Call WriteLocaleMsg(UserIndex, "1313", e_FontTypeNames.FONTTYPE_INFOIAO, BonusExp) 'Msg1313= ¡Has ganado ¬1 puntos de experiencia!
                 
 152             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
 154                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + BonusExp

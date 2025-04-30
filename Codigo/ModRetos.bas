@@ -679,7 +679,8 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                 Next
             
                 ' Anuncio global
-164             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » " & Equipo1 & " vs " & Equipo2 & ". Ninguno pudo vencer a su rival.", e_FontTypeNames.FONTTYPE_INFO))
+164             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1670, Equipo1 & "¬" & Equipo2, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1670=Retos » ¬1 vs ¬2. Ninguno pudo vencer a su rival.
+
 166             Call SalaLiberada(Sala)
             ' Hubo un ganador
             Else

@@ -82,7 +82,8 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 154       If Damage < 0 Then Damage = 0
 156       IsAlive = UserMod.DoDamageOrHeal(UserIndex, npcIndex, eNpc, -Damage, e_DamageSourceType.e_magic, Spell) = eStillAlive
 157       DamageStr = PonerPuntos(Damage)
-158       Call WriteConsoleMsg(UserIndex, NpcList(npcIndex).name & " te ha quitado " & DamageStr & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)
+158       Call WriteLocaleMsg(UserIndex, 1627, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr) 'Msg1627=¬1 te ha quitado ¬2 puntos de vida.
+
 162       Call SubirSkill(UserIndex, Resistencia)
           If NpcList(npcIndex).Char.CastAnimation > 0 Then Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageCharAtaca(NpcList(npcIndex).Char.charindex, UserList(UserIndex).Char.charindex, DamageStr, NpcList(npcIndex).Char.CastAnimation))
         End If
@@ -104,7 +105,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 174       .Stats.MinMAN = MinimoInt(.Stats.MinMAN + Damage, .Stats.MaxMAN)
 
 176       Call WriteUpdateMana(UserIndex)
-178       Call WriteConsoleMsg(UserIndex, NpcList(npcIndex).name & " te ha restaurado " & Damage & " puntos de mana.", e_FontTypeNames.FONTTYPE_INFO)
+178       Call WriteLocaleMsg(UserIndex, 1628, e_FontTypeNames.FONTTYPE_INFO, NpcList(NpcIndex).name & "¬" & Damage) 'Msg1628=¬1 te ha restaurado ¬2 puntos de maná.
 
 180     ElseIf Hechizos(Spell).SubeMana = 2 Then
 182       Damage = RandomNumber(Hechizos(Spell).MinMana, Hechizos(Spell).MaxMana)
@@ -112,7 +113,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 184       .Stats.MinMAN = MaximoInt(.Stats.MinMAN - Damage, 0)
 
 186       Call WriteUpdateMana(UserIndex)
-188       Call WriteConsoleMsg(UserIndex, NpcList(npcIndex).name & " te ha quitado " & Damage & " puntos de mana.", e_FontTypeNames.FONTTYPE_INFO)
+188       Call WriteLocaleMsg(UserIndex, 1629, e_FontTypeNames.FONTTYPE_INFO, NpcList(NpcIndex).name & "¬" & Damage) 'Msg1629=¬1 te ha quitado ¬2 puntos de maná.
         End If
 
 190     If Hechizos(Spell).SubeAgilidad = 1 Then
@@ -203,7 +204,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 286         .flags.Incinerado = 1
 288         .Counters.Incineracion = Hechizos(Spell).Duration
 
-290         Call WriteConsoleMsg(UserIndex, "Has sido incinerado por " & NpcList(NpcIndex).Name & ".", e_FontTypeNames.FONTTYPE_FIGHT)
+290         Call WriteLocaleMsg(UserIndex, 1630, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name) 'Msg1630=Has sido incinerado por ¬1.
           End If
         End If
 
@@ -211,7 +212,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 294       If .flags.Envenenado = 0 Then
 296         .flags.Envenenado = Hechizos(Spell).Envenena
 298         .Counters.Veneno = Hechizos(Spell).Duration
-300         Call WriteConsoleMsg(UserIndex, "Has sido envenenado por " & NpcList(NpcIndex).Name & ".", e_FontTypeNames.FONTTYPE_FIGHT)
+300         Call WriteLocaleMsg(UserIndex, 1631, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name) 'Msg1631=Has sido envenenado por ¬1.
           End If
         End If
 
@@ -223,14 +224,14 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 320       If .flags.Estupidez = 0 Then
 322         .flags.Estupidez = IsSet(Hechizos(Spell).Effects, e_SpellEffects.Dumb)
 324         .Counters.Estupidez = Hechizos(Spell).Duration
-326         Call WriteConsoleMsg(UserIndex, "Has sido estupidizado por " & NpcList(NpcIndex).Name & ".", e_FontTypeNames.FONTTYPE_FIGHT)
+326         Call WriteLocaleMsg(UserIndex, 1632, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name) 'Msg1632=Has sido estupidizado por ¬1.
 328         Call WriteDumb(UserIndex)
           End If
 330     ElseIf IsSet(Hechizos(Spell).Effects, e_SpellEffects.RemoveDumb) Then
 332       If .flags.Estupidez > 0 Then
 334         .flags.Estupidez = 0
 336         .Counters.Estupidez = 0
-338         Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).Name & " te removio la estupidez.", e_FontTypeNames.FONTTYPE_FIGHT)
+338         Call WriteLocaleMsg(UserIndex, 1633, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name) 'Msg1633=¬1 te removió la estupidez.
 340         Call WriteDumbNoMore(UserIndex)
           End If
         End If
@@ -637,7 +638,7 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
               If Not IsObjecIndextInInventory(UserIndex, Hechizos(HechizoIndex).NecesitaObj) And _
                  Not IsObjecIndextInInventory(UserIndex, Hechizos(HechizoIndex).NecesitaObj2) Then
                     If Not IsObjecIndextInInventory(UserIndex, Hechizos(HechizoIndex).NecesitaObj) And Not IsObjecIndextInInventory(UserIndex, Hechizos(HechizoIndex).NecesitaObj2) Then
-                        Call WriteConsoleMsg(UserIndex, "Necesitas un " & ObjData(Hechizos(HechizoIndex).NecesitaObj).name & " para lanzar el hechizo.", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, 1634, e_FontTypeNames.FONTTYPE_INFO, ObjData(Hechizos(HechizoIndex).NecesitaObj).name) 'Msg1634=Necesitas un ¬1 para lanzar el hechizo.
                         Exit Function
                     End If
                 End If
@@ -687,18 +688,18 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
                 Cooldown = Cooldown * 1000
 132             If .Counters.UserHechizosInterval(Slot) + Cooldown > Actual Then
 134                 SegundosFaltantes = Int((.Counters.UserHechizosInterval(Slot) + Cooldown - Actual) / 1000)
-136                 Call WriteConsoleMsg(UserIndex, "Debes esperar " & SegundosFaltantes & " segundos para volver a tirar este hechizo.", e_FontTypeNames.FONTTYPE_WARNING)
+136                 Call WriteLocaleMsg(UserIndex, 1635, e_FontTypeNames.FONTTYPE_WARNING, SegundosFaltantes) 'Msg1635=Debes esperar ¬1 segundos para volver a tirar este hechizo.
                     Exit Function
                 End If
             End If
 
 138         If .Stats.UserSkills(e_Skill.Magia) < Hechizos(HechizoIndex).MinSkill Then
-140             Call WriteConsoleMsg(UserIndex, "No tenes suficientes puntos de magia para lanzar este hechizo, necesitas " & Hechizos(HechizoIndex).MinSkill & " puntos.", e_FontTypeNames.FONTTYPE_INFO)
+140             Call WriteLocaleMsg(UserIndex, 1636, e_FontTypeNames.FONTTYPE_INFO, Hechizos(HechizoIndex).MinSkill) 'Msg1636=No tienes suficientes puntos de magia para lanzar este hechizo, necesitas ¬1 puntos.
                 Exit Function
             End If
 
 142         If .Stats.MinHp < Hechizos(HechizoIndex).RequiredHP Then
-144             Call WriteConsoleMsg(UserIndex, "No tenes suficiente vida. Necesitas " & Hechizos(HechizoIndex).RequiredHP & " puntos de vida.", e_FontTypeNames.FONTTYPE_INFO)
+144             Call WriteLocaleMsg(UserIndex, 1637, e_FontTypeNames.FONTTYPE_INFO, Hechizos(HechizoIndex).RequiredHP) 'Msg1637=No tienes suficiente vida. Necesitas ¬1 puntos de vida.
                 Exit Function
             End If
             
@@ -911,8 +912,7 @@ Call WriteLocaleMsg(UserIndex, "785", e_FontTypeNames.FONTTYPE_INFO)
                     
                     ' No puede invocar en este mapa
                     If MapInfo(.Pos.Map).NoMascotas Then
-'Msg786= Un gran poder te impide invocar criaturas en este mapa.
-Call WriteLocaleMsg(UserIndex, "786", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, "786", e_FontTypeNames.FONTTYPE_INFO) 'Msg786= Un gran poder te impide invocar criaturas en este mapa.
                         Exit Sub
                     End If
                 
@@ -2019,7 +2019,7 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
             
             ' Si no esta envenenado, no hay nada mas que hacer
 342         If UserList(tU).flags.Envenenado = 0 Then
-344             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " no está envenenado, el hechizo no tiene efecto.", e_FontTypeNames.FONTTYPE_INFOIAO)
+344             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " no está envenenado, el hechizo no tiene efecto.", e_FontTypeNames.FONTTYPE_INFOIAO)
 346             b = False
                 Exit Sub
             End If
@@ -2103,7 +2103,7 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
             End If
             
             If UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
-                Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " no puede volver a ser paralizado tan rápido.", e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteConsoleMsg(UserIndex, UserList(tU).name & " no puede volver a ser paralizado tan rápido.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
             If Not UserMod.CanMove(UserList(tU).flags, UserList(tU).Counters) Then
@@ -2216,7 +2216,7 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
             End If
             
             If UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
-515             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " no puede volver a ser inmovilizado tan rápido.", e_FontTypeNames.FONTTYPE_FIGHT)
+515             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " no puede volver a ser inmovilizado tan rápido.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
             
@@ -2561,7 +2561,7 @@ Sub checkHechizosEfectividad(ByVal UserIndex As Integer, ByVal TargetUser As Int
             efectividad = (100 * .Counters.controlHechizos.HechizosCasteados) / .Counters.controlHechizos.HechizosTotales
             
             If efectividad >= 50 And .Counters.controlHechizos.HechizosTotales >= 6 Then
-                Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("El usuario " & .Name & " está lanzando hechizos con una efectividad de " & efectividad & "% (Casteados: " & .Counters.controlHechizos.HechizosCasteados & "/" & .Counters.controlHechizos.HechizosTotales & "), revisar.", e_FontTypeNames.FONTTYPE_TALK))
+                Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1638, .name & "¬" & efectividad & "¬" & .Counters.controlHechizos.HechizosCasteados & "¬" & .Counters.controlHechizos.HechizosTotales, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1638=El usuario ¬1 está lanzando hechizos con una efectividad de ¬2% (Casteados: ¬3/¬4), revisar.
             End If
             
             Debug.Print "El usuario " & .Name & " está lanzando hechizos con una efectividad de " & efectividad & "% (Casteados: " & .Counters.controlHechizos.HechizosCasteados & "/" & .Counters.controlHechizos.HechizosTotales & "), revisar."

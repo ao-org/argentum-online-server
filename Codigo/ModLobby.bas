@@ -407,7 +407,7 @@ On Error GoTo AddPlayerOrGroup_Err
 138                 If IsValidUserRef(.Grupo.Miembros(i)) Then
 140                     AddPlayerOrGroup = CanPlayerJoin(instance, .Grupo.Miembros(i).ArrayIndex)
 142                     If Not AddPlayerOrGroup.Success Then
-                            Call WriteConsoleMsg(UserIndex, UserList(.Grupo.Miembros(i).ArrayIndex).name & ": no puede participar, motivo: ", e_FontTypeNames.FONTTYPE_New_Verde_Oscuro)
+                            Call WriteLocaleMsg(UserIndex, 1604, UserList(.Grupo.Miembros(i).ArrayIndex).name, e_FontTypeNames.FONTTYPE_New_Verde_Oscuro) 'Msg1604= ¬1: no puede participar, motivo: 'ver ReyarB
                             Call WriteLocaleMsg(UserIndex, AddPlayerOrGroup.Message, e_FontTypeNames.FONTTYPE_INFO)
 150                         Exit Function
                         End If
@@ -786,14 +786,14 @@ End Function
 
 Public Sub StartLobby(ByRef instance As t_Lobby, ByVal UserIndex As Integer)
     If Instance.State = Initialized And UserIndex >= 0 Then
-        Call WriteConsoleMsg(UserIndex, "El evento ya fue iniciado.", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, 1605, e_FontTypeNames.FONTTYPE_INFO) 'Msg1605= El evento ya fue iniciado.
         Exit Sub
     End If
     If (Instance.TeamSize > 1 Or Instance.TeamType = eFixedTeamCount) And Instance.TeamType = eRandom Then
         Call SortTeams(instance)
     End If
     Call ModLobby.UpdateLobbyState(instance, e_LobbyState.InProgress)
-    If UserIndex >= 0 Then Call WriteConsoleMsg(UserIndex, "Evento iniciado", e_FontTypeNames.FONTTYPE_INFO)
+    If UserIndex >= 0 Then Call WriteLocaleMsg(UserIndex, 1606, e_FontTypeNames.FONTTYPE_INFO) 'Msg1606= Evento iniciado
 End Sub
 
 Public Function HandleRemoteLobbyCommand(ByVal Command, ByVal Params As String, ByVal UserIndex As Integer, ByVal LobbyIndex As Integer) As Boolean
@@ -987,17 +987,18 @@ End Function
 
 Public Function ValidateLobbySettings(ByVal UserIndex As Integer, ByRef LobbySettings As t_NewScenearioSettings)
     If LobbySettings.MaxPlayers > NumUsers Then
-        Call WriteConsoleMsg(UserIndex, "Hay pocos jugadores en el servidor, intenta con una cantidad menor de participantes.", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, 1607, e_FontTypeNames.FONTTYPE_INFO) 'Msg1607= Hay pocos jugadores en el servidor, intenta con una cantidad menor de participantes.
+
         Exit Function
     End If
     
     If LobbySettings.MinLevel < 1 Or LobbySettings.MaxLevel > 47 Then
-        Call WriteConsoleMsg(UserIndex, "El nivel para el evento debe ser entre 1 y 47.", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, 1608, e_FontTypeNames.FONTTYPE_INFO) 'Msg1608= El nivel para el evento debe ser entre 1 y 47.
         Exit Function
     End If
     
     If LobbySettings.MinLevel > LobbySettings.MaxLevel Then
-        Call WriteConsoleMsg(UserIndex, "El nivel minimo debe ser menor al maximo.", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, 1609, e_FontTypeNames.FONTTYPE_INFO) 'Msg1609= El nivel mínimo debe ser menor al máximo.
         Exit Function
     End If
     ValidateLobbySettings = True
@@ -1008,7 +1009,7 @@ Public Sub CreatePublicEvent(ByVal UserIndex As Integer, ByRef LobbySettings As 
     
     LobbyId = GetAvailableLobby()
     If LobbyId < 0 Then
-        Call WriteConsoleMsg(UserIndex, "No se pudo encontrar una sala disponible.", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, 1610, e_FontTypeNames.FONTTYPE_INFO) 'Msg1610= No se pudo encontrar una sala disponible.
         Exit Sub
     End If
     If Not ValidateLobbySettings(UserIndex, LobbySettings) Then
@@ -1022,6 +1023,6 @@ Public Sub CreatePublicEvent(ByVal UserIndex As Integer, ByRef LobbySettings As 
     addPlayerResult = ModLobby.AddPlayerOrGroup(LobbyList(LobbyId), UserIndex, LobbySettings.Password)
     If Not addPlayerResult.Success Then
         Call CancelLobby(LobbyList(LobbyId))
-        Call WriteConsoleMsg(UserIndex, "Se cancelo la sala que creaste porque no cumples los requisitos para participar.", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, 1611, e_FontTypeNames.FONTTYPE_INFO) 'Msg1611= Se canceló la sala que creaste porque no cumples los requisitos para participar.
     End If
 End Sub
