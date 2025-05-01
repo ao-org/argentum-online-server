@@ -765,7 +765,7 @@ Sub CheckIdleUser()
 104             UserList(iUserIndex).Counters.IdleCount = UserList(iUserIndex).Counters.IdleCount + 1
 
 106             If UserList(iUserIndex).Counters.IdleCount >= IdleLimit Then
-108                 Call WriteShowMessageBox(iUserIndex, "Demasiado tiempo inactivo. Has sido desconectado...")
+108                 Call WriteShowMessageBox(iUserIndex, 1775, vbNullString) 'Msg1775=Demasiado tiempo inactivo. Has sido desconectado...
 
                     'mato los comercios seguros
 110                 If IsValidUserRef(UserList(iUserIndex).ComUsu.DestUsu) Then

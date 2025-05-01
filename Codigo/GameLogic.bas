@@ -135,8 +135,7 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
                         'Lo sacamos.
 142                     If UserList(OtherUserIndex).flags.UserLogged Then
 144                         Call FinComerciarUsu(OtherUserIndex)
-146                         Call WriteShowMessageBox(OtherUserIndex, "Alguien se ha conectado donde te encontrabas, por favor reconéctate...")
-                        
+146                         Call WriteShowMessageBox(OtherUserIndex, 1758, vbNullString) 'Msg1758=Alguien se ha conectado donde te encontrabas, por favor reconéctate...
 
                         End If
 
@@ -1680,7 +1679,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 502                                         If QuestList(.QuestIndex).RequiredTargetNPC(j).amount = .NPCsTarget(j) Then
 504                                             Call FinishQuest(UserIndex, .QuestIndex, i)
 506                                             Call WriteUpdateNPCSimbolo(UserIndex, TempCharIndex, 1)
-508                                             Call WriteLocaleChatOverHead(UserIndex, "1353", "", NpcList(TempCharIndex).Char.charindex, vbYellow) ' Msg1353=¡Quest Finalizada!
+508                                             Call WriteLocaleChatOverHead(UserIndex, "1353", "", NpcList(TempCharIndex).Char.charIndex, vbYellow) ' Msg1353=¡Quest Finalizada!
 510                                             ' Msg494=Quest Finalizada!
                                                 Call WriteLocaleMsg(UserIndex, "494", e_FontTypeNames.FONTTYPE_INFOIAO)
 

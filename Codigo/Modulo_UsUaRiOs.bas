@@ -158,7 +158,7 @@ On Error GoTo Check_ConnectUser_Err
     ConnectUser_Check = False
     'Controlamos no pasar el maximo de usuarios
     If NumUsers >= MaxUsers Then
-        Call WriteShowMessageBox(userIndex, "El servidor ha alcanzado el maximo de usuarios soportado, por favor vuelva a intertarlo mas tarde.")
+        Call WriteShowMessageBox(UserIndex, 1759, vbNullString) 'Msg1759=El servidor ha alcanzado el máximo de usuarios soportado, por favor vuelva a intentarlo más tarde.
         Call CloseSocket(userIndex)
         Exit Function
     End If
@@ -172,7 +172,7 @@ On Error GoTo Check_ConnectUser_Err
     End If
     
     If Not EsGM(userIndex) And ServerSoloGMs > 0 Then
-        Call WriteShowMessageBox(userIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
+        Call WriteShowMessageBox(UserIndex, 1760, vbNullString) 'Msg1760=Servidor restringido a administradores. Por favor reintente en unos momentos.
         Call CloseSocket(userIndex)
         Exit Function
     End If
@@ -192,15 +192,15 @@ On Error GoTo Check_ConnectUser_Err
             If Not IsValidUserRef(tIndex) Then
                 Call CloseSocket(tIndex.ArrayIndex)
             ElseIf IsFeatureEnabled("override_same_ip_connection") And .ConnectionDetails.IP = UserList(tIndex.ArrayIndex).ConnectionDetails.IP Then
-                Call WriteShowMessageBox(tIndex.ArrayIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
+                Call WriteShowMessageBox(tIndex.ArrayIndex, 1761, vbNullString) 'Msg1761=Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.
                 Call CloseSocket(tIndex.ArrayIndex)
             Else
                 If UserList(tIndex.ArrayIndex).Counters.Saliendo Then
-                    Call WriteShowMessageBox(UserIndex, "El personaje está saliendo.")
+                    Call WriteShowMessageBox(UserIndex, 1762, vbNullString) 'Msg1762=El personaje está saliendo.
                 Else
-                    Call WriteShowMessageBox(UserIndex, "El personaje ya está conectado. Espere mientras es desconectado.")
+                    Call WriteShowMessageBox(UserIndex, 1763, vbNullString) 'Msg1763=El personaje ya está conectado. Espere mientras es desconectado.
                     ' Le avisamos al usuario que está jugando, en caso de que haya uno
-                    Call WriteShowMessageBox(tIndex.ArrayIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
+                    Call WriteShowMessageBox(tIndex.ArrayIndex, 1761, vbNullString) 'Msg1761=Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.
                 End If
             Call CloseSocket(UserIndex)
             Exit Function
@@ -211,9 +211,9 @@ On Error GoTo Check_ConnectUser_Err
         If MaxUsersPorCuenta > 0 Then
             If ContarUsuariosMismaCuenta(.AccountID) >= MaxUsersPorCuenta Then
                 If MaxUsersPorCuenta = 1 Then
-                    Call WriteShowMessageBox(UserIndex, "Ya hay un usuario conectado con esta cuenta.")
+                    Call WriteShowMessageBox(UserIndex, 1764, vbNullString) 'Msg1764=Ya hay un usuario conectado con esta cuenta.
                 Else
-                    Call WriteShowMessageBox(UserIndex, "La cuenta ya alcanzó el máximo de " & MaxUsersPorCuenta & " usuarios conectados.")
+                    Call WriteShowMessageBox(UserIndex, 1765, MaxUsersPorCuenta) 'Msg1765=La cuenta ya alcanzó el máximo de ¬1 usuarios conectados.
                 End If
                 Call CloseSocket(UserIndex)
                 Exit Function
@@ -473,7 +473,7 @@ On Error GoTo Complete_ConnectUser_Err
             ' -----------------------------------------------------------------------
             
 520         If Not ValidateChr(UserIndex) Then
-525             Call WriteShowMessageBox(UserIndex, "Error en el personaje. Comuniquese con el staff.")
+525             Call WriteShowMessageBox(UserIndex, 1766, vbNullString) 'Msg1766=Error en el personaje. Comuniquese con el staff.
 530             Call CloseSocket(UserIndex)
                 Exit Function
 
@@ -780,8 +780,7 @@ On Error GoTo Complete_ConnectUser_Err
              End If
 
 1100        If LenB(.LastGuildRejection) <> 0 Then
-1105            Call WriteShowMessageBox(UserIndex, "Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: " & .LastGuildRejection)
-
+1105            Call WriteShowMessageBox(UserIndex, 1767, .LastGuildRejection) 'Msg1767=Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: ¬1
                 .LastGuildRejection = vbNullString
                 
                 Call SaveUserGuildRejectionReason(.Name, vbNullString)

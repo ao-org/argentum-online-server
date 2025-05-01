@@ -1210,14 +1210,15 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
         UserName = AO20CryptoSysWrapper.DECRYPT(cnvHexStrFromString(UserList(UserIndex).public_key), encrypted_username)
     
 126     If PuedeCrearPersonajes = 0 Then
-128         Call WriteShowMessageBox(UserIndex, "La creacion de personajes en este servidor se ha deshabilitado.")
+128         Call WriteShowMessageBox(UserIndex, 1776, vbNullString) 'Msg1776=La creación de personajes en este servidor se ha deshabilitado.
 130         Call CloseSocket(UserIndex)
             Exit Sub
 
         End If
 
 132     If aClon.MaxPersonajes(UserList(UserIndex).ConnectionDetails.IP) Then
-134         Call WriteShowMessageBox(UserIndex, "Has creado demasiados personajes.")
+134         Call WriteShowMessageBox(UserIndex, 1777, vbNullString) 'Msg1777=Has creado demasiados personajes.
+
 136         Call CloseSocket(UserIndex)
             Exit Sub
 
@@ -1226,7 +1227,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
 148     If EsGmChar(UserName) Then
             
 150         If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
-152             Call WriteShowMessageBox(UserIndex, "El nombre de usuario ingresado está siendo ocupado por un miembro del Staff.")
+152             Call WriteShowMessageBox(UserIndex, 1778, vbNullString) 'Msg1778=El nombre de usuario ingresado está siendo ocupado por un miembro del Staff.
 154             Call CloseSocket(UserIndex)
                 Exit Sub
 
@@ -1249,7 +1250,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
         max_pc_for_tier = MaxCharacterForTier(user_tier)
         Debug.Assert max_pc_for_tier > 0
         If num_pc >= Min(max_pc_for_tier, MAX_PERSONAJES) Then
-            Call WriteShowMessageBox(UserIndex, "You need to upgrade your account to create more characters, please visit https://www.patreon.com/nolandstudios")
+            Call WriteShowMessageBox(UserIndex, 1779, vbNullString) 'Msg1779=You need to upgrade your account to create more characters, please visit https://www.patreon.com/nolandstudios
             Call CloseSocket(userindex)
             Exit Sub
         End If
@@ -1291,14 +1292,15 @@ Private Sub HandleLoginNewChar(ByVal userindex As Integer)
 118     Hogar = Reader.ReadInt()
 
 126     If PuedeCrearPersonajes = 0 Then
-128         Call WriteShowMessageBox(userindex, "La creacion de personajes en este servidor se ha deshabilitado.")
+128         Call WriteShowMessageBox(UserIndex, 1780, vbNullString) 'Msg1780=La creación de personajes en este servidor se ha deshabilitado.
 130         Call CloseSocket(userindex)
             Exit Sub
 
         End If
 
 132     If aClon.MaxPersonajes(UserList(UserIndex).ConnectionDetails.IP) Then
-134         Call WriteShowMessageBox(userindex, "Has creado demasiados personajes.")
+134         Call WriteShowMessageBox(UserIndex, 1781, vbNullString) 'Msg1781=Has creado demasiados personajes.
+
 136         Call CloseSocket(userindex)
             Exit Sub
 
@@ -2552,7 +2554,7 @@ Private Sub HandleUseSpellMacro(ByVal UserIndex As Integer)
     Exit Sub
 #End If
 102         Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg(.name & " fue expulsado por Anti-macro de hechizos", e_FontTypeNames.FONTTYPE_VENENO))
-104         Call WriteShowMessageBox(UserIndex, "Has sido expulsado por usar macro de hechizos. Recomendamos leer el reglamento sobre el tema macros")
+104         Call WriteShowMessageBox(UserIndex, 1782, vbNullString) 'Msg1782=Has sido expulsado por usar macro de hechizos. Recomendamos leer el reglamento sobre el tema macros.
         
 106         Call CloseSocket(UserIndex)
 
@@ -3246,7 +3248,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 End If
                             
                                 ''FUISTE
-594                             Call WriteShowMessageBox(UserIndex, "Has sido expulsado por el sistema anti cheats.")
+594                             Call WriteShowMessageBox(UserIndex, 1783, vbNullString) 'Msg1783=Has sido expulsado por el sistema anti cheats.
                             
 596                             Call CloseSocket(UserIndex)
                                 Exit Sub
