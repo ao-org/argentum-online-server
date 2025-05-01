@@ -1360,7 +1360,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
             Else
 136             If LenB(chat) <> 0 Then
                     
-                    ' WyroX: Foto-denuncias - Push message
+                    '  Foto-denuncias - Push message
                     Dim i As Long
 140                 For i = 1 To UBound(.flags.ChatHistory) - 1
 142                     .flags.ChatHistory(i) = .flags.ChatHistory(i + 1)
@@ -1463,7 +1463,7 @@ Call WriteLocaleMsg(UserIndex, "1116", e_FontTypeNames.FONTTYPE_INFO, .flags.Min
                 Else
 
 140                 If LenB(chat) <> 0 Then
-                        ' WyroX: Foto-denuncias - Push message
+                        '  Foto-denuncias - Push message
                         Dim i As Long
 144                     For i = 1 To UBound(.flags.ChatHistory) - 1
 146                         .flags.ChatHistory(i) = .flags.ChatHistory(i + 1)
@@ -5736,7 +5736,7 @@ Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
             If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "GuildMessage", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
        
 104         If LenB(chat) <> 0 Then
-                ' WyroX: Foto-denuncias - Push message
+                '  Foto-denuncias - Push message
                 Dim i As Integer
 
 108             For i = 1 To UBound(.flags.ChatHistory) - 1
@@ -5819,7 +5819,7 @@ Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
 102             chat = Reader.ReadString8()
         
 104         If LenB(chat) <> 0 Then
-                ' WyroX: Foto-denuncias - Push message
+                '  Foto-denuncias - Push message
                 Dim i As Long
 108             For i = 1 To UBound(.flags.ChatHistory) - 1
 110                 .flags.ChatHistory(i) = .flags.ChatHistory(i + 1)
@@ -7689,7 +7689,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 102         Cantidad = Reader.ReadInt32()
 104         UserName = Reader.ReadString8()
 
-            ' WyroX: Chequeos de seguridad... Estos chequeos ya se hacen en el cliente, pero si no se hacen se puede duplicar oro...
+            '  Chequeos de seguridad... Estos chequeos ya se hacen en el cliente, pero si no se hacen se puede duplicar oro...
 
             ' Cantidad válida?
 106         If Cantidad <= 0 Then Exit Sub
@@ -8999,7 +8999,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 102         Destino = Reader.ReadInt8()
 104         costo = Reader.ReadInt32()
 
-            ' WyroX: WTF el costo lo decide el cliente... Desactivo....
+            '  WTF el costo lo decide el cliente... Desactivo....
             Exit Sub
 
 106         If costo <= 0 Then Exit Sub

@@ -205,7 +205,7 @@ Sub WorldSave()
 
         Dim Porc  As Long
 
-100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Iniciando WorldSave", e_FontTypeNames.FONTTYPE_SERVER))
+100     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1732", vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1732=Servidor » Iniciando WorldSave
 
 102     Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
 
@@ -230,7 +230,7 @@ Sub WorldSave()
 
 124     FrmStat.Visible = False
 
-126     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » WorldSave ha concluído", e_FontTypeNames.FONTTYPE_SERVER))
+126     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1733, vbNullString, e_FontTypeNames.FONTTYPE_SERVER))
 
         Exit Sub
         

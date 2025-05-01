@@ -47,7 +47,7 @@ Private ClosestDistance As Single
 
 Private Const MAXINT As Integer = 32767
 
-' WyroX: Usada para mover memoria... VB6 es un desastre en cuanto a contenedores dinámicos
+'  Usada para mover memoria... VB6 es un desastre en cuanto a contenedores dinámicos
 Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDest As Any, pSource As Any, ByVal Length As Long)
 
 Public Sub InitPathFinding()

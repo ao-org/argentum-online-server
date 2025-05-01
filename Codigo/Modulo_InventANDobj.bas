@@ -394,7 +394,7 @@ Public Sub DropObjQuest(ByRef npc As t_Npc, ByRef UserIndex As Integer)
                                 'Call TirarItemAlPiso(npc.Pos, Dropeo)
                                 'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
 
-                                ' WyroX: Ahora te lo da en el inventario, si hay espacio, y el sonido lo escuchas vos solo
+                                '  Ahora te lo da en el inventario, si hay espacio, y el sonido lo escuchas vos solo
 120                             Call MeterItemEnInventario(UserIndex, Dropeo)
 122                             Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
                             End If

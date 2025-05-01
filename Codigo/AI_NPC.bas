@@ -27,7 +27,7 @@ Attribute VB_Name = "AI"
 '
 Option Explicit
 
-' WyroX: Hardcodeada de la vida...
+'  Hardcodeada de la vida...
 Public Const FUEGOFATUO      As Integer = 964
 Public Const ELEMENTAL_VIENTO      As Integer = 963
 Public Const ELEMENTAL_FUEGO      As Integer = 962

@@ -965,7 +965,7 @@ Private Sub tControlHechizos_Timer()
         
 End Sub
 
-' WyroX: Comprobamos cada 10 segundos, porque no es necesaria tanta precisión
+'  Comprobamos cada 10 segundos, porque no es necesaria tanta precisión
 Private Sub TiempoRetos_Timer()
 
 On Error GoTo Handler
@@ -1547,7 +1547,7 @@ Private Sub EstadoTimer_Timer()
     Call PerformanceTestStart(PerformanceTimer)
     For i = 1 To Baneos.Count
         If Baneos(i).FechaLiberacion <= Now Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", e_FontTypeNames.FONTTYPE_SERVER))
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", e_FontTypeNames.FONTTYPE_SERVER))
             Call UnBan(Baneos(i).Name)
             Call Baneos.Remove(i)
             Call SaveBans
@@ -1995,7 +1995,7 @@ ErrorHandler:
 End Sub
 
 Private Sub TimerMeteorologia_Timer()
-    'Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Timer de lluvia en :" & TimerMeteorologico, e_FontTypeNames.FONTTYPE_SERVER))
+    'Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1741, TimerMeteorologico, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1741=Servidor > Timer de lluvia en : ¬1
         
     On Error GoTo TimerMeteorologia_Timer_Err
         
@@ -2132,7 +2132,7 @@ Private Sub tPiqueteC_Timer()
         If UserList(i).flags.UserLogged Then
             If MapData(UserList(i).Pos.Map, UserList(i).Pos.X, UserList(i).Pos.Y).trigger = e_Trigger.ANTIPIQUETE Then
                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
-                'WyroX: Le empiezo a avisar a partir de los 18 segundos, para no spamear
+                ' Le empiezo a avisar a partir de los 18 segundos, para no spamear
                 If UserList(i).Counters.PiqueteC > 3 Then
                     Call WriteLocaleMsg(i, "70", e_FontTypeNames.FONTTYPE_INFO)
                 End If
@@ -2140,7 +2140,7 @@ Private Sub tPiqueteC_Timer()
                 If UserList(i).Counters.PiqueteC > 10 Then
                     UserList(i).Counters.PiqueteC = 0
                     'Call Encarcelar(i, TIEMPO_CARCEL_PIQUETE)
-                    'WyroX: En vez de encarcelarlo, lo sacamos del juego.
+                    ' En vez de encarcelarlo, lo sacamos del juego.
                     'Ojo! No sï¿½ si se puede abusar de esto para evitar los 10 segundos al salir
                     Call WriteDisconnect(i)
                     Call CloseSocket(i)

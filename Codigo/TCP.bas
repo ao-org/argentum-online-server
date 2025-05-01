@@ -692,12 +692,12 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
     
 168         Call ClearClothes(.char)
 
-            ' WyroX: Vida inicial
+            '  Vida inicial
 174         .Stats.MaxHp = .Stats.UserAtributos(e_Atributos.Constitucion)
 176         .Stats.MinHp = .Stats.MaxHp
 177         .Stats.Shield = 0
 
-            ' WyroX: Maná inicial
+            '  Maná inicial
 178         .Stats.MaxMAN = .Stats.UserAtributos(e_Atributos.Inteligencia) * ModClase(.clase).ManaInicial
 180         .Stats.MinMAN = .Stats.MaxMAN
         

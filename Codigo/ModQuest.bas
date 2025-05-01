@@ -263,7 +263,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             'Ordenamos las quests
 294         Call ArrangeUserQuests(UserIndex)
 
-            'Se agrega que el usuario ya hizo esta quest. - WyroX: La agrego aunque sea repetible, para llevar el control
+            'Se agrega que el usuario ya hizo esta quest. -  La agrego aunque sea repetible, para llevar el control
 298         Call AddDoneQuest(UserIndex, QuestIndex)
 
 300         If .Repetible = 0 Then

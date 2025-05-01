@@ -73,7 +73,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
                 Exit Sub
                 
 106         ElseIf Cantidad > MAX_INVENTORY_OBJS Then
-108             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserList(UserIndex).Name & " ha sido baneado por el sistema anti-cheats.", e_FontTypeNames.FONTTYPE_FIGHT))
+108             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1746, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1746=¬1 ha sido baneado por el sistema anti-cheats.
 110             Call Ban(UserList(UserIndex).Name, "Sistema Anti Cheats", "Intentar hackear el sistema de comercio. Quiso comprar demasiados items:" & Cantidad)
 112             UserList(UserIndex).flags.Ban = 1
 114             Call WriteShowMessageBox(UserIndex, "Has sido baneado por el Sistema AntiCheat.")
