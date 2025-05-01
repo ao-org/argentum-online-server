@@ -480,7 +480,7 @@ Public Sub HandleGoNearby(ByVal UserIndex As Integer)
                                             Exit Sub
                                         End If
 128                                     If LegalPos(UserList(tUser.ArrayIndex).pos.map, x, y, True, True) Then
-                                            Call WriteLocaleMsg(UserIndex, "1472", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1472=Te teletransportaste cerca de ¬1.
+                                            Call WriteLocaleMsg(UserIndex, "1472", e_FontTypeNames.FONTTYPE_INFO, UserList(tUser.ArrayIndex).name) ' Msg1472=Te teletransportaste cerca de ¬1.
 132                                         Call WarpUserChar(userIndex, UserList(tUser.ArrayIndex).pos.map, x, y, True)
 134                                         Found = True
                                             Exit For
