@@ -1512,7 +1512,7 @@ Public Sub SwapNpcPos(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos,
 End Sub
 
 Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) As Boolean
-        ' 20/01/2021 - WyroX: Lo convierto a función y saco los WritePosUpdate, ahora están en el paquete
+        ' Lo convierto a función y saco los WritePosUpdate, ahora están en el paquete
 
         On Error GoTo MoveUserChar_Err
 
@@ -2006,7 +2006,7 @@ End Function
 Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Optional ByVal AffectsOwner As Boolean = True)
         On Error GoTo NPCAtacado_Err
         
-        ' WyroX: El usuario pierde la protección
+        '  El usuario pierde la protección
 100     UserList(UserIndex).Counters.TiempoDeInmunidad = 0
 102     UserList(UserIndex).flags.Inmunidad = 0
 
@@ -2840,7 +2840,7 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
 104     If .flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero) Then
    
 106         If .Faccion.Status = e_Facciones.Armada Then
-                ' WyroX: NUNCA debería pasar, pero dejo un log por si las...
+                '  NUNCA debería pasar, pero dejo un log por si las...
                 Call TraceError(111, "Un personaje de la Armada Real atacó un ciudadano.", "UsUaRiOs.VolverCriminal")
                 'Call ExpulsarFaccionReal(UserIndex)
             End If

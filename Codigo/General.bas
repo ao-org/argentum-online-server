@@ -99,7 +99,7 @@ Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integ
         'toMap = false -> Envia los datos al user
         'Unifique los tres parametros (sndIndex,sndMap y map) en sndIndex... pero de todas formas, el mapa jamas se indica.. eso esta bien asi?
         'Puede llegar a ser, que se quiera mandar el mapa, habria que agregar un nuevo parametro y modificar.. lo quite porque no se usaba ni aca ni en el cliente :s
-        ' WyroX: Uso bloqueo parcial
+        '  Uso bloqueo parcial
         On Error GoTo Bloquear_Err
         ' Envío sólo los flags de bloq
 100     b = b And e_Block.ALL_SIDES
@@ -986,7 +986,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
 100     If Not Intemperie(UserIndex) Then Exit Sub
 102     With UserList(UserIndex)
 104         If .Invent.ArmourEqpObjIndex > 0 Then
-                ' WyroX: Ropa invernal
+                '  Ropa invernal
 106             If ObjData(.Invent.ArmourEqpObjIndex).Invernal Then Exit Sub
             End If
 108         If .Counters.Frio < IntervaloFrio Then
@@ -995,7 +995,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
 112             If MapInfo(.Pos.Map).terrain = Nieve Then
 114                 ' Msg512=¡Estás muriendo de frío, abrígate o morirás!
                     Call WriteLocaleMsg(UserIndex, "512", e_FontTypeNames.FONTTYPE_INFO)
-                    ' WyroX: Sin ropa perdés vida más rápido que con una ropa no-invernal
+                    '  Sin ropa perdés vida más rápido que con una ropa no-invernal
                     Dim MinDamage As Integer, MaxDamage As Integer
 116                 If .flags.Desnudo = 0 Then
 118                     MinDamage = 17
@@ -1005,7 +1005,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
 124                     MaxDamage = 33
                     End If
 
-                    ' WyroX: Agrego aleatoriedad
+                    '  Agrego aleatoriedad
                     Dim Damage As Integer
 126                 Damage = Porcentaje(.Stats.MaxHp, RandomNumber(MinDamage, MaxDamage))
 128                 If UserMod.ModifyHealth(UserIndex, -Damage, 0) Then
@@ -2333,12 +2333,12 @@ Public Function RunningInVB(Optional ByRef b As Boolean = True) As Boolean
 100     If b Then Debug.Assert Not RunningInVB(RunningInVB) Else b = True
 End Function
 
-' WyroX: Mensaje a todo el mundo
+'  Mensaje a todo el mundo
 Public Sub MensajeGlobal(texto As String, Fuente As e_FontTypeNames)
 100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(texto, Fuente))
 End Sub
 
-' WyroX: Devuelve si X e Y están dentro del Rectangle
+'  Devuelve si X e Y están dentro del Rectangle
 Public Function InsideRectangle(R As t_Rectangle, ByVal X As Integer, ByVal Y As Integer) As Boolean
 100     If X < R.X1 Then Exit Function
 102     If X > R.X2 Then Exit Function

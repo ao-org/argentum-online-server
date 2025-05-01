@@ -439,7 +439,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
     
 136             If (MapData(map, X, y).TileExit.map > 0) And (MapData(map, X, y).TileExit.map <= NumMaps) Then
     
-                    ' WyroX: Restricciones de mapas
+                    '  Restricciones de mapas
 138                 If CheckMapRestrictions(UserIndex, MapData(map, X, y).TileExit.map) Then
 140                     If EsMapaInterdimensional(MapData(map, X, y).TileExit.map) And Not EsMapaInterdimensional(.pos.map) Then
 142                         .flags.ReturnPos = .pos
@@ -1617,7 +1617,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 'End If
             
 458             If Len(NpcList(TempCharIndex).Desc) > 1 Then
-                    ' WyroX: Hacemos que se detenga a hablar un momento :P
+                    '  Hacemos que se detenga a hablar un momento :P
 460                 If NpcList(TempCharIndex).Movement = Caminata Then
 462                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 + Len(NpcList(TempCharIndex).Desc) * 50 - NpcList(TempCharIndex).IntervaloMovimiento ' 5 segundos + 1 segundo cada 20 caracteres
                     End If
@@ -1974,11 +1974,11 @@ Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As 
 172         .Char.CascoAnim = NingunCasco
 173         .char.CartAnim = NoCart
 
-            ' WyroX: Vida inicial
+            '  Vida inicial
 174         .Stats.MaxHp = .Stats.UserAtributos(e_Atributos.Constitucion)
 176         .Stats.MinHp = .Stats.MaxHp
 
-            ' WyroX: Maná inicial
+            '  Maná inicial
 178         .Stats.MaxMAN = .Stats.UserAtributos(e_Atributos.Inteligencia) * ModClase(.clase).ManaInicial
 180         .Stats.MinMAN = .Stats.MaxMAN
 

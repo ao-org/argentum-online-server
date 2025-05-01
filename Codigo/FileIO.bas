@@ -1749,7 +1749,7 @@ Sub LoadOBJData()
         
             End With
             
-            ' WyroX: Cada 10 objetos revivo la interfaz
+            '  Cada 10 objetos revivo la interfaz
 642         If Object Mod 10 = 0 Then DoEvents
         
 644     Next Object
@@ -2106,7 +2106,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 296                         NpcList(npcIndex).pos.map = map
 298                         NpcList(npcIndex).pos.x = NPCs(i).x
 300                         NpcList(npcIndex).pos.y = NPCs(i).y
-                            ' WyroX: guardo siempre la pos original... puede sernos útil ;)
+                            '  guardo siempre la pos original... puede sernos útil ;)
 302                         NpcList(npcIndex).Orig = NpcList(npcIndex).pos
     
 304                         If LenB(NpcList(npcIndex).Name) = 0 Then
@@ -2135,7 +2135,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
         End With
 330     Close fh
 
-        ' WyroX: Nuevo sistema de restricciones
+        '  Nuevo sistema de restricciones
 332     If Not IsNumeric(MapDat.restrict_mode) Then
             ' Solo se usaba el "NEWBIE"
 334         If UCase$(MapDat.restrict_mode) = "NEWBIE" Then

@@ -692,7 +692,7 @@ Sub GiveRewards()
 142                 Next j
 144                 RewardStr = ", ganaron " & PonerPuntos(Reward) & " Modenas de oro cada uno."
                 End If
-146             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(i & ") " & Teams(Ranking(i).PlayerIndex) & ": " & Ranking(i).Score & " puntos" & RewardStr, e_FontTypeNames.FONTTYPE_GUILD))
+146             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1744, i & "¬" & Teams(Ranking(i).PlayerIndex) & "¬" & Ranking(i).Score & "¬" & RewardStr, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1744=¬1) ¬2: ¬3 puntos¬4
 148         Next i
         Else
 150         Ranking = Board.GetRanking(3)

@@ -842,7 +842,7 @@ Public Sub TirarItemsEnPos(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y 
 126                     If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
 128                         Call DropObj(UserIndex, i, MiObj.amount, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
                         
-                        ' WyroX: Si no hay lugar, quemamos el item del inventario (nada de mochilas gratis)
+                        '  Si no hay lugar, quemamos el item del inventario (nada de mochilas gratis)
                         Else
 130                         Call QuitarUserInvItem(UserIndex, i, MiObj.amount)
 132                         Call UpdateUserInv(False, UserIndex, i)

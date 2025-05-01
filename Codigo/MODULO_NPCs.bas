@@ -1070,7 +1070,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As t_WorldPos, ByVal FX As Bool
 126     X = NpcList(nIndex).Pos.X
 128     Y = NpcList(nIndex).Pos.Y
 
-        ' WyroX: Asignamos el dueño
+        '  Asignamos el dueño
 130     Call SetUserRef(NpcList(nIndex).MaestroUser, MaestroUser)
         
 132     NpcList(nIndex).Orig = NpcList(nIndex).Pos
