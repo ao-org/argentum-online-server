@@ -48,8 +48,8 @@ Public Sub HandleOnline(ByVal UserIndex As Integer)
     
             
 135         If EsGM(UserIndex) Then
-                Call WriteLocaleMsg(UserIndex, "1468", e_FontTypeNames.FONTTYPE_INFOIAO)  ' Msg1468=Número de usuarios: ¬1 conectados.
-                Call WriteLocaleMsg(UserIndex, "1469", e_FontTypeNames.FONTTYPE_INFOIAO)  ' Msg1469=Record de usuarios en simultaneo: ¬1.
+                Call WriteLocaleMsg(UserIndex, "1468", e_FontTypeNames.FONTTYPE_INFOIAO, Count) ' Msg1468=Número de usuarios: ¬1 conectados.
+                Call WriteLocaleMsg(UserIndex, "1469", e_FontTypeNames.FONTTYPE_INFOIAO, RecordUsuarios) ' Msg1469=Record de usuarios en simultaneo: ¬1.
             Else
                 ' Msg526=Comando deshabilitado para tu rango.
                 Call WriteLocaleMsg(UserIndex, "526", e_FontTypeNames.FONTTYPE_INFOIAO)
