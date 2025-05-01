@@ -232,7 +232,7 @@ Private Sub StartGame()
     Next key
     LastFrameTime = GetTickCount()
     BroadCastInterval = 60000
-    Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg("Que inicie la caceria!!!", e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1730, "", e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1730=¡Que inicie la cacería!
 End Sub
 
 Private Sub IBaseScenario_PlayerKillNpc(ByVal npcIndex As Integer, ByVal userIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
@@ -245,7 +245,8 @@ Private Sub IBaseScenario_PlayerKillNpc(ByVal npcIndex As Integer, ByVal userInd
         If MatchNpc.Exists(NPCtype) Then
             If board.UpdatePlayerScore(UserIndex, MatchNpc.Item(npcType).Score) >= TargetScore Then
                 LobbyList(LobbyIndex).State = Completed
-                Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg("Tenemos un ganador!", e_FontTypeNames.FONTTYPE_GUILD))
+                Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1731, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1731=¡Tenemos un ganador!
+
                 Call MatchComplete
                 Exit Sub
             End If

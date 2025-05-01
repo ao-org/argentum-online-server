@@ -789,18 +789,18 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                   End If
 
                   If eloDiff > 0 Then
-                    Call SendData(SendTarget.ToIndex, tUser.ArrayIndex, PrepareMessageConsoleMsg("Has ganado " & Abs(eloDiff) & " puntos de ELO!", e_FontTypeNames.FONTTYPE_ROSA))
+                    Call SendData(SendTarget.ToIndex, tUser.ArrayIndex, PrepareMessageLocaleMsg(1695, Abs(eloDiff), e_FontTypeNames.FONTTYPE_ROSA)) 'Msg1695=Has ganado ¬1 puntos de ELO!
                   Else
 272                 If UserList(tUser.ArrayIndex).Stats.ELO < Abs(eloDiff) Then
 274                   eloDiff = -UserList(tUser.ArrayIndex).Stats.ELO
                     End If
 
-                    Call SendData(SendTarget.ToIndex, tUser.ArrayIndex, PrepareMessageConsoleMsg("Has perdido " & Abs(eloDiff) & " puntos de ELO!", e_FontTypeNames.FONTTYPE_ROSA))
+                    Call SendData(SendTarget.ToIndex, tUser.ArrayIndex, PrepareMessageLocaleMsg(1696, Abs(eloDiff), e_FontTypeNames.FONTTYPE_ROSA)) 'Msg1696=Has perdido ¬1 puntos de ELO!
                   End If
 
 276               UserList(tUser.ArrayIndex).Stats.ELO = UserList(tUser.ArrayIndex).Stats.ELO + eloDiff
                 Else ' Alguno es menor a level 35
-                  Call SendData(SendTarget.ToIndex, tUser.ArrayIndex, PrepareMessageConsoleMsg("Al menos un participante del reto tiene nivel menor a 35, tu ELO permanece igual.", e_FontTypeNames.FONTTYPE_INFOIAO))
+                  Call SendData(SendTarget.ToIndex, tUser.ArrayIndex, PrepareMessageLocaleMsg(1697, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) 'Msg1697=Al menos un participante del reto tiene nivel menor a 35, tu ELO permanece igual.
                 End If
               End If
 

@@ -3726,22 +3726,22 @@ WriteShowFrmMapa_Err:
         
 End Sub
 
+Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal MsgID As Integer, Optional ByVal Param As String = vbNullString)
+    On Error GoTo WritePreguntaBox_Err
 
-Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal Message As String)
-        
-        On Error GoTo WritePreguntaBox_Err
-        
-100     Call Writer.WriteInt16(ServerPacketID.eShowPregunta)
-102     Call Writer.WriteString8(Message)
-104     Call modSendData.SendData(ToIndex, UserIndex)
-        
-        Exit Sub
+    Call Writer.WriteInt16(ServerPacketID.eShowPregunta)
+    Call Writer.WriteInt16(MsgID)           ' Enviar el ID
+    Call Writer.WriteString8(Param)          ' Enviar el parámetro (puede ser vacío)
+    Call modSendData.SendData(ToIndex, UserIndex)
+    
+    Exit Sub
 
 WritePreguntaBox_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePreguntaBox", Erl)
-        
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePreguntaBox", Erl)
 End Sub
+
+
 
 Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
         

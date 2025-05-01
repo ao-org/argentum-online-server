@@ -234,7 +234,9 @@ Public Sub PerderTesoro()
         
 134         BusquedaTesoroActiva = True
 136         Call MakeObj(TesoroRegalo(RandomNumber(1, UBound(TesoroRegalo))), TesoroNumMapa, TesoroX, TesoroY, False)
-138         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1678, get_map_name(TesoroNumMapa) & "¬" & TesoroNumMapa, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1678=Eventos> Rondan rumores que hay un tesoro enterrado en el mapa: ¬1(¬2) ¿Quien sera el afortunado que lo encuentre?
+
+138         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1567, get_map_name(TesoroNumMapa) & "¬" & TesoroNumMapa, e_FontTypeNames.FONTTYPE_TALK))  'Msg1699=Eventos> Rondan rumores que hay un tesoro enterrado en el mapa: ¬1(¬2) ¿Quien será el afortunado que lo encuentre?
+
 140         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno 257
 
         
@@ -285,7 +287,9 @@ Public Sub PerderRegalo()
 
 134     BusquedaRegaloActiva = True
 136     Call MakeObj(RegaloRegalo(RandomNumber(1, UBound(RegaloRegalo))), RegaloNumMapa, RegaloX, RegaloY, False)
-138     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1679, get_map_name(RegaloNumMapa) & "¬" & RegaloNumMapa, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1679=Eventos> De repente ha surgido un item maravilloso en el mapa: ¬1(¬2) ¿Quien sera el valiente que lo encuentre? ¡MUCHO CUIDADO!
+
+138     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1568, get_map_name(RegaloNumMapa) & "¬" & RegaloNumMapa, e_FontTypeNames.FONTTYPE_TALK))  'Msg1700=Eventos> De repente ha surgido un item maravilloso en el mapa: ¬1(¬2) ¿Quien será el valiente que lo encuentre? ¡MUCHO CUIDADO!
+
 140     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(497, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
 
 

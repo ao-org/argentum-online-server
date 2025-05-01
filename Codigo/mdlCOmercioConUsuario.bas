@@ -65,7 +65,8 @@ Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino
 128         Call SetUserRef(UserList(Destino).flags.targetUser, Origen)
     
 130         UserList(Destino).flags.pregunta = 4
-132         Call WritePreguntaBox(Destino, UserList(Origen).Name & " desea comerciar contigo. ¿Aceptás?")
+132         Call WritePreguntaBox(Destino, 1594, UserList(Origen).name) 'Msg1594= ¬1 desea comerciar contigo. ¿Aceptás?
+
     
         End If
 
@@ -234,13 +235,17 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
 120     UserList(UserIndex).ComUsu.Acepto = True
 
 122     If UserList(OtroUserIndex).ComUsu.Acepto = False Then
-124         Call WriteConsoleMsg(UserIndex, "El otro usuario aun no ha aceptado tu oferta.", e_FontTypeNames.FONTTYPE_TALK)
+124         'Call WriteConsoleMsg(UserIndex, "El otro usuario aun no ha aceptado tu oferta.", e_FontTypeNames.FONTTYPE_TALK)
+            Call WriteLocaleMsg(UserIndex, 1596, e_FontTypeNames.FONTTYPE_TALK) 'Msg1596= El otro usuario aún no ha aceptado tu oferta.
             Exit Sub
 
         End If
 
 126     If UserList(UserIndex).ComUsu.Oro > UserList(UserIndex).Stats.GLD Then
-128         Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad.", e_FontTypeNames.FONTTYPE_TALK)
+128         'Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad.", e_FontTypeNames.FONTTYPE_TALK)'ver ReyarB
+            Call WriteLocaleMsg(UserIndex, 1597, e_FontTypeNames.FONTTYPE_TALK) 'Msg1597= No tienes esa cantidad.
+
+
 130         TerminarAhora = True
         End If
     

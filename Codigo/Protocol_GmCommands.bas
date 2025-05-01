@@ -2154,7 +2154,7 @@ Public Sub HandleKick(ByVal UserIndex As Integer)
 116                     ' Msg558=No podes echar a alguien con jerarquia mayor a la tuya.
                         Call WriteLocaleMsg(UserIndex, "558", e_FontTypeNames.FONTTYPE_INFO)
                     Else
-118                     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(.name & " echo a " & username & ".", e_FontTypeNames.FONTTYPE_INFO))
+118                     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1702, .name & "¬" & username, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1702=Servidor » ¬1 echo a ¬2.
 120                     Call CloseSocket(tUser.ArrayIndex)
 122                     Call LogGM(.name, "Echo a " & username)
                     End If
@@ -4318,7 +4318,7 @@ Public Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
         
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 116             If DesbanearCuenta(UserIndex, UserNameOEmail) Then
-118                 Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg("Servidor » " & .name & " ha desbaneado la cuenta de " & UserNameOEmail & ".", e_FontTypeNames.FONTTYPE_SERVER))
+118                 Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1703, .name & "¬" & UserNameOEmail, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1703=Servidor » ¬1 ha desbaneado la cuenta de ¬2.
                 Else
                     ' Msg556=No se ha podido desbanear la cuenta.
                     Call WriteLocaleMsg(UserIndex, "556", e_FontTypeNames.FONTTYPE_INFO)
@@ -4348,7 +4348,7 @@ Public Sub HandleCerrarCliente(ByVal UserIndex As Integer)
 110                 ' Msg557=El usuario no esta online.
                     Call WriteLocaleMsg(UserIndex, "557", e_FontTypeNames.FONTTYPE_INFO)
                 Else
-112                 Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(.name & " cerro el cliente de " & username & ".", e_FontTypeNames.FONTTYPE_INFO))
+112                 Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1704, .name & "¬" & username, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1704=¬1 cerro el cliente de ¬2.
 114                 Call WriteCerrarleCliente(tUser.ArrayIndex)
 116                 Call LogGM(.name, "Cerro el cliene de:" & username)
                 End If

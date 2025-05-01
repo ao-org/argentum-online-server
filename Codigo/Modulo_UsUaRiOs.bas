@@ -228,7 +228,8 @@ On Error GoTo Check_ConnectUser_Err
         End If
         
         If EsGM(UserIndex) Then
-            Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg("Servidor » " & name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
+            Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1706, name, e_FontTypeNames.FONTTYPE_INFOBOLD)) 'Msg1706=Servidor » ¬1 se conecto al juego.
+
             Call LogGM(name, "Se conectó con IP: " & .ConnectionDetails.IP)
         End If
     End With
