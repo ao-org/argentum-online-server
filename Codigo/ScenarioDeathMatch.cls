@@ -404,13 +404,13 @@ Public Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal de
     Call Board.UpdatePlayerScore(deadIndex, -1)
     If killerIndex <> deadIndex Then
         If Board.UpdatePlayerScore(killerIndex, 3) >= TargetScore Then
-            Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg("Tenemos un ganador!", e_FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1889, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1889=¡Tenemos un ganador!
             Call MatchCompleted
         End If
         If GlobalFrameTime - UserList(deadIndex).flags.LastAttackedByUserTime < AssistDamageValidTime Then
             If IsValidUserRef(UserList(deadIndex).flags.LastAttacker) And UserList(deadIndex).flags.LastAttacker.ArrayIndex <> killerIndex Then
                 If Board.UpdatePlayerScore(UserList(deadIndex).flags.LastAttacker.ArrayIndex, 1) >= TargetScore Then
-                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg("Tenemos un ganador!", e_FontTypeNames.FONTTYPE_GUILD))
+                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1889, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1889=¡Tenemos un ganador!
                     Call MatchCompleted
                 End If
             End If
@@ -428,7 +428,7 @@ Public Sub IBaseScenario_Update()
                 If CountdownTimer.Occurrences >= 10 Then
                     Call StartGame
                 Else
-                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg("La matanza iniciara en " & 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD))
+                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1890, (10 - CountdownTimer.Occurrences), e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1890=La matanza iniciará en ¬1 minutos.
                 End If
             End If
             Exit Sub
@@ -437,7 +437,8 @@ Public Sub IBaseScenario_Update()
         Call RespawnItems(frametime)
         ElapsedTime = ElapsedTime + frametime
         If ElapsedTime > MaxTime Then
-            Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg("Se acabo el tiempo!", e_FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1881, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1881=¡Se acabó el tiempo!
+
             Call MatchCompleted
         Else
             If UpdateTime(BroadCastTimer, frametime) Then
@@ -453,7 +454,7 @@ Public Sub IBaseScenario_Update()
                 If CountdownTimer.Occurrences >= 10 Then
                     Call CloseScenario
                 Else
-                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg("El mapa se cerrara en " & 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD))
+                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1882, 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1882=El mapa se cerrará en ¬1
                 End If
             End If
             Exit Sub
@@ -478,7 +479,7 @@ Private Sub StartGame()
     Call SetTimer(BroadCastTimer, 60000)
     Call SetTimer(ScoreBroadcastTimer, 20000)
     LastFrameTime = GetTickCount()
-    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg("Que inicie la masacre!!!", e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1893, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1893=¡Que inicie la masacre!
     ElapsedTime = 0
     Call LimitFightArea
     Dim i As Integer
@@ -545,7 +546,7 @@ Private Sub BroadcastPendingTime(ByVal frametime As Long)
         Exit Sub
     ElseIf pendingTime >= 60 Then
         pendingTime = pendingTime / 60
-        Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg("quedan " & pendingTime & " minutos.", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1894, CStr(pendingTime), e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1894=Quedan ¬1 minutos.
     ElseIf pendingTime <= 10 Then
         Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg(pendingTime, e_FontTypeNames.FONTTYPE_GUILD))
     End If

@@ -2944,8 +2944,8 @@ Call WriteLocaleMsg(UserIndex, "906", e_FontTypeNames.FONTTYPE_INFO)
 1138                 If obj.Real Then '¿Es el Cuerno Real?
 1140                     If FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
 1142                         If MapInfo(.Pos.Map).Seguro = 1 Then
-'Msg907= No hay Peligro aquí. Es Zona Segura
-Call WriteLocaleMsg(UserIndex, "907", e_FontTypeNames.FONTTYPE_INFO)
+                                    'Msg907= No hay Peligro aquí. Es Zona Segura
+                                    Call WriteLocaleMsg(UserIndex, "907", e_FontTypeNames.FONTTYPE_INFO)
                                       Exit Sub
     
                                   End If
@@ -2953,8 +2953,8 @@ Call WriteLocaleMsg(UserIndex, "907", e_FontTypeNames.FONTTYPE_INFO)
 1146                         Call SendData(SendTarget.toMap, .Pos.Map, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                                   Exit Sub
                               Else
-'Msg908= Solo Miembros de la Armada Real pueden usar este cuerno.
-Call WriteLocaleMsg(UserIndex, "908", e_FontTypeNames.FONTTYPE_INFO)
+                                    'Msg908= Solo Miembros de la Armada Real pueden usar este cuerno.
+                                    Call WriteLocaleMsg(UserIndex, "908", e_FontTypeNames.FONTTYPE_INFO)
                                   Exit Sub
     
                               End If
@@ -2963,8 +2963,8 @@ Call WriteLocaleMsg(UserIndex, "908", e_FontTypeNames.FONTTYPE_INFO)
     
 1152                     If FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
 1154                         If MapInfo(.Pos.Map).Seguro = 1 Then
-'Msg909= No hay Peligro aquí. Es Zona Segura
-Call WriteLocaleMsg(UserIndex, "909", e_FontTypeNames.FONTTYPE_INFO)
+                                    'Msg909= No hay Peligro aquí. Es Zona Segura
+                                    Call WriteLocaleMsg(UserIndex, "909", e_FontTypeNames.FONTTYPE_INFO)
                                       Exit Sub
     
                                   End If
@@ -2972,8 +2972,8 @@ Call WriteLocaleMsg(UserIndex, "909", e_FontTypeNames.FONTTYPE_INFO)
 1158                         Call SendData(SendTarget.toMap, .Pos.Map, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                                   Exit Sub
                               Else
-'Msg910= Solo Miembros de la Legión Oscura pueden usar este cuerno.
-Call WriteLocaleMsg(UserIndex, "910", e_FontTypeNames.FONTTYPE_INFO)
+                                    'Msg910= Solo Miembros de la Legión Oscura pueden usar este cuerno.
+                                    Call WriteLocaleMsg(UserIndex, "910", e_FontTypeNames.FONTTYPE_INFO)
                                   Exit Sub
     
                               End If
@@ -2989,8 +2989,8 @@ Call WriteLocaleMsg(UserIndex, "910", e_FontTypeNames.FONTTYPE_INFO)
                      If .invent.Object(Slot).objIndex <> iObjTrajeAltoNw And .invent.Object(Slot).objIndex <> iObjTrajeBajoNw And .invent.Object(Slot).objIndex <> iObjTraje Then
 1166                     If .clase = e_Class.Trabajador Or .clase = e_Class.Pirat Then
 1168                         If .Stats.ELV < 23 Then
-'Msg911= Para recorrer los mares debes ser nivel 23 o superior.
-Call WriteLocaleMsg(UserIndex, "911", e_FontTypeNames.FONTTYPE_INFO)
+                                    'Msg911= Para recorrer los mares debes ser nivel 23 o superior.
+                                    Call WriteLocaleMsg(UserIndex, "911", e_FontTypeNames.FONTTYPE_INFO)
                                     Exit Sub
                                 End If
                         ' Nivel mínimo 25 para navegar, si no sos pirata ni trabajador
@@ -3007,8 +3007,8 @@ Call WriteLocaleMsg(UserIndex, "911", e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     ElseIf .invent.Object(Slot).objIndex = iObjTraje Then
                           If (.flags.Navegando = 0 Or .invent.BarcoObjIndex <> iObjTraje) And MapData(.pos.Map, .pos.X + 1, .pos.y).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.X - 1, .pos.y).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.X, .pos.y + 1).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.X, .pos.y - 1).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.X + 1, .pos.y).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.X - 1, .pos.y).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.X, .pos.y + 1).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.X, .pos.y - 1).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.X + 1, .pos.y).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.X - 1, .pos.y).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.X, .pos.y + 1).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.X, .pos.y - 1).trigger <> e_Trigger.NADOBAJOTECHO Then
-'Msg914= Este traje es para zonas poco profundas.
-Call WriteLocaleMsg(UserIndex, "914", e_FontTypeNames.FONTTYPE_INFO)
+                            'Msg914= Este traje es para zonas poco profundas.
+                            Call WriteLocaleMsg(UserIndex, "914", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                     End If

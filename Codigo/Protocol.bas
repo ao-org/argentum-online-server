@@ -9649,17 +9649,13 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
             Select Case tipoMacro
             
                 Case tMacro.Coordenadas
-102                 mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de COORDENADAS."
-                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
+102                 Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1876, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1876=Control AntiCheat--> El usuario ¬1 está utilizando macro de COORDENADAS.
                 Case tMacro.dobleclick
-                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
-                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
+                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1877, UserList(UserIndex).name & "¬" & clicks, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1877=Control AntiCheat--> El usuario ¬1 está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: ¬2).
                 Case tMacro.inasistidoPosFija
-                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de INASISTIDO."
-                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
+                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1878, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1878=Control AntiCheat--> El usuario ¬1 está utilizando macro de INASISTIDO.
                 Case tMacro.borrarCartel
-                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de CARTELEO."
-                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
+                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1879, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1879=Control AntiCheat--> El usuario ¬1 está utilizando macro de CARTELEO.
             End Select
             
             
@@ -10200,8 +10196,8 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
     Valor = Reader.ReadInt32
     
     If Valor <= MinimumPriceMao Then
-'Msg1281= El valor de venta del personaje debe ser mayor que $¬1
-Call WriteLocaleMsg(UserIndex, "1281", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMao)
+        'Msg1281= El valor de venta del personaje debe ser mayor que $¬1
+        Call WriteLocaleMsg(UserIndex, "1281", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMao)
         Exit Sub
     End If
     
@@ -10211,25 +10207,25 @@ Call WriteLocaleMsg(UserIndex, "1281", e_FontTypeNames.FONTTYPE_INFO, MinimumPri
         Set RS = Query("select is_locked_in_mao from user where id = ?;", .ID)
                     
         If EsGM(UserIndex) Then
-'Msg1282= No podes vender un gm.
-Call WriteLocaleMsg(UserIndex, "1282", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1282= No podes vender un gm.
+            Call WriteLocaleMsg(UserIndex, "1282", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If CBool(RS!is_locked_in_mao) Then
-'Msg1283= El personaje ya está publicado.
-Call WriteLocaleMsg(UserIndex, "1283", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1283= El personaje ya está publicado.
+            Call WriteLocaleMsg(UserIndex, "1283", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
         If .Stats.ELV < MinimumLevelMao Then
-'Msg1284= No puedes publicar un personaje menor a nivel ¬1
-Call WriteLocaleMsg(UserIndex, "1284", e_FontTypeNames.FONTTYPE_INFO, MinimumLevelMao)
+            'Msg1284= No puedes publicar un personaje menor a nivel ¬1
+            Call WriteLocaleMsg(UserIndex, "1284", e_FontTypeNames.FONTTYPE_INFO, MinimumLevelMao)
             Exit Sub
         End If
         
         If .Stats.GLD < GoldPriceMao Then
-'Msg1291= El costo para vender tu personajes es de ¬1 monedas de oro, no tienes esa cantidad.
-Call WriteLocaleMsg(UserIndex, "1291", e_FontTypeNames.FONTTYPE_INFOBOLD, GoldPriceMao)
+            'Msg1291= El costo para vender tu personajes es de ¬1 monedas de oro, no tienes esa cantidad.
+            Call WriteLocaleMsg(UserIndex, "1291", e_FontTypeNames.FONTTYPE_INFOBOLD, GoldPriceMao)
             Exit Sub
         Else
             .Stats.GLD = .Stats.GLD - GoldPriceMao
@@ -10256,14 +10252,14 @@ Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
         If Slot > getMaxInventorySlots(UserIndex) Or Slot <= 0 Then Exit Sub
         
         If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
-'Msg1285= Solo puedes eliminar items en zona segura.
-Call WriteLocaleMsg(UserIndex, "1285", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1285= Solo puedes eliminar items en zona segura.
+            Call WriteLocaleMsg(UserIndex, "1285", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
         If UserList(UserIndex).flags.Muerto = 1 Then
-'Msg1286= No puede eliminar items cuando estas muerto.
-Call WriteLocaleMsg(UserIndex, "1286", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1286= No puede eliminar items cuando estas muerto.
+            Call WriteLocaleMsg(UserIndex, "1286", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
@@ -10272,11 +10268,11 @@ Call WriteLocaleMsg(UserIndex, "1286", e_FontTypeNames.FONTTYPE_INFO)
             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
             UserList(UserIndex).Invent.Object(Slot).ObjIndex = 0
             Call UpdateUserInv(False, UserIndex, Slot)
-'Msg1287= Objeto eliminado correctamente.
-Call WriteLocaleMsg(UserIndex, "1287", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1287= Objeto eliminado correctamente.
+            Call WriteLocaleMsg(UserIndex, "1287", e_FontTypeNames.FONTTYPE_INFO)
         Else
-'Msg1288= No puedes eliminar un objeto estando equipado.
-Call WriteLocaleMsg(UserIndex, "1288", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg1288= No puedes eliminar un objeto estando equipado.
+            Call WriteLocaleMsg(UserIndex, "1288", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
     End With

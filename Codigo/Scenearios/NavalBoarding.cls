@@ -498,7 +498,7 @@ Public Sub IBaseScenario_Update()
                 If CountdownTimer.Occurrences >= 10 Then
                     Call StartGame
                 Else
-                    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageConsoleMsg("El abordaje iniciara en " & 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD))
+                    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(1880, 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1880=El abordaje iniciará en ¬1
                 End If
             End If
             Exit Sub
@@ -511,8 +511,8 @@ Public Sub IBaseScenario_Update()
             ElapsedResapwnTime = 0
         End If
         If ElapsedTime > MaxTime Then
-            Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageConsoleMsg("Se acabo el tiempo!", e_FontTypeNames.FONTTYPE_GUILD))
-            Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageConsoleMsg("Se acabo el tiempo!", e_FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(1881, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1881=¡Se acabó el tiempo!
+            Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(1881, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1881=¡Se acabó el tiempo!
             Call CheckWinner
             Call MatchCompleted
         Else
@@ -526,8 +526,8 @@ Public Sub IBaseScenario_Update()
                 If CountdownTimer.Occurrences >= 10 Then
                     Call CloseScenario
                 Else
-                    Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageConsoleMsg("El mapa se cerrara en " & 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD))
-                    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageConsoleMsg("El mapa se cerrara en " & 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD))
+                    Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(1882, 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1882=El mapa se cerrará en ¬1
+                    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(1882, 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1882=El mapa se cerrará en ¬1
                 End If
             End If
             Exit Sub
@@ -566,7 +566,7 @@ Private Sub StartGame()
     Call SetTimer(BroadCastTimer, 60000)
     Call SetTimer(ScoreBroadcastTimer, 20000)
     LastFrameTime = GetTickCount()
-    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageConsoleMsg("Marineros al abordaje!!!", e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(1883, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1883=¡Marineros al abordaje!
     ElapsedTime = 0
     Call ConfigMapEvent
 End Sub
@@ -634,8 +634,9 @@ Private Sub BroadcastPendingTime(ByVal frametime As Long)
         Exit Sub
     ElseIf pendingTime >= 60 Then
         pendingTime = pendingTime / 60
-        Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageConsoleMsg("quedan " & pendingTime & " minutos.", e_FontTypeNames.FONTTYPE_GUILD))
-        Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageConsoleMsg("quedan " & pendingTime & " minutos.", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(1884, pendingTime, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1884=Quedan ¬1 minutos.
+        Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(1884, pendingTime, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1884=Quedan ¬1 minutos.
+
     ElseIf pendingTime <= 10 Then
         Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageConsoleMsg(pendingTime, e_FontTypeNames.FONTTYPE_GUILD))
         Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageConsoleMsg(pendingTime, e_FontTypeNames.FONTTYPE_GUILD))
