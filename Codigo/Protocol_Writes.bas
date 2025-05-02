@@ -1179,19 +1179,7 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    Message Text to be displayed in the message box.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-<<<<<<< Updated upstream
 
-
-Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal MessageID As Integer, Optional ByVal Extra As String = vbNullString)
-    On Error GoTo WriteShowMessageBox_Err
-    Dim Message As String
-
-    ' Usar Locale_Parse_ServerMessage para obtener el mensaje con valores dinámicos
-    Message = PrepareMessageLocaleMsg(MessageID, Extra, FONTTYPE_CONSEJO)
-
-    Call Writer.WriteInt16(ServerPacketID.eShowMessageBox)
-    Call Writer.WriteString8(Message)
-=======
 Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal MessageId As Integer, Optional ByVal strExtra As String = vbNullString)
     On Error GoTo WriteShowMessageBox_Err
 
@@ -1199,17 +1187,14 @@ Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal MessageId As In
     Call Writer.WriteInt16(MessageId)
     Call Writer.WriteString8(strExtra) ' Enviás los valores dinámicos si hay
 
->>>>>>> Stashed changes
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
 
 WriteShowMessageBox_Err:
     Call Writer.Clear
-<<<<<<< Updated upstream
+
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowMessageBox", Erl)
-=======
-    Call TraceError(Err.Number, Err.Description, "Protocol_Writes.WriteShowMessageBox", Erl)
->>>>>>> Stashed changes
+
 End Sub
 
 
