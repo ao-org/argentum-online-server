@@ -1774,16 +1774,17 @@ On Error GoTo GetExpForUser_Err
                 DeltaLevel = .Stats.ELV - NpcList(NpcIndex).nivel
             
                 If DeltaLevel > CInt(SvrConfig.GetValue("DeltaLevelExpPenalty")) Then
-                    ExpaDar = ExpaDar * GetExpPenalty(UserIndex, NpcIndex, DeltaLevel)
-                                                               
-                    ' Mostrar porcentaje final de experiencia como número entero
-                     Dim PorcentajeFinal As Integer
-                     PorcentajeFinal = GetExpPenalty(UserIndex, NpcIndex, DeltaLevel) * 100
+                    Dim Penalty As Single
+                    Penalty = GetExpPenalty(UserIndex, NpcIndex, DeltaLevel)
+                    ExpaDar = ExpaDar * Penalty
                      
                      ' Si tiene el chat activado, enviamos el mensaje
                      If UserList(UserIndex).ChatCombate = 1 Then
-                         'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
-                         Call WriteLocaleMsg(UserIndex, "1467", e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
+                        ' Mostrar porcentaje final de experiencia como número entero
+                        Dim PorcentajeFinal As Integer
+                        PorcentajeFinal = Penalty * 100
+                        'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
+                        Call WriteLocaleMsg(UserIndex, "1467", e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
                      End If
                 End If
             End If
@@ -1894,13 +1895,15 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                                     If NpcList(NpcIndex).nivel Then
                                         DeltaLevel = UserList(Index).Stats.ELV - NpcList(NpcIndex).nivel
                                         If DeltaLevel > CInt(SvrConfig.GetValue("DeltaLevelExpPenalty")) Then
-                                           ExpUser = ExpUser * GetExpPenalty(Index, NpcIndex, DeltaLevel)
-                                           ' Mostrar porcentaje final de experiencia como número entero
-                                            Dim PorcentajeFinal As Integer
-                                            PorcentajeFinal = GetExpPenalty(Index, NpcIndex, DeltaLevel) * 100
+                                            Dim Penalty As Single
+                                            Penalty = GetExpPenalty(Index, NpcIndex, DeltaLevel)
+                                            ExpUser = ExpUser * Penalty
                                             
                                             ' Si tiene el chat activado, enviamos el mensaje
                                             If UserList(Index).ChatCombate = 1 Then
+                                                ' Mostrar porcentaje final de experiencia como número entero
+                                                Dim PorcentajeFinal As Integer
+                                                PorcentajeFinal = Penalty * 100
                                                 'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
                                                 Call WriteLocaleMsg(Index, "1467", e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
                                             End If
