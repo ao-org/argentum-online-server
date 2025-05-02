@@ -926,7 +926,7 @@ Public Sub HandleGoToChar(ByVal UserIndex As Integer)
 134                 Call WriteConsoleMsg(tUser.ArrayIndex, .name & " se ha trasportado hacia donde te encuentras.", e_FontTypeNames.FONTTYPE_INFO)
                 End If
                 
-                Call WriteLocaleMsg(UserIndex, "1474", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1474=Te has transportado hacia ¬1.
+                Call WriteLocaleMsg(UserIndex, "1474", e_FontTypeNames.FONTTYPE_INFO, UserList(tUser.ArrayIndex).name) ' Msg1474=Te has transportado hacia ¬1.
 138             Call LogGM(.name, "/IRA " & username & " Mapa:" & UserList(tUser.ArrayIndex).pos.map & " X:" & UserList(tUser.ArrayIndex).pos.x & " Y:" & UserList(tUser.ArrayIndex).pos.y)
             Else
                 'Msg951= Servidor » Comando deshabilitado para tu cargo. solo puedes ir a Usuarios que piden SOS.
