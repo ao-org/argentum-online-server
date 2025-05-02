@@ -628,13 +628,13 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
             End If
             
 112         If Not NombrePermitido(name) Then
-114             Call WriteShowMessageBox(UserIndex, "El nombre no está permitido.")
+114             Call WriteShowMessageBox(UserIndex, 1768, vbNullString) 'Msg1768=El nombre no está permitido.
                 Exit Function
             End If
     
             '¿Existe el personaje?
 116         If PersonajeExiste(name) Then
-118             Call WriteShowMessageBox(UserIndex, "Ya existe el personaje.")
+118             Call WriteShowMessageBox(UserIndex, 1769, vbNullString) 'Msg1769=Ya existe el personaje.
                 Exit Function
             End If
             
@@ -999,7 +999,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, B
 110         Next adminIdx
             
 112         If Not laCuentaEsDeAdmin Then
-114             Call WriteShowMessageBox(UserIndex, "El servidor se encuentra habilitado solo para administradores por el momento.")
+114             Call WriteShowMessageBox(UserIndex, 1770, vbNullString) 'Msg1770=El servidor se encuentra habilitado solo para administradores por el momento.
                 Exit Function
             End If
 
@@ -1007,13 +1007,13 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, B
 
         #If DEBUGGING = 0 Then
 124         If LCase$(Md5Cliente) <> LCase$(MD5) Then
-126             Call WriteShowMessageBox(UserIndex, "Error al comprobar el cliente del juego, por favor reinstale y vuelva a intentar.")
+126             Call WriteShowMessageBox(UserIndex, 1771, vbNullString) 'Msg1771=Error al comprobar el cliente del juego, por favor reinstale y vuelva a intentar.
                 Exit Function
             End If
         #End If
 
 128     If Not CheckMailString(CuentaEmail) Then
-130         Call WriteShowMessageBox(UserIndex, "Email inválido.")
+130         Call WriteShowMessageBox(UserIndex, 1772, vbNullString) 'Msg1772=Email inválido.
             Exit Function
         End If
     
@@ -1042,7 +1042,7 @@ On Error GoTo ErrHandler
                 Exit Function
             End If
         Else
-            Call WriteShowMessageBox(userIndex, "Cannot load character")
+            Call WriteShowMessageBox(UserIndex, 1773, vbNullString) 'Msg1773=No se puede cargar el personaje.
             Call CloseSocket(userIndex)
         End If
     End With

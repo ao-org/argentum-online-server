@@ -355,7 +355,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                                 End If
 
                                 ''FUISTE
-594                             Call WriteShowMessageBox(UserIndex, "Has sido expulsado por el sistema anti cheats.")
+594                             Call WriteShowMessageBox(UserIndex, 1774, vbNullString) 'Msg1774=Has sido expulsado por el sistema anti cheats.
 596                             Call CloseSocket(UserIndex)
                                 Exit Sub
 
