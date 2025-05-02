@@ -48,8 +48,8 @@ Public Sub HandleOnline(ByVal UserIndex As Integer)
     
             
 135         If EsGM(UserIndex) Then
-                Call WriteLocaleMsg(UserIndex, "1468", e_FontTypeNames.FONTTYPE_INFOIAO)  ' Msg1468=Número de usuarios: ¬1 conectados.
-                Call WriteLocaleMsg(UserIndex, "1469", e_FontTypeNames.FONTTYPE_INFOIAO)  ' Msg1469=Record de usuarios en simultaneo: ¬1.
+                Call WriteLocaleMsg(UserIndex, "1468", e_FontTypeNames.FONTTYPE_INFOIAO, Count) ' Msg1468=Número de usuarios: ¬1 conectados.
+                Call WriteLocaleMsg(UserIndex, "1469", e_FontTypeNames.FONTTYPE_INFOIAO, RecordUsuarios) ' Msg1469=Record de usuarios en simultaneo: ¬1.
             Else
                 ' Msg526=Comando deshabilitado para tu rango.
                 Call WriteLocaleMsg(UserIndex, "526", e_FontTypeNames.FONTTYPE_INFOIAO)
@@ -480,7 +480,7 @@ Public Sub HandleGoNearby(ByVal UserIndex As Integer)
                                             Exit Sub
                                         End If
 128                                     If LegalPos(UserList(tUser.ArrayIndex).pos.map, x, y, True, True) Then
-                                            Call WriteLocaleMsg(UserIndex, "1472", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1472=Te teletransportaste cerca de ¬1.
+                                            Call WriteLocaleMsg(UserIndex, "1472", e_FontTypeNames.FONTTYPE_INFO, UserList(tUser.ArrayIndex).name) ' Msg1472=Te teletransportaste cerca de ¬1.
 132                                         Call WarpUserChar(userIndex, UserList(tUser.ArrayIndex).pos.map, x, y, True)
 134                                         Found = True
                                             Exit For
