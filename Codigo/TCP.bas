@@ -816,7 +816,7 @@ Sub CloseSocket(ByVal UserIndex As Integer)
             
 120                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = userIndex Then
                 
-122                     Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, "Comercio cancelado por el otro usuario", e_FontTypeNames.FONTTYPE_TALK)
+122                     Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(1844, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1844=Comercio cancelado por el otro usuario.
 124                     Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
                     
                     End If
@@ -1734,7 +1734,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
                 Call WriteUserCharIndexInServer(.flags.GMMeSigue.ArrayIndex)
                 Call UpdateUserInv(True, .flags.GMMeSigue.ArrayIndex, 1)
                 Call WriteUpdateUserStats(.flags.GMMeSigue.ArrayIndex)
-                Call WriteConsoleMsg(.flags.GMMeSigue.ArrayIndex, "El usuario " & UserList(UserIndex).name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(.flags.GMMeSigue.ArrayIndex, PrepareMessageLocaleMsg(1866, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1866=El usuario ¬1 que estabas siguiendo se desconectó.
                 Call SetUserRef(.flags.GMMeSigue, 0)
                 'Falta revertir inventario del GM
             End If

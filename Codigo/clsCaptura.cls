@@ -328,7 +328,7 @@ Private Sub iniciarCaptura()
             UserList(participante.PlayerIndex).flags.CurrentTeam = team
             UserList(participante.PlayerIndex).flags.tiene_bandera = 0
             Call SendData(SendTarget.ToAll, participante.PlayerIndex, PrepareMessageUpdateFlag(UserList(participante.PlayerIndex).flags.tiene_bandera, UserList(participante.PlayerIndex).Char.charindex))
-            Call WriteConsoleMsg(participante.PlayerIndex, "Te ha tocado participar en el equipo " & colorEquipo(participante.team) & " deberás proteger a tus compañeros de equipo y capturar la bandera del equipo contrario para ganar.", e_FontTypeNames.FONTTYPE_GUILD)
+            Call WriteConsoleMsg(participante.PlayerIndex, PrepareMessageLocaleMsg(1845, colorEquipo(participante.team), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1845=Te ha tocado participar en el equipo ¬1. Deberás proteger a tus compañeros de equipo y capturar la bandera del equipo contrario para ganar.
             counter = counter + 1
 
             If counter = 2 Then
@@ -358,7 +358,7 @@ Public Sub muereUsuario(ByVal UserIndex As Integer)
         Call tirarBandera(UserIndex)
         .flags.jugando_captura_muertes = .flags.jugando_captura_muertes + 1
         .flags.jugando_captura_timer = .flags.jugando_captura_muertes * CAPTURA_TIEMPO_POR_MUERTE + CAPTURA_TIEMPO_MUERTE
-        Call WriteConsoleMsg(UserIndex, "Volverás a tu base en " & .flags.jugando_captura_timer & " segundos.", e_FontTypeNames.FONTTYPE_GUILD)
+        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1846, .flags.jugando_captura_timer, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1846=Volverás a tu base en ¬1 segundos.
         Call enviarUsuarioSala(UserIndex)
         Call ResucitarOCurar(UserIndex)
 
@@ -458,7 +458,7 @@ Public Sub tiraBandera(ByVal UserIndex As Integer, ByVal objIndex As Integer)
         contadorBandera(Team) = 0
         UserList(UserIndex).flags.tiene_bandera = 0
         Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageUpdateFlag(UserList(UserIndex).flags.tiene_bandera, UserList(UserIndex).Char.charindex))
-        Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageLocaleMsg(1718, colorEquipo(team) & "¬" & .pos.Map & "," & .pos.x & "," & .pos.y, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1718=Eventos» ¡Atención! la bandera del equipo ¬1 se encuentra en (¬2,¬3,¬4)
+        Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageLocaleMsg(1718, colorEquipo(team) & "¬" & .Pos.Map & "," & .Pos.x & "," & .Pos.y, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1718=Eventos» ¡Atención! la bandera del equipo ¬1 se encuentra en (¬2,¬3,¬4)
 
     End With
 
@@ -495,7 +495,7 @@ Public Sub tirarBandera(ByVal UserIndex As Integer)
                 MiObj.amount = 1
                 MiObj.objIndex = objBandera
                 Call TirarItemAlPiso(.Pos, MiObj, False)
-                Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageLocaleMsg(1719, colorEquipo(team) & "¬" & .pos.Map & "," & .pos.x & "," & .pos.y, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1719=Eventos» ¡Atención! la bandera del equipo ¬1 se encuentra en (¬2,¬3,¬4)
+                Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageLocaleMsg(1719, colorEquipo(team) & "¬" & .Pos.Map & "," & .Pos.x & "," & .Pos.y, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1719=Eventos» ¡Atención! la bandera del equipo ¬1 se encuentra en (¬2,¬3,¬4)
 
             End If
 
@@ -629,8 +629,7 @@ Public Sub finalizarCaptura(Optional Team As Integer = -1)
                 If participante.Team = Team Then
                     UserList(participante.PlayerIndex).Stats.GLD = UserList(participante.PlayerIndex).Stats.GLD + recompensa
                     Call WriteUpdateGold(participante.PlayerIndex)
-                    Call WriteConsoleMsg(participante.PlayerIndex, "¡Has recuperado tu inscripción y ganado " & PonerPuntos(precio) & " monedas de oro adicionales por ganar el evento!", e_FontTypeNames.FONTTYPE_GUILD)
-
+                    Call WriteConsoleMsg(participante.PlayerIndex, PrepareMessageLocaleMsg(1847, PonerPuntos(precio), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1847=¡Has recuperado tu inscripción y ganado ¬1 monedas de oro adicionales por ganar el evento!
                 End If
 
             End If
@@ -721,13 +720,13 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
 
         'Nivel
         If .Stats.ELV < nivel_minimo Then
-            Call WriteConsoleMsg(UserIndex, "Para ingresar al evento deberás ser al menos nivel " & nivel_minimo & ".", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1848, nivel_minimo, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1848=Para ingresar al evento deberás ser al menos nivel ¬1.
             Exit Sub
 
         End If
 
         If .Stats.ELV > nivel_maximo Then
-            Call WriteConsoleMsg(UserIndex, "Para ingresar al evento tu nivel no puede ser mayor a " & nivel_maximo & ".", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1849, nivel_maximo, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1849=Para ingresar al evento tu nivel no puede ser mayor a ¬1.
             Exit Sub
 
         End If
