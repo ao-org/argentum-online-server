@@ -714,7 +714,7 @@ Private Sub SpawnNpc(ByRef NpcInfo As t_NpcSpawnInfo, ByRef Waypoints() As t_Way
         NpcList(NpcId).flags.Respawn = 1
         NpcList(NpcId).flags.team = team
     Else
-        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("No se pudo spawnear el npc " & NpcInfo.NpcId & ", revisar.", e_FontTypeNames.FONTTYPE_TALK))
+        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1786, NpcInfo.NpcId, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1792=No se pudo spawnear el npc ¬1, revisar.
         Call TraceError(Err.Number, "failed to spawn Npc " & NpcInfo.NpcId, "NavalBoarding.SpawnNpc ", Erl)
     End If
 End Sub

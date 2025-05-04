@@ -143,9 +143,9 @@ Friend Sub PublishScoreboard(ByVal Audience As Integer, ByVal AudienceIndex, ByR
     End If
     If Lobby.TeamSize > 1 Then
         rank = GetTeamRanking(Lobby)
-        Call SendData(Audience, AudienceIndex, PrepareMessageConsoleMsg("Posiciones:", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(Audience, AudienceIndex, PrepareMessageLocaleMsg(1838, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1838=Posiciones:
         For i = 1 To UBound(rank)
-            Call SendData(Audience, AudienceIndex, PrepareMessageConsoleMsg("Equipo " & (rank(i).PlayerIndex) & ": " & rank(i).Score, e_FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(Audience, AudienceIndex, PrepareMessageLocaleMsg(1839, rank(i).PlayerIndex & "¬" & rank(i).Score, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1839=Equipo ¬1: ¬2
         Next i
     Else
         rank = GetRanking(5)
@@ -154,9 +154,9 @@ Friend Sub PublishScoreboard(ByVal Audience As Integer, ByVal AudienceIndex, ByR
                 Exit Sub
             End If
             If i = 0 Then
-                Call SendData(Audience, AudienceIndex, PrepareMessageConsoleMsg("Posiciones:", e_FontTypeNames.FONTTYPE_GUILD))
+                Call SendData(Audience, AudienceIndex, PrepareMessageLocaleMsg(1838, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1838=Posiciones:
             End If
-            Call SendData(Audience, AudienceIndex, PrepareMessageConsoleMsg((i + 1) & ") " & UserList(rank(i).PlayerIndex).name & ": " & rank(i).Score, e_FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(Audience, AudienceIndex, PrepareMessageLocaleMsg(1824, (i + 1) & "¬" & UserList(rank(i).PlayerIndex).name & "¬" & rank(i).Score & "¬", e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1824=¬1) ¬2: ¬3 puntos¬4
         Next i
     End If
 End Sub
@@ -169,7 +169,8 @@ Friend Sub PublishTeamScore(ByVal Audience As Integer, ByVal AudienceIndex, ByRe
     Dim TeamPlayerList As String
     Dim key As Variant
     Dim i As Integer
-    Call SendData(Audience, AudienceIndex, PrepareMessageConsoleMsg("Ganador equipo " & Winner & ": " & rank(1).Score, e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(Audience, AudienceIndex, PrepareMessageLocaleMsg(1840, Winner & "¬" & rank(1).Score, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1840=Ganador equipo ¬1: ¬2
+
     For Each key In PlayersScore.Keys
         For i = 0 To Lobby.RegisteredPlayers - 1
             If Lobby.Players(i).user.ArrayIndex = key And Lobby.Players(i).Team = Winner Then

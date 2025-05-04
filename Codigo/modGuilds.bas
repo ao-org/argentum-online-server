@@ -1538,7 +1538,7 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
             While MemberIndex > 0
                 If UserList(MemberIndex).ConnectionDetails.ConnIDValida Then
                     If UserList(MemberIndex).ChatCombate = 1 Then
-                        Call SendData(SendTarget.ToIndex, MemberIndex, PrepareMessageConsoleMsg("Clan> El clan ha ganado " & ExpDar & " puntos de experiencia.", e_FontTypeNames.FONTTYPE_GUILD))
+                        Call SendData(SendTarget.ToIndex, MemberIndex, PrepareMessageLocaleMsg(1789, ExpDar, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1789=Clan> El clan ha ganado ¬1 puntos de experiencia.
                     End If
                 End If
             
@@ -1558,7 +1558,7 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
 124             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave(SND_NIVEL, NO_3D_SOUND, NO_3D_SOUND))
 126             ExpActual = ExpActual - ExpNecesaria
 128             nivel = nivel + 1
-130             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> El clan ha subido a nivel " & nivel & ". Nuevos beneficios disponibles.", e_FontTypeNames.FONTTYPE_GUILD))
+130             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1790, nivel, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1790=Clan> El clan ha subido a nivel ¬1. Nuevos beneficios disponibles.
         
 132             If nivel > 5 Then
 146                 ExpActual = 0

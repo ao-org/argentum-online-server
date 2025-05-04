@@ -709,7 +709,10 @@ Sub GiveRewards()
 164                 Next j
 166                 RewardStr = ", gano " & PonerPuntos(Rewards(i + 1)) & " Modenas de oro."
                 End If
-168             If Ranking(i).PlayerIndex > 0 Then Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg((i + 1) & ") " & UserList(Ranking(i).PlayerIndex).name & ": " & Ranking(i).Score & " puntos" & RewardStr, e_FontTypeNames.FONTTYPE_GUILD))
+168             If Ranking(i).PlayerIndex > 0 Then
+                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1824, (i + 1) & "¬" & UserList(Ranking(i).PlayerIndex).name & "¬" & Ranking(i).Score & "¬" & RewardStr, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1824=¬1) ¬2: ¬3 puntos¬4
+                End If
+
 170         Next i
         End If
         Exit Sub

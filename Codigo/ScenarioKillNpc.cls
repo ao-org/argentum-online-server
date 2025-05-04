@@ -276,7 +276,7 @@ Private Sub IBaseScenario_Update()
                 If StartTimer.Occurrences >= 10 Then
                     Call StartGame
                 Else
-                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg("La caceria iniciara en " & 10 - StartTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD))
+                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1819, 10 - StartTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1819=La cacería iniciará en ¬1
                 End If
             End If
             Exit Sub
@@ -287,7 +287,7 @@ Private Sub IBaseScenario_Update()
             Call Board.PublishScoreboard(SendTarget.toMap, MapNumber, LobbyList(LobbyIndex), False)
         End If
         If ElapsedTime > MaxTime Then
-            Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg("Se acabo el tiempo!", e_FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1820, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1820=¡Se acabó el tiempo!
             Call MatchComplete
         End If
         Call RespawnPlayers
@@ -346,7 +346,7 @@ Private Sub SpawnNpc(ByVal npcType As Integer)
         NpcList(NpcId).Contadores.IntervaloRespawn = 0
         Call SpawnedCreaturesId.Add(NpcId, 0)
     Else
-        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("No se pudo spawnear el npc " & npcType & ", revisar.", e_FontTypeNames.FONTTYPE_TALK))
+        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1792, npcType, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1792=No se pudo spawnear el npc ¬1, revisar.
         Call TraceError(Err.Number, "failed to spawn Npc " & npcType, "ScenarioHunt.SpawnNpc ", Erl)
     End If
 End Sub
@@ -358,7 +358,8 @@ Private Sub CloseCountDown()
         Call CloseScenario
         Exit Sub
     End If
-    Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg("El mapa se cerrara en " & pendingTime & " segundos.", e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1821, pendingTime, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1821=El mapa se cerrará en ¬1 segundos.
+
 End Sub
 
 Private Sub BroadCastTimeUpdate()
@@ -373,7 +374,7 @@ Private Sub BroadCastTimeUpdate()
         Exit Sub
     ElseIf pendingTime >= 60 Then
         pendingTime = pendingTime / 60
-        Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg("quedan " & pendingTime & " minutos.", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1822, pendingTime, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1822=Quedan ¬1 minutos.
         BroadCastInterval = 60000
     ElseIf pendingTime <= 10 Then
         Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg(pendingTime, e_FontTypeNames.FONTTYPE_GUILD))
@@ -490,7 +491,8 @@ Sub GiveRewards()
 142                 Next j
 144                 RewardStr = ", ganaron " & PonerPuntos(Reward) & " Modenas de oro cada uno."
                 End If
-146             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(i & ") " & Teams(Ranking(i).PlayerIndex) & ": " & Ranking(i).Score & " puntos" & RewardStr, e_FontTypeNames.FONTTYPE_GUILD))
+146             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1823, i & "¬" & Teams(Ranking(i).PlayerIndex) & "¬" & Ranking(i).Score & "¬" & RewardStr, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1823=¬1) ¬2: ¬3 puntos¬4
+
 148         Next i
         Else
 150         Ranking = Board.GetRanking(3)
@@ -506,7 +508,7 @@ Sub GiveRewards()
 164                 Next j
 166                 RewardStr = ", gano " & PonerPuntos(Rewards(i + 1)) & " Modenas de oro."
                 End If
-168             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg((i + 1) & ") " & UserList(Ranking(i).PlayerIndex).name & ": " & Ranking(i).Score & " puntos" & RewardStr, e_FontTypeNames.FONTTYPE_GUILD))
+168             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1824, (i + 1) & "¬" & UserList(Ranking(i).PlayerIndex).name & "¬" & Ranking(i).Score & "¬" & RewardStr, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1824=¬1) ¬2: ¬3 puntos¬4
 170         Next i
         End If
         Exit Sub
