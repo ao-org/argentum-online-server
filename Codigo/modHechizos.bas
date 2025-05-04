@@ -63,7 +63,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
           If Damage > 0 Then
 116         Call UserMod.DoDamageOrHeal(UserIndex, NpcIndex, eNpc, Damage, e_DamageSourceType.e_magic, Spell)
 120         DamageStr = PonerPuntos(Damage)
-122         Call WriteLocaleMsg(UserIndex, 32, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).Name & "¬" & DamageStr)
+122         Call WriteLocaleMsg(UserIndex, 32, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr)
           End If
           
 128     ElseIf IsSet(Hechizos(Spell).Effects, e_SpellEffects.eDoDamage) Then
@@ -1002,7 +1002,7 @@ Sub HechizoTerrenoEstado(ByVal UserIndex As Integer, ByRef b As Boolean)
                             'hay un user
 120                         If UserList(MapData(PosCasteadaM, TempX, TempY).UserIndex).flags.invisible = 1 And UserList(MapData(PosCasteadaM, TempX, TempY).UserIndex).flags.NoDetectable = 0 Then
 122                             UserList(MapData(PosCasteadaM, TempX, TempY).UserIndex).flags.invisible = 0
-124                             Call WriteConsoleMsg(MapData(PosCasteadaM, TempX, TempY).UserIndex, "Tu invisibilidad ya no tiene efecto.", e_FontTypeNames.FONTTYPE_INFOIAO)
+124                             Call WriteConsoleMsg(MapData(PosCasteadaM, TempX, TempY).UserIndex, PrepareMessageLocaleMsg(1869, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1869=Tu invisibilidad ya no tiene efecto.
 126                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(MapData(PosCasteadaM, TempX, TempY).UserIndex).Char.charindex, False, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
                             End If
                         End If
@@ -1920,7 +1920,7 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
 258             Call InfoHechizo(UserIndex)
 260             b = True
             Else
-262             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya esta envenenado. El hechizo no tuvo efecto.", e_FontTypeNames.FONTTYPE_INFO)
+262             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1870, UserList(tU).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1870=¬1 ya está envenenado. El hechizo no tuvo efecto.
 264             b = False
             End If
         End If
@@ -2019,7 +2019,7 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
             
             ' Si no esta envenenado, no hay nada mas que hacer
 342         If UserList(tU).flags.Envenenado = 0 Then
-344             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " no está envenenado, el hechizo no tiene efecto.", e_FontTypeNames.FONTTYPE_INFOIAO)
+344             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1871, UserList(tU).name, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1871=¬1 no está envenenado, el hechizo no tiene efecto.
 346             b = False
                 Exit Sub
             End If
@@ -2103,7 +2103,7 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
             End If
             
             If UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
-                Call WriteConsoleMsg(UserIndex, UserList(tU).name & " no puede volver a ser paralizado tan rápido.", e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1872, UserList(tU).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1872=¬1 no puede volver a ser paralizado tan rápido.
                 Exit Sub
             End If
             If Not UserMod.CanMove(UserList(tU).flags, UserList(tU).Counters) Then
@@ -2216,7 +2216,7 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
             End If
             
             If UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
-515             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " no puede volver a ser inmovilizado tan rápido.", e_FontTypeNames.FONTTYPE_FIGHT)
+515             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1873, UserList(tU).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1873=¬1 no puede volver a ser inmovilizado tan rápido.
                 Exit Sub
             End If
             
@@ -2375,8 +2375,8 @@ Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
 614         If UserList(tU).flags.Muerto = 1 Then
 
 616             If UserList(UserIndex).flags.EnReto Then
-'Msg807= No podés revivir a nadie durante un reto.
-Call WriteLocaleMsg(UserIndex, "807", e_FontTypeNames.FONTTYPE_INFO)
+                    'Msg807= No podés revivir a nadie durante un reto.
+                    Call WriteLocaleMsg(UserIndex, "807", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
     
@@ -2411,16 +2411,16 @@ Call WriteLocaleMsg(UserIndex, "807", e_FontTypeNames.FONTTYPE_INFO)
                     End If
                         
 634                 If Not PuedeRevivir Then
-'Msg809= Necesitás un objeto con mayor poder mágico para poder revivir.
-Call WriteLocaleMsg(UserIndex, "809", e_FontTypeNames.FONTTYPE_INFO)
+                        'Msg809= Necesitás un objeto con mayor poder mágico para poder revivir.
+                        Call WriteLocaleMsg(UserIndex, "809", e_FontTypeNames.FONTTYPE_INFO)
 638                     b = False
                         Exit Sub
                     End If
                 End If
                 
                 If UserList(UserIndex).Stats.MinSta < UserList(UserIndex).Stats.MaxSta Then
-'Msg810= Deberás tener la barra de energía llena para poder resucitar.
-Call WriteLocaleMsg(UserIndex, "810", e_FontTypeNames.FONTTYPE_INFO)
+                    'Msg810= Deberás tener la barra de energía llena para poder resucitar.
+                    Call WriteLocaleMsg(UserIndex, "810", e_FontTypeNames.FONTTYPE_INFO)
                     b = False
                     Exit Sub
                 End If
@@ -2431,7 +2431,7 @@ Call WriteLocaleMsg(UserIndex, "810", e_FontTypeNames.FONTTYPE_INFO)
                     If UserList(tU).flags.SeguroResu Then
                         ' Msg693=El usuario tiene el seguro de resurrección activado.
                         Call WriteLocaleMsg(UserIndex, "693", e_FontTypeNames.FONTTYPE_INFO)
-                        Call WriteConsoleMsg(tU, UserList(UserIndex).name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteConsoleMsg(tU, PrepareMessageLocaleMsg(1874, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1874=¬1 está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.
                         b = False
                         Exit Sub
                     End If
@@ -2440,14 +2440,14 @@ Call WriteLocaleMsg(UserIndex, "810", e_FontTypeNames.FONTTYPE_INFO)
                         Case 1, 3, 5 'Ciudadano o armada
                             If Status(tU) <> e_Facciones.Ciudadano And Status(tU) <> e_Facciones.Armada And Status(tU) <> e_Facciones.consejo Then
                                 If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
-'Msg811= Los miembros de la armada real solo pueden revivir ciudadanos a miembros de su facción.
-Call WriteLocaleMsg(UserIndex, "811", e_FontTypeNames.FONTTYPE_INFO)
+                                    'Msg811= Los miembros de la armada real solo pueden revivir ciudadanos a miembros de su facción.
+                                    Call WriteLocaleMsg(UserIndex, "811", e_FontTypeNames.FONTTYPE_INFO)
                                     b = False
                                     Exit Sub
                                 ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
                                     If UserList(UserIndex).flags.Seguro = True Then
-'Msg812= Deberás desactivar el seguro para revivir al usuario, ten en cuenta que te convertirás en criminal.
-Call WriteLocaleMsg(UserIndex, "812", e_FontTypeNames.FONTTYPE_INFO)
+                                        'Msg812= Deberás desactivar el seguro para revivir al usuario, ten en cuenta que te convertirás en criminal.
+                                        Call WriteLocaleMsg(UserIndex, "812", e_FontTypeNames.FONTTYPE_INFO)
                                         b = False
                                         Exit Sub
                                     Else
@@ -2456,8 +2456,8 @@ Call WriteLocaleMsg(UserIndex, "812", e_FontTypeNames.FONTTYPE_INFO)
                                             'Si el clan es de alineación ciudadana.
                                             If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
                                                 'No lo dejo resucitarlo
-'Msg813= No puedes resucitar al usuario siendo fundador de un clan ciudadano.
-Call WriteLocaleMsg(UserIndex, "813", e_FontTypeNames.FONTTYPE_INFO)
+                                                'Msg813= No puedes resucitar al usuario siendo fundador de un clan ciudadano.
+                                                Call WriteLocaleMsg(UserIndex, "813", e_FontTypeNames.FONTTYPE_INFO)
                                                 b = False
                                                 Exit Sub
                                             'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
@@ -2474,8 +2474,8 @@ Call WriteLocaleMsg(UserIndex, "813", e_FontTypeNames.FONTTYPE_INFO)
                             End If
                         Case 2, 4 'Caos
                             If Status(tU) <> e_Facciones.Caos And Status(tU) <> e_Facciones.Criminal And Status(tU) <> e_Facciones.concilio Then
-'Msg814= Los miembros del caos solo pueden revivir criminales o miembros de su facción.
-Call WriteLocaleMsg(UserIndex, "814", e_FontTypeNames.FONTTYPE_INFO)
+                                'Msg814= Los miembros del caos solo pueden revivir criminales o miembros de su facción.
+                                Call WriteLocaleMsg(UserIndex, "814", e_FontTypeNames.FONTTYPE_INFO)
                                 b = False
                                 Exit Sub
                             End If
@@ -2564,7 +2564,7 @@ Sub checkHechizosEfectividad(ByVal UserIndex As Integer, ByVal TargetUser As Int
                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1638, .name & "¬" & efectividad & "¬" & .Counters.controlHechizos.HechizosCasteados & "¬" & .Counters.controlHechizos.HechizosTotales, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1638=El usuario ¬1 está lanzando hechizos con una efectividad de ¬2% (Casteados: ¬3/¬4), revisar.
             End If
             
-            Debug.Print "El usuario " & .Name & " está lanzando hechizos con una efectividad de " & efectividad & "% (Casteados: " & .Counters.controlHechizos.HechizosCasteados & "/" & .Counters.controlHechizos.HechizosTotales & "), revisar."
+            Debug.Print "El usuario " & .name & " está lanzando hechizos con una efectividad de " & efectividad & "% (Casteados: " & .Counters.controlHechizos.HechizosCasteados & "/" & .Counters.controlHechizos.HechizosTotales & "), revisar."
         Else
             .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales - 1
         End If
@@ -3040,10 +3040,10 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
 110         UserList(tempChr).Stats.MinHam = UserList(tempChr).Stats.MinHam + Damage
 112         If UserList(tempChr).Stats.MinHam > UserList(tempChr).Stats.MaxHam Then UserList(tempChr).Stats.MinHam = UserList(tempChr).Stats.MaxHam
 114         If UserIndex <> tempChr Then
-116             Call WriteConsoleMsg(UserIndex, "Le has restaurado " & Damage & " puntos de hambre a " & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)
-118             Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha restaurado " & Damage & " puntos de hambre.", e_FontTypeNames.FONTTYPE_FIGHT)
+116             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1875, Damage & "¬" & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1875=Le has restaurado ¬1 puntos de hambre a ¬2.
+118             Call WriteConsoleMsg(tempChr, PrepareMessageLocaleMsg(1895, UserList(UserIndex).name & "¬" & Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1895=¬1 te ha restaurado ¬2 puntos de hambre.
             Else
-120             Call WriteConsoleMsg(UserIndex, "Te has restaurado " & Damage & " puntos de hambre.", e_FontTypeNames.FONTTYPE_FIGHT)
+120             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1896, Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1896=Te has restaurado ¬1 puntos de hambre.
             End If
 122         Call WriteUpdateHungerAndThirst(tempChr)
 124         b = True
@@ -3061,10 +3061,10 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
 140         If UserList(tempChr).Stats.MinHam < 0 Then UserList(tempChr).Stats.MinHam = 0
     
 142         If UserIndex <> tempChr Then
-144             Call WriteConsoleMsg(UserIndex, "Le has quitado " & Damage & " puntos de hambre a " & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)
-146             Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha quitado " & Damage & " puntos de hambre.", e_FontTypeNames.FONTTYPE_FIGHT)
+144             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1897, Damage & "¬" & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1897=Le has quitado ¬1 puntos de hambre a ¬2.
+146             Call WriteConsoleMsg(tempChr, PrepareMessageLocaleMsg(1898, UserList(UserIndex).name & "¬" & Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1898=¬1 te ha quitado ¬2 puntos de hambre.
             Else
-148             Call WriteConsoleMsg(UserIndex, "Te has quitado " & Damage & " puntos de hambre.", e_FontTypeNames.FONTTYPE_FIGHT)
+148             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1899, Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1899=Te has quitado ¬1 puntos de hambre.
 
             End If
     
@@ -3090,10 +3090,10 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
 168         If UserList(tempChr).Stats.MinAGU > UserList(tempChr).Stats.MaxAGU Then UserList(tempChr).Stats.MinAGU = UserList(tempChr).Stats.MaxAGU
          
 170         If UserIndex <> tempChr Then
-172             Call WriteConsoleMsg(UserIndex, "Le has restaurado " & Damage & " puntos de sed a " & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)
-174             Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha restaurado " & Damage & " puntos de sed.", e_FontTypeNames.FONTTYPE_FIGHT)
+172             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1900, Damage & "¬" & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1900=Le has restaurado ¬1 puntos de sed a ¬2.
+174             Call WriteConsoleMsg(tempChr, PrepareMessageLocaleMsg(1901, UserList(UserIndex).name & "¬" & Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1901=¬1 te ha restaurado ¬2 puntos de sed.
             Else
-176             Call WriteConsoleMsg(UserIndex, "Te has restaurado " & Damage & " puntos de sed.", e_FontTypeNames.FONTTYPE_FIGHT)
+176             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1902, Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1902=Te has restaurado ¬1 puntos de sed.
             End If
             
 178         Call WriteUpdateHungerAndThirst(tempChr)
@@ -3111,10 +3111,10 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
 194         UserList(tempChr).Stats.MinAGU = UserList(tempChr).Stats.MinAGU - Damage
     
 196         If UserIndex <> tempChr Then
-198             Call WriteConsoleMsg(UserIndex, "Le has quitado " & Damage & " puntos de sed a " & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)
-200             Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha quitado " & Damage & " puntos de sed.", e_FontTypeNames.FONTTYPE_FIGHT)
+198             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1903, Damage & "¬" & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1903=Le has quitado ¬1 puntos de sed a ¬2.
+200             Call WriteConsoleMsg(tempChr, PrepareMessageLocaleMsg(1904, UserList(UserIndex).name & "¬" & Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1904=¬1 te ha quitado ¬2 puntos de sed.
             Else
-202             Call WriteConsoleMsg(UserIndex, "Te has quitado " & Damage & " puntos de sed.", e_FontTypeNames.FONTTYPE_FIGHT)
+202             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1905, Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1905=Te has quitado ¬1 puntos de sed.
             End If
     
 204         If UserList(tempChr).Stats.MinAGU < 1 Then
@@ -3330,7 +3330,7 @@ Call WriteLocaleMsg(UserIndex, "822", e_FontTypeNames.FONTTYPE_INFO)
             End If
             
 340         If UserList(tempChr).Stats.MinHp = UserList(tempChr).Stats.MaxHp Then
-342             Call WriteConsoleMsg(UserIndex, UserList(tempChr).Name & " no tiene heridas para curar.", e_FontTypeNames.FONTTYPE_INFOIAO)
+342             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1906, UserList(tempChr).name, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1906=¬1 no tiene heridas para curar.
 344             b = False
                 Exit Sub
             End If
@@ -3365,8 +3365,8 @@ Call WriteLocaleMsg(UserIndex, "822", e_FontTypeNames.FONTTYPE_INFO)
             Call UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, h)
 376         DamageStr = PonerPuntos(Damage)
 378         If UserIndex <> tempChr Then
-380             Call WriteLocaleMsg(UserIndex, "388", e_FontTypeNames.FONTTYPE_FIGHT, UserList(tempChr).Name & "¬" & DamageStr)
-382             Call WriteLocaleMsg(tempChr, "32", e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).Name & "¬" & DamageStr)
+380             Call WriteLocaleMsg(UserIndex, "388", e_FontTypeNames.FONTTYPE_FIGHT, UserList(tempChr).name & "¬" & DamageStr)
+382             Call WriteLocaleMsg(tempChr, "32", e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).name & "¬" & DamageStr)
             Else
 384             Call WriteLocaleMsg(UserIndex, "33", e_FontTypeNames.FONTTYPE_FIGHT, DamageStr)
             End If
@@ -3435,10 +3435,10 @@ Call WriteLocaleMsg(UserIndex, "822", e_FontTypeNames.FONTTYPE_INFO)
 482         If UserList(tempChr).Stats.MinMAN > UserList(tempChr).Stats.MaxMAN Then UserList(tempChr).Stats.MinMAN = UserList(tempChr).Stats.MaxMAN
     
 484         If UserIndex <> tempChr Then
-486             Call WriteConsoleMsg(UserIndex, "Le has restaurado " & Damage & " puntos de mana a " & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)
-488             Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha restaurado " & Damage & " puntos de mana.", e_FontTypeNames.FONTTYPE_FIGHT)
+486             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1907, Damage & "¬" & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1907=Le has restaurado ¬1 puntos de mana a ¬2.
+488             Call WriteConsoleMsg(tempChr, PrepareMessageLocaleMsg(1908, UserList(UserIndex).name & "¬" & Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1908=¬1 te ha restaurado ¬2 puntos de mana.
             Else
-490             Call WriteConsoleMsg(UserIndex, "Te has restaurado " & Damage & " puntos de mana.", e_FontTypeNames.FONTTYPE_FIGHT)
+490             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1909, Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1909=Te has restaurado ¬1 puntos de mana.
 
             End If
             
@@ -3458,10 +3458,10 @@ Call WriteLocaleMsg(UserIndex, "822", e_FontTypeNames.FONTTYPE_INFO)
 504         Call InfoHechizo(UserIndex)
     
 506         If UserIndex <> tempChr Then
-508             Call WriteConsoleMsg(UserIndex, "Le has quitado " & Damage & " puntos de mana a " & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)
-510             Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha quitado " & Damage & " puntos de mana.", e_FontTypeNames.FONTTYPE_FIGHT)
+508             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1910, Damage & "¬" & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1910=Le has quitado ¬1 puntos de mana a ¬2.
+510             Call WriteConsoleMsg(tempChr, PrepareMessageLocaleMsg(1911, UserList(UserIndex).name & "¬" & Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1911=¬1 te ha quitado ¬2 puntos de mana.
             Else
-512             Call WriteConsoleMsg(UserIndex, "Te has quitado " & Damage & " puntos de mana.", e_FontTypeNames.FONTTYPE_FIGHT)
+512             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1912, Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1912=Te has quitado ¬1 puntos de mana.
             End If
     
 514         UserList(tempChr).Stats.MinMAN = UserList(tempChr).Stats.MinMAN - Damage
@@ -3478,10 +3478,10 @@ Call WriteLocaleMsg(UserIndex, "822", e_FontTypeNames.FONTTYPE_INFO)
 528         If UserList(tempChr).Stats.MinSta > UserList(tempChr).Stats.MaxSta Then UserList(tempChr).Stats.MinSta = UserList(tempChr).Stats.MaxSta
 
 530         If UserIndex <> tempChr Then
-532             Call WriteConsoleMsg(UserIndex, "Le has restaurado " & Damage & " puntos de vitalidad a " & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)
-534             Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha restaurado " & Damage & " puntos de vitalidad.", e_FontTypeNames.FONTTYPE_FIGHT)
+532             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1913, Damage & "¬" & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1913=Le has restaurado ¬1 puntos de vitalidad a ¬2.
+534             Call WriteConsoleMsg(tempChr, PrepareMessageLocaleMsg(1914, UserList(UserIndex).name & "¬" & Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1914=¬1 te ha restaurado ¬2 puntos de vitalidad.
             Else
-536             Call WriteConsoleMsg(UserIndex, "Te has restaurado " & Damage & " puntos de vitalidad.", e_FontTypeNames.FONTTYPE_FIGHT)
+536             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1915, Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1915=Te has restaurado ¬1 puntos de vitalidad.
 
             End If
             
@@ -3500,10 +3500,10 @@ Call WriteLocaleMsg(UserIndex, "822", e_FontTypeNames.FONTTYPE_INFO)
 550         Call InfoHechizo(UserIndex)
     
 552         If UserIndex <> tempChr Then
-554             Call WriteConsoleMsg(UserIndex, "Le has quitado " & Damage & " puntos de vitalidad a " & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)
-556             Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha quitado " & Damage & " puntos de vitalidad.", e_FontTypeNames.FONTTYPE_FIGHT)
+554             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1916, Damage & "¬" & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1916=Le has quitado ¬1 puntos de vitalidad a ¬2.
+556             Call WriteConsoleMsg(tempChr, PrepareMessageLocaleMsg(1917, UserList(UserIndex).name & "¬" & Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1917=¬1 te ha quitado ¬2 puntos de vitalidad.
             Else
-558             Call WriteConsoleMsg(UserIndex, "Te has quitado " & Damage & " puntos de vitalidad.", e_FontTypeNames.FONTTYPE_FIGHT)
+558             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1915, Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1915=Te has restaurado ¬1 puntos de vitalidad.
             End If
     
 560         UserList(tempChr).Stats.MinSta = UserList(tempChr).Stats.MinSta - Damage
@@ -3678,10 +3678,10 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 250         Call UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, h)
     
 254         If UserIndex <> tempChr Then
-256             Call WriteConsoleMsg(UserIndex, "Le has restaurado " & Damage & " puntos de vida a " & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)
-258             Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha restaurado " & Damage & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)
+256             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1918, Damage & "¬" & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1918=Le has restaurado ¬1 puntos de vida a ¬2.
+258             Call WriteConsoleMsg(tempChr, PrepareMessageLocaleMsg(1919, UserList(UserIndex).name & "¬" & Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1919=¬1 te ha restaurado ¬2 puntos de vida.
             Else
-260             Call WriteConsoleMsg(UserIndex, "Te has restaurado " & Damage & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)
+260             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1920, Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1920=Te has restaurado ¬1 puntos de vida.
             End If
 264         b = True
 
@@ -4312,7 +4312,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 140             Call NPCs.DoDamageOrHeal(npcIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h2)
             
 142             If UserList(UserIndex).ChatCombate = 1 Then
-144                 Call WriteConsoleMsg(UserIndex, "Le has causado " & Damage & " puntos de daño a " & NpcList(NpcIndex).Name, e_FontTypeNames.FONTTYPE_FIGHT)
+144                 Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1921, Damage & "¬" & NpcList(NpcIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1921=Le has causado ¬1 puntos de daño a ¬2.
                 End If
             End If
             Exit Sub
@@ -4401,10 +4401,10 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
                 Damage = Damage * NPCs.GetSelfHealingBonus(NpcList(NpcIndex))
 248             Call UserMod.DoDamageOrHeal(npcIndex, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, h2)
 252             If UserIndex <> NpcIndex Then
-254                 Call WriteConsoleMsg(UserIndex, "Le has restaurado " & Damage & " puntos de vida a " & UserList(npcIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)
-256                 Call WriteConsoleMsg(npcIndex, UserList(UserIndex).name & " te ha restaurado " & Damage & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)
+254                 Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1922, Damage & "¬" & UserList(NpcIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1922=Le has restaurado ¬1 puntos de vida a ¬2.
+256                 Call WriteConsoleMsg(NpcIndex, PrepareMessageLocaleMsg(1923, UserList(UserIndex).name & "¬" & Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1923=¬1 te ha restaurado ¬2 puntos de vida.
                 Else
-258                 Call WriteConsoleMsg(UserIndex, "Te has restaurado " & Damage & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)
+258                 Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1920, Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1920=Te has restaurado ¬1 puntos de vida.
                 End If
             End If
 260         Call WriteUpdateUserStats(NpcIndex)
@@ -4423,7 +4423,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
             End If
                     
 272         UserList(NpcIndex).flags.Envenenado = Hechizos(h2).Envenena
-274         Call WriteConsoleMsg(NpcIndex, UserList(UserIndex).Name & " te ha envenenado.", e_FontTypeNames.FONTTYPE_FIGHT)
+274         Call WriteConsoleMsg(NpcIndex, PrepareMessageLocaleMsg(1924, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1924=¬1 te ha envenenado.
 
         End If
                 

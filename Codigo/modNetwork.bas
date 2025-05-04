@@ -316,7 +316,8 @@ Public Sub CheckDisconnectedUsers()
 114                         If .ComUsu.DestUsu.ArrayIndex > 0 Then
 116                             If IsValidUserRef(.ComUsu.DestUsu) And UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
 118                                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = iUserIndex Then
-120                                     Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, "Comercio cancelado por el otro usuario.", e_FontTypeNames.FONTTYPE_TALK)
+120                                     Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(1844, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1844=Comercio cancelado por el otro usuario.
+
 122                                     Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
                                     End If
                                 End If

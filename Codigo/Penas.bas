@@ -48,7 +48,7 @@ Private Function GlobalChecks(ByVal BannerIndex As Integer, ByRef username As St
 110     If IsValidUserRef(tUser) Then
 
 112         If tUser.ArrayIndex = BannerIndex Then
-114             Call WriteConsoleMsg(BannerIndex, "No podes banearte a vos mismo.", e_FontTypeNames.FONTTYPE_INFO)
+114             Call WriteConsoleMsg(BannerIndex, PrepareMessageLocaleMsg(1841, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1841=No podés banearte a vos mismo.
                 Exit Function
             End If
 
@@ -90,12 +90,12 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef R
 
         ' Si no existe el personaje...
 102     If Not PersonajeExiste(UserName) Then
-104         Call WriteConsoleMsg(BannerIndex, "El personaje no existe.", e_FontTypeNames.FONTTYPE_TALK)
+104         Call WriteConsoleMsg(BannerIndex, PrepareMessageLocaleMsg(1842, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1842=El personaje no existe.
             Exit Sub
         End If
 
 106     If BANCheck(UserName) Then
-108         Call WriteConsoleMsg(BannerIndex, "El usuario ya se encuentra baneado.", e_FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(BannerIndex, PrepareMessageLocaleMsg(1843, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1843=El usuario ya se encuentra baneado.
             Exit Sub
         End If
 
@@ -169,7 +169,7 @@ Public Sub BanearCuenta(ByVal BannerIndex As Integer, ByVal UserName As String, 
 
         ' Me fijo que exista la cuenta.
 104     If CuentaID <= 0 Then
-106         Call WriteConsoleMsg(BannerIndex, "El personaje no existe.", e_FontTypeNames.FONTTYPE_TALK)
+106         Call WriteConsoleMsg(BannerIndex, PrepareMessageLocaleMsg(1842, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1842=El personaje no existe.
             Exit Sub
         End If
 
