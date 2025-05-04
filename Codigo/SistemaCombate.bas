@@ -1718,97 +1718,96 @@ End Function
 
 
 Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
-        '***************************************************
-        'Autor: Nacho (Integer)
-        'Last Modification: 03/09/06 Nacho
-        'Reescribi gran parte del Sub
-        'Ahora, da toda la experiencia del npc mientras este vivo.
-        '***************************************************
-        
         On Error GoTo CalcularDarExp_Err
         
 100     If NpcList(npcIndex).MaestroUser.ArrayIndex <> 0 Then
             Exit Sub
         End If
-
-102     If UserList(UserIndex).Grupo.EnGrupo Then
-104         Call CalcularDarExpGrupal(UserIndex, NpcIndex, ElDaño)
-        Else
-
-            Dim ExpaDar As Double
-    
-            '[Nacho] Chekeamos que las variables sean validas para las operaciones
-106         If ElDaño <= 0 Then ElDaño = 0
-108         If NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
-
-            '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
-            
-110         ExpaDar = CDbl(ElDaño) * CDbl(NpcList(NpcIndex).GiveEXP) / NpcList(NpcIndex).Stats.MaxHp
-
-112         If ExpaDar <= 0 Then Exit Sub
-
-            '[Nacho] Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
-            'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
-            'Podria dar un numero fraccionario, esas fracciones se acumulan hasta formar enteros ;P
-114         If ExpaDar > NpcList(NpcIndex).flags.ExpCount Then
-116             ExpaDar = NpcList(NpcIndex).flags.ExpCount
-118             NpcList(NpcIndex).flags.ExpCount = 0
-            Else
-120             NpcList(NpcIndex).flags.ExpCount = NpcList(NpcIndex).flags.ExpCount - ExpaDar
-
-            End If
-    
-122         If SvrConfig.GetValue("ExpMult") > 0 Then
-124             ExpaDar = ExpaDar * SvrConfig.GetValue("ExpMult")
-            End If
-
-130         If ExpaDar > 0 Then
-132             If NpcList(NpcIndex).nivel Then
-                    Dim DeltaLevel As Integer
-134                 DeltaLevel = UserList(UserIndex).Stats.ELV - NpcList(NpcIndex).nivel
-136                 If Abs(DeltaLevel) > 5 Then ' Qué pereza da desharcodear
-138                     ExpaDar = ExpaDar * Math.Exp(15 - Abs(3 * DeltaLevel))
-                        
-140                     Call WriteConsoleMsg(UserIndex, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", e_FontTypeNames.FONTTYPE_WARNING)
-                    End If
-                End If
-
-142             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
-144                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + ExpaDar
-
-146                 If UserList(UserIndex).Stats.Exp > MAXEXP Then UserList(UserIndex).Stats.Exp = MAXEXP
-
-148                 Call WriteUpdateExp(UserIndex)
-150                 Call CheckUserLevel(UserIndex)
-
-                End If
-            
-152             Call WriteTextOverTile(UserIndex, "+" & PonerPuntos(ExpaDar), UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, RGB(0, 169, 255))
-
-            End If
-
-        End If
-
         
-        Exit Sub
+102         If UserList(UserIndex).Grupo.EnGrupo Then
+104             Call CalcularDarExpGrupal(UserIndex, NpcIndex, ElDaño)
+            Else
+                Call GetExpForUser(UserIndex, NpcIndex, ElDaño)
+            End If
+            Exit Sub
 
 CalcularDarExp_Err:
 154     Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExp", Erl)
 
         
 End Sub
+Private Sub GetExpForUser(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
+    
+On Error GoTo GetExpForUser_Err
 
+    Dim ExpaDar As Double
+            
+    With UserList(UserIndex)
+        'Chekeamos que las variables sean validas para las operaciones
+        If ElDaño <= 0 Then ElDaño = 0
+        If NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
+
+        'La experiencia a dar es la porcion de vida quitada * toda la experiencia
+        
+        ExpaDar = CDbl(ElDaño) * CDbl(NpcList(NpcIndex).GiveEXP) / NpcList(NpcIndex).Stats.MaxHp
+
+        If ExpaDar <= 0 Then Exit Sub
+
+        'Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
+        'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
+        'Podria dar un numero fraccionario, esas fracciones se acumulan hasta formar enteros ;P
+        If ExpaDar > NpcList(NpcIndex).flags.ExpCount Then
+            ExpaDar = NpcList(NpcIndex).flags.ExpCount
+            NpcList(NpcIndex).flags.ExpCount = 0
+        Else
+            NpcList(NpcIndex).flags.ExpCount = NpcList(NpcIndex).flags.ExpCount - ExpaDar
+
+        End If
+
+        If SvrConfig.GetValue("ExpMult") > 0 Then
+            ExpaDar = ExpaDar * SvrConfig.GetValue("ExpMult")
+        End If
+
+        If ExpaDar > 0 Then
+            If NpcList(NpcIndex).nivel Then
+                Dim DeltaLevel As Integer
+                DeltaLevel = .Stats.ELV - NpcList(NpcIndex).nivel
+            
+                If DeltaLevel > CInt(SvrConfig.GetValue("DeltaLevelExpPenalty")) Then
+                    Dim Penalty As Single
+                    Penalty = GetExpPenalty(UserIndex, NpcIndex, DeltaLevel)
+                    ExpaDar = ExpaDar * Penalty
+                     
+                     ' Si tiene el chat activado, enviamos el mensaje
+                     If UserList(UserIndex).ChatCombate = 1 Then
+                        ' Mostrar porcentaje final de experiencia como número entero
+                        Dim PorcentajeFinal As Integer
+                        PorcentajeFinal = Penalty * 100
+                        'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
+                        Call WriteLocaleMsg(UserIndex, "1467", e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
+                     End If
+                End If
+            End If
+            If .Stats.ELV < STAT_MAXELV Then
+               .Stats.Exp = .Stats.Exp + ExpaDar
+               
+                If .Stats.Exp > MAXEXP Then .Stats.Exp = MAXEXP
+
+                Call WriteUpdateExp(UserIndex)
+                Call CheckUserLevel(UserIndex)
+            End If
+        
+            Call WriteTextOverTile(UserIndex, "+" & PonerPuntos(ExpaDar), .pos.x, .pos.y, RGB(0, 169, 255))
+        End If
+    End With
+    Exit Sub
+GetExpForUser_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetExpForUser", Erl)
+End Sub
 Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
         
         On Error GoTo CalcularDarExpGrupal_Err
         
-
-        '***************************************************
-        'Autor: Nacho (Integer)
-        'Last Modification: 03/09/06 Nacho
-        'Reescribi gran parte del Sub
-        'Ahora, da toda la experiencia del npc mientras este vivo.
-        '***************************************************
         Dim ExpaDar                 As Long
         Dim BonificacionGrupo       As Single
         Dim CantidadMiembrosValidos As Integer
@@ -1816,19 +1815,19 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         Dim Index                   As Integer
 
         'If UserList(UserIndex).Grupo.EnGrupo Then
-        '[Nacho] Chekeamos que las variables sean validas para las operaciones
+        'Chekeamos que las variables sean validas para las operaciones
 100     If NpcIndex = 0 Then Exit Sub
 102     If UserIndex = 0 Then Exit Sub
 104     If ElDaño <= 0 Then ElDaño = 0
 106     If NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
 108     If ElDaño > NpcList(NpcIndex).Stats.MinHp Then ElDaño = NpcList(NpcIndex).Stats.MinHp
     
-        '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
+        'La experiencia a dar es la porcion de vida quitada * toda la experiencia
 110     ExpaDar = CLng((ElDaño) * (NpcList(NpcIndex).GiveEXP / NpcList(NpcIndex).Stats.MaxHp))
 
 112     If ExpaDar <= 0 Then Exit Sub
 
-        '[Nacho] Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
+        'Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
         'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
         'Podria dar un numero fraccionario, esas fracciones se acumulan hasta formar enteros ;P
 114     If ExpaDar > NpcList(NpcIndex).flags.ExpCount Then
@@ -1892,13 +1891,25 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 158                             ExpUser = ExpaDar
                     
 166                             If UserList(Index).Stats.ELV < STAT_MAXELV Then
-168                                 If NpcList(NpcIndex).nivel Then
-170                                     DeltaLevel = UserList(Index).Stats.ELV - NpcList(NpcIndex).nivel
-172                                     If Abs(DeltaLevel) > 5 Then ' Qué pereza da desharcodear
-174                                         ExpUser = ExpUser * Math.Exp(15 - Abs(3 * DeltaLevel))
-176                                         Call WriteConsoleMsg(Index, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", e_FontTypeNames.FONTTYPE_WARNING)
+
+                                    If NpcList(NpcIndex).nivel Then
+                                        DeltaLevel = UserList(Index).Stats.ELV - NpcList(NpcIndex).nivel
+                                        If DeltaLevel > CInt(SvrConfig.GetValue("DeltaLevelExpPenalty")) Then
+                                            Dim Penalty As Single
+                                            Penalty = GetExpPenalty(Index, NpcIndex, DeltaLevel)
+                                            ExpUser = ExpUser * Penalty
+                                            
+                                            ' Si tiene el chat activado, enviamos el mensaje
+                                            If UserList(Index).ChatCombate = 1 Then
+                                                ' Mostrar porcentaje final de experiencia como número entero
+                                                Dim PorcentajeFinal As Integer
+                                                PorcentajeFinal = Penalty * 100
+                                                'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
+                                                Call WriteLocaleMsg(Index, "1467", e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
+                                            End If
                                         End If
                                     End If
+                                        
 178                                 UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
 180                                 If UserList(Index).Stats.Exp > MAXEXP Then UserList(Index).Stats.Exp = MAXEXP
 182                                 If UserList(Index).ChatCombate = 1 Then
@@ -1929,7 +1940,33 @@ CalcularDarExpGrupal_Err:
 
         
 End Sub
+Function GetExpPenalty(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, DeltaLevel As Integer) As Single
 
+    On Error GoTo GetExpPenalty_Err
+    
+'    This function computes an experience-gain multiplier (between 0.0 and 1.0) based on how far above the NPC’s level the player is.
+'    Why “DeltaLevel – 4”? No penalty for small over-leveling (up to 4 levels). Beyond that, each extra level reduces your XP by the configured percentage.
+'    Summary
+'    Output: a multiplier from 1.0 down to 0.0.
+'    Use it to scale whatever EXP your damage routine calculated.
+
+    Dim NivelesExtra As Integer
+    
+    NivelesExtra = DeltaLevel - 4
+    
+    ' Calculamos el porcentaje de penalización
+    Dim Penalizacion As Single
+    Penalizacion = 1 - (CSng(SvrConfig.GetValue("PenaltyExpUserPerLevel")) * NivelesExtra)
+    
+    ' Nos aseguramos de que nunca sea menos del 0%
+    If Penalizacion < 0 Then Penalizacion = 0
+    
+    GetExpPenalty = Penalizacion
+    Exit Function
+    
+GetExpPenalty_Err:
+        Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetExpPenalty", Erl)
+End Function
 Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As Long)
         
         On Error GoTo CalcularDarOroGrupal_Err
