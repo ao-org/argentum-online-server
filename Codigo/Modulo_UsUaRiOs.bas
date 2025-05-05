@@ -580,8 +580,7 @@ On Error GoTo Complete_ConnectUser_Err
                             'Le avisamos al que estaba comerciando que se tuvo que ir.
 725                         If UserList(UserList(MapData(.pos.map, .pos.x, .pos.y).userIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
 730                             Call FinComerciarUsu(UserList(MapData(.pos.map, .pos.x, .pos.y).userIndex).ComUsu.DestUsu.ArrayIndex)
-735                             Call WriteConsoleMsg(UserList(MapData(.pos.map, .pos.x, .pos.y).userIndex).ComUsu.DestUsu.ArrayIndex, "Comercio cancelado. El otro usuario se ha desconectado.", e_FontTypeNames.FONTTYPE_WARNING)
-
+735                             Call WriteConsoleMsg(UserList(MapData(.pos.Map, .pos.x, .pos.y).UserIndex).ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(1925, vbNullString, e_FontTypeNames.FONTTYPE_WARNING)) ' Msg1925=Comercio cancelado. El otro usuario se ha desconectado.
                             End If
 
                             'Lo sacamos.
@@ -799,7 +798,7 @@ On Error GoTo Complete_ConnectUser_Err
 
 
 1135        ElseIf .Stats.ELV < 25 Then
-1140            Call WriteLocaleMsg(UserIndex, "1439", e_FontTypeNames.FONTTYPE_GUILD, .name & "¬" & .Stats.ELV & "¬" & get_map_name(.Pos.Map)) ' Msg1439=¡Bienvenido de nuevo ¬1! Actualmente estas en el nivel ¬2 en ¬3, ¡buen viaje y mucha suerte!
+1140            Call WriteLocaleMsg(UserIndex, "1439", e_FontTypeNames.FONTTYPE_GUILD, .name & "¬" & .Stats.ELV & "¬" & get_map_name(.pos.Map)) ' Msg1439=¡Bienvenido de nuevo ¬1! Actualmente estas en el nivel ¬2 en ¬3, ¡buen viaje y mucha suerte!
 
              End If
 

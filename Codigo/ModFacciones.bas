@@ -83,14 +83,14 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 136                 primerRango = RangosFaccion(1)
 
 138             If .Faccion.FactionScore < primerRango.RequiredScore Then
-140                 Call WriteLocaleChatOverHead(UserIndex, 1378, primerRango.RequiredScore & "¬" & .Faccion.FactionScore, charIndexStr, vbWhite) ' Msg1378=Para unirte a nuestras fuerzas debes tener al menos ¬1 puntos de faccion, solo tienes ¬2
+140                 Call WriteLocaleChatOverHead(UserIndex, 1378, primerRango.RequiredScore & "¬" & .Faccion.FactionScore, charindexstr, vbWhite) ' Msg1378=Para unirte a nuestras fuerzas debes tener al menos ¬1 puntos de faccion, solo tienes ¬2
 
                     Exit Sub
 
                 End If
 
 142             If .Stats.ELV < primerRango.NivelRequerido Then
-144                 Call WriteLocaleChatOverHead(UserIndex, 1379, primerRango.NivelRequerido, charIndexStr, vbWhite) ' Msg1379=¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel ¬1!!!
+144                 Call WriteLocaleChatOverHead(UserIndex, 1379, primerRango.NivelRequerido, charindexstr, vbWhite) ' Msg1379=¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel ¬1!!!
                     Exit Sub
 
                 End If
@@ -122,7 +122,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 
                 End If
 
-170             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces al Ejercito Real!", e_FontTypeNames.FONTTYPE_INFOIAO)
+170             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1932, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1932=¡Ahora perteneces al Ejército Real!
 172             Call DarRecompensas(UserIndex)
 174             Call RefreshCharStatus(UserIndex)
 
@@ -192,7 +192,7 @@ Public Sub ExpulsarFaccionReal(ByVal UserIndex As Integer)
 102         UserList(UserIndex).Faccion.status = e_Facciones.Ciudadano
 104         Call RefreshCharStatus(UserIndex)
 106         Call PerderItemsFaccionarios(UserIndex)
-108         Call WriteConsoleMsg(UserIndex, "Has sido expulsado del Ejercito Real.", e_FontTypeNames.FONTTYPE_INFOIAO)
+108         Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1933, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1933=Has sido expulsado del Ejército Real.
             UserList(UserIndex).Faccion.FactionScore = 0
 
             Exit Sub
@@ -210,7 +210,8 @@ Public Sub ExpulsarFaccionCaos(ByVal UserIndex As Integer)
 102         UserList(UserIndex).Faccion.status = e_Facciones.Criminal
 104         Call RefreshCharStatus(UserIndex)
 106         Call PerderItemsFaccionarios(UserIndex)
-108         Call WriteConsoleMsg(UserIndex, "Has sido expulsado de la Legión Oscura.", e_FontTypeNames.FONTTYPE_INFOIAO)
+108         Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1934, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1934=Has sido expulsado de la Legión Oscura.
+
             UserList(UserIndex).Faccion.FactionScore = 0
             Exit Sub
 
@@ -281,14 +282,14 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 132                 primerRango = RangosFaccion(2) ' 2 es el primer rango del caos
 
 134             If .Faccion.FactionScore < primerRango.RequiredScore Then
-136                 Call WriteLocaleChatOverHead(UserIndex, 1383, primerRango.RequiredScore & "," & .Faccion.FactionScore, charIndexStr, vbWhite) ' Msg1383=Para unirte a nuestras fuerzas debes tener al menos ¬1 puntos de facción, solo tienes ¬2
+136                 Call WriteLocaleChatOverHead(UserIndex, 1383, primerRango.RequiredScore & "," & .Faccion.FactionScore, charindexstr, vbWhite) ' Msg1383=Para unirte a nuestras fuerzas debes tener al menos ¬1 puntos de facción, solo tienes ¬2
 
                     Exit Sub
 
                 End If
 
 138             If .Stats.ELV < primerRango.NivelRequerido Then
-140                 Call WriteLocaleChatOverHead(UserIndex, 1384, primerRango.NivelRequerido, charIndexStr, vbWhite) ' Msg1384=¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel ¬1!!!
+140                 Call WriteLocaleChatOverHead(UserIndex, 1384, primerRango.NivelRequerido, charindexstr, vbWhite) ' Msg1384=¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel ¬1!!!
                     Exit Sub
                 End If
                 
@@ -318,7 +319,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 162                 .Faccion.NivelIngreso = .Stats.ELV
                 End If
 
-164             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces a la Legión Oscura.!", e_FontTypeNames.FONTTYPE_INFOIAO)
+164             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1935, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1935=¡Ahora perteneces a la Legión Oscura!
 166             Call DarRecompensas(UserIndex)
 168             Call RefreshCharStatus(UserIndex)
 
