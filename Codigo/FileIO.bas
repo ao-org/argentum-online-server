@@ -607,6 +607,37 @@ CargarForbidenWords_Err:
 
         
 End Sub
+Public Sub CargarPalabrasBloqueadasDesc()
+        
+        On Error GoTo CargarPalabrasBloqueadasDesc_Err
+
+        Dim Size As Integer
+
+        Size = TxtDimension(DatPath & "PalabrasBloqueadasDesc.txt")
+    
+        If Size = 0 Then
+            ReDim PalabrasBloqueadasDesc(0)
+            Exit Sub
+        End If
+    
+        ReDim PalabrasBloqueadasDesc(1 To Size)
+
+        Dim n As Integer, i As Integer
+
+        n = FreeFile(1)
+        Open DatPath & "PalabrasBloqueadasDesc.txt" For Input As #n
+    
+        For i = LBound(PalabrasBloqueadasDesc) To UBound(PalabrasBloqueadasDesc)
+            Line Input #n, PalabrasBloqueadasDesc(i)
+            PalabrasBloqueadasDesc(i) = LCase$(PalabrasBloqueadasDesc(i))
+        Next i
+    
+        Close n
+        Exit Sub
+
+CargarPalabrasBloqueadasDesc_Err:
+        Call TraceError(Err.Number, Err.Description, "ES.CargarPalabrasBloqueadasDesc", Erl)
+End Sub
 
 Public Sub CargarHechizos()
 
