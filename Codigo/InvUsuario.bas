@@ -1790,13 +1790,13 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             End If
     
 130         If .Stats.ELV < obj.MinELV Then
-132             Call WriteConsoleMsg(UserIndex, "Necesitas ser nivel " & obj.MinELV & " para usar este item.", e_FontTypeNames.FONTTYPE_INFO)
+132             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1981, obj.MinELV, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1981=Necesitas ser nivel ¬1 para usar este item.
                 Exit Sub
     
             End If
             
             If .Stats.ELV > obj.MaxLEV And obj.MaxLEV > 0 Then
-                Call WriteConsoleMsg(UserIndex, "Este objeto no puede ser utilizado por personajes de nivel " & obj.MaxLEV & " o superior.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1982, obj.MaxLEV, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1982=Este objeto no puede ser utilizado por personajes de nivel ¬1 o superior.
                 Exit Sub
             End If
     
@@ -2453,7 +2453,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 800                                 .flags.SpouseId = 0
                                     'Msg886= Te has divorciado.
                                     Call WriteLocaleMsg(UserIndex, "886", e_FontTypeNames.FONTTYPE_INFOIAO)
-804                                 Call WriteConsoleMsg(tUser.ArrayIndex, .name & " se ha divorciado de ti.", e_FontTypeNames.FONTTYPE_INFOIAO)
+804                                 Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1983, .name, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1983=¬1 se ha divorciado de ti.
 
                                     If obj.Snd1 <> 0 Then
 808                                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
@@ -2695,7 +2695,7 @@ Call WriteLocaleMsg(UserIndex, "889", e_FontTypeNames.FONTTYPE_INFOIAO)
 1008                 Call QuitarUserInvItem(UserIndex, Slot, 1)
 1010                 Call UpdateUserInv(False, UserIndex, Slot)
             
-1012                 Call WriteConsoleMsg(UserIndex, "Has abierto un " & obj.Name & " y obtuviste...", e_FontTypeNames.FONTTYPE_New_DONADOR)
+1012                 Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1984, obj.name, e_FontTypeNames.FONTTYPE_New_DONADOR)) ' Msg1984=Has abierto un ¬1 y obtuviste...
             
 1014                 If obj.Snd1 <> 0 Then
 1016                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
@@ -3515,7 +3515,8 @@ On Error GoTo ResurrectWithItem_Err
         If UserList(TargetUser).flags.SeguroResu Then
             ' Msg693=El usuario tiene el seguro de resurrección activado.
             Call WriteLocaleMsg(UserIndex, "693", e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(TargetUser, UserList(UserIndex).name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(TargetUser, PrepareMessageLocaleMsg(1985, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1985=¬1 está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.
+
             Exit Sub
         End If
         If CanHelpResult <> eInteractionOk Then
