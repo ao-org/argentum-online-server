@@ -92,7 +92,9 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
 102             If UserList(UserIndex).ComUsu.Oro + ObjAEnviar.amount <= UserList(UserIndex).Stats.GLD Then
 104                 UserList(UserIndex).ComUsu.Oro = UserList(UserIndex).ComUsu.Oro + ObjAEnviar.amount
                 Else
+
 106                 Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1936, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1936=No tienes esa cantidad disponible para agregar.
+
                     Exit Sub
                 End If
             Else
@@ -108,7 +110,9 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
 116             cantidadTotalItem = cantidadTotalItem + ObjAEnviar.amount
             
 118             If Not TieneObjetos(ObjAEnviar.ObjIndex, cantidadTotalItem, UserIndex) Then
-120                 Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1936, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1936=No tienes esa cantidad disponible para agregar.
+
+120                 Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1997, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1997=No tienes esa cantidad disponible para agregar.
+
                     Exit Sub
                 End If
             
@@ -153,7 +157,8 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
 162                     .itemsAenviar(FirstEmptyPos).amount = ObjAEnviar.amount
 164                 ElseIf FirstEmptyPos = 0 And nada = False Then
                         'le aviso que no le entran los items
-166                     Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1937, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1937=No tienes suficiente lugar para agregar esa cantidad o item.
+
+166                     Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1998, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1998=No tienes suficiente lugar para agregar esa cantidad o item.
 
                     End If
                 End With
@@ -251,7 +256,9 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
         End If
     
 132     If UserList(OtroUserIndex).ComUsu.Oro > UserList(OtroUserIndex).Stats.GLD Then
-134         Call WriteConsoleMsg(OtroUserIndex, PrepareMessageLocaleMsg(1938, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1938=No tienes esa cantidad.
+
+134         Call WriteConsoleMsg(OtroUserIndex, PrepareMessageLocaleMsg(1999, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1999=No tienes esa cantidad.
+
 136         GoTo FinalizarComercio
         End If
 
