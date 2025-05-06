@@ -6157,7 +6157,7 @@ Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
                 Dim MembersId() As Long
                 MembersId = GetGuildMemberList(guild)
                 For i = LBound(MembersId) To UBound(MembersId)
-                    Call WriteConsoleMsg(UserIndex, GetUserName(MembersId(i)) & "<" & guild & ">", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1993, GetUserName(MembersId(i)) & "¬" & guild, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1993=¬1 <¬2>
                 Next i
             End If
         End With
@@ -6890,8 +6890,8 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                     Else
 122                     UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 2
                         UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Criminal
-124                     Call WriteConsoleMsg(UserIndex, username & " expulsado de las fuerzas del caos y prohibida la reenlistada", e_FontTypeNames.FONTTYPE_INFO)
-126                     Call WriteConsoleMsg(tUser.ArrayIndex, .name & " te ha expulsado en forma definitiva de las fuerzas del caos.", e_FontTypeNames.FONTTYPE_FIGHT)
+124                     Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1992, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1992=¬1 expulsado de las fuerzas del caos y prohibida la reenlistada.
+126                     Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1991, .name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1991=¬1 te ha expulsado en forma definitiva de las fuerzas del caos.
                     End If
                 Else
                     If PersonajeExiste(username) Then
@@ -6971,8 +6971,8 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                     Else
 122                     UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 2
                         UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Ciudadano
-124                     Call WriteConsoleMsg(UserIndex, username & " expulsado de las fuerzas reales y prohibida la reenlistada", e_FontTypeNames.FONTTYPE_INFO)
-126                     Call WriteConsoleMsg(tUser.ArrayIndex, .name & " te ha expulsado en forma definitiva de las fuerzas reales.", e_FontTypeNames.FONTTYPE_FIGHT)
+124                     Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1990, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1990=¬1 expulsado de las fuerzas reales y prohibida la reenlistada.
+126                     Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1989, .name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1989=¬1 te ha expulsado en forma definitiva de las fuerzas reales.
                     End If
 
                 Else
@@ -7127,7 +7127,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-102         Call WriteConsoleMsg(UserIndex, ListaClases(.clase) & " " & ListaRazas(.raza) & " nivel " & .Stats.ELV & ".", FONTTYPE_INFOBOLD)
+102         Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1988, ListaClases(.clase) & "¬" & ListaRazas(.raza) & "¬" & .Stats.ELV, FONTTYPE_INFOBOLD)) ' Msg1988=¬1 ¬2 nivel ¬3.
             
             Dim Promedio As Double, Vida As Long
         
