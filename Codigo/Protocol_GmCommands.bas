@@ -1044,7 +1044,8 @@ Public Sub HandleWorking(ByVal UserIndex As Integer)
         
 116         If LenB(Users) <> 0 Then
 118             Users = Right$(Users, Len(Users) - 2)
-                Call WriteConsoleMsg(UserIndex, "Usuarios trabajando: " & Users, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1852, Users, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1852=Usuarios trabajando: ¬1
+
             Else
                 'Msg953= No hay usuarios trabajando
                 Call WriteLocaleMsg(UserIndex, "953", e_FontTypeNames.FONTTYPE_INFO)
