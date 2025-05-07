@@ -194,6 +194,7 @@ On Error Resume Next
         If UserIndex > 0 Then
             If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
                 Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageLocaleMsg(1791, UserList(UserIndex).name & "¬" & PacketId, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1791=Control Paquetes---> El usuario ¬1 | Iteración paquetes | Último paquete: ¬2.
+                Call KickConnection(ConnectionID)
             End If
             Mapping(ConnectionId).PacketCount = 0
             If IsFeatureEnabled("kick_packet_overflow") Then
@@ -202,6 +203,7 @@ On Error Resume Next
         Else
             If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
                 Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageLocaleMsg(1792, PacketId, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1792=Control Paquetes---> Usuario desconocido | Iteración paquetes | Último paquete: ¬1.
+                Call KickConnection(ConnectionID)
             End If
             Mapping(ConnectionId).PacketCount = 0
             If IsFeatureEnabled("kick_packet_overflow") Then
@@ -216,6 +218,7 @@ On Error Resume Next
         If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
             Call LogEdicionPaquete("El usuario " & UserList(UserIndex).ConnectionDetails.IP & " mando fake paquet " & PacketId)
             Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageLocaleMsg(1793, UserList(UserIndex).name & "¬" & UserList(UserIndex).ConnectionDetails.IP, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1793=Control Paquetes---> El usuario ¬1 | IP: ¬2 ESTÁ ENVIANDO PAQUETES INVÁLIDOS
+            Call KickConnection(ConnectionID)
         End If
         Call KickConnection(ConnectionID)
         Exit Function
