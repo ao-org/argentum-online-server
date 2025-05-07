@@ -193,16 +193,16 @@ On Error Resume Next
         'Lo kickeo
         If UserIndex > 0 Then
             If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
-                Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageLocaleMsg(1791, UserList(UserIndex).name & "¬" & PacketId, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1791=Control Paquetes---> El usuario ¬1 | Iteración paquetes | Último paquete: ¬2.
-            End If
+                Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & UserList(UserIndex).name & " | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
+                End If
             Mapping(ConnectionId).PacketCount = 0
             If IsFeatureEnabled("kick_packet_overflow") Then
                 Call KickConnection(ConnectionID)
             End If
         Else
             If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
-                Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageLocaleMsg(1792, PacketId, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1792=Control Paquetes---> Usuario desconocido | Iteración paquetes | Último paquete: ¬1.
-            End If
+                Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> Usuario desconocido | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
+                End If
             Mapping(ConnectionId).PacketCount = 0
             If IsFeatureEnabled("kick_packet_overflow") Then
                 Call KickConnection(ConnectionId)
@@ -215,7 +215,7 @@ On Error Resume Next
     If PacketId < ClientPacketID.eMinPacket Or PacketId >= ClientPacketID.PacketCount Then
         If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
             Call LogEdicionPaquete("El usuario " & UserList(UserIndex).ConnectionDetails.IP & " mando fake paquet " & PacketId)
-            Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageLocaleMsg(1793, UserList(UserIndex).name & "¬" & UserList(UserIndex).ConnectionDetails.IP, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1793=Control Paquetes---> El usuario ¬1 | IP: ¬2 ESTÁ ENVIANDO PAQUETES INVÁLIDOS
+            Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & UserList(UserIndex).name & " | IP: " & UserList(UserIndex).ConnectionDetails.IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
         End If
         Call KickConnection(ConnectionID)
         Exit Function
@@ -2320,9 +2320,9 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount As Lo
 
     'Controlamos secuencia para ver que no haya paquetes duplicados.
     If ActualCount <= LastCount Then
-        Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageLocaleMsg(1794, PacketName & "¬" & UserList(UserIndex).Cuenta & "¬" & UserList(UserIndex).ConnectionDetails.IP, e_FontTypeNames.FONTTYPE_INFOBOLD)) ' Msg1794=Paquete grabado: ¬1 | Cuenta: ¬2 | Ip: ¬3 (Baneado automáticamente)
+        Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & UserList(UserIndex).ConnectionDetails.IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
         Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el paquete " & PacketName & ".")
-        Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageLocaleMsg(1794, PacketName & "¬" & UserList(UserIndex).Cuenta & "¬" & UserList(UserIndex).ConnectionDetails.IP, e_FontTypeNames.FONTTYPE_INFOBOLD)) ' Msg1794=Paquete grabado: ¬1 | Cuenta: ¬2 | Ip: ¬3 (Baneado automáticamente)
+        Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & UserList(UserIndex).ConnectionDetails.IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
         Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el paquete " & PacketName & ".")
         LastCount = ActualCount
         Call CloseSocket(UserIndex)
@@ -2336,7 +2336,7 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount As Lo
             'Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
             verifyTimeStamp = False
             'Call LogMacroServidor("El usuario " & UserList(UserIndex).name & " iteró el paquete " & PacketName & " " & MaxIterations & " veces.")
-            Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageLocaleMsg(1795, UserList(UserIndex).name & "¬" & PacketName & "¬" & Iterations, e_FontTypeNames.FONTTYPE_INFOBOLD)) ' Msg1795=Control de macro---> El usuario ¬1| Revisar --> ¬2 (Envíos: ¬3).
+            Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).name & "| Revisar --> " & PacketName & " (Envíos: " & Iterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
             'Call WriteCerrarleCliente(UserIndex)
             'Call CloseSocket(UserIndex)
             LastCount = ActualCount
@@ -2553,7 +2553,7 @@ Private Sub HandleUseSpellMacro(ByVal UserIndex As Integer)
 #If STRESSER = 1 Then
     Exit Sub
 #End If
-102         Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageLocaleMsg(1796, .name, e_FontTypeNames.FONTTYPE_VENENO)) ' Msg1796=¬1 fue expulsado por Anti-macro de hechizos
+102         Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg(.name & " fue expulsado por Anti-macro de hechizos", e_FontTypeNames.FONTTYPE_VENENO))
 104         Call WriteShowMessageBox(UserIndex, 1782, vbNullString) 'Msg1782=Has sido expulsado por usar macro de hechizos. Recomendamos leer el reglamento sobre el tema macros.
         
 106         Call CloseSocket(UserIndex)
@@ -2586,8 +2586,8 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
             DesdeInventario = Reader.ReadInt8
             
             If Not DesdeInventario Then
-                Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageLocaleMsg(1797, .name, e_FontTypeNames.FONTTYPE_INFOBOLD)) ' Msg1797=El usuario ¬1 está tomando pociones con click estando en hechizos... raaaaaro, poleeeeemico. BAN?
-            End If
+                Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("El usuario " & .name & " está tomando pociones con click estando en hechizos... raaaaaro, poleeeeemico. BAN?", e_FontTypeNames.FONTTYPE_INFOBOLD))
+                End If
             
             Dim PacketCounter As Long
             PacketCounter = Reader.ReadInt32
