@@ -5876,9 +5876,13 @@ Private Sub HandleChangeDescription(ByVal UserIndex As Integer)
 110                 ' Msg764=La descripción es muy larga.
                     Call WriteLocaleMsg(UserIndex, "764", e_FontTypeNames.FONTTYPE_INFOIAO)
 
-112             ElseIf Not DescripcionValida(Description) Then
+112             ElseIf Not ValidDescription(Description) Then
 114                 ' Msg765=La descripción tiene carácteres inválidos.
                     Call WriteLocaleMsg(UserIndex, "765", e_FontTypeNames.FONTTYPE_INFOIAO)
+                    
+                ElseIf Not ValidWordsDescription(Description) Then
+                    'Msg2000=La descripción contiene palabras que no están permitidas.
+                    Call WriteLocaleMsg(UserIndex, "2000", e_FontTypeNames.FONTTYPE_INFOIAO)
                 
                 Else
 116                 .Desc = Trim$(Description)

@@ -582,6 +582,7 @@ On Error GoTo Handler
 138     Call LoadMainConfigFile
 140     Call LoadIntervalos
 142     Call CargarForbidenWords
+        Call LoadBlockedWordsDescription
 144     Call CargaApuestas
 146     Call CargarSpawnList
 148     Call LoadMotd
