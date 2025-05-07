@@ -22,7 +22,7 @@ Function ValidWordsDescription(ByVal cad As String) As Boolean
     Exit Function
 
 ValidWordsDescription_Err:
-    Call TraceError(Err.Number, Err.Description, "TCP.ValidWordsDescription", Erl)
+    Call TraceError(Err.Number, Err.Description, "StringUtils.ValidWordsDescription", Erl)
 End Function
 Private Function NormalizeText(ByVal cad As String) As String
     On Error GoTo NormalizeText_Err
@@ -51,7 +51,7 @@ Private Function NormalizeText(ByVal cad As String) As String
     Exit Function
 
 NormalizeText_Err:
-    Call TraceError(Err.Number, Err.Description, "TCP.NormalizeText", Erl)
+    Call TraceError(Err.Number, Err.Description, "StringUtils.NormalizeText", Erl)
 End Function
 
 Function ValidDescription(ByVal cad As String) As Boolean
@@ -77,5 +77,5 @@ Function ValidDescription(ByVal cad As String) As Boolean
         Exit Function
 
 ValidDescription_Err:
-114     Call TraceError(Err.Number, Err.Description, "TCP.ValidDescription", Erl)
+114     Call TraceError(Err.Number, Err.Description, "StringUtils.ValidDescription", Erl)
 End Function
