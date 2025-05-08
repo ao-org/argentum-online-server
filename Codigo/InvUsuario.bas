@@ -1500,9 +1500,11 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     'Si esta equipado lo quita
 422                 If .Invent.Object(Slot).Equipped Then
 424                     Call Desequipar(UserIndex, Slot)
-                
-426                     .Char.CascoAnim = NingunCasco
-428                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+                        .Char.CascoAnim = NingunCasco
+452                     If obj.Subtipo = 2 Then
+                            .Char.head = .Char.originalhead
+                        End If
+                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
                         Exit Sub
 
                     End If
@@ -1525,8 +1527,16 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 446                 .Invent.CascoEqpSlot = Slot
             
 448                 If .flags.Navegando = 0 Then
-450                     .Char.CascoAnim = obj.CascoAnim
-452                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
+450
+                     If obj.Subtipo = 2 Then
+                            .Char.originalhead = .Char.head
+                            .Char.head = obj.CascoAnim
+                            .Char.CascoAnim = 0
+                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
+                        Else
+                            .Char.CascoAnim = obj.CascoAnim
+                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
+                        End If
                     End If
                 
 454                 If obj.ResistenciaMagica > 0 Then

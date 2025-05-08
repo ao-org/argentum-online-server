@@ -1344,6 +1344,7 @@ Public Type t_Char
     charindex_bk As Integer
     Head As Integer
     Body As Integer
+    originalhead As Integer
     
     WeaponAnim As Integer
     ShieldAnim As Integer
