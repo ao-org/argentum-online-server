@@ -2590,13 +2590,16 @@ Public Type t_Vertice
     y As Integer
 End Type
 
-Public Type t_NpcPathFindingInfo
+Public Const MAX_PATH_LENGTH As Integer = 512
+Public Const PATH_VISION_DELTA As Integer = 25
 
+Public Type t_NpcPathFindingInfo
     PathLength As Integer   ' Number of steps *
     Path() As t_Vertice      ' This array holds the path
     destination As t_Position ' The location where the NPC has to go
     RangoVision As Single
-    Inteligencia As Integer
+    OriginalVision As Single
+    
     
     '* By setting PathLenght to 0 we force the recalculation
     '  of the path, this is very useful. For example,

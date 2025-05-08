@@ -1538,13 +1538,9 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
             End If
         
             '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< PATHFINDING >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-394         .pathFindingInfo.RangoVision = val(Leer.GetValue("NPC" & NpcNumber, "Distancia"))
-396         If .pathFindingInfo.RangoVision = 0 Then .pathFindingInfo.RangoVision = RANGO_VISION_X
-        
-398         .pathFindingInfo.Inteligencia = val(Leer.GetValue("NPC" & NpcNumber, "Inteligencia"))
-400         If .pathFindingInfo.Inteligencia = 0 Then .pathFindingInfo.Inteligencia = 10
-        
-402         ReDim .pathFindingInfo.Path(1 To .pathFindingInfo.Inteligencia + RANGO_VISION_X * 3)
+            .pathFindingInfo.RangoVision = val(Leer.GetValue("NPC" & NpcNumber, "Distancia", RANGO_VISION_X))
+            .pathFindingInfo.OriginalVision = .pathFindingInfo.RangoVision
+            ReDim .pathFindingInfo.Path(1 To MAX_PATH_LENGTH)
     
             '<<<<<<<<<<<<<< Sistema de Viajes NUEVO >>>>>>>>>>>>>>>>
 404         aux = Leer.GetValue("NPC" & NpcNumber, "NumDestinos")
