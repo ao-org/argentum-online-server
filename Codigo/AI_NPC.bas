@@ -33,8 +33,8 @@ Public Const ELEMENTAL_VIENTO      As Integer = 963
 Public Const ELEMENTAL_FUEGO      As Integer = 962
 
 'Damos a los NPCs el mismo rango de vison que un PJ
-Public Const RANGO_VISION_X  As Byte = 11
-Public Const RANGO_VISION_Y  As Byte = 9
+Public Const RANGO_VISION_X  As Byte = 21
+Public Const RANGO_VISION_Y  As Byte = 19
 Public Sub NpcDummyUpdate(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)
         Debug.Assert .npcType = DummyTarget
@@ -50,7 +50,7 @@ End Sub
 
 Public Sub NpcAI(ByVal NpcIndex As Integer)
         On Error GoTo ErrorHandler
-        'Debug.Print "NPC: " & NpcList(NpcIndex).Name
+
 100     With NpcList(NpcIndex)
 102         Select Case .Movement
                 Case e_TipoAI.Estatico
@@ -134,9 +134,9 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
         Dim enemigoCercano As Integer
         Dim enemigoAtacableMasCercano As Integer
     
-        ' Numero muy grande para que siempre haya un mÃƒÂ­nimo
-100     minDistancia = 32000
-102     minDistanciaAtacable = 32000
+
+100     minDistancia = MAX_INTEGER
+102     minDistanciaAtacable = MAX_INTEGER
 
 104     With NpcList(NpcIndex)
 106         npcEraPasivo = .flags.OldHostil = 0
@@ -454,6 +454,11 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
 112             If SeekPath(NpcIndex, True) Then
                     ' Si consiguo un camino
 114                 Call FollowPath(NpcIndex)
+                Else
+                    ' Cannot find path
+                    If NpcList(NpcIndex).Hostile = 1 And NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 Then
+                        NpcList(NpcIndex).pathFindingInfo.RangoVision = Min(MAX_PATH_LENGTH, NpcList(NpcIndex).pathFindingInfo.RangoVision + PATH_VISION_DELTA)
+                    End If
                 End If
             Else ' Avanzamos en el camino
 116             Call FollowPath(NpcIndex)
@@ -989,6 +994,10 @@ Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
 100     With NpcList(NpcIndex)
 102         Call SetUserRef(.TargetUser, 0)
 104         Call ClearNpcRef(.TargetNPC)
+            If .pathFindingInfo.RangoVision <> .pathFindingInfo.OriginalVision Then
+                'Restore old range
+                .pathFindingInfo.RangoVision = .pathFindingInfo.OriginalVision
+            End If
         
             ' Si el NPC no tiene maestro, reseteamos el movimiento que tenia antes.
 106         If Not IsValidUserRef(.MaestroUser) Then
@@ -1324,6 +1333,7 @@ Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Int
         ' Si alguno es cero, devolve false
 100     If NpcIndex = 0 Or UserIndex = 0 Then Exit Function
 
+        
 102     Limite_X = IIf(NpcList(NpcIndex).Distancia <> 0, NpcList(NpcIndex).Distancia, RANGO_VISION_X)
 104     Limite_Y = IIf(NpcList(NpcIndex).Distancia <> 0, NpcList(NpcIndex).Distancia, RANGO_VISION_Y)
 
