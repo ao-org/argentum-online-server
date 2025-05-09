@@ -1194,6 +1194,16 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
 
         If Not IsValidUserRef(NpcList(npcIndex).TargetUser) Then Exit Sub
 102     Target = NpcList(npcIndex).TargetUser.ArrayIndex
+
+     ' Compute how far the user is from the npcs
+         Dim dst_userx As Integer
+         Dim dst_usery As Integer
+         dst_userx = Abs(NpcList(NpcIndex).pos.x - UserList(Target).pos.x)
+         dst_usery = Abs(NpcList(NpcIndex).pos.y - UserList(Target).pos.y)
+         Debug.Assert NpcList(NpcIndex).pos.Map = UserList(Target).pos.Map
+         If dst_userx > SvrConfig.GetValue("NPC_SPELL_RANGE_X") Then Exit Sub
+         If dst_usery > SvrConfig.GetValue("NPC_SPELL_RANGE_Y") Then Exit Sub
+         
 104     SpellIndex = NpcList(NpcIndex).Spells(RandomNumber(1, NpcList(NpcIndex).flags.LanzaSpells)).SpellIndex
 106     PuedeDanarAlUsuario = UserList(Target).flags.NoMagiaEfecto = 0 And NpcList(NpcIndex).flags.Paralizado = 0
         
