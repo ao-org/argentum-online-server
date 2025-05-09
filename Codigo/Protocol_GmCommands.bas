@@ -2454,7 +2454,7 @@ Public Sub HandleServerMessage(ByVal UserIndex As Integer)
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero)) Then
 106             If LenB(Message) <> 0 Then
 108                 Call LogGM(.name, "Mensaje Broadcast:" & Message)
-110                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & "> " & Message, e_FontTypeNames.FONTTYPE_SERVER))
+110                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & "> " & Message, e_FontTypeNames.FONTTYPE_CENTINELA))
                 End If
             Else
 112             'Msg528=Servidor » Comando deshabilitado para tu cargo.
