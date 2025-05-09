@@ -850,6 +850,13 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer
         
         On Error GoTo UsuarioAtacaNpc_Err
         
+        'Si el npc es solo atacable para clanes y el usuario no tiene clan, le avisa y sale de la funcion
+        If NpcList(NpcIndex).OnlyForGuilds = 1 And UserList(UserIndex).GuildIndex <= 0 Then
+            'Msg2001=Debes pertenecer a un clan para atacar a este NPC
+            Call WriteLocaleMsg(UserIndex, "2001", e_FontTypeNames.FONTTYPE_WARNING)
+            Exit Sub
+        End If
+        
         Dim UserAttackInteractionResult As t_AttackInteractionResult
         UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
         Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)

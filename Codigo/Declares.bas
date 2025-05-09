@@ -2747,6 +2747,7 @@ Public Type t_Npc
     QuizaDropea() As String
     QuizaProb As Integer
     MinTameLevel As Byte
+    OnlyForGuilds As Byte
         
     NumDestinos As Byte
     Dest() As String
