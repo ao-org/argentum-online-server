@@ -580,6 +580,15 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
         
 102     With UserList(UserIndex)
 
+            'Si lanza a un npc y este es solo atacable para clanes y el usuario no tiene clan, le avisa y sale de la funcion
+            If IsValidNpcRef(.flags.TargetNPC) Then
+                If NpcList(.flags.TargetNPC.ArrayIndex).OnlyForGuilds = 1 And UserList(UserIndex).GuildIndex <= 0 Then
+                    'Msg2001=Debes pertenecer a un clan para atacar a este NPC
+                    Call WriteLocaleMsg(UserIndex, "2001", e_FontTypeNames.FONTTYPE_WARNING)
+                    Exit Function
+                End If
+            End If
+
 104         If UserList(UserIndex).flags.EnConsulta Then
 'Msg778= No puedes lanzar hechizos si estas en consulta.
 Call WriteLocaleMsg(UserIndex, "778", e_FontTypeNames.FONTTYPE_INFO)
