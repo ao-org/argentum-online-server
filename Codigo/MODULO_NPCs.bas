@@ -1357,6 +1357,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
     
 210         .QuizaProb = val(Leer.GetValue("NPC" & NpcNumber, "QuizaProb"))
             .MinTameLevel = val(Leer.GetValue("NPC" & NpcNumber, "MinTameLevel", 1))
+            .OnlyForGuilds = val(Leer.GetValue("NPC" & NpcNumber, "OnlyForGuilds", 0))
         
 214         If .IntervaloMovimiento = 0 Then
 216             .IntervaloMovimiento = 380
