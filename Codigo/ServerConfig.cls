@@ -119,7 +119,12 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "FISHING_SPECIALFISH2_ID", CInt(val(reader.GetValue("PESCA", "UniqueMapfish2")))
     mSettings.Add "FISHING_SPECIALFISH1_REMPLAZO_ID", CInt(val(reader.GetValue("PESCA", "ReplacementSpecialFish")))
     mSettings.Add "NPC_WATCHMAN_ID", CInt(val(reader.GetValue("PESCA", "NPCFishingWatcher")))
-   
+    
+
+    mSettings.Add "NPC_SPELL_RANGE_X", CInt(val(reader.GetValue("AI", "NPCSpellRangeX", NPC_SPELL_RANGE_X)))
+    mSettings.Add "NPC_SPELL_RANGE_Y", CInt(val(reader.GetValue("AI", "NPCSpellRangeY", NPC_SPELL_RANGE_Y)))
+    mSettings.Add "NPC_VISION_RANGE_X", CInt(val(reader.GetValue("AI", "NPCVisionRangeX", NPC_VISION_RANGE_X)))
+    mSettings.Add "NPC_VISION_RANGE_Y", CInt(val(reader.GetValue("AI", "NPCVisionRangeY", NPC_VISION_RANGE_Y)))
     Set reader = Nothing
     
     LoadSettings = 0
