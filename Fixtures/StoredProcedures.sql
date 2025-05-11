@@ -70,7 +70,6 @@ Main:BEGIN
 		UINFO.max_hit,
 		UINFO.killed_npcs,
 		UINFO.killed_users,
-		UINFO.invent_level,
 		UINFO.ELO,
 		UINFO.is_naked,
 		UINFO.is_poisoned,
