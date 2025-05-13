@@ -2913,6 +2913,7 @@ Public haciendoBK                        As Boolean
 Public PuedeCrearPersonajes              As Integer
 Public MinimumPriceMao                   As Long
 Public GoldPriceMao                      As Long
+Public PatreonCreditsPriceMao            As Long
 Public MinimumLevelMao                   As Integer
 Public ServerSoloGMs                     As Integer
 Public EnPausa                           As Boolean

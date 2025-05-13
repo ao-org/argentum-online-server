@@ -10198,57 +10198,90 @@ HandleBuyShopItem_Err:
 End Sub
 
 Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
+    On Error GoTo HandlePublicarPersonajeMAO_Err
 
-    On Error GoTo HandlePublicarPersonajeMAO_Err:
+    ' Leer valor del personaje y método de pago
     Dim Valor As Long
-        
     Valor = Reader.ReadInt32
-    
+
+    Dim paymentMethod As Byte
+    paymentMethod = Reader.ReadInt8
+
+    ' Validar precio mínimo
     If Valor <= MinimumPriceMao Then
-        'Msg1281= El valor de venta del personaje debe ser mayor que $¬1
-        Call WriteLocaleMsg(UserIndex, "1281", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMao)
+        WriteLocaleMsg UserIndex, "1281", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMao
         Exit Sub
     End If
-    
+
+    Dim RS As ADODB.Recordset
     With UserList(UserIndex)
-        ' Para recibir el ID del user
-        Dim RS As ADODB.Recordset
-        Set RS = Query("select is_locked_in_mao from user where id = ?;", .ID)
-                    
+
+        ' No permitir GMs
         If EsGM(UserIndex) Then
-            'Msg1282= No podes vender un gm.
-            Call WriteLocaleMsg(UserIndex, "1282", e_FontTypeNames.FONTTYPE_INFO)
+            WriteLocaleMsg UserIndex, "1282", e_FontTypeNames.FONTTYPE_INFO
             Exit Sub
         End If
-        If CBool(RS!is_locked_in_mao) Then
-            'Msg1283= El personaje ya está publicado.
-            Call WriteLocaleMsg(UserIndex, "1283", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
+
+        ' Verificar si ya fue publicado
+        Set RS = Query("SELECT is_locked_in_mao FROM user WHERE id = ?;", .ID)
+        If Not RS.EOF Then
+            If CBool(RS!is_locked_in_mao) Then
+                WriteLocaleMsg UserIndex, "1283", e_FontTypeNames.FONTTYPE_INFO
+                RS.Close
+                Exit Sub
+            End If
         End If
-        
+        RS.Close
+
+        ' Verificar nivel mínimo
         If .Stats.ELV < MinimumLevelMao Then
-            'Msg1284= No puedes publicar un personaje menor a nivel ¬1
-            Call WriteLocaleMsg(UserIndex, "1284", e_FontTypeNames.FONTTYPE_INFO, MinimumLevelMao)
+            WriteLocaleMsg UserIndex, "1284", e_FontTypeNames.FONTTYPE_INFO, MinimumLevelMao
             Exit Sub
         End If
-        
-        If .Stats.GLD < GoldPriceMao Then
-            'Msg1291= El costo para vender tu personajes es de ¬1 monedas de oro, no tienes esa cantidad.
-            Call WriteLocaleMsg(UserIndex, "1291", e_FontTypeNames.FONTTYPE_INFOBOLD, GoldPriceMao)
-            Exit Sub
-        Else
-            .Stats.GLD = .Stats.GLD - GoldPriceMao
-            Call WriteUpdateGold(UserIndex)
+
+        ' Cargar créditos Patreon desde base de datos si es necesario
+        If paymentMethod = PATRON_POINTS Then
+            LoadPatronCreditsFromDB UserIndex
         End If
-        Call Execute("update user set price_in_mao = ?, is_locked_in_mao = 1 where id = ?;", Valor, .ID)
-        Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID, "El personaje fue publicado.")
+
+        ' Manejo del pago según el método seleccionado
+        Select Case paymentMethod
+            Case GOLD
+                If .Stats.GLD < GoldPriceMao Then
+                    WriteConsoleMsg UserIndex, "El costo para vender tu personaje es de " & GoldPriceMao & " monedas de oro, no tienes esa cantidad.", e_FontTypeNames.FONTTYPE_INFOBOLD
+                    Exit Sub
+                End If
+
+                .Stats.GLD = .Stats.GLD - GoldPriceMao
+                WriteUpdateGold UserIndex
+
+            Case PATRON_POINTS
+                If .Stats.Creditos < PatreonCreditsPriceMao Then
+                    WriteConsoleMsg UserIndex, "El costo para vender tu personaje es de " & PatreonCreditsPriceMao & " Créditos Patreon, no tienes esa cantidad.", e_FontTypeNames.FONTTYPE_INFOBOLD
+                    Exit Sub
+                End If
+
+                .Stats.Creditos = .Stats.Creditos - PatreonCreditsPriceMao
+                writeUpdateShopClienteCredits UserIndex
+
+            Case Else
+                WriteConsoleMsg UserIndex, "Método de pago no válido.", e_FontTypeNames.FONTTYPE_INFOBOLD
+                Exit Sub
+        End Select
+
+        ' Marcar personaje como publicado
+        Execute "UPDATE user SET price_in_mao = ?, is_locked_in_mao = 1 WHERE id = ?;", Valor, .ID
+
+        ' Desconectar al usuario con mensaje
+        modNetwork.Kick .ConnectionDetails.ConnID, "El personaje fue publicado."
     End With
-        
+
     Exit Sub
 
 HandlePublicarPersonajeMAO_Err:
-102     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePublicarPersonajeMAO", Erl)
+    TraceError Err.Number, Err.Description, "Protocol.HandlePublicarPersonajeMAO", Erl
 End Sub
+
 
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     On Error GoTo HandleDeleteItem_Err:
