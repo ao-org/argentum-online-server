@@ -121,10 +121,10 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "NPC_WATCHMAN_ID", CInt(val(reader.GetValue("PESCA", "NPCFishingWatcher")))
     
 
-    mSettings.Add "NPC_SPELL_RANGE_X", CInt(val(reader.GetValue("AI", "NPCSpellRangeX", NPC_SPELL_RANGE_X)))
-    mSettings.Add "NPC_SPELL_RANGE_Y", CInt(val(reader.GetValue("AI", "NPCSpellRangeY", NPC_SPELL_RANGE_Y)))
-    mSettings.Add "NPC_VISION_RANGE_X", CInt(val(reader.GetValue("AI", "NPCVisionRangeX", NPC_VISION_RANGE_X)))
-    mSettings.Add "NPC_VISION_RANGE_Y", CInt(val(reader.GetValue("AI", "NPCVisionRangeY", NPC_VISION_RANGE_Y)))
+    mSettings.Add "NPC_SPELL_RANGE_X", CInt(val(Reader.GetValue("AI", "NPCSpellRangeX", DEFAULT_NPC_SPELL_RANGE_X)))
+    mSettings.Add "NPC_SPELL_RANGE_Y", CInt(val(Reader.GetValue("AI", "NPCSpellRangeY", DEFAULT_NPC_SPELL_RANGE_Y)))
+    mSettings.Add "NPC_VISION_RANGE_X", CInt(val(Reader.GetValue("AI", "NPCVisionRangeX", DEFAULT_NPC_VISION_RANGE_X)))
+    mSettings.Add "NPC_VISION_RANGE_Y", CInt(val(Reader.GetValue("AI", "NPCVisionRangeY", DEFAULT_NPC_VISION_RANGE_Y)))
     Set reader = Nothing
     
     LoadSettings = 0
