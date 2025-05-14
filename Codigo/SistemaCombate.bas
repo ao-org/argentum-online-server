@@ -880,11 +880,11 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer
             ' Golpe Paralizador
 112         If UserList(UserIndex).flags.Paraliza = 1 And NpcList(NpcIndex).flags.Paralizado = 0 Then
 
-114             If RandomNumber(1, 4) = 1 Then
+114             If RandomNumber(1, 10) = 1 Then '10% de probabilidad
 
 116                 If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
 118                     NpcList(NpcIndex).flags.Paralizado = 1
-120                     NpcList(NpcIndex).Contadores.Paralisis = (IntervaloParalizado / 3) * 7
+120                     NpcList(NpcIndex).Contadores.Paralisis = (IntervaloParalizado + 2) * 6 '20 segundos
 
 122                     If UserList(UserIndex).ChatCombate = 1 Then
                             'Call WriteConsoleMsg(UserIndex, "Tu golpe a paralizado a la criatura.", e_FontTypeNames.FONTTYPE_FIGHT)
@@ -2114,9 +2114,9 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
         End If
 
 146     If puedeParalizar And (UserList(VictimaIndex).flags.Paralizado = 0) And Not IsSet(UserList(VictimaIndex).flags.StatusMask, eCCInmunity) Then
-148         If RandomNumber(1, 100) < 10 Then
+148         If RandomNumber(1, 10) = 1 Then '10% de probabilidad
 150             UserList(VictimaIndex).flags.Paralizado = 1
-152             UserList(VictimaIndex).Counters.Paralisis = 6
+152             UserList(VictimaIndex).Counters.Paralisis = 10 '10 segundos
 
 154             Call WriteParalizeOK(VictimaIndex)
                 UserList(VictimaIndex).Counters.timeFx = 3
