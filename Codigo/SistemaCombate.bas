@@ -2114,7 +2114,7 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
         End If
 
 146     If puedeParalizar And (UserList(VictimaIndex).flags.Paralizado = 0) And Not IsSet(UserList(VictimaIndex).flags.StatusMask, eCCInmunity) Then
-148         If RandomNumber(1, 100) < 10 Then
+148         If RandomNumber(1, 100) < 20 Then
 150             UserList(VictimaIndex).flags.Paralizado = 1
 152             UserList(VictimaIndex).Counters.Paralisis = 6
 
