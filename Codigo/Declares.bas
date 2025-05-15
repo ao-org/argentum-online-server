@@ -2592,7 +2592,7 @@ Public Type t_Vertice
 End Type
 
 Public Const MAX_PATH_LENGTH As Integer = 512
-Public Const PATH_VISION_DELTA As Integer = 25
+Public Const PATH_VISION_DELTA As Integer = 5
 
 Public Type t_NpcPathFindingInfo
     PathLength As Integer   ' Number of steps *
