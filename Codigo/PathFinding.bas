@@ -294,7 +294,11 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
         End With
 
         ' Loop principal del algoritmo
-170     Do While (VertexCount > 0 And pasos < MAX_PATH_LENGTH)
+        
+        Dim max_steps As Integer
+        max_steps = SvrConfig.GetValue("NPC_PATHFINDING_MAX_STEPS")
+        Debug.Assert max_steps < MAX_PATH_LENGTH
+170     Do While (VertexCount > 0 And pasos < max_steps)
             
             pasos = pasos + 1
 175         MinTotalDistance = MAX_INTEGER
