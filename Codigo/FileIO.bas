@@ -607,6 +607,37 @@ CargarForbidenWords_Err:
 
         
 End Sub
+Public Sub LoadBlockedWordsDescription()
+        
+        On Error GoTo LoadBlockedWordsDescription_Err
+
+        Dim Size As Integer
+
+        Size = TxtDimension(DatPath & "BlockedWordsDescription.txt")
+    
+        If Size = 0 Then
+            ReDim BlockedWordsDescription(0)
+            Exit Sub
+        End If
+    
+        ReDim BlockedWordsDescription(1 To Size)
+
+        Dim n As Integer, i As Integer
+
+        n = FreeFile(1)
+        Open DatPath & "BlockedWordsDescription.txt" For Input As #n
+    
+        For i = LBound(BlockedWordsDescription) To UBound(BlockedWordsDescription)
+            Line Input #n, BlockedWordsDescription(i)
+            BlockedWordsDescription(i) = LCase$(BlockedWordsDescription(i))
+        Next i
+    
+        Close n
+        Exit Sub
+
+LoadBlockedWordsDescription_Err:
+        Call TraceError(Err.Number, Err.Description, "ES.LoadBlockedWordsDescription", Erl)
+End Sub
 
 Public Sub CargarHechizos()
 

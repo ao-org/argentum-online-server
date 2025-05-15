@@ -2933,6 +2933,7 @@ Public ObjShop()                          As t_ObjData
 Public FX()                               As t_FXdata
 Public SpawnList()                        As t_CriaturasEntrenador
 Public ForbidenNames()                    As String
+Public BlockedWordsDescription()           As String
 Public ArmasHerrero()                     As Integer
 Public ArmadurasHerrero()                 As Integer
 Public ObjCarpintero()                    As Integer
