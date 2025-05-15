@@ -457,7 +457,7 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
                 Else
                     ' Cannot find path
                     If NpcList(NpcIndex).Hostile = 1 And NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 Then
-                        NpcList(NpcIndex).pathFindingInfo.RangoVision = Min(MAX_PATH_LENGTH, NpcList(NpcIndex).pathFindingInfo.RangoVision + PATH_VISION_DELTA)
+                        NpcList(NpcIndex).pathFindingInfo.RangoVision = Min(SvrConfig.GetValue("NPC_MAX_VISION_RANGE"), NpcList(NpcIndex).pathFindingInfo.RangoVision + PATH_VISION_DELTA)
                     End If
                 End If
             Else ' Avanzamos en el camino
