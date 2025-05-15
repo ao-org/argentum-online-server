@@ -1325,7 +1325,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                     ' Mostramos en consola el golpe a la victima independientemente de la configuración de chat
 196                 Call WriteLocaleMsg(VictimaIndex, "211", e_FontTypeNames.FONTTYPE_INFOBOLD, UserList(AtacanteIndex).name & "¬" & DamageStr)
                     'Fx de apuñalar
-                    Call SendData(SendTarget.ToPCAliveArea, AtacanteIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charIndex, 89, 0, UserList(AtacanteIndex).pos.x, UserList(AtacanteIndex).pos.y))
+                    Call SendData(SendTarget.ToPCAliveArea, AtacanteIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charIndex, FX_STABBING, 0, UserList(AtacanteIndex).pos.x, UserList(AtacanteIndex).pos.y))
                     'Sonido de apuñalar
 198                 Call SendData(SendTarget.toPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO_APU, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.y))
 
@@ -1370,7 +1370,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                 'Sonido del golpe
 444             Call SendData(SendTarget.ToPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(AtacanteIndex).pos.X, UserList(AtacanteIndex).pos.y))
                 'Fx de sangre del golpe
-                Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charIndex, 14, 0, UserList(VictimaIndex).pos.x, UserList(VictimaIndex).pos.y))
+                Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charIndex, FX_BLOOD, 0, UserList(VictimaIndex).pos.x, UserList(VictimaIndex).pos.y))
                 ' Intentamos aplicar algún efecto de estado
 252             Call UserDañoEspecial(AtacanteIndex, VictimaIndex, aType)
             End If
