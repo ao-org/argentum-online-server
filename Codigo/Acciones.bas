@@ -859,7 +859,6 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 104     Pos.Y = Y
 
 106     If Distancia(Pos, UserList(UserIndex).Pos) > 2 Then
-108         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
             ' Msg8=Estas demasiado lejos.
             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub

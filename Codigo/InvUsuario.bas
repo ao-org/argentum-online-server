@@ -1500,9 +1500,11 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     'Si esta equipado lo quita
 422                 If .Invent.Object(Slot).Equipped Then
 424                     Call Desequipar(UserIndex, Slot)
-                
-426                     .Char.CascoAnim = NingunCasco
-428                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+                        .Char.CascoAnim = NingunCasco
+452                     If obj.Subtipo = 2 Then
+                            .Char.head = .Char.originalhead
+                        End If
+                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
                         Exit Sub
 
                     End If
@@ -1525,8 +1527,16 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 446                 .Invent.CascoEqpSlot = Slot
             
 448                 If .flags.Navegando = 0 Then
-450                     .Char.CascoAnim = obj.CascoAnim
-452                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
+450
+                     If obj.Subtipo = 2 Then
+                            .Char.originalhead = .Char.head
+                            .Char.head = obj.CascoAnim
+                            .Char.CascoAnim = 0
+                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
+                        Else
+                            .Char.CascoAnim = obj.CascoAnim
+                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
+                        End If
                     End If
                 
 454                 If obj.ResistenciaMagica > 0 Then
@@ -1712,13 +1722,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 
         On Error GoTo hErr
 
-        '*************************************************
-        'Author: Unknown
-        'Last modified: 24/01/2007
-        'Handels the usage of items from inventory box.
-        '24/01/2007 Pablo (ToxicWaste) - Agrego el Cuerno de la Armada y la Legión.
-        '24/01/2007 Pablo (ToxicWaste) - Utilización nueva de Barco en lvl 20 por clase Pirata y Pescador.
-        '*************************************************
+        ' Agrego el Cuerno de la Armada y la Legión.
+        'Utilización nueva de Barco en lvl 20 por clase Pirata y Pescador.
+
 
         Dim obj      As t_ObjData
 
@@ -1790,13 +1796,17 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             End If
     
 130         If .Stats.ELV < obj.MinELV Then
-132             Call WriteConsoleMsg(UserIndex, "Necesitas ser nivel " & obj.MinELV & " para usar este item.", e_FontTypeNames.FONTTYPE_INFO)
+
+132             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1926, obj.MinELV, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1926=Necesitas ser nivel ¬1 para usar este item.
+
                 Exit Sub
     
             End If
             
             If .Stats.ELV > obj.MaxLEV And obj.MaxLEV > 0 Then
-                Call WriteConsoleMsg(UserIndex, "Este objeto no puede ser utilizado por personajes de nivel " & obj.MaxLEV & " o superior.", e_FontTypeNames.FONTTYPE_INFO)
+
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1982, obj.MaxLEV, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1982=Este objeto no puede ser utilizado por personajes de nivel ¬1 o superior.
+
                 Exit Sub
             End If
     
@@ -2453,7 +2463,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 800                                 .flags.SpouseId = 0
                                     'Msg886= Te has divorciado.
                                     Call WriteLocaleMsg(UserIndex, "886", e_FontTypeNames.FONTTYPE_INFOIAO)
-804                                 Call WriteConsoleMsg(tUser.ArrayIndex, .name & " se ha divorciado de ti.", e_FontTypeNames.FONTTYPE_INFOIAO)
+
+804                                 Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1983, .name, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1983=¬1 se ha divorciado de ti.
+
 
                                     If obj.Snd1 <> 0 Then
 808                                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
@@ -2466,8 +2478,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 806
                         
                             Else
-'Msg887= No estas casado.
-Call WriteLocaleMsg(UserIndex, "887", e_FontTypeNames.FONTTYPE_INFOIAO)
+                                'Msg887= No estas casado.
+                                Call WriteLocaleMsg(UserIndex, "887", e_FontTypeNames.FONTTYPE_INFOIAO)
     
                             End If
     
@@ -2695,7 +2707,9 @@ Call WriteLocaleMsg(UserIndex, "889", e_FontTypeNames.FONTTYPE_INFOIAO)
 1008                 Call QuitarUserInvItem(UserIndex, Slot, 1)
 1010                 Call UpdateUserInv(False, UserIndex, Slot)
             
-1012                 Call WriteConsoleMsg(UserIndex, "Has abierto un " & obj.Name & " y obtuviste...", e_FontTypeNames.FONTTYPE_New_DONADOR)
+
+1012                 Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1984, obj.name, e_FontTypeNames.FONTTYPE_New_DONADOR)) ' Msg1984=Has abierto un ¬1 y obtuviste...
+
             
 1014                 If obj.Snd1 <> 0 Then
 1016                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
@@ -3109,7 +3123,7 @@ Call WriteLocaleMsg(UserIndex, "906", e_FontTypeNames.FONTTYPE_INFO)
                           End If
             
 1276                 If .Pos.Map <> obj.DesdeMap Then
-1278                     Call WriteLocaleChatOverHead(UserIndex, "1354", "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1354=El pasaje no lo compraste aquí! Largate!
+1278                     Call WriteLocaleChatOverHead(UserIndex, "1354", "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex), vbWhite) ' Msg1354=El pasaje no lo compraste aquí! Largate!
                               Exit Sub
                           End If
             
@@ -3515,7 +3529,9 @@ On Error GoTo ResurrectWithItem_Err
         If UserList(TargetUser).flags.SeguroResu Then
             ' Msg693=El usuario tiene el seguro de resurrección activado.
             Call WriteLocaleMsg(UserIndex, "693", e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(TargetUser, UserList(UserIndex).name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
+
+            Call WriteConsoleMsg(TargetUser, PrepareMessageLocaleMsg(1985, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1985=¬1 está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.
+
             Exit Sub
         End If
         If CanHelpResult <> eInteractionOk Then

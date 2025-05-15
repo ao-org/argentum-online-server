@@ -119,7 +119,15 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "FISHING_SPECIALFISH2_ID", CInt(val(reader.GetValue("PESCA", "UniqueMapfish2")))
     mSettings.Add "FISHING_SPECIALFISH1_REMPLAZO_ID", CInt(val(reader.GetValue("PESCA", "ReplacementSpecialFish")))
     mSettings.Add "NPC_WATCHMAN_ID", CInt(val(reader.GetValue("PESCA", "NPCFishingWatcher")))
-   
+    
+
+    mSettings.Add "NPC_SPELL_RANGE_X", CInt(val(Reader.GetValue("AI", "NPCSpellRangeX", DEFAULT_NPC_SPELL_RANGE_X)))
+    mSettings.Add "NPC_SPELL_RANGE_Y", CInt(val(Reader.GetValue("AI", "NPCSpellRangeY", DEFAULT_NPC_SPELL_RANGE_Y)))
+    mSettings.Add "NPC_VISION_RANGE_X", CInt(val(Reader.GetValue("AI", "NPCVisionRangeX", DEFAULT_NPC_VISION_RANGE_X)))
+    mSettings.Add "NPC_VISION_RANGE_Y", CInt(val(Reader.GetValue("AI", "NPCVisionRangeY", DEFAULT_NPC_VISION_RANGE_Y)))
+    mSettings.Add "NPC_PATHFINDING_MAX_STEPS", Min(MAX_PATH_LENGTH, CInt(val(Reader.GetValue("AI", "NPCMaxStepsPathFinding", MAX_PATH_LENGTH))))
+    mSettings.Add "NPC_MAX_VISION_RANGE", Min(DEFAULT_NPC_MAX_VISION_RANGE, CInt(val(Reader.GetValue("AI", "NPCMaxVisionRange", DEFAULT_NPC_MAX_VISION_RANGE))))
+      
     Set reader = Nothing
     
     LoadSettings = 0

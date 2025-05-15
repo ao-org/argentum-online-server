@@ -1344,6 +1344,7 @@ Public Type t_Char
     charindex_bk As Integer
     Head As Integer
     Body As Integer
+    originalhead As Integer
     
     WeaponAnim As Integer
     ShieldAnim As Integer
@@ -2590,13 +2591,16 @@ Public Type t_Vertice
     y As Integer
 End Type
 
-Public Type t_NpcPathFindingInfo
+Public Const MAX_PATH_LENGTH As Integer = 512
+Public Const PATH_VISION_DELTA As Integer = 5
 
+Public Type t_NpcPathFindingInfo
     PathLength As Integer   ' Number of steps *
     Path() As t_Vertice      ' This array holds the path
     destination As t_Position ' The location where the NPC has to go
     RangoVision As Single
-    Inteligencia As Integer
+    OriginalVision As Single
+    
     
     '* By setting PathLenght to 0 we force the recalculation
     '  of the path, this is very useful. For example,
@@ -2743,6 +2747,7 @@ Public Type t_Npc
     QuizaDropea() As String
     QuizaProb As Integer
     MinTameLevel As Byte
+    OnlyForGuilds As Byte
         
     NumDestinos As Byte
     Dest() As String

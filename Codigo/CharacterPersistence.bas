@@ -254,6 +254,7 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .MENSAJEINFORMACION = RS!message_info
         .OrigChar.body = RS!body_id
         .OrigChar.head = RS!head_id
+        .OrigChar.originalhead = .OrigChar.head
         .OrigChar.WeaponAnim = RS!weapon_id
         .OrigChar.CascoAnim = RS!helmet_id
         .OrigChar.ShieldAnim = RS!shield_id
@@ -534,7 +535,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 134         Params(post_increment(i)) = .pos.y
 136         Params(post_increment(i)) = .MENSAJEINFORMACION
 138         Params(post_increment(i)) = .Char.body
-140         Params(post_increment(i)) = .OrigChar.head
+140         Params(post_increment(i)) = .OrigChar.originalhead
 142         Params(post_increment(i)) = .Char.WeaponAnim
 144         Params(post_increment(i)) = .Char.CascoAnim
 146         Params(post_increment(i)) = .Char.ShieldAnim

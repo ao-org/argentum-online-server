@@ -1044,8 +1044,7 @@ Public Sub HandleWorking(ByVal UserIndex As Integer)
         
 116         If LenB(Users) <> 0 Then
 118             Users = Right$(Users, Len(Users) - 2)
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1852, Users, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1852=Usuarios trabajando: ¬1
-
+                Call WriteConsoleMsg(UserIndex, "Usuarios trabajando: " & Users, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 'Msg953= No hay usuarios trabajando
                 Call WriteLocaleMsg(UserIndex, "953", e_FontTypeNames.FONTTYPE_INFO)
@@ -2455,7 +2454,7 @@ Public Sub HandleServerMessage(ByVal UserIndex As Integer)
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero)) Then
 106             If LenB(Message) <> 0 Then
 108                 Call LogGM(.name, "Mensaje Broadcast:" & Message)
-110                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & "> " & Message, e_FontTypeNames.FONTTYPE_SERVER))
+110                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & "> " & Message, e_FontTypeNames.FONTTYPE_CENTINELA))
                 End If
             Else
 112             'Msg528=Servidor » Comando deshabilitado para tu cargo.

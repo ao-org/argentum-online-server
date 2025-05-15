@@ -1610,6 +1610,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 If EsGM(UserIndex) And GetOwnedBy(TempCharIndex) <> 0 Then
                     estatus = estatus & " | Owned by " & NpcList(TempCharIndex).flags.AttackedBy
                 End If
+#If DEBUGGING Then
+                estatus = estatus & " | NpcIndex = " & TempCharIndex
+#End If
                         
 456             estatus = estatus & ">"
     

@@ -47,7 +47,7 @@ Public Sub goHome(ByVal UserIndex As Integer)
                 End If
 110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Runa, .Counters.TimerBarra * 100, False, , .Pos.X, .Pos.y))
 112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.charindex, .Counters.TimerBarra, e_AccionBarra.Hogar))
-                Call WriteConsoleMsg(UserIndex, "Volverás a tu hogar en " & .Counters.TimerBarra & " segundos.", e_FontTypeNames.FONTTYPE_New_Gris)
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1994, .Counters.TimerBarra, e_FontTypeNames.FONTTYPE_New_Gris)) ' Msg1994=Volverás a tu hogar en ¬1 segundos.
                     
 114             .Accion.Particula = e_ParticulasIndex.Runa
 116             .Accion.AccionPendiente = True
@@ -55,7 +55,7 @@ Public Sub goHome(ByVal UserIndex As Integer)
             
             Else
         
-120             Call WriteConsoleMsg(UserIndex, "Debes estar muerto para poder utilizar este comando.", e_FontTypeNames.FONTTYPE_FIGHT)
+120             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1995, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1995=Debes estar muerto para poder utilizar este comando.
 
             End If
         
@@ -139,7 +139,7 @@ Public Sub HomeArrival(ByVal UserIndex As Integer)
 124         Call FindLegalPos(UserIndex, tMap, CByte(tX), CByte(tY))
 126         Call WarpUserChar(UserIndex, tMap, tX, tY, True)
         
-128         Call WriteConsoleMsg(UserIndex, "Has regresado a tu ciudad de origen.", e_FontTypeNames.FONTTYPE_WARNING)
+128         Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1996, vbNullString, e_FontTypeNames.FONTTYPE_WARNING)) ' Msg1996=Has regresado a tu ciudad de origen.
         
 130         .flags.Traveling = 0
 132         .Counters.goHome = 0

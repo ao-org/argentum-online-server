@@ -850,6 +850,13 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer
         
         On Error GoTo UsuarioAtacaNpc_Err
         
+        'Si el npc es solo atacable para clanes y el usuario no tiene clan, le avisa y sale de la funcion
+        If NpcList(NpcIndex).OnlyForGuilds = 1 And UserList(UserIndex).GuildIndex <= 0 Then
+            'Msg2001=Debes pertenecer a un clan para atacar a este NPC
+            Call WriteLocaleMsg(UserIndex, "2001", e_FontTypeNames.FONTTYPE_WARNING)
+            Exit Sub
+        End If
+        
         Dim UserAttackInteractionResult As t_AttackInteractionResult
         UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
         Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
@@ -1149,7 +1156,9 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 162             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, 88, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
 164             Call SubirSkill(VictimaIndex, e_Skill.Defensa)
             Else
-166             Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te atacó y falló! ", e_FontTypeNames.FONTTYPE_FIGHT)
+
+166             Call WriteConsoleMsg(VictimaIndex, PrepareMessageLocaleMsg(1930, UserList(AtacanteIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1930=¡¬1 te atacó y falló!
+
                 'Msg1043= ¡Has fallado el golpe!
                 Call WriteLocaleMsg(AtacanteIndex, "1043", e_FontTypeNames.FONTTYPE_FIGHT)
             End If
@@ -2001,7 +2010,9 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
 114                     If OroDar > 0 Then
 116                         UserList(Index).Stats.GLD = UserList(Index).Stats.GLD + OroDar
 118                         If UserList(Index).ChatCombate = 1 Then
-120                             Call WriteConsoleMsg(index, "¡El grupo ha ganado " & PonerPuntos(OroDar) & " monedas de oro!", e_FontTypeNames.FONTTYPE_New_GRUPO)
+
+120                             Call WriteConsoleMsg(Index, PrepareMessageLocaleMsg(1980, PonerPuntos(OroDar), e_FontTypeNames.FONTTYPE_New_GRUPO)) ' Msg1780=¡El grupo ha ganado ¬1 monedas de oro!
+
                             End If
 122                         Call WriteUpdateGold(Index)
                         End If

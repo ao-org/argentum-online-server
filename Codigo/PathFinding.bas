@@ -45,7 +45,6 @@ Private DirOffset(e_Heading.NORTH To e_Heading.WEST) As t_Position
 Private ClosestVertex As t_Position
 Private ClosestDistance As Single
 
-Private Const MAXINT As Integer = 32767
 
 '  Usada para mover memoria... VB6 es un desastre en cuanto a contenedores dinámicos
 Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDest As Any, pSource As Any, ByVal Length As Long)
@@ -188,7 +187,7 @@ Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, By
 4                DistanceFromStart = Table(CurX, CurY).Distance + 1
     
                 ' Si no habíamos visitado este vértice
-                If .Distance = MAXINT Then
+                If .Distance = MAX_INTEGER Then
                     ' Lo metemos en la cola
 5                    Call OpenVertex(X, Y)
                     
@@ -232,6 +231,7 @@ ErrHandler:
 End Sub
 
 Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Boolean) As Boolean
+
         ' Busca un camino desde la posición del NPC a la posición en .PFINFO.Target
         ' El parámetro Closest indica que en caso de que no exista un camino completo, se debe retornar el camino parcial hasta la posición más cercana al objetivo.
         ' Si Closest = True, la función devuelve True si puede moverse al menos un tile. Si Closest = False, devuelve True si se encontró un camino completo.
@@ -256,7 +256,6 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
             End If
         End If
         
-        
 100     With NpcList(NpcIndex)
 105         PosNPC.X = .Pos.X
 110         PosNPC.Y = .Pos.Y
@@ -273,7 +272,7 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
 135         Call OpenVertexV(PosNPC)
         
             ' Distancia máxima a calcular (distancia en tiles al target + inteligencia del NPC)
-140         MaxDistance = TileDistance(PosNPC, PosTarget) + .pathFindingInfo.Inteligencia
+140         MaxDistance = Min(MAX_PATH_LENGTH, TileDistance(PosNPC, PosTarget) + .pathFindingInfo.RangoVision)
         
             ' Distancia euclideana desde la posición inicial hasta la final
 145         Table(PosNPC.X, PosNPC.Y).EstimatedTotalDistance = EuclideanDistanceV(PosNPC, PosTarget)
@@ -295,10 +294,14 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
         End With
 
         ' Loop principal del algoritmo
-170     Do While (VertexCount > 0 And pasos < 300)
+        
+        Dim max_steps As Integer
+        max_steps = SvrConfig.GetValue("NPC_PATHFINDING_MAX_STEPS")
+        Debug.Assert max_steps < MAX_PATH_LENGTH
+170     Do While (VertexCount > 0 And pasos < max_steps)
             
             pasos = pasos + 1
-175         MinTotalDistance = MAXINT
+175         MinTotalDistance = MAX_INTEGER
         
             ' Buscamos en la cola la posición con menor distancia total
 180         For Index = 0 To VertexCount - 1
@@ -366,8 +369,11 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
         
         End If
 
+        
         ' Llegados a este punto, invalidamos el Path del NPC
 275     NpcList(NpcIndex).pathFindingInfo.PathLength = 0
+        
+        
 
         Exit Function
 
@@ -425,7 +431,7 @@ Private Sub InitializeTable(ByRef Table() As t_IntermidiateWork, ByRef PosNPC As
         
 110             If InsideLimits(X, Y) Then
 115                 Table(X, Y).Closed = False
-120                 Table(X, Y).Distance = MAXINT
+120                 Table(x, y).Distance = MAX_INTEGER
                 End If
             
             Next
