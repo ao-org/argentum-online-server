@@ -1561,7 +1561,7 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
                     End If
                     
 490             Case e_EditOptions.eo_Desc
-                    If DescripcionValida(Arg1) Then
+                    If ValidDescription(Arg1) Then
 498                     UserList(tUser.ArrayIndex).Desc = Arg1
                     Else
 500                     ' Msg545=Caracteres inválidos en la descripción.
