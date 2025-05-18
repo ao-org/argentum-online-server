@@ -2052,12 +2052,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 ' Verifica si el jugador está en la ARENA
                                 Dim triggerStatus As e_Trigger6
                                 triggerStatus = TriggerZonaPelea(UserIndex, UserIndex)
-                            
-                                ' Si NO está en las zonas permitidas, se consume la poción
-                                If Not ((UserList(UserIndex).pos.Map >= 600 And UserList(UserIndex).pos.Map <= 749 And triggerStatus = e_Trigger6.TRIGGER6_PERMITE) Or _
-                                        (UserList(UserIndex).pos.Map = 275 Or UserList(UserIndex).pos.Map = 276 Or UserList(UserIndex).pos.Map = 277) Or _
-                                        (UserList(UserIndex).pos.Map = 172 And triggerStatus = e_Trigger6.TRIGGER6_PERMITE And _
-                                        (UserList(UserIndex).Stats.tipoUsuario = tAventurero Or UserList(UserIndex).Stats.tipoUsuario = tHeroe Or UserList(UserIndex).Stats.tipoUsuario = tLeyenda))) Then
+
+                                ' Consumir pocion solo si el usuario no esta en zona de uso libre
+                                If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
                                     ' Quitamos el ítem del inventario
                                     Call QuitarUserInvItem(UserIndex, Slot, 1)
                                 End If
@@ -3226,6 +3223,48 @@ hErr:
 1350    LogError "Error en useinvitem Usuario: " & UserList(UserIndex).Name & " item:" & obj.Name & " index: " & UserList(UserIndex).Invent.Object(Slot).ObjIndex
 
 End Sub
+
+'**************************************************************
+' Description: Determines whether the user is in a map zone
+'              where potions are not consumed upon use.
+'
+' Parameters:  UserIndex      - Index of the user
+'              triggerStatus  - Current trigger status of the user
+'
+' Returns:     Boolean - True if the user is in a potion-free zone
+'                       False if the potion should be consumed
+'************************************************************** 
+Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatus As e_Trigger6) As Boolean
+    Dim currentMap As Integer
+    Dim isTriggerZone As Boolean
+    Dim isTierUser As Boolean
+    Dim isTournamentZone As Boolean
+    Dim isSpecialZone As Boolean
+    Dim isTrainingZone As Boolean
+
+    ' Obtener el mapa actual del usuario
+    currentMap = UserList(UserIndex).pos.Map
+
+    ' Verificar si está en zona con trigger activo
+    isTriggerZone = (triggerStatus = e_Trigger6.TRIGGER6_PERMITE)
+
+    ' Verificar si es un usuario con tier de suscripción
+    isTierUser = (UserList(UserIndex).Stats.tipoUsuario = tAventurero Or _
+                  UserList(UserIndex).Stats.tipoUsuario = tHeroe Or _
+                  UserList(UserIndex).Stats.tipoUsuario = tLeyenda)
+
+    ' Zona de casas/sotanos arenas: mapas del 600 al 749 con trigger activo
+    isTournamentZone = (currentMap >= 600 And currentMap <= 749 And isTriggerZone)
+
+    ' Zonas especiales fijas donde no se consumen pociones
+    isSpecialZone = (currentMap = 275 Or currentMap = 276 Or currentMap = 277 Or currentMap = 390)
+
+    ' Zona de entrenamiento: mapa 172, con trigger activo y jugador con tier
+    isTrainingZone = (currentMap = 172 And isTriggerZone And isTierUser)
+
+    ' Si esta en alguna de las zonas anteriores, no se consume la poción
+    IsPotionFreeZone = (isTournamentZone Or isSpecialZone Or isTrainingZone)
+End Function
 
 Sub EnivarArmasConstruibles(ByVal UserIndex As Integer)
         
