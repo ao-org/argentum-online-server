@@ -2096,7 +2096,7 @@ Private Sub TimerRespawn_Timer()
                 RespawnList(NpcIndex).Contadores.IntervaloRespawn = RespawnList(NpcIndex).Contadores.IntervaloRespawn - 1
             Else
                 RespawnList(NpcIndex).flags.NPCActive = False
-                If RespawnList(NpcIndex).InformarRespawn = 1 Then 'ver con Pablo - mando el numero del NPC en lugar del nombre
+                If RespawnList(NpcIndex).InformarRespawn = 1 Then 
                     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1788, RespawnList(NpcIndex).Numero, e_FontTypeNames.FONTTYPE_EXP)) ' Msg1788=¬1 ha vuelto a este mundo.
                     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
                 End If
