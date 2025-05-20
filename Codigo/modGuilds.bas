@@ -331,13 +331,13 @@ Public Function CrearNuevoClan(ByVal FundadorIndex As Integer, ByRef Desc As Str
         End If
 
 106     If GuildName = vbNullString Or Not GuildNameValido(GuildName) Then
-108         refError = "Nombre de clan inválido."
+108         refError = 2020 'Nombre de clan inválido.
             Exit Function
 
         End If
     
 110     If YaExiste(GuildName) Then
-112         refError = "Ya existe un clan con ese nombre."
+112         refError = 2021 'Ya existe un clan con ese nombre.
             Exit Function
 
         End If
@@ -373,7 +373,7 @@ Public Function CrearNuevoClan(ByVal FundadorIndex As Integer, ByRef Desc As Str
 148         Next i
 
         Else
-150         refError = "No hay mas slots para fundar clanes. Consulte a un administrador."
+150         refError = 2022 'No hay más slots para fundar clanes. Consulte a un administrador.
             Exit Function
 
         End If
@@ -460,69 +460,69 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
 100     PuedeFundarUnClan = False
 
 102     If UserList(UserIndex).GuildIndex > 0 Then
-104         refError = "Ya perteneces a un clan, no podés fundar otro"
+104         refError = 2023 'Ya perteneces a un clan, no podés fundar otro.
             Exit Function
         End If
     
 106     If UserList(UserIndex).Stats.ELV < 23 Or UserList(UserIndex).Stats.UserSkills(e_Skill.liderazgo) < 50 Then
-108         refError = "Para fundar un clan debes ser Nivel 23, tener 50 puntos en liderazgo y tener en tu inventario las Gemas de Fundación Verde, Roja, Azul y Polar."
+108         refError = 2024 'Para fundar un clan debes ser Nivel 23, tener 50 puntos en liderazgo y tener en tu inventario las Gemas de Fundación Verde, Roja, Azul y Polar.
             Exit Function
         End If
     
 110     If Not TieneObjetos(407, 1, UserIndex) Then
-112         refError = "Para fundar un clan debes ser nivel 23, tener 50 puntos en liderazgo y tener en tu inventario las Gemas de Fundación Verde, Roja, Azul y Polar."
+112         refError = 2025 'Para fundar un clan debes ser nivel 23, tener 50 puntos en liderazgo y tener en tu inventario las Gemas de Fundación Verde, Roja, Azul y Polar.
             Exit Function
         End If
     
 114     If Not TieneObjetos(408, 1, UserIndex) Then
-116         refError = "Para fundar un clan debes ser nivel 23, tener 50 puntos en liderazgo y tener en tu inventario las Gemas de Fundación Verde, Roja, Azul y Polar."
+116         refError = 2026 'Para fundar un clan debes ser nivel 23, tener 50 puntos en liderazgo y tener en tu inventario las Gemas de Fundación Verde, Roja, Azul y Polar.
             Exit Function
         End If
         
 121             If Not TieneObjetos(409, 1, UserIndex) Then
-122         refError = "Para fundar un clan debes ser nivel 23, tener 50 puntos en liderazgo y tener en tu inventario las Gemas de Fundación Verde, Roja, Azul y Polar."
+122         refError = 2027 'Para fundar un clan debes ser nivel 23, tener 50 puntos en liderazgo y tener en tu inventario las Gemas de Fundación Verde, Roja, Azul y Polar.
             Exit Function
         End If
     
 123     If Not TieneObjetos(412, 1, UserIndex) Then
-124         refError = "Para fundar un clan debes ser nivel 23, tener 50 puntos en liderazgo y tener en tu inventario las Gemas de Fundación Verde, Roja, Azul y Polar."
+124         refError = 2028 'Para fundar un clan debes ser nivel 23, tener 50 puntos en liderazgo y tener en tu inventario las Gemas de Fundación Verde, Roja, Azul y Polar.
             Exit Function
         End If
         
         If Alineacion = e_ALINEACION_GUILD.ALINEACION_CIUDADANA And UserList(UserIndex).flags.Seguro = False Then
-            refError = "Para fundar un clan ciudadano deberás tener activado el seguro."
+            refError = 2029 'Para fundar un clan ciudadano deberás tener activado el seguro.
             Exit Function
         End If
     
 125     Select Case Alineacion
             Case e_ALINEACION_GUILD.ALINEACION_NEUTRAL
 126             If status(UserIndex) = e_Facciones.Caos Or status(UserIndex) = e_Facciones.Armada Or status(UserIndex) = e_Facciones.consejo Or status(UserIndex) = e_Facciones.concilio Then
-127                 refError = "Para fundar un clan neutral deberás ser ciudadano o criminal."
+127                 refError = 2030 'Para fundar un clan neutral deberás ser ciudadano o criminal.
                     Exit Function
                 End If
 
 128         Case e_ALINEACION_GUILD.ALINEACION_ARMADA
 
 129             If status(UserIndex) <> e_Facciones.Armada And status(UserIndex) <> e_Facciones.consejo Then
-130                 refError = "Para fundar un clan de la Armada Real deberás pertenecer a la misma."
+130                 refError = 2031 'Para fundar un clan de la Armada Real deberás pertenecer a la misma.
                     Exit Function
                 End If
                 
 131         Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
 132             If status(UserIndex) <> e_Facciones.Caos And status(UserIndex) <> e_Facciones.concilio Then
-133                 refError = "Para fundar un clan de la Legión Oscura deberás pertenecer a la misma."
+133                 refError = 2032 'Para fundar un clan de la Legión Oscura deberás pertenecer a la misma.
                     Exit Function
                 End If
                 
             Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
              If status(UserIndex) <> e_Facciones.Ciudadano And status(UserIndex) <> e_Facciones.Armada Then
-                refError = "Para fundar un clan ciudadano deberás ser ciudadano."
+                refError = 2033 'Para fundar un clan ciudadano deberás ser ciudadano.
                 Exit Function
             End If
                 
             Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
              If Status(UserIndex) <> e_Facciones.Criminal And Status(UserIndex) <> e_Facciones.Caos Then
-                refError = "Para fundar un clan criminal deberás ser criminal o legión oscura."
+                refError = 2034 'Para fundar un clan criminal deberás ser criminal o legión oscura.
                 Exit Function
             End If
             
@@ -1117,12 +1117,12 @@ Public Function a_RechazarAspirante(ByVal UserIndex As Integer, ByRef nombre As 
 102     GI = UserList(UserIndex).GuildIndex
 
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
-106         refError = "No perteneces a ningún clan"
+106         refError = 2035 'No perteneces a ningún clan.
             Exit Function
         End If
 
 114     Call guilds(GI).RetirarAspirante(nombre)
-116     refError = "Fue rechazada tu solicitud de ingreso a " & guilds(GI).GuildName
+116     refError = PrepareMessageLocaleMsg(2036, guilds(GI).GuildName, e_FontTypeNames.FONTTYPE_TALK) 'Fue rechazada tu solicitud de ingreso a ¬1.
 118     a_RechazarAspirante = True
         
         Exit Function
@@ -1242,13 +1242,13 @@ Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As Strin
 100     a_NuevoAspirante = False
 
 102     If UserList(UserIndex).GuildIndex > 0 Then
-104         refError = "Ya perteneces a un clan, debes salir del mismo antes de solicitar ingresar a otro"
+104         refError = 2010 'Ya perteneces a un clan, debes salir del mismo antes de solicitar ingresar a otro.
             Exit Function
 
         End If
     
 106     If EsNewbie(UserIndex) Then
-108         refError = "Los newbies no tienen derecho a entrar a un clan."
+108         refError = 2005 'Los newbies no tienen derecho a entrar a un clan.
             Exit Function
 
         End If
@@ -1256,18 +1256,19 @@ Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As Strin
 110     NuevoGuildIndex = GuildIndex(clan)
 
 112     If NuevoGuildIndex = 0 Then
-114         refError = "Ese clan no existe! Avise a un administrador."
+114         refError = 2006 'Ese clan no existe! Avise a un administrador.
             Exit Function
 
         End If
     
 116     If Not m_EstadoPermiteEntrar(UserIndex, NuevoGuildIndex) Then
-118         refError = "Tu no podés entrar a un clan de alineación " & Alineacion2String(guilds(NuevoGuildIndex).Alineacion)
+118         refError = 2007 'Tú no podés entrar a un clan de alineación ¬1.
+
             Exit Function
         End If
 
 120     If guilds(NuevoGuildIndex).CantidadAspirantes >= MAXASPIRANTES Then
-122         refError = "El clan tiene demasiados aspirantes. Contáctate con un miembro para que procese las solicitudes."
+122         refError = 2008 'El clan tiene demasiados aspirantes. Contáctate con un miembro para que procese las solicitudes.
             Exit Function
         End If
         
@@ -1278,7 +1279,7 @@ Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As Strin
 126     For i = 0 To UBound(NuevoGuildAspirantes)
             
 128         If UserList(UserIndex).Name = NuevoGuildAspirantes(i) Then
-130             refError = "Ya has enviado una solicitud a este clan."
+130             refError = 2009 'Ya has enviado una solicitud a este clan.
                 Exit Function
 
             End If
@@ -1325,13 +1326,13 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
 102     GI = UserList(UserIndex).GuildIndex
 
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
-106         refError = "No perteneces a ningún clan"
+106         refError = 2011 'No perteneces a ningún clan.
             Exit Function
 
         End If
     
 108     If Not m_EsGuildLeader(UserList(UserIndex).id, GI) Then
-110         refError = "No eres el líder de tu clan"
+110         refError = 2012 'No eres el líder de tu clan.
             Exit Function
 
         End If
@@ -1341,7 +1342,7 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
         UserDidRequest = guilds(GI).HasGuildRequest(CharId)
     
 114     If Not UserDidRequest Then
-116         refError = "El Pj no es aspirante al clan"
+116         refError = 2013 'El Pj no es aspirante al clan.
             Exit Function
         End If
     
@@ -1350,29 +1351,29 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
 120     If IsValidUserRef(AspiranteRef) Then
             'pj Online
 122         If Not m_EstadoPermiteEntrar(AspiranteRef.ArrayIndex, GI) Then
-124             refError = Aspirante & " no puede entrar a un clan " & Alineacion2String(guilds(GI).Alineacion)
+124             refError = PrepareMessageLocaleMsg(2014, Aspirante & "¬" & Alineacion2String(guilds(GI).Alineacion), e_FontTypeNames.FONTTYPE_INFO) '¬1 no puede entrar a un clan ¬2.
 126             Call guilds(GI).RetirarAspirante(Aspirante)
                 Exit Function
 128         ElseIf Not UserList(AspiranteRef.ArrayIndex).GuildIndex = 0 Then
-130             refError = Aspirante & " ya es parte de otro clan."
+130             refError = PrepareMessageLocaleMsg(2015, Aspirante, e_FontTypeNames.FONTTYPE_INFO) '¬1 ya es parte de otro clan.
 132             Call guilds(GI).RetirarAspirante(Aspirante)
                 Exit Function
             End If
             
             If GuildAlignmentIndex(GI) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA And UserList(AspiranteRef.ArrayIndex).flags.Seguro = False Then
-                refError = Aspirante & " deberá activar el seguro para entrar al clan."
+                refError = PrepareMessageLocaleMsg(2016, Aspirante, e_FontTypeNames.FONTTYPE_INFO) '¬1 deberá activar el seguro para entrar al clan.
                 Call guilds(GI).RetirarAspirante(Aspirante)
                Exit Function
             End If
         Else
 134         If Not m_EstadoPermiteEntrarChar(Aspirante, GI) Then
-136             refError = Aspirante & " no puede entrar a un clan " & Alineacion2String(guilds(GI).Alineacion)
+136             refError = PrepareMessageLocaleMsg(2017, Aspirante & "¬" & Alineacion2String(guilds(GI).Alineacion), e_FontTypeNames.FONTTYPE_INFO) '¬1 no puede entrar a un clan ¬2.
 138             Call guilds(GI).RetirarAspirante(Aspirante)
                 Exit Function
             Else
 142             tGI = GetUserGuildIndexDatabase(CharId)
 146             If tGI <> 0 Then
-148                 refError = Aspirante & " ya es parte de otro clan."
+148                 refError = PrepareMessageLocaleMsg(2018, Aspirante, e_FontTypeNames.FONTTYPE_INFO) '¬1 ya es parte de otro clan.
 150                 Call guilds(GI).RetirarAspirante(Aspirante)
                     Exit Function
                 End If
@@ -1380,7 +1381,7 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
         End If
     
 152     If guilds(GI).CantidadDeMiembros >= MiembrosPermite(GI) Then
-154         refError = "La capacidad del clan esta completa."
+154         refError = 2019 'La capacidad del clan está completa.
             Exit Function
 
         End If
