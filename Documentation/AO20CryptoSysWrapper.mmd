@@ -1,0 +1,38 @@
+componentDiagram
+  component AO20CryptoSysWrapper {
+    description "Wrapper for Cryptographic Operations (AO20CryptoSysWrapper.bas)"
+    
+    folder "Public Functions" {
+      [Encrypt]
+      [Decrypt]
+      [Str2ByteArr]
+      [ByteArr2String]
+      [hiByte]
+      [LoByte]
+      [MakeInt]
+      [CopyBytes]
+      [ByteArrayToHex]
+      [initBase64Chars]
+      [IsBase64]
+    }
+  }
+
+  component ExternalCryptoLib {
+    description "External Cryptography Library (e.g., diCryptoSys.dll)"
+    
+    folder "External Functions" {
+      [cnvBytesFromHexStr]
+      [cnvHexStrFromString]
+      [cipherEncryptBytes2]
+      [cnvToBase64]
+      [cnvFromBase64]
+      [cnvToHex]
+      [cnvStringFromHexStr]
+      [cipherDecryptBytes2]
+    }
+  }
+  
+  AO20CryptoSysWrapper --> ExternalCryptoLib : Calls cryptographic functions
+
+  note right of AO20CryptoSysWrapper "Provides simplified encryption/decryption and utility functions by wrapping an external crypto library."
+end

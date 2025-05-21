@@ -1,0 +1,64 @@
+componentDiagram
+  title High-Level Project Module Interactions
+
+  component API {
+    description "External API Interface"
+  }
+  component GameLogic {
+    description "Core Game Logic & Utilities"
+  }
+  component Database_Queries {
+    description "SQL Query Definitions"
+  }
+  component CharacterPersistence {
+    description "Player Data Load/Save"
+  }
+  component Admin {
+    description "Server Administration & Config"
+  }
+  component AI_NPC {
+    description "NPC Artificial Intelligence"
+  }
+  component EffectsOverTime {
+    description "Status Effects Management"
+  }
+  component Comercio {
+    description "Player-NPC Trading System"
+  }
+  component AO20CryptoSysWrapper {
+    description "Cryptography Utilities"
+  }
+
+  %% Core Data Flow & Control
+  GameLogic --> CharacterPersistence : Manages player state (e.g., resetPj)
+  GameLogic --> Database_Queries : (Implicitly) For various data lookups
+  GameLogic --> AI_NPC : Triggers/influences NPC states
+  GameLogic --> EffectsOverTime : Applies/Removes effects based on game events
+  GameLogic --> Comercio : Initiates/terminates trade sessions
+  
+  CharacterPersistence --> Database_Queries : Uses queries for DB operations
+  
+  Admin --> CharacterPersistence : Accesses/modifies persistent player data (bans, etc.)
+  Admin --> Database_Queries : (Implicitly) For admin-related DB operations
+  Admin --> GameLogic : (Potentially) To trigger server-wide actions
+
+  %% API Interactions
+  API --> GameLogic : (Potentially) Forwards commands for game state changes
+  API --> CharacterPersistence : (Via GameLogic or directly) For player data for external API
+  
+  %% Utility Usage
+  Comercio --> GameLogic : Uses utility functions (e.g., for position checks)
+  AI_NPC --> GameLogic : Uses utility functions (positioning, visibility)
+  EffectsOverTime --> GameLogic : Uses utility functions
+  
+  %% Crypto Usage (Illustrative - actual usage might be more specific)
+  API --> AO20CryptoSysWrapper : (Potentially) For secure communication
+  CharacterPersistence --> AO20CryptoSysWrapper : (Potentially) For encrypting sensitive data
+  
+  %% General Dependencies (Illustrative of data access, not direct calls in all cases)
+  Comercio --> CharacterPersistence : (Indirectly) Affects player gold/inventory
+  AI_NPC --> CharacterPersistence : (Indirectly) NPCs target players
+  EffectsOverTime --> CharacterPersistence : (Indirectly) Effects are on players
+  
+  note "This diagram shows plausible high-level interactions. Actual calls can be more nuanced (e.g., via shared data structures like UserList, NpcList, or more specific utility modules not shown at this level)."
+end

@@ -1,0 +1,67 @@
+componentDiagram
+  component EffectsOverTime_Module {
+    description "Manages Effects Over Time (EffectsOverTime.bas)"
+    
+    folder "Public Functions" {
+      [InitializePools]
+      [UpdateEffectOverTime]
+      [CreateEffect]
+      [CreateTrap]
+      [CreateDelayedBlast]
+      [CreateUnequip]
+      [ClearEffectList]
+      [TargetUseMagic]
+      [TartgetWillAtack]
+      [TargetWasDamaged]
+      [ApplyEotModifier]
+      [RemoveEotModifier]
+    }
+  }
+
+  package "Effect Implementations" {
+    description "Individual Effect Classes (Codigo/EffectOverTime/*.cls and others)"
+    interface IBaseEffectOverTime
+    
+    component AttrackEffect_cls [AttrackEffect.cls]
+    component BonusDamageEffect_cls [BonusDamageEffect.cls]
+    component DelayedBlast_cls [DelayedBlast.cls]
+    component MultipleAttacks_cls [MultipleAttacks.cls]
+    component ProtectEffect_cls [ProtectEffect.cls]
+    component TransformEffect_cls [TransformEffect.cls]
+    component UnequipItem_cls [UnequipItem.cls]
+    component OtherEffectClasses {
+      description "e.g., UpdateHpOverTime, StatModifier, clsTrap, DrunkEffect, etc."
+    }
+    
+    AttrackEffect_cls --|> IBaseEffectOverTime
+    BonusDamageEffect_cls --|> IBaseEffectOverTime
+    DelayedBlast_cls --|> IBaseEffectOverTime
+    MultipleAttacks_cls --|> IBaseEffectOverTime
+    ProtectEffect_cls --|> IBaseEffectOverTime
+    TransformEffect_cls --|> IBaseEffectOverTime
+    UnequipItem_cls --|> IBaseEffectOverTime
+    OtherEffectClasses --|> IBaseEffectOverTime
+  }
+  
+  component GlobalData {
+    description "Global Data Structures"
+    [UserList]
+    [NpcList]
+    [EffectOverTime_Definitions]
+  }
+  
+  component CharacterNPC_StatManagement {
+    description "Modules handling Character/NPC stats and state updates"
+  }
+  
+  component Logging {
+    description "Error Logging (TraceError)"
+  }
+
+  EffectsOverTime_Module --> IBaseEffectOverTime : Instantiates & Manages
+  EffectsOverTime_Module --> GlobalData : Accesses UserList, NpcList, EffectOverTime definitions
+  EffectsOverTime_Module --> CharacterNPC_StatManagement : Applies/Removes stat modifiers
+  EffectsOverTime_Module --> Logging : Reports errors
+
+  note left of EffectsOverTime_Module "EffectsOverTime.bas orchestrates the lifecycle of various status effects, buffs, and debuffs, using specific class implementations for each effect type."
+end
