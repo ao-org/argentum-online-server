@@ -6636,39 +6636,67 @@ Private Sub HandleFactionMessage(ByVal UserIndex As Integer)
 
         On Error GoTo ErrHandler
 
-        Dim TActual     As Long
+        Dim currentTime As Long
         Dim ElapsedTime As Long
         Dim Message As String
+        Dim factionLabel As String
+        Dim fontType As e_FontTypeNames
+        Dim target As Byte
         
         With UserList(UserIndex)
             Message = reader.ReadString8()
-            TActual = GetTickCount()
-            ElapsedTime = TActual - .Counters.MensajeGlobal
+            
+            If LenB(message) = 0 Then Exit Sub
+            
+            currentTime = GetTickCount()
+            elapsedTime = currentTime - .Counters.MensajeGlobal
             
             'Si esta silenciado no le deja enviar mensaje
             If .flags.Silenciado = 1 Then
                 Call WriteLocaleMsg(UserIndex, "110", e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
-            ElseIf ElapsedTime < IntervaloMensajeGlobal Then
+                Exit Sub
+            End If
+            
+            'Previene spam de mensajes globales
+            If elapsedTime < IntervaloMensajeGlobal Then
                 ' Msg548=No puedes escribir mensajes globales tan rápido.
                 Call WriteLocaleMsg(UserIndex, "548", e_FontTypeNames.FONTTYPE_WARNING)
-            Else
-                .Counters.MensajeGlobal = TActual
-                If LenB(Message) <> 0 Then
-                    'Si es Consejo
-                    If .Faccion.Status = e_Facciones.consejo Then
-                        Call SendData(SendTarget.ToRealYRMs, 0, PrepareFactionMessageConsole("[Consejo] " & .name & "> " & Message, e_FontTypeNames.FONTTYPE_CONSEJO))
-                    'Si es Armada
-                    ElseIf .Faccion.Status = e_Facciones.Armada Then
-                        Call SendData(SendTarget.ToRealYRMs, 0, PrepareFactionMessageConsole("[Armada Real] " & .name & "> " & Message, e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA))
-                    'Si es Concilio
-                    ElseIf .Faccion.Status = e_Facciones.concilio Then
-                        Call SendData(SendTarget.ToCaosYRMs, 0, PrepareFactionMessageConsole("[Concilio] " & .name & "> " & Message, e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
-                    'Si es Caos
-                    ElseIf .Faccion.Status = e_Facciones.Caos Then
-                        Call SendData(SendTarget.ToCaosYRMs, 0, PrepareFactionMessageConsole("[Legión Oscura] " & .name & "> " & Message, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS))
-                    End If
-                End If
+                Exit Sub
             End If
+            
+            'Actualiza el tiempo del último mensaje
+            .Counters.MensajeGlobal = currentTime
+            
+            'Determina la etiqueta y estilo según la facción
+            Select Case .Faccion.Status
+                Case e_Facciones.consejo
+                    factionLabel = "[Consejo]"
+                    fontType = e_FontTypeNames.FONTTYPE_CONSEJO
+                    target = SendTarget.ToRealYRMs
+    
+                Case e_Facciones.Armada
+                    factionLabel = "[Armada Real]"
+                    fontType = e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA
+                    target = SendTarget.ToRealYRMs
+    
+                Case e_Facciones.concilio
+                    factionLabel = "[Concilio]"
+                    fontType = e_FontTypeNames.FONTTYPE_CONSEJOCAOS
+                    target = SendTarget.ToCaosYRMs
+    
+                Case e_Facciones.Caos
+                    factionLabel = "[Legión Oscura]"
+                    fontType = e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS
+                    target = SendTarget.ToCaosYRMs
+    
+                Case Else
+                    Exit Sub 'Si no pertenece a ninguna facción válida
+            End Select
+            
+            'Envía el mensaje de facción
+            Dim formattedMessage As String
+            formattedMessage = factionLabel & " " & .name & "> " & message
+            Call SendData(target, 0, PrepareFactionMessageConsole(formattedMessage, fontType))
         End With
         Exit Sub
 
