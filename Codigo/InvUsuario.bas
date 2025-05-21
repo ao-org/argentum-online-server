@@ -2197,6 +2197,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 
 440                         .Char.Head = CabezaFinal
 442                         .OrigChar.Head = CabezaFinal
+                            .OrigChar.originalhead = CabezaFinal
 444                         Call ChangeUserChar(UserIndex, .Char.body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
                             'Quitamos del inv el item
                             
