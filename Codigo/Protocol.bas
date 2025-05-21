@@ -908,6 +908,8 @@ On Error Resume Next
             Call HandleUseHKeySlot(UserIndex)
         Case ClientPacketID.eAntiCheatMessage
             Call HandleAntiCheatMessage(UserIndex)
+        Case ClientPacketID.eFactionMessage
+            Call HandleFactionMessage(UserIndex)
 #If PYMMO = 0 Then
         Case ClientPacketID.eCreateAccount
             Call HandleCreateAccount(ConnectionId)
@@ -6630,7 +6632,49 @@ ErrHandler:
 110
 
 End Sub
+Private Sub HandleFactionMessage(ByVal UserIndex As Integer)
 
+        On Error GoTo ErrHandler
+
+        Dim TActual     As Long
+        Dim ElapsedTime As Long
+        Dim Message As String
+        
+        With UserList(UserIndex)
+            Message = reader.ReadString8()
+            TActual = GetTickCount()
+            ElapsedTime = TActual - .Counters.MensajeGlobal
+            
+            'Si esta silenciado no le deja enviar mensaje
+            If .flags.Silenciado = 1 Then
+                Call WriteLocaleMsg(UserIndex, "110", e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
+            ElseIf ElapsedTime < IntervaloMensajeGlobal Then
+                ' Msg548=No puedes escribir mensajes globales tan rápido.
+                Call WriteLocaleMsg(UserIndex, "548", e_FontTypeNames.FONTTYPE_WARNING)
+            Else
+                .Counters.MensajeGlobal = TActual
+                If LenB(Message) <> 0 Then
+                    'Si es Consejo
+                    If .Faccion.Status = e_Facciones.consejo Then
+                        Call SendData(SendTarget.ToRealYRMs, 0, PrepareFactionMessageConsole("[Consejo] " & .name & "> " & Message, e_FontTypeNames.FONTTYPE_CONSEJO))
+                    'Si es Armada
+                    ElseIf .Faccion.Status = e_Facciones.Armada Then
+                        Call SendData(SendTarget.ToRealYRMs, 0, PrepareFactionMessageConsole("[Armada Real] " & .name & "> " & Message, e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA))
+                    'Si es Concilio
+                    ElseIf .Faccion.Status = e_Facciones.concilio Then
+                        Call SendData(SendTarget.ToCaosYRMs, 0, PrepareFactionMessageConsole("[Concilio] " & .name & "> " & Message, e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
+                    'Si es Caos
+                    ElseIf .Faccion.Status = e_Facciones.Caos Then
+                        Call SendData(SendTarget.ToCaosYRMs, 0, PrepareFactionMessageConsole("[Legión Oscura] " & .name & "> " & Message, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS))
+                    End If
+                End If
+            End If
+        End With
+        Exit Sub
+
+ErrHandler:
+        Call TraceError(Err.Number, Err.Description, "Protocol.HandleFactionMessage", Erl)
+End Sub
 ''
 ' Handles the "AcceptRoyalCouncilMember" message.
 '
