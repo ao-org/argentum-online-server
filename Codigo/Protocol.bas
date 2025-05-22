@@ -6670,22 +6670,22 @@ Private Sub HandleFactionMessage(ByVal UserIndex As Integer)
             'Determina la etiqueta y estilo según la facción
             Select Case .Faccion.Status
                 Case e_Facciones.consejo
-                    factionLabel = "[Consejo]"
+                    factionLabel = "MENSAJE_CONSEJO"
                     fontType = e_FontTypeNames.FONTTYPE_CONSEJO
                     target = SendTarget.ToRealYRMs
     
                 Case e_Facciones.Armada
-                    factionLabel = "[Armada Real]"
+                    factionLabel = "MENSAJE_ARMADA"
                     fontType = e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA
                     target = SendTarget.ToRealYRMs
     
                 Case e_Facciones.concilio
-                    factionLabel = "[Concilio]"
+                    factionLabel = "MENSAJE_CONCILIO"
                     fontType = e_FontTypeNames.FONTTYPE_CONSEJOCAOS
                     target = SendTarget.ToCaosYRMs
     
                 Case e_Facciones.Caos
-                    factionLabel = "[Legión Oscura]"
+                    factionLabel = "MENSAJE_LEGION"
                     fontType = e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS
                     target = SendTarget.ToCaosYRMs
     
@@ -6695,8 +6695,8 @@ Private Sub HandleFactionMessage(ByVal UserIndex As Integer)
             
             'Envía el mensaje de facción
             Dim formattedMessage As String
-            formattedMessage = factionLabel & " " & .name & "> " & message
-            Call SendData(target, 0, PrepareFactionMessageConsole(formattedMessage, fontType))
+            formattedMessage = " " & .name & "> " & Message
+            Call SendData(Target, 0, PrepareFactionMessageConsole(factionLabel, formattedMessage, fontType))
         End With
         Exit Sub
 
