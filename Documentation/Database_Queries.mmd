@@ -1,0 +1,51 @@
+componentDiagram
+  component Database_Queries {
+    description "Constructs and Stores SQL Query Strings (Database_Queries.bas)"
+    
+    folder "Public Constants" {
+      [QUERY_LOAD_MAINPJ]
+      [QUERY_SAVE_MAINPJ]
+      [QUERY_SAVE_SPELLS]
+      [QUERY_SAVE_INVENTORY]
+      [QUERY_SAVE_SKILLS]
+      [QUERY_SAVE_QUESTS]
+      [QUERY_SAVE_PETS]
+      [QUERY_UPDATE_MAINPJ]
+      [QUERY_SAVE_BANCOINV]
+      [QUERY_UPSERT_SPELLS]
+      [QUERY_UPSERT_INVENTORY]
+      [QUERY_UPSERT_SKILLS]
+      [QUERY_UPSERT_PETS]
+    }
+    
+    folder "Public Subroutines" {
+        [Contruir_Querys]
+    }
+  }
+
+  component CharacterPersistence {
+    description "Handles Character Data Loading/Saving (CharacterPersistence.bas)"
+  }
+  
+  component DatabaseSystem {
+    description "Conceptual Database System"
+  }
+  
+  component cStringBuilder {
+    description "Custom String Builder Class (cStringBuilder.cls)"
+    note "Internal dependency for query construction"
+  }
+  
+  component GlobalConstants {
+    description "Game-wide constants (MAXUSERHECHIZOS, MAX_INVENTORY_SLOTS, etc.)"
+  }
+
+  Database_Queries --> cStringBuilder : Uses to build query strings
+  Database_Queries --> GlobalConstants : Uses game limits (e.g. MAX_INVENTORY_SLOTS) in query construction
+  
+  CharacterPersistence --> Database_Queries : Consumes SQL query strings
+  
+  Database_Queries --|> DatabaseSystem : Defines queries for this system
+  
+  note right of Database_Queries "Database_Queries.bas defines SQL query strings. It does not execute them but provides them to other modules like CharacterPersistence.bas, which then interacts with the Database System."
+end

@@ -1,0 +1,81 @@
+componentDiagram
+  component Admin {
+    description "Server Administration & Configuration (Admin.bas)"
+    
+    folder "Public Functions" {
+      [ReSpawnOrigPosNpcs]
+      [WorldSave]
+      [PurgarPenas]
+      [Encarcelar]
+      [BANCheck]
+      [PersonajeExiste]
+      [IsValidUserId]
+      [UnBan]
+      [UserDarPrivilegioLevel]
+      [BanTemporal]
+      [SaveBans]
+      [SaveBan]
+      [LoadBans]
+      [CompararUserPrivilegios]
+      [CompararPrivilegios]
+    }
+  }
+
+  component DatabaseLayer {
+    description "Handles direct database operations (e.g., BANCheckDatabase, GetUserValue)"
+  }
+
+  component FileSystem {
+    description "Handles file I/O (WriteVar, GetVar, .dat files)"
+  }
+
+  component NetworkSystem {
+    description "Handles communication with clients (SendData, PrepareMessageLocaleMsg)"
+  }
+
+  component NPCManagement {
+    description "Manages NPC instances (QuitarNPC, ReSpawnNpc)"
+  }
+
+  component PlayerManagement {
+    description "Manages player actions and data (WarpUserChar, EsGM, UserList access)"
+  }
+  
+  component GlobalData {
+    description "Global variables and data structures (NpcList, MapInfo, Prision, Libertad, DatPath, Server Timers & Settings)"
+  }
+  
+  component Logging {
+    description "Error Logging (TraceError)"
+  }
+  
+  component UI_Forms {
+    description "User Interface Forms (FrmStat)"
+  }
+
+  Admin --> DatabaseLayer : Uses for ban checks, user existence, saving bans
+  Admin --> FileSystem : Uses for loading/saving baneos.dat, BanDetail.dat
+  Admin --> NetworkSystem : Sends notifications to players and GMs
+  Admin --> NPCManagement : Uses to respawn NPCs
+  Admin --> PlayerManagement : Uses to jail players, check privileges, access UserList
+  Admin --> GlobalData : Accesses UserList, NpcList, MapInfo, Server Settings
+  Admin --> Logging : Reports errors
+  Admin --> UI_Forms : Updates FrmStat progress bar
+
+  [WorldSave] ..> NPCManagement : Calls ReSpawnOrigPosNpcs
+  [WorldSave] ..> NetworkSystem : Sends server messages
+  [WorldSave] ..> UI_Forms : Updates FrmStat
+  [Encarcelar] ..> PlayerManagement : Calls WarpUserChar
+  [Encarcelar] ..> NetworkSystem : Sends messages to user
+  [BANCheck] ..> DatabaseLayer : Calls BANCheckDatabase
+  [UnBan] ..> DatabaseLayer : Calls UnBanDatabase
+  [UnBan] ..> FileSystem : Modifies BanDetail.dat
+  [BanTemporal] ..> NetworkSystem : Notifies admins
+  [BanTemporal] ..> FileSystem : Calls SaveBan
+  [SaveBan] ..> FileSystem : Writes to baneos.dat
+  [SaveBan] ..> DatabaseLayer : Calls SaveBanDatabase
+  [LoadBans] ..> FileSystem : Reads from baneos.dat
+  [ReSpawnOrigPosNpcs] ..> NPCManagement : Calls QuitarNPC, ReSpawnNpc
+
+  note left of Admin "Admin.bas is crucial for server operations, game balance, and administrative tasks, interfacing with many core systems."
+end

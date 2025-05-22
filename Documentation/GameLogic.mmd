@@ -1,0 +1,90 @@
+componentDiagram
+  component GameLogic {
+    description "General Game Utilities & Logic (Extra.bas)"
+    
+    folder "Public Functions" {
+      [esCiudad]
+      [NameIndex]
+      [FindLegalPos]
+      [EsNewbie]
+      [EsGM]
+      [DoTileEvents]
+      [ClearAttackerNpc]
+      [InRangoVision]
+      [InMapBounds]
+      [ClosestLegalPos]
+      [LegalPos]
+      [LegalWalk]
+      [SendHelp]
+      [Expresar]
+      [LookatTile]
+      [resetPj]
+      [ResucitarOCurar]
+      [TestRequiredEquipedItem]
+      [SendAttackInteractionMessage]
+      [FactionCanAttackFaction]
+    }
+  }
+
+  component GlobalData {
+    description "Global Data Structures (UserList, NpcList, MapData, ObjData, MapInfo, QuestList, m_NameIndex)"
+  }
+
+  component NetworkSystem {
+    description "Client-Server Communication (SendData, WriteConsoleMsg, PrepareMessage*)"
+  }
+
+  component DatabaseFileIO {
+    description "Database and File Operations (GetVar, clsIniManager, Execute SQL)"
+  }
+
+  component CharacterManagement {
+    description "Player Character Actions (WarpUserChar, RevivirUsuario, DarCuerpo, VaciarInventario, ResetUserSpells)"
+  }
+
+  component NPCManagementAI {
+    description "NPC Actions & AI (AI.SetMovement)"
+  }
+  
+  component GuildSystem {
+    description "Guild Information (modGuilds.GuildName)"
+  }
+
+  component MapSystem {
+    description "Map-specific operations (ModMap.ActivateTrap)"
+  }
+  
+  component CommerceSystem {
+    description "Trading operations (FinComerciarUsu)"
+  }
+
+  component Logging {
+    description "Error Logging (TraceError, LogError)"
+  }
+  
+  component UI_Forms {
+    description "Server UI elements (frmMain.List1)"
+  }
+
+  GameLogic --> GlobalData : Accesses extensively
+  GameLogic --> NetworkSystem : Sends messages, updates to clients
+  GameLogic --> DatabaseFileIO : Reads help/map files, SQL for resetPj
+  GameLogic --> CharacterManagement : Calls functions to modify player state
+  GameLogic --> NPCManagementAI : Modifies NPC state (e.g. ClearAttackerNpc)
+  GameLogic --> GuildSystem : Retrieves guild names for display
+  GameLogic --> MapSystem : Triggers map events like traps
+  GameLogic --> CommerceSystem : Cancels trade on teleport conflict
+  GameLogic --> Logging : Reports errors
+  GameLogic --> UI_Forms : Outputs to server console
+
+  [DoTileEvents] ..> CharacterManagement : Calls WarpUserChar
+  [DoTileEvents] ..> MapSystem : Calls ModMap.ActivateTrap
+  [LookatTile] ..> GlobalData : Reads UserList, NpcList, ObjData
+  [LookatTile] ..> NetworkSystem : Sends info to client
+  [resetPj] ..> CharacterManagement : Calls multiple char modification functions
+  [resetPj] ..> DatabaseFileIO : Executes SQL to mark user as reset
+  [ResucitarOCurar] ..> CharacterManagement : Calls RevivirUsuario
+  [SendHelp] ..> DatabaseFileIO : Reads Help.dat
+
+  note left of GameLogic "GameLogic (Extra.bas) is a highly interconnected module providing diverse utility and core gameplay functions, acting as a central support for many other systems."
+end

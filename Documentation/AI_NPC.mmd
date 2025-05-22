@@ -1,0 +1,76 @@
+componentDiagram
+  component AI_NPC {
+    description "Handles Artificial Intelligence for Non-Player Characters (AI_NPC.bas)"
+    
+    folder "Public Functions" {
+      [NpcAI]
+      [NpcDummyUpdate]
+      [SelectNearestUser]
+      [SelectNearestNpc]
+      [SelectCurrentTarget]
+      [AI_RangeAttack]
+      [AI_GuardiaPersigueNpc]
+      [AI_SupportAndAttackNpc]
+      [AI_NpcAtacaNpc]
+      [SeguirAmo]
+      [GetAvailableSpellEffects]
+      [TryCastHelpSpell]
+      [TryCastAttackSpell]
+      [TrySupportThenAttackSpells]
+      [GoToNextWp]
+      [SetMovement]
+    }
+  }
+
+  component Modulo_NPCs {
+    description "NPC Management and Utilities (NPCs.*)"
+  }
+
+  component Modulo_Usuarios {
+    description "User Management and Utilities (UserMod.*, UserList)"
+  }
+  
+  component SistemaCombate {
+    description "Combat Mechanics"
+  }
+
+  component ModAreas {
+    description "Game Area Management (ModAreas.ConnGroups)"
+  }
+
+  component Pathfinding {
+    description "Path Calculation (SeekPath, FollowPath)"
+  }
+
+  component GlobalData {
+    description "Global Data Structures (NpcList, UserList, MapData, Hechizos, SvrConfig)"
+  }
+  
+  component Network {
+    description "Network Communication (SendData, PrepareMessage*)"
+  }
+
+  component Logging {
+    description "Error Logging (LogError, TraceError)"
+  }
+
+  AI_NPC --> Modulo_NPCs : Uses NPC utilities
+  AI_NPC --> Modulo_Usuarios : Uses User utilities, Accesses UserList
+  AI_NPC --> SistemaCombate : Calls NpcAtacaNpc, NpcAtacaUser
+  AI_NPC --> ModAreas : Accesses ConnGroups for area checks
+  AI_NPC --> Pathfinding : Uses for NPC movement
+  AI_NPC --> GlobalData : Accesses NpcList, MapData, Hechizos, SvrConfig
+  AI_NPC --> Network : Sends game updates to clients
+  AI_NPC --> Logging : Reports errors
+  
+  [NpcAI] ..> Pathfinding : Calls AI_CaminarConRumbo
+  [NpcAI] ..> SistemaCombate : Implicitly via Attack routines
+  [AI_RangeAttack] ..> Network : PrepareCreateProjectile
+  [AI_GuardiaPersigueNpc] ..> SistemaCombate : NpcAtacaNpc
+  [AI_NpcAtacaNpc] ..> SistemaCombate : NpcAtacaNpc
+  [TrySupportThenAttackSpells] ..> GlobalData : Accesses Hechizos, NpcList
+  [SeguirAmo] ..> Pathfinding : Calls AI_CaminarConRumbo
+  [NpcDummyUpdate] ..> Network : PrepareMessageTextOverChar
+
+  note left of AI_NPC "The AI_NPC module is central to NPC behavior, orchestrating actions based on different AI states and interactions with the game world and its entities."
+end
