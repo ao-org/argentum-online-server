@@ -3239,7 +3239,7 @@ Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatu
     Dim currentMap As Integer
     Dim isTriggerZone As Boolean
     Dim isTierUser As Boolean
-    Dim isTournamentZone As Boolean
+    Dim isHouseZone As Boolean
     Dim isSpecialZone As Boolean
     Dim isTrainingZone As Boolean
 
@@ -3255,16 +3255,23 @@ Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatu
                   UserList(UserIndex).Stats.tipoUsuario = tLeyenda)
 
     ' Zona de casas/sotanos arenas: mapas del 600 al 749 con trigger activo
-    isTournamentZone = (currentMap >= 600 And currentMap <= 749 And isTriggerZone)
+    isHouseZone = (currentMap >= 600 And currentMap <= 749 And isTriggerZone)
 
     ' Zonas especiales fijas donde no se consumen pociones
-    isSpecialZone = (currentMap = 275 Or currentMap = 276 Or currentMap = 277 Or currentMap = 390)
+    ' 275, 276, 277 - Capture the Flag
+    ' 390, 389, 372, 324 - Arenas
+    Select Case currentMap
+        Case 275, 276, 277, 324, 372, 389, 390
+            isSpecialZone = True
+        Case Else
+            isSpecialZone = False
+    End Select
 
     ' Zona de entrenamiento: mapa 172, con trigger activo y jugador con tier
     isTrainingZone = (currentMap = 172 And isTriggerZone And isTierUser)
 
     ' Si esta en alguna de las zonas anteriores, no se consume la poción
-    IsPotionFreeZone = (isTournamentZone Or isSpecialZone Or isTrainingZone)
+    IsPotionFreeZone = (isHouseZone Or isSpecialZone Or isTrainingZone)
 End Function
 
 Sub EnivarArmasConstruibles(ByVal UserIndex As Integer)
