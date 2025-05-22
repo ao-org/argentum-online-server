@@ -2600,8 +2600,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Dim S As Byte
                     
 922                         If .Stats.UserSkills(e_Skill.liderazgo) >= 80 Then
-'Msg889= Has fundado un clan, no podes resetar tus skills.
-Call WriteLocaleMsg(UserIndex, "889", e_FontTypeNames.FONTTYPE_INFOIAO)
+                                'Msg889= Has fundado un clan, no podes resetar tus skills.
+                                Call WriteLocaleMsg(UserIndex, "889", e_FontTypeNames.FONTTYPE_INFOIAO)
                                 Exit Sub
     
                             End If
@@ -2810,22 +2810,22 @@ Call WriteLocaleMsg(UserIndex, "889", e_FontTypeNames.FONTTYPE_INFOIAO)
                                     MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex _
                                     = ObjData(MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
                                     UserList(UserIndex).flags.TargetObj = MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex
-'Msg897= Has abierto la puerta.
-Call WriteLocaleMsg(UserIndex, "897", e_FontTypeNames.FONTTYPE_INFO)
+                                    'Msg897= Has abierto la puerta.
+                                    Call WriteLocaleMsg(UserIndex, "897", e_FontTypeNames.FONTTYPE_INFO)
                                     clavellave = obj.clave
                                     Call EliminarLlaves(ClaveLlave, UserIndex)
                                     Exit Sub
                                  Else
-'Msg898= La llave no sirve.
-Call WriteLocaleMsg(UserIndex, "898", e_FontTypeNames.FONTTYPE_INFO)
+                                    'Msg898= La llave no sirve.
+                                    Call WriteLocaleMsg(UserIndex, "898", e_FontTypeNames.FONTTYPE_INFO)
                                     Exit Sub
                                  End If
                               Else
                                  If TargObj.clave = obj.clave Then
                                     MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex _
                                     = ObjData(MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex).IndexCerradaLlave
-'Msg899= Has cerrado con llave la puerta.
-Call WriteLocaleMsg(UserIndex, "899", e_FontTypeNames.FONTTYPE_INFO)
+                                    'Msg899= Has cerrado con llave la puerta.
+                                    Call WriteLocaleMsg(UserIndex, "899", e_FontTypeNames.FONTTYPE_INFO)
                                     UserList(UserIndex).flags.TargetObj = MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex
                                     Exit Sub
                                 Else
@@ -2835,8 +2835,8 @@ Call WriteLocaleMsg(UserIndex, "899", e_FontTypeNames.FONTTYPE_INFO)
                                  End If
                               End If
                         Else
-'Msg901= No esta cerrada.
-Call WriteLocaleMsg(UserIndex, "901", e_FontTypeNames.FONTTYPE_INFO)
+                                'Msg901= No esta cerrada.
+                                Call WriteLocaleMsg(UserIndex, "901", e_FontTypeNames.FONTTYPE_INFO)
                               Exit Sub
                         End If
                     End If
@@ -2853,14 +2853,14 @@ Call WriteLocaleMsg(UserIndex, "901", e_FontTypeNames.FONTTYPE_INFO)
                     End If
                     
 1064                 If (MapData(.Pos.Map, .flags.TargetX, .flags.TargetY).Blocked And FLAG_AGUA) = 0 Then
-'Msg902= No hay agua allí.
-Call WriteLocaleMsg(UserIndex, "902", e_FontTypeNames.FONTTYPE_INFO)
+                        'Msg902= No hay agua allí.
+                        Call WriteLocaleMsg(UserIndex, "902", e_FontTypeNames.FONTTYPE_INFO)
                          Exit Sub
                     End If
                     
                     If Distance(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, .flags.TargetX, .flags.TargetY) > 2 Then
-'Msg903= Debes acercarte más al agua.
-Call WriteLocaleMsg(UserIndex, "903", e_FontTypeNames.FONTTYPE_INFO)
+                        'Msg903= Debes acercarte más al agua.
+                        Call WriteLocaleMsg(UserIndex, "903", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
     
@@ -2928,8 +2928,8 @@ Call WriteLocaleMsg(UserIndex, "903", e_FontTypeNames.FONTTYPE_INFO)
                               'End If
                           Else
                  
-'Msg906= Por mas que lo intentas, no podés comprender el manuescrito.
-Call WriteLocaleMsg(UserIndex, "906", e_FontTypeNames.FONTTYPE_INFO)
+                            'Msg906= Por mas que lo intentas, no podés comprender el manuescrito.
+                            Call WriteLocaleMsg(UserIndex, "906", e_FontTypeNames.FONTTYPE_INFO)
        
                           End If
             
