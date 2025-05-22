@@ -4232,20 +4232,6 @@ WriteCraftingResult_Err:
         
 End Sub
 
-Sub WriteForceUpdate(ByVal UserIndex As Integer)
-        
-        On Error GoTo WriteForceUpdate_Err
-        
-100     Call Writer.WriteInt16(ServerPacketID.eForceUpdate)
-102     Call modSendData.SendData(ToIndex, UserIndex)
-        
-        Exit Sub
-
-WriteForceUpdate_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteForceUpdate", Erl)
-        
-End Sub
 
 Public Sub WriteUpdateNPCSimbolo(ByVal UserIndex As Integer, _
                                  ByVal NpcIndex As Integer, _

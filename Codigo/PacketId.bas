@@ -172,7 +172,6 @@ Public Enum ServerPacketID
     eCraftingItem
     eCraftingCatalyst
     eCraftingResult
-    eForceUpdate
     eGuardNotice
     eAnswerReset
     eObjQuestListSend
@@ -199,7 +198,6 @@ Public Enum ServerPacketID
     eCreateProjectile
     eUpdateTrap
     eUpdateGroupInfo
-    eRequestTelemetry
     eUpdateCharValue 'updates some char index value based on enum
     eSendClientToggles 'Get active feature Toggles from server
     eAntiCheatMessage
@@ -532,7 +530,6 @@ Public Enum ClientPacketID
     eLobbyCommand
     eFeatureToggle
     eActionOnGroupFrame
-    eSendTelemetry
     eSetHotkeySlot
     eUseHKeySlot
     eAntiCheatMessage
