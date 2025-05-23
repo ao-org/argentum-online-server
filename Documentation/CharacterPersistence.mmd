@@ -1,0 +1,64 @@
+componentDiagram
+  component CharacterPersistence {
+    description "Handles Saving and Loading of Character Data (CharacterPersistence.bas)"
+    
+    folder "Public Functions" {
+      [GetCharacterName]
+      [LoadCharacterBank]
+      [get_num_inv_slots_from_tier]
+      [LoadCharacterInventory]
+      [LoadCharacterFromDB]
+      [MaxCharacterForTier]
+      [GetPatronTierFromAccountID]
+      [LoadPatronCreditsFromDB]
+      [SaveCharacterDB]
+      [SaveNewCharacterDB]
+    }
+  }
+
+  component DatabaseSystem {
+    description "Database Interaction Layer (Query, Execute functions, ADODB)"
+    note "Likely Database.bas, handles SQL execution"
+  }
+
+  component DatabaseQueries {
+    description "Stores SQL Query Definitions (QUERY_LOAD_MAINPJ, etc.)"
+    note "Likely Database_Queries.bas or a constants module"
+  }
+
+  component GlobalData {
+    description "Global In-Memory Data Structures (UserList, ObjData, QuestList)"
+  }
+  
+  component CharacterUtilities {
+    description "Utility functions for character manipulation (EquiparInvItem, RegisterUserName)"
+  }
+
+  component NetworkSystem {
+    description "Client Communication (CloseSocket, WriteShowMessageBox)"
+  }
+  
+  component Logging {
+    description "Error Logging (LogDatabaseError)"
+  }
+  
+  component Performance {
+    description "Performance Monitoring Utilities"
+  }
+
+  CharacterPersistence --> DatabaseSystem : Executes queries, retrieves recordsets
+  CharacterPersistence --> DatabaseQueries : Uses predefined SQL queries
+  CharacterPersistence --> GlobalData : Reads from/writes to UserList, uses ObjData, QuestList for validation/context
+  CharacterPersistence --> CharacterUtilities : Uses helper functions for character setup
+  CharacterPersistence --> NetworkSystem : Sends messages on load failure (ban, lock)
+  CharacterPersistence --> Logging : Logs database errors
+  CharacterPersistence --> Performance : Measures execution time of save/load operations
+
+  [LoadCharacterFromDB] ..> DatabaseSystem : Calls Query multiple times
+  [LoadCharacterFromDB] ..> GlobalData : Populates UserList(UserIndex)
+  [SaveCharacterDB] ..> DatabaseSystem : Calls Execute multiple times
+  [SaveCharacterDB] ..> GlobalData : Reads from UserList(UserIndex)
+  [SaveNewCharacterDB] ..> DatabaseSystem : Calls Query and Execute
+  
+  note left of CharacterPersistence "This module is the bridge between the live character data (UserList) and the persistent database storage."
+end

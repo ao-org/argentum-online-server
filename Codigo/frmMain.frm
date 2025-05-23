@@ -852,7 +852,6 @@ Private Sub CerrarYForzarActualizar_Click()
         
 102     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1659, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1659=Servidor » Cerrando servidor y lanzando nuevo parche.
 
-104     Call ForzarActualizar
 106     Call GuardarUsuarios
 108     Call EcharPjsNoPrivilegiados
 

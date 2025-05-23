@@ -1,0 +1,61 @@
+componentDiagram
+  component Comercio {
+    description "Handles Player-NPC Trading (modSistemaComercio)"
+    
+    folder "Public Functions" {
+      [Comercio]
+      [IniciarComercioNPC]
+      [UpdateNpcInvToAll]
+      [SalePrice]
+    }
+  }
+
+  component InventoryManagement {
+    description "Manages User and NPC Inventories (e.g., MeterItemEnInventario, QuitarUserInvItem)"
+  }
+
+  component GlobalData {
+    description "Global Data Structures (UserList, NpcList, ObjData, Game Constants)"
+  }
+
+  component NetworkSystem {
+    description "Handles client-server communication (SendData, WriteLocaleMsg, WriteUpdateGold)"
+  }
+
+  component SkillSystem {
+    description "Manages player skills (SubirSkill)"
+  }
+
+  component DataPersistence {
+    description "Handles saving/loading data (WriteVar for NPCs.dat, logVentaCasa)"
+  }
+  
+  component NPCDataSystem {
+    description "Provides NPC specific data & checks (NpcSellsItem)"
+  }
+
+  component AdminSecurity {
+    description "Handles administrative actions like banning (Ban, CloseSocket)"
+  }
+  
+  component Logging {
+    description "Error Logging (TraceError)"
+  }
+
+  Comercio --> InventoryManagement : Modifies User and NPC inventories
+  Comercio --> GlobalData : Accesses UserList, NpcList, ObjData
+  Comercio --> NetworkSystem : Sends trade updates and UI commands to clients
+  Comercio --> SkillSystem : Updates 'Comerciar' skill
+  Comercio --> DataPersistence : Logs key sales, updates NPCs.dat for keys
+  Comercio --> NPCDataSystem : Checks if NPC sells certain items
+  Comercio --> AdminSecurity : Calls Ban/CloseSocket for anti-cheat
+  Comercio --> Logging : Reports errors
+
+  [Comercio] ..> InventoryManagement : Calls MeterItemEnInventario, QuitarUserInvItem, etc.
+  [Comercio] ..> SkillSystem : Calls SubirSkill
+  [IniciarComercioNPC] ..> NetworkSystem : Calls WriteCommerceInit, UpdateNpcInv
+  [UpdateNpcInvToAll] ..> NetworkSystem : Calls UpdateNpcInv for multiple users
+  [SalePrice] ..> GlobalData : Accesses ObjData
+
+  note left of Comercio "The Comercio module orchestrates the buy/sell process between players and NPCs, relying on several other systems for data and actions."
+end

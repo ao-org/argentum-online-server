@@ -203,8 +203,9 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal ExpellUs
 120                 UserList(UserReference.ArrayIndex).GuildIndex = 0
 122                 map = UserList(UserReference.ArrayIndex).pos.map
 124                 If MapInfo(Map).SoloClanes And MapInfo(Map).Salida.Map <> 0 Then
-126                     Call WriteConsoleMsg(UserReference.ArrayIndex, PrepareMessageLocaleMsg(1941, vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG)) ' Msg1941=Necesitas un clan para pertenecer en este mapa.
+
 128                     Call WarpUserChar(UserReference.ArrayIndex, MapInfo(map).Salida.map, MapInfo(map).Salida.x, MapInfo(map).Salida.y, True)
+126                     Call WriteConsoleMsg(UserReference.ArrayIndex, PrepareMessageLocaleMsg(1941, vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG)) ' Msg1941=Necesitas un clan para pertenecer en este mapa.
                     Else
 130                     Call RefreshCharStatus(UserReference.ArrayIndex)
                     End If
@@ -1181,7 +1182,9 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
 
         End If
     
-108     If Not m_EsGuildLeader(UserList(UserIndex).id, GI) Then
+
+108     If Not m_EsGuildLeader(UserList(UserIndex).Id, GI) Then
+
 110         Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1947, vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG)) ' Msg1947=No eres el líder de tu clan.
             Exit Sub
 
@@ -1331,7 +1334,9 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
 
         End If
     
-108     If Not m_EsGuildLeader(UserList(UserIndex).id, GI) Then
+
+108     If Not m_EsGuildLeader(UserList(UserIndex).Id, GI) Then
+
 110         refError = PrepareMessageLocaleMsg(2012, vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG) 'No eres el líder de tu clan.
             Exit Function
 

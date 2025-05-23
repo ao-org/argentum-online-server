@@ -900,8 +900,6 @@ On Error Resume Next
             Call HandleFeatureToggle(UserIndex)
         Case ClientPacketID.eActionOnGroupFrame
             Call HandleActionOnGroupFrame(UserIndex)
-        Case ClientPacketID.eSendTelemetry
-            'TODO: remove eSendTelemetry
         Case ClientPacketID.eSetHotkeySlot
             Call HandleSetHotkeySlot(UserIndex)
         Case ClientPacketID.eUseHKeySlot

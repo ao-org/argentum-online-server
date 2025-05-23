@@ -1968,23 +1968,6 @@ ErrHandler:
 End Sub
 
 
-Sub ForzarActualizar()
-    
-        On Error Resume Next
-    
-        Dim i As Long
-
-100     For i = 1 To LastUser
-
-102         If UserList(i).ConnectionDetails.ConnIDValida Then
-        
-104             Call WriteForceUpdate(i)
-    
-            End If
-    
-106     Next i
-    
-End Sub
  
 Sub GuardarUsuarios()
         
