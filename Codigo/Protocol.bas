@@ -3435,7 +3435,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
                 'Update tag
 122             Call RefreshCharStatus(UserIndex)
             Else
-124             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
+124             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(errorStr, vbNullString, e_FontTypeNames.FONTTYPE_GUILD))
 
         End If
 
