@@ -373,7 +373,7 @@ Public Sub HandleArena(ByVal UserIndex As Integer)
         Else
         .Stats.GLD = .Stats.GLD - ArenaPrice
         Call WriteUpdateGold(UserIndex)
-        Call WarpUserChar(UserIndex, arenaMap, mapX, mapY, True) 'Teleports user to the arena map
+        Call WarpToLegalPos(UserIndex, arenaMap, MapX, MapY, True) 'Teleports user to the arena map
         End If
 
     End With
