@@ -344,8 +344,8 @@ Public Sub HandleArena(ByVal UserIndex As Integer)
         Dim mapY As Integer
         
         arenaMap = 297
-        mapX = 50
-        mapY = 50
+        MapX = 47
+        MapY = 47
 
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             Call WriteLocaleMsg(UserIndex, "530", e_FontTypeNames.FONTTYPE_INFO)
