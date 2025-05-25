@@ -1329,6 +1329,8 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 182         .flags.Domable = val(Leer.GetValue("NPC" & NpcNumber, "Domable"))
 
             .flags.AttackableByEveryone = val(Leer.GetValue("NPC" & NpcNumber, "AttackableByEveryone", 0)) 'makes the NPC attackable by ciudadanos and crimis -ako
+            
+            .flags.ArenaPrice = val(Leer.GetValue("NPC" & NpcNumber, "ArenaPrice", 0)) 'makes the NPC be able to charge a X amount of gold for the arena entry
     
 184         .GiveGLD = val(Leer.GetValue("NPC" & NpcNumber, "GiveGLD"))
     

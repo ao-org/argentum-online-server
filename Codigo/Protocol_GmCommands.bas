@@ -332,6 +332,50 @@ Public Function GetLoserMsgID() As Integer
     GetLoserMsgID = 1332 + Int(Rnd * 4)
 End Function
 
+Public Sub HandleArena(ByVal UserIndex As Integer)
+    On Error GoTo HandleArena_Err
+    With UserList(UserIndex)
+
+        Dim arenaPrice As Integer
+        Dim npcIndex As Integer
+        Dim charIndex As Integer
+
+        arenaPrice = NpcList(charIndex).flags.arenaPrice
+        If arenaPrice = 0 Then Exit Sub
+
+        If Not IsValidNpcRef(.flags.TargetNPC) Then
+            Call WriteLocaleMsg(UserIndex, "530", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
+        npcIndex = .flags.TargetNPC.ArrayIndex
+        charIndex = NpcList(npcIndex).Char.charIndex
+
+        If .flags.Muerto = 1 Then
+            Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
+
+        ElseIf Distancia(NpcList(npcIndex).pos, .pos) > 10 Then
+            Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+
+        ElseIf NpcList(npcIndex).npcType <> e_NPCType.ArenaGuard Then
+            Call WriteLocaleChatOverHead(UserIndex, 1322, vbNullString, charIndex, vbWhite)
+
+        ElseIf .Stats.GLD < arenaPrice Then
+            Call WriteLocaleChatOverHead(UserIndex, 1325, vbNullString, charIndex, vbWhite)
+
+        Else
+        .Stats.GLD = .Stats.GLD - arenaPrice
+        Call WarpUserChar(UserIndex, 297, 50, 50, True) 'Teleports user to the arena map
+        End If
+
+    End With
+
+    Exit Sub
+
+HandleArena_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleArena", Erl)
+End Sub
+
  
 Public Sub HandleDenounce(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler

@@ -594,6 +594,7 @@ Public Enum e_NPCType
     AO20Shop = 21
     AO20ShopPjs = 22
     EventMaster = 23
+    ArenaGuard = 24
 End Enum
 
 Public Const MIN_APUÑALAR As Byte = 10
@@ -2528,6 +2529,7 @@ End Enum
 Public Type t_NPCFlags
 
     AttackableByEveryone As Byte 'el NPC puede ser atacado indistintamente por PKs y Ciudadanos / ako
+    ArenaPrice As Byte
     AfectaParalisis As Byte
     GolpeExacto As Byte
     Domable As Integer
