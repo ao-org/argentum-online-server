@@ -336,20 +336,27 @@ Public Sub HandleArena(ByVal UserIndex As Integer)
     On Error GoTo HandleArena_Err
     With UserList(UserIndex)
 
-        Dim arenaPrice As Integer
-        Dim npcIndex As Integer
-        Dim charIndex As Integer
-
-        arenaPrice = NpcList(charIndex).flags.arenaPrice
-        If arenaPrice = 0 Then Exit Sub
+        Dim ArenaPrice As Integer
+        Dim NpcIndex As Integer
+        Dim charindex As Integer
+        Dim arenaMap As Integer
+        Dim mapX As Integer
+        Dim mapY As Integer
+        
+        arenaMap = 297
+        mapX = 50
+        mapY = 50
 
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             Call WriteLocaleMsg(UserIndex, "530", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
-        npcIndex = .flags.TargetNPC.ArrayIndex
-        charIndex = NpcList(npcIndex).Char.charIndex
+        NpcIndex = .flags.TargetNPC.ArrayIndex
+        charindex = NpcList(NpcIndex).Char.charindex
+        
+        ArenaPrice = NpcList(NpcIndex).flags.ArenaPrice
+        If ArenaPrice = 0 Then Exit Sub
 
         If .flags.Muerto = 1 Then
             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
@@ -364,8 +371,9 @@ Public Sub HandleArena(ByVal UserIndex As Integer)
             Call WriteLocaleChatOverHead(UserIndex, 1325, vbNullString, charIndex, vbWhite)
 
         Else
-        .Stats.GLD = .Stats.GLD - arenaPrice
-        Call WarpUserChar(UserIndex, 297, 50, 50, True) 'Teleports user to the arena map
+        .Stats.GLD = .Stats.GLD - ArenaPrice
+        Call WriteUpdateGold(UserIndex)
+        Call WarpUserChar(UserIndex, arenaMap, mapX, mapY, True) 'Teleports user to the arena map
         End If
 
     End With
