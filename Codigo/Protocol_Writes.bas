@@ -4486,7 +4486,20 @@ PrepareMessageConsoleMsg_Err:
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageConsoleMsg", Erl)
         
 End Function
+Public Function PrepareFactionMessageConsole(ByVal factionLabel As String, ByVal chat As String, ByVal FontIndex As e_FontTypeNames)
+    On Error GoTo PrepareFactionMessageConsole_Err
+             
+        Call Writer.WriteInt16(ServerPacketID.eConsoleFactionMessage)
+        Call Writer.WriteString8(chat)
+        Call Writer.WriteInt8(FontIndex)
+        Call Writer.WriteString8(factionLabel)
+        
+        Exit Function
 
+PrepareFactionMessageConsole_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareFactionMessageConsole", Erl)
+End Function
 Public Function PrepareMessageLocaleMsg(ByVal ID As Integer, _
                                         ByVal chat As String, _
                                         ByVal FontIndex As e_FontTypeNames)
