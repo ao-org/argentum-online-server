@@ -68,6 +68,11 @@ Private Enum estadoCaptura
 
 End Enum
 
+Private Enum e_CancelarCaptura
+    CanceladoAbruto = -1
+    FaltaJugadoresInscripcion = -2
+End Enum
+
 Private Estado                  As estadoCaptura
 
 Private contadorBandera(1 To 2) As Integer
@@ -142,7 +147,7 @@ Public Sub PasarSegundo()
                 reintentos = reintentos + 1
 
                 If reintentos >= 2 Then
-                    Call finalizarCaptura(-2)
+                    Call finalizarCaptura(e_CancelarCaptura.FaltaJugadoresInscripcion)
                 Else
                     tiempo_espera = 30
 
@@ -295,19 +300,9 @@ Private Sub iniciarCaptura()
 
     Dim participante As clsCapturaParticipante
 
+    'Si no hay suficientes participantes al momento de inscripción, cancelamos el evento
     If participantes.Count Mod 2 <> 0 Then
-
-        Dim player As clsCapturaParticipante
-
-        Set player = Participantes(Participantes.Count)
-        Call eliminarParticipante(player)
-
-        If player.IsValid Then
-            'Msg924= Has sido eliminado del evento por ser el último en ingresar y los equipos eran impares.
-            Call WriteLocaleMsg(player.PlayerIndex, "924", e_FontTypeNames.FONTTYPE_INFOBOLD)
-
-        End If
-
+        call finalizarCaptura(e_CancelarCaptura.FaltaJugadoresInscripcion)
     End If
 
 
@@ -589,18 +584,16 @@ Private Sub restaurarBandera(ByVal Team As Byte)
 
 End Sub
 
-Public Sub finalizarCaptura(Optional Team As Integer = -1)
+Public Sub finalizarCaptura(Optional Team As Integer = e_CancelarCaptura.CanceladoAbruto)
 
     Dim participante As clsCapturaParticipante
 
     Estado = Finalizado
 
-    If Team = -2 Then
+    If Team = e_CancelarCaptura.FaltaJugadoresInscripcion Then
 
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1684, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1684=Eventos» Se ha cancelado el evento de captura la bandera por falta de participantes.
-    ElseIf Team = -1 Then 'Se aborto el evento
-       Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1685, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1685=Eventos» El evento de captura la bandera ha sido cancelado. Se te ha devuelto el precio de inscripción.
-
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1685, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1685=Eventos» El evento de captura la bandera ha sido cancelado. Se te ha devuelto el precio de inscripción.
         For Each participante In participantes
 
             If participante.IsValid Then
