@@ -466,8 +466,8 @@ On Error Resume Next
             Call HandlePunishments(UserIndex)
         Case ClientPacketID.eGamble
             Call HandleGamble(UserIndex)
-        Case ClientPacketID.eArena
-            Call HandleArena(UserIndex)
+        Case ClientPacketID.eEntrar
+            Call HandleEntrar(UserIndex)
         Case ClientPacketID.eLeaveFaction
             Call HandleLeaveFaction(UserIndex)
         Case ClientPacketID.eBankExtractGold

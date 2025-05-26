@@ -332,20 +332,16 @@ Public Function GetLoserMsgID() As Integer
     GetLoserMsgID = 1332 + Int(Rnd * 4)
 End Function
 
-Public Sub HandleArena(ByVal UserIndex As Integer)
-    On Error GoTo HandleArena_Err
+Public Sub HandleEntrar(ByVal UserIndex As Integer)
+    On Error GoTo HandleEntrar_Err
     With UserList(UserIndex)
 
-        Dim ArenaPrice As Integer
+        Dim EntryPrice As Integer
         Dim NpcIndex As Integer
         Dim charindex As Integer
         Dim arenaMap As Integer
-        Dim mapX As Integer
-        Dim mapY As Integer
-        
-        arenaMap = 297
-        MapX = 47
-        MapY = 47
+        Dim MapX As Integer
+        Dim MapY As Integer
 
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             Call WriteLocaleMsg(UserIndex, "530", e_FontTypeNames.FONTTYPE_INFO)
@@ -355,23 +351,30 @@ Public Sub HandleArena(ByVal UserIndex As Integer)
         NpcIndex = .flags.TargetNPC.ArrayIndex
         charindex = NpcList(NpcIndex).Char.charindex
         
-        ArenaPrice = NpcList(NpcIndex).flags.ArenaPrice
-        If ArenaPrice = 0 Then Exit Sub
+        EntryPrice = NpcList(NpcIndex).flags.EntryPrice
+        If EntryPrice = 0 Then Exit Sub
+        
+        arenaMap = NpcList(NpcIndex).flags.TargetEntryMap
+        MapX = NpcList(NpcIndex).flags.TargetEntryX
+        MapY = NpcList(NpcIndex).flags.TargetEntryY
+        
+        If arenaMap = 0 And MapX = 0 And MapY = 0 _
+        Then Exit Sub
 
         If .flags.Muerto = 1 Then
             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 
-        ElseIf Distancia(NpcList(npcIndex).pos, .pos) > 10 Then
+        ElseIf Distancia(NpcList(NpcIndex).pos, .pos) > 10 Then
             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 
-        ElseIf NpcList(npcIndex).npcType <> e_NPCType.ArenaGuard Then
-            Call WriteLocaleChatOverHead(UserIndex, 1322, vbNullString, charIndex, vbWhite)
-
-        ElseIf .Stats.GLD < arenaPrice Then
-            Call WriteLocaleChatOverHead(UserIndex, 1325, vbNullString, charIndex, vbWhite)
+        ElseIf .Stats.GLD < EntryPrice Then
+            Call WriteLocaleChatOverHead(UserIndex, 1325, vbNullString, charindex, vbWhite)
+            
+        ElseIf NpcList(NpcIndex).npcType <> e_NPCType.ArenaGuard Then
+            Call WriteLocaleChatOverHead(UserIndex, 1322, vbNullString, charindex, vbWhite)
 
         Else
-        .Stats.GLD = .Stats.GLD - ArenaPrice
+        .Stats.GLD = .Stats.GLD - EntryPrice
         Call WriteUpdateGold(UserIndex)
         Call WarpToLegalPos(UserIndex, arenaMap, MapX, MapY, True) 'Teleports user to the arena map
         End If
@@ -380,8 +383,8 @@ Public Sub HandleArena(ByVal UserIndex As Integer)
 
     Exit Sub
 
-HandleArena_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleArena", Erl)
+HandleEntrar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleEntrar", Erl)
 End Sub
 
  
