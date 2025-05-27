@@ -342,20 +342,20 @@ Public Sub HandleMapPriceEntrance(ByVal UserIndex As Integer)
         End If
 
         Dim entryPrice As Integer
-        Dim npcIndex As Integer
-        Dim charIndex As Integer
+        Dim NpcIndex As Integer
+        Dim charindex As Integer
         Dim arenaMap As Integer
-        Dim mapX As Integer
-        Dim mapY As Integer
+        Dim MapX As Integer
+        Dim MapY As Integer
         Dim isArenaEnabled As Boolean
 
-        npcIndex = .flags.TargetNPC.ArrayIndex
-        charIndex = NpcList(npcIndex).Char.charIndex
-        entryPrice = NpcList(npcIndex).flags.entryPrice
-        isArenaEnabled = NpcList(npcIndex).flags.ArenaEnabled
-        arenaMap = NpcList(npcIndex).flags.TargetEntryMap
-        mapX = NpcList(npcIndex).flags.TargetEntryX
-        mapY = NpcList(npcIndex).flags.TargetEntryY
+        NpcIndex = .flags.TargetNPC.ArrayIndex
+        charindex = NpcList(NpcIndex).Char.charindex
+        isArenaEnabled = NpcList(NpcIndex).flags.ArenaEnabled
+        entryPrice = NpcList(NpcIndex).flags.MapEntryPrice
+        arenaMap = NpcList(NpcIndex).flags.MapTargetEntry
+        MapX = NpcList(NpcIndex).flags.MapTargetEntryX
+        MapY = NpcList(NpcIndex).flags.MapTargetEntryY
         
         If Not isArenaEnabled Then Exit Sub
         
