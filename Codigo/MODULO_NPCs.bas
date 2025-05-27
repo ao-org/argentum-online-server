@@ -1330,13 +1330,15 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 
             .flags.AttackableByEveryone = val(Leer.GetValue("NPC" & NpcNumber, "AttackableByEveryone", 0)) 'makes the NPC attackable by ciudadanos and crimis -ako
             
-            .flags.EntryPrice = val(Leer.GetValue("NPC" & NpcNumber, "EntryPrice", 0)) 'makes the NPC be able to charge a X amount of gold for the entry
+            .flags.MapEntryPrice = val(Leer.GetValue("NPC" & NpcNumber, "MapEntryPrice", 0)) 'makes the NPC be able to charge a X amount of gold for the entry
     
-            .flags.TargetEntryMap = val(Leer.GetValue("NPC" & NpcNumber, "TargetEntryMap", 0))
+            .flags.MapTargetEntry = val(Leer.GetValue("NPC" & NpcNumber, "MapTargetEntry", 1))
             
-            .flags.TargetEntryX = val(Leer.GetValue("NPC" & NpcNumber, "TargetEntryX", 0))
+            .flags.MapTargetEntryX = val(Leer.GetValue("NPC" & NpcNumber, "MapTargetEntryX", 50))
             
-            .flags.TargetEntryY = val(Leer.GetValue("NPC" & NpcNumber, "TargetEntryY", 0))
+            .flags.MapTargetEntryY = val(Leer.GetValue("NPC" & NpcNumber, "MapTargetEntryY", 50))
+            
+            .flags.ArenaEnabled = val(Leer.GetValue("NPC" & NpcNumber, "ArenaEnabled", 0))
     
 184         .GiveGLD = val(Leer.GetValue("NPC" & NpcNumber, "GiveGLD"))
     
