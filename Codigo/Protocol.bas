@@ -4779,7 +4779,7 @@ Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
 104         application = Reader.ReadString8()
         
 106         If Not modGuilds.a_NuevoAspirante(UserIndex, guild, application, errorStr) Then
-108             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
+108             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(errorStr, vbNullString, e_FontTypeNames.FONTTYPE_GUILD))
 
             Else
                 'Msg1155= Tu solicitud ha sido enviada. Espera prontas noticias del líder de ¬1
