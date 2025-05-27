@@ -332,6 +332,61 @@ Public Function GetLoserMsgID() As Integer
     GetLoserMsgID = 1332 + Int(Rnd * 4)
 End Function
 
+Public Sub HandleMapPriceEntrance(ByVal UserIndex As Integer)
+    On Error GoTo HandleMapPriceEntrance_Err
+    With UserList(UserIndex)
+
+        If Not IsValidNpcRef(.flags.TargetNPC) Then
+            Call WriteLocaleMsg(UserIndex, "530", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
+        Dim entryPrice As Integer
+        Dim NpcIndex As Integer
+        Dim charindex As Integer
+        Dim arenaMap As Integer
+        Dim MapX As Integer
+        Dim MapY As Integer
+        Dim isArenaEnabled As Boolean
+
+        NpcIndex = .flags.TargetNPC.ArrayIndex
+        charindex = NpcList(NpcIndex).Char.charindex
+        isArenaEnabled = NpcList(NpcIndex).flags.ArenaEnabled
+        entryPrice = NpcList(NpcIndex).flags.MapEntryPrice
+        arenaMap = NpcList(NpcIndex).flags.MapTargetEntry
+        MapX = NpcList(NpcIndex).flags.MapTargetEntryX
+        MapY = NpcList(NpcIndex).flags.MapTargetEntryY
+        
+        If Not isArenaEnabled Then Exit Sub
+        
+        If entryPrice = 0 Then Exit Sub
+        
+        If .flags.Muerto = 1 Then
+            Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
+
+        ElseIf Distancia(NpcList(npcIndex).pos, .pos) > 10 Then
+            Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+
+        ElseIf .Stats.GLD < entryPrice Then
+            Call WriteLocaleChatOverHead(UserIndex, 1325, vbNullString, charIndex, vbWhite)
+            
+        ElseIf NpcList(npcIndex).npcType <> e_NPCType.ArenaGuard Then
+            Call WriteLocaleChatOverHead(UserIndex, 1322, vbNullString, charIndex, vbWhite)
+
+        Else
+            .Stats.GLD = .Stats.GLD - entryPrice
+            Call WriteUpdateGold(UserIndex)
+            Call WarpToLegalPos(UserIndex, arenaMap, mapX, mapY, True) 'Teleports user to the arena map
+        End If
+
+    End With
+
+    Exit Sub
+
+HandleMapPriceEntrance_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleMapPriceEntrance", Erl)
+End Sub
+
  
 Public Sub HandleDenounce(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
