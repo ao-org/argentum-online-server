@@ -2529,7 +2529,7 @@ End Enum
 Public Type t_NPCFlags
 
     AttackableByEveryone As Byte 'el NPC puede ser atacado indistintamente por PKs y Ciudadanos / ako
-    MapEntryPrice As Byte
+    MapEntryPrice As Integer
     MapTargetEntry As Integer
     MapTargetEntryX As Byte
     MapTargetEntryY As Byte
