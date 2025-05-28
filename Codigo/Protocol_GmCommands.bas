@@ -368,7 +368,7 @@ Public Sub HandleMapPriceEntrance(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 
         ElseIf .Stats.GLD < entryPrice Then
-            Call WriteLocaleChatOverHead(UserIndex, 1325, vbNullString, charIndex, vbWhite)
+            Call WriteLocaleChatOverHead(UserIndex, 2040, vbNullString, charindex, vbWhite)
             
         ElseIf NpcList(npcIndex).npcType <> e_NPCType.ArenaGuard Then
             Call WriteLocaleChatOverHead(UserIndex, 1322, vbNullString, charIndex, vbWhite)
