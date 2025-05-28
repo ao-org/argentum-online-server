@@ -1741,7 +1741,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 Call WriteLocaleMsg(UserIndex, 395, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-            
+
             If PuedeUsarObjeto(UserIndex, .invent.Object(Slot).objIndex, True) > 0 Then
                 Exit Sub
             End If
@@ -3273,7 +3273,7 @@ Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatu
             isSpecialZone = False
     End Select
 
-    ' Zona de entrenamiento: mapa 172, con trigger activo y jugador con tier
+    ' Meson Hostigado - Beneficio Patreon: mapa 172, con trigger activo y jugador con tier
     isTrainingZone = (currentMap = 172 And isTriggerZone And isTierUser)
 
     ' Si esta en alguna de las zonas anteriores, no se consume la poción
