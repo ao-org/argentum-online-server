@@ -3260,8 +3260,9 @@ Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatu
     ' Zonas especiales fijas donde no se consumen pociones
     ' 275, 276, 277 - Capture the Flag
     ' 390, 389, 372, 324 - Arenas
+    ' 297 - Lindo's Arena
     Select Case currentMap
-        Case 275, 276, 277, 324, 372, 389, 390
+        Case 275, 276, 277, 324, 372, 389, 390, 297
             isSpecialZone = True
         Case Else
             isSpecialZone = False
