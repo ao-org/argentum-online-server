@@ -3243,6 +3243,7 @@ Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatu
     Dim isHouseZone As Boolean
     Dim isSpecialZone As Boolean
     Dim isTrainingZone As Boolean
+    Dim isArena As Boolean
 
     ' Obtener el mapa actual del usuario
     currentMap = UserList(UserIndex).pos.Map
