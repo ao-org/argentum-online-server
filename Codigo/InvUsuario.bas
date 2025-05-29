@@ -1971,8 +1971,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 260                 .flags.TipoPocion = obj.TipoPocion
                     
                     Dim CabezaFinal  As Integer
-    
                     Dim CabezaActual As Integer
+
+                    ' Esta en Zona de Pelea?
+                    Dim triggerStatus As e_Trigger6
+                    triggerStatus = TriggerZonaPelea(UserIndex, UserIndex)
     
 262                 Select Case .flags.TipoPocion
             
@@ -2022,16 +2025,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 ' Usa el ítem
                                 Dim HealingAmount As Long
                                 Dim Source As Integer
-                                Dim T As e_Trigger6
                             
                                 ' Calcula la cantidad de curación
                                 HealingAmount = RandomNumber(obj.MinModificador, obj.MaxModificador) * UserMod.GetSelfHealingBonus(UserList(UserIndex))
                             
                                 ' Modifica la salud del jugador
                                 Call UserMod.ModifyHealth(UserIndex, HealingAmount)
-                            
-                                ' Verifica si el jugador está en la ARENA
-                                T = TriggerZonaPelea(UserIndex, UserIndex)
                             
                                 ' Consumir pocion solo si el usuario no esta en zona de uso libre
                                 If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
@@ -2054,10 +2053,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 ' Usa el ítem: restaura el MANA
                                 .Stats.MinMAN = IIf(.Stats.MinMAN > 20000, 20000, .Stats.MinMAN + Porcentaje(.Stats.MaxMAN, porcentajeRec))
                                 If .Stats.MinMAN > .Stats.MaxMAN Then .Stats.MinMAN = .Stats.MaxMAN
-                            
-                                ' Verifica si el jugador está en la ARENA
-                                Dim triggerStatus As e_Trigger6
-                                triggerStatus = TriggerZonaPelea(UserIndex, UserIndex)
 
                                 ' Consumir pocion solo si el usuario no esta en zona de uso libre
                                 If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
