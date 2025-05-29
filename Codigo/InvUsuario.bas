@@ -1741,9 +1741,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 Call WriteLocaleMsg(UserIndex, 395, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
+
             If PuedeUsarObjeto(UserIndex, .invent.Object(Slot).objIndex, True) > 0 Then
                 Exit Sub
             End If
+
 104         obj = ObjData(.Invent.Object(Slot).ObjIndex)
             Dim TimeSinceLastUse As Long: TimeSinceLastUse = GetTickCount() - .CdTimes(obj.cdType)
             If TimeSinceLastUse < obj.Cooldown Then Exit Sub
@@ -1969,8 +1971,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 260                 .flags.TipoPocion = obj.TipoPocion
                     
                     Dim CabezaFinal  As Integer
-    
                     Dim CabezaActual As Integer
+
+                    ' Esta en Zona de Pelea?
+                    Dim triggerStatus As e_Trigger6
+                    triggerStatus = TriggerZonaPelea(UserIndex, UserIndex)
     
 262                 Select Case .flags.TipoPocion
             
@@ -1982,8 +1987,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     
 268                         Call WriteFYA(UserIndex)
                     
-                            'Quitamos del inv el item
-270                         Call QuitarUserInvItem(UserIndex, Slot, 1)
+                            ' Consumir pocion solo si el usuario no esta en zona de uso libre
+                            If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+                                ' Quitamos el ítem del inventario
+                                Call QuitarUserInvItem(UserIndex, Slot, 1)
+                            End If
     
 272                         If obj.Snd1 <> 0 Then
 274                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
@@ -1998,8 +2006,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             'Usa el item
 282                         .Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(.Stats.UserAtributos(e_Atributos.Fuerza) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
                     
-                            'Quitamos del inv el item
-284                         Call QuitarUserInvItem(UserIndex, Slot, 1)
+                            ' Consumir pocion solo si el usuario no esta en zona de uso libre
+                            If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+                                ' Quitamos el ítem del inventario
+                                Call QuitarUserInvItem(UserIndex, Slot, 1)
+                            End If
     
 286                         If obj.Snd1 <> 0 Then
 288                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
@@ -2014,7 +2025,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 ' Usa el ítem
                                 Dim HealingAmount As Long
                                 Dim Source As Integer
-                                Dim T As e_Trigger6
                             
                                 ' Calcula la cantidad de curación
                                 HealingAmount = RandomNumber(obj.MinModificador, obj.MaxModificador) * UserMod.GetSelfHealingBonus(UserList(UserIndex))
@@ -2022,17 +2032,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 ' Modifica la salud del jugador
                                 Call UserMod.ModifyHealth(UserIndex, HealingAmount)
                             
-                                ' Verifica si el jugador está en la ARENA
-                                T = TriggerZonaPelea(UserIndex, UserIndex)
-                            
-                                ' Si NO está en un mapa entre 600 y 749 o NO está en la ARENA, se consume la poción
-                                If Not ((UserList(UserIndex).pos.Map >= 600 And UserList(UserIndex).pos.Map <= 749 And T = e_Trigger6.TRIGGER6_PERMITE) Or _
-                                                                (UserList(UserIndex).pos.Map = 275 Or UserList(UserIndex).pos.Map = 276 Or UserList(UserIndex).pos.Map = 277) Or _
-                                                                ((UserList(UserIndex).pos.Map = 172 And T = e_Trigger6.TRIGGER6_PERMITE And (.Stats.tipoUsuario = tAventurero Or .Stats.tipoUsuario = tHeroe Or .Stats.tipoUsuario = tLeyenda)))) Then
-                                Call QuitarUserInvItem(UserIndex, Slot, 1)
+                                ' Consumir pocion solo si el usuario no esta en zona de uso libre
+                                If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+                                    ' Quitamos el ítem del inventario
+                                    Call QuitarUserInvItem(UserIndex, Slot, 1)
                                 End If
                                                     
-                            
                                 ' Reproduce sonido al usar la poción
                                 If obj.Snd1 <> 0 Then
                                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
@@ -2048,10 +2053,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 ' Usa el ítem: restaura el MANA
                                 .Stats.MinMAN = IIf(.Stats.MinMAN > 20000, 20000, .Stats.MinMAN + Porcentaje(.Stats.MaxMAN, porcentajeRec))
                                 If .Stats.MinMAN > .Stats.MaxMAN Then .Stats.MinMAN = .Stats.MaxMAN
-                            
-                                ' Verifica si el jugador está en la ARENA
-                                Dim triggerStatus As e_Trigger6
-                                triggerStatus = TriggerZonaPelea(UserIndex, UserIndex)
 
                                 ' Consumir pocion solo si el usuario no esta en zona de uso libre
                                 If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
@@ -3259,16 +3260,15 @@ Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatu
 
     ' Zonas especiales fijas donde no se consumen pociones
     ' 275, 276, 277 - Capture the Flag
-    ' 390, 389, 372, 324 - Arenas
     ' 297 - Lindo's Arena
     Select Case currentMap
-        Case 275, 276, 277, 324, 372, 389, 390, 297
+        Case 275, 276, 277, 297
             isSpecialZone = True
         Case Else
             isSpecialZone = False
     End Select
 
-    ' Zona de entrenamiento: mapa 172, con trigger activo y jugador con tier
+    ' Meson Hostigado - Beneficio Patreon: mapa 172, con trigger activo y jugador con tier
     isTrainingZone = (currentMap = 172 And isTriggerZone And isTierUser)
 
     ' Si esta en alguna de las zonas anteriores, no se consume la poción
