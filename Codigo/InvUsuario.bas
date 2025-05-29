@@ -3262,17 +3262,17 @@ Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatu
     ' Zonas especiales fijas donde no se consumen pociones
     ' 275, 276, 277 - Capture the Flag
     Select Case currentMap
-        Case 275, 276, 277
+        Case MAP_CAPTURE_THE_FLAG_1, MAP_CAPTURE_THE_FLAG_2, MAP_CAPTURE_THE_FLAG_3
             isSpecialZone = True
         Case Else
             isSpecialZone = False
     End Select
 
     ' 297 - Arena de Lindos
-    isArena = (currentMap = 297 And isTriggerZone And isTierUser)
+    isArena = (currentMap = MAP_ARENA_LINDOS And isTriggerZone And isTierUser)
 
     ' Meson Hostigado - Beneficio Patreon: mapa 172, con trigger activo y jugador con tier
-    isTrainingZone = (currentMap = 172 And isTriggerZone And isTierUser)
+    isTrainingZone = (currentMap = MAP_MESON_HOSTIGADO And isTriggerZone And isTierUser)
 
     ' Si esta en alguna de las zonas anteriores, no se consume la poción
     IsPotionFreeZone = (isHouseZone Or isSpecialZone Or isTrainingZone Or isArena)
