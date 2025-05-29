@@ -3269,7 +3269,7 @@ Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatu
     End Select
 
     ' 297 - Arena de Lindos
-    isArena = (currentMap = MAP_ARENA_LINDOS And isTriggerZone And isTierUser)
+    isArena = (currentMap = MAP_ARENA_LINDOS And isTriggerZone)
 
     ' Meson Hostigado - Beneficio Patreon: mapa 172, con trigger activo y jugador con tier
     isTrainingZone = (currentMap = MAP_MESON_HOSTIGADO And isTriggerZone And isTierUser)
