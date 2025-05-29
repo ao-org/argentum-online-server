@@ -3243,6 +3243,7 @@ Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatu
     Dim isHouseZone As Boolean
     Dim isSpecialZone As Boolean
     Dim isTrainingZone As Boolean
+    Dim isArena As Boolean
 
     ' Obtener el mapa actual del usuario
     currentMap = UserList(UserIndex).pos.Map
@@ -3260,19 +3261,21 @@ Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatu
 
     ' Zonas especiales fijas donde no se consumen pociones
     ' 275, 276, 277 - Capture the Flag
-    ' 297 - Lindo's Arena
     Select Case currentMap
-        Case 275, 276, 277, 297
+        Case MAP_CAPTURE_THE_FLAG_1, MAP_CAPTURE_THE_FLAG_2, MAP_CAPTURE_THE_FLAG_3
             isSpecialZone = True
         Case Else
             isSpecialZone = False
     End Select
 
+    ' 297 - Arena de Lindos
+    isArena = (currentMap = MAP_ARENA_LINDOS And isTriggerZone)
+
     ' Meson Hostigado - Beneficio Patreon: mapa 172, con trigger activo y jugador con tier
-    isTrainingZone = (currentMap = 172 And isTriggerZone And isTierUser)
+    isTrainingZone = (currentMap = MAP_MESON_HOSTIGADO And isTriggerZone And isTierUser)
 
     ' Si esta en alguna de las zonas anteriores, no se consume la poción
-    IsPotionFreeZone = (isHouseZone Or isSpecialZone Or isTrainingZone)
+    IsPotionFreeZone = (isHouseZone Or isSpecialZone Or isTrainingZone Or isArena)
 End Function
 
 Sub EnivarArmasConstruibles(ByVal UserIndex As Integer)
