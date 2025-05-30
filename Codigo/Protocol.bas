@@ -910,6 +910,8 @@ On Error Resume Next
             Call HandleAntiCheatMessage(UserIndex)
         Case ClientPacketID.eFactionMessage
             Call HandleFactionMessage(UserIndex)
+        Case ClientPacketID.eOfflineMassTpFromMapToUlla
+            Call HandleOfflineMassTpFromMapToUlla(UserIndex)
 #If PYMMO = 0 Then
         Case ClientPacketID.eCreateAccount
             Call HandleCreateAccount(ConnectionId)

@@ -911,8 +911,14 @@ ErrorHandler:
 
 End Sub
 
-
-
-
+Public Function db_massTp_fromMap_toUlla(ByVal MapNumber As Integer) As Boolean
+        Dim RS As ADODB.Recordset
+        Set RS = Query("insert or replace into user (pos_map,pos_x,pos_y) values (1,56,44) WHERE pos_map = ?", MapNumber)
+        If Not RS Is Nothing Then
+            db_massTp_fromMap_toUlla = True
+        Else
+            db_massTp_fromMap_toUlla = False
+        End If
+End Function
 
 

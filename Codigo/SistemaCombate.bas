@@ -1902,7 +1902,8 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 152                     If UserList(Index).flags.Muerto = 0 Then
 154                         If Distancia(.pos, UserList(Index).pos) < 20 Then
     
-158                             ExpUser = ExpaDar
+158                             ExpUser = ExpaDar * UserList(LiderIndex).Stats.UserSkills(e_Skill.liderazgo) / 10
+                                                        
                     
 166                             If UserList(Index).Stats.ELV < STAT_MAXELV Then
 
