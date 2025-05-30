@@ -5171,7 +5171,7 @@ End Sub
 
 Public Sub HandleOfflineMassTpFromMapToUlla(ByVal UserIndex As Integer)
 On Error GoTo HandleRemoveHouseThiefs_Err:
-    If EsAdmin(UserIndex) Or EsDios(UserIndex) Then
+    If EsAdmin(UserList(UserIndex).name) Or EsDios(UserList(UserIndex).name) Then
         Dim MapNumber As Integer
         MapNumber = Reader.ReadInt16()
         Call db_massTp_fromMap_toUlla(MapNumber)
