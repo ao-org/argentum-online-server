@@ -911,8 +911,9 @@ ErrorHandler:
 
 End Sub
 
-
-
-
+Public Function db_kick_uninvited_house_guests()
+        Dim RS As ADODB.Recordset
+        Set RS = Query("insert or replace into user (pos_map,pos_x,pos_y) values (1,56,44) WHERE pos_map BETWEEN 600 AND 749", .AccountID)
+End Function
 
 

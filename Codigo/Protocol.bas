@@ -910,6 +910,8 @@ On Error Resume Next
             Call HandleAntiCheatMessage(UserIndex)
         Case ClientPacketID.eFactionMessage
             Call HandleFactionMessage(UserIndex)
+        Case ClientPacketID.eKickUninvitedHouseGuests
+            Call HandleKickUninvitedHouseGuests(UserIndex)
 #If PYMMO = 0 Then
         Case ClientPacketID.eCreateAccount
             Call HandleCreateAccount(ConnectionId)
@@ -10495,4 +10497,12 @@ On Error GoTo HendleRequestLobbyList_Err:
     Exit Sub
 HendleRequestLobbyList_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HendleRequestLobbyList", Erl)
+End Sub
+
+Public Sub HandleKickUninvitedHouseGuests()
+On Error GoTo HandleRemoveHouseThiefs_Err:
+    Call db_kick_uninvited_house_guests()
+    Exit Sub
+HandleRemoveHouseThiefs_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemoveHouseThiefs", Erl)
 End Sub
