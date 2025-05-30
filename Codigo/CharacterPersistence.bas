@@ -911,9 +911,14 @@ ErrorHandler:
 
 End Sub
 
-Public Function db_kick_uninvited_house_guests()
+Public Function db_kick_uninvited_house_guests(ByVal MapNumber As Integer) As Boolean
         Dim RS As ADODB.Recordset
-        Set RS = Query("insert or replace into user (pos_map,pos_x,pos_y) values (1,56,44) WHERE pos_map BETWEEN 600 AND 749", .AccountID)
+        Set RS = Query("insert or replace into user (pos_map,pos_x,pos_y) values (1,56,44) WHERE pos_map = ?", MapNumber)
+        If Not RS Is Nothing Then
+            db_kick_uninvited_house_guests = True
+        Else
+            db_kick_uninvited_house_guests = False
+        End If
 End Function
 
 
