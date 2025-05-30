@@ -911,8 +911,14 @@ ErrorHandler:
 
 End Sub
 
-
-
-
+Public Function db_massTp_fromMap_toUlla(ByVal MapNumber As Integer) As Boolean
+        Dim RS As ADODB.Recordset
+        Set RS = Query("UPDATE user SET pos_map=1,pos_y=50,pos_x=50 WHERE pos_map = ?", MapNumber)
+        If Not RS Is Nothing Then
+            db_massTp_fromMap_toUlla = True
+        Else
+            db_massTp_fromMap_toUlla = False
+        End If
+End Function
 
 

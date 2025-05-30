@@ -5168,3 +5168,19 @@ On Error GoTo ErrHandler
 ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartGenericLobby", Erl)
 End Sub
+
+Public Sub HandleOfflineMassTpFromMapToUlla(ByVal UserIndex As Integer)
+On Error GoTo HandleRemoveHouseThiefs_Err:
+    If EsAdmin(UserList(UserIndex).name) Or EsDios(UserList(UserIndex).name) Then
+        Dim MapNumber As Integer
+        MapNumber = Reader.ReadInt16()
+        Call db_massTp_fromMap_toUlla(MapNumber)
+        Exit Sub
+    else
+        'Msg959= Solo los Administradores y Dioses pueden usar este comando.
+        Call WriteLocaleMsg(UserIndex, "959", e_FontTypeNames.FONTTYPE_INFO)
+    Exit Sub
+    End If
+HandleRemoveHouseThiefs_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemoveHouseThiefs", Erl)
+End Sub
