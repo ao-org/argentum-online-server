@@ -537,7 +537,7 @@ Public Enum ClientPacketID
     eUseHKeySlot
     eAntiCheatMessage
     eRequestLobbyList
-    eMassTpFromMapToUlla '/OFFLINEMASSTP
+    eOfflineMassTpFromMapToUlla '/OFFLINEMASSTP
     #If PYMMO = 0 Then
     eCreateAccount
     eLoginAccount

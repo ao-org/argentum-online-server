@@ -5169,7 +5169,7 @@ ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartGenericLobby", Erl)
 End Sub
 
-Public Sub HandleMassTpFromMapToUlla(ByVal UserIndex As Integer)
+Public Sub HandleOfflineMassTpFromMapToUlla(ByVal UserIndex As Integer)
 On Error GoTo HandleRemoveHouseThiefs_Err:
     If EsAdmin(UserIndex) Or EsDios(UserIndex) Then
         Dim MapNumber As Integer
