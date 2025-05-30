@@ -10498,11 +10498,3 @@ On Error GoTo HendleRequestLobbyList_Err:
 HendleRequestLobbyList_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HendleRequestLobbyList", Erl)
 End Sub
-
-Public Sub HandleKickUninvitedHouseGuests(ByVal MapNumber As Integer)
-On Error GoTo HandleRemoveHouseThiefs_Err:
-    Call db_kick_uninvited_house_guests(MapNumber)
-    Exit Sub
-HandleRemoveHouseThiefs_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemoveHouseThiefs", Erl)
-End Sub
