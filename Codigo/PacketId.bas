@@ -537,7 +537,7 @@ Public Enum ClientPacketID
     eUseHKeySlot
     eAntiCheatMessage
     eRequestLobbyList
-    eKickUninvitedHouseGuests '/KICKUNINVITEDHOUSEGUESTS
+    eMassTpFromMapToUlla '/OFFLINEMASSTP
     #If PYMMO = 0 Then
     eCreateAccount
     eLoginAccount

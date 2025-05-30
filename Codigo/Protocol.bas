@@ -911,7 +911,7 @@ On Error Resume Next
         Case ClientPacketID.eFactionMessage
             Call HandleFactionMessage(UserIndex)
         Case ClientPacketID.eKickUninvitedHouseGuests
-            Call HandleKickUninvitedHouseGuests(UserIndex)
+            Call HandleMassTpFromMapToUlla(UserIndex)
 #If PYMMO = 0 Then
         Case ClientPacketID.eCreateAccount
             Call HandleCreateAccount(ConnectionId)

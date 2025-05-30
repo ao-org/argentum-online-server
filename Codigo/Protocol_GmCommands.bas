@@ -5169,12 +5169,12 @@ ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartGenericLobby", Erl)
 End Sub
 
-Public Sub HandleKickUninvitedHouseGuests(ByVal UserIndex As Integer)
+Public Sub HandleMassTpFromMapToUlla(ByVal UserIndex As Integer)
 On Error GoTo HandleRemoveHouseThiefs_Err:
     If EsAdmin(UserIndex) Or EsDios(UserIndex) Then
         Dim MapNumber As Integer
         MapNumber = Reader.ReadInt16()
-        Call db_kick_uninvited_house_guests(MapNumber)
+        Call db_massTp_fromMap_toUlla(MapNumber)
         Exit Sub
     else
         'Msg959= Solo los Administradores y Dioses pueden usar este comando.
