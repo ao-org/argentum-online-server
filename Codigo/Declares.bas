@@ -1732,10 +1732,11 @@ Public Type t_ObjData
     Snd1 As Integer
     Snd2 As Integer
     Snd3 As Integer
-    
+
     Real As Integer
     Caos As Integer
-    
+    Lider As Boolean
+
     NoSeCae As Integer
     
     Power As Integer
