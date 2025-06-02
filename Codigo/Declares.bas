@@ -1735,7 +1735,7 @@ Public Type t_ObjData
 
     Real As Integer
     Caos As Integer
-    Lider As Boolean
+    LeadersOnly As Boolean
 
     NoSeCae As Integer
     

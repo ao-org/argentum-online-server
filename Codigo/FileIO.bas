@@ -1349,7 +1349,7 @@ Sub LoadOBJData()
 168                 Case e_OBJType.otArmadura
 170                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 172                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
-173                     .Lider = val(Leer.GetValue(ObjKey, "Lider")) <> 0
+173                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
 174                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
 176                     .Invernal = val(Leer.GetValue(ObjKey, "Invernal")) > 0
         
@@ -1357,7 +1357,7 @@ Sub LoadOBJData()
 180                     .ShieldAnim = val(Leer.GetValue(ObjKey, "Anim"))
 182                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 184                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
-185                     .Lider = val(Leer.GetValue(ObjKey, "Lider")) <> 0
+185                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
 186                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
                         .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
         
@@ -1365,7 +1365,7 @@ Sub LoadOBJData()
 190                     .CascoAnim = val(Leer.GetValue(ObjKey, "Anim"))
 192                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 194                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
-195                     .Lider = val(Leer.GetValue(ObjKey, "Lider")) <> 0
+195                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
 196                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
         
 198                 Case e_OBJType.otWeapon
@@ -1386,7 +1386,7 @@ Sub LoadOBJData()
 220                     .Power = val(Leer.GetValue(ObjKey, "StaffPower"))
 226                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 228                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
-229                     .Lider = val(Leer.GetValue(ObjKey, "Lider")) <> 0
+229                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
 230                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
 232                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
 234                     .DosManos = val(Leer.GetValue(ObjKey, "DosManos"))
@@ -1398,7 +1398,7 @@ Sub LoadOBJData()
                         'Pablo (ToxicWaste)
 238                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 240                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
-241                     .Lider = val(Leer.GetValue(ObjKey, "Lider")) <> 0
+241                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
         
 242                 Case e_OBJType.otPuertas, e_OBJType.otBotellaVacia, e_OBJType.otBotellaLlena
 244                     .IndexAbierta = val(Leer.GetValue(ObjKey, "IndexAbierta"))
@@ -1447,7 +1447,7 @@ Sub LoadOBJData()
 282                     .MaxDef = val(Leer.GetValue(ObjKey, "MAXDEF"))
 284                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 286                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
-287                     .Lider = val(Leer.GetValue(ObjKey, "Lider")) <> 0
+287                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
 288                     .velocidad = val(Leer.GetValue(ObjKey, "Velocidad"))
         
 290                 Case e_OBJType.otFlechas
