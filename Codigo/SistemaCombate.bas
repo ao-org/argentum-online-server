@@ -1075,6 +1075,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         Dim SkillTacticas          As Long
         Dim SkillDefensa           As Long
         Dim ProbEvadir             As Long
+        Dim PorcentajeRechazoEsc   As Long
 
 100     If UserList(AtacanteIndex).flags.GolpeCertero = 1 Then
 102         UsuarioImpacto = True
@@ -1104,10 +1105,11 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 126     UserPoderEvasion = PoderEvasion(VictimaIndex)
 
 128     If UserList(VictimaIndex).Invent.EscudoEqpObjIndex > 0 Then
-          If ObjData(UserList(VictimaIndex).Invent.EscudoEqpObjIndex).Porcentaje > 0 Then
+        PorcentajeRechazoEsc = ObjData(UserList(VictimaIndex).invent.EscudoEqpObjIndex).Porcentaje
+          If PorcentajeRechazoEsc > 0 Then
 130         UserPoderEvasion = UserPoderEvasion + PoderEvasionEscudo(VictimaIndex)
 132         If SkillDefensa > 0 Then
-134             ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (Maximo(SkillDefensa + SkillTacticas, 1)))))
+134             ProbRechazo = Maximo(10, Minimo(90, (PorcentajeRechazoEsc * (SkillDefensa / (Maximo(SkillDefensa + SkillTacticas, 1))))))
             Else
 136             ProbRechazo = 10
             End If
