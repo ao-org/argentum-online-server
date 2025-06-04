@@ -1,8 +1,8 @@
 @echo off
 setlocal
 
-REM Ruta base dinámica
-set "BASE=%USERPROFILE%\Documents\GitHub"
+REM Carpeta base fija
+set "BASE=C:\AO20"
 
 REM Ejecutar el servidor
 start "" "%BASE%\argentum-online-server\Server.exe"
