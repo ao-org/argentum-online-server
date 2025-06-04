@@ -1923,8 +1923,13 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                                             End If
                                         End If
                                     End If
-                                        
-178                                 UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
+
+                                    If(UserList(Index).Stats.UserSkills(e_Skill.liderazgo) >= (15 - Remitente.Stats.UserAtributos(e_Atributos.Carisma) / 2)) Then
+                                        UserList(Index).Stats.Exp = (UserList(Index).Stats.Exp + ExpUser) * SvrConfig.GetValue("PartyELV")
+                                    Else
+    178                                 UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
+                                    End If
+
 180                                 If UserList(Index).Stats.Exp > MAXEXP Then UserList(Index).Stats.Exp = MAXEXP
 182                                 If UserList(Index).ChatCombate = 1 Then
 184                                     Call WriteLocaleMsg(Index, "141", e_FontTypeNames.FONTTYPE_EXP, ExpUser)
