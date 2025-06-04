@@ -1892,7 +1892,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
     
 144         ExpaDar = ExpaDar / CantidadMiembrosValidos
     
-            Dim ExpUser As Long, DeltaLevel As Integer
+            Dim ExpUser As Long, DeltaLevel As Integer, ExpBonusForUser As Double
     
 146         If ExpaDar > 0 Then
 148             For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
@@ -1923,8 +1923,13 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                                             End If
                                         End If
                                     End If
-                                        
-178                                 UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
+                                    If (UserList(Index).Stats.UserSkills(e_Skill.liderazgo) >= (15 - UserList(Index).Stats.UserAtributos(e_Atributos.Carisma) / 2)) Then
+                                        ExpBonusForUser = ExpUser * SvrConfig.GetValue("LeadershipExpPartyBonus")
+                                        UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpBonusForUser
+                                    Else
+178                                     UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
+                                    End If
+
 180                                 If UserList(Index).Stats.Exp > MAXEXP Then UserList(Index).Stats.Exp = MAXEXP
 182                                 If UserList(Index).ChatCombate = 1 Then
 184                                     Call WriteLocaleMsg(Index, "141", e_FontTypeNames.FONTTYPE_EXP, ExpUser)
