@@ -125,9 +125,12 @@ On Error GoTo Kick_ErrHandler:
             End If
         End If
     End If
-        
     Call Server.Flush(Connection)
-    Call Server.Kick(Connection, True)
+    #If DEBUGGING = 1 Then
+        Call Server.Kick(Connection)
+    #Else
+        Call Server.Kick(Connection, True)
+    #End If
     Exit Sub
     
 Kick_ErrHandler:
@@ -277,7 +280,12 @@ On Error GoTo ForcedClose_Err:
 100     UserList(UserIndex).ConnectionDetails.ConnIDValida = False
 102     UserList(UserIndex).ConnectionDetails.ConnID = 0
 104     Call Server.Flush(Connection)
-106     Call Server.Kick(Connection, True)
+        
+        #If DEBUGGING = 1 Then
+            Call Server.Kick(Connection)
+        #Else
+            Call Server.Kick(Connection, True)
+        #End If
 108     Call ClearUserRef(Mapping(Connection).UserRef)
 110     Call IncreaseVersionId(userIndex)
         Exit Sub
@@ -288,7 +296,11 @@ End Sub
 Public Sub KickConnection(Connection As Long)
 On Error GoTo ForcedClose_Err:
 104     Call Server.Flush(Connection)
-106     Call Server.Kick(Connection, True)
+        #If DEBUGGING = 1 Then
+            Call Server.Kick(Connection)
+        #Else
+            Call Server.Kick(Connection, True)
+        #End If
 108     Call ClearConnection(Connection)
 110     If PendingConnections.Exists(Connection) Then
 112         Call PendingConnections.Remove(Connection)
