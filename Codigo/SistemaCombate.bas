@@ -670,14 +670,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
 100     If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Function
 101     If UserList(userindex).flags.Muerto = 1 Then Exit Function
 102     If (Not UserList(UserIndex).flags.Privilegios And e_PlayerType.user) <> 0 And Not UserList(UserIndex).flags.AdminPerseguible Then Exit Function
-        'Si mi objetivo es mi propio amo, no le deberia pegar
-103     If (NpcList(NpcIndex).MaestroUser.ArrayIndex = UserIndex) Then 
-            NpcAtacaUser = False
-            Exit Function
-        End If
-
         ' El npc puede atacar ???
-    
 104     If Not IntervaloPermiteAtacarNPC(NpcIndex) Then
 106         NpcAtacaUser = False
             Exit Function
