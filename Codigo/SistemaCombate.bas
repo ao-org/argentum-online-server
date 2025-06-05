@@ -1925,7 +1925,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                                     End If
 
                                     If(UserList(Index).Stats.UserSkills(e_Skill.liderazgo) >= (15 - Remitente.Stats.UserAtributos(e_Atributos.Carisma) / 2)) Then
-                                        UserList(Index).Stats.Exp = (UserList(Index).Stats.Exp + ExpUser) * SvrConfig.GetValue("PartyELV")
+                                        UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + (ExpUser * SvrConfig.GetValue("LeadershipExpPartyBonus"))
                                     Else
     178                                 UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
                                     End If
