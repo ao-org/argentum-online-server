@@ -2200,7 +2200,7 @@ Sub UserDie(ByVal UserIndex As Integer)
                     If .flags.PendienteDelSacrificio = 0 Then
                             Call TirarTodosLosItems(UserIndex)
                         Else
-                            Call TirarItemsConPendiente(UserIndex)
+                            Call DropItemsWithPendant(UserIndex)
                     End If
                 End If
             End If
