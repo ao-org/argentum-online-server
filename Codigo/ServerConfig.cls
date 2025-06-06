@@ -105,6 +105,7 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "PartyELV", CInt(val(Reader.GetValue("CONFIGURACIONES", "PartyELV", "4")))
     mSettings.Add "PenaltyExpUserPerLevel", CSng(val(reader.GetValue("CONFIGURACIONES", "PenaltyExpUserPerLevel", "0.05")))
     mSettings.Add "DeltaLevelExpPenalty", CInt(val(Reader.GetValue("CONFIGURACIONES", "DeltaLevelExpPenalty", "4")))
+    mSettings.Add "LeadershipExpPartyBonus", CInt(val(reader.GetValue("CONFIGURACIONES", "LeadershipExpPartyBonus", "1.01")))
     
     mSettings.Add "DropMult", CInt(val(reader.GetValue("DROPEO", "DropMult")))
     mSettings.Add "DropActive", CInt(val(reader.GetValue("DROPEO", "DropActive")))
