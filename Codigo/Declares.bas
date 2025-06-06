@@ -361,6 +361,9 @@ Public Const NingunCasco             As Integer = 2
 Public Const NingunArma              As Integer = 2
 Public Const NoCart                  As Integer = 2
 Public Const EspadaMataDragonesIndex As Integer = 402
+Public Const LaudComunIndex          As Integer = 3986
+Public Const LaudMagicoIndex         As Integer = 469
+Public Const LaudElficoIndex         As Integer = 41
 
 Public Const MAXMASCOTASENTRENADOR   As Byte = 7
 
