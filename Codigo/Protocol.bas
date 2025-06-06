@@ -9731,19 +9731,23 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
             tipoMacro = Reader.ReadInt8
             clicks = Reader.ReadInt32
             
+            mensaje = "Control AntiCheat--> El usuario "
+            
             Select Case tipoMacro
             
                 Case tMacro.Coordenadas
-102                 mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de COORDENADAS."
+102                 mensaje = mensaje & UserList(UserIndex).name & "| está utilizando macro de COORDENADAS."
                     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.dobleclick
-                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
+                    mensaje = mensaje & UserList(UserIndex).name & "| está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
                     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.inasistidoPosFija
-                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de INASISTIDO."
-                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
+                    If Not (UserList(UserIndex).Stats.UserHechizos(.flags.Hechizo)) = 52 Then
+                        mensaje = mensaje & UserList(UserIndex).name & "| está utilizando macro de INASISTIDO."
+                        Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
+                    End If
                 Case tMacro.borrarCartel
-                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de CARTELEO."
+                    mensaje = mensaje & UserList(UserIndex).name & "| está utilizando macro de CARTELEO."
                     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
             End Select
             
