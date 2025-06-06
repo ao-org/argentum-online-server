@@ -1059,15 +1059,18 @@ Function FaccionPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Inte
 104     If ObjIndex < 1 Then Exit Function
 
 106     If ObjData(ObjIndex).Real = 1 Then
-108         If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
+107         If ObjData(ObjIndex).LeadersOnly Then
+108             FaccionPuedeUsarItem = (Status(UserIndex) = e_Facciones.consejo)
+109         ElseIf Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
 110             FaccionPuedeUsarItem = esArmada(UserIndex)
             Else
 112             FaccionPuedeUsarItem = False
             End If
 
 114     ElseIf ObjData(ObjIndex).Caos = 1 Then
-
-116         If Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio Then
+115         If ObjData(ObjIndex).LeadersOnly Then
+116             FaccionPuedeUsarItem = (Status(UserIndex) = e_Facciones.concilio)
+117         ElseIf Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio Then
 118             FaccionPuedeUsarItem = esCaos(UserIndex)
             Else
 120             FaccionPuedeUsarItem = False
@@ -3235,7 +3238,7 @@ End Sub
 '
 ' Returns:     Boolean - True if the user is in a potion-free zone
 '                       False if the potion should be consumed
-'************************************************************** 
+'**************************************************************
 Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatus As e_Trigger6) As Boolean
     Dim currentMap As Integer
     Dim isTriggerZone As Boolean
