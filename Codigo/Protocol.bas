@@ -9740,7 +9740,8 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
                     mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
                     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.inasistidoPosFija
-                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de INASISTIDO."
+                If Not (UserList(UserIndex).Stats.UserHechizos(.flags.Hechizo)) = 52 Then
+                     mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de INASISTIDO."
                     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.borrarCartel
                     mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de CARTELEO."
