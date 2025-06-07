@@ -4785,23 +4785,10 @@ On Error GoTo ErrHandler
     LobbySettings.InscriptionFee = Reader.ReadInt32
     LobbySettings.Description = Reader.ReadString8
     LobbySettings.Password = Reader.ReadString8
-    If eventType = 0 Then
         CurrentActiveEventType = LobbySettings.ScenearioType
-        Select Case LobbySettings.ScenearioType
-            Case e_EventType.CaptureTheFlag
-                Call HandleIniciarCaptura(UserIndex, LobbySettings)
-            Case Else
-                Call HandleStartGenericLobby(UserIndex, LobbySettings)
-        End Select
-    Else
-        With UserList(UserIndex)
-            If IsValidNpcRef(.flags.TargetNPC) Then
-                If NpcList(.flags.TargetNPC.ArrayIndex).npcType = e_NPCType.EventMaster And .flags.Muerto = 0 Then
-                    Call CreatePublicEvent(UserIndex, LobbySettings)
-                End If
-            End If
-        End With
-    End If
+
+    Call initEventLobby(UserIndex, eventType, LobbySettings)
+    
     Exit Sub
 ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartEvent", Erl)
@@ -5130,7 +5117,7 @@ ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleIniciarCaptura", Erl)
 End Sub
 
-Private Sub HandleStartGenericLobby(ByVal UserIndex As Integer, ByRef LobbySettings As t_NewScenearioSettings)
+Public Sub HandleStartGenericLobby(ByVal UserIndex As Integer, ByRef LobbySettings As t_NewScenearioSettings)
 On Error GoTo ErrHandler
 
     If IsEventActive Then

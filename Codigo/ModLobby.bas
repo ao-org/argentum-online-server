@@ -1027,3 +1027,25 @@ Public Sub CreatePublicEvent(ByVal UserIndex As Integer, ByRef LobbySettings As 
         Call WriteLocaleMsg(UserIndex, 1611, e_FontTypeNames.FONTTYPE_INFO) 'Msg1611= Se canceló la sala que creaste porque no cumples los requisitos para participar.
     End If
 End Sub
+
+
+
+Public Sub initEventLobby(ByVal UserIndex As Integer,ByVal eventType As Integer,lobbySettings As t_NewScenearioSettings)
+If eventType = 0 Then
+        CurrentActiveEventType = LobbySettings.ScenearioType
+        Select Case LobbySettings.ScenearioType
+            Case e_EventType.CaptureTheFlag
+                Call HandleIniciarCaptura(UserIndex, LobbySettings)
+            Case Else
+                Call HandleStartGenericLobby(UserIndex, LobbySettings)
+        End Select
+    Else
+        With UserList(UserIndex)
+            If IsValidNpcRef(.flags.TargetNPC) Then
+                If NpcList(.flags.TargetNPC.ArrayIndex).npcType = e_NPCType.EventMaster And .flags.Muerto = 0 Then
+                    Call CreatePublicEvent(UserIndex, LobbySettings)
+                End If
+            End If
+        End With
+    End If
+End Sub
