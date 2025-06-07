@@ -1316,7 +1316,7 @@ Private Sub Minuto_Timer()
    '     Call CheckIdleUser
    ' End If
 
-
+    Call Automatic_Event_Timer
     Call dump_stats
     Call PerformTimeLimitCheck(PerformanceTimer, "Minuto_Timer", 500)
     Exit Sub
@@ -1546,7 +1546,7 @@ Private Sub EstadoTimer_Timer()
     Call PerformanceTestStart(PerformanceTimer)
     For i = 1 To Baneos.Count
         If Baneos(i).FechaLiberacion <= Now Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1787, Baneos(i).name, e_FontTypeNames.FONTTYPE_SERVER)) ' Msg1787=Servidor » Se ha concluido la sentencia de ban para ¬1.
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1787, Baneos(i).Name, e_FontTypeNames.FONTTYPE_SERVER)) ' Msg1787=Servidor » Se ha concluido la sentencia de ban para ¬1.
             Call UnBan(Baneos(i).Name)
             Call Baneos.Remove(i)
             Call SaveBans
@@ -1612,13 +1612,42 @@ EstadoTimer_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.EstadoTimer_Timer", Erl)
 End Sub
 
-Private Sub Evento_Timer()
+Private Sub Automatic_Event_Timer()
         
     On Error GoTo Evento_Timer_Err
-    TiempoRestanteEvento = TiempoRestanteEvento - 1
-    If TiempoRestanteEvento = 0 Then
-        Call FinalizarEvento
+    Dim UserIndex As Integer
+    Dim GmIndex As Integer
+
+    For UserIndex = 1 To LastUser
+        If EsGM(UserIndex) Then
+            GmIndex = UserIndex
+        End If
+    Next UserIndex
+
+    If EventoActivo Then Exit Sub
+
+    If IsEventActive Then
+
     End If
+
+    Dim LobbySettings As t_NewScenearioSettings
+
+    'deathmatch de plus
+    LobbySettings.ScenearioType = 3
+    LobbySettings.MinLevel = 1
+    LobbySettings.MaxLevel = 47
+    LobbySettings.MinPlayers = 0
+    LobbySettings.MaxPlayers = 2
+    LobbySettings.TeamSize = 0
+    LobbySettings.TeamType = 0
+    LobbySettings.RoundNumber = 0
+    LobbySettings.InscriptionFee = 1000
+    LobbySettings.Description = ""
+    LobbySettings.Password = ""
+    
+    Call CreatePublicEvent(GmIndex, LobbySettings)
+    'Call initEventLobby(UserIndex, 0, LobbySettings)
+
     Exit Sub
 Evento_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Evento_Timer", Erl)
