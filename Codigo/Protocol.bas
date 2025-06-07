@@ -32,6 +32,8 @@ Option Explicit
 'having too many string lengths in the queue. Yes, each string is NULL-terminated :P
 Public Const SEPARATOR             As String * 1 = vbNullChar
 
+Private Const SPELL_UNASSISTED_FULGOR = 52
+
 Public Enum e_EditOptions
 
     eo_Gold = 1
@@ -9742,7 +9744,7 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
                     mensaje = mensaje & UserList(UserIndex).name & "| está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
                     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.inasistidoPosFija
-                    If Not (UserList(UserIndex).Stats.UserHechizos(.flags.Hechizo)) = 52 Then
+                    If Not (UserList(UserIndex).Stats.UserHechizos(.flags.Hechizo)) = SPELL_UNASSISTED_FULGOR Then
                         mensaje = mensaje & UserList(UserIndex).name & "| está utilizando macro de INASISTIDO."
                         Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                     End If
