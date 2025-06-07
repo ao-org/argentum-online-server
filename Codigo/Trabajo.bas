@@ -3130,7 +3130,15 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
             .Counters.TiempoInicioMeditar = .Counters.TiempoInicioMeditar + 1
 
 104         If .Counters.TimerMeditar >= IntervaloMeditar And .Counters.TiempoInicioMeditar > 20 Then
-106             Mana = Porcentaje(.Stats.MaxMAN, Porcentaje(PorcentajeRecuperoMana, 50 + .Stats.UserSkills(e_Skill.Meditar) * 0.5))
+                If e_Class.Bard And .invent.DañoMagicoEqpObjIndex = LaudComunIndex Then
+                     Mana = Porcentaje(.Stats.MaxMAN, Porcentaje(PorcentajeRecuperoMana, 50 + .Stats.UserSkills(e_Skill.Meditar) * 0.5)) + 5
+                ElseIf e_Class.Bard And .invent.DañoMagicoEqpObjIndex = LaudMagicoIndex Then
+                     Mana = Porcentaje(.Stats.MaxMAN, Porcentaje(PorcentajeRecuperoMana, 50 + .Stats.UserSkills(e_Skill.Meditar) * 0.5)) + 10
+                ElseIf e_Class.Bard And .invent.DañoMagicoEqpObjIndex = LaudElficoIndex Then
+                     Mana = Porcentaje(.Stats.MaxMAN, Porcentaje(PorcentajeRecuperoMana, 50 + .Stats.UserSkills(e_Skill.Meditar) * 0.5)) + 15
+                Else
+                     Mana = Porcentaje(.Stats.MaxMAN, Porcentaje(PorcentajeRecuperoMana, 50 + .Stats.UserSkills(e_Skill.Meditar) * 0.5))
+            End If
 
 108             If Mana <= 0 Then Mana = 1
 110             If .Stats.MinMAN + Mana >= .Stats.MaxMAN Then

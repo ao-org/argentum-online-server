@@ -1487,34 +1487,15 @@ Public Function ManaHechizoPorClase(ByVal userindex As Integer, Hechizo As t_Hec
 
     Select Case UserList(UserIndex).clase
     
-        Case e_Class.Paladin
-              
-            If IsSet(Hechizo.Effects, e_SpellEffects.RemoveParalysis) Then
-                ManaHechizoPorClase = 250
+    'juanc 5/6/25
+        Case e_Class.Bard
+            If Hechizos(HechizoIndex).nombre = "Destello Malva (NPC)" And UserList(UserIndex).invent.DañoMagicoEqpObjIndex = LaudMagicoIndex Then
+                ManaHechizoPorClase = 80
+            ElseIf Hechizos(HechizoIndex).nombre = "Eco Ígneo (NPC)" And UserList(UserIndex).invent.DañoMagicoEqpObjIndex = LaudMagicoIndex Then
+                ManaHechizoPorClase = 70
                 Exit Function
             End If
-            If IsSet(Hechizo.Effects, e_SpellEffects.Invisibility) Then
-                ManaHechizoPorClase = 350
-                Exit Function
-            End If
-
-        Case e_Class.Assasin
-                  
-            If IsSet(Hechizo.Effects, e_SpellEffects.RemoveParalysis) Then
-                ManaHechizoPorClase = 250
-                Exit Function
-            End If
-            If IsSet(Hechizo.Effects, e_SpellEffects.Invisibility) Then
-                ManaHechizoPorClase = 350
-                Exit Function
-                Exit Function
-            End If
-                  
-        Case e_Class.Bandit
-             If IsSet(Hechizo.Effects, e_SpellEffects.RemoveParalysis) Then
-               ManaHechizoPorClase = 250
-               Exit Function
-           End If
+           
     End Select
 End Function
 
