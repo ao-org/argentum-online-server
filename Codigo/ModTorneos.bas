@@ -198,7 +198,6 @@ Public Sub ComenzarTorneoOk()
 106         Y = Torneo.Y
 108         Call FindLegalPos(Torneo.IndexParticipantes(i), Torneo.Mapa, X, Y)
 110         Call WarpUserChar(Torneo.IndexParticipantes(i), Torneo.Mapa, X, Y, True)
-            'Call WriteLocaleMsg(Torneo.IndexParticipantes(i), 2068, e_FontTypeNames.FONTTYPE_INFO) ' Msg2068="¡Ya estas participado! Solo debes aguardar aquí hasta que seas convocado al torneo."
 112     Next i
 
 114     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1676, nombres, e_FontTypeNames.FONTTYPE_CITIZEN)) 'Msg1676=Evento> Los elegidos para participar son: ¬1 damos inicio al evento.
