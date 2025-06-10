@@ -1892,7 +1892,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
     
 144         ExpaDar = ExpaDar / CantidadMiembrosValidos
     
-            Dim ExpUser As Long, DeltaLevel As Integer
+            Dim ExpUser As Long, DeltaLevel As Integer, Dim ExpBonusForUser as Double
     
 146         If ExpaDar > 0 Then
 148             For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
@@ -1923,9 +1923,9 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                                             End If
                                         End If
                                     End If
-
                                     If(UserList(Index).Stats.UserSkills(e_Skill.liderazgo) >= (15 - Remitente.Stats.UserAtributos(e_Atributos.Carisma) / 2)) Then
-                                        UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + (ExpUser * SvrConfig.GetValue("LeadershipExpPartyBonus"))
+                                        ExpBonusForUser = ExpUser * SvrConfig.GetValue("LeadershipExpPartyBonus")
+                                        UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpBonusForUser
                                     Else
     178                                 UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
                                     End If
