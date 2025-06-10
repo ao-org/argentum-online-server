@@ -1075,6 +1075,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         Dim SkillTacticas          As Long
         Dim SkillDefensa           As Long
         Dim ProbEvadir             As Long
+        Dim ShieldChancePercentage As Long
 
 100     If UserList(AtacanteIndex).flags.GolpeCertero = 1 Then
 102         UsuarioImpacto = True
@@ -1104,10 +1105,11 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 126     UserPoderEvasion = PoderEvasion(VictimaIndex)
 
 128     If UserList(VictimaIndex).Invent.EscudoEqpObjIndex > 0 Then
-          If ObjData(UserList(VictimaIndex).Invent.EscudoEqpObjIndex).Porcentaje > 0 Then
+            ShieldChancePercentage = ObjData(UserList(VictimaIndex).invent.EscudoEqpObjIndex).Porcentaje
+            If ShieldChancePercentage > 0 Then
 130         UserPoderEvasion = UserPoderEvasion + PoderEvasionEscudo(VictimaIndex)
 132         If SkillDefensa > 0 Then
-134             ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (Maximo(SkillDefensa + SkillTacticas, 1)))))
+134             ProbRechazo = Maximo(10, Minimo(90, (ShieldChancePercentage * (SkillDefensa / (Maximo(SkillDefensa + SkillTacticas, 1))))))
             Else
 136             ProbRechazo = 10
             End If
@@ -1892,7 +1894,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
     
 144         ExpaDar = ExpaDar / CantidadMiembrosValidos
     
-            Dim ExpUser As Long, DeltaLevel As Integer
+            Dim ExpUser As Long, DeltaLevel As Integer, Dim ExpBonusForUser as Double
     
 146         If ExpaDar > 0 Then
 148             For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
@@ -1923,8 +1925,13 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                                             End If
                                         End If
                                     End If
-                                        
-178                                 UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
+                                    If(UserList(Index).Stats.UserSkills(e_Skill.liderazgo) >= (15 - Remitente.Stats.UserAtributos(e_Atributos.Carisma) / 2)) Then
+                                        ExpBonusForUser = ExpUser * SvrConfig.GetValue("LeadershipExpPartyBonus")
+                                        UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpBonusForUser
+                                    Else
+    178                                 UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
+                                    End If
+
 180                                 If UserList(Index).Stats.Exp > MAXEXP Then UserList(Index).Stats.Exp = MAXEXP
 182                                 If UserList(Index).ChatCombate = 1 Then
 184                                     Call WriteLocaleMsg(Index, "141", e_FontTypeNames.FONTTYPE_EXP, ExpUser)
