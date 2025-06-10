@@ -54,14 +54,14 @@ Private Function GlobalChecks(ByVal BannerIndex As Integer, ByRef username As St
 
             ' Estas tratando de banear a alguien con mas privilegios que vos, no va a pasar bro.
 116         If CompararUserPrivilegios(tUser.ArrayIndex, BannerIndex) >= 0 Then
-118             Call WriteConsoleMsg(BannerIndex, "No podes banear a al alguien de igual o mayor jerarquia.", e_FontTypeNames.FONTTYPE_INFO)
+118             Call WriteLocaleMsg(BannerIndex, 2069, e_FontTypeNames.FONTTYPE_INFO) ' Msg2069="No podes banear a al alguien de igual o mayor jerarquia."
                 Exit Function
             End If
 
         Else
 
 120         If CompararPrivilegios(UserDarPrivilegioLevel(UserName), UserList(BannerIndex).flags.Privilegios) >= 0 Then
-122             Call WriteConsoleMsg(BannerIndex, "No podes banear a al alguien de igual o mayor jerarquia.", e_FontTypeNames.FONTTYPE_INFO)
+122             Call WriteLocaleMsg(BannerIndex, 2070, e_FontTypeNames.FONTTYPE_INFO) ' Msg2070="No podes banear a al alguien de igual o mayor jerarquia."
                 Exit Function
             End If
 

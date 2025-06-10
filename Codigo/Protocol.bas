@@ -7217,7 +7217,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
 106         Vida = 18 + ModRaza(.raza).Constitucion + Promedio * (.Stats.ELV - 1)
 
             'Msg1220= Vida esperada: ¬1
-            Call WriteLocaleMsg(UserIndex, "1220", e_FontTypeNames.FONTTYPE_INFOBOLD, Vida & ". Promedio: " & Promedio)
+            Call WriteLocaleMsg(UserIndex, "1220", e_FontTypeNames.FONTTYPE_INFOBOLD, Vida & "¬" & Promedio)
 110         Promedio = CalcularPromedioVida(UserIndex)
 
             Dim Diff As Long, Color As e_FontTypeNames, Signo As String
@@ -7239,7 +7239,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
             End If
 
             'Msg1221= Vida actual: ¬1
-            Call WriteLocaleMsg(UserIndex, "1221", e_FontTypeNames.FONTTYPE_INFOBOLD, .Stats.MaxHp & " (" & Signo & Abs(Diff) & "). Promedio: " & Round(Promedio, 2) & Color)
+            Call WriteLocaleMsg(UserIndex, "1221", e_FontTypeNames.FONTTYPE_INFOBOLD, .Stats.MaxHp & " (" & Signo & Abs(Diff) & ")" & "¬" & Round(Promedio, 2) & Color)
         End With
         
         Exit Sub
