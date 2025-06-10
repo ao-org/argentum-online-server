@@ -9727,39 +9727,50 @@ ErrHandler:
 End Sub
 
 Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+        Dim tipoMacro As Byte
+        Dim mensaje As String
+        Dim clicks As Long
+        Dim motivo As String
 
-100     With UserList(UserIndex)
-            Dim tipoMacro As Byte
-            Dim mensaje As String
-            Dim clicks As Long
-            tipoMacro = Reader.ReadInt8
-            clicks = Reader.ReadInt32
-            
-            mensaje = "Control AntiCheat--> El usuario "
-            
-            Select Case tipoMacro
-            
-                Case tMacro.Coordenadas
-102                 mensaje = mensaje & UserList(UserIndex).name & "| está utilizando macro de COORDENADAS."
-                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
-                Case tMacro.dobleclick
-                    mensaje = mensaje & UserList(UserIndex).name & "| está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
-                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
-                Case tMacro.inasistidoPosFija
-                    If Not (UserList(UserIndex).Stats.UserHechizos(.flags.Hechizo)) = SPELL_UNASSISTED_FULGOR And Not (UserList(UserIndex).Stats.UserHechizos(.flags.Hechizo)) = SPELL_UNASSISTED_ECO And Not (UserList(UserIndex).Stats.UserHechizos(.flags.Hechizo)) = SPELL_UNASSISTED_DESTELLO Then
-                        mensaje = mensaje & UserList(UserIndex).name & "| está utilizando macro de INASISTIDO."
-                        Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
-                    End If
-                Case tMacro.borrarCartel
-                    mensaje = mensaje & UserList(UserIndex).name & "| está utilizando macro de CARTELEO."
-                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
-            End Select
-            
-            
+        tipoMacro = reader.ReadInt8
+        clicks = reader.ReadInt32
 
-        End With
+        mensaje = "Control AntiCheat--> El usuario " & .name & "| está utilizando "
 
+        Select Case tipoMacro
+            Case tMacro.Coordenadas
+                motivo = "macro de COORDENADAS"
+
+            Case tMacro.dobleclick
+                motivo = "macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & ")"
+
+            Case tMacro.inasistidoPosFija
+                Dim spellID As Integer
+                spellID = .Stats.UserHechizos(.flags.Hechizo)
+
+                If Not IsUnassistedSpellAllowed(spellID) Then
+                    motivo = "macro de INASISTIDO"
+                End If
+
+            Case tMacro.borrarCartel
+                motivo = "macro de CARTELEO"
+        End Select
+
+        If motivo <> "" Then
+            Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje & motivo & ".", e_FontTypeNames.FONTTYPE_INFO))
+        End If
+    End With
 End Sub
+
+Private Function IsUnassistedSpellAllowed(ByVal spellID As Integer) As Boolean
+    Select Case spellID
+        Case SPELL_UNASSISTED_FULGOR, SPELL_UNASSISTED_ECO, SPELL_UNASSISTED_DESTELLO
+            IsUnassistedSpellAllowed = True
+        Case Else
+            IsUnassistedSpellAllowed = False
+    End Select
+End Function
 
 
 
