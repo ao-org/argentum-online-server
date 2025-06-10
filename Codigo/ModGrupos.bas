@@ -273,7 +273,6 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
         
 136         If UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = 1 Then
         
-                'Call WriteLocaleMsg(.Grupo.Lider, 2058, "El grupo se quedo sin miembros, grupo finalizado.", e_FontTypeNames.FONTTYPE_INFOIAO) ' Msg2058="¬1"
 138             Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, "35", e_FontTypeNames.FONTTYPE_New_GRUPO)
             
 140             Call WriteUbicacion(.Grupo.Lider.ArrayIndex, 1, 0)
