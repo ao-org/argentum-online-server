@@ -32,6 +32,8 @@ Option Explicit
 'having too many string lengths in the queue. Yes, each string is NULL-terminated :P
 Public Const SEPARATOR             As String * 1 = vbNullChar
 
+Private Const SPELL_UNASSISTED_FULGOR = 52
+
 Public Enum e_EditOptions
 
     eo_Gold = 1
@@ -7215,7 +7217,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
 106         Vida = 18 + ModRaza(.raza).Constitucion + Promedio * (.Stats.ELV - 1)
 
             'Msg1220= Vida esperada: ¬1
-            Call WriteLocaleMsg(UserIndex, "1220", e_FontTypeNames.FONTTYPE_INFOBOLD, Vida & ". Promedio: " & Promedio)
+            Call WriteLocaleMsg(UserIndex, "1220", e_FontTypeNames.FONTTYPE_INFOBOLD, Vida & "¬" & Promedio)
 110         Promedio = CalcularPromedioVida(UserIndex)
 
             Dim Diff As Long, Color As e_FontTypeNames, Signo As String
@@ -7237,7 +7239,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
             End If
 
             'Msg1221= Vida actual: ¬1
-            Call WriteLocaleMsg(UserIndex, "1221", e_FontTypeNames.FONTTYPE_INFOBOLD, .Stats.MaxHp & " (" & Signo & Abs(Diff) & "). Promedio: " & Round(Promedio, 2) & Color)
+            Call WriteLocaleMsg(UserIndex, "1221", e_FontTypeNames.FONTTYPE_INFOBOLD, .Stats.MaxHp & " (" & Signo & Abs(Diff) & ")" & "¬" & Round(Promedio, 2) & Color)
         End With
         
         Exit Sub
@@ -9731,16 +9733,24 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
             tipoMacro = Reader.ReadInt8
             clicks = Reader.ReadInt32
             
+            mensaje = "Control AntiCheat--> El usuario "
+            
             Select Case tipoMacro
             
                 Case tMacro.Coordenadas
-102                 Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1876, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1876=Control AntiCheat--> El usuario ¬1 está utilizando macro de COORDENADAS.
+102                 mensaje = mensaje & UserList(UserIndex).name & "| está utilizando macro de COORDENADAS."
+                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.dobleclick
-                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1877, UserList(UserIndex).name & "¬" & clicks, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1877=Control AntiCheat--> El usuario ¬1 está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: ¬2).
+                    mensaje = mensaje & UserList(UserIndex).name & "| está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
+                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.inasistidoPosFija
-                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1878, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1878=Control AntiCheat--> El usuario ¬1 está utilizando macro de INASISTIDO.
+                    If Not (UserList(UserIndex).Stats.UserHechizos(.flags.Hechizo)) = SPELL_UNASSISTED_FULGOR Then
+                        mensaje = mensaje & UserList(UserIndex).name & "| está utilizando macro de INASISTIDO."
+                        Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
+                    End If
                 Case tMacro.borrarCartel
-                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1879, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1879=Control AntiCheat--> El usuario ¬1 está utilizando macro de CARTELEO.
+                    mensaje = mensaje & UserList(UserIndex).name & "| está utilizando macro de CARTELEO."
+                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
             End Select
             
             
