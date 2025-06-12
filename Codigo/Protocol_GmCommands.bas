@@ -1174,13 +1174,13 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
         
             Dim username As String
             Dim Reason   As String
-            Dim jailTime As Byte
+            Dim jailTime As Integer
             Dim count    As Byte
             Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
 104         Reason = Reader.ReadString8()
-106         jailTime = Reader.ReadInt8()
+106         jailTime = reader.ReadInt16()
         
 108         If InStr(1, username, "+") Then
 110             username = Replace(username, "+", " ")
@@ -1205,9 +1205,9 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
                             'Msg957= No podés encarcelar a administradores.
                             Call WriteLocaleMsg(UserIndex, "957", e_FontTypeNames.FONTTYPE_INFO)
                     
-128                     ElseIf jailTime > 240 Then
-                            'Msg958= No podés encarcelar por más de 4 horas.
-                            Call WriteLocaleMsg(UserIndex, "958", e_FontTypeNames.FONTTYPE_INFO)
+128                     ElseIf jailTime > SvrConfig.GetValue("MaxJailTime") Then
+                            'Msg958= No podés encarcelar por más de ¬1 minutos.
+                            Call WriteLocaleMsg(UserIndex, "958", e_FontTypeNames.FONTTYPE_INFO, SvrConfig.GetValue("MaxJailTime"))
                         Else
 
 132                         If (InStrB(username, "\") <> 0) Then
