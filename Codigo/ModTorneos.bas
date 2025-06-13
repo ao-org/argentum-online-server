@@ -115,7 +115,7 @@ Public Sub ParticiparTorneo(ByVal UserIndex As Integer)
 104     Torneo.Participantes = Torneo.Participantes + 1
 106     UserList(UserIndex).flags.EnTorneo = True
     
-108     Call WriteConsoleMsg(UserIndex, "¡Ya estas anotado! Solo debes aguardar hasta que seas enviado a la sala de espera.", e_FontTypeNames.FONTTYPE_INFOIAO)
+Call WriteLocaleMsg(UserIndex, 2067, e_FontTypeNames.FONTTYPE_INFOIAO) ' Msg2067="¡Ya estas anotado! Solo debes aguardar hasta que seas enviado a la sala de espera."
     
         
         Exit Sub
@@ -198,7 +198,6 @@ Public Sub ComenzarTorneoOk()
 106         Y = Torneo.Y
 108         Call FindLegalPos(Torneo.IndexParticipantes(i), Torneo.Mapa, X, Y)
 110         Call WarpUserChar(Torneo.IndexParticipantes(i), Torneo.Mapa, X, Y, True)
-            ' Call WriteConsoleMsg(Torneo.IndexParticipantes(i), "¡Ya estas participado! Solo debes aguardar aquí hasta que seas convocado al torneo.", e_FontTypeNames.FONTTYPE_INFO)
 112     Next i
 
 114     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1676, nombres, e_FontTypeNames.FONTTYPE_CITIZEN)) 'Msg1676=Evento> Los elegidos para participar son: ¬1 damos inicio al evento.
