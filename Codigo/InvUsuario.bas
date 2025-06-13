@@ -28,6 +28,7 @@ Attribute VB_Name = "InvUsuario"
 
 Option Explicit
 
+Private Const PATREON_HEAD = 900
 
 Public Function IsObjecIndextInInventory(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Boolean
 On Error GoTo IsObjecIndextInInventory_Err
@@ -1196,7 +1197,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
         Dim obj       As t_ObjData
         Dim ObjIndex  As Integer
         Dim errordesc As String
-
+        
 100     ObjIndex = UserList(UserIndex).Invent.Object(Slot).ObjIndex
 102     obj = ObjData(ObjIndex)
         
@@ -1496,6 +1497,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     End If
     
 420             Case e_OBJType.otCasco
+
+    
                     If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eHelm) Then
                         Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -1529,17 +1532,32 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 444                 .Invent.CascoEqpObjIndex = .Invent.Object(Slot).ObjIndex
 446                 .Invent.CascoEqpSlot = Slot
             
-448                 If .flags.Navegando = 0 Then
-450
-                     If obj.Subtipo = 2 Then
-                            .Char.originalhead = .Char.head
-                            .Char.head = obj.CascoAnim
-                            .Char.CascoAnim = 0
-                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
+                    If .flags.Navegando = 0 Then
+                        Dim nuevoHead As Integer
+                        Dim nuevoCasco As Integer
+                    
+                        If obj.Subtipo = 2 Then
+                            ' Si el casco cambia la cabeza entera
+                            If .Char.head < PATREON_HEAD Then
+                                .Char.originalhead = .Char.head
+                            End If
+                            nuevoHead = obj.CascoAnim
+                            nuevoCasco = NingunCasco
                         Else
-                            .Char.CascoAnim = obj.CascoAnim
-                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
+                            ' Si el casco se superpone (no reemplaza la cabeza)
+                            nuevoHead = .Char.head
+                            If .Char.head >= PATREON_HEAD Then
+                                nuevoCasco = NingunCasco
+                            Else
+                                nuevoCasco = obj.CascoAnim
+                            End If
                         End If
+                    
+                        ' Asignar cambios y aplicar actualización visual
+                        .Char.head = nuevoHead
+                        .Char.CascoAnim = nuevoCasco
+                    
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
                     End If
                 
 454                 If obj.ResistenciaMagica > 0 Then

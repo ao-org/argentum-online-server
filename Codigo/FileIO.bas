@@ -1104,6 +1104,11 @@ Sub LoadBalance()
 
         'Extra
 160     PorcentajeRecuperoMana = val(BalanceIni.GetValue("EXTRA", "PorcentajeRecuperoMana"))
+        RecoveryMana = val(BalanceIni.GetValue("EXTRA", "RecoveryMana"))
+        MultiplierManaxSkills = val(BalanceIni.GetValue("EXTRA", "MultiplierManaxSkills"))
+        ManaCommonLute = val(BalanceIni.GetValue("EXTRA", "ManaCommonLute"))
+        ManaMagicLute = val(BalanceIni.GetValue("EXTRA", "ManaMagicLute"))
+        ManaElvenLute = val(BalanceIni.GetValue("EXTRA", "ManaElvenLute"))
 162     DificultadSubirSkill = val(BalanceIni.GetValue("EXTRA", "DificultadSubirSkill"))
 164     InfluenciaPromedioVidas = val(BalanceIni.GetValue("EXTRA", "InfluenciaPromedioVidas"))
 166     DesbalancePromedioVidas = val(BalanceIni.GetValue("EXTRA", "DesbalancePromedioVidas"))
