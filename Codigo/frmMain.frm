@@ -1615,6 +1615,20 @@ End Sub
 Private Sub Automatic_Event_Timer()
         
     On Error GoTo Evento_Timer_Err
+    
+    If EventoActivo Then Exit Sub
+    
+    If IsEventActive = True Then
+        If LobbyList(GlobalLobbyIndex).State = e_LobbyState.Initialized Then
+            Call StartLobby(LobbyList(GlobalLobbyIndex), GmIndex)
+        End If
+        Exit Sub
+    Else
+        If LobbyList(GlobalLobbyIndex).State = e_LobbyState.InProgress Then
+            Exit Sub
+        End If
+    End If
+    
     Dim UserIndex As Integer
     Dim GmIndex As Integer
 
@@ -1623,12 +1637,6 @@ Private Sub Automatic_Event_Timer()
             GmIndex = UserIndex
         End If
     Next UserIndex
-
-    If EventoActivo Then Exit Sub
-
-    If IsEventActive Then
-
-    End If
 
     Dim LobbySettings As t_NewScenearioSettings
 
@@ -1645,9 +1653,9 @@ Private Sub Automatic_Event_Timer()
     LobbySettings.Description = ""
     LobbySettings.Password = ""
     
-    Call CreatePublicEvent(GmIndex, LobbySettings)
-    'Call initEventLobby(UserIndex, 0, LobbySettings)
-
+    Call initEventLobby(GmIndex, 0, LobbySettings)
+    Call OpenLobby(LobbyList(GlobalLobbyIndex), True, GmIndex)
+    
     Exit Sub
 Evento_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Evento_Timer", Erl)
