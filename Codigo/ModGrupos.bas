@@ -91,9 +91,9 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
 
         If(CInt(Remitente.Stats.UserSkills(e_Skill.liderazgo)) >= (15 - Remitente.Stats.UserAtributos(e_Atributos.Carisma) / 2)) Then
             ' Si el lider tiene liderazgo asignado segun su raza, se permite una diferencia de 1 nivel mas
-            If Abs(CInt(Invitado.Stats.ELV) - CInt(Remitente.Stats.ELV)) > (SvrConfig.GetValue("PartyELV")+1) Then
+            If Abs(CInt(Invitado.Stats.ELV) - CInt(Remitente.Stats.ELV)) > (SvrConfig.GetValue("PartyELVwLeadership")) Then
                 'Msg1438=No podes crear un grupo con personajes con diferencia de más de ¬1 niveles.
-                Call WriteLocaleMsg(UserIndex, "1438", e_FontTypeNames.FONTTYPE_New_GRUPO, SvrConfig.GetValue("PartyELV")+1)
+                Call WriteLocaleMsg(UserIndex, "1438", e_FontTypeNames.FONTTYPE_New_GRUPO, SvrConfig.GetValue("PartyELVwLeadership"))
                 Exit Sub
             End If
 
