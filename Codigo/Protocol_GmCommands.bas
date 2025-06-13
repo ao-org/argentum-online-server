@@ -1174,13 +1174,13 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
         
             Dim username As String
             Dim Reason   As String
-            Dim jailTime As Byte
+            Dim jailTime As Integer
             Dim count    As Byte
             Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
 104         Reason = Reader.ReadString8()
-106         jailTime = Reader.ReadInt8()
+106         jailTime = reader.ReadInt16()
         
 108         If InStr(1, username, "+") Then
 110             username = Replace(username, "+", " ")
@@ -1205,9 +1205,9 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
                             'Msg957= No podés encarcelar a administradores.
                             Call WriteLocaleMsg(UserIndex, "957", e_FontTypeNames.FONTTYPE_INFO)
                     
-128                     ElseIf jailTime > 240 Then
-                            'Msg958= No podés encarcelar por más de 4 horas.
-                            Call WriteLocaleMsg(UserIndex, "958", e_FontTypeNames.FONTTYPE_INFO)
+128                     ElseIf jailTime > SvrConfig.GetValue("MaxJailTime") Then
+                            'Msg958= No podés encarcelar por más de ¬1 minutos.
+                            Call WriteLocaleMsg(UserIndex, "958", e_FontTypeNames.FONTTYPE_INFO, SvrConfig.GetValue("MaxJailTime"))
                         Else
 
 132                         If (InStrB(username, "\") <> 0) Then
@@ -4867,7 +4867,7 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                     Call SetUserRef(UserList(userIndex).flags.SigueUsuario, 0)
                 ElseIf tUser.ArrayIndex <> .flags.SigueUsuario.ArrayIndex And .flags.SigueUsuario.ArrayIndex > 0 And IsValidUserRef(tUser) Then
                     If IsValidUserRef(UserList(tUser.ArrayIndex).flags.GMMeSigue) And UserList(tUser.ArrayIndex).flags.GMMeSigue.ArrayIndex <> userIndex Then
-                    Call WriteLocaleMsg(UserIndex, "1523", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1523=El usuario está siendo seguido por ¬1.
+                    Call WriteLocaleMsg(UserIndex, "1523", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).name)  ' Msg1523=El usuario está siendo seguido por ¬1.
                         Exit Sub
                     End If
                     
@@ -4875,7 +4875,7 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                     UserList(UserIndex).Invent = UserList(UserIndex).Invent_bk
                     UserList(UserIndex).Stats = UserList(UserIndex).Stats_bk
                     'UserList(UserIndex).Char.charindex = UserList(UserIndex).Char.charindex_bk
-                    Call WriteLocaleMsg(UserIndex, "1524", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1524=Dejas de seguir a ¬1.
+                    Call WriteLocaleMsg(UserIndex, "1524", e_FontTypeNames.FONTTYPE_INFO, username)  ' Msg1524=Dejas de seguir a ¬1.
                     Call WriteCancelarSeguimiento(UserIndex)
                     Call WriteNotificarClienteSeguido(.flags.SigueUsuario.ArrayIndex, 0)
                     Call SetUserRef(UserList(.flags.SigueUsuario.ArrayIndex).flags.GMMeSigue, 0)
@@ -4897,7 +4897,7 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                     'Actualizo flag en cliente para que empiece a enviar paquetes
                     Call WriteNotificarClienteSeguido(tUser.ArrayIndex, 1)
                     Call SetUserRef(UserList(tUser.ArrayIndex).flags.GMMeSigue, userIndex)
-                    Call WriteLocaleMsg(UserIndex, "1525", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1525=Comienzas a seguir a ¬1.
+                    Call WriteLocaleMsg(UserIndex, "1525", e_FontTypeNames.FONTTYPE_INFO, username)  ' Msg1525=Comienzas a seguir a ¬1.
                     tempArea = UserList(UserIndex).AreasInfo.AreaID
                     Call WarpUserChar(userIndex, UserList(tUser.ArrayIndex).pos.map, 15, 15)
                     Call WriteSendFollowingCharindex(userIndex, UserList(tUser.ArrayIndex).Char.charindex)
@@ -4933,7 +4933,7 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                         'Actualizo flag en cliente para que empiece a enviar paquetes
                         Call WriteNotificarClienteSeguido(tUser.ArrayIndex, 1)
                         Call SetUserRef(UserList(tUser.ArrayIndex).flags.GMMeSigue, userIndex)
-                        Call WriteLocaleMsg(UserIndex, "1527", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1527=Comienzas a seguir a ¬1.
+                        Call WriteLocaleMsg(UserIndex, "1527", e_FontTypeNames.FONTTYPE_INFO, username) ' Msg1527=Comienzas a seguir a ¬1.
                         tempArea = UserList(UserIndex).AreasInfo.AreaID
                         Call WarpUserChar(userIndex, UserList(tUser.ArrayIndex).pos.map, 15, 15)
                         Call WriteSendFollowingCharindex(userIndex, UserList(tUser.ArrayIndex).Char.charindex)
@@ -4948,14 +4948,14 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                         Call WriteAreaChanged(UserIndex, UserList(tUser.ArrayIndex).pos.x, UserList(tUser.ArrayIndex).pos.y)
                     Else
                         If UserList(userIndex).flags.SigueUsuario.ArrayIndex <> tUser.ArrayIndex Then
-                            Call WriteLocaleMsg(UserIndex, "1528", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1528=Ya te encuentras siguiendo a un usuario, para dejar de seguirlo escribe /SM ¬1.
+                            Call WriteLocaleMsg(UserIndex, "1528", e_FontTypeNames.FONTTYPE_INFO, username) ' Msg1528=Ya te encuentras siguiendo a un usuario, para dejar de seguirlo escribe /SM ¬1.
                             Exit Sub
                         End If
                         'Me devuelvo inventario y stats
                         UserList(UserIndex).Invent = UserList(UserIndex).Invent_bk
                         UserList(UserIndex).Stats = UserList(UserIndex).Stats_bk
                         Call SetUserRef(UserList(userIndex).flags.SigueUsuario, 0)
-                        Call WriteLocaleMsg(UserIndex, "1529", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1529=Dejas de seguir a ¬1.
+                        Call WriteLocaleMsg(UserIndex, "1529", e_FontTypeNames.FONTTYPE_INFO, username) ' Msg1529=Dejas de seguir a ¬1.
                         Call WriteCancelarSeguimiento(UserIndex)
                         Call WriteNotificarClienteSeguido(tUser.ArrayIndex, 0)
                         Call SetUserRef(UserList(tUser.ArrayIndex).flags.GMMeSigue, 0)

@@ -361,6 +361,12 @@ Public Const NingunCasco             As Integer = 2
 Public Const NingunArma              As Integer = 2
 Public Const NoCart                  As Integer = 2
 Public Const EspadaMataDragonesIndex As Integer = 402
+Public Const CommonLuteIndex         As Integer = 3986
+Public Const MagicLuteIndex          As Integer = 469
+Public Const ElvenLuteIndex          As Integer = 41
+Public Const FireEcoIndex            As String = "Eco Ígneo (NPC)"
+Public Const MauveFlashIndex         As String = "Destello Malva (NPC)"
+
 
 Public Const MAXMASCOTASENTRENADOR   As Byte = 7
 
@@ -1732,10 +1738,11 @@ Public Type t_ObjData
     Snd1 As Integer
     Snd2 As Integer
     Snd3 As Integer
-    
+
     Real As Integer
     Caos As Integer
-    
+    LeadersOnly As Boolean
+
     NoSeCae As Integer
     
     Power As Integer
