@@ -32,6 +32,10 @@ Option Explicit
 'having too many string lengths in the queue. Yes, each string is NULL-terminated :P
 Public Const SEPARATOR             As String * 1 = vbNullChar
 
+Private Const SPELL_UNASSISTED_FULGOR = 52
+Private Const SPELL_UNASSISTED_ECO = 61
+Private Const SPELL_UNASSISTED_DESTELLO = 62
+
 Public Enum e_EditOptions
 
     eo_Gold = 1
@@ -7215,7 +7219,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
 106         Vida = 18 + ModRaza(.raza).Constitucion + Promedio * (.Stats.ELV - 1)
 
             'Msg1220= Vida esperada: ¬1
-            Call WriteLocaleMsg(UserIndex, "1220", e_FontTypeNames.FONTTYPE_INFOBOLD, Vida & ". Promedio: " & Promedio)
+            Call WriteLocaleMsg(UserIndex, "1220", e_FontTypeNames.FONTTYPE_INFOBOLD, Vida & "¬" & Promedio)
 110         Promedio = CalcularPromedioVida(UserIndex)
 
             Dim Diff As Long, Color As e_FontTypeNames, Signo As String
@@ -7237,7 +7241,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
             End If
 
             'Msg1221= Vida actual: ¬1
-            Call WriteLocaleMsg(UserIndex, "1221", e_FontTypeNames.FONTTYPE_INFOBOLD, .Stats.MaxHp & " (" & Signo & Abs(Diff) & "). Promedio: " & Round(Promedio, 2) & Color)
+            Call WriteLocaleMsg(UserIndex, "1221", e_FontTypeNames.FONTTYPE_INFOBOLD, .Stats.MaxHp & " (" & Signo & Abs(Diff) & ")" & "¬" & Round(Promedio, 2) & Color)
         End With
         
         Exit Sub
@@ -9723,31 +9727,50 @@ ErrHandler:
 End Sub
 
 Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+        Dim tipoMacro As Byte
+        Dim mensaje As String
+        Dim clicks As Long
+        Dim motivo As String
 
-100     With UserList(UserIndex)
-            Dim tipoMacro As Byte
-            Dim mensaje As String
-            Dim clicks As Long
-            tipoMacro = Reader.ReadInt8
-            clicks = Reader.ReadInt32
-            
-            Select Case tipoMacro
-            
-                Case tMacro.Coordenadas
-102                 Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1876, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1876=Control AntiCheat--> El usuario ¬1 está utilizando macro de COORDENADAS.
-                Case tMacro.dobleclick
-                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1877, UserList(UserIndex).name & "¬" & clicks, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1877=Control AntiCheat--> El usuario ¬1 está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: ¬2).
-                Case tMacro.inasistidoPosFija
-                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1878, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1878=Control AntiCheat--> El usuario ¬1 está utilizando macro de INASISTIDO.
-                Case tMacro.borrarCartel
-                    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1879, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1879=Control AntiCheat--> El usuario ¬1 está utilizando macro de CARTELEO.
-            End Select
-            
-            
+        tipoMacro = reader.ReadInt8
+        clicks = reader.ReadInt32
 
-        End With
+        mensaje = "Control AntiCheat--> El usuario " & .name & "| está utilizando "
 
+        Select Case tipoMacro
+            Case tMacro.Coordenadas
+                motivo = "macro de COORDENADAS"
+
+            Case tMacro.dobleclick
+                motivo = "macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & ")"
+
+            Case tMacro.inasistidoPosFija
+                Dim spellID As Integer
+                spellID = .Stats.UserHechizos(.flags.Hechizo)
+
+                If Not IsUnassistedSpellAllowed(spellID) Then
+                    motivo = "macro de INASISTIDO"
+                End If
+
+            Case tMacro.borrarCartel
+                motivo = "macro de CARTELEO"
+        End Select
+
+        If motivo <> "" Then
+            Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje & motivo & ".", e_FontTypeNames.FONTTYPE_INFO))
+        End If
+    End With
 End Sub
+
+Private Function IsUnassistedSpellAllowed(ByVal spellID As Integer) As Boolean
+    Select Case spellID
+        Case SPELL_UNASSISTED_FULGOR, SPELL_UNASSISTED_ECO, SPELL_UNASSISTED_DESTELLO
+            IsUnassistedSpellAllowed = True
+        Case Else
+            IsUnassistedSpellAllowed = False
+    End Select
+End Function
 
 
 

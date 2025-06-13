@@ -47,29 +47,29 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
           skillsNecesarios = 0
     
 106     If Remitente.Stats.UserSkills(e_Skill.liderazgo) < skillsNecesarios Then
-108         Call WriteConsoleMsg(UserIndex, "Te faltan " & (skillsNecesarios - Remitente.Stats.UserSkills(e_Skill.liderazgo)) & " puntos en Liderazgo para liderar un grupo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
+108         Call WriteLocaleMsg(UserIndex, 2041, (skillsNecesarios - Remitente.Stats.UserSkills(e_Skill.liderazgo)), e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2041="Te faltan ¬1 puntos en Liderazgo para liderar un grupo."
             Exit Sub
         End If
         
         'HarThaoS: Si invita a un gm no lo dejo
 110     If EsGM(InvitadoIndex) Then
-112         Call WriteConsoleMsg(UserIndex, "No puedes invitar a un grupo a un GM.", e_FontTypeNames.FONTTYPE_New_GRUPO)
+112         Call WriteLocaleMsg(UserIndex, 2042, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2042="No puedes invitar a un grupo a un GM."
             Exit Sub
         End If
         
         'Si es gm tampoco lo dejo
 114     If EsGM(UserIndex) Then
-116         Call WriteConsoleMsg(UserIndex, "Los GMs no pueden formar parte de un grupo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
+116         Call WriteLocaleMsg(UserIndex, 2043, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2043="Los GMs no pueden formar parte de un grupo."
             Exit Sub
         End If
 
 118     If Invitado.flags.SeguroParty Then
-120         Call WriteConsoleMsg(UserIndex, "El usuario debe desactivar el seguro de grupos para poder invitarlo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
+120         Call WriteLocaleMsg(UserIndex, 2044, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2044="El usuario debe desactivar el seguro de grupos para poder invitarlo."
             Exit Sub
         End If
         
 122     If Remitente.Grupo.CantidadMiembros >= UBound(Remitente.Grupo.Miembros) Then
-124         Call WriteConsoleMsg(UserIndex, "No puedes invitar a mas personas. (Límite: " & CStr(UBound(Remitente.Grupo.Miembros)) & ")", e_FontTypeNames.FONTTYPE_New_GRUPO)
+124         Call WriteLocaleMsg(UserIndex, 2045, CStr(UBound(Remitente.Grupo.Miembros)), e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2045="No puedes invitar a mas personas. (Límite: ¬1)"
             Exit Sub
         End If
             
@@ -84,7 +84,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
             (Status(userindex) = 2 And Status(InvitadoIndex) = 3) _
             Then
         
-128         Call WriteConsoleMsg(UserIndex, "No podes crear un grupo con personajes de diferentes facciones.", e_FontTypeNames.FONTTYPE_New_GRUPO)
+128         Call WriteLocaleMsg(UserIndex, 2046, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2046="No podes crear un grupo con personajes de diferentes facciones."
             Exit Sub
             
         End If
@@ -109,16 +109,15 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
 
 
 134     If Invitado.Grupo.EnGrupo Then
-            'Call WriteConsoleMsg(userindex, "El usuario ya se encuentra en un grupo.", e_FontTypeNames.FONTTYPE_INFOIAO)
+            
 136         Call WriteLocaleMsg(UserIndex, "41", e_FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub
             
         End If
         
-            'Call WriteConsoleMsg(userindex, "Se envio la invitacion a " & UserList(Invitado).name & ", ahora solo resta aguardar su respuesta.", e_FontTypeNames.FONTTYPE_INFOIAO)
         If UserList(InvitadoIndex).flags.RespondiendoPregunta = False Then
 138         Call WriteLocaleMsg(UserIndex, "42", e_FontTypeNames.FONTTYPE_New_GRUPO)
-140         Call WriteConsoleMsg(InvitadoIndex, Remitente.Name & " te invitó a unirse a su grupo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
+140         Call WriteLocaleMsg(InvitadoIndex, 2049, Remitente.Name, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2049="¬1 te invitó a unirse a su grupo."
                     
 142         With UserList(InvitadoIndex)
                     
@@ -129,7 +128,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
 150         Call WritePreguntaBox(InvitadoIndex, 1595, Remitente.name) 'Msg1595= ¬1 te invito a unirse a su grupo. ¿Deseas unirte?
             UserList(InvitadoIndex).flags.RespondiendoPregunta = True
         Else
-            Call WriteConsoleMsg(UserIndex, "El usuario tiene una solicitud pendiente.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 2050, e_FontTypeNames.FONTTYPE_INFO) ' Msg2050="El usuario tiene una solicitud pendiente."
         End If
         Exit Sub
 
@@ -152,20 +151,20 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
 100     With UserList(UserIndex).Grupo
             GroupLider = .Lider.ArrayIndex
 102         If Not .EnGrupo Then
-104             Call WriteConsoleMsg(UserIndex, "No estás en ningun grupo", e_FontTypeNames.FONTTYPE_New_GRUPO)
+104             Call WriteLocaleMsg(UserIndex, 2051, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2051="No estás en ningun grupo"
                 Exit Sub
         
             End If
     
 106         If .Lider.ArrayIndex <> userIndex Then
-108             Call WriteConsoleMsg(UserIndex, "No podés echar a usuarios del grupo", e_FontTypeNames.FONTTYPE_New_GRUPO)
+108             Call WriteLocaleMsg(UserIndex, 2052, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2052="No podés echar a usuarios del grupo"
                 Exit Sub
             End If
         
 110         UserIndexEchar = UserList(.Lider.ArrayIndex).Grupo.Miembros(Indice + 1).ArrayIndex
 
 112         If UserIndexEchar = userIndex Then
-114             Call WriteConsoleMsg(UserIndex, "No podés expulsarte a ti mismo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
+114             Call WriteLocaleMsg(UserIndex, 2053, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2053="No podés expulsarte a ti mismo."
                 Exit Sub
             End If
 
@@ -196,7 +195,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
     
 140     With UserList(UserIndexEchar)
     
-142         Call WriteConsoleMsg(UserIndex, .Name & " fue expulsado del grupo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
+142         Call WriteLocaleMsg(UserIndex, 2054, .Name, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2054="¬1 fue expulsado del grupo."
 144         Call WriteLocaleMsg(UserIndexEchar, "37", e_FontTypeNames.FONTTYPE_New_GRUPO)
         
 146         .Grupo.EnGrupo = False
@@ -208,7 +207,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
             .Grupo.ID = -1
             
 157         If MapInfo(.pos.Map).OnlyGroups And MapInfo(.pos.Map).Salida.Map <> 0 Then
-                Call WriteConsoleMsg(UserIndexEchar, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndexEchar, 2055, e_FontTypeNames.FONTTYPE_INFO) ' Msg2055="Debes estar en un grupo para permanecer en este mapa."
                 Call WarpUserChar(UserIndexEchar, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
             End If
             
@@ -228,7 +227,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
                 
 173             Dim LiderMap As Integer: LiderMap = UserList(UserIndex).pos.Map
                 If MapInfo(LiderMap).OnlyGroups And MapInfo(LiderMap).Salida.Map <> 0 Then
-                    Call WriteConsoleMsg(UserIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, 2056, e_FontTypeNames.FONTTYPE_INFO) ' Msg2056="Debes estar en un grupo para permanecer en este mapa."
                     Call WarpUserChar(UserIndex, MapInfo(LiderMap).Salida.Map, MapInfo(LiderMap).Salida.x, MapInfo(LiderMap).Salida.y, True)
                 End If
             End If
@@ -255,7 +254,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
     
 102         If Not .Grupo.EnGrupo Then
-104             Call WriteConsoleMsg(UserIndex, "No estas en ningun grupo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
+104             Call WriteLocaleMsg(UserIndex, 2057, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2057="No estas en ningun grupo."
                 Exit Sub
         
             End If
@@ -287,7 +286,6 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
         
 136         If UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = 1 Then
         
-                'Call WriteConsoleMsg(.Grupo.Lider, "El grupo se quedo sin miembros, grupo finalizado.", e_FontTypeNames.FONTTYPE_INFOIAO)
 138             Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, "35", e_FontTypeNames.FONTTYPE_New_GRUPO)
             
 140             Call WriteUbicacion(.Grupo.Lider.ArrayIndex, 1, 0)
@@ -302,7 +300,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
                 
 153             Dim LiderMap As Integer: LiderMap = UserList(.Grupo.Lider.ArrayIndex).pos.Map
                 If MapInfo(LiderMap).OnlyGroups And MapInfo(LiderMap).Salida.Map <> 0 Then
-                    Call WriteConsoleMsg(.Grupo.Lider.ArrayIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, 2059, e_FontTypeNames.FONTTYPE_INFO) ' Msg2059="Debes estar en un grupo para permanecer en este mapa."
                     Call WarpUserChar(.Grupo.Lider.ArrayIndex, MapInfo(LiderMap).Salida.Map, MapInfo(LiderMap).Salida.x, MapInfo(LiderMap).Salida.y, True)
                 End If
             End If
@@ -314,7 +312,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
             Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
             
 157         If MapInfo(.pos.Map).OnlyGroups And MapInfo(.pos.Map).Salida.Map <> 0 Then
-                Call WriteConsoleMsg(UserIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, 2060, e_FontTypeNames.FONTTYPE_INFO) ' Msg2060="Debes estar en un grupo para permanecer en este mapa."
                 Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
             End If
             
@@ -376,13 +374,13 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
 
 147             Dim LiderMap As Integer: LiderMap = UserList(.Grupo.Lider.ArrayIndex).pos.Map
                 If MapInfo(LiderMap).OnlyGroups And MapInfo(LiderMap).Salida.Map <> 0 Then
-                    Call WriteConsoleMsg(.Grupo.Lider.ArrayIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, 2061, e_FontTypeNames.FONTTYPE_INFO) ' Msg2061="Debes estar en un grupo para permanecer en este mapa."
                     Call WarpUserChar(.Grupo.Lider.ArrayIndex, MapInfo(LiderMap).Salida.Map, MapInfo(LiderMap).Salida.x, MapInfo(LiderMap).Salida.y, True)
                 End If
             End If
             
             If MapInfo(.pos.Map).OnlyGroups And MapInfo(.pos.Map).Salida.Map <> 0 Then
-                Call WriteConsoleMsg(UserIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, 2062, e_FontTypeNames.FONTTYPE_INFO) ' Msg2062="Debes estar en un grupo para permanecer en este mapa."
                 Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
             End If
             
@@ -417,13 +415,13 @@ On Error GoTo FinalizarGrupo_Err
                 Call SetUserRef(.Grupo.PropuestaDe, 0)
 
                 If MemberIndex = LiderIndex Then
-                    Call WriteConsoleMsg(LiderIndex, "Has disuelto el grupo.", e_FontTypeNames.FONTTYPE_INFOIAO)
+                    Call WriteLocaleMsg(LiderIndex, 2063, e_FontTypeNames.FONTTYPE_INFOIAO) ' Msg2063="Has disuelto el grupo."
                 Else
-                    Call WriteConsoleMsg(MemberIndex, "El líder ha abandonado el grupo. El grupo se disuelve.", e_FontTypeNames.FONTTYPE_New_GRUPO)
+                    Call WriteLocaleMsg(MemberIndex, 2064, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2064="El líder ha abandonado el grupo. El grupo se disuelve."
                 End If
 
                 If MapInfo(.pos.Map).OnlyGroups And MapInfo(.pos.Map).Salida.Map <> 0 Then
-                    Call WriteConsoleMsg(MemberIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(MemberIndex, 2065, e_FontTypeNames.FONTTYPE_INFO) ' Msg2065="Debes estar en un grupo para permanecer en este mapa."
                     Call WarpUserChar(MemberIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
                 Else
                     Call RefreshCharStatus(MemberIndex)
@@ -505,7 +503,7 @@ On Error GoTo AddUserToGRoup_Err
     
 120 Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex, "40", e_FontTypeNames.FONTTYPE_INFOIAO, UserList(UserIndex).name)
     
-130 Call WriteConsoleMsg(UserIndex, "¡Has sido añadido al grupo!", e_FontTypeNames.FONTTYPE_INFOIAO)
+130 Call WriteLocaleMsg(UserIndex, 2066, e_FontTypeNames.FONTTYPE_INFOIAO) ' Msg2066="¡Has sido añadido al grupo!"
 140 Call RefreshCharStatus(GroupLiderIndex)
 150 Call RefreshCharStatus(UserIndex)
 160 Call CompartirUbicacion(UserIndex)
