@@ -134,6 +134,11 @@ Public Const IntervaloConsultaGM    As Long = 300000
 'BALANCE
 
 Public PorcentajeRecuperoMana       As Integer
+Public RecoveryMana                 As Integer
+Public MultiplierManaxSkills        As Currency
+Public ManaCommonLute               As Integer
+Public ManaMagicLute                As Integer
+Public ManaElvenLute                As Integer
 Public DificultadSubirSkill         As Integer
 Public RequiredSpellDisplayTime     As Integer
 Public MaxInvisibleSpellDisplayTime As Integer
