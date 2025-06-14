@@ -1006,26 +1006,19 @@ Public Function ValidateLobbySettings(ByVal UserIndex As Integer, ByRef LobbySet
 End Function
 
 Public Sub CreatePublicEvent(ByVal UserIndex As Integer, ByRef LobbySettings As t_NewScenearioSettings)
-    Dim LobbyId As Integer
     
-    LobbyId = GetAvailableLobby()
-    If LobbyId < 0 Then
+    GlobalLobbyIndex = GetAvailableLobby()
+    If GlobalLobbyIndex < 0 Then
         Call WriteLocaleMsg(UserIndex, 1610, e_FontTypeNames.FONTTYPE_INFO) 'Msg1610= No se pudo encontrar una sala disponible.
         Exit Sub
     End If
     If Not ValidateLobbySettings(UserIndex, LobbySettings) Then
         Exit Sub
     End If
-    Call InitializeLobby(LobbyList(LobbyId))
-    Call ModLobby.SetupLobby(LobbyList(LobbyId), LobbySettings)
-    Call CustomScenarios.PrepareNewEvent(LobbySettings.ScenearioType, LobbyId)
-    Call OpenLobby(LobbyList(LobbyId), True, UserIndex)
-    Dim addPlayerResult As t_response
-    addPlayerResult = ModLobby.AddPlayerOrGroup(LobbyList(LobbyId), UserIndex, LobbySettings.Password)
-    If Not addPlayerResult.Success Then
-        Call CancelLobby(LobbyList(LobbyId))
-        Call WriteLocaleMsg(UserIndex, 1611, e_FontTypeNames.FONTTYPE_INFO) 'Msg1611= Se canceló la sala que creaste porque no cumples los requisitos para participar.
-    End If
+    Call InitializeLobby(LobbyList(GlobalLobbyIndex))
+    Call ModLobby.SetupLobby(LobbyList(GlobalLobbyIndex), LobbySettings)
+    Call CustomScenarios.PrepareNewEvent(LobbySettings.ScenearioType, GlobalLobbyIndex)
+    Call OpenLobby(LobbyList(GlobalLobbyIndex), True, UserIndex)
 End Sub
 
 

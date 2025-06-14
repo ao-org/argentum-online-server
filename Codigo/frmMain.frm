@@ -1316,7 +1316,9 @@ Private Sub Minuto_Timer()
    '     Call CheckIdleUser
    ' End If
 
-    Call Automatic_Event_Timer
+    If IsFeatureEnabled("automatic_events") Then
+        Call Automatic_Event_Timer
+    End If
     Call dump_stats
     Call PerformTimeLimitCheck(PerformanceTimer, "Minuto_Timer", 500)
     Exit Sub
@@ -1618,43 +1620,48 @@ Private Sub Automatic_Event_Timer()
     
     If EventoActivo Then Exit Sub
     
-    If IsEventActive = True Then
-        If LobbyList(GlobalLobbyIndex).State = e_LobbyState.Initialized Then
-            Call StartLobby(LobbyList(GlobalLobbyIndex), GmIndex)
-        End If
-        Exit Sub
-    Else
-        If LobbyList(GlobalLobbyIndex).State = e_LobbyState.InProgress Then
-            Exit Sub
-        End If
-    End If
-    
+    Dim CurrentDay As Byte
+    Dim CurrentHour As Byte
     Dim UserIndex As Integer
     Dim GmIndex As Integer
-
+    
+    CurrentDay = Weekday(Date)
+    CurrentHour = Hour(Time)
+    
+    'si no es sabado
+    If (CurrentDay <> 7) Then
+        Exit Sub
+    End If
+    
+    'si ya hay lobbies aunque sean de gente
+    If (GlobalLobbyIndex >= 0) Then
+        Exit Sub
+    End If
+    
+    'necesariamente tengo que buscar un gm
     For UserIndex = 1 To LastUser
         If EsGM(UserIndex) Then
             GmIndex = UserIndex
         End If
     Next UserIndex
+    
+
 
     Dim LobbySettings As t_NewScenearioSettings
 
-    'deathmatch de plus
     LobbySettings.ScenearioType = 3
     LobbySettings.MinLevel = 1
     LobbySettings.MaxLevel = 47
-    LobbySettings.MinPlayers = 0
-    LobbySettings.MaxPlayers = 2
+    LobbySettings.MinPlayers = 8
+    LobbySettings.MaxPlayers = 16
     LobbySettings.TeamSize = 0
     LobbySettings.TeamType = 0
     LobbySettings.RoundNumber = 0
-    LobbySettings.InscriptionFee = 1000
-    LobbySettings.Description = ""
+    LobbySettings.InscriptionFee = 10000
+    LobbySettings.Description = "Evento Automatico"
     LobbySettings.Password = ""
     
-    Call initEventLobby(GmIndex, 0, LobbySettings)
-    Call OpenLobby(LobbyList(GlobalLobbyIndex), True, GmIndex)
+    Call CreatePublicEvent(GmIndex, LobbySettings)
     
     Exit Sub
 Evento_Timer_Err:
