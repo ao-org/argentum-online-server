@@ -896,6 +896,8 @@ On Error Resume Next
             Call HandleBuyShopItem(userindex)
         Case ClientPacketID.ePublicarPersonajeMAO
             Call HandlePublicarPersonajeMAO(userindex)
+        Case ClientPacketID.ePublishItemMAO
+            Call HandlePublishItemMAO(userindex)
         Case ClientPacketID.eEventoFaccionario
             Call HandleEventoFaccionario(UserIndex)
         Case ClientPacketID.eRequestDebug
