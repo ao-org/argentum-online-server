@@ -366,6 +366,28 @@ WriteCommerceInit_Err:
         
 End Sub
 
+
+''
+' Writes the "SellItemsMaoInit" message to the given user's outgoing data .incomingData.
+'
+' @param    UserIndex User to which the message is intended.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Sub WriteSellItemsMaoInit(ByVal UserIndex As Integer)
+        
+        On Error GoTo WriteSellItemsMaoInit_Err
+        
+100     Call Writer.WriteInt16(ServerPacketID.eSellItemsMaoInit)
+102     Call Writer.WriteString8(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Name)
+104     Call modSendData.SendData(ToIndex, UserIndex)
+        
+        Exit Sub
+
+WriteSellItemsMaoInit_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSellItemsMaoInit", Erl)
+        
+End Sub
+
 ''
 ' Writes the "BankInit" message to the given user's outgoing data .incomingData.
 '

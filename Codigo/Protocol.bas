@@ -896,6 +896,8 @@ On Error Resume Next
             Call HandleBuyShopItem(userindex)
         Case ClientPacketID.ePublicarPersonajeMAO
             Call HandlePublicarPersonajeMAO(userindex)
+        Case ClientPacketID.ePublishItemMAO
+            Call HandlePublishItemMAO(userindex)
         Case ClientPacketID.eEventoFaccionario
             Call HandleEventoFaccionario(UserIndex)
         Case ClientPacketID.eRequestDebug
@@ -10300,6 +10302,7 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
 
     On Error GoTo HandlePublicarPersonajeMAO_Err:
     Dim Valor As Long
+
         
     Valor = Reader.ReadInt32
     
@@ -10347,6 +10350,65 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
 
 HandlePublicarPersonajeMAO_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePublicarPersonajeMAO", Erl)
+End Sub
+
+Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
+
+    On Error GoTo HandlePublishItemMAO_Err:
+    Dim Slot As Byte
+    Dim value As Long
+    Dim quantity As Integer
+
+    Slot = reader.ReadInt8()
+
+    value = reader.ReadInt32
+    
+    quantity = reader.ReadInt32
+    
+    If value < MinimumPriceMaoItems Then
+        'Msg2079="El valor de tus items debe ser minimo ¬1 ARS"
+        Call WriteLocaleMsg(UserIndex, "2079", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMaoItems)
+        Exit Sub
+    End If
+    
+    With UserList(UserIndex)
+        If UserList(UserIndex).invent.Object(Slot).amount < quantity Then
+            'Msg1138=No tienes esa cantidad.
+            Call WriteLocaleMsg(UserIndex, "1138", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
+        If .Stats.ELV < MinimumLevelMaoItems Then
+            'Msg2076="No tenes el nivel minimo requerido para vender items online"
+            Call WriteLocaleMsg(UserIndex, "2076", e_FontTypeNames.FONTTYPE_INFO, MinimumLevelMaoItems)
+            Exit Sub
+        End If
+        
+        If .Stats.GLD < GoldPriceMaoItems Then
+            'Msg2077="El costo para vender un item online es de ¬1 monedas de oro, no tenes esa cantidad."
+            Call WriteLocaleMsg(UserIndex, "2077", e_FontTypeNames.FONTTYPE_INFO, GoldPriceMaoItems)
+            Exit Sub
+        Else
+            .Stats.GLD = .Stats.GLD - GoldPriceMaoItems
+            Call WriteUpdateGold(UserIndex)
+        End If
+
+        Call QuitarUserInvItem(UserIndex, Slot, quantity)
+            
+        Call UpdateUserInv(False, UserIndex, Slot)
+        
+        Call Execute("INSERT INTO mao_items_on_sale (user_id, account_id, item_id, item_qty, price_in_pesos) VALUES (?, ?, ?, ?, ?);", _
+    .Id, .AccountID, .invent.Object(Slot).ObjIndex, quantity, value)
+
+        'Msg2078="Tu item fue publicado online correctamente."
+        Call WriteLocaleMsg(UserIndex, "2078", e_FontTypeNames.FONTTYPE_INFOBOLD)
+
+    End With
+        
+    Exit Sub
+
+HandlePublishItemMAO_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePublishItemMAO", Erl)
 End Sub
 
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)

@@ -745,6 +745,14 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
                
                     Call WriteShopPjsInit(UserIndex)
+                ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.MAOItemSeller Then
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        'Msg77=¡¡Estás muerto!!.
+                        Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
+                        Exit Sub
+                    End If
+               
+                    Call WriteSellItemsMaoInit(UserIndex)
                 ElseIf NpcList(TempCharIndex).npcType = e_NPCType.EventMaster Then
                     If UserList(UserIndex).flags.Muerto = 1 Then
                         'Msg77=¡¡Estás muerto!!.
