@@ -117,7 +117,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
         
         If UserList(InvitadoIndex).flags.RespondiendoPregunta = False Then
 138         Call WriteLocaleMsg(UserIndex, "42", e_FontTypeNames.FONTTYPE_New_GRUPO)
-140         Call WriteLocaleMsg(InvitadoIndex, 2049, Remitente.Name, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2049="¬1 te invitó a unirse a su grupo."
+140         Call WriteLocaleMsg(InvitadoIndex, 2049, e_FontTypeNames.FONTTYPE_New_GRUPO, Remitente.Name) ' Msg2049="¬1 te invitó a unirse a su grupo."
                     
 142         With UserList(InvitadoIndex)
                     
