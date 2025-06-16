@@ -10391,7 +10391,6 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
         
         Call Execute("INSERT INTO mao_items_on_sale (user_id, account_id, item_id, qty, price_in_pesos) VALUES (?, ?, ?, ?, ?);", _
     .ID, .AccountID, .invent.Object(Slot).ObjIndex, 1, value)
-        Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID, "El item fue publicado.")
     End With
         
     Exit Sub
