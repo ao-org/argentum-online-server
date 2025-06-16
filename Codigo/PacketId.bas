@@ -528,6 +528,7 @@ Public Enum ClientPacketID
     eSendPosSeguimiento
     eNotifyInventarioHechizos
     ePublicarPersonajeMAO
+    ePublishItemMAO
     eEventoFaccionario
     eRequestDebug '/RequestDebug consulta info debug al server, para gms
     eLobbyCommand
