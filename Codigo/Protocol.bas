@@ -10351,6 +10351,49 @@ HandlePublicarPersonajeMAO_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePublicarPersonajeMAO", Erl)
 End Sub
 
+Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
+
+    On Error GoTo HandlePublishItemMAO_Err:
+    Dim Valor As Long
+        
+    Valor = Reader.ReadInt32
+    
+    If Valor <= MinimumPriceMaoItems Then
+    'We gotta add a new message saying something like we do with the characters
+        'Msg1281= El valor de venta del personaje debe ser mayor que $¬1
+        'Call WriteLocaleMsg(UserIndex, "1281", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMao)
+        Exit Sub
+    End If
+    
+    With UserList(UserIndex)
+        ' Para recibir el ID del user
+
+        If .Stats.ELV < MinimumLevelMaoItems Then
+        ' here we also gotta add a new msg
+            'Msg1284= No puedes publicar un personaje menor a nivel ¬1
+            'Call WriteLocaleMsg(UserIndex, "1284", e_FontTypeNames.FONTTYPE_INFO, MinimumLevelMaoItems)
+            Exit Sub
+        End If
+        
+        If .Stats.GLD < GoldPriceMaoItems Then
+        ' here we ggotta add a new msg
+            'Msg1291= El costo para vender tu personajes es de ¬1 monedas de oro, no tienes esa cantidad.
+            'Call WriteLocaleMsg(UserIndex, "1291", e_FontTypeNames.FONTTYPE_INFOBOLD, GoldPriceMao)
+            Exit Sub
+        Else
+            .Stats.GLD = .Stats.GLD - GoldPriceMaoItems
+            Call WriteUpdateGold(UserIndex)
+        End If
+        ' here actually we gotta add the item to the db and so on Call Execute("update user set price_in_mao = ?, is_locked_in_mao = 1 where id = ?;", Valor, .ID)
+        Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID, "El item fue publicado.")
+    End With
+        
+    Exit Sub
+
+HandlePublishItemMAO_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePublishItemMAO", Erl)
+End Sub
+
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     On Error GoTo HandleDeleteItem_Err:
 
