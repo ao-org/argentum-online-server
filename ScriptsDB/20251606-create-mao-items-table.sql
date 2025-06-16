@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS "mao_items_on_sale" (
-    "id" integer NOT NULL,
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "user_id" integer NOT NULL,
     "account_id" integer NOT NULL,
     "item_id" integer NOT NULL,

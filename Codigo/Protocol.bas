@@ -10302,6 +10302,7 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
 
     On Error GoTo HandlePublicarPersonajeMAO_Err:
     Dim Valor As Long
+
         
     Valor = Reader.ReadInt32
     
@@ -10354,11 +10355,14 @@ End Sub
 Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
 
     On Error GoTo HandlePublishItemMAO_Err:
-    Dim Valor As Long
-        
-    Valor = Reader.ReadInt32
+    Dim Value As Long    
+    Dim Slot As Byte
+
+    Slot = Reader.ReadInt8()
+
+    Value = Reader.ReadInt32
     
-    If Valor <= MinimumPriceMaoItems Then
+    If Value <= MinimumPriceMaoItems Then
     'We gotta add a new message saying something like we do with the characters
         'Msg1281= El valor de venta del personaje debe ser mayor que $¬1
         'Call WriteLocaleMsg(UserIndex, "1281", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMao)
@@ -10384,7 +10388,9 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
             .Stats.GLD = .Stats.GLD - GoldPriceMaoItems
             Call WriteUpdateGold(UserIndex)
         End If
-        ' here actually we gotta add the item to the db and so on Call Execute("update user set price_in_mao = ?, is_locked_in_mao = 1 where id = ?;", Valor, .ID)
+        
+        Call Execute("INSERT INTO mao_items_on_sale (user_id, account_id, item_id, qty, price_in_pesos) VALUES (?, ?, ?, ?, ?);", _
+    .ID, .AccoundID, .invent.Object(Slot).ObjIndex, 1, value)
         Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID, "El item fue publicado.")
     End With
         
