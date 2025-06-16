@@ -2933,6 +2933,9 @@ Public PuedeCrearPersonajes              As Integer
 Public MinimumPriceMao                   As Long
 Public GoldPriceMao                      As Long
 Public MinimumLevelMao                   As Integer
+Public MinimumPriceMaoItems              As Long
+Public GoldPriceMaoItems                 As Long
+Public MinimumLevelMaoItems              As Integer
 Public ServerSoloGMs                     As Integer
 Public EnPausa                           As Boolean
 Public EnTesting                         As Boolean
