@@ -10371,6 +10371,10 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
         'Call WriteLocaleMsg(UserIndex, "1281", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMao)
         Exit Sub
     End If
+
+    If UserList(UserIndex).invent.Object(Slot).amount < quantity Then
+    'we could add here a msg if the user does not have the claimed quantity
+    Exit Sub
     
     With UserList(UserIndex)
         ' Para recibir el ID del user
@@ -10391,6 +10395,10 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
             .Stats.GLD = .Stats.GLD - GoldPriceMaoItems
             Call WriteUpdateGold(UserIndex)
         End If
+
+        Call QuitarUserInvItem(UserIndex, Slot, quantity)
+            
+        Call UpdateUserInv(False, UserIndex, Slot)
         
         Call Execute("INSERT INTO mao_items_on_sale (user_id, account_id, item_id, qty, price_in_pesos) VALUES (?, ?, ?, ?, ?);", _
     .Id, .AccountID, .invent.Object(Slot).ObjIndex, quantity, value)
