@@ -10297,57 +10297,75 @@ HandleBuyShopItem_Err:
 End Sub
 
 Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
+    On Error GoTo HandlePublicarPersonajeMAO_Err
 
-    On Error GoTo HandlePublicarPersonajeMAO_Err:
-    Dim Valor As Long
-        
-    Valor = Reader.ReadInt32
-    
-    If Valor <= MinimumPriceMao Then
-        'Msg1281= El valor de venta del personaje debe ser mayor que $¬1
+    ' Leer valor del personaje y método de pago
+    Dim characterPrice As Long
+    characterPrice = Reader.ReadInt32
+
+    Dim paymentMethod As Byte
+    paymentMethod = Reader.ReadInt8
+
+    ' Validar precio mínimo
+    If characterPrice <= MinimumPriceMao Then
         Call WriteLocaleMsg(UserIndex, "1281", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMao)
         Exit Sub
     End If
-    
+
+    Dim RS As ADODB.Recordset
     With UserList(UserIndex)
-        ' Para recibir el ID del user
-        Dim RS As ADODB.Recordset
-        Set RS = Query("select is_locked_in_mao from user where id = ?;", .ID)
-                    
-        If EsGM(UserIndex) Then
-            'Msg1282= No podes vender un gm.
+
+        ' No permitir GMs
+        If Call EsGM(UserIndex) Then
             Call WriteLocaleMsg(UserIndex, "1282", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        If CBool(RS!is_locked_in_mao) Then
-            'Msg1283= El personaje ya está publicado.
-            Call WriteLocaleMsg(UserIndex, "1283", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        
+
+        ' Verificar nivel mínimo
         If .Stats.ELV < MinimumLevelMao Then
-            'Msg1284= No puedes publicar un personaje menor a nivel ¬1
             Call WriteLocaleMsg(UserIndex, "1284", e_FontTypeNames.FONTTYPE_INFO, MinimumLevelMao)
             Exit Sub
         End If
-        
-        If .Stats.GLD < GoldPriceMao Then
-            'Msg1291= El costo para vender tu personajes es de ¬1 monedas de oro, no tienes esa cantidad.
-            Call WriteLocaleMsg(UserIndex, "1291", e_FontTypeNames.FONTTYPE_INFOBOLD, GoldPriceMao)
-            Exit Sub
-        Else
-            .Stats.GLD = .Stats.GLD - GoldPriceMao
-            Call WriteUpdateGold(UserIndex)
-        End If
-        Call Execute("update user set price_in_mao = ?, is_locked_in_mao = 1 where id = ?;", Valor, .ID)
-        Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID, "El personaje fue publicado.")
+
+        ' Manejar el pago según método
+        Select Case paymentMethod
+            Case GOLD
+                If .Stats.GLD < GoldPriceMao Then
+                    Call WriteLocaleMsg(UserIndex, "2002", e_FontTypeNames.FONTTYPE_INFOBOLD, GoldPriceMao)
+                    Exit Sub
+                End If
+
+                .Stats.GLD = .Stats.GLD - GoldPriceMao
+                Call WriteUpdateGold(UserIndex)
+
+            Case PATRON_POINTS
+                Call LoadPatronCreditsFromDB(UserIndex)
+                If .Stats.Creditos < PatreonCreditsPriceMao Then
+                    Call WriteLocaleMsg(UserIndex, "2003", e_FontTypeNames.FONTTYPE_INFOBOLD, PatreonCreditsPriceMao)
+                    Exit Sub
+                End If
+
+                .Stats.Creditos = .Stats.Creditos - PatreonCreditsPriceMao
+                Call WriteUpdateShopClienteCredits(UserIndex)
+
+            Case Else
+                Call WriteLocaleMsg(UserIndex, "2004", e_FontTypeNames.FONTTYPE_INFOBOLD)
+                Exit Sub
+        End Select
+
+        ' Marcar personaje como publicado
+        Call Execute("UPDATE user SET price_in_mao = ?, is_locked_in_mao = 1 WHERE id = ?;", characterPrice, .ID)
+
+        ' Desconectar al usuario con mensaje
+        Call modNetwork.Kick(.ConnectionDetails.ConnID, "El personaje fue publicado.")
     End With
-        
+
     Exit Sub
 
 HandlePublicarPersonajeMAO_Err:
-102     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePublicarPersonajeMAO", Erl)
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandlePublicarPersonajeMAO", Erl)
 End Sub
+
 
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     On Error GoTo HandleDeleteItem_Err:
