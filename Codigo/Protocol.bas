@@ -10355,14 +10355,17 @@ End Sub
 Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
 
     On Error GoTo HandlePublishItemMAO_Err:
-    Dim Value As Long    
     Dim Slot As Byte
+    Dim value As Long
+    Dim quantity As Integer
 
-    Slot = Reader.ReadInt8()
+    Slot = reader.ReadInt8()
 
-    Value = Reader.ReadInt32
+    value = reader.ReadInt32
     
-    If Value <= MinimumPriceMaoItems Then
+    quantity = reader.ReadInt32
+    
+    If value <= MinimumPriceMaoItems Then
     'We gotta add a new message saying something like we do with the characters
         'Msg1281= El valor de venta del personaje debe ser mayor que $¬1
         'Call WriteLocaleMsg(UserIndex, "1281", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMao)
@@ -10390,7 +10393,7 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
         End If
         
         Call Execute("INSERT INTO mao_items_on_sale (user_id, account_id, item_id, qty, price_in_pesos) VALUES (?, ?, ?, ?, ?);", _
-    .ID, .AccountID, .invent.Object(Slot).ObjIndex, 1, value)
+    .Id, .AccountID, .invent.Object(Slot).ObjIndex, quantity, value)
     End With
         
     Exit Sub
