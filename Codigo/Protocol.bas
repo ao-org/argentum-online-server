@@ -10374,7 +10374,8 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
 
     If UserList(UserIndex).invent.Object(Slot).amount < quantity Then
     'we could add here a msg if the user does not have the claimed quantity
-    Exit Sub
+        Exit Sub
+    End If
     
     With UserList(UserIndex)
         ' Para recibir el ID del user
