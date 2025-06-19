@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS "mao_items_on_sale" (
     "user_id" integer NOT NULL,
     "account_id" integer NOT NULL,
     "item_id" integer NOT NULL,
-    "qty" integer NOT NULL DEFAULT 1,
+    "item_qty" integer NOT NULL DEFAULT 1,
     "price_in_pesos" integer NOT NULL DEFAULT 0,
     "date_created" integer NOT NULL DEFAULT (strftime('%s', 'now')),
     "date_updated" integer NOT NULL DEFAULT (strftime('%s', 'now')));
