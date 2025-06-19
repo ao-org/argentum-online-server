@@ -10367,30 +10367,31 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
     
     If value <= MinimumPriceMaoItems Then
     'We gotta add a new message saying something like we do with the characters
-        'Msg1281= El valor de venta del personaje debe ser mayor que $¬1
-        'Call WriteLocaleMsg(UserIndex, "1281", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMao)
-        Exit Sub
-    End If
-
-    If UserList(UserIndex).invent.Object(Slot).amount < quantity Then
-    'we could add here a msg if the user does not have the claimed quantity
+        'Msg2079="El valor de tus items debe ser minimo ¬1 ARS"
+        'Call WriteLocaleMsg(UserIndex, "2079", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMao)
         Exit Sub
     End If
     
     With UserList(UserIndex)
-        ' Para recibir el ID del user
+        ' To receive user
+
+        If UserList(UserIndex).invent.Object(Slot).amount < quantity Then
+            'Msg1138=No tienes esa cantidad.
+            'Call WriteLocaleMsg(UserIndex, "1138", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
 
         If .Stats.ELV < MinimumLevelMaoItems Then
         ' here we also gotta add a new msg
-            'Msg1284= No puedes publicar un personaje menor a nivel ¬1
-            'Call WriteLocaleMsg(UserIndex, "1284", e_FontTypeNames.FONTTYPE_INFO, MinimumLevelMaoItems)
+            'Msg2076="No tenes el nivel minimo requerido para vender items online"
+            Call WriteLocaleMsg(UserIndex, "2076", e_FontTypeNames.FONTTYPE_INFO, MinimumLevelMaoItems)
             Exit Sub
         End If
         
         If .Stats.GLD < GoldPriceMaoItems Then
         ' here we ggotta add a new msg
-            'Msg1291= El costo para vender tu personajes es de ¬1 monedas de oro, no tienes esa cantidad.
-            'Call WriteLocaleMsg(UserIndex, "1291", e_FontTypeNames.FONTTYPE_INFOBOLD, GoldPriceMao)
+            'Msg2077="El costo para vender un item online es de ¬1 monedas de oro, no tenes esa cantidad."
+            Call WriteLocaleMsg(UserIndex, "2077", e_FontTypeNames.FONTTYPE_INFOBOLD, GoldPriceMao)
             Exit Sub
         Else
             .Stats.GLD = .Stats.GLD - GoldPriceMaoItems
@@ -10403,6 +10404,10 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
         
         Call Execute("INSERT INTO mao_items_on_sale (user_id, account_id, item_id, item_qty, price_in_pesos) VALUES (?, ?, ?, ?, ?);", _
     .Id, .AccountID, .invent.Object(Slot).ObjIndex, quantity, value)
+
+        'Msg2078="Tu item fue publicado online correctamente."
+        Call WriteLocaleMsg(UserIndex, "2078", e_FontTypeNames.FONTTYPE_INFOBOLD)
+
     End With
         
     Exit Sub
