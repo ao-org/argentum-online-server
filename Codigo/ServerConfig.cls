@@ -103,9 +103,11 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "CostoPerdonPorCiudadano", CLng(val(reader.GetValue("CONFIGURACIONES", "CostoPerdonPorCiudadano")))
     mSettings.Add "ChatGlobal", CInt(val(reader.GetValue("CONFIGURACIONES", "ChatGlobal", "1")))
     mSettings.Add "PartyELV", CInt(val(Reader.GetValue("CONFIGURACIONES", "PartyELV", "4")))
+    mSettings.Add "PartyELVwLeadership", CInt(val(Reader.GetValue("CONFIGURACIONES", "PartyELVwLeadership", "5")))
     mSettings.Add "PenaltyExpUserPerLevel", CSng(val(reader.GetValue("CONFIGURACIONES", "PenaltyExpUserPerLevel", "0.05")))
     mSettings.Add "DeltaLevelExpPenalty", CInt(val(Reader.GetValue("CONFIGURACIONES", "DeltaLevelExpPenalty", "4")))
     mSettings.Add "SacriPendantItemTreshold", CInt(val(reader.GetValue("CONFIGURACIONES", "SacriPendantItemTreshold", "3")))
+    mSettings.Add "LeadershipExpPartyBonus", CDbl(val(reader.GetValue("CONFIGURACIONES", "LeadershipExpPartyBonus", "1.01")))
 
     mSettings.Add "MaxJailTime", CInt(val(reader.GetValue("CONFIGURACIONES", "MaxJailTime", "8640")))
     
