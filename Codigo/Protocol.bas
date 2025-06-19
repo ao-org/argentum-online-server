@@ -10391,7 +10391,7 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
         If .Stats.GLD < GoldPriceMaoItems Then
         ' here we ggotta add a new msg
             'Msg2077="El costo para vender un item online es de ¬1 monedas de oro, no tenes esa cantidad."
-            Call WriteLocaleMsg(UserIndex, "2077", e_FontTypeNames.FONTTYPE_INFOBOLD, GoldPriceMaoItems)
+            Call WriteLocaleMsg(UserIndex, "2077", e_FontTypeNames.FONTTYPE_INFO, GoldPriceMaoItems)
             Exit Sub
         Else
             .Stats.GLD = .Stats.GLD - GoldPriceMaoItems
