@@ -923,33 +923,36 @@ On Error Resume Next
             Call HandleDeleteCharacter(ConnectionId)
 #End If
         Case Else
-            Err.raise -1, "Invalid Message"
+            Call TraceError(&HDEAD0001, "Invalid or unhandled message ID: " & PacketId, "Protocol.HandleIncomingData", Erl)
+            If Not IsMissing(optional_user_index) Then
+                Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("[Error] Paquete desconocido: " & PacketId, e_FontTypeNames.FONTTYPE_GUILD))
+            End If
+            Call KickConnection(ConnectionID)
+            HandleIncomingData = False
+            Exit Function
     End Select
-    
 
     If (Reader.GetAvailable() > 0) Then
-         If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
-                Err.raise &HDEADBEEF, "HandleIncomingData", "The client message with ID: '" & PacketId & "' has the wrong size '" & Reader.GetAvailable() & "' bytes de mas por el usuario '" & UserList(UserIndex).Name & "'"
-         Else
-                Err.raise &HDEADBEEF, "HandleIncomingData", "The client message with ID: '" & PacketId & "' has the wrong size '" & Reader.GetAvailable() & "' bytes de mas por el usuario '"
-         End If
+        Dim errMsg As String
+        errMsg = "Server message ID: " & PacketId & " has too many bytes; " & Reader.GetAvailable() & " extra bytes found"
+        If Not IsMissing(optional_user_index) Then
+            errMsg = errMsg & " from user: " & UserList(UserIndex).Name
+        End If
+
+        Call TraceError(&HDEADBEEF, errMsg, "Protocol.HandleIncomingData", Erl)
+
+        If Not IsMissing(optional_user_index) Then
+            Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("[Warning] " & errMsg, e_FontTypeNames.FONTTYPE_GUILD))
+        End If
+
+        Call KickConnection(ConnectionID)
+        HandleIncomingData = False
+        Exit Function
     End If
-    
-    #If DIRECT_PLAY = 1 Then
-        Reader.Clear
-    #End If
-    
+
     Call PerformTimeLimitCheck(performance_timer, "Protocol handling message " & PacketId, 100)
 
-HandleIncomingData_Err:
-    
-    Set Reader = Nothing
-
-    If Err.Number <> 0 Then
-        Call TraceError(Err.Number, Err.Description & vbNewLine & "PackedID: " & PacketID & vbNewLine & IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).name, "UserIndex: " & UserIndex), "Protocol.HandleIncomingData", Erl)
-        'Call CloseSocket(UserIndex)
-        HandleIncomingData = False
-    End If
+    HandleIncomingData = True
 End Function
 
 #If PYMMO = 0 Then
