@@ -10365,10 +10365,10 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
     
     quantity = reader.ReadInt32
     
-    If value <= MinimumPriceMaoItems Then
+    If value < MinimumPriceMaoItems Then
     'We gotta add a new message saying something like we do with the characters
         'Msg2079="El valor de tus items debe ser minimo ¬1 ARS"
-        'Call WriteLocaleMsg(UserIndex, "2079", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMao)
+        Call WriteLocaleMsg(UserIndex, "2079", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMaoItems)
         Exit Sub
     End If
     
@@ -10377,7 +10377,7 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
 
         If UserList(UserIndex).invent.Object(Slot).amount < quantity Then
             'Msg1138=No tienes esa cantidad.
-            'Call WriteLocaleMsg(UserIndex, "1138", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, "1138", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
@@ -10391,7 +10391,7 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
         If .Stats.GLD < GoldPriceMaoItems Then
         ' here we ggotta add a new msg
             'Msg2077="El costo para vender un item online es de ¬1 monedas de oro, no tenes esa cantidad."
-            Call WriteLocaleMsg(UserIndex, "2077", e_FontTypeNames.FONTTYPE_INFOBOLD, GoldPriceMao)
+            Call WriteLocaleMsg(UserIndex, "2077", e_FontTypeNames.FONTTYPE_INFOBOLD, GoldPriceMaoItems)
             Exit Sub
         Else
             .Stats.GLD = .Stats.GLD - GoldPriceMaoItems
