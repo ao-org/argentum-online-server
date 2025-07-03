@@ -1516,17 +1516,17 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                         End If
                         
 364                     If Len(UserList(TempCharIndex).Desc) > 0 Then
-366                         Stat = "Ves a " & UserList(TempCharIndex).Name & Stat & " - " & UserList(TempCharIndex).Desc
+366                         Stat = UserList(TempCharIndex).name & Stat & " - " & UserList(TempCharIndex).Desc
                         Else
-368                         Stat = "Ves a " & UserList(TempCharIndex).Name & Stat
+368                         Stat = UserList(TempCharIndex).name & Stat
                         End If
                 
 370                     If LenB(Stat) > 0 Then
                             If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(TempCharIndex).GuildIndex) Or UserIndex = TempCharIndex Then
 372                             If UserList(TempCharIndex).flags.Muerto Then
-374                                 Call WriteConsoleMsg(UserIndex, Stat, e_FontTypeNames.FONTTYPE_New_Gris)
+374                                 Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_New_Gris, Stat)
                                 Else
-376                                 Call WriteConsoleMsg(UserIndex, Stat, ft)
+376                                 Call WriteLocaleMsg(UserIndex, "1105", ft, Stat)
                                 End If
                             End If
                         End If
