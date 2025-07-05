@@ -124,13 +124,63 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "FISHING_SPECIALFISH1_REMPLAZO_ID", CInt(val(reader.GetValue("PESCA", "ReplacementSpecialFish")))
     mSettings.Add "NPC_WATCHMAN_ID", CInt(val(reader.GetValue("PESCA", "NPCFishingWatcher")))
     
-
     mSettings.Add "NPC_SPELL_RANGE_X", CInt(val(Reader.GetValue("AI", "NPCSpellRangeX", DEFAULT_NPC_SPELL_RANGE_X)))
     mSettings.Add "NPC_SPELL_RANGE_Y", CInt(val(Reader.GetValue("AI", "NPCSpellRangeY", DEFAULT_NPC_SPELL_RANGE_Y)))
     mSettings.Add "NPC_VISION_RANGE_X", CInt(val(Reader.GetValue("AI", "NPCVisionRangeX", DEFAULT_NPC_VISION_RANGE_X)))
     mSettings.Add "NPC_VISION_RANGE_Y", CInt(val(Reader.GetValue("AI", "NPCVisionRangeY", DEFAULT_NPC_VISION_RANGE_Y)))
     mSettings.Add "NPC_PATHFINDING_MAX_STEPS", Min(MAX_PATH_LENGTH, CInt(val(Reader.GetValue("AI", "NPCMaxStepsPathFinding", MAX_PATH_LENGTH))))
     mSettings.Add "NPC_MAX_VISION_RANGE", Min(DEFAULT_NPC_MAX_VISION_RANGE, CInt(val(Reader.GetValue("AI", "NPCMaxVisionRange", DEFAULT_NPC_MAX_VISION_RANGE))))
+    
+    mSettings.Add "AUTOEVENTDAYCALENDAR_Domingo", CInt(val(reader.GetValue("AUTOEVENTDAYCALENDAR", "Domingo")))
+    mSettings.Add "AUTOEVENTDAYCALENDAR_Lunes", CInt(val(reader.GetValue("AUTOEVENTDAYCALENDAR", "Lunes")))
+    mSettings.Add "AUTOEVENTDAYCALENDAR_Martes", CInt(val(reader.GetValue("AUTOEVENTDAYCALENDAR", "Martes")))
+    mSettings.Add "AUTOEVENTDAYCALENDAR_Miercoles", CInt(val(reader.GetValue("AUTOEVENTDAYCALENDAR", "Miercoles")))
+    mSettings.Add "AUTOEVENTDAYCALENDAR_Jueves", CInt(val(reader.GetValue("AUTOEVENTDAYCALENDAR", "Jueves")))
+    mSettings.Add "AUTOEVENTDAYCALENDAR_Viernes", CInt(val(reader.GetValue("AUTOEVENTDAYCALENDAR", "Viernes")))
+    mSettings.Add "AUTOEVENTDAYCALENDAR_Sabado", CInt(val(reader.GetValue("AUTOEVENTDAYCALENDAR", "Sabado")))
+
+    mSettings.Add "AUTOEVENTHOURCALENDAR_Horarios",  CInt(val(reader.GetValue("AUTOEVENTHOURCALENDAR", "Horarios")))
+
+    mSettings.Add "AUTOCAPTURETHEFLAG_MinLevel", CInt(val(reader.GetValue("AUTOCAPTURETHEFLAG", "MinLevel")))
+    mSettings.Add "AUTOCAPTURETHEFLAG_MaxLevel", CInt(val(reader.GetValue("AUTOCAPTURETHEFLAG", "MaxLevel")))
+    mSettings.Add "AUTOCAPTURETHEFLAG_MinPlayers", CInt(val(reader.GetValue("AUTOCAPTURETHEFLAG", "MinPlayers")))
+    mSettings.Add "AUTOCAPTURETHEFLAG_MaxPlayers", CInt(val(reader.GetValue("AUTOCAPTURETHEFLAG", "MaxPlayers")))
+    mSettings.Add "AUTOCAPTURETHEFLAG_TeamSize", CInt(val(reader.GetValue("AUTOCAPTURETHEFLAG", "TeamSize")))
+    mSettings.Add "AUTOCAPTURETHEFLAG_TeamType", CInt(val(reader.GetValue("AUTOCAPTURETHEFLAG", "TeamType")))
+    mSettings.Add "AUTOCAPTURETHEFLAG_RoundNumber", CInt(val(reader.GetValue("AUTOCAPTURETHEFLAG", "RoundNumber")))
+    mSettings.Add "AUTOCAPTURETHEFLAG_InscriptionFee", CInt(val(reader.GetValue("AUTOCAPTURETHEFLAG", "InscriptionFee")))
+    mSettings.Add "AUTOCAPTURETHEFLAG_Description", reader.GetValue("AUTOCAPTURETHEFLAG", "Description")
+
+    mSettings.Add "AUTONPCHUNT_MinLevel", CInt(val(reader.GetValue("AUTONPCHUNT", "MinLevel")))
+    mSettings.Add "AUTONPCHUNT_MaxLevel", CInt(val(reader.GetValue("AUTONPCHUNT", "MaxLevel")))
+    mSettings.Add "AUTONPCHUNT_MinPlayers", CInt(val(reader.GetValue("AUTONPCHUNT", "MinPlayers")))
+    mSettings.Add "AUTONPCHUNT_MaxPlayers", CInt(val(reader.GetValue("AUTONPCHUNT", "MaxPlayers")))
+    mSettings.Add "AUTONPCHUNT_TeamSize", CInt(val(reader.GetValue("AUTONPCHUNT", "TeamSize")))
+    mSettings.Add "AUTONPCHUNT_TeamType", CInt(val(reader.GetValue("AUTONPCHUNT", "TeamType")))
+    mSettings.Add "AUTONPCHUNT_RoundNumber", CInt(val(reader.GetValue("AUTONPCHUNT", "RoundNumber")))
+    mSettings.Add "AUTONPCHUNT_InscriptionFee", CInt(val(reader.GetValue("AUTONPCHUNT", "InscriptionFee")))
+    mSettings.Add "AUTONPCHUNT_Description", reader.GetValue("AUTONPCHUNT", "Description")
+
+    mSettings.Add "AUTODEATHMATCH_MinLevel", CInt(val(reader.GetValue("AUTODEATHMATCH", "MinLevel")))
+    mSettings.Add "AUTODEATHMATCH_MaxLevel", CInt(val(reader.GetValue("AUTODEATHMATCH", "MaxLevel")))
+    mSettings.Add "AUTODEATHMATCH_MinPlayers", CInt(val(reader.GetValue("AUTODEATHMATCH", "MinPlayers")))
+    mSettings.Add "AUTODEATHMATCH_MaxPlayers", CInt(val(reader.GetValue("AUTODEATHMATCH", "MaxPlayers")))
+    mSettings.Add "AUTODEATHMATCH_TeamSize", CInt(val(reader.GetValue("AUTODEATHMATCH", "TeamSize")))
+    mSettings.Add "AUTODEATHMATCH_TeamType", CInt(val(reader.GetValue("AUTODEATHMATCH", "TeamType")))
+    mSettings.Add "AUTODEATHMATCH_RoundNumber", CInt(val(reader.GetValue("AUTODEATHMATCH", "RoundNumber")))
+    mSettings.Add "AUTODEATHMATCH_InscriptionFee", CInt(val(reader.GetValue("AUTODEATHMATCH", "InscriptionFee")))
+    mSettings.Add "AUTODEATHMATCH_Description", reader.GetValue("AUTODEATHMATCH", "Description")
+
+    mSettings.Add "AUTONAVALBATTLE_MinLevel", CInt(val(reader.GetValue("AUTONAVALBATTLE", "MinLevel")))
+    mSettings.Add "AUTONAVALBATTLE_MaxLevel", CInt(val(reader.GetValue("AUTONAVALBATTLE", "MaxLevel")))
+    mSettings.Add "AUTONAVALBATTLE_MinPlayers", CInt(val(reader.GetValue("AUTONAVALBATTLE", "MinPlayers")))
+    mSettings.Add "AUTONAVALBATTLE_MaxPlayers", CInt(val(reader.GetValue("AUTONAVALBATTLE", "MaxPlayers")))
+    mSettings.Add "AUTONAVALBATTLE_TeamSize", CInt(val(reader.GetValue("AUTONAVALBATTLE", "TeamSize")))
+    mSettings.Add "AUTONAVALBATTLE_TeamType", CInt(val(reader.GetValue("AUTONAVALBATTLE", "TeamType")))
+    mSettings.Add "AUTONAVALBATTLE_RoundNumber", CInt(val(reader.GetValue("AUTONAVALBATTLE", "RoundNumber")))
+    mSettings.Add "AUTONAVALBATTLE_InscriptionFee", CInt(val(reader.GetValue("AUTONAVALBATTLE", "InscriptionFee")))
+    mSettings.Add "AUTONAVALBATTLE_Description", reader.GetValue("AUTONAVALBATTLE", "Description")
+    
       
     Set reader = Nothing
     

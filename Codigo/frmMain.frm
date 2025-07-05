@@ -1316,7 +1316,9 @@ Private Sub Minuto_Timer()
    '     Call CheckIdleUser
    ' End If
 
-
+    If IsFeatureEnabled("automatic_events") Then
+        Call Automatic_Event_Timer
+    End If
     Call dump_stats
     Call PerformTimeLimitCheck(PerformanceTimer, "Minuto_Timer", 500)
     Exit Sub
@@ -1546,7 +1548,7 @@ Private Sub EstadoTimer_Timer()
     Call PerformanceTestStart(PerformanceTimer)
     For i = 1 To Baneos.Count
         If Baneos(i).FechaLiberacion <= Now Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1787, Baneos(i).name, e_FontTypeNames.FONTTYPE_SERVER)) ' Msg1787=Servidor » Se ha concluido la sentencia de ban para ¬1.
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1787, Baneos(i).Name, e_FontTypeNames.FONTTYPE_SERVER)) ' Msg1787=Servidor » Se ha concluido la sentencia de ban para ¬1.
             Call UnBan(Baneos(i).Name)
             Call Baneos.Remove(i)
             Call SaveBans
@@ -1612,13 +1614,119 @@ EstadoTimer_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.EstadoTimer_Timer", Erl)
 End Sub
 
-Private Sub Evento_Timer()
+Private Sub Automatic_Event_Timer()
         
     On Error GoTo Evento_Timer_Err
-    TiempoRestanteEvento = TiempoRestanteEvento - 1
-    If TiempoRestanteEvento = 0 Then
-        Call FinalizarEvento
+    
+    If EventoActivo Then Exit Sub
+    
+    Dim CurrentDay As Byte
+    Dim CurrentHour As Byte
+
+    Dim EventOfTheDay As Integer
+
+    CurrentDay = Weekday(Date) 'domingo=1 , lunes=2, martes=3, miercoles=4, jueves=5, viernes=6, sabado=7
+    CurrentHour = Hour(Time) 'number between 0 and 23
+
+    'si no es la hora de activar el evento salimos
+    If SvrConfig.GetValue("AUTOEVENTHOURCALENDAR_Horarios") <> CurrentHour Then
+        Exit Sub
     End If
+    
+    Select Case CurrentDay
+        Case 1 'domingo
+            EventOfTheDay = SvrConfig.GetValue("AUTOEVENTDAYCALENDAR_Domingo")
+        Case 2 'lunes
+            EventOfTheDay = SvrConfig.GetValue("AUTOEVENTDAYCALENDAR_Lunes")
+        Case 3 'martes
+            EventOfTheDay = SvrConfig.GetValue("AUTOEVENTDAYCALENDAR_Martes")
+        Case 4 'miércoles
+            EventOfTheDay = SvrConfig.GetValue("AUTOEVENTDAYCALENDAR_Miercoles")
+        Case 5 'jueves
+            EventOfTheDay = SvrConfig.GetValue("AUTOEVENTDAYCALENDAR_Jueves")
+        Case 6 'viernes
+            EventOfTheDay = SvrConfig.GetValue("AUTOEVENTDAYCALENDAR_Viernes")
+        Case 7 'sábado
+            EventOfTheDay = SvrConfig.GetValue("AUTOEVENTDAYCALENDAR_Sabado")
+    End Select
+
+    'no hay evento programado para hoy
+    If EventOfTheDay = 0 Then
+        Exit Sub
+    End If
+
+    Dim LobbySettings As t_NewScenearioSettings
+
+    
+    Select Case EventOfTheDay
+
+        Case e_EventType.CaptureTheFlag
+            LobbySettings.ScenearioType = e_EventType.CaptureTheFlag
+            LobbySettings.MinLevel = SvrConfig.GetValue("AUTOCAPTURETHEFLAG_MinLevel")
+            LobbySettings.MaxLevel = SvrConfig.GetValue("AUTOCAPTURETHEFLAG_MaxLevel")
+            LobbySettings.MinPlayers = SvrConfig.GetValue("AUTOCAPTURETHEFLAG_MinPlayers")
+            LobbySettings.MaxPlayers = SvrConfig.GetValue("AUTOCAPTURETHEFLAG_MaxPlayers")
+            LobbySettings.TeamSize = SvrConfig.GetValue("AUTOCAPTURETHEFLAG_TeamSize")
+            LobbySettings.TeamType = SvrConfig.GetValue("AUTOCAPTURETHEFLAG_TeamType")
+            LobbySettings.RoundNumber = SvrConfig.GetValue("AUTOCAPTURETHEFLAG_RoundNumber")
+            LobbySettings.InscriptionFee = SvrConfig.GetValue("AUTOCAPTURETHEFLAG_InscriptionFee")
+            LobbySettings.Description = SvrConfig.GetValue("AUTOCAPTURETHEFLAG_Description")
+
+        Case e_EventType.NpcHunt
+            LobbySettings.ScenearioType = e_EventType.NpcHunt
+            LobbySettings.MinLevel = SvrConfig.GetValue("AUTONPCHUNT_MinLevel")
+            LobbySettings.MaxLevel = SvrConfig.GetValue("AUTONPCHUNT_MaxLevel")
+            LobbySettings.MinPlayers = SvrConfig.GetValue("AUTONPCHUNT_MinPlayers")
+            LobbySettings.MaxPlayers = SvrConfig.GetValue("AUTONPCHUNT_MaxPlayers")
+            LobbySettings.TeamSize = SvrConfig.GetValue("AUTONPCHUNT_TeamSize")
+            LobbySettings.TeamType = SvrConfig.GetValue("AUTONPCHUNT_TeamType")
+            LobbySettings.RoundNumber = SvrConfig.GetValue("AUTONPCHUNT_RoundNumber")
+            LobbySettings.InscriptionFee = SvrConfig.GetValue("AUTONPCHUNT_InscriptionFee")
+            LobbySettings.Description = SvrConfig.GetValue("AUTONPCHUNT_Description")
+
+        Case e_EventType.DeathMatch
+            LobbySettings.ScenearioType = e_EventType.DeathMatch
+            LobbySettings.MinLevel = SvrConfig.GetValue("AUTODEATHMATCH_MinLevel")
+            LobbySettings.MaxLevel = SvrConfig.GetValue("AUTODEATHMATCH_MaxLevel")
+            LobbySettings.MinPlayers = SvrConfig.GetValue("AUTODEATHMATCH_MinPlayers")
+            LobbySettings.MaxPlayers = SvrConfig.GetValue("AUTODEATHMATCH_MaxPlayers")
+            LobbySettings.TeamSize = SvrConfig.GetValue("AUTODEATHMATCH_TeamSize")
+            LobbySettings.TeamType = SvrConfig.GetValue("AUTODEATHMATCH_TeamType")
+            LobbySettings.RoundNumber = SvrConfig.GetValue("AUTODEATHMATCH_RoundNumber")
+            LobbySettings.InscriptionFee = SvrConfig.GetValue("AUTODEATHMATCH_InscriptionFee")
+            LobbySettings.Description = SvrConfig.GetValue("AUTODEATHMATCH_Description")
+
+        Case e_EventType.NavalBattle
+            LobbySettings.ScenearioType = e_EventType.NavalBattle
+            LobbySettings.MinLevel = SvrConfig.GetValue("AUTONAVALBATTLE_MinLevel")
+            LobbySettings.MaxLevel = SvrConfig.GetValue("AUTONAVALBATTLE_MaxLevel")
+            LobbySettings.MinPlayers = SvrConfig.GetValue("AUTONAVALBATTLE_MinPlayers")
+            LobbySettings.MaxPlayers = SvrConfig.GetValue("AUTONAVALBATTLE_MaxPlayers")
+            LobbySettings.TeamSize = SvrConfig.GetValue("AUTONAVALBATTLE_TeamSize")
+            LobbySettings.TeamType = SvrConfig.GetValue("AUTONAVALBATTLE_TeamType")
+            LobbySettings.RoundNumber = SvrConfig.GetValue("AUTONAVALBATTLE_RoundNumber")
+            LobbySettings.InscriptionFee = SvrConfig.GetValue("AUTONAVALBATTLE_InscriptionFee")
+            LobbySettings.Description = SvrConfig.GetValue("AUTONAVALBATTLE_Description")
+    End Select
+
+    LobbySettings.Password = ""
+
+    'si ya hay lobbies aunque sean de gente
+    If (GlobalLobbyIndex >= 0) Then
+        Exit Sub
+    End If
+    
+    Dim UserIndex As Integer
+    Dim GmIndex As Integer
+    'necesariamente tengo que buscar un gm
+    For UserIndex = 1 To LastUser
+        If EsGM(UserIndex) Then
+            GmIndex = UserIndex
+        End If
+    Next UserIndex
+    
+    Call CreatePublicEvent(GmIndex, LobbySettings)
+    
     Exit Sub
 Evento_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Evento_Timer", Erl)
