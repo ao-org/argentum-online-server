@@ -39,7 +39,7 @@ Attribute VB_Exposed = False
 '
 Option Explicit
 
-Const RequiredWeaponId = 1848
+Const RequiredWeaponId = 1847
 Const MaxActiveNpc = 30
 Const configPath = "../dat/Scenarios/NpcHunt.ini"
 Const RequireItemMessage = 403
