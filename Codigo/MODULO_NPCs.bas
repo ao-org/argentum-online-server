@@ -214,7 +214,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             End If
 
 138         If UserList(UserIndex).ChatCombate = 1 Then
-140             Call WriteLocaleMsg(UserIndex, "184", e_FontTypeNames.FONTTYPE_DIOS, "la criatura")
+140             Call WriteLocaleMsg(UserIndex, "184", e_FontTypeNames.FONTTYPE_DIOS)
             End If
 
 142         If UserList(UserIndex).Stats.NPCsMuertos < 32000 Then UserList(UserIndex).Stats.NPCsMuertos = UserList(UserIndex).Stats.NPCsMuertos + 1
