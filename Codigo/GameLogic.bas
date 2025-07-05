@@ -1539,7 +1539,6 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     Else
                         'Msg1105= Ves a ??? <Game Master>
                         Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_GM, UserList(TempCharIndex).name)
-    
 388                     Call SetUserRef(UserList(userIndex).flags.targetUser, TempCharIndex)
 390                     Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
 392                     UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
