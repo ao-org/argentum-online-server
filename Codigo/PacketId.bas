@@ -165,6 +165,7 @@ Public Enum ServerPacketID
     eUpdateRM
     eUpdateDM
     eSeguroResu
+    eLegionarySecure
     eStopped
     eInvasionInfo
     eCommerceRecieveChatMessage
@@ -500,6 +501,7 @@ Public Enum ClientPacketID
     eGetMapInfo              '/MAPINFO
     eFinEvento
     eSeguroResu
+    eLegionarySecure
     eCuentaExtractItem
     eCuentaDeposit
     eCreateEvent
