@@ -2034,6 +2034,7 @@ Public Type t_UserFlags
     SeguroParty As Boolean
     SeguroClan As Boolean
     SeguroResu As Boolean
+    LegionarySecure As Boolean
 
     DuracionEfecto As Long
     TargetNPC As t_NpcReference ' Npc señalado por el usuario
