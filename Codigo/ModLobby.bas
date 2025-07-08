@@ -1010,14 +1010,14 @@ End Sub
 
 
 
-Public Sub initEventLobby(ByVal UserIndex As Integer,ByVal eventType As Integer,lobbySettings As t_NewScenearioSettings)
+Public Sub initEventLobby(ByVal UserIndex As Integer, ByVal eventType As Integer, LobbySettings As t_NewScenearioSettings)
 If eventType = 0 Then
         CurrentActiveEventType = LobbySettings.ScenearioType
         Select Case LobbySettings.ScenearioType
             Case e_EventType.CaptureTheFlag
                 Call HandleIniciarCaptura(UserIndex, LobbySettings)
             Case Else
-                Call HandleStartGenericLobby(UserIndex, LobbySettings)
+                Call CreatePublicEvent(LobbySettings)
         End Select
     Else
         With UserList(UserIndex)
