@@ -5136,8 +5136,7 @@ On Error GoTo ErrHandler
             'Msg528=Servidor » Comando deshabilitado para tu cargo.
             Call WriteLocaleMsg(UserIndex, "528", e_FontTypeNames.FONTTYPE_INFO)
         Else
-136         'Me fijo si hay más participantes conectados que el cupo para jugar
-            If Not ValidateLobbySettings(UserIndex, LobbySettings) Then
+            If Not ValidateLobbySettings(LobbySettings) Then
                 Exit Sub
             End If
             Call InitializeLobby(LobbyList(GlobalLobbyIndex))

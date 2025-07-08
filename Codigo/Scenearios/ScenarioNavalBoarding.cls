@@ -401,7 +401,7 @@ Public Function IBaseScenario_GetScenarioName() As String
     IBaseScenario_GetScenarioName = "Abordaje"
 End Function
 
-Public Sub IBaseScenario_BroadcastOpenScenario(ByVal CreatorIndex As Integer)
+Public Sub IBaseScenario_BroadcastOpenScenario()
     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalConquestIntro, "", e_FontTypeNames.FONTTYPE_GUILD))
 End Sub
 

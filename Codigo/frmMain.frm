@@ -1716,16 +1716,7 @@ Private Sub Automatic_Event_Timer()
         Exit Sub
     End If
     
-    Dim UserIndex As Integer
-    Dim GmIndex As Integer
-    'necesariamente tengo que buscar un gm
-    For UserIndex = 1 To LastUser
-        If EsGM(UserIndex) Then
-            GmIndex = UserIndex
-        End If
-    Next UserIndex
-    
-    Call CreatePublicEvent(GmIndex, LobbySettings)
+    Call CreatePublicEvent(LobbySettings)
     
     Exit Sub
 Evento_Timer_Err:

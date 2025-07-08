@@ -543,7 +543,7 @@ ListPlayers_Err:
 116    Call TraceError(Err.Number, Err.Description, "ModLobby.ListPlayers", Erl)
 End Sub
 
-Public Function OpenLobby(ByRef instance As t_Lobby, ByVal IsPublic As Boolean, ByVal UserIndex As Integer) As t_response
+Public Function OpenLobby(ByRef instance As t_Lobby, ByVal IsPublic As Boolean) As t_response
 On Error GoTo OpenLobby_Err
     Dim Ret As t_response
     Dim RequiresSpawn As Boolean
@@ -564,9 +564,8 @@ On Error GoTo OpenLobby_Err
         If Not instance.Scenario Is Nothing Then
              EventName = instance.Scenario.GetScenarioName()
         End If
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgCreateEventRoom, UserList(UserIndex).name & "¬" & EventName, e_FontTypeNames.FONTTYPE_GUILD))
         If Not instance.Scenario Is Nothing Then
-             Call instance.Scenario.BroadcastOpenScenario(UserIndex)
+             Call instance.Scenario.BroadcastOpenScenario
         End If
         If instance.InscriptionPrice > 0 Then
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgBoardcastInscriptionPrice, instance.InscriptionPrice, e_FontTypeNames.FONTTYPE_GUILD))
@@ -821,7 +820,7 @@ On Error GoTo HandleRemoteLobbyCommand_Err
              Case e_LobbyCommandId.eSetMinLevel
 144              Call ModLobby.SetMinLevel(LobbyList(LobbyIndex), Arguments(0))
              Case e_LobbyCommandId.eOpenLobby
-148             RetValue = ModLobby.OpenLobby(LobbyList(LobbyIndex), Arguments(0), UserIndex)
+148             RetValue = ModLobby.OpenLobby(LobbyList(LobbyIndex), Arguments(0))
             Case e_LobbyCommandId.eStartEvent
 158             Call StartLobby(LobbyList(LobbyIndex), UserIndex)
             Case e_LobbyCommandId.eSummonAll
@@ -986,39 +985,27 @@ Public Function GetOpenLobbyList(ByRef IdList() As Integer) As Integer
     GetOpenLobbyList = OpenCount
 End Function
 
-Public Function ValidateLobbySettings(ByVal UserIndex As Integer, ByRef LobbySettings As t_NewScenearioSettings)
-    If LobbySettings.MaxPlayers > NumUsers Then
-        Call WriteLocaleMsg(UserIndex, 1607, e_FontTypeNames.FONTTYPE_INFO) 'Msg1607= Hay pocos jugadores en el servidor, intenta con una cantidad menor de participantes.
-
-        Exit Function
-    End If
-    
+Public Function ValidateLobbySettings(ByRef LobbySettings As t_NewScenearioSettings)
     If LobbySettings.MinLevel < 1 Or LobbySettings.MaxLevel > 47 Then
-        Call WriteLocaleMsg(UserIndex, 1608, e_FontTypeNames.FONTTYPE_INFO) 'Msg1608= El nivel para el evento debe ser entre 1 y 47.
+        Debug.Print "Minimo o maximo fuera del rango " & DateTime.Now
         Exit Function
     End If
-    
     If LobbySettings.MinLevel > LobbySettings.MaxLevel Then
-        Call WriteLocaleMsg(UserIndex, 1609, e_FontTypeNames.FONTTYPE_INFO) 'Msg1609= El nivel mínimo debe ser menor al máximo.
+        Debug.Print "nivel minimo mas grande que el minimo"
         Exit Function
     End If
     ValidateLobbySettings = True
 End Function
 
-Public Sub CreatePublicEvent(ByVal UserIndex As Integer, ByRef LobbySettings As t_NewScenearioSettings)
-    
+Public Sub CreatePublicEvent(ByRef LobbySettings As t_NewScenearioSettings)
     GlobalLobbyIndex = GetAvailableLobby()
-    If GlobalLobbyIndex < 0 Then
-        Call WriteLocaleMsg(UserIndex, 1610, e_FontTypeNames.FONTTYPE_INFO) 'Msg1610= No se pudo encontrar una sala disponible.
-        Exit Sub
-    End If
-    If Not ValidateLobbySettings(UserIndex, LobbySettings) Then
+    If Not ValidateLobbySettings(LobbySettings) Then
         Exit Sub
     End If
     Call InitializeLobby(LobbyList(GlobalLobbyIndex))
     Call ModLobby.SetupLobby(LobbyList(GlobalLobbyIndex), LobbySettings)
     Call CustomScenarios.PrepareNewEvent(LobbySettings.ScenearioType, GlobalLobbyIndex)
-    Call OpenLobby(LobbyList(GlobalLobbyIndex), True, UserIndex)
+    Call OpenLobby(LobbyList(GlobalLobbyIndex), True)
 End Sub
 
 
@@ -1036,7 +1023,7 @@ If eventType = 0 Then
         With UserList(UserIndex)
             If IsValidNpcRef(.flags.TargetNPC) Then
                 If NpcList(.flags.TargetNPC.ArrayIndex).npcType = e_NPCType.EventMaster And .flags.Muerto = 0 Then
-                    Call CreatePublicEvent(UserIndex, LobbySettings)
+                    Call CreatePublicEvent(LobbySettings)
                 End If
             End If
         End With

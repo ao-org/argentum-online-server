@@ -324,7 +324,9 @@ Public Function IBaseScenario_GetScenarioName() As String
     IBaseScenario_GetScenarioName = "DeathMatch"
 End Function
 
-Public Sub IBaseScenario_BroadcastOpenScenario(ByVal CreatorIndex As Integer)
+Public Sub IBaseScenario_BroadcastOpenScenario()
+    'queda pendiente hacer un mensaje de broadcast de deathmatch
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgDeathMatchInstructions, "", e_FontTypeNames.FONTTYPE_GUILD))
 End Sub
 
 Public Sub IBaseScenario_SendRules(ByVal UserIndex As Integer)

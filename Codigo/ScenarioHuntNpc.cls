@@ -150,10 +150,10 @@ Public Sub IBaseScenario_SetLobbyIndex(ByVal value As Integer)
 End Sub
 
 Public Function IBaseScenario_GetScenarioName() As String
-    IBaseScenario_GetScenarioName = "CacerÃ­a"
+    IBaseScenario_GetScenarioName = "Caceria"
 End Function
 
-Public Sub IBaseScenario_BroadcastOpenScenario(ByVal CreatorIndex As Integer)
+Public Sub IBaseScenario_BroadcastOpenScenario()
     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgHuntScenearioIntro, "", e_FontTypeNames.FONTTYPE_GUILD))
 End Sub
 
