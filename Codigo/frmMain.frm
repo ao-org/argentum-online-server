@@ -1614,7 +1614,7 @@ EstadoTimer_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.EstadoTimer_Timer", Erl)
 End Sub
 
-Private Sub Evento_Timer()
+Private Sub Automatic_Event_Timer()
         
     On Error GoTo Evento_Timer_Err
     
