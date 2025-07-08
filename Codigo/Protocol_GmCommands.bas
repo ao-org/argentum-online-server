@@ -5054,64 +5054,37 @@ HandleFeatureToggle_Err:
 End Sub
 
 'HarThaoS: Iniciar captura de bandera
-Public Sub HandleIniciarCaptura(ByVal UserIndex As Integer, EventSettings As t_NewScenearioSettings)
+Public Sub HandleIniciarCaptura(EventSettings As t_NewScenearioSettings)
         On Error GoTo ErrHandler
-100     With UserList(UserIndex)
-
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
                 If Not InstanciaCaptura Is Nothing Then
                     'Msg1008= Ya hay un evento de captura de bandera en curso.
-                    Call WriteLocaleMsg(UserIndex, "1008", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 Else
                     'El precio no puede ser negativo
                     If EventSettings.InscriptionFee < 0 Then
                         'Msg1009= El valor de la entrada al evento no podrá ser menor que 0.
-                        Call WriteLocaleMsg(UserIndex, "1009", e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-                
-                    'Me fijo si que la cantidad de participantes sea par
-                    If EventSettings.MaxPlayers Mod 2 <> 0 Then
-                        'Msg1010= La cantidad de participantes debe ser un número par.
-                        Call WriteLocaleMsg(UserIndex, "1010", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     
                     'Permito un máximo de 48 participantes
                     If EventSettings.MaxPlayers > 48 Then 'Leer de una variable de configuración
                         'Msg1011= La cantidad de participantes no podrá ser mayor que 48.
-                        Call WriteLocaleMsg(UserIndex, "1011", e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-                    
-                    'Me fijo si hay más participantes conectados que el cupo para jugar
-                    If EventSettings.MaxPlayers > NumUsers Then
-                        'Msg1012= Hay pocos jugadores en el servidor, intenta con una cantidad menor de participantes.
-                        Call WriteLocaleMsg(UserIndex, "1012", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     
                     If EventSettings.MinLevel < 1 Or EventSettings.MinLevel > 47 Then
                         'Msg1013= El nivel para el evento debe ser entre 1 y 47.
-                        Call WriteLocaleMsg(UserIndex, "1013", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     
                     If EventSettings.MinLevel > EventSettings.MaxLevel Then
                         'Msg1014= El nivel minimo debe ser menor al maximo.
-                        Call WriteLocaleMsg(UserIndex, "1014", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 
                     Set InstanciaCaptura = New clsCaptura
                     Call InstanciaCaptura.inicializar(EventSettings.MaxPlayers, EventSettings.RoundNumber, EventSettings.MinLevel, EventSettings.MaxLevel, EventSettings.InscriptionFee)
                 End If
-            Else
-136             'Msg528=Servidor » Comando deshabilitado para tu cargo.
-                Call WriteLocaleMsg(UserIndex, "528", e_FontTypeNames.FONTTYPE_INFO)
-            End If
-        End With
         Exit Sub
 ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleIniciarCaptura", Erl)

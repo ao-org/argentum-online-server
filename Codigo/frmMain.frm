@@ -1716,7 +1716,13 @@ Private Sub Automatic_Event_Timer()
         Exit Sub
     End If
     
-    Call CreatePublicEvent(LobbySettings)
+    CurrentActiveEventType = LobbySettings.ScenearioType
+    
+    If LobbySettings.ScenearioType = e_EventType.CaptureTheFlag Then
+        Call HandleIniciarCaptura(LobbySettings)
+    Else
+        Call CreatePublicEvent(LobbySettings)
+    End If
     
     Exit Sub
 Evento_Timer_Err:

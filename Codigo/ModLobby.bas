@@ -1011,11 +1011,12 @@ End Sub
 
 
 Public Sub initEventLobby(ByVal UserIndex As Integer, ByVal eventType As Integer, LobbySettings As t_NewScenearioSettings)
+'aca se podria validar por nivel de patreon 
 If eventType = 0 Then
         CurrentActiveEventType = LobbySettings.ScenearioType
         Select Case LobbySettings.ScenearioType
             Case e_EventType.CaptureTheFlag
-                Call HandleIniciarCaptura(UserIndex, LobbySettings)
+                Call HandleIniciarCaptura(LobbySettings)
             Case Else
                 Call CreatePublicEvent(LobbySettings)
         End Select
