@@ -3492,6 +3492,82 @@ TirarTodosLosItems_Err:
 140     Call TraceError(Err.Number, Err.Description, "InvUsuario.TirarTodosLosItems", Erl)
 End Sub
 
+Sub DropItemsWithPendant(ByVal UserIndex As Integer)
+
+        On Error GoTo DropItemsWithPendant_Err
+
+        Dim i         As Byte
+        Dim newPos  As t_WorldPos
+        Dim AuxObj     As t_Obj
+        Dim ItemIndex As Integer
+        Dim DeltaAmount As Integer
+        DeltaAmount = SvrConfig.GetValue("SacriPendantItemTreshold")
+        Dim objType As e_OBJType
+
+        Call QuitarObjetos(PENDIENTE, 1, UserIndex)
+        With UserList(UserIndex)
+            For i = 1 To .CurrentInventorySlots
+                If .invent.Object(i).ObjIndex > 0 Then
+                    AuxObj.ObjIndex = .invent.Object(i).ObjIndex
+                    AuxObj.amount = .invent.Object(i).amount
+                    objType = ObjData(AuxObj.ObjIndex).objType
+
+                    Select Case objType
+
+                    Case e_OBJType.otArmadura, e_OBJType.otCasco, e_OBJType.otDañoMagico, e_OBJType.otEscudo, e_OBJType.otInstrumentos, e_OBJType.otWeapon, e_OBJType.otEscudo, e_OBJType.otMagicos
+                        If AuxObj.amount >= DeltaAmount Then
+                            If ItemSeCae(AuxObj.ObjIndex) And PirataCaeItem(UserIndex, i) Then
+                                newPos.x = 0
+                                newPos.y = 0
+                                If .flags.Navegando Then
+                                    Call Tilelibre(.pos, newPos, AuxObj, True, True)
+                                Else
+                                    Call Tilelibre(.pos, newPos, AuxObj, .flags.Navegando = True, (Not .flags.Navegando) = True)
+                                    Call ClosestLegalPos(.pos, newPos, .flags.Navegando, Not .flags.Navegando)
+                                End If
+
+                                If newPos.x <> 0 And newPos.y <> 0 Then
+                                    Call DropObj(UserIndex, i, AuxObj.amount - DeltaAmount, newPos.Map, newPos.x, newPos.y)
+                                    '  Si no hay lugar, quemamos el item del inventario (nada de mochilas gratis)
+                                Else
+                                    Call QuitarUserInvItem(UserIndex, i, AuxObj.amount - DeltaAmount)
+                                    Call UpdateUserInv(False, UserIndex, i)
+                                End If
+                            End If
+                        End If
+
+                    Case Else
+
+                            If ItemSeCae(MiObj.ObjIndex) And PirataCaeItem(UserIndex, i) Then
+                                newPos.x = 0
+                                newPos.y = 0
+                                If .flags.Navegando Then
+                                    Call Tilelibre(.pos, newPos, MiObj, True, True)
+                                Else
+                                    Call Tilelibre(.pos, newPos, MiObj, .flags.Navegando = True, (Not .flags.Navegando) = True)
+                                    Call ClosestLegalPos(.pos, newPos, .flags.Navegando, Not .flags.Navegando)
+                                End If
+
+                                If newPos.x <> 0 And newPos.y <> 0 Then
+                                    Call DropObj(UserIndex, i, MiObj.amount, newPos.Map, newPos.x, newPos.y)
+                                    '  Si no hay lugar, quemamos el item del inventario (nada de mochilas gratis)
+                                Else
+                                    Call QuitarUserInvItem(UserIndex, i, MiObj.amount)
+                                    Call UpdateUserInv(False, UserIndex, i)
+                                End If
+                            End If
+
+                    End Select
+
+                End If
+            Next i
+        End With
+    Exit Sub
+
+DropItemsWithPendant_Err:
+140     Call TraceError(Err.Number, Err.Description, "InvUsuario.DropItemsWithPendant", Erl)
+End Sub
+
 Function DropAmmount(ByRef invent As t_Inventario, ByVal objectIndex As Integer) As Integer
 100 DropAmmount = invent.Object(objectIndex).amount
 102 If invent.MagicoObjIndex > 0 Then
