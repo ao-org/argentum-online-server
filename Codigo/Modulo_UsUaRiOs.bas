@@ -2194,17 +2194,13 @@ Sub UserDie(ByVal UserIndex As Integer)
             
             Call ClearAttackerNpc(UserIndex)
     
-158         If MapData(.Pos.map, .Pos.X, .Pos.y).trigger <> e_Trigger.ZONAPELEA And MapInfo(.Pos.map).DropItems Then
+            If MapData(.pos.Map, .pos.x, .pos.y).trigger <> e_Trigger.ZONAPELEA And MapInfo(.pos.Map).DropItems Then
 
-160             If (.flags.Privilegios And e_PlayerType.user) <> 0 Then
-
-162                 If .flags.PendienteDelSacrificio = 0 Then
-164                         Call TirarTodosLosItems(UserIndex)
-                    Else
-                        Dim MiObj As t_Obj
-166                     MiObj.amount = 1
-168                     MiObj.ObjIndex = PENDIENTE
-170                     Call QuitarObjetos(PENDIENTE, 1, UserIndex)
+                If (.flags.Privilegios And e_PlayerType.User) <> 0 Then
+                    If .flags.PendienteDelSacrificio = 0 Then
+                            Call TirarTodosLosItems(UserIndex)
+                        Else
+                            Call DropItemsWithPendant(UserIndex)
                     End If
                 End If
             End If
