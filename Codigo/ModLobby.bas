@@ -133,6 +133,10 @@ Public Enum e_LobbyCommandId
 End Enum
 Public GlobalLobbyIndex As Integer
 Public CurrentActiveEventType As e_EventType
+
+Public LastAutoEventAttempt As Long
+Public AlreadyDidAutoEventToday As Boolean
+
 Const LobbyCount = 200
 Public LobbyList(0 To LobbyCount) As t_Lobby
 Private AvailableLobby As t_IndexHeap
@@ -1011,8 +1015,10 @@ End Sub
 
 
 Public Sub initEventLobby(ByVal UserIndex As Integer, ByVal eventType As Integer, LobbySettings As t_NewScenearioSettings)
-'aca se podria validar por nivel de patreon 
+'aca se podria validar por nivel de patreon
+
 If eventType = 0 Then
+        'a esto que esta aca abajo solo se accede si el lobby fue creado mediante comando GM
         CurrentActiveEventType = LobbySettings.ScenearioType
         Select Case LobbySettings.ScenearioType
             Case e_EventType.CaptureTheFlag

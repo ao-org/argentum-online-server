@@ -1617,7 +1617,8 @@ End Sub
 Private Sub Automatic_Event_Timer()
         
     On Error GoTo Evento_Timer_Err
-    
+
+    'validacion para captura la bandera que es unico
     If EventoActivo Then Exit Sub
     
     Dim CurrentDay As Byte
@@ -1630,6 +1631,15 @@ Private Sub Automatic_Event_Timer()
 
     'si no es la hora de activar el evento salimos
     If SvrConfig.GetValue("AUTOEVENTHOURCALENDAR_Horarios") <> CurrentHour Then
+        Exit Sub
+    End If
+    
+    
+    If AlreadyDidAutoEventToday Then
+        '3600000 = 1 hora en milisegundos
+        If GetTickCount - LastAutoEventAttempt > 3600000 Then
+            AlreadyDidAutoEventToday = False
+        End If
         Exit Sub
     End If
     
@@ -1711,11 +1721,6 @@ Private Sub Automatic_Event_Timer()
 
     LobbySettings.Password = ""
 
-    'si ya hay lobbies aunque sean de gente
-    If (GlobalLobbyIndex >= 0) Then
-        Exit Sub
-    End If
-    
     CurrentActiveEventType = LobbySettings.ScenearioType
     
     If LobbySettings.ScenearioType = e_EventType.CaptureTheFlag Then
@@ -1723,6 +1728,9 @@ Private Sub Automatic_Event_Timer()
     Else
         Call CreatePublicEvent(LobbySettings)
     End If
+    
+    AlreadyDidAutoEventToday = True
+    LastAutoEventAttempt = GetTickCount
     
     Exit Sub
 Evento_Timer_Err:
