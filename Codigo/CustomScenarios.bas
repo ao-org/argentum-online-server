@@ -303,7 +303,7 @@ On Error GoTo PrepareNewEvent_Err:
         Case e_EventType.DeathMatch
             Set LobbyList(LobbyIndex).Scenario = New ScenarioDeathMatch
         Case e_EventType.NavalBattle
-            Set LobbyList(LobbyIndex).Scenario = New NavalBoarding
+            Set LobbyList(LobbyIndex).Scenario = New ScenarioNavalBoarding
     End Select
     If Not LobbyList(LobbyIndex).Scenario Is Nothing Then
         LobbyList(LobbyIndex).Scenario.SetLobbyIndex (LobbyIndex)
