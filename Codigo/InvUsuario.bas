@@ -1853,6 +1853,16 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 148                 If .Stats.MinHam > .Stats.MaxHam Then .Stats.MinHam = .Stats.MaxHam
 152                 Call WriteUpdateHungerAndThirst(UserIndex)
 
+                    If obj.JineteLevel > 0 Then
+                        If .Stats.JineteLevel < obj.JineteLevel Then
+                                .Stats.JineteLevel = obj.JineteLevel
+                            Else
+                                'to be developed, msg en cliente que notifique que se lo esta consumiendo al pedo
+                                Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                                Exit Sub
+                        End If
+                    End If
+                    
                     'Sonido
 154                 Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, .Pos.X, .Pos.y))
 

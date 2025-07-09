@@ -3202,7 +3202,7 @@ End Sub
 Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Single
         On Error GoTo ActualizarVelocidadDeUsuario_Err
     
-        Dim velocidad As Single, modificadorItem As Single, modificadorHechizo As Single
+        Dim velocidad As Single, modificadorItem As Single, modificadorHechizo As Single, JineteLevelSpeed As Single
     
 100     velocidad = VelocidadNormal
 102     modificadorItem = 1
@@ -3228,7 +3228,32 @@ Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Sing
 124             modificadorHechizo = .flags.VelocidadHechizada
             End If
         
-126         velocidad = VelocidadNormal * modificadorItem * modificadorHechizo * max(0, (1 + .Modifiers.MovementSpeed))
+            Select Case .Stats.JineteLevel
+                Case 1
+                    JineteLevelSpeed = SvrConfig.GetValue("JineteLevel1Speed")
+                Case 2
+                    JineteLevelSpeed = SvrConfig.GetValue("JineteLevel2Speed")
+                Case 3
+                    JineteLevelSpeed = SvrConfig.GetValue("JineteLevel3Speed")
+                Case 4
+                    JineteLevelSpeed = SvrConfig.GetValue("JineteLevel4Speed")
+                Case 5
+                    JineteLevelSpeed = SvrConfig.GetValue("JineteLevel5Speed")
+                Case 6
+                    JineteLevelSpeed = SvrConfig.GetValue("JineteLevel6Speed")
+                Case 7
+                    JineteLevelSpeed = SvrConfig.GetValue("JineteLevel7Speed")
+                Case 8
+                    JineteLevelSpeed = SvrConfig.GetValue("JineteLevel8Speed")
+                Case 9
+                    JineteLevelSpeed = SvrConfig.GetValue("JineteLevel9Speed")
+                Case Else
+                    JineteLevelSpeed = 1
+            End Select
+            
+            
+            
+126         velocidad = VelocidadNormal * modificadorItem * JineteLevelSpeed * modificadorHechizo * Max(0, (1 + .Modifiers.MovementSpeed))
         
 UpdateSpeed:
 128         .Char.speeding = velocidad
