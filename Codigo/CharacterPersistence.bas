@@ -271,6 +271,7 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .Stats.UsuariosMatados = RS!killed_users
         .Stats.PuntosPesca = RS!puntos_pesca
         .Stats.ELO = RS!ELO
+        .Stats.JineteLevel = RS!jinete_level
         .Counters.Pena = RS!counter_pena
         .ChatGlobal = RS!chat_global
         .ChatCombate = RS!chat_combate
@@ -514,7 +515,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
                 Exit Sub
             End If
               
-104         ReDim Params(63)
+104         ReDim Params(64)
 
             Dim i As Integer
         
@@ -581,6 +582,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 282         Params(post_increment(i)) = .flags.ReturnPos.map
 284         Params(post_increment(i)) = .flags.ReturnPos.x
 286         Params(post_increment(i)) = .flags.ReturnPos.y
+287         Params(post_increment(i)) = .Stats.JineteLevel
 
 
             ' WHERE block
@@ -768,6 +770,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 
 626                 Call Builder.Clear
                 End If
+                
         Call PerformTimeLimitCheck(PerformanceTimer, "save character id:" & .id, 50)
         End With
         
