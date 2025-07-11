@@ -9347,6 +9347,85 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
                 
             End With
         Else
+        
+            Dim tmpQuest As t_Quest
+            Dim tmpIndex As Integer
+            tmpIndex = UserList(UserIndex).flags.QuestNumber
+            tmpQuest = QuestList(tmpIndex)
+            
+            If tmpQuest.Trabajador And UserList(UserIndex).clase <> e_Class.Trabajador Then
+                'Msg1262= La quest es solo para trabajadores.
+                Call WriteLocaleMsg(UserIndex, "1262", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If TieneQuest(UserIndex, tmpIndex) Then
+                'Msg1263= La quest ya esta en curso.
+                Call WriteLocaleMsg(UserIndex, "1263", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If tmpQuest.RequiredQuest > 0 Then
+                If Not UserDoneQuest(UserIndex, tmpQuest.RequiredQuest) Then
+                    Call WriteLocaleMsg(UserIndex, "1424", e_FontTypeNames.FONTTYPE_INFO, QuestList(tmpQuest.RequiredQuest).nombre) ' Msg1424=Debes completar la quest ¬1 para emprender esta misión.
+                    Exit Sub
+                End If
+            End If
+            
+            
+            If UserList(UserIndex).Stats.ELV < tmpQuest.RequiredLevel Then
+                Call WriteLocaleMsg(UserIndex, "1425", e_FontTypeNames.FONTTYPE_INFO, tmpQuest.RequiredLevel)
+                Exit Sub
+            End If
+            
+            If tmpQuest.LimitLevel > 0 Then
+                If UserList(UserIndex).Stats.ELV > tmpQuest.LimitLevel Then
+                    Call WriteLocaleMsg(UserIndex, "1416", e_FontTypeNames.FONTTYPE_INFO, tmpQuest.LimitLevel)
+                End If
+            End If
+            
+            If tmpQuest.RequiredSkill.SkillType > 0 Then
+                If UserList(UserIndex).Stats.UserSkills(tmpQuest.RequiredSkill.SkillType) < tmpQuest.RequiredSkill.RequiredValue Then
+                    Call WriteLocaleMsg(UserIndex, MsgRequiredSkill, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+            End If
+            
+            If tmpQuest.RequiredClass > 0 Then
+                If UserList(UserIndex).clase <> tmpQuest.RequiredClass Then
+                    Call WriteLocaleMsg(UserIndex, "1426", e_FontTypeNames.FONTTYPE_INFO, ListaClases(tmpQuest.RequiredClass))
+                    Exit Sub
+                End If
+            End If
+            
+            
+            If tmpQuest.Repetible = 0 Then
+                If UserDoneQuest(UserIndex, tmpIndex) Then
+                    Call WriteLocaleMsg(UserIndex, "QUESTNEXT*", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+            End If
+        
+            QuestSlot = FreeQuestSlot(UserIndex)
+    
+            If QuestSlot = 0 Then
+                Call WriteLocaleMsg(UserIndex, "1417", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+        
+            'Agregamos la quest.
+            With UserList(UserIndex).QuestStats.Quests(QuestSlot)
+                
+                .QuestIndex = tmpIndex
+                If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
+                If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
+                UserList(UserIndex).flags.ModificoQuests = True
+                'Msg1264= Has aceptado la misión ¬1
+                Call WriteLocaleMsg(UserIndex, "1264", e_FontTypeNames.FONTTYPE_INFOIAO, Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".")
+                
+            End With
+            
+            Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.QuestItemSlot)
             
         End If
         Exit Sub
