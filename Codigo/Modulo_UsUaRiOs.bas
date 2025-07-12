@@ -2430,7 +2430,28 @@ End Sub
 Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As Integer)
     Dim Score As Integer
     With UserList(UserIndex)
+    If CInt(.Stats.ELV) < CInt(UserList(TargetIndex).Stats.ELV) Then
+        Score = 10 + CInt(UserList(TargetIndex).Stats.ELV) - max(CInt(.Stats.ELV), 0)
+    Else
         Score = 10 - max(CInt(.Stats.ELV) - CInt(UserList(TargetIndex).Stats.ELV), 0)
+    End If
+    
+    If (UserList(UserIndex).Faccion.Status = e_Facciones.Caos And UserList(TargetIndex).Faccion.Status = e_Facciones.Armada) _
+        Or (UserList(UserIndex).Faccion.Status = e_Facciones.Caos And UserList(TargetIndex).Faccion.Status = e_Facciones.consejo) _
+        Or (UserList(UserIndex).Faccion.Status = e_Facciones.concilio And UserList(TargetIndex).Faccion.Status = e_Facciones.Armada) _
+        Or (UserList(UserIndex).Faccion.Status = e_Facciones.concilio And UserList(TargetIndex).Faccion.Status = e_Facciones.consejo) _
+        Or (UserList(UserIndex).Faccion.Status = e_Facciones.Armada And UserList(TargetIndex).Faccion.Status = e_Facciones.Caos) _
+        Or (UserList(UserIndex).Faccion.Status = e_Facciones.Armada And UserList(TargetIndex).Faccion.Status = e_Facciones.concilio) _
+        Or (UserList(UserIndex).Faccion.Status = e_Facciones.consejo And UserList(TargetIndex).Faccion.Status = e_Facciones.Caos) _
+        Or (UserList(UserIndex).Faccion.Status = e_Facciones.consejo And UserList(TargetIndex).Faccion.Status = e_Facciones.concilio) Then
+            Score = Int(Score * 1.5)
+    End If
+    
+    If (Score > 20) Then
+     Score = 20
+    End If
+    
+        
         If GlobalFrameTime - .flags.LastHelpByTime < AssistHelpValidTime Then
             If IsValidUserRef(.flags.LastHelpUser) And .flags.LastHelpUser.ArrayIndex <> UserIndex Then
                 Score = Score - 1
@@ -2446,6 +2467,7 @@ Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As I
         .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
     End With
 End Sub
+
 
 Sub HandleFactionScoreForAssist(ByVal UserIndex As Integer, ByVal TargetIndex As Integer)
     Dim Score As Integer
