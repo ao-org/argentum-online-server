@@ -1,0 +1,1 @@
+ALTER TABLE user ADD jinete_level integer not null default 0;
