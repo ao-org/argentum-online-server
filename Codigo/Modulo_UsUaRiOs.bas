@@ -483,6 +483,7 @@ On Error GoTo Complete_ConnectUser_Err
 535         .flags.SeguroParty = True
 540         .flags.SeguroClan = True
 545         .flags.SeguroResu = True
+            .flags.LegionarySecure = True
         
 550         .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
         
@@ -3489,8 +3490,10 @@ Public Function CanAttackUser(ByVal AttackerIndex As Integer, ByVal AttackerVers
                 End If
             End If
         ElseIf esCaos(attackerIndex) And esCaos(TargetIndex) Then
-194             CanAttackUser = eSameFaction
-            Exit Function
+            If (UserList(attackerIndex).flags.LegionarySecure) Then
+194             CanAttackUser = eSameFaction 
+                Exit Function
+            End If
         End If
     End If
 

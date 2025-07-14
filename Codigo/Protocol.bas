@@ -854,6 +854,8 @@ On Error Resume Next
             Call HandleFinEvento(UserIndex)
         Case ClientPacketID.eSeguroResu
             Call HandleSeguroResu(UserIndex)
+        Case ClientPacketID.eLegionarySecure
+            Call HandleLegionarySecure(UserIndex)
         Case ClientPacketID.eCuentaExtractItem
             Call HandleCuentaExtractItem(UserIndex)
         Case ClientPacketID.eCuentaDeposit
@@ -9629,6 +9631,18 @@ Private Sub HandleSeguroResu(ByVal UserIndex As Integer)
 102         .flags.SeguroResu = Not .flags.SeguroResu
         
 104         Call WriteSeguroResu(UserIndex, .flags.SeguroResu)
+    
+        End With
+
+End Sub
+Private Sub HandleLegionarySecure(ByVal UserIndex As Integer)
+
+        With UserList(UserIndex)
+
+            .flags.LegionarySecure = Not .flags.LegionarySecure
+        
+
+            Call WriteLegionarySecure(UserIndex, .flags.LegionarySecure)
     
         End With
 
