@@ -668,6 +668,21 @@ WriteSeguroResu_Err:
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSeguroResu", Erl)
         
 End Sub
+Public Sub WriteLegionarySecure(ByVal UserIndex As Integer, ByVal Estado As Boolean)
+        
+        On Error GoTo WriteLegionarySecure_Err
+        
+             Call Writer.WriteInt16(ServerPacketID.eLegionarySecure)
+             Call Writer.WriteBool(Estado)
+             Call modSendData.SendData(ToIndex, UserIndex)
+        
+        Exit Sub
+
+WriteLegionarySecure_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLegionarySecure", Erl)
+        
+End Sub
 
 ''
 ' Writes the "CantUseWhileMeditating" message to the given user's outgoing data .incomingData.
