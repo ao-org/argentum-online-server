@@ -483,6 +483,7 @@ On Error GoTo Complete_ConnectUser_Err
 535         .flags.SeguroParty = True
 540         .flags.SeguroClan = True
 545         .flags.SeguroResu = True
+            .flags.LegionarySecure = True
         
 550         .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
         
@@ -2427,20 +2428,56 @@ ContarMuerte_Err:
 126         Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ContarMuerte", Erl)
 End Sub
 
-Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As Integer)
+Private Function ShouldApplyFactionBonus(ByVal attackerIndex As Integer, ByVal targetIndex As Integer) As Boolean
+    Dim attacker As Byte
+    Dim target As Byte
+
+    attacker = UserList(attackerIndex).Faccion.Status
+    target = UserList(targetIndex).Faccion.Status
+
+    Dim caosVsArmadaOrConsejo As Boolean
+    Dim concilioVsArmadaOrConsejo As Boolean
+    Dim armadaVsCaosOrConcilio As Boolean
+    Dim consejoVsCaosOrConcilio As Boolean
+
+    caosVsArmadaOrConsejo = (attacker = e_Facciones.Caos) And (target = e_Facciones.Armada Or target = e_Facciones.consejo)
+    concilioVsArmadaOrConsejo = (attacker = e_Facciones.concilio) And (target = e_Facciones.Armada Or target = e_Facciones.consejo)
+    armadaVsCaosOrConcilio = (attacker = e_Facciones.Armada) And (target = e_Facciones.Caos Or target = e_Facciones.concilio)
+    consejoVsCaosOrConcilio = (attacker = e_Facciones.consejo) And (target = e_Facciones.Caos Or target = e_Facciones.concilio)
+
+    ShouldApplyFactionBonus = caosVsArmadaOrConsejo Or _
+                              concilioVsArmadaOrConsejo Or _
+                              armadaVsCaosOrConcilio Or _
+                              consejoVsCaosOrConcilio
+End Function
+
+Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal targetIndex As Integer)
     Dim Score As Integer
     With UserList(UserIndex)
-        Score = 10 - max(CInt(.Stats.ELV) - CInt(UserList(TargetIndex).Stats.ELV), 0)
+        If CInt(.Stats.ELV) < CInt(UserList(targetIndex).Stats.ELV) Then
+            Score = 10 + CInt(UserList(targetIndex).Stats.ELV) - max(CInt(.Stats.ELV), 0)
+        Else
+            Score = 10 - max(CInt(.Stats.ELV) - CInt(UserList(targetIndex).Stats.ELV), 0)
+        End If
+
+        If ShouldApplyFactionBonus(UserIndex, targetIndex) Then
+            Score = Int(Score * 1.5)
+        End If
+
+        If Score > 20 Then
+            Score = 20
+        End If
+        
         If GlobalFrameTime - .flags.LastHelpByTime < AssistHelpValidTime Then
             If IsValidUserRef(.flags.LastHelpUser) And .flags.LastHelpUser.ArrayIndex <> UserIndex Then
                 Score = Score - 1
-                Call HandleFactionScoreForAssist(.flags.LastHelpUser.ArrayIndex, TargetIndex)
+                Call HandleFactionScoreForAssist(.flags.LastHelpUser.ArrayIndex, targetIndex)
             End If
         End If
-        If GlobalFrameTime - UserList(TargetIndex).flags.LastAttackedByUserTime < AssistDamageValidTime Then
-            If IsValidUserRef(UserList(TargetIndex).flags.LastAttacker) And UserList(TargetIndex).flags.LastAttacker.ArrayIndex <> UserIndex Then
+        If GlobalFrameTime - UserList(targetIndex).flags.LastAttackedByUserTime < AssistDamageValidTime Then
+            If IsValidUserRef(UserList(targetIndex).flags.LastAttacker) And UserList(targetIndex).flags.LastAttacker.ArrayIndex <> UserIndex Then
                 Score = Score - 1
-                Call HandleFactionScoreForAssist(UserList(TargetIndex).flags.LastAttacker.ArrayIndex, TargetIndex)
+                Call HandleFactionScoreForAssist(UserList(targetIndex).flags.LastAttacker.ArrayIndex, targetIndex)
             End If
         End If
         .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
@@ -3453,8 +3490,10 @@ Public Function CanAttackUser(ByVal AttackerIndex As Integer, ByVal AttackerVers
                 End If
             End If
         ElseIf esCaos(attackerIndex) And esCaos(TargetIndex) Then
-194             CanAttackUser = eSameFaction
-            Exit Function
+            If (UserList(attackerIndex).flags.LegionarySecure) Then
+194             CanAttackUser = eSameFaction 
+                Exit Function
+            End If
         End If
     End If
 
