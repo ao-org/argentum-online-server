@@ -5057,33 +5057,23 @@ End Sub
 Public Sub HandleIniciarCaptura(EventSettings As t_NewScenearioSettings)
         On Error GoTo ErrHandler
                 If Not InstanciaCaptura Is Nothing Then
-                    'Msg1008= Ya hay un evento de captura de bandera en curso.
-                    Debug.Print "Ya hay un evento de captura la bandera en curso"
                     Exit Sub
                 Else
                     'El precio no puede ser negativo
                     If EventSettings.InscriptionFee < 0 Then
-                        Debug.Print "El valor de la entrada al evento no podra ser menor que 0"
-                        'Msg1009= El valor de la entrada al evento no podrá ser menor que 0.
                         Exit Sub
                     End If
                     
                     'Permito un máximo de 48 participantes
                     If EventSettings.MaxPlayers > 48 Then 'Leer de una variable de configuración
-                        'Msg1011= La cantidad de participantes no podrá ser mayor que 48.
-                        Debug.Print "La cantidad de participantes no puede ser mayor que 48"
                         Exit Sub
                     End If
                     
                     If EventSettings.MinLevel < 1 Or EventSettings.MinLevel > 47 Then
-                        'Msg1013= El nivel para el evento debe ser entre 1 y 47.
-                        Debug.Print "Nivel minimo para el evento entre 1 y 47"
                         Exit Sub
                     End If
                     
                     If EventSettings.MinLevel > EventSettings.MaxLevel Then
-                        'Msg1014= El nivel minimo debe ser menor al maximo.
-                        Debug.Print "Nivel minimo debe ser menor que el maximo"
                         Exit Sub
                     End If
                 
