@@ -5057,23 +5057,28 @@ End Sub
 Public Sub HandleIniciarCaptura(EventSettings As t_NewScenearioSettings)
         On Error GoTo ErrHandler
                 If Not InstanciaCaptura Is Nothing Then
+                    SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1008, "", e_FontTypeNames.FONTTYPE_GUILD))
                     Exit Sub
                 Else
                     'El precio no puede ser negativo
                     If EventSettings.InscriptionFee < 0 Then
+                        SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1009, "", e_FontTypeNames.FONTTYPE_GUILD))
                         Exit Sub
                     End If
                     
                     'Permito un máximo de 48 participantes
                     If EventSettings.MaxPlayers > 48 Then 'Leer de una variable de configuración
+                        SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1011, "", e_FontTypeNames.FONTTYPE_GUILD))
                         Exit Sub
                     End If
                     
                     If EventSettings.MinLevel < 1 Or EventSettings.MinLevel > 47 Then
+                        SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1013, "", e_FontTypeNames.FONTTYPE_GUILD))
                         Exit Sub
                     End If
                     
                     If EventSettings.MinLevel > EventSettings.MaxLevel Then
+                        SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1014, "", e_FontTypeNames.FONTTYPE_GUILD))
                         Exit Sub
                     End If
                 
