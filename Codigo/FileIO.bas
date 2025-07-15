@@ -1340,6 +1340,7 @@ Sub LoadOBJData()
 161             .ImprovedRangedHitChance = val(Leer.GetValue(ObjKey, "ImprovedRHit"))
                 .ImprovedMeleeHitChance = val(Leer.GetValue(ObjKey, "ImprovedMHit"))
                 .ApplyEffectId = val(Leer.GetValue(ObjKey, "ApplyEffectId"))
+                .JineteLevel = val(Leer.GetValue(ObjKey, "JineteLevel"))
                 If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
                 If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
                 

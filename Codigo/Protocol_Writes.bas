@@ -1602,11 +1602,12 @@ Public Sub WritePlayWave(ByVal UserIndex As Integer, _
                          ByVal wave As Integer, _
                          ByVal X As Byte, _
                          ByVal Y As Byte, _
-                         Optional ByVal CancelLastWave As Byte = 0)
-        
+                         Optional ByVal CancelLastWave As Byte = 0, _
+                         Optional ByVal Localize As Byte = 0)
+                         
         On Error GoTo WritePlayWave_Err
         
-100     Call modSendData.SendData(ToIndex, userindex, PrepareMessagePlayWave(wave, X, Y, CancelLastWave))
+100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessagePlayWave(wave, x, y, CancelLastWave, Localize))
         
         Exit Sub
 
@@ -4790,7 +4791,8 @@ End Function
 Public Function PrepareMessagePlayWave(ByVal wave As Integer, _
                                        ByVal X As Byte, _
                                        ByVal Y As Byte, _
-                                       Optional ByVal CancelLastWave As Byte = False)
+                                       Optional ByVal CancelLastWave As Byte = False, _
+                                       Optional ByVal Localize As Byte = 0)
         
         On Error GoTo PrepareMessagePlayWave_Err
         
@@ -4799,7 +4801,7 @@ Public Function PrepareMessagePlayWave(ByVal wave As Integer, _
 104     Call Writer.WriteInt8(X)
 106     Call Writer.WriteInt8(Y)
 108     Call Writer.WriteInt8(CancelLastWave)
-        
+        Call Writer.WriteInt8(Localize)
         Exit Function
 
 PrepareMessagePlayWave_Err:
