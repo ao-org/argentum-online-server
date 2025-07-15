@@ -1848,18 +1848,14 @@ Call WriteLocaleMsg(sendIndex, "1296", e_FontTypeNames.FONTTYPE_INFO, modGuilds.
         Call LoadPatronCreditsFromDB(UserIndex)
         'Msg1298= Oro: ¬1
         Call WriteLocaleMsg(sendIndex, "1298", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.GLD)
-150     Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1864, _
-            UserList(UserIndex).Stats.UserAtributos(e_Atributos.Fuerza) & "¬" & _
-            UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad) & "¬" & _
-            UserList(UserIndex).Stats.UserAtributos(e_Atributos.Inteligencia) & "¬" & _
-            UserList(UserIndex).Stats.UserAtributos(e_Atributos.Constitucion) & "¬" & _
-            UserList(UserIndex).Stats.UserAtributos(e_Atributos.Carisma), _
-            e_FontTypeNames.FONTTYPE_INFO)) ' Msg1864=Dados: ¬1, ¬2, ¬3, ¬4, ¬5
         'Msg1299= Veces que Moriste: ¬1
         Call WriteLocaleMsg(sendIndex, "1299", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).flags.VecesQueMoriste)
 154     Call WriteLocaleMsg(sendIndex, MsgFactionScore, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Faccion.FactionScore)
         'Msg1300= Creditos Patreon: ¬1
         Call WriteLocaleMsg(sendIndex, "1300", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.Creditos)
+        'Msg2078 = Nivel de Jinete:¬1
+        Call WriteLocaleMsg(sendIndex, "2078", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.JineteLevel)
+          
         Exit Sub
 
 SendUserStatsTxt_Err:
@@ -3239,11 +3235,12 @@ End Sub
 Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Single
         On Error GoTo ActualizarVelocidadDeUsuario_Err
     
-        Dim velocidad As Single, modificadorItem As Single, modificadorHechizo As Single
+        Dim velocidad As Single, modificadorItem As Single, modificadorHechizo As Single, JineteLevelSpeed As Single
     
 100     velocidad = VelocidadNormal
 102     modificadorItem = 1
 104     modificadorHechizo = 1
+105     JineteLevelSpeed = 1
     
 106     With UserList(UserIndex)
 108         If .flags.Muerto = 1 Then
@@ -3258,14 +3255,36 @@ Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Sing
         
 118         If (.flags.Montado = 1) And (.Invent.MonturaObjIndex > 0) Then
 120             modificadorItem = ObjData(.Invent.MonturaObjIndex).velocidad
+                Select Case .Stats.JineteLevel
+                    Case 1
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel1Speed")
+                    Case 2
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel2Speed")
+                    Case 3
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel3Speed")
+                    Case 4
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel4Speed")
+                    Case 5
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel5Speed")
+                    Case 6
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel6Speed")
+                    Case 7
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel7Speed")
+                    Case 8
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel8Speed")
+                    Case 9
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel9Speed")
+                    Case Else
+                        JineteLevelSpeed = 1
+                End Select
             End If
         
             ' Algun hechizo le afecto la velocidad
 122         If .flags.VelocidadHechizada > 0 Then
 124             modificadorHechizo = .flags.VelocidadHechizada
             End If
-        
-126         velocidad = VelocidadNormal * modificadorItem * modificadorHechizo * max(0, (1 + .Modifiers.MovementSpeed))
+
+126         velocidad = VelocidadNormal * modificadorItem * JineteLevelSpeed * modificadorHechizo * Max(0, (1 + .Modifiers.MovementSpeed))
         
 UpdateSpeed:
 128         .Char.speeding = velocidad

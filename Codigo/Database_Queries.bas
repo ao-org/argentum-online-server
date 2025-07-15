@@ -134,7 +134,8 @@ Private Sub ConstruirQuery_CargarPersonaje()
         QueryBuilder.Append "warnings,"
         QueryBuilder.Append "last_logout,"
         QueryBuilder.Append "is_reset,"
-        QueryBuilder.Append "is_locked_in_mao "
+        QueryBuilder.Append "is_locked_in_mao,"
+        QueryBuilder.Append "jinete_level "
         QueryBuilder.Append " FROM user WHERE name= ?"
     
         ' Guardo la query ensamblada
@@ -351,6 +352,7 @@ Private Sub ConstruirQuery_GuardarPersonaje()
         QueryBuilder.Append "return_map = ?,"
         QueryBuilder.Append "return_x = ?,"
         QueryBuilder.Append "return_y = ?, "
+        QueryBuilder.Append "jinete_level = ?, "
         QueryBuilder.Append "last_logout = strftime('%s','now') "
 278     QueryBuilder.Append "WHERE id = ?"
     
