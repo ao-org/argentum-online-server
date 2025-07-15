@@ -1848,18 +1848,14 @@ Call WriteLocaleMsg(sendIndex, "1296", e_FontTypeNames.FONTTYPE_INFO, modGuilds.
         Call LoadPatronCreditsFromDB(UserIndex)
         'Msg1298= Oro: ¬1
         Call WriteLocaleMsg(sendIndex, "1298", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.GLD)
-150     Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1864, _
-            UserList(UserIndex).Stats.UserAtributos(e_Atributos.Fuerza) & "¬" & _
-            UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad) & "¬" & _
-            UserList(UserIndex).Stats.UserAtributos(e_Atributos.Inteligencia) & "¬" & _
-            UserList(UserIndex).Stats.UserAtributos(e_Atributos.Constitucion) & "¬" & _
-            UserList(UserIndex).Stats.UserAtributos(e_Atributos.Carisma), _
-            e_FontTypeNames.FONTTYPE_INFO)) ' Msg1864=Dados: ¬1, ¬2, ¬3, ¬4, ¬5
         'Msg1299= Veces que Moriste: ¬1
         Call WriteLocaleMsg(sendIndex, "1299", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).flags.VecesQueMoriste)
 154     Call WriteLocaleMsg(sendIndex, MsgFactionScore, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Faccion.FactionScore)
         'Msg1300= Creditos Patreon: ¬1
         Call WriteLocaleMsg(sendIndex, "1300", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.Creditos)
+        'Msg2078 = Nivel de Jinete:¬1
+        Call WriteLocaleMsg(sendIndex, "2078", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.JineteLevel)
+          
         Exit Sub
 
 SendUserStatsTxt_Err:

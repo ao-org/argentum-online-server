@@ -1857,8 +1857,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         If .Stats.JineteLevel < obj.JineteLevel Then
                                 .Stats.JineteLevel = obj.JineteLevel
                             Else
-                                'to be developed, msg en cliente que notifique que se lo esta consumiendo al pedo
-                                Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                                'Msg2080 = No puedes consumir un nivel de jinete menor al que posees actualmente
+                                Call WriteLocaleMsg(UserIndex, 2079, e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
                         End If
                     End If
