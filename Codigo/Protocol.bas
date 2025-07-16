@@ -2063,7 +2063,7 @@ Private Sub HandleCommerceEnd(ByVal UserIndex As Integer)
         'User quits commerce mode
 100     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
 102         If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose <> 0 Then
-104             Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND)
+104             Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND, , 1)
             End If
 
         End If
