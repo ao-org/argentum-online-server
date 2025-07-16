@@ -9143,7 +9143,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 
 146                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
 148                         If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose <> 0 Then
-150                             Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND)
+150                             Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND, , 1)
                             End If
                         End If
 
@@ -9173,7 +9173,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 
 176                 If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
 178                     If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose <> 0 Then
-180                         Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND)
+180                         Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND, , 1)
 
                         End If
 
