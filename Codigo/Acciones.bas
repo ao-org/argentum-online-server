@@ -504,7 +504,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
             
 158                 If NpcList(TempCharIndex).SoundOpen <> 0 Then
-160                     Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND)
+160                     Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND, , 1)
 
                     End If
 
