@@ -10399,7 +10399,7 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
             Exit Sub
         End If
 
-        If UserList(UserIndex).invent.Object(Slot).amount < quantity Then
+        If .invent.Object(Slot).amount < quantity Then
             'Msg1138=No tienes esa cantidad.
             Call WriteLocaleMsg(UserIndex, "1138", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
