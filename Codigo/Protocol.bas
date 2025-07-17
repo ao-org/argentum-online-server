@@ -10358,13 +10358,15 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
     Dim Slot As Byte
     Dim value As Long
     Dim quantity As Integer
+    Dim maxSlots As Integer
+
 
     Slot = reader.ReadInt8()
 
     value = reader.ReadInt32
     
     quantity = reader.ReadInt32
-    
+
     If value < MinimumPriceMaoItems Then
         'Msg2079="El valor de tus items debe ser minimo ¬1 ARS"
         Call WriteLocaleMsg(UserIndex, "2079", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMaoItems)
@@ -10372,6 +10374,15 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
     End If
     
     With UserList(UserIndex)
+
+    maxSlots = get_num_inv_slots_from_tier(.Stats.tipoUsuario)
+
+        If Slot < 1 Or Slot > maxSlots Then
+            'Msg1001=Slot Invalido.'
+            Call WriteLocaleMsg(UserIndex, "1001", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
         If UserList(UserIndex).invent.Object(Slot).amount < quantity Then
             'Msg1138=No tienes esa cantidad.
             Call WriteLocaleMsg(UserIndex, "1138", e_FontTypeNames.FONTTYPE_INFO)
