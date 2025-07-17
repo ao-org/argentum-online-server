@@ -30,6 +30,10 @@ Option Explicit
 
 Const MAX_RANDOM_TELEPORT_IN_MAP = 20
 
+Const DefaultMinumumPriceMaoItems As Integer = 5000
+Const DefaultGoldPriceMaoItems As Integer = 5000
+Const DefaultMinimumLevelMaoItems As Integer = 20
+
 Private Type t_Position
 
     x As Integer
@@ -2319,9 +2323,9 @@ Sub LoadSini()
 137     MinimumPriceMao = val(Lector.GetValue("INIT", "MinimumPriceMao"))
 138     GoldPriceMao = val(Lector.GetValue("INIT", "GoldPriceMao"))
         MinimumLevelMao = val(Lector.GetValue("INIT", "MinimumLevelMao"))
-        MinimumPriceMaoItems = val(Lector.GetValue("INIT", "MinimumPriceMaoItems"))
-        GoldPriceMaoItems = val(Lector.GetValue("INIT", "GoldPriceMaoItems"))
-        MinimumLevelMaoItems = val(Lector.GetValue("INIT", "MinimumLevelMaoItems"))
+        MinimumPriceMaoItems = val(Lector.GetValue("INIT", "MinimumPriceMaoItems",DefaultMinumumPriceMaoItems))
+        GoldPriceMaoItems = val(Lector.GetValue("INIT", "GoldPriceMaoItems",DefaultGoldPriceMaoItems))
+        MinimumLevelMaoItems = val(Lector.GetValue("INIT", "MinimumLevelMaoItems",DefaultMinimumLevelMaoItems))
         ServerSoloGMs = val(Lector.GetValue("init", "ServerSoloGMs"))
 140     DisconnectTimeout = val(Lector.GetValue("INIT", "DisconnectTimeout"))
 142     InstanceMapCount = val(Lector.GetValue("INIT", "InstanceMaps"))
