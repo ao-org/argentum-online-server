@@ -10359,13 +10359,29 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
     Dim value As Long
     Dim quantity As Integer
     Dim maxSlots As Integer
+    Dim maxValue As Integer
+    Dim maxQuantity As Integer
 
+    maxValue = 2147483647
+    maxQuantity = 10000
 
     Slot = reader.ReadInt8()
 
     value = reader.ReadInt32
     
     quantity = reader.ReadInt32
+
+    If quantity > maxQuantity Then
+        'Msg2081=No podes vender esa cantidad
+        Call WriteLocaleMsg(UserIndex, "2081", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMaoItems)
+        Exit Sub
+    End If
+
+    If value > maxValue Then
+        'Msg2080=El valor seleccionado es demasiado alto
+        Call WriteLocaleMsg(UserIndex, "2080", e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMaoItems)
+        Exit Sub
+    End If
 
     If value < MinimumPriceMaoItems Then
         'Msg2079="El valor de tus items debe ser minimo ¬1 ARS"
