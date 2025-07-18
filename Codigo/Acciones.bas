@@ -117,7 +117,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
              Select Case obj.TipoRuna
 
-                    Case 1 'Cuando esta muerto lleva al lugar de Origen
+                    Case e_RuneType.Escape 'Cuando esta muerto lleva al lugar de Origen
 
                         Dim DeDonde As t_CityWorldPos
 
@@ -277,7 +277,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                      UserList(UserIndex).Accion.RunaObj = 0
                      UserList(UserIndex).Accion.ObjSlot = 0
               
-                 Case 2
+                 Case e_RuneType.Escape
                      map = obj.HastaMap
                      X = obj.HastaX
                      y = obj.HastaY
@@ -313,7 +313,36 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                      UserList(UserIndex).Accion.ObjSlot = 0
                      UserList(UserIndex).Accion.AccionPendiente = False
 
-            
+
+                    Case e_RuneType.MesonSafePassage
+
+                        If UserList(UserIndex).Pos.Map = MAP_MESON_HOSTIGADO or UserList(UserIndex).Pos.Map = MAP_MESON_HOSTIGADO_TRADING_ZONE Then
+                            'mensaje de error de "no puedes usar la runa estando en el meson"
+                            Exit Sub
+                        End If
+
+                        If obj.HastaMap <> MAP_MESON_HOSTIGADO Then
+                            'mensaje de error de runa invalida, hay algo mal dateado llamar a un gm o avisar a soporte
+                            Exit Sub
+                        End If
+                        
+                        UserList(UserIndex).flags.ReturnPos = UserList(UserIndex).Pos
+                        
+                        Map = obj.HastaMap
+                        x = obj.HastaX
+                        y = obj.HastaY
+                        
+                        Call WarpUserChar(UserIndex, Map, x, y, True)
+                        'Msg1066= Te has teletransportado por el mundo.
+                        Call WriteLocaleMsg(UserIndex, "1066", e_FontTypeNames.FONTTYPE_WARNING)
+                        
+                        UserList(UserIndex).Accion.Particula = 0
+                        UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
+                        UserList(UserIndex).Accion.HechizoPendiente = 0
+                        UserList(UserIndex).Accion.RunaObj = 0
+                        UserList(UserIndex).Accion.ObjSlot = 0
+                        UserList(UserIndex).Accion.AccionPendiente = False
+                        
                 End Select
                 
          Case e_AccionBarra.Hogar
