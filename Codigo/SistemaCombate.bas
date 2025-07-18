@@ -1676,15 +1676,15 @@ Call WriteLocaleMsg(AttackerIndex, "1050", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Function
                     End If
                 End If
-            ElseIf esCaos(AttackerIndex) And esCaos(VictimIndex) Then
+                ElseIf esCaos(attackerIndex) And esCaos(VictimIndex) Then
                  If Not (UserList(attackerIndex).flags.LegionarySecure) Then
-                        PuedeAtacar = True
-                    Else
-                        'Msg1059= Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.
-                        Call WriteLocaleMsg(attackerIndex, "1059", e_FontTypeNames.FONTTYPE_WARNING)
-194                     PuedeAtacar = False
+                         PuedeAtacar = True
+                 ElseIf MapInfo(UserList(VictimIndex).Pos.Map).Seguro <> 1 Then
+                         'Msg1059= Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.
+                         Call WriteLocaleMsg(attackerIndex, "1059", e_FontTypeNames.FONTTYPE_WARNING)
+194                      PuedeAtacar = False
+                         Exit Function
                  End If
-                Exit Function
             End If
         End If
 
