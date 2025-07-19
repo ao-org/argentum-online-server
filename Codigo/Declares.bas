@@ -876,7 +876,7 @@ Public Enum e_OBJType
 End Enum
 
 Public Enum e_RuneType
-    WhileDeadReturnHome = 1
+    ReturnHome = 1
     Escape = 2
     MesonSafePassage = 3
 End Enum

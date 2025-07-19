@@ -3208,7 +3208,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             
 1324                 Select Case ObjData(ObjIndex).TipoRuna
             
-                              Case e_RuneType.WhileDeadReturnHome
                                 .Counters.TimerBarra = HomeTimer
                               Case e_RuneType.Escape
                                 .Counters.TimerBarra = HomeTimer
@@ -3230,7 +3229,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 1342                         .Accion.RunaObj = ObjIndex
 1344                         .Accion.ObjSlot = Slot
         
-                          End Select
             
 1346             Case e_OBJType.otmapa
 1348                 Call WriteShowFrmMapa(UserIndex)

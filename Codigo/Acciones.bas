@@ -117,7 +117,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
              Select Case obj.TipoRuna
 
-                    Case e_RuneType.Escape 'Cuando esta muerto lleva al lugar de Origen
+                    Case e_RuneType.ReturnHome 'lleva a la ciudad de origen vivo o muerto
 
                         Dim DeDonde As t_CityWorldPos
 
@@ -318,11 +318,13 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                         If UserList(UserIndex).Pos.Map = MAP_MESON_HOSTIGADO or UserList(UserIndex).Pos.Map = MAP_MESON_HOSTIGADO_TRADING_ZONE Then
                             'mensaje de error de "no puedes usar la runa estando en el meson"
+                            Call WriteLocaleMsg(UserIndex, "N", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
 
                         If obj.HastaMap <> MAP_MESON_HOSTIGADO Then
                             'mensaje de error de runa invalida, hay algo mal dateado llamar a un gm o avisar a soporte
+                            Call WriteLocaleMsg(UserIndex, "N", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         
