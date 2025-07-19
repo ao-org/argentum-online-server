@@ -3208,6 +3208,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             
 1324                 Select Case ObjData(ObjIndex).TipoRuna
             
+                              Case e_RuneType.ReturnHome
                                 .Counters.TimerBarra = HomeTimer
                               Case e_RuneType.Escape
                                 .Counters.TimerBarra = HomeTimer
