@@ -44,7 +44,7 @@ End Sub
 
 Public Function GetScenarioName() As String
 End Function
-Public Sub BroadcastOpenScenario(ByVal CreatorIndex As Integer)
+Public Sub BroadcastOpenScenario()
 End Sub
 
 Public Sub SendRules(ByVal UserIndex As Integer)

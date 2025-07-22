@@ -324,7 +324,9 @@ Public Function IBaseScenario_GetScenarioName() As String
     IBaseScenario_GetScenarioName = "DeathMatch"
 End Function
 
-Public Sub IBaseScenario_BroadcastOpenScenario(ByVal CreatorIndex As Integer)
+Public Sub IBaseScenario_BroadcastOpenScenario()
+    'queda pendiente hacer un mensaje de broadcast de deathmatch
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgDeathMatchInstructions, "", e_FontTypeNames.FONTTYPE_GUILD))
 End Sub
 
 Public Sub IBaseScenario_SendRules(ByVal UserIndex As Integer)
@@ -655,6 +657,7 @@ Public Sub IBaseScenario_UserDie(ByVal UserIndex)
     Call PlayerRespawn.Add(UserIndex, RespawnInfo)
 End Sub
 
+
 Sub GiveRewards()
     On Error GoTo GiveRewards_Err:
         Dim Teams() As String
@@ -664,14 +667,20 @@ Sub GiveRewards()
         Dim RewardStr As String
         Dim i As Integer
         Dim j As Integer
-100     If (LobbyList(LobbyIndex).RegisteredPlayers / LobbyList(LobbyIndex).TeamSize) = 2 Then
-102         Rewards(1) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.55
-104         Rewards(2) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.35
-        Else
-106         Rewards(1) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.4
-108         Rewards(2) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.3
-110         Rewards(3) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.2
+        If (LobbyList(LobbyIndex).TeamSize = 0) Then
+            LobbyList(LobbyIndex).TeamSize = 1 'cero division check
         End If
+        
+100     If (LobbyList(LobbyIndex).RegisteredPlayers / LobbyList(LobbyIndex).TeamSize) = 2 Then
+102             Rewards(1) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.55
+104             Rewards(2) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.35
+            Else
+106             Rewards(1) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.4
+108             Rewards(2) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.3
+110             Rewards(3) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.2
+        End If
+        
+        
 112     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgMatchComplete, Me.IBaseScenario_GetScenarioName(), e_FontTypeNames.FONTTYPE_GUILD))
 114     If LobbyList(LobbyIndex).TeamSize > 1 Then
 116         ReDim Teams(0 To LobbyList(LobbyIndex).RegisteredPlayers / LobbyList(LobbyIndex).TeamSize) As String

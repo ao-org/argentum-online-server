@@ -55,6 +55,7 @@ End Type
 
 Public Function GetTickCount() As Long
         On Error GoTo GetTickCount_Err
+        'recovers time as MILISECONDS
         GetTickCount = timeGetTime And &H7FFFFFFF
         Exit Function
 GetTickCount_Err:
