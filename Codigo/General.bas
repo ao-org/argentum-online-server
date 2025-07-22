@@ -1817,7 +1817,7 @@ Sub PasarSegundo()
                                 Case e_AccionBarra.Hogar
 170                                 Call HomeArrival(i)
                                 Case e_AccionBarra.Runa
-                                    CompletarAccionFin (i)
+                                    Call CompletarAccionFin(i)
                             End Select
                             
 182                         .Accion.Particula = 0
