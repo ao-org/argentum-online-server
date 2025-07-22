@@ -568,6 +568,7 @@ On Error GoTo OpenLobby_Err
         If Not instance.Scenario Is Nothing Then
              EventName = instance.Scenario.GetScenarioName()
         End If
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgCreateEventRoom, EventName, e_FontTypeNames.FONTTYPE_GLOBAL))
         If Not instance.Scenario Is Nothing Then
              Call instance.Scenario.BroadcastOpenScenario
         End If
@@ -991,11 +992,11 @@ End Function
 
 Public Function ValidateLobbySettings(ByRef LobbySettings As t_NewScenearioSettings)
     If LobbySettings.MinLevel < 1 Or LobbySettings.MaxLevel > 47 Then
-        Debug.Print "Minimo o maximo fuera del rango " & DateTime.Now
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1607, "", e_FontTypeNames.FONTTYPE_GLOBAL))
         Exit Function
     End If
     If LobbySettings.MinLevel > LobbySettings.MaxLevel Then
-        Debug.Print "nivel minimo mas grande que el minimo"
+             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1609, "", e_FontTypeNames.FONTTYPE_GLOBAL))
         Exit Function
     End If
     ValidateLobbySettings = True
