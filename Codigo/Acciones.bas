@@ -318,13 +318,13 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                         If UserList(UserIndex).Pos.Map = MAP_MESON_HOSTIGADO or UserList(UserIndex).Pos.Map = MAP_MESON_HOSTIGADO_TRADING_ZONE Then
                             'mensaje de error de "no puedes usar la runa estando en el meson"
-                            Call WriteLocaleMsg(UserIndex, "492", e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, "2081", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
 
                         If obj.HastaMap <> MAP_MESON_HOSTIGADO Then
                             'mensaje de error de runa invalida, hay algo mal dateado llamar a un gm o avisar a soporte
-                            Call WriteLocaleMsg(UserIndex, "493", e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, "2080", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         
