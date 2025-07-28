@@ -28,7 +28,6 @@ Attribute VB_Name = "ModQuest"
 Option Explicit
  
 'Constantes de las quests
-Public Const MAXUSERQUESTS As Integer = 5     'Maxima cantidad de quests que puede tener un usuario al mismo tiempo.
 
 Public Function TieneQuest(ByVal UserIndex As Integer, ByVal QuestNumber As Integer) As Byte
         

@@ -802,6 +802,7 @@ Public Const GRH_FALLO_PESCA     As Long = 48974
 'Numero de objeto de la poción de reset
 Public Const POCION_RESET       As Long = 3378
 
+Public Const MAXUSERQUESTS As Integer = 5     'Maxima cantidad de quests que puede tener un usuario al mismo tiempo.
 ''
 ' Cantidad maxima de objetos por slot de inventario
 Public Const MAX_INVENTORY_OBJS      As Integer = 10000
