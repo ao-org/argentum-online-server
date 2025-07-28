@@ -854,6 +854,8 @@ On Error Resume Next
             Call HandleFinEvento(UserIndex)
         Case ClientPacketID.eSeguroResu
             Call HandleSeguroResu(UserIndex)
+        Case ClientPacketID.eLegionarySecure
+            Call HandleLegionarySecure(UserIndex)
         Case ClientPacketID.eCuentaExtractItem
             Call HandleCuentaExtractItem(UserIndex)
         Case ClientPacketID.eCuentaDeposit
@@ -2061,7 +2063,7 @@ Private Sub HandleCommerceEnd(ByVal UserIndex As Integer)
         'User quits commerce mode
 100     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
 102         If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose <> 0 Then
-104             Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND)
+104             Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND, , 1)
             End If
 
         End If
@@ -9141,7 +9143,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 
 146                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
 148                         If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose <> 0 Then
-150                             Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND)
+150                             Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND, , 1)
                             End If
                         End If
 
@@ -9171,7 +9173,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 
 176                 If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
 178                     If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose <> 0 Then
-180                         Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND)
+180                         Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND, , 1)
 
                         End If
 
@@ -9629,6 +9631,18 @@ Private Sub HandleSeguroResu(ByVal UserIndex As Integer)
 102         .flags.SeguroResu = Not .flags.SeguroResu
         
 104         Call WriteSeguroResu(UserIndex, .flags.SeguroResu)
+    
+        End With
+
+End Sub
+Private Sub HandleLegionarySecure(ByVal UserIndex As Integer)
+
+        With UserList(UserIndex)
+
+            .flags.LegionarySecure = Not .flags.LegionarySecure
+        
+
+            Call WriteLegionarySecure(UserIndex, .flags.LegionarySecure)
     
         End With
 

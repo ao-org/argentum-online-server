@@ -1766,6 +1766,9 @@ Public Type t_ObjData
     WeaponType As e_WeaponType
     ProjectileType As Integer
     ObjFlags As Long 'use bitmask from enum e_ObjFlags
+    
+    JineteLevel As Byte
+    
 End Type
 
 '[Pablo ToxicWaste]
@@ -1895,6 +1898,9 @@ Public Type t_UserStats
     Advertencias As Byte
     NumObj_PezEspecial As Integer
     Creditos As Long
+    
+    JineteLevel As Byte
+    
 End Type
 
 'Sistema de Barras
@@ -2034,6 +2040,7 @@ Public Type t_UserFlags
     SeguroParty As Boolean
     SeguroClan As Boolean
     SeguroResu As Boolean
+    LegionarySecure As Boolean
 
     DuracionEfecto As Long
     TargetNPC As t_NpcReference ' Npc señalado por el usuario

@@ -109,7 +109,18 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "SacriPendantItemTreshold", CInt(val(reader.GetValue("CONFIGURACIONES", "SacriPendantItemTreshold", "3")))
     mSettings.Add "LeadershipExpPartyBonus", CDbl(val(reader.GetValue("CONFIGURACIONES", "LeadershipExpPartyBonus", "1.01")))
 
-    mSettings.Add "MaxJailTime", CInt(val(reader.GetValue("CONFIGURACIONES", "MaxJailTime", "8640")))
+    mSettings.Add "JineteLevel1Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel1Speed","1.05")))
+    mSettings.Add "JineteLevel2Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel2Speed","1.07")))
+    mSettings.Add "JineteLevel3Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel3Speed","1.10")))
+    mSettings.Add "JineteLevel4Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel4Speed","1.15")))
+    mSettings.Add "JineteLevel5Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel5Speed","1.20")))
+    mSettings.Add "JineteLevel6Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel6Speed","1.25")))
+    mSettings.Add "JineteLevel7Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel7Speed","1.30")))
+    mSettings.Add "JineteLevel8Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel8Speed","1.45")))
+    mSettings.Add "JineteLevel9Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel9Speed","1.50")))
+
+
+    mSettings.Add "MaxJailTime", CInt(val(reader.GetValue("CONFIGURACIONES", "MaxJailTime","8640")))
     
     mSettings.Add "DropMult", CInt(val(reader.GetValue("DROPEO", "DropMult")))
     mSettings.Add "DropActive", CInt(val(reader.GetValue("DROPEO", "DropActive")))

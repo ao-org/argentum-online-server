@@ -483,6 +483,7 @@ On Error GoTo Complete_ConnectUser_Err
 535         .flags.SeguroParty = True
 540         .flags.SeguroClan = True
 545         .flags.SeguroResu = True
+            .flags.LegionarySecure = True
         
 550         .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
         
@@ -1847,18 +1848,14 @@ Call WriteLocaleMsg(sendIndex, "1296", e_FontTypeNames.FONTTYPE_INFO, modGuilds.
         Call LoadPatronCreditsFromDB(UserIndex)
         'Msg1298= Oro: ¬1
         Call WriteLocaleMsg(sendIndex, "1298", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.GLD)
-150     Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1864, _
-            UserList(UserIndex).Stats.UserAtributos(e_Atributos.Fuerza) & "¬" & _
-            UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad) & "¬" & _
-            UserList(UserIndex).Stats.UserAtributos(e_Atributos.Inteligencia) & "¬" & _
-            UserList(UserIndex).Stats.UserAtributos(e_Atributos.Constitucion) & "¬" & _
-            UserList(UserIndex).Stats.UserAtributos(e_Atributos.Carisma), _
-            e_FontTypeNames.FONTTYPE_INFO)) ' Msg1864=Dados: ¬1, ¬2, ¬3, ¬4, ¬5
         'Msg1299= Veces que Moriste: ¬1
         Call WriteLocaleMsg(sendIndex, "1299", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).flags.VecesQueMoriste)
 154     Call WriteLocaleMsg(sendIndex, MsgFactionScore, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Faccion.FactionScore)
         'Msg1300= Creditos Patreon: ¬1
         Call WriteLocaleMsg(sendIndex, "1300", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.Creditos)
+        'Msg2078 = Nivel de Jinete:¬1
+        Call WriteLocaleMsg(sendIndex, "2078", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.JineteLevel)
+          
         Exit Sub
 
 SendUserStatsTxt_Err:
@@ -2423,20 +2420,56 @@ ContarMuerte_Err:
 126         Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ContarMuerte", Erl)
 End Sub
 
-Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As Integer)
+Private Function ShouldApplyFactionBonus(ByVal attackerIndex As Integer, ByVal targetIndex As Integer) As Boolean
+    Dim attacker As Byte
+    Dim target As Byte
+
+    attacker = UserList(attackerIndex).Faccion.Status
+    target = UserList(targetIndex).Faccion.Status
+
+    Dim caosVsArmadaOrConsejo As Boolean
+    Dim concilioVsArmadaOrConsejo As Boolean
+    Dim armadaVsCaosOrConcilio As Boolean
+    Dim consejoVsCaosOrConcilio As Boolean
+
+    caosVsArmadaOrConsejo = (attacker = e_Facciones.Caos) And (target = e_Facciones.Armada Or target = e_Facciones.consejo)
+    concilioVsArmadaOrConsejo = (attacker = e_Facciones.concilio) And (target = e_Facciones.Armada Or target = e_Facciones.consejo)
+    armadaVsCaosOrConcilio = (attacker = e_Facciones.Armada) And (target = e_Facciones.Caos Or target = e_Facciones.concilio)
+    consejoVsCaosOrConcilio = (attacker = e_Facciones.consejo) And (target = e_Facciones.Caos Or target = e_Facciones.concilio)
+
+    ShouldApplyFactionBonus = caosVsArmadaOrConsejo Or _
+                              concilioVsArmadaOrConsejo Or _
+                              armadaVsCaosOrConcilio Or _
+                              consejoVsCaosOrConcilio
+End Function
+
+Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal targetIndex As Integer)
     Dim Score As Integer
     With UserList(UserIndex)
-        Score = 10 - max(CInt(.Stats.ELV) - CInt(UserList(TargetIndex).Stats.ELV), 0)
+        If CInt(.Stats.ELV) < CInt(UserList(targetIndex).Stats.ELV) Then
+            Score = 10 + CInt(UserList(targetIndex).Stats.ELV) - max(CInt(.Stats.ELV), 0)
+        Else
+            Score = 10 - max(CInt(.Stats.ELV) - CInt(UserList(targetIndex).Stats.ELV), 0)
+        End If
+
+        If ShouldApplyFactionBonus(UserIndex, targetIndex) Then
+            Score = Int(Score * 1.5)
+        End If
+
+        If Score > 20 Then
+            Score = 20
+        End If
+        
         If GlobalFrameTime - .flags.LastHelpByTime < AssistHelpValidTime Then
             If IsValidUserRef(.flags.LastHelpUser) And .flags.LastHelpUser.ArrayIndex <> UserIndex Then
                 Score = Score - 1
-                Call HandleFactionScoreForAssist(.flags.LastHelpUser.ArrayIndex, TargetIndex)
+                Call HandleFactionScoreForAssist(.flags.LastHelpUser.ArrayIndex, targetIndex)
             End If
         End If
-        If GlobalFrameTime - UserList(TargetIndex).flags.LastAttackedByUserTime < AssistDamageValidTime Then
-            If IsValidUserRef(UserList(TargetIndex).flags.LastAttacker) And UserList(TargetIndex).flags.LastAttacker.ArrayIndex <> UserIndex Then
+        If GlobalFrameTime - UserList(targetIndex).flags.LastAttackedByUserTime < AssistDamageValidTime Then
+            If IsValidUserRef(UserList(targetIndex).flags.LastAttacker) And UserList(targetIndex).flags.LastAttacker.ArrayIndex <> UserIndex Then
                 Score = Score - 1
-                Call HandleFactionScoreForAssist(UserList(TargetIndex).flags.LastAttacker.ArrayIndex, TargetIndex)
+                Call HandleFactionScoreForAssist(UserList(targetIndex).flags.LastAttacker.ArrayIndex, targetIndex)
             End If
         End If
         .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
@@ -3198,11 +3231,12 @@ End Sub
 Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Single
         On Error GoTo ActualizarVelocidadDeUsuario_Err
     
-        Dim velocidad As Single, modificadorItem As Single, modificadorHechizo As Single
+        Dim velocidad As Single, modificadorItem As Single, modificadorHechizo As Single, JineteLevelSpeed As Single
     
 100     velocidad = VelocidadNormal
 102     modificadorItem = 1
 104     modificadorHechizo = 1
+105     JineteLevelSpeed = 1
     
 106     With UserList(UserIndex)
 108         If .flags.Muerto = 1 Then
@@ -3217,14 +3251,36 @@ Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Sing
         
 118         If (.flags.Montado = 1) And (.Invent.MonturaObjIndex > 0) Then
 120             modificadorItem = ObjData(.Invent.MonturaObjIndex).velocidad
+                Select Case .Stats.JineteLevel
+                    Case 1
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel1Speed")
+                    Case 2
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel2Speed")
+                    Case 3
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel3Speed")
+                    Case 4
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel4Speed")
+                    Case 5
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel5Speed")
+                    Case 6
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel6Speed")
+                    Case 7
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel7Speed")
+                    Case 8
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel8Speed")
+                    Case 9
+                        JineteLevelSpeed = SvrConfig.GetValue("JineteLevel9Speed")
+                    Case Else
+                        JineteLevelSpeed = 1
+                End Select
             End If
         
             ' Algun hechizo le afecto la velocidad
 122         If .flags.VelocidadHechizada > 0 Then
 124             modificadorHechizo = .flags.VelocidadHechizada
             End If
-        
-126         velocidad = VelocidadNormal * modificadorItem * modificadorHechizo * max(0, (1 + .Modifiers.MovementSpeed))
+
+126         velocidad = VelocidadNormal * modificadorItem * JineteLevelSpeed * modificadorHechizo * Max(0, (1 + .Modifiers.MovementSpeed))
         
 UpdateSpeed:
 128         .Char.speeding = velocidad
@@ -3449,8 +3505,10 @@ Public Function CanAttackUser(ByVal AttackerIndex As Integer, ByVal AttackerVers
                 End If
             End If
         ElseIf esCaos(attackerIndex) And esCaos(TargetIndex) Then
-194             CanAttackUser = eSameFaction
-            Exit Function
+            If (UserList(attackerIndex).flags.LegionarySecure) Then
+194             CanAttackUser = eSameFaction 
+                Exit Function
+            End If
         End If
     End If
 

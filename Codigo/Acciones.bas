@@ -504,8 +504,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
             
 158                 If NpcList(TempCharIndex).SoundOpen <> 0 Then
-160                     Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND)
-
+160                     Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND, , 1)
                     End If
 
                     'A depositar de unaIniciarTransporte
@@ -587,7 +586,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         Exit Sub
                     End If
                     
-                    Call WritePlayWave(userindex, NpcList(TempCharIndex).SoundOpen, NpcList(TempCharIndex).Pos.X, NpcList(TempCharIndex).Pos.Y, 2)
+                    Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NpcList(TempCharIndex).pos.x, NpcList(TempCharIndex).pos.y, 2, 1)
 230                 Call EnviarQuest(UserIndex)
             
 232             ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.Enlistador Then

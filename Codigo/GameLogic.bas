@@ -1624,14 +1624,18 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     End If
                     
                     If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).flags.Muerto = 1 And NpcList(TempCharIndex).NPCtype = e_NPCType.Revividor) Then
-                        If NpcList(TempCharIndex).NPCtype = e_NPCType.Quest Then
+                        If NpcList(TempCharIndex).npcType = e_NPCType.Quest _
+                           Or NpcList(TempCharIndex).npcType = e_NPCType.Banquero _
+                           Or NpcList(TempCharIndex).npcType = e_NPCType.Revividor _
+                           Or NpcList(TempCharIndex).npcType = e_NPCType.Gobernador Then
+                           
                             If Distance(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, NpcList(TempCharIndex).Pos.X, NpcList(TempCharIndex).Pos.y) < 3 Then
                                 If NpcList(TempCharIndex).Movement = Caminata Then
                                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(TempCharIndex).IntervaloMovimiento ' 15 segundos
                                 End If
                                 
                                 If NpcList(TempCharIndex).SoundOpen <> 0 Then
-                                    Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NpcList(TempCharIndex).Pos.X, NpcList(TempCharIndex).Pos.y, 1)
+                                    Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NpcList(TempCharIndex).pos.x, NpcList(TempCharIndex).pos.y, 1, 1)
                                 End If
                                 Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.charindex, vbWhite)
                             End If
@@ -1681,7 +1685,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 502                                         If QuestList(.QuestIndex).RequiredTargetNPC(j).amount = .NPCsTarget(j) Then
 504                                             Call FinishQuest(UserIndex, .QuestIndex, i)
 506                                             Call WriteUpdateNPCSimbolo(UserIndex, TempCharIndex, 1)
-508                                             Call WriteLocaleChatOverHead(UserIndex, "1353", "", NpcList(TempCharIndex).Char.charIndex, vbYellow) ' Msg1353=¡Quest Finalizada!
+508                                             Call WriteLocaleChatOverHead(UserIndex, "1353", "", NpcList(TempCharIndex).Char.charindex, vbYellow) ' Msg1353=¡Quest Finalizada!
 510                                             ' Msg494=Quest Finalizada!
                                                 Call WriteLocaleMsg(UserIndex, "494", e_FontTypeNames.FONTTYPE_INFOIAO)
 
