@@ -372,8 +372,6 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
         
         ' Llegados a este punto, invalidamos el Path del NPC
 275     NpcList(NpcIndex).pathFindingInfo.PathLength = 0
-        
-        
 
         Exit Function
 
