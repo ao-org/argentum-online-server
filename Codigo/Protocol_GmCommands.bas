@@ -4785,23 +4785,10 @@ On Error GoTo ErrHandler
     LobbySettings.InscriptionFee = Reader.ReadInt32
     LobbySettings.Description = Reader.ReadString8
     LobbySettings.Password = Reader.ReadString8
-    If eventType = 0 Then
         CurrentActiveEventType = LobbySettings.ScenearioType
-        Select Case LobbySettings.ScenearioType
-            Case e_EventType.CaptureTheFlag
-                Call HandleIniciarCaptura(UserIndex, LobbySettings)
-            Case Else
-                Call HandleStartGenericLobby(UserIndex, LobbySettings)
-        End Select
-    Else
-        With UserList(UserIndex)
-            If IsValidNpcRef(.flags.TargetNPC) Then
-                If NpcList(.flags.TargetNPC.ArrayIndex).npcType = e_NPCType.EventMaster And .flags.Muerto = 0 Then
-                    Call CreatePublicEvent(UserIndex, LobbySettings)
-                End If
-            End If
-        End With
-    End If
+
+    Call initEventLobby(UserIndex, eventType, LobbySettings)
+    
     Exit Sub
 ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartEvent", Erl)
@@ -5067,104 +5054,38 @@ HandleFeatureToggle_Err:
 End Sub
 
 'HarThaoS: Iniciar captura de bandera
-Public Sub HandleIniciarCaptura(ByVal UserIndex As Integer, EventSettings As t_NewScenearioSettings)
+Public Sub HandleIniciarCaptura(EventSettings As t_NewScenearioSettings)
         On Error GoTo ErrHandler
-100     With UserList(UserIndex)
-
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
                 If Not InstanciaCaptura Is Nothing Then
-                    'Msg1008= Ya hay un evento de captura de bandera en curso.
-                    Call WriteLocaleMsg(UserIndex, "1008", e_FontTypeNames.FONTTYPE_INFO)
+                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1008, "", e_FontTypeNames.FONTTYPE_GLOBAL))
                     Exit Sub
                 Else
                     'El precio no puede ser negativo
                     If EventSettings.InscriptionFee < 0 Then
-                        'Msg1009= El valor de la entrada al evento no podrá ser menor que 0.
-                        Call WriteLocaleMsg(UserIndex, "1009", e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-                
-                    'Me fijo si que la cantidad de participantes sea par
-                    If EventSettings.MaxPlayers Mod 2 <> 0 Then
-                        'Msg1010= La cantidad de participantes debe ser un número par.
-                        Call WriteLocaleMsg(UserIndex, "1010", e_FontTypeNames.FONTTYPE_INFO)
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1009, "", e_FontTypeNames.FONTTYPE_GLOBAL))
                         Exit Sub
                     End If
                     
                     'Permito un máximo de 48 participantes
                     If EventSettings.MaxPlayers > 48 Then 'Leer de una variable de configuración
-                        'Msg1011= La cantidad de participantes no podrá ser mayor que 48.
-                        Call WriteLocaleMsg(UserIndex, "1011", e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-                    
-                    'Me fijo si hay más participantes conectados que el cupo para jugar
-                    If EventSettings.MaxPlayers > NumUsers Then
-                        'Msg1012= Hay pocos jugadores en el servidor, intenta con una cantidad menor de participantes.
-                        Call WriteLocaleMsg(UserIndex, "1012", e_FontTypeNames.FONTTYPE_INFO)
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1011, "", e_FontTypeNames.FONTTYPE_GLOBAL))
                         Exit Sub
                     End If
                     
                     If EventSettings.MinLevel < 1 Or EventSettings.MinLevel > 47 Then
-                        'Msg1013= El nivel para el evento debe ser entre 1 y 47.
-                        Call WriteLocaleMsg(UserIndex, "1013", e_FontTypeNames.FONTTYPE_INFO)
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1013, "", e_FontTypeNames.FONTTYPE_GLOBAL))
                         Exit Sub
                     End If
                     
                     If EventSettings.MinLevel > EventSettings.MaxLevel Then
-                        'Msg1014= El nivel minimo debe ser menor al maximo.
-                        Call WriteLocaleMsg(UserIndex, "1014", e_FontTypeNames.FONTTYPE_INFO)
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1014, "", e_FontTypeNames.FONTTYPE_GLOBAL))
                         Exit Sub
                     End If
                 
                     Set InstanciaCaptura = New clsCaptura
                     Call InstanciaCaptura.inicializar(EventSettings.MaxPlayers, EventSettings.RoundNumber, EventSettings.MinLevel, EventSettings.MaxLevel, EventSettings.InscriptionFee)
                 End If
-            Else
-136             'Msg528=Servidor » Comando deshabilitado para tu cargo.
-                Call WriteLocaleMsg(UserIndex, "528", e_FontTypeNames.FONTTYPE_INFO)
-            End If
-        End With
         Exit Sub
 ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleIniciarCaptura", Erl)
-End Sub
-
-Private Sub HandleStartGenericLobby(ByVal UserIndex As Integer, ByRef LobbySettings As t_NewScenearioSettings)
-On Error GoTo ErrHandler
-
-    If IsEventActive Then
-        'Msg1015= Ya hay un evento activo, debes cancelarlo primero.
-        Call WriteLocaleMsg(UserIndex, "1015", e_FontTypeNames.FONTTYPE_INFO)
-        Exit Sub
-    End If
-    GlobalLobbyIndex = GetAvailableLobby()
-    If GlobalLobbyIndex < 0 Then
-        'Msg1016= No se pudo encontrar una sala activa.
-        Call WriteLocaleMsg(UserIndex, "1016", e_FontTypeNames.FONTTYPE_INFO)
-        Exit Sub
-    End If
-    With UserList(UserIndex)
-        If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) = 0 Then
-            'Msg528=Servidor » Comando deshabilitado para tu cargo.
-            Call WriteLocaleMsg(UserIndex, "528", e_FontTypeNames.FONTTYPE_INFO)
-        Else
-136         'Me fijo si hay más participantes conectados que el cupo para jugar
-            If Not ValidateLobbySettings(UserIndex, LobbySettings) Then
-                Exit Sub
-            End If
-            Call InitializeLobby(LobbyList(GlobalLobbyIndex))
-            LobbyList(GlobalLobbyIndex).IsGlobal = True
-            Call ModLobby.SetMinLevel(LobbyList(GlobalLobbyIndex), LobbySettings.MinLevel)
-            Call ModLobby.SetMaxLevel(LobbyList(GlobalLobbyIndex), LobbySettings.MaxLevel)
-            Call ModLobby.SetMaxPlayers(LobbyList(GlobalLobbyIndex), LobbySettings.MaxPlayers)
-            Call CustomScenarios.PrepareNewEvent(LobbySettings.ScenearioType, GlobalLobbyIndex)
-            'Msg1017= Se creo el lobby, recorda que tenes que abrirlo para que se pueda anotar gente.
-            Call WriteLocaleMsg(UserIndex, "1017", e_FontTypeNames.FONTTYPE_INFO)
-            Call LogGM(.name, "Inicio un Lobby")
-        End If
-    End With
-    Exit Sub
-ErrHandler:
-138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartGenericLobby", Erl)
 End Sub
