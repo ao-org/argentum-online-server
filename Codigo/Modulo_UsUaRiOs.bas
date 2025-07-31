@@ -799,10 +799,11 @@ On Error GoTo Complete_ConnectUser_Err
 1140            Call WriteLocaleMsg(UserIndex, "1439", e_FontTypeNames.FONTTYPE_GUILD, .name & "¬" & .Stats.ELV & "¬" & get_map_name(.pos.Map)) ' Msg1439=¡Bienvenido de nuevo ¬1! Actualmente estas en el nivel ¬2 en ¬3, ¡buen viaje y mucha suerte!
             End If
 
-1145        If Status(UserIndex) = Criminal Or Status(UserIndex) = e_Facciones.Caos Then
+1145        If Status(UserIndex) = e_Facciones.Criminal Or Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio Then
 1150            Call WriteSafeModeOff(UserIndex)
 1155            .flags.Seguro = False
-
+                Call WriteLegionarySecure(UserIndex, False)
+                .flags.LegionarySecure = False
              Else
 1160            .flags.Seguro = True
 1165            Call WriteSafeModeOn(UserIndex)
