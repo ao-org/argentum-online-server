@@ -505,7 +505,7 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
                 Select Case .clase
 
                     Case e_Class.Bandit, e_Class.Thief
-128                     .Counters.TiempoOculto = Int(Suerte / 2)
+128                     .Counters.TiempoOculto = RandomNumber(Int(Suerte / 2.5), Int(Suerte / 2))
 
                     Case e_Class.Hunter
 130                     .Counters.TiempoOculto = Int(Suerte / 2)
