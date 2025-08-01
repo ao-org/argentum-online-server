@@ -2046,7 +2046,9 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
         Dim Lvl As Integer, maxPermitido As Integer
 100         Lvl = UserList(UserIndex).Stats.ELV
 
-102     If UserList(UserIndex).Stats.UserSkills(Skill) = MAXSKILLPOINTS Then Exit Sub
+102     If UserList(UserIndex).Stats.UserSkills(Skill) = MAXSKILLPOINTS Then 
+            Exit Sub
+        End If
 
         ' Se suben 5 skills cada dos niveles como máximo.
 104     If (Lvl Mod 2 = 0) Then ' El level es numero par
@@ -2057,61 +2059,53 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 108         maxPermitido = (Lvl \ 2) * 5 + 3 - (((((Lvl - 1) \ 2) * 5) Mod 10) \ 5)
         End If
 
-110     If UserList(UserIndex).Stats.UserSkills(Skill) >= maxPermitido Then Exit Sub
-
-112     If UserList(UserIndex).Stats.MinHam > 0 And UserList(UserIndex).Stats.MinAGU > 0 Then
-
-            Dim Aumenta As Integer
-            Dim Prob    As Integer
-            Dim Menor   As Byte
-            
-114         Menor = 10
-            
-            Select Case Lvl
-                Case Is <= 12
-                    Prob = 15
-                Case Is <= 24
-                    Prob = 30
-                Case Else
-                    Prob = 50
-            End Select
-             
-134         Aumenta = RandomNumber(1, Prob * DificultadSubirSkill)
-             
-136         If UserList(UserIndex).flags.PendienteDelExperto = 1 Then
-138             Menor = 15
-            End If
-            
-140         If Aumenta < Menor Then
-142             UserList(UserIndex).Stats.UserSkills(Skill) = UserList(UserIndex).Stats.UserSkills(Skill) + 1
-    
-144             Call WriteLocaleMsg(UserIndex, 1626, e_FontTypeNames.FONTTYPE_INFO, SkillsNames(Skill) & "¬" & UserList(UserIndex).Stats.UserSkills(Skill)) 'Msg1626=¡Has mejorado tu habilidad ¬1 en un punto! Ahora tienes ¬2 pts.
-            
-                Dim BonusExp As Long
-146             BonusExp = 5& * SvrConfig.GetValue("ExpMult")
-        
-                Call WriteLocaleMsg(UserIndex, "1313", e_FontTypeNames.FONTTYPE_INFOIAO, BonusExp) 'Msg1313= ¡Has ganado ¬1 puntos de experiencia!
-                
-152             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
-154                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + BonusExp
-156                 If UserList(UserIndex).Stats.Exp > MAXEXP Then UserList(UserIndex).Stats.Exp = MAXEXP
-                    
-                    UserList(UserIndex).flags.ModificoSkills = True
-                    
-158                 If UserList(UserIndex).ChatCombate = 1 Then
-160                     Call WriteLocaleMsg(UserIndex, "140", e_FontTypeNames.FONTTYPE_EXP, BonusExp)
-                    End If
-                
-162                 Call WriteUpdateExp(UserIndex)
-164                 Call CheckUserLevel(UserIndex)
-
-                End If
-
-            End If
-
+110     If UserList(UserIndex).Stats.UserSkills(Skill) >= maxPermitido Then 
+            Exit Sub
         End If
 
+112     If UserList(UserIndex).Stats.MinHam = 0 Or UserList(UserIndex).Stats.MinAGU = 0 Then
+            Exit Sub
+        End If
+
+        Dim Aumenta As Integer
+        Dim Prob    As Integer
         
+        'Cuadratic expression to sumarize old select case lvl bands 
+        Prob = Int(0.0198 * (Lvl ^ 2) + 9.98)
+         
+136     If UserList(UserIndex).flags.PendienteDelExperto = 1 Then
+            Aumenta = RandomNumber(1, Prob * (DificultadSubirSkill-1))
+        Else
+134         Aumenta = RandomNumber(1, Prob * DificultadSubirSkill)
+        End If
+        
+140     If Aumenta > 10 Then
+            Exit Sub
+        End If
+
+142     UserList(UserIndex).Stats.UserSkills(Skill) = UserList(UserIndex).Stats.UserSkills(Skill) + 1
+144     Call WriteLocaleMsg(UserIndex, 1626, e_FontTypeNames.FONTTYPE_INFO, SkillsNames(Skill) & "¬" & UserList(UserIndex).Stats.UserSkills(Skill))
+        Dim BonusExp As Long
+146     BonusExp = 5& * SvrConfig.GetValue("ExpMult")
+        Call WriteLocaleMsg(UserIndex, "1313", e_FontTypeNames.FONTTYPE_INFOIAO, BonusExp) 'Msg1313= ¡Has ganado ¬1 puntos de experiencia!
+
+152     If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
+154         UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + BonusExp
+
+156         If UserList(UserIndex).Stats.Exp > MAXEXP Then 
+                UserList(UserIndex).Stats.Exp = MAXEXP
+            End If
+
+            UserList(UserIndex).flags.ModificoSkills = True
+                
+158         If UserList(UserIndex).ChatCombate = 1 Then
+160             Call WriteLocaleMsg(UserIndex, "140", e_FontTypeNames.FONTTYPE_EXP, BonusExp)
+            End If
+            
+162         Call WriteUpdateExp(UserIndex)
+164         Call CheckUserLevel(UserIndex)
+        End If
+            
         Exit Sub
 
 SubirSkill_Err:
