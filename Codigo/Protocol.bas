@@ -3697,7 +3697,9 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
                     End If
                 End If
             Else
-120             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No puedo traer más criaturas, mata las existentes!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite))
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, _
+                    PrepareLocalizedChatOverHead(2082, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
+
             End If
 
         End With
@@ -3739,7 +3741,7 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
             
             'íEl NPC puede comerciar?
 112         If NpcList(.flags.TargetNPC.ArrayIndex).Comercia = 0 Then
-114             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite))
+114             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareLocalizedChatOverHead(2084, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
                 Exit Sub
 
             End If
@@ -3840,7 +3842,7 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
         
             'íEl NPC puede comerciar?
 112         If NpcList(.flags.TargetNPC.ArrayIndex).Comercia = 0 Then
-114             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite))
+114             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareLocalizedChatOverHead(2084, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
                 Exit Sub
 
             End If
@@ -9221,12 +9223,12 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
     
         'El NPC hace quests?
 108     If NpcList(NpcIndex).NumQuest = 0 Then
-110         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("No tengo ninguna misión para ti.", NpcList(NpcIndex).Char.charIndex, vbWhite))
+110         Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2085, NpcList(NpcIndex).Char.charindex, vbWhite))
             Exit Sub
 
         End If
     
-112     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("Estas haciendo demasiadas misiones. Vuelve cuando hayas completado alguna.", NpcList(NpcIndex).Char.CharIndex, vbWhite))
+112     Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2086, NpcList(NpcIndex).Char.charindex, vbWhite))
 
         Exit Sub
 
