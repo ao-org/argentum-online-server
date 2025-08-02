@@ -368,7 +368,7 @@ Public Const FireEcoIndex            As String = "Eco Ígneo (NPC)"
 Public Const MauveFlashIndex         As String = "Destello Malva (NPC)"
 
 
-Public Const MAXMASCOTASENTRENADOR   As Byte = 7
+Public Const MAXMASCOTASENTRENADOR   As Byte = 5
 
 Public Enum e_FXSound
 

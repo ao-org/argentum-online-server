@@ -3697,7 +3697,8 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
                     End If
                 End If
             Else
-120             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No puedo traer más criaturas, mata las existentes!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite))
+120             'Msg2082 = No puedo traer mas de 5 criaturas, deberás matar las existentes para volver a invocar.
+                Call WriteLocaleMsg(NpcIndex, 2082, e_FontTypeNames.FONTTYPE_INFO)
             End If
 
         End With
