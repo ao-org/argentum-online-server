@@ -1061,6 +1061,24 @@ WriteLocaleChatOverHead_Err:
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLocaleChatOverHead", Erl)
         
 End Sub
+Public Function PrepareLocalizedChatOverHead(ByVal msgId As Integer, _
+                                             ByVal charIndex As Integer, _
+                                             ByVal color As Long, _
+                                             ParamArray args() As Variant) As String
+    Dim finalText As String
+    Dim i As Long
+
+    finalText = "LOCMSG*" & msgId & "*"
+
+    For i = LBound(args) To UBound(args)
+        If i > LBound(args) Then finalText = finalText & "¬"
+        finalText = finalText & CStr(args(i))
+    Next
+
+    PrepareLocalizedChatOverHead = PrepareMessageChatOverHead(finalText, charIndex, color)
+End Function
+
+
 
 Public Sub WriteTextOverChar(ByVal UserIndex As Integer, _
                              ByVal chat As String, _
