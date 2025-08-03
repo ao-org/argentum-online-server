@@ -2071,7 +2071,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
         Dim Prob    As Integer
         
         'Cuadratic expression to sumarize old select case lvl bands 
-        Prob = Int(0.0198 * (Lvl ^ 2) + 9.98)
+        Prob = Int(0.1 * (Lvl ^ 2) + 15)
          
 136     If UserList(UserIndex).flags.PendienteDelExperto = 1 Then
             Aumenta = RandomNumber(1, Prob * (DificultadSubirSkill-1))
