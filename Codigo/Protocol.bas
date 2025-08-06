@@ -9249,112 +9249,54 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         Dim NpcIndex  As Integer
         Dim QuestSlot As Byte
         Dim Indice    As Byte
+        Dim tmpIndex As Integer
         
 100     Indice = Reader.ReadInt8
 102     If Not IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) And UserList(UserIndex).flags.QuestOpenByObj = False Then Exit Sub
-
-104     NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
-106     If NpcIndex > 0 Then
-108         If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).Trabajador And UserList(UserIndex).clase <> e_Class.Trabajador Then
-                'Msg1262= La quest es solo para trabajadores.
-                Call WriteLocaleMsg(UserIndex, "1262", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
-            
-112         If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) > 5 Then
-114             ' Msg8=Estas demasiado lejos.
-                Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
-            
-116         If TieneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(Indice)) Then
-                'Msg1263= La quest ya esta en curso.
-                Call WriteLocaleMsg(UserIndex, "1263", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
-            'El personaje completo la quest que requiere?
-120         If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest > 0 Then
-122             If Not UserDoneQuest(UserIndex, QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest) Then
-124                 Call WriteLocaleChatOverHead(UserIndex, 1424, QuestList(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest).nombre, NpcList(NpcIndex).Char.charIndex, vbYellow) ' Msg1424=Debes completar la quest ¬1 para emprender esta misión.
-                    Exit Sub
-    
-                End If
-    
-            End If
-    
-            'El personaje tiene suficiente nivel?
-126         If UserList(UserIndex).Stats.ELV < QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel Then
-128             Call WriteLocaleChatOverHead(UserIndex, 1425, QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel, NpcList(NpcIndex).Char.charIndex, vbYellow) ' Msg1425=Debes ser por lo menos nivel ¬1 para emprender esta misión.
-                Exit Sub
-            End If
-            
-            'El personaje es nivel muy alto?
-            If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).LimitLevel > 0 Then 'Si el nivel limite es mayor a 0, por si no esta asignada la propiedad en quest.dat
-                If UserList(UserIndex).Stats.ELV > QuestList(NpcList(NpcIndex).QuestNumber(Indice)).LimitLevel Then
-                    Call WriteLocaleChatOverHead(UserIndex, 1416, vbNullString, NpcList(NpcIndex).Char.charIndex, vbYellow)  ' Msg1416=Tu nivel es demasiado alto para emprender esta misión.
-                    Exit Sub
-                End If
-            End If
-            
-130         If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredSkill.SkillType > 0 Then
-132             If UserList(UserIndex).Stats.UserSkills(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredSkill.SkillType) < QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredSkill.RequiredValue Then
-134                 Call WriteLocaleChatOverHead(UserIndex, MsgRequiredSkill, SkillsNames(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredSkill.SkillType), NpcList(NpcIndex).Char.charindex, vbYellow)
-                    Exit Sub
-                End If
-            End If
-            
-            'El personaje no es la clase requerida?
-136         If UserList(UserIndex).clase <> QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredClass And _
-                QuestList(NpcList(npcIndex).QuestNumber(Indice)).RequiredClass > 0 Then
-138              Call WriteLocaleChatOverHead(UserIndex, 1426, ListaClases(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredClass), NpcList(NpcIndex).Char.charIndex, vbYellow) ' Msg1426=Debes ser ¬1 para emprender esta misión.
-                Exit Sub
-
-            End If
-            'La quest no es repetible?
-140         If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).Repetible = 0 Then
-                'El personaje ya hizo la quest?
-142             If UserDoneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(Indice)) Then
-144                 Call WriteChatOverHead(UserIndex, "QUESTNEXT*" & NpcList(NpcIndex).QuestNumber(Indice), NpcList(NpcIndex).Char.charindex, vbYellow)
-                    Exit Sub
+        NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
+        Dim tmpQuest As t_Quest
         
-                End If
-            End If
+        If NpcIndex > 0 Then
+            tmpQuest = QuestList(NpcList(NpcIndex).QuestNumber(Indice))
+            tmpIndex = NpcList(NpcIndex).QuestNumber(Indice)
+        Else
+            tmpIndex = UserList(UserIndex).flags.QuestNumber
+            tmpQuest = QuestList(tmpIndex)
+        End If
         
-146         QuestSlot = FreeQuestSlot(UserIndex)
-    
-148         If QuestSlot = 0 Then
-                Call WriteLocaleChatOverHead(UserIndex, 1417, vbNullString, NpcList(NpcIndex).Char.charIndex, vbYellow)  ' Msg1417=Debes completar las misiones en curso para poder aceptar más misiones.
-                Exit Sub
-    
-            End If
+        If Not ModQuest.CanUserAcceptQuest(UserIndex, NpcIndex, tmpIndex, tmpQuest) Then
+            Exit Sub
+        End If
         
-            'Agregamos la quest.
-152         With UserList(UserIndex).QuestStats.Quests(QuestSlot)
-                
-154             .QuestIndex = NpcList(NpcIndex).QuestNumber(Indice)
-                '.QuestIndex = UserList(UserIndex).flags.QuestNumber
-            
-156             If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
+146     QuestSlot = FreeQuestSlot(UserIndex)
+    
+148     If QuestSlot = 0 Then
+            Call WriteLocaleChatOverHead(UserIndex, 1417, vbNullString, NpcList(NpcIndex).Char.charindex, vbYellow)  ' Msg1417=Debes completar las misiones en curso para poder aceptar más misiones.
+            Exit Sub
+        End If
+    
+        'Agregamos la quest.
+152     With UserList(UserIndex).QuestStats.Quests(QuestSlot)
+154         .QuestIndex = tmpIndex
+156         If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
 158             If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
 160             UserList(UserIndex).flags.ModificoQuests = True
-                'Msg1264= Has aceptado la misión ¬1
+            'Msg1264= Has aceptado la misión ¬1
                 Call WriteLocaleMsg(UserIndex, "1264", e_FontTypeNames.FONTTYPE_INFOIAO, Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".")
-
-164             If (FinishQuestCheck(UserIndex, .QuestIndex, QuestSlot)) Then
-166                 Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 3)
-                Else
-168                 Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
-                End If
                 
-            End With
-        Else
-            
-        End If
+                If NpcIndex > 0 Then
+164                 If (FinishQuestCheck(UserIndex, .QuestIndex, QuestSlot)) Then
+166                     Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 3)
+                    Else
+168                     Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
+                    End If
+                Else
+                    Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.QuestItemSlot)
+                End If
+        End With
+        
+        
         Exit Sub
-
 HandleQuestAccept_Err:
 170     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestAccept", Erl)
 

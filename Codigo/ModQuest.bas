@@ -28,7 +28,6 @@ Attribute VB_Name = "ModQuest"
 Option Explicit
  
 'Constantes de las quests
-Public Const MAXUSERQUESTS As Integer = 5     'Maxima cantidad de quests que puede tener un usuario al mismo tiempo.
 
 Public Function TieneQuest(ByVal UserIndex As Integer, ByVal QuestNumber As Integer) As Byte
         
@@ -752,3 +751,77 @@ Handler:
 
 
 End Function
+
+Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal QuestIndex As Integer, ByRef tmpQuest As t_Quest) As Boolean
+    On Error GoTo ErrHandler
+
+    CanUserAcceptQuest = False
+
+    If tmpQuest.Trabajador And UserList(UserIndex).clase <> e_Class.Trabajador Then
+        Call WriteLocaleMsg(UserIndex, 1262, e_FontTypeNames.FONTTYPE_INFO)
+        Exit Function
+    End If
+    
+    If NpcIndex > 0 Then
+        If Distancia(UserList(UserIndex).Pos, NpcList(NpcIndex).Pos) > 5 Then
+            ' Msg8=Estas demasiado lejos.
+            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+    End If
+
+    If TieneQuest(UserIndex, QuestIndex) Then
+        Call WriteLocaleMsg(UserIndex, 1263, e_FontTypeNames.FONTTYPE_INFO)
+        Exit Function
+    End If
+    
+    If tmpQuest.RequiredQuest > 0 Then
+        If Not UserDoneQuest(UserIndex, tmpQuest.RequiredQuest) Then
+            Call WriteLocaleMsg(UserIndex, 1424, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+    End If
+    
+    
+    'El personaje tiene suficiente nivel?
+    If UserList(UserIndex).Stats.ELV < tmpQuest.RequiredLevel Then
+        Call WriteLocaleMsg(UserIndex, 1425, e_FontTypeNames.FONTTYPE_INFO)
+        Exit Function
+    End If
+    
+    'El personaje es nivel muy alto?
+    If tmpQuest.LimitLevel > 0 Then 'Si el nivel limite es mayor a 0, por si no esta asignada la propiedad en quest.dat
+        If UserList(UserIndex).Stats.ELV > tmpQuest.LimitLevel Then
+            Call WriteLocaleMsg(UserIndex, 1416, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+    End If
+    
+    If tmpQuest.RequiredSkill.SkillType > 0 Then
+        If UserList(UserIndex).Stats.UserSkills(tmpQuest.RequiredSkill.SkillType) < tmpQuest.RequiredSkill.RequiredValue Then
+            Call WriteLocaleMsg(UserIndex, 473, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+    End If
+    
+    If UserList(UserIndex).clase <> tmpQuest.RequiredClass And tmpQuest.RequiredClass > 0 Then
+        Call WriteLocaleMsg(UserIndex, 1426, e_FontTypeNames.FONTTYPE_INFO)
+        Exit Function
+    End If
+    
+    
+    If tmpQuest.Repetible = 0 Then
+        If UserDoneQuest(UserIndex, QuestIndex) Then
+            Call WriteLocaleMsg(UserIndex, "QUESTNEXT*", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+    End If
+    
+    CanUserAcceptQuest = True
+    Exit Function
+ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.CanUserAcceptQuest", Erl)
+
+End Function
+
+
