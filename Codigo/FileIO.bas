@@ -2727,8 +2727,9 @@ Sub CargarCiudades()
 294     Ciudades(e_Ciudad.cBanderbill) = Banderbill
 296     Ciudades(e_Ciudad.cLindos) = Lindos
 298     Ciudades(e_Ciudad.cArghal) = Arghal
-        Ciudades(e_Ciudad.cForgat) = Forgat
-300     Ciudades(e_Ciudad.cArkhein) = Arkhein
+299     Ciudades(e_Ciudad.cArkhein) = Arkhein
+300     Ciudades(e_Ciudad.cForgat) = Forgat
+
         
         Exit Sub
 
