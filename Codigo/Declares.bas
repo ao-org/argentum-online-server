@@ -308,6 +308,7 @@ Public Enum e_Ciudad
     cArghal
     cForgat
     cArkhein
+    cForgat
 
 End Enum
 
