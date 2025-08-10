@@ -4665,7 +4665,7 @@ Private Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIn
 
     With NpcList(NpcIndex)
 
-        .PoderAtaque = BaseHit
+        .PoderAtaque = .PoderAtaque + BaseHit
         .Stats.MinHIT = .Stats.MinHIT + (.Stats.MinHIT * BonusDamage)
         .Stats.MaxHit = .Stats.MaxHit + (.Stats.MaxHit * BonusDamage)
         
