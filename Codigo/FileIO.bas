@@ -543,32 +543,37 @@ loadAdministrativeUsers_Err:
         
 End Sub
 
-
 Public Function TxtDimension(ByVal Name As String) As Long
-        
-        On Error GoTo TxtDimension_Err
-        
 
-        Dim n As Integer, cad As String, Tam As Long
+Dim n                           As Integer
+Dim cad                         As String
+Dim Tam                         As Long
 
-100     n = FreeFile(1)
-102     Open Name For Input As #n
-104     Tam = 0
+10  On Error GoTo TxtDimension_Err
 
-106     Do While Not EOF(n)
-108         Tam = Tam + 1
-110         Line Input #n, cad
-        Loop
-112     Close n
-114     TxtDimension = Tam
+20  n = FreeFile(1)
 
-        
-        Exit Function
+30  If FileExist(name, vbArchive) Then
+40      Open name For Input As #n
+50      Tam = 0
+
+60      Do While Not EOF(n)
+70          Tam = Tam + 1
+80          Line Input #n, cad
+90      Loop
+100     Close n
+
+110     TxtDimension = Tam
+Else
+    Debug.Print "El archivo: " & name & " no existe al intentar cargar TxtDimension."
+120 End If
+
+130 Exit Function
 
 TxtDimension_Err:
-116     Call TraceError(Err.Number, Err.Description, "ES.TxtDimension", Erl)
+140 Call TraceError(Err.Number, Err.Description, "ES.TxtDimension", Erl)
 
-        
+
 End Function
 
 Public Sub CargarForbidenWords()
