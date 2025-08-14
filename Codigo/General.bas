@@ -1283,7 +1283,7 @@ Public Sub EfectoParalisisUser(ByVal UserIndex As Integer)
             Else
 104             .flags.Paralizado = 0
     
-                If .clase = e_Class.Warrior Or .clase = e_Class.Hunter Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
+                If .clase = e_Class.Warrior Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
                     .Counters.TiempoDeInmunidadParalisisNoMagicas = 3
                 End If
                 'UserList(UserIndex).Flags.AdministrativeParalisis = 0
