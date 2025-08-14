@@ -476,10 +476,6 @@ On Error GoTo UserDamageNpc_Err
             Else
                 ' Daño normal o elemental
                 DamageBase = GetUserDamage(UserIndex)
-                
-                If IsFeatureEnabled("ElementalTags") Then
-                    Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, DamageBase)
-                End If
 
                 ' NPC de pruebas
 110             If NpcList(NpcIndex).NPCtype = DummyTarget Then
@@ -497,6 +493,10 @@ On Error GoTo UserDamageNpc_Err
 149
             Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(UserIndex))
             Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(npcIndex))
+            
+            If IsFeatureEnabled("ElementalTags") Then
+                Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, DamageBase)
+            End If
 118         If Damage < 0 Then Damage = 0
 
             ' Golpe crítico
