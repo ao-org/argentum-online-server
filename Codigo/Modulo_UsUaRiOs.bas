@@ -2074,15 +2074,17 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
         'Cuadratic expression to sumarize old select case lvl bands 
         Prob = Int(0.1 * (Lvl ^ 2) + 15)
          
-136     If UserList(UserIndex).flags.PendienteDelExperto = 1 Then
-            Aumenta = RandomNumber(1, Prob * (DificultadSubirSkill-1))
-        Else
-134         Aumenta = RandomNumber(1, Prob * DificultadSubirSkill)
-        End If
+        Aumenta = RandomNumber(1, Prob * DificultadSubirSkill)
         
-140     If Aumenta > 10 Then
-            Exit Sub
+        Dim cutoff As Integer
+
+        If UserList(UserIndex).flags.PendienteDelExperto = 1 Then
+            cutoff = 20   ' Expert used to allow 1..14
+        Else
+            cutoff = 10   ' Non-expert used to allow 1..9
         End If
+
+        If Aumenta >= cutoff Then Exit Sub
 
 142     UserList(UserIndex).Stats.UserSkills(Skill) = UserList(UserIndex).Stats.UserSkills(Skill) + 1
 144     Call WriteLocaleMsg(UserIndex, 1626, e_FontTypeNames.FONTTYPE_INFO, SkillsNames(Skill) & "¬" & UserList(UserIndex).Stats.UserSkills(Skill))
