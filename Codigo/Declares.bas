@@ -416,6 +416,16 @@ Public Const VelocidadMuerto       As Single = 1.4
 
 Public Const TIEMPO_CARCEL_PIQUETE As Long = 5
 
+Public Enum e_ElementTags
+    Normal = 0
+    Fire = 1
+    Water = 2
+    Earth = 4
+    Thunder = 8
+End Enum
+
+Public ElementalMatrixForNpcs(1 To 32, 1 To 32) As Single
+
 ''
 ' TRIGGERS
 '
@@ -1769,6 +1779,7 @@ Public Type t_ObjData
     ObjFlags As Long 'use bitmask from enum e_ObjFlags
     
     JineteLevel As Byte
+    ElementTags As Long
     
 End Type
 
@@ -2602,6 +2613,9 @@ Public Type t_NPCFlags
     BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
     Team As Byte
+
+    ElementTags As Long
+
 End Type
 
 Public Type t_CriaturasEntrenador
