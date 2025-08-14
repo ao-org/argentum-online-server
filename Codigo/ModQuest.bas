@@ -777,7 +777,7 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
     
     If tmpQuest.RequiredQuest > 0 Then
         If Not UserDoneQuest(UserIndex, tmpQuest.RequiredQuest) Then
-            Call WriteLocaleMsg(UserIndex, 1424, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 1424, e_FontTypeNames.FONTTYPE_INFO, QuestList(tmpQuest.RequiredQuest).nombre)
             Exit Function
         End If
     End If
