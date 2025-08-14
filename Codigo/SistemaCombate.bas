@@ -2712,6 +2712,11 @@ Public Sub CalculateElementalTagsModifiers(ByVal UserIndex As Integer, ByVal Npc
     ' Get the bitmask of elements from the NPC
     defenderElementMask = NpcList(NpcIndex).flags.ElementTags
 
+    If attackerElementMask = 0 Or defenderElementMask = 0 Then
+        ' No elemental tags to process
+        Exit Sub
+    End If
+
     ' Loop over each possible attacker element (0 to 31)
     For attackerIndex = 0 To 31
         ' Create a bitmask for the current attacker element
