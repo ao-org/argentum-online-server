@@ -306,8 +306,7 @@ Public Enum e_Ciudad
     cBanderbill
     cLindos
     cArghal
-	cForgat
-    cArkhein
+	cArkhein
     cForgat
     cEldoria
 
