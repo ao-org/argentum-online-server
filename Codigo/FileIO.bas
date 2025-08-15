@@ -1139,9 +1139,23 @@ Sub LoadBalance()
 173     For i = 1 To STAT_MAXELV
 174         ExpLevelUp(i) = val(BalanceIni.GetValue("EXP", i))
         Next
+
+
+        'MatrizElementalNpcs
+        Dim vals() As String
+        Dim row As String
+
+        For i = 0 To 31
+        row = (CStr(BalanceIni.GetValue("MatrizElementalNpcs", "Row" & i + 1, "1")))
+        vals = Split(row, " ")
+                For j = 0 To 31
+                ElementalMatrixForNpcs(i + 1, j + 1) = CSng(vals(j))
+                Next j
+        Next i
+        '--------------------
+        
     
 176     Set BalanceIni = Nothing
-    
 178     AgregarAConsola "Se cargó el balance (Balance.dat)"
 
         
@@ -1341,6 +1355,7 @@ Sub LoadOBJData()
                 .ImprovedMeleeHitChance = val(Leer.GetValue(ObjKey, "ImprovedMHit"))
                 .ApplyEffectId = val(Leer.GetValue(ObjKey, "ApplyEffectId"))
                 .JineteLevel = val(Leer.GetValue(ObjKey, "JineteLevel"))
+                .ElementTags = val(Leer.GetValue(ObjKey, "ElementTags"))
                 If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
                 If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
                 

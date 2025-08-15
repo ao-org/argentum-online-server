@@ -474,8 +474,8 @@ On Error GoTo UserDamageNpc_Err
                 'registramos quien mato y uso la MD
                 Call LogGM(.name, " Mato un Dragon Rojo ")
             Else
-                ' Daño normal
-108             DamageBase = GetUserDamage(UserIndex)
+                ' Daño normal o elemental
+                DamageBase = GetUserDamage(UserIndex)
 
                 ' NPC de pruebas
 110             If NpcList(NpcIndex).NPCtype = DummyTarget Then
@@ -493,6 +493,10 @@ On Error GoTo UserDamageNpc_Err
 149
             Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(UserIndex))
             Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(npcIndex))
+            
+            If IsFeatureEnabled("ElementalTags") Then
+                Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, DamageBase)
+            End If
 118         If Damage < 0 Then Damage = 0
 
             ' Golpe crítico
@@ -2694,3 +2698,42 @@ Public Sub ConsumeAmunition(ByVal UserIndex As Integer)
     End With
 End Sub
 
+Public Sub CalculateElementalTagsModifiers(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByRef DmgAcumulator As Long)
+    Dim attackerElementMask As Long
+    Dim defenderElementMask As Long
+    Dim attackerBit As Long
+    Dim defenderBit As Long
+    Dim attackerIndex As Long
+    Dim defenderIndex As Long
+
+    ' Get the bitmask of elements from the equipped weapon
+    attackerElementMask = ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).ElementTags
+
+    ' Get the bitmask of elements from the NPC
+    defenderElementMask = NpcList(NpcIndex).flags.ElementTags
+
+    If attackerElementMask = 0 Or defenderElementMask = 0 Then
+        ' No elemental tags to process
+        Exit Sub
+    End If
+
+    ' Loop over each possible attacker element (0 to 31)
+    For attackerIndex = 0 To 31
+        ' Create a bitmask for the current attacker element
+        attackerBit = ShiftLeft(1, attackerIndex)
+        
+        ' Ensure shift is valid and safe (only 0 to 31)
+        If attackerBit <> 0 And IsSet(attackerElementMask, attackerBit) Then
+            ' Loop over each possible defender element
+            For defenderIndex = 0 To 31
+                defenderBit = ShiftLeft(1, defenderIndex)
+                
+                If defenderBit <> 0 And IsSet(defenderElementMask, defenderBit) Then
+                    ' Multiply the accumulated damage by the matrix value
+                    ' Matrix is 1-based, so we add 1 to both indexes
+                    DmgAcumulator = DmgAcumulator * ElementalMatrixForNpcs(attackerIndex + 1, defenderIndex + 1)
+                End If
+            Next defenderIndex
+        End If
+    Next attackerIndex
+End Sub
