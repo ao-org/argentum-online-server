@@ -568,7 +568,7 @@ On Error GoTo OpenLobby_Err
         If Not instance.Scenario Is Nothing Then
              EventName = instance.Scenario.GetScenarioName()
         End If
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgCreateEventRoom, EventName, e_FontTypeNames.FONTTYPE_GLOBAL))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgCreateEventRoom, EventName & "¬" & instance.MaxPlayers & "¬" & instance.MinLevel & "¬" & instance.MaxLevel & "¬" & instance.InscriptionPrice, e_FontTypeNames.FONTTYPE_GLOBAL))
         If Not instance.Scenario Is Nothing Then
              Call instance.Scenario.BroadcastOpenScenario
         End If
