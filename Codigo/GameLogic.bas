@@ -394,104 +394,138 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
         '***************************************************
         On Error GoTo ErrHandler
 
-        Dim nPos   As t_WorldPos
+        Dim nPos        As t_WorldPos
+        Dim EsTeleport  As Boolean
+        Dim TelepRadio  As Byte
+        Dim aN          As Integer
+        Dim destPos     As t_WorldPos
+        Dim teMap       As Integer
 
-        Dim EsTeleport As Boolean
-        Dim TelepRadio As Byte
-        Dim aN As Integer
-        Dim destPos As t_WorldPos
 100     With UserList(UserIndex)
             'Controla las salidas
 102         If InMapBounds(Map, X, Y) Then
-                If MapData(Map, X, Y).trigger = AUTORESU Then
-                    Call ResucitarOCurar(UserIndex)
-                End If
-104             If MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
-106                 EsTeleport = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otTeleport
-                End If
-                If Not MapData(map, X, y).Trap Is Nothing Then
-                    Call ModMap.ActivateTrap(UserIndex, eUser, map, X, y)
-                End If
-                If EsTeleport Then
-108                 If ObjData(MapData(map, X, y).ObjInfo.objIndex).Subtipo = e_TeleportSubType.eTransportNetwork Then
-110                     Dim StartTransportIndex As Integer
-112                     Dim ExitPortal As Integer
-114                     StartTransportIndex = GetTransportNextIndex(map, X, y)
-116                     If .LastTransportNetwork.map = map And .LastTransportNetwork.ExitIndex = StartTransportIndex Then
-118                         ExitPortal = .LastTransportNetwork.StartIdex
-                        Else
-120                         ExitPortal = GetExitTransport(map, StartTransportIndex)
-                        End If
-122                     destPos = MapData(map, MapInfo(map).TransportNetwork(ExitPortal).TileX, MapInfo(map).TransportNetwork(ExitPortal).TileY).TileExit
-124                     If destPos.map > 0 And destPos.map <= NumMaps Then
-126                         .LastTransportNetwork.map = map
-128                         .LastTransportNetwork.StartIdex = StartTransportIndex
-130                         .LastTransportNetwork.ExitIndex = ExitPortal
-132                         Call WarpUserChar(UserIndex, destPos.map, destPos.X, destPos.y, EsTeleport)
-                        Else
-134                         Call LogError("Invalid teleport at map: " & map & "(" & X & ", " & y & ")")
-                        End If
-                        Exit Sub
+                ' 1) Muertos: si es TRANSFER_ONLY_DEAD, warpea y corta.
+104             If TryDeadExit(UserIndex, Map, x, y) Then Exit Sub
+
+                ' 2) Vivos sobre TRANSFER_ONLY_DEAD: NO teletransportar
+106             Dim SkipTeleports As Boolean
+108             If .flags.Muerto <> 1 Then
+110                 If MapData(Map, x, y).trigger = e_Trigger.TRANSFER_ONLY_DEAD Then
+112                     SkipTeleports = True
                     End If
                 End If
-                
-    
-136             If (MapData(map, X, y).TileExit.map > 0) And (MapData(map, X, y).TileExit.map <= NumMaps) Then
-    
-                    '  Restricciones de mapas
-138                 If CheckMapRestrictions(UserIndex, MapData(map, X, y).TileExit.map) Then
-140                     If EsMapaInterdimensional(MapData(map, X, y).TileExit.map) And Not EsMapaInterdimensional(.pos.map) Then
-142                         .flags.ReturnPos = .pos
-                        End If
-                        
-144                     destPos.map = MapData(map, X, y).TileExit.map
-                        If EsTeleport Then
-146                         destPos.X = RandomNumber(MapData(map, X, y).TileExit.X - ObjData(MapData(map, X, y).ObjInfo.objIndex).Radio, MapData(map, X, y).TileExit.X + ObjData(MapData(map, X, y).ObjInfo.objIndex).Radio)
-148                         destPos.y = RandomNumber(MapData(map, X, y).TileExit.y - ObjData(MapData(map, X, y).ObjInfo.objIndex).Radio, MapData(map, X, y).TileExit.y + ObjData(MapData(map, X, y).ObjInfo.objIndex).Radio)
-                        Else
-150                         destPos.X = MapData(map, X, y).TileExit.X
-152                         destPos.y = MapData(map, X, y).TileExit.y
-                        End If
-                        
-                        If .flags.Navegando Then
-154                         Call ClosestLegalPos(destPos, nPos, True)
-                        Else
-156                         Call ClosestLegalPos(destPos, nPos)
-                        End If
-                        
-158                     If nPos.X <> 0 And nPos.y <> 0 Then
-160                         Call WarpUserChar(UserIndex, nPos.map, nPos.X, nPos.y, EsTeleport)
+
+                ' AUTORESU: se procesa siempre (no es teleport)
+114             If MapData(Map, x, y).trigger = AUTORESU Then
+116                 Call ResucitarOCurar(UserIndex)
+                End If
+
+                ' Trampas: se activan siempre (no son teleports)
+118             If Not MapData(Map, x, y).Trap Is Nothing Then
+120                 Call ModMap.ActivateTrap(UserIndex, eUser, Map, x, y)
+                End If
+
+                ' ======= BLOQUE DE TELEPORTS (solo si NO estamos bloqueando) =======
+122             If Not SkipTeleports Then
+
+                    ' --- Teleport por objeto / red de transporte ---
+124                 EsTeleport = False ' evitar arrastrar valor de otro tile
+126                 If MapData(Map, x, y).ObjInfo.ObjIndex > 0 Then
+128                     EsTeleport = (ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).OBJType = e_OBJType.otTeleport)
+                    End If
+
+130                 If EsTeleport Then
+132                     If ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Subtipo = e_TeleportSubType.eTransportNetwork Then
+134                         Dim StartTransportIndex As Integer
+136                         Dim ExitPortal As Integer
+
+138                         StartTransportIndex = GetTransportNextIndex(Map, x, y)
+
+140                         If .LastTransportNetwork.Map = Map And .LastTransportNetwork.ExitIndex = StartTransportIndex Then
+142                             ExitPortal = .LastTransportNetwork.StartIdex
+                            Else
+144                             ExitPortal = GetExitTransport(Map, StartTransportIndex)
+                            End If
+
+146                         destPos = MapData(Map, MapInfo(Map).TransportNetwork(ExitPortal).TileX, MapInfo(Map).TransportNetwork(ExitPortal).TileY).TileExit
+
+148                         If destPos.Map > 0 And destPos.Map <= NumMaps Then
+150                             .LastTransportNetwork.Map = Map
+152                             .LastTransportNetwork.StartIdex = StartTransportIndex
+154                             .LastTransportNetwork.ExitIndex = ExitPortal
+156                             Call WarpUserChar(UserIndex, destPos.Map, destPos.x, destPos.y, EsTeleport)
+                            Else
+158                             Call LogError("Invalid teleport at map: " & Map & " (" & x & ", " & y & ")")
+                            End If
+160                         Exit Sub
                         End If
                     End If
-    
-                    'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
-162                 Call ClearAttackerNpc(UserIndex)
-    
-164             ElseIf MapData(map, X, y).TileExit.map < 0 Then
-166                 If .flags.ReturnPos.map <> 0 Then
-168                     If LegalPos(.flags.ReturnPos.map, .flags.ReturnPos.X, .flags.ReturnPos.y, .flags.Navegando = 1, , , False) Then
-170                         Call WarpUserChar(UserIndex, .flags.ReturnPos.map, .flags.ReturnPos.X, .flags.ReturnPos.y, False)
-                        
+
+                    ' --- TileExit normal / ReturnPos ---
+162                 teMap = MapData(Map, x, y).TileExit.Map
+
+164                 If teMap <> 0 Then
+                        ' teMap > 0 => salto a otro mapa
+166                     If teMap > 0 And teMap <= NumMaps Then
+
+168                         If CheckMapRestrictions(UserIndex, teMap) Then
+170                             If EsMapaInterdimensional(teMap) And Not EsMapaInterdimensional(.pos.Map) Then
+172                                 .flags.ReturnPos = .pos
+                                End If
+
+174                             destPos.Map = teMap
+176                             If EsTeleport Then
+178                                 destPos.x = RandomNumber(MapData(Map, x, y).TileExit.x - ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Radio, _
+                                                            MapData(Map, x, y).TileExit.x + ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Radio)
+180                                 destPos.y = RandomNumber(MapData(Map, x, y).TileExit.y - ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Radio, _
+                                                            MapData(Map, x, y).TileExit.y + ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Radio)
+                                Else
+182                                 destPos.x = MapData(Map, x, y).TileExit.x
+184                                 destPos.y = MapData(Map, x, y).TileExit.y
+                                End If
+
+186                             If .flags.Navegando Then
+188                                 Call ClosestLegalPos(destPos, nPos, True)
+                                Else
+190                                 Call ClosestLegalPos(destPos, nPos)
+                                End If
+
+192                             If nPos.x <> 0 And nPos.y <> 0 Then
+194                                 Call WarpUserChar(UserIndex, nPos.Map, nPos.x, nPos.y, EsTeleport)
+                                End If
+                            End If
+
+                            ' Te fuiste del mapa -> limpiar agresores
+196                         Call ClearAttackerNpc(UserIndex)
+
                         Else
-172                         Call ClosestLegalPos(.flags.ReturnPos, nPos)
-                        
-174                         If nPos.X <> 0 And nPos.y <> 0 Then
-176                             Call WarpUserChar(UserIndex, nPos.map, nPos.X, nPos.y, EsTeleport)
+                            ' teMap < 0 => volver a ReturnPos
+198                         If .flags.ReturnPos.Map <> 0 Then
+200                             If LegalPos(.flags.ReturnPos.Map, .flags.ReturnPos.x, .flags.ReturnPos.y, .flags.Navegando = 1, , , False) Then
+202                                 Call WarpUserChar(UserIndex, .flags.ReturnPos.Map, .flags.ReturnPos.x, .flags.ReturnPos.y, False)
+                                Else
+204                                 Call ClosestLegalPos(.flags.ReturnPos, nPos)
+206                                 If nPos.x <> 0 And nPos.y <> 0 Then
+208                                     Call WarpUserChar(UserIndex, nPos.Map, nPos.x, nPos.y, EsTeleport)
+                                    End If
+                                End If
+
+                                ' Te fuiste del mapa -> limpiar agresores
+210                             Call ClearAttackerNpc(UserIndex)
                             End If
                         End If
-                        
-                        'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
-178                     Call ClearAttackerNpc(UserIndex)
                     End If
-                End If
-            End If
 
+                End If
+                ' ======= FIN BLOQUE DE TELEPORTS =======
+
+            End If
         End With
 
         Exit Sub
 
 ErrHandler:
-    Call TraceError(Err.Number, Err.Description, ".DotileEvents", Erl)
+        Call TraceError(Err.Number, Err.Description, ".DoTileEvents", Erl)
 End Sub
 
 Public Sub ClearAttackerNpc(ByVal UserIndex As Integer)
@@ -2387,3 +2421,52 @@ Public Function PreferedTileForDirection(ByRef Direction As t_Vector, ByRef Curr
         PreferedTileForDirection = Ret
     End If
 End Function
+
+Public Function TryDeadExit(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    On Error GoTo eh
+
+    If UserList(UserIndex).flags.Muerto <> 1 Then Exit Function
+    If MapData(Map, x, y).trigger <> e_Trigger.TRANSFER_ONLY_DEAD Then Exit Function
+
+    Dim dest As t_WorldPos
+    Dim nPos As t_WorldPos
+    dest = MapData(Map, x, y).TileExit
+
+    ' --- Destino normal por TileExit ---
+    If dest.Map > 0 And dest.Map <= NumMaps Then
+        If UserList(UserIndex).flags.Navegando Then
+            Call ClosestLegalPos(dest, nPos, True)
+        Else
+            Call ClosestLegalPos(dest, nPos)
+        End If
+        If nPos.x <> 0 And nPos.y <> 0 Then
+            Call WarpUserChar(UserIndex, nPos.Map, nPos.x, nPos.y, False)
+            Call ClearAttackerNpc(UserIndex)
+            TryDeadExit = True
+            Exit Function
+        End If
+    End If
+
+    ' --- Fallback opcional: ReturnPos ---
+    ' (Útil si el TRANSFER_ONLY_DEAD no tiene TileExit válido)
+    Dim rp As t_WorldPos
+    rp = UserList(UserIndex).flags.ReturnPos
+    If rp.Map <> 0 Then
+        If UserList(UserIndex).flags.Navegando Then
+            Call ClosestLegalPos(rp, nPos, True)
+        Else
+            Call ClosestLegalPos(rp, nPos)
+        End If
+        If nPos.x <> 0 And nPos.y <> 0 Then
+            Call WarpUserChar(UserIndex, nPos.Map, nPos.x, nPos.y, False)
+            Call ClearAttackerNpc(UserIndex)
+            TryDeadExit = True
+            Exit Function
+        End If
+    End If
+
+    Exit Function
+eh:
+    Call TraceError(Err.Number, Err.Description, "TryDeadExit", Erl)
+End Function
+
