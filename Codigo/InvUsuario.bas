@@ -3510,6 +3510,7 @@ TirarTodosLosItems_Err:
 End Sub
 
 Sub DropItemsWithPendant(ByVal UserIndex As Integer)
+    'DropItemsWithPendant replaces the normal drop items function (TirarTodosLosItems) if the player has the amulet equiped because it makes the user retain equipable items up to a certain (MaxItemsDroppedWhenUsingAmulet) amount in their inventory after death
 
         On Error GoTo DropItemsWithPendant_Err
 
