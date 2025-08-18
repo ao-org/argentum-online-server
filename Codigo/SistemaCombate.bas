@@ -494,7 +494,7 @@ On Error GoTo UserDamageNpc_Err
             Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(UserIndex))
             Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(npcIndex))
             
-            If IsFeatureEnabled("ElementalTags") Then
+            If IsFeatureEnabled("elemental_tags") Then
                 Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, DamageBase)
             End If
 118         If Damage < 0 Then Damage = 0

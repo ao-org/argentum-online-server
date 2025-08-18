@@ -2767,7 +2767,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
 105             Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
                 Damage = Damage * NPCs.GetSelfHealingBonus(NpcList(NpcIndex))
 
-                If IsFeatureEnabled("ElementalTags") Then
+                If IsFeatureEnabled("elemental_tags") Then
                     Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, Damage)
                 End If
                 
@@ -2837,7 +2837,7 @@ Call WriteLocaleMsg(UserIndex, "821", e_FontTypeNames.FONTTYPE_INFOIAO)
             Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
             Damage = Damage * NPCs.GetMagicDamageReduction(NpcList(NpcIndex))
 166         If Damage < 0 Then Damage = 0
-            If IsFeatureEnabled("ElementalTags") Then
+            If IsFeatureEnabled("elemental_tags") Then
                 Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, Damage)
             End If
 170         Call InfoHechizo(UserIndex)
