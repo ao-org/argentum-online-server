@@ -736,6 +736,10 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
                     .Pos.map = 196
                     .Pos.x = 43
                     .Pos.y = 58
+                Case e_Ciudad.cEldoria
+                    .Pos.map = 440
+                    .Pos.x = 50
+                    .Pos.y = 88
             End Select
         
 254         UltimoChar = UCase$(name)

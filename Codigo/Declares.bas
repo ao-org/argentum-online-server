@@ -306,8 +306,10 @@ Public Enum e_Ciudad
     cBanderbill
     cLindos
     cArghal
+	cArkhein
     cForgat
-    cArkhein
+    cEldoria
+
 
 End Enum
 
@@ -802,6 +804,7 @@ Public Const GRH_FALLO_PESCA     As Long = 48974
 'Numero de objeto de la poción de reset
 Public Const POCION_RESET       As Long = 3378
 
+Public Const MAXUSERQUESTS As Integer = 5     'Maxima cantidad de quests que puede tener un usuario al mismo tiempo.
 ''
 ' Cantidad maxima de objetos por slot de inventario
 Public Const MAX_INVENTORY_OBJS      As Integer = 10000
@@ -2987,6 +2990,7 @@ Public Lindos                             As t_WorldPos
 Public Arghal                             As t_WorldPos
 Public Forgat                             As t_WorldPos
 Public Arkhein                            As t_WorldPos
+Public Eldoria                            As t_WorldPos
 Public CityNix                            As t_CityWorldPos
 Public CityUllathorpe                     As t_CityWorldPos
 Public CityBanderbill                     As t_CityWorldPos
@@ -2996,6 +3000,7 @@ Public CityPenthar                        As t_CityWorldPos
 Public CityLindos                         As t_CityWorldPos
 Public CityEleusis                        As t_CityWorldPos
 Public CityArkhein                        As t_CityWorldPos
+Public CityEldoria                        As t_CityWorldPos
 Public Prision                            As t_WorldPos
 Public Libertad                           As t_WorldPos
 Public Renacimiento                       As t_WorldPos

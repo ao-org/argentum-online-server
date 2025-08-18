@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "NavalBoarding"
+Attribute VB_Name = "ScenarioNavalBoarding"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -69,7 +69,7 @@ End Type
 Private Type t_CargoElement
     WorldPos As t_WorldPos 'keeps track where it is in the work
     CarrierIndex As Integer 'keeps track of the user that carry this item
-    id As Integer
+    Id As Integer
     ItemIndex As Integer
 End Type
 
@@ -109,7 +109,7 @@ Private Type t_UserList
     RegisteredUserCount As Integer
 End Type
 
-Dim MapNumbers(1) As Integer
+Dim MapNumbers(0 To 1) As Integer
 Dim TileBlocks() As t_TilePos
 
 Dim SpawnedUserList As t_UserList
@@ -235,7 +235,7 @@ Private Sub LoadTeamCargo(ByRef TeamCargo As t_Cargo, ByVal team As Integer, Sce
 126     For i = 1 To CargoCount
 128         TeamCargo.ItemList(i).ItemIndex = TeamCargo.CargoItemId
 130         TeamCargo.ItemList(i).CarrierIndex = 0
-132         TeamCargo.ItemList(i).id = team * 1000 + i
+132         TeamCargo.ItemList(i).Id = team * 1000 + i
 134         TeamCargo.ItemList(i).WorldPos.x = TeamCargo.OriginalCargoArea.TopLeft.PosX + ((i - 1) Mod Width)
 136         TeamCargo.ItemList(i).WorldPos.y = TeamCargo.OriginalCargoArea.TopLeft.PosY + ((i - 1) \ Width)
 138         TeamCargo.ItemList(i).WorldPos.Map = MapNumbers(1)
@@ -331,7 +331,7 @@ Private Sub RemoveForbiddenItems(ByVal UserIndex As Integer)
         End If
         
         For i = 0 To SpawnedUserList.RegisteredUserCount - 1
-            If SpawnedUserList.UserList(i).UserId = .id Then
+            If SpawnedUserList.UserList(i).UserId = .Id Then
                 Exit For
             End If
         Next i
@@ -392,8 +392,8 @@ Private Function IsForbidden(ByVal ItemId As Integer) As Boolean
     IsForbidden = False
 End Function
 
-Public Sub IBaseScenario_SetLobbyIndex(ByVal Value As Integer)
-    LobbyIndex = Value
+Public Sub IBaseScenario_SetLobbyIndex(ByVal value As Integer)
+    LobbyIndex = value
     Call ConfigMapLobby
 End Sub
 
@@ -401,7 +401,7 @@ Public Function IBaseScenario_GetScenarioName() As String
     IBaseScenario_GetScenarioName = "Abordaje"
 End Function
 
-Public Sub IBaseScenario_BroadcastOpenScenario(ByVal CreatorIndex As Integer)
+Public Sub IBaseScenario_BroadcastOpenScenario()
     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalConquestIntro, "", e_FontTypeNames.FONTTYPE_GUILD))
 End Sub
 
@@ -438,7 +438,7 @@ Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
     Dim i As Integer
     With UserList(UserIndex)
         For i = 0 To SpawnedUserList.RegisteredUserCount - 1
-            If SpawnedUserList.UserList(i).UserId = .id Then
+            If SpawnedUserList.UserList(i).UserId = .Id Then
                 Exit For
             End If
         Next i
@@ -455,7 +455,7 @@ Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
             Next i
             If UserItemInfo.RemovedItemCount > 0 Then
                 SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount) = UserItemInfo
-                SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount).UserId = .id
+                SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount).UserId = .Id
                 SpawnedUserList.RegisteredUserCount = SpawnedUserList.RegisteredUserCount + 1
                 Call UpdateUserInv(True, UserIndex, 0)
             End If
@@ -533,7 +533,7 @@ Public Sub IBaseScenario_Update()
             Exit Sub
         End If
     ElseIf LobbyList(LobbyIndex).State = e_LobbyState.AcceptingPlayers Then
-        Call UpdateWaitingForPlayers(FrameTime, LobbyList(LobbyIndex))
+        Call UpdateWaitingForPlayers(frametime, LobbyList(LobbyIndex))
     ElseIf LobbyList(LobbyIndex).State = e_LobbyState.Closed Then
         Call CloseScenario
     End If
@@ -609,8 +609,8 @@ Private Sub MatchCompleted()
     Call SetTimer(CountdownTimer, 1000)
     Dim i As Integer
     For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
-        If IsValidUserRef(LobbyList(LobbyIndex).Players(i).user) Then
-            Call RemoveForbiddenItems(LobbyList(LobbyIndex).Players(i).user.ArrayIndex)
+        If IsValidUserRef(LobbyList(LobbyIndex).Players(i).User) Then
+            Call RemoveForbiddenItems(LobbyList(LobbyIndex).Players(i).User.ArrayIndex)
         End If
     Next i
     LobbyList(LobbyIndex).State = Completed
@@ -861,7 +861,7 @@ Public Sub IInventoryInterface_UserDidPickupItem(ByVal UserIndex As Integer, ByV
                TeamCargo(ItemTeam).ItemList(i).WorldPos.y = .pos.y And _
                TeamCargo(ItemTeam).ItemList(i).WorldPos.Map = .pos.Map Then
                TeamCargo(ItemTeam).ItemList(i).CarrierIndex = UserIndex
-               Call UserLoot.Add(UserIndex, TeamCargo(ItemTeam).ItemList(i).id)
+               Call UserLoot.Add(UserIndex, TeamCargo(ItemTeam).ItemList(i).Id)
             Exit Sub
             End If
         Next i
@@ -899,15 +899,15 @@ Public Sub IInventoryInterface_UserDropItem(ByVal UserIndex As Integer, ByVal Sl
                 'TODO: LOG ERROR
                 Exit Sub
             End If
-            Dim id As Integer
-            id = UserLoot.Item(UserIndex)
-            id = id - ItemTeam * 1000
+            Dim Id As Integer
+            Id = UserLoot.Item(UserIndex)
+            Id = Id - ItemTeam * 1000
             UserLoot.Remove (UserIndex)
-            If TeamCargo(ItemTeam).ItemList(id).CarrierIndex = UserIndex Then
-                TeamCargo(ItemTeam).ItemList(id).WorldPos.Map = Map
-                TeamCargo(ItemTeam).ItemList(id).WorldPos.x = TileX
-                TeamCargo(ItemTeam).ItemList(id).WorldPos.y = TileY
-                TeamCargo(ItemTeam).ItemList(id).CarrierIndex = 0
+            If TeamCargo(ItemTeam).ItemList(Id).CarrierIndex = UserIndex Then
+                TeamCargo(ItemTeam).ItemList(Id).WorldPos.Map = Map
+                TeamCargo(ItemTeam).ItemList(Id).WorldPos.x = TileX
+                TeamCargo(ItemTeam).ItemList(Id).WorldPos.y = TileY
+                TeamCargo(ItemTeam).ItemList(Id).CarrierIndex = 0
                 If IsInsideArea(TeamCargo(.flags.CurrentTeam).DropArea, TileX, TileY) Or _
                    IsInsideArea(TeamCargo(.flags.CurrentTeam).OriginalCargoArea, TileX, TileY) Then
                     Call ValidateCargoAreasForTeam(.flags.CurrentTeam)
@@ -1161,11 +1161,11 @@ Sub GiveRewards()
     End If
     Dim i As Integer
     For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
-        If IsValidUserRef(LobbyList(LobbyIndex).Players(i).user) Then
+        If IsValidUserRef(LobbyList(LobbyIndex).Players(i).User) Then
             If LobbyList(LobbyIndex).Players(i).team = 1 Then
-                Team1 = Team1 & UserList(LobbyList(LobbyIndex).Players(i).user.ArrayIndex).name & " "
+                Team1 = Team1 & UserList(LobbyList(LobbyIndex).Players(i).User.ArrayIndex).name & " "
             ElseIf LobbyList(LobbyIndex).Players(i).team = 2 Then
-                Team2 = Team2 & UserList(LobbyList(LobbyIndex).Players(i).user.ArrayIndex).name & " "
+                Team2 = Team2 & UserList(LobbyList(LobbyIndex).Players(i).User.ArrayIndex).name & " "
             End If
             If LobbyList(LobbyIndex).Players(i).team = Winner Then
                 TeamSize = TeamSize + 1
@@ -1176,7 +1176,7 @@ Sub GiveRewards()
         Reward = LobbyList(LobbyIndex).AvailableInscriptionMoney / TeamSize
     End If
     For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
-        If IsValidUserRef(LobbyList(LobbyIndex).Players(i).user) Then
+        If IsValidUserRef(LobbyList(LobbyIndex).Players(i).User) Then
             If LobbyList(LobbyIndex).Players(i).team = Winner Then
                 Call GiveGoldToPlayer(LobbyList(LobbyIndex), i, Reward)
             End If
