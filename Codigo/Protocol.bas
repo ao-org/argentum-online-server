@@ -277,7 +277,11 @@ On Error Resume Next
         End If
     #End If
     
-    Select Case PacketID
+    Select Case PacketId
+        Case ClientPacketID.ePlayerIsAfk
+            Call HandlePlayerIsAfk(UserIndex)
+        Case ClientPacketID.eLoginExistingChar
+            Call HandleLoginExistingChar(ConnectionID)
         Case ClientPacketID.eLoginExistingChar
             Call HandleLoginExistingChar(ConnectionId)
         Case ClientPacketID.eLoginNewChar
@@ -1335,6 +1339,25 @@ ErrHandler:
      Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginNewChar", Erl)
 End Sub
 #End If
+
+''
+' Handles the "HandlePlayerIsAfk" message.
+'
+' @param    UserIndex The index of the user sending the message.
+
+
+Private Sub HandlePlayerIsAfk(ByVal UserIndex As Integer)
+        
+        Call SpawnNpc(SvrConfig.GetValue("NPC_WATCHMAN_ID"), UserList(UserIndex).pos, False, False)
+            
+        On Error GoTo ErrHandler
+        
+        Exit Sub
+        
+ErrHandler:
+     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePlayerIsAfk", Erl)
+
+End Sub
 
 ''
 ' Handles the "Talk" message.
