@@ -2707,10 +2707,10 @@ Public Sub CalculateElementalTagsModifiers(ByVal UserIndex As Integer, ByVal Npc
     Dim defenderIndex As Long
 
     ' Get the bitmask of elements from the equipped weapon
-    attackerElementMask = ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).ElementTags
+    attackerElementMask = ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).ElementalTags
 
     ' Get the bitmask of elements from the NPC
-    defenderElementMask = NpcList(NpcIndex).flags.ElementTags
+    defenderElementMask = NpcList(NpcIndex).flags.ElementalTags
 
     If attackerElementMask = 0 Or defenderElementMask = 0 Then
         ' No elemental tags to process

@@ -1043,6 +1043,36 @@ LoadArmadurasHerreria_Err:
         
 End Sub
 
+Sub LoadRunasElementalesHerreria()
+        
+        On Error GoTo LoadRunasHerreria_Err
+        
+
+        Dim n As Integer, lc As Integer
+    
+100     n = val(GetVar(DatPath & "RunasElementalesHerrero.dat", "INIT", "NumRunas"))
+    
+102     If n = 0 Then
+104         ReDim RunasElementalesHerrero(0) As Integer
+            Exit Sub
+
+        End If
+    
+106     ReDim Preserve RunasElementalesHerrero(1 To n) As Integer
+    
+108     For lc = 1 To n
+110         RunasElementalesHerrero(lc) = val(GetVar(DatPath & "RunasElementalesHerrero.dat", "Runa" & lc, "Index"))
+112     Next lc
+
+        
+        Exit Sub
+
+LoadRunasHerreria_Err:
+114     Call TraceError(Err.Number, Err.Description, "ES.LoadRunasElementalesHerreria", Erl)
+
+        
+End Sub
+
 Sub LoadBalance()
         
         On Error GoTo LoadBalance_Err
@@ -1355,7 +1385,7 @@ Sub LoadOBJData()
                 .ImprovedMeleeHitChance = val(Leer.GetValue(ObjKey, "ImprovedMHit"))
                 .ApplyEffectId = val(Leer.GetValue(ObjKey, "ApplyEffectId"))
                 .JineteLevel = val(Leer.GetValue(ObjKey, "JineteLevel"))
-                .ElementTags = val(Leer.GetValue(ObjKey, "ElementTags"))
+                .ElementalTags = val(Leer.GetValue(ObjKey, "ElementalTags"))
                 If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
                 If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
                 
@@ -1582,6 +1612,9 @@ Sub LoadOBJData()
 434                     .LingoteIndex = val(Leer.GetValue(ObjKey, "LingoteIndex"))
                     Case e_OBJType.otUsableOntarget
                         .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
+                        
+                    Case e_OBJType.otElementalRune
+                        .Hechizo = val(Leer.GetValue(ObjKey, "Hechizo"))
                 End Select
 424             .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
 425             .MagicAbsoluteBonus = val(Leer.GetValue(ObjKey, "MagicAbsoluteBonus"))

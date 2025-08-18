@@ -3348,6 +3348,22 @@ EnivarObjConstruibles_Err:
         
 End Sub
 
+Sub EnivarRunasElementalesConstruibles(ByVal UserIndex As Integer)
+        
+        On Error GoTo EnivarRunasElementalesConstruibles_Err
+        
+
+100     Call WriteBlacksmithElementalRunes(UserIndex)
+
+        
+        Exit Sub
+
+EnivarRunasElementalesConstruibles_Err:
+102     Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarRunasElementalesConstruibles", Erl)
+
+        
+End Sub
+
 Sub EnivarObjConstruiblesAlquimia(ByVal UserIndex As Integer)
         
         On Error GoTo EnivarObjConstruiblesAlquimia_Err
@@ -3951,4 +3967,38 @@ Sub EliminarLlaves(ByVal ClaveLlave As Integer, ByVal UserIndex As Integer)
     ' Cerrar el archivo
     Close #1
 End Sub
+
+Public Function CanElementalTagBeApplied(ByVal TargetIndex As Integer, ByVal SourceIndex As Integer) As Boolean
+    CanElementalTagBeApplied = False
+    Dim TargetObj As t_ObjData
+    Dim SourceObj As t_ObjData
+    
+    If TargetIndex = 0 Or SourceIndex = 0 Then
+        Exit Function
+    End If
+    
+    TargetObj = ObjData(TargetIndex)
+    SourceObj = ObjData(SourceIndex)
+
+    If SourceObj.OBJType <> otElementalRune Then
+        Exit Function
+    End If
+    
+    If TargetObj.OBJType <> otWeapon Then
+        Exit Function
+    End If
+    
+    If TargetObj.ElementalTags <> e_ElementalTags.Normal Then
+        Exit Function
+    End If
+    
+    If TargetObj.CantItem > 0 Then
+        Exit Function
+    End If
+    
+
+    TargetObj.ElementalTags = SourceObj.ElementalTags
+    CanElementalTagBeApplied = True
+    
+End Function
 

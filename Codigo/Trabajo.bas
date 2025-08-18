@@ -844,6 +844,7 @@ Sub HerreroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integ
 102     If ObjData(ItemIndex).LingP > 0 Then Call QuitarObjetos(LingotePlata, ObjData(ItemIndex).LingP, UserIndex)
 104     If ObjData(ItemIndex).LingO > 0 Then Call QuitarObjetos(LingoteOro, ObjData(ItemIndex).LingO, UserIndex)
 106     If ObjData(ItemIndex).Coal > 0 Then Call QuitarObjetos(e_Minerales.Coal, ObjData(ItemIndex).Coal, UserIndex)
+        If ObjData(ItemIndex).Blodium > 0 Then Call QuitarObjetos(e_Minerales.Blodium, ObjData(ItemIndex).Blodium, UserIndex)
         Exit Sub
 HerreroQuitarMateriales_Err:
         Call TraceError(Err.Number, Err.Description, "Trabajo.HerreroQuitarMateriales", Erl)
@@ -1363,7 +1364,16 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, _
                 Exit Function
 
             End If
-
+        End If
+        
+        
+        If ObjData(ItemIndex).Blodium > 0 Then
+            If Not TieneObjetos(e_Minerales.Blodium, ObjData(ItemIndex).Blodium, UserIndex) Then
+                Call WriteLocaleMsg(UserIndex, "PENDIENTE", e_FontTypeNames.FONTTYPE_INFO)
+                HerreroTieneMateriales = False
+                Call WriteMacroTrabajoToggle(UserIndex, False)
+                Exit Function
+            End If
         End If
 
 140     HerreroTieneMateriales = True
@@ -1392,25 +1402,36 @@ Public Function PuedeConstruirHerreria(ByVal ItemIndex As Integer) As Boolean
 
         Dim i As Long
 
-100     For i = 1 To UBound(ArmasHerrero)
+        Select Case ObjData(ItemIndex).OBJType
+        
+            Case e_OBJType.otWeapon
+    
+100             For i = 1 To UBound(ArmasHerrero)
+102                 If ArmasHerrero(i) = ItemIndex Then
+104                     PuedeConstruirHerreria = True
+                        Exit Function
+                    End If
+106             Next i
+    
+    
+            Case e_OBJType.otArmadura, e_OBJType.otCasco, e_OBJType.otEscudo, e_OBJType.otMagicos, e_OBJType.otResistencia
+108             For i = 1 To UBound(ArmadurasHerrero)
+110                 If ArmadurasHerrero(i) = ItemIndex Then
+112                     PuedeConstruirHerreria = True
+                        Exit Function
+                    End If
+114             Next i
 
-102         If ArmasHerrero(i) = ItemIndex Then
-104             PuedeConstruirHerreria = True
-                Exit Function
+            Case e_OBJType.otElementalRune
+                For i = 1 To UBound(RunasElementalesHerrero)
+                    If RunasElementalesHerrero(i) = ItemIndex Then
+                        PuedeConstruirHerreria = True
+                        Exit Function
+                    End If
+                Next i
 
-            End If
+        End Select
 
-106     Next i
-
-108     For i = 1 To UBound(ArmadurasHerrero)
-
-110         If ArmadurasHerrero(i) = ItemIndex Then
-112             PuedeConstruirHerreria = True
-                Exit Function
-
-            End If
-
-114     Next i
 
 116     PuedeConstruirHerreria = False
         Exit Function
@@ -1437,33 +1458,35 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
 
         End If
 
-104     If PuedeConstruir(UserIndex, ItemIndex) And PuedeConstruirHerreria(ItemIndex) Then
+104     If PuedeConstruir(UserIndex, ItemIndex) And PuedeConstruirHerreria(ItemIndex) And KnowsCraftingRecipe(UserIndex, ItemIndex) Then
 106         Call HerreroQuitarMateriales(UserIndex, ItemIndex)
 108         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
 110         Call WriteUpdateSta(UserIndex)
             ' AGREGAR FX
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
 
-112         If ObjData(ItemIndex).OBJType = e_OBJType.otWeapon Then
-                'Call WriteLocaleMsg(UserIndex, "1450", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1450=Has construido el arma!
-114             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
-116         ElseIf ObjData(ItemIndex).OBJType = e_OBJType.otEscudo Then
-                'Call WriteLocaleMsg(UserIndex, "1451", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1451=Has construido el escudo!
-118             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
-120         ElseIf ObjData(ItemIndex).OBJType = e_OBJType.otCasco Then
-                'Call WriteLocaleMsg(UserIndex, "1452", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1452=Has construido el casco!
-122             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
-124         ElseIf ObjData(ItemIndex).OBJType = e_OBJType.otArmadura Then
-                'Call WriteLocaleMsg(UserIndex, "1453", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1453=Has construido la armadura!
-126             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
+            Select Case ObjData(ItemIndex).OBJType
+                Case e_OBJType.otWeapon
+                    Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
+                Case e_OBJType.otEscudo
+                    Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
+                Case e_OBJType.otCasco
+                    Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
+                Case e_OBJType.otArmadura
+                    Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
+                Case e_OBJType.otElementalRune
+                    Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
+                Case Else
+            End Select
 
-            End If
 
             Dim MiObj As t_Obj
 
 128         MiObj.amount = 1
 130         MiObj.ObjIndex = ItemIndex
-132         Call MeterItemEnInventario(UserIndex, MiObj)
+132         If Not MeterItemEnInventario(UserIndex, MiObj) Then
+                Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
+            End If
 136         Call SubirSkill(UserIndex, e_Skill.Herreria)
 138         Call UpdateUserInv(True, UserIndex, 0)
 140         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
@@ -1672,13 +1695,9 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
        UserList(UserIndex).Stats.UserSkills(e_Skill.Alquimia) >= ObjData(ItemIndex).SkPociones And _
        PuedeConstruirAlquimista(ItemIndex) And _
        ObjData(ToolIndex).OBJType = e_OBJType.otHerramientas And _
-       ObjData(ToolIndex).Subtipo = 4 Then
+       ObjData(ToolIndex).Subtipo = 4 And _
+       KnowsCraftingRecipe(UserIndex, ItemIndex) Then
 
-        ' Assign spell index
-        Dim hIndex As Integer
-        hIndex = ObjData(ItemIndex).Hechizo
-
-        If TieneHechizo(hIndex, UserIndex) Then
 106         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 1
 108         Call WriteUpdateSta(UserIndex)
             ' AGREGAR FX
@@ -1701,7 +1720,6 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             ' Msg644=Lamentablemente no aprendiste la receta para crear esta poción.
             Call WriteLocaleMsg(UserIndex, "644", e_FontTypeNames.FONTTYPE_INFOBOLD)
         End If
-    End If
 
     Exit Sub
 
@@ -3730,4 +3748,24 @@ Public Function GetExtractResourceForLevel(ByVal level As Integer) As Integer
     upper = Int(CDbl(level + 0.000001) / 2)
     GetExtractResourceForLevel = RandomNumber(lower, upper)
 
+End Function
+
+
+Public Function KnowsCraftingRecipe(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
+        KnowsCraftingRecipe = True
+        Dim hIndex As Integer
+        hIndex = ObjData(ItemIndex).Hechizo
+    
+        'item doesnt require recipe
+        If hIndex = 0 Then
+            Exit Function
+        End If
+
+        If Not TieneHechizo(hIndex, UserIndex) Then
+            'no conoces la receta para fabricar este item
+            Call WriteLocaleMsg(UserIndex, 644, e_FontTypeNames.FONTTYPE_INFOBOLD)
+            KnowsCraftingRecipe = False
+            Exit Function
+        End If
+    
 End Function

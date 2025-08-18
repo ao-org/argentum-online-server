@@ -1276,7 +1276,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 128         .flags.AguaValida = val(Leer.GetValue("NPC" & NpcNumber, "AguaValida"))
 130         .flags.TierraInvalida = val(Leer.GetValue("NPC" & NpcNumber, "TierraInValida"))
 132         .flags.Faccion = val(Leer.GetValue("NPC" & NpcNumber, "Faccion"))
-            .flags.ElementTags = val(Leer.GetValue("NPC" & NpcNumber, "ElementTags"))
+            .flags.ElementalTags = val(Leer.GetValue("NPC" & NpcNumber, "ElementalTags"))
     
 134         .NPCtype = val(Leer.GetValue("NPC" & NpcNumber, "NpcType"))
     

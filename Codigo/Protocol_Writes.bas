@@ -2163,8 +2163,6 @@ Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
 
         Dim i              As Long
 
-        Dim obj            As t_ObjData
-
         Dim validIndexes() As Integer
 
         Dim Count          As Integer
@@ -2188,13 +2186,7 @@ Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
 
         ' Write the needed data of each object
 116     For i = 1 To Count
-118         obj = ObjData(ArmasHerrero(validIndexes(i)))
-            'Call Writer.WriteString8(obj.Index)
 120         Call Writer.WriteInt16(ArmasHerrero(validIndexes(i)))
-122         Call Writer.WriteInt16(obj.LingH)
-124         Call Writer.WriteInt16(obj.LingP)
-126         Call Writer.WriteInt16(obj.LingO)
-127         Call Writer.WriteInt16(obj.Coal)
 128     Next i
 
 130     Call modSendData.SendData(ToIndex, UserIndex)
@@ -2218,8 +2210,6 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
         
 
         Dim i              As Long
-
-        Dim obj            As t_ObjData
 
         Dim validIndexes() As Integer
 
@@ -2245,12 +2235,6 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
 
         ' Write the needed data of each object
 116     For i = 1 To Count
-118         obj = ObjData(ArmadurasHerrero(validIndexes(i)))
-120         Call Writer.WriteString8(obj.Name)
-122         Call Writer.WriteInt16(obj.LingH)
-124         Call Writer.WriteInt16(obj.LingP)
-126         Call Writer.WriteInt16(obj.LingO)
-127         Call Writer.WriteInt16(obj.Coal)
 128         Call Writer.WriteInt16(ArmadurasHerrero(validIndexes(i)))
 130     Next i
 
@@ -2261,6 +2245,49 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
 WriteBlacksmithArmors_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlacksmithArmors", Erl)
+        
+End Sub
+
+Public Sub WriteBlacksmithElementalRunes(ByVal UserIndex As Integer)
+        
+        On Error GoTo WriteBlacksmithElementalRunes_Err
+        
+
+        Dim i              As Long
+
+        Dim validIndexes() As Integer
+
+        Dim Count          As Integer
+
+100     ReDim validIndexes(1 To UBound(RunasElementalesHerrero()))
+102     Call Writer.WriteInt16(ServerPacketID.eBlacksmithExtraObjects)
+
+104     For i = 1 To UBound(RunasElementalesHerrero())
+
+            ' Can the user create this object? If so add it to the list....
+106         If ObjData(RunasElementalesHerrero(i)).SkHerreria <= UserList(UserIndex).Stats.UserSkills( _
+                    e_Skill.Herreria) Then
+108             Count = Count + 1
+110             validIndexes(Count) = i
+            End If
+
+112     Next i
+
+        ' Write the number of objects in the list
+114     Call Writer.WriteInt16(Count)
+
+        ' Write the needed data of each object
+116     For i = 1 To Count
+120         Call Writer.WriteInt16(RunasElementalesHerrero(validIndexes(i)))
+128     Next i
+
+130     Call modSendData.SendData(ToIndex, UserIndex)
+        
+        Exit Sub
+
+WriteBlacksmithElementalRunes_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlacksmithElementalRunes", Erl)
         
 End Sub
 
