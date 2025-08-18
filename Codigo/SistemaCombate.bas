@@ -1199,9 +1199,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
 
         Else
 
-            If UserList(AtacanteIndex).clase = e_Class.Bandit And UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
-                'Call RemoveUserInvisibility(UserIndex)
-            Else
+            If Not UserList(AtacanteIndex).clase = e_Class.Bandit And Not UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
                 Call RemoveUserInvisibility(AtacanteIndex)
             End If
 
