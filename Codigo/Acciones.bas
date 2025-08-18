@@ -148,6 +148,9 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                                  
                              Case e_Ciudad.cForgat
                                  DeDonde = CityForgat
+
+                             Case e_Ciudad.cEldoria
+                                 DeDonde = CityEldoria
                         
                              Case e_Ciudad.cArkhein
                                  DeDonde = CityArkhein
@@ -186,6 +189,10 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                         
                                  Case e_Ciudad.cArkhein
                                      DeDonde = CityArkhein
+                                 
+                                 Case e_Ciudad.cEldoria
+                                     DeDonde = CityEldoria
+
                         
                                  Case Else
                                      DeDonde = CityUllathorpe
@@ -216,6 +223,9 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                         
                                  Case e_Ciudad.cArkhein
                                      DeDonde = CityArkhein
+
+                                 Case e_Ciudad.cEldoria
+                                     DeDonde = CityEldoria
                         
                                  Case Else
                                      DeDonde = CityUllathorpe
@@ -714,13 +724,16 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 302                             DeDonde = "Lindos"
                             
 304                         Case e_Ciudad.cArghal
-306                             DeDonde = " Arghal"
+306                             DeDonde = "Arghal"
                         
                             Case e_Ciudad.cForgat
-                                DeDonde = " Forgat"
+                                DeDonde = "Forgat"
+
+                            Case e_Ciudad.cEldoria
+                                DeDonde = "Eldoria"
                             
 308                         Case e_Ciudad.cArkhein
-310                             DeDonde = " Arkhein"
+310                             DeDonde = "Arkhein"
 
 312                         Case Else
 314                             DeDonde = "Ullathorpe"

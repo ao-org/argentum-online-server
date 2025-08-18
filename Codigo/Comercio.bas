@@ -255,10 +255,6 @@ Public Sub IniciarComercioNPC(ByVal UserIndex As Integer)
         End If
 100     Call UpdateNpcInv(True, UserIndex, UserList(UserIndex).flags.TargetNPC.ArrayIndex, 0)
 
-102     If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundOpen <> 0 Then
-104         Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND, , 1)
-        End If
-
 106     UserList(UserIndex).flags.Comerciando = True
 
 108     Call WriteCommerceInit(UserIndex)

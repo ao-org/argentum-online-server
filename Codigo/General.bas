@@ -379,7 +379,7 @@ Private Function HayLava(ByVal Map As Integer, ByVal X As Integer, ByVal Y As In
         On Error GoTo HayLava_Err
 
 100     If Map > 0 And Map < NumMaps + 1 And X > 0 And X < 101 And Y > 0 And Y < 101 Then
-102         If MapData(Map, X, Y).Graphic(1) >= 5837 And MapData(Map, X, Y).Graphic(1) <= 5852 Then
+102         If MapData(Map, x, y).Graphic(1) >= 5837 And MapData(Map, x, y).Graphic(1) <= 5852 Or MapData(Map, x, y).Graphic(1) >= 16101 And MapData(Map, x, y).Graphic(1) <= 16116 Then
 104             HayLava = True
             Else
 106             HayLava = False
@@ -1283,7 +1283,7 @@ Public Sub EfectoParalisisUser(ByVal UserIndex As Integer)
             Else
 104             .flags.Paralizado = 0
     
-                If .clase = e_Class.Warrior Or .clase = e_Class.Hunter Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
+                If .clase = e_Class.Warrior Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
                     .Counters.TiempoDeInmunidadParalisisNoMagicas = 3
                 End If
                 'UserList(UserIndex).Flags.AdministrativeParalisis = 0

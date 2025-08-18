@@ -133,6 +133,10 @@ Public Enum e_LobbyCommandId
 End Enum
 Public GlobalLobbyIndex As Integer
 Public CurrentActiveEventType As e_EventType
+
+Public LastAutoEventAttempt As Long
+Public AlreadyDidAutoEventToday As Boolean
+
 Const LobbyCount = 200
 Public LobbyList(0 To LobbyCount) As t_Lobby
 Private AvailableLobby As t_IndexHeap
@@ -543,7 +547,7 @@ ListPlayers_Err:
 116    Call TraceError(Err.Number, Err.Description, "ModLobby.ListPlayers", Erl)
 End Sub
 
-Public Function OpenLobby(ByRef instance As t_Lobby, ByVal IsPublic As Boolean, ByVal UserIndex As Integer) As t_response
+Public Function OpenLobby(ByRef instance As t_Lobby, ByVal IsPublic As Boolean) As t_response
 On Error GoTo OpenLobby_Err
     Dim Ret As t_response
     Dim RequiresSpawn As Boolean
@@ -564,9 +568,9 @@ On Error GoTo OpenLobby_Err
         If Not instance.Scenario Is Nothing Then
              EventName = instance.Scenario.GetScenarioName()
         End If
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgCreateEventRoom, UserList(UserIndex).name & "¬" & EventName, e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgCreateEventRoom, EventName & "¬" & instance.MaxPlayers & "¬" & instance.MinLevel & "¬" & instance.MaxLevel & "¬" & instance.InscriptionPrice, e_FontTypeNames.FONTTYPE_GLOBAL))
         If Not instance.Scenario Is Nothing Then
-             Call instance.Scenario.BroadcastOpenScenario(UserIndex)
+             Call instance.Scenario.BroadcastOpenScenario
         End If
         If instance.InscriptionPrice > 0 Then
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgBoardcastInscriptionPrice, instance.InscriptionPrice, e_FontTypeNames.FONTTYPE_GUILD))
@@ -821,7 +825,7 @@ On Error GoTo HandleRemoteLobbyCommand_Err
              Case e_LobbyCommandId.eSetMinLevel
 144              Call ModLobby.SetMinLevel(LobbyList(LobbyIndex), Arguments(0))
              Case e_LobbyCommandId.eOpenLobby
-148             RetValue = ModLobby.OpenLobby(LobbyList(LobbyIndex), Arguments(0), UserIndex)
+148             RetValue = ModLobby.OpenLobby(LobbyList(LobbyIndex), Arguments(0))
             Case e_LobbyCommandId.eStartEvent
 158             Call StartLobby(LobbyList(LobbyIndex), UserIndex)
             Case e_LobbyCommandId.eSummonAll
@@ -986,44 +990,50 @@ Public Function GetOpenLobbyList(ByRef IdList() As Integer) As Integer
     GetOpenLobbyList = OpenCount
 End Function
 
-Public Function ValidateLobbySettings(ByVal UserIndex As Integer, ByRef LobbySettings As t_NewScenearioSettings)
-    If LobbySettings.MaxPlayers > NumUsers Then
-        Call WriteLocaleMsg(UserIndex, 1607, e_FontTypeNames.FONTTYPE_INFO) 'Msg1607= Hay pocos jugadores en el servidor, intenta con una cantidad menor de participantes.
-
-        Exit Function
-    End If
-    
+Public Function ValidateLobbySettings(ByRef LobbySettings As t_NewScenearioSettings)
     If LobbySettings.MinLevel < 1 Or LobbySettings.MaxLevel > 47 Then
-        Call WriteLocaleMsg(UserIndex, 1608, e_FontTypeNames.FONTTYPE_INFO) 'Msg1608= El nivel para el evento debe ser entre 1 y 47.
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1607, "", e_FontTypeNames.FONTTYPE_GLOBAL))
         Exit Function
     End If
-    
     If LobbySettings.MinLevel > LobbySettings.MaxLevel Then
-        Call WriteLocaleMsg(UserIndex, 1609, e_FontTypeNames.FONTTYPE_INFO) 'Msg1609= El nivel mínimo debe ser menor al máximo.
+             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1609, "", e_FontTypeNames.FONTTYPE_GLOBAL))
         Exit Function
     End If
     ValidateLobbySettings = True
 End Function
 
-Public Sub CreatePublicEvent(ByVal UserIndex As Integer, ByRef LobbySettings As t_NewScenearioSettings)
-    Dim LobbyId As Integer
-    
-    LobbyId = GetAvailableLobby()
-    If LobbyId < 0 Then
-        Call WriteLocaleMsg(UserIndex, 1610, e_FontTypeNames.FONTTYPE_INFO) 'Msg1610= No se pudo encontrar una sala disponible.
+Public Sub CreatePublicEvent(ByRef LobbySettings As t_NewScenearioSettings)
+    GlobalLobbyIndex = GetAvailableLobby()
+    If Not ValidateLobbySettings(LobbySettings) Then
         Exit Sub
     End If
-    If Not ValidateLobbySettings(UserIndex, LobbySettings) Then
-        Exit Sub
-    End If
-    Call InitializeLobby(LobbyList(LobbyId))
-    Call ModLobby.SetupLobby(LobbyList(LobbyId), LobbySettings)
-    Call CustomScenarios.PrepareNewEvent(LobbySettings.ScenearioType, LobbyId)
-    Call OpenLobby(LobbyList(LobbyId), True, UserIndex)
-    Dim addPlayerResult As t_response
-    addPlayerResult = ModLobby.AddPlayerOrGroup(LobbyList(LobbyId), UserIndex, LobbySettings.Password)
-    If Not addPlayerResult.Success Then
-        Call CancelLobby(LobbyList(LobbyId))
-        Call WriteLocaleMsg(UserIndex, 1611, e_FontTypeNames.FONTTYPE_INFO) 'Msg1611= Se canceló la sala que creaste porque no cumples los requisitos para participar.
+    Call InitializeLobby(LobbyList(GlobalLobbyIndex))
+    Call ModLobby.SetupLobby(LobbyList(GlobalLobbyIndex), LobbySettings)
+    Call CustomScenarios.PrepareNewEvent(LobbySettings.ScenearioType, GlobalLobbyIndex)
+    Call OpenLobby(LobbyList(GlobalLobbyIndex), True)
+End Sub
+
+
+
+Public Sub initEventLobby(ByVal UserIndex As Integer, ByVal eventType As Integer, LobbySettings As t_NewScenearioSettings)
+'aca se podria validar por nivel de patreon
+
+If eventType = 0 Then
+        'a esto que esta aca abajo solo se accede si el lobby fue creado mediante comando GM
+        CurrentActiveEventType = LobbySettings.ScenearioType
+        Select Case LobbySettings.ScenearioType
+            Case e_EventType.CaptureTheFlag
+                Call HandleIniciarCaptura(LobbySettings)
+            Case Else
+                Call CreatePublicEvent(LobbySettings)
+        End Select
+    Else
+        With UserList(UserIndex)
+            If IsValidNpcRef(.flags.TargetNPC) Then
+                If NpcList(.flags.TargetNPC.ArrayIndex).npcType = e_NPCType.EventMaster And .flags.Muerto = 0 Then
+                    Call CreatePublicEvent(LobbySettings)
+                End If
+            End If
+        End With
     End If
 End Sub
