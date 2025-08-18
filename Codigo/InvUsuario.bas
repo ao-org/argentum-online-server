@@ -3518,7 +3518,7 @@ Sub DropItemsWithPendant(ByVal UserIndex As Integer)
         Dim AuxObj     As t_Obj
         Dim ItemIndex As Integer
         Dim DeltaAmount As Integer
-        DeltaAmount = SvrConfig.GetValue("SacriPendantItemTreshold")
+        DeltaAmount = SvrConfig.GetValue("MaxItemsDroppedWhenUsingAmulet")
         Dim objType As e_OBJType
 
         Call QuitarObjetos(PENDIENTE, 1, UserIndex)
