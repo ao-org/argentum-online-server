@@ -4645,30 +4645,38 @@ Private Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIn
     Dim BaseHit As Integer
     Dim BonusDamage As Single
     Dim BonusFromItem As Integer
-    'get natural skill for user lvl and apply hit chance for a cleric of that level with agility buff to 36
-    BaseHit = UserList(UserIndex).Stats.ELV * 2.5
-    BaseHit = ((BaseHit + ((3 * BaseHit / 100) * 38))) * ModClase(e_Class.Warrior).AtaqueArmas
-    BaseHit = (BaseHit + (2.5 * max(CInt(UserList(UserIndex).Stats.ELV) - 12, 0)))
+    
+    BaseHit = UserList(UserIndex).Stats.ELV
+
     If UserList(UserIndex).invent.WeaponEqpObjIndex > 0 Then
-        BonusFromItem = ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus
-        If BonusFromItem = 0 Then
-            BonusFromItem = ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicAbsoluteBonus \ 2
+    
+        BonusFromItem = BonusFromItem + ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus
+    
+        If ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MaderaElfica > 0 Then
+            BonusFromItem = BonusFromItem * 2
         End If
+        
     End If
-    If BonusFromItem = 0 And UserList(UserIndex).invent.DañoMagicoEqpObjIndex Then
-        BonusFromItem = ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus
-        If BonusFromItem = 0 Then
-            BonusFromItem = ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicAbsoluteBonus \ 3
+
+    If UserList(UserIndex).invent.DañoMagicoEqpObjIndex Then
+    
+        BonusFromItem = BonusFromItem + ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus
+        
+        If ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MaderaElfica > 0 Then
+            BonusFromItem = BonusFromItem * 2
         End If
+        
     End If
+
     BonusDamage = BonusFromItem / 100
+
+
     With NpcList(NpcIndex)
-        .PoderAtaque = BaseHit
-        Dim HitBonus As Integer
-        HitBonus = .Stats.MaxHit * BonusDamage
-        HitBonus = max(HitBonus, BonusFromItem / 2)
-        .Stats.MinHIT = .Stats.MinHIT + HitBonus
-        .Stats.MaxHit = .Stats.MaxHit + HitBonus
+
+        .PoderAtaque = .PoderAtaque + BaseHit
+        .Stats.MinHIT = .Stats.MinHIT + (.Stats.MinHIT * BonusDamage)
+        .Stats.MaxHit = .Stats.MaxHit + (.Stats.MaxHit * BonusDamage)
+        
     End With
 End Sub
 
