@@ -1628,6 +1628,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                            Or NpcList(TempCharIndex).npcType = e_NPCType.Banquero _
                            Or NpcList(TempCharIndex).npcType = e_NPCType.Revividor _
                            Or NpcList(TempCharIndex).npcType = e_NPCType.Comun _
+                           Or NpcList(TempCharIndex).npcType = e_NPCType.Entrenador _
                            Or NpcList(TempCharIndex).npcType = e_NPCType.Gobernador Then
                            
                             If Distance(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, NpcList(TempCharIndex).Pos.X, NpcList(TempCharIndex).Pos.y) < 3 Then
