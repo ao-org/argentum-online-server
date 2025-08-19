@@ -7907,6 +7907,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 
 
             If IsFeatureEnabled("elemental_tags") Then
+                If CanElementalTagBeApplied(UserIndex, SlotNuevo, SlotViejo) Then
                     Call RemoveItemFromInventory(UserIndex, SlotViejo)
                     'Call SendData(SendTarget.ToIndex, 0, PrepareMessagePlayWave(e_FXSound.OminousEcho_Sound, NO_3D_SOUND, NO_3D_SOUND))
                 End If
