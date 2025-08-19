@@ -582,7 +582,8 @@ Public Const BLODIUM_MINA       As Integer = 3787 'OK
 Public Const MAP_CAPTURE_THE_FLAG_1 As Integer = 275
 Public Const MAP_CAPTURE_THE_FLAG_2 As Integer = 276
 Public Const MAP_CAPTURE_THE_FLAG_3 As Integer = 277
-Public Const MAP_MESON_HOSTIGADO As Integer = 172
+Public Const MAP_MESON_HOSTIGADO As Integer = 170
+Public Const MAP_MESON_HOSTIGADO_TRADING_ZONE As Integer = 172
 Public Const MAP_ARENA_LINDOS As Integer = 297
 
 Public Enum e_NPCType
@@ -875,6 +876,12 @@ Public Enum e_OBJType
     otUsableOntarget = 53
     otPlantas = 54
     otCualquiera = 100
+End Enum
+
+Public Enum e_RuneType
+    ReturnHome = 1
+    Escape = 2
+    MesonSafePassage = 3
 End Enum
 
 Public Enum e_UseOnceSubType

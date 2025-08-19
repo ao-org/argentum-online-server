@@ -3215,8 +3215,13 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             
 1324                 Select Case ObjData(ObjIndex).TipoRuna
             
-                              Case 1, 2
-    
+                              Case e_RuneType.ReturnHome
+                                .Counters.TimerBarra = HomeTimer
+                              Case e_RuneType.Escape
+                                .Counters.TimerBarra = HomeTimer
+                              Case e_RuneType.MesonSafePassage
+                                .Counters.TimerBarra = 5
+                     End Select
 1326                         If Not EsGM(UserIndex) Then
 1328                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Runa, 400, False))
 1330                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 350, e_AccionBarra.Runa))
@@ -3232,7 +3237,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 1342                         .Accion.RunaObj = ObjIndex
 1344                         .Accion.ObjSlot = Slot
         
-                          End Select
             
 1346             Case e_OBJType.otmapa
 1348                 Call WriteShowFrmMapa(UserIndex)
