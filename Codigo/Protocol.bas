@@ -7907,7 +7907,6 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 
 
             If IsFeatureEnabled("elemental_tags") Then
-                If CanElementalTagBeApplied(.invent.Object(SlotNuevo).ObjIndex, .invent.Object(SlotViejo).ObjIndex) Then
                     Call RemoveItemFromInventory(UserIndex, SlotViejo)
                     'Call SendData(SendTarget.ToIndex, 0, PrepareMessagePlayWave(e_FXSound.OminousEcho_Sound, NO_3D_SOUND, NO_3D_SOUND))
                 End If
@@ -7919,7 +7918,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                 Call WriteLocaleMsg(UserIndex, "1235", e_FontTypeNames.FONTTYPE_INFO)
             Else
     
-110             If .Invent.Object(SlotNuevo).ObjIndex = .Invent.Object(SlotViejo).ObjIndex Then
+110             If .invent.Object(SlotNuevo).ObjIndex = .invent.Object(SlotViejo).ObjIndex And .invent.Object(SlotNuevo).ElementalTags = .invent.Object(SlotViejo).ElementalTags Then
 112                 .Invent.Object(SlotNuevo).amount = .Invent.Object(SlotNuevo).amount + .Invent.Object(SlotViejo).amount
                     
                     Dim Excedente As Integer
@@ -8139,10 +8138,12 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 312                     .Invent.Object(SlotNuevo).ObjIndex = .Invent.Object(SlotViejo).ObjIndex
 314                     .Invent.Object(SlotNuevo).amount = .Invent.Object(SlotViejo).amount
 316                     .Invent.Object(SlotNuevo).Equipped = .Invent.Object(SlotViejo).Equipped
+                        .invent.Object(SlotNuevo).ElementalTags = .invent.Object(SlotViejo).ElementalTags
                             
 318                     .Invent.Object(SlotViejo).ObjIndex = 0
 320                     .Invent.Object(SlotViejo).amount = 0
 322                     .Invent.Object(SlotViejo).Equipped = 0
+                        .invent.Object(SlotViejo).ElementalTags = 0
     
                     End If
                     

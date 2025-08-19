@@ -3968,17 +3968,17 @@ Sub EliminarLlaves(ByVal ClaveLlave As Integer, ByVal UserIndex As Integer)
     Close #1
 End Sub
 
-Public Function CanElementalTagBeApplied(ByVal TargetIndex As Integer, ByVal SourceIndex As Integer) As Boolean
+Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal TargetSlot As Integer, ByVal SourceSlot As Integer) As Boolean
     CanElementalTagBeApplied = False
     Dim TargetObj As t_ObjData
     Dim SourceObj As t_ObjData
     
-    If TargetIndex = 0 Or SourceIndex = 0 Then
+    If UserList(UserIndex).invent.Object(TargetSlot).ObjIndex = 0 Or UserList(UserIndex).invent.Object(SourceSlot).ObjIndex = 0 Then
         Exit Function
     End If
     
-    TargetObj = ObjData(TargetIndex)
-    SourceObj = ObjData(SourceIndex)
+    TargetObj = ObjData(UserList(UserIndex).invent.Object(TargetSlot).ObjIndex)
+    SourceObj = ObjData(UserList(UserIndex).invent.Object(SourceSlot).ObjIndex)
 
     If SourceObj.OBJType <> otElementalRune Then
         Exit Function
@@ -3997,7 +3997,7 @@ Public Function CanElementalTagBeApplied(ByVal TargetIndex As Integer, ByVal Sou
     End If
     
 
-    TargetObj.ElementalTags = SourceObj.ElementalTags
+    UserList(UserIndex).invent.Object(TargetSlot).ElementalTags = SourceObj.ElementalTags
     CanElementalTagBeApplied = True
     
 End Function

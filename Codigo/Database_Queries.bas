@@ -211,10 +211,10 @@ Private Sub ConstruirQuery_CrearPersonaje()
 232     Call QueryBuilder.Clear
     
         ' ******************* INVENTORY *******************
-234     QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
+234     QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped, elemental_tags) VALUES "
 
 236     For LoopC = 1 To MAX_INVENTORY_SLOTS
-238         QueryBuilder.Append "(?, ?, ?, ?, ?)"
+238         QueryBuilder.Append "(?, ?, ?, ?, ?, ?)"
 
 240         If LoopC < MAX_INVENTORY_SLOTS Then
 242             QueryBuilder.Append ", "
@@ -401,10 +401,10 @@ Private Sub ConstruirQuery_GuardarPersonaje()
         Call QueryBuilder.Clear
     
         ' ******************* INVENTORY *******************
-        QueryBuilder.Append "REPLACE INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
+        QueryBuilder.Append "REPLACE INTO inventory_item (user_id, number, item_id, Amount, is_equipped, elemental_tags) VALUES "
 
         For LoopC = 1 To MAX_INVENTORY_SLOTS
-            QueryBuilder.Append "(?, ?, ?, ?, ?)"
+            QueryBuilder.Append "(?, ?, ?, ?, ?, ?)"
 
             If LoopC < MAX_INVENTORY_SLOTS Then
                 QueryBuilder.Append ", "

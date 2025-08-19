@@ -1270,6 +1270,7 @@ Public Type t_UserOBJ
     ObjIndex As Integer
     amount As Integer
     Equipped As Byte
+    ElementalTags As Long
 End Type
 
 Public Type t_Inventario
