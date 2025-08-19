@@ -3992,6 +3992,10 @@ Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal Targe
         Exit Function
     End If
     
+    If UserList(UserIndex).invent.Object(TargetSlot).ElementalTags <> e_ElementalTags.Normal Then
+        Exit Function
+    End If
+    
     If TargetObj.CantItem > 0 Then
         Exit Function
     End If
