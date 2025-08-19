@@ -607,7 +607,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
                 Call Execute(QUERY_UPSERT_SPELLS, Params)
             
             ' ************************** User inventory *********************************
-            ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
+            ReDim Params(MAX_INVENTORY_SLOTS * 6 - 1)
             ParamC = 0
 
 370         For LoopC = 1 To MAX_INVENTORY_SLOTS
@@ -624,7 +624,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
             Call Execute(QUERY_UPSERT_INVENTORY, Params)
 
             ' ************************** User bank inventory *********************************
-402             ReDim Params(MAX_BANCOINVENTORY_SLOTS * 4 - 1)
+402             ReDim Params(MAX_BANCOINVENTORY_SLOTS * 5 - 1)
 404             ParamC = 0
             
 406             For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
@@ -851,7 +851,7 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
             Call Execute(QUERY_SAVE_SPELLS, Params)
         
             ' ******************* INVENTORY *******************
-244         ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
+244         ReDim Params(MAX_INVENTORY_SLOTS * 6 - 1)
 246         ParamC = 0
         
 248         For LoopC = 1 To MAX_INVENTORY_SLOTS
