@@ -215,6 +215,7 @@ End Enum
 Public Enum ClientPacketID
     eMinPacket
     '--------------------
+    ePlayerIsAfk
     eCraftCarpenter          'CNC
     eWorkLeftClick           'WLC
     eCreateNewGuild          'CIG
