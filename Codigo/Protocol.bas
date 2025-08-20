@@ -9751,7 +9751,7 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
             End If
                 
             'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
-108         If MapInfo(.Pos.Map).zone = "NEWBIE" Or MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
+108         If IsSet(MapInfo(.Pos.Map).zone, e_TerrainType.Newbie) Or MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
                 'Msg1273= No pueder viajar a tu hogar desde este mapa.
                 Call WriteLocaleMsg(UserIndex, "1273", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
