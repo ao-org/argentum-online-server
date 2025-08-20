@@ -364,6 +364,7 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
             End If
 
 112         If UserList(UserIndex).BancoInvent.Object(slotdestino).ObjIndex = obji And _
+                UserList(UserIndex).BancoInvent.Object(slotdestino).ElementalTags = UserList(UserIndex).invent.Object(ObjIndex).ElementalTags And _
                 UserList(UserIndex).BancoInvent.Object(slotdestino).amount + Cantidad <= MAX_INVENTORY_OBJS Then '¿Ya tiene un objeto de este tipo?
                 
 114             slotvalido = True
@@ -377,6 +378,7 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
 118         Slot = 1
 
 120         Do Until UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex = obji And _
+                     UserList(UserIndex).BancoInvent.Object(Slot).ElementalTags = UserList(UserIndex).invent.Object(ObjIndex).ElementalTags And _
                      UserList(UserIndex).BancoInvent.Object(Slot).amount + Cantidad <= MAX_INVENTORY_OBJS
                      
 122             Slot = Slot + 1
@@ -421,6 +423,7 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
                 'Menor que MAX_INV_OBJS
 150             UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex = obji
 152             UserList(UserIndex).BancoInvent.Object(Slot).amount = UserList(UserIndex).BancoInvent.Object(Slot).amount + Cantidad
+                UserList(UserIndex).BancoInvent.Object(Slot).ElementalTags = UserList(UserIndex).invent.Object(ObjIndex).ElementalTags
                 
                 UserList(UserIndex).flags.ModificoInventarioBanco = True
                 

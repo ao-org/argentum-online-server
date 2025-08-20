@@ -2037,6 +2037,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As By
 114     Call Writer.WriteBool(UserList(UserIndex).Invent.Object(Slot).Equipped)
 116     Call Writer.WriteReal32(SalePrice(ObjIndex))
 118     Call Writer.WriteInt8(PodraUsarlo)
+        Call Writer.WriteInt32(UserList(UserIndex).invent.Object(Slot).ElementalTags)
         If ObjIndex > 0 Then
 119         Call Writer.WriteBool(IsSet(ObjData(ObjIndex).ObjFlags, e_ObjFlags.e_Bindable))
         Else
@@ -2564,6 +2565,7 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, _
 108     Call Writer.WriteInt16(obj.ObjIndex)
 110     Call Writer.WriteInt16(obj.amount)
 112     Call Writer.WriteReal32(price)
+        Call Writer.WriteInt32(obj.ElementalTags)
 114     Call Writer.WriteInt8(PodraUsarlo)
 116     Call modSendData.SendData(ToIndex, UserIndex)
         
@@ -3547,6 +3549,7 @@ Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, _
             End If
 
 122         Call Writer.WriteInt32(itemsAenviar(i).amount)
+            Call Writer.WriteInt32(itemsAenviar(i).ElementalTags)
 124     Next i
 
 126     Call modSendData.SendData(ToIndex, UserIndex)
