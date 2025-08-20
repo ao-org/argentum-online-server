@@ -549,7 +549,7 @@ Public Sub IBaseScenario_OnUserDisconnected(ByVal UserIndex As Integer)
             For i = LBound(.invent.Object) To UBound(.invent.Object)
                 If .invent.Object(i).ObjIndex = TeamCargo(1).CargoItemId Or _
                    .invent.Object(i).ObjIndex = TeamCargo(2).CargoItemId Then
-                    Call DropObj(UserIndex, i, .invent.Object(i).amount, .pos.Map, .pos.x, .pos.y)
+                    Call DropObj(UserIndex, i, .invent.Object(i).amount, e_ElementalTags.Normal, .Pos.Map, .Pos.x, .Pos.y)
                     Exit For
                 End If
             Next i
@@ -826,7 +826,7 @@ Public Sub IBaseScenario_UserDie(ByVal UserIndex)
             For i = LBound(.invent.Object) To UBound(.invent.Object)
                 If .invent.Object(i).ObjIndex = TeamCargo(1).CargoItemId Or _
                    .invent.Object(i).ObjIndex = TeamCargo(2).CargoItemId Then
-                    Call DropObj(UserIndex, i, .invent.Object(i).amount, .pos.Map, .pos.x, .pos.y)
+                    Call DropObj(UserIndex, i, .invent.Object(i).amount, e_ElementalTags.Normal, .Pos.Map, .Pos.x, .Pos.y)
                     Exit For
                 End If
             Next i

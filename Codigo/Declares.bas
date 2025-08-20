@@ -1404,6 +1404,7 @@ End Type
 Public Type t_Obj
 
     ObjIndex As Integer
+    ElementalTags As Long
     amount As Long
     Data As Double
 

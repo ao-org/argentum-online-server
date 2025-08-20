@@ -1484,6 +1484,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
 
 128         MiObj.amount = 1
 130         MiObj.ObjIndex = ItemIndex
+            MiObj.ElementalTags = e_ElementalTags.Normal
 132         If Not MeterItemEnInventario(UserIndex, MiObj) Then
                 Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
             End If
@@ -1638,6 +1639,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, _
 
 126         MiObj.amount = cantidad_a_construir
 128         MiObj.ObjIndex = ItemIndex
+            MiObj.ElementalTags = e_ElementalTags.Normal
             ' AGREGAR FX
 130         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
 
@@ -1708,7 +1710,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             Dim MiObj As t_Obj
 114         MiObj.amount = 1
 116         MiObj.ObjIndex = ItemIndex
-
+            MiObj.ElementalTags = e_ElementalTags.Normal
 118         If Not MeterItemEnInventario(UserIndex, MiObj) Then
 120             Call TirarItemAlPiso(UserList(UserIndex).pos, MiObj)
             End If
@@ -1756,7 +1758,7 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
 
 118         MiObj.amount = 1
 120         MiObj.ObjIndex = ItemIndex
-
+            MiObj.ElementalTags = e_ElementalTags.Normal
 122         If Not MeterItemEnInventario(UserIndex, MiObj) Then
 124             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
 

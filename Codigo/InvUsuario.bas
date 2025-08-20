@@ -481,6 +481,7 @@ End Sub
 Sub DropObj(ByVal UserIndex As Integer, _
             ByVal Slot As Byte, _
             ByVal num As Integer, _
+            ByVal ElementalTags As Long, _
             ByVal Map As Integer, _
             ByVal X As Integer, _
             ByVal Y As Integer)
@@ -495,6 +496,7 @@ Sub DropObj(ByVal UserIndex As Integer, _
                 End If
 108             obj.ObjIndex = .Invent.Object(Slot).ObjIndex
 110             obj.amount = num
+                obj.ElementalTags = ElementalTags
                 If Not CustomScenarios.UserCanDropItem(UserIndex, Slot, Map, x, y) Then
                     Exit Sub
                 End If
@@ -555,6 +557,7 @@ Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal X As Integer, ByV
             
 108         MapData(Map, X, Y).ObjInfo.ObjIndex = 0
 110         MapData(Map, X, Y).ObjInfo.amount = 0
+            MapData(Map, x, y).ObjInfo.ElementalTags = 0
     
     
 112         Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectDelete(X, Y))
@@ -580,10 +583,11 @@ Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal X As Integer, ByVal 
 
 100     If obj.ObjIndex > 0 And obj.ObjIndex <= UBound(ObjData) Then
     
-102         If MapData(Map, X, Y).ObjInfo.ObjIndex = obj.ObjIndex Then
+102         If MapData(Map, x, y).ObjInfo.ObjIndex = obj.ObjIndex And MapData(Map, x, y).ObjInfo.ElementalTags = obj.ElementalTags Then
 104             MapData(Map, X, Y).ObjInfo.amount = MapData(Map, X, Y).ObjInfo.amount + obj.amount
             Else
 110             MapData(Map, X, Y).ObjInfo.ObjIndex = obj.ObjIndex
+                MapData(Map, x, y).ObjInfo.ElementalTags = obj.ElementalTags
 
 112             If ObjData(obj.ObjIndex).VidaUtil <> 0 Then
 114                 MapData(Map, X, Y).ObjInfo.amount = ObjData(obj.ObjIndex).VidaUtil
@@ -594,7 +598,7 @@ Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal X As Integer, ByVal 
                 
             End If
             
-118         Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(obj.ObjIndex, MapData(Map, X, Y).ObjInfo.amount, X, Y))
+118         Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(obj.ObjIndex, MapData(Map, x, y).ObjInfo.amount, MapData(Map, x, y).ObjInfo.ElementalTags, x, y))
     
         End If
         
@@ -613,6 +617,7 @@ On Error GoTo GetSlotForItemInInventory_Err
 104    If UserList(UserIndex).invent.Object(i).objIndex = 0 And GetSlotForItemInInventory = -1 Then
 106        GetSlotForItemInInventory = i 'we found a valid place but keep looking in case we can stack
 108    ElseIf UserList(UserIndex).invent.Object(i).objIndex = MyObject.objIndex And _
+              UserList(UserIndex).invent.Object(i).ElementalTags = MyObject.ElementalTags And _
               UserList(UserIndex).invent.Object(i).amount + MyObject.amount <= MAX_INVENTORY_OBJS Then
 110        GetSlotForItemInInventory = i 'we can stack the item, let use this slot
 112        Exit Function
@@ -671,6 +676,7 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
             'Menor que MAX_INV_OBJS
 126         UserList(UserIndex).Invent.Object(Slot).ObjIndex = MiObj.ObjIndex
 128         UserList(UserIndex).Invent.Object(Slot).amount = UserList(UserIndex).Invent.Object(Slot).amount + MiObj.amount
+            UserList(UserIndex).invent.Object(Slot).ElementalTags = MiObj.ElementalTags
             
         
         Else
@@ -747,6 +753,7 @@ Sub PickObj(ByVal UserIndex As Integer)
 112             obj = ObjData(MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex)
 114             MiObj.amount = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.amount
 116             MiObj.ObjIndex = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.ObjIndex
+117             MiObj.ElementalTags = MapData(UserList(UserIndex).Pos.Map, x, y).ObjInfo.ElementalTags
         
 118             If Not MeterItemEnInventario(UserIndex, MiObj) Then
                     'Call WriteConsoleMsg(UserIndex, "No puedo cargar mas objetos.", e_FontTypeNames.FONTTYPE_INFO)
@@ -3495,6 +3502,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
                     
 118                     MiObj.amount = DropAmmount(.invent, i)
 120                     MiObj.ObjIndex = ItemIndex
+                        MiObj.ElementalTags = .invent.Object(i).ElementalTags
                         
                         If .flags.Navegando Then
 128                         Call Tilelibre(.Pos, NuevaPos, MiObj, True, True)
@@ -3503,7 +3511,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
                             Call ClosestLegalPos(.Pos, NuevaPos, .flags.Navegando, Not .flags.Navegando)
                         End If
 130                     If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
-132                         Call DropObj(UserIndex, i, MiObj.amount, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
+132                         Call DropObj(UserIndex, i, MiObj.amount, MiObj.ElementalTags, NuevaPos.Map, NuevaPos.x, NuevaPos.y)
                         
                         '  Si no hay lugar, quemamos el item del inventario (nada de mochilas gratis)
                         Else
