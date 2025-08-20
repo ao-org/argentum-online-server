@@ -733,6 +733,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
 112         GG = IIf(.showName > 0, .Name & .SubName, vbNullString)
         
 114         If Not toMap Then
+                Call UpdateNpcSpeed(NpcIndex)
 116             If .NumQuest > 0 Then
     
                     Dim q As Byte
