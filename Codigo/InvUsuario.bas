@@ -3997,14 +3997,17 @@ Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal Targe
     End If
     
     If TargetObj.ElementalTags <> e_ElementalTags.Normal Then
+        Call SendData(SendTarget.ToIndex, 0, PrepareMessageLocaleMsg(2087, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO))
         Exit Function
     End If
     
     If UserList(UserIndex).invent.Object(TargetSlot).ElementalTags <> e_ElementalTags.Normal Then
+        Call SendData(SendTarget.ToIndex, 0, PrepareMessageLocaleMsg(2087, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO))
         Exit Function
     End If
     
-    If TargetObj.CantItem > 0 Then
+    If UserList(UserIndex).invent.Object(TargetSlot).amount > 1 Then
+        Call SendData(SendTarget.ToIndex, 0, PrepareMessageLocaleMsg(2088, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO))
         Exit Function
     End If
     
