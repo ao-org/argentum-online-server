@@ -506,7 +506,8 @@ Sub DropObj(ByVal UserIndex As Integer, _
                     Dim Suma As Long
                     Suma = num + MapData(.Pos.Map, X, Y).ObjInfo.amount
                     'Check objeto en el suelo
-114                 If MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex = 0 Or (MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex = obj.ObjIndex And Suma <= MAX_INVENTORY_OBJS) Then
+114                 If MapData(.Pos.Map, x, y).ObjInfo.ObjIndex = 0 Or (MapData(.Pos.Map, x, y).ObjInfo.ObjIndex = obj.ObjIndex And MapData(.Pos.Map, x, y).ObjInfo.ElementalTags = obj.ElementalTags And Suma <= MAX_INVENTORY_OBJS) Then
+
 116                     If Suma > MAX_INVENTORY_OBJS Then
 118                         num = MAX_INVENTORY_OBJS - MapData(.Pos.Map, X, Y).ObjInfo.amount
                         End If
