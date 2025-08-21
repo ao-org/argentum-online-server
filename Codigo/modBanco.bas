@@ -192,7 +192,9 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
 
             '¿Ya tiene un objeto de este tipo?
 
-112         If UserList(UserIndex).Invent.Object(slotdestino).ObjIndex = obji And UserList(UserIndex).Invent.Object(slotdestino).amount + Cantidad <= MAX_INVENTORY_OBJS Then
+112         If UserList(UserIndex).Invent.Object(slotdestino).ObjIndex = obji And _ 
+               UserList(UserIndex).Invent.Object(slotdestino).amount + Cantidad <= MAX_INVENTORY_OBJS And _
+               UserList(UserIndex).Invent.Object(slotdestino).ElementalTags = UserList(UserIndex).BancoInvent.Object(ObjIndex).ElementalTags  Then
     
 114             slotvalido = True
 
@@ -205,7 +207,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
             '¿Ya tiene un objeto de este tipo?
 118         Slot = 1
 
-120         Do Until UserList(UserIndex).Invent.Object(Slot).ObjIndex = obji And UserList(UserIndex).Invent.Object(Slot).amount + Cantidad <= MAX_INVENTORY_OBJS
+120         Do Until UserList(UserIndex).Invent.Object(Slot).ObjIndex = obji And UserList(UserIndex).Invent.Object(Slot).amount + Cantidad <= MAX_INVENTORY_OBJS And UserList(UserIndex).Invent.Object(Slot).ElementalTags = UserList(UserIndex).BancoInvent.Object(ObjIndex).ElementalTags
     
 122             Slot = Slot + 1
 
@@ -249,6 +251,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
             'Menor que MAX_INV_OBJS
 148         UserList(UserIndex).Invent.Object(Slot).ObjIndex = obji
 150         UserList(UserIndex).Invent.Object(Slot).amount = UserList(UserIndex).Invent.Object(Slot).amount + Cantidad
+            UserLIst(UserIndex).Invent.Object(Slot).ElementalTags = UserList(UserIndex).BancoInvent.Object(ObjIndex).ElementalTags
 
             UserList(UserIndex).flags.ModificoInventario = True
     
@@ -283,6 +286,7 @@ Sub QuitarBancoInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Can
 106         UserList(UserIndex).BancoInvent.NroItems = UserList(UserIndex).BancoInvent.NroItems - 1
 108         UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex = 0
 110         UserList(UserIndex).BancoInvent.Object(Slot).amount = 0
+            UserList(UserIndex).BancoInvent.Object(Slot).ElementalTags = 0
 
         End If
         
