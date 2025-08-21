@@ -2030,7 +2030,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As By
 
 106     If ObjIndex > 0 Then
 108         PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
-            NaturalElementalTags = ObjData(UserList(UserIndex).invent.Object(Slot).ObjIndex)
+            NaturalElementalTags = ObjData(UserList(UserIndex).invent.Object(Slot).ObjIndex).ElementalTags
         End If
 
 110     Call Writer.WriteInt16(ObjIndex)
@@ -2077,14 +2077,15 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
 108     If ObjIndex > 0 Then
 110         Valor = ObjData(ObjIndex).Valor
 112         PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
-114         NaturalElementalTags = ObjData(UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex).ElementalTags
+114         NaturalElementalTags = ObjData(ObjIndex).ElementalTags
         Else
         End If
-106     Call Writer.WriteInt16(ObjIndex)
+        
+       Call Writer.WriteInt16(ObjIndex)
         Call Writer.WriteInt32(UserList(UserIndex).BancoInvent.Object(Slot).ElementalTags Or NaturalElementalTags)
 
 
-114     Call Writer.WriteInt16(UserList(UserIndex).BancoInvent.Object(Slot).amount)
+        Call Writer.WriteInt16(UserList(UserIndex).BancoInvent.Object(Slot).amount)
 116     Call Writer.WriteInt32(Valor)
 118     Call Writer.WriteInt8(PodraUsarlo)
 120     Call modSendData.SendData(ToIndex, UserIndex)
