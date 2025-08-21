@@ -2074,6 +2074,7 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
 102     Call Writer.WriteInt8(Slot)
 104     ObjIndex = UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex
 106     Call Writer.WriteInt16(ObjIndex)
+        Call Writer.WriteInt32(UserList(UserIndex).BancoInvent.Object(Slot).ElementalTags)
 
 108     If ObjIndex > 0 Then
 110         Valor = ObjData(ObjIndex).Valor

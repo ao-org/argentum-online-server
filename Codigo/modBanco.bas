@@ -296,18 +296,18 @@ QuitarBancoInvItem_Err:
         
 End Sub
 
-Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer)
+Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer)
 
         On Error GoTo ErrHandler
 
-100     If UserList(UserIndex).Invent.Object(Item).amount > 0 And Cantidad > 0 Then
-102         If Cantidad > UserList(UserIndex).Invent.Object(Item).amount Then Cantidad = UserList(UserIndex).Invent.Object(Item).amount
+100     If UserList(UserIndex).invent.Object(Slot).amount > 0 And Cantidad > 0 Then
+102         If Cantidad > UserList(UserIndex).invent.Object(Slot).amount Then Cantidad = UserList(UserIndex).invent.Object(Slot).amount
         
             'Agregamos el obj que deposita al banco
-104         slotdestino = UserDejaObj(UserIndex, CInt(Item), Cantidad, slotdestino)
+104         slotdestino = UserDejaObj(UserIndex, CInt(Slot), Cantidad, slotdestino)
         
             'Actualizamos el inventario del usuario
-106         Call UpdateUserInv(False, UserIndex, Item)
+106         Call UpdateUserInv(False, UserIndex, Slot)
         
             'Actualizamos el inventario del banco
 108         Call UpdateBanUserInv(False, UserIndex, slotdestino, "UserDepositaItem")
@@ -320,28 +320,6 @@ ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "modBanco.UserDepositaItem")
 
     
-End Sub
-
-Sub UserDepositaItemDrop(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Cantidad As Integer)
-
-        On Error GoTo ErrHandler
-
-100     If UserList(UserIndex).Invent.Object(Item).amount > 0 And Cantidad > 0 Then
-102         If Cantidad > UserList(UserIndex).Invent.Object(Item).amount Then Cantidad = UserList(UserIndex).Invent.Object(Item).amount
-            'Agregamos el obj que deposita al banco
-104         Call UserDejaObj(UserIndex, CInt(Item), Cantidad, 0)
-        
-            'Actualizamos el inventario del usuario
-106         Call UpdateUserInv(True, UserIndex, 0)
-        
-        End If
-    
-        Exit Sub
-
-ErrHandler:
-108     Call TraceError(Err.Number, Err.Description, "modBanco.UserDepositaItemDrop")
-
-
 End Sub
 
 Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer) As Long
