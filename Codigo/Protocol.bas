@@ -8197,12 +8197,15 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
             If SlotViejo > MAX_BANCOINVENTORY_SLOTS Or SlotNuevo > MAX_BANCOINVENTORY_SLOTS Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
 106         Objeto.ObjIndex = UserList(UserIndex).BancoInvent.Object(SlotViejo).ObjIndex
 108         Objeto.amount = UserList(UserIndex).BancoInvent.Object(SlotViejo).amount
+            Objeto.ElementalTags = UserList(UserIndex).BancoInvent.Object(SlotViejo).ElementalTags
         
 110         UserList(UserIndex).BancoInvent.Object(SlotViejo).ObjIndex = UserList(UserIndex).BancoInvent.Object(SlotNuevo).ObjIndex
 112         UserList(UserIndex).BancoInvent.Object(SlotViejo).amount = UserList(UserIndex).BancoInvent.Object(SlotNuevo).amount
+            UserList(UserIndex).BancoInvent.Object(SlotViejo).ElementalTags = UserList(UserIndex).BancoInvent.Object(SlotNuevo).ElementalTags
          
 114         UserList(UserIndex).BancoInvent.Object(SlotNuevo).ObjIndex = Objeto.ObjIndex
 116         UserList(UserIndex).BancoInvent.Object(SlotNuevo).amount = Objeto.amount
+            UserList(UserIndex).BancoInvent.Object(SlotNuevo).ElementalTags = Objeto.ElementalTags
     
             'Actualizamos el banco
 118         Call UpdateBanUserInv(False, UserIndex, SlotViejo, "HandleBovedaMoveItem - slot viejo")
