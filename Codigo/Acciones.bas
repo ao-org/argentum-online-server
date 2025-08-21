@@ -923,7 +923,7 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 
 118     Call EnivarArmasConstruibles(UserIndex)
 120     Call EnivarArmadurasConstruibles(UserIndex)
-        Call EnivarRunasElementalesConstruibles(UserIndex)
+        Call SendCraftableElementRunes(UserIndex)
 122     Call WriteShowBlacksmithForm(UserIndex)
 
         Exit Sub

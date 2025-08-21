@@ -3361,9 +3361,9 @@ EnivarObjConstruibles_Err:
         
 End Sub
 
-Sub EnivarRunasElementalesConstruibles(ByVal UserIndex As Integer)
+Sub SendCraftableElementRunes(ByVal UserIndex As Integer)
         
-        On Error GoTo EnivarRunasElementalesConstruibles_Err
+        On Error GoTo SendCraftableElementRunes_Err
         
 
 100     Call WriteBlacksmithElementalRunes(UserIndex)
@@ -3371,8 +3371,8 @@ Sub EnivarRunasElementalesConstruibles(ByVal UserIndex As Integer)
         
         Exit Sub
 
-EnivarRunasElementalesConstruibles_Err:
-102     Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarRunasElementalesConstruibles", Erl)
+SendCraftableElementRunes_Err:
+102     Call TraceError(Err.Number, Err.Description, "InvUsuario.SendCraftableElementRunes", Erl)
 
         
 End Sub
