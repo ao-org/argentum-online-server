@@ -2047,6 +2047,7 @@ Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As 
 102             .BancoInvent.Object(i).amount = 0
 104             .BancoInvent.Object(i).Equipped = 0
 106             .BancoInvent.Object(i).ObjIndex = 0
+                .BancoInvent.Object(i).ElementalTags = 0
             Next i
 
             .Invent.Object(slot_libre).ObjIndex = POCION_RESET

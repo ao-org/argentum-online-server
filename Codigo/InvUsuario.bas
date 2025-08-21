@@ -239,6 +239,7 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
                 If ObjData(UserList(UserIndex).BancoInvent.Object(j).ObjIndex).Newbie = 1 Then
                     UserList(UserIndex).BancoInvent.Object(j).ObjIndex = 0
                     UserList(UserIndex).BancoInvent.Object(j).amount = 0
+                    UserList(UserIndex).BancoInvent.Object(j).ElementalTags = 0
                     Call UpdateBanUserInv(False, UserIndex, j, "QuitarNewbieObj")
                 End If
             End If

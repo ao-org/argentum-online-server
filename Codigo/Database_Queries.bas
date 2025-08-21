@@ -363,10 +363,10 @@ Private Sub ConstruirQuery_GuardarPersonaje()
 282     Call QueryBuilder.Clear
     
         ' ************************** User bank inventory **************************************
-284     QueryBuilder.Append "REPLACE INTO bank_item (user_id, number, item_id, amount) VALUES "
+284     QueryBuilder.Append "REPLACE INTO bank_item (user_id, number, item_id, amount, elemental_tags) VALUES "
 
 286     For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
-288         QueryBuilder.Append "(?, ?, ?, ?)"
+288         QueryBuilder.Append "(?, ?, ?, ?, ?)"
 
 290         If LoopC < MAX_BANCOINVENTORY_SLOTS Then
 292             QueryBuilder.Append ", "

@@ -1537,6 +1537,7 @@ Sub ResetUserBanco(ByVal UserIndex As Integer)
 102         UserList(UserIndex).BancoInvent.Object(LoopC).amount = 0
 104         UserList(UserIndex).BancoInvent.Object(LoopC).Equipped = 0
 106         UserList(UserIndex).BancoInvent.Object(LoopC).ObjIndex = 0
+            UserList(UserIndex).BancoInvent.Object(LoopC).ElementalTags = 0
 108     Next LoopC
     
 110     UserList(UserIndex).BancoInvent.NroItems = 0

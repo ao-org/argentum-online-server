@@ -74,6 +74,7 @@ Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
 380                         If LenB(ObjData(.ObjIndex).name) Then
                                 counter = counter + 1
 382                             .amount = RS!amount
+                                .ElementalTags = RS!elemental_tags
                             Else
 384                             .ObjIndex = 0
                             End If
