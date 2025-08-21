@@ -381,6 +381,7 @@ Public Enum e_FXSound
     Casamiento_sound = 161
     BARCA_SOUND = 202
     MP_SOUND = 522
+    RUNE_SOUND = 528
 
 End Enum
 

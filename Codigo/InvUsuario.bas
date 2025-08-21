@@ -3997,21 +3997,37 @@ Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal Targe
     End If
     
     If TargetObj.ElementalTags <> e_ElementalTags.Normal Then
-        Call SendData(SendTarget.ToIndex, 0, PrepareMessageLocaleMsg(2087, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO))
+        Call WriteLocaleMsg(UserIndex, "2087", e_FontTypeNames.FONTTYPE_INFOIAO)
         Exit Function
     End If
     
     If UserList(UserIndex).invent.Object(TargetSlot).ElementalTags <> e_ElementalTags.Normal Then
-        Call SendData(SendTarget.ToIndex, 0, PrepareMessageLocaleMsg(2087, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO))
+        Call WriteLocaleMsg(UserIndex, "2087", e_FontTypeNames.FONTTYPE_INFOIAO)
         Exit Function
     End If
     
     If UserList(UserIndex).invent.Object(TargetSlot).amount > 1 Then
-        Call SendData(SendTarget.ToIndex, 0, PrepareMessageLocaleMsg(2088, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO))
+        Call WriteLocaleMsg(UserIndex, "2088", e_FontTypeNames.FONTTYPE_INFOIAO)
         Exit Function
     End If
     
-
+    
+    
+    Select Case SourceObj.ElementalTags
+        Case e_ElementalTags.Fire
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Incinerar, 10, False))
+        Case e_ElementalTags.Water
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.CurarCrimi, 10, False))
+        Case e_ElementalTags.Earth
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Envenena, 10, False))
+        Case e_ElementalTags.Wind
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Runa, 10, False))
+        Case Else
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Curar, 10, False))
+    End Select
+    
+    
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_FXSound.RUNE_SOUND, NO_3D_SOUND, NO_3D_SOUND))
     UserList(UserIndex).invent.Object(TargetSlot).ElementalTags = SourceObj.ElementalTags
     CanElementalTagBeApplied = True
     
