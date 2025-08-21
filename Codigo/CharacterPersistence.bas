@@ -64,7 +64,7 @@ Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
 100     With UserList(UserIndex)
             Dim RS As ADODB.Recordset
             Dim counter As Long
-            Set RS = Query("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", .id)
+            Set RS = Query("SELECT number, item_id, amount,elemental_tags FROM bank_item WHERE user_id = ?;", .ID)
             counter = 0
 368         If Not RS Is Nothing Then
 372             While Not RS.EOF
