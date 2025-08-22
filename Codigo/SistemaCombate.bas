@@ -495,7 +495,7 @@ On Error GoTo UserDamageNpc_Err
             Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(npcIndex))
             
             If IsFeatureEnabled("elemental_tags") Then
-                Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, DamageBase)
+                Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, Damage)
             End If
 118         If Damage < 0 Then Damage = 0
 
@@ -2719,14 +2719,14 @@ Public Sub CalculateElementalTagsModifiers(ByVal UserIndex As Integer, ByVal Npc
     End If
 
     ' Loop over each possible attacker element (0 to 31)
-    For attackerIndex = 0 To 31
+    For attackerIndex = 0 To MAX_ELEMENT_TAGS -1
         ' Create a bitmask for the current attacker element
         attackerBit = ShiftLeft(1, attackerIndex)
         
         ' Ensure shift is valid and safe (only 0 to 31)
         If attackerBit <> 0 And IsSet(attackerElementMask, attackerBit) Then
             ' Loop over each possible defender element
-            For defenderIndex = 0 To 31
+            For defenderIndex = 0 To MAX_ELEMENT_TAGS -1
                 defenderBit = ShiftLeft(1, defenderIndex)
                 
                 If defenderBit <> 0 And IsSet(defenderElementMask, defenderBit) Then

@@ -30,7 +30,7 @@ Option Explicit
 
 Const MAX_RANDOM_TELEPORT_IN_MAP = 20
 
-Const MAX_ELEMENT_TAGS = 32
+Public Const MAX_ELEMENT_TAGS = 4 'the maximum suported is 32
 
 Private Type t_Position
 
@@ -1183,7 +1183,7 @@ Sub LoadBalance()
         row = (CStr(BalanceIni.GetValue("ElementalMatrixForNpcs", "Row" & i + 1, "1")))
         vals = Split(row, " ")
                 For j = 0 To MAX_ELEMENT_TAGS - 1
-                ElementalMatrixForNpcs(i + 1, j + 1) = CSng(vals(j))
+                ElementalMatrixForNpcs(i + 1, j + 1) = val(vals(j))
                 Next j
         Next i
         '--------------------

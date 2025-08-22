@@ -432,7 +432,7 @@ Public Enum e_ElementalTags
     'cant have more than 32 elements, so the last one is 2^31
 End Enum
 
-Public ElementalMatrixForNpcs(1 To 32, 1 To 32) As Single
+Public ElementalMatrixForNpcs(1 To MAX_ELEMENT_TAGS, 1 To MAX_ELEMENT_TAGS) As Single
 
 ''
 ' TRIGGERS
