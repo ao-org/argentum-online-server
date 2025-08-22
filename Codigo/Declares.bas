@@ -306,9 +306,10 @@ Public Enum e_Ciudad
     cBanderbill
     cLindos
     cArghal
-	cArkhein
+    cArkhein
     cForgat
     cEldoria
+    cPenthar
 
 
 End Enum
@@ -3002,6 +3003,7 @@ Public Arghal                             As t_WorldPos
 Public Forgat                             As t_WorldPos
 Public Arkhein                            As t_WorldPos
 Public Eldoria                            As t_WorldPos
+Public Penthar                            As t_WorldPos
 Public CityNix                            As t_CityWorldPos
 Public CityUllathorpe                     As t_CityWorldPos
 Public CityBanderbill                     As t_CityWorldPos
