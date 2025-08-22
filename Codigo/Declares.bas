@@ -307,7 +307,7 @@ Public Enum e_Ciudad
     cBanderbill
     cLindos
     cArghal
-	cArkhein
+    cArkhein
     cForgat
     cEldoria
 
@@ -431,6 +431,8 @@ Public Enum e_ElementalTags
     Chaos = 64
     'cant have more than 32 elements, so the last one is 2^31
 End Enum
+
+Public Const MAX_ELEMENT_TAGS = 4 'the maximum suported is 32
 
 Public ElementalMatrixForNpcs(1 To MAX_ELEMENT_TAGS, 1 To MAX_ELEMENT_TAGS) As Single
 

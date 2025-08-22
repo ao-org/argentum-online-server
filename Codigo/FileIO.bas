@@ -30,8 +30,6 @@ Option Explicit
 
 Const MAX_RANDOM_TELEPORT_IN_MAP = 20
 
-Public Const MAX_ELEMENT_TAGS = 4 'the maximum suported is 32
-
 Private Type t_Position
 
     x As Integer
