@@ -1207,8 +1207,12 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
 
         Else
 
-            If Not UserList(AtacanteIndex).clase = e_Class.Bandit And Not UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+            If UserList(AtacanteIndex).clase <> e_Class.Bandit Then
                 Call RemoveUserInvisibility(AtacanteIndex)
+            Else
+                If Not UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+                    Call RemoveUserInvisibility(AtacanteIndex)
+                End If
             End If
 
             Call EffectsOverTime.TargetFailedAttack(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
