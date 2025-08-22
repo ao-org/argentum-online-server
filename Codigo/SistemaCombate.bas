@@ -976,9 +976,6 @@ Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_W
 132     Index = MapData(TargetPos.map, TargetPos.X, TargetPos.Y).UserIndex
         'Look for user
 134     If Index > 0 Then
-            'El RemoveUserInvisibility saca el ocultar al pegar hit melee
-            'Para el resto de ataques, se requiere feature toggle
-            Call RemoveUserInvisibility(UserIndex)
 136         Call UsuarioAtacaUsuario(UserIndex, Index, Melee)
             'Look for NPC
 138     ElseIf MapData(TargetPos.map, TargetPos.X, TargetPos.Y).npcIndex > 0 Then
@@ -1187,9 +1184,6 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
         On Error GoTo UsuarioAtacaUsuario_Err
 
         Dim sendto As SendTarget
-        Dim Probabilidad As Byte
-        Dim HuboEfecto   As Boolean
-100         HuboEfecto = False
 
 102     If Not PuedeAtacar(AtacanteIndex, VictimaIndex) Then Exit Sub
 
@@ -1204,10 +1198,23 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
                 UserList(VictimaIndex).Counters.timeFx = 3
 114             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, FXSANGRE, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
             End If
+            
+            Call RemoveUserInvisibility(AtacanteIndex)
 116         Call UserDamageToUser(AtacanteIndex, VictimaIndex, aType)
             Call EffectsOverTime.TartgetDidHit(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
             Call RegisterNewAttack(VictimaIndex, AtacanteIndex)
+
+
         Else
+
+            If UserList(AtacanteIndex).clase <> e_Class.Bandit Then
+                Call RemoveUserInvisibility(AtacanteIndex)
+            Else
+                If Not UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+                    Call RemoveUserInvisibility(AtacanteIndex)
+                End If
+            End If
+
             Call EffectsOverTime.TargetFailedAttack(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
 118         If UserList(AtacanteIndex).flags.invisible Or UserList(AtacanteIndex).flags.Oculto Then
 120             sendto = SendTarget.ToIndex
