@@ -1448,7 +1448,7 @@ Public Sub WriteObjectCreate(ByVal UserIndex As Integer, _
         On Error GoTo WriteObjectCreate_Err
         
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageObjectCreate(ObjIndex, _
-                amount, ObjData(ObjIndex).ElementalTags, x, y))
+                amount, x, y, ObjData(ObjIndex).ElementalTags))
         
         Exit Sub
 
@@ -5239,10 +5239,9 @@ End Function
 'Optimizacion por Ladder
 Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, _
                                            ByVal amount As Integer, _
-                                           ByVal ElementalTags As Long, _
                                            ByVal X As Byte, _
-                                           ByVal Y As Byte)
-        
+                                           ByVal y As Byte, _
+                                           Optional ByVal ElementalTags As Long = e_ElementalTags.Normal)
         On Error GoTo PrepareMessageObjectCreate_Err
         
 100     Call Writer.WriteInt16(ServerPacketID.eObjectCreate)
