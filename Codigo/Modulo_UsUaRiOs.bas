@@ -2079,9 +2079,9 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
         Dim cutoff As Integer
 
         If UserList(UserIndex).flags.PendienteDelExperto = 1 Then
-            cutoff = 20   ' Expert used to allow 1..14
+            cutoff = EXPERT_SKILL_CUTOFF   ' Expert used to allow 1..14
         Else
-            cutoff = 10   ' Non-expert used to allow 1..9
+            cutoff = NONEXPERT_SKILL_CUTOFF   ' Non-expert used to allow 1..9
         End If
 
         If Aumenta >= cutoff Then Exit Sub

@@ -412,6 +412,10 @@ Public Enum e_ParticulasIndex ' Particulas FX
 
 End Enum
 
+Public Const EXPERT_SKILL_CUTOFF As Integer = 20
+
+Public Const NONEXPERT_SKILL_CUTOFF As Integer = 8 
+
 Public Const VelocidadNormal       As Single = 1
 
 Public Const VelocidadMuerto       As Single = 1.4
