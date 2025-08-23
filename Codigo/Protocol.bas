@@ -8661,13 +8661,19 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 196                             DeDonde = "Lindos"
                             
 198                         Case e_Ciudad.cArghal
-200                             DeDonde = " Arghal"
+200                             DeDonde = "Arghal"
+
 
                             Case e_Ciudad.cForgat
-                                DeDonde = " Forgat"
+                                DeDonde = "Forgat"
+
                             
 202                         Case e_Ciudad.cArkhein
-204                             DeDonde = " Arkhein"
+204                             DeDonde = "Arkhein"
+
+
+                            Case e_Ciudad.cPenthar
+                                DeDonde = "Penthar"
                             
 206                         Case Else
 208                             DeDonde = "Ullathorpe"
@@ -8781,13 +8787,16 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 306                             DeDonde = "Lindos"
                             
 308                         Case e_Ciudad.cArghal
-310                             DeDonde = " Arghal"
+310                             DeDonde = "Arghal"
 
                             Case e_Ciudad.cForgat
-                                DeDonde = " Forgat"
+                                DeDonde = "Forgat"
                             
 312                         Case e_Ciudad.cArkhein
-314                             DeDonde = " Arkhein"
+314                             DeDonde = "Arkhein"
+
+                            Case e_Ciudad.cPenthar
+                                DeDonde = "Penthar"
                             
 316                         Case Else
 318                             DeDonde = "Ullathorpe"
@@ -9129,6 +9138,9 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
                         
 132                 Case e_Ciudad.cArkhein
 134                     DeDonde = CityArkhein
+
+                    Case e_Ciudad.cPenthar
+                        DeDonde = CityPenthar
                         
 136                 Case Else
 138                     DeDonde = CityUllathorpe

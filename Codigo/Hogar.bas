@@ -28,7 +28,7 @@ Attribute VB_Name = "Hogar"
 '
 Option Explicit
 
-Public Const NUMCIUDADES    As Byte = 8
+Public Const NUMCIUDADES    As Integer = 9
 
 Public Ciudades(1 To NUMCIUDADES)         As t_WorldPos
 
