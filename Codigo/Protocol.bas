@@ -4050,9 +4050,14 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             Dim tUser  As Integer
             Dim Slot   As Byte
             Dim amount As Long
+            Dim ElementalTags As Long
             
 102         Slot = Reader.ReadInt8()
 104         amount = Reader.ReadInt32()
+
+            If Slot <> FLAGORO Then
+                ElementalTags = UserList(UserIndex).invent.Object(Slot).ElementalTags
+            End If
             
             
             'Is the commerce attempt valid??
@@ -4165,9 +4170,10 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 Dim ObjAEnviar As t_Obj
                 
 166             ObjAEnviar.amount = amount
+                ObjAEnviar.ElementalTags = ElementalTags
 
                 'Si no es oro tmb le agrego el objInex
-168             If Slot <> FLAGORO Then ObjAEnviar.ObjIndex = UserList(UserIndex).Invent.Object(Slot).ObjIndex
+168             If Slot <> FLAGORO Then ObjAEnviar.ObjIndex = UserList(UserIndex).invent.Object(Slot).ObjIndex
                 'Llamos a la funcion
 170             Call EnviarObjetoTransaccion(tUser, UserIndex, ObjAEnviar)
 
