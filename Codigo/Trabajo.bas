@@ -2302,6 +2302,12 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
                         ' Le mandamos un mensaje
                         Call WriteLocaleMsg(UserIndex, "1457", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1457=¡Has conseguido ¬1!
 
+                    If IsFeatureEnabled("gain_exp_while_working") Then
+                        Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.HerramientaEqpObjIndex, e_JobsTypes.Fisherman)
+                        Call WriteUpdateExp(UserIndex)
+                        Call CheckUserLevel(UserIndex)
+                    End If
+
                     End If
 
                 Next
@@ -2314,7 +2320,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
 182             Call SubirSkill(UserIndex, e_Skill.Pescar)
             End If
 
-            Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.HerramientaEqpObjIndex, e_JobsTypes.Fisherman)
+
 
             If StopWorking Then
 184             Call WriteWorkRequestTarget(UserIndex, 0)
