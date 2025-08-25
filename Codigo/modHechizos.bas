@@ -673,11 +673,9 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
             ElseIf IsValidNpcRef(.flags.TargetNPC) Then
                 If Hechizos(HechizoIndex).TargetEffectType = e_TargetEffectType.eNegative Then
                     Dim UserAttackInteractionResult As t_AttackInteractionResult
-                    Dim Paraliza As Boolean
                     UserAttackInteractionResult = UserCanAttackNpc(UserIndex, .flags.TargetNPC.ArrayIndex)
-                    
-                    Paraliza = IsSet(Hechizos(HechizoIndex).Effects, e_SpellEffects.Paralize) Or IsSet(Hechizos(HechizoIndex).Effects, e_SpellEffects.Immobilize)
-                    If Not Paraliza Or (Paraliza And UserAttackInteractionResult.result <> eAttackCitizenNpc And UserAttackInteractionResult.result <> eRemoveSafeCitizenNpc) Then
+
+                    If UserAttackInteractionResult.result = eAttackCitizenNpc Or UserAttackInteractionResult.result = eRemoveSafeCitizenNpc Then
                         Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.result)
                         If UserAttackInteractionResult.CanAttack Then
                             If UserAttackInteractionResult.TurnPK Then VolverCriminal (UserIndex)
@@ -2627,7 +2625,7 @@ Call WriteLocaleMsg(UserIndex, "815", e_FontTypeNames.FONTTYPE_INFOIAO)
 
 150     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.Paralize) Then
 152         If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
-158             Call NPCAtacado(NpcIndex, UserIndex, False)
+158             Call NPCAtacado(NpcIndex, UserIndex, True)
 160             Call InfoHechizo(UserIndex)
 162             NpcList(NpcIndex).flags.Paralizado = 1
 164             NpcList(NpcIndex).Contadores.Paralisis = (Hechizos(hIndex).Duration * 6.5) * 6
@@ -2674,7 +2672,7 @@ Call WriteLocaleMsg(UserIndex, "817", e_FontTypeNames.FONTTYPE_INFOIAO)
  
 208     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.Immobilize) Then
 210         If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
-220             Call NPCAtacado(NpcIndex, UserIndex, False)
+220             Call NPCAtacado(NpcIndex, UserIndex, True)
 222             NpcList(NpcIndex).flags.Inmovilizado = 1
 224             NpcList(NpcIndex).Contadores.Inmovilizado = (Hechizos(hIndex).Duration * 6.5) * 6
 226             NpcList(NpcIndex).flags.Paralizado = 0
