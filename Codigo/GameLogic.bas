@@ -1606,9 +1606,12 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
                 End If
 
-                If EsGM(UserIndex) And GetOwnedBy(TempCharIndex) <> 0 Then
-                    estatus = estatus & " | Owned by " & NpcList(TempCharIndex).flags.AttackedBy
+                If GetOwnedBy(TempCharIndex) <> 0 Then
+                    estatus = estatus & " | Combatiendo con " & NpcList(TempCharIndex).flags.AttackedBy
+                    estatus = estatus & " (" & CInt((IntervaloNpcOwner - (GlobalFrameTime - NpcList(TempCharIndex).flags.AttackedTime)) / 1000)
+                    estatus = estatus & "s)"
                 End If
+                
 #If DEBUGGING Then
                 estatus = estatus & " | NpcIndex = " & TempCharIndex
 #End If
