@@ -1378,6 +1378,12 @@ Sub LoadOBJData()
 152             .Subtipo = val(Leer.GetValue(ObjKey, "Subtipo"))
 154             .Dorada = val(Leer.GetValue(ObjKey, "Dorada"))
 155             .Blodium = val(Leer.GetValue(ObjKey, "Blodium"))
+
+                .FireEssence = val(Leer.GetValue(ObjKey, "FireEssence"))
+                .WaterEssence = val(Leer.GetValue(ObjKey, "WaterEssence"))
+                .EarthEssence = val(Leer.GetValue(ObjKey, "EarthEssence"))
+                .WindEssence = val(Leer.GetValue(ObjKey, "WindEssence"))
+                
 156             .VidaUtil = val(Leer.GetValue(ObjKey, "VidaUtil"))
 158             .TiempoRegenerar = val(Leer.GetValue(ObjKey, "TiempoRegenerar"))
                 .Jerarquia = val(Leer.GetValue(ObjKey, "Jerarquia"))

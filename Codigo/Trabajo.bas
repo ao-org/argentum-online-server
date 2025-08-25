@@ -843,11 +843,15 @@ Sub HerreroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integ
 
         On Error GoTo HerreroQuitarMateriales_Err
 
-100     If ObjData(ItemIndex).LingH > 0 Then Call QuitarObjetos(LingoteHierro, ObjData(ItemIndex).LingH, UserIndex)
-102     If ObjData(ItemIndex).LingP > 0 Then Call QuitarObjetos(LingotePlata, ObjData(ItemIndex).LingP, UserIndex)
-104     If ObjData(ItemIndex).LingO > 0 Then Call QuitarObjetos(LingoteOro, ObjData(ItemIndex).LingO, UserIndex)
+100     If ObjData(ItemIndex).LingH > 0 Then Call QuitarObjetos(e_Minerales.LingoteDeHierro, ObjData(ItemIndex).LingH, UserIndex)
+102     If ObjData(ItemIndex).LingP > 0 Then Call QuitarObjetos(e_Minerales.LingoteDePlata, ObjData(ItemIndex).LingP, UserIndex)
+104     If ObjData(ItemIndex).LingO > 0 Then Call QuitarObjetos(e_Minerales.LingoteDeOro, ObjData(ItemIndex).LingO, UserIndex)
 106     If ObjData(ItemIndex).Coal > 0 Then Call QuitarObjetos(e_Minerales.Coal, ObjData(ItemIndex).Coal, UserIndex)
         If ObjData(ItemIndex).Blodium > 0 Then Call QuitarObjetos(e_Minerales.Blodium, ObjData(ItemIndex).Blodium, UserIndex)
+        If ObjData(ItemIndex).FireEssence > 0 Then Call QuitarObjetos(e_Minerales.FireEssence, ObjData(ItemIndex).FireEssence, UserIndex)
+        If ObjData(ItemIndex).WaterEssence > 0 Then Call QuitarObjetos(e_Minerales.WaterEssence, ObjData(ItemIndex).WaterEssence, UserIndex)
+        If ObjData(ItemIndex).EarthEssence > 0 Then Call QuitarObjetos(e_Minerales.EarthEssence, ObjData(ItemIndex).EarthEssence, UserIndex)
+        If ObjData(ItemIndex).WindEssence > 0 Then Call QuitarObjetos(e_Minerales.WindEssence, ObjData(ItemIndex).WindEssence, UserIndex)
         Exit Sub
 HerreroQuitarMateriales_Err:
         Call TraceError(Err.Number, Err.Description, "Trabajo.HerreroQuitarMateriales", Erl)
@@ -1323,7 +1327,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, _
         On Error GoTo HerreroTieneMateriales_Err
 
 100     If ObjData(ItemIndex).LingH > 0 Then
-102         If Not TieneObjetos(LingoteHierro, ObjData(ItemIndex).LingH, UserIndex) Then
+102         If Not TieneObjetos(e_Minerales.LingoteDeHierro, ObjData(ItemIndex).LingH, UserIndex) Then
 104             ' Msg639=No tenés suficientes lingotes de hierro.
                 Call WriteLocaleMsg(UserIndex, "639", e_FontTypeNames.FONTTYPE_INFO)
 106             HerreroTieneMateriales = False
@@ -1335,7 +1339,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, _
         End If
 
 110     If ObjData(ItemIndex).LingP > 0 Then
-112         If Not TieneObjetos(LingotePlata, ObjData(ItemIndex).LingP, UserIndex) Then
+112         If Not TieneObjetos(e_Minerales.LingoteDePlata, ObjData(ItemIndex).LingP, UserIndex) Then
 114             ' Msg640=No tenés suficientes lingotes de plata.
                 Call WriteLocaleMsg(UserIndex, "640", e_FontTypeNames.FONTTYPE_INFO)
 116             HerreroTieneMateriales = False
@@ -1347,7 +1351,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, _
         End If
 
 120     If ObjData(ItemIndex).LingO > 0 Then
-122         If Not TieneObjetos(LingoteOro, ObjData(ItemIndex).LingO, UserIndex) Then
+122         If Not TieneObjetos(e_Minerales.LingoteDeOro, ObjData(ItemIndex).LingO, UserIndex) Then
 124             ' Msg641=No tenés suficientes lingotes de oro.
                 Call WriteLocaleMsg(UserIndex, "641", e_FontTypeNames.FONTTYPE_INFO)
 126             HerreroTieneMateriales = False
@@ -1369,15 +1373,51 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, _
             End If
         End If
         
-        
         If ObjData(ItemIndex).Blodium > 0 Then
             If Not TieneObjetos(e_Minerales.Blodium, ObjData(ItemIndex).Blodium, UserIndex) Then
-                Call WriteLocaleMsg(UserIndex, "PENDIENTE", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, "2089", e_FontTypeNames.FONTTYPE_INFO)
                 HerreroTieneMateriales = False
                 Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
         End If
+        
+        If ObjData(ItemIndex).FireEssence > 0 Then
+            If Not TieneObjetos(e_Minerales.Blodium, ObjData(ItemIndex).FireEssence, UserIndex) Then
+                Call WriteLocaleMsg(UserIndex, "2090", e_FontTypeNames.FONTTYPE_INFO)
+                HerreroTieneMateriales = False
+                Call WriteMacroTrabajoToggle(UserIndex, False)
+                Exit Function
+            End If
+        End If
+
+        If ObjData(ItemIndex).WaterEssence > 0 Then
+            If Not TieneObjetos(e_Minerales.Blodium, ObjData(ItemIndex).WaterEssence, UserIndex) Then
+                Call WriteLocaleMsg(UserIndex, "2090", e_FontTypeNames.FONTTYPE_INFO)
+                HerreroTieneMateriales = False
+                Call WriteMacroTrabajoToggle(UserIndex, False)
+                Exit Function
+            End If
+        End If
+
+        If ObjData(ItemIndex).EarthEssence > 0 Then
+            If Not TieneObjetos(e_Minerales.Blodium, ObjData(ItemIndex).EarthEssence, UserIndex) Then
+                Call WriteLocaleMsg(UserIndex, "2090", e_FontTypeNames.FONTTYPE_INFO)
+                HerreroTieneMateriales = False
+                Call WriteMacroTrabajoToggle(UserIndex, False)
+                Exit Function
+            End If
+        End If
+
+        If ObjData(ItemIndex).WindEssence > 0 Then
+            If Not TieneObjetos(e_Minerales.Blodium, ObjData(ItemIndex).WindEssence, UserIndex) Then
+                Call WriteLocaleMsg(UserIndex, "2090", e_FontTypeNames.FONTTYPE_INFO)
+                HerreroTieneMateriales = False
+                Call WriteMacroTrabajoToggle(UserIndex, False)
+                Exit Function
+            End If
+        End If
+
 
 140     HerreroTieneMateriales = True
         Exit Function

@@ -258,6 +258,10 @@ Public Enum e_Minerales
     LingoteDePlata = 387
     LingoteDeOro = 388
     Blodium = 3787
+    FireEssence = 5179
+    WaterEssence = 5180
+    EarthEssence = 5181
+    WindEssence = 5182
 
 End Enum
 
@@ -550,9 +554,6 @@ Public Const MAXORO             As Long = 90000000
 Public Const MAXEXP             As Long = 1999999999
 Public Const MAXUSERMATADOS     As Long = 65000
 Public Const MINATRIBUTOS       As Byte = 6
-Public Const LingoteHierro      As Integer = 386 'OK
-Public Const LingotePlata       As Integer = 387 'OK
-Public Const LingoteOro         As Integer = 388 'OK
 Public Const Wood               As Integer = 58 'OK
 Public Const ElvenWood          As Integer = 2781 'OK
 Public Const Raices             As Integer = 888 'OK
@@ -875,6 +876,7 @@ Public Enum e_OBJType
     otInstrumentos = 26
     otYunque = 27
     otFragua = 28
+    otBlacksmithMaterial = 29
     otDañoMagico = 30
     otBarcos = 31
     otFlechas = 32
@@ -1631,7 +1633,13 @@ Public Type t_ObjData
     Subtipo As Byte ' 0: -, 1: Paraliza, 2: Incinera, 3: Envenena, 4: Explosiva
     
     Dorada  As Byte
-    Blodium As Byte
+    
+    Blodium As Integer
+    
+    FireEssence As Integer
+    WaterEssence As Integer
+    EarthEssence As Integer
+    WindEssence As Integer
     
     VidaUtil As Integer
     TiempoRegenerar As Integer
