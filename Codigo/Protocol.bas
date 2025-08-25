@@ -8662,15 +8662,15 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                             
 198                         Case e_Ciudad.cArghal
 200                             DeDonde = " Arghal"
-200                             DeDonde = "Arghal"
+
 
                             Case e_Ciudad.cForgat
                                 DeDonde = " Forgat"
-                                DeDonde = "Forgat"
+
                             
 202                         Case e_Ciudad.cArkhein
 204                             DeDonde = " Arkhein"
-204                             DeDonde = "Arkhein"
+
 
                             Case e_Ciudad.cPenthar
                                 DeDonde = "Penthar"
