@@ -8661,16 +8661,18 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 196                             DeDonde = "Lindos"
                             
 198                         Case e_Ciudad.cArghal
-200                             DeDonde = " Arghal"
+200                             DeDonde = "Arghal"
 
 
                             Case e_Ciudad.cForgat
-                                DeDonde = " Forgat"
+                                DeDonde = "Forgat"
 
                             
 202                         Case e_Ciudad.cArkhein
-204                             DeDonde = " Arkhein"
+204                             DeDonde = "Arkhein"
 
+                            Case e_Ciudad.cEldoria
+                                DeDonde = "Eldoria"
 
                             Case e_Ciudad.cPenthar
                                 DeDonde = "Penthar"
@@ -8791,6 +8793,9 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 
                             Case e_Ciudad.cForgat
                                 DeDonde = " Forgat"
+                                
+                                  Case e_Ciudad.cEldoria
+                                DeDonde = " Eldoria"
                             
 312                         Case e_Ciudad.cArkhein
 314                             DeDonde = " Arkhein"
@@ -9132,6 +9137,9 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 
                     Case e_Ciudad.cForgat
                         DeDonde = CityForgat
+                        
+                    Case e_Ciudad.cEldoria
+                        DeDonde = CityEldoria
                         
 132                 Case e_Ciudad.cArkhein
 134                     DeDonde = CityArkhein
