@@ -7880,7 +7880,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 104         SlotNuevo = Reader.ReadInt8()
         
             Dim Objeto    As t_Obj
-            Dim DidElementalTags As Boolean
+            Dim AppliedElementalTags As Boolean
             Dim tmpElementalTags As Long
             
             Dim Equipado  As Boolean
@@ -7918,9 +7918,9 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 
 
             If IsFeatureEnabled("elemental_tags") Then
-                    DidElementalTags = False
+                    AppliedElementalTags = False
                 If CanElementalTagBeApplied(UserIndex, SlotNuevo, SlotViejo) Then
-                    DidElementalTags = True
+                    AppliedElementalTags = True
                     Call RemoveItemFromInventory(UserIndex, SlotViejo)
                 End If
             End If
@@ -8020,7 +8020,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                 
                 Else
 
-180                 If .invent.Object(SlotNuevo).ObjIndex <> 0 And Not DidElementalTags Then
+180                 If .invent.Object(SlotNuevo).ObjIndex <> 0 And Not AppliedElementalTags Then
 182                     Objeto.amount = .Invent.Object(SlotViejo).amount
 184                     Objeto.ObjIndex = .Invent.Object(SlotViejo).ObjIndex
                         tmpElementalTags = .invent.Object(SlotViejo).ElementalTags
@@ -8148,7 +8148,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
     
                     End If
                 
-310                 If Objeto.ObjIndex = 0 And Not DidElementalTags Then
+310                 If Objeto.ObjIndex = 0 And Not AppliedElementalTags Then
 312                     .Invent.Object(SlotNuevo).ObjIndex = .Invent.Object(SlotViejo).ObjIndex
 314                     .Invent.Object(SlotNuevo).amount = .Invent.Object(SlotViejo).amount
 316                     .Invent.Object(SlotNuevo).Equipped = .Invent.Object(SlotViejo).Equipped

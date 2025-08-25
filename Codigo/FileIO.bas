@@ -1045,32 +1045,32 @@ LoadArmadurasHerreria_Err:
         
 End Sub
 
-Sub LoadRunasElementalesHerreria()
+Sub LoadBlackSmithElementalRunes()
         
         On Error GoTo LoadRunasHerreria_Err
         
 
         Dim n As Integer, lc As Integer
     
-100     n = val(GetVar(DatPath & "RunasElementalesHerrero.dat", "INIT", "NumRunas"))
+100     n = val(GetVar(DatPath & "BlackSmithElementalRunes.dat", "INIT", "NumRunas"))
     
 102     If n = 0 Then
-104         ReDim RunasElementalesHerrero(0) As Integer
+104         ReDim BlackSmithElementalRunes(0) As Integer
             Exit Sub
 
         End If
     
-106     ReDim Preserve RunasElementalesHerrero(1 To n) As Integer
+106     ReDim Preserve BlackSmithElementalRunes(1 To n) As Integer
     
 108     For lc = 1 To n
-110         RunasElementalesHerrero(lc) = val(GetVar(DatPath & "RunasElementalesHerrero.dat", "Runa" & lc, "Index"))
+110         BlackSmithElementalRunes(lc) = val(GetVar(DatPath & "BlackSmithElementalRunes.dat", "Runa" & lc, "Index"))
 112     Next lc
 
         
         Exit Sub
 
 LoadRunasHerreria_Err:
-114     Call TraceError(Err.Number, Err.Description, "ES.LoadRunasElementalesHerreria", Erl)
+114     Call TraceError(Err.Number, Err.Description, "ES.LoadBlackSmithElementalRunes", Erl)
 
         
 End Sub

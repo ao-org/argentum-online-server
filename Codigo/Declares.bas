@@ -3009,7 +3009,7 @@ Public ForbidenNames()                    As String
 Public BlockedWordsDescription()           As String
 Public ArmasHerrero()                     As Integer
 Public ArmadurasHerrero()                 As Integer
-Public RunasElementalesHerrero()          As Integer
+Public BlackSmithElementalRunes()          As Integer
 Public ObjCarpintero()                    As Integer
 Public ObjAlquimista()                    As Integer
 Public ObjSastre()                        As Integer

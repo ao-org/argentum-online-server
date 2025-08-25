@@ -1466,8 +1466,8 @@ Public Function PuedeConstruirHerreria(ByVal ItemIndex As Integer) As Boolean
 114             Next i
 
             Case e_OBJType.otElementalRune
-                For i = 1 To UBound(RunasElementalesHerrero)
-                    If RunasElementalesHerrero(i) = ItemIndex Then
+                For i = 1 To UBound(BlackSmithElementalRunes)
+                    If BlackSmithElementalRunes(i) = ItemIndex Then
                         PuedeConstruirHerreria = True
                         Exit Function
                     End If

@@ -622,7 +622,7 @@ On Error GoTo Handler
 176     frmCargando.Label1(2).Caption = "Cargando Objetos de Herrería"
 178     Call LoadArmasHerreria
 180     Call LoadArmadurasHerreria
-        Call LoadRunasElementalesHerreria
+        Call LoadBlackSmithElementalRunes
     
 182     frmCargando.Label1(2).Caption = "Cargando Objetos de Carpintería"
 184     Call LoadObjCarpintero

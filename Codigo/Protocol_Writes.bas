@@ -2265,13 +2265,13 @@ Public Sub WriteBlacksmithElementalRunes(ByVal UserIndex As Integer)
 
         Dim Count          As Integer
 
-100     ReDim validIndexes(1 To UBound(RunasElementalesHerrero()))
+100     ReDim validIndexes(1 To UBound(BlackSmithElementalRunes()))
 102     Call Writer.WriteInt16(ServerPacketID.eBlacksmithExtraObjects)
 
-104     For i = 1 To UBound(RunasElementalesHerrero())
+104     For i = 1 To UBound(BlackSmithElementalRunes())
 
             ' Can the user create this object? If so add it to the list....
-106         If ObjData(RunasElementalesHerrero(i)).SkHerreria <= UserList(UserIndex).Stats.UserSkills( _
+106         If ObjData(BlackSmithElementalRunes(i)).SkHerreria <= UserList(UserIndex).Stats.UserSkills( _
                     e_Skill.Herreria) Then
 108             Count = Count + 1
 110             validIndexes(Count) = i
@@ -2284,7 +2284,7 @@ Public Sub WriteBlacksmithElementalRunes(ByVal UserIndex As Integer)
 
         ' Write the needed data of each object
 116     For i = 1 To Count
-120         Call Writer.WriteInt16(RunasElementalesHerrero(validIndexes(i)))
+120         Call Writer.WriteInt16(BlackSmithElementalRunes(validIndexes(i)))
 128     Next i
 
 130     Call modSendData.SendData(ToIndex, UserIndex)
