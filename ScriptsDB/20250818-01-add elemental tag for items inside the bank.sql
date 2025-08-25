@@ -1,0 +1,1 @@
+ALTER TABLE bank_item ADD elemental_tags integer not null default 0;

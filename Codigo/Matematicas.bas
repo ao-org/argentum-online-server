@@ -137,7 +137,7 @@ Public Sub SetMask(ByRef mask As Long, ByVal value As Long)
 End Sub
 
 Public Function IsSet(ByVal Mask As Long, ByVal Value As Long) As Boolean
-    IsSet = (mask And value) > 0
+    IsSet = (Mask And value) <> 0
 End Function
 
 Public Sub UnsetMask(ByRef mask As Long, ByVal value As Long)
@@ -152,8 +152,8 @@ Public Sub SetIntMask(ByRef Mask As Integer, ByVal Value As Integer)
     Mask = Mask Or Value
 End Sub
 
-Public Function IsIntSet(ByVal Mask As Integer, ByVal Value As Integer)
-    IsIntSet = (Mask And Value) > 0
+Public Function IsIntSet(ByVal Mask As Integer, ByVal value As Integer) As Boolean
+    IsIntSet = (Mask And value) <> 0
 End Function
 
 Public Sub UnsetIntMask(ByRef Mask As Integer, ByVal Value As Integer)
@@ -165,9 +165,20 @@ Public Sub ResetIntMask(ByRef Mask As Integer)
 End Sub
 
 Public Function ShiftRight(ByVal Number As Long, ByVal BitCount As Byte) As Long
-    ShiftRight = Number \ 2 ^ BitCount
+    If BitCount < 0 Or BitCount > 31 Then
+        ShiftRight = 0
+    Else
+        ShiftRight = Number \ (2 ^ BitCount)
+    End If
 End Function
 
 Public Function ShiftLeft(ByVal Number As Long, ByVal BitCount As Byte) As Long
-    ShiftLeft = Number * 2 ^ BitCount
+    If BitCount < 0 Or BitCount > 31 Then
+        ShiftLeft = 0
+    ElseIf BitCount = 31 Then
+        ' Directly assign the sign bit to avoid CLng overflow
+        ShiftLeft = &H80000000
+    Else
+        ShiftLeft = Number * (2 ^ BitCount)
+    End If
 End Function
