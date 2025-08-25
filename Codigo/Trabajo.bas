@@ -2208,6 +2208,12 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
 
                 Dim objValue As Integer
 
+                If IsFeatureEnabled("gain_exp_while_working") Then
+                        Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.HerramientaEqpObjIndex, e_JobsTypes.Fisherman)
+                        Call WriteUpdateExp(UserIndex)
+                        Call CheckUserLevel(UserIndex)
+                End If
+
                 ' Shugar: al final no importa el valor del pez ya que se ajusta la cantidad...
                 ' Genero el obj pez que pesqué y su cantidad
 126             MiObj.ObjIndex = ObtenerPezRandom(ObjData(.invent.HerramientaEqpObjIndex).Power)
@@ -2301,12 +2307,6 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
 178                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
                         ' Le mandamos un mensaje
                         Call WriteLocaleMsg(UserIndex, "1457", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1457=¡Has conseguido ¬1!
-
-                    If IsFeatureEnabled("gain_exp_while_working") Then
-                        Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.HerramientaEqpObjIndex, e_JobsTypes.Fisherman)
-                        Call WriteUpdateExp(UserIndex)
-                        Call CheckUserLevel(UserIndex)
-                    End If
 
                     End If
 

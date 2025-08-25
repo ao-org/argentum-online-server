@@ -8717,8 +8717,15 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                                 For j = 1 To UBound(PecesEspeciales)
                                     If .Invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
                                         .Stats.PuntosPesca = .Stats.PuntosPesca + (ObjData(.Invent.Object(i).ObjIndex).PuntosPesca * .Invent.Object(i).amount)
-                                        .Stats.GLD = .Stats.GLD + (ObjData(.Invent.Object(i).ObjIndex).Valor * .Invent.Object(i).amount * 1.2)
+                                        .Stats.GLD = .Stats.GLD + (ObjData(.Invent.Object(i).ObjIndex).Valor * .Invent.Object(i).amount * SvrConfig.GetValue("SpecialFishGoldMultiplier"))
                                         Call WriteUpdateGold(userindex)
+
+                                        If IsFeatureEnabled("gain_exp_while_working") Then
+                                            .Stats.Exp = .Stats.Exp + (ObjData(.invent(Object(i).ObjIndex).Valor * .invent.Object(i).amount * SvrConfig.GetValue("SpecialFishExpMultiplier")))
+                                            Call WriteUpdateExp(UserIndex)
+                                            Call CheckUserLevel(UserIndex)
+                                        End If
+
                                         Call QuitarUserInvItem(UserIndex, i, .Invent.Object(i).amount)
                                         Call UpdateUserInv(False, UserIndex, i)
                                     End If

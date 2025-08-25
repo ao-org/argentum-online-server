@@ -200,6 +200,9 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "PescarExp", CByte(val(reader.GetValue("JOBEXP", "PescarExp",1)))
     mSettings.Add "MezclarExp", CByte(val(reader.GetValue("JOBEXP", "MezclarExp",1)))
     mSettings.Add "ElseExp", CByte(val(reader.GetValue("JOBEXP", "ElseExp",1)))
+
+    mSettings.Add "SpecialFishGoldMultiplier", CLng(val(reader.GetValue("JOBEXP", "SpecialFishGoldMultiplier",1.2)))
+    mSettings.Add "SpecialFishExpMultiplier", CLng(val(reader.GetValue("JOBEXP", "SpecialFishExpMultiplier",1)))
     
       
     Set reader = Nothing
