@@ -4058,7 +4058,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             If Slot <> FLAGORO Then
                 'Natural elemental tags are the one in the object
                 'User added elemental tags are the one in the user slots
-                ElementalTags = ObjData(UserList(UserIndex).invent.Object(Slot).ObjIndex).ElementalTags Or UserList(UserIndex).invent.Object(Slot).ElementalTags
+                ElementalTags = UserList(UserIndex).invent.Object(Slot).ElementalTags
             End If
             
             
