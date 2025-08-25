@@ -2757,7 +2757,7 @@ Sub CargarCiudades()
         Exit Sub
 
 CargarCiudades_Err:
-302     Call TraceError(Err.Number, Err.Description, "ES.CargarCiudades", Erl)
+303     Call TraceError(Err.Number, Err.Description, "ES.CargarCiudades", Erl)
         Call TraceError(Err.Number, Err.Description, "ES.CargarCiudades", Erl)
         
 End Sub
