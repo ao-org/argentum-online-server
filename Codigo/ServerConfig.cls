@@ -193,6 +193,14 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "AUTONAVALBATTLE_InscriptionFee", CInt(val(reader.GetValue("AUTONAVALBATTLE", "InscriptionFee")))
     mSettings.Add "AUTONAVALBATTLE_Description", reader.GetValue("AUTONAVALBATTLE", "Description")
     
+    mSettings.Add "MinarExp", CByte(val(reader.GetValue("JOBEXP", "MinarExp",1)))
+    mSettings.Add "TalarExp", CByte(val(reader.GetValue("JOBEXP", "TalarExp",1)))
+    mSettings.Add "ForjarExp", CByte(val(reader.GetValue("JOBEXP", "ForjarExp",1)))
+    mSettings.Add "CarpinteriaExp", CByte(val(reader.GetValue("JOBEXP", "CarpinteriaExp",1)))
+    mSettings.Add "PescarExp", CByte(val(reader.GetValue("JOBEXP", "PescarExp",1)))
+    mSettings.Add "MezclarExp", CByte(val(reader.GetValue("JOBEXP", "MezclarExp",1)))
+    mSettings.Add "ElseExp", CByte(val(reader.GetValue("JOBEXP", "ElseExp",1)))
+    
       
     Set reader = Nothing
     
