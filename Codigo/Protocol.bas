@@ -4056,7 +4056,8 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
 104         amount = Reader.ReadInt32()
 
             If Slot <> FLAGORO Then
-                ElementalTags = UserList(UserIndex).invent.Object(Slot).ElementalTags
+                ElementalTags = ObjData(UserList(UserIndex).invent.Object(Slot).ObjIndex)
+                ElementalTags = ElementalTags Or UserList(UserIndex).invent.Object(Slot).ElementalTags
             End If
             
             
