@@ -2712,7 +2712,7 @@ Public Type t_Npc
     Desc As String
     DescExtra As String
     showName As Byte
-    GobernadorDe As Byte
+    GobernadorDe As Integer
 
     NPCtype As e_NPCType
     Numero As Integer
