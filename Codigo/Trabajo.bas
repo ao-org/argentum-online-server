@@ -2208,6 +2208,12 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
 
                 Dim objValue As Integer
 
+                If IsFeatureEnabled("gain_exp_while_working") Then
+                        Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.HerramientaEqpObjIndex, e_JobsTypes.Fisherman)
+                        Call WriteUpdateExp(UserIndex)
+                        Call CheckUserLevel(UserIndex)
+                End If
+
                 ' Shugar: al final no importa el valor del pez ya que se ajusta la cantidad...
                 ' Genero el obj pez que pesqué y su cantidad
 126             MiObj.ObjIndex = ObtenerPezRandom(ObjData(.invent.HerramientaEqpObjIndex).Power)
@@ -2312,8 +2318,9 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
 
             If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Then
 182             Call SubirSkill(UserIndex, e_Skill.Pescar)
-
             End If
+
+
 
             If StopWorking Then
 184             Call WriteWorkRequestTarget(UserIndex, 0)
@@ -3729,5 +3736,42 @@ Public Function GetExtractResourceForLevel(ByVal level As Integer) As Integer
     lower = Int(CDbl(level + 0.000001) / 3.6)
     upper = Int(CDbl(level + 0.000001) / 2)
     GetExtractResourceForLevel = RandomNumber(lower, upper)
+
+End Function
+
+Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal JobType As Byte)
+
+ On Error GoTo GiveExpWhileWorking_Err:
+
+    Dim tmpExp As Byte
+
+    Select Case JobType
+        Case e_JobsTypes.Miner
+            tmpExp = SvrConfig.GetValue("MinarExp")
+        Case e_JobsTypes.Woodcutter
+            tmpExp = SvrConfig.GetValue("TalarExp")
+        Case e_JobsTypes.Blacksmith
+            tmpExp = SvrConfig.GetValue("ForjarExp")
+        Case e_JobsTypes.Carpenter
+            tmpExp = SvrConfig.GetValue("CarpinteriaExp")
+        Case e_JobsTypes.Woodcutter
+            tmpExp = SvrConfig.GetValue("TalarExp")
+        Case e_JobsTypes.Fisherman
+            If ObjData(ItemIndex).Power >= 2 Then
+                tmpExp = SvrConfig.GetValue("PescarExp")
+            End If
+        Case e_JobsTypes.Alchemist
+            tmpExp = SvrConfig.GetValue("MezclarExp")
+        Case Else
+            tmpExp = SvrConfig.GetValue("ElseExp")
+    End Select
+
+    UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + tmpExp
+
+Exit Function
+
+
+GiveExpWhileWorking_Err:
+        Call TraceError(Err.Number, Err.Description, "Trabajo.GiveExpWhileWorking", Erl)
 
 End Function
