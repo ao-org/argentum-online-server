@@ -675,7 +675,9 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
                     Dim UserAttackInteractionResult As t_AttackInteractionResult
                     UserAttackInteractionResult = UserCanAttackNpc(UserIndex, .flags.TargetNPC.ArrayIndex)
 
-                    If UserAttackInteractionResult.result = eAttackCitizenNpc Or UserAttackInteractionResult.result = eRemoveSafeCitizenNpc Then
+                    If UserAttackInteractionResult.result = e_AttackInteractionResult.eAttackCitizenNpc Or _
+                       UserAttackInteractionResult.result = e_AttackInteractionResult.eRemoveSafeCitizenNpc Or _
+                       UserAttackInteractionResult.result = e_AttackInteractionResult.eRemoveSafe Then
                         Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.result)
                         If UserAttackInteractionResult.CanAttack Then
                             If UserAttackInteractionResult.TurnPK Then VolverCriminal (UserIndex)
