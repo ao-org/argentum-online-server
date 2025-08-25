@@ -1383,7 +1383,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, _
         End If
         
         If ObjData(ItemIndex).FireEssence > 0 Then
-            If Not TieneObjetos(e_Minerales.Blodium, ObjData(ItemIndex).FireEssence, UserIndex) Then
+            If Not TieneObjetos(e_Minerales.FireEssence, ObjData(ItemIndex).FireEssence, UserIndex) Then
                 Call WriteLocaleMsg(UserIndex, "2090", e_FontTypeNames.FONTTYPE_INFO)
                 HerreroTieneMateriales = False
                 Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -1392,7 +1392,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, _
         End If
 
         If ObjData(ItemIndex).WaterEssence > 0 Then
-            If Not TieneObjetos(e_Minerales.Blodium, ObjData(ItemIndex).WaterEssence, UserIndex) Then
+            If Not TieneObjetos(e_Minerales.WaterEssence, ObjData(ItemIndex).WaterEssence, UserIndex) Then
                 Call WriteLocaleMsg(UserIndex, "2090", e_FontTypeNames.FONTTYPE_INFO)
                 HerreroTieneMateriales = False
                 Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -1401,7 +1401,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, _
         End If
 
         If ObjData(ItemIndex).EarthEssence > 0 Then
-            If Not TieneObjetos(e_Minerales.Blodium, ObjData(ItemIndex).EarthEssence, UserIndex) Then
+            If Not TieneObjetos(e_Minerales.EarthEssence, ObjData(ItemIndex).EarthEssence, UserIndex) Then
                 Call WriteLocaleMsg(UserIndex, "2090", e_FontTypeNames.FONTTYPE_INFO)
                 HerreroTieneMateriales = False
                 Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -1410,7 +1410,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, _
         End If
 
         If ObjData(ItemIndex).WindEssence > 0 Then
-            If Not TieneObjetos(e_Minerales.Blodium, ObjData(ItemIndex).WindEssence, UserIndex) Then
+            If Not TieneObjetos(e_Minerales.WindEssence, ObjData(ItemIndex).WindEssence, UserIndex) Then
                 Call WriteLocaleMsg(UserIndex, "2090", e_FontTypeNames.FONTTYPE_INFO)
                 HerreroTieneMateriales = False
                 Call WriteMacroTrabajoToggle(UserIndex, False)
