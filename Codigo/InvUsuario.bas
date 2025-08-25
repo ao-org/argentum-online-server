@@ -482,7 +482,6 @@ End Sub
 Sub DropObj(ByVal UserIndex As Integer, _
             ByVal Slot As Byte, _
             ByVal num As Integer, _
-            ByVal ElementalTags As Long, _
             ByVal Map As Integer, _
             ByVal X As Integer, _
             ByVal Y As Integer)
@@ -497,7 +496,7 @@ Sub DropObj(ByVal UserIndex As Integer, _
                 End If
 108             obj.ObjIndex = .Invent.Object(Slot).ObjIndex
 110             obj.amount = num
-                obj.ElementalTags = ElementalTags
+                obj.ElementalTags = .Invent.Object(Slot).ElementalTags
                 If Not CustomScenarios.UserCanDropItem(UserIndex, Slot, Map, x, y) Then
                     Exit Sub
                 End If
@@ -3525,7 +3524,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
                             Call ClosestLegalPos(.Pos, NuevaPos, .flags.Navegando, Not .flags.Navegando)
                         End If
 130                     If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
-132                         Call DropObj(UserIndex, i, MiObj.amount, MiObj.ElementalTags, NuevaPos.Map, NuevaPos.x, NuevaPos.y)
+132                         Call DropObj(UserIndex, i, MiObj.amount, NuevaPos.Map, NuevaPos.x, NuevaPos.y)
                         
                         '  Si no hay lugar, quemamos el item del inventario (nada de mochilas gratis)
                         Else

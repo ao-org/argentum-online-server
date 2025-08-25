@@ -2274,7 +2274,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 136                     ElseIf ObjData(.Invent.Object(Slot).ObjIndex).Intirable = 1 And EsGM(UserIndex) Then
 138                         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
 140                             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-142                             Call DropObj(UserIndex, Slot, amount, .invent.Object(Slot).ElementalTags, .Pos.Map, .Pos.x, .Pos.y)
+142                             Call DropObj(UserIndex, Slot, amount, .Pos.Map, .Pos.x, .Pos.y)
                             End If
                             Exit Sub
                         End If
@@ -2306,7 +2306,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             
 154                 If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
 
-156                 Call DropObj(UserIndex, Slot, amount, .invent.Object(Slot).ElementalTags, .Pos.Map, .Pos.x, .Pos.y)
+156                 Call DropObj(UserIndex, Slot, amount, .Pos.Map, .Pos.x, .Pos.y)
 
                 End If
 
