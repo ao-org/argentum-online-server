@@ -732,7 +732,8 @@ End Sub
 
 Function TieneObjetos(ByVal ItemIndex As Integer, _
                       ByVal cant As Integer, _
-                      ByVal UserIndex As Integer) As Boolean
+                      ByVal UserIndex As Integer, _
+                      Optional ByVal ElementalTags As Long = e_ElementalTags.Normal) As Boolean
 
         On Error GoTo TieneObjetos_Err
 
@@ -747,7 +748,7 @@ Function TieneObjetos(ByVal ItemIndex As Integer, _
 
 100     For i = 1 To UserList(UserIndex).CurrentInventorySlots
 
-102         If UserList(UserIndex).Invent.Object(i).ObjIndex = ItemIndex Then
+102         If UserList(UserIndex).invent.Object(i).ObjIndex = ItemIndex And UserList(UserIndex).invent.Object(i).ElementalTags = ElementalTags Then
 104             Total = Total + UserList(UserIndex).Invent.Object(i).amount
 
             End If
@@ -769,7 +770,8 @@ End Function
 
 Function QuitarObjetos(ByVal ItemIndex As Integer, _
                        ByVal cant As Integer, _
-                       ByVal UserIndex As Integer) As Boolean
+                       ByVal UserIndex As Integer, _
+                       Optional ByVal ElementalTags As Long = e_ElementalTags.Normal) As Boolean
 
         On Error GoTo QuitarObjetos_Err
 
@@ -779,7 +781,7 @@ Function QuitarObjetos(ByVal ItemIndex As Integer, _
 
 102         For i = 1 To .CurrentInventorySlots
 
-104             If .Invent.Object(i).ObjIndex = ItemIndex Then
+104             If .invent.Object(i).ObjIndex = ItemIndex And .invent.Object(i).ElementalTags = ElementalTags Then
 106                 .Invent.Object(i).amount = .Invent.Object(i).amount - cant
 
 108                 If .Invent.Object(i).amount <= 0 Then
@@ -791,6 +793,7 @@ Function QuitarObjetos(ByVal ItemIndex As Integer, _
 114                     cant = Abs(.Invent.Object(i).amount)
 116                     .Invent.Object(i).amount = 0
 118                     .Invent.Object(i).ObjIndex = 0
+                        .invent.Object(i).ElementalTags = 0
                     Else
 120                     cant = 0
 
