@@ -403,6 +403,11 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 100     With UserList(UserIndex)
             'Controla las salidas
 102         If InMapBounds(Map, X, Y) Then
+
+                If MapData(Map, x, y).trigger = e_Trigger.TRANSFER_ONLY_DEAD Then
+                    If .flags.Muerto <> 1 Then Exit Sub  ' si está vivo, no teletransportar
+                End If
+                
                 If MapData(Map, X, Y).trigger = AUTORESU Then
                     Call ResucitarOCurar(UserIndex)
                 End If
