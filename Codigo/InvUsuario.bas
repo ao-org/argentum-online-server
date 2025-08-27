@@ -239,6 +239,7 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
                 If ObjData(UserList(UserIndex).BancoInvent.Object(j).ObjIndex).Newbie = 1 Then
                     UserList(UserIndex).BancoInvent.Object(j).ObjIndex = 0
                     UserList(UserIndex).BancoInvent.Object(j).amount = 0
+                    UserList(UserIndex).BancoInvent.Object(j).ElementalTags = 0
                     Call UpdateBanUserInv(False, UserIndex, j, "QuitarNewbieObj")
                 End If
             End If
@@ -495,6 +496,7 @@ Sub DropObj(ByVal UserIndex As Integer, _
                 End If
 108             obj.ObjIndex = .Invent.Object(Slot).ObjIndex
 110             obj.amount = num
+                obj.ElementalTags = .Invent.Object(Slot).ElementalTags
                 If Not CustomScenarios.UserCanDropItem(UserIndex, Slot, Map, x, y) Then
                     Exit Sub
                 End If
@@ -503,7 +505,8 @@ Sub DropObj(ByVal UserIndex As Integer, _
                     Dim Suma As Long
                     Suma = num + MapData(.Pos.Map, X, Y).ObjInfo.amount
                     'Check objeto en el suelo
-114                 If MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex = 0 Or (MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex = obj.ObjIndex And Suma <= MAX_INVENTORY_OBJS) Then
+114                 If MapData(.Pos.Map, x, y).ObjInfo.ObjIndex = 0 Or (MapData(.Pos.Map, x, y).ObjInfo.ObjIndex = obj.ObjIndex And MapData(.Pos.Map, x, y).ObjInfo.ElementalTags = obj.ElementalTags And Suma <= MAX_INVENTORY_OBJS) Then
+
 116                     If Suma > MAX_INVENTORY_OBJS Then
 118                         num = MAX_INVENTORY_OBJS - MapData(.Pos.Map, X, Y).ObjInfo.amount
                         End If
@@ -555,6 +558,7 @@ Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal X As Integer, ByV
             
 108         MapData(Map, X, Y).ObjInfo.ObjIndex = 0
 110         MapData(Map, X, Y).ObjInfo.amount = 0
+            MapData(Map, x, y).ObjInfo.ElementalTags = 0
     
     
 112         Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectDelete(X, Y))
@@ -580,10 +584,11 @@ Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal X As Integer, ByVal 
 
 100     If obj.ObjIndex > 0 And obj.ObjIndex <= UBound(ObjData) Then
     
-102         If MapData(Map, X, Y).ObjInfo.ObjIndex = obj.ObjIndex Then
+102         If MapData(Map, x, y).ObjInfo.ObjIndex = obj.ObjIndex And MapData(Map, x, y).ObjInfo.ElementalTags = obj.ElementalTags Then
 104             MapData(Map, X, Y).ObjInfo.amount = MapData(Map, X, Y).ObjInfo.amount + obj.amount
             Else
 110             MapData(Map, X, Y).ObjInfo.ObjIndex = obj.ObjIndex
+                MapData(Map, x, y).ObjInfo.ElementalTags = obj.ElementalTags
 
 112             If ObjData(obj.ObjIndex).VidaUtil <> 0 Then
 114                 MapData(Map, X, Y).ObjInfo.amount = ObjData(obj.ObjIndex).VidaUtil
@@ -594,7 +599,7 @@ Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal X As Integer, ByVal 
                 
             End If
             
-118         Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(obj.ObjIndex, MapData(Map, X, Y).ObjInfo.amount, X, Y))
+118         Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(obj.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y, MapData(Map, x, y).ObjInfo.ElementalTags))
     
         End If
         
@@ -613,6 +618,7 @@ On Error GoTo GetSlotForItemInInventory_Err
 104    If UserList(UserIndex).invent.Object(i).objIndex = 0 And GetSlotForItemInInventory = -1 Then
 106        GetSlotForItemInInventory = i 'we found a valid place but keep looking in case we can stack
 108    ElseIf UserList(UserIndex).invent.Object(i).objIndex = MyObject.objIndex And _
+              UserList(UserIndex).invent.Object(i).ElementalTags = MyObject.ElementalTags And _
               UserList(UserIndex).invent.Object(i).amount + MyObject.amount <= MAX_INVENTORY_OBJS Then
 110        GetSlotForItemInInventory = i 'we can stack the item, let use this slot
 112        Exit Function
@@ -671,6 +677,7 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
             'Menor que MAX_INV_OBJS
 126         UserList(UserIndex).Invent.Object(Slot).ObjIndex = MiObj.ObjIndex
 128         UserList(UserIndex).Invent.Object(Slot).amount = UserList(UserIndex).Invent.Object(Slot).amount + MiObj.amount
+            UserList(UserIndex).invent.Object(Slot).ElementalTags = MiObj.ElementalTags
             
         
         Else
@@ -747,6 +754,7 @@ Sub PickObj(ByVal UserIndex As Integer)
 112             obj = ObjData(MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex)
 114             MiObj.amount = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.amount
 116             MiObj.ObjIndex = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.ObjIndex
+117             MiObj.ElementalTags = MapData(UserList(UserIndex).Pos.Map, x, y).ObjInfo.ElementalTags
         
 118             If Not MeterItemEnInventario(UserIndex, MiObj) Then
                     'Call WriteConsoleMsg(UserIndex, "No puedo cargar mas objetos.", e_FontTypeNames.FONTTYPE_INFO)
@@ -1473,6 +1481,14 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
                     End If
   
+                    'Si esta equipando armadura faccionaria fuera de zona segura o fuera de trigger seguro
+                    If obj.Real > 0 Or obj.Caos > 0 Then
+                        If Not MapData(.Pos.Map, .Pos.x, .Pos.y).trigger = e_Trigger.ZonaSegura And Not MapInfo(.Pos.Map).Seguro = 1 Then
+                            Call WriteLocaleMsg(UserIndex, "2091", e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
+                    End If
+                    
                     'Lo equipa
 396                 If Len(obj.CreaGRH) <> 0 Then
 398                     .Char.Body_Aura = obj.CreaGRH
@@ -3352,6 +3368,22 @@ EnivarObjConstruibles_Err:
         
 End Sub
 
+Sub SendCraftableElementRunes(ByVal UserIndex As Integer)
+        
+        On Error GoTo SendCraftableElementRunes_Err
+        
+
+100     Call WriteBlacksmithElementalRunes(UserIndex)
+
+        
+        Exit Sub
+
+SendCraftableElementRunes_Err:
+102     Call TraceError(Err.Number, Err.Description, "InvUsuario.SendCraftableElementRunes", Erl)
+
+        
+End Sub
+
 Sub EnivarObjConstruiblesAlquimia(ByVal UserIndex As Integer)
         
         On Error GoTo EnivarObjConstruiblesAlquimia_Err
@@ -3483,6 +3515,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
                     
 118                     MiObj.amount = DropAmmount(.invent, i)
 120                     MiObj.ObjIndex = ItemIndex
+                        MiObj.ElementalTags = .invent.Object(i).ElementalTags
                         
                         If .flags.Navegando Then
 128                         Call Tilelibre(.Pos, NuevaPos, MiObj, True, True)
@@ -3491,7 +3524,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
                             Call ClosestLegalPos(.Pos, NuevaPos, .flags.Navegando, Not .flags.Navegando)
                         End If
 130                     If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
-132                         Call DropObj(UserIndex, i, MiObj.amount, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
+132                         Call DropObj(UserIndex, i, MiObj.amount, NuevaPos.Map, NuevaPos.x, NuevaPos.y)
                         
                         '  Si no hay lugar, quemamos el item del inventario (nada de mochilas gratis)
                         Else
@@ -3955,4 +3988,70 @@ Sub EliminarLlaves(ByVal ClaveLlave As Integer, ByVal UserIndex As Integer)
     ' Cerrar el archivo
     Close #1
 End Sub
+
+Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal TargetSlot As Integer, ByVal SourceSlot As Integer) As Boolean
+    CanElementalTagBeApplied = False
+    Dim TargetObj As t_ObjData
+    Dim SourceObj As t_ObjData
+
+
+     If TargetSlot < 1 Or TargetSlot  > UserList(UserIndex).CurrentInventorySlots Then
+        Exit Function
+    End If
+    
+    If SourceSlot< 1 Or SourceSlot> UserList(UserIndex).CurrentInventorySlots Then
+        Exit Function
+    End If
+    
+    If UserList(UserIndex).invent.Object(TargetSlot).ObjIndex = 0 Or UserList(UserIndex).invent.Object(SourceSlot).ObjIndex = 0 Then
+        Exit Function
+    End If
+    
+    TargetObj = ObjData(UserList(UserIndex).invent.Object(TargetSlot).ObjIndex)
+    SourceObj = ObjData(UserList(UserIndex).invent.Object(SourceSlot).ObjIndex)
+
+    If SourceObj.OBJType <> otElementalRune Then
+        Exit Function
+    End If
+    
+    If TargetObj.OBJType <> otWeapon Then
+        Exit Function
+    End If
+    
+    If TargetObj.ElementalTags <> e_ElementalTags.Normal Then
+        Call WriteLocaleMsg(UserIndex, "2087", e_FontTypeNames.FONTTYPE_INFOIAO)
+        Exit Function
+    End If
+    
+    If UserList(UserIndex).invent.Object(TargetSlot).ElementalTags <> e_ElementalTags.Normal Then
+        Call WriteLocaleMsg(UserIndex, "2087", e_FontTypeNames.FONTTYPE_INFOIAO)
+        Exit Function
+    End If
+    
+    If UserList(UserIndex).invent.Object(TargetSlot).amount > 1 Then
+        Call WriteLocaleMsg(UserIndex, "2088", e_FontTypeNames.FONTTYPE_INFOIAO)
+        Exit Function
+    End If
+    
+    
+    
+    Select Case SourceObj.ElementalTags
+        Case e_ElementalTags.Fire
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Incinerar, 10, False))
+        Case e_ElementalTags.Water
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.CurarCrimi, 10, False))
+        Case e_ElementalTags.Earth
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Envenena, 10, False))
+        Case e_ElementalTags.Wind
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Runa, 10, False))
+        Case Else
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Curar, 10, False))
+    End Select
+    
+    
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_FXSound.RUNE_SOUND, NO_3D_SOUND, NO_3D_SOUND))
+    UserList(UserIndex).invent.Object(TargetSlot).ElementalTags = SourceObj.ElementalTags
+    CanElementalTagBeApplied = True
+    
+End Function
 

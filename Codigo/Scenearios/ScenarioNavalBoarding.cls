@@ -311,6 +311,7 @@ Private Sub AddItemToUser(ByVal UserIndex As Integer, ByVal ItemId As Integer, B
             If .invent.Object(Slot).ObjIndex = 0 Then
                 .invent.Object(Slot).ObjIndex = ItemId
                 .invent.Object(Slot).amount = ItemCount
+                .invent.Object(Slot).ElementalTags = e_ElementalTags.Normal
                 Exit Sub
             End If
         Next Slot
@@ -451,6 +452,7 @@ Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
                     .invent.Object(i).ObjIndex = 0
                     .invent.Object(i).amount = 0
                     .invent.Object(i).Equipped = 0
+                    .invent.Object(i).ElementalTags = e_ElementalTags.Normal
                 End If
             Next i
             If UserItemInfo.RemovedItemCount > 0 Then
@@ -547,7 +549,7 @@ Public Sub IBaseScenario_OnUserDisconnected(ByVal UserIndex As Integer)
             For i = LBound(.invent.Object) To UBound(.invent.Object)
                 If .invent.Object(i).ObjIndex = TeamCargo(1).CargoItemId Or _
                    .invent.Object(i).ObjIndex = TeamCargo(2).CargoItemId Then
-                    Call DropObj(UserIndex, i, .invent.Object(i).amount, .pos.Map, .pos.x, .pos.y)
+                    Call DropObj(UserIndex, i, .invent.Object(i).amount, .Pos.Map, .Pos.x, .Pos.y)
                     Exit For
                 End If
             Next i
@@ -824,7 +826,7 @@ Public Sub IBaseScenario_UserDie(ByVal UserIndex)
             For i = LBound(.invent.Object) To UBound(.invent.Object)
                 If .invent.Object(i).ObjIndex = TeamCargo(1).CargoItemId Or _
                    .invent.Object(i).ObjIndex = TeamCargo(2).CargoItemId Then
-                    Call DropObj(UserIndex, i, .invent.Object(i).amount, .pos.Map, .pos.x, .pos.y)
+                    Call DropObj(UserIndex, i, .invent.Object(i).amount, .Pos.Map, .Pos.x, .Pos.y)
                     Exit For
                 End If
             Next i

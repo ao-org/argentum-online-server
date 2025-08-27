@@ -725,14 +725,14 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
 154         If .clase = e_Class.Mage And Not IsFeatureEnabled("remove-staff-requirements") Then
 156             If Hechizos(HechizoIndex).NeedStaff > 0 Then
 158                 If .Invent.WeaponEqpObjIndex = 0 Then
-'Msg781= Necesitás un báculo para lanzar este hechizo.
-Call WriteLocaleMsg(UserIndex, "781", e_FontTypeNames.FONTTYPE_INFO)
+                        'Msg781= Necesitás un báculo para lanzar este hechizo.
+                        Call WriteLocaleMsg(UserIndex, "781", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Function
                     End If
                 
 162                 If ObjData(.Invent.WeaponEqpObjIndex).Power < Hechizos(HechizoIndex).NeedStaff Then
-'Msg782= Necesitás un báculo más poderoso para lanzar este hechizo.
-Call WriteLocaleMsg(UserIndex, "782", e_FontTypeNames.FONTTYPE_INFO)
+                        'Msg782= Necesitás un báculo más poderoso para lanzar este hechizo.
+                        Call WriteLocaleMsg(UserIndex, "782", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Function
                     End If
                 End If
@@ -740,9 +740,9 @@ Call WriteLocaleMsg(UserIndex, "782", e_FontTypeNames.FONTTYPE_INFO)
             
             If .clase = e_Class.Druid Then
                 If Hechizos(HechizoIndex).RequiereInstrumento > 0 Then
-                    If .invent.DañoMagicoEqpSlot = 0 Or ObjData(.invent.DañoMagicoEqpObjIndex).InstrumentoRequerido <> 1 Then
-'Msg783= Necesitás una flauta para invocar o desinvocar a tus mascotas.
-Call WriteLocaleMsg(UserIndex, "783", e_FontTypeNames.FONTTYPE_INFO)
+                    If .invent.DañoMagicoEqpObjIndex = 0 Or ObjData(.invent.DañoMagicoEqpObjIndex).InstrumentoRequerido <> 1 Then
+                        'Msg783= Necesitás una flauta para invocar o desinvocar a tus mascotas.
+                        Call WriteLocaleMsg(UserIndex, "783", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Function
                     End If
                 End If
@@ -953,6 +953,11 @@ Call WriteLocaleMsg(UserIndex, "785", e_FontTypeNames.FONTTYPE_INFO)
 192                             Call SetNpcRef(.MascotasIndex(i), SpawnNpc(.MascotasType(i), targetPos, True, True, False, UserIndex))
 194                             Call SetUserRef(NpcList(.MascotasIndex(i).ArrayIndex).MaestroUser, UserIndex)
 196                             Call FollowAmo(.MascotasIndex(i).ArrayIndex)
+
+                                If IsFeatureEnabled("addjust-npc-with-caster") And IsSet(Hechizos(h).Effects, AdjustStatsWithCaster) Then
+                                    Call AdjustNpcStatWithCasterLevel(UserIndex, .MascotasIndex(i).ArrayIndex)
+                                End If
+
 198                             b = True
                             End If
                         Next
@@ -2766,6 +2771,11 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
 104             Damage = RandomNumber(Hechizos(hIndex).MinHp, Hechizos(hIndex).MaxHp)
 105             Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
                 Damage = Damage * NPCs.GetSelfHealingBonus(NpcList(NpcIndex))
+
+                If IsFeatureEnabled("elemental_tags") Then
+                    Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, Damage)
+                End If
+                
 106             Call InfoHechizo(UserIndex)
 108             Call NPCs.DoDamageOrHeal(npcIndex, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, hIndex)
                 
@@ -2832,6 +2842,9 @@ Call WriteLocaleMsg(UserIndex, "821", e_FontTypeNames.FONTTYPE_INFOIAO)
             Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
             Damage = Damage * NPCs.GetMagicDamageReduction(NpcList(NpcIndex))
 166         If Damage < 0 Then Damage = 0
+            If IsFeatureEnabled("elemental_tags") Then
+                Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, Damage)
+            End If
 170         Call InfoHechizo(UserIndex)
             IsAlive = NPCs.DoDamageOrHeal(NpcIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, hIndex) = eStillAlive
 176         If NpcList(NpcIndex).NPCtype = DummyTarget Then

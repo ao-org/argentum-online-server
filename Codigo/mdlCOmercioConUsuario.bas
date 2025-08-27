@@ -102,14 +102,14 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
                 Dim j As Long
                 'me fijo si tiene esas cantidades para que no duplique items
 108             For j = 1 To UBound(UserList(UserIndex).ComUsu.itemsAenviar)
-110                 If UserList(UserIndex).ComUsu.itemsAenviar(j).ObjIndex = ObjAEnviar.ObjIndex Then
+110                 If UserList(UserIndex).ComUsu.itemsAenviar(j).ObjIndex = ObjAEnviar.ObjIndex And UserList(UserIndex).ComUsu.itemsAenviar(j).ElementalTags = ObjAEnviar.ElementalTags Then
 112                     cantidadTotalItem = cantidadTotalItem + UserList(UserIndex).ComUsu.itemsAenviar(j).amount
                     End If
 114             Next j
             
 116             cantidadTotalItem = cantidadTotalItem + ObjAEnviar.amount
             
-118             If Not TieneObjetos(ObjAEnviar.ObjIndex, cantidadTotalItem, UserIndex) Then
+118             If Not TieneObjetos(ObjAEnviar.ObjIndex, cantidadTotalItem, UserIndex, ObjAEnviar.ElementalTags) Then
 
 120                 Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1997, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1997=No tienes esa cantidad disponible para agregar.
 
@@ -120,9 +120,9 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
                 Dim i As Long
 122             For i = 1 To UBound(UserList(UserIndex).ComUsu.itemsAenviar)
                     'Si encuentro el item y tiene lugar pongo Found en la posición que lo encontré
-124                 If UserList(UserIndex).ComUsu.itemsAenviar(i).ObjIndex = ObjAEnviar.ObjIndex And UserList(UserIndex).ComUsu.itemsAenviar(i).amount <= 10000 Then
+124                 If UserList(UserIndex).ComUsu.itemsAenviar(i).ObjIndex = ObjAEnviar.ObjIndex And UserList(UserIndex).ComUsu.itemsAenviar(i).ElementalTags = ObjAEnviar.ElementalTags And UserList(UserIndex).ComUsu.itemsAenviar(i).amount <= 10000 Then
                         'Me fijo si le va a entrar el objeto con las cantidades en el slot que encontró
-126                     If UserList(UserIndex).ComUsu.itemsAenviar(i).amount + ObjAEnviar.amount <= 10000 Then
+126                     If UserList(UserIndex).ComUsu.itemsAenviar(i).amount + ObjAEnviar.amount <= MAX_INVENTORY_OBJS Then
                             'Si le entra simplemente le agrego las cantidades
 128                         UserList(UserIndex).ComUsu.itemsAenviar(i).amount = UserList(UserIndex).ComUsu.itemsAenviar(i).amount + ObjAEnviar.amount
 130                         nada = True
@@ -155,6 +155,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
                         'Si entré aca es porque tengo que guardar el item en la pos vacía que encontré
 160                     .itemsAenviar(FirstEmptyPos).ObjIndex = ObjAEnviar.ObjIndex
 162                     .itemsAenviar(FirstEmptyPos).amount = ObjAEnviar.amount
+                        .itemsAenviar(FirstEmptyPos).ElementalTags = ObjAEnviar.ElementalTags
 164                 ElseIf FirstEmptyPos = 0 And nada = False Then
                         'le aviso que no le entran los items
 
@@ -266,13 +267,13 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
         Dim i As Long
 138     For i = 1 To UBound(UserList(OtroUserIndex).ComUsu.itemsAenviar)
 140         objOfrecido = UserList(OtroUserIndex).ComUsu.itemsAenviar(i)
-142         If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, OtroUserIndex) Then
+142         If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, OtroUserIndex, objOfrecido.ElementalTags) Then
 144             Call WriteLocaleMsg(OtroUserIndex, 1599, e_FontTypeNames.FONTTYPE_INFO) 'Msg1599= El otro usuario no tiene esa cantidad disponible para ofrecer.
 146             GoTo FinalizarComercio
             End If
         
 148         objOfrecido = UserList(UserIndex).ComUsu.itemsAenviar(i)
-150         If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, UserIndex) Then
+150         If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, UserIndex, objOfrecido.ElementalTags) Then
 152             Call WriteLocaleMsg(UserIndex, 1598, e_FontTypeNames.FONTTYPE_INFO) 'Msg1598= No tienes esa cantidad disponible para ofrecer.
 154             GoTo FinalizarComercio
             End If
@@ -302,7 +303,7 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
 184             Call TirarItemAlPiso(UserList(UserIndex).Pos, UserList(OtroUserIndex).ComUsu.itemsAenviar(i))
             End If
         
-186         Call QuitarObjetos(UserList(OtroUserIndex).ComUsu.itemsAenviar(i).ObjIndex, UserList(OtroUserIndex).ComUsu.itemsAenviar(i).amount, OtroUserIndex)
+186         Call QuitarObjetos(UserList(OtroUserIndex).ComUsu.itemsAenviar(i).ObjIndex, UserList(OtroUserIndex).ComUsu.itemsAenviar(i).amount, OtroUserIndex, UserList(OtroUserIndex).ComUsu.itemsAenviar(i).ElementalTags)
 188     Next i
     
         Dim j As Long
@@ -310,7 +311,7 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
 192         If MeterItemEnInventario(OtroUserIndex, UserList(UserIndex).ComUsu.itemsAenviar(j)) = False Then
 194             Call TirarItemAlPiso(UserList(OtroUserIndex).Pos, UserList(UserIndex).ComUsu.itemsAenviar(j))
             End If
-196         Call QuitarObjetos(UserList(UserIndex).ComUsu.itemsAenviar(j).ObjIndex, UserList(UserIndex).ComUsu.itemsAenviar(j).amount, UserIndex)
+196         Call QuitarObjetos(UserList(UserIndex).ComUsu.itemsAenviar(j).ObjIndex, UserList(UserIndex).ComUsu.itemsAenviar(j).amount, UserIndex, UserList(UserIndex).ComUsu.itemsAenviar(j).ElementalTags)
 198     Next j
 
 

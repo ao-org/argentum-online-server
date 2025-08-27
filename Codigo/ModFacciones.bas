@@ -473,7 +473,7 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
 124                     If PuedeUsarObjeto(UserIndex, recompensa.ObjIndex, False) = 0 Then
 126                         objetoRecompensa.amount = 1
 128                         objetoRecompensa.ObjIndex = recompensa.ObjIndex
-
+                            objetoRecompensa.ElementalTags = e_ElementalTags.Normal
 130                         If Not MeterItemEnInventario(UserIndex, objetoRecompensa) Then
 132                             Call TirarItemAlPiso(.Pos, objetoRecompensa)
 

@@ -923,6 +923,7 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 
 118     Call EnivarArmasConstruibles(UserIndex)
 120     Call EnivarArmadurasConstruibles(UserIndex)
+        Call SendCraftableElementRunes(UserIndex)
 122     Call WriteShowBlacksmithForm(UserIndex)
 
         Exit Sub
@@ -974,7 +975,7 @@ Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByV
 122          Call AccionParaPuerta(Map, X - 3, Y + 1, UserIndex, True)
         End If
 
-124     Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(MapData(Map, X, Y).ObjInfo.ObjIndex, MapData(Map, X, Y).ObjInfo.amount, X, Y))
+124     Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(Map, x, y).ObjInfo.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y))
 126     If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = 59878 Or puerta.GrhIndex = 59877 Then
 128         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PUERTA_DUCTO, X, Y))
         Else
@@ -1008,7 +1009,7 @@ Sub AccionParaPuertaNpc(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, 
 
         End If
 
-112     Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(MapData(Map, X, Y).ObjInfo.ObjIndex, MapData(Map, X, Y).ObjInfo.amount, X, Y))
+112     Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(Map, x, y).ObjInfo.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y))
 
 114     Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_PUERTA, X, Y))
 

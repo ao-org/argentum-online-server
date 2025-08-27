@@ -257,6 +257,11 @@ Public Enum e_Minerales
     LingoteDeHierro = 386
     LingoteDePlata = 387
     LingoteDeOro = 388
+    Blodium = 3787
+    FireEssence = 5179
+    WaterEssence = 5180
+    EarthEssence = 5181
+    WindEssence = 5182
 
 End Enum
 
@@ -306,7 +311,7 @@ Public Enum e_Ciudad
     cBanderbill
     cLindos
     cArghal
-	cArkhein
+    cArkhein
     cForgat
     cEldoria
 
@@ -380,6 +385,7 @@ Public Enum e_FXSound
     Casamiento_sound = 161
     BARCA_SOUND = 202
     MP_SOUND = 522
+    RUNE_SOUND = 528
 
 End Enum
 
@@ -421,6 +427,22 @@ Public Const VelocidadNormal       As Single = 1
 Public Const VelocidadMuerto       As Single = 1.4
 
 Public Const TIEMPO_CARCEL_PIQUETE As Long = 5
+
+Public Enum e_ElementalTags
+    Normal = 0
+    Fire = 1
+    Water = 2
+    Earth = 4
+    Wind = 8
+    Light = 16
+    Dark = 32
+    Chaos = 64
+    'cant have more than 32 elements, so the last one is 2^31
+End Enum
+
+Public Const MAX_ELEMENT_TAGS = 4 'the maximum suported is 32
+
+Public ElementalMatrixForNpcs(1 To MAX_ELEMENT_TAGS, 1 To MAX_ELEMENT_TAGS) As Single
 
 ''
 ' TRIGGERS
@@ -536,9 +558,6 @@ Public Const MAXORO             As Long = 90000000
 Public Const MAXEXP             As Long = 1999999999
 Public Const MAXUSERMATADOS     As Long = 65000
 Public Const MINATRIBUTOS       As Byte = 6
-Public Const LingoteHierro      As Integer = 386 'OK
-Public Const LingotePlata       As Integer = 387 'OK
-Public Const LingoteOro         As Integer = 388 'OK
 Public Const Wood               As Integer = 58 'OK
 Public Const ElvenWood          As Integer = 2781 'OK
 Public Const Raices             As Integer = 888 'OK
@@ -861,6 +880,7 @@ Public Enum e_OBJType
     otInstrumentos = 26
     otYunque = 27
     otFragua = 28
+    otBlacksmithMaterial = 29
     otDañoMagico = 30
     otBarcos = 31
     otFlechas = 32
@@ -879,6 +899,7 @@ Public Enum e_OBJType
     otFishingPool = 52
     otUsableOntarget = 53
     otPlantas = 54
+    otElementalRune = 55
     otCualquiera = 100
 End Enum
 
@@ -1265,6 +1286,7 @@ Public Type t_UserOBJ
     ObjIndex As Integer
     amount As Integer
     Equipped As Byte
+    ElementalTags As Long
 End Type
 
 Public Type t_Inventario
@@ -1398,6 +1420,7 @@ End Type
 Public Type t_Obj
 
     ObjIndex As Integer
+    ElementalTags As Long
     amount As Long
     Data As Double
 
@@ -1614,7 +1637,13 @@ Public Type t_ObjData
     Subtipo As Byte ' 0: -, 1: Paraliza, 2: Incinera, 3: Envenena, 4: Explosiva
     
     Dorada  As Byte
-    Blodium As Byte
+    
+    Blodium As Integer
+    
+    FireEssence As Integer
+    WaterEssence As Integer
+    EarthEssence As Integer
+    WindEssence As Integer
     
     VidaUtil As Integer
     TiempoRegenerar As Integer
@@ -1782,6 +1811,7 @@ Public Type t_ObjData
     ObjFlags As Long 'use bitmask from enum e_ObjFlags
     
     JineteLevel As Byte
+    ElementalTags As Long
     
 End Type
 
@@ -2615,6 +2645,9 @@ Public Type t_NPCFlags
     BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
     Team As Byte
+
+    ElementalTags As Long
+
 End Type
 
 Public Type t_CriaturasEntrenador
@@ -2976,6 +3009,7 @@ Public ForbidenNames()                    As String
 Public BlockedWordsDescription()           As String
 Public ArmasHerrero()                     As Integer
 Public ArmadurasHerrero()                 As Integer
+Public BlackSmithElementalRunes()          As Integer
 Public ObjCarpintero()                    As Integer
 Public ObjAlquimista()                    As Integer
 Public ObjSastre()                        As Integer
