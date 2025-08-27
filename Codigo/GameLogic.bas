@@ -1237,11 +1237,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
         '¿Rango Visión? (ToxicWaste)
 100     If (Abs(UserList(UserIndex).Pos.Y - Y) > RANGO_VISION_Y) Or (Abs(UserList(UserIndex).Pos.X - X) > RANGO_VISION_X) Then
             Exit Sub
-
         End If
-        
-
-
         '¿Posicion valida?
 102     If InMapBounds(Map, X, Y) Then
 104         UserList(UserIndex).flags.TargetMap = Map
@@ -1384,137 +1380,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                                 Stat = Stat & " (ELO " & UserList(TempCharIndex).Stats.ELO & ")"
                             End If
 
-232                         If EsNewbie(TempCharIndex) Then
-234                             Stat = Stat & " <Newbie>"
-                            End If
-    
-236                         If UserList(UserIndex).Stats.UserSkills(e_Skill.Supervivencia) > 49 Then
-238                             If UserList(TempCharIndex).flags.Envenenado > 0 Then
-240                                 Fragsnick = " | Envenenado"
-                                End If
-    
-242                             If UserList(TempCharIndex).flags.Ceguera = 1 Then
-244                                 Fragsnick = Fragsnick & " | Ciego"
-                                End If
-    
-246                             If UserList(TempCharIndex).flags.Incinerado = 1 Then
-248                                 Fragsnick = Fragsnick & " | Incinerado"
-                                End If
-    
-250                             If UserList(TempCharIndex).flags.Paralizado = 1 Then
-252                                 Fragsnick = Fragsnick & " | Paralizado"
-                                End If
-    
-254                             If UserList(TempCharIndex).flags.Inmovilizado = 1 Then
-256                                 Fragsnick = Fragsnick & " | Inmovilizado"
-                                End If
-    
-258                             If UserList(TempCharIndex).Counters.Trabajando > 0 Then
-260                                 Fragsnick = Fragsnick & " | Trabajando"
-                                End If
-    
-262                             If UserList(TempCharIndex).flags.invisible = 1 Then
-264                                 Fragsnick = Fragsnick & " | Invisible"
-                                End If
-    
-266                             If UserList(TempCharIndex).flags.Oculto = 1 Then
-268                                 Fragsnick = Fragsnick & " | Oculto"
-                                End If
-    
-270                             If UserList(TempCharIndex).flags.Estupidez = 1 Then
-272                                 Fragsnick = Fragsnick & " | Estupido"
-                                End If
-    
-274                             If UserList(TempCharIndex).flags.Maldicion = 1 Then
-276                                 Fragsnick = Fragsnick & " | Maldito"
-                                End If
-    
-278                             If UserList(TempCharIndex).flags.Silenciado = 1 Then
-280                                 Fragsnick = Fragsnick & " | Silenciado"
-                                End If
-    
-282                             If UserList(TempCharIndex).flags.Comerciando = True Then
-284                                 Fragsnick = Fragsnick & " | Comerciando"
-                                End If
-    
-286                             If UserList(TempCharIndex).flags.Descansar = 1 Then
-288                                 Fragsnick = Fragsnick & " | Descansando"
-                                End If
-    
-290                             If UserList(TempCharIndex).flags.Meditando Then
-292                                 Fragsnick = Fragsnick & " | Concentrado"
-                                End If
-                                
-294                             If UserList(TempCharIndex).Stats.MinHp = 0 Then
-296                                 Stat = Stat & " <Muerto>"
-298                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.1) Then
-300                                 Stat = Stat & " <Casi muerto" & Fragsnick & ">"
-302                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.5) Then
-304                                 Stat = Stat & " <Malherido" & Fragsnick & ">"
-306                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.75) Then
-308                                 Stat = Stat & " <Herido" & Fragsnick & ">"
-310                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.99) Then
-312                                 Stat = Stat & " <Levemente herido" & Fragsnick & ">"
-                                Else
-314                                 Stat = Stat & " <Intacto" & Fragsnick & ">"
-                                End If
-    
-                            End If
                     
-316                         If UserList(TempCharIndex).Faccion.status = e_Facciones.Armada Or UserList(TempCharIndex).Faccion.status = e_Facciones.consejo Then
-318                             Stat = Stat & " <" & TituloReal(TempCharIndex) & ">"
 
-320                             ft = e_FontTypeNames.FONTTYPE_CONSEJOVesA
-322                         ElseIf UserList(TempCharIndex).Faccion.status = e_Facciones.Caos Or UserList(TempCharIndex).Faccion.status = e_Facciones.concilio Then
-324                             Stat = Stat & " <" & TituloCaos(TempCharIndex) & ">"
-326                             ft = e_FontTypeNames.FONTTYPE_CONSEJOCAOSVesA
-                            End If
-                    
-328                         If UserList(TempCharIndex).GuildIndex > 0 Then
-330                             Stat = Stat & " <" & modGuilds.GuildName(UserList(TempCharIndex).GuildIndex) & ">"
-                            End If
-    
-                        End If
-                                
-332                     If EsGM(TempCharIndex) Then
-334                         ft = e_FontTypeNames.FONTTYPE_GM
-                        
-336                         If UserList(TempCharIndex).flags.Privilegios = e_PlayerType.Consejero Then
-338                             Stat = Stat & " <Consejero>"
-                            End If
-    
-340                         If UserList(TempCharIndex).flags.Privilegios = e_PlayerType.SemiDios Then
-342                             Stat = Stat & " <Semi-Dios>"
-                            End If
-    
-344                         If UserList(TempCharIndex).flags.Privilegios = e_PlayerType.Dios Then
-346                             Stat = Stat & " <Dios>"
-                            End If
-                            
-348                         If UserList(TempCharIndex).flags.Privilegios = e_PlayerType.Admin Then
-350                             Stat = Stat & " <Administrador>"
-    
-                            End If
-                        'si es pk
-                        ElseIf UserList(TempCharIndex).Faccion.Status = e_Facciones.concilio Then
-                            Stat = Stat + " <Concilio Del Caos>"
-                            ft = e_FontTypeNames.FONTTYPE_CONSEJOCAOS
-                        ElseIf UserList(TempCharIndex).Faccion.Status = e_Facciones.Caos Then
-                            ft = e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS
-                        ElseIf UserList(TempCharIndex).Faccion.Status = e_Facciones.Criminal Then
-                            ft = e_FontTypeNames.FONTTYPE_CRIMINAL
-                        ElseIf UserList(TempCharIndex).Faccion.Status = e_Facciones.consejo Then
-                            ft = e_FontTypeNames.FONTTYPE_CONSEJO
-                            Stat = Stat + " <Consejo de Banderbill>"
-                        ElseIf UserList(TempCharIndex).Faccion.Status = e_Facciones.armada Then
-                            ft = e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA
-                        ElseIf UserList(TempCharIndex).Faccion.Status = e_Facciones.Ciudadano Then
-                            ft = e_FontTypeNames.FONTTYPE_CITIZEN
-                        End If
-                        
-360                     If UserList(TempCharIndex).flags.Casado = 1 Then
-362                         Stat = Stat & " <Pareja de " & GetUserSpouse(TempCharIndex) & ">"
-                        End If
+
                         
 364                     If Len(UserList(TempCharIndex).Desc) > 0 Then
 366                         Stat = UserList(TempCharIndex).name & Stat & " - " & UserList(TempCharIndex).Desc
@@ -2391,4 +2259,154 @@ Public Function PreferedTileForDirection(ByRef Direction As t_Vector, ByRef Curr
     Else
         PreferedTileForDirection = Ret
     End If
+End Function
+
+
+
+Public Function PrepareUserStatusEffectMsgs(ByVal UserIndex As Integer) As String
+    On Error GoTo PrepareUserStatusEffectMsgs_Err
+
+    Dim Statuses As Long
+    Dim extraStrings As String
+
+    With UserList(UserIndex)
+
+        If EsNewbie(UserIndex) Then
+            Statuses = Statuses & e_InfoTxts.Newbie
+        End If
+
+        If .Stats.UserSkills(e_Skill.Supervivencia) >= 50 Then
+            If .flags.Envenenado > 0 Then
+                Statuses = Statuses & e_InfoTxts.Poisoned
+            End If
+
+            If .flags.Ceguera = 1 Then
+                Statuses = Statuses & e_InfoTxts.Blind
+            End If
+
+            If .flags.Incinerado = 1 Then
+                Statuses = Statuses & e_InfoTxts.Incinerated
+            End If
+
+            If .flags.Paralizado = 1 Then
+                Statuses = Statuses & e_InfoTxts.Paralized
+            End If
+
+            If .flags.Inmovilizado = 1 Then
+                Statuses = Statuses & e_InfoTxts.Inmovilized
+            End If
+
+            If .Counters.Trabajando > 0 Then
+                Statuses = Statuses & e_InfoTxts.Working
+            End If
+
+            If .flags.invisible = 1 Then
+                Statuses = Statuses & e_InfoTxts.Invisible
+            End If
+
+            If .flags.Oculto = 1 Then
+                Statuses = Statuses & e_InfoTxts.Hidden
+            End If
+
+            If .flags.Estupidez = 1 Then
+                Statuses = Statuses & e_InfoTxts.Stupid
+            End If
+
+            If .flags.Maldicion = 1 Then
+                Statuses = Statuses & e_InfoTxts.Cursed
+            End If
+
+            If .flags.Silenciado = 1 Then
+                Statuses = Statuses & e_InfoTxts.Silenced
+            End If
+
+            If .flags.Comerciando = True Then
+                Statuses = Statuses & e_InfoTxts.Trading
+            End If
+
+            If .flags.Descansar = 1 Then
+                Statuses = Statuses & e_InfoTxts.Resting
+            End If
+
+            If .flags.Meditando Then
+                Statuses = Statuses & e_InfoTxts.Focusing
+            End If
+            
+            Select Case .Stats.MinHp
+                Case .Stats.MinHp = 0
+                    Statuses = Statuses & e_InfoTxts.Dead
+                Case Is < (.Stats.MaxHp * 0.1)
+                    Statuses = Statuses & e_InfoTxts.AlmostDead
+                Case Is < (.Stats.MaxHp * 0.5)
+                    Statuses = Statuses & e_InfoTxts.SeriouslyWounded
+                Case Is < (.Stats.MaxHp * 0.75) 
+                    Statuses = Statuses & e_InfoTxts.Wounded
+                Case Is < (.Stats.MaxHp * 0.99) 
+                    Statuses = Statuses & e_InfoTxts.LightlyWounded
+                Case Else
+                    Statuses = Statuses & e_InfoTxts.Intact
+            End Select
+        End If
+
+        If .Faccion.status = e_Facciones.Armada Or .Faccion.status = e_Facciones.consejo Then
+            extraStrings = extraStrings & TituloReal(UserIndex) & " "
+        End If
+
+        If .Faccion.status = e_Facciones.Caos Or .Faccion.status = e_Facciones.concilio Then
+            extraStrings = extraStrings & TituloCaos(UserIndex) & " "
+        End If
+
+        If .GuildIndex > 0 Then
+            extraStrings = extraStrings & modGuilds.GuildName(.GuildIndex) & " "
+        End If
+
+        If EsGM(UserIndex) Then
+            Select Case .flags.Privilegios
+                Case e_PlayerType.Consejero
+                    Statuses = Statuses & e_InfoTxts.Counselor
+                Case e_PlayerType.Consejero
+                    Statuses = Statuses & e_InfoTxts.DemiGod
+                Case e_PlayerType.Consejero
+                    Statuses = Statuses & e_InfoTxts.God
+                Case e_PlayerType.Consejero
+                    Statuses = Statuses & e_InfoTxts.Admin
+            End Select
+        End If
+
+        If .Faccion.Status = e_Facciones.concilio Then
+            Statuses = Statuses & e_InfoTxts.ChaoticCouncil
+        End If
+
+        If .Faccion.Status = e_Facciones.Caos Then
+            Statuses = Statuses & e_InfoTxts.Chaotic
+        End If
+
+        If .Faccion.Status = e_Facciones.Criminal Then
+            Statuses = Statuses & e_InfoTxts.Criminal
+        End If
+
+        If .Faccion.Status = e_Facciones.consejo Then
+            Statuses = Statuses & e_InfoTxts.RoyalCouncil
+        End if
+
+
+        If .Faccion.Status = e_Facciones.armada Then
+            Statuses = Statuses & e_InfoTxts.Army
+        End If
+
+        If .Faccion.Status = e_Facciones.Ciudadano Then
+            Statuses = Statuses & e_InfoTxts.Citizen
+        End If
+        
+        If .flags.Casado = 1 Then
+            Statuses = Statuses & " <Pareja de " & GetUserSpouse(TempCharIndex) & ">"
+        End If
+
+    End With
+
+
+
+    Exit Function
+PrepareUserStatusEffectMsgs_Err:
+    Call TraceError(Err.Number, Err.Description, "Extra.PrepareUserStatusEffectMsgs", Erl)
 End Function

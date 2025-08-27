@@ -476,6 +476,45 @@ Public Enum e_Trigger
     CARCEL = 19
 End Enum
 
+
+Public Enum e_InfoTxts
+    Newbie = 1
+    Poisoned = 2
+    Blind = 4
+    Paralized = 8
+    Inmovilized = 16
+    Working = 32
+    Invisible = 64
+    Hidden = 128
+    Stupid = 256
+    Cursed = 512
+    Silenced = 1024
+    Trading = 2048
+    Resting = 4096
+    Focusing = 8192
+    Incinerated = 16384
+    Dead = 32768
+    AlmostDead = 65536
+    SeriouslyWounded = 131072
+    Wounded = 262144
+    LightlyWounded = 524288
+    Intact = 1048576
+    Counselor =  2097152
+    DemiGod = 4194304
+    God = 8388608
+    Admin = 16777216
+    
+    ChaoticCouncil = 33554432
+    Chaotic = 67108864
+    Criminal = 134217728
+    RoyalCouncil = 268435456
+    Army = 536870912
+    Citizen = 1073741824
+
+End Enum
+
+
+
 ''
 ' constantes para el trigger 6
 '
