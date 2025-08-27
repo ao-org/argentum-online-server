@@ -304,6 +304,11 @@ Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Ca
 
         On Error GoTo ErrHandler
 
+        If Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots Then
+                Exit Sub
+        End If
+
+
 100     If UserList(UserIndex).invent.Object(Slot).amount > 0 And Cantidad > 0 Then
 102         If Cantidad > UserList(UserIndex).invent.Object(Slot).amount Then Cantidad = UserList(UserIndex).invent.Object(Slot).amount
         

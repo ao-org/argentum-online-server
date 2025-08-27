@@ -3993,6 +3993,15 @@ Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal Targe
     CanElementalTagBeApplied = False
     Dim TargetObj As t_ObjData
     Dim SourceObj As t_ObjData
+
+
+     If TargetSlot < 1 Or TargetSlot  > UserList(UserIndex).CurrentInventorySlots Then
+        Exit Sub
+    End If
+    
+    If SourceSlot< 1 Or SourceSlot> UserList(UserIndex).CurrentInventorySlots Then
+        Exit Sub
+    End If
     
     If UserList(UserIndex).invent.Object(TargetSlot).ObjIndex = 0 Or UserList(UserIndex).invent.Object(SourceSlot).ObjIndex = 0 Then
         Exit Function

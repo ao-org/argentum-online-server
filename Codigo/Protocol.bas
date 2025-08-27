@@ -2227,7 +2227,9 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             Packet_ID = PacketNames.Drop
             
             
-            'If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), userindex, "Drop", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+            If Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots Then
+                Exit Sub
+            End If
             
 106         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
             If .flags.PescandoEspecial = True Then Exit Sub
