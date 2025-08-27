@@ -1448,7 +1448,7 @@ Public Sub WriteObjectCreate(ByVal UserIndex As Integer, _
         On Error GoTo WriteObjectCreate_Err
         
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageObjectCreate(ObjIndex, _
-                amount, X, Y))
+                amount, x, y, ObjData(ObjIndex).ElementalTags))
         
         Exit Sub
 
@@ -2021,7 +2021,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As By
         
 
         Dim ObjIndex    As Integer
-
+        Dim NaturalElementalTags As Long
         Dim PodraUsarlo As Byte
 
 100     Call Writer.WriteInt16(ServerPacketID.eChangeInventorySlot)
@@ -2030,6 +2030,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As By
 
 106     If ObjIndex > 0 Then
 108         PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
+            NaturalElementalTags = ObjData(UserList(UserIndex).invent.Object(Slot).ObjIndex).ElementalTags
         End If
 
 110     Call Writer.WriteInt16(ObjIndex)
@@ -2037,6 +2038,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As By
 114     Call Writer.WriteBool(UserList(UserIndex).Invent.Object(Slot).Equipped)
 116     Call Writer.WriteReal32(SalePrice(ObjIndex))
 118     Call Writer.WriteInt8(PodraUsarlo)
+        Call Writer.WriteInt32(UserList(UserIndex).invent.Object(Slot).ElementalTags Or NaturalElementalTags)
         If ObjIndex > 0 Then
 119         Call Writer.WriteBool(IsSet(ObjData(ObjIndex).ObjFlags, e_ObjFlags.e_Bindable))
         Else
@@ -2066,20 +2068,24 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
         Dim ObjIndex    As Integer
 
         Dim Valor       As Long
-
+        Dim NaturalElementalTags As Long
         Dim PodraUsarlo As Byte
 
 100     Call Writer.WriteInt16(ServerPacketID.eChangeBankSlot)
 102     Call Writer.WriteInt8(Slot)
 104     ObjIndex = UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex
-106     Call Writer.WriteInt16(ObjIndex)
-
 108     If ObjIndex > 0 Then
 110         Valor = ObjData(ObjIndex).Valor
 112         PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
+114         NaturalElementalTags = ObjData(ObjIndex).ElementalTags
+        Else
         End If
+        
+       Call Writer.WriteInt16(ObjIndex)
+        Call Writer.WriteInt32(UserList(UserIndex).BancoInvent.Object(Slot).ElementalTags Or NaturalElementalTags)
 
-114     Call Writer.WriteInt16(UserList(UserIndex).BancoInvent.Object(Slot).amount)
+
+        Call Writer.WriteInt16(UserList(UserIndex).BancoInvent.Object(Slot).amount)
 116     Call Writer.WriteInt32(Valor)
 118     Call Writer.WriteInt8(PodraUsarlo)
 120     Call modSendData.SendData(ToIndex, UserIndex)
@@ -2163,8 +2169,6 @@ Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
 
         Dim i              As Long
 
-        Dim obj            As t_ObjData
-
         Dim validIndexes() As Integer
 
         Dim Count          As Integer
@@ -2188,13 +2192,7 @@ Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
 
         ' Write the needed data of each object
 116     For i = 1 To Count
-118         obj = ObjData(ArmasHerrero(validIndexes(i)))
-            'Call Writer.WriteString8(obj.Index)
 120         Call Writer.WriteInt16(ArmasHerrero(validIndexes(i)))
-122         Call Writer.WriteInt16(obj.LingH)
-124         Call Writer.WriteInt16(obj.LingP)
-126         Call Writer.WriteInt16(obj.LingO)
-127         Call Writer.WriteInt16(obj.Coal)
 128     Next i
 
 130     Call modSendData.SendData(ToIndex, UserIndex)
@@ -2218,8 +2216,6 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
         
 
         Dim i              As Long
-
-        Dim obj            As t_ObjData
 
         Dim validIndexes() As Integer
 
@@ -2245,12 +2241,6 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
 
         ' Write the needed data of each object
 116     For i = 1 To Count
-118         obj = ObjData(ArmadurasHerrero(validIndexes(i)))
-120         Call Writer.WriteString8(obj.Name)
-122         Call Writer.WriteInt16(obj.LingH)
-124         Call Writer.WriteInt16(obj.LingP)
-126         Call Writer.WriteInt16(obj.LingO)
-127         Call Writer.WriteInt16(obj.Coal)
 128         Call Writer.WriteInt16(ArmadurasHerrero(validIndexes(i)))
 130     Next i
 
@@ -2261,6 +2251,49 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
 WriteBlacksmithArmors_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlacksmithArmors", Erl)
+        
+End Sub
+
+Public Sub WriteBlacksmithElementalRunes(ByVal UserIndex As Integer)
+        
+        On Error GoTo WriteBlacksmithElementalRunes_Err
+        
+
+        Dim i              As Long
+
+        Dim validIndexes() As Integer
+
+        Dim Count          As Integer
+
+100     ReDim validIndexes(1 To UBound(BlackSmithElementalRunes()))
+102     Call Writer.WriteInt16(ServerPacketID.eBlacksmithExtraObjects)
+
+104     For i = 1 To UBound(BlackSmithElementalRunes())
+
+            ' Can the user create this object? If so add it to the list....
+106         If ObjData(BlackSmithElementalRunes(i)).SkHerreria <= UserList(UserIndex).Stats.UserSkills( _
+                    e_Skill.Herreria) Then
+108             Count = Count + 1
+110             validIndexes(Count) = i
+            End If
+
+112     Next i
+
+        ' Write the number of objects in the list
+114     Call Writer.WriteInt16(Count)
+
+        ' Write the needed data of each object
+116     For i = 1 To Count
+120         Call Writer.WriteInt16(BlackSmithElementalRunes(validIndexes(i)))
+128     Next i
+
+130     Call modSendData.SendData(ToIndex, UserIndex)
+        
+        Exit Sub
+
+WriteBlacksmithElementalRunes_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlacksmithElementalRunes", Erl)
         
 End Sub
 
@@ -2537,6 +2570,7 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, _
 108     Call Writer.WriteInt16(obj.ObjIndex)
 110     Call Writer.WriteInt16(obj.amount)
 112     Call Writer.WriteReal32(price)
+        Call Writer.WriteInt32(obj.ElementalTags)
 114     Call Writer.WriteInt8(PodraUsarlo)
 116     Call modSendData.SendData(ToIndex, UserIndex)
         
@@ -3520,6 +3554,7 @@ Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, _
             End If
 
 122         Call Writer.WriteInt32(itemsAenviar(i).amount)
+            Call Writer.WriteInt32(itemsAenviar(i).ElementalTags)
 124     Next i
 
 126     Call modSendData.SendData(ToIndex, UserIndex)
@@ -5205,8 +5240,8 @@ End Function
 Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, _
                                            ByVal amount As Integer, _
                                            ByVal X As Byte, _
-                                           ByVal Y As Byte)
-        
+                                           ByVal y As Byte, _
+                                           Optional ByVal ElementalTags As Long = e_ElementalTags.Normal)
         On Error GoTo PrepareMessageObjectCreate_Err
         
 100     Call Writer.WriteInt16(ServerPacketID.eObjectCreate)
@@ -5214,6 +5249,7 @@ Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, _
 104     Call Writer.WriteInt8(Y)
 106     Call Writer.WriteInt16(ObjIndex)
 108     Call Writer.WriteInt16(amount)
+        Call Writer.WriteInt32(ElementalTags)
         
         Exit Function
 
