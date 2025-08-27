@@ -2733,7 +2733,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
         
 214         If .NroMascotas > 0 Then Call WarpMascotas(UserIndex)
     
-216         If IsSet(MapInfo(Map).zone,e_TerrainType.Dungeon) Or MapData(Map, X, Y).trigger >= 9 Then
+216         If IsSet(MapInfo(Map).zone,e_ZoneType.Dungeon) Or MapData(Map, X, Y).trigger >= 9 Then
 218             If .flags.Montado > 0 Then
 220                 Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
                 End If

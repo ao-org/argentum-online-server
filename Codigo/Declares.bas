@@ -464,7 +464,7 @@ Public Enum e_Trigger6
 
 End Enum
 
-Public Enum e_TerrainType
+Public Enum e_ZoneType
     Bosque = 1
     Nieve = 2
     Desierto = 4

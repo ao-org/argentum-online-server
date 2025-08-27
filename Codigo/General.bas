@@ -938,7 +938,7 @@ Public Function Intemperie(ByVal UserIndex As Integer) As Boolean
         On Error GoTo Intemperie_Err
         Intemperie = False
         With UserList(UserIndex).Pos
-           If Not IsSet(MapInfo(.Map).zone, e_TerrainType.Dungeon) Then
+           If Not IsSet(MapInfo(.Map).zone, e_ZoneType.Dungeon) Then
                 If MapData(.Map, .x, .y).trigger <> 1 And MapData(.Map, .x, .y).trigger <> 2 And MapData(.Map, .x, .y).trigger < 10 Then
                     Intemperie = True
                 End If
@@ -988,7 +988,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
 108         If .Counters.Frio < IntervaloFrio Then
 110             .Counters.Frio = .Counters.Frio + 1
             Else
-112             If IsSet(MapInfo(.Pos.Map).zone, e_TerrainType.Nieve) Then
+112             If IsSet(MapInfo(.Pos.Map).zone, e_ZoneType.Nieve) Then
 114                 ' Msg512=¡Estás muriendo de frío, abrígate o morirás!
                     Call WriteLocaleMsg(UserIndex, "512", e_FontTypeNames.FONTTYPE_INFO)
                     '  Sin ropa perdés vida más rápido que con una ropa no-invernal

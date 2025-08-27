@@ -1059,7 +1059,7 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 
 138         If exito = 1 Then
     
-140             If Not (IsSet(MapInfo(.Pos.Map).zone,e_TerrainType.Ciudad))   Then
+140             If Not (IsSet(MapInfo(.Pos.Map).zone,e_ZoneType.Ciudad))   Then
                 
                     Dim obj As t_Obj
 142                 obj.ObjIndex = FOGATA
