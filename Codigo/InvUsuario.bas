@@ -3996,11 +3996,11 @@ Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal Targe
 
 
      If TargetSlot < 1 Or TargetSlot  > UserList(UserIndex).CurrentInventorySlots Then
-        Exit Sub
+        Exit Function
     End If
     
     If SourceSlot< 1 Or SourceSlot> UserList(UserIndex).CurrentInventorySlots Then
-        Exit Sub
+        Exit Function
     End If
     
     If UserList(UserIndex).invent.Object(TargetSlot).ObjIndex = 0 Or UserList(UserIndex).invent.Object(SourceSlot).ObjIndex = 0 Then
