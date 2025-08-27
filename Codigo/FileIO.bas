@@ -179,7 +179,7 @@ Private Type t_MapDat
     music_numberLow As Long
     Seguro As Byte
     zone As String
-    terrain As Long
+    terrain As String
     ambient As String
     base_light As Long
     letter_grh As Long
@@ -187,6 +187,8 @@ Private Type t_MapDat
     extra2 As Long
     Salida As String
     lluvia As Byte
+    Nieve As Byte
+    niebla As Byte
 End Type
 
 Private MapSize As t_MapSize
@@ -2214,7 +2216,6 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
     
 378     MapInfo(map).Seguro = MapDat.Seguro
 
-380     MapInfo(map).terrain = MapDat.terrain
 382     MapInfo(map).zone = MapDat.zone
 383     MapInfo(map).DropItems = True
         MapInfo(map).FriendlyFire = True

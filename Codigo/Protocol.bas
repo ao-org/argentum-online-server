@@ -9555,7 +9555,6 @@ Private Sub HandleGetMapInfo(ByVal UserIndex As Integer)
 120             Response = Response & "NoPKs = " & MapInfo(.Pos.Map).NoPKs & vbNewLine
 122             Response = Response & "NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos & vbNewLine
 124             Response = Response & "Salida = " & MapInfo(.Pos.Map).Salida.Map & "-" & MapInfo(.Pos.Map).Salida.X & "-" & MapInfo(.Pos.Map).Salida.Y & vbNewLine
-126             Response = Response & "Terreno = " & MapInfo(.Pos.Map).terrain & vbNewLine
 128             Response = Response & "NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos & vbNewLine
 130             Response = Response & "Zona = " & MapInfo(.Pos.Map).zone & vbNewLine
             

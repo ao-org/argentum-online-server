@@ -2838,7 +2838,6 @@ Type t_MapInfo
     music_numberLow As Long
     Seguro As Byte
     zone As String
-    terrain As Long
     Newbie As Boolean
     SinMagia As Boolean
     SinInviOcul As Boolean
