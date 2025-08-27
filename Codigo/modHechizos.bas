@@ -953,6 +953,11 @@ Call WriteLocaleMsg(UserIndex, "785", e_FontTypeNames.FONTTYPE_INFO)
 192                             Call SetNpcRef(.MascotasIndex(i), SpawnNpc(.MascotasType(i), targetPos, True, True, False, UserIndex))
 194                             Call SetUserRef(NpcList(.MascotasIndex(i).ArrayIndex).MaestroUser, UserIndex)
 196                             Call FollowAmo(.MascotasIndex(i).ArrayIndex)
+
+                                If IsFeatureEnabled("addjust-npc-with-caster") And IsSet(Hechizos(h).Effects, AdjustStatsWithCaster) Then
+                                    Call AdjustNpcStatWithCasterLevel(UserIndex, .MascotasIndex(i).ArrayIndex)
+                                End If
+
 198                             b = True
                             End If
                         Next
