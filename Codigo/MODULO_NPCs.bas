@@ -2114,7 +2114,9 @@ UserCanAttackNpc.TurnPK = False
                 End If
            End If
        End If
-    If Status(UserIndex) = Ciudadano Or Status(UserIndex) = Armada Or Status(UserIndex) = consejo Then
+    If Status(UserIndex) = e_Facciones.Ciudadano Or _
+       Status(UserIndex) = e_Facciones.Armada Or _
+       Status(UserIndex) = e_Facciones.consejo Then
         'Es el NPC mascota de alguien?
 180     If IsPet Then
 182         Select Case UserList(NpcList(NpcIndex).MaestroUser.ArrayIndex).Faccion.Status
