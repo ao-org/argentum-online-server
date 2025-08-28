@@ -1235,9 +1235,11 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
         Dim TempCharIndex  As Integer
 
-        Dim Stat           As String
+        Dim extraSrings  As String
 
         Dim ft             As e_FontTypeNames
+
+        Dim curStatuses       As Currency
 
         '¿Rango Visión? (ToxicWaste)
 100     If (Abs(UserList(UserIndex).Pos.Y - Y) > RANGO_VISION_Y) Or (Abs(UserList(UserIndex).Pos.X - X) > RANGO_VISION_X) Then
@@ -1377,12 +1379,15 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 222                 If UserList(TempCharIndex).showName Or CompararPrivilegiosUser(UserIndex, TempCharIndex) >= 0 Then
                 
 224                     If UserList(TempCharIndex).flags.Privilegios = user Then
-370                         If LenB(Stat) > 0 Then
+
+                        extraStrings = PrepareUserStatusEffectMsgsForPlayers(UserIndex,curStatuses)
+
+370                         If LenB(extraSrings) > 0 Then
                                 If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList    (TempCharIndex).GuildIndex) Or UserIndex = TempCharIndex Then
 372                                 If UserList(TempCharIndex).flags.Muerto Then
-374                                     Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_New_Gris, Stat)
+374                                     Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_New_Gris, extraSrings)
                                     Else
-376                                     Call WriteLocaleMsg(UserIndex, "1105", ft, Stat)
+376                                     Call WriteLocaleMsg(UserIndex, "1105", ft, extraSrings)
                                     End If
                                 End If
                             End If
@@ -2393,6 +2398,8 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
         If Len(.Desc) > 0 Then
             extraStrings = .Desc & "-"
         End If
+
+        PrepareUserStatusEffectMsgsForPlayers = extraStrings
 
     End With
 Exit Function
