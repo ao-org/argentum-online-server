@@ -1389,7 +1389,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 372                                 If UserList(TempCharIndex).flags.Muerto Then
 374                                     Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_New_Gris, extraStrings)
                                     Else
-376                                     Call WriteLocaleMsg(UserIndex, "1105", ft, extraStrings)
+376                                     Call WriteLocaleMsg(UserIndex, "1105", ft, extraStrings & "¬" & Statuses & "¬" & FactionStatuses)
                                     End If
                                 End If
                             End If
