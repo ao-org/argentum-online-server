@@ -498,7 +498,19 @@ Public Enum e_Trigger
 End Enum
 
 
-Public Enum e_InfoTxts
+Public Enum e_NpcInfoMask
+    AlmostDead = 1
+    SeriouslyWounded = 2
+    Wounded = 4
+    LightlyWounded = 8
+    Intact = 16
+    Poisoned = 32
+    Paralized = 64
+    Inmovilized = 128
+    Fighting = 256
+End Enum
+
+Public Enum e_UsersInfoMask
     Newbie = 1
     Poisoned = 2
     Blind = 4
@@ -527,7 +539,7 @@ Public Enum e_InfoTxts
     RoleMaster = 33554432
 End Enum
 
-Public Enum e_InfoTxts2
+Public Enum e_UsersInfoMask2
     ChaoticCouncil = 1
     Chaotic = 2
     Criminal = 4

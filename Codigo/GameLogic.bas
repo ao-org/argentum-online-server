@@ -1332,38 +1332,33 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
     
             End If
             Dim yy As Byte
-            '¿Es un personaje?
+
 190         If Y + 1 <= YMaxMapSize Then
+                'it's a character?
 192             If MapData(Map, X, Y + 1).UserIndex > 0 Then
 194                 TempCharIndex = MapData(Map, X, Y + 1).UserIndex
                     yy = y + 1
 196                 FoundChar = 1
-
                 End If
-
+                'it's an npc?
 198             If MapData(Map, X, Y + 1).NpcIndex > 0 Then
 200                 TempCharIndex = MapData(Map, X, Y + 1).NpcIndex
 202                 FoundChar = 2
-
                 End If
-
             End If
 
-            '¿Es un personaje?
 204         If FoundChar = 0 Then
+                'it's a character?
 206             If MapData(Map, X, Y).UserIndex > 0 Then
 208                 TempCharIndex = MapData(Map, X, Y).UserIndex
                     yy = y
 210                 FoundChar = 1
-
                 End If
-
+                'it's an npc?
 212             If MapData(Map, X, Y).NpcIndex > 0 Then
 214                 TempCharIndex = MapData(Map, X, Y).NpcIndex
 216                 FoundChar = 2
-
                 End If
-
             End If
     
             'Reaccion al personaje
@@ -1396,76 +1391,8 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 394         If FoundChar = 2 Then '¿Encontro un NPC?
 
                 Dim estatus As String
+                Dim NpcStatusMask As Long
 
-396             If EsGM(UserIndex) Or UserList(UserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 75 Then
-398                 estatus = "<" & NpcList(TempCharIndex).Stats.MinHp & "/" & NpcList(TempCharIndex).Stats.MaxHp
-                    
-400             ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 50 Then
-402                 If NpcList(TempCharIndex).Stats.MaxHp <> 0 Then
-404                     estatus = "<" & Round((NpcList(TempCharIndex).Stats.MinHp / NpcList(TempCharIndex).Stats.MaxHp) * 100#, 0) & "%"
-                    End If
- 
-406             ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 25 Then
-                
-408                 If NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.1) Then
-410                     estatus = "<Agonizando"
-412                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.2) Then
-414                     estatus = "<Casi muerto"
-416                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.5) Then
-418                     estatus = "<Malherido"
-420                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.7) Then
-422                     estatus = "<Herido"
-424                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.95) Then
-426                     estatus = "<Levemente herido"
-                    Else
-428                     estatus = "<Intacto"
-                    End If
-                    
-                Else
-430                 If NpcList(TempCharIndex).Stats.MinHp < NpcList(TempCharIndex).Stats.MaxHp Then
-432                     estatus = "<Herido"
-                    Else
-434                     estatus = "<Intacto"
-                    End If
-                        
-                End If
-                        
-436             If NpcList(TempCharIndex).flags.Envenenado > 0 Then
-438                 estatus = estatus & " | Envenenado"
-                End If
-                        
-440             If NpcList(TempCharIndex).flags.Paralizado = 1 Then
-442                 If UserList(UserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 100 Then
-444                     estatus = estatus & " | Paralizado (" & CInt(NpcList(TempCharIndex).Contadores.Paralisis / 6.5) & "s)"
-                    Else
-446                     estatus = estatus & " | Paralizado"
-                    End If
-                End If
-                        
-448             If NpcList(TempCharIndex).flags.Inmovilizado = 1 Then
-450                 If UserList(UserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 100 Then
-452                     estatus = estatus & " | Inmovilizado (" & CInt(NpcList(TempCharIndex).Contadores.Inmovilizado / 6.5) & "s)"
-                    Else
-454                     estatus = estatus & " | Inmovilizado"
-
-                    End If
-
-                End If
-
-                If GetOwnedBy(TempCharIndex) <> 0 Then
-                    estatus = estatus & " | Fighting with " & NpcList(TempCharIndex).flags.AttackedBy
-                    estatus = estatus & " (" & CInt((IntervaloNpcOwner - (GlobalFrameTime - NpcList(TempCharIndex).flags.AttackedTime)) / 1000)
-                    estatus = estatus & "s)"
-                End If
-                
-#If DEBUGGING Then
-                estatus = estatus & " | NpcIndex = " & TempCharIndex
-#End If
-                        
-456             estatus = estatus & ">"
-    
-                'End If
-            
 458             If Len(NpcList(TempCharIndex).Desc) > 1 Then
                     '  Hacemos que se detenga a hablar un momento :P
 460                 If NpcList(TempCharIndex).Movement = Caminata Then
@@ -1499,11 +1426,13 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     End If
 470             ElseIf IsValidUserRef(NpcList(TempCharIndex).MaestroUser) Then
                     If UserList(UserIndex).flags.Muerto = 0 Then
-472                     Call WriteLocaleMsg(UserIndex, 1621, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Name & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).Name & "¬" & estatus) 'Msg1621=NPC ¬1 es mascota de ¬2 ¬3
+                        estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex,NpcStatusMask)
+472                     Call WriteLocaleMsg(UserIndex, 1621, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Name & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).Name & "¬" & estatus) 'Msg1621=NPC ¬1 es mascota de ¬2 ¬3
                     End If
                 Else
                     If UserList(UserIndex).flags.Muerto = 0 Then
-                        Call WriteLocaleMsg(UserIndex, 1622, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Name & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & estatus)  'Msg1622=NPC ¬1 ¬2
+                        estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex,NpcStatusMask)
+                        Call WriteLocaleMsg(UserIndex, 1622, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Name & "¬" & estatus)  'Msg1622=NPC ¬1 ¬2
                     End If
                 End If
                ' End If
@@ -2279,7 +2208,7 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
         End If
         
         If EsNewbie(TargetUserIndex) Then
-            Call SetMask(Statuses, e_InfoTxts.Newbie)
+            Call SetMask(Statuses, e_UsersInfoMask.Newbie)
         End If
         
         Dim factionRank As Byte
@@ -2287,15 +2216,15 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
             factionRank = TituloReal(TargetUserIndex)
             Select Case factionRank
                 Case e_RoyalArmyRanks.FirstHierarchy
-                    Call SetMask(FactionStatuses, e_InfoTxts2.ArmyFirstHierarchy)
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ArmyFirstHierarchy)
                 Case e_RoyalArmyRanks.SecondHierarchy
-                    Call SetMask(FactionStatuses, e_InfoTxts2.ArmySecondHierarchy)
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ArmySecondHierarchy)
                 Case e_RoyalArmyRanks.ThirdHierarchy
-                    Call SetMask(FactionStatuses, e_InfoTxts2.ArmyThirdHierarchy)
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ArmyThirdHierarchy)
                 Case e_RoyalArmyRanks.FourthHierarchy
-                    Call SetMask(FactionStatuses, e_InfoTxts2.ArmyFourthHierarchy)
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ArmyFourthHierarchy)
                 Case e_RoyalArmyRanks.FifthHierarchy
-                    Call SetMask(FactionStatuses, e_InfoTxts2.ArmyFifthHierarchy)
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ArmyFifthHierarchy)
                 Case Else
             End select
         End If
@@ -2304,65 +2233,65 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
             factionRank = TituloCaos(TargetUserIndex)
             Select Case factionRank
                 Case e_ChaosArmyRanks.FirstHierarchy
-                    Call SetMask(FactionStatuses, e_InfoTxts2.ChaosFirstHierarchy)
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ChaosFirstHierarchy)
                 Case e_ChaosArmyRanks.SecondHierarchy
-                    Call SetMask(FactionStatuses, e_InfoTxts2.ChaosSecondHierarchy)
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ChaosSecondHierarchy)
                 Case e_ChaosArmyRanks.ThirdHierarchy
-                    Call SetMask(FactionStatuses, e_InfoTxts2.ChaosThirdHierarchy)
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ChaosThirdHierarchy)
                 Case e_ChaosArmyRanks.FourthHierarchy
-                    Call SetMask(FactionStatuses, e_InfoTxts2.ChaosFourthHierarchy)
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ChaosFourthHierarchy)
                 Case e_ChaosArmyRanks.FifthHierarchy
-                    Call SetMask(FactionStatuses, e_InfoTxts2.ChaosFifthHierarchy)
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ChaosFifthHierarchy)
                 Case Else
             End select
         End If
 
         If .Faccion.Status = e_Facciones.Criminal Then
-            Call SetMask(FactionStatuses, e_InfoTxts2.Criminal)
+            Call SetMask(FactionStatuses, e_UsersInfoMask2.Criminal)
             fontType = e_FontTypeNames.FONTTYPE_CRIMINAL
         End If
 
         If .Faccion.Status = e_Facciones.Caos Then
-            Call SetMask(FactionStatuses, e_InfoTxts2.Chaotic)
+            Call SetMask(FactionStatuses, e_UsersInfoMask2.Chaotic)
             fontType = e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS
         End If
 
         If .Faccion.Status = e_Facciones.concilio Then
-            Call SetMask(FactionStatuses, e_InfoTxts2.ChaoticCouncil)
+            Call SetMask(FactionStatuses, e_UsersInfoMask2.ChaoticCouncil)
             fontType = e_FontTypeNames.FONTTYPE_CONSEJOCAOS
         End If
 
         If .Faccion.Status = e_Facciones.Ciudadano Then
-            Call SetMask(FactionStatuses, e_InfoTxts2.Citizen)
+            Call SetMask(FactionStatuses, e_UsersInfoMask2.Citizen)
             fontType = e_FontTypeNames.FONTTYPE_CITIZEN
         End If
 
         If .Faccion.Status = e_Facciones.armada Then
-            Call SetMask(FactionStatuses, e_InfoTxts2.Army)
+            Call SetMask(FactionStatuses, e_UsersInfoMask2.Army)
             fontType = e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA
         End If
 
         If .Faccion.Status = e_Facciones.consejo Then
-            Call SetMask(FactionStatuses, e_InfoTxts2.RoyalCouncil)
+            Call SetMask(FactionStatuses, e_UsersInfoMask2.RoyalCouncil)
             fontType = e_FontTypeNames.FONTTYPE_CONSEJO
         End if
 
         If EsGM(TargetUserIndex) Then
             Select Case .flags.Privilegios
                 Case e_PlayerType.Consejero
-                    Call SetMask(Statuses, e_InfoTxts.Counselor)
+                    Call SetMask(Statuses, e_UsersInfoMask.Counselor)
                     fontType = e_FontTypeNames.FONTTYPE_GM
                 Case e_PlayerType.SemiDios
-                    Call SetMask(Statuses, e_InfoTxts.DemiGod)
+                    Call SetMask(Statuses, e_UsersInfoMask.DemiGod)
                     fontType = e_FontTypeNames.FONTTYPE_GM
                 Case e_PlayerType.Dios
-                    Call SetMask(Statuses, e_InfoTxts.God)
+                    Call SetMask(Statuses, e_UsersInfoMask.God)
                     fontType = e_FontTypeNames.FONTTYPE_DIOS
                 Case e_PlayerType.Admin
-                    Call SetMask(Statuses, e_InfoTxts.Admin)
+                    Call SetMask(Statuses, e_UsersInfoMask.Admin)
                     fontType = e_FontTypeNames.FONTTYPE_DIOS
                 Case e_PlayerType.RoleMaster
-                    Call SetMask(Statuses, e_InfoTxts.RoleMaster)
+                    Call SetMask(Statuses, e_UsersInfoMask.RoleMaster)
                     fontType = e_FontTypeNames.FONTTYPE_GM
             End Select
         End If
@@ -2370,80 +2299,80 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
         'if im clicking and i have survival skill 50 or more i see all status
         If UserList(SourceUserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 50 Then
             If .flags.Envenenado > 0 Then
-                Call SetMask(Statuses, e_InfoTxts.Poisoned)
+                Call SetMask(Statuses, e_UsersInfoMask.Poisoned)
             End If
 
             If .flags.Ceguera = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Blind)
+                Call SetMask(Statuses, e_UsersInfoMask.Blind)
             End If
 
             If .flags.Incinerado = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Incinerated)
+                Call SetMask(Statuses, e_UsersInfoMask.Incinerated)
             End If
 
             If .flags.Paralizado = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Paralized)
+                Call SetMask(Statuses, e_UsersInfoMask.Paralized)
             End If
 
             If .flags.Inmovilizado = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Inmovilized)
+                Call SetMask(Statuses, e_UsersInfoMask.Inmovilized)
             End If
 
             If .Counters.Trabajando > 0 Then
-                Call SetMask(Statuses, e_InfoTxts.Working)
+                Call SetMask(Statuses, e_UsersInfoMask.Working)
             End If
 
             If .flags.invisible = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.invisible)
+                Call SetMask(Statuses, e_UsersInfoMask.invisible)
             End If
 
             If .flags.Oculto = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Hidden)
+                Call SetMask(Statuses, e_UsersInfoMask.Hidden)
             End If
 
             If .flags.Estupidez = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Stupid)
+                Call SetMask(Statuses, e_UsersInfoMask.Stupid)
             End If
 
             If .flags.Maldicion = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Cursed)
+                Call SetMask(Statuses, e_UsersInfoMask.Cursed)
             End If
 
             If .flags.Silenciado = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Silenced)
+                Call SetMask(Statuses, e_UsersInfoMask.Silenced)
             End If
 
             If .flags.Comerciando = True Then
-                Call SetMask(Statuses, e_InfoTxts.Trading)
+                Call SetMask(Statuses, e_UsersInfoMask.Trading)
             End If
 
             If .flags.Descansar = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Resting)
+                Call SetMask(Statuses, e_UsersInfoMask.Resting)
             End If
 
             If .flags.Meditando Then
-                Call SetMask(Statuses, e_InfoTxts.Focusing)
+                Call SetMask(Statuses, e_UsersInfoMask.Focusing)
             End If
             
             Select Case .Stats.MinHp
                 Case 0
-                    Call SetMask(Statuses, e_InfoTxts.Dead)
+                    Call SetMask(Statuses, e_UsersInfoMask.Dead)
                     fontType = e_FontTypeNames.FONTTYPE_New_Gris
                 Case Is < (.Stats.MaxHp * 0.1)
-                    Call SetMask(Statuses, e_InfoTxts.AlmostDead)
+                    Call SetMask(Statuses, e_UsersInfoMask.AlmostDead)
                 Case Is < (.Stats.MaxHp * 0.5)
-                    Call SetMask(Statuses, e_InfoTxts.SeriouslyWounded)
+                    Call SetMask(Statuses, e_UsersInfoMask.SeriouslyWounded)
                 Case Is < (.Stats.MaxHp * 0.75)
-                    Call SetMask(Statuses, e_InfoTxts.Wounded)
+                    Call SetMask(Statuses, e_UsersInfoMask.Wounded)
                 Case Is < (.Stats.MaxHp * 0.99)
-                    Call SetMask(Statuses, e_InfoTxts.LightlyWounded)
+                    Call SetMask(Statuses, e_UsersInfoMask.LightlyWounded)
                 Case Else
-                    Call SetMask(Statuses, e_InfoTxts.Intact)
+                    Call SetMask(Statuses, e_UsersInfoMask.Intact)
             End Select
         Else
             'even if i dont have survival, I have to see the dead people
             If .Stats.MinHp = 0 Then
-                Call SetMask(Statuses, e_InfoTxts.Dead)
+                Call SetMask(Statuses, e_UsersInfoMask.Dead)
                 fontType = e_FontTypeNames.FONTTYPE_New_Gris
             End If
         End If
@@ -2454,4 +2383,80 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
 Exit Function
 PrepareUserStatusEffectMsgsForPlayers_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.PrepareUserStatusEffectMsgsForPlayers", Erl)
+End Function
+
+
+Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, _
+                                         ByVal SourceUserIndex As Integer, _
+                                         ByRef NpcStatusMask As Long) As String
+    On Error Goto PrepareStatusMsgsForNpcs_Err
+    Dim extraStrings As String
+    Dim UserSurvivalSkill As Integer
+    UserSurvivalSkill = UserList(SourceUserIndex).Stats.UserSkills(e_Skill.Supervivencia)
+
+    With NpcList(TargetNpcIndex)
+        Select Case UserSurvivalSkill
+            Case Is >= 75, EsGm(SourceUserIndex)
+                extraStrings = extraStrings & .Stats.MinHp & "/" & .Stats.MaxHp & "-"
+            Case Is >= 50
+                extraStrings = extraStrings & Round((.Stats.MinHp / .Stats.MaxHp) * 100#, 0) & "%" & "-"
+            Case Is >= 25
+                Select Case .Stats.MinHp
+                    Case Is < (.Stats.MaxHp * 0.1)
+                        Call SetMask(NpcStatusMask, e_NpcInfoMask.AlmostDead)
+                    Case Is < (.Stats.MaxHp * 0.2)
+                        Call SetMask(NpcStatusMask, e_NpcInfoMask.SeriouslyWounded)
+                    Case Is < (.Stats.MaxHp * 0.5)
+                        Call SetMask(NpcStatusMask, e_NpcInfoMask.Wounded)
+                    Case Is < (.Stats.MaxHp * 0.7)
+                        Call SetMask(NpcStatusMask, e_NpcInfoMask.LightlyWounded)
+                    Case Else
+                        Call SetMask(NpcStatusMask, e_NpcInfoMask.Intact)
+                End Select
+            Case Else
+                If .Stats.MinHp < .Stats.MaxHp Then
+                    Call SetMask(NpcStatusMask, e_NpcInfoMask.Wounded)
+                Else
+                    Call SetMask(NpcStatusMask, e_NpcInfoMask.Intact)
+                End If
+        End Select
+
+        If .flags.Envenenado > 0 Then
+            Call SetMask(NpcStatusMask, e_NpcInfoMask.Poisoned)
+        End If
+            
+        If .flags.Paralizado = 1 Then
+            If UserSurvivalSkill >= 100 Then
+                extraStrings = extraStrings & CInt(.Contadores.Paralisis / 6.5) & "-"
+            End If
+        Call SetMask(NpcStatusMask, e_NpcInfoMask.Paralized)
+        End If
+
+        If .flags.Inmovilizado = 1 Then
+            If UserSurvivalSkill >= 100 Then
+                extraStrings = extraStrings & CInt(.Contadores.Inmovilizado / 6.5) & "-"
+            End If
+            Call SetMask(NpcStatusMask, e_NpcInfoMask.Inmovilized)
+        End If
+
+        If GetOwnedBy(TargetNpcIndex) <> 0 Then
+            Call SetMask(NpcStatusMask, e_NpcInfoMask.Fighting)
+            extraStrings = extraStrings & .flags.AttackedBy & "-"
+            extraStrings = extraStrings & CInt((IntervaloNpcOwner - (GlobalFrameTime - .flags.AttackedTime)) / 1000) & "-"
+        End If
+
+        If EsGm(SourceUserIndex) Then
+            extraStrings = extraStrings & TargetNpcIndex & "-"
+        Else
+            extraStrings = extraStrings & "-"
+        End If
+
+        extraStrings = extraStrings & .flags.ElementalTags & "-"
+
+    End With
+
+    PrepareStatusMsgsForNpcs = extraStrings
+    Exit Function
+PrepareStatusMsgsForNpcs_Err:
+    Call TraceError(Err.Number, Err.Description, "Extra.PrepareStatusMsgsForNpcs", Erl)
 End Function
