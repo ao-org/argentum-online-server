@@ -1380,7 +1380,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 
 224                     If UserList(TempCharIndex).flags.Privilegios = user Then
 
-                        extraStrings = PrepareUserStatusEffectMsgsForPlayers(UserIndex, curStatuses)
+                        extraStrings = PrepareUserStatusEffectMsgsForPlayers(UserIndex, curStatuses,ft)
 
 370                         If LenB(extraStrings) > 0 Then
                                 If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(TempCharIndex).GuildIndex) Or UserIndex = TempCharIndex Then
@@ -2254,7 +2254,7 @@ End Function
 
 
 
-Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer, ByRef Statuses As Currency) As String
+Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer, ByRef Statuses As Currency, ByRef fontType as e_FontTypeNames) As String
     On Error GoTo PrepareUserStatusEffectMsgsForPlayers_Err
 
     Dim extraStrings As String
@@ -2360,6 +2360,7 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
                 Case e_PlayerType.Consejero
                     Statuses = Statuses & e_InfoTxts.Admin
             End Select
+            extraStrings = extraStrings & ListaClases(.clase) & "-" & ListaRazas(.raza) & "-" & .Stats.ELV & "-" & .Stats.ELO & "-"
         End If
 
         If .Faccion.Status = e_Facciones.concilio Then
@@ -2389,10 +2390,6 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
         
         If .flags.Casado = 1 Then
             extraStrings = extraStrings & GetUserSpouse(UserIndex) & "-"
-        End If
-
-        If EsGM(UserIndex) Then
-            extraStrings = extraStrings & ListaClases(.clase) & "-" & ListaRazas(.raza) & "-" & .Stats.ELV & "-" & .Stats.ELO & "-"
         End If
 
         extraStrings = extraStrings & .Name & "-"
