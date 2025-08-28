@@ -1382,7 +1382,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 
 224                     If UserList(TempCharIndex).flags.Privilegios = user Then
 
-                        extraStrings = PrepareUserStatusEffectMsgsForPlayers(TempCharIndex, Statuses,FactionStatuses,ft)
+                        extraStrings = PrepareUserStatusEffectMsgsForPlayers(TempCharIndex,UserIndex, Statuses,FactionStatuses,ft)
 
 370                         If LenB(extraStrings) > 0 Then
                                 If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(TempCharIndex).GuildIndex) Or UserIndex = TempCharIndex Then
@@ -2256,7 +2256,8 @@ End Function
 
 
 
-Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer, _
+Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As Integer, _
+                                                      ByVal SourceUserIndex As Integer, _
                                                       ByRef Statuses As Long, _
                                                       ByRef FactionStatuses As Long, _
                                                       ByRef fontType as e_FontTypeNames) As String
@@ -2265,8 +2266,8 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
 
     Dim extraStrings As String
 
-    With UserList(UserIndex)
-        If EsNewbie(UserIndex) Then
+    With UserList(TargetUserIndex)
+        If EsNewbie(TargetUserIndex) Then
             Statuses = Statuses & e_InfoTxts.Newbie
         End If
 
@@ -2345,7 +2346,7 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
 
         Dim factionRank As Byte
         If .Faccion.status = e_Facciones.Armada Or .Faccion.status = e_Facciones.consejo Then
-            factionRank = TituloReal(UserIndex)
+            factionRank = TituloReal(TargetUserIndex)
             Select Case factionRank
                 Case e_RoyalArmyRanks.FirstHierarchy
                     FactionStatuses = FactionStatuses & e_InfoTxts2.ArmyFirstHierarchy
@@ -2362,7 +2363,7 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
         End If
 
         If .Faccion.status = e_Facciones.Caos Or .Faccion.status = e_Facciones.concilio Then
-            factionRank = TituloCaos(UserIndex)
+            factionRank = TituloCaos(TargetUserIndex)
             Select Case factionRank
                 Case e_ChaosArmyRanks.FirstHierarchy
                     FactionStatuses = FactionStatuses & e_InfoTxts2.ChaosFirstHierarchy
@@ -2413,11 +2414,10 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
         End if
 
         If .flags.Casado = 1 Then
-            extraStrings = extraStrings & GetUserSpouse(UserIndex) & "-"
+            extraStrings = extraStrings & GetUserSpouse(TargetUserIndex) & "-"
         End If
 
-
-        If EsGM(UserIndex) Then
+        If EsGM(TargetUserIndex) Then
             Select Case .flags.Privilegios
                 Case e_PlayerType.Consejero
                     Statuses = Statuses & e_InfoTxts.Counselor
@@ -2428,8 +2428,13 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
                 Case e_PlayerType.Consejero
                     Statuses = Statuses & e_InfoTxts.Admin
             End Select
-            extraStrings = extraStrings & ListaClases(.clase) & "-" & ListaRazas(.raza) & "-" & .Stats.ELV & "-" & .Stats.ELO & "-"
+            
             fontType = e_FontTypeNames.FONTTYPE_GM
+        End If
+
+        'if im am a gm and im clicking other person i have extra data
+        If EsGM(UserIndex) Then
+            extraStrings = extraStrings & .clase & "-" & .raza & "-" & .Stats.ELV & "-" & .Stats.ELO & "-"
         End If
 
         extraStrings = extraStrings & .Name & "-"
