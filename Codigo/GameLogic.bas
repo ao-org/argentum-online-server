@@ -1377,49 +1377,29 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 222                 If UserList(TempCharIndex).showName Or CompararPrivilegiosUser(UserIndex, TempCharIndex) >= 0 Then
                 
 224                     If UserList(TempCharIndex).flags.Privilegios = user Then
-                    
-                            Dim Fragsnick As String
-    
-226                         If EsGM(UserIndex) Then
-228                             Stat = Stat & " <" & ListaClases(UserList(TempCharIndex).clase) & " " & ListaRazas(UserList(TempCharIndex).raza) & " Nivel: " & UserList(TempCharIndex).Stats.ELV & ">"
-                                Stat = Stat & " (ELO " & UserList(TempCharIndex).Stats.ELO & ")"
-                            End If
-
-                    
-
-
-                        
-364                     If Len(UserList(TempCharIndex).Desc) > 0 Then
-366                         Stat = UserList(TempCharIndex).name & Stat & " - " & UserList(TempCharIndex).Desc
-                        Else
-368                         Stat = UserList(TempCharIndex).name & Stat
-                        End If
-                
-370                     If LenB(Stat) > 0 Then
-                            If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(TempCharIndex).GuildIndex) Or UserIndex = TempCharIndex Then
-372                             If UserList(TempCharIndex).flags.Muerto Then
-374                                 Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_New_Gris, Stat)
-                                Else
-376                                 Call WriteLocaleMsg(UserIndex, "1105", ft, Stat)
+370                         If LenB(Stat) > 0 Then
+                                If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList    (TempCharIndex).GuildIndex) Or UserIndex = TempCharIndex Then
+372                                 If UserList(TempCharIndex).flags.Muerto Then
+374                                     Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_New_Gris, Stat)
+                                    Else
+376                                     Call WriteLocaleMsg(UserIndex, "1105", ft, Stat)
+                                    End If
                                 End If
                             End If
-                        End If
-                
-378                     FoundSomething = 1
-380                     Call SetUserRef(UserList(userIndex).flags.targetUser, TempCharIndex)
-382                     Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
-384                     UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
 
-                    Else
+378                         FoundSomething = 1
+380                         Call SetUserRef(UserList(userIndex).flags.targetUser, TempCharIndex)
+382                         Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
+384                         UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
+                        Else
                         'Msg1105= Ves a ??? <Game Master>
-                        Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_GM, UserList(TempCharIndex).name)
-388                     Call SetUserRef(UserList(userIndex).flags.targetUser, TempCharIndex)
-390                     Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
-392                     UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
-    
+                            Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_GM, UserList(TempCharIndex).name)
+388                         Call SetUserRef(UserList(userIndex).flags.targetUser, TempCharIndex)
+390                         Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
+392                         UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
+                        End If
                     End If
                 End If
-            End If
 
 394         If FoundChar = 2 Then '¿Encontro un NPC?
 
@@ -2268,14 +2248,12 @@ End Function
 
 
 
-Public Function PrepareUserStatusEffectMsgs(ByVal UserIndex As Integer) As String
-    On Error GoTo PrepareUserStatusEffectMsgs_Err
+Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer, ByRef Statuses As Currency) As String
+    On Error GoTo PrepareUserStatusEffectMsgsForPlayers_Err
 
-    Dim Statuses As Long
     Dim extraStrings As String
 
     With UserList(UserIndex)
-
         If EsNewbie(UserIndex) Then
             Statuses = Statuses & e_InfoTxts.Newbie
         End If
@@ -2291,7 +2269,7 @@ Public Function PrepareUserStatusEffectMsgs(ByVal UserIndex As Integer) As Strin
 
             If .flags.Incinerado = 1 Then
                 Statuses = Statuses & e_InfoTxts.Incinerated
-            End If
+            End If 
 
             If .flags.Paralizado = 1 Then
                 Statuses = Statuses & e_InfoTxts.Paralized
@@ -2354,15 +2332,15 @@ Public Function PrepareUserStatusEffectMsgs(ByVal UserIndex As Integer) As Strin
         End If
 
         If .Faccion.status = e_Facciones.Armada Or .Faccion.status = e_Facciones.consejo Then
-            extraStrings = extraStrings & TituloReal(UserIndex) & " "
+            extraStrings = extraStrings & TituloReal(UserIndex) & "-"
         End If
 
         If .Faccion.status = e_Facciones.Caos Or .Faccion.status = e_Facciones.concilio Then
-            extraStrings = extraStrings & TituloCaos(UserIndex) & " "
+            extraStrings = extraStrings & TituloCaos(UserIndex) & "-"
         End If
 
         If .GuildIndex > 0 Then
-            extraStrings = extraStrings & modGuilds.GuildName(.GuildIndex) & " "
+            extraStrings = extraStrings & modGuilds.GuildName(.GuildIndex) & "-"
         End If
 
         If EsGM(UserIndex) Then
@@ -2404,14 +2382,20 @@ Public Function PrepareUserStatusEffectMsgs(ByVal UserIndex As Integer) As Strin
         End If
         
         If .flags.Casado = 1 Then
-            Statuses = Statuses & " <Pareja de " & GetUserSpouse(TempCharIndex) & ">"
+            extraStrings = extraStrings & GetUserSpouse(UserIndex) & "-"
+        End If
+
+        If EsGM(UserIndex) Then
+            extraStrings = extraStrings & ListaClases(.clase) & "-" & ListaRazas(.raza) & "-" & .Stats.ELV & "-" & .Stats.ELO & "-"
+        End If
+
+        extraStrings = extraStrings & .name & "-" & 
+        If Len(.Desc) > 0 Then
+            extraStrings = .Desc & "-"
         End If
 
     End With
-
-
-
-    Exit Function
-PrepareUserStatusEffectMsgs_Err:
-    Call TraceError(Err.Number, Err.Description, "Extra.PrepareUserStatusEffectMsgs", Erl)
+Exit Function
+PrepareUserStatusEffectMsgsForPlayers_Err:
+    Call TraceError(Err.Number, Err.Description, "Extra.PrepareUserStatusEffectMsgsForPlayers", Erl)
 End Function
