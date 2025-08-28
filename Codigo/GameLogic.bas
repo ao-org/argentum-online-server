@@ -2450,10 +2450,8 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, _
         Else
             extraStrings = extraStrings & "-"
         End If
-
-    End With
-
     PrepareStatusMsgsForNpcs = extraStrings & "|" & NpcStatusMask & "|" & .flags.ElementalTags
+    End With
     Exit Function
 PrepareStatusMsgsForNpcs_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.PrepareStatusMsgsForNpcs", Erl)
