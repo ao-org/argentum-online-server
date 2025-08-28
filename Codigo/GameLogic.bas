@@ -2271,21 +2271,28 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
         extraStrings = extraStrings & .Name & "-"
         If Len(.Desc) > 0 Then
             extraStrings = .Desc & "-"
+        Else
         End If
 
         If .GuildIndex > 0 Then
             extraStrings = extraStrings & modGuilds.GuildName(.GuildIndex) & "-"
+        Else
+            extraString = extraStrings & "-"
         End If
 
         If .flags.Casado = 1 Then
             extraStrings = extraStrings & GetUserSpouse(TargetUserIndex) & "-"
+        Else
+            extraString = extraStrings & "-"
         End If
 
         'if im am a gm and im clicking other person i have extra data
         If EsGM(SourceUserIndex) Then
             extraStrings = extraStrings & .clase & "-" & .raza & "-" & .Stats.ELV & "-" & .Stats.ELO & "-"
+        Else
+            extraString = extraStrings & "----"
         End If
-
+        
         If EsNewbie(TargetUserIndex) Then
             Statuses = Statuses & e_InfoTxts.Newbie
         End If
