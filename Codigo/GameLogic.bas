@@ -2267,6 +2267,25 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
     Dim extraStrings As String
 
     With UserList(TargetUserIndex)
+
+        extraStrings = extraStrings & .Name & "-"
+        If Len(.Desc) > 0 Then
+            extraStrings = .Desc & "-"
+        End If
+
+        If .GuildIndex > 0 Then
+            extraStrings = extraStrings & modGuilds.GuildName(.GuildIndex) & "-"
+        End If
+
+        If .flags.Casado = 1 Then
+            extraStrings = extraStrings & GetUserSpouse(TargetUserIndex) & "-"
+        End If
+
+        'if im am a gm and im clicking other person i have extra data
+        If EsGM(SourceUserIndex) Then
+            extraStrings = extraStrings & .clase & "-" & .raza & "-" & .Stats.ELV & "-" & .Stats.ELO & "-"
+        End If
+
         If EsNewbie(TargetUserIndex) Then
             Statuses = Statuses & e_InfoTxts.Newbie
         End If
@@ -2379,9 +2398,6 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
             End select
         End If
 
-        If .GuildIndex > 0 Then
-            extraStrings = extraStrings & modGuilds.GuildName(.GuildIndex) & "-"
-        End If
 
         If .Faccion.Status = e_Facciones.Criminal Then
             FactionStatuses = FactionStatuses & e_InfoTxts2.Criminal
@@ -2413,9 +2429,6 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
             fontType = e_FontTypeNames.FONTTYPE_CONSEJO
         End if
 
-        If .flags.Casado = 1 Then
-            extraStrings = extraStrings & GetUserSpouse(TargetUserIndex) & "-"
-        End If
 
         If EsGM(TargetUserIndex) Then
             Select Case .flags.Privilegios
@@ -2430,16 +2443,6 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
             End Select
             
             fontType = e_FontTypeNames.FONTTYPE_GM
-        End If
-
-        'if im am a gm and im clicking other person i have extra data
-        If EsGM(SourceUserIndex) Then
-            extraStrings = extraStrings & .clase & "-" & .raza & "-" & .Stats.ELV & "-" & .Stats.ELO & "-"
-        End If
-
-        extraStrings = extraStrings & .Name & "-"
-        If Len(.Desc) > 0 Then
-            extraStrings = .Desc & "-"
         End If
 
         PrepareUserStatusEffectMsgsForPlayers = extraStrings
