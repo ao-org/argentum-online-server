@@ -52,11 +52,11 @@ End Enum
 
 Public Enum e_ChaosArmyRanks
     NotEnlisted = 0
-    FirstHirearchy = 1
-    SecondHirearchy = 2
-    ThirdHirearchy = 3
-    FourthHirearchy = 4
-    FifthHirearchy = 5
+    FirstHierarchy = 1
+    SecondHierarchy = 2
+    ThirdHierarchy = 3
+    FourthHierarchy = 4
+    FifthHierarchy = 5
 End Enum
 
 

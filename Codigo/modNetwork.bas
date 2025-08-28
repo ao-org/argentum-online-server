@@ -98,15 +98,15 @@ Public Sub Send(ByVal UserIndex As Long, ByRef Buffer As Network.Writer)
     Call Server.Send(UserList(UserIndex).ConnectionDetails.ConnID, False, Buffer)
 End Sub
 
-Public Sub SendToConnection(ByVal ConnectionId As Long, ByRef Buffer As Network.Writer)
-    Call Server.Send(ConnectionId, False, Buffer)
+Public Sub SendToConnection(ByVal ConnectionID As Long, ByRef Buffer As Network.Writer)
+    Call Server.Send(ConnectionID, False, Buffer)
 End Sub
 
 Public Sub Flush(ByVal UserIndex As Long)
     Call Server.Flush(UserList(UserIndex).ConnectionDetails.ConnID)
 End Sub
 
-Public Sub Kick(ByVal Connection As Long, Optional ByVal message As String = vbNullString)
+Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbNullString)
 On Error GoTo Kick_ErrHandler:
     If IsFeatureEnabled("debug_connections") Then
         If (Message <> vbNullString) Then
@@ -117,7 +117,7 @@ On Error GoTo Kick_ErrHandler:
     End If
     Dim UserRef As t_UserReference
     UserRef = Mapping(Connection).UserRef
-    If (message <> vbNullString) Then
+    If (Message <> vbNullString) Then
         If UserRef.ArrayIndex > 0 Then
             Call Protocol_Writes.WriteErrorMsg(UserRef.ArrayIndex, Message)
             If UserList(UserRef.ArrayIndex).flags.UserLogged Then
@@ -127,7 +127,7 @@ On Error GoTo Kick_ErrHandler:
     End If
         
     Call Server.Flush(Connection)
-    Call Server.Kick(Connection, True)
+    Call Server.Kick(Connection)
     Exit Sub
     
 Kick_ErrHandler:
@@ -142,23 +142,23 @@ End Function
 Public Sub close_not_logged_sockets_if_timeout()
 On Error GoTo close_not_logged_sockets_if_timeout_ErrHandler:
         Dim i As Integer
-        Dim key As Variant
+        Dim Key As Variant
         Dim Ticks As Long, Delta As Long
 100     Ticks = GetTickCount
-102     For Each key In PendingConnections.Keys
-104         With Mapping(key)
-                Dim ConnectionId As Long
-106             ConnectionId = key
-108             Delta = Ticks - Mapping(ConnectionId).ConnectionDetails.OnConnectTimestamp
+102     For Each Key In PendingConnections.Keys
+104         With Mapping(Key)
+                Dim ConnectionID As Long
+106             ConnectionID = Key
+108             Delta = Ticks - Mapping(ConnectionID).ConnectionDetails.OnConnectTimestamp
 110             If Delta > PendingConnectionTimeout Then
 112                 If IsValidUserRef(.UserRef) Then
-114                     LogError ("trying to kick an assigned connection: " & ConnectionId & " assigned to: " & .UserRef.ArrayIndex)
+114                     LogError ("trying to kick an assigned connection: " & ConnectionID & " assigned to: " & .UserRef.ArrayIndex)
                     Else
-116                     Call KickConnection(ConnectionId)
+116                     Call KickConnection(ConnectionID)
                     End If
                 End If
             End With
-118     Next key
+118     Next Key
         Exit Sub
 close_not_logged_sockets_if_timeout_ErrHandler:
     Call TraceError(Err.Number, Err.Description, "modNetwork.Kick", Erl)
@@ -210,7 +210,7 @@ On Error GoTo OnServerClose_Err:
 100    UserRef = Mapping(Connection).UserRef
 102    If IsFeatureEnabled("debug_connections") Then
 104        If UserRef.ArrayIndex > 0 Then
-106            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserRef.ArrayIndex & " With connection id: " & Connection & " with name: " & UserList(UserRef.ArrayIndex).name & " and ip" & UserList(UserRef.ArrayIndex).ConnectionDetails.IP)
+106            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserRef.ArrayIndex & " With connection id: " & Connection & " with name: " & UserList(UserRef.ArrayIndex).Name & " and ip" & UserList(UserRef.ArrayIndex).ConnectionDetails.IP)
 108        Else
 110            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserRef.ArrayIndex & " With connection id: " & Connection)
 112        End If
@@ -260,9 +260,9 @@ On Error GoTo OnServerRecv_Err:
         '       HandleLoginExistingChar(ConnectionID)
         '       HandleLoginNewChar(ConnectionID)
         ' It does not make sense to pass the index if it has not being assigned
-        Call Protocol.HandleIncomingData(connection, Message, UserRef.ArrayIndex)
+        Call Protocol.HandleIncomingData(Connection, Message, UserRef.ArrayIndex)
     Else
-        Call Protocol.HandleIncomingData(connection, Message)
+        Call Protocol.HandleIncomingData(Connection, Message)
     End If
     
     Exit Sub
@@ -277,9 +277,9 @@ On Error GoTo ForcedClose_Err:
 100     UserList(UserIndex).ConnectionDetails.ConnIDValida = False
 102     UserList(UserIndex).ConnectionDetails.ConnID = 0
 104     Call Server.Flush(Connection)
-106     Call Server.Kick(Connection, True)
+106     Call Server.Kick(Connection)
 108     Call ClearUserRef(Mapping(Connection).UserRef)
-110     Call IncreaseVersionId(userIndex)
+110     Call IncreaseVersionId(UserIndex)
         Exit Sub
 ForcedClose_Err:
     Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)
@@ -288,7 +288,7 @@ End Sub
 Public Sub KickConnection(Connection As Long)
 On Error GoTo ForcedClose_Err:
 104     Call Server.Flush(Connection)
-106     Call Server.Kick(Connection, True)
+106     Call Server.Kick(Connection)
 108     Call ClearConnection(Connection)
 110     If PendingConnections.Exists(Connection) Then
 112         Call PendingConnections.Remove(Connection)
@@ -335,11 +335,11 @@ CheckDisconnectedUsers_Err:
 130     Call TraceError(Err.Number, Err.Description, "modNetwork.CheckDisconnectedUsers", Erl)
 End Sub
 
-Public Function MapConnectionToUser(ByVal ConnectionId As Long) As Integer
+Public Function MapConnectionToUser(ByVal ConnectionID As Long) As Integer
      On Error GoTo CheckDisconnectedUsers_Err:
         Dim FreeUser As Long
-100     If Not PendingConnections.Exists(ConnectionId) Then
-102         Call LogError("Connection " & ConnectionId & " is not waiting for assign")
+100     If Not PendingConnections.Exists(ConnectionID) Then
+102         Call LogError("Connection " & ConnectionID & " is not waiting for assign")
             Exit Function
         End If
         
@@ -352,7 +352,7 @@ Public Function MapConnectionToUser(ByVal ConnectionId As Long) As Integer
 112         If IsFeatureEnabled("debug_connections") Then
 114             Call LogError("Failed to find slot for new user, connection: " & Connection & " LastUser: " & LastUser)
             End If
-116         Call Kick(ConnectionId, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
+116         Call Kick(ConnectionID, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
             Exit Function
         End If
         
@@ -361,9 +361,9 @@ Public Function MapConnectionToUser(ByVal ConnectionId As Long) As Integer
 122        FreeUser = NextOpenUser()
         End If
         
-124     Call PendingConnections.Remove(ConnectionId)
-126     UserList(FreeUser).ConnectionDetails = Mapping(ConnectionId).ConnectionDetails
-128     Call SetUserRef(Mapping(ConnectionId).UserRef, FreeUser)
+124     Call PendingConnections.Remove(ConnectionID)
+126     UserList(FreeUser).ConnectionDetails = Mapping(ConnectionID).ConnectionDetails
+128     Call SetUserRef(Mapping(ConnectionID).UserRef, FreeUser)
 130     MapConnectionToUser = FreeUser
 132     If FreeUser > LastUser Then
 134         LastUser = FreeUser
@@ -397,7 +397,7 @@ On Error GoTo CheckDisconnectedUsers_Err:
         
         If FreeUser < 0 Then
             If IsFeatureEnabled("debug_connections") Then
-                Call LogError("Failed to find slot for new user, connection: " & connection & " LastUser: " & LastUser)
+                Call LogError("Failed to find slot for new user, connection: " & Connection & " LastUser: " & LastUser)
             End If
             KickConnection (ConnectionID)
             Exit Function
@@ -589,12 +589,12 @@ receive_error:
         Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.Receive", Erl)
     End If
 End Sub
-Public Sub Send(ByVal user_index As Long, ByRef writer As clsNetWriter)
+Public Sub Send(ByVal user_index As Long, ByRef Writer As clsNetWriter)
 On Error GoTo send_error:
     Debug.Assert user_index >= LBound(UserList) And user_index <= UBound(UserList)
     Err.Clear
     With UserList(user_index)
-        Call SendToConnection(.ConnectionDetails.ConnID, writer)
+        Call SendToConnection(.ConnectionDetails.ConnID, Writer)
     End With
     Exit Sub
 send_error:
@@ -602,10 +602,10 @@ send_error:
         Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.Send", Erl)
     End If
 End Sub
-Public Sub SendToConnection(ByVal ConnectionID As Long, ByRef writer As clsNetWriter)
+Public Sub SendToConnection(ByVal ConnectionID As Long, ByRef Writer As clsNetWriter)
 On Error GoTo sendtoconnection_error:
     Err.Clear
-    Call writer.Send(ConnectionID)
+    Call Writer.Send(ConnectionID)
     Exit Sub
 sendtoconnection_error:
      If Err.Number <> 0 Then
@@ -616,10 +616,10 @@ Public Sub Flush(ByVal user_index As Long)
     'Nothing
 End Sub
 
-Public Sub KickConnection(ByVal connection As Long)
+Public Sub KickConnection(ByVal Connection As Long)
 On Error GoTo KickConnection_err:
     Err.Clear
-    Call dps.DestroyClient(connection, 0, 0, 0)
+    Call dps.DestroyClient(Connection, 0, 0, 0)
     Exit Sub
 KickConnection_err:
     If Err.Number <> 0 Then
@@ -627,27 +627,27 @@ KickConnection_err:
     End If
 End Sub
 
-Public Sub Kick(ByVal connection As Long, Optional ByVal Message As String = vbNullString)
+Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbNullString)
 On Error GoTo Kick_ErrHandler:
     If IsFeatureEnabled("debug_connections") Then
         If (Message <> vbNullString) Then
-            Call AddLogToCircularBuffer("Kick connection: " & connection & " reason: " & Message)
+            Call AddLogToCircularBuffer("Kick connection: " & Connection & " reason: " & Message)
         Else
-            Call AddLogToCircularBuffer("Kick connection: " & connection)
+            Call AddLogToCircularBuffer("Kick connection: " & Connection)
         End If
     End If
     If (Message <> vbNullString) Then
         Dim user_index As Integer
         
-        If Mapping.Exists(connection) Then
-            user_index = Mapping.Item(connection)
+        If Mapping.Exists(Connection) Then
+            user_index = Mapping.Item(Connection)
             Call Protocol_Writes.WriteErrorMsg(user_index, Message)
             If UserList(user_index).flags.UserLogged Then
                 Call Cerrar_Usuario(user_index)
             End If
         End If
     End If
-    KickConnection connection
+    KickConnection Connection
     Exit Sub
     
 Kick_ErrHandler:
