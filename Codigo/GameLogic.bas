@@ -2254,7 +2254,7 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
 
         extraStrings = extraStrings & .Name & "-"
         If Len(.Desc) > 0 Then
-            extraStrings = .Desc & "-"
+            extraStrings = extraStrings & .Desc & "-"
         Else
             extraStrings = extraStrings & "-"
         End If
@@ -2279,7 +2279,7 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
         End If
         
         If EsNewbie(TargetUserIndex) Then
-            Statuses = Statuses & e_InfoTxts.Newbie
+            Call SetMask(Statuses, e_InfoTxts.Newbie)
         End If
         
         Dim factionRank As Byte
