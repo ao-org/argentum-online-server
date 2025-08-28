@@ -2351,14 +2351,20 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
             Select Case .flags.Privilegios
                 Case e_PlayerType.Consejero
                     Call SetMask(Statuses, e_InfoTxts.Counselor)
-                Case e_PlayerType.Consejero
+                    fontType = e_FontTypeNames.FONTTYPE_GM
+                Case e_PlayerType.SemiDios
                     Call SetMask(Statuses, e_InfoTxts.DemiGod)
-                Case e_PlayerType.Consejero
+                    fontType = e_FontTypeNames.FONTTYPE_GM
+                Case e_PlayerType.Dios
                     Call SetMask(Statuses, e_InfoTxts.God)
-                Case e_PlayerType.Consejero
+                    fontType = e_FontTypeNames.FONTTYPE_DIOS
+                Case e_PlayerType.Admin
                     Call SetMask(Statuses, e_InfoTxts.Admin)
+                    fontType = e_FontTypeNames.FONTTYPE_DIOS
+                Case e_PlayerType.RoleMaster
+                    Call SetMask(Statuses, e_InfoTxts.RoleMaster)
+                    fontType = e_FontTypeNames.FONTTYPE_GM
             End Select
-            fontType = e_FontTypeNames.FONTTYPE_GM
         End If
         
         'if im clicking and i have survival skill 50 or more i see all status
@@ -2434,6 +2440,12 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
                 Case Else
                     Call SetMask(Statuses, e_InfoTxts.Intact)
             End Select
+        Else
+            'even if i dont have survival, I have to see the dead people
+            If .Stats.MinHp = 0 Then
+                Call SetMask(Statuses, e_InfoTxts.Dead)
+                fontType = e_FontTypeNames.FONTTYPE_New_Gris
+            End If
         End If
 
         PrepareUserStatusEffectMsgsForPlayers = extraStrings
