@@ -174,7 +174,7 @@ End Function
 Public Function esCiudadano(ByVal UserIndex As Integer) As Boolean
         On Error GoTo esCiudadano_Err
         
-100     If UserIndex > 0 Then esCiudadano = Status(UserIndex) = Ciudadano
+100     If UserIndex > 0 Then esCiudadano = Status(UserIndex) = e_Facciones.Ciudadano
         
         Exit Function
 
@@ -186,7 +186,7 @@ End Function
 Public Function esCriminal(ByVal UserIndex As Integer) As Boolean
         On Error GoTo esCriminal_Err
         
-100     If UserIndex > 0 Then esCriminal = Status(UserIndex) = Criminal
+100     If UserIndex > 0 Then esCriminal = Status(UserIndex) = e_Facciones.Criminal
         
         Exit Function
 
