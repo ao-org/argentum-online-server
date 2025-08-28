@@ -1235,7 +1235,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
         Dim TempCharIndex  As Integer
 
-        Dim extraSrings  As String
+        Dim extraStrings   As String
 
         Dim ft             As e_FontTypeNames
 
@@ -1380,14 +1380,14 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 
 224                     If UserList(TempCharIndex).flags.Privilegios = user Then
 
-                        extraStrings = PrepareUserStatusEffectMsgsForPlayers(UserIndex,curStatuses)
+                        extraStrings = PrepareUserStatusEffectMsgsForPlayers(UserIndex, curStatuses)
 
-370                         If LenB(extraSrings) > 0 Then
-                                If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList    (TempCharIndex).GuildIndex) Or UserIndex = TempCharIndex Then
+370                         If LenB(extraStrings) > 0 Then
+                                If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(TempCharIndex).GuildIndex) Or UserIndex = TempCharIndex Then
 372                                 If UserList(TempCharIndex).flags.Muerto Then
-374                                     Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_New_Gris, extraSrings)
+374                                     Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_New_Gris, extraStrings)
                                     Else
-376                                     Call WriteLocaleMsg(UserIndex, "1105", ft, extraSrings)
+376                                     Call WriteLocaleMsg(UserIndex, "1105", ft, extraStrings)
                                     End If
                                 End If
                             End If
@@ -1405,6 +1405,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                         End If
                     End If
                 End If
+            End If
 
 394         If FoundChar = 2 Then '¿Encontro un NPC?
 
@@ -2274,7 +2275,7 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
 
             If .flags.Incinerado = 1 Then
                 Statuses = Statuses & e_InfoTxts.Incinerated
-            End If 
+            End If
 
             If .flags.Paralizado = 1 Then
                 Statuses = Statuses & e_InfoTxts.Paralized
@@ -2327,9 +2328,9 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
                     Statuses = Statuses & e_InfoTxts.AlmostDead
                 Case Is < (.Stats.MaxHp * 0.5)
                     Statuses = Statuses & e_InfoTxts.SeriouslyWounded
-                Case Is < (.Stats.MaxHp * 0.75) 
+                Case Is < (.Stats.MaxHp * 0.75)
                     Statuses = Statuses & e_InfoTxts.Wounded
-                Case Is < (.Stats.MaxHp * 0.99) 
+                Case Is < (.Stats.MaxHp * 0.99)
                     Statuses = Statuses & e_InfoTxts.LightlyWounded
                 Case Else
                     Statuses = Statuses & e_InfoTxts.Intact
@@ -2394,7 +2395,7 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
             extraStrings = extraStrings & ListaClases(.clase) & "-" & ListaRazas(.raza) & "-" & .Stats.ELV & "-" & .Stats.ELO & "-"
         End If
 
-        extraStrings = extraStrings & .name & "-" & 
+        extraStrings = extraStrings & .Name & "-"
         If Len(.Desc) > 0 Then
             extraStrings = .Desc & "-"
         End If
