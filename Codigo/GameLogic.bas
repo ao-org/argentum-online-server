@@ -1377,31 +1377,18 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
             
             
 220             If UserList(TempCharIndex).flags.AdminInvisible = 0 Or CompararPrivilegiosUser(UserIndex, TempCharIndex) >= 0 Then
-                    
 222                 If UserList(TempCharIndex).showName Or CompararPrivilegiosUser(UserIndex, TempCharIndex) >= 0 Then
-                
-224                     If UserList(TempCharIndex).flags.Privilegios = user Then
-
                         extraStrings = PrepareUserStatusEffectMsgsForPlayers(TempCharIndex, UserIndex, Statuses, FactionStatuses, ft)
-
 370                         If LenB(extraStrings) > 0 Then
                                 'if im not dead or (i have guild and the target is a guildmate) or im clicking myself
                                 If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(TempCharIndex).GuildIndex) Or UserIndex = TempCharIndex Then
 376                                     Call WriteLocaleMsg(UserIndex, "1105", ft, extraStrings & "¬" & Statuses & "¬" & FactionStatuses)
                                 End If
                             End If
-
 378                         FoundSomething = 1
 380                         Call SetUserRef(UserList(userIndex).flags.targetUser, TempCharIndex)
 382                         Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
 384                         UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
-                        Else
-                        'Msg1105= Ves a ??? <Game Master>
-                            Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_GM, UserList(TempCharIndex).name)
-388                         Call SetUserRef(UserList(userIndex).flags.targetUser, TempCharIndex)
-390                         Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
-392                         UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
-                        End If
                     End If
                 End If
             End If
