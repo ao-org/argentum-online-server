@@ -1382,7 +1382,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 
 224                     If UserList(TempCharIndex).flags.Privilegios = user Then
 
-                        extraStrings = PrepareUserStatusEffectMsgsForPlayers(TempCharIndex,UserIndex, Statuses,FactionStatuses,ft)
+                        extraStrings = PrepareUserStatusEffectMsgsForPlayers(TempCharIndex, UserIndex, Statuses, FactionStatuses, ft)
 
 370                         If LenB(extraStrings) > 0 Then
                                 If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(TempCharIndex).GuildIndex) Or UserIndex = TempCharIndex Then
@@ -2433,7 +2433,7 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
         End If
 
         'if im am a gm and im clicking other person i have extra data
-        If EsGM(UserIndex) Then
+        If EsGM(SourceUserIndex) Then
             extraStrings = extraStrings & .clase & "-" & .raza & "-" & .Stats.ELV & "-" & .Stats.ELO & "-"
         End If
 
