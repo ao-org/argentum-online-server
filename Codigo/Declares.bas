@@ -524,25 +524,26 @@ Public Enum e_InfoTxts
     DemiGod = 4194304
     God = 8388608
     Admin = 16777216
-    ChaoticCouncil = 33554432
-    Chaotic = 67108864
-    Criminal = 134217728
-    RoyalCouncil = 268435456
-    Army = 536870912
-    Citizen = 1073741824
-    ArmyFirstHierarchy = 2147483648
-    ArmySecondHierarchy = 4294967296
-    ArmyThirdHierarchy = 8589934592
-    ArmyFourthHierarchy = 17179869184
-    ArmyFifthHierarchy = 34359738368
-    ChaosFirstHierarchy = 68719476736
-    ChaosSecondHierarchy = 137438953472
-    ChaosThirdHierarchy = 274877906944
-    ChaosFourthHierarchy = 549755813888
-    ChaosFifthHierarchy = 1099511627776
-
 End Enum
 
+Public Enum e_InfoTxts2
+    ChaoticCouncil = 1
+    Chaotic = 2
+    Criminal = 4
+    RoyalCouncil = 8
+    Army = 16
+    Citizen = 32
+    ArmyFirstHierarchy = 64
+    ArmySecondHierarchy = 128
+    ArmyThirdHierarchy = 256
+    ArmyFourthHierarchy = 512
+    ArmyFifthHierarchy = 1024
+    ChaosFirstHierarchy = 2048
+    ChaosSecondHierarchy = 4096
+    ChaosThirdHierarchy = 8192
+    ChaosFourthHierarchy = 16384
+    ChaosFifthHierarchy = 32768
+End Enum
 
 
 ''

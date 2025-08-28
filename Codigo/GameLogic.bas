@@ -1239,7 +1239,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
         Dim ft             As e_FontTypeNames
 
-        Dim curStatuses       As Currency
+        Dim Statuses       As Long
+
+        Dim FactionStatuses As Long
 
         '¿Rango Visión? (ToxicWaste)
 100     If (Abs(UserList(UserIndex).Pos.Y - Y) > RANGO_VISION_Y) Or (Abs(UserList(UserIndex).Pos.X - X) > RANGO_VISION_X) Then
@@ -1380,7 +1382,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 
 224                     If UserList(TempCharIndex).flags.Privilegios = user Then
 
-                        extraStrings = PrepareUserStatusEffectMsgsForPlayers(TempCharIndex, curStatuses,ft)
+                        extraStrings = PrepareUserStatusEffectMsgsForPlayers(TempCharIndex, Statuses,FactionStatuses,ft)
 
 370                         If LenB(extraStrings) > 0 Then
                                 If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(TempCharIndex).GuildIndex) Or UserIndex = TempCharIndex Then
@@ -2254,7 +2256,11 @@ End Function
 
 
 
-Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer, ByRef Statuses As Currency, ByRef fontType as e_FontTypeNames) As String
+Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer, _
+                                                      ByRef Statuses As Long, _
+                                                      ByRef FactionStatuses As Long, _
+                                                      ByRef fontType as e_FontTypeNames) As String
+
     On Error GoTo PrepareUserStatusEffectMsgsForPlayers_Err
 
     Dim extraStrings As String
@@ -2342,15 +2348,15 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
             factionRank = TituloReal(UserIndex)
             Select Case factionRank
                 Case e_RoyalArmyRanks.FirstHierarchy
-                    Statuses = Statuses & e_InfoTxts.ArmyFirstHierarchy
+                    FactionStatuses = FactionStatuses & e_InfoTxts2.ArmyFirstHierarchy
                 Case e_RoyalArmyRanks.SecondHierarchy
-                    Statuses = Statuses & e_InfoTxts.ArmySecondHierarchy
+                    FactionStatuses = FactionStatuses & e_InfoTxts2.ArmySecondHierarchy
                 Case e_RoyalArmyRanks.ThirdHierarchy
-                    Statuses = Statuses & e_InfoTxts.ArmyThirdHierarchy
+                    FactionStatuses = FactionStatuses & e_InfoTxts2.ArmyThirdHierarchy
                 Case e_RoyalArmyRanks.FourthHierarchy
-                    Statuses = Statuses & e_InfoTxts.ArmyFourthHierarchy
+                    FactionStatuses = FactionStatuses & e_InfoTxts2.ArmyFourthHierarchy
                 Case e_RoyalArmyRanks.FifthHierarchy
-                    Statuses = Statuses & e_InfoTxts.ArmyFifthHierarchy
+                    FactionStatuses = FactionStatuses & e_InfoTxts2.ArmyFifthHierarchy
                 Case Else
             End select
         End If
@@ -2359,15 +2365,15 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
             factionRank = TituloCaos(UserIndex)
             Select Case factionRank
                 Case e_ChaosArmyRanks.FirstHierarchy
-                    Statuses = Statuses & e_InfoTxts.ChaosFirstHierarchy
+                    FactionStatuses = FactionStatuses & e_InfoTxts2.ChaosFirstHierarchy
                 Case e_ChaosArmyRanks.SecondHierarchy
-                    Statuses = Statuses & e_InfoTxts.ChaosSecondHierarchy
+                    FactionStatuses = FactionStatuses & e_InfoTxts2.ChaosSecondHierarchy
                 Case e_ChaosArmyRanks.ThirdHierarchy
-                    Statuses = Statuses & e_InfoTxts.ChaosThirdHierarchy
+                    FactionStatuses = FactionStatuses & e_InfoTxts2.ChaosThirdHierarchy
                 Case e_ChaosArmyRanks.FourthHierarchy
-                    Statuses = Statuses & e_InfoTxts.ChaosFourthHierarchy
+                    FactionStatuses = FactionStatuses & e_InfoTxts2.ChaosFourthHierarchy
                 Case e_ChaosArmyRanks.FifthHierarchy
-                    Statuses = Statuses & e_InfoTxts.ChaosFifthHierarchy
+                    FactionStatuses = FactionStatuses & e_InfoTxts2.ChaosFifthHierarchy
                 Case Else
             End select
         End If
@@ -2377,32 +2383,32 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
         End If
 
         If .Faccion.Status = e_Facciones.Criminal Then
-            Statuses = Statuses & e_InfoTxts.Criminal
+            FactionStatuses = FactionStatuses & e_InfoTxts2.Criminal
             fontType = e_FontTypeNames.FONTTYPE_CRIMINAL
         End If
 
         If .Faccion.Status = e_Facciones.Caos Then
-            Statuses = Statuses & e_InfoTxts.Chaotic
+            FactionStatuses = FactionStatuses & e_InfoTxts2.Chaotic
             fontType = e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS
         End If
 
         If .Faccion.Status = e_Facciones.concilio Then
-            Statuses = Statuses & e_InfoTxts.ChaoticCouncil
+            FactionStatuses = FactionStatuses & e_InfoTxts2.ChaoticCouncil
             fontType = e_FontTypeNames.FONTTYPE_CONSEJOCAOS
         End If
 
         If .Faccion.Status = e_Facciones.Ciudadano Then
-            Statuses = Statuses & e_InfoTxts.Citizen
+            FactionStatuses = FactionStatuses & e_InfoTxts2.Citizen
             fontType = e_FontTypeNames.FONTTYPE_CITIZEN
         End If
 
         If .Faccion.Status = e_Facciones.armada Then
-            Statuses = Statuses & e_InfoTxts.Army
+            FactionStatuses = FactionStatuses & e_InfoTxts2.Army
             fontType = e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA
         End If
 
         If .Faccion.Status = e_Facciones.consejo Then
-            Statuses = Statuses & e_InfoTxts.RoyalCouncil
+            FactionStatuses = FactionStatuses & e_InfoTxts2.RoyalCouncil
             fontType = e_FontTypeNames.FONTTYPE_CONSEJO
         End if
 
