@@ -2523,9 +2523,13 @@ Sub Tilelibre(ByRef Pos As t_WorldPos, ByRef nPos As t_WorldPos, ByRef obj As t_
 112             For tX = Pos.X - LoopC To Pos.X + LoopC
             
 114                 If LegalPos(nPos.Map, tX, tY, Agua, Tierra) Then
-                        'We continue if: a - the item is different from 0 and the dropped item or b - the Amount dropped + Amount in map exceeds MAX_INVENTORY_OBJS
+                        'We continue searching for a valid tile if
+                        'there is already an item on the floor that differs from the item being dropped
+                        'the item on the floor is the same but the elemental tags differ
+                        'the amount of items exceeds the max quantity of items on the floor
 116                     hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex <> obj.ObjIndex)
 
+                        If Not hayobj Then hayobj = MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags <> obj.ElementalTags
 118                     If Not hayobj Then hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.amount + obj.amount > MAX_INVENTORY_OBJS)
 
 120                     If Not hayobj And MapData(nPos.Map, tX, tY).TileExit.Map = 0 And (InitialPos Or (tX <> Pos.X And tY <> Pos.Y)) Then

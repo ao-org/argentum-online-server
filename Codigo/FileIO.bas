@@ -45,6 +45,8 @@ Private Type t_Item
 
 End Type
 
+
+
 Private Type t_WorldPos
 
     map As Integer
@@ -1043,6 +1045,36 @@ LoadArmadurasHerreria_Err:
         
 End Sub
 
+Sub LoadBlackSmithElementalRunes()
+        
+        On Error GoTo LoadRunasHerreria_Err
+        
+
+        Dim n As Integer, lc As Integer
+    
+100     n = val(GetVar(DatPath & "BlackSmithElementalRunes.dat", "INIT", "NumRunas"))
+    
+102     If n = 0 Then
+104         ReDim BlackSmithElementalRunes(0) As Integer
+            Exit Sub
+
+        End If
+    
+106     ReDim Preserve BlackSmithElementalRunes(1 To n) As Integer
+    
+108     For lc = 1 To n
+110         BlackSmithElementalRunes(lc) = val(GetVar(DatPath & "BlackSmithElementalRunes.dat", "Runa" & lc, "Index"))
+112     Next lc
+
+        
+        Exit Sub
+
+LoadRunasHerreria_Err:
+114     Call TraceError(Err.Number, Err.Description, "ES.LoadBlackSmithElementalRunes", Erl)
+
+        
+End Sub
+
 Sub LoadBalance()
         
         On Error GoTo LoadBalance_Err
@@ -1139,9 +1171,23 @@ Sub LoadBalance()
 173     For i = 1 To STAT_MAXELV
 174         ExpLevelUp(i) = val(BalanceIni.GetValue("EXP", i))
         Next
+
+
+        'ElementalMatrixForNpcs
+        Dim vals() As String
+        Dim row As String
+
+        For i = 0 To MAX_ELEMENT_TAGS - 1
+        row = (CStr(BalanceIni.GetValue("ElementalMatrixForNpcs", "Row" & i + 1, "1")))
+        vals = Split(row, " ")
+                For j = 0 To MAX_ELEMENT_TAGS - 1
+                ElementalMatrixForNpcs(i + 1, j + 1) = val(vals(j))
+                Next j
+        Next i
+        '--------------------
+        
     
 176     Set BalanceIni = Nothing
-    
 178     AgregarAConsola "Se cargó el balance (Balance.dat)"
 
         
@@ -1332,6 +1378,12 @@ Sub LoadOBJData()
 152             .Subtipo = val(Leer.GetValue(ObjKey, "Subtipo"))
 154             .Dorada = val(Leer.GetValue(ObjKey, "Dorada"))
 155             .Blodium = val(Leer.GetValue(ObjKey, "Blodium"))
+
+                .FireEssence = val(Leer.GetValue(ObjKey, "FireEssence"))
+                .WaterEssence = val(Leer.GetValue(ObjKey, "WaterEssence"))
+                .EarthEssence = val(Leer.GetValue(ObjKey, "EarthEssence"))
+                .WindEssence = val(Leer.GetValue(ObjKey, "WindEssence"))
+                
 156             .VidaUtil = val(Leer.GetValue(ObjKey, "VidaUtil"))
 158             .TiempoRegenerar = val(Leer.GetValue(ObjKey, "TiempoRegenerar"))
                 .Jerarquia = val(Leer.GetValue(ObjKey, "Jerarquia"))
@@ -1341,6 +1393,7 @@ Sub LoadOBJData()
                 .ImprovedMeleeHitChance = val(Leer.GetValue(ObjKey, "ImprovedMHit"))
                 .ApplyEffectId = val(Leer.GetValue(ObjKey, "ApplyEffectId"))
                 .JineteLevel = val(Leer.GetValue(ObjKey, "JineteLevel"))
+                .ElementalTags = val(Leer.GetValue(ObjKey, "ElementalTags"))
                 If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
                 If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
                 
@@ -1567,6 +1620,9 @@ Sub LoadOBJData()
 434                     .LingoteIndex = val(Leer.GetValue(ObjKey, "LingoteIndex"))
                     Case e_OBJType.otUsableOntarget
                         .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
+                        
+                    Case e_OBJType.otElementalRune
+                        .Hechizo = val(Leer.GetValue(ObjKey, "Hechizo"))
                 End Select
 424             .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
 425             .MagicAbsoluteBonus = val(Leer.GetValue(ObjKey, "MagicAbsoluteBonus"))
