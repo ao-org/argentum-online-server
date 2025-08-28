@@ -3098,7 +3098,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 
                     End If
 
-1204                If IsSet(MapInfo(.Pos.Map).zone,e_TerrainType.Dungeon) Then
+1204                If IsSet(MapInfo(.Pos.Map).zone, e_ZoneType.Dungeon) Then
                         'Msg918= No podes cabalgar dentro de un dungeon.
                         Call WriteLocaleMsg(UserIndex, "918", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
