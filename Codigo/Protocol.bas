@@ -8696,6 +8696,12 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                             
 202                         Case e_Ciudad.cArkhein
 204                             DeDonde = " Arkhein"
+
+                            Case e_Ciudad.cEldoria
+                             DeDonde = " Eldoria"
+
+                            Case e_Ciudad.cPenthar
+                             DeDonde = " Penthar"
                             
 206                         Case Else
 208                             DeDonde = "Ullathorpe"
@@ -8816,6 +8822,13 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                             
 312                         Case e_Ciudad.cArkhein
 314                             DeDonde = " Arkhein"
+                             
+                            Case e_Ciudad.cEldoria
+                                DeDonde = " Eldoria"
+                                
+                                Case e_Ciudad.cPenthar
+                                DeDonde = " Penthar"
+
                             
 316                         Case Else
 318                             DeDonde = "Ullathorpe"
@@ -9157,6 +9170,12 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
                         
 132                 Case e_Ciudad.cArkhein
 134                     DeDonde = CityArkhein
+
+                    Case e_Ciudad.cEldoria
+                        DeDonde = CityEldoria
+                        
+                    Case e_Ciudad.cPenthar
+                        DeDonde = CityPenthar
                         
 136                 Case Else
 138                     DeDonde = CityUllathorpe
