@@ -1380,7 +1380,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 
 224                     If UserList(TempCharIndex).flags.Privilegios = user Then
 
-                        extraStrings = PrepareUserStatusEffectMsgsForPlayers(UserIndex, curStatuses,ft)
+                        extraStrings = PrepareUserStatusEffectMsgsForPlayers(TempCharIndex, curStatuses,ft)
 
 370                         If LenB(extraStrings) > 0 Then
                                 If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(TempCharIndex).GuildIndex) Or UserIndex = TempCharIndex Then
