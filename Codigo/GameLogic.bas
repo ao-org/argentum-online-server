@@ -2298,7 +2298,8 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
             Statuses = Statuses & e_InfoTxts.Newbie
         End If
 
-        If UserList(UserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 50 Then
+        'if im clicking and i have survival skill 50 or more i see all status
+        If UserList(SourceUserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 50 Then
             If .flags.Envenenado > 0 Then
                 Call SetMask(Statuses, e_InfoTxts.Poisoned)
             End If
