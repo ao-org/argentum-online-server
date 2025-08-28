@@ -1385,12 +1385,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                         extraStrings = PrepareUserStatusEffectMsgsForPlayers(TempCharIndex, UserIndex, Statuses, FactionStatuses, ft)
 
 370                         If LenB(extraStrings) > 0 Then
+                                'if im not dead or (i have guild and the target is a guildmate) or im clicking myself
                                 If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(TempCharIndex).GuildIndex) Or UserIndex = TempCharIndex Then
-372                                 If UserList(TempCharIndex).flags.Muerto Then
-374                                     Call WriteLocaleMsg(UserIndex, "1105", e_FontTypeNames.FONTTYPE_New_Gris, extraStrings)
-                                    Else
 376                                     Call WriteLocaleMsg(UserIndex, "1105", ft, extraStrings & "¬" & Statuses & "¬" & FactionStatuses)
-                                    End If
                                 End If
                             End If
 
@@ -2297,81 +2294,7 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
         If EsNewbie(TargetUserIndex) Then
             Statuses = Statuses & e_InfoTxts.Newbie
         End If
-
-        'if im clicking and i have survival skill 50 or more i see all status
-        If UserList(SourceUserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 50 Then
-            If .flags.Envenenado > 0 Then
-                Call SetMask(Statuses, e_InfoTxts.Poisoned)
-            End If
-
-            If .flags.Ceguera = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Blind)
-            End If
-
-            If .flags.Incinerado = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Incinerated)
-            End If
-
-            If .flags.Paralizado = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Paralized)
-            End If
-
-            If .flags.Inmovilizado = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Inmovilized)
-            End If
-
-            If .Counters.Trabajando > 0 Then
-                Call SetMask(Statuses, e_InfoTxts.Working)
-            End If
-
-            If .flags.invisible = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.invisible)
-            End If
-
-            If .flags.Oculto = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Hidden)
-            End If
-
-            If .flags.Estupidez = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Stupid)
-            End If
-
-            If .flags.Maldicion = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Cursed)
-            End If
-
-            If .flags.Silenciado = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Silenced)
-            End If
-
-            If .flags.Comerciando = True Then
-                Call SetMask(Statuses, e_InfoTxts.Trading)
-            End If
-
-            If .flags.Descansar = 1 Then
-                Call SetMask(Statuses, e_InfoTxts.Resting)
-            End If
-
-            If .flags.Meditando Then
-                Call SetMask(Statuses, e_InfoTxts.Focusing)
-            End If
-            
-            Select Case .Stats.MinHp
-                Case .Stats.MinHp = 0
-                    Call SetMask(Statuses, e_InfoTxts.Dead)
-                Case Is < (.Stats.MaxHp * 0.1)
-                    Call SetMask(Statuses, e_InfoTxts.AlmostDead)
-                Case Is < (.Stats.MaxHp * 0.5)
-                    Call SetMask(Statuses, e_InfoTxts.SeriouslyWounded)
-                Case Is < (.Stats.MaxHp * 0.75)
-                    Call SetMask(Statuses, e_InfoTxts.Wounded)
-                Case Is < (.Stats.MaxHp * 0.99)
-                    Call SetMask(Statuses, e_InfoTxts.LightlyWounded)
-                Case Else
-                    Call SetMask(Statuses, e_InfoTxts.Intact)
-            End Select
-        End If
-
+        
         Dim factionRank As Byte
         If .Faccion.status = e_Facciones.Armada Or .Faccion.status = e_Facciones.consejo Then
             factionRank = TituloReal(TargetUserIndex)
@@ -2449,6 +2372,81 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
                     Call SetMask(Statuses, e_InfoTxts.Admin)
             End Select
             fontType = e_FontTypeNames.FONTTYPE_GM
+        End If
+        
+        'if im clicking and i have survival skill 50 or more i see all status
+        If UserList(SourceUserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 50 Then
+            If .flags.Envenenado > 0 Then
+                Call SetMask(Statuses, e_InfoTxts.Poisoned)
+            End If
+
+            If .flags.Ceguera = 1 Then
+                Call SetMask(Statuses, e_InfoTxts.Blind)
+            End If
+
+            If .flags.Incinerado = 1 Then
+                Call SetMask(Statuses, e_InfoTxts.Incinerated)
+            End If
+
+            If .flags.Paralizado = 1 Then
+                Call SetMask(Statuses, e_InfoTxts.Paralized)
+            End If
+
+            If .flags.Inmovilizado = 1 Then
+                Call SetMask(Statuses, e_InfoTxts.Inmovilized)
+            End If
+
+            If .Counters.Trabajando > 0 Then
+                Call SetMask(Statuses, e_InfoTxts.Working)
+            End If
+
+            If .flags.invisible = 1 Then
+                Call SetMask(Statuses, e_InfoTxts.invisible)
+            End If
+
+            If .flags.Oculto = 1 Then
+                Call SetMask(Statuses, e_InfoTxts.Hidden)
+            End If
+
+            If .flags.Estupidez = 1 Then
+                Call SetMask(Statuses, e_InfoTxts.Stupid)
+            End If
+
+            If .flags.Maldicion = 1 Then
+                Call SetMask(Statuses, e_InfoTxts.Cursed)
+            End If
+
+            If .flags.Silenciado = 1 Then
+                Call SetMask(Statuses, e_InfoTxts.Silenced)
+            End If
+
+            If .flags.Comerciando = True Then
+                Call SetMask(Statuses, e_InfoTxts.Trading)
+            End If
+
+            If .flags.Descansar = 1 Then
+                Call SetMask(Statuses, e_InfoTxts.Resting)
+            End If
+
+            If .flags.Meditando Then
+                Call SetMask(Statuses, e_InfoTxts.Focusing)
+            End If
+            
+            Select Case .Stats.MinHp
+                Case .Stats.MinHp = 0
+                    Call SetMask(Statuses, e_InfoTxts.Dead)
+                    fontType = e_FontTypeNames.FONTTYPE_New_Gris
+                Case Is < (.Stats.MaxHp * 0.1)
+                    Call SetMask(Statuses, e_InfoTxts.AlmostDead)
+                Case Is < (.Stats.MaxHp * 0.5)
+                    Call SetMask(Statuses, e_InfoTxts.SeriouslyWounded)
+                Case Is < (.Stats.MaxHp * 0.75)
+                    Call SetMask(Statuses, e_InfoTxts.Wounded)
+                Case Is < (.Stats.MaxHp * 0.99)
+                    Call SetMask(Statuses, e_InfoTxts.LightlyWounded)
+                Case Else
+                    Call SetMask(Statuses, e_InfoTxts.Intact)
+            End Select
         End If
 
         PrepareUserStatusEffectMsgsForPlayers = extraStrings
