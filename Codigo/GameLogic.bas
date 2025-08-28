@@ -2378,13 +2378,13 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
                 Case e_RoyalArmyRanks.FirstHierarchy
                     Call SetMask(FactionStatuses, e_InfoTxts2.ArmyFirstHierarchy)
                 Case e_RoyalArmyRanks.SecondHierarchy
-                    Call SetMask(FactionStatuses, e_InfoTxts2.SecondFirstHierarchy)
+                    Call SetMask(FactionStatuses, e_InfoTxts2.ArmySecondHierarchy)
                 Case e_RoyalArmyRanks.ThirdHierarchy
-                    Call SetMask(FactionStatuses, e_InfoTxts2.ThirdFirstHierarchy)
+                    Call SetMask(FactionStatuses, e_InfoTxts2.ArmyThirdHierarchy)
                 Case e_RoyalArmyRanks.FourthHierarchy
-                    Call SetMask(FactionStatuses, e_InfoTxts2.FourthFirstHierarchy)
+                    Call SetMask(FactionStatuses, e_InfoTxts2.ArmyFourthHierarchy)
                 Case e_RoyalArmyRanks.FifthHierarchy
-                    Call SetMask(FactionStatuses, e_InfoTxts2.FifthFirstHierarchy)
+                    Call SetMask(FactionStatuses, e_InfoTxts2.ArmyFifthHierarchy)
                 Case Else
             End select
         End If
@@ -2395,7 +2395,7 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
                 Case e_ChaosArmyRanks.FirstHierarchy
                     Call SetMask(FactionStatuses, e_InfoTxts2.ChaosFirstHierarchy)
                 Case e_ChaosArmyRanks.SecondHierarchy
-                    Call SetMask(FactionStatuses, e_InfoTxts2.ChaosSecondtHierarchy)
+                    Call SetMask(FactionStatuses, e_InfoTxts2.ChaosSecondHierarchy)
                 Case e_ChaosArmyRanks.ThirdHierarchy
                     Call SetMask(FactionStatuses, e_InfoTxts2.ChaosThirdHierarchy)
                 Case e_ChaosArmyRanks.FourthHierarchy
