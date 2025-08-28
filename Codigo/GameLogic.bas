@@ -2272,25 +2272,26 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
         If Len(.Desc) > 0 Then
             extraStrings = .Desc & "-"
         Else
+            extraStrings = extraStrings & "-"
         End If
 
         If .GuildIndex > 0 Then
             extraStrings = extraStrings & modGuilds.GuildName(.GuildIndex) & "-"
         Else
-            extraString = extraStrings & "-"
+            extraStrings = extraStrings & "-"
         End If
 
         If .flags.Casado = 1 Then
             extraStrings = extraStrings & GetUserSpouse(TargetUserIndex) & "-"
         Else
-            extraString = extraStrings & "-"
+            extraStrings = extraStrings & "-"
         End If
 
         'if im am a gm and im clicking other person i have extra data
         If EsGM(SourceUserIndex) Then
             extraStrings = extraStrings & .clase & "-" & .raza & "-" & .Stats.ELV & "-" & .Stats.ELO & "-"
         Else
-            extraString = extraStrings & "----"
+            extraStrings = extraStrings & "----"
         End If
         
         If EsNewbie(TargetUserIndex) Then
@@ -2299,74 +2300,74 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
 
         If .Stats.UserSkills(e_Skill.Supervivencia) >= 50 Then
             If .flags.Envenenado > 0 Then
-                Statuses = Statuses & e_InfoTxts.Poisoned
+                Call SetMask(Statuses, e_InfoTxts.Poisoned)
             End If
 
             If .flags.Ceguera = 1 Then
-                Statuses = Statuses & e_InfoTxts.Blind
+                Call SetMask(Statuses, e_InfoTxts.Blind)
             End If
 
             If .flags.Incinerado = 1 Then
-                Statuses = Statuses & e_InfoTxts.Incinerated
+                Call SetMask(Statuses, e_InfoTxts.Incinerated)
             End If
 
             If .flags.Paralizado = 1 Then
-                Statuses = Statuses & e_InfoTxts.Paralized
+                Call SetMask(Statuses, e_InfoTxts.Paralized)
             End If
 
             If .flags.Inmovilizado = 1 Then
-                Statuses = Statuses & e_InfoTxts.Inmovilized
+                Call SetMask(Statuses, e_InfoTxts.Inmovilized)
             End If
 
             If .Counters.Trabajando > 0 Then
-                Statuses = Statuses & e_InfoTxts.Working
+                Call SetMask(Statuses, e_InfoTxts.Working)
             End If
 
             If .flags.invisible = 1 Then
-                Statuses = Statuses & e_InfoTxts.Invisible
+                Call SetMask(Statuses, e_InfoTxts.invisible)
             End If
 
             If .flags.Oculto = 1 Then
-                Statuses = Statuses & e_InfoTxts.Hidden
+                Call SetMask(Statuses, e_InfoTxts.Hidden)
             End If
 
             If .flags.Estupidez = 1 Then
-                Statuses = Statuses & e_InfoTxts.Stupid
+                Call SetMask(Statuses, e_InfoTxts.Stupid)
             End If
 
             If .flags.Maldicion = 1 Then
-                Statuses = Statuses & e_InfoTxts.Cursed
+                Call SetMask(Statuses, e_InfoTxts.Cursed)
             End If
 
             If .flags.Silenciado = 1 Then
-                Statuses = Statuses & e_InfoTxts.Silenced
+                Call SetMask(Statuses, e_InfoTxts.Silenced)
             End If
 
             If .flags.Comerciando = True Then
-                Statuses = Statuses & e_InfoTxts.Trading
+                Call SetMask(Statuses, e_InfoTxts.Trading)
             End If
 
             If .flags.Descansar = 1 Then
-                Statuses = Statuses & e_InfoTxts.Resting
+                Call SetMask(Statuses, e_InfoTxts.Resting)
             End If
 
             If .flags.Meditando Then
-                Statuses = Statuses & e_InfoTxts.Focusing
+                Call SetMask(Statuses, e_InfoTxts.Focusing)
             End If
             
             Select Case .Stats.MinHp
                 Case .Stats.MinHp = 0
-                    Statuses = Statuses & e_InfoTxts.Dead
+                    Call SetMask(Statuses, e_InfoTxts.Dead)
                 Case Is < (.Stats.MaxHp * 0.1)
-                    Statuses = Statuses & e_InfoTxts.AlmostDead
+                    Call SetMask(Statuses, e_InfoTxts.AlmostDead)
                 Case Is < (.Stats.MaxHp * 0.5)
-                    Statuses = Statuses & e_InfoTxts.SeriouslyWounded
+                    Call SetMask(Statuses, e_InfoTxts.SeriouslyWounded)
                 Case Is < (.Stats.MaxHp * 0.75)
-                    Statuses = Statuses & e_InfoTxts.Wounded
+                    Call SetMask(Statuses, e_InfoTxts.Wounded)
                 Case Is < (.Stats.MaxHp * 0.99)
-                    Statuses = Statuses & e_InfoTxts.LightlyWounded
+                    Call SetMask(Statuses, e_InfoTxts.LightlyWounded)
                 Case Else
-                    Statuses = Statuses & e_InfoTxts.Intact
+                    Call SetMask(Statuses, e_InfoTxts.Intact)
             End Select
         End If
 
@@ -2375,80 +2376,77 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
             factionRank = TituloReal(TargetUserIndex)
             Select Case factionRank
                 Case e_RoyalArmyRanks.FirstHierarchy
-                    FactionStatuses = FactionStatuses & e_InfoTxts2.ArmyFirstHierarchy
+                    Call SetMask(FactionStatuses, e_InfoTxts2.ArmyFirstHierarchy)
                 Case e_RoyalArmyRanks.SecondHierarchy
-                    FactionStatuses = FactionStatuses & e_InfoTxts2.ArmySecondHierarchy
+                    Call SetMask(FactionStatuses, e_InfoTxts2.SecondFirstHierarchy)
                 Case e_RoyalArmyRanks.ThirdHierarchy
-                    FactionStatuses = FactionStatuses & e_InfoTxts2.ArmyThirdHierarchy
+                    Call SetMask(FactionStatuses, e_InfoTxts2.ThirdFirstHierarchy)
                 Case e_RoyalArmyRanks.FourthHierarchy
-                    FactionStatuses = FactionStatuses & e_InfoTxts2.ArmyFourthHierarchy
+                    Call SetMask(FactionStatuses, e_InfoTxts2.FourthFirstHierarchy)
                 Case e_RoyalArmyRanks.FifthHierarchy
-                    FactionStatuses = FactionStatuses & e_InfoTxts2.ArmyFifthHierarchy
+                    Call SetMask(FactionStatuses, e_InfoTxts2.FifthFirstHierarchy)
                 Case Else
             End select
         End If
-
+        
         If .Faccion.status = e_Facciones.Caos Or .Faccion.status = e_Facciones.concilio Then
             factionRank = TituloCaos(TargetUserIndex)
             Select Case factionRank
                 Case e_ChaosArmyRanks.FirstHierarchy
-                    FactionStatuses = FactionStatuses & e_InfoTxts2.ChaosFirstHierarchy
+                    Call SetMask(FactionStatuses, e_InfoTxts2.ChaosFirstHierarchy)
                 Case e_ChaosArmyRanks.SecondHierarchy
-                    FactionStatuses = FactionStatuses & e_InfoTxts2.ChaosSecondHierarchy
+                    Call SetMask(FactionStatuses, e_InfoTxts2.ChaosSecondtHierarchy)
                 Case e_ChaosArmyRanks.ThirdHierarchy
-                    FactionStatuses = FactionStatuses & e_InfoTxts2.ChaosThirdHierarchy
+                    Call SetMask(FactionStatuses, e_InfoTxts2.ChaosThirdHierarchy)
                 Case e_ChaosArmyRanks.FourthHierarchy
-                    FactionStatuses = FactionStatuses & e_InfoTxts2.ChaosFourthHierarchy
+                    Call SetMask(FactionStatuses, e_InfoTxts2.ChaosFourthHierarchy)
                 Case e_ChaosArmyRanks.FifthHierarchy
-                    FactionStatuses = FactionStatuses & e_InfoTxts2.ChaosFifthHierarchy
+                    Call SetMask(FactionStatuses, e_InfoTxts2.ChaosFifthHierarchy)
                 Case Else
             End select
         End If
 
-
         If .Faccion.Status = e_Facciones.Criminal Then
-            FactionStatuses = FactionStatuses & e_InfoTxts2.Criminal
+            Call SetMask(FactionStatuses, e_InfoTxts2.Criminal)
             fontType = e_FontTypeNames.FONTTYPE_CRIMINAL
         End If
 
         If .Faccion.Status = e_Facciones.Caos Then
-            FactionStatuses = FactionStatuses & e_InfoTxts2.Chaotic
+            Call SetMask(FactionStatuses, e_InfoTxts2.Chaotic)
             fontType = e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS
         End If
 
         If .Faccion.Status = e_Facciones.concilio Then
-            FactionStatuses = FactionStatuses & e_InfoTxts2.ChaoticCouncil
+            Call SetMask(FactionStatuses, e_InfoTxts2.ChaoticCouncil)
             fontType = e_FontTypeNames.FONTTYPE_CONSEJOCAOS
         End If
 
         If .Faccion.Status = e_Facciones.Ciudadano Then
-            FactionStatuses = FactionStatuses & e_InfoTxts2.Citizen
+            Call SetMask(FactionStatuses, e_InfoTxts2.Citizen)
             fontType = e_FontTypeNames.FONTTYPE_CITIZEN
         End If
 
         If .Faccion.Status = e_Facciones.armada Then
-            FactionStatuses = FactionStatuses & e_InfoTxts2.Army
+            Call SetMask(FactionStatuses, e_InfoTxts2.Army)
             fontType = e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA
         End If
 
         If .Faccion.Status = e_Facciones.consejo Then
-            FactionStatuses = FactionStatuses & e_InfoTxts2.RoyalCouncil
+            Call SetMask(FactionStatuses, e_InfoTxts2.RoyalCouncil)
             fontType = e_FontTypeNames.FONTTYPE_CONSEJO
         End if
-
 
         If EsGM(TargetUserIndex) Then
             Select Case .flags.Privilegios
                 Case e_PlayerType.Consejero
-                    Statuses = Statuses & e_InfoTxts.Counselor
+                    Call SetMask(Statuses, e_InfoTxts.Counselor)
                 Case e_PlayerType.Consejero
-                    Statuses = Statuses & e_InfoTxts.DemiGod
+                    Call SetMask(Statuses, e_InfoTxts.DemiGod)
                 Case e_PlayerType.Consejero
-                    Statuses = Statuses & e_InfoTxts.God
+                    Call SetMask(Statuses, e_InfoTxts.God)
                 Case e_PlayerType.Consejero
-                    Statuses = Statuses & e_InfoTxts.Admin
+                    Call SetMask(Statuses, e_InfoTxts.Admin)
             End Select
-            
             fontType = e_FontTypeNames.FONTTYPE_GM
         End If
 
