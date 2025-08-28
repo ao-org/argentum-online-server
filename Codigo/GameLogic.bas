@@ -2337,17 +2337,79 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
             End Select
         End If
 
+        Dim factionRank As Byte
         If .Faccion.status = e_Facciones.Armada Or .Faccion.status = e_Facciones.consejo Then
-            extraStrings = extraStrings & TituloReal(UserIndex) & "-"
+            factionRank = TituloReal(UserIndex)
+            Select Case factionRank
+                Case e_RoyalArmyRanks.FirstHierarchy
+                    Statuses = Statuses & e_InfoTxts.ArmyFirstHierarchy
+                Case e_RoyalArmyRanks.SecondHierarchy
+                    Statuses = Statuses & e_InfoTxts.ArmySecondHierarchy
+                Case e_RoyalArmyRanks.ThirdHierarchy
+                    Statuses = Statuses & e_InfoTxts.ArmyThirdHierarchy
+                Case e_RoyalArmyRanks.FourthHierarchy
+                    Statuses = Statuses & e_InfoTxts.ArmyFourthHierarchy
+                Case e_RoyalArmyRanks.FifthHierarchy
+                    Statuses = Statuses & e_InfoTxts.ArmyFifthHierarchy
+                Case Else
+            End select
         End If
 
         If .Faccion.status = e_Facciones.Caos Or .Faccion.status = e_Facciones.concilio Then
-            extraStrings = extraStrings & TituloCaos(UserIndex) & "-"
+            factionRank = TituloCaos(UserIndex)
+            Select Case factionRank
+                Case e_ChaosArmyRanks.FirstHierarchy
+                    Statuses = Statuses & e_InfoTxts.ChaosFirstHierarchy
+                Case e_ChaosArmyRanks.SecondHierarchy
+                    Statuses = Statuses & e_InfoTxts.ChaosSecondHierarchy
+                Case e_ChaosArmyRanks.ThirdHierarchy
+                    Statuses = Statuses & e_InfoTxts.ChaosThirdHierarchy
+                Case e_ChaosArmyRanks.FourthHierarchy
+                    Statuses = Statuses & e_InfoTxts.ChaosFourthHierarchy
+                Case e_ChaosArmyRanks.FifthHierarchy
+                    Statuses = Statuses & e_InfoTxts.ChaosFifthHierarchy
+                Case Else
+            End select
         End If
 
         If .GuildIndex > 0 Then
             extraStrings = extraStrings & modGuilds.GuildName(.GuildIndex) & "-"
         End If
+
+        If .Faccion.Status = e_Facciones.Criminal Then
+            Statuses = Statuses & e_InfoTxts.Criminal
+            fontType = e_FontTypeNames.FONTTYPE_CRIMINAL
+        End If
+
+        If .Faccion.Status = e_Facciones.Caos Then
+            Statuses = Statuses & e_InfoTxts.Chaotic
+            fontType = e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS
+        End If
+
+        If .Faccion.Status = e_Facciones.concilio Then
+            Statuses = Statuses & e_InfoTxts.ChaoticCouncil
+            fontType = e_FontTypeNames.FONTTYPE_CONSEJOCAOS
+        End If
+
+        If .Faccion.Status = e_Facciones.Ciudadano Then
+            Statuses = Statuses & e_InfoTxts.Citizen
+            fontType = e_FontTypeNames.FONTTYPE_CITIZEN
+        End If
+
+        If .Faccion.Status = e_Facciones.armada Then
+            Statuses = Statuses & e_InfoTxts.Army
+            fontType = e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA
+        End If
+
+        If .Faccion.Status = e_Facciones.consejo Then
+            Statuses = Statuses & e_InfoTxts.RoyalCouncil
+            fontType = e_FontTypeNames.FONTTYPE_CONSEJO
+        End if
+
+        If .flags.Casado = 1 Then
+            extraStrings = extraStrings & GetUserSpouse(UserIndex) & "-"
+        End If
+
 
         If EsGM(UserIndex) Then
             Select Case .flags.Privilegios
@@ -2361,35 +2423,7 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal UserIndex As Integer
                     Statuses = Statuses & e_InfoTxts.Admin
             End Select
             extraStrings = extraStrings & ListaClases(.clase) & "-" & ListaRazas(.raza) & "-" & .Stats.ELV & "-" & .Stats.ELO & "-"
-        End If
-
-        If .Faccion.Status = e_Facciones.concilio Then
-            Statuses = Statuses & e_InfoTxts.ChaoticCouncil
-        End If
-
-        If .Faccion.Status = e_Facciones.Caos Then
-            Statuses = Statuses & e_InfoTxts.Chaotic
-        End If
-
-        If .Faccion.Status = e_Facciones.Criminal Then
-            Statuses = Statuses & e_InfoTxts.Criminal
-        End If
-
-        If .Faccion.Status = e_Facciones.consejo Then
-            Statuses = Statuses & e_InfoTxts.RoyalCouncil
-        End if
-
-
-        If .Faccion.Status = e_Facciones.armada Then
-            Statuses = Statuses & e_InfoTxts.Army
-        End If
-
-        If .Faccion.Status = e_Facciones.Ciudadano Then
-            Statuses = Statuses & e_InfoTxts.Citizen
-        End If
-        
-        If .flags.Casado = 1 Then
-            extraStrings = extraStrings & GetUserSpouse(UserIndex) & "-"
+            fontType = e_FontTypeNames.FONTTYPE_GM
         End If
 
         extraStrings = extraStrings & .Name & "-"

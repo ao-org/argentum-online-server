@@ -40,6 +40,26 @@ Public Enum e_AccionBarra
     CancelarAccion = 99
 End Enum
 
+
+Public Enum e_RoyalArmyRanks
+    NotEnlisted = 0
+    FirstHierarchy = 1
+    SecondHierarchy = 2
+    ThirdHierarchy = 3
+    FourthHierarchy = 4
+    FifthHierarchy = 5
+End Enum
+
+Public Enum e_ChaosArmyRanks
+    NotEnlisted = 0
+    FirstHirearchy = 1
+    SecondHirearchy = 2
+    ThirdHirearchy = 3
+    FourthHirearchy = 4
+    FifthHirearchy = 5
+End Enum
+
+
 Public Enum e_elecciones
     HayGanador = 1
     HayGanadorPeroAbandono = 2
@@ -504,13 +524,22 @@ Public Enum e_InfoTxts
     DemiGod = 4194304
     God = 8388608
     Admin = 16777216
-    
     ChaoticCouncil = 33554432
     Chaotic = 67108864
     Criminal = 134217728
     RoyalCouncil = 268435456
     Army = 536870912
     Citizen = 1073741824
+    ArmyFirstHierarchy = 2147483648
+    ArmySecondHierarchy = 4294967296
+    ArmyThirdHierarchy = 8589934592
+    ArmyFourthHierarchy = 17179869184
+    ArmyFifthHierarchy = 34359738368
+    ChaosFirstHierarchy = 68719476736
+    ChaosSecondHierarchy = 137438953472
+    ChaosThirdHierarchy = 274877906944
+    ChaosFourthHierarchy = 549755813888
+    ChaosFifthHierarchy = 1099511627776
 
 End Enum
 
