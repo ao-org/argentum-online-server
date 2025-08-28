@@ -3748,54 +3748,27 @@ HandleChangeMapInfoNoResu_Err:
 End Sub
 
 Public Sub HandleChangeMapInfoLand(ByVal UserIndex As Integer)
-        'Author: Pablo (ToxicWaste)
-        'Terreno -> Opciones: "BOSQUE", "NIEVE", "DESIERTO", "CIUDAD", "CAMPO", "DUNGEON".
         On Error GoTo ErrHandler
         Dim tStr As String
 100     With UserList(UserIndex)
 102         tStr = Reader.ReadString8()
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
-106             If tStr = "BOSQUE" Or tStr = "NIEVE" Or tStr = "DESIERTO" Or tStr = "CIUDAD" Or tStr = "CAMPO" Or tStr = "DUNGEON" Then
-108                 Call LogGM(.name, .name & " ha cambiado la informacion del Terreno del mapa.")
-110                 MapInfo(UserList(UserIndex).Pos.map).terrain = tStr
-112                 Call WriteVar(MapPath & "mapa" & UserList(UserIndex).Pos.map & ".dat", "Mapa" & UserList(UserIndex).Pos.map, "Terreno", tStr)
-                    Call WriteLocaleMsg(UserIndex, "1513", e_FontTypeNames.FONTTYPE_INFO, CStr(.Pos.Map) & "¬" & tStr)  ' Msg1513=Mapa ¬1 Terreno: ¬2
-                Else
-                    'Msg990= Opciones para terreno: 'BOSQUE', 'NIEVE', 'DESIERTO', 'CIUDAD', 'CAMPO', 'DUNGEON'
-                    Call WriteLocaleMsg(UserIndex, "990", e_FontTypeNames.FONTTYPE_INFO)
-                    'Msg991= Igualmente, el ínico ítil es 'NIEVE' ya que al ingresarlo, la gente muere de frio en el Mapa
-                    Call WriteLocaleMsg(UserIndex, "991", e_FontTypeNames.FONTTYPE_INFO)
-                End If
-            End If
         End With
         Exit Sub
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 End Sub
-
 Public Sub HandleChangeMapInfoZone(ByVal UserIndex As Integer)
-        'Author: Pablo (ToxicWaste)
-        'Zona -> Opciones: "BOSQUE", "NIEVE", "DESIERTO", "CIUDAD", "CAMPO", "DUNGEON".
+
         On Error GoTo ErrHandler
         Dim tStr As String
     
 100     With UserList(UserIndex)
 102         tStr = Reader.ReadString8()
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
-106             If tStr = "BOSQUE" Or tStr = "NIEVE" Or tStr = "DESIERTO" Or tStr = "CIUDAD" Or tStr = "CAMPO" Or tStr = "DUNGEON" Then
-108                 Call LogGM(.name, .name & " ha cambiado la informacion de la Zona del mapa.")
-110                 MapInfo(UserList(UserIndex).Pos.map).zone = tStr
-112                 Call WriteVar(MapPath & "mapa" & UserList(UserIndex).Pos.map & ".dat", "Mapa" & UserList(UserIndex).Pos.map, "Zona", tStr)
-                    Call WriteLocaleMsg(UserIndex, "1514", e_FontTypeNames.FONTTYPE_INFO, CStr(.Pos.Map) & "¬" & tStr)  ' Msg1514=Mapa ¬1 Zona: ¬2
-                Else
-                    'Msg992= Opciones para terreno: 'BOSQUE', 'NIEVE', 'DESIERTO', 'CIUDAD', 'CAMPO', 'DUNGEON'
-                    Call WriteLocaleMsg(UserIndex, "992", e_FontTypeNames.FONTTYPE_INFO)
-                    'Msg993= Igualmente, el ínico ítil es 'DUNGEON' ya que al ingresarlo, NO se sentirí el efecto de la lluvia en este mapa.
-                    Call WriteLocaleMsg(UserIndex, "993", e_FontTypeNames.FONTTYPE_INFO)
-                End If
-            End If
+
+
+
         End With
-        Exit Sub
+    Exit Sub
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 End Sub
