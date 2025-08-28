@@ -2298,7 +2298,7 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
             Statuses = Statuses & e_InfoTxts.Newbie
         End If
 
-        If .Stats.UserSkills(e_Skill.Supervivencia) >= 50 Then
+        If UserList(UserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 50 Then
             If .flags.Envenenado > 0 Then
                 Call SetMask(Statuses, e_InfoTxts.Poisoned)
             End If
