@@ -2433,7 +2433,7 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal TargetUserIndex As I
             End If
             
             Select Case .Stats.MinHp
-                Case .Stats.MinHp = 0
+                Case 0
                     Call SetMask(Statuses, e_InfoTxts.Dead)
                     fontType = e_FontTypeNames.FONTTYPE_New_Gris
                 Case Is < (.Stats.MaxHp * 0.1)
