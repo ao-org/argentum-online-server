@@ -2471,6 +2471,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 
                                 Case e_Ciudad.cEldoria
                                     DeDonde = Eldoria
+                                    
+                                Case e_Ciudad.cPenthar
+                                    DeDonde = Penthar
+
 
                                 
 716                             Case Else

@@ -154,6 +154,9 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                         
                              Case e_Ciudad.cArkhein
                                  DeDonde = CityArkhein
+                                 
+                             Case e_Ciudad.cPenthar
+                                 DeDonde = CityPenthar
                         
                              Case Else
                                  DeDonde = CityUllathorpe
@@ -192,6 +195,9 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                                  
                                  Case e_Ciudad.cEldoria
                                      DeDonde = CityEldoria
+                                     
+                                 Case e_Ciudad.cPenthar
+                                     DeDonde = CityPenthar
 
                         
                                  Case Else
@@ -226,6 +232,9 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                                  Case e_Ciudad.cEldoria
                                      DeDonde = CityEldoria
+                                     
+                                 Case e_Ciudad.cPenthar
+                                     DeDonde = CityPenthar
                         
                                  Case Else
                                      DeDonde = CityUllathorpe
@@ -734,6 +743,11 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                             
 308                         Case e_Ciudad.cArkhein
 310                             DeDonde = "Arkhein"
+
+                            Case e_Ciudad.cPenthar
+                              DeDonde = "Penthar"
+
+
 
 312                         Case Else
 314                             DeDonde = "Ullathorpe"

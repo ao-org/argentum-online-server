@@ -2794,6 +2794,10 @@ Sub CargarCiudades()
 284     Arkhein.map = CityArkhein.map
 286     Arkhein.x = CityArkhein.x
 288     Arkhein.y = CityArkhein.y
+ 
+        Penthar.Map = CityPenthar.Map
+        Penthar.x = CityPenthar.x
+        Penthar.y = CityPenthar.y
     
         'Esto es para el /HOGAR
 290     Ciudades(e_Ciudad.cNix) = Nix
@@ -2804,6 +2808,7 @@ Sub CargarCiudades()
 299     Ciudades(e_Ciudad.cForgat) = Forgat
 300     Ciudades(e_Ciudad.cArkhein) = Arkhein
 301     Ciudades(e_Ciudad.cEldoria) = Eldoria
+        Ciudades(e_Ciudad.cPenthar) = Penthar
         
         Exit Sub
 
