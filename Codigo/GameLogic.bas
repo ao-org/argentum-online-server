@@ -1427,12 +1427,12 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 470             ElseIf IsValidUserRef(NpcList(TempCharIndex).MaestroUser) Then
                     If UserList(UserIndex).flags.Muerto = 0 Then
                         estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex,NpcStatusMask)
-472                     Call WriteLocaleMsg(UserIndex, 1621, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Name & "¬" & estatus & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).Name) 'Msg1621=NPC ¬1 es mascota de ¬2 ¬3
+472                     Call WriteLocaleMsg(UserIndex, 1621, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Name & "¬" & NpcList(TempCharIndex).ElementalTags & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).Name & "¬" & estatus) 'Msg1621=NPC ¬1 es mascota de ¬2 ¬3
                     End If
                 Else
                     If UserList(UserIndex).flags.Muerto = 0 Then
                         estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex,NpcStatusMask)
-                        Call WriteLocaleMsg(UserIndex, 1622, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Name & "¬" & estatus)  'Msg1622=NPC ¬1 ¬2
+                        Call WriteLocaleMsg(UserIndex, 1622, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Name & "¬" & NpcList(TempCharIndex).ElementalTags "¬" & estatus)  'Msg1622=NPC ¬1 ¬2
                     End If
                 End If
                ' End If
@@ -2400,7 +2400,7 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, _
                 extraStrings = extraStrings & .Stats.MinHp & "/" & .Stats.MaxHp & "-"
             Case Is >= 50
                 extraStrings = extraStrings & Round((.Stats.MinHp / .Stats.MaxHp) * 100#, 0) & "%" & "-"
-            Case Is >= 25
+            CextraStrings = extraStrings & "-"ase Is >= 25
                 Select Case .Stats.MinHp
                     Case Is < (.Stats.MaxHp * 0.1)
                         Call SetMask(NpcStatusMask, e_NpcInfoMask.AlmostDead)
@@ -2413,12 +2413,14 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, _
                     Case Else
                         Call SetMask(NpcStatusMask, e_NpcInfoMask.Intact)
                 End Select
+                extraStrings = extraStrings & "-"
             Case Else
                 If .Stats.MinHp < .Stats.MaxHp Then
                     Call SetMask(NpcStatusMask, e_NpcInfoMask.Wounded)
                 Else
                     Call SetMask(NpcStatusMask, e_NpcInfoMask.Intact)
                 End If
+                extraStrings = extraStrings & "-"
         End Select
 
         If .flags.Envenenado > 0 Then
@@ -2430,6 +2432,7 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, _
                 extraStrings = extraStrings & CInt(.Contadores.Paralisis / 6.5) & "-"
             End If
         Call SetMask(NpcStatusMask, e_NpcInfoMask.Paralized)
+        extraStrings = extraStrings & "-"
         End If
 
         If .flags.Inmovilizado = 1 Then
@@ -2437,12 +2440,15 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, _
                 extraStrings = extraStrings & CInt(.Contadores.Inmovilizado / 6.5) & "-"
             End If
             Call SetMask(NpcStatusMask, e_NpcInfoMask.Inmovilized)
+            extraStrings = extraStrings & "-"
         End If
 
         If GetOwnedBy(TargetNpcIndex) <> 0 Then
             Call SetMask(NpcStatusMask, e_NpcInfoMask.Fighting)
             extraStrings = extraStrings & .flags.AttackedBy & "-"
             extraStrings = extraStrings & CInt((IntervaloNpcOwner - (GlobalFrameTime - .flags.AttackedTime)) / 1000) & "-"
+        Else
+            extraStrings = extraStrings & "-"
         End If
 
         If EsGm(SourceUserIndex) Then
@@ -2450,7 +2456,8 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, _
         Else
             extraStrings = extraStrings & "-"
         End If
-    PrepareStatusMsgsForNpcs = extraStrings & "|" & NpcStatusMask & "|" & .flags.ElementalTags
+
+    PrepareStatusMsgsForNpcs = extraStrings & "|" & NpcStatusMask
     End With
     Exit Function
 PrepareStatusMsgsForNpcs_Err:
