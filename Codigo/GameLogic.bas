@@ -1426,13 +1426,13 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     End If
 470             ElseIf IsValidUserRef(NpcList(TempCharIndex).MaestroUser) Then
                     If UserList(UserIndex).flags.Muerto = 0 Then
-                        estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex,NpcStatusMask)
-472                     Call WriteLocaleMsg(UserIndex, 1621, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Name & "¬" & NpcList(TempCharIndex).ElementalTags & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).Name & "¬" & estatus) 'Msg1621=NPC ¬1 es mascota de ¬2 ¬3
+                        estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex, NpcStatusMask)
+472                     Call WriteLocaleMsg(UserIndex, 1621, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Name & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).Name & "¬" & estatus) 'Msg1621=NPC ¬1 es mascota de ¬2 ¬3
                     End If
                 Else
                     If UserList(UserIndex).flags.Muerto = 0 Then
-                        estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex,NpcStatusMask)
-                        Call WriteLocaleMsg(UserIndex, 1622, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Name & "¬" & NpcList(TempCharIndex).ElementalTags "¬" & estatus)  'Msg1622=NPC ¬1 ¬2
+                        estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex, NpcStatusMask)
+                        Call WriteLocaleMsg(UserIndex, 1622, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Name & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & estatus)  'Msg1622=NPC ¬1 ¬2
                     End If
                 End If
                ' End If
@@ -2400,7 +2400,7 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, _
                 extraStrings = extraStrings & .Stats.MinHp & "/" & .Stats.MaxHp & "-"
             Case Is >= 50
                 extraStrings = extraStrings & Round((.Stats.MinHp / .Stats.MaxHp) * 100#, 0) & "%" & "-"
-            CextraStrings = extraStrings & "-"ase Is >= 25
+            Case Is >= 25
                 Select Case .Stats.MinHp
                     Case Is < (.Stats.MaxHp * 0.1)
                         Call SetMask(NpcStatusMask, e_NpcInfoMask.AlmostDead)
