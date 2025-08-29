@@ -630,6 +630,7 @@ Private Enum MsgTypes
 End Enum
 
 Private Sub Form_Load()
+    On Error Goto Form_Load_Err
     Dim lCount As Long
     Dim dpn As DPN_SERVICE_PROVIDER_INFO
     dps.RegisterMessageHandler Me
@@ -638,93 +639,165 @@ Private Sub Form_Load()
         dpn = dps.GetServiceProvider(lCount)
         Debug.Print dpn.Name; " " & dpn.Guid
     Next
+    Exit Sub
+Form_Load_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Form_Load", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_AddRemovePlayerGroup(ByVal lMsgID As Long, ByVal lPlayerID As Long, ByVal lGroupID As Long, fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_AddRemovePlayerGroup_Err
     'VB requires that we must implement *every* member of this interface
+    Exit Sub
+DirectPlay8Event_AddRemovePlayerGroup_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_AddRemovePlayerGroup", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_AppDesc(fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_AppDesc_Err
     'VB requires that we must implement *every* member of this interface
     Debug.Print "DirectPlay8Event_AppDesc"
+    Exit Sub
+DirectPlay8Event_AppDesc_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_AppDesc", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_AsyncOpComplete(dpnotify As DxVBLibA.DPNMSG_ASYNC_OP_COMPLETE, fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_AsyncOpComplete_Err
     'VB requires that we must implement *every* member of this interface
     Debug.Print "DirectPlay8Event_AsyncOpComplete"
+    Exit Sub
+DirectPlay8Event_AsyncOpComplete_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_AsyncOpComplete", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_ConnectComplete(dpnotify As DxVBLibA.DPNMSG_CONNECT_COMPLETE, fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_ConnectComplete_Err
     'VB requires that we must implement *every* member of this interface
     Debug.Print "DirectPlay8Event_ConnectComplete"
+    Exit Sub
+DirectPlay8Event_ConnectComplete_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_ConnectComplete", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_CreateGroup(ByVal lGroupID As Long, ByVal lOwnerID As Long, fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_CreateGroup_Err
     'VB requires that we must implement *every* member of this interface
+    Exit Sub
+DirectPlay8Event_CreateGroup_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_CreateGroup", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_CreatePlayer(ByVal lPlayerID As Long, fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_CreatePlayer_Err
    Call modNetwork.CreatePlayer(lPlayerID, fRejectMsg)
+    Exit Sub
+DirectPlay8Event_CreatePlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_CreatePlayer", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_DestroyGroup(ByVal lGroupID As Long, ByVal lReason As Long, fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_DestroyGroup_Err
     'VB requires that we must implement *every* member of this interface
+    Exit Sub
+DirectPlay8Event_DestroyGroup_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_DestroyGroup", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_DestroyPlayer(ByVal lPlayerID As Long, ByVal lReason As Long, fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_DestroyPlayer_Err
     Debug.Print "DirectPlay8Event_DestroyPlayer"
     Call modNetwork.DestroyPlayer(lPlayerID, lReason, fRejectMsg)
     
+    Exit Sub
+DirectPlay8Event_DestroyPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_DestroyPlayer", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_EnumHostsQuery(dpnotify As DxVBLibA.DPNMSG_ENUM_HOSTS_QUERY, fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_EnumHostsQuery_Err
     'VB requires that we must implement *every* member of this interface
      Debug.Print "DirectPlay8Event_EnumHostsQuery"
+    Exit Sub
+DirectPlay8Event_EnumHostsQuery_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_EnumHostsQuery", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_EnumHostsResponse(dpnotify As DxVBLibA.DPNMSG_ENUM_HOSTS_RESPONSE, fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_EnumHostsResponse_Err
     'VB requires that we must implement *every* member of this interface
      Debug.Print "DirectPlay8Event_EnumHostsResponse"
+    Exit Sub
+DirectPlay8Event_EnumHostsResponse_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_EnumHostsResponse", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_HostMigrate(ByVal lNewHostID As Long, fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_HostMigrate_Err
     'VB requires that we must implement *every* member of this interface
      Debug.Print "DirectPlay8Event_HostMigrate"
+    Exit Sub
+DirectPlay8Event_HostMigrate_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_HostMigrate", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_IndicateConnect(dpnotify As DxVBLibA.DPNMSG_INDICATE_CONNECT, fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_IndicateConnect_Err
     'VB requires that we must implement *every* member of this interface
     Debug.Print "DirectPlay8Event_IndicateConnect"
+    Exit Sub
+DirectPlay8Event_IndicateConnect_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_IndicateConnect", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_IndicatedConnectAborted(fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_IndicatedConnectAborted_Err
     'VB requires that we must implement *every* member of this interface
      Debug.Print "DirectPlay8Event_IndicatedConnectAborted"
+    Exit Sub
+DirectPlay8Event_IndicatedConnectAborted_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_IndicatedConnectAborted", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_InfoNotify(ByVal lMsgID As Long, ByVal lNotifyID As Long, fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_InfoNotify_Err
     'VB requires that we must implement *every* member of this interface
     Debug.Print "DirectPlay8Event_InfoNotify"
+    Exit Sub
+DirectPlay8Event_InfoNotify_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_InfoNotify", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_Receive(dpnotify As DxVBLibA.DPNMSG_RECEIVE, fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_Receive_Err
     Call modNetwork.Receive(dpnotify, fRejectMsg)
+    Exit Sub
+DirectPlay8Event_Receive_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_Receive", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_SendComplete(dpnotify As DxVBLibA.DPNMSG_SEND_COMPLETE, fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_SendComplete_Err
     'VB requires that we must implement *every* member of this interface
   
+    Exit Sub
+DirectPlay8Event_SendComplete_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_SendComplete", Erl)
 End Sub
 
 Private Sub DirectPlay8Event_TerminateSession(dpnotify As DxVBLibA.DPNMSG_TERMINATE_SESSION, fRejectMsg As Boolean)
+    On Error Goto DirectPlay8Event_TerminateSession_Err
     'VB requires that we must implement *every* member of this interface
     Debug.Print "DirectPlay8Event_TerminateSession"
+    Exit Sub
+DirectPlay8Event_TerminateSession_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.DirectPlay8Event_TerminateSession", Erl)
 End Sub
 #End If
 
 
 
 Private Function setNOTIFYICONDATA(hwnd As Long, ID As Long, flags As Long, CallbackMessage As Long, Icon As Long, Tip As String) As NOTIFYICONDATA
+    On Error Goto setNOTIFYICONDATA_Err
         
         On Error GoTo setNOTIFYICONDATA_Err
         
@@ -748,9 +821,13 @@ setNOTIFYICONDATA_Err:
 116     Call TraceError(Err.Number, Err.Description, "frmMain.setNOTIFYICONDATA", Erl)
 
         
+    Exit Function
+setNOTIFYICONDATA_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.setNOTIFYICONDATA", Erl)
 End Function
 
 Sub CheckIdleUser()
+    On Error Goto CheckIdleUser_Err
         
         On Error GoTo CheckIdleUser_Err
         
@@ -798,20 +875,32 @@ CheckIdleUser_Err:
 126     Call TraceError(Err.Number, Err.Description, "frmMain.CheckIdleUser", Erl)
 
         
+    Exit Sub
+CheckIdleUser_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.CheckIdleUser", Erl)
 End Sub
 
 Private Sub cmdDbControl_Click()
+    On Error Goto cmdDbControl_Click_Err
     frmDbControl.Show
+    Exit Sub
+cmdDbControl_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.cmdDbControl_Click", Erl)
 End Sub
 
 Private Sub Command3_Click()
+    On Error Goto Command3_Click_Err
     Call CargarDonadores
+    Exit Sub
+Command3_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command3_Click", Erl)
 End Sub
 
 
 
 
 Private Sub Segundo_Timer()
+    On Error Goto Segundo_Timer_Err
 
     On Error GoTo errhand
     Dim PerformanceTimer As Long
@@ -843,9 +932,13 @@ Private Sub Segundo_Timer()
 errhand:
     Call TraceError(Err.Number, Err.Description, "frmMain.Auditoria", Erl)
         
+    Exit Sub
+Segundo_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Segundo_Timer", Erl)
 End Sub
 
 Private Sub CerrarYForzarActualizar_Click()
+    On Error Goto CerrarYForzarActualizar_Click_Err
     On Error GoTo Command4_Click_Err
 
 100     If MsgBox("¿Está seguro que desea guardar, forzar actualización a los usuarios y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
@@ -863,9 +956,13 @@ Private Sub CerrarYForzarActualizar_Click()
 Command4_Click_Err:
 114     Call TraceError(Err.Number, Err.Description, "frmMain.CerrarYForzarActualizar", Erl)
 
+    Exit Sub
+CerrarYForzarActualizar_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.CerrarYForzarActualizar_Click", Erl)
 End Sub
 
 Private Sub Invasion_Timer()
+    On Error Goto Invasion_Timer_Err
 
 
 On Error GoTo Handler
@@ -920,9 +1017,13 @@ Handler:
 
     
     ' **********************************
+    Exit Sub
+Invasion_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Invasion_Timer", Erl)
 End Sub
 
 Private Sub t_Extraer_Timer()
+    On Error Goto t_Extraer_Timer_Err
     Dim i As Long
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
@@ -932,9 +1033,13 @@ Private Sub t_Extraer_Timer()
         End If
     Next i
     Call PerformTimeLimitCheck(PerformanceTimer, "t_Extraer_Timer", 100)
+    Exit Sub
+t_Extraer_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.t_Extraer_Timer", Erl)
 End Sub
 
 Private Sub T_UsersOnline_Timer()
+    On Error Goto T_UsersOnline_Timer_Err
 
 On Error GoTo T_UsersOnline_Err
 
@@ -945,9 +1050,13 @@ On Error GoTo T_UsersOnline_Err
 T_UsersOnline_Err:
 106     Call TraceError(Err.Number, Err.Description, "General.T_UsersOnline", Erl)
 
+    Exit Sub
+T_UsersOnline_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.T_UsersOnline_Timer", Erl)
 End Sub
 
 Private Sub tControlHechizos_Timer()
+    On Error Goto tControlHechizos_Timer_Err
     Dim UserIndex As Integer
     'Reseteo control de hechizos
     tHechizosMinutesCounter = tHechizosMinutesCounter + 1
@@ -962,10 +1071,14 @@ Private Sub tControlHechizos_Timer()
         tHechizosMinutesCounter = 0
     End If
         
+    Exit Sub
+tControlHechizos_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.tControlHechizos_Timer", Erl)
 End Sub
 
 '  Comprobamos cada 10 segundos, porque no es necesaria tanta precisión
 Private Sub TiempoRetos_Timer()
+    On Error Goto TiempoRetos_Timer_Err
 
 On Error GoTo Handler
     
@@ -995,9 +1108,13 @@ Handler:
     Call TraceError(Err.Number, Err.Description, "frmMain.TiempoRetos_Timer")
 
     
+    Exit Sub
+TiempoRetos_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.TiempoRetos_Timer", Erl)
 End Sub
 
 Private Sub TimerBarco_Timer()
+    On Error Goto TimerBarco_Timer_Err
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
     Call UpdateBarcoForgatNix
@@ -1007,9 +1124,13 @@ Private Sub TimerBarco_Timer()
     Call MsnEnbarque(ArghalDock)
     Call MsnEnbarque(NixDock)
     Call PerformTimeLimitCheck(PerformanceTimer, "TimerBarco_Timer", 100)
+    Exit Sub
+TimerBarco_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.TimerBarco_Timer", Erl)
 End Sub
 
 Private Function GetPassSlot(ByVal UserIndex As Integer) As Integer
+    On Error Goto GetPassSlot_Err
 Dim i As Integer
     With UserList(UserIndex)
         For i = 1 To UBound(.invent.Object)
@@ -1023,9 +1144,13 @@ Dim i As Integer
         Next
     End With
     GetPassSlot = -1
+    Exit Function
+GetPassSlot_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.GetPassSlot", Erl)
 End Function
 
 Private Sub MsnEnbarque(ByRef ShipInfo As t_Transport)
+    On Error Goto MsnEnbarque_Err
     On Error GoTo SendToMap_Err
     Dim LoopC     As Long
     Dim tempIndex As Integer
@@ -1046,8 +1171,12 @@ Private Sub MsnEnbarque(ByRef ShipInfo As t_Transport)
 
 SendToMap_Err:
 112     Call TraceError(Err.Number, Err.Description, "modSendData.SendToMap", Erl)
+    Exit Sub
+MsnEnbarque_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.MsnEnbarque", Erl)
 End Sub
 Private Sub UpdateBarcoForgatNix()
+    On Error Goto UpdateBarcoForgatNix_Err
 
     Dim TileX, TileY As Integer
     Dim user As Integer
@@ -1109,10 +1238,14 @@ Private Sub UpdateBarcoForgatNix()
         Next TileY
     Next TileX
 
+    Exit Sub
+UpdateBarcoForgatNix_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.UpdateBarcoForgatNix", Erl)
 End Sub
 
 
 Private Sub UpdateBarcoNixArghal()
+    On Error Goto UpdateBarcoNixArghal_Err
 
     Dim TileX, TileY As Integer
     Dim user As Integer
@@ -1173,9 +1306,13 @@ Private Sub UpdateBarcoNixArghal()
         Next TileY
     Next TileX
 
+    Exit Sub
+UpdateBarcoNixArghal_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.UpdateBarcoNixArghal", Erl)
 End Sub
 
 Private Sub UpdateBarcoArghalForgat()
+    On Error Goto UpdateBarcoArghalForgat_Err
 
     Dim TileX, TileY As Integer
     Dim user As Integer
@@ -1237,11 +1374,15 @@ Private Sub UpdateBarcoArghalForgat()
         Next TileY
     Next TileX
 
+    Exit Sub
+UpdateBarcoArghalForgat_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.UpdateBarcoArghalForgat", Erl)
 End Sub
 
 
 
 Private Sub TimerGuardarUsuarios_Timer()
+    On Error Goto TimerGuardarUsuarios_Timer_Err
 
 On Error GoTo Handler
     If IsFeatureEnabled("auto_save_chars") Then
@@ -1267,9 +1408,13 @@ On Error GoTo Handler
     Exit Sub
 Handler:
     Call TraceError(Err.Number, Err.Description, "frmMain.TimreGuardarUsuarios_Timer")
+    Exit Sub
+TimerGuardarUsuarios_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.TimerGuardarUsuarios_Timer", Erl)
 End Sub
 
 Private Sub Minuto_Timer()
+    On Error Goto Minuto_Timer_Err
 
     On Error GoTo ErrHandler
 
@@ -1326,9 +1471,13 @@ Private Sub Minuto_Timer()
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "General.Minuto_Timer", Erl)
         
+    Exit Sub
+Minuto_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Minuto_Timer", Erl)
 End Sub
 
 Private Sub CMDDUMP_Click()
+    On Error Goto CMDDUMP_Click_Err
 On Error GoTo CMDDUMP_Click_Err
         Dim i As Integer
 
@@ -1341,9 +1490,13 @@ On Error GoTo CMDDUMP_Click_Err
 
 CMDDUMP_Click_Err:
 108     Call TraceError(Err.Number, Err.Description, "frmMain.CMDDUMP_Click", Erl)
+    Exit Sub
+CMDDUMP_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.CMDDUMP_Click", Erl)
 End Sub
 
 Private Sub Command1_Click()
+    On Error Goto Command1_Click_Err
         
         On Error GoTo Command1_Click_Err
         
@@ -1356,9 +1509,13 @@ Command1_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmMain.Command1_Click", Erl)
 
         
+    Exit Sub
+Command1_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command1_Click", Erl)
 End Sub
 
 Public Sub InitMain(ByVal f As Byte)
+    On Error Goto InitMain_Err
         
         On Error GoTo InitMain_Err
         
@@ -1376,9 +1533,13 @@ InitMain_Err:
 106     Call TraceError(Err.Number, Err.Description, "frmMain.InitMain", Erl)
 
         
+    Exit Sub
+InitMain_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.InitMain", Erl)
 End Sub
 
 Private Sub Command10_Click()
+    On Error Goto Command10_Click_Err
         
         On Error GoTo Command10_Click_Err
         
@@ -1391,9 +1552,13 @@ Command10_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmMain.Command10_Click", Erl)
 
         
+    Exit Sub
+Command10_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command10_Click", Erl)
 End Sub
 
 Private Sub Command11_Click()
+    On Error Goto Command11_Click_Err
         
         On Error GoTo Command11_Click_Err
         
@@ -1407,9 +1572,13 @@ Command11_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmMain.Command11_Click", Erl)
 
         
+    Exit Sub
+Command11_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command11_Click", Erl)
 End Sub
 
 Private Sub Command12_Click()
+    On Error Goto Command12_Click_Err
         
         On Error GoTo Command12_Click_Err
         
@@ -1421,9 +1590,13 @@ Command12_Click_Err:
 104     Call TraceError(Err.Number, Err.Description, "frmMain.Command12_Click", Erl)
 
         
+    Exit Sub
+Command12_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command12_Click", Erl)
 End Sub
 
 Private Sub Command13_Click()
+    On Error Goto Command13_Click_Err
         
         On Error GoTo Command13_Click_Err
         
@@ -1436,9 +1609,13 @@ Command13_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmMain.Command13_Click", Erl)
 
         
+    Exit Sub
+Command13_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command13_Click", Erl)
 End Sub
 
 Private Sub Command2_Click()
+    On Error Goto Command2_Click_Err
         
         On Error GoTo Command2_Click_Err
         
@@ -1450,9 +1627,13 @@ Command2_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmMain.Command2_Click", Erl)
 
         
+    Exit Sub
+Command2_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command2_Click", Erl)
 End Sub
 
 Private Sub Command4_Click()
+    On Error Goto Command4_Click_Err
         
         On Error GoTo Command4_Click_Err
 
@@ -1473,10 +1654,14 @@ Command4_Click_Err:
 112     Call TraceError(Err.Number, Err.Description, "frmMain.Command4_Click", Erl)
 
         
+    Exit Sub
+Command4_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command4_Click", Erl)
 End Sub
 
 
 Private Sub Command6_Click()
+    On Error Goto Command6_Click_Err
         
         On Error GoTo Command6_Click_Err
         
@@ -1489,9 +1674,13 @@ Command6_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmMain.Command6_Click", Erl)
 
         
+    Exit Sub
+Command6_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command6_Click", Erl)
 End Sub
 
 Private Sub Command7_Click()
+    On Error Goto Command7_Click_Err
         
         On Error GoTo Command7_Click_Err
         
@@ -1504,9 +1693,13 @@ Command7_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmMain.Command7_Click", Erl)
 
         
+    Exit Sub
+Command7_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command7_Click", Erl)
 End Sub
 
 Private Sub Command8_Click()
+    On Error Goto Command8_Click_Err
         
         On Error GoTo Command8_Click_Err
         
@@ -1523,9 +1716,13 @@ Command8_Click_Err:
 110     Call TraceError(Err.Number, Err.Description, "frmMain.Command8_Click", Erl)
 
         
+    Exit Sub
+Command8_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command8_Click", Erl)
 End Sub
 
 Private Sub Command9_Click()
+    On Error Goto Command9_Click_Err
         
         On Error GoTo Command9_Click_Err
         
@@ -1538,9 +1735,13 @@ Command9_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmMain.Command9_Click", Erl)
 
         
+    Exit Sub
+Command9_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command9_Click", Erl)
 End Sub
 
 Private Sub EstadoTimer_Timer()
+    On Error Goto EstadoTimer_Timer_Err
     On Error GoTo EstadoTimer_Timer_Err
     Call GetHoraActual
     Dim i As Long
@@ -1612,9 +1813,13 @@ Private Sub EstadoTimer_Timer()
     Exit Sub
 EstadoTimer_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.EstadoTimer_Timer", Erl)
+    Exit Sub
+EstadoTimer_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.EstadoTimer_Timer", Erl)
 End Sub
 
 Private Sub Automatic_Event_Timer()
+    On Error Goto Automatic_Event_Timer_Err
         
     On Error GoTo Evento_Timer_Err
 
@@ -1735,9 +1940,13 @@ Private Sub Automatic_Event_Timer()
     Exit Sub
 Evento_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Evento_Timer", Erl)
+    Exit Sub
+Automatic_Event_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Automatic_Event_Timer", Erl)
 End Sub
 
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    On Error Goto Form_MouseMove_Err
         
         On Error GoTo Form_MouseMove_Err
    
@@ -1775,9 +1984,13 @@ Form_MouseMove_Err:
 124     Call TraceError(Err.Number, Err.Description, "frmMain.Form_MouseMove", Erl)
 
         
+    Exit Sub
+Form_MouseMove_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Form_MouseMove", Erl)
 End Sub
 
 Public Sub QuitarIconoSystray()
+    On Error Goto QuitarIconoSystray_Err
         
         On Error GoTo QuitarIconoSystray_Err
     
@@ -1800,9 +2013,13 @@ QuitarIconoSystray_Err:
 104     Call TraceError(Err.Number, Err.Description, "frmMain.QuitarIconoSystray", Erl)
 
         
+    Exit Sub
+QuitarIconoSystray_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.QuitarIconoSystray", Erl)
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+    On Error Goto Form_QueryUnload_Err
         
         On Error GoTo Form_QueryUnload_Err
     
@@ -1819,17 +2036,25 @@ Form_QueryUnload_Err:
 106     Call TraceError(Err.Number, Err.Description, "frmMain.Form_QueryUnload", Erl)
 
         
+    Exit Sub
+Form_QueryUnload_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Form_QueryUnload", Erl)
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
+    On Error Goto Form_Unload_Err
         
 
   Call CerrarServidor
 
         
+    Exit Sub
+Form_Unload_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Form_Unload", Erl)
 End Sub
 
 Private Sub GameTimer_Timer()
+    On Error Goto GameTimer_Timer_Err
 On Error GoTo HayError
     Dim iUserIndex   As Long
     Dim PerformanceTimer As Long
@@ -1864,9 +2089,13 @@ On Error GoTo HayError
     Exit Sub
 HayError:
     Call TraceError(Err.Number, Err.Description & vbNewLine & "UserIndex:" & iUserIndex, "frmMain.GameTimer", Erl)
+    Exit Sub
+GameTimer_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.GameTimer_Timer", Erl)
 End Sub
 
 Private Sub HoraFantasia_Timer()
+    On Error Goto HoraFantasia_Timer_Err
         
     On Error GoTo HoraFantasia_Timer_Err
     If Lloviendo Then
@@ -1884,10 +2113,14 @@ Private Sub HoraFantasia_Timer()
     Exit Sub
 HoraFantasia_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.HoraFantasia_Timer", Erl)
+    Exit Sub
+HoraFantasia_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.HoraFantasia_Timer", Erl)
 End Sub
 
 
 Private Sub mnuCerrar_Click()
+    On Error Goto mnuCerrar_Click_Err
         
         On Error GoTo mnuCerrar_Click_Err
         
@@ -1908,9 +2141,13 @@ mnuCerrar_Click_Err:
 106     Call TraceError(Err.Number, Err.Description, "frmMain.mnuCerrar_Click", Erl)
 
         
+    Exit Sub
+mnuCerrar_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.mnuCerrar_Click", Erl)
 End Sub
 
 Private Sub mnusalir_Click()
+    On Error Goto mnusalir_Click_Err
         
         On Error GoTo mnusalir_Click_Err
         
@@ -1923,9 +2160,13 @@ mnusalir_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmMain.mnusalir_Click", Erl)
 
         
+    Exit Sub
+mnusalir_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.mnusalir_Click", Erl)
 End Sub
 
 Public Sub mnuMostrar_Click()
+    On Error Goto mnuMostrar_Click_Err
         
         On Error GoTo mnuMostrar_Click_Err
     
@@ -1943,9 +2184,13 @@ mnuMostrar_Click_Err:
 104     Call TraceError(Err.Number, Err.Description, "frmMain.mnuMostrar_Click", Erl)
 
         
+    Exit Sub
+mnuMostrar_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.mnuMostrar_Click", Erl)
 End Sub
 
 Private Sub KillLog_Timer()
+    On Error Goto KillLog_Timer_Err
     On Error GoTo KillLog_Timer_Err
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
@@ -1961,9 +2206,13 @@ Private Sub KillLog_Timer()
     Exit Sub
 KillLog_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.KillLog_Timer", Erl)
+    Exit Sub
+KillLog_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.KillLog_Timer", Erl)
 End Sub
 
 Private Sub mnuServidor_Click()
+    On Error Goto mnuServidor_Click_Err
         
         On Error GoTo mnuServidor_Click_Err
         
@@ -1976,9 +2225,13 @@ mnuServidor_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmMain.mnuServidor_Click", Erl)
 
         
+    Exit Sub
+mnuServidor_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.mnuServidor_Click", Erl)
 End Sub
 
 Private Sub mnuSystray_Click()
+    On Error Goto mnuSystray_Click_Err
         
         On Error GoTo mnuSystray_Click_Err
         
@@ -2002,9 +2255,13 @@ mnuSystray_Click_Err:
 110     Call TraceError(Err.Number, Err.Description, "frmMain.mnuSystray_Click", Erl)
 
         
+    Exit Sub
+mnuSystray_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.mnuSystray_Click", Erl)
 End Sub
 
 Private Sub SubastaTimer_Timer()
+    On Error Goto SubastaTimer_Timer_Err
         
     On Error GoTo SubastaTimer_Timer_Err
     Dim PerformanceTimer As Long
@@ -2064,6 +2321,9 @@ SubastaTimer_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.SubastaTimer_Timer", Erl)
 
         
+    Exit Sub
+SubastaTimer_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.SubastaTimer_Timer", Erl)
 End Sub
 
 
@@ -2072,6 +2332,7 @@ End Sub
 
 
 Private Sub TIMER_AI_Timer()
+    On Error Goto TIMER_AI_Timer_Err
     On Error GoTo ErrorHandler
     Dim NpcIndex As Long
     Dim PerformanceTimer As Long
@@ -2104,9 +2365,13 @@ ErrorHandler:
                                     " en la posicion: " & NpcList(NpcIndex).Pos.Map & "-" & NpcList(NpcIndex).Pos.X & "-" & NpcList(NpcIndex).Pos.Y, "frmMain.Timer_AI", Erl)
     Call MuereNpc(NpcIndex, 0)
 
+    Exit Sub
+TIMER_AI_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.TIMER_AI_Timer", Erl)
 End Sub
 
 Private Sub TimerMeteorologia_Timer()
+    On Error Goto TimerMeteorologia_Timer_Err
     'Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1741, TimerMeteorologico, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1741=Servidor > Timer de lluvia en : ¬1
         
     On Error GoTo TimerMeteorologia_Timer_Err
@@ -2192,9 +2457,13 @@ Private Sub TimerMeteorologia_Timer()
     Exit Sub
 TimerMeteorologia_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.TimerMeteorologia_Timer", Erl)
+    Exit Sub
+TimerMeteorologia_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.TimerMeteorologia_Timer", Erl)
 End Sub
 
 Private Sub TimerRespawn_Timer()
+    On Error Goto TimerRespawn_Timer_Err
 
     On Error GoTo ErrorHandler
     Dim NpcIndex As Long
@@ -2225,9 +2494,13 @@ ErrorHandler:
                                     " en la posicion: " & NpcList(NpcIndex).Pos.Map & "-" & NpcList(NpcIndex).Pos.X & "-" & NpcList(NpcIndex).Pos.Y, "frmMain.TimerRespawn_Timer", Erl)
     Call MuereNpc(NpcIndex, 0)
 
+    Exit Sub
+TimerRespawn_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.TimerRespawn_Timer", Erl)
 End Sub
 
 Private Sub tPiqueteC_Timer()
+    On Error Goto tPiqueteC_Timer_Err
 
     On Error GoTo ErrHandler
 
@@ -2270,9 +2543,13 @@ Private Sub tPiqueteC_Timer()
     Exit Sub
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "frmMain.tPiqueteC_Timer", Erl)
+    Exit Sub
+tPiqueteC_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.tPiqueteC_Timer", Erl)
 End Sub
 
 Private Sub Truenos_Timer()
+    On Error Goto Truenos_Timer_Err
     On Error GoTo Truenos_Timer_Err
     Dim Enviar    As Byte
     Dim TruenoWav As Integer
@@ -2288,11 +2565,18 @@ Private Sub Truenos_Timer()
     Exit Sub
 Truenos_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Truenos_Timer", Erl)
+    Exit Sub
+Truenos_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.Truenos_Timer", Erl)
 End Sub
 
 Private Sub UptimeTimer_Timer()
+    On Error Goto UptimeTimer_Timer_Err
     On Error GoTo UptimeTimer_Timer_Err
     SERVER_UPTIME = SERVER_UPTIME + 1
+    Exit Sub
+UptimeTimer_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.UptimeTimer_Timer", Erl)
     Exit Sub
 UptimeTimer_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.UptimeTimer_Timer", Erl)

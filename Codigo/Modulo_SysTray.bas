@@ -60,6 +60,7 @@ Public Const WM_CREATE = &H1
 Public hHook As Long
 
 Public Function AppHook(ByVal idHook As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+    On Error Goto AppHook_Err
         
         On Error GoTo AppHook_Err
         
@@ -88,5 +89,8 @@ AppHook_Err:
 114     Call TraceError(Err.Number, Err.Description, "SysTray.AppHook", Erl)
 116
         
+    Exit Function
+AppHook_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_SysTray.AppHook", Erl)
 End Function
 

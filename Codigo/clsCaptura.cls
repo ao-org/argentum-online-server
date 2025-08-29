@@ -90,6 +90,7 @@ Private yEquipo(1 To 2)         As Byte
 Private objEquipo(1 To 2)       As Integer
 
 Private Sub Class_Initialize()
+    On Error Goto Class_Initialize_Err
     Set participantes = New Collection
     colorEquipo(1) = "azul"
     colorEquipo(2) = "rojo"
@@ -102,14 +103,22 @@ Private Sub Class_Initialize()
     objEquipo(1) = OBJ_CAPTURA_BANDERA_1
     objEquipo(2) = OBJ_CAPTURA_BANDERA_2
 
+    Exit Sub
+Class_Initialize_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.Class_Initialize", Erl)
 End Sub
 
 Public Function GetPlayer(ByVal UserIndex As Integer) As clsCapturaParticipante
+    On Error Goto GetPlayer_Err
     Set GetPlayer = Participantes.Item(CStr(UserIndex))
 
+    Exit Function
+GetPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.GetPlayer", Erl)
 End Function
 
 Public Sub eliminarParticipante(ByRef player As clsCapturaParticipante)
+    On Error Goto eliminarParticipante_Err
 
     If player Is Nothing Then
         Exit Sub
@@ -126,9 +135,13 @@ Public Sub eliminarParticipante(ByRef player As clsCapturaParticipante)
 
     Call Participantes.Remove(CStr(player.PlayerIndex))
 
+    Exit Sub
+eliminarParticipante_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.eliminarParticipante", Erl)
 End Sub
 
 Public Sub PasarSegundo()
+    On Error Goto PasarSegundo_Err
 
     Dim participante As clsCapturaParticipante
 
@@ -244,9 +257,13 @@ Public Sub PasarSegundo()
 
     End If
 
+    Exit Sub
+PasarSegundo_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.PasarSegundo", Erl)
 End Sub
 
 Private Function sortParticipantes() As Collection
+    On Error Goto sortParticipantes_Err
 
     Dim i     As Integer
 
@@ -288,9 +305,13 @@ Private Function sortParticipantes() As Collection
 
     Next i
 
+    Exit Function
+sortParticipantes_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.sortParticipantes", Erl)
 End Function
 
 Private Sub iniciarCaptura()
+    On Error Goto iniciarCaptura_Err
     tiempo_espera = 0
 
     'Ordenar equipos
@@ -338,9 +359,13 @@ Private Sub iniciarCaptura()
 
     Call iniciarRonda
 
+    Exit Sub
+iniciarCaptura_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.iniciarCaptura", Erl)
 End Sub
 
 Public Sub muereUsuario(ByVal UserIndex As Integer)
+    On Error Goto muereUsuario_Err
 
     With UserList(UserIndex)
 
@@ -359,9 +384,13 @@ Public Sub muereUsuario(ByVal UserIndex As Integer)
 
     End With
 
+    Exit Sub
+muereUsuario_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.muereUsuario", Erl)
 End Sub
 
 Public Function tomaBandera(ByVal UserIndex As Integer, _
+    On Error Goto tomaBandera_Err
                             ByVal ObjIndex As Integer) As Boolean
 
     With UserList(UserIndex)
@@ -401,9 +430,13 @@ Public Function tomaBandera(ByVal UserIndex As Integer, _
 
     End With
 
+    Exit Function
+tomaBandera_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.tomaBandera", Erl)
 End Function
 
 Public Sub quitarBandera(ByVal UserIndex As Integer, ByVal objIndex As Integer)
+    On Error Goto quitarBandera_Err
 
     With UserList(UserIndex)
 
@@ -432,9 +465,13 @@ Public Sub quitarBandera(ByVal UserIndex As Integer, ByVal objIndex As Integer)
 
     End With
 
+    Exit Sub
+quitarBandera_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.quitarBandera", Erl)
 End Sub
 
 Public Sub tiraBandera(ByVal UserIndex As Integer, ByVal objIndex As Integer)
+    On Error Goto tiraBandera_Err
 
     'El usuario tira la bandera
     With UserList(UserIndex)
@@ -457,9 +494,13 @@ Public Sub tiraBandera(ByVal UserIndex As Integer, ByVal objIndex As Integer)
 
     End With
 
+    Exit Sub
+tiraBandera_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.tiraBandera", Erl)
 End Sub
 
 Public Sub tirarBandera(ByVal UserIndex As Integer)
+    On Error Goto tirarBandera_Err
 
     'Verificamos si tiene la bandera
     Dim team       As Byte
@@ -498,9 +539,13 @@ Public Sub tirarBandera(ByVal UserIndex As Integer)
 
     End With
 
+    Exit Sub
+tirarBandera_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.tirarBandera", Erl)
 End Sub
 
 Private Sub enviarUsuarioBase(ByVal UserIndex As Integer)
+    On Error Goto enviarUsuarioBase_Err
 
     Dim pos_map As Integer
 
@@ -524,9 +569,13 @@ Private Sub enviarUsuarioBase(ByVal UserIndex As Integer)
     Call FindLegalPos(UserIndex, pos_map, pos_X, pos_Y)
     Call WarpUserChar(UserIndex, pos_map, pos_X, pos_Y, True)
 
+    Exit Sub
+enviarUsuarioBase_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.enviarUsuarioBase", Erl)
 End Sub
 
 Private Sub enviarUsuarioSala(ByVal UserIndex As Integer)
+    On Error Goto enviarUsuarioSala_Err
 
     Dim pos_X As Byte, pos_Y As Byte
 
@@ -536,9 +585,13 @@ Private Sub enviarUsuarioSala(ByVal UserIndex As Integer)
     Call FindLegalPos(UserIndex, MAP_SALA_ESPERA, pos_X, pos_Y)
     Call WarpUserChar(UserIndex, MAP_SALA_ESPERA, pos_X, pos_Y, True)
 
+    Exit Sub
+enviarUsuarioSala_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.enviarUsuarioSala", Erl)
 End Sub
 
 Private Sub iniciarRonda()
+    On Error Goto iniciarRonda_Err
     Estado = IniciaRonda
     ronda_actual = ronda_actual + 1
     tiempo_ronda = CAPTURA_TIEMPO_INICIO_RONDA
@@ -563,9 +616,13 @@ Private Sub iniciarRonda()
     Call restaurarBandera(1)
     Call restaurarBandera(2)
 
+    Exit Sub
+iniciarRonda_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.iniciarRonda", Erl)
 End Sub
 
 Private Sub restaurarBandera(ByVal Team As Byte)
+    On Error Goto restaurarBandera_Err
 
     Dim MiObj As t_Obj
 
@@ -582,9 +639,13 @@ Private Sub restaurarBandera(ByVal Team As Byte)
 
     End If
 
+    Exit Sub
+restaurarBandera_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.restaurarBandera", Erl)
 End Sub
 
 Public Sub finalizarCaptura(Optional Team As Integer = e_CancelarCaptura.CanceladoAbruto)
+    On Error Goto finalizarCaptura_Err
 
     Dim participante As clsCapturaParticipante
 
@@ -643,9 +704,13 @@ Public Sub finalizarCaptura(Optional Team As Integer = e_CancelarCaptura.Cancela
     'Destruyo la instancia
     Set InstanciaCaptura = Nothing
 
+    Exit Sub
+finalizarCaptura_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.finalizarCaptura", Erl)
 End Sub
 
 Public Sub finalizarRonda(ByVal Team As Byte)
+    On Error Goto finalizarRonda_Err
     Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageLocaleMsg(1725, colorEquipo(team) & "¬" & ronda_actual, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1725=Eventos» ¡El equipo ¬1 ha ganado la ronda ¬2!
     'El sonido de fundar clan para hacerlo mas magestuoso, mirar si hay un sonido mejor
     Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
@@ -664,9 +729,13 @@ Public Sub finalizarRonda(ByVal Team As Byte)
 
     End If
 
+    Exit Sub
+finalizarRonda_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.finalizarRonda", Erl)
 End Sub
 
 Public Function inicializar(ByVal MaxParticipantes As Long, _
+    On Error Goto inicializar_Err
                             ByVal CantidadRondas As Byte, _
                             ByVal NivelMinimo As Byte, _
                             ByVal NivelMaximo, _
@@ -683,9 +752,13 @@ Public Function inicializar(ByVal MaxParticipantes As Long, _
     precio = precio_
     Estado = Inscripcion
 
+    Exit Function
+inicializar_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.inicializar", Erl)
 End Function
 
 Public Sub inscribirse(ByVal UserIndex As Integer)
+    On Error Goto inscribirse_Err
 
     'Validaciones al inscribirse
     With UserList(UserIndex)
@@ -798,4 +871,7 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
 
     End With
 
+    Exit Sub
+inscribirse_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCaptura.inscribirse", Erl)
 End Sub

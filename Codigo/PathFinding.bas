@@ -50,6 +50,7 @@ Private ClosestDistance As Single
 Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDest As Any, pSource As Any, ByVal Length As Long)
 
 Public Sub InitPathFinding()
+    On Error Goto InitPathFinding_Err
         
         On Error GoTo InitPathFinding_Err
 
@@ -66,9 +67,13 @@ Public Sub InitPathFinding()
 InitPathFinding_Err:
         Call TraceError(Err.Number, Err.Description, "PathFinding.InitPathFinding", Erl)
 
+    Exit Sub
+InitPathFinding_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.InitPathFinding", Erl)
 End Sub
 
 Public Sub FollowPath(ByVal NpcIndex As Integer)
+    On Error Goto FollowPath_Err
         
         On Error GoTo FollowPath_Err
         
@@ -94,9 +99,13 @@ Public Sub FollowPath(ByVal NpcIndex As Integer)
 FollowPath_Err:
         Call TraceError(Err.Number, Err.Description, "PathFinding.FollowPath", Erl)
        
+    Exit Sub
+FollowPath_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.FollowPath", Erl)
 End Sub
 
 Private Function InsideLimits(ByVal X As Integer, ByVal Y As Integer)
+    On Error Goto InsideLimits_Err
         
         On Error GoTo InsideLimits_Err
         
@@ -107,9 +116,13 @@ Private Function InsideLimits(ByVal X As Integer, ByVal Y As Integer)
 InsideLimits_Err:
         Call TraceError(Err.Number, Err.Description, "PathFinding.InsideLimits", Erl)
 
+    Exit Function
+InsideLimits_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.InsideLimits", Erl)
 End Function
 
 Private Function IsWalkable(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Heading As e_Heading) As Boolean
+    On Error Goto IsWalkable_Err
         
     On Error GoTo ErrHandler
     
@@ -159,9 +172,13 @@ Private Function IsWalkable(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "PathFinding.IsWalkable", Erl)
     
+    Exit Function
+IsWalkable_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.IsWalkable", Erl)
 End Function
 
 Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, ByVal CurY As Integer, ByVal Heading As e_Heading, ByRef EndPos As t_Position)
+    On Error Goto ProcessAdjacent_Err
 
     On Error GoTo ErrHandler
     
@@ -228,9 +245,13 @@ Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, By
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "PathFinding.ProcessAdjacent", Erl)
     
+    Exit Sub
+ProcessAdjacent_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.ProcessAdjacent", Erl)
 End Sub
 
 Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Boolean) As Boolean
+    On Error Goto SeekPath_Err
 
         ' Busca un camino desde la posición del NPC a la posición en .PFINFO.Target
         ' El parámetro Closest indica que en caso de que no exista un camino completo, se debe retornar el camino parcial hasta la posición más cercana al objetivo.
@@ -378,9 +399,13 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
 SeekPath_Err:
         Call TraceError(Err.Number, Err.Description, "PathFinding.SeekPath", Erl)
   
+    Exit Function
+SeekPath_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.SeekPath", Erl)
 End Function
 
 Private Sub MakePath(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal Y As Integer)
+    On Error Goto MakePath_Err
         
         On Error GoTo MakePath_Err
  
@@ -414,9 +439,13 @@ Private Sub MakePath(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal Y As I
 MakePath_Err:
         Call TraceError(Err.Number, Err.Description, "PathFinding.MakePath", Erl)
         
+    Exit Sub
+MakePath_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.MakePath", Erl)
 End Sub
 
 Private Sub InitializeTable(ByRef Table() As t_IntermidiateWork, ByRef PosNPC As t_Position, ByVal RangoVision As Single)
+    On Error Goto InitializeTable_Err
         ' Inicializar la tabla de posiciones para calcular el camino.
         ' Solo limpiamos el campo de visión del NPC.
         
@@ -441,9 +470,13 @@ Private Sub InitializeTable(ByRef Table() As t_IntermidiateWork, ByRef PosNPC As
 InitializeTable_Err:
         Call TraceError(Err.Number, Err.Description, "PathFinding.InitializeTable", Erl)
   
+    Exit Sub
+InitializeTable_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.InitializeTable", Erl)
 End Sub
 
 Private Function TileDistance(ByRef Vertex1 As t_Position, ByRef Vertex2 As t_Position) As Integer
+    On Error Goto TileDistance_Err
         
         On Error GoTo TileDistance_Err
         
@@ -454,9 +487,13 @@ Private Function TileDistance(ByRef Vertex1 As t_Position, ByRef Vertex2 As t_Po
 TileDistance_Err:
         Call TraceError(Err.Number, Err.Description, "PathFinding.TileDistance", Erl)
   
+    Exit Function
+TileDistance_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.TileDistance", Erl)
 End Function
 
 Private Function EuclideanDistance(ByVal X As Integer, ByVal Y As Integer, ByRef Vertex As t_Position) As Single
+    On Error Goto EuclideanDistance_Err
         
         On Error GoTo EuclideanDistance_Err
         
@@ -470,9 +507,13 @@ Private Function EuclideanDistance(ByVal X As Integer, ByVal Y As Integer, ByRef
 EuclideanDistance_Err:
         Call TraceError(Err.Number, Err.Description, "PathFinding.EuclideanDistance", Erl)
       
+    Exit Function
+EuclideanDistance_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.EuclideanDistance", Erl)
 End Function
 
 Private Function EuclideanDistanceV(ByRef Vertex1 As t_Position, ByRef Vertex2 As t_Position) As Single
+    On Error Goto EuclideanDistanceV_Err
         
         On Error GoTo EuclideanDistanceV_Err
         
@@ -486,9 +527,13 @@ Private Function EuclideanDistanceV(ByRef Vertex1 As t_Position, ByRef Vertex2 A
 EuclideanDistanceV_Err:
         Call TraceError(Err.Number, Err.Description, "PathFinding.EuclideanDistanceV", Erl)
 
+    Exit Function
+EuclideanDistanceV_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.EuclideanDistanceV", Erl)
 End Function
 
 Private Sub OpenVertex(ByVal X As Integer, ByVal Y As Integer)
+    On Error Goto OpenVertex_Err
         
         On Error GoTo OpenVertex_Err
         
@@ -502,9 +547,13 @@ Private Sub OpenVertex(ByVal X As Integer, ByVal Y As Integer)
 OpenVertex_Err:
         Call TraceError(Err.Number, Err.Description, "PathFinding.OpenVertex", Erl)
 
+    Exit Sub
+OpenVertex_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.OpenVertex", Erl)
 End Sub
 
 Private Sub OpenVertexV(ByRef Vertex As t_Position)
+    On Error Goto OpenVertexV_Err
         
         On Error GoTo OpenVertexV_Err
         
@@ -516,9 +565,13 @@ Private Sub OpenVertexV(ByRef Vertex As t_Position)
 OpenVertexV_Err:
         Call TraceError(Err.Number, Err.Description, "PathFinding.OpenVertexV", Erl)
 
+    Exit Sub
+OpenVertexV_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.OpenVertexV", Erl)
 End Sub
 
 Private Sub CloseVertex(ByVal Index As Integer)
+    On Error Goto CloseVertex_Err
         
         On Error GoTo CloseVertex_Err
         
@@ -530,10 +583,14 @@ Private Sub CloseVertex(ByVal Index As Integer)
 CloseVertex_Err:
         Call TraceError(Err.Number, Err.Description, "PathFinding.CloseVertex", Erl)
 
+    Exit Sub
+CloseVertex_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.CloseVertex", Erl)
 End Sub
 
 ' Las posiciones se pasan ByRef pero NO SE MODIFICAN.
 Public Function GetHeadingFromWorldPos(ByRef currentPos As t_WorldPos, ByRef nextPos As t_WorldPos) As e_Heading
+    On Error Goto GetHeadingFromWorldPos_Err
         
         On Error GoTo GetHeadingFromWorldPos_Err
         
@@ -557,4 +614,7 @@ Public Function GetHeadingFromWorldPos(ByRef currentPos As t_WorldPos, ByRef nex
 GetHeadingFromWorldPos_Err:
         Call TraceError(Err.Number, Err.Description, "PathFinding.GetHeadingFromWorldPos", Erl)
 
+    Exit Function
+GetHeadingFromWorldPos_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.GetHeadingFromWorldPos", Erl)
 End Function

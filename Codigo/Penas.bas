@@ -29,6 +29,7 @@ Option Explicit
 
 
 Private Function GlobalChecks(ByVal BannerIndex As Integer, ByRef username As String) As Integer
+    On Error Goto GlobalChecks_Err
         
         On Error GoTo GlobalChecks_Err
 
@@ -77,9 +78,13 @@ GlobalChecks_Err:
     Call TraceError(Err.Number, Err.Description, "Penas.GlobalChecks", Erl)
     
     
+    Exit Function
+GlobalChecks_Err:
+    Call TraceError(Err.Number, Err.Description, "Penas.GlobalChecks", Erl)
 End Function
 
 Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef Razon As String)
+    On Error Goto BanPJ_Err
         On Error GoTo BanPJ_Err
         
 #If STRESSER = 1 Then
@@ -121,9 +126,13 @@ BanPJ_Err:
 120     Call TraceError(Err.Number, Err.Description, "Mod_Baneo.BanPJ")
 122
 
+    Exit Sub
+BanPJ_Err:
+    Call TraceError(Err.Number, Err.Description, "Penas.BanPJ", Erl)
 End Sub
 
 Public Sub BanPJWithoutGM(ByVal UserName As String, ByRef Razon As String)
+    On Error Goto BanPJWithoutGM_Err
         On Error GoTo BanPJWithoutGM_Err
 
         ' Si no existe el personaje...
@@ -157,8 +166,12 @@ BanPJWithoutGM_Err:
 120     Call TraceError(Err.Number, Err.Description, "Mod_Baneo.BanPJWithoutGM")
 122
 
+    Exit Sub
+BanPJWithoutGM_Err:
+    Call TraceError(Err.Number, Err.Description, "Penas.BanPJWithoutGM", Erl)
 End Sub
 Public Sub BanearCuenta(ByVal BannerIndex As Integer, ByVal UserName As String, ByVal Reason As String)
+    On Error Goto BanearCuenta_Err
         On Error GoTo BanearCuenta_Err
         Dim CuentaID As Long
         
@@ -201,9 +214,13 @@ BanearCuenta_Err:
         Call TraceError(Err.Number, Err.Description, "Penas.BanearCuenta", Erl)
         
         
+    Exit Sub
+BanearCuenta_Err:
+    Call TraceError(Err.Number, Err.Description, "Penas.BanearCuenta", Erl)
 End Sub
 
 Public Function DesbanearCuenta(ByVal BannerIndex As Integer, ByVal UserNameOEmail As String) As Boolean
+    On Error Goto DesbanearCuenta_Err
 
         On Error GoTo DesbanearCuenta_Err
         
@@ -218,6 +235,9 @@ Public Function DesbanearCuenta(ByVal BannerIndex As Integer, ByVal UserNameOEma
 
 DesbanearCuenta_Err:
         Call TraceError(Err.Number, Err.Description, "Penas.DesbanearCuenta", Erl)
+    Exit Function
+DesbanearCuenta_Err:
+    Call TraceError(Err.Number, Err.Description, "Penas.DesbanearCuenta", Erl)
 End Function
 
 

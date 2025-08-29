@@ -28,6 +28,7 @@ Attribute VB_Name = "ModCuentas"
 Option Explicit
 
 Public Function GetUserGuildIndex(ByVal UserName As String) As Integer
+    On Error Goto GetUserGuildIndex_Err
         
         On Error GoTo GetUserGuildIndex_Err
 
@@ -50,9 +51,13 @@ Public Function GetUserGuildIndex(ByVal UserName As String) As Integer
 GetUserGuildIndex_Err:
 118     Call TraceError(Err.Number, Err.Description, "ModCuentas.GetUserGuildIndex", Erl)
 
+    Exit Function
+GetUserGuildIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "ModEmail.GetUserGuildIndex", Erl)
 End Function
 
 Public Function ObtenerCriminal(ByVal Name As String) As Byte
+    On Error Goto ObtenerCriminal_Err
 
         On Error GoTo ErrorHandler
     
@@ -78,4 +83,7 @@ Public Function ObtenerCriminal(ByVal Name As String) As Byte
 ErrorHandler:
 128     ObtenerCriminal = 1
 
+    Exit Function
+ObtenerCriminal_Err:
+    Call TraceError(Err.Number, Err.Description, "ModEmail.ObtenerCriminal", Erl)
 End Function

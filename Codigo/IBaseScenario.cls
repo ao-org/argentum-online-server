@@ -40,72 +40,148 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Public Sub SetLobbyIndex(ByVal Value As Integer)
+    On Error Goto SetLobbyIndex_Err
+    Exit Sub
+SetLobbyIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.SetLobbyIndex", Erl)
 End Sub
 
 Public Function GetScenarioName() As String
+    On Error Goto GetScenarioName_Err
+    Exit Function
+GetScenarioName_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.GetScenarioName", Erl)
 End Function
 Public Sub BroadcastOpenScenario()
+    On Error Goto BroadcastOpenScenario_Err
+    Exit Sub
+BroadcastOpenScenario_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.BroadcastOpenScenario", Erl)
 End Sub
 
 Public Sub SendRules(ByVal UserIndex As Integer)
+    On Error Goto SendRules_Err
+    Exit Sub
+SendRules_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.SendRules", Erl)
 End Sub
 
 Public Function GetExtraInterfaces() As Long
+    On Error Goto GetExtraInterfaces_Err
+    Exit Function
+GetExtraInterfaces_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.GetExtraInterfaces", Erl)
 End Function
 
 Public Sub Reset()
+    On Error Goto Reset_Err
     'empty interface
+    Exit Sub
+Reset_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.Reset", Erl)
 End Sub
 
 Public Function RequiresSpawn() As Boolean
+    On Error Goto RequiresSpawn_Err
     RequiresSpawn = False
+    Exit Function
+RequiresSpawn_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.RequiresSpawn", Erl)
 End Function
 
 Public Function ValidateUser(ByVal userIndex As Integer) As Integer
+    On Error Goto ValidateUser_Err
     'empty interface
+    Exit Function
+ValidateUser_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.ValidateUser", Erl)
 End Function
 
 Public Sub WillSummonPlayer(ByVal UserIndex As Integer)
+    On Error Goto WillSummonPlayer_Err
     'empty interface
+    Exit Sub
+WillSummonPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.WillSummonPlayer", Erl)
 End Sub
 
 Public Sub UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef newState As e_LobbyState)
+    On Error Goto UpdateLobbyState_Err
 'empty interface
+    Exit Sub
+UpdateLobbyState_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.UpdateLobbyState", Erl)
 End Sub
 
 Public Sub PlayerKillNpc(ByVal npcIndex As Integer, ByVal userIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
+    On Error Goto PlayerKillNpc_Err
     'empty interface
+    Exit Sub
+PlayerKillNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.PlayerKillNpc", Erl)
 End Sub
 
 Public Sub NPcKillPlayer(ByVal npcIndex As Integer, ByVal userIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
+    On Error Goto NPcKillPlayer_Err
     'empty interface
+    Exit Sub
+NPcKillPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.NPcKillPlayer", Erl)
 End Sub
 
 Public Sub PlayerKillPlayer(ByVal killerIndex As Integer, ByVal deadIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
+    On Error Goto PlayerKillPlayer_Err
     'empty interface
+    Exit Sub
+PlayerKillPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.PlayerKillPlayer", Erl)
 End Sub
 
 Public Sub NpcDie(ByVal NpcIndex)
+    On Error Goto NpcDie_Err
 
+    Exit Sub
+NpcDie_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.NpcDie", Erl)
 End Sub
 
 Public Sub UserDie(ByVal UserIndex)
+    On Error Goto UserDie_Err
 
+    Exit Sub
+UserDie_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.UserDie", Erl)
 End Sub
 
 Public Sub Update()
+    On Error Goto Update_Err
     'empty interface
+    Exit Sub
+Update_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.Update", Erl)
 End Sub
 
 Public Sub OnUserDisconnected(ByVal userIndex As Integer)
+    On Error Goto OnUserDisconnected_Err
     
+    Exit Sub
+OnUserDisconnected_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.OnUserDisconnected", Erl)
 End Sub
 
 Public Sub OnUserReconnect(ByVal userIndex As Integer)
+    On Error Goto OnUserReconnect_Err
 
+    Exit Sub
+OnUserReconnect_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.OnUserReconnect", Erl)
 End Sub
 
 Public Sub GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)
+    On Error Goto GetNextWaypointForNpc_Err
 
+    Exit Sub
+GetNextWaypointForNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseScenario.GetNextWaypointForNpc", Erl)
 End Sub
 

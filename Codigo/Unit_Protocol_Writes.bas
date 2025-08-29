@@ -30,18 +30,31 @@ Option Explicit
 Private Writer As Network.Writer
 
 Public Function writer_is_nothing() As Boolean
+    On Error Goto writer_is_nothing_Err
     writer_is_nothing = Writer Is Nothing
+    Exit Function
+writer_is_nothing_Err:
+    Call TraceError(Err.Number, Err.Description, "Unit_Protocol_Writes.writer_is_nothing", Erl)
 End Function
 Public Sub Initialize()
+    On Error Goto Initialize_Err
     Set Writer = New Network.Writer
+    Exit Sub
+Initialize_Err:
+    Call TraceError(Err.Number, Err.Description, "Unit_Protocol_Writes.Initialize", Erl)
 End Sub
 
 Public Sub Clear()
+    On Error Goto Clear_Err
     Call Writer.Clear
+    Exit Sub
+Clear_Err:
+    Call TraceError(Err.Number, Err.Description, "Unit_Protocol_Writes.Clear", Erl)
 End Sub
 
 
 Public Sub WriteLoginExistingChar(ByVal encrypted_session_token As String, ByVal public_key As String, ByVal username As String, _
+    On Error Goto WriteLoginExistingChar_Err
     ByVal app_major As Byte, ByVal app_minor As Byte, ByVal app_revision As Byte, ByVal md5 As String)
     
     Call Writer.WriteInt16(ClientPacketID.eLoginExistingChar)
@@ -54,9 +67,13 @@ Public Sub WriteLoginExistingChar(ByVal encrypted_session_token As String, ByVal
     Call Writer.WriteInt8(app_revision)
     Call Writer.WriteString8(md5)
      Call UnitClient.Send(Writer)
+    Exit Sub
+WriteLoginExistingChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Unit_Protocol_Writes.WriteLoginExistingChar", Erl)
 End Sub
 
 Public Sub WriteLoginNewChar(ByVal public_key As String, ByVal username As String, _
+    On Error Goto WriteLoginNewChar_Err
     ByVal app_major As Byte, ByVal app_minor As Byte, ByVal app_revision As Byte, ByVal md5 As String, _
     ByVal race As Byte, ByVal gender As Byte, ByVal class As Byte, ByVal body As Byte, _
     ByVal head As Byte, ByVal home As Byte)
@@ -76,24 +93,40 @@ Public Sub WriteLoginNewChar(ByVal public_key As String, ByVal username As Strin
      Call Writer.WriteInt16(head)
      Call Writer.WriteInt8(home)
      Call UnitClient.Send(Writer)
+    Exit Sub
+WriteLoginNewChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Unit_Protocol_Writes.WriteLoginNewChar", Erl)
 End Sub
 
 Public Sub WriteLong(ByVal value_to_send As Long)
+    On Error Goto WriteLong_Err
     Call Writer.WriteInt16(value_to_send)
     Call UnitClient.Send(Writer)
+    Exit Sub
+WriteLong_Err:
+    Call TraceError(Err.Number, Err.Description, "Unit_Protocol_Writes.WriteLong", Erl)
 End Sub
 Public Sub HandleErrorMessageBox(ByRef Reader As Network.Reader)
+    On Error Goto HandleErrorMessageBox_Err
     Dim mensaje As String
     mensaje = Reader.ReadString8()
     Debug.Print "HandleErrorMessageBox " & mensaje
+    Exit Sub
+HandleErrorMessageBox_Err:
+    Call TraceError(Err.Number, Err.Description, "Unit_Protocol_Writes.HandleErrorMessageBox", Erl)
 End Sub
 Public Sub HandleShowMessageBox(ByRef Reader As Network.Reader)
+    On Error Goto HandleShowMessageBox_Err
     Dim mensaje As String
     mensaje = Reader.ReadString8()
     Debug.Print "HandleShowMessageBox " & mensaje
+    Exit Sub
+HandleShowMessageBox_Err:
+    Call TraceError(Err.Number, Err.Description, "Unit_Protocol_Writes.HandleShowMessageBox", Erl)
 End Sub
 
 Public Sub HandleCharacterChange(ByRef Reader As Network.Reader)
+    On Error Goto HandleCharacterChange_Err
     Dim charindex As Integer
     Dim TempInt   As Integer
     Dim headIndex As Integer
@@ -107,6 +140,9 @@ Public Sub HandleCharacterChange(ByRef Reader As Network.Reader)
     Reader.ReadInt16
     Reader.ReadInt16
     Reader.ReadInt8
+    Exit Sub
+HandleCharacterChange_Err:
+    Call TraceError(Err.Number, Err.Description, "Unit_Protocol_Writes.HandleCharacterChange", Erl)
 End Sub
 
 

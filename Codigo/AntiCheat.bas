@@ -60,17 +60,26 @@ Private Declare Sub HandleRemoteMessage Lib "AOACServer.dll" (ByRef UserReferenc
 Dim EnableAnticheat As Boolean
 
 Private Function GetStringFromPtr(ByVal Ptr As Long, ByVal size As Long) As String
+    On Error Goto GetStringFromPtr_Err
     Dim Buffer() As Byte
     ReDim Buffer(0 To (size - 1)) As Byte
     CopyMemory Buffer(0), ByVal Ptr, size
     GetStringFromPtr = StrConv(Buffer, vbUnicode)
+    Exit Function
+GetStringFromPtr_Err:
+    Call TraceError(Err.Number, Err.Description, "AntiCheat.GetStringFromPtr", Erl)
 End Function
 
 Private Function FARPROC(pfn As Long) As Long
+    On Error Goto FARPROC_Err
   FARPROC = pfn
+    Exit Function
+FARPROC_Err:
+    Call TraceError(Err.Number, Err.Description, "AntiCheat.FARPROC", Erl)
 End Function
 
 Public Sub InitializeAntiCheat()
+    On Error Goto InitializeAntiCheat_Err
 On Error GoTo InitializeAC_Err
     EnableAnticheat = IsFeatureEnabled("anti-cheat")
     If EnableAnticheat Then
@@ -88,18 +97,26 @@ On Error GoTo InitializeAC_Err
     Exit Sub
 InitializeAC_Err:
     Call TraceError(Err.Number, Err.Description, "AOAC.InitializeAC", Erl)
+    Exit Sub
+InitializeAntiCheat_Err:
+    Call TraceError(Err.Number, Err.Description, "AntiCheat.InitializeAntiCheat", Erl)
 End Sub
 
 Public Sub OnNewPlayerConnect(ByVal UserIndex As Integer)
+    On Error Goto OnNewPlayerConnect_Err
     If EnableAnticheat Then
         Dim UserRef As t_UserReference
         Call SetUserRef(UserRef, UserIndex)
         Call AddPendingRegister(UserRef)
         Call WriteAntiCheatStartSeassion(UserIndex)
     End If
+    Exit Sub
+OnNewPlayerConnect_Err:
+    Call TraceError(Err.Number, Err.Description, "AntiCheat.OnNewPlayerConnect", Erl)
 End Sub
 
 Public Sub KickUnregisteredPlayers()
+    On Error Goto KickUnregisteredPlayers_Err
     If EnableAnticheat Then
         Dim UserRef As t_UserReference
         Dim Result As Long
@@ -108,9 +125,13 @@ Public Sub KickUnregisteredPlayers()
             Call modNetwork.Kick(UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID, "Anticheat detection timeout")
         End If
     End If
+    Exit Sub
+KickUnregisteredPlayers_Err:
+    Call TraceError(Err.Number, Err.Description, "AntiCheat.KickUnregisteredPlayers", Erl)
 End Sub
 
 Public Sub AntiCheatUpdate()
+    On Error Goto AntiCheatUpdate_Err
     If EnableAnticheat Then
         Call Update
 #If DIRECT_PLAY = 0 Then
@@ -118,30 +139,46 @@ Public Sub AntiCheatUpdate()
         Call KickUnregisteredPlayers
 #End If
     End If
+    Exit Sub
+AntiCheatUpdate_Err:
+    Call TraceError(Err.Number, Err.Description, "AntiCheat.AntiCheatUpdate", Erl)
 End Sub
 
 Public Sub UnloadAntiCheat()
+    On Error Goto UnloadAntiCheat_Err
     If EnableAnticheat Then
         Call UnloadAC
     End If
+    Exit Sub
+UnloadAntiCheat_Err:
+    Call TraceError(Err.Number, Err.Description, "AntiCheat.UnloadAntiCheat", Erl)
 End Sub
 Public Sub SendToClientCB(ByRef TargetUser As t_UserReference, ByVal Data As Long, ByVal DataSize As Long)
+    On Error Goto SendToClientCB_Err
     If EnableAnticheat Then
         If IsValidUserRef(TargetUser) Then
             Call WriteAntiCheatMessage(TargetUser.ArrayIndex, Data, DataSize)
         End If
     End If
+    Exit Sub
+SendToClientCB_Err:
+    Call TraceError(Err.Number, Err.Description, "AntiCheat.SendToClientCB", Erl)
 End Sub
 
 Public Sub HandleAntiCheatServerMessage(ByVal UserIndex As Integer, ByRef Data() As Byte)
+    On Error Goto HandleAntiCheatServerMessage_Err
     If EnableAnticheat Then
         Dim UserRef As t_UserReference
         Call SetUserRef(UserRef, UserIndex)
         Call HandleRemoteMessage(UserRef, Data(0), UBound(Data))
     End If
+    Exit Sub
+HandleAntiCheatServerMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "AntiCheat.HandleAntiCheatServerMessage", Erl)
 End Sub
 
 Public Sub LogMessageCB(ByRef Message As SINGLESTRINGPARAM, ByVal LogLevel As Long)
+    On Error Goto LogMessageCB_Err
     Dim MessageStr As String
     If Message.Len > 0 Then
         MessageStr = GetStringFromPtr(Message.Ptr, Message.Len)
@@ -151,9 +188,13 @@ Public Sub LogMessageCB(ByRef Message As SINGLESTRINGPARAM, ByVal LogLevel As Lo
     If LogLevel < EOS_LOG_Warning Then
         Call LogThis(0, "Anticheat: " & MessageStr, vbLogEventTypeError)
     End If
+    Exit Sub
+LogMessageCB_Err:
+    Call TraceError(Err.Number, Err.Description, "AntiCheat.LogMessageCB", Erl)
 End Sub
 
 Public Sub RegisterRemoteUserIdCb(ByRef UserRef As t_UserReference, ByRef Id As SINGLESTRINGPARAM)
+    On Error Goto RegisterRemoteUserIdCb_Err
     Dim IdStr As String
     If Id.Len > 0 Then
         IdStr = GetStringFromPtr(Id.Ptr, Id.Len)
@@ -161,9 +202,13 @@ Public Sub RegisterRemoteUserIdCb(ByRef UserRef As t_UserReference, ByRef Id As 
     If IsValidUserRef(UserRef) Then
         Call SaveEpicLogin(IdStr, UserRef.ArrayIndex)
     End If
+    Exit Sub
+RegisterRemoteUserIdCb_Err:
+    Call TraceError(Err.Number, Err.Description, "AntiCheat.RegisterRemoteUserIdCb", Erl)
 End Sub
 
 Public Sub ClientActionRequired(ByRef UserRef As t_UserReference, ByVal Action As Long, ByVal ReasonCode As Long, ByRef ReasonString As SINGLESTRINGPARAM)
+    On Error Goto ClientActionRequired_Err
     Dim ReasonStr As String
     If ReasonString.Len > 0 Then
         ReasonStr = GetStringFromPtr(ReasonString.Ptr, ReasonString.Len)
@@ -171,10 +216,17 @@ Public Sub ClientActionRequired(ByRef UserRef As t_UserReference, ByVal Action A
     If Action = eEOS_ACCCA_RemovePlayer And IsValidUserRef(UserRef) Then
         Call modNetwork.Kick(UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID, ReasonStr)
     End If
+    Exit Sub
+ClientActionRequired_Err:
+    Call TraceError(Err.Number, Err.Description, "AntiCheat.ClientActionRequired", Erl)
 End Sub
 
 Public Sub OnPlayerDisconnect(ByVal UserIndex As Integer)
+    On Error Goto OnPlayerDisconnect_Err
     If EnableAnticheat Then
         Call UnRegisterClient(UserIndex)
     End If
+    Exit Sub
+OnPlayerDisconnect_Err:
+    Call TraceError(Err.Number, Err.Description, "AntiCheat.OnPlayerDisconnect", Erl)
 End Sub

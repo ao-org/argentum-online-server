@@ -199,6 +199,7 @@ NavalBoarding_Initialize_Err:
 End Sub
 
 Private Sub LoadTileBlock(ByRef Tiles() As t_TilePos, ScenearioIni As clsIniManager)
+    On Error Goto LoadTileBlock_Err
     On Error GoTo LoadTileBlock_Err:
         Dim TileCount As Integer
 100     TileCount = val(ScenearioIni.GetValue("LOBBY-BLOCK", "Count"))
@@ -212,9 +213,13 @@ Private Sub LoadTileBlock(ByRef Tiles() As t_TilePos, ScenearioIni As clsIniMana
         Exit Sub
 LoadTileBlock_Err:
 114    Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadTileBlock ", Erl)
+    Exit Sub
+LoadTileBlock_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.LoadTileBlock", Erl)
 End Sub
 
 Private Sub LoadTeamCargo(ByRef TeamCargo As t_Cargo, ByVal team As Integer, ScenearioIni As clsIniManager)
+    On Error Goto LoadTeamCargo_Err
     On Error GoTo LoadTeamCargo_Err:
 100     TeamCargo.CargoItemId = val(ScenearioIni.GetValue("Team" & team & "Cargo", "CargoItemId"))
 102     TeamCargo.OriginalCargoArea.TopLeft.PosX = val(ScenearioIni.GetValue("Team" & team & "Cargo", "TopLeftX"))
@@ -243,9 +248,13 @@ Private Sub LoadTeamCargo(ByRef TeamCargo As t_Cargo, ByVal team As Integer, Sce
         Exit Sub
 LoadTeamCargo_Err:
 142     Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadTeamCargo ", Erl)
+    Exit Sub
+LoadTeamCargo_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.LoadTeamCargo", Erl)
 End Sub
 
 Private Sub LoadNpcSpawnInfo(ByRef NpcSpawnList() As t_NpcSpawnInfo, ScenarioIni As clsIniManager)
+    On Error Goto LoadNpcSpawnInfo_Err
     On Error GoTo LoadNpcSpawnInfo_Err:
         Dim StartIndex, TankCount, SupportCount, RandgedCount, CaptainCount As Integer
 100     TankCount = val(ScenarioIni.GetValue("TankNpc", "Count"))
@@ -260,9 +269,13 @@ Private Sub LoadNpcSpawnInfo(ByRef NpcSpawnList() As t_NpcSpawnInfo, ScenarioIni
         Exit Sub
 LoadNpcSpawnInfo_Err:
 118     Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadNpcSpawnInfo ", Erl)
+    Exit Sub
+LoadNpcSpawnInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.LoadNpcSpawnInfo", Erl)
 End Sub
 
 Private Function LoadNpcData(ByRef NpcSpawnList() As t_NpcSpawnInfo, ScenearioIni As clsIniManager, ByVal SectionName As String, _
+    On Error Goto LoadNpcData_Err
                              ByVal StartIndex As Integer, ByVal NpcCount As Integer) As Long
     Dim NpcId, i As Integer
     NpcId = val(ScenearioIni.GetValue(SectionName, "NpcId"))
@@ -271,9 +284,13 @@ Private Function LoadNpcData(ByRef NpcSpawnList() As t_NpcSpawnInfo, ScenearioIn
         NpcSpawnList(StartIndex + i).Waypoint = val(ScenearioIni.GetValue(SectionName, "Wp" & i))
     Next i
     LoadNpcData = NpcCount + StartIndex
+    Exit Function
+LoadNpcData_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.LoadNpcData", Erl)
 End Function
 
 Private Sub LoadTeamWeapoints(ByVal team As Integer, ByRef WpArray() As t_Waypoint, ByVal WpCount As Byte, ScenearioIni As clsIniManager)
+    On Error Goto LoadTeamWeapoints_Err
     On Error GoTo LoadTeamWeapoints_Err:
         Dim i, j As Integer
 100     ReDim WpArray(1 To WpCount) As t_Waypoint
@@ -292,9 +309,13 @@ Private Sub LoadTeamWeapoints(ByVal team As Integer, ByRef WpArray() As t_Waypoi
         Exit Sub
 LoadTeamWeapoints_Err:
 122     Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadTeamWeapoints " & team & " and wpCount: " & WpCount, Erl)
+    Exit Sub
+LoadTeamWeapoints_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.LoadTeamWeapoints", Erl)
 End Sub
 
 Private Sub LoadForbidenItems(ScenearioIni As clsIniManager)
+    On Error Goto LoadForbidenItems_Err
     Dim forbiddenItemCount As Integer
     Dim i As Integer
     forbiddenItemCount = val(ScenearioIni.GetValue("FORBIDDEN", "Count"))
@@ -302,9 +323,13 @@ Private Sub LoadForbidenItems(ScenearioIni As clsIniManager)
     For i = 0 To forbiddenItemCount - 1
         ForbbidenItemId(i) = val(ScenearioIni.GetValue("FORBIDDEN", "ItemId" & i + 1))
     Next i
+    Exit Sub
+LoadForbidenItems_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.LoadForbidenItems", Erl)
 End Sub
 
 Private Sub AddItemToUser(ByVal UserIndex As Integer, ByVal ItemId As Integer, ByVal ItemCount As Integer)
+    On Error Goto AddItemToUser_Err
     With UserList(UserIndex)
         Dim Slot As Integer
         For Slot = 1 To UBound(.invent.Object)
@@ -316,9 +341,13 @@ Private Sub AddItemToUser(ByVal UserIndex As Integer, ByVal ItemId As Integer, B
             End If
         Next Slot
     End With
+    Exit Sub
+AddItemToUser_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.AddItemToUser", Erl)
 End Sub
 
 Private Sub RemoveForbiddenItems(ByVal UserIndex As Integer)
+    On Error Goto RemoveForbiddenItems_Err
     Dim i As Integer
     Dim j As Integer
     With UserList(UserIndex)
@@ -349,9 +378,13 @@ Private Sub RemoveForbiddenItems(ByVal UserIndex As Integer)
             Call UpdateUserInv(True, UserIndex, 0)
         End If
     End With
+    Exit Sub
+RemoveForbiddenItems_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.RemoveForbiddenItems", Erl)
 End Sub
 
 Private Sub CloseScenario()
+    On Error Goto CloseScenario_Err
 On Error GoTo CloseScenario_Err:
 100    Call ModLobby.ReturnAllPlayers(LobbyList(LobbyIndex))
 102    Set LobbyList(LobbyIndex).Scenario = Nothing
@@ -365,9 +398,13 @@ On Error GoTo CloseScenario_Err:
     Exit Sub
 CloseScenario_Err:
     Call TraceError(Err.Number, Err.Description, "NavalBoarding.CloseScenario ", Erl)
+    Exit Sub
+CloseScenario_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.CloseScenario", Erl)
 End Sub
 
 Private Sub ClearMap()
+    On Error Goto ClearMap_Err
 On Error GoTo ClearMap_Err:
 106    CustomScenarios.RemoveCustomScenario (MapNumbers(0))
 107    CustomScenarios.RemoveCustomScenario (MapNumbers(1))
@@ -376,9 +413,13 @@ On Error GoTo ClearMap_Err:
     Exit Sub
 ClearMap_Err:
     Call TraceError(Err.Number, Err.Description, "NavalBoarding.ClearMap", Erl)
+    Exit Sub
+ClearMap_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.ClearMap", Erl)
 End Sub
 
 Private Function IsForbidden(ByVal ItemId As Integer) As Boolean
+    On Error Goto IsForbidden_Err
     Dim i As Integer
     If ItemId = 0 Then
         IsForbidden = False
@@ -391,40 +432,76 @@ Private Function IsForbidden(ByVal ItemId As Integer) As Boolean
         End If
     Next i
     IsForbidden = False
+    Exit Function
+IsForbidden_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IsForbidden", Erl)
 End Function
 
 Public Sub IBaseScenario_SetLobbyIndex(ByVal value As Integer)
+    On Error Goto IBaseScenario_SetLobbyIndex_Err
     LobbyIndex = value
     Call ConfigMapLobby
+    Exit Sub
+IBaseScenario_SetLobbyIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_SetLobbyIndex", Erl)
 End Sub
 
 Public Function IBaseScenario_GetScenarioName() As String
+    On Error Goto IBaseScenario_GetScenarioName_Err
     IBaseScenario_GetScenarioName = "Abordaje"
+    Exit Function
+IBaseScenario_GetScenarioName_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_GetScenarioName", Erl)
 End Function
 
 Public Sub IBaseScenario_BroadcastOpenScenario()
+    On Error Goto IBaseScenario_BroadcastOpenScenario_Err
     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalConquestIntro, "", e_FontTypeNames.FONTTYPE_GUILD))
+    Exit Sub
+IBaseScenario_BroadcastOpenScenario_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_BroadcastOpenScenario", Erl)
 End Sub
 
 Public Sub IBaseScenario_SendRules(ByVal UserIndex As Integer)
+    On Error Goto IBaseScenario_SendRules_Err
     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgNavalConquestInstructions, "", e_FontTypeNames.FONTTYPE_GUILD))
+    Exit Sub
+IBaseScenario_SendRules_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_SendRules", Erl)
 End Sub
 
 Public Function IBaseScenario_GetExtraInterfaces() As Long
+    On Error Goto IBaseScenario_GetExtraInterfaces_Err
     IBaseScenario_GetExtraInterfaces = eInventoryInterface
+    Exit Function
+IBaseScenario_GetExtraInterfaces_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_GetExtraInterfaces", Erl)
 End Function
 
 Public Sub IBaseScenario_Reset()
+    On Error Goto IBaseScenario_Reset_Err
+    Exit Sub
+IBaseScenario_Reset_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_Reset", Erl)
 End Sub
 
 Public Function IBaseScenario_RequiresSpawn() As Boolean
+    On Error Goto IBaseScenario_RequiresSpawn_Err
     IBaseScenario_RequiresSpawn = False
+    Exit Function
+IBaseScenario_RequiresSpawn_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_RequiresSpawn", Erl)
 End Function
 
 Public Function IBaseScenario_ValidateUser(ByVal UserIndex As Integer) As Integer
+    On Error Goto IBaseScenario_ValidateUser_Err
+    Exit Function
+IBaseScenario_ValidateUser_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_ValidateUser", Erl)
 End Function
 
 Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
+    On Error Goto IBaseScenario_WillSummonPlayer_Err
     Dim SpawnPos As t_WorldPos
     SpawnPos.Map = MapNumbers(1)
     If UserList(UserIndex).flags.CurrentTeam = 1 Then
@@ -465,9 +542,13 @@ Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
     End With
     LobbyList(LobbyIndex).SummonCoordinates = SpawnPos
     Call RefillPotions(UserIndex)
+    Exit Sub
+IBaseScenario_WillSummonPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_WillSummonPlayer", Erl)
 End Sub
 
 Public Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef NewState As e_LobbyState)
+    On Error Goto IBaseScenario_UpdateLobbyState_Err
     If oldState = NewState Then
         Exit Sub
     End If
@@ -478,19 +559,35 @@ Public Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef 
     If NewState = Closed Then
         Call MatchCompleted
     End If
+    Exit Sub
+IBaseScenario_UpdateLobbyState_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_UpdateLobbyState", Erl)
 End Sub
 
 Public Sub IBaseScenario_PlayerKillNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
+    On Error Goto IBaseScenario_PlayerKillNpc_Err
+    Exit Sub
+IBaseScenario_PlayerKillNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_PlayerKillNpc", Erl)
 End Sub
 
 Public Sub IBaseScenario_NPcKillPlayer(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
+    On Error Goto IBaseScenario_NPcKillPlayer_Err
+    Exit Sub
+IBaseScenario_NPcKillPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_NPcKillPlayer", Erl)
 End Sub
 
 Public Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal deadIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
+    On Error Goto IBaseScenario_PlayerKillPlayer_Err
     
+    Exit Sub
+IBaseScenario_PlayerKillPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_PlayerKillPlayer", Erl)
 End Sub
 
 Public Sub IBaseScenario_Update()
+    On Error Goto IBaseScenario_Update_Err
     Dim frametime As Long
     frametime = GetTickCount() - LastFrameTime
     LastFrameTime = GetTickCount()
@@ -539,9 +636,13 @@ Public Sub IBaseScenario_Update()
     ElseIf LobbyList(LobbyIndex).State = e_LobbyState.Closed Then
         Call CloseScenario
     End If
+    Exit Sub
+IBaseScenario_Update_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_Update", Erl)
 End Sub
 
 Public Sub IBaseScenario_OnUserDisconnected(ByVal UserIndex As Integer)
+    On Error Goto IBaseScenario_OnUserDisconnected_Err
     With UserList(UserIndex)
         If UserLoot.Exists(UserIndex) Then
             Dim i, ItemTeam As Integer
@@ -556,24 +657,36 @@ Public Sub IBaseScenario_OnUserDisconnected(ByVal UserIndex As Integer)
         End If
     End With
     Call RemoveForbiddenItems(UserIndex)
+    Exit Sub
+IBaseScenario_OnUserDisconnected_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_OnUserDisconnected", Erl)
 End Sub
 
 Public Sub IBaseScenario_OnUserReconnect(ByVal UserIndex As Integer)
+    On Error Goto IBaseScenario_OnUserReconnect_Err
 
+    Exit Sub
+IBaseScenario_OnUserReconnect_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_OnUserReconnect", Erl)
 End Sub
 
 
 
 Private Sub StartGame()
+    On Error Goto StartGame_Err
     Call SetTimer(BroadCastTimer, 60000)
     Call SetTimer(ScoreBroadcastTimer, 20000)
     LastFrameTime = GetTickCount()
     Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(1883, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1883=¡Marineros al abordaje!
     ElapsedTime = 0
     Call ConfigMapEvent
+    Exit Sub
+StartGame_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.StartGame", Erl)
 End Sub
 
 Private Sub Respawn(ByVal player As Integer)
+    On Error Goto Respawn_Err
     Dim SpawnPos As t_WorldPos
     SpawnPos.Map = MapNumbers(0)
     SpawnPos.x = 10
@@ -600,9 +713,13 @@ Private Sub Respawn(ByVal player As Integer)
     Call RefillPotions(player)
 114 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessageParticleFX(UserList(player).Char.charindex, e_ParticulasIndex.Curar, 100, False, , UserList(player).pos.x, UserList(player).pos.y))
 116 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessagePlayWave("104", UserList(player).pos.x, UserList(player).pos.y))
+    Exit Sub
+Respawn_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.Respawn", Erl)
 End Sub
 
 Private Sub MatchCompleted()
+    On Error Goto MatchCompleted_Err
     If Not LobbyList(LobbyIndex).Canceled Then
         Call GiveRewards
     End If
@@ -626,9 +743,13 @@ Private Sub MatchCompleted()
         NpcIndex = ModAreas.ConnGroups(MapNumbers(0)).NpcForAi(0)
         Call QuitarNPC(NpcIndex, eClearHunt)
     Loop
+    Exit Sub
+MatchCompleted_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.MatchCompleted", Erl)
 End Sub
 
 Private Sub BroadcastPendingTime(ByVal frametime As Long)
+    On Error Goto BroadcastPendingTime_Err
     Dim pendingTime As Long
     'we add frame time here again so we round up
     pendingTime = (MaxTime - ElapsedTime + frametime) / 1000
@@ -646,9 +767,13 @@ Private Sub BroadcastPendingTime(ByVal frametime As Long)
     If pendingTime <= 1 Then
         Call SetTimer(BroadCastTimer, 1000)
     End If
+    Exit Sub
+BroadcastPendingTime_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.BroadcastPendingTime", Erl)
 End Sub
 
 Private Sub RespawnPlayers()
+    On Error Goto RespawnPlayers_Err
     Dim key As Variant
     Dim Keys As Variant
     Dim currentTime As Long
@@ -674,9 +799,13 @@ Private Sub RespawnPlayers()
             Call PlayerRespawn.Remove(key)
         End If
     Next key
+    Exit Sub
+RespawnPlayers_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.RespawnPlayers", Erl)
 End Sub
 
 Private Sub ConfigMapEvent()
+    On Error Goto ConfigMapEvent_Err
     Dim i As Integer
     For i = 0 To UBound(MapNumbers)
         MapInfo(MapNumbers(i)).Seguro = 0
@@ -698,9 +827,13 @@ Private Sub ConfigMapEvent()
         Call SpawnItem(TeamCargo(2).ItemList(i).ItemIndex, 1, TeamCargo(2).ItemList(i).WorldPos.Map, _
                        TeamCargo(2).ItemList(i).WorldPos.x, TeamCargo(2).ItemList(i).WorldPos.y)
     Next i
+    Exit Sub
+ConfigMapEvent_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.ConfigMapEvent", Erl)
 End Sub
 
 Private Sub SpawnNpc(ByRef NpcInfo As t_NpcSpawnInfo, ByRef Waypoints() As t_Waypoint, ByVal team As Byte)
+    On Error Goto SpawnNpc_Err
     Dim SpawnPos As t_WorldPos
     Dim NpcId As Integer
     SpawnPos.Map = MapNumbers(0)
@@ -719,9 +852,13 @@ Private Sub SpawnNpc(ByRef NpcInfo As t_NpcSpawnInfo, ByRef Waypoints() As t_Way
         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1786, NpcInfo.NpcId, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1792=No se pudo spawnear el npc ¬1, revisar.
         Call TraceError(Err.Number, "failed to spawn Npc " & NpcInfo.NpcId, "NavalBoarding.SpawnNpc ", Erl)
     End If
+    Exit Sub
+SpawnNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.SpawnNpc", Erl)
 End Sub
 
 Private Sub ConfigMapLobby()
+    On Error Goto ConfigMapLobby_Err
     Dim i As Integer
     Call ModLobby.SetTeamCount(LobbyList(LobbyIndex), 2, LobbyList(LobbyIndex).TeamType)
     For i = 0 To UBound(MapNumbers)
@@ -729,9 +866,13 @@ Private Sub ConfigMapLobby()
         MapInfo(MapNumbers(i)).SinInviOcul = True
         MapInfo(MapNumbers(i)).DropItems = False
     Next i
+    Exit Sub
+ConfigMapLobby_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.ConfigMapLobby", Erl)
 End Sub
 
 Private Function GetClosestWp(ByRef Npc As t_Npc, ByRef Waypoints() As t_Waypoint) As Integer
+    On Error Goto GetClosestWp_Err
     Dim ClosestWp As Integer
     Dim MinDistance As Single
     Dim i As Integer
@@ -762,9 +903,13 @@ Private Function GetClosestWp(ByRef Npc As t_Npc, ByRef Waypoints() As t_Waypoin
     End If
     If ClosestWp < 0 Then Exit Function
     GetClosestWp = ClosestWp
+    Exit Function
+GetClosestWp_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.GetClosestWp", Erl)
 End Function
 
 Public Sub IBaseScenario_GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)
+    On Error Goto IBaseScenario_GetNextWaypointForNpc_Err
     With NpcList(NpcIndex)
         Dim TargetWp As Byte
         If .flags.team = 1 Then
@@ -785,13 +930,21 @@ Public Sub IBaseScenario_GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef 
             PosY = Team2Waypoints(TargetWp).PosY
         End If
     End With
+    Exit Sub
+IBaseScenario_GetNextWaypointForNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_GetNextWaypointForNpc", Erl)
 End Sub
 
 Public Function GetOposingFaction(ByVal team As Integer) As Integer
+    On Error Goto GetOposingFaction_Err
     GetOposingFaction = IIf(team = 1, 2, 1)
+    Exit Function
+GetOposingFaction_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.GetOposingFaction", Erl)
 End Function
 
 Public Sub IBaseScenario_NpcDie(ByVal NpcIndex)
+    On Error Goto IBaseScenario_NpcDie_Err
     If NpcList(NpcIndex).Numero = CaptianNpcId Then
         Winner = GetOposingFaction(NpcList(NpcIndex).flags.team)
         Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MsgCaptainIsDeath, NpcList(NpcIndex).flags.team, e_FontTypeNames.FONTTYPE_GUILD))
@@ -800,9 +953,13 @@ Public Sub IBaseScenario_NpcDie(ByVal NpcIndex)
         Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MsgTeamNumberWin, GetOposingFaction(NpcList(NpcIndex).flags.team), e_FontTypeNames.FONTTYPE_GUILD))
         Call MatchCompleted
     End If
+    Exit Sub
+IBaseScenario_NpcDie_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_NpcDie", Erl)
 End Sub
 
 Public Sub IBaseScenario_UserDie(ByVal UserIndex)
+    On Error Goto IBaseScenario_UserDie_Err
     Dim RespawnInfo As clsRespawnInfo
     Set RespawnInfo = New clsRespawnInfo
     RespawnInfo.RespawnTime = GetTickCount()
@@ -834,9 +991,13 @@ Public Sub IBaseScenario_UserDie(ByVal UserIndex)
     End With
     Call PlayerRespawn.Add(UserIndex, RespawnInfo)
     
+    Exit Sub
+IBaseScenario_UserDie_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IBaseScenario_UserDie", Erl)
 End Sub
 
 Public Function IInventoryInterface_UserCanPickUpItem(ByVal UserIndex As Integer) As Boolean
+    On Error Goto IInventoryInterface_UserCanPickUpItem_Err
     With UserList(UserIndex)
         Dim ObjIndex As Integer
         ObjIndex = MapData(.pos.Map, .pos.x, .pos.y).ObjInfo.ObjIndex
@@ -848,9 +1009,13 @@ Public Function IInventoryInterface_UserCanPickUpItem(ByVal UserIndex As Integer
         End If
     End With
     IInventoryInterface_UserCanPickUpItem = True
+    Exit Function
+IInventoryInterface_UserCanPickUpItem_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IInventoryInterface_UserCanPickUpItem", Erl)
 End Function
 
 Public Sub IInventoryInterface_UserDidPickupItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+    On Error Goto IInventoryInterface_UserDidPickupItem_Err
     Dim i As Integer
     Dim ItemTeam As Integer
     With UserList(UserIndex)
@@ -868,9 +1033,13 @@ Public Sub IInventoryInterface_UserDidPickupItem(ByVal UserIndex As Integer, ByV
             End If
         Next i
     End With
+    Exit Sub
+IInventoryInterface_UserDidPickupItem_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IInventoryInterface_UserDidPickupItem", Erl)
 End Sub
 
 Public Function IInventoryInterface_UserCanDropItemAt(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer) As Boolean
+    On Error Goto IInventoryInterface_UserCanDropItemAt_Err
     With UserList(UserIndex)
         Dim ItemTeam As Integer
         ItemTeam = GetCargoItemTeam(.invent.Object(Slot).ObjIndex)
@@ -888,10 +1057,14 @@ Public Function IInventoryInterface_UserCanDropItemAt(ByVal UserIndex As Integer
         IInventoryInterface_UserCanDropItemAt = True
         Exit Function
     End With
+    Exit Function
+IInventoryInterface_UserCanDropItemAt_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IInventoryInterface_UserCanDropItemAt", Erl)
 End Function
 
 'inform that user want to drop an item
 Public Sub IInventoryInterface_UserDropItem(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
+    On Error Goto IInventoryInterface_UserDropItem_Err
     Dim ItemTeam As Integer
     With UserList(UserIndex)
         ItemTeam = GetCargoItemTeam(.invent.Object(Slot).ObjIndex)
@@ -922,9 +1095,13 @@ Public Sub IInventoryInterface_UserDropItem(ByVal UserIndex As Integer, ByVal Sl
             
         End If
     End With
+    Exit Sub
+IInventoryInterface_UserDropItem_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IInventoryInterface_UserDropItem", Erl)
 End Sub
 
 Private Sub SpawnItem(ByVal ItemId As Integer, ByVal StackSize As Integer, ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
+    On Error Goto SpawnItem_Err
     Dim MiObj As t_Obj
     MiObj.amount = StackSize
     MiObj.ObjIndex = ItemId
@@ -933,22 +1110,34 @@ Private Sub SpawnItem(ByVal ItemId As Integer, ByVal StackSize As Integer, ByVal
     SpawnPos.x = TileX
     SpawnPos.y = TileY
     Call TirarItemAlPiso(SpawnPos, MiObj, 0)
+    Exit Sub
+SpawnItem_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.SpawnItem", Erl)
 End Sub
 
 Private Function GetCargoItemTeam(ByVal ItemIndex As Integer) As Integer
+    On Error Goto GetCargoItemTeam_Err
     If ItemIndex = TeamCargo(1).CargoItemId Then
         GetCargoItemTeam = 1
     ElseIf ItemIndex = TeamCargo(2).CargoItemId Then
         GetCargoItemTeam = 2
     End If
+    Exit Function
+GetCargoItemTeam_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.GetCargoItemTeam", Erl)
 End Function
 
 Private Function GetOposingTeam(ByVal TeamIndex As Integer) As Integer
+    On Error Goto GetOposingTeam_Err
     If TeamIndex = 1 Then GetOposingTeam = 2
     If TeamIndex = 2 Then GetOposingTeam = 1
+    Exit Function
+GetOposingTeam_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.GetOposingTeam", Erl)
 End Function
 
 Private Function TryPickupItemAt(ByVal UserIndex As Integer) As Boolean
+    On Error Goto TryPickupItemAt_Err
     With UserList(UserIndex)
         If UserLoot.Exists(UserIndex) Then
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgCantCarryMoreThanOne, "", e_FontTypeNames.FONTTYPE_GUILD))
@@ -975,17 +1164,25 @@ Private Function TryPickupItemAt(ByVal UserIndex As Integer) As Boolean
         End If
     End With
     TryPickupItemAt = True
+    Exit Function
+TryPickupItemAt_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.TryPickupItemAt", Erl)
 End Function
 
 Private Function IsInsideArea(ByRef Area As t_CargoArea, ByVal PosX As Integer, ByVal PosY As Integer) As Boolean
+    On Error Goto IsInsideArea_Err
 100     If PosX < Area.TopLeft.PosX Then Exit Function
 102     If PosX > Area.BottomRight.PosX Then Exit Function
 104     If PosY < Area.TopLeft.PosY Then Exit Function
 106     If PosY > Area.BottomRight.PosY Then Exit Function
 108     IsInsideArea = True
+    Exit Function
+IsInsideArea_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.IsInsideArea", Erl)
 End Function
 
 Private Sub ValidateCargoAreasForTeam(ByVal team As Integer)
+    On Error Goto ValidateCargoAreasForTeam_Err
     If GetTeamCargoCount(team) < UBound(TeamCargo(team).ItemList) * 2 Then
         Exit Sub
     End If
@@ -993,9 +1190,13 @@ Private Sub ValidateCargoAreasForTeam(ByVal team As Integer)
     Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MsgTeamGotAllCargo, team, e_FontTypeNames.FONTTYPE_GUILD))
     Winner = team
     Call MatchCompleted
+    Exit Sub
+ValidateCargoAreasForTeam_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.ValidateCargoAreasForTeam", Erl)
 End Sub
 
 Private Function GetTeamCargoCount(ByVal team As Integer) As Integer
+    On Error Goto GetTeamCargoCount_Err
     Dim i, j As Integer
     Dim CargoCount As Integer
     For i = TeamCargo(team).OriginalCargoArea.TopLeft.PosX To _
@@ -1019,9 +1220,13 @@ Private Function GetTeamCargoCount(ByVal team As Integer) As Integer
         Next j
     Next i
     GetTeamCargoCount = CargoCount
+    Exit Function
+GetTeamCargoCount_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.GetTeamCargoCount", Erl)
 End Function
 
 Private Sub CheckWinner()
+    On Error Goto CheckWinner_Err
     Dim Team1Cargo, Team2Cargo As Integer
     Team1Cargo = GetTeamCargoCount(1)
     Team2Cargo = GetTeamCargoCount(2)
@@ -1040,15 +1245,23 @@ Private Sub CheckWinner()
         Call SendData(SendTarget.toMap, MapNumbers(TopMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestEvenMatch, "", e_FontTypeNames.FONTTYPE_GUILD))
         Call SendData(SendTarget.toMap, MapNumbers(CargoMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestEvenMatch, "", e_FontTypeNames.FONTTYPE_GUILD))
     End If
+    Exit Sub
+CheckWinner_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.CheckWinner", Erl)
 End Sub
 
 Private Sub UpdateCaptains(ByVal DeltaTime As Long)
+    On Error Goto UpdateCaptains_Err
     If ElapsedTime <= FireStartTime Then Exit Sub
     Call HandleCaptain(DeltaTime, 1)
     Call HandleCaptain(DeltaTime, 2)
+    Exit Sub
+UpdateCaptains_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.UpdateCaptains", Erl)
 End Sub
 
 Private Sub HandleCaptain(ByVal DeltaTime As Long, ByVal CaptainIndex As Integer)
+    On Error Goto HandleCaptain_Err
     With CaptainState(CaptainIndex)
         If Not IsValidNpcRef(CaptainState(CaptainIndex).NpcRef) Then Exit Sub
         .TimeSinceLastFire = .TimeSinceLastFire + DeltaTime
@@ -1063,9 +1276,13 @@ Private Sub HandleCaptain(ByVal DeltaTime As Long, ByVal CaptainIndex As Integer
             End If
         End If
     End With
+    Exit Sub
+HandleCaptain_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.HandleCaptain", Erl)
 End Sub
 
 Private Function CaptainFire(ByVal CaptainIndex As Integer) As Boolean
+    On Error Goto CaptainFire_Err
     With CaptainState(CaptainIndex)
         Dim TargetTeam As Integer
         TargetTeam = GetOposingTeam(CaptainIndex)
@@ -1108,9 +1325,13 @@ Private Function CaptainFire(ByVal CaptainIndex As Integer) As Boolean
         Next i
     End With
     CaptainFire = True
+    Exit Function
+CaptainFire_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.CaptainFire", Erl)
 End Function
 
 Sub RefillPotions(ByVal UserIndex As Integer)
+    On Error Goto RefillPotions_Err
     Dim FillBluePots As Integer
     Dim FillRedPots As Integer
     FillBluePots = RespawnManaPotAmount
@@ -1151,9 +1372,13 @@ Sub RefillPotions(ByVal UserIndex As Integer)
         End If
         Call UpdateUserInv(True, UserIndex, 0)
     End With
+    Exit Sub
+RefillPotions_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.RefillPotions", Erl)
 End Sub
 
 Sub GiveRewards()
+    On Error Goto GiveRewards_Err
     Dim Team1 As String
     Dim Team2 As String
     Dim Reward As Long
@@ -1197,4 +1422,7 @@ Sub GiveRewards()
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleRewardBroadcast, Reward, e_FontTypeNames.FONTTYPE_GUILD))
         End If
     End If
+    Exit Sub
+GiveRewards_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioNavalBoarding.GiveRewards", Erl)
 End Sub

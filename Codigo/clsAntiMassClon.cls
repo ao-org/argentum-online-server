@@ -44,6 +44,7 @@ Private Const MaximoPersonajesPorIP = 15
 Private m_coleccion As New Collection
 
 Public Function MaxPersonajes(sIp As String) As Boolean
+    On Error Goto MaxPersonajes_Err
         
         On Error GoTo MaxPersonajes_Err
         
@@ -73,9 +74,13 @@ MaxPersonajes_Err:
 114     Call TraceError(Err.Number, Err.Description, "clsAntiMassClon.MaxPersonajes", Erl)
 116
         
+    Exit Function
+MaxPersonajes_Err:
+    Call TraceError(Err.Number, Err.Description, "clsAntiMassClon.MaxPersonajes", Erl)
 End Function
 
 Public Function VaciarColeccion()
+    On Error Goto VaciarColeccion_Err
 
         On Error GoTo ErrHandler
 
@@ -89,5 +94,8 @@ Public Function VaciarColeccion()
 ErrHandler:
 104     Call LogError("Error en RestarConexion " & Err.Description)
 
+    Exit Function
+VaciarColeccion_Err:
+    Call TraceError(Err.Number, Err.Description, "clsAntiMassClon.VaciarColeccion", Erl)
 End Function
 

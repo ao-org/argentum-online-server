@@ -85,6 +85,7 @@ Public LastSockListen As Long
 ' ====================================================================================
 
 Public Function BuscaSlotSock(ByVal S As Long) As Long
+    On Error Goto BuscaSlotSock_Err
 
         On Error GoTo BuscaSlotSock_Err
         
@@ -102,9 +103,13 @@ BuscaSlotSock_Err:
 
 108
 
+    Exit Function
+BuscaSlotSock_Err:
+    Call TraceError(Err.Number, Err.Description, "wskapiAO.BuscaSlotSock", Erl)
 End Function
 
 Public Sub AgregaSlotSock(ByVal Sock As Long, ByVal Slot As Long)
+    On Error Goto AgregaSlotSock_Err
         
         On Error GoTo AgregaSlotSock_Err
         
@@ -124,9 +129,13 @@ AgregaSlotSock_Err:
 
 110
         
+    Exit Sub
+AgregaSlotSock_Err:
+    Call TraceError(Err.Number, Err.Description, "wskapiAO.AgregaSlotSock", Erl)
 End Sub
 
 Public Sub BorraSlotSock(ByVal Sock As Long)
+    On Error Goto BorraSlotSock_Err
         
         On Error GoTo BorraSlotSock_Err
         
@@ -145,11 +154,15 @@ Public Sub BorraSlotSock(ByVal Sock As Long)
 BorraSlotSock_Err:
 108     Call TraceError(Err.Number, Err.Description, "wskapiAO.BorraSlotSock", Erl)
         
+    Exit Sub
+BorraSlotSock_Err:
+    Call TraceError(Err.Number, Err.Description, "wskapiAO.BorraSlotSock", Erl)
 End Sub
 
 
 
 Public Sub LogCustom(ByVal str As String)
+    On Error Goto LogCustom_Err
 
         On Error GoTo ErrHandler
 
@@ -164,9 +177,13 @@ Public Sub LogCustom(ByVal str As String)
 
 ErrHandler:
 
+    Exit Sub
+LogCustom_Err:
+    Call TraceError(Err.Number, Err.Description, "wskapiAO.LogCustom", Erl)
 End Sub
 
 Public Sub LogApiSock(ByVal str As String)
+    On Error Goto LogApiSock_Err
 
         On Error GoTo ErrHandler
 
@@ -181,9 +198,13 @@ Public Sub LogApiSock(ByVal str As String)
 
 ErrHandler:
 
+    Exit Sub
+LogApiSock_Err:
+    Call TraceError(Err.Number, Err.Description, "wskapiAO.LogApiSock", Erl)
 End Sub
 
 Public Sub EventoSockAccept(ByVal UserSocketID As Long, UserIP As Long)
+    On Error Goto EventoSockAccept_Err
         
     On Error GoTo EventoSockAccept_Err
 
@@ -252,9 +273,13 @@ EventoSockAccept_Err:
     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.EventoSockAccept", Erl)
     Resume Next
     
+    Exit Sub
+EventoSockAccept_Err:
+    Call TraceError(Err.Number, Err.Description, "wskapiAO.EventoSockAccept", Erl)
 End Sub
  
 Public Sub EventoSockRead(ByVal Slot As Integer, ByRef Datos() As Byte, ByVal Length As Long)
+    On Error Goto EventoSockRead_Err
         
         On Error GoTo EventoSockRead_Err
 
@@ -321,9 +346,13 @@ EventoSockRead_Err:
 138     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.EventoSockRead", Erl)
         Resume Next
         
+    Exit Sub
+EventoSockRead_Err:
+    Call TraceError(Err.Number, Err.Description, "wskapiAO.EventoSockRead", Erl)
 End Sub
 
 Public Sub EventoSockClose(ByVal Slot As Integer)
+    On Error Goto EventoSockClose_Err
         
         On Error GoTo EventoSockClose_Err
 
@@ -345,9 +374,13 @@ EventoSockClose_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.EventoSockClose", Erl)
         Resume Next
         
+    Exit Sub
+EventoSockClose_Err:
+    Call TraceError(Err.Number, Err.Description, "wskapiAO.EventoSockClose", Erl)
 End Sub
 
 Public Sub WSApiReiniciarSockets()
+    On Error Goto WSApiReiniciarSockets_Err
         
         On Error GoTo WSApiReiniciarSockets_Err
 
@@ -396,9 +429,13 @@ WSApiReiniciarSockets_Err:
 
 146
         
+    Exit Sub
+WSApiReiniciarSockets_Err:
+    Call TraceError(Err.Number, Err.Description, "wskapiAO.WSApiReiniciarSockets", Erl)
 End Sub
 
 Public Function CondicionSocket(ByRef lpCallerId As WSABUF, ByRef lpCallerData As WSABUF, ByRef lpSQOS As FLOWSPEC, ByVal Reserved As Long, ByRef lpCalleeId As WSABUF, ByRef lpCalleeData As WSABUF, ByRef Group As Long, ByVal dwCallbackData As Long) As Long
+    On Error Goto CondicionSocket_Err
         
         On Error GoTo CondicionSocket_Err
 
@@ -428,4 +465,7 @@ CondicionSocket_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.CondicionSocket", Erl)
         Resume Next
  
+    Exit Function
+CondicionSocket_Err:
+    Call TraceError(Err.Number, Err.Description, "wskapiAO.CondicionSocket", Erl)
 End Function

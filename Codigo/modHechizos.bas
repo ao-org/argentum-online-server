@@ -32,6 +32,7 @@ Private Const FLAUTA_ELFICA             As Long = 40
 
 
 Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Spell As Integer, Optional ByVal IgnoreVisibilityCheck As Boolean = False)
+    On Error Goto NpcLanzaSpellSobreUser_Err
       On Error GoTo NpcLanzaSpellSobreUser_Err
 
       Dim Damage As Integer
@@ -269,9 +270,13 @@ NpcLanzaSpellSobreUser_Err:
 352   Call TraceError(Err.Number, Err.Description & " Hechizo: " & Spell, "modHechizos.NpcLanzaSpellSobreUser", Erl)
 
 
+    Exit Sub
+NpcLanzaSpellSobreUser_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.NpcLanzaSpellSobreUser", Erl)
 End Sub
 
 Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer, ByVal Spell As Integer)
+    On Error Goto NpcLanzaSpellSobreNpc_Err
       On Error GoTo NpcLanzaSpellSobreNpc_Err
 
       Dim Damage As Integer
@@ -384,9 +389,13 @@ NpcLanzaSpellSobreNpc_Err:
 206   Call TraceError(Err.Number, Err.Description, "modHechizos.NpcLanzaSpellSobreNpc", Erl)
 
 
+    Exit Sub
+NpcLanzaSpellSobreNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.NpcLanzaSpellSobreNpc", Erl)
 End Sub
 
 Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As Integer)
+    On Error Goto NpcLanzaSpellSobreArea_Err
         On Error GoTo NpcLanzaSpellSobreArea_Err
     
         Dim afectaUsers As Boolean
@@ -485,10 +494,14 @@ NpcLanzaSpellSobreArea_Err:
 150     Call TraceError(Err.Number, Err.Description, "modHechizos.NpcLanzaSpellSobreArea", Erl)
 
         
+    Exit Sub
+NpcLanzaSpellSobreArea_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.NpcLanzaSpellSobreArea", Erl)
 End Sub
 
 
 Function TieneHechizo(ByVal i As Integer, ByVal UserIndex As Integer) As Boolean
+    On Error Goto TieneHechizo_Err
 
         On Error GoTo ErrHandler
     
@@ -507,9 +520,13 @@ Function TieneHechizo(ByVal i As Integer, ByVal UserIndex As Integer) As Boolean
         Exit Function
 ErrHandler:
 
+    Exit Function
+TieneHechizo_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.TieneHechizo", Erl)
 End Function
 
 Sub AgregarHechizo(ByVal UserIndex As Integer, ByVal Slot As Integer)
+    On Error Goto AgregarHechizo_Err
         
         On Error GoTo AgregarHechizo_Err
         
@@ -555,9 +572,13 @@ AgregarHechizo_Err:
 122     Call TraceError(Err.Number, Err.Description, "modHechizos.AgregarHechizo", Erl)
 
         
+    Exit Sub
+AgregarHechizo_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.AgregarHechizo", Erl)
 End Sub
             
 Sub DecirPalabrasMagicas(ByVal Hechizo As Integer, ByVal UserIndex As Integer)
+    On Error Goto DecirPalabrasMagicas_Err
 On Error GoTo DecirPalabrasMagicas_Err
         UserList(UserIndex).Counters.timeChat = 4
         If Not IsVisible(UserList(UserIndex)) Then
@@ -569,9 +590,13 @@ On Error GoTo DecirPalabrasMagicas_Err
         Exit Sub
 DecirPalabrasMagicas_Err:
     Call TraceError(Err.Number, Err.Description, "modHechizos.DecirPalabrasMagicas", Erl)
+    Exit Sub
+DecirPalabrasMagicas_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.DecirPalabrasMagicas", Erl)
 End Sub
 
 Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As Integer, Optional ByVal Slot As Integer = 0) As Boolean
+    On Error Goto PuedeLanzar_Err
         On Error GoTo PuedeLanzar_Err
 
 100     PuedeLanzar = False
@@ -808,6 +833,9 @@ PuedeLanzar_Err:
 168     Call TraceError(Err.Number, Err.Description, "modHechizos.PuedeLanzar", Erl)
 
         
+    Exit Function
+PuedeLanzar_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.PuedeLanzar", Erl)
 End Function
 
 ''
@@ -817,6 +845,7 @@ End Function
 ' @param b  Indica si se termino la operación.
 
 Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
+    On Error Goto HechizoInvocacion_Err
         '***************************************************
         'Author: Uknown
         'Modification: 06/15/2008 (NicoNZ)
@@ -982,9 +1011,13 @@ HechizoInvocacion_Err:
 208     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoInvocacion")
 
 
+    Exit Sub
+HechizoInvocacion_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoInvocacion", Erl)
 End Sub
 
 Sub HechizoTerrenoEstado(ByVal UserIndex As Integer, ByRef b As Boolean)
+    On Error Goto HechizoTerrenoEstado_Err
         
         On Error GoTo HechizoTerrenoEstado_Err
         
@@ -1028,9 +1061,13 @@ Sub HechizoTerrenoEstado(ByVal UserIndex As Integer, ByRef b As Boolean)
         Exit Sub
 HechizoTerrenoEstado_Err:
 134     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoTerrenoEstado", Erl)
+    Exit Sub
+HechizoTerrenoEstado_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoTerrenoEstado", Erl)
 End Sub
 
 Private Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
+    On Error Goto HechizoSobreArea_Err
         
         On Error GoTo HechizoSobreArea_Err
         
@@ -1118,9 +1155,13 @@ HechizoSobreArea_Err:
 154     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoSobreArea", Erl)
 
         
+    Exit Sub
+HechizoSobreArea_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoSobreArea", Erl)
 End Sub
 
 Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
+    On Error Goto HechizoPortal_Err
         On Error GoTo HechizoPortal_Err
         
 
@@ -1191,9 +1232,13 @@ HechizoPortal_Err:
 146     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoPortal", Erl)
 
         
+    Exit Sub
+HechizoPortal_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoPortal", Erl)
 End Sub
 
 Sub HechizoMaterializacion(ByVal UserIndex As Integer, ByRef b As Boolean)
+    On Error Goto HechizoMaterializacion_Err
         
         On Error GoTo HechizoMaterializacion_Err
         
@@ -1224,9 +1269,13 @@ HechizoMaterializacion_Err:
 118     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoMaterializacion", Erl)
 
         
+    Exit Sub
+HechizoMaterializacion_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoMaterializacion", Erl)
 End Sub
 
 Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
+    On Error Goto HandleHechizoTerreno_Err
         
         On Error GoTo HandleHechizoTerreno_Err
         
@@ -1285,9 +1334,13 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
 
 HandleHechizoTerreno_Err:
 140     Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoTerreno", Erl)
+    Exit Sub
+HandleHechizoTerreno_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoTerreno", Erl)
 End Sub
 
 Function HandlePetSpell(ByVal UserIndex As Integer, ByVal uh As Integer) As Boolean
+    On Error Goto HandlePetSpell_Err
     With UserList(UserIndex)
         If .NroMascotas = 0 Then
             Exit Function
@@ -1326,9 +1379,13 @@ Function HandlePetSpell(ByVal UserIndex As Integer, ByVal uh As Integer) As Bool
     Call WriteUpdateMana(UserIndex)
     Call WriteUpdateSta(UserIndex)
     HandlePetSpell = True
+    Exit Function
+HandlePetSpell_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HandlePetSpell", Erl)
 End Function
 
 Function HandlePhysicalSkill(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
+    On Error Goto HandlePhysicalSkill_Err
                         ByVal SpellIndex As Integer, IsAlive As Boolean) As Boolean
     
     Dim TargetRef As t_AnyReference
@@ -1399,9 +1456,13 @@ Function HandlePhysicalSkill(ByVal SourceIndex As Integer, ByVal SourceType As e
             HandlePhysicalSkill = False
             Exit Function
     End Select
+    Exit Function
+HandlePhysicalSkill_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HandlePhysicalSkill", Erl)
 End Function
 
 Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
+    On Error Goto HandleHechizoUsuario_Err
         '***************************************************
         'Author: Unknown
         'Last Modification: 01/10/07
@@ -1484,9 +1545,13 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
         Exit Sub
 HandleHechizoUsuario_Err:
 138     Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoUsuario", Erl)
+    Exit Sub
+HandleHechizoUsuario_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoUsuario", Erl)
 End Sub
 
 Public Function ManaHechizoPorClase(ByVal userindex As Integer, Hechizo As t_Hechizo, Optional ByVal HechizoIndex As Long) As Integer
+    On Error Goto ManaHechizoPorClase_Err
         
     ManaHechizoPorClase = Hechizo.ManaRequerido
 
@@ -1502,9 +1567,13 @@ Public Function ManaHechizoPorClase(ByVal userindex As Integer, Hechizo As t_Hec
             End If
            
     End Select
+    Exit Function
+ManaHechizoPorClase_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.ManaHechizoPorClase", Erl)
 End Function
 
 Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
+    On Error Goto HandleHechizoNPC_Err
         
         On Error GoTo HandleHechizoNPC_Err
         
@@ -1575,9 +1644,13 @@ HandleHechizoNPC_Err:
 134     Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoNPC", Erl)
 
         
+    Exit Sub
+HandleHechizoNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoNPC", Erl)
 End Sub
 
 Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
+    On Error Goto LanzarHechizo_Err
         
         On Error GoTo LanzarHechizo_Err
 
@@ -1680,9 +1753,13 @@ Call WriteLocaleMsg(UserIndex, "792", e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
 LanzarHechizo_Err:
 178     Call TraceError(Err.Number, Err.Description, "modHechizos.LanzarHechizo", Erl)
+    Exit Sub
+LanzarHechizo_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.LanzarHechizo", Erl)
 End Sub
 
 Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
+    On Error Goto HechizoEstadoUsuario_Err
         '***************************************************
         'Autor: Unknown (orginal version)
         'Last Modification: 02/01/2008
@@ -2544,9 +2621,13 @@ HechizoEstadoUsuario_Err:
      Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoEstadoUsuario", Erl)
 
         
+    Exit Sub
+HechizoEstadoUsuario_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoEstadoUsuario", Erl)
 End Sub
 
 Sub checkHechizosEfectividad(ByVal UserIndex As Integer, ByVal TargetUser As Integer)
+    On Error Goto checkHechizosEfectividad_Err
     With UserList(UserIndex)
         If UserList(TargetUser).flags.Inmovilizado + UserList(TargetUser).flags.Paralizado = 0 Then
             .Counters.controlHechizos.HechizosCasteados = .Counters.controlHechizos.HechizosCasteados + 1
@@ -2564,9 +2645,13 @@ Sub checkHechizosEfectividad(ByVal UserIndex As Integer, ByVal TargetUser As Int
             .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales - 1
         End If
     End With
+    Exit Sub
+checkHechizosEfectividad_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.checkHechizosEfectividad", Erl)
 End Sub
 
 Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b As Boolean, ByVal UserIndex As Integer)
+    On Error Goto HechizoEstadoNPC_Err
         On Error GoTo HechizoEstadoNPC_Err
         
         Dim UserAttackInteractionResult As t_AttackInteractionResult
@@ -2748,9 +2833,13 @@ Call WriteLocaleMsg(UserIndex, "820", e_FontTypeNames.FONTTYPE_INFOIAO)
 
 HechizoEstadoNPC_Err:
     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoEstadoNPC", Erl)
+    Exit Sub
+HechizoEstadoNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoEstadoNPC", Erl)
 End Sub
 
 Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAlive As Boolean)
+    On Error Goto HechizoPropNPC_Err
         '***************************************************
         'Autor: Unknown (orginal version)
         'Last Modification: 14/08/2007
@@ -2854,9 +2943,13 @@ Call WriteLocaleMsg(UserIndex, "821", e_FontTypeNames.FONTTYPE_INFOIAO)
         Exit Sub
 HechizoPropNPC_Err:
 200     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoPropNPC", Erl)
+    Exit Sub
+HechizoPropNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoPropNPC", Erl)
 End Sub
 
 Private Sub InfoHechizoDeNpcSobreUser(ByVal NpcIndex As Integer, ByVal TargetUser As Integer, ByVal Spell As Integer)
+    On Error Goto InfoHechizoDeNpcSobreUser_Err
       On Error GoTo InfoHechizoDeNpcSobreUser_Err
 
 100   With UserList(TargetUser)
@@ -2895,9 +2988,13 @@ Private Sub InfoHechizoDeNpcSobreUser(ByVal NpcIndex As Integer, ByVal TargetUse
 InfoHechizoDeNpcSobreUser_Err:
 126   Call TraceError(Err.Number, Err.Description, "modHechizos.InfoHechizoDeNpcSobreUser", Erl)
 
+    Exit Sub
+InfoHechizoDeNpcSobreUser_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.InfoHechizoDeNpcSobreUser", Erl)
 End Sub
 
 Private Sub InfoHechizo(ByVal UserIndex As Integer)
+    On Error Goto InfoHechizo_Err
         
         On Error GoTo InfoHechizo_Err
         
@@ -3020,9 +3117,13 @@ InfoHechizo_Err:
 200     Call TraceError(Err.Number, Err.Description, "modHechizos.InfoHechizo", Erl)
 
         
+    Exit Sub
+InfoHechizo_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.InfoHechizo", Erl)
 End Sub
 
 Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAlive As Boolean)
+    On Error Goto HechizoPropUsuario_Err
         On Error GoTo HechizoPropUsuario_Err
         
 
@@ -3519,9 +3620,13 @@ HechizoPropUsuario_Err:
 568     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoPropUsuario", Erl)
 
         
+    Exit Sub
+HechizoPropUsuario_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoPropUsuario", Erl)
 End Sub
 
 Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAlive As Boolean)
+    On Error Goto HechizoCombinados_Err
         '***************************************************
         'Autor: Unknown (orginal version)
         'Last Modification: 02/01/2008
@@ -4129,9 +4234,13 @@ HechizoCombinados_Err:
 730     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoCombinados", Erl)
 
         
+    Exit Sub
+HechizoCombinados_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoCombinados", Erl)
 End Sub
 
 Sub UpdateUserHechizos(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal Slot As Byte)
+    On Error Goto UpdateUserHechizos_Err
         
         On Error GoTo UpdateUserHechizos_Err
 
@@ -4172,18 +4281,26 @@ UpdateUserHechizos_Err:
 118     Call TraceError(Err.Number, Err.Description, "modHechizos.UpdateUserHechizos", Erl)
 
         
+    Exit Sub
+UpdateUserHechizos_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.UpdateUserHechizos", Erl)
 End Sub
 
 Sub ChangeUserHechizo(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Hechizo As Integer)
+    On Error Goto ChangeUserHechizo_Err
     On Error GoTo ChangeUserHechizo_Err
 100     UserList(UserIndex).Stats.UserHechizos(Slot) = Hechizo
         Call WriteChangeSpellSlot(UserIndex, Slot)
         Exit Sub
 ChangeUserHechizo_Err:
     Call TraceError(Err.Number, Err.Description, "modHechizos.ChangeUserHechizo", Erl)
+    Exit Sub
+ChangeUserHechizo_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.ChangeUserHechizo", Erl)
 End Sub
 
 Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, ByVal CualHechizo As Integer)
+    On Error Goto DesplazarHechizo_Err
         
         On Error GoTo DesplazarHechizo_Err
 
@@ -4257,9 +4374,13 @@ Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, B
 DesplazarHechizo_Err:
 142     Call TraceError(Err.Number, Err.Description, "modHechizos.DesplazarHechizo", Erl)
         
+    Exit Sub
+DesplazarHechizo_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.DesplazarHechizo", Erl)
 End Sub
 
 Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte, npc As Boolean)
+    On Error Goto AreaHechizo_Err
         On Error GoTo AreaHechizo_Err
         
         Dim calculo      As Integer
@@ -4644,9 +4765,13 @@ Call WriteLocaleMsg(NpcIndex, "833", e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
 AreaHechizo_Err:
 482     Call TraceError(Err.Number, Err.Description, "modHechizos.AreaHechizo", Erl)
+    Exit Sub
+AreaHechizo_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.AreaHechizo", Erl)
 End Sub
 
 Private Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+    On Error Goto AdjustNpcStatWithCasterLevel_Err
     Dim BaseHit As Integer
     Dim BonusDamage As Single
     Dim BonusFromItem As Integer
@@ -4683,9 +4808,13 @@ Private Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIn
         .Stats.MaxHit = .Stats.MaxHit + (.Stats.MaxHit * BonusDamage)
         
     End With
+    Exit Sub
+AdjustNpcStatWithCasterLevel_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.AdjustNpcStatWithCasterLevel", Erl)
 End Sub
 
 Public Sub UseSpellSlot(ByVal UserIndex As Integer, ByVal SpellSlot As Integer)
+    On Error Goto UseSpellSlot_Err
     On Error GoTo UseSpellSlot_Err
 100     With UserList(UserIndex)
             
@@ -4740,4 +4869,7 @@ Public Sub UseSpellSlot(ByVal UserIndex As Integer, ByVal SpellSlot As Integer)
     Exit Sub
 UseSpellSlot_Err:
 140     Call TraceError(Err.Number, Err.Description, "Protocol.UseSpellSlot", Erl)
+    Exit Sub
+UseSpellSlot_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.UseSpellSlot", Erl)
 End Sub

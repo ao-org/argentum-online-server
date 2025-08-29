@@ -28,6 +28,7 @@ Attribute VB_Name = "ModMap"
 Option Explicit
 
 Public Function CanAddTrapAt(ByVal mapIndex As Integer, ByVal posX As Integer, ByVal posY As Integer) As Boolean
+    On Error Goto CanAddTrapAt_Err
     If Not MapData(mapIndex, posX, posY).Trap Is Nothing Then
         Exit Function
     End If
@@ -36,9 +37,13 @@ Public Function CanAddTrapAt(ByVal mapIndex As Integer, ByVal posX As Integer, B
     If MapData(mapIndex, posX, posY).UserIndex > 0 Then Exit Function
     If MapData(mapIndex, posX, posY).ObjInfo.objIndex > 0 Then Exit Function
     CanAddTrapAt = True
+    Exit Function
+CanAddTrapAt_Err:
+    Call TraceError(Err.Number, Err.Description, "ModMap.CanAddTrapAt", Erl)
 End Function
 
 Public Sub ActivateTrap(ByVal TargetIndex, ByVal TargetType As e_ReferenceType, ByVal map As Integer, ByVal posX As Integer, ByVal posY As Integer)
+    On Error Goto ActivateTrap_Err
     If MapData(map, posX, posY).Trap Is Nothing Then
      Exit Sub
     End If
@@ -46,4 +51,7 @@ Public Sub ActivateTrap(ByVal TargetIndex, ByVal TargetType As e_ReferenceType, 
         Exit Sub
     End If
     Call MapData(map, posX, posY).Trap.trigger(TargetIndex, TargetType)
+    Exit Sub
+ActivateTrap_Err:
+    Call TraceError(Err.Number, Err.Description, "ModMap.ActivateTrap", Erl)
 End Sub

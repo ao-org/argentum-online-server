@@ -46,6 +46,10 @@ Public Connection_async(1 To MAX_ASYNC)    As ADODB.Connection
 Public Builder             As cStringBuilder
 
 Public Function post_increment(ByRef value As Integer) As Integer
+    On Error Goto post_increment_Err
      post_increment = value
      value = value + 1
+    Exit Function
+post_increment_Err:
+    Call TraceError(Err.Number, Err.Description, "DatabaseGlobals.post_increment", Erl)
 End Function

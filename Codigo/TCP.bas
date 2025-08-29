@@ -28,6 +28,7 @@ Attribute VB_Name = "TCP"
 Option Explicit
 
 Sub DarCuerpo(ByVal UserIndex As Integer)
+    On Error Goto DarCuerpo_Err
         
         On Error GoTo DarCuerpo_Err
         
@@ -107,9 +108,13 @@ DarCuerpo_Err:
 158     Call TraceError(Err.Number, Err.Description, "TCP.DarCuerpo", Erl)
 
         
+    Exit Sub
+DarCuerpo_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.DarCuerpo", Erl)
 End Sub
 
 Sub RellenarInventario(ByVal UserIndex As String)
+    On Error Goto RellenarInventario_Err
         
         On Error GoTo RellenarInventario_Err
         
@@ -447,9 +452,13 @@ RellenarInventario_Err:
 258     Call TraceError(Err.Number, Err.Description, "TCP.RellenarInventario", Erl)
 
         
+    Exit Sub
+RellenarInventario_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.RellenarInventario", Erl)
 End Sub
 
 Function AsciiValidos(ByVal cad As String) As Boolean
+    On Error Goto AsciiValidos_Err
         
         On Error GoTo AsciiValidos_Err
         
@@ -480,8 +489,12 @@ AsciiValidos_Err:
 114     Call TraceError(Err.Number, Err.Description, "TCP.AsciiValidos", Erl)
 
         
+    Exit Function
+AsciiValidos_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.AsciiValidos", Erl)
 End Function
 Function Numeric(ByVal cad As String) As Boolean
+    On Error Goto Numeric_Err
         
         On Error GoTo Numeric_Err
         
@@ -512,9 +525,13 @@ Numeric_Err:
 114     Call TraceError(Err.Number, Err.Description, "TCP.Numeric", Erl)
 
         
+    Exit Function
+Numeric_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.Numeric", Erl)
 End Function
 
 Function NombrePermitido(ByVal nombre As String) As Boolean
+    On Error Goto NombrePermitido_Err
         
         On Error GoTo NombrePermitido_Err
         
@@ -540,9 +557,13 @@ NombrePermitido_Err:
 110     Call TraceError(Err.Number, Err.Description, "TCP.NombrePermitido", Erl)
 
         
+    Exit Function
+NombrePermitido_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.NombrePermitido", Erl)
 End Function
 
 Function Validate_Skills(ByVal UserIndex As Integer) As Boolean
+    On Error Goto Validate_Skills_Err
         
         On Error GoTo Validate_Skills_Err
         
@@ -569,9 +590,13 @@ Validate_Skills_Err:
 110     Call TraceError(Err.Number, Err.Description, "TCP.Validate_Skills", Erl)
 
         
+    Exit Function
+Validate_Skills_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.Validate_Skills", Erl)
 End Function
 
 Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal UserRaza As e_Raza, ByVal UserSexo As e_Genero, ByVal UserClase As e_Class, ByVal Head As Integer, ByVal Hogar As e_Ciudad) As Boolean
+    On Error Goto ConnectNewUser_Err
         
         On Error GoTo ConnectNewUser_Err
         
@@ -760,9 +785,13 @@ ConnectNewUser_Err:
 262     Call TraceError(Err.Number, Err.Description, "TCP.ConnectNewUser", Erl)
 
         
+    Exit Function
+ConnectNewUser_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ConnectNewUser", Erl)
 End Function
 
 Sub CloseSocket(ByVal UserIndex As Integer)
+    On Error Goto CloseSocket_Err
 
     On Error GoTo ErrHandler
 
@@ -818,10 +847,14 @@ ErrHandler:
 148     Call TraceError(Err.Number, Err.Description, "TCP.CloseSocket", Erl)
 
 
+    Exit Sub
+CloseSocket_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.CloseSocket", Erl)
 End Sub
 
 
 Sub CloseSocketSL(ByVal UserIndex As Integer)
+    On Error Goto CloseSocketSL_Err
         
         On Error GoTo CloseSocketSL_Err
 
@@ -837,9 +870,13 @@ CloseSocketSL_Err:
 108     Call TraceError(Err.Number, Err.Description, "TCP.CloseSocketSL", Erl)
 
         
+    Exit Sub
+CloseSocketSL_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.CloseSocketSL", Erl)
 End Sub
 
 Function EstaPCarea(Index As Integer, Index2 As Integer) As Boolean
+    On Error Goto EstaPCarea_Err
         
         On Error GoTo EstaPCarea_Err
         
@@ -867,9 +904,13 @@ EstaPCarea_Err:
 114     Call TraceError(Err.Number, Err.Description, "TCP.EstaPCarea", Erl)
 
         
+    Exit Function
+EstaPCarea_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.EstaPCarea", Erl)
 End Function
 
 Function HayPCarea(ByVal map As Integer, ByVal X As Integer, ByVal y As Integer, ByVal ignoreUserMuerto As Boolean) As Boolean
+    On Error Goto HayPCarea_Err
         
         On Error GoTo HayPCarea_Err
         
@@ -903,9 +944,13 @@ HayPCarea_Err:
 112     Call TraceError(Err.Number, Err.Description, "TCP.HayPCarea", Erl)
 
         
+    Exit Function
+HayPCarea_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.HayPCarea", Erl)
 End Function
 
 Function HayOBJarea(Pos As t_WorldPos, ObjIndex As Integer) As Boolean
+    On Error Goto HayOBJarea_Err
         
         On Error GoTo HayOBJarea_Err
         
@@ -933,9 +978,13 @@ HayOBJarea_Err:
 114     Call TraceError(Err.Number, Err.Description, "TCP.HayOBJarea", Erl)
 
         
+    Exit Function
+HayOBJarea_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.HayOBJarea", Erl)
 End Function
 
 Function ValidateChr(ByVal UserIndex As Integer) As Boolean
+    On Error Goto ValidateChr_Err
         
         On Error GoTo ValidateChr_Err
         
@@ -949,9 +998,13 @@ ValidateChr_Err:
 102     Call TraceError(Err.Number, Err.Description, "TCP.ValidateChr", Erl)
 
         
+    Exit Function
+ValidateChr_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ValidateChr", Erl)
 End Function
 
 Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, ByVal MD5 As String) As Boolean
+    On Error Goto EntrarCuenta_Err
         
         On Error GoTo EntrarCuenta_Err
         
@@ -996,8 +1049,12 @@ EntrarCuenta_Err:
 
 
         
+    Exit Function
+EntrarCuenta_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.EntrarCuenta", Erl)
 End Function
 Function ConnectUser(ByVal userIndex As Integer, ByRef name As String, Optional ByVal newUser As Boolean = False) As Boolean
+    On Error Goto ConnectUser_Err
 On Error GoTo ErrHandler
     ConnectUser = False
     With UserList(userIndex)
@@ -1025,9 +1082,13 @@ ErrHandler:
      Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
      Call CloseSocket(UserIndex)
 
+    Exit Function
+ConnectUser_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
 End Function
 
 Sub SendMOTD(ByVal UserIndex As Integer)
+    On Error Goto SendMOTD_Err
         
         On Error GoTo SendMOTD_Err
         
@@ -1045,9 +1106,13 @@ SendMOTD_Err:
 106     Call TraceError(Err.Number, Err.Description, "TCP.SendMOTD", Erl)
 
         
+    Exit Sub
+SendMOTD_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.SendMOTD", Erl)
 End Sub
 
 Sub ResetFacciones(ByVal UserIndex As Integer)
+    On Error Goto ResetFacciones_Err
         
         On Error GoTo ResetFacciones_Err
         
@@ -1081,9 +1146,13 @@ ResetFacciones_Err:
 132     Call TraceError(Err.Number, Err.Description, "TCP.ResetFacciones", Erl)
 
         
+    Exit Sub
+ResetFacciones_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetFacciones", Erl)
 End Sub
 
 Sub ResetContadores(ByVal UserIndex As Integer)
+    On Error Goto ResetContadores_Err
         
         On Error GoTo ResetContadores_Err
         
@@ -1159,9 +1228,13 @@ ResetContadores_Err:
 190     Call TraceError(Err.Number, Err.Description, "TCP.ResetContadores", Erl)
 
         
+    Exit Sub
+ResetContadores_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetContadores", Erl)
 End Sub
 
 Sub ResetCharInfo(ByVal UserIndex As Integer)
+    On Error Goto ResetCharInfo_Err
         '*************************************************
         'Author: Unknown
         'Last modified: 03/15/2006
@@ -1203,9 +1276,13 @@ ResetCharInfo_Err:
 144     Call TraceError(Err.Number, Err.Description, "TCP.ResetCharInfo", Erl)
 
         
+    Exit Sub
+ResetCharInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetCharInfo", Erl)
 End Sub
 
 Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
+    On Error Goto ResetBasicUserInfo_Err
         
         On Error GoTo ResetBasicUserInfo_Err
         
@@ -1277,9 +1354,13 @@ ResetBasicUserInfo_Err:
 200     Call TraceError(Err.Number, Err.Description, "TCP.ResetBasicUserInfo", Erl)
 
         
+    Exit Sub
+ResetBasicUserInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetBasicUserInfo", Erl)
 End Sub
 
 Sub ResetGuildInfo(ByVal UserIndex As Integer)
+    On Error Goto ResetGuildInfo_Err
         
         On Error GoTo ResetGuildInfo_Err
         
@@ -1304,9 +1385,13 @@ ResetGuildInfo_Err:
 112     Call TraceError(Err.Number, Err.Description, "TCP.ResetGuildInfo", Erl)
 
         
+    Exit Sub
+ResetGuildInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetGuildInfo", Erl)
 End Sub
 
 Sub ResetPacketRateData(ByVal UserIndex As Integer)
+    On Error Goto ResetPacketRateData_Err
 
         On Error GoTo ResetPacketRateData_Err
 
@@ -1327,9 +1412,13 @@ Sub ResetPacketRateData(ByVal UserIndex As Integer)
 ResetPacketRateData_Err:
 282     Call TraceError(Err.Number, Err.Description, "TCP.ResetPacketRateData", Erl)
 
+    Exit Sub
+ResetPacketRateData_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetPacketRateData", Erl)
 End Sub
 
 Sub ResetUserFlags(ByVal UserIndex As Integer)
+    On Error Goto ResetUserFlags_Err
         '*************************************************
         'Author: Unknown
         'Last modified: 03/29/2006
@@ -1457,9 +1546,13 @@ ResetUserFlags_Err:
 282     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserFlags", Erl)
 
         
+    Exit Sub
+ResetUserFlags_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetUserFlags", Erl)
 End Sub
 
 Sub ResetAccionesPendientes(ByVal UserIndex As Integer)
+    On Error Goto ResetAccionesPendientes_Err
         
         On Error GoTo ResetAccionesPendientes_Err
         
@@ -1483,9 +1576,13 @@ ResetAccionesPendientes_Err:
 114     Call TraceError(Err.Number, Err.Description, "TCP.ResetAccionesPendientes", Erl)
 
         
+    Exit Sub
+ResetAccionesPendientes_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetAccionesPendientes", Erl)
 End Sub
 
 Sub ResetUserSpells(ByVal UserIndex As Integer)
+    On Error Goto ResetUserSpells_Err
         
         On Error GoTo ResetUserSpells_Err
         
@@ -1504,9 +1601,13 @@ ResetUserSpells_Err:
 106     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSpells", Erl)
 
         
+    Exit Sub
+ResetUserSpells_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSpells", Erl)
 End Sub
 
 Sub ResetUserSkills(ByVal UserIndex As Integer)
+    On Error Goto ResetUserSkills_Err
         
         On Error GoTo ResetUserSkills_Err
         
@@ -1524,9 +1625,13 @@ ResetUserSkills_Err:
 106     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSkills", Erl)
 
         
+    Exit Sub
+ResetUserSkills_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSkills", Erl)
 End Sub
 
 Sub ResetUserBanco(ByVal UserIndex As Integer)
+    On Error Goto ResetUserBanco_Err
         
         On Error GoTo ResetUserBanco_Err
         
@@ -1549,9 +1654,13 @@ ResetUserBanco_Err:
 112     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserBanco", Erl)
 
         
+    Exit Sub
+ResetUserBanco_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetUserBanco", Erl)
 End Sub
 
 Sub ResetUserKeys(ByVal UserIndex As Integer)
+    On Error Goto ResetUserKeys_Err
         
         On Error GoTo ResetUserKeys_Err
     
@@ -1570,9 +1679,13 @@ ResetUserKeys_Err:
 106     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserKeys", Erl)
 
         
+    Exit Sub
+ResetUserKeys_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetUserKeys", Erl)
 End Sub
 
 Public Sub LimpiarComercioSeguro(ByVal UserIndex As Integer)
+    On Error Goto LimpiarComercioSeguro_Err
         
         On Error GoTo LimpiarComercioSeguro_Err
         
@@ -1594,9 +1707,13 @@ LimpiarComercioSeguro_Err:
 108     Call TraceError(Err.Number, Err.Description, "TCP.LimpiarComercioSeguro", Erl)
 
         
+    Exit Sub
+LimpiarComercioSeguro_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.LimpiarComercioSeguro", Erl)
 End Sub
 
 Sub ResetUserSlot(ByVal UserIndex As Integer)
+    On Error Goto ResetUserSlot_Err
         On Error GoTo ResetUserSlot_Err
         Call SaveDCUserCache(UserIndex)
         Call AntiCheat.OnPlayerDisconnect(UserIndex)
@@ -1660,9 +1777,13 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
         Exit Sub
 ResetUserSlot_Err:
     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSlot", Erl)
+    Exit Sub
+ResetUserSlot_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSlot", Erl)
 End Sub
 
 Sub ClearAndSaveUser(ByVal UserIndex As Integer)
+    On Error Goto ClearAndSaveUser_Err
 
     On Error GoTo ErrHandler
     
@@ -1785,9 +1906,13 @@ ErrHandler:
 208     Call TraceError(Err.Number, Err.Description & ". Detalle:" & errordesc, Erl)
 210     Resume Next ' TODO: Provisional hasta solucionar bugs graves
 
+    Exit Sub
+ClearAndSaveUser_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ClearAndSaveUser", Erl)
 End Sub
 
 Sub CloseUser(ByVal UserIndex As Integer)
+    On Error Goto CloseUser_Err
 
         On Error GoTo ErrHandler
     
@@ -1858,9 +1983,13 @@ ErrHandler:
 144     Call TraceError(Err.Number, Err.Description & ". Detalle:" & errordesc, Erl)
 146     Resume Next ' TODO: Provisional hasta solucionar bugs graves
 
+    Exit Sub
+CloseUser_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.CloseUser", Erl)
 End Sub
 
 Public Sub EcharPjsNoPrivilegiados()
+    On Error Goto EcharPjsNoPrivilegiados_Err
         
         On Error GoTo EcharPjsNoPrivilegiados_Err
         
@@ -1886,9 +2015,13 @@ EcharPjsNoPrivilegiados_Err:
 110     Call TraceError(Err.Number, Err.Description, "TCP.EcharPjsNoPrivilegiados", Erl)
 
         
+    Exit Sub
+EcharPjsNoPrivilegiados_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.EcharPjsNoPrivilegiados", Erl)
 End Sub
 
 Function ValidarCabeza(ByVal UserRaza As e_Raza, ByVal UserSexo As e_Genero, ByVal Head As Integer) As Boolean
+    On Error Goto ValidarCabeza_Err
 
 100     Select Case UserSexo
     
@@ -1941,9 +2074,13 @@ Function ValidarCabeza(ByVal UserRaza As e_Raza, ByVal UserSexo As e_Genero, ByV
     
         End Select
 
+    Exit Function
+ValidarCabeza_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ValidarCabeza", Erl)
 End Function
 
 Function ValidarNombre(nombre As String) As Boolean
+    On Error Goto ValidarNombre_Err
     
 100     If Len(nombre) < 3 Or Len(nombre) > 18 Then Exit Function
     
@@ -1970,9 +2107,13 @@ Function ValidarNombre(nombre As String) As Boolean
     
 116     ValidarNombre = True
 
+    Exit Function
+ValidarNombre_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ValidarNombre", Erl)
 End Function
 
 Function ContarUsuariosMismaCuenta(ByVal AccountID As Long) As Integer
+    On Error Goto ContarUsuariosMismaCuenta_Err
 
         Dim i As Integer
     
@@ -1984,16 +2125,24 @@ Function ContarUsuariosMismaCuenta(ByVal AccountID As Long) As Integer
         
         Next
 
+    Exit Function
+ContarUsuariosMismaCuenta_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ContarUsuariosMismaCuenta", Erl)
 End Function
 
 Sub ResetCd(ByRef user As t_User)
+    On Error Goto ResetCd_Err
     Dim i As Integer
     For i = 0 To e_CdTypes.CDCount - 1
         user.CdTimes(i) = 0
     Next i
+    Exit Sub
+ResetCd_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetCd", Erl)
 End Sub
 
 Sub VaciarInventario(ByVal UserIndex As Integer)
+    On Error Goto VaciarInventario_Err
 
     Dim i As Long
 
@@ -2004,4 +2153,7 @@ Sub VaciarInventario(ByVal UserIndex As Integer)
             .Invent.Object(i).ObjIndex = 0
         Next i
     End With
+    Exit Sub
+VaciarInventario_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.VaciarInventario", Erl)
 End Sub

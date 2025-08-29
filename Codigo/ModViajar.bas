@@ -27,10 +27,14 @@ Attribute VB_Name = "ModViajar"
 '
 '
 Public Sub IniciarTransporte(ByVal UserIndex As Integer)
+    On Error Goto IniciarTransporte_Err
         On Error GoTo IniciarTransporte_Err
         Dim destinos As Byte
 100     destinos = NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).NumDestinos
         Exit Sub
 IniciarTransporte_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModViajar.IniciarTransporte", Erl)
+    Exit Sub
+IniciarTransporte_Err:
+    Call TraceError(Err.Number, Err.Description, "ModViajar.IniciarTransporte", Erl)
 End Sub

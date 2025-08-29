@@ -39,6 +39,7 @@ Option Explicit
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 Public Function TirarItemAlPiso(Pos As t_WorldPos, obj As t_Obj, Optional PuedeAgua As Boolean = True) As t_WorldPos
+    On Error Goto TirarItemAlPiso_Err
 
         On Error GoTo ErrHandler
 
@@ -58,9 +59,13 @@ Public Function TirarItemAlPiso(Pos As t_WorldPos, obj As t_Obj, Optional PuedeA
         Exit Function
 ErrHandler:
 
+    Exit Function
+TirarItemAlPiso_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_InventANDobj.TirarItemAlPiso", Erl)
 End Function
 
 Public Sub NPC_TIRAR_ITEMS(ByRef npc As t_Npc)
+    On Error Goto NPC_TIRAR_ITEMS_Err
         
         On Error GoTo NPC_TIRAR_ITEMS_Err
     
@@ -95,9 +100,13 @@ NPC_TIRAR_ITEMS_Err:
 114     Call TraceError(Err.Number, Err.Description, "InvNpc.NPC_TIRAR_ITEMS", Erl)
 
         
+    Exit Sub
+NPC_TIRAR_ITEMS_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_InventANDobj.NPC_TIRAR_ITEMS", Erl)
 End Sub
 
 Function QuedanItems(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Boolean
+    On Error Goto QuedanItems_Err
         
         On Error GoTo QuedanItems_Err
 
@@ -126,9 +135,13 @@ QuedanItems_Err:
 110     Call TraceError(Err.Number, Err.Description, "InvNpc.QuedanItems", Erl)
 
         
+    Exit Function
+QuedanItems_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_InventANDobj.QuedanItems", Erl)
 End Function
 
 Function EncontrarCant(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Integer
+    On Error Goto EncontrarCant_Err
         
         On Error GoTo EncontrarCant_Err
         
@@ -163,9 +176,13 @@ EncontrarCant_Err:
 112     Call TraceError(Err.Number, Err.Description, "InvNpc.EncontrarCant", Erl)
 
         
+    Exit Function
+EncontrarCant_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_InventANDobj.EncontrarCant", Erl)
 End Function
 
 Sub ResetNpcInv(ByVal NpcIndex As Integer)
+    On Error Goto ResetNpcInv_Err
         
         On Error GoTo ResetNpcInv_Err
     
@@ -186,9 +203,13 @@ ResetNpcInv_Err:
 112     Call TraceError(Err.Number, Err.Description, "InvNpc.ResetNpcInv", Erl)
 
         
+    Exit Sub
+ResetNpcInv_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_InventANDobj.ResetNpcInv", Erl)
 End Sub
 
 Sub QuitarNpcInvItem(ByVal NpcIndex As Integer, ByVal Slot As Byte, ByVal Cantidad As Integer)
+    On Error Goto QuitarNpcInvItem_Err
         
         On Error GoTo QuitarNpcInvItem_Err
         
@@ -252,9 +273,13 @@ QuitarNpcInvItem_Err:
 144     Call TraceError(Err.Number, Err.Description, "InvNpc.QuitarNpcInvItem", Erl)
 
         
+    Exit Sub
+QuitarNpcInvItem_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_InventANDobj.QuitarNpcInvItem", Erl)
 End Sub
 
 Sub CargarInvent(ByVal NpcIndex As Integer)
+    On Error Goto CargarInvent_Err
         
         On Error GoTo CargarInvent_Err
         
@@ -290,9 +315,13 @@ CargarInvent_Err:
 114     Call TraceError(Err.Number, Err.Description, "InvNpc.CargarInvent", Erl)
 
         
+    Exit Sub
+CargarInvent_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_InventANDobj.CargarInvent", Erl)
 End Sub
 
 Public Sub NpcDropeo(ByRef npc As t_Npc, ByRef UserIndex As Integer)
+    On Error Goto NpcDropeo_Err
 
         On Error GoTo ErrHandler
 
@@ -337,9 +366,13 @@ Public Sub NpcDropeo(ByRef npc As t_Npc, ByRef UserIndex As Integer)
 ErrHandler:
 134     Call LogError("Error al dropear el item " & ObjData(npc.QuizaDropea(objRandom)).Name & ", al usuario " & UserList(UserIndex).Name & ". " & Err.Description & ".")
 
+    Exit Sub
+NpcDropeo_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_InventANDobj.NpcDropeo", Erl)
 End Sub
 
 Public Sub DropFromGlobalDropTable(ByRef Npc As t_Npc, ByVal UserIndex As Integer)
+    On Error Goto DropFromGlobalDropTable_Err
 On Error GoTo ErrHandler
     Dim i As Integer
     Dim DropChance As Single
@@ -360,9 +393,13 @@ On Error GoTo ErrHandler
     Exit Sub
 ErrHandler:
 126     Call LogError("Error DropFromGlobalDropTable al dropear el item " & i & ", al usuario " & UserList(UserIndex).name & ". " & Err.Description & ".")
+    Exit Sub
+DropFromGlobalDropTable_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_InventANDobj.DropFromGlobalDropTable", Erl)
 End Sub
 
 Public Sub DropObjQuest(ByRef npc As t_Npc, ByRef UserIndex As Integer)
+    On Error Goto DropObjQuest_Err
     'Dropeo por Quest
     'Ladder
     '3/12/2020
@@ -410,5 +447,8 @@ Public Sub DropObjQuest(ByRef npc As t_Npc, ByRef UserIndex As Integer)
 ErrHandler:
 126     Call LogError("Error DropObjQuest al dropear el item " & ObjData(npc.DropQuest(i).ObjIndex).Name & ", al usuario " & UserList(UserIndex).Name & ". " & Err.Description & ".")
 
+    Exit Sub
+DropObjQuest_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_InventANDobj.DropObjQuest", Erl)
 End Sub
 

@@ -58,6 +58,7 @@ Const ACTIVATE_TRAOP_WAW_FILE = 210
 
 
 Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal EffectId As Integer, ByVal ID As Long, _
+    On Error Goto Setup_Err
                  ByVal map As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
     On Error GoTo Setup_Err
 100     mElapsedTime = 0
@@ -72,6 +73,9 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
         Exit Sub
 Setup_Err:
         Call TraceError(Err.Number, Err.Description, "clsTrap.Setup", Erl)
+    Exit Sub
+Setup_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.Setup", Erl)
 End Sub
 
 Public Property Get IBaseEffectOverTime_TypeId() As Integer
@@ -123,11 +127,15 @@ Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
 End Property
 
 Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
+    On Error Goto IBaseEffectOverTime_Update_Err
     mElapsedTime = mElapsedTime + deltaTime
     If mElapsedTime >= mTimeLimit Or Not IsValidRef(mDotInfo.TargetRef) Then
         mDotInfo.RemoveEffect = True
         Exit Sub
     End If
+    Exit Sub
+IBaseEffectOverTime_Update_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.IBaseEffectOverTime_Update", Erl)
 End Sub
 
 Public Property Get IBaseEffectOverTime_RemoveMe() As Boolean
@@ -139,7 +147,11 @@ Public Property Let IBaseEffectOverTime_RemoveMe(ByVal value As Boolean)
 End Property
 
 Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
+    On Error Goto IBaseEffectOverTime_Reset_Err
     IBaseEffectOverTime_Reset = True
+    Exit Function
+IBaseEffectOverTime_Reset_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.IBaseEffectOverTime_Reset", Erl)
 End Function
 
 Public Property Get IBaseEffectOverTime_EotId() As Integer
@@ -147,6 +159,7 @@ Public Property Get IBaseEffectOverTime_EotId() As Integer
 End Property
 
 Public Sub IBaseEffectOverTime_OnRemove()
+    On Error Goto IBaseEffectOverTime_OnRemove_Err
     If mDotInfo.Removed Then Exit Sub
     mDotInfo.Removed = True
     mDotInfo.RemoveEffect = True
@@ -155,32 +168,67 @@ Public Sub IBaseEffectOverTime_OnRemove()
                                     mDotInfo.UniqueId, 0, 0, EffectOverTime(mDotInfo.EotId).buffType)
     End If
     Call RemoveFromMap
+    Exit Sub
+IBaseEffectOverTime_OnRemove_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.IBaseEffectOverTime_OnRemove", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
+    On Error Goto IBaseEffectOverTime_TargetUseMagic_Err
+    Exit Sub
+IBaseEffectOverTime_TargetUseMagic_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.IBaseEffectOverTime_TargetUseMagic", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TartgetWillAtack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TartgetWillAtack_Err
+    Exit Sub
+IBaseEffectOverTime_TartgetWillAtack_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.IBaseEffectOverTime_TartgetWillAtack", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TartgetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TartgetDidHit_Err
+    Exit Sub
+IBaseEffectOverTime_TartgetDidHit_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.IBaseEffectOverTime_TartgetDidHit", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetFailedAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TargetFailedAttack_Err
+    Exit Sub
+IBaseEffectOverTime_TargetFailedAttack_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.IBaseEffectOverTime_TargetFailedAttack", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TargetWasDamaged_Err
+    Exit Sub
+IBaseEffectOverTime_TargetWasDamaged_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.IBaseEffectOverTime_TargetWasDamaged", Erl)
 End Sub
 
 Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType) As Long
+    On Error Goto IBaseEffectOverTime_ApplyDamageReduction_Err
     IBaseEffectOverTime_ApplyDamageReduction = Damage
+    Exit Function
+IBaseEffectOverTime_ApplyDamageReduction_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.IBaseEffectOverTime_ApplyDamageReduction", Erl)
 End Function
 
 Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
+    On Error Goto IBaseEffectOverTime_TargetWillAttackPosition_Err
+    Exit Sub
+IBaseEffectOverTime_TargetWillAttackPosition_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.IBaseEffectOverTime_TargetWillAttackPosition", Erl)
 End Sub
 
 Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
+    On Error Goto IBaseEffectOverTime_ChangeTarget_Err
     IBaseEffectOverTime_ChangeTarget = False
+    Exit Function
+IBaseEffectOverTime_ChangeTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.IBaseEffectOverTime_ChangeTarget", Erl)
 End Function
 
 Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
@@ -188,11 +236,15 @@ Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
 End Property
 
 Private Sub SetPosition(ByVal map As Integer, ByVal posX As Integer, ByVal posY As Integer)
+    On Error Goto SetPosition_Err
     mWorldPosition.map = map
     mWorldPosition.x = posX
     mWorldPosition.y = posY
     Set MapData(mWorldPosition.map, mWorldPosition.x, mWorldPosition.y).Trap = Me
     Call modSendData.SendToAreaByPos(map, posX, posY, PrepareTrapUpdate(1, posX, posY))
+    Exit Sub
+SetPosition_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.SetPosition", Erl)
 End Sub
 
 Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
@@ -200,15 +252,24 @@ Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
 End Property
 
 Public Sub IBaseEffectOverTime_TargetChangeTerrain()
+    On Error Goto IBaseEffectOverTime_TargetChangeTerrain_Err
+    Exit Sub
+IBaseEffectOverTime_TargetChangeTerrain_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.IBaseEffectOverTime_TargetChangeTerrain", Erl)
 End Sub
 
 
 Private Sub RemoveFromMap()
+    On Error Goto RemoveFromMap_Err
     Set MapData(mWorldPosition.map, mWorldPosition.x, mWorldPosition.y).Trap = Nothing
     Call modSendData.SendToAreaByPos(mWorldPosition.map, mWorldPosition.x, mWorldPosition.y, PrepareTrapUpdate(0, mWorldPosition.x, mWorldPosition.y))
+    Exit Sub
+RemoveFromMap_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.RemoveFromMap", Erl)
 End Sub
 
 Public Function CanAffectTarget(ByVal TargetIndex, ByVal TargetType As e_ReferenceType) As Boolean
+    On Error Goto CanAffectTarget_Err
     If mDotInfo.TargetRef.RefType = eUser Then
         If TargetType = eUser Then
             CanAffectTarget = UserMod.CanAttackUser(mDotInfo.TargetRef.ArrayIndex, mDotInfo.TargetRef.VersionId, TargetIndex, UserList(TargetIndex).VersionId) = eCanAttack
@@ -221,9 +282,13 @@ Public Function CanAffectTarget(ByVal TargetIndex, ByVal TargetType As e_Referen
     Else
        CanAffectTarget = False
     End If
+    Exit Function
+CanAffectTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.CanAffectTarget", Erl)
 End Function
 
 Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
+    On Error Goto trigger_Err
     trigger = False
     Call modSendData.SendToAreaByPos(mWorldPosition.map, mWorldPosition.x, mWorldPosition.y, PrepareMessagePlayWave(ACTIVATE_TRAOP_WAW_FILE, mWorldPosition.x, mWorldPosition.y, False))
     If EffectOverTime(mDotInfo.EotId).OnHitWav > 0 Then Call modSendData.SendToAreaByPos(mWorldPosition.map, mWorldPosition.x, mWorldPosition.y, PrepareMessagePlayWave(EffectOverTime(mDotInfo.EotId).OnHitWav, mWorldPosition.x, mWorldPosition.y, False))
@@ -291,6 +356,9 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
             trigger = True
             Exit Function
         End Select
+    Exit Function
+trigger_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.trigger", Erl)
 End Function
 
 Public Property Get ElapsedTime() As Long
@@ -298,6 +366,10 @@ Public Property Get ElapsedTime() As Long
 End Property
 
 Public Sub Disable()
+    On Error Goto Disable_Err
     mDotInfo.RemoveEffect = True
+    Exit Sub
+Disable_Err:
+    Call TraceError(Err.Number, Err.Description, "clsTrap.Disable", Erl)
 End Sub
 

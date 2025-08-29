@@ -35,6 +35,7 @@ Private Const MAX_OBJ_LOGUEABLE As Long = 1000
 'origen: origen de la transaccion, originador del comando
 'destino: receptor de la transaccion
 Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino As Integer) As Boolean
+    On Error Goto IniciarComercioConUsuario_Err
 
         On Error GoTo ErrHandler
 
@@ -76,8 +77,12 @@ Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino
 ErrHandler:
 134     Call LogError("Error en IniciarComercioConUsuario: " & Err.Description)
 
+    Exit Function
+IniciarComercioConUsuario_Err:
+    Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.IniciarComercioConUsuario", Erl)
 End Function
 Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As Integer, ByRef ObjAEnviar As t_Obj)
+    On Error Goto EnviarObjetoTransaccion_Err
         
             On Error GoTo EnviarObjetoTransaccion_Err
         
@@ -177,9 +182,13 @@ EnviarObjetoTransaccion_Err:
 172         Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.EnviarObjetoTransaccion", Erl)
 
         
+    Exit Sub
+EnviarObjetoTransaccion_Err:
+    Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.EnviarObjetoTransaccion", Erl)
 End Sub
 
 Public Sub FinComerciarUsu(ByVal UserIndex As Integer, Optional ByVal Invalido As Boolean = False)
+    On Error Goto FinComerciarUsu_Err
         
         On Error GoTo FinComerciarUsu_Err
         
@@ -208,9 +217,13 @@ FinComerciarUsu_Err:
 120     Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.FinComerciarUsu", Erl)
 
         
+    Exit Sub
+FinComerciarUsu_Err:
+    Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.FinComerciarUsu", Erl)
 End Sub
 
 Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
+    On Error Goto AceptarComercioUsu_Err
         On Error GoTo AceptarComercioUsu_Err
         
         Dim objOfrecido As t_Obj
@@ -328,4 +341,7 @@ AceptarComercioUsu_Err:
 208     Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.AceptarComercioUsu", Erl)
 
         
+    Exit Sub
+AceptarComercioUsu_Err:
+    Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.AceptarComercioUsu", Erl)
 End Sub

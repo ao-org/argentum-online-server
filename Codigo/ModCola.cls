@@ -61,6 +61,7 @@ Private Const FRENTE = 1
 Private Cola As Collection
 
 Public Sub Reset()
+    On Error Goto Reset_Err
         
         On Error GoTo Reset_Err
     
@@ -81,6 +82,9 @@ Reset_Err:
 106     Call TraceError(Err.Number, Err.Description, "cCola.Reset", Erl)
 
         
+    Exit Sub
+Reset_Err:
+    Call TraceError(Err.Number, Err.Description, "ModCola.Reset", Erl)
 End Sub
 
 Public Property Get Longitud() As Integer
@@ -99,6 +103,7 @@ Longitud_Err:
 End Property
 
 Private Function IndexValido(ByVal i As Integer) As Boolean
+    On Error Goto IndexValido_Err
         
         On Error GoTo IndexValido_Err
         
@@ -111,9 +116,13 @@ IndexValido_Err:
 102     Call TraceError(Err.Number, Err.Description, "cCola.IndexValido", Erl)
 104
         
+    Exit Function
+IndexValido_Err:
+    Call TraceError(Err.Number, Err.Description, "ModCola.IndexValido", Erl)
 End Function
 
 Private Sub Class_Initialize()
+    On Error Goto Class_Initialize_Err
         
         On Error GoTo Class_Initialize_Err
         
@@ -126,9 +135,13 @@ Class_Initialize_Err:
 102     Call TraceError(Err.Number, Err.Description, "cCola.Class_Initialize", Erl)
 104
         
+    Exit Sub
+Class_Initialize_Err:
+    Call TraceError(Err.Number, Err.Description, "ModCola.Class_Initialize", Erl)
 End Sub
 
 Public Function VerElemento(ByVal Index As Integer) As String
+    On Error Goto VerElemento_Err
         
         On Error GoTo VerElemento_Err
     
@@ -150,9 +163,13 @@ VerElemento_Err:
 106     Call TraceError(Err.Number, Err.Description, "cCola.VerElemento", Erl)
 
         
+    Exit Function
+VerElemento_Err:
+    Call TraceError(Err.Number, Err.Description, "ModCola.VerElemento", Erl)
 End Function
 
 Public Sub Push(ByVal nombre As String, ByVal Consulta As String, ByVal TipoDeConsulta As String)
+    On Error Goto Push_Err
         
         On Error GoTo Push_Err
         
@@ -169,9 +186,13 @@ Push_Err:
 102     Call TraceError(Err.Number, Err.Description, "cCola.Push", Erl)
 
         
+    Exit Sub
+Push_Err:
+    Call TraceError(Err.Number, Err.Description, "ModCola.Push", Erl)
 End Sub
 
 Public Function Pop() As String
+    On Error Goto Pop_Err
         
         On Error GoTo Pop_Err
     
@@ -195,9 +216,13 @@ Pop_Err:
 108     Call TraceError(Err.Number, Err.Description, "cCola.Pop", Erl)
 
         
+    Exit Function
+Pop_Err:
+    Call TraceError(Err.Number, Err.Description, "ModCola.Pop", Erl)
 End Function
 
 Public Function PopByVal() As String
+    On Error Goto PopByVal_Err
         
         On Error GoTo PopByVal_Err
 
@@ -216,9 +241,13 @@ PopByVal_Err:
 106     Call TraceError(Err.Number, Err.Description, "cCola.PopByVal", Erl)
 
         
+    Exit Function
+PopByVal_Err:
+    Call TraceError(Err.Number, Err.Description, "ModCola.PopByVal", Erl)
 End Function
 
 Public Function Existe(ByVal nombre As String) As Boolean
+    On Error Goto Existe_Err
         
         On Error GoTo Existe_Err
     
@@ -252,9 +281,13 @@ Existe_Err:
 112     Call TraceError(Err.Number, Err.Description, "cCola.Existe", Erl)
 
         
+    Exit Function
+Existe_Err:
+    Call TraceError(Err.Number, Err.Description, "ModCola.Existe", Erl)
 End Function
 
 Public Sub Quitar(ByVal nombre As String)
+    On Error Goto Quitar_Err
         
         On Error GoTo Quitar_Err
     
@@ -286,9 +319,13 @@ Quitar_Err:
 110     Call TraceError(Err.Number, Err.Description, "cCola.Quitar", Erl)
 
         
+    Exit Sub
+Quitar_Err:
+    Call TraceError(Err.Number, Err.Description, "ModCola.Quitar", Erl)
 End Sub
 
 Public Sub QuitarIndex(ByVal Index As Integer)
+    On Error Goto QuitarIndex_Err
         
         On Error GoTo QuitarIndex_Err
     
@@ -305,9 +342,13 @@ QuitarIndex_Err:
 102     Call TraceError(Err.Number, Err.Description, "cCola.QuitarIndex", Erl)
 
         
+    Exit Sub
+QuitarIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "ModCola.QuitarIndex", Erl)
 End Sub
 
 Private Sub Class_Terminate()
+    On Error Goto Class_Terminate_Err
         'Destruimos el objeto Cola
         
         On Error GoTo Class_Terminate_Err
@@ -321,4 +362,7 @@ Class_Terminate_Err:
 102     Call TraceError(Err.Number, Err.Description, "cCola.Class_Terminate", Erl)
 104
         
+    Exit Sub
+Class_Terminate_Err:
+    Call TraceError(Err.Number, Err.Description, "ModCola.Class_Terminate", Erl)
 End Sub

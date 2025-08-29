@@ -47,6 +47,7 @@ Public Subasta As t_Subastas
 Dim Logear     As String
 
 Public Sub IniciarSubasta(ByVal userindex As Integer)
+    On Error Goto IniciarSubasta_Err
         
         On Error GoTo IniciarSubasta_Err
 100     If UserList(UserIndex).flags.Subastando = True And Not Subasta.HaySubastaActiva Then
@@ -96,9 +97,13 @@ IniciarSubasta_Err:
 140     Call TraceError(Err.Number, Err.Description, "ModSubasta.IniciarSubasta", Erl)
 
         
+    Exit Sub
+IniciarSubasta_Err:
+    Call TraceError(Err.Number, Err.Description, "ModSubasta.IniciarSubasta", Erl)
 End Sub
 
 Public Sub FinalizarSubasta()
+    On Error Goto FinalizarSubasta_Err
         'Primero Damos el objeto subastado
         'Despues el oro al subastador
         On Error GoTo FinalizarSubasta_Err
@@ -198,10 +203,14 @@ FinalizarSubasta_Err:
 188     Call TraceError(Err.Number, Err.Description, "ModSubasta.FinalizarSubasta", Erl)
 
         
+    Exit Sub
+FinalizarSubasta_Err:
+    Call TraceError(Err.Number, Err.Description, "ModSubasta.FinalizarSubasta", Erl)
 End Sub
 
 
 Public Sub ResetearSubasta()
+    On Error Goto ResetearSubasta_Err
         
         On Error GoTo ResetearSubasta_Err
         
@@ -226,9 +235,13 @@ ResetearSubasta_Err:
 126     Call TraceError(Err.Number, Err.Description, "ModSubasta.ResetearSubasta", Erl)
 
         
+    Exit Sub
+ResetearSubasta_Err:
+    Call TraceError(Err.Number, Err.Description, "ModSubasta.ResetearSubasta", Erl)
 End Sub
 
 Public Sub DevolverItem()
+    On Error Goto DevolverItem_Err
         
         On Error GoTo DevolverItem_Err
         
@@ -303,9 +316,13 @@ DevolverItem_Err:
 166     Call TraceError(Err.Number, Err.Description, "ModSubasta.DevolverItem", Erl)
 
         
+    Exit Sub
+DevolverItem_Err:
+    Call TraceError(Err.Number, Err.Description, "ModSubasta.DevolverItem", Erl)
 End Sub
 
 Public Sub CancelarSubasta()
+    On Error Goto CancelarSubasta_Err
         
         On Error GoTo CancelarSubasta_Err
         
@@ -377,4 +394,7 @@ CancelarSubasta_Err:
 170     Call TraceError(Err.Number, Err.Description, "ModSubasta.CancelarSubasta", Erl)
 
         
+    Exit Sub
+CancelarSubasta_Err:
+    Call TraceError(Err.Number, Err.Description, "ModSubasta.CancelarSubasta", Erl)
 End Sub

@@ -4,6 +4,7 @@ Option Explicit
 Public packetResend As New CColaArray
 
 Public Sub HandleIncomingAPIData(ByRef data As String)
+    On Error Goto HandleIncomingAPIData_Err
     
     With frmAPISocket
     
@@ -35,9 +36,13 @@ Public Sub HandleIncomingAPIData(ByRef data As String)
             
     End Select
 
+    Exit Sub
+HandleIncomingAPIData_Err:
+    Call TraceError(Err.Number, Err.Description, "API.HandleIncomingAPIData", Erl)
 End Sub
 
 Public Sub SendDataAPI(ByRef data As String)
+    On Error Goto SendDataAPI_Err
     
     On Error GoTo ErrHandler:
 
@@ -55,9 +60,13 @@ Public Sub SendDataAPI(ByRef data As String)
 ErrHandler:
     Call RegistrarError(Err.Number, Err.Description, "API_Manager.SendDataAPI")
     
+    Exit Sub
+SendDataAPI_Err:
+    Call TraceError(Err.Number, Err.Description, "API.SendDataAPI", Erl)
 End Sub
 
 Sub SaveUserAPI(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
+    On Error Goto SaveUserAPI_Err
         
         On Error GoTo SaveUserAPI_Err:
 
@@ -141,5 +150,8 @@ Sub SaveUserAPI(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = F
 SaveUserAPI_Err:
 138     Call RegistrarError(Err.Number, Err.Description, "API.SaveUserAPI", Erl)
         
+    Exit Sub
+SaveUserAPI_Err:
+    Call TraceError(Err.Number, Err.Description, "API.SaveUserAPI", Erl)
 End Sub
 

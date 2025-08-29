@@ -3,6 +3,7 @@ Option Explicit
 Public Baneos As New Collection
 
 Public Function ChangeBan(ByVal Name As String, ByVal Baneado As Byte) As Boolean
+    On Error Goto ChangeBan_Err
 Dim Orden As String
 
 Dim RS As New ADODB.Recordset
@@ -20,4 +21,7 @@ Call Con.Execute(Orden)
 
 Set RS = Nothing
 
+    Exit Function
+ChangeBan_Err:
+    Call TraceError(Err.Number, Err.Description, "BanTemporal.ChangeBan", Erl)
 End Function

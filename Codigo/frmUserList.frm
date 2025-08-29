@@ -87,6 +87,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
+    On Error Goto Command1_Click_Err
         
         On Error GoTo Command1_Click_Err
         
@@ -112,9 +113,13 @@ Command1_Click_Err:
 116     Call TraceError(Err.Number, Err.Description, "frmUserList.Command1_Click", Erl)
 118
         
+    Exit Sub
+Command1_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmUserList.Command1_Click", Erl)
 End Sub
 
 Private Sub Command2_Click()
+    On Error Goto Command2_Click_Err
         
         On Error GoTo Command2_Click_Err
         
@@ -137,9 +142,13 @@ Command2_Click_Err:
 108     Call TraceError(Err.Number, Err.Description, "frmUserList.Command2_Click", Erl)
 110
         
+    Exit Sub
+Command2_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmUserList.Command2_Click", Erl)
 End Sub
 
 Private Sub List1_Click()
+    On Error Goto List1_Click_Err
         
         On Error GoTo List1_Click_Err
         
@@ -169,4 +178,7 @@ List1_Click_Err:
 116     Call TraceError(Err.Number, Err.Description, "frmUserList.List1_Click", Erl)
 118
         
+    Exit Sub
+List1_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmUserList.List1_Click", Erl)
 End Sub

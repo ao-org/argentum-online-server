@@ -85,13 +85,18 @@ Friend Sub RegisterNpc(ByVal Tag, ByVal sectionSize, ByRef registry As Dictionar
 End Sub
 
 Private Sub ConfigMapLobby()
+    On Error Goto ConfigMapLobby_Err
     PrevMapState = MapInfo(MapNumber).Seguro
     MapDropItems = MapInfo(MapNumber).DropItems
     MapInfo(MapNumber).Seguro = 1
     MapInfo(MapNumber).DropItems = False
+    Exit Sub
+ConfigMapLobby_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.ConfigMapLobby", Erl)
 End Sub
 
 Private Sub Class_Initialize()
+    On Error Goto Class_Initialize_Err
     On Error GoTo Hunt_Initialize_Err:
         Dim validNpcCount As Integer
         Dim ScenarioIni As clsIniManager
@@ -115,9 +120,13 @@ Private Sub Class_Initialize()
         Exit Sub
 Hunt_Initialize_Err:
 136 Call TraceError(Err.Number, Err.Description, "ScenarioHunt.Initialize ", Erl)
+    Exit Sub
+Class_Initialize_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.Class_Initialize", Erl)
 End Sub
 
 Private Sub CloseScenario()
+    On Error Goto CloseScenario_Err
     On Error GoTo CloseScenario_Err:
 100    Call ModLobby.ReturnAllPlayers(LobbyList(LobbyIndex))
 102    Set LobbyList(LobbyIndex).Scenario = Nothing
@@ -131,9 +140,13 @@ Private Sub CloseScenario()
     Exit Sub
 CloseScenario_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.CloseScenario ", Erl)
+    Exit Sub
+CloseScenario_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.CloseScenario", Erl)
 End Sub
 
 Private Sub ClearMap()
+    On Error Goto ClearMap_Err
 On Error GoTo ClearMap_Err:
 106    CustomScenarios.RemoveCustomScenario (MapNumber)
 108    CustomScenarios.RemoveUpdateScenario (UpdateIndex)
@@ -142,38 +155,70 @@ On Error GoTo ClearMap_Err:
     Exit Sub
 ClearMap_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ClearMap", Erl)
+    Exit Sub
+ClearMap_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.ClearMap", Erl)
 End Sub
 
 Public Sub IBaseScenario_SetLobbyIndex(ByVal value As Integer)
+    On Error Goto IBaseScenario_SetLobbyIndex_Err
     LobbyIndex = value
     Call ConfigMapLobby
+    Exit Sub
+IBaseScenario_SetLobbyIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_SetLobbyIndex", Erl)
 End Sub
 
 Public Function IBaseScenario_GetScenarioName() As String
+    On Error Goto IBaseScenario_GetScenarioName_Err
     IBaseScenario_GetScenarioName = "Caceria"
+    Exit Function
+IBaseScenario_GetScenarioName_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_GetScenarioName", Erl)
 End Function
 
 Public Sub IBaseScenario_BroadcastOpenScenario()
+    On Error Goto IBaseScenario_BroadcastOpenScenario_Err
     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgHuntScenearioIntro, "", e_FontTypeNames.FONTTYPE_GUILD))
+    Exit Sub
+IBaseScenario_BroadcastOpenScenario_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_BroadcastOpenScenario", Erl)
 End Sub
 
 Public Sub IBaseScenario_SendRules(ByVal UserIndex As Integer)
+    On Error Goto IBaseScenario_SendRules_Err
     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgHuntScenarioInstructions, "", e_FontTypeNames.FONTTYPE_GUILD))
+    Exit Sub
+IBaseScenario_SendRules_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_SendRules", Erl)
 End Sub
 
 Public Function IBaseScenario_GetExtraInterfaces() As Long
+    On Error Goto IBaseScenario_GetExtraInterfaces_Err
     IBaseScenario_GetExtraInterfaces = 0
+    Exit Function
+IBaseScenario_GetExtraInterfaces_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_GetExtraInterfaces", Erl)
 End Function
 
 Public Sub IBaseScenario_Reset()
+    On Error Goto IBaseScenario_Reset_Err
 106        Call ClearMap
+    Exit Sub
+IBaseScenario_Reset_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_Reset", Erl)
 End Sub
 
 Private Function IBaseScenario_RequiresSpawn() As Boolean
+    On Error Goto IBaseScenario_RequiresSpawn_Err
     IBaseScenario_RequiresSpawn = False
+    Exit Function
+IBaseScenario_RequiresSpawn_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_RequiresSpawn", Erl)
 End Function
 
 Private Function IBaseScenario_ValidateUser(ByVal UserIndex As Integer) As Integer
+    On Error Goto IBaseScenario_ValidateUser_Err
 On Error GoTo ValidateUser_Err:
        Dim i As Integer
 100    With UserList(UserIndex)
@@ -188,18 +233,26 @@ On Error GoTo ValidateUser_Err:
        Exit Function
 ValidateUser_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ValidateUser userIndex: " & UserIndex, Erl)
+    Exit Function
+IBaseScenario_ValidateUser_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_ValidateUser", Erl)
 End Function
 
 Private Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
+    On Error Goto IBaseScenario_WillSummonPlayer_Err
     Dim SpawnPos As t_WorldPos
     SpawnPos.Map = MapNumber
     SpawnPos.x = RandomNumber(12, 85)
     SpawnPos.y = RandomNumber(12, 85)
     LobbyList(LobbyIndex).SummonCoordinates = SpawnPos
     Call Board.AddPlayer(UserIndex)
+    Exit Sub
+IBaseScenario_WillSummonPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_WillSummonPlayer", Erl)
 End Sub
 
 Private Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef NewState As e_LobbyState)
+    On Error Goto IBaseScenario_UpdateLobbyState_Err
     If oldState = NewState Then
         Exit Sub
     End If
@@ -209,9 +262,13 @@ Private Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef
     If NewState = Closed Then
         Call MatchComplete
     End If
+    Exit Sub
+IBaseScenario_UpdateLobbyState_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_UpdateLobbyState", Erl)
 End Sub
 
 Private Sub StartGame()
+    On Error Goto StartGame_Err
     Dim key As Variant
     Dim i As Integer
     For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
@@ -233,9 +290,13 @@ Private Sub StartGame()
     LastFrameTime = GetTickCount()
     BroadCastInterval = 60000
     Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1730, "", e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1730=Â¡Que inicie la cacerÃ­a!
+    Exit Sub
+StartGame_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.StartGame", Erl)
 End Sub
 
 Private Sub IBaseScenario_PlayerKillNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
+    On Error Goto IBaseScenario_PlayerKillNpc_Err
     If LobbyList(LobbyIndex).State <> e_LobbyState.InProgress Then
         Exit Sub
     End If
@@ -256,17 +317,29 @@ Private Sub IBaseScenario_PlayerKillNpc(ByVal NpcIndex As Integer, ByVal UserInd
     End If
     Call SpawnedCreaturesId.Remove(NpcIndex)
     Call SpawnNpc(npcType)
+    Exit Sub
+IBaseScenario_PlayerKillNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_PlayerKillNpc", Erl)
 End Sub
 
 Private Sub IBaseScenario_NPcKillPlayer(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
+    On Error Goto IBaseScenario_NPcKillPlayer_Err
     'implements interface
+    Exit Sub
+IBaseScenario_NPcKillPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_NPcKillPlayer", Erl)
 End Sub
 
 Private Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal deadIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
+    On Error Goto IBaseScenario_PlayerKillPlayer_Err
     'implements interface
+    Exit Sub
+IBaseScenario_PlayerKillPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_PlayerKillPlayer", Erl)
 End Sub
 
 Private Sub IBaseScenario_Update()
+    On Error Goto IBaseScenario_Update_Err
     Dim frametime As Long
     frametime = GetTickCount() - LastFrameTime
     LastFrameTime = GetTickCount()
@@ -303,17 +376,29 @@ Private Sub IBaseScenario_Update()
     ElseIf LobbyList(LobbyIndex).State = e_LobbyState.Closed Then
         Call CloseScenario
     End If
+    Exit Sub
+IBaseScenario_Update_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_Update", Erl)
 End Sub
 
 Public Sub IBaseScenario_OnUserDisconnected(ByVal UserIndex As Integer)
+    On Error Goto IBaseScenario_OnUserDisconnected_Err
     Call Board.DisconnectUser(UserIndex, UserList(UserIndex).Id)
+    Exit Sub
+IBaseScenario_OnUserDisconnected_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_OnUserDisconnected", Erl)
 End Sub
 
 Public Sub IBaseScenario_OnUserReconnect(ByVal UserIndex As Integer)
+    On Error Goto IBaseScenario_OnUserReconnect_Err
     Call Board.RestoreDisconnectUser(UserIndex, UserList(UserIndex).Id)
+    Exit Sub
+IBaseScenario_OnUserReconnect_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_OnUserReconnect", Erl)
 End Sub
 
 Private Sub MatchComplete()
+    On Error Goto MatchComplete_Err
 On Error GoTo MatchComplete_Err:
 100    Dim i As Integer
        If Not LobbyList(LobbyIndex).Canceled Then
@@ -332,9 +417,13 @@ On Error GoTo MatchComplete_Err:
 MatchComplete_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.MatchComplete ", Erl)
     Resume Next
+    Exit Sub
+MatchComplete_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.MatchComplete", Erl)
 End Sub
 
 Private Sub SpawnNpc(ByVal npcType As Integer)
+    On Error Goto SpawnNpc_Err
     Dim SpawnPos As t_WorldPos
     Dim npcId As Integer
     SpawnPos.Map = MapNumber
@@ -349,9 +438,13 @@ Private Sub SpawnNpc(ByVal npcType As Integer)
         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1792, npcType, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1792=No se pudo spawnear el npc Â¬1, revisar.
         Call TraceError(Err.Number, "failed to spawn Npc " & npcType, "ScenarioHunt.SpawnNpc ", Erl)
     End If
+    Exit Sub
+SpawnNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.SpawnNpc", Erl)
 End Sub
 
 Private Sub CloseCountDown()
+    On Error Goto CloseCountDown_Err
     Dim pendingTime As Integer
     pendingTime = 10 - (ElapsedTime - MaxTime) / 1000
     If pendingTime <= 0 Then
@@ -360,9 +453,13 @@ Private Sub CloseCountDown()
     End If
     Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1821, pendingTime, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1821=El mapa se cerrarÃ¡ en Â¬1 segundos.
 
+    Exit Sub
+CloseCountDown_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.CloseCountDown", Erl)
 End Sub
 
 Private Sub BroadCastTimeUpdate()
+    On Error Goto BroadCastTimeUpdate_Err
     If BroadCastInterval > (ElapsedTime - LastBroadCastTime) Then
         Exit Sub
     End If
@@ -382,17 +479,29 @@ Private Sub BroadCastTimeUpdate()
     If pendingTime <= 1 Then
         BroadCastInterval = 1000
     End If
+    Exit Sub
+BroadCastTimeUpdate_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.BroadCastTimeUpdate", Erl)
 End Sub
 
 Public Sub IBaseScenario_GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)
+    On Error Goto IBaseScenario_GetNextWaypointForNpc_Err
 
+    Exit Sub
+IBaseScenario_GetNextWaypointForNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_GetNextWaypointForNpc", Erl)
 End Sub
 
 Public Sub IBaseScenario_NpcDie(ByVal NpcIndex)
+    On Error Goto IBaseScenario_NpcDie_Err
 
+    Exit Sub
+IBaseScenario_NpcDie_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_NpcDie", Erl)
 End Sub
 
 Public Sub IBaseScenario_UserDie(ByVal UserIndex)
+    On Error Goto IBaseScenario_UserDie_Err
     Dim RespawnInfo As clsRespawnInfo
     Set RespawnInfo = New clsRespawnInfo
     RespawnInfo.RespawnTime = GetTickCount()
@@ -411,9 +520,13 @@ Public Sub IBaseScenario_UserDie(ByVal UserIndex)
         End If
     End With
     Call PlayerRespawn.Add(UserIndex, RespawnInfo)
+    Exit Sub
+IBaseScenario_UserDie_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.IBaseScenario_UserDie", Erl)
 End Sub
 
 Private Sub Respawn(ByVal player As Integer)
+    On Error Goto Respawn_Err
     Dim SpawnPos As t_WorldPos
     SpawnPos.Map = MapNumber
     SpawnPos.x = RandomNumber(12, 85)
@@ -423,9 +536,13 @@ Private Sub Respawn(ByVal player As Integer)
     UserList(player).Counters.timeFx = 3
 114 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessageParticleFX(UserList(player).Char.charindex, e_ParticulasIndex.Curar, 100, False, , UserList(player).Pos.x, UserList(player).Pos.y))
 116 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessagePlayWave("104", UserList(player).Pos.x, UserList(player).Pos.y))
+    Exit Sub
+Respawn_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.Respawn", Erl)
 End Sub
 
 Private Sub RespawnPlayers()
+    On Error Goto RespawnPlayers_Err
     Dim key As Variant
     Dim Keys As Variant
     Dim currentTime As Long
@@ -451,9 +568,13 @@ Private Sub RespawnPlayers()
             Call PlayerRespawn.Remove(key)
         End If
     Next key
+    Exit Sub
+RespawnPlayers_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.RespawnPlayers", Erl)
 End Sub
 
 Sub GiveRewards()
+    On Error Goto GiveRewards_Err
     On Error GoTo GiveRewards_Err:
         Dim Teams() As String
         Dim Rewards(1 To 3) As Long
@@ -519,4 +640,7 @@ Sub GiveRewards()
         Exit Sub
 GiveRewards_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.GiveRewards ", Erl)
+    Exit Sub
+GiveRewards_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHuntNpc.GiveRewards", Erl)
 End Sub

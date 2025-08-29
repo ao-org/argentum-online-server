@@ -30,11 +30,16 @@ Public Grupo As Tgrupo
 
 Private UniqueIdCounter As Long
 Private Function GetNextId() As Long
+    On Error Goto GetNextId_Err
     UniqueIdCounter = (UniqueIdCounter + 1) And &H7FFFFFFF
     GetNextId = UniqueIdCounter
+    Exit Function
+GetNextId_Err:
+    Call TraceError(Err.Number, Err.Description, "ModGrupos.GetNextId", Erl)
 End Function
 
 Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Integer)
+    On Error Goto InvitarMiembro_Err
         On Error GoTo InvitarMiembro_Err
 
         Dim skillsNecesarios As Integer
@@ -136,9 +141,13 @@ InvitarMiembro_Err:
 152     Call TraceError(Err.Number, Err.Description, "ModGrupos.InvitarMiembro", Erl)
 
         
+    Exit Sub
+InvitarMiembro_Err:
+    Call TraceError(Err.Number, Err.Description, "ModGrupos.InvitarMiembro", Erl)
 End Sub
 
 Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
+    On Error Goto EcharMiembro_Err
         
         On Error GoTo EcharMiembro_Err
 
@@ -241,9 +250,13 @@ EcharMiembro_Err:
 176     Call TraceError(Err.Number, Err.Description, "ModGrupos.EcharMiembro", Erl)
 
         
+    Exit Sub
+EcharMiembro_Err:
+    Call TraceError(Err.Number, Err.Description, "ModGrupos.EcharMiembro", Erl)
 End Sub
 
 Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
+    On Error Goto SalirDeGrupo_Err
         
         On Error GoTo SalirDeGrupo_Err
 
@@ -326,9 +339,13 @@ SalirDeGrupo_Err:
 160     Call TraceError(Err.Number, Err.Description, "ModGrupos.SalirDeGrupo", Erl)
 
         
+    Exit Sub
+SalirDeGrupo_Err:
+    Call TraceError(Err.Number, Err.Description, "ModGrupos.SalirDeGrupo", Erl)
 End Sub
 
 Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
+    On Error Goto SalirDeGrupoForzado_Err
         
         On Error GoTo SalirDeGrupoForzado_Err
 
@@ -390,9 +407,13 @@ SalirDeGrupoForzado_Err:
 148     Call TraceError(Err.Number, Err.Description, "ModGrupos.SalirDeGrupoForzado", Erl)
 
         
+    Exit Sub
+SalirDeGrupoForzado_Err:
+    Call TraceError(Err.Number, Err.Description, "ModGrupos.SalirDeGrupoForzado", Erl)
 End Sub
 
 Public Sub FinalizarGrupo(ByVal LiderIndex As Integer)
+    On Error Goto FinalizarGrupo_Err
 On Error GoTo FinalizarGrupo_Err
 
         Dim i As Integer
@@ -437,9 +458,13 @@ On Error GoTo FinalizarGrupo_Err
 
 FinalizarGrupo_Err:
 122     Call TraceError(Err.Number, Err.Description, "ModGrupos.FinalizarGrupo", Erl)
+    Exit Sub
+FinalizarGrupo_Err:
+    Call TraceError(Err.Number, Err.Description, "ModGrupos.FinalizarGrupo", Erl)
 End Sub
 
 Public Sub CompartirUbicacion(ByVal UserIndex As Integer)
+    On Error Goto CompartirUbicacion_Err
         
         On Error GoTo CompartirUbicacion_Err
 
@@ -474,17 +499,25 @@ Public Sub CompartirUbicacion(ByVal UserIndex As Integer)
         Exit Sub
 CompartirUbicacion_Err:
 128     Call TraceError(Err.Number, Err.Description, "ModGrupos.CompartirUbicacion", Erl)
+    Exit Sub
+CompartirUbicacion_Err:
+    Call TraceError(Err.Number, Err.Description, "ModGrupos.CompartirUbicacion", Erl)
 End Sub
 
 Public Sub GroupCreateSuccess(ByVal LiderIndex As Integer)
+    On Error Goto GroupCreateSuccess_Err
     Call WriteLocaleMsg(LiderIndex, "36", e_FontTypeNames.FONTTYPE_INFOIAO)
     With UserList(LiderIndex)
         .Grupo.EnGrupo = True
         .Grupo.ID = GetNextId()
     End With
+    Exit Sub
+GroupCreateSuccess_Err:
+    Call TraceError(Err.Number, Err.Description, "ModGrupos.GroupCreateSuccess", Erl)
 End Sub
 
 Public Sub AddUserToGRoup(ByVal UserIndex As Integer, ByVal GroupLiderIndex As Integer)
+    On Error Goto AddUserToGRoup_Err
 On Error GoTo AddUserToGRoup_Err
     Dim Index As Byte
     For Index = 1 To UserList(GroupLiderIndex).Grupo.CantidadMiembros
@@ -511,5 +544,8 @@ On Error GoTo AddUserToGRoup_Err
     Exit Sub
 AddUserToGRoup_Err:
 122     Call TraceError(Err.Number, Err.Description, "ModGrupos.AddUserToGRoup", Erl)
+    Exit Sub
+AddUserToGRoup_Err:
+    Call TraceError(Err.Number, Err.Description, "ModGrupos.AddUserToGRoup", Erl)
 End Sub
 

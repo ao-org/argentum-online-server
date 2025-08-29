@@ -74,6 +74,7 @@ Private AreasRecive(10)               As Integer
 Public ConnGroups()                   As t_ConnGroup
  
 Public Sub InitAreas()
+    On Error Goto InitAreas_Err
         
         On Error GoTo InitAreas_Err
 
@@ -113,9 +114,13 @@ InitAreas_Err:
 132     Call TraceError(Err.Number, Err.Description, "ModAreas.InitAreas", Erl)
 
         
+    Exit Sub
+InitAreas_Err:
+    Call TraceError(Err.Number, Err.Description, "ModAreas.InitAreas", Erl)
 End Sub
  
 Public Sub AreasOptimizacion()
+    On Error Goto AreasOptimizacion_Err
         
         On Error GoTo AreasOptimizacion_Err
 
@@ -157,9 +162,13 @@ AreasOptimizacion_Err:
 124     Call TraceError(Err.Number, Err.Description, "ModAreas.AreasOptimizacion", Erl)
 
         
+    Exit Sub
+AreasOptimizacion_Err:
+    Call TraceError(Err.Number, Err.Description, "ModAreas.AreasOptimizacion", Erl)
 End Sub
  
 Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte, ByVal appear As Byte, Optional ByVal Muerto As Byte = 0)
+    On Error Goto CheckUpdateNeededUser_Err
 
         On Error GoTo CheckUpdateNeededUser_Err
 
@@ -325,9 +334,13 @@ CheckUpdateNeededUser_Err:
 250     Call TraceError(Err.Number, Err.Description, "ModAreas.CheckUpdateNeededUser", Erl)
 
         
+    Exit Sub
+CheckUpdateNeededUser_Err:
+    Call TraceError(Err.Number, Err.Description, "ModAreas.CheckUpdateNeededUser", Erl)
 End Sub
 
 Private Sub NotifyUser(ByVal UserNotificado As Integer, ByVal UserIngresante As Integer)
+    On Error Goto NotifyUser_Err
 
     Dim sendChar As Boolean
 
@@ -351,9 +364,13 @@ Private Sub NotifyUser(ByVal UserNotificado As Integer, ByVal UserIngresante As 
         End If
     End With
 
+    Exit Sub
+NotifyUser_Err:
+    Call TraceError(Err.Number, Err.Description, "ModAreas.NotifyUser", Erl)
 End Sub
 
 Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal Head As Byte)
+    On Error Goto CheckUpdateNeededNpc_Err
         
         On Error GoTo CheckUpdateNeededNpc_Err
 
@@ -454,9 +471,13 @@ CheckUpdateNeededNpc_Err:
 208     Call TraceError(Err.Number, Err.Description, "ModAreas.CheckUpdateNeededNpc", Erl)
 
         
+    Exit Sub
+CheckUpdateNeededNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "ModAreas.CheckUpdateNeededNpc", Erl)
 End Sub
  
 Public Sub QuitarUser(ByVal UserIndex As Integer, ByVal Map As Integer)
+    On Error Goto QuitarUser_Err
         
         On Error GoTo QuitarUser_Err
 
@@ -484,9 +505,13 @@ Public Sub QuitarUser(ByVal UserIndex As Integer, ByVal Map As Integer)
         Exit Sub
 QuitarUser_Err:
 122     Call TraceError(Err.Number, Err.Description, "ModAreas.QuitarUser", Erl)
+    Exit Sub
+QuitarUser_Err:
+    Call TraceError(Err.Number, Err.Description, "ModAreas.QuitarUser", Erl)
 End Sub
  
 Public Sub AgregarUser(ByVal UserIndex As Integer, ByVal Map As Integer, Optional ByVal appear As Byte = 0)
+    On Error Goto AgregarUser_Err
         
         On Error GoTo AgregarUser_Err
 
@@ -550,9 +575,13 @@ AgregarUser_Err:
 136     Call TraceError(Err.Number, Err.Description, "ModAreas.AgregarUser", Erl)
 
         
+    Exit Sub
+AgregarUser_Err:
+    Call TraceError(Err.Number, Err.Description, "ModAreas.AgregarUser", Erl)
 End Sub
  
 Public Sub AgregarNpc(ByVal NpcIndex As Integer)
+    On Error Goto AgregarNpc_Err
         On Error GoTo AgregarNpc_Err
         With NpcList(NpcIndex)
 100     .AreasInfo.AreaID = 0
@@ -575,9 +604,13 @@ Public Sub AgregarNpc(ByVal NpcIndex As Integer)
 
 AgregarNpc_Err:
 112     Call TraceError(Err.Number, Err.Description, "ModAreas.AgregarNpc", Erl)
+    Exit Sub
+AgregarNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "ModAreas.AgregarNpc", Erl)
 End Sub
 
 Public Sub RemoveNpc(ByVal NpcIndex As Integer)
+    On Error Goto RemoveNpc_Err
     Dim i As Integer
     With NpcList(NpcIndex)
         If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eConsideredByMapAi) Then
@@ -591,4 +624,7 @@ Public Sub RemoveNpc(ByVal NpcIndex As Integer)
         End If
     End With
     
+    Exit Sub
+RemoveNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "ModAreas.RemoveNpc", Erl)
 End Sub

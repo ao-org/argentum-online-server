@@ -3171,14 +3171,19 @@ End Type
 
 
 Public Sub SetBaseDot(ByRef DotInfo As t_BaseDotInfo, ByVal TargetIndex As Integer, ByVal RefType As e_ReferenceType, ByVal UniqueId As Long, ByVal EotId As Integer)
+    On Error Goto SetBaseDot_Err
     Call SetRef(DotInfo.TargetRef, TargetIndex, RefType)
     DotInfo.RemoveEffect = False
     DotInfo.Removed = False
     DotInfo.EotId = EotId
     DotInfo.UniqueId = UniqueId
+    Exit Sub
+SetBaseDot_Err:
+    Call TraceError(Err.Number, Err.Description, "Declares.SetBaseDot", Erl)
 End Sub
 
 Private Function ValidateUerRef(ByRef Ref As t_AnyReference) As Boolean
+    On Error Goto ValidateUerRef_Err
     ValidateUerRef = False
     If Ref.ArrayIndex < LBound(UserList) Then
         Exit Function
@@ -3190,9 +3195,13 @@ Private Function ValidateUerRef(ByRef Ref As t_AnyReference) As Boolean
         Exit Function
     End If
     ValidateUerRef = True
+    Exit Function
+ValidateUerRef_Err:
+    Call TraceError(Err.Number, Err.Description, "Declares.ValidateUerRef", Erl)
 End Function
 
 Private Function ValidateNpcRef(ByRef Ref As t_AnyReference) As Boolean
+    On Error Goto ValidateNpcRef_Err
      ValidateNpcRef = False
      If Ref.ArrayIndex < LBound(NpcList) Then
         Exit Function
@@ -3204,9 +3213,13 @@ Private Function ValidateNpcRef(ByRef Ref As t_AnyReference) As Boolean
             Exit Function
         End If
         ValidateNpcRef = True
+    Exit Function
+ValidateNpcRef_Err:
+    Call TraceError(Err.Number, Err.Description, "Declares.ValidateNpcRef", Erl)
 End Function
 
 Public Function IsValidRef(ByRef Ref As t_AnyReference) As Boolean
+    On Error Goto IsValidRef_Err
     IsValidRef = False
     
     If Ref.RefType = e_ReferenceType.eNone Then
@@ -3216,9 +3229,13 @@ Public Function IsValidRef(ByRef Ref As t_AnyReference) As Boolean
     Else
         IsValidRef = ValidateNpcRef(Ref)
     End If
+    Exit Function
+IsValidRef_Err:
+    Call TraceError(Err.Number, Err.Description, "Declares.IsValidRef", Erl)
 End Function
 
 Public Function SetRef(ByRef Ref As t_AnyReference, ByVal index As Integer, ByVal RefType As e_ReferenceType) As Boolean
+    On Error Goto SetRef_Err
     SetRef = False
     Ref.RefType = RefType
     Ref.ArrayIndex = index
@@ -3236,9 +3253,13 @@ Public Function SetRef(ByRef Ref As t_AnyReference, ByVal index As Integer, ByVa
         Ref.UserId = 0
     End If
     SetRef = True
+    Exit Function
+SetRef_Err:
+    Call TraceError(Err.Number, Err.Description, "Declares.SetRef", Erl)
 End Function
 
 Public Function CastUserToAnyRef(ByRef UserRef As t_UserReference, ByRef AnyRef As t_AnyReference) As Boolean
+    On Error Goto CastUserToAnyRef_Err
     CastUserToAnyRef = False
     If Not IsValidUserRef(UserRef) Then
         Call ClearRef(AnyRef)
@@ -3249,9 +3270,13 @@ Public Function CastUserToAnyRef(ByRef UserRef As t_UserReference, ByRef AnyRef 
     AnyRef.VersionId = UserRef.VersionId
     AnyRef.userID = UserList(UserRef.ArrayIndex).ID
     CastUserToAnyRef = True
+    Exit Function
+CastUserToAnyRef_Err:
+    Call TraceError(Err.Number, Err.Description, "Declares.CastUserToAnyRef", Erl)
 End Function
 
 Public Function CastNpcToAnyRef(ByRef NpcRef As t_NpcReference, ByRef AnyRef As t_AnyReference) As Boolean
+    On Error Goto CastNpcToAnyRef_Err
     CastNpcToAnyRef = False
     If Not IsValidNpcRef(NpcRef) Then
         Call ClearRef(AnyRef)
@@ -3261,16 +3286,24 @@ Public Function CastNpcToAnyRef(ByRef NpcRef As t_NpcReference, ByRef AnyRef As 
     AnyRef.RefType = eNpc
     AnyRef.VersionId = NpcRef.VersionId
     CastNpcToAnyRef = True
+    Exit Function
+CastNpcToAnyRef_Err:
+    Call TraceError(Err.Number, Err.Description, "Declares.CastNpcToAnyRef", Erl)
 End Function
 
 Public Sub ClearRef(ByRef Ref As t_AnyReference)
+    On Error Goto ClearRef_Err
     Ref.ArrayIndex = 0
     Ref.VersionId = -1
     Ref.RefType = e_ReferenceType.eNone
     Ref.UserId = 0
+    Exit Sub
+ClearRef_Err:
+    Call TraceError(Err.Number, Err.Description, "Declares.ClearRef", Erl)
 End Sub
 
 Public Sub ClearModifiers(ByRef Modifiers As t_ActiveModifiers)
+    On Error Goto ClearModifiers_Err
     Modifiers.MagicDamageBonus = 0
     Modifiers.MagicDamageReduction = 0
     Modifiers.PhysicalDamageBonus = 0
@@ -3280,31 +3313,54 @@ Public Sub ClearModifiers(ByRef Modifiers As t_ActiveModifiers)
     Modifiers.HitBonus = 0
     Modifiers.MagicHealingBonus = 0
     Modifiers.SelfHealingBonus = 0
+    Exit Sub
+ClearModifiers_Err:
+    Call TraceError(Err.Number, Err.Description, "Declares.ClearModifiers", Erl)
 End Sub
 
 Public Sub IncreaseSingle(ByRef dest As Single, ByVal amount As Single)
+    On Error Goto IncreaseSingle_Err
     dest = dest + amount
+    Exit Sub
+IncreaseSingle_Err:
+    Call TraceError(Err.Number, Err.Description, "Declares.IncreaseSingle", Erl)
 End Sub
 
 Public Sub IncreaseInteger(ByRef dest As Integer, ByVal amount As Integer)
+    On Error Goto IncreaseInteger_Err
     dest = dest + amount
+    Exit Sub
+IncreaseInteger_Err:
+    Call TraceError(Err.Number, Err.Description, "Declares.IncreaseInteger", Erl)
 End Sub
 
 Public Sub IncreaseLong(ByRef dest As Long, ByVal amount As Long)
+    On Error Goto IncreaseLong_Err
     dest = dest + amount
+    Exit Sub
+IncreaseLong_Err:
+    Call TraceError(Err.Number, Err.Description, "Declares.IncreaseLong", Erl)
 End Sub
 
 Public Sub PerformanceTestStart(ByRef Timer As Long)
+    On Error Goto PerformanceTestStart_Err
     Timer = GetTickCount()
+    Exit Sub
+PerformanceTestStart_Err:
+    Call TraceError(Err.Number, Err.Description, "Declares.PerformanceTestStart", Erl)
 End Sub
 
 ' Test the time since last call and update the time
 ' log if there time betwen calls exced the limit
 Public Sub PerformTimeLimitCheck(ByRef timer As Long, ByRef TestText As String, Optional ByVal TimeLimit As Long = 1000)
+    On Error Goto PerformTimeLimitCheck_Err
     Dim CurrTime As Long
     CurrTime = GetTickCount() - timer
     If CurrTime > TimeLimit Then
         Call LogPerformance("Performance warning at: " & TestText & " elapsed time: " & CurrTime)
     End If
     timer = GetTickCount()
+    Exit Sub
+PerformTimeLimitCheck_Err:
+    Call TraceError(Err.Number, Err.Description, "Declares.PerformTimeLimitCheck", Erl)
 End Sub

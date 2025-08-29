@@ -39,6 +39,7 @@ End Enum
 
 
 Private Function ModificadorPoderAtaqueArmas(ByVal clase As e_Class) As Single
+    On Error Goto ModificadorPoderAtaqueArmas_Err
         
         On Error GoTo ModificadorPoderAtaqueArmas_Err
         
@@ -52,9 +53,13 @@ ModificadorPoderAtaqueArmas_Err:
 102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModificadorPoderAtaqueArmas", Erl)
 
         
+    Exit Function
+ModificadorPoderAtaqueArmas_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModificadorPoderAtaqueArmas", Erl)
 End Function
 
 Private Function ModificadorPoderAtaqueProyectiles(ByVal clase As e_Class) As Single
+    On Error Goto ModificadorPoderAtaqueProyectiles_Err
         
         On Error GoTo ModificadorPoderAtaqueProyectiles_Err
         
@@ -68,9 +73,13 @@ ModificadorPoderAtaqueProyectiles_Err:
 102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModificadorPoderAtaqueProyectiles", Erl)
 
         
+    Exit Function
+ModificadorPoderAtaqueProyectiles_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModificadorPoderAtaqueProyectiles", Erl)
 End Function
 
 Private Function ModicadorDañoClaseArmas(ByVal clase As e_Class) As Single
+    On Error Goto ModicadorDañoClaseArmas_Err
         
         On Error GoTo ModicadorDañoClaseArmas_Err
         
@@ -84,16 +93,24 @@ ModicadorDañoClaseArmas_Err:
 102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorDañoClaseArmas", Erl)
 
         
+    Exit Function
+ModicadorDañoClaseArmas_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorDañoClaseArmas", Erl)
 End Function
 
 Private Function ModicadorApuñalarClase(ByVal clase As e_Class) As Single
+    On Error Goto ModicadorApuñalarClase_Err
         On Error GoTo ModicadorApuñalarClase_Err
      ModicadorApuñalarClase = ModClase(clase).ModApunalar
         Exit Function
 ModicadorApuñalarClase_Err:
      Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorApuñalarClase", Erl)
+    Exit Function
+ModicadorApuñalarClase_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorApuñalarClase", Erl)
 End Function
 Private Function GetStabbingNPCMinForClass(ByVal clase As e_Class) As Single
+    On Error Goto GetStabbingNPCMinForClass_Err
         
         On Error GoTo GetStabbingNPCMinForClass
         
@@ -107,8 +124,12 @@ GetStabbingNPCMinForClass:
      Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingNPCMinForClass", Erl)
 
         
+    Exit Function
+GetStabbingNPCMinForClass_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingNPCMinForClass", Erl)
 End Function
 Private Function GetStabbingNPCMaxForClass(ByVal clase As e_Class) As Single
+    On Error Goto GetStabbingNPCMaxForClass_Err
         
         On Error GoTo GetStabbingNPCMaxForClass
         
@@ -122,9 +143,13 @@ GetStabbingNPCMaxForClass:
      Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingNPCMaxForClass", Erl)
 
         
+    Exit Function
+GetStabbingNPCMaxForClass_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingNPCMaxForClass", Erl)
 End Function
 
 Private Function ModicadorDañoClaseProyectiles(ByVal clase As e_Class) As Single
+    On Error Goto ModicadorDañoClaseProyectiles_Err
         
         On Error GoTo ModicadorDañoClaseProyectiles_Err
         
@@ -138,9 +163,13 @@ ModicadorDañoClaseProyectiles_Err:
 102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorDañoClaseProyectiles", Erl)
 
         
+    Exit Function
+ModicadorDañoClaseProyectiles_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorDañoClaseProyectiles", Erl)
 End Function
 
 Private Function ModEvasionDeEscudoClase(ByVal clase As e_Class) As Single
+    On Error Goto ModEvasionDeEscudoClase_Err
         
         On Error GoTo ModEvasionDeEscudoClase_Err
         
@@ -154,9 +183,13 @@ ModEvasionDeEscudoClase_Err:
 102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModEvasionDeEscudoClase", Erl)
 
         
+    Exit Function
+ModEvasionDeEscudoClase_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModEvasionDeEscudoClase", Erl)
 End Function
 
 Private Function Minimo(ByVal a As Single, ByVal b As Single) As Single
+    On Error Goto Minimo_Err
         
         On Error GoTo Minimo_Err
         
@@ -175,9 +208,13 @@ Minimo_Err:
 106     Call TraceError(Err.Number, Err.Description, "SistemaCombate.Minimo", Erl)
 
         
+    Exit Function
+Minimo_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.Minimo", Erl)
 End Function
 
 Function MinimoInt(ByVal a As Integer, ByVal b As Integer) As Integer
+    On Error Goto MinimoInt_Err
         
         On Error GoTo MinimoInt_Err
         
@@ -196,9 +233,13 @@ MinimoInt_Err:
 106     Call TraceError(Err.Number, Err.Description, "SistemaCombate.MinimoInt", Erl)
 
         
+    Exit Function
+MinimoInt_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.MinimoInt", Erl)
 End Function
 
 Private Function Maximo(ByVal a As Single, ByVal b As Single) As Single
+    On Error Goto Maximo_Err
         
         On Error GoTo Maximo_Err
         
@@ -217,9 +258,13 @@ Maximo_Err:
 106     Call TraceError(Err.Number, Err.Description, "SistemaCombate.Maximo", Erl)
 
         
+    Exit Function
+Maximo_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.Maximo", Erl)
 End Function
 
 Function MaximoInt(ByVal a As Integer, ByVal b As Integer) As Integer
+    On Error Goto MaximoInt_Err
         
         On Error GoTo MaximoInt_Err
         
@@ -238,9 +283,13 @@ MaximoInt_Err:
 106     Call TraceError(Err.Number, Err.Description, "SistemaCombate.MaximoInt", Erl)
 
         
+    Exit Function
+MaximoInt_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.MaximoInt", Erl)
 End Function
 
 Private Function PoderEvasionEscudo(ByVal UserIndex As Integer) As Long
+    On Error Goto PoderEvasionEscudo_Err
         
         On Error GoTo PoderEvasionEscudo_Err
         With UserList(userIndex)
@@ -260,9 +309,13 @@ PoderEvasionEscudo_Err:
 104     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderEvasionEscudo", Erl)
 
         
+    Exit Function
+PoderEvasionEscudo_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderEvasionEscudo", Erl)
 End Function
 
 Private Function PoderEvasion(ByVal UserIndex As Integer) As Long
+    On Error Goto PoderEvasion_Err
     On Error GoTo PoderEvasion_Err
 100     With UserList(UserIndex)
             PoderEvasion = (.Stats.UserSkills(e_Skill.Tacticas) + (3 * .Stats.UserSkills(e_Skill.Tacticas) / 100) * .Stats.UserAtributos(Agilidad)) * ModClase(.clase).Evasion
@@ -272,9 +325,13 @@ Private Function PoderEvasion(ByVal UserIndex As Integer) As Long
         Exit Function
 PoderEvasion_Err:
 106     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderEvasion", Erl)
+    Exit Function
+PoderEvasion_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderEvasion", Erl)
 End Function
 
 Private Function AttackPower(ByVal UserIndex, ByVal skill As Integer, ByVal skillModifier As Single) As Long
+    On Error Goto AttackPower_Err
 On Error GoTo AttackPower_Err
         Dim TempAttackPower As Long
         With UserList(UserIndex)
@@ -285,33 +342,49 @@ On Error GoTo AttackPower_Err
         Exit Function
 AttackPower_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.AttackPower", Erl)
+    Exit Function
+AttackPower_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.AttackPower", Erl)
 End Function
 
 Private Function PoderAtaqueArma(ByVal UserIndex As Integer) As Long
+    On Error Goto PoderAtaqueArma_Err
 On Error GoTo PoderAtaqueArma_Err
         PoderAtaqueArma = AttackPower(UserIndex, e_Skill.Armas, ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
         Exit Function
 PoderAtaqueArma_Err:
 116     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueArma", Erl)
+    Exit Function
+PoderAtaqueArma_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueArma", Erl)
 End Function
 
 Private Function PoderAtaqueProyectil(ByVal UserIndex As Integer) As Long
+    On Error Goto PoderAtaqueProyectil_Err
 On Error GoTo PoderAtaqueProyectil_Err
     PoderAtaqueProyectil = AttackPower(UserIndex, e_Skill.Proyectiles, ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
     Exit Function
 PoderAtaqueProyectil_Err:
 116     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueProyectil", Erl)
+    Exit Function
+PoderAtaqueProyectil_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueProyectil", Erl)
 End Function
 
 Private Function PoderAtaqueWrestling(ByVal UserIndex As Integer) As Long
+    On Error Goto PoderAtaqueWrestling_Err
 On Error GoTo PoderAtaqueWrestling_Err
         PoderAtaqueWrestling = AttackPower(UserIndex, e_Skill.Wrestling, ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
     Exit Function
 PoderAtaqueWrestling_Err:
 116     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueWrestling", Erl)
+    Exit Function
+PoderAtaqueWrestling_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueWrestling", Erl)
 End Function
 
 Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal aType As AttackType) As Boolean
+    On Error Goto UserImpactoNpc_Err
         
         On Error GoTo UserImpactoNpc_Err
         Dim PoderAtaque As Long
@@ -344,9 +417,13 @@ UserImpactoNpc_Err:
 122     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserImpactoNpc", Erl)
 
         
+    Exit Function
+UserImpactoNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserImpactoNpc", Erl)
 End Function
 
 Private Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+    On Error Goto NpcImpacto_Err
     On Error GoTo NpcImpacto_Err
         Dim Rechazo           As Boolean
         Dim ProbRechazo       As Long
@@ -392,9 +469,13 @@ Private Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Intege
 
 NpcImpacto_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcImpacto", Erl)
+    Exit Function
+NpcImpacto_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcImpacto", Erl)
 End Function
 
 Private Function GetUserDamage(ByVal UserIndex As Integer) As Long
+    On Error Goto GetUserDamage_Err
 On Error GoTo GetUserDamge_Err
 100 With UserList(UserIndex)
         GetUserDamage = GetUserDamageWithItem(UserIndex, .invent.WeaponEqpObjIndex, .invent.MunicionEqpObjIndex) _
@@ -403,9 +484,13 @@ On Error GoTo GetUserDamge_Err
     Exit Function
 GetUserDamge_Err:
 150      Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetUserDamge", Erl)
+    Exit Function
+GetUserDamage_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetUserDamage", Erl)
 End Function
 
 Public Function GetClassAttackModifier(ByRef ObjData As t_ObjData, ByVal Class As e_Class) As Single
+    On Error Goto GetClassAttackModifier_Err
     If ObjData.Proyectil > 0 Then
         GetClassAttackModifier = ModicadorDañoClaseProyectiles(Class)
     ElseIf ObjData.WeaponType = eKnuckle Then
@@ -413,9 +498,13 @@ Public Function GetClassAttackModifier(ByRef ObjData As t_ObjData, ByVal Class A
     Else
         GetClassAttackModifier = ModicadorDañoClaseArmas(Class)
     End If
+    Exit Function
+GetClassAttackModifier_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetClassAttackModifier", Erl)
 End Function
 
 Public Function GetUserDamageWithItem(ByVal UserIndex As Integer, ByVal WeaponObjIndex As Integer, ByVal AmunitionObjIndex As Integer) As Long
+    On Error Goto GetUserDamageWithItem_Err
 On Error GoTo GetUserDamageWithItem_Err
             Dim UserDamage As Long, WeaponDamage As Long, MaxWeaponDamage As Long, ClassModifier As Single
 100         With UserList(UserIndex)
@@ -460,9 +549,13 @@ On Error GoTo GetUserDamageWithItem_Err
             Exit Function
 GetUserDamageWithItem_Err:
 150      Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetUserDamageWithItem", Erl)
+    Exit Function
+GetUserDamageWithItem_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetUserDamageWithItem", Erl)
 End Function
 
 Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal aType As AttackType)
+    On Error Goto UserDamageNpc_Err
 On Error GoTo UserDamageNpc_Err
 100     With UserList(UserIndex)
             Dim Damage As Long, DamageBase As Long, DamageExtra As Long, Color As Long, DamageStr As String
@@ -574,18 +667,30 @@ On Error GoTo UserDamageNpc_Err
 
 UserDamageNpc_Err:
      Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoNpc", Erl)
+    Exit Sub
+UserDamageNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDamageNpc", Erl)
 End Sub
 
 Public Function UserDamageToNpc(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, ByVal Source As e_DamageSourceType, ByVal ObjIndex As Integer) As e_DamageResult
+    On Error Goto UserDamageToNpc_Err
     Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AttackerIndex))
 149 Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
 240 UserDamageToNpc = NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex)
+    Exit Function
+UserDamageToNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDamageToNpc", Erl)
 End Function
 
 Public Function GetNpcDamage(ByVal npcIndex As Integer) As Long
+    On Error Goto GetNpcDamage_Err
     GetNpcDamage = RandomNumber(NpcList(NpcIndex).Stats.MinHIT, NpcList(NpcIndex).Stats.MaxHit) + NPCs.GetLinearDamageBonus(NpcIndex)
+    Exit Function
+GetNpcDamage_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetNpcDamage", Erl)
 End Function
 Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer) As Long
+    On Error Goto NpcDamage_Err
     On Error GoTo NpcDamage_Err
         
         NpcDamage = -1
@@ -654,9 +759,13 @@ Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer
         Exit Function
 NpcDamage_Err:
 182     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamage", Erl)
+    Exit Function
+NpcDamage_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamage", Erl)
 End Function
 
 Public Function NpcDoDamageToUser(ByVal AttackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, _
+    On Error Goto NpcDoDamageToUser_Err
                                   ByVal Source As e_DamageSourceType, ByVal ObjIndex As Integer) As e_DamageResult
     Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
 149 Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(TargetIndex))
@@ -664,9 +773,13 @@ Public Function NpcDoDamageToUser(ByVal AttackerIndex As Integer, ByVal TargetIn
     If UserList(TargetIndex).ChatCombate = 1 Then
         Call WriteNPCHitUser(TargetIndex, bTorso, Damage)
     End If
+    Exit Function
+NpcDoDamageToUser_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDoDamageToUser", Erl)
 End Function
 
 Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Heading As e_Heading) As Boolean
+    On Error Goto NpcAtacaUser_Err
         
         On Error GoTo NpcAtacaUser_Err
         
@@ -736,9 +849,13 @@ NpcAtacaUser_Err:
 144     Call TraceError(Err.Number, Err.Description & " Linea---> " & Erl, "SistemaCombate.NpcAtacaUser", Erl)
 
         
+    Exit Function
+NpcAtacaUser_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaUser", Erl)
 End Function
 
 Private Function NpcImpactoNpc(ByVal Atacante As Integer, ByVal Victima As Integer) As Boolean
+    On Error Goto NpcImpactoNpc_Err
         
         On Error GoTo NpcImpactoNpc_Err
         
@@ -759,15 +876,23 @@ NpcImpactoNpc_Err:
 108     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcImpactoNpc", Erl)
 
         
+    Exit Function
+NpcImpactoNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcImpactoNpc", Erl)
 End Function
 
 Private Sub NpcDamageNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
+    On Error Goto NpcDamageNpc_Err
     With NpcList(Atacante)
         Call NpcDamageToNpc(Atacante, Victima, RandomNumber(.Stats.MinHIT, .Stats.MaxHit) + NPCs.GetLinearDamageBonus(Atacante) - NPCs.GetDefenseBonus(Victima) - NpcList(Victima).Stats.def)
     End With
+    Exit Sub
+NpcDamageNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamageNpc", Erl)
 End Sub
 
 Public Function NpcDamageToNpc(ByVal AttackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Integer) As e_DamageResult
+    On Error Goto NpcDamageToNpc_Err
 On Error GoTo NpcDamageNpc_Err
 100 With NpcList(attackerIndex)
 106     Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
@@ -785,9 +910,13 @@ On Error GoTo NpcDamageNpc_Err
     Exit Function
 NpcDamageNpc_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamageNpc")
+    Exit Function
+NpcDamageToNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamageToNpc", Erl)
 End Function
 
 Public Function NpcPerformAttackNpc(ByVal AttackerIndex As Integer, ByVal TargetIndex As Integer) As Boolean
+    On Error Goto NpcPerformAttackNpc_Err
     If NpcList(AttackerIndex).flags.Snd1 > 0 Then
         Call SendData(SendTarget.ToNPCAliveArea, AttackerIndex, PrepareMessagePlayWave(NpcList(AttackerIndex).flags.Snd1, NpcList(AttackerIndex).pos.x, NpcList(AttackerIndex).pos.y))
     End If
@@ -808,9 +937,13 @@ Public Function NpcPerformAttackNpc(ByVal AttackerIndex As Integer, ByVal Target
     Else
         Call SendData(SendTarget.ToNPCAliveArea, AttackerIndex, PrepareMessageCharSwing(NpcList(AttackerIndex).Char.charindex, False, True))
     End If
+    Exit Function
+NpcPerformAttackNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcPerformAttackNpc", Erl)
 End Function
 
 Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Optional ByVal cambiarMovimiento As Boolean = True)
+    On Error Goto NpcAtacaNpc_Err
     On Error GoTo NpcAtacaNpc_Err
 
 100 If Not IntervaloPermiteAtacarNPC(Atacante) Then Exit Sub
@@ -856,9 +989,13 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
 
 NpcAtacaNpc_Err:
 130 Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaNpc", Erl)
+    Exit Sub
+NpcAtacaNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaNpc", Erl)
 End Sub
 
 Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal aType As AttackType)
+    On Error Goto UsuarioAtacaNpc_Err
         
         On Error GoTo UsuarioAtacaNpc_Err
         
@@ -967,9 +1104,13 @@ UsuarioAtacaNpc_Err:
 170     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaNpc", Erl)
 
         
+    Exit Sub
+UsuarioAtacaNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaNpc", Erl)
 End Sub
 
 Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos, Optional ByVal IsExtraHit As Boolean = False)
+    On Error Goto UserAttackPosition_Err
     'Exit if not legal
 126 If TargetPos.X >= XMinMapSize And TargetPos.X <= XMaxMapSize And TargetPos.Y >= YMinMapSize And TargetPos.Y <= YMaxMapSize Then
 128     If ((MapData(TargetPos.map, TargetPos.X, TargetPos.Y).Blocked And 2 ^ (UserList(UserIndex).Char.Heading - 1)) <> 0) Then
@@ -1008,9 +1149,13 @@ Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_W
     Else
 154     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
     End If
+    Exit Sub
+UserAttackPosition_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserAttackPosition", Erl)
 End Sub
 
 Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
+    On Error Goto UsuarioAtaca_Err
         
         On Error GoTo UsuarioAtaca_Err
         
@@ -1069,9 +1214,13 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
         Exit Sub
 UsuarioAtaca_Err:
 156     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtaca", Erl)
+    Exit Sub
+UsuarioAtaca_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtaca", Erl)
 End Sub
 
 Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType) As Boolean
+    On Error Goto UsuarioImpacto_Err
 
         On Error GoTo UsuarioImpacto_Err
 
@@ -1181,9 +1330,13 @@ UsuarioImpacto_Err:
 168     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioImpacto", Erl)
 
 
+    Exit Function
+UsuarioImpacto_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioImpacto", Erl)
 End Function
 
 Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType)
+    On Error Goto UsuarioAtacaUsuario_Err
         
         On Error GoTo UsuarioAtacaUsuario_Err
 
@@ -1233,9 +1386,13 @@ UsuarioAtacaUsuario_Err:
 126     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaUsuario", Erl)
 
 
+    Exit Sub
+UsuarioAtacaUsuario_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaUsuario", Erl)
 End Sub
 
 Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType)
+    On Error Goto UserDamageToUser_Err
         On Error GoTo UserDañoUser_Err
 
 100     With UserList(VictimaIndex)
@@ -1399,9 +1556,13 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
         Exit Sub
 UserDañoUser_Err:
 254     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoUser", Erl)
+    Exit Sub
+UserDamageToUser_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDamageToUser", Erl)
 End Sub
 
 Public Function UserDoDamageToUser(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, ByVal Source As e_DamageSourceType, _
+    On Error Goto UserDoDamageToUser_Err
                                     ByVal ObjIndex As Integer) As e_DamageResult
     Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AttackerIndex))
 149 Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(TargetIndex))
@@ -1412,9 +1573,13 @@ Public Function UserDoDamageToUser(ByVal attackerIndex As Integer, ByVal TargetI
 156     Call WriteUserHittedUser(AttackerIndex, bTorso, UserList(TargetIndex).Char.charindex, DamageStr)
     End If
     Call WriteUserHittedByUser(TargetIndex, bTorso, UserList(AttackerIndex).Char.charindex, DamageStr)
+    Exit Function
+UserDoDamageToUser_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDoDamageToUser", Erl)
 End Function
 
 Private Sub DesequiparObjetoDeUnGolpe(ByVal AttackerIndex As Integer, ByVal VictimIndex As Integer, ByVal parteDelCuerpo As e_PartesCuerpo)
+    On Error Goto DesequiparObjetoDeUnGolpe_Err
         On Error GoTo DesequiparObjetoDeUnGolpe_Err
     
         Dim desequiparCasco As Boolean, desequiparArma As Boolean, desequiparEscudo As Boolean
@@ -1472,9 +1637,13 @@ Private Sub DesequiparObjetoDeUnGolpe(ByVal AttackerIndex As Integer, ByVal Vict
 DesequiparObjetoDeUnGolpe_Err:
 152     Call TraceError(Err.Number, Err.Description, "SistemaCombate.DesequiparObjetoDeUnGolpe", Erl)
  
+    Exit Sub
+DesequiparObjetoDeUnGolpe_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.DesequiparObjetoDeUnGolpe", Erl)
 End Sub
 
 Sub UsuarioAtacadoPorUsuario(ByVal AttackerIndex As Integer, ByVal VictimIndex As Integer)
+    On Error Goto UsuarioAtacadoPorUsuario_Err
         '***************************************************
         'Autor: Unknown
         'Last Modification: 10/01/08
@@ -1527,9 +1696,13 @@ UsuarioAtacadoPorUsuario_Err:
 136     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacadoPorUsuario", Erl)
 
         
+    Exit Sub
+UsuarioAtacadoPorUsuario_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacadoPorUsuario", Erl)
 End Sub
 
 Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As Integer) As Boolean
+    On Error Goto PuedeAtacar_Err
         
         On Error GoTo PuedeAtacar_Err
         
@@ -1753,10 +1926,14 @@ PuedeAtacar_Err:
 230     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacar", Erl)
 
         
+    Exit Function
+PuedeAtacar_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacar", Erl)
 End Function
 
 
 Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
+    On Error Goto CalcularDarExp_Err
         On Error GoTo CalcularDarExp_Err
         
 100     If NpcList(npcIndex).MaestroUser.ArrayIndex <> 0 Then
@@ -1774,8 +1951,12 @@ CalcularDarExp_Err:
 154     Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExp", Erl)
 
         
+    Exit Sub
+CalcularDarExp_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExp", Erl)
 End Sub
 Private Sub GetExpForUser(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
+    On Error Goto GetExpForUser_Err
     
 On Error GoTo GetExpForUser_Err
 
@@ -1842,8 +2023,12 @@ On Error GoTo GetExpForUser_Err
     Exit Sub
 GetExpForUser_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetExpForUser", Erl)
+    Exit Sub
+GetExpForUser_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetExpForUser", Erl)
 End Sub
 Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
+    On Error Goto CalcularDarExpGrupal_Err
         
         On Error GoTo CalcularDarExpGrupal_Err
         
@@ -1983,8 +2168,12 @@ CalcularDarExpGrupal_Err:
 200     Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExpGrupal", Erl)
 
         
+    Exit Sub
+CalcularDarExpGrupal_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExpGrupal", Erl)
 End Sub
 Function GetExpPenalty(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, DeltaLevel As Integer) As Single
+    On Error Goto GetExpPenalty_Err
 
     On Error GoTo GetExpPenalty_Err
     
@@ -2010,8 +2199,12 @@ Function GetExpPenalty(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, De
     
 GetExpPenalty_Err:
         Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetExpPenalty", Erl)
+    Exit Function
+GetExpPenalty_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetExpPenalty", Erl)
 End Function
 Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As Long)
+    On Error Goto CalcularDarOroGrupal_Err
         
         On Error GoTo CalcularDarOroGrupal_Err
         
@@ -2061,9 +2254,13 @@ CalcularDarOroGrupal_Err:
 126     Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarOroGrupal", Erl)
 
         
+    Exit Sub
+CalcularDarOroGrupal_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarOroGrupal", Erl)
 End Sub
 
 Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integer) As e_Trigger6
+    On Error Goto TriggerZonaPelea_Err
         On Error GoTo ErrHandler
 
         Dim tOrg As e_Trigger
@@ -2090,17 +2287,25 @@ ErrHandler:
 114     TriggerZonaPelea = TRIGGER6_AUSENTE
 116     LogError ("Error en TriggerZonaPelea - " & Err.Description)
 
+    Exit Function
+TriggerZonaPelea_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.TriggerZonaPelea", Erl)
 End Function
 
 Public Function PeleaSegura(ByVal source As Integer, ByVal dest As Integer) As Boolean
+    On Error Goto PeleaSegura_Err
     If MapInfo(UserList(source).pos.map).SafeFightMap Then
         PeleaSegura = True
     Else
         PeleaSegura = TriggerZonaPelea(source, dest) = TRIGGER6_PERMITE
     End If
+    Exit Function
+PeleaSegura_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.PeleaSegura", Erl)
 End Function
 
 Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType)
+    On Error Goto UserDañoEspecial_Err
         On Error GoTo UserDañoEspecial_Err
 
         Dim ArmaObjInd As Integer, ObjInd As Integer
@@ -2198,9 +2403,13 @@ UserDañoEspecial_Err:
 180     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoEspecial", Erl)
 
 
+    Exit Sub
+UserDañoEspecial_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoEspecial", Erl)
 End Sub
 
 Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
+    On Error Goto AllMascotasAtacanUser_Err
         'Reaccion de las mascotas
         
         On Error GoTo AllMascotasAtacanUser_Err
@@ -2238,9 +2447,13 @@ Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
 AllMascotasAtacanUser_Err:
 120     Call TraceError(Err.Number, Err.Description, "SistemaCombate.AllMascotasAtacanUser", Erl)
         
+    Exit Sub
+AllMascotasAtacanUser_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.AllMascotasAtacanUser", Erl)
 End Sub
 
 Public Sub AllMascotasAtacanNPC(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
+    On Error Goto AllMascotasAtacanNPC_Err
         On Error GoTo AllMascotasAtacanNPC_Err
         
         Dim j As Long
@@ -2276,9 +2489,13 @@ Public Sub AllMascotasAtacanNPC(ByVal NpcIndex As Integer, ByVal UserIndex As In
 AllMascotasAtacanNPC_Err:
 116     Call TraceError(Err.Number, Err.Description, "SistemaCombate.AllMascotasAtacanNPC", Erl)
         
+    Exit Sub
+AllMascotasAtacanNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.AllMascotasAtacanNPC", Erl)
 End Sub
 
 Private Function PuedeDesequiparDeUnGolpe(ByVal UserIndex As Integer) As Boolean
+    On Error Goto PuedeDesequiparDeUnGolpe_Err
         On Error GoTo PuedeDesequiparDeUnGolpe_Err
 100     With UserList(UserIndex)
             If .invent.WeaponEqpObjIndex > 0 Then
@@ -2309,9 +2526,13 @@ PuedeDesequiparDeUnGolpe_Err:
 110     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeDesequiparDeUnGolpe", Erl)
 
         
+    Exit Function
+PuedeDesequiparDeUnGolpe_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeDesequiparDeUnGolpe", Erl)
 End Function
 
 Private Function PuedeApuñalar(ByVal UserIndex As Integer) As Boolean
+    On Error Goto PuedeApuñalar_Err
         
         On Error GoTo PuedeApuñalar_Err
         
@@ -2329,9 +2550,13 @@ PuedeApuñalar_Err:
 106     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeApuñalar", Erl)
 
         
+    Exit Function
+PuedeApuñalar_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeApuñalar", Erl)
 End Function
 
 Private Function PuedeGolpeCritico(ByVal UserIndex As Integer) As Boolean
+    On Error Goto PuedeGolpeCritico_Err
         ' Autor: WyroX - 16/01/2021
         
         On Error GoTo PuedeGolpeCritico_Err
@@ -2350,9 +2575,13 @@ PuedeGolpeCritico_Err:
 106     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeGolpeCritico", Erl)
 
         
+    Exit Function
+PuedeGolpeCritico_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeGolpeCritico", Erl)
 End Function
 
 Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer, Optional ByVal NpcIndex As Integer) As Integer
+    On Error Goto ProbabilidadApuñalar_Err
 
         ' Autor: WyroX - 16/01/2021
         
@@ -2392,9 +2621,13 @@ ProbabilidadApuñalar_Err:
 120     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadApuñalar", Erl)
 
         
+    Exit Function
+ProbabilidadApuñalar_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadApuñalar", Erl)
 End Function
 
 Private Function GetSkillRequiredForWeapon(ByVal ObjId As Integer) As e_Skill
+    On Error Goto GetSkillRequiredForWeapon_Err
     If ObjId = 0 Then
         GetSkillRequiredForWeapon = e_Skill.Wrestling
     Else
@@ -2406,9 +2639,13 @@ Private Function GetSkillRequiredForWeapon(ByVal ObjId As Integer) As e_Skill
             GetSkillRequiredForWeapon = e_Skill.Armas
         End If
     End If
+    Exit Function
+GetSkillRequiredForWeapon_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetSkillRequiredForWeapon", Erl)
 End Function
 
 Private Function ProbabilidadGolpeCritico(ByVal UserIndex As Integer) As Integer
+    On Error Goto ProbabilidadGolpeCritico_Err
         On Error GoTo ProbabilidadGolpeCritico_Err
 
         
@@ -2420,9 +2657,13 @@ ProbabilidadGolpeCritico_Err:
 102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadGolpeCritico", Erl)
 
 
+    Exit Function
+ProbabilidadGolpeCritico_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadGolpeCritico", Erl)
 End Function
 
 Private Function ProbabilidadDesequipar(ByVal UserIndex As Integer) As Integer
+    On Error Goto ProbabilidadDesequipar_Err
         On Error GoTo ProbabilidadDesequipar_Err
 
 100     With UserList(UserIndex)
@@ -2455,11 +2696,15 @@ ProbabilidadDesequipar_Err:
 114     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadDesequipar", Erl)
 
         
+    Exit Function
+ProbabilidadDesequipar_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadDesequipar", Erl)
 End Function
 
 
 ' Helper function to simplify the code. Keep private!
 Private Sub WriteCombatConsoleMsg(ByVal UserIndex As Integer, ByVal Message As String)
+    On Error Goto WriteCombatConsoleMsg_Err
             On Error GoTo WriteCombatConsoleMsg_Err
 100         If UserList(UserIndex).ChatCombate = 1 Then
 102             Call WriteConsoleMsg(UserIndex, Message, e_FontTypeNames.FONTTYPE_FIGHT)
@@ -2467,9 +2712,13 @@ Private Sub WriteCombatConsoleMsg(ByVal UserIndex As Integer, ByVal Message As S
             Exit Sub
 WriteCombatConsoleMsg_Err:
 104         Call TraceError(Err.Number, Err.Description, "SistemaCombate.WriteCombatConsoleMsg", Erl)
+    Exit Sub
+WriteCombatConsoleMsg_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.WriteCombatConsoleMsg", Erl)
 End Sub
 
 Public Function MultiShot(ByVal UserIndex As Integer, ByRef targetPos As t_WorldPos) As Boolean
+    On Error Goto MultiShot_Err
 On Error GoTo MultiShot_Err
     With UserList(UserIndex)
         Dim ArrowSlot As Integer
@@ -2515,9 +2764,13 @@ On Error GoTo MultiShot_Err
     Exit Function
 MultiShot_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.MultiShot", Erl)
+    Exit Function
+MultiShot_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.MultiShot", Erl)
 End Function
 
 Public Sub ThrowArrowToTargetDir(ByVal UserIndex As Integer, ByRef Direction As t_Vector, ByVal distance As Integer)
+    On Error Goto ThrowArrowToTargetDir_Err
 On Error GoTo ThrowArrowToTargetDir_Err
     Dim currentPos As t_WorldPos
     Dim TargetPoint As t_Vector
@@ -2554,9 +2807,13 @@ On Error GoTo ThrowArrowToTargetDir_Err
     Exit Sub
 ThrowArrowToTargetDir_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ThrowArrowToTargetDir", Erl)
+    Exit Sub
+ThrowArrowToTargetDir_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ThrowArrowToTargetDir", Erl)
 End Sub
 
 Public Function ThrowArrowToTile(ByVal UserIndex As Integer, ByRef targetPos As t_WorldPos) As Boolean
+    On Error Goto ThrowArrowToTile_Err
 On Error GoTo ThrowArrowToTile_Err
 100    ThrowArrowToTile = False
 102    If MapData(targetPos.map, targetPos.x, targetPos.y).UserIndex > 0 Then
@@ -2580,9 +2837,13 @@ On Error GoTo ThrowArrowToTile_Err
     Exit Function
 ThrowArrowToTile_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ThrowArrowToTile", Erl)
+    Exit Function
+ThrowArrowToTile_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ThrowArrowToTile", Erl)
 End Function
 
 Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType)
+    On Error Goto ThrowProjectileToTarget_Err
     Dim WeaponData As t_ObjData
     Dim ProjectileType As Byte
     Dim AmunitionState As Integer
@@ -2669,9 +2930,13 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
     If DidConsumeAmunition Then
         Call ConsumeAmunition(UserIndex)
     End If
+    Exit Sub
+ThrowProjectileToTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ThrowProjectileToTarget", Erl)
 End Sub
 
 Public Function GetProjectileView(ByRef user As t_User) As Integer
+    On Error Goto GetProjectileView_Err
     Dim WeaponData As t_ObjData
     Dim ProjectileType As Byte
     With user.invent
@@ -2683,9 +2948,13 @@ Public Function GetProjectileView(ByRef user As t_User) As Integer
             GetProjectileView = ObjData(.MunicionEqpObjIndex).ProjectileType
         End If
     End With
+    Exit Function
+GetProjectileView_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetProjectileView", Erl)
 End Function
 
 Public Sub ConsumeAmunition(ByVal UserIndex As Integer)
+    On Error Goto ConsumeAmunition_Err
     With UserList(UserIndex).invent
         Dim AmunitionSlot As Integer
         AmunitionSlot = .MunicionEqpSlot
@@ -2703,9 +2972,13 @@ Public Sub ConsumeAmunition(ByVal UserIndex As Integer)
             Call UpdateUserInv(False, UserIndex, AmunitionSlot)
         End If
     End With
+    Exit Sub
+ConsumeAmunition_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ConsumeAmunition", Erl)
 End Sub
 
 Public Sub CalculateElementalTagsModifiers(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByRef DmgAcumulator As Long)
+    On Error Goto CalculateElementalTagsModifiers_Err
     Dim attackerElementMask As Long
     Dim defenderElementMask As Long
     Dim attackerBit As Long
@@ -2744,4 +3017,7 @@ Public Sub CalculateElementalTagsModifiers(ByVal UserIndex As Integer, ByVal Npc
             Next defenderIndex
         End If
     Next attackerIndex
+    Exit Sub
+CalculateElementalTagsModifiers_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalculateElementalTagsModifiers", Erl)
 End Sub

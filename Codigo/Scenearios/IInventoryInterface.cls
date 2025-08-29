@@ -41,18 +41,34 @@ Option Explicit
 
 'request if user can pickup an item, return false if user can't pick up item at pos
 Public Function UserCanPickUpItem(ByVal UserIndex As Integer) As Boolean
+    On Error Goto UserCanPickUpItem_Err
 
+    Exit Function
+UserCanPickUpItem_Err:
+    Call TraceError(Err.Number, Err.Description, "IInventoryInterface.UserCanPickUpItem", Erl)
 End Function
 
 Public Sub UserDidPickupItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+    On Error Goto UserDidPickupItem_Err
 
+    Exit Sub
+UserDidPickupItem_Err:
+    Call TraceError(Err.Number, Err.Description, "IInventoryInterface.UserDidPickupItem", Erl)
 End Sub
 
 'request if user can drop item at position
 Public Function UserCanDropItemAt(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer) As Boolean
+    On Error Goto UserCanDropItemAt_Err
 
+    Exit Function
+UserCanDropItemAt_Err:
+    Call TraceError(Err.Number, Err.Description, "IInventoryInterface.UserCanDropItemAt", Erl)
 End Function
 
 'inform that user drop an item
 Public Sub UserDropItem(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
+    On Error Goto UserDropItem_Err
+    Exit Sub
+UserDropItem_Err:
+    Call TraceError(Err.Number, Err.Description, "IInventoryInterface.UserDropItem", Erl)
 End Sub

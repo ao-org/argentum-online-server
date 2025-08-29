@@ -33,6 +33,7 @@ Public Const MAXKEYS As Byte = 10
 
 
 Public Sub SacarLlaveDeLLavero(ByVal UserIndex As Integer, ByVal Llave As Integer)
+    On Error Goto SacarLlaveDeLLavero_Err
 
         On Error GoTo ErrHandler
     
@@ -55,9 +56,13 @@ Public Sub SacarLlaveDeLLavero(ByVal UserIndex As Integer, ByVal Llave As Intege
 ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "ModLlaves.SacarLlaveDeLLavero", Erl)
 
+    Exit Sub
+SacarLlaveDeLLavero_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLlaves.SacarLlaveDeLLavero", Erl)
 End Sub
 
 Public Sub EnviarLlaves(ByVal UserIndex As Integer)
+    On Error Goto EnviarLlaves_Err
         
         On Error GoTo EnviarLlaves_Err
     
@@ -81,9 +86,13 @@ EnviarLlaves_Err:
 108     Call TraceError(Err.Number, Err.Description, "ModLlaves.EnviarLlaves", Erl)
 
         
+    Exit Sub
+EnviarLlaves_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLlaves.EnviarLlaves", Erl)
 End Sub
 
 Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
+    On Error Goto UsarLlave_Err
         
         On Error GoTo UsarLlave_Err
     
@@ -156,4 +165,7 @@ UsarLlave_Err:
 140     Call TraceError(Err.Number, Err.Description, "ModLlaves.UsarLlave", Erl)
 
         
+    Exit Sub
+UsarLlave_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLlaves.UsarLlave", Erl)
 End Sub

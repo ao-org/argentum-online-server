@@ -48,6 +48,7 @@ Private mUnequipedslotMask As Long
 Private mDebuffIcon As Integer
 
 Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, ByVal EffectId As Integer, ByVal ID As Long, ByVal ItemSlotMask As Long)
+    On Error Goto Setup_Err
     Debug.Assert TargetType = eUser
     mElapsedTime = 0
     Call SetBaseDot(mDotInfo, TargetIndex, TargetType, ID, EffectId)
@@ -67,6 +68,9 @@ Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceTy
             Call WriteSendSkillCdUpdate(TargetIndex, mDebuffIcon, id, .TickTime, .TickTime, .buffType)
         End If
     End With
+    Exit Sub
+Setup_Err:
+    Call TraceError(Err.Number, Err.Description, "UnequipItem.Setup", Erl)
 End Sub
 
 Public Property Get IBaseEffectOverTime_TypeId() As Integer
@@ -118,6 +122,10 @@ Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
 End Property
 
 Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
+    On Error Goto IBaseEffectOverTime_TargetWillAttackPosition_Err
+    Exit Sub
+IBaseEffectOverTime_TargetWillAttackPosition_Err:
+    Call TraceError(Err.Number, Err.Description, "UnequipItem.IBaseEffectOverTime_TargetWillAttackPosition", Erl)
 End Sub
 
 Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
@@ -125,11 +133,15 @@ Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
 End Property
 
 Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
+    On Error Goto IBaseEffectOverTime_Update_Err
     mElapsedTime = mElapsedTime + deltaTime
     If mElapsedTime >= mTimeLimit Or Not IsValidRef(mDotInfo.TargetRef) Then
         mDotInfo.RemoveEffect = True
         Exit Sub
     End If
+    Exit Sub
+IBaseEffectOverTime_Update_Err:
+    Call TraceError(Err.Number, Err.Description, "UnequipItem.IBaseEffectOverTime_Update", Erl)
 End Sub
 
 Public Property Get IBaseEffectOverTime_RemoveMe() As Boolean
@@ -141,7 +153,11 @@ Public Property Let IBaseEffectOverTime_RemoveMe(ByVal Value As Boolean)
 End Property
 
 Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
+    On Error Goto IBaseEffectOverTime_Reset_Err
     IBaseEffectOverTime_Reset = True
+    Exit Function
+IBaseEffectOverTime_Reset_Err:
+    Call TraceError(Err.Number, Err.Description, "UnequipItem.IBaseEffectOverTime_Reset", Erl)
 End Function
 
 Public Property Get IBaseEffectOverTime_EotId() As Integer
@@ -149,6 +165,7 @@ Public Property Get IBaseEffectOverTime_EotId() As Integer
 End Property
 
 Public Sub IBaseEffectOverTime_OnRemove()
+    On Error Goto IBaseEffectOverTime_OnRemove_Err
     If mDotInfo.Removed Then Exit Sub
     mDotInfo.Removed = True
     mDotInfo.RemoveEffect = True
@@ -157,29 +174,60 @@ Public Sub IBaseEffectOverTime_OnRemove()
         Call WriteSendSkillCdUpdate(mDotInfo.TargetRef.ArrayIndex, mDebuffIcon, _
                                     mDotInfo.UniqueId, 0, 0, EffectOverTime(mDotInfo.EotId).buffType)
     End If
+    Exit Sub
+IBaseEffectOverTime_OnRemove_Err:
+    Call TraceError(Err.Number, Err.Description, "UnequipItem.IBaseEffectOverTime_OnRemove", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
+    On Error Goto IBaseEffectOverTime_TargetUseMagic_Err
+    Exit Sub
+IBaseEffectOverTime_TargetUseMagic_Err:
+    Call TraceError(Err.Number, Err.Description, "UnequipItem.IBaseEffectOverTime_TargetUseMagic", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TartgetWillAtack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TartgetWillAtack_Err
+    Exit Sub
+IBaseEffectOverTime_TartgetWillAtack_Err:
+    Call TraceError(Err.Number, Err.Description, "UnequipItem.IBaseEffectOverTime_TartgetWillAtack", Erl)
 End Sub
 
 Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
+    On Error Goto IBaseEffectOverTime_ChangeTarget_Err
     IBaseEffectOverTime_ChangeTarget = False
+    Exit Function
+IBaseEffectOverTime_ChangeTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "UnequipItem.IBaseEffectOverTime_ChangeTarget", Erl)
 End Function
 
 Public Sub IBaseEffectOverTime_TartgetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TartgetDidHit_Err
+    Exit Sub
+IBaseEffectOverTime_TartgetDidHit_Err:
+    Call TraceError(Err.Number, Err.Description, "UnequipItem.IBaseEffectOverTime_TartgetDidHit", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetFailedAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TargetFailedAttack_Err
+    Exit Sub
+IBaseEffectOverTime_TargetFailedAttack_Err:
+    Call TraceError(Err.Number, Err.Description, "UnequipItem.IBaseEffectOverTime_TargetFailedAttack", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TargetWasDamaged_Err
+    Exit Sub
+IBaseEffectOverTime_TargetWasDamaged_Err:
+    Call TraceError(Err.Number, Err.Description, "UnequipItem.IBaseEffectOverTime_TargetWasDamaged", Erl)
 End Sub
 
 Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType) As Long
+    On Error Goto IBaseEffectOverTime_ApplyDamageReduction_Err
     IBaseEffectOverTime_ApplyDamageReduction = Damage
+    Exit Function
+IBaseEffectOverTime_ApplyDamageReduction_Err:
+    Call TraceError(Err.Number, Err.Description, "UnequipItem.IBaseEffectOverTime_ApplyDamageReduction", Erl)
 End Function
 
 Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
@@ -187,6 +235,10 @@ Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
 End Property
 
 Public Sub IBaseEffectOverTime_TargetChangeTerrain()
+    On Error Goto IBaseEffectOverTime_TargetChangeTerrain_Err
+    Exit Sub
+IBaseEffectOverTime_TargetChangeTerrain_Err:
+    Call TraceError(Err.Number, Err.Description, "UnequipItem.IBaseEffectOverTime_TargetChangeTerrain", Erl)
 End Sub
 
 

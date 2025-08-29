@@ -198,6 +198,7 @@ Private MapDat  As t_MapDat
 Private FeatureToggles As Dictionary
 
 Public Sub load_stats()
+    On Error Goto load_stats_Err
 On Error GoTo error_load_stats
     Dim n As Integer
     Dim strFile As String
@@ -226,9 +227,13 @@ On Error GoTo error_load_stats
 error_load_stats:
      Call TraceError(Err.Number, Err.Description, "ES.load_stats", Erl)
 
+    Exit Sub
+load_stats_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.load_stats", Erl)
 End Sub
 
 Public Sub dump_stats()
+    On Error Goto dump_stats_Err
 On Error GoTo error_dump_stats
     Dim n As Integer
     n = FreeFile()
@@ -244,9 +249,13 @@ On Error GoTo error_dump_stats
     Exit Sub
 error_dump_stats:
      Call TraceError(Err.Number, Err.Description, "ES.error_dump_stats", Erl)
+    Exit Sub
+dump_stats_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.dump_stats", Erl)
 End Sub
 
 Public Sub CargarSpawnList()
+    On Error Goto CargarSpawnList_Err
         
         On Error GoTo CargarSpawnList_Err
         
@@ -275,9 +284,13 @@ CargarSpawnList_Err:
 116     Call TraceError(Err.Number, Err.Description, "ES.CargarSpawnList", Erl)
 
         
+    Exit Sub
+CargarSpawnList_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.CargarSpawnList", Erl)
 End Sub
 
 Function EsAdmin(ByRef Name As String) As Boolean
+    On Error Goto EsAdmin_Err
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -295,9 +308,13 @@ EsAdmin_Err:
 102     Call TraceError(Err.Number, Err.Description, "ES.EsAdmin", Erl)
 
         
+    Exit Function
+EsAdmin_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.EsAdmin", Erl)
 End Function
 
 Function EsDios(ByRef Name As String) As Boolean
+    On Error Goto EsDios_Err
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -315,9 +332,13 @@ EsDios_Err:
 102     Call TraceError(Err.Number, Err.Description, "ES.EsDios", Erl)
 
         
+    Exit Function
+EsDios_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.EsDios", Erl)
 End Function
 
 Function EsSemiDios(ByRef Name As String) As Boolean
+    On Error Goto EsSemiDios_Err
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -335,9 +356,13 @@ EsSemiDios_Err:
 102     Call TraceError(Err.Number, Err.Description, "ES.EsSemiDios", Erl)
 
         
+    Exit Function
+EsSemiDios_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.EsSemiDios", Erl)
 End Function
 
 Function EsConsejero(ByRef Name As String) As Boolean
+    On Error Goto EsConsejero_Err
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -355,9 +380,13 @@ EsConsejero_Err:
 102     Call TraceError(Err.Number, Err.Description, "ES.EsConsejero", Erl)
 
         
+    Exit Function
+EsConsejero_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.EsConsejero", Erl)
 End Function
 
 Function EsRolesMaster(ByRef Name As String) As Boolean
+    On Error Goto EsRolesMaster_Err
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -375,9 +404,13 @@ EsRolesMaster_Err:
 102     Call TraceError(Err.Number, Err.Description, "ES.EsRolesMaster", Erl)
 
         
+    Exit Function
+EsRolesMaster_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.EsRolesMaster", Erl)
 End Function
 
 Public Function EsGmChar(ByRef Name As String) As Boolean
+    On Error Goto EsGmChar_Err
         '***************************************************
         'Author: ZaMa
         'Last Modification: 27/03/2011
@@ -410,9 +443,13 @@ EsGmChar_Err:
 110     Call TraceError(Err.Number, Err.Description, "ES.EsGmChar", Erl)
 
         
+    Exit Function
+EsGmChar_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.EsGmChar", Erl)
 End Function
 
 Public Sub loadAdministrativeUsers()
+    On Error Goto loadAdministrativeUsers_Err
         'Admines     => Admin
         'Dioses      => Dios
         'SemiDioses  => SemiDios
@@ -543,10 +580,14 @@ loadAdministrativeUsers_Err:
 190     Call TraceError(Err.Number, Err.Description, "ES.loadAdministrativeUsers", Erl)
 
         
+    Exit Sub
+loadAdministrativeUsers_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.loadAdministrativeUsers", Erl)
 End Sub
 
 
 Public Function TxtDimension(ByVal Name As String) As Long
+    On Error Goto TxtDimension_Err
         
         On Error GoTo TxtDimension_Err
         
@@ -571,9 +612,13 @@ TxtDimension_Err:
 116     Call TraceError(Err.Number, Err.Description, "ES.TxtDimension", Erl)
 
         
+    Exit Function
+TxtDimension_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.TxtDimension", Erl)
 End Function
 
 Public Sub CargarForbidenWords()
+    On Error Goto CargarForbidenWords_Err
         
         On Error GoTo CargarForbidenWords_Err
 
@@ -608,8 +653,12 @@ CargarForbidenWords_Err:
 120     Call TraceError(Err.Number, Err.Description, "ES.CargarForbidenWords", Erl)
 
         
+    Exit Sub
+CargarForbidenWords_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.CargarForbidenWords", Erl)
 End Sub
 Public Sub LoadBlockedWordsDescription()
+    On Error Goto LoadBlockedWordsDescription_Err
         
         On Error GoTo LoadBlockedWordsDescription_Err
 
@@ -639,9 +688,13 @@ Public Sub LoadBlockedWordsDescription()
 
 LoadBlockedWordsDescription_Err:
         Call TraceError(Err.Number, Err.Description, "ES.LoadBlockedWordsDescription", Erl)
+    Exit Sub
+LoadBlockedWordsDescription_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadBlockedWordsDescription", Erl)
 End Sub
 
 Public Sub CargarHechizos()
+    On Error Goto CargarHechizos_Err
 
         '###################################################
         '#               ATENCION PELIGRO                  #
@@ -828,9 +881,13 @@ Public Sub CargarHechizos()
 
 ErrHandler:
 402     MsgBox "Error cargando hechizos.dat " & Err.Number & ": " & Err.Description
+    Exit Sub
+CargarHechizos_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.CargarHechizos", Erl)
 End Sub
 
 Public Sub LoadEffectOverTime()
+    On Error Goto LoadEffectOverTime_Err
 On Error GoTo ErrHandler
 
 100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando Hechizos."
@@ -941,9 +998,13 @@ On Error GoTo ErrHandler
         Exit Sub
 ErrHandler:
 288     MsgBox "Error cargando EffectsOverTime.dat " & Err.Number & ": " & Err.Description
+    Exit Sub
+LoadEffectOverTime_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadEffectOverTime", Erl)
 End Sub
 
 Sub LoadMotd()
+    On Error Goto LoadMotd_Err
         
         On Error GoTo LoadMotd_Err
         
@@ -966,9 +1027,13 @@ LoadMotd_Err:
 112     Call TraceError(Err.Number, Err.Description, "ES.LoadMotd", Erl)
 
         
+    Exit Sub
+LoadMotd_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadMotd", Erl)
 End Sub
 
 Public Sub DoBackUp()
+    On Error Goto DoBackUp_Err
         On Error GoTo DoBackUp_Err
     
         
@@ -982,10 +1047,14 @@ Public Sub DoBackUp()
         Exit Sub
 DoBackUp_Err:
 120     Call TraceError(Err.Number, Err.Description, "ES.DoBackUp", Erl)
+    Exit Sub
+DoBackUp_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.DoBackUp", Erl)
 End Sub
 
 
 Sub LoadArmasHerreria()
+    On Error Goto LoadArmasHerreria_Err
         
         On Error GoTo LoadArmasHerreria_Err
         
@@ -1013,9 +1082,13 @@ LoadArmasHerreria_Err:
 114     Call TraceError(Err.Number, Err.Description, "ES.LoadArmasHerreria", Erl)
 
         
+    Exit Sub
+LoadArmasHerreria_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadArmasHerreria", Erl)
 End Sub
 
 Sub LoadArmadurasHerreria()
+    On Error Goto LoadArmadurasHerreria_Err
         
         On Error GoTo LoadArmadurasHerreria_Err
         
@@ -1043,9 +1116,13 @@ LoadArmadurasHerreria_Err:
 114     Call TraceError(Err.Number, Err.Description, "ES.LoadArmadurasHerreria", Erl)
 
         
+    Exit Sub
+LoadArmadurasHerreria_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadArmadurasHerreria", Erl)
 End Sub
 
 Sub LoadBlackSmithElementalRunes()
+    On Error Goto LoadBlackSmithElementalRunes_Err
         
         On Error GoTo LoadRunasHerreria_Err
         
@@ -1073,9 +1150,13 @@ LoadRunasHerreria_Err:
 114     Call TraceError(Err.Number, Err.Description, "ES.LoadBlackSmithElementalRunes", Erl)
 
         
+    Exit Sub
+LoadBlackSmithElementalRunes_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadBlackSmithElementalRunes", Erl)
 End Sub
 
 Sub LoadBalance()
+    On Error Goto LoadBalance_Err
         
         On Error GoTo LoadBalance_Err
         
@@ -1197,9 +1278,13 @@ LoadBalance_Err:
 180     Call TraceError(Err.Number, Err.Description, "ES.LoadBalance", Erl)
 
         
+    Exit Sub
+LoadBalance_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadBalance", Erl)
 End Sub
 
 Sub LoadObjCarpintero()
+    On Error Goto LoadObjCarpintero_Err
         
         On Error GoTo LoadObjCarpintero_Err
         
@@ -1227,9 +1312,13 @@ LoadObjCarpintero_Err:
 114     Call TraceError(Err.Number, Err.Description, "ES.LoadObjCarpintero", Erl)
 
         
+    Exit Sub
+LoadObjCarpintero_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadObjCarpintero", Erl)
 End Sub
 
 Sub LoadObjAlquimista()
+    On Error Goto LoadObjAlquimista_Err
         
         On Error GoTo LoadObjAlquimista_Err
         
@@ -1257,9 +1346,13 @@ LoadObjAlquimista_Err:
 114     Call TraceError(Err.Number, Err.Description, "ES.LoadObjAlquimista", Erl)
 
         
+    Exit Sub
+LoadObjAlquimista_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadObjAlquimista", Erl)
 End Sub
 
 Sub LoadObjSastre()
+    On Error Goto LoadObjSastre_Err
         
         On Error GoTo LoadObjSastre_Err
         
@@ -1287,9 +1380,13 @@ LoadObjSastre_Err:
 114     Call TraceError(Err.Number, Err.Description, "ES.LoadObjSastre", Erl)
 
         
+    Exit Sub
+LoadObjSastre_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadObjSastre", Erl)
 End Sub
 
 Sub LoadOBJData()
+    On Error Goto LoadOBJData_Err
 
         '###################################################
         '#               ATENCION PELIGRO                  #
@@ -1864,9 +1961,13 @@ Sub LoadOBJData()
 ErrHandler:
 652     MsgBox "error cargando objetos " & Err.Number & ": " & Err.Description & ". Error producido al cargar el objeto: " & Object
 
+    Exit Sub
+LoadOBJData_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadOBJData", Erl)
 End Sub
 
 Function GetVar(ByVal File As String, ByVal Main As String, ByVal Var As String, Optional EmptySpaces As Long = 1024) As String
+    On Error Goto GetVar_Err
         
         On Error GoTo GetVar_Err
         
@@ -1891,9 +1992,13 @@ GetVar_Err:
 110     Call TraceError(Err.Number, Err.Description, "ES.GetVar", Erl)
 
         
+    Exit Function
+GetVar_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.GetVar", Erl)
 End Function
 
 Sub CargarBackUp()
+    On Error Goto CargarBackUp_Err
         
         On Error GoTo CargarBackUp_Err
         
@@ -1941,9 +2046,13 @@ CargarBackUp_Err:
 138     Call TraceError(Err.Number, Err.Description, "ES.CargarBackUp", Erl)
 
         
+    Exit Sub
+CargarBackUp_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.CargarBackUp", Erl)
 End Sub
 
 Sub LoadMapData()
+    On Error Goto LoadMapData_Err
         On Error GoTo man
 
 100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando mapas..."
@@ -2003,9 +2112,13 @@ man:
     Call MsgBox("Error durante la carga de mapas, el mapa " & Map & " contiene errores")
     Call LogError(Date & " " & Err.Description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.Source)
 
+    Exit Sub
+LoadMapData_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadMapData", Erl)
 End Sub
 
 Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
+    On Error Goto CargarMapaFormatoCSM_Err
 
         On Error GoTo ErrorHandler:
 
@@ -2301,16 +2414,24 @@ ErrorHandler:
 394     Close fh
 396     Call TraceError(Err.Number, Err.Description, "ES.CargarMapaFormatoCSM", Erl)
     
+    Exit Sub
+CargarMapaFormatoCSM_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.CargarMapaFormatoCSM", Erl)
 End Sub
 
 Sub AddFishingPoolsToMap(ByVal Map As Integer)
+    On Error Goto AddFishingPoolsToMap_Err
     Dim i As Integer
     For i = 1 To SvrConfig.GetValue("FISHING_TILES_ON_MAP")
         Call CreateFishingPool(Map)
     Next i
+    Exit Sub
+AddFishingPoolsToMap_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.AddFishingPoolsToMap", Erl)
 End Sub
 
 Public Sub CreateFishingPool(ByVal Map As Integer)
+    On Error Goto CreateFishingPool_Err
     Dim x, y As Integer
     Do
         x = RandomNumber(12, 88)
@@ -2319,21 +2440,33 @@ Public Sub CreateFishingPool(ByVal Map As Integer)
     MapData(Map, x, y).ObjInfo.ObjIndex = SvrConfig.GetValue("FISHING_POOL_ID")
     MapData(Map, x, y).ObjInfo.amount = ObjData(SvrConfig.GetValue("FISHING_POOL_ID")).VidaUtil
     MapData(Map, x, y).ObjInfo.Data = &H7FFFFFFF ' Ultimo uso = Max Long
+    Exit Sub
+CreateFishingPool_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.CreateFishingPool", Erl)
 End Sub
 
 Sub LoadPrivateKey()
+    On Error Goto LoadPrivateKey_Err
     Dim MyLine As String
     Open App.Path & "\..\ao20-ComputePK\crypto-hex.txt" For Input As #1
     Line Input #1, PrivateKey
 Close #1
+    Exit Sub
+LoadPrivateKey_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadPrivateKey", Erl)
 End Sub
 Sub LoadMD5()
+    On Error Goto LoadMD5_Err
     Open IniPath & "ClienteMD5.txt" For Input As #1
         Line Input #1, Md5Cliente
     Close #1
     Md5Cliente = Replace(Md5Cliente, " ", "")
+    Exit Sub
+LoadMD5_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadMD5", Erl)
 End Sub
 Sub LoadSini()
+    On Error Goto LoadSini_Err
         On Error GoTo LoadSini_Err
 
         Dim Lector   As clsIniManager
@@ -2410,9 +2543,13 @@ Sub LoadSini()
 LoadSini_Err:
 170     Set Lector = Nothing
 172     Call TraceError(Err.Number, Err.Description, "ES.LoadSini", Erl)
+    Exit Sub
+LoadSini_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadSini", Erl)
 End Sub
 
 Sub LoadGlobalDropTable()
+    On Error Goto LoadGlobalDropTable_Err
     
     Dim Lector   As clsIniManager
 
@@ -2444,9 +2581,13 @@ Sub LoadGlobalDropTable()
         GlobalDropTable(i).Amount = val(Lector.GetValue("DROP" & i, "AMOUNT"))
     Next i
     Set Lector = Nothing
+    Exit Sub
+LoadGlobalDropTable_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadGlobalDropTable", Erl)
 End Sub
 
 Sub LoadFeatureToggles()
+    On Error Goto LoadFeatureToggles_Err
 On Error GoTo LoadFeatureToggles_Err
 
         Dim Lector   As clsIniManager
@@ -2481,9 +2622,13 @@ On Error GoTo LoadFeatureToggles_Err
 LoadFeatureToggles_Err:
 170     Set Lector = Nothing
 172     Call TraceError(Err.Number, Err.Description, "ES.LoadFeatureToggles", Erl)
+    Exit Sub
+LoadFeatureToggles_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadFeatureToggles", Erl)
 End Sub
 
 Sub LoadPacketRatePolicy()
+    On Error Goto LoadPacketRatePolicy_Err
         On Error GoTo LoadPacketRatePolicy_Err
 
         Dim Lector   As clsIniManager
@@ -2508,9 +2653,13 @@ LoadPacketRatePolicy_Err:
 172     Call TraceError(Err.Number, Err.Description, "ES.LoadPacketRatePolicy", Erl)
 
         
+    Exit Sub
+LoadPacketRatePolicy_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadPacketRatePolicy", Erl)
 End Sub
 
 Sub CargarCiudades()
+    On Error Goto CargarCiudades_Err
         
         On Error GoTo CargarCiudades_Err
     
@@ -2810,9 +2959,13 @@ Sub CargarCiudades()
 CargarCiudades_Err:
 302     Call TraceError(Err.Number, Err.Description, "ES.CargarCiudades", Erl)
         
+    Exit Sub
+CargarCiudades_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.CargarCiudades", Erl)
 End Sub
 
 Sub LoadIntervalos()
+    On Error Goto LoadIntervalos_Err
         
         On Error GoTo LoadIntervalos_Err
         
@@ -2942,9 +3095,13 @@ LoadIntervalos_Err:
 240     Call TraceError(Err.Number, Err.Description, "ES.LoadIntervalos", Erl)
 
         
+    Exit Sub
+LoadIntervalos_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadIntervalos", Erl)
 End Sub
 
 Sub LoadMainConfigFile()
+    On Error Goto LoadMainConfigFile_Err
         
 On Error GoTo LoadMainConfigFile_Err
         
@@ -2963,9 +3120,13 @@ LoadMainConfigFile_Err:
 136     Call TraceError(Err.Number, Err.Description, "ES.LoadMainConfigFile", Erl)
 
         
+    Exit Sub
+LoadMainConfigFile_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadMainConfigFile", Erl)
 End Sub
 
 Sub WriteVar(ByVal File As String, ByVal Main As String, ByVal Var As String, ByVal value As String)
+    On Error Goto WriteVar_Err
         '*****************************************************************
         'Escribe VAR en un archivo
         '*****************************************************************
@@ -2982,9 +3143,13 @@ WriteVar_Err:
 102     Call TraceError(Err.Number, Err.Description, "ES.WriteVar", Erl)
 
         
+    Exit Sub
+WriteVar_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.WriteVar", Erl)
 End Sub
 
 Sub SaveUser(ByVal userIndex As Integer, Optional ByVal Logout As Boolean = False)
+    On Error Goto SaveUser_Err
 On Error GoTo SaveUser_Err
         If Logout Then
             Call UserDisconnected(UserList(UserIndex).pos.map, UserIndex)
@@ -2998,21 +3163,33 @@ On Error GoTo SaveUser_Err
 
 SaveUser_Err:
         Call TraceError(Err.Number, Err.Description, "ES.SaveUser", Erl)
+    Exit Sub
+SaveUser_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.SaveUser", Erl)
 End Sub
 
 Public Sub RemoveTokenDatabase(ByVal userIndex As Integer)
+    On Error Goto RemoveTokenDatabase_Err
     Call Execute("delete from tokens where id =  ?;", UserList(userIndex).encrypted_session_token_db_id)
+    Exit Sub
+RemoveTokenDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.RemoveTokenDatabase", Erl)
 End Sub
 
 Public Sub AddTokenDatabase(ByVal encrypted_token As String, ByVal decrypted_token As String, ByVal username As String)
+    On Error Goto AddTokenDatabase_Err
 #If UNIT_TEST = 1 Then
     'Only used in automated unit testing to create a valid session so that we can then try LoginNewChar and
     'LoginExistingChar
     Call Execute("insert into tokens (encrypted_token, decrypted_token, username, remote_host, timestamp) values(?,?,?,""127.0.0.1"",""123456"") ;", encrypted_token, decrypted_token, username)
 #End If
+    Exit Sub
+AddTokenDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.AddTokenDatabase", Erl)
 End Sub
 
 Sub SaveNewUser(ByVal userIndex As Integer)
+    On Error Goto SaveNewUser_Err
     On Error GoTo SaveNewUser_Err
             
     Call SaveNewCharacterDB(userIndex)
@@ -3023,17 +3200,25 @@ SaveNewUser_Err:
 102     Call TraceError(Err.Number, Err.Description, "ES.SaveNewUser", Erl)
 
         
+    Exit Sub
+SaveNewUser_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.SaveNewUser", Erl)
 End Sub
 
 Function Status(ByVal userIndex As Integer) As e_Facciones
+    On Error Goto Status_Err
         On Error GoTo Status_Err
 100     Status = UserList(userIndex).Faccion.Status
         Exit Function
 Status_Err:
 102     Call TraceError(Err.Number, Err.Description, "ES.Status", Erl)
+    Exit Function
+Status_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.Status", Erl)
 End Function
 
 Sub BackUPnPc(npcIndex As Integer)
+    On Error Goto BackUPnPc_Err
         
         On Error GoTo BackUPnPc_Err
         
@@ -3102,9 +3287,13 @@ BackUPnPc_Err:
 164     Call TraceError(Err.Number, Err.Description, "ES.BackUPnPc", Erl)
 
         
+    Exit Sub
+BackUPnPc_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.BackUPnPc", Erl)
 End Sub
 
 Sub CargarNpcBackUp(npcIndex As Integer, ByVal NpcNumber As Integer)
+    On Error Goto CargarNpcBackUp_Err
         
         On Error GoTo CargarNpcBackUp_Err
         
@@ -3187,11 +3376,15 @@ CargarNpcBackUp_Err:
 180     Call TraceError(Err.Number, Err.Description, "ES.CargarNpcBackUp", Erl)
 
         
+    Exit Sub
+CargarNpcBackUp_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.CargarNpcBackUp", Erl)
 End Sub
 
 
 
 Sub LogBanFromName(ByVal BannedName As String, ByVal userIndex As Integer, ByVal Motivo As String)
+    On Error Goto LogBanFromName_Err
         
         On Error GoTo LogBanFromName_Err
         
@@ -3214,9 +3407,13 @@ LogBanFromName_Err:
 112     Call TraceError(Err.Number, Err.Description, "ES.LogBanFromName", Erl)
 
         
+    Exit Sub
+LogBanFromName_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LogBanFromName", Erl)
 End Sub
 
 Sub Ban(ByVal BannedName As String, ByVal Baneador As String, ByVal Motivo As String)
+    On Error Goto Ban_Err
         
         On Error GoTo Ban_Err
         
@@ -3239,9 +3436,13 @@ Ban_Err:
 112     Call TraceError(Err.Number, Err.Description, "ES.Ban", Erl)
 
         
+    Exit Sub
+Ban_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.Ban", Erl)
 End Sub
 
 Public Sub CargaApuestas()
+    On Error Goto CargaApuestas_Err
         
         On Error GoTo CargaApuestas_Err
         
@@ -3257,9 +3458,13 @@ CargaApuestas_Err:
 106     Call TraceError(Err.Number, Err.Description, "ES.CargaApuestas", Erl)
 
         
+    Exit Sub
+CargaApuestas_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.CargaApuestas", Erl)
 End Sub
 
 Public Sub LoadRecursosEspeciales()
+    On Error Goto LoadRecursosEspeciales_Err
         
         On Error GoTo LoadRecursosEspeciales_Err
         
@@ -3324,9 +3529,13 @@ LoadRecursosEspeciales_Err:
 148     Call TraceError(Err.Number, Err.Description, "ES.LoadRecursosEspeciales", Erl)
 
         
+    Exit Sub
+LoadRecursosEspeciales_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadRecursosEspeciales", Erl)
 End Sub
 
 Public Sub LoadPesca()
+    On Error Goto LoadPesca_Err
         
         On Error GoTo LoadPesca_Err
         
@@ -3411,10 +3620,14 @@ LoadPesca_Err:
 154     Call TraceError(Err.Number, Err.Description, "ES.LoadPesca", Erl)
 
         
+    Exit Sub
+LoadPesca_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadPesca", Erl)
 End Sub
 
 ' Adaptado de https://www.vbforums.com/showthread.php?231925-VB-Quick-Sort-algorithm-(very-fast-sorting-algorithm)
 Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
+    On Error Goto QuickSortPeces_Err
         
         On Error GoTo QuickSortPeces_Err
         
@@ -3462,10 +3675,14 @@ QuickSortPeces_Err:
 132     Call TraceError(Err.Number, Err.Description, "ES.QuickSortPeces", Erl)
 
         
+    Exit Sub
+QuickSortPeces_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.QuickSortPeces", Erl)
 End Sub
 
 ' Adaptado de https://www.freevbcode.com/ShowCode.asp?ID=9416
 Public Function BinarySearchPeces(ByVal value As Long) As Long
+    On Error Goto BinarySearchPeces_Err
         
         On Error GoTo BinarySearchPeces_Err
         
@@ -3511,9 +3728,13 @@ BinarySearchPeces_Err:
 124     Call TraceError(Err.Number, Err.Description, "ES.BinarySearchPeces", Erl)
 
         
+    Exit Function
+BinarySearchPeces_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.BinarySearchPeces", Erl)
 End Function
 
 Public Sub LoadRangosFaccion()
+    On Error Goto LoadRangosFaccion_Err
             On Error GoTo LoadRangosFaccion_Err
 
 100         If Not FileExist(DatPath & "rangos_faccion.dat", vbArchive) Then
@@ -3561,9 +3782,13 @@ LoadRangosFaccion_Err:
 140         Call TraceError(Err.Number, Err.Description, "ES.LoadRangosFaccion", Erl)
 
 
+    Exit Sub
+LoadRangosFaccion_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadRangosFaccion", Erl)
 End Sub
 
 Public Sub LoadRecompensasFaccion()
+    On Error Goto LoadRecompensasFaccion_Err
             On Error GoTo LoadRecompensasFaccion_Err
 
 100         If Not FileExist(DatPath & "recompensas_faccion.dat", vbArchive) Then
@@ -3601,10 +3826,14 @@ LoadRecompensasFaccion_Err:
 126         Call TraceError(Err.Number, Err.Description, "ES.LoadRecompensasFaccion", Erl)
 
 
+    Exit Sub
+LoadRecompensasFaccion_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadRecompensasFaccion", Erl)
 End Sub
 
 
 Public Sub LoadUserIntervals(ByVal userIndex As Integer)
+    On Error Goto LoadUserIntervals_Err
         
         On Error GoTo LoadUserIntervals_Err
         
@@ -3646,9 +3875,13 @@ LoadUserIntervals_Err:
 124     Call TraceError(Err.Number, Err.Description, "ES.LoadUserIntervals", Erl)
 
         
+    Exit Sub
+LoadUserIntervals_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.LoadUserIntervals", Erl)
 End Sub
 
 Function CountFiles(strFolder As String, strPattern As String) As Integer
+    On Error Goto CountFiles_Err
         
         On Error GoTo CountFiles_Err
     
@@ -3671,9 +3904,13 @@ CountFiles_Err:
 110     Call TraceError(Err.Number, Err.Description, "ES.CountFiles", Erl)
 
         
+    Exit Function
+CountFiles_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.CountFiles", Erl)
 End Function
 
 Public Function GetElapsedTime() As Single
+    On Error Goto GetElapsedTime_Err
 
         '***********************************************************************
         'Author: Wyrox
@@ -3697,10 +3934,14 @@ Public Function GetElapsedTime() As Single
     
 110     start_time = end_time
 
+    Exit Function
+GetElapsedTime_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.GetElapsedTime", Erl)
 End Function
 
 
 Public Sub CargarDonadores()
+    On Error Goto CargarDonadores_Err
 100     If Not FileExist(DatPath & "donadores.dat", vbArchive) Then
             Exit Sub
         End If
@@ -3716,24 +3957,36 @@ Public Sub CargarDonadores()
                 lstUsuariosDonadores(i) = IniFile.GetValue("DONADOR", "Donador" & i)
             Next i
         End If
+    Exit Sub
+CargarDonadores_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.CargarDonadores", Erl)
 End Sub
 
 Public Function IsFeatureEnabled(ByVal featureName As String)
+    On Error Goto IsFeatureEnabled_Err
     If FeatureToggles.Exists(featureName) Then
         IsFeatureEnabled = FeatureToggles.Item(featureName)
     Else
         IsFeatureEnabled = False
     End If
+    Exit Function
+IsFeatureEnabled_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.IsFeatureEnabled", Erl)
 End Function
 
 Public Sub SetFeatureToggle(ByVal Name As String, ByVal State As Boolean)
+    On Error Goto SetFeatureToggle_Err
     If FeatureToggles.Exists(Name) Then
         FeatureToggles.Remove Name
     End If
     Call FeatureToggles.Add(Name, State)
+    Exit Sub
+SetFeatureToggle_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.SetFeatureToggle", Erl)
 End Sub
 
 Public Function GetActiveToggles(ByRef ActiveCount As Integer) As String()
+    On Error Goto GetActiveToggles_Err
     Dim key As Variant
     Dim ActiveKeys() As String
     ReDim ActiveKeys(FeatureToggles.count) As String
@@ -3745,4 +3998,7 @@ Public Function GetActiveToggles(ByRef ActiveCount As Integer) As String()
         End If
     Next key
     GetActiveToggles = ActiveKeys
+    Exit Function
+GetActiveToggles_Err:
+    Call TraceError(Err.Number, Err.Description, "FileIO.GetActiveToggles", Erl)
 End Function

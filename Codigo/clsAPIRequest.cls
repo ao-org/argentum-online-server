@@ -16,10 +16,15 @@ Option Explicit
 Dim m_xmlHttp As MSXML2.ServerXMLHTTP60
  
 Public Sub Initialize(ByRef xmlHttpRequest As MSXML2.ServerXMLHTTP60)
+    On Error Goto Initialize_Err
    Set m_xmlHttp = xmlHttpRequest
+    Exit Sub
+Initialize_Err:
+    Call TraceError(Err.Number, Err.Description, "clsAPIRequest.Initialize", Erl)
 End Sub
  
 Sub OnReadyStateChange()
+    On Error Goto OnReadyStateChange_Err
 Attribute OnReadyStateChange.VB_UserMemId = 0
    
    If m_xmlHttp.readyState = 4 Then
@@ -32,4 +37,7 @@ Attribute OnReadyStateChange.VB_UserMemId = 0
      
    End If
    
+    Exit Sub
+OnReadyStateChange_Err:
+    Call TraceError(Err.Number, Err.Description, "clsAPIRequest.OnReadyStateChange", Erl)
 End Sub

@@ -45,13 +45,25 @@ Public Team As Byte
 
 
 Public Sub SetPlayer(ByVal UserIndex As Integer)
+    On Error Goto SetPlayer_Err
     Call SetUserRef(UserRef, UserIndex)
+    Exit Sub
+SetPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCapturaParticipante.SetPlayer", Erl)
 End Sub
 
 Public Function PlayerIndex() As Integer
+    On Error Goto PlayerIndex_Err
     PlayerIndex = UserRef.ArrayIndex
+    Exit Function
+PlayerIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCapturaParticipante.PlayerIndex", Erl)
 End Function
 
 Public Function IsValid() As Boolean
+    On Error Goto IsValid_Err
     IsValid = IsValidUserRef(UserRef)
+    Exit Function
+IsValid_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCapturaParticipante.IsValid", Erl)
 End Function

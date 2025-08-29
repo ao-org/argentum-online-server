@@ -38,11 +38,16 @@ Public glNumPlayers As Long
 Public gfStarted As Boolean
 
 Public Sub InitDPlay()
+    On Error Goto InitDPlay_Err
     Set dps = dx.DirectPlayServerCreate
     Set dpa = dx.DirectPlayAddressCreate
+    Exit Sub
+InitDPlay_Err:
+    Call TraceError(Err.Number, Err.Description, "modDPlayServer.InitDPlay", Erl)
 End Sub
 
 Public Sub Cleanup()
+    On Error Goto Cleanup_Err
     'Shut down our message handler
     If Not dps Is Nothing Then dps.UnRegisterMessageHandler
     'Close down our session
@@ -50,9 +55,13 @@ Public Sub Cleanup()
     Set dps = Nothing
     Set dpa = Nothing
     Set dx = Nothing
+    Exit Sub
+Cleanup_Err:
+    Call TraceError(Err.Number, Err.Description, "modDPlayServer.Cleanup", Erl)
 End Sub
 
 Public Sub HandleDPlayError(ByVal ErrNumber As Long, ByVal ErrDescription As String, ByVal place As String, ByVal line As String)
+    On Error Goto HandleDPlayError_Err
        Select Case Err.Number
             Case DPNERR_INVALIDPLAYER
                     Call TraceError(ErrNumber, "DPNERR_INVALIDPLAYER: The player ID is not recognized as a valid player ID for this game session.", place, line)
@@ -68,6 +77,9 @@ Public Sub HandleDPlayError(ByVal ErrNumber As Long, ByVal ErrDescription As Str
                     Call TraceError(ErrNumber, "Unknown error", place, line)
         End Select
         Err.Clear
+    Exit Sub
+HandleDPlayError_Err:
+    Call TraceError(Err.Number, Err.Description, "modDPlayServer.HandleDPlayError", Erl)
 End Sub
 
 

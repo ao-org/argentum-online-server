@@ -76,6 +76,7 @@ Private m_str()                      As Integer
 Private m_length                     As Long
 
 Public Function GetParserErrors() As String
+    On Error Goto GetParserErrors_Err
         
         On Error GoTo GetParserErrors_Err
     
@@ -88,9 +89,13 @@ GetParserErrors_Err:
 102     Call TraceError(Err.Number, Err.Description, "mod_JSON.GetParserErrors", Erl)
 
         
+    Exit Function
+GetParserErrors_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.GetParserErrors", Erl)
 End Function
 
 Public Function parse(ByRef str As String) As Object
+    On Error Goto parse_Err
         
         On Error GoTo parse_Err
     
@@ -133,9 +138,13 @@ parse_Err:
 126     Call TraceError(Err.Number, Err.Description, "mod_JSON.parse", Erl)
 
         
+    Exit Function
+parse_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.parse", Erl)
 End Function
 
 Private Sub GenerateStringArray(ByRef str As String)
+    On Error Goto GenerateStringArray_Err
         
         On Error GoTo GenerateStringArray_Err
     
@@ -157,9 +166,13 @@ GenerateStringArray_Err:
 110     Call TraceError(Err.Number, Err.Description, "mod_JSON.GenerateStringArray", Erl)
 
         
+    Exit Sub
+GenerateStringArray_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.GenerateStringArray", Erl)
 End Sub
 
 Private Function parseObject(ByRef str As String, ByRef Index As Long) As Dictionary
+    On Error Goto parseObject_Err
         
         On Error GoTo parseObject_Err
     
@@ -222,9 +235,13 @@ parseObject_Err:
 136     Call TraceError(Err.Number, Err.Description, "mod_JSON.parseObject", Erl)
 
         
+    Exit Function
+parseObject_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.parseObject", Erl)
 End Function
 
 Private Function parseArray(ByRef str As String, ByRef Index As Long) As Collection
+    On Error Goto parseArray_Err
         
         On Error GoTo parseArray_Err
     
@@ -279,9 +296,13 @@ parseArray_Err:
 134     Call TraceError(Err.Number, Err.Description, "mod_JSON.parseArray", Erl)
 
         
+    Exit Function
+parseArray_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.parseArray", Erl)
 End Function
 
 Private Function parseValue(ByRef str As String, ByRef Index As Long)
+    On Error Goto parseValue_Err
         
         On Error GoTo parseValue_Err
     
@@ -324,9 +345,13 @@ parseValue_Err:
 126     Call TraceError(Err.Number, Err.Description, "mod_JSON.parseValue", Erl)
 
         
+    Exit Function
+parseValue_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.parseValue", Erl)
 End Function
 
 Private Function parseString(ByRef str As String, ByRef Index As Long) As String
+    On Error Goto parseString_Err
         
         On Error GoTo parseString_Err
     
@@ -407,9 +432,13 @@ parseString_Err:
 172     Call TraceError(Err.Number, Err.Description, "mod_JSON.parseString", Erl)
 
         
+    Exit Function
+parseString_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.parseString", Erl)
 End Function
 
 Private Function parseNumber(ByRef str As String, ByRef Index As Long)
+    On Error Goto parseNumber_Err
         
         On Error GoTo parseNumber_Err
     
@@ -453,9 +482,13 @@ parseNumber_Err:
 122     Call TraceError(Err.Number, Err.Description, "mod_JSON.parseNumber", Erl)
 
         
+    Exit Function
+parseNumber_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.parseNumber", Erl)
 End Function
 
 Private Function parseBoolean(ByRef str As String, ByRef Index As Long) As Boolean
+    On Error Goto parseBoolean_Err
         
         On Error GoTo parseBoolean_Err
     
@@ -481,9 +514,13 @@ parseBoolean_Err:
 116     Call TraceError(Err.Number, Err.Description, "mod_JSON.parseBoolean", Erl)
 
         
+    Exit Function
+parseBoolean_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.parseBoolean", Erl)
 End Function
 
 Private Function parseNull(ByRef str As String, ByRef Index As Long)
+    On Error Goto parseNull_Err
         
         On Error GoTo parseNull_Err
     
@@ -506,9 +543,13 @@ parseNull_Err:
 110     Call TraceError(Err.Number, Err.Description, "mod_JSON.parseNull", Erl)
 
         
+    Exit Function
+parseNull_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.parseNull", Erl)
 End Function
 
 Private Function parseKey(ByRef Index As Long) As String
+    On Error Goto parseKey_Err
         
         On Error GoTo parseKey_Err
     
@@ -592,9 +633,13 @@ parseKey_Err:
 158     Call TraceError(Err.Number, Err.Description, "mod_JSON.parseKey", Erl)
 
         
+    Exit Function
+parseKey_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.parseKey", Erl)
 End Function
 
 Private Sub skipChar(ByRef Index As Long)
+    On Error Goto skipChar_Err
         
         On Error GoTo skipChar_Err
     
@@ -673,9 +718,13 @@ skipChar_Err:
 154     Call TraceError(Err.Number, Err.Description, "mod_JSON.skipChar", Erl)
 
         
+    Exit Sub
+skipChar_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.skipChar", Erl)
 End Sub
 
 Public Function GetRegionalSettings(ByVal regionalsetting As Long) As String
+    On Error Goto GetRegionalSettings_Err
         ' Devuelve la configuracion regional del sistema
 
         On Error GoTo ErrorHandler
@@ -710,6 +759,9 @@ ErrorHandler:
 
         End Select
 
+    Exit Function
+GetRegionalSettings_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.GetRegionalSettings", Erl)
 End Function
 
 '********************************************************************************************************
@@ -717,6 +769,7 @@ End Function
 '********************************************************************************************************
 
 Private Function Encode(str) As String
+    On Error Goto Encode_Err
         
         On Error GoTo Encode_Err
     
@@ -777,9 +830,13 @@ Encode_Err:
 134     Call TraceError(Err.Number, Err.Description, "mod_JSON.Encode", Erl)
 
         
+    Exit Function
+Encode_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.Encode", Erl)
 End Function
 
 Public Function StringToJSON(st As String) As String
+    On Error Goto StringToJSON_Err
         
         On Error GoTo StringToJSON_Err
     
@@ -825,9 +882,13 @@ StringToJSON_Err:
 122     Call TraceError(Err.Number, Err.Description, "mod_JSON.StringToJSON", Erl)
 
         
+    Exit Function
+StringToJSON_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.StringToJSON", Erl)
 End Function
 
 Public Function RStoJSON(rs As ADODB.Recordset) As String
+    On Error Goto RStoJSON_Err
 
         On Error GoTo ErrHandler
 
@@ -868,9 +929,13 @@ Public Function RStoJSON(rs As ADODB.Recordset) As String
         Exit Function
 ErrHandler:
 
+    Exit Function
+RStoJSON_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.RStoJSON", Erl)
 End Function
 
 Public Function toUnicode(str As String) As String
+    On Error Goto toUnicode_Err
         
         On Error GoTo toUnicode_Err
     
@@ -933,4 +998,7 @@ toUnicode_Err:
 150     Call TraceError(Err.Number, Err.Description, "mod_JSON.toUnicode", Erl)
 
         
+    Exit Function
+toUnicode_Err:
+    Call TraceError(Err.Number, Err.Description, "JSON.toUnicode", Erl)
 End Function

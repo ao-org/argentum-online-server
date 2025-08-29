@@ -53,6 +53,7 @@ Private DotInfo As t_BaseDotInfo
 Private Source As t_AnyReference
 
 Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
+    On Error Goto Setup_Err
                  ByVal EffectId As Integer, ByVal ID As Long)
     TimeSinceLastTick = 0
     TickCount = 0
@@ -71,6 +72,9 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
         End If
     End With
     Call EffectsOverTime.ApplyEotModifier(DotInfo.TargetRef, EffectOverTime(EffectId))
+    Exit Sub
+Setup_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.Setup", Erl)
 End Sub
 
 Public Property Get IBaseEffectOverTime_TypeId() As Integer
@@ -122,10 +126,18 @@ Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
 End Property
 
 Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
+    On Error Goto IBaseEffectOverTime_TargetWillAttackPosition_Err
+    Exit Sub
+IBaseEffectOverTime_TargetWillAttackPosition_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.IBaseEffectOverTime_TargetWillAttackPosition", Erl)
 End Sub
 
 Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
+    On Error Goto IBaseEffectOverTime_ChangeTarget_Err
     IBaseEffectOverTime_ChangeTarget = False
+    Exit Function
+IBaseEffectOverTime_ChangeTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.IBaseEffectOverTime_ChangeTarget", Erl)
 End Function
 
 Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
@@ -133,6 +145,7 @@ Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
 End Property
 
 Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
+    On Error Goto IBaseEffectOverTime_Update_Err
     If TickCount >= TargetTicks Or Not IsValidRef(DotInfo.TargetRef) Or Not IsValidRef(Source) Then
         DotInfo.RemoveEffect = True
         Exit Sub
@@ -143,6 +156,9 @@ Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
         TickCount = TickCount + 1
         Call PerformAction
     End If
+    Exit Sub
+IBaseEffectOverTime_Update_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.IBaseEffectOverTime_Update", Erl)
 End Sub
 
 Public Property Get IBaseEffectOverTime_RemoveMe() As Boolean
@@ -154,8 +170,12 @@ Public Property Let IBaseEffectOverTime_RemoveMe(ByVal Value As Boolean)
 End Property
 
 Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
+    On Error Goto IBaseEffectOverTime_Reset_Err
     TickCount = 0
     IBaseEffectOverTime_Reset = True
+    Exit Function
+IBaseEffectOverTime_Reset_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.IBaseEffectOverTime_Reset", Erl)
 End Function
 
 Public Property Get IBaseEffectOverTime_EotId() As Integer
@@ -163,6 +183,7 @@ Public Property Get IBaseEffectOverTime_EotId() As Integer
 End Property
 
 Public Sub IBaseEffectOverTime_OnRemove()
+    On Error Goto IBaseEffectOverTime_OnRemove_Err
     If DotInfo.Removed Then Exit Sub
     DotInfo.Removed = True
     DotInfo.RemoveEffect = True
@@ -173,28 +194,56 @@ Public Sub IBaseEffectOverTime_OnRemove()
     If Source.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(Source.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, e_EffectType.eInformativeBuff)
     End If
+    Exit Sub
+IBaseEffectOverTime_OnRemove_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.IBaseEffectOverTime_OnRemove", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
+    On Error Goto IBaseEffectOverTime_TargetUseMagic_Err
+    Exit Sub
+IBaseEffectOverTime_TargetUseMagic_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.IBaseEffectOverTime_TargetUseMagic", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TartgetWillAtack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TartgetWillAtack_Err
+    Exit Sub
+IBaseEffectOverTime_TartgetWillAtack_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.IBaseEffectOverTime_TartgetWillAtack", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TartgetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TartgetDidHit_Err
+    Exit Sub
+IBaseEffectOverTime_TartgetDidHit_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.IBaseEffectOverTime_TartgetDidHit", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetFailedAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TargetFailedAttack_Err
+    Exit Sub
+IBaseEffectOverTime_TargetFailedAttack_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.IBaseEffectOverTime_TargetFailedAttack", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TargetWasDamaged_Err
+    Exit Sub
+IBaseEffectOverTime_TargetWasDamaged_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.IBaseEffectOverTime_TargetWasDamaged", Erl)
 End Sub
 
 Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType) As Long
+    On Error Goto IBaseEffectOverTime_ApplyDamageReduction_Err
     IBaseEffectOverTime_ApplyDamageReduction = Damage
+    Exit Function
+IBaseEffectOverTime_ApplyDamageReduction_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.IBaseEffectOverTime_ApplyDamageReduction", Erl)
 End Function
 
 Public Function IsValidPos(ByVal map As Integer, ByVal TileX As Integer, ByVal TileY As Integer) As Boolean
+    On Error Goto IsValidPos_Err
     IsValidPos = False
     Dim CanGoWater As Boolean
     Dim Mounted As Boolean
@@ -205,9 +254,13 @@ Public Function IsValidPos(ByVal map As Integer, ByVal TileX As Integer, ByVal T
         CanGoWater = NpcList(DotInfo.TargetRef.ArrayIndex).flags.AguaValida
     End If
     IsValidPos = LegalPos(map, TileX, TileY, CanGoWater, Not CanGoWater, Mounted, False, False)
+    Exit Function
+IsValidPos_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.IsValidPos", Erl)
 End Function
 
 Public Sub PerformAction()
+    On Error Goto PerformAction_Err
     Dim Direction As t_Vector
     Dim TargetPos As t_WorldPos
     Dim CurrPos As t_WorldPos
@@ -232,9 +285,13 @@ Public Sub PerformAction()
     If IsValidPos(TargetPos.map, TargetPos.x, TargetPos.y) Then
         Call TranslateTo(TargetPos)
     End If
+    Exit Sub
+PerformAction_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.PerformAction", Erl)
 End Sub
 
 Private Sub TranslateTo(ByRef TargetPos As t_WorldPos)
+    On Error Goto TranslateTo_Err
     If DotInfo.TargetRef.RefType = eUser Then
         Call TranslateUserPos(DotInfo.TargetRef.ArrayIndex, TargetPos, 200)
     Else
@@ -245,6 +302,9 @@ Private Sub TranslateTo(ByRef TargetPos As t_WorldPos)
     If Not MapData(currentPos.map, currentPos.x, currentPos.y).Trap Is Nothing Then
          Call ModMap.ActivateTrap(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, currentPos.map, currentPos.x, currentPos.y)
     End If
+    Exit Sub
+TranslateTo_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.TranslateTo", Erl)
 End Sub
 
 Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
@@ -252,4 +312,8 @@ Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
 End Property
 
 Public Sub IBaseEffectOverTime_TargetChangeTerrain()
+    On Error Goto IBaseEffectOverTime_TargetChangeTerrain_Err
+    Exit Sub
+IBaseEffectOverTime_TargetChangeTerrain_Err:
+    Call TraceError(Err.Number, Err.Description, "AttrackEffect.IBaseEffectOverTime_TargetChangeTerrain", Erl)
 End Sub

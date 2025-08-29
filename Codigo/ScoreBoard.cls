@@ -43,15 +43,23 @@ Dim PlayersScore As New Dictionary
 Dim DisconnectedUser As New Dictionary
 
 Public Sub AddPlayer(ByVal PlayerIndex As Long)
+    On Error Goto AddPlayer_Err
     If Not PlayersScore.Exists(PlayerIndex) Then
         Call PlayersScore.Add(PlayerIndex, 0)
     End If
+    Exit Sub
+AddPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ScoreBoard.AddPlayer", Erl)
 End Sub
 
 Public Function UpdatePlayerScore(ByVal PlayerIndex As Integer, ByVal modifyValue As Integer) As Integer
+    On Error Goto UpdatePlayerScore_Err
     If Not PlayersScore.Exists(PlayerIndex) Then Exit Function
     UpdatePlayerScore = max(PlayersScore.Item(PlayerIndex) + modifyValue, 0)
     PlayersScore.Item(PlayerIndex) = UpdatePlayerScore
+    Exit Function
+UpdatePlayerScore_Err:
+    Call TraceError(Err.Number, Err.Description, "ScoreBoard.UpdatePlayerScore", Erl)
 End Function
 
 Friend Function GetRanking(ByVal size As Integer) As e_Rank()
@@ -90,6 +98,7 @@ Friend Function GetTeamRanking(ByRef Lobby As t_Lobby) As e_Rank()
 End Function
 
 Private Function InsertionPos(ByVal Score As Integer, ByRef rank() As e_Rank) As Integer
+    On Error Goto InsertionPos_Err
     If rank(UBound(rank)).Score >= Score Then
         InsertionPos = UBound(rank) + 1
         Exit Function
@@ -102,9 +111,13 @@ Private Function InsertionPos(ByVal Score As Integer, ByRef rank() As e_Rank) As
         End If
     Next currentPosition
     InsertionPos = currentPosition
+    Exit Function
+InsertionPos_Err:
+    Call TraceError(Err.Number, Err.Description, "ScoreBoard.InsertionPos", Erl)
 End Function
 
 Private Sub SortRank(ByRef rank() As e_Rank)
+    On Error Goto SortRank_Err
     Dim CurrentMax As Integer
     Dim currentPos As Integer
     Dim Temp As e_Rank
@@ -125,13 +138,20 @@ Private Sub SortRank(ByRef rank() As e_Rank)
             rank(currentPos) = Temp
         End If
     Next i
+    Exit Sub
+SortRank_Err:
+    Call TraceError(Err.Number, Err.Description, "ScoreBoard.SortRank", Erl)
 End Sub
 
 Private Sub ShiftElement(ByVal position As Integer, ByRef rank() As e_Rank)
+    On Error Goto ShiftElement_Err
     Dim i As Integer
     For i = UBound(rank) To position + 1 Step -1
         rank(i) = rank(i - 1)
     Next i
+    Exit Sub
+ShiftElement_Err:
+    Call TraceError(Err.Number, Err.Description, "ScoreBoard.ShiftElement", Erl)
 End Sub
 
 Friend Sub PublishScoreboard(ByVal Audience As Integer, ByVal AudienceIndex, ByRef Lobby As t_Lobby, ByVal IsFinal As Boolean)
@@ -182,14 +202,19 @@ Friend Sub PublishTeamScore(ByVal Audience As Integer, ByVal AudienceIndex, ByRe
 End Sub
 
 Public Sub DisconnectUser(ByVal userIndex As Integer, ByVal userID As Long)
+    On Error Goto DisconnectUser_Err
     If Not PlayersScore.Exists(userIndex) Then
         Exit Sub
     End If
     Call DisconnectedUser.Add(userID, PlayersScore.Item(userIndex))
     PlayersScore.Remove (userIndex)
+    Exit Sub
+DisconnectUser_Err:
+    Call TraceError(Err.Number, Err.Description, "ScoreBoard.DisconnectUser", Erl)
 End Sub
 
 Public Sub RestoreDisconnectUser(ByVal userIndex As Integer, ByVal userID As Long)
+    On Error Goto RestoreDisconnectUser_Err
 
     If Not DisconnectedUser.Exists(userID) Then
         Exit Sub
@@ -200,4 +225,7 @@ Public Sub RestoreDisconnectUser(ByVal userIndex As Integer, ByVal userID As Lon
         Call PlayersScore.Add(userIndex, DisconnectedUser.Item(userID))
     End If
     DisconnectedUser.Remove (userID)
+    Exit Sub
+RestoreDisconnectUser_Err:
+    Call TraceError(Err.Number, Err.Description, "ScoreBoard.RestoreDisconnectUser", Erl)
 End Sub

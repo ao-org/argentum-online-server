@@ -59,6 +59,7 @@ Enum TipoEvento
 End Enum
 
 Public Sub CheckEvento(ByVal Hora As Byte)
+    On Error Goto CheckEvento_Err
         
         On Error GoTo CheckEvento_Err
         
@@ -140,9 +141,13 @@ CheckEvento_Err:
 196     Call TraceError(Err.Number, Err.Description, "ModEventos.CheckEvento", Erl)
 
         
+    Exit Sub
+CheckEvento_Err:
+    Call TraceError(Err.Number, Err.Description, "ModEventos.CheckEvento", Erl)
 End Sub
 
 Public Sub FinalizarEvento()
+    On Error Goto FinalizarEvento_Err
         
         On Error GoTo FinalizarEvento_Err
         
@@ -196,9 +201,13 @@ FinalizarEvento_Err:
 152     Call TraceError(Err.Number, Err.Description, "ModEventos.FinalizarEvento", Erl)
 
         
+    Exit Sub
+FinalizarEvento_Err:
+    Call TraceError(Err.Number, Err.Description, "ModEventos.FinalizarEvento", Erl)
 End Sub
 
 Public Function DescribirEvento(ByVal Hora As Byte) As String
+    On Error Goto DescribirEvento_Err
         
         On Error GoTo DescribirEvento_Err
         
@@ -249,9 +258,13 @@ DescribirEvento_Err:
 138     Call TraceError(Err.Number, Err.Description, "ModEventos.DescribirEvento", Erl)
 
         
+    Exit Function
+DescribirEvento_Err:
+    Call TraceError(Err.Number, Err.Description, "ModEventos.DescribirEvento", Erl)
 End Function
 
 Public Sub CargarEventos()
+    On Error Goto CargarEventos_Err
         
         On Error GoTo CargarEventos_Err
         
@@ -279,9 +292,13 @@ CargarEventos_Err:
 120     Call TraceError(Err.Number, Err.Description, "ModEventos.CargarEventos", Erl)
 
         
+    Exit Sub
+CargarEventos_Err:
+    Call TraceError(Err.Number, Err.Description, "ModEventos.CargarEventos", Erl)
 End Sub
 
 Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi As Byte, ByVal Quien As String)
+    On Error Goto ForzarEvento_Err
         
         On Error GoTo ForzarEvento_Err
         
@@ -396,11 +413,18 @@ ForzarEvento_Err:
 214     Call TraceError(Err.Number, Err.Description, "ModEventos.ForzarEvento", Erl)
 
         
+    Exit Sub
+ForzarEvento_Err:
+    Call TraceError(Err.Number, Err.Description, "ModEventos.ForzarEvento", Erl)
 End Sub
 
 Public Sub IniciarEvento(ByVal Tipo As TipoEvento, ByVal data As Variant)
+    On Error Goto IniciarEvento_Err
 100     Select Case Tipo
             Case TipoEvento.Invasion
 102             Call IniciarInvasion(data)
         End Select
+    Exit Sub
+IniciarEvento_Err:
+    Call TraceError(Err.Number, Err.Description, "ModEventos.IniciarEvento", Erl)
 End Sub

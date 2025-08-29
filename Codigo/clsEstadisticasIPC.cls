@@ -64,6 +64,7 @@ End Enum
 '*************************************************
 
 Private Function BuscaVentana(Wnd As Long, str As String) As Long
+    On Error Goto BuscaVentana_Err
         
         On Error GoTo BuscaVentana_Err
         
@@ -104,9 +105,13 @@ BuscaVentana_Err:
 120     Call TraceError(Err.Number, Err.Description, "clsEstadisticasIPC.BuscaVentana", Erl)
 122
         
+    Exit Function
+BuscaVentana_Err:
+    Call TraceError(Err.Number, Err.Description, "clsEstadisticasIPC.BuscaVentana", Erl)
 End Function
 
 Public Function Informar(ByVal QueCosa As EstaNotificaciones, ByVal Parametro As Long) As Long
+    On Error Goto Informar_Err
         
         On Error GoTo Informar_Err
         
@@ -124,9 +129,13 @@ Informar_Err:
 106     Call TraceError(Err.Number, Err.Description, "clsEstadisticasIPC.Informar", Erl)
 108
         
+    Exit Function
+Informar_Err:
+    Call TraceError(Err.Number, Err.Description, "clsEstadisticasIPC.Informar", Erl)
 End Function
 
 Public Function EstadisticasAndando() As Boolean
+    On Error Goto EstadisticasAndando_Err
         
         On Error GoTo EstadisticasAndando_Err
         
@@ -142,9 +151,13 @@ EstadisticasAndando_Err:
 104     Call TraceError(Err.Number, Err.Description, "clsEstadisticasIPC.EstadisticasAndando", Erl)
 106
         
+    Exit Function
+EstadisticasAndando_Err:
+    Call TraceError(Err.Number, Err.Description, "clsEstadisticasIPC.EstadisticasAndando", Erl)
 End Function
 
 Public Sub Inicializa(ByVal hWnd As Long)
+    On Error Goto Inicializa_Err
         
         On Error GoTo Inicializa_Err
         
@@ -158,9 +171,13 @@ Inicializa_Err:
 104     Call TraceError(Err.Number, Err.Description, "clsEstadisticasIPC.Inicializa", Erl)
 106
         
+    Exit Sub
+Inicializa_Err:
+    Call TraceError(Err.Number, Err.Description, "clsEstadisticasIPC.Inicializa", Erl)
 End Sub
 
 Private Sub BuscaWndEstadisticas()
+    On Error Goto BuscaWndEstadisticas_Err
         
         On Error GoTo BuscaWndEstadisticas_Err
         
@@ -173,4 +190,7 @@ BuscaWndEstadisticas_Err:
 102     Call TraceError(Err.Number, Err.Description, "clsEstadisticasIPC.BuscaWndEstadisticas", Erl)
 104
         
+    Exit Sub
+BuscaWndEstadisticas_Err:
+    Call TraceError(Err.Number, Err.Description, "clsEstadisticasIPC.BuscaWndEstadisticas", Erl)
 End Sub

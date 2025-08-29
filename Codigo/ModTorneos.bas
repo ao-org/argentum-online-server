@@ -61,6 +61,7 @@ Public Torneo        As t_Torneo
 Public MensajeTorneo As String
 
 Public Sub IniciarTorneo()
+    On Error Goto IniciarTorneo_Err
         On Error GoTo IniciarTorneo_Err
         
         Dim i As Long
@@ -100,9 +101,13 @@ IniciarTorneo_Err:
 144     Call TraceError(Err.Number, Err.Description, "ModTorneos.IniciarTorneo", Erl)
 
         
+    Exit Sub
+IniciarTorneo_Err:
+    Call TraceError(Err.Number, Err.Description, "ModTorneos.IniciarTorneo", Erl)
 End Sub
 
 Public Sub ParticiparTorneo(ByVal UserIndex As Integer)
+    On Error Goto ParticiparTorneo_Err
         
         On Error GoTo ParticiparTorneo_Err
         
@@ -124,9 +129,13 @@ ParticiparTorneo_Err:
 110     Call TraceError(Err.Number, Err.Description, "ModTorneos.ParticiparTorneo", Erl)
 
         
+    Exit Sub
+ParticiparTorneo_Err:
+    Call TraceError(Err.Number, Err.Description, "ModTorneos.ParticiparTorneo", Erl)
 End Sub
 
 Public Function BuscarIndexFreeTorneo() As Byte
+    On Error Goto BuscarIndexFreeTorneo_Err
         
         On Error GoTo BuscarIndexFreeTorneo_Err
         
@@ -150,9 +159,13 @@ BuscarIndexFreeTorneo_Err:
 108     Call TraceError(Err.Number, Err.Description, "ModTorneos.BuscarIndexFreeTorneo", Erl)
 
         
+    Exit Function
+BuscarIndexFreeTorneo_Err:
+    Call TraceError(Err.Number, Err.Description, "ModTorneos.BuscarIndexFreeTorneo", Erl)
 End Function
 
 Public Sub BorrarIndexInTorneo(ByVal Index As Integer)
+    On Error Goto BorrarIndexInTorneo_Err
         
         On Error GoTo BorrarIndexInTorneo_Err
         
@@ -178,9 +191,13 @@ BorrarIndexInTorneo_Err:
 110     Call TraceError(Err.Number, Err.Description, "ModTorneos.BorrarIndexInTorneo", Erl)
 
         
+    Exit Sub
+BorrarIndexInTorneo_Err:
+    Call TraceError(Err.Number, Err.Description, "ModTorneos.BorrarIndexInTorneo", Erl)
 End Sub
 
 Public Sub ComenzarTorneoOk()
+    On Error Goto ComenzarTorneoOk_Err
         
         On Error GoTo ComenzarTorneoOk_Err
         
@@ -210,9 +227,13 @@ ComenzarTorneoOk_Err:
 116     Call TraceError(Err.Number, Err.Description, "ModTorneos.ComenzarTorneoOk", Erl)
 
         
+    Exit Sub
+ComenzarTorneoOk_Err:
+    Call TraceError(Err.Number, Err.Description, "ModTorneos.ComenzarTorneoOk", Erl)
 End Sub
 
 Public Sub ResetearTorneo()
+    On Error Goto ResetearTorneo_Err
         
         On Error GoTo ResetearTorneo_Err
         
@@ -258,4 +279,7 @@ ResetearTorneo_Err:
 158     Call TraceError(Err.Number, Err.Description, "ModTorneos.ResetearTorneo", Erl)
 
         
+    Exit Sub
+ResetearTorneo_Err:
+    Call TraceError(Err.Number, Err.Description, "ModTorneos.ResetearTorneo", Erl)
 End Sub

@@ -28,6 +28,7 @@ Attribute VB_Name = "Database"
 Public Const DatabaseFileName = "Database.db"
 
 Public Sub Database_Connect_Async()
+    On Error Goto Database_Connect_Async_Err
         On Error GoTo Database_Connect_AsyncErr
         
         Dim ConnectionID As String
@@ -55,8 +56,12 @@ Public Sub Database_Connect_Async()
     
 Database_Connect_AsyncErr:
 116     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - Database_Connect_Async")
+    Exit Sub
+Database_Connect_Async_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.Database_Connect_Async", Erl)
 End Sub
 Public Sub Database_Connect()
+    On Error Goto Database_Connect_Err
         On Error GoTo Database_Connect_Err
         
         Dim ConnectionID As String
@@ -79,9 +84,13 @@ Public Sub Database_Connect()
     
 Database_Connect_Err:
 116     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - Database_Connect")
+    Exit Sub
+Database_Connect_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.Database_Connect", Erl)
 End Sub
 
 Public Sub Database_Close()
+    On Error Goto Database_Close_Err
         On Error GoTo Database_Close_Err
 
         If Connection.State <> adStateClosed Then
@@ -94,9 +103,13 @@ Public Sub Database_Close()
      
 Database_Close_Err:
         Call LogDatabaseError("Unable to close Mysql Database: " & Err.Number & " - " & Err.Description)
+    Exit Sub
+Database_Close_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.Database_Close", Erl)
 End Sub
 
 Public Function Query(ByVal Text As String, ParamArray Arguments() As Variant) As ADODB.Recordset
+    On Error Goto Query_Err
     Dim Command  As New ADODB.Command
     Dim Argument As Variant
     
@@ -136,9 +149,13 @@ Public Function Query(ByVal Text As String, ParamArray Arguments() As Variant) A
 Query_Err:
     DBError = Err.Description
     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - " & vbCrLf & Text)
+    Exit Function
+Query_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.Query", Erl)
 End Function
 
 Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant) As Boolean
+    On Error Goto Execute_Err
     Dim Command  As New ADODB.Command
     Dim Argument As Variant
     
@@ -188,9 +205,13 @@ Execute_Err:
         Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - " & vbCrLf & Text)
     End If
     
+    Exit Function
+Execute_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.Execute", Erl)
 End Function
 
 Public Function Invoke(ByVal Procedure As String, ParamArray Arguments() As Variant) As ADODB.Recordset
+    On Error Goto Invoke_Err
     Dim Command  As New ADODB.Command
     Dim Argument As Variant
     Dim Affected As Long
@@ -234,9 +255,13 @@ Execute_Err:
     If (Err.Number <> 0) Then
         Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description)
     End If
+    Exit Function
+Invoke_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.Invoke", Erl)
 End Function
 
 Private Function CreateParameter(ByVal value As Variant, ByVal Direction As ADODB.ParameterDirectionEnum) As ADODB.Parameter
+    On Error Goto CreateParameter_Err
     Set CreateParameter = New ADODB.Parameter
     
     CreateParameter.Direction = Direction
@@ -268,9 +293,13 @@ Private Function CreateParameter(ByVal value As Variant, ByVal Direction As ADOD
             CreateParameter.Type = adDouble
             CreateParameter.value = CDbl(value)
     End Select
+    Exit Function
+CreateParameter_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.CreateParameter", Erl)
 End Function
 
 Public Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As String, ValueTest As Variant) As Variant
+    On Error Goto GetDBValue_Err
         On Error GoTo ErrorHandler
     
 100     Dim RS As ADODB.Recordset
@@ -287,9 +316,13 @@ Public Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As
     
 ErrorHandler:
 106     Call LogDatabaseError("Error en GetDBValue: SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = '" & ValueTest & "';" & ". " & Err.Number & " - " & Err.Description)
+    Exit Function
+GetDBValue_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.GetDBValue", Erl)
 End Function
 
 Public Function GetUserValue(CharName As String, Columna As String) As Variant
+    On Error Goto GetUserValue_Err
         On Error GoTo GetUserValue_Err
         
 100     GetUserValue = GetDBValue("user", Columna, "name", CharName)
@@ -298,9 +331,13 @@ Public Function GetUserValue(CharName As String, Columna As String) As Variant
 
 GetUserValue_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserValue", Erl)
+    Exit Function
+GetUserValue_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserValue", Erl)
 End Function
 
 Public Function GetUserValueById(CharId As Long, Columna As String) As Variant
+    On Error Goto GetUserValueById_Err
         On Error GoTo GetUserValue_Err
 100     Dim RS As ADODB.Recordset
         Set RS = Query("SELECT " & Columna & " FROM user WHERE id = ?;", CharId)
@@ -312,9 +349,13 @@ Public Function GetUserValueById(CharId As Long, Columna As String) As Variant
         Exit Function
 GetUserValue_Err:
 106     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserValue", Erl)
+    Exit Function
+GetUserValueById_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserValueById", Erl)
 End Function
 
 Public Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As Variant, ColumnaTest As String, ByVal ValueTest As Variant)
+    On Error Goto SetDBValue_Err
         On Error GoTo ErrorHandler
 
         Call Execute("UPDATE " & Tabla & " SET " & ColumnaSet & " = ? WHERE " & ColumnaTest & " = ?;", ValueSet, ValueTest)
@@ -323,9 +364,13 @@ Public Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As V
     
 ErrorHandler:
 102     Call LogDatabaseError("Error en SetDBValue: UPDATE " & Tabla & " SET " & ColumnaSet & " = " & ValueSet & " WHERE " & ColumnaTest & " = " & ValueTest & ";" & ". " & Err.Number & " - " & Err.Description)
+    Exit Sub
+SetDBValue_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SetDBValue", Erl)
 End Sub
 
 Private Sub SetUserValue(CharName As String, Columna As String, value As Variant)
+    On Error Goto SetUserValue_Err
         On Error GoTo SetUserValue_Err
         
 100     Call SetDBValue("user", Columna, value, "UPPER(name)", UCase(CharName))
@@ -334,9 +379,13 @@ Private Sub SetUserValue(CharName As String, Columna As String, value As Variant
 
 SetUserValue_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetUserValue", Erl)
+    Exit Sub
+SetUserValue_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SetUserValue", Erl)
 End Sub
 
 Private Sub SetUserValueByID(ByVal ID As Long, Columna As String, value As Variant)
+    On Error Goto SetUserValueByID_Err
         On Error GoTo SetUserValueByID_Err
         
 100     Call SetDBValue("user", Columna, value, "id", ID)
@@ -345,9 +394,13 @@ Private Sub SetUserValueByID(ByVal ID As Long, Columna As String, value As Varia
 
 SetUserValueByID_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetUserValueByID", Erl)
+    Exit Sub
+SetUserValueByID_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SetUserValueByID", Erl)
 End Sub
 
 Public Function BANCheckDatabase(Name As String) As Boolean
+    On Error Goto BANCheckDatabase_Err
         
         On Error GoTo BANCheckDatabase_Err
         
@@ -357,9 +410,13 @@ Public Function BANCheckDatabase(Name As String) As Boolean
 
 BANCheckDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.BANCheckDatabase", Erl)
+    Exit Function
+BANCheckDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.BANCheckDatabase", Erl)
 End Function
 
 Public Function GetUserStatusDatabase(Name As String) As Integer
+    On Error Goto GetUserStatusDatabase_Err
         
         On Error GoTo GetUserStatusDatabase_Err
         
@@ -372,9 +429,13 @@ GetUserStatusDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserStatusDatabase", Erl)
 
         
+    Exit Function
+GetUserStatusDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserStatusDatabase", Erl)
 End Function
 
 Public Function GetAccountIDDatabase(Name As String) As Long
+    On Error Goto GetAccountIDDatabase_Err
         
         On Error GoTo GetAccountIDDatabase_Err
         
@@ -397,9 +458,13 @@ GetAccountIDDatabase_Err:
 108     Call TraceError(Err.Number, Err.Description, "modDatabase.GetAccountIDDatabase", Erl)
 
         
+    Exit Function
+GetAccountIDDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.GetAccountIDDatabase", Erl)
 End Function
 
 Public Function GetPersonajesCountByIDDatabase(ByVal AccountID As Long) As Byte
+    On Error Goto GetPersonajesCountByIDDatabase_Err
 
         On Error GoTo ErrorHandler
     
@@ -415,9 +480,13 @@ Public Function GetPersonajesCountByIDDatabase(ByVal AccountID As Long) As Byte
 ErrorHandler:
 106     Call LogDatabaseError("Error in GetPersonajesCountByIDDatabase. AccountID: " & AccountID & ". " & Err.Number & " - " & Err.Description)
     
+    Exit Function
+GetPersonajesCountByIDDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.GetPersonajesCountByIDDatabase", Erl)
 End Function
 
 Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje() As t_PersonajeCuenta) As Byte
+    On Error Goto GetPersonajesCuentaDatabase_Err
         
         On Error GoTo GetPersonajesCuentaDatabase_Err
         
@@ -471,9 +540,13 @@ GetPersonajesCuentaDatabase_Err:
 162     Call TraceError(Err.Number, Err.Description, "modDatabase.GetPersonajesCuentaDatabase", Erl)
 
         
+    Exit Function
+GetPersonajesCuentaDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.GetPersonajesCuentaDatabase", Erl)
 End Function
 
 Public Sub SaveUserBodyDatabase(username As String, ByVal body As Integer)
+    On Error Goto SaveUserBodyDatabase_Err
         
         On Error GoTo SaveUserBodyDatabase_Err
         
@@ -486,9 +559,13 @@ SaveUserBodyDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserBodyDatabase", Erl)
 
         
+    Exit Sub
+SaveUserBodyDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserBodyDatabase", Erl)
 End Sub
 
 Public Sub SaveUserHeadDatabase(username As String, ByVal head As Integer)
+    On Error Goto SaveUserHeadDatabase_Err
         
         On Error GoTo SaveUserHeadDatabase_Err
         
@@ -501,9 +578,13 @@ SaveUserHeadDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserHeadDatabase", Erl)
 
         
+    Exit Sub
+SaveUserHeadDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserHeadDatabase", Erl)
 End Sub
 
 Public Sub SaveUserSkillDatabase(username As String, ByVal Skill As Integer, ByVal value As Integer)
+    On Error Goto SaveUserSkillDatabase_Err
         
         On Error GoTo SaveUserSkillDatabase_Err
         
@@ -515,9 +596,13 @@ SaveUserSkillDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserSkillDatabase", Erl)
 
         
+    Exit Sub
+SaveUserSkillDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserSkillDatabase", Erl)
 End Sub
 
 Public Sub SaveUserSkillsLibres(username As String, ByVal SkillsLibres As Integer)
+    On Error Goto SaveUserSkillsLibres_Err
         
         On Error GoTo SaveUserHeadDatabase_Err
         
@@ -529,10 +614,14 @@ SaveUserHeadDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserHeadDatabase", Erl)
 
         
+    Exit Sub
+SaveUserSkillsLibres_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserSkillsLibres", Erl)
 End Sub
 
 
 Public Sub SaveBanDatabase(username As String, Reason As String, BannedBy As String)
+    On Error Goto SaveBanDatabase_Err
 
         On Error GoTo ErrorHandler
         
@@ -545,9 +634,13 @@ Public Sub SaveBanDatabase(username As String, Reason As String, BannedBy As Str
 ErrorHandler:
 104     Call LogDatabaseError("Error in SaveBanDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Sub
+SaveBanDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SaveBanDatabase", Erl)
 End Sub
 
 Public Sub SaveWarnDatabase(username As String, Reason As String, WarnedBy As String)
+    On Error Goto SaveWarnDatabase_Err
 
         On Error GoTo ErrorHandler
         
@@ -560,9 +653,13 @@ Public Sub SaveWarnDatabase(username As String, Reason As String, WarnedBy As St
 ErrorHandler:
 104     Call LogDatabaseError("Error in SaveWarnDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Sub
+SaveWarnDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SaveWarnDatabase", Erl)
 End Sub
 
 Public Sub SavePenaDatabase(username As String, Reason As String)
+    On Error Goto SavePenaDatabase_Err
 
         On Error GoTo ErrorHandler
 
@@ -577,9 +674,13 @@ Public Sub SavePenaDatabase(username As String, Reason As String)
 ErrorHandler:
 106     Call LogDatabaseError("Error in SavePenaDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Sub
+SavePenaDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SavePenaDatabase", Erl)
 End Sub
 
 Public Sub SilenciarUserDatabase(username As String, ByVal Tiempo As Integer)
+    On Error Goto SilenciarUserDatabase_Err
     
         On Error GoTo ErrorHandler
         
@@ -590,9 +691,13 @@ Public Sub SilenciarUserDatabase(username As String, ByVal Tiempo As Integer)
 ErrorHandler:
 102     Call LogDatabaseError("Error in SilenciarUserDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
     
+    Exit Sub
+SilenciarUserDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SilenciarUserDatabase", Erl)
 End Sub
 
 Public Sub DesilenciarUserDatabase(username As String)
+    On Error Goto DesilenciarUserDatabase_Err
 
         On Error GoTo ErrorHandler
 
@@ -603,9 +708,13 @@ Public Sub DesilenciarUserDatabase(username As String)
 ErrorHandler:
 102     Call LogDatabaseError("Error in DesilenciarUserDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
     
+    Exit Sub
+DesilenciarUserDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.DesilenciarUserDatabase", Erl)
 End Sub
 
 Public Sub UnBanDatabase(username As String)
+    On Error Goto UnBanDatabase_Err
 
         On Error GoTo ErrorHandler
         
@@ -616,9 +725,13 @@ Public Sub UnBanDatabase(username As String)
 ErrorHandler:
 102     Call LogDatabaseError("Error in UnBanDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Sub
+UnBanDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.UnBanDatabase", Erl)
 End Sub
 
 Public Sub SaveBanCuentaDatabase(ByVal AccountID As Long, Reason As String, BannedBy As String)
+    On Error Goto SaveBanCuentaDatabase_Err
 
         On Error GoTo ErrorHandler
         
@@ -629,9 +742,13 @@ Public Sub SaveBanCuentaDatabase(ByVal AccountID As Long, Reason As String, Bann
 ErrorHandler:
 102     Call LogDatabaseError("Error in SaveBanCuentaDatabase: AccountId=" & AccountID & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Sub
+SaveBanCuentaDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SaveBanCuentaDatabase", Erl)
 End Sub
 
 Public Sub EcharConsejoDatabase(username As String, ByVal Status As Integer)
+    On Error Goto EcharConsejoDatabase_Err
         
         On Error GoTo EcharConsejoDatabase_Err
         
@@ -643,9 +760,13 @@ EcharConsejoDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.EcharConsejoDatabase", Erl)
 
         
+    Exit Sub
+EcharConsejoDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.EcharConsejoDatabase", Erl)
 End Sub
 
 Public Sub EcharLegionDatabase(username As String)
+    On Error Goto EcharLegionDatabase_Err
         
         On Error GoTo EcharLegionDatabase_Err
         
@@ -657,9 +778,13 @@ EcharLegionDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.EcharLegionDatabase", Erl)
 
         
+    Exit Sub
+EcharLegionDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.EcharLegionDatabase", Erl)
 End Sub
 
 Public Sub EcharArmadaDatabase(username As String)
+    On Error Goto EcharArmadaDatabase_Err
         
         On Error GoTo EcharArmadaDatabase_Err
         
@@ -671,9 +796,13 @@ EcharArmadaDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.EcharArmadaDatabase", Erl)
 
         
+    Exit Sub
+EcharArmadaDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.EcharArmadaDatabase", Erl)
 End Sub
 
 Public Sub CambiarPenaDatabase(username As String, ByVal Numero As Integer, Pena As String)
+    On Error Goto CambiarPenaDatabase_Err
         
         On Error GoTo CambiarPenaDatabase_Err
         
@@ -685,9 +814,13 @@ CambiarPenaDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.CambiarPenaDatabase", Erl)
 
         
+    Exit Sub
+CambiarPenaDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.CambiarPenaDatabase", Erl)
 End Sub
 
 Public Function GetUserAmountOfPunishmentsDatabase(ByVal username As String) As Integer
+    On Error Goto GetUserAmountOfPunishmentsDatabase_Err
 
         On Error GoTo ErrorHandler
         
@@ -702,9 +835,13 @@ Public Function GetUserAmountOfPunishmentsDatabase(ByVal username As String) As 
 ErrorHandler:
 106     Call LogDatabaseError("Error in GetUserAmountOfPunishmentsDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Function
+GetUserAmountOfPunishmentsDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserAmountOfPunishmentsDatabase", Erl)
 End Function
 
 Public Sub SendUserPunishmentsDatabase(ByVal userIndex As Integer, ByVal username As String)
+    On Error Goto SendUserPunishmentsDatabase_Err
 
         On Error GoTo ErrorHandler
 
@@ -727,17 +864,25 @@ Public Sub SendUserPunishmentsDatabase(ByVal userIndex As Integer, ByVal usernam
 ErrorHandler:
 114     Call LogDatabaseError("Error in SendUserPunishmentsDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Sub
+SendUserPunishmentsDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SendUserPunishmentsDatabase", Erl)
 End Sub
 
 Public Function GetUserGuildIndexDatabase(ByVal CharId As Long) As Integer
+    On Error Goto GetUserGuildIndexDatabase_Err
         On Error GoTo ErrorHandler
 100     GetUserGuildIndexDatabase = SanitizeNullValue(GetUserValueById(CharId, "guild_index"), 0)
         Exit Function
 ErrorHandler:
 102     Call LogDatabaseError("Error in GetUserGuildIndexDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+    Exit Function
+GetUserGuildIndexDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserGuildIndexDatabase", Erl)
 End Function
 
 Public Function GetUserGuildMemberDatabase(username As String) As String
+    On Error Goto GetUserGuildMemberDatabase_Err
 
         On Error GoTo ErrorHandler
         Dim user_id As Long
@@ -765,9 +910,13 @@ Public Function GetUserGuildMemberDatabase(username As String) As String
 ErrorHandler:
 114     Call LogDatabaseError("Error in GetUserGuildMemberDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Function
+GetUserGuildMemberDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserGuildMemberDatabase", Erl)
 End Function
 
 Public Function GetUserGuildAspirantDatabase(username As String) As Integer
+    On Error Goto GetUserGuildAspirantDatabase_Err
 
         On Error GoTo ErrorHandler
 
@@ -778,9 +927,13 @@ Public Function GetUserGuildAspirantDatabase(username As String) As Integer
 ErrorHandler:
 102     Call LogDatabaseError("Error in GetUserGuildAspirantDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Function
+GetUserGuildAspirantDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserGuildAspirantDatabase", Erl)
 End Function
 
 Public Function GetUserGuildPedidosDatabase(username As String) As String
+    On Error Goto GetUserGuildPedidosDatabase_Err
 
         On Error GoTo ErrorHandler
         Dim user_id As Long
@@ -808,9 +961,13 @@ Public Function GetUserGuildPedidosDatabase(username As String) As String
 ErrorHandler:
 114     Call LogDatabaseError("Error in GetUserGuildPedidosDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Function
+GetUserGuildPedidosDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserGuildPedidosDatabase", Erl)
 End Function
 
 Public Sub SaveUserGuildRejectionReasonDatabase(username As String, Reason As String)
+    On Error Goto SaveUserGuildRejectionReasonDatabase_Err
 
         On Error GoTo ErrorHandler
 
@@ -820,32 +977,48 @@ Public Sub SaveUserGuildRejectionReasonDatabase(username As String, Reason As St
 ErrorHandler:
 102     Call LogDatabaseError("Error in SaveUserGuildRejectionReasonDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Sub
+SaveUserGuildRejectionReasonDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserGuildRejectionReasonDatabase", Erl)
 End Sub
 
 Public Sub SaveUserGuildIndexDatabase(ByVal UserId As Long, ByVal GuildIndex As Integer)
+    On Error Goto SaveUserGuildIndexDatabase_Err
         On Error GoTo ErrorHandler
 100     Call SetUserValueByID(UserId, "guild_index", GuildIndex)
         Exit Sub
 ErrorHandler:
 102     Call LogDatabaseError("Error in SaveUserGuildIndexDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+    Exit Sub
+SaveUserGuildIndexDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserGuildIndexDatabase", Erl)
 End Sub
 
 Public Sub SaveUserGuildAspirantDatabase(ByVal UserId As Long, ByVal AspirantIndex As Integer)
+    On Error Goto SaveUserGuildAspirantDatabase_Err
         On Error GoTo ErrorHandler
 100     Call SetUserValueByID(UserId, "guild_aspirant_index", AspirantIndex)
         Exit Sub
 ErrorHandler:
 102     Call LogDatabaseError("Error in SaveUserGuildAspirantDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+    Exit Sub
+SaveUserGuildAspirantDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserGuildAspirantDatabase", Erl)
 End Sub
 
 Public Sub SaveUserGuildMemberDatabase(ByVal user_id As Long, ByVal guilds As String)
+    On Error Goto SaveUserGuildMemberDatabase_Err
         Call Execute("INSERT INTO guild_member_history (user_id, guild_name) VALUES (?, ?)", user_id, guilds)
         Exit Sub
 ErrorHandler:
 102     Call LogDatabaseError("Error in SaveUserGuildMemberDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+    Exit Sub
+SaveUserGuildMemberDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserGuildMemberDatabase", Erl)
 End Sub
 
 Public Sub SaveUserGuildPedidosDatabase(ByVal username As String, ByVal Pedidos As String)
+    On Error Goto SaveUserGuildPedidosDatabase_Err
 
         On Error GoTo ErrorHandler
         Dim user_id As Long
@@ -856,9 +1029,13 @@ Public Sub SaveUserGuildPedidosDatabase(ByVal username As String, ByVal Pedidos 
 ErrorHandler:
 102     Call LogDatabaseError("Error in SaveUserGuildPedidosDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Sub
+SaveUserGuildPedidosDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserGuildPedidosDatabase", Erl)
 End Sub
 
 Public Sub SendCharacterInfoDatabase(ByVal userIndex As Integer, ByVal username As String)
+    On Error Goto SendCharacterInfoDatabase_Err
 
         On Error GoTo ErrorHandler
 
@@ -906,9 +1083,13 @@ Public Sub SendCharacterInfoDatabase(ByVal userIndex As Integer, ByVal username 
 ErrorHandler:
 122     Call LogDatabaseError("Error in SendCharacterInfoDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Sub
+SendCharacterInfoDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SendCharacterInfoDatabase", Erl)
 End Sub
 
 Public Function EnterAccountDatabase(ByVal userIndex As Integer, ByVal CuentaEmail As String) As Boolean
+    On Error Goto EnterAccountDatabase_Err
 
         On Error GoTo ErrorHandler
     
@@ -931,9 +1112,13 @@ Public Function EnterAccountDatabase(ByVal userIndex As Integer, ByVal CuentaEma
 ErrorHandler:
 130     Call LogDatabaseError("Error in EnterAccountDatabase. UserCuenta: " & CuentaEmail & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Function
+EnterAccountDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.EnterAccountDatabase", Erl)
 End Function
 
 Public Function PersonajePerteneceID(ByVal username As String, ByVal AccountID As Long) As Boolean
+    On Error Goto PersonajePerteneceID_Err
     
         Dim RS As ADODB.Recordset
 100     Set RS = Query("SELECT id FROM user WHERE name = ? AND account_id = ?;", username, AccountID)
@@ -945,9 +1130,13 @@ Public Function PersonajePerteneceID(ByVal username As String, ByVal AccountID A
     
 106     PersonajePerteneceID = True
     
+    Exit Function
+PersonajePerteneceID_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.PersonajePerteneceID", Erl)
 End Function
 
 Public Function GetCharacterIdWithName(ByVal username As String) As Long
+    On Error Goto GetCharacterIdWithName_Err
         Dim tUser    As t_UserReference
         tUser = NameIndex(username)
         If IsValidUserRef(tUser) Then
@@ -962,9 +1151,13 @@ Public Function GetCharacterIdWithName(ByVal username As String) As Long
             Exit Function
         End If
 106     GetCharacterIdWithName = 0
+    Exit Function
+GetCharacterIdWithName_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.GetCharacterIdWithName", Erl)
 End Function
 
 Public Function SetPositionDatabase(username As String, ByVal map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    On Error Goto SetPositionDatabase_Err
         On Error GoTo ErrorHandler
 
 102     SetPositionDatabase = Execute("UPDATE user SET pos_map = ?, pos_x = ?, pos_y = ? WHERE UPPER(name) = ?;", map, x, y, UCase$(username))
@@ -974,9 +1167,13 @@ Public Function SetPositionDatabase(username As String, ByVal map As Integer, By
 ErrorHandler:
 104     Call LogDatabaseError("Error in SetPositionDatabase. UserName: " & username & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Function
+SetPositionDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SetPositionDatabase", Erl)
 End Function
 
 Public Function GetMapDatabase(username As String) As Integer
+    On Error Goto GetMapDatabase_Err
         On Error GoTo ErrorHandler
 
 100     GetMapDatabase = val(GetUserValue(LCase$(username), "pos_map"))
@@ -986,19 +1183,27 @@ Public Function GetMapDatabase(username As String) As Integer
 ErrorHandler:
 102     Call LogDatabaseError("Error in SetPositionDatabase. UserName: " & username & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Function
+GetMapDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.GetMapDatabase", Erl)
 End Function
 
 Public Function AddOroBancoDatabase(username As String, ByVal OroGanado As Long) As Boolean
+    On Error Goto AddOroBancoDatabase_Err
 On Error GoTo ErrorHandler
         AddOroBancoDatabase = Execute("UPDATE user SET bank_gold = bank_gold + ? WHERE UPPER(name) = ?;", OroGanado, UCase$(username))
         Exit Function
 ErrorHandler:
     Call LogDatabaseError("Error in AddOroBancoDatabase. UserName: " & username & ". " & Err.Number & " - " & Err.Description)
+    Exit Function
+AddOroBancoDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.AddOroBancoDatabase", Erl)
 End Function
 
 
 
 Public Function SanitizeNullValue(ByVal value As Variant, ByVal defaultValue As Variant) As Variant
+    On Error Goto SanitizeNullValue_Err
         
         On Error GoTo SanitizeNullValue_Err
         
@@ -1010,20 +1215,39 @@ SanitizeNullValue_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SanitizeNullValue", Erl)
 
         
+    Exit Function
+SanitizeNullValue_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SanitizeNullValue", Erl)
 End Function
 
 Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal Message As String)
+    On Error Goto SetMessageInfoDatabase_Err
     Call Execute("update user set message_info = concat(message_info, ?) where upper(name) = ?;", Message, UCase$(Name))
+    Exit Sub
+SetMessageInfoDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SetMessageInfoDatabase", Erl)
 End Sub
 
 Public Sub ChangeNameDatabase(ByVal CurName As String, ByVal NewName As String)
+    On Error Goto ChangeNameDatabase_Err
     Call SetUserValue(CurName, "name", NewName)
+    Exit Sub
+ChangeNameDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.ChangeNameDatabase", Erl)
 End Sub
 
 Public Sub ResetLastLogoutAndIsLogged()
+    On Error Goto ResetLastLogoutAndIsLogged_Err
     Call Execute("Update user set last_logout = 0, is_logged = 0")
+    Exit Sub
+ResetLastLogoutAndIsLogged_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.ResetLastLogoutAndIsLogged", Erl)
 End Sub
 
 Public Sub SaveEpicLogin(ByVal Id As String, ByVal UserIndex As Integer)
+    On Error Goto SaveEpicLogin_Err
     Call Query("insert or replace into epic_id_mapping (epic_id, user_id, last_login) values ( ?, ?, strftime('%s','now'))", Id, UserList(UserIndex).Id)
+    Exit Sub
+SaveEpicLogin_Err:
+    Call TraceError(Err.Number, Err.Description, "modDatabase.SaveEpicLogin", Erl)
 End Sub

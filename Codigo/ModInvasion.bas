@@ -80,6 +80,7 @@ End Type
 Public Invasiones() As t_Invasion
 
 Sub CargarInfoEventos()
+    On Error Goto CargarInfoEventos_Err
     Dim File As clsIniManager
 100 Set File = New clsIniManager
 
@@ -186,9 +187,13 @@ Sub CargarInfoEventos()
         frmMain.Invasion.Enabled = True
         
 212     Set File = Nothing
+    Exit Sub
+CargarInfoEventos_Err:
+    Call TraceError(Err.Number, Err.Description, "ModInvasion.CargarInfoEventos", Erl)
 End Sub
 
 Sub IniciarInvasion(ByVal Index As Integer)
+    On Error Goto IniciarInvasion_Err
         
         If UBound(Invasiones) = 0 Then Exit Sub
         
@@ -208,9 +213,13 @@ Sub IniciarInvasion(ByVal Index As Integer)
     
         End With
     
+    Exit Sub
+IniciarInvasion_Err:
+    Call TraceError(Err.Number, Err.Description, "ModInvasion.IniciarInvasion", Erl)
 End Sub
 
 Sub FinalizarInvasion(ByVal Index As Integer)
+    On Error Goto FinalizarInvasion_Err
 
 100     With Invasiones(Index)
     
@@ -284,9 +293,13 @@ Sub FinalizarInvasion(ByVal Index As Integer)
 
         End With
 
+    Exit Sub
+FinalizarInvasion_Err:
+    Call TraceError(Err.Number, Err.Description, "ModInvasion.FinalizarInvasion", Erl)
 End Sub
 
 Sub InvasionSpawnNPC(ByVal index As Integer)
+    On Error Goto InvasionSpawnNPC_Err
 
 100     With Invasiones(index)
     
@@ -341,9 +354,13 @@ Sub InvasionSpawnNPC(ByVal index As Integer)
 
         End With
 
+    Exit Sub
+InvasionSpawnNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "ModInvasion.InvasionSpawnNPC", Erl)
 End Sub
 
 Public Sub MuereNpcInvasion(ByVal index As Integer, ByVal NpcIndex As Integer)
+    On Error Goto MuereNpcInvasion_Err
 
 100     With Invasiones(index)
     
@@ -353,9 +370,13 @@ Public Sub MuereNpcInvasion(ByVal index As Integer, ByVal NpcIndex As Integer)
 
         End With
 
+    Exit Sub
+MuereNpcInvasion_Err:
+    Call TraceError(Err.Number, Err.Description, "ModInvasion.MuereNpcInvasion", Erl)
 End Sub
 
 Private Function String2Heading(str As String) As e_Heading
+    On Error Goto String2Heading_Err
 
 100     Select Case LCase$(str)
             Case "norte": String2Heading = e_Heading.NORTH
@@ -364,9 +385,13 @@ Private Function String2Heading(str As String) As e_Heading
 106         Case "oeste": String2Heading = e_Heading.WEST
         End Select
 
+    Exit Function
+String2Heading_Err:
+    Call TraceError(Err.Number, Err.Description, "ModInvasion.String2Heading", Erl)
 End Function
 
 Public Sub EnviarInfoInvasion(ByVal index As Integer)
+    On Error Goto EnviarInfoInvasion_Err
 
 100     With Invasiones(index)
     
@@ -387,9 +412,13 @@ Public Sub EnviarInfoInvasion(ByVal index As Integer)
         
         End With
 
+    Exit Sub
+EnviarInfoInvasion_Err:
+    Call TraceError(Err.Number, Err.Description, "ModInvasion.EnviarInfoInvasion", Erl)
 End Sub
 
 Public Sub HacerDañoMuralla(ByVal index As Integer, ByVal Daño As Long)
+    On Error Goto HacerDañoMuralla_Err
     
 100     With Invasiones(index)
     
@@ -401,9 +430,13 @@ Public Sub HacerDañoMuralla(ByVal index As Integer, ByVal Daño As Long)
     
         End With
     
+    Exit Sub
+HacerDañoMuralla_Err:
+    Call TraceError(Err.Number, Err.Description, "ModInvasion.HacerDañoMuralla", Erl)
 End Sub
 
 Public Sub SumarScoreInvasion(ByVal index As Integer, ByVal UserIndex As Integer, ByVal Score As Long)
+    On Error Goto SumarScoreInvasion_Err
     
 100     With Invasiones(index)
     
@@ -464,4 +497,7 @@ Public Sub SumarScoreInvasion(ByVal index As Integer, ByVal UserIndex As Integer
     
         End With
     
+    Exit Sub
+SumarScoreInvasion_Err:
+    Call TraceError(Err.Number, Err.Description, "ModInvasion.SumarScoreInvasion", Erl)
 End Sub

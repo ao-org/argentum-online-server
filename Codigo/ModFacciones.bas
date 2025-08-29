@@ -29,6 +29,7 @@ Attribute VB_Name = "ModFacciones"
 Option Explicit
 
 Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
+    On Error Goto EnlistarArmadaReal_Err
             On Error GoTo EnlistarArmadaReal_Err
 
             Dim charIndexStr As String
@@ -136,10 +137,14 @@ EnlistarArmadaReal_Err:
 176         Call TraceError(Err.Number, Err.Description, "ModFacciones.EnlistarArmadaReal", Erl)
 
 
+    Exit Sub
+EnlistarArmadaReal_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.EnlistarArmadaReal", Erl)
 End Sub
 
 ' Subir de Rango y asignar recompensas.
 Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
+    On Error Goto RecompensaArmadaReal_Err
             On Error GoTo RecompensaArmadaReal_Err
 
             Dim npcCharIndex As String
@@ -184,9 +189,13 @@ RecompensaArmadaReal_Err:
 130         Call TraceError(Err.Number, Err.Description, "ModFacciones.RecompensaArmadaReal", Erl)
 
 
+    Exit Sub
+RecompensaArmadaReal_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.RecompensaArmadaReal", Erl)
 End Sub
 
 Public Sub ExpulsarFaccionReal(ByVal UserIndex As Integer)
+    On Error Goto ExpulsarFaccionReal_Err
             On Error GoTo ExpulsarFaccionReal_Err
 
 102         UserList(UserIndex).Faccion.status = e_Facciones.Ciudadano
@@ -201,9 +210,13 @@ ExpulsarFaccionReal_Err:
 110         Call TraceError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionReal", Erl)
 
 
+    Exit Sub
+ExpulsarFaccionReal_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionReal", Erl)
 End Sub
 
 Public Sub ExpulsarFaccionCaos(ByVal UserIndex As Integer)
+    On Error Goto ExpulsarFaccionCaos_Err
 
             On Error GoTo ExpulsarFaccionCaos_Err
 
@@ -219,9 +232,13 @@ ExpulsarFaccionCaos_Err:
 110         Call TraceError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionCaos", Erl)
 
 
+    Exit Sub
+ExpulsarFaccionCaos_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionCaos", Erl)
 End Sub
 
 Public Function TituloReal(ByVal UserIndex As Integer) As String
+    On Error Goto TituloReal_Err
             On Error GoTo TituloReal_Err
 
             Dim rank As Byte
@@ -238,9 +255,13 @@ TituloReal_Err:
 106         Call TraceError(Err.Number, Err.Description, "ModFacciones.TituloReal", Erl)
 
 
+    Exit Function
+TituloReal_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.TituloReal", Erl)
 End Function
 
 Public Sub EnlistarCaos(ByVal UserIndex As Integer)
+    On Error Goto EnlistarCaos_Err
             On Error GoTo EnlistarCaos_Err
 
             Dim charIndexStr As String
@@ -333,9 +354,13 @@ EnlistarCaos_Err:
 170         Call TraceError(Err.Number, Err.Description, "ModFacciones.EnlistarCaos", Erl)
 
 
+    Exit Sub
+EnlistarCaos_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.EnlistarCaos", Erl)
 End Sub
 
 Public Sub RecompensaCaos(ByVal UserIndex As Integer)
+    On Error Goto RecompensaCaos_Err
             On Error GoTo RecompensaCaos_Err
 
 
@@ -381,9 +406,13 @@ RecompensaCaos_Err:
 130         Call TraceError(Err.Number, Err.Description, "ModFacciones.RecompensaCaos", Erl)
 
 
+    Exit Sub
+RecompensaCaos_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.RecompensaCaos", Erl)
 End Sub
 
 Public Function TituloCaos(ByVal UserIndex As Integer) As String
+    On Error Goto TituloCaos_Err
             On Error GoTo TituloCaos_Err
 
             Dim rank As Byte
@@ -400,11 +429,15 @@ TituloCaos_Err:
 106         Call TraceError(Err.Number, Err.Description, "ModFacciones.TituloCaos", Erl)
 
 
+    Exit Function
+TituloCaos_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.TituloCaos", Erl)
 End Function
 
 
 ' Devuelve el proximo rango para el usuario de la faccion que pertenece.
 Private Function ProximoRango(ByVal UserIndex As Integer) As t_RangoFaccion
+    On Error Goto ProximoRango_Err
             On Error GoTo ProximoRango_Err
 
 100         With UserList(UserIndex)
@@ -423,6 +456,9 @@ ProximoRango_Err:
 110         Call TraceError(Err.Number, Err.Description, "ModFacciones.TituloCaos", Erl)
 
 
+    Exit Function
+ProximoRango_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.ProximoRango", Erl)
 End Function
 
 
@@ -430,6 +466,7 @@ End Function
 ' Si el usuario sube mas de un rango por vez, esta rutina le dara TODOS los objetos
 ' que debería tener hasta alcanzar su rango.
 Private Sub DarRecompensas(ByVal UserIndex As Integer)
+    On Error Goto DarRecompensas_Err
             On Error GoTo DarRecompensas_Err
 
             Dim recompensa As t_RecompensaFaccion
@@ -499,10 +536,14 @@ DarRecompensas_Err:
 144         Call TraceError(Err.Number, Err.Description, "ModFacciones.DarRecompensas", Erl)
 
 
+    Exit Sub
+DarRecompensas_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.DarRecompensas", Erl)
 End Sub
 
 
 Private Sub PerderItemsFaccionarios(ByVal UserIndex As Integer)
+    On Error Goto PerderItemsFaccionarios_Err
             On Error GoTo PerderItemsFaccionarios_Err
 
             Dim i         As Byte
@@ -524,4 +565,7 @@ PerderItemsFaccionarios_Err:
 116         Call TraceError(Err.Number, Err.Description, "ModFacciones.PerderItemsFaccionarios", Erl)
 
 
+    Exit Sub
+PerderItemsFaccionarios_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.PerderItemsFaccionarios", Erl)
 End Sub

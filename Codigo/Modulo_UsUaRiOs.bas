@@ -31,6 +31,7 @@ Private UserNameCache As New Dictionary
 Private AvailableUserSlot As t_IndexHeap
 
 Public Sub InitializeUserIndexHeap(Optional ByVal size As Integer = NpcIndexHeapSize)
+    On Error Goto InitializeUserIndexHeap_Err
 On Error GoTo ErrHandler_InitializeUserIndexHeap
     ReDim AvailableUserSlot.IndexInfo(size)
     Dim i As Integer
@@ -42,9 +43,13 @@ On Error GoTo ErrHandler_InitializeUserIndexHeap
     Exit Sub
 ErrHandler_InitializeUserIndexHeap:
     Call TraceError(Err.Number, Err.Description, "UserMod.InitializeUserIndexHeap", Erl)
+    Exit Sub
+InitializeUserIndexHeap_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.InitializeUserIndexHeap", Erl)
 End Sub
 
 Public Function ReleaseUser(ByVal UserIndex As Integer) As Boolean
+    On Error Goto ReleaseUser_Err
 On Error GoTo ErrHandler
     If UserList(UserIndex).flags.IsSlotFree Then
         ReleaseUser = False
@@ -62,13 +67,21 @@ On Error GoTo ErrHandler
 ErrHandler:
     ReleaseUser = False
     Call TraceError(Err.Number, Err.Description, "UserMod.ReleaseUser", Erl)
+    Exit Function
+ReleaseUser_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ReleaseUser", Erl)
 End Function
 
 Public Function GetAvailableUserSlot() As Integer
+    On Error Goto GetAvailableUserSlot_Err
     GetAvailableUserSlot = AvailableUserSlot.currentIndex
+    Exit Function
+GetAvailableUserSlot_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetAvailableUserSlot", Erl)
 End Function
 
 Public Function GetNextAvailableUserSlot() As Integer
+    On Error Goto GetNextAvailableUserSlot_Err
 On Error GoTo ErrHandler
     If (AvailableUserSlot.currentIndex = 0) Then
         GetNextAvailableUserSlot = -1
@@ -84,9 +97,13 @@ On Error GoTo ErrHandler
     Exit Function
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "UserMod.GetNextAvailableUserSlot", Erl)
+    Exit Function
+GetNextAvailableUserSlot_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetNextAvailableUserSlot", Erl)
 End Function
 
 Public Function GetUserName(ByVal UserId As Long) As String
+    On Error Goto GetUserName_Err
     On Error GoTo GetUserName_Err
 100     If UserId <= 0 Then
 102         GetUserName = ""
@@ -103,17 +120,25 @@ Public Function GetUserName(ByVal UserId As Long) As String
         Exit Function
 GetUserName_Err:
 114     Call TraceError(Err.Number, Err.Description, "UserMod.GetUserName", Erl)
+    Exit Function
+GetUserName_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetUserName", Erl)
 End Function
 
 Public Sub RegisterUserName(ByVal UserId As Long, ByVal UserName As String)
+    On Error Goto RegisterUserName_Err
     If UserNameCache.Exists(UserId) Then
         UserNameCache.Item(UserId) = username
     Else
         UserNameCache.Add UserId, username
     End If
+    Exit Sub
+RegisterUserName_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.RegisterUserName", Erl)
 End Sub
 
 Public Function IsValidUserRef(ByRef UserRef As t_UserReference) As Boolean
+    On Error Goto IsValidUserRef_Err
     IsValidUserRef = False
     If UserRef.ArrayIndex <= 0 Or UserRef.ArrayIndex > UBound(UserList) Then
         Exit Function
@@ -122,9 +147,13 @@ Public Function IsValidUserRef(ByRef UserRef As t_UserReference) As Boolean
         Exit Function
     End If
     IsValidUserRef = True
+    Exit Function
+IsValidUserRef_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.IsValidUserRef", Erl)
 End Function
 
 Public Function SetUserRef(ByRef UserRef As t_UserReference, ByVal index As Integer) As Boolean
+    On Error Goto SetUserRef_Err
     SetUserRef = False
     UserRef.ArrayIndex = Index
     If Index <= 0 Or UserRef.ArrayIndex > UBound(UserList) Then
@@ -132,14 +161,22 @@ Public Function SetUserRef(ByRef UserRef As t_UserReference, ByVal index As Inte
     End If
     UserRef.VersionId = UserList(Index).VersionId
     SetUserRef = True
+    Exit Function
+SetUserRef_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.SetUserRef", Erl)
 End Function
 
 Public Sub ClearUserRef(ByRef UserRef As t_UserReference)
+    On Error Goto ClearUserRef_Err
     UserRef.ArrayIndex = 0
     UserRef.VersionId = -1
+    Exit Sub
+ClearUserRef_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ClearUserRef", Erl)
 End Sub
 
 Public Sub IncreaseVersionId(ByVal UserIndex As Integer)
+    On Error Goto IncreaseVersionId_Err
     With UserList(UserIndex)
         If .VersionId > 32760 Then
             .VersionId = 0
@@ -147,13 +184,21 @@ Public Sub IncreaseVersionId(ByVal UserIndex As Integer)
             .VersionId = .VersionId + 1
         End If
     End With
+    Exit Sub
+IncreaseVersionId_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.IncreaseVersionId", Erl)
 End Sub
 
 Public Sub LogUserRefError(ByRef UserRef As t_UserReference, ByRef Text As String)
+    On Error Goto LogUserRefError_Err
     Call LogError("Failed to validate UserRef index(" & UserRef.ArrayIndex & ") version(" & UserRef.VersionId & ") got versionId: " & UserList(UserRef.ArrayIndex).VersionId & " At: " & Text)
+    Exit Sub
+LogUserRefError_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.LogUserRefError", Erl)
 End Sub
 
 Public Function ConnectUser_Check(ByVal userIndex As Integer, ByVal Name As String) As Boolean
+    On Error Goto ConnectUser_Check_Err
 On Error GoTo Check_ConnectUser_Err
     ConnectUser_Check = False
     'Controlamos no pasar el maximo de usuarios
@@ -241,9 +286,13 @@ On Error GoTo Check_ConnectUser_Err
 Check_ConnectUser_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ConnectUser_Check", Erl)
         
+    Exit Function
+ConnectUser_Check_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ConnectUser_Check", Erl)
 End Function
 
 Public Sub ConnectUser_Prepare(ByVal userIndex As Integer, ByVal name As String)
+    On Error Goto ConnectUser_Prepare_Err
 On Error GoTo Prepare_ConnectUser_Err
     With UserList(userIndex)
         .flags.Escondido = 0
@@ -264,9 +313,13 @@ On Error GoTo Prepare_ConnectUser_Err
 Prepare_ConnectUser_Err:
         Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ConnectUser_Prepare", Erl)
 
+    Exit Sub
+ConnectUser_Prepare_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ConnectUser_Prepare", Erl)
 End Sub
 
 Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
+    On Error Goto ConnectUser_Complete_Err
                                      ByRef Name As String, _
                                      Optional ByVal newUser As Boolean = False)
 
@@ -844,9 +897,13 @@ On Error GoTo Complete_ConnectUser_Err
 Complete_ConnectUser_Err:
 1235    Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ConnectUser_Complete", Erl)
 
+    Exit Function
+ConnectUser_Complete_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ConnectUser_Complete", Erl)
 End Function
 
 Sub ActStats(ByVal VictimIndex As Integer, ByVal AttackerIndex As Integer)
+    On Error Goto ActStats_Err
         
         On Error GoTo ActStats_Err
         
@@ -892,9 +949,13 @@ ActStats_Err:
 136     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ActStats", Erl)
 
         
+    Exit Sub
+ActStats_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ActStats", Erl)
 End Sub
 
 Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As Boolean)
+    On Error Goto RevivirUsuario_Err
         
         On Error GoTo RevivirUsuario_Err
         
@@ -1013,9 +1074,13 @@ RevivirUsuario_Err:
 210     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.RevivirUsuario", Erl)
 
         
+    Exit Sub
+RevivirUsuario_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.RevivirUsuario", Erl)
 End Sub
 
 Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As Byte, ByVal Arma As Integer, ByVal Escudo As Integer, ByVal Casco As Integer, ByVal Cart As Integer)
+    On Error Goto ChangeUserChar_Err
         
         On Error GoTo ChangeUserChar_Err
         If IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTransformed) Then Exit Sub
@@ -1038,9 +1103,13 @@ ChangeUserChar_Err:
 118     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ChangeUserChar", Erl)
 
         
+    Exit Sub
+ChangeUserChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ChangeUserChar", Erl)
 End Sub
 
 Sub EraseUserChar(ByVal UserIndex As Integer, ByVal Desvanecer As Boolean, Optional ByVal FueWarp As Boolean = False)
+    On Error Goto EraseUserChar_Err
 
         On Error GoTo ErrorHandler
 
@@ -1085,9 +1154,13 @@ Sub EraseUserChar(ByVal UserIndex As Integer, ByVal Desvanecer As Boolean, Optio
 ErrorHandler:
 134     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.EraseUserChar", Erl)
 
+    Exit Sub
+EraseUserChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.EraseUserChar", Erl)
 End Sub
 
 Sub RefreshCharStatus(ByVal UserIndex As Integer)
+    On Error Goto RefreshCharStatus_Err
         
         On Error GoTo RefreshCharStatus_Err
         
@@ -1131,9 +1204,13 @@ RefreshCharStatus_Err:
 122     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.RefreshCharStatus", Erl)
 
         
+    Exit Sub
+RefreshCharStatus_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.RefreshCharStatus", Erl)
 End Sub
 
 Sub MakeUserChar(ByVal toMap As Boolean, _
+    On Error Goto MakeUserChar_Err
                  ByVal sndIndex As Integer, _
                  ByVal UserIndex As Integer, _
                  ByVal Map As Integer, _
@@ -1233,9 +1310,13 @@ HayError:
         
 148     Call CloseSocket(UserIndex)
 
+    Exit Sub
+MakeUserChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.MakeUserChar", Erl)
 End Sub
 
 Sub CheckUserLevel(ByVal UserIndex As Integer)
+    On Error Goto CheckUserLevel_Err
         '*************************************************
         'Author: Unknown
         'Last modified: 01/10/2007
@@ -1428,9 +1509,13 @@ Call WriteLocaleMsg(UserIndex, "1294", e_FontTypeNames.FONTTYPE_INFO, Pts)
 ErrHandler:
 212     Call LogError("Error en la subrutina CheckUserLevel - Error : " & Err.Number & " - Description : " & Err.Description)
 
+    Exit Sub
+CheckUserLevel_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.CheckUserLevel", Erl)
 End Sub
 
 Public Sub SwapTargetUserPos(ByVal TargetUser As Integer, ByRef NewTargetPos As t_WorldPos)
+    On Error Goto SwapTargetUserPos_Err
     Dim Heading As e_Heading
     Heading = UserList(TargetUser).Char.Heading
     UserList(TargetUser).pos = NewTargetPos
@@ -1449,9 +1534,13 @@ Public Sub SwapTargetUserPos(ByVal TargetUser As Integer, ByRef NewTargetPos As 
     MapData(UserList(TargetUser).pos.map, UserList(TargetUser).pos.x, UserList(TargetUser).pos.y).UserIndex = TargetUser
     'Actualizamos las areas de ser necesario
     Call ModAreas.CheckUpdateNeededUser(TargetUser, Heading, 0)
+    Exit Sub
+SwapTargetUserPos_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.SwapTargetUserPos", Erl)
 End Sub
 
 Function TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos, ByVal Speed As Long)
+    On Error Goto TranslateUserPos_Err
 On Error GoTo TranslateUserPos_Err
     Dim OriginalPos As t_WorldPos
     
@@ -1491,9 +1580,13 @@ On Error GoTo TranslateUserPos_Err
     Exit Function
 TranslateUserPos_Err:
     Call LogError("Error en la subrutina TranslateUserPos - Error : " & Err.Number & " - Description : " & Err.Description)
+    Exit Function
+TranslateUserPos_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.TranslateUserPos", Erl)
 End Function
 
 Public Sub SwapNpcPos(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos, ByVal nHeading As e_Heading)
+    On Error Goto SwapNpcPos_Err
     Dim NpcIndex As Integer
     Dim Opposite_Heading As e_Heading
     NpcIndex = MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex
@@ -1505,9 +1598,13 @@ Public Sub SwapNpcPos(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos,
     MapData(NpcList(NpcIndex).pos.Map, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y).NpcIndex = NpcIndex
     MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex = 0
     Call CheckUpdateNeededNpc(NpcIndex, Opposite_Heading)
+    Exit Sub
+SwapNpcPos_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.SwapNpcPos", Erl)
 End Sub
 
 Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) As Boolean
+    On Error Goto MoveUserChar_Err
         ' Lo convierto a función y saco los WritePosUpdate, ahora están en el paquete
 
         On Error GoTo MoveUserChar_Err
@@ -1665,9 +1762,13 @@ MoveUserChar_Err:
 184     Call TraceError(Err.Number, Err.Description + " UI:" + UserIndex, "UsUaRiOs.MoveUserChar", Erl)
 
         
+    Exit Function
+MoveUserChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.MoveUserChar", Erl)
 End Function
 
 Public Function InvertHeading(ByVal nHeading As e_Heading) As e_Heading
+    On Error Goto InvertHeading_Err
         
         On Error GoTo InvertHeading_Err
     
@@ -1701,9 +1802,13 @@ InvertHeading_Err:
 116     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.InvertHeading", Erl)
 
         
+    Exit Function
+InvertHeading_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.InvertHeading", Erl)
 End Function
 
 Sub ChangeUserInv(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef Object As t_UserOBJ)
+    On Error Goto ChangeUserInv_Err
         
         On Error GoTo ChangeUserInv_Err
         
@@ -1717,9 +1822,13 @@ ChangeUserInv_Err:
 104     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ChangeUserInv", Erl)
 
         
+    Exit Sub
+ChangeUserInv_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ChangeUserInv", Erl)
 End Sub
 
 Function NextOpenCharIndex() As Integer
+    On Error Goto NextOpenCharIndex_Err
         
         On Error GoTo NextOpenCharIndex_Err
         
@@ -1747,9 +1856,13 @@ NextOpenCharIndex_Err:
 112     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.NextOpenCharIndex", Erl)
 
         
+    Exit Function
+NextOpenCharIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.NextOpenCharIndex", Erl)
 End Function
 
 Function NextOpenUser() As Integer
+    On Error Goto NextOpenUser_Err
         
         On Error GoTo NextOpenUser_Err
         
@@ -1767,9 +1880,13 @@ Function NextOpenUser() As Integer
         Exit Function
 NextOpenUser_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.NextOpenUser", Erl)
+    Exit Function
+NextOpenUser_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.NextOpenUser", Erl)
 End Function
 
 Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
+    On Error Goto SendUserStatsTxt_Err
         
         On Error GoTo SendUserStatsTxt_Err
         
@@ -1863,9 +1980,13 @@ SendUserStatsTxt_Err:
 156     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxt", Erl)
 
         
+    Exit Sub
+SendUserStatsTxt_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.SendUserStatsTxt", Erl)
 End Sub
 
 Sub SendUserMiniStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
+    On Error Goto SendUserMiniStatsTxt_Err
         
         On Error GoTo SendUserMiniStatsTxt_Err
         
@@ -1912,9 +2033,13 @@ SendUserMiniStatsTxt_Err:
 126     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserMiniStatsTxt", Erl)
 
         
+    Exit Sub
+SendUserMiniStatsTxt_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.SendUserMiniStatsTxt", Erl)
 End Sub
 
 Sub SendUserInvTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
+    On Error Goto SendUserInvTxt_Err
         
         On Error GoTo SendUserInvTxt_Err
     
@@ -1943,9 +2068,13 @@ SendUserInvTxt_Err:
 112     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserInvTxt", Erl)
 
         
+    Exit Sub
+SendUserInvTxt_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.SendUserInvTxt", Erl)
 End Sub
 
 Sub SendUserSkillsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
+    On Error Goto SendUserSkillsTxt_Err
         
         On Error GoTo SendUserSkillsTxt_Err
     
@@ -1970,9 +2099,13 @@ SendUserSkillsTxt_Err:
 108     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserSkillsTxt", Erl)
 
         
+    Exit Sub
+SendUserSkillsTxt_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.SendUserSkillsTxt", Erl)
 End Sub
 
 Function DameUserIndexConNombre(ByVal nombre As String) As Integer
+    On Error Goto DameUserIndexConNombre_Err
         
         On Error GoTo DameUserIndexConNombre_Err
         
@@ -2004,9 +2137,13 @@ DameUserIndexConNombre_Err:
 114     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.DameUserIndexConNombre", Erl)
 
         
+    Exit Function
+DameUserIndexConNombre_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.DameUserIndexConNombre", Erl)
 End Function
 
 Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Optional ByVal AffectsOwner As Boolean = True)
+    On Error Goto NPCAtacado_Err
         On Error GoTo NPCAtacado_Err
         
         '  El usuario pierde la protección
@@ -2039,9 +2176,13 @@ NPCAtacado_Err:
 126     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.NPCAtacado", Erl)
 
         
+    Exit Sub
+NPCAtacado_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.NPCAtacado", Erl)
 End Sub
 
 Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
+    On Error Goto SubirSkill_Err
         On Error GoTo SubirSkill_Err
 
         Dim Lvl As Integer, maxPermitido As Integer
@@ -2115,9 +2256,13 @@ SubirSkill_Err:
 166     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SubirSkill", Erl)
 
         
+    Exit Sub
+SubirSkill_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.SubirSkill", Erl)
 End Sub
 
 Public Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
+    On Error Goto SubirSkillDeArmaActual_Err
         On Error GoTo SubirSkillDeArmaActual_Err
 
 100     With UserList(UserIndex)
@@ -2139,6 +2284,9 @@ Public Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
         Exit Sub
 SubirSkillDeArmaActual_Err:
 112         Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SubirSkillDeArmaActual", Erl)
+    Exit Sub
+SubirSkillDeArmaActual_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.SubirSkillDeArmaActual", Erl)
 End Sub
 
 ''
@@ -2148,6 +2296,7 @@ End Sub
 '
 
 Sub UserDie(ByVal UserIndex As Integer)
+    On Error Goto UserDie_Err
 
         '************************************************
         'Author: Uknown
@@ -2356,9 +2505,13 @@ Sub UserDie(ByVal UserIndex As Integer)
 ErrorHandler:
 238        Call TraceError(Err.Number, Err.Description, "UsUaRiOs.UserDie", Erl)
 
+    Exit Sub
+UserDie_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.UserDie", Erl)
 End Sub
 
 Public Function AlreadyKilledBy(ByVal TargetIndex As Integer, ByVal KillerIndex As Integer) As Boolean
+    On Error Goto AlreadyKilledBy_Err
     Dim TargetPos As Integer
     With UserList(TargetIndex)
         TargetPos = Min(.flags.LastKillerIndex, MaxRecentKillToStore)
@@ -2371,9 +2524,13 @@ Public Function AlreadyKilledBy(ByVal TargetIndex As Integer, ByVal KillerIndex 
         Next i
     End With
     
+    Exit Function
+AlreadyKilledBy_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.AlreadyKilledBy", Erl)
 End Function
 
 Public Sub RegisterRecentKiller(ByVal TargetIndex As Integer, ByVal KillerIndex As Integer)
+    On Error Goto RegisterRecentKiller_Err
     Dim InsertIndex As Integer
     With UserList(TargetIndex)
         InsertIndex = .flags.LastKillerIndex Mod MaxRecentKillToStore
@@ -2384,8 +2541,12 @@ Public Sub RegisterRecentKiller(ByVal TargetIndex As Integer, ByVal KillerIndex 
             .flags.LastKillerIndex = .flags.LastKillerIndex \ 10
         End If
     End With
+    Exit Sub
+RegisterRecentKiller_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.RegisterRecentKiller", Erl)
 End Sub
 Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
+    On Error Goto ContarMuerte_Err
             On Error GoTo ContarMuerte_Err
 
 100         If EsNewbie(Muerto) Then Exit Sub
@@ -2419,9 +2580,13 @@ Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
             Exit Sub
 ContarMuerte_Err:
 126         Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ContarMuerte", Erl)
+    Exit Sub
+ContarMuerte_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ContarMuerte", Erl)
 End Sub
 
 Private Function ShouldApplyFactionBonus(ByVal attackerIndex As Integer, ByVal targetIndex As Integer) As Boolean
+    On Error Goto ShouldApplyFactionBonus_Err
     Dim attacker As Byte
     Dim target As Byte
 
@@ -2442,9 +2607,13 @@ Private Function ShouldApplyFactionBonus(ByVal attackerIndex As Integer, ByVal t
                               concilioVsArmadaOrConsejo Or _
                               armadaVsCaosOrConcilio Or _
                               consejoVsCaosOrConcilio
+    Exit Function
+ShouldApplyFactionBonus_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ShouldApplyFactionBonus", Erl)
 End Function
 
 Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal targetIndex As Integer)
+    On Error Goto HandleFactionScoreForKill_Err
     Dim Score As Integer
     With UserList(UserIndex)
         If CInt(.Stats.ELV) < CInt(UserList(targetIndex).Stats.ELV) Then
@@ -2475,9 +2644,13 @@ Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal targetIndex As I
         End If
         .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
     End With
+    Exit Sub
+HandleFactionScoreForKill_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.HandleFactionScoreForKill", Erl)
 End Sub
 
 Sub HandleFactionScoreForAssist(ByVal UserIndex As Integer, ByVal TargetIndex As Integer)
+    On Error Goto HandleFactionScoreForAssist_Err
     Dim Score As Integer
     
     With UserList(UserIndex)
@@ -2485,9 +2658,13 @@ Sub HandleFactionScoreForAssist(ByVal UserIndex As Integer, ByVal TargetIndex As
         Score = Score / 2
         .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
     End With
+    Exit Sub
+HandleFactionScoreForAssist_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.HandleFactionScoreForAssist", Erl)
 End Sub
 
 Sub Tilelibre(ByRef Pos As t_WorldPos, ByRef nPos As t_WorldPos, ByRef obj As t_Obj, ByRef Agua As Boolean, ByRef Tierra As Boolean, Optional ByVal InitialPos As Boolean = True)
+    On Error Goto Tilelibre_Err
 
         
         On Error GoTo Tilelibre_Err
@@ -2562,9 +2739,13 @@ Tilelibre_Err:
 142     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.Tilelibre", Erl)
 
         
+    Exit Sub
+Tilelibre_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.Tilelibre", Erl)
 End Sub
 
 Sub WarpToLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, Optional ByVal FX As Boolean = False, Optional ByVal AguaValida As Boolean = False)
+    On Error Goto WarpToLegalPos_Err
 
         On Error GoTo WarpToLegalPos_Err
 
@@ -2603,9 +2784,13 @@ WarpToLegalPos_Err:
 132     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.WarpToLegalPos", Erl)
 
         
+    Exit Sub
+WarpToLegalPos_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.WarpToLegalPos", Erl)
 End Sub
 
 Sub WarpUserChar(ByVal UserIndex As Integer, _
+    On Error Goto WarpUserChar_Err
                  ByVal Map As Integer, _
                  ByVal X As Integer, _
                  ByVal Y As Integer, _
@@ -2750,10 +2935,14 @@ WarpUserChar_Err:
 
 
         
+    Exit Sub
+WarpUserChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.WarpUserChar", Erl)
 End Sub
 
 
 Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Boolean = False)
+    On Error Goto Cerrar_Usuario_Err
 
         On Error GoTo Cerrar_Usuario_Err
         
@@ -2808,6 +2997,9 @@ Cerrar_Usuario_Err:
 124     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.Cerrar_Usuario", Erl)
 
 
+    Exit Sub
+Cerrar_Usuario_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.Cerrar_Usuario", Erl)
 End Sub
 
 ''
@@ -2816,6 +3008,7 @@ End Sub
 ' @param    UserIndex   The index of the user whose exit is being reset.
 
 Public Sub CancelExit(ByVal UserIndex As Integer)
+    On Error Goto CancelExit_Err
         
         On Error GoTo CancelExit_Err
         
@@ -2859,9 +3052,13 @@ CancelExit_Err:
 120     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CancelExit", Erl)
 
         
+    Exit Sub
+CancelExit_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.CancelExit", Erl)
 End Sub
 
 Sub VolverCriminal(ByVal UserIndex As Integer)
+    On Error Goto VolverCriminal_Err
         
     On Error GoTo VolverCriminal_Err
         
@@ -2908,9 +3105,13 @@ VolverCriminal_Err:
 120     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.VolverCriminal", Erl)
 
         
+    Exit Sub
+VolverCriminal_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.VolverCriminal", Erl)
 End Sub
 
 Sub VolverCiudadano(ByVal UserIndex As Integer)
+    On Error Goto VolverCiudadano_Err
     '**************************************************************
     'Author: Unknown
     'Last Modify Date: 21/06/2006
@@ -2946,9 +3147,13 @@ VolverCiudadano_Err:
 114     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.VolverCiudadano", Erl)
 
         
+    Exit Sub
+VolverCiudadano_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.VolverCiudadano", Erl)
 End Sub
 
 Public Function getMaxInventorySlots(ByVal UserIndex As Integer) As Byte
+    On Error Goto getMaxInventorySlots_Err
 On Error GoTo getMaxInventorySlots_Err
     getMaxInventorySlots = MAX_USERINVENTORY_SLOTS
     With UserList(UserIndex)
@@ -2957,9 +3162,13 @@ On Error GoTo getMaxInventorySlots_Err
     Exit Function
 getMaxInventorySlots_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.getMaxInventorySlots", Erl)
+    Exit Function
+getMaxInventorySlots_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.getMaxInventorySlots", Erl)
 End Function
 
 Private Sub WarpMascotas(ByVal UserIndex As Integer)
+    On Error Goto WarpMascotas_Err
 On Error GoTo WarpMascotas_Err
         Dim i                As Integer
         Dim petType          As Integer
@@ -3035,9 +3244,13 @@ On Error GoTo WarpMascotas_Err
 
 WarpMascotas_Err:
 168     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.WarpMascotas", Erl)
+    Exit Sub
+WarpMascotas_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.WarpMascotas", Erl)
 End Sub
 
 Function TieneArmaduraCazador(ByVal UserIndex As Integer) As Boolean
+    On Error Goto TieneArmaduraCazador_Err
         
         On Error GoTo TieneArmaduraCazador_Err
     
@@ -3058,9 +3271,13 @@ TieneArmaduraCazador_Err:
 106     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.TieneArmaduraCazador", Erl)
 
         
+    Exit Function
+TieneArmaduraCazador_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.TieneArmaduraCazador", Erl)
 End Function
 
 Public Sub SetModoConsulta(ByVal UserIndex As Integer)
+    On Error Goto SetModoConsulta_Err
         '***************************************************
         'Author: Torres Patricio (Pato)
         'Last Modification: 05/06/10
@@ -3087,12 +3304,16 @@ Public Sub SetModoConsulta(ByVal UserIndex As Integer)
 
         End With
 
+    Exit Sub
+SetModoConsulta_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.SetModoConsulta", Erl)
 End Sub
 
 ' Autor: WyroX - 20/01/2021
 ' Intenta moverlo hacia un "costado" según el heading indicado.
 ' Si no hay un lugar válido a los lados, lo mueve a la posición válida más cercana.
 Sub MoveUserToSide(ByVal UserIndex As Integer, ByVal Heading As e_Heading)
+    On Error Goto MoveUserToSide_Err
 
         On Error GoTo Handler
 
@@ -3132,11 +3353,15 @@ Sub MoveUserToSide(ByVal UserIndex As Integer, ByVal Heading As e_Heading)
 Handler:
 120     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.MoveUserToSide", Erl)
 
+    Exit Sub
+MoveUserToSide_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.MoveUserToSide", Erl)
 End Sub
 
 ' Autor: WyroX - 02/03/2021
 ' Quita parálisis, veneno, invisibilidad, estupidez, mimetismo, deja de descansar, de meditar y de ocultarse; y quita otros estados obsoletos (por si acaso)
 Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
+    On Error Goto LimpiarEstadosAlterados_Err
 
         On Error GoTo Handler
     
@@ -3223,17 +3448,25 @@ Handler:
 182     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.LimpiarEstadosAlterados", Erl)
 
 
+    Exit Sub
+LimpiarEstadosAlterados_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.LimpiarEstadosAlterados", Erl)
 End Sub
 
 Public Sub DevolverPosAnterior(ByVal UserIndex As Integer)
+    On Error Goto DevolverPosAnterior_Err
 
 100     With UserList(UserIndex).flags
 102         Call WarpToLegalPos(UserIndex, .LastPos.Map, .LastPos.X, .LastPos.Y, True)
         End With
 
+    Exit Sub
+DevolverPosAnterior_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.DevolverPosAnterior", Erl)
 End Sub
 
 Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Single
+    On Error Goto ActualizarVelocidadDeUsuario_Err
         On Error GoTo ActualizarVelocidadDeUsuario_Err
     
         Dim velocidad As Single, modificadorItem As Single, modificadorHechizo As Single, JineteLevelSpeed As Single
@@ -3300,24 +3533,40 @@ UpdateSpeed:
 ActualizarVelocidadDeUsuario_Err:
 134     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CalcularVelocidad_Err", Erl)
 
+    Exit Function
+ActualizarVelocidadDeUsuario_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ActualizarVelocidadDeUsuario", Erl)
 End Function
 
 Public Sub ClearClothes(ByRef Char As t_Char)
+    On Error Goto ClearClothes_Err
     Char.ShieldAnim = NingunEscudo
     Char.WeaponAnim = NingunArma
     Char.CascoAnim = NingunCasco
     Char.CartAnim = NoCart
+    Exit Sub
+ClearClothes_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ClearClothes", Erl)
 End Sub
 
 Public Function IsStun(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
+    On Error Goto IsStun_Err
     IsStun = Counters.StunEndTime > GetTickCount()
+    Exit Function
+IsStun_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.IsStun", Erl)
 End Function
 
 Public Function CanMove(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
+    On Error Goto CanMove_Err
     CanMove = flags.Paralizado = 0 And flags.Inmovilizado = 0 And Not IsStun(flags, Counters) And Not flags.TranslationActive
+    Exit Function
+CanMove_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.CanMove", Erl)
 End Function
 
 Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserCounters) As Boolean
+    On Error Goto StunPlayer_Err
     Dim currTime As Long
     StunPlayer = False
     If Not CanMove(UserList(UserIndex).flags, Counters) Then Exit Function
@@ -3327,22 +3576,38 @@ Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserC
         Counters.StunEndTime = GetTickCount() + PlayerStunTime
         StunPlayer = True
     End If
+    Exit Function
+StunPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.StunPlayer", Erl)
 End Function
 
 Public Function CanUseItem(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
+    On Error Goto CanUseItem_Err
     CanUseItem = True
+    Exit Function
+CanUseItem_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.CanUseItem", Erl)
 End Function
 
 Public Sub UpdateCd(ByVal UserIndex As Integer, ByVal cdType As e_CdTypes)
+    On Error Goto UpdateCd_Err
     UserList(UserIndex).CdTimes(cdType) = GetTickCount()
     Call WriteUpdateCdType(UserIndex, cdType)
+    Exit Sub
+UpdateCd_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.UpdateCd", Erl)
 End Sub
 
 Public Function IsVisible(ByRef user As t_User) As Boolean
+    On Error Goto IsVisible_Err
     IsVisible = (Not (user.flags.invisible > 0 Or user.flags.Oculto > 0))
+    Exit Function
+IsVisible_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.IsVisible", Erl)
 End Function
 
 Public Function CanHelpUser(ByVal UserIndex As Integer, ByVal targetUserIndex As Integer) As e_InteractionResult
+    On Error Goto CanHelpUser_Err
     CanHelpUser = eInteractionOk
     If UserList(UserIndex).flags.CurrentTeam > 0 And _
        UserList(UserIndex).flags.CurrentTeam <> UserList(TargetUserIndex).flags.CurrentTeam Then
@@ -3389,9 +3654,13 @@ Public Function CanHelpUser(ByVal UserIndex As Integer, ByVal targetUserIndex As
         Case Else
             Exit Function
     End Select
+    Exit Function
+CanHelpUser_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.CanHelpUser", Erl)
 End Function
 
 Public Function CanAttackUser(ByVal AttackerIndex As Integer, ByVal AttackerVersionID As Integer, ByVal TargetIndex As Integer, ByVal TargetVersionID As Integer) As e_AttackInteractionResult
+    On Error Goto CanAttackUser_Err
     If UserList(TargetIndex).flags.Muerto = 1 Then
 104     CanAttackUser = e_AttackInteractionResult.eDeathTarget
         Exit Function
@@ -3546,9 +3815,13 @@ Public Function CanAttackUser(ByVal AttackerIndex As Integer, ByVal AttackerVers
         Exit Function
     End If
 228 CanAttackUser = eCanAttack
+    Exit Function
+CanAttackUser_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.CanAttackUser", Erl)
 End Function
 
 Public Function ModifyHealth(ByVal UserIndex As Integer, ByVal amount As Long, Optional ByVal minValue = 0) As Boolean
+    On Error Goto ModifyHealth_Err
     With UserList(UserIndex)
         ModifyHealth = False
         .Stats.MinHp = .Stats.MinHp + amount
@@ -3561,9 +3834,13 @@ Public Function ModifyHealth(ByVal UserIndex As Integer, ByVal amount As Long, O
         End If
         Call WriteUpdateHP(UserIndex)
     End With
+    Exit Function
+ModifyHealth_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ModifyHealth", Erl)
 End Function
 
 Public Function ModifyStamina(ByVal UserIndex As Integer, ByVal Amount As Integer, ByVal CancelIfNotEnought As Boolean, Optional ByVal MinValue = 0) As Boolean
+    On Error Goto ModifyStamina_Err
     ModifyStamina = False
     With UserList(UserIndex)
     If CancelIfNotEnought And Amount < 0 And .Stats.MinSta < Abs(Amount) Then
@@ -3580,9 +3857,13 @@ Public Function ModifyStamina(ByVal UserIndex As Integer, ByVal Amount As Intege
     End If
     Call WriteUpdateSta(UserIndex)
     End With
+    Exit Function
+ModifyStamina_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ModifyStamina", Erl)
 End Function
 
 Public Function ModifyMana(ByVal UserIndex As Integer, ByVal Amount As Integer, ByVal CancelIfNotEnought As Boolean, Optional ByVal MinValue = 0) As Boolean
+    On Error Goto ModifyMana_Err
     ModifyMana = False
     With UserList(UserIndex)
     If CancelIfNotEnought And Amount < 0 And .Stats.MinMAN < Abs(Amount) Then
@@ -3599,18 +3880,26 @@ Public Function ModifyMana(ByVal UserIndex As Integer, ByVal Amount As Integer, 
     End If
     Call WriteUpdateMana(UserIndex)
     End With
+    Exit Function
+ModifyMana_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ModifyMana", Erl)
 End Function
 
 Public Sub ResurrectUser(ByVal UserIndex As Integer)
+    On Error Goto ResurrectUser_Err
     ' Msg585=¡Has sido resucitado!
     Call WriteLocaleMsg(UserIndex, "585", e_FontTypeNames.FONTTYPE_INFO)
     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Resucitar, 250, True))
     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y))
     Call RevivirUsuario(UserIndex, True)
 684 Call WriteUpdateHungerAndThirst(UserIndex)
+    Exit Sub
+ResurrectUser_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.ResurrectUser", Erl)
 End Sub
 
 Public Function DoDamageOrHeal(ByVal UserIndex As Integer, ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, _
+    On Error Goto DoDamageOrHeal_Err
                              ByVal amount As Long, ByVal DamageSourceType As e_DamageSourceType, ByVal DamageSourceIndex As Integer, _
                              Optional DoDamageText As Integer = 389, Optional GotDamageText As Integer = 34, Optional ByVal DamageColor As Long = vbRed) As e_DamageResult
 On Error GoTo DoDamageOrHeal_Err
@@ -3671,25 +3960,45 @@ On Error GoTo DoDamageOrHeal_Err
     Exit Function
 DoDamageOrHeal_Err:
 134     Call TraceError(Err.Number, Err.Description, "UserMod.DoDamageOrHeal", Erl)
+    Exit Function
+DoDamageOrHeal_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.DoDamageOrHeal", Erl)
 End Function
 
 Public Function GetPhysicalDamageModifier(ByRef user As t_User) As Single
+    On Error Goto GetPhysicalDamageModifier_Err
     GetPhysicalDamageModifier = max(1 + user.Modifiers.PhysicalDamageBonus, 0)
+    Exit Function
+GetPhysicalDamageModifier_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetPhysicalDamageModifier", Erl)
 End Function
 
 Public Function GetMagicDamageModifier(ByRef user As t_User) As Single
+    On Error Goto GetMagicDamageModifier_Err
     GetMagicDamageModifier = max(1 + user.Modifiers.MagicDamageBonus, 0)
+    Exit Function
+GetMagicDamageModifier_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetMagicDamageModifier", Erl)
 End Function
 
 Public Function GetMagicDamageReduction(ByRef user As t_User) As Single
+    On Error Goto GetMagicDamageReduction_Err
     GetMagicDamageReduction = max(1 - user.Modifiers.MagicDamageReduction, 0)
+    Exit Function
+GetMagicDamageReduction_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetMagicDamageReduction", Erl)
 End Function
 
 Public Function GetPhysicDamageReduction(ByRef user As t_User) As Single
+    On Error Goto GetPhysicDamageReduction_Err
     GetPhysicDamageReduction = max(1 - user.Modifiers.PhysicalDamageReduction, 0)
+    Exit Function
+GetPhysicDamageReduction_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetPhysicDamageReduction", Erl)
 End Function
 
 Public Sub RemoveInvisibility(ByVal UserIndex As Integer)
+    On Error Goto RemoveInvisibility_Err
     With UserList(UserIndex)
 304      If .flags.invisible + .flags.Oculto > 0 And .flags.NoDetectable = 0 Then
 306         .flags.invisible = 0
@@ -3702,9 +4011,13 @@ Public Sub RemoveInvisibility(ByVal UserIndex As Integer)
 316         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
          End If
    End With
+    Exit Sub
+RemoveInvisibility_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.RemoveInvisibility", Erl)
 End Sub
 
 Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer, ByVal Time As Integer, ByVal Fx As Integer) As Boolean
+    On Error Goto Inmovilize_Err
 142 Call UsuarioAtacadoPorUsuario(SourceIndex, TargetIndex)
     If IsSet(UserList(TargetIndex).flags.StatusMask, eCCInmunity) Then
         Call WriteLocaleMsg(SourceIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
@@ -3718,9 +4031,13 @@ Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As In
 154     Call WritePosUpdate(TargetIndex)
         Inmovilize = True
     End If
+    Exit Function
+Inmovilize_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.Inmovilize", Erl)
 End Function
 
 Public Function GetArmorPenetration(ByVal UserIndex As Integer, ByVal TargetArmor As Integer) As Integer
+    On Error Goto GetArmorPenetration_Err
     Dim ArmorPenetration As Integer
     If Not IsFeatureEnabled("armor_penetration_feature") Then Exit Function
     With UserList(UserIndex)
@@ -3732,27 +4049,47 @@ Public Function GetArmorPenetration(ByVal UserIndex As Integer, ByVal TargetArmo
         End If
     End With
     GetArmorPenetration = ArmorPenetration
+    Exit Function
+GetArmorPenetration_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetArmorPenetration", Erl)
 End Function
 
 Public Function GetEvasionBonus(ByRef User As t_User) As Integer
+    On Error Goto GetEvasionBonus_Err
     GetEvasionBonus = User.Modifiers.EvasionBonus
+    Exit Function
+GetEvasionBonus_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetEvasionBonus", Erl)
 End Function
 
 Public Function GetHitBonus(ByRef User As t_User) As Integer
+    On Error Goto GetHitBonus_Err
     GetHitBonus = User.Modifiers.HitBonus + GetWeaponHitBonus(User.invent.WeaponEqpObjIndex, User.clase)
+    Exit Function
+GetHitBonus_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetHitBonus", Erl)
 End Function
 
 'Defines the healing bonus when using a potion, a spell or any other healing source
 Public Function GetSelfHealingBonus(ByRef user As t_User) As Single
+    On Error Goto GetSelfHealingBonus_Err
     GetSelfHealingBonus = max(1 + user.Modifiers.SelfHealingBonus, 0)
+    Exit Function
+GetSelfHealingBonus_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetSelfHealingBonus", Erl)
 End Function
 
 'Defines bonus when healing someone with magic
 Public Function GetMagicHealingBonus(ByRef user As t_User) As Single
+    On Error Goto GetMagicHealingBonus_Err
     GetMagicHealingBonus = max(1 + user.Modifiers.MagicHealingBonus, 0)
+    Exit Function
+GetMagicHealingBonus_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetMagicHealingBonus", Erl)
 End Function
 
 Public Function GetWeaponHitBonus(ByVal WeaponIndex As Integer, ByVal UserClass As e_Class)
+    On Error Goto GetWeaponHitBonus_Err
     On Error GoTo GetWeaponHitBonus_Err
         If WeaponIndex = 0 Then Exit Function
 100     If Not IsFeatureEnabled("class_weapon_bonus") Or ObjData(WeaponIndex).WeaponType = 0 Then Exit Function
@@ -3760,9 +4097,13 @@ Public Function GetWeaponHitBonus(ByVal WeaponIndex As Integer, ByVal UserClass 
         Exit Function
 GetWeaponHitBonus_Err:
 134     Call TraceError(Err.Number, Err.Description, "UserMod.GetWeaponHitBonus WeaponIndex: " & WeaponIndex & " for class: " & UserClass, Erl)
+    Exit Function
+GetWeaponHitBonus_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetWeaponHitBonus", Erl)
 End Function
 
 Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
+    On Error Goto RemoveUserInvisibility_Err
     With UserList(UserIndex)
         Dim RemoveHiddenState As Boolean
              
@@ -3803,9 +4144,13 @@ Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
             End If
         End If
     End With
+    Exit Sub
+RemoveUserInvisibility_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.RemoveUserInvisibility", Erl)
 End Sub
 
 Public Function UserHasSpell(ByVal UserIndex As Integer, ByVal SpellId As Integer) As Boolean
+    On Error Goto UserHasSpell_Err
     With UserList(UserIndex)
         Dim i As Integer
         For i = LBound(.Stats.UserHechizos) To UBound(.Stats.UserHechizos)
@@ -3815,24 +4160,40 @@ Public Function UserHasSpell(ByVal UserIndex As Integer, ByVal SpellId As Intege
             End If
         Next i
     End With
+    Exit Function
+UserHasSpell_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.UserHasSpell", Erl)
 End Function
 
 Public Function GetLinearDamageBonus(ByVal UserIndex As Integer) As Integer
+    On Error Goto GetLinearDamageBonus_Err
     GetLinearDamageBonus = UserList(UserIndex).Modifiers.PhysicalDamageLinearBonus
+    Exit Function
+GetLinearDamageBonus_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetLinearDamageBonus", Erl)
 End Function
 
 Public Function GetDefenseBonus(ByVal UserIndex As Integer) As Integer
+    On Error Goto GetDefenseBonus_Err
     GetDefenseBonus = UserList(UserIndex).Modifiers.DefenseBonus
+    Exit Function
+GetDefenseBonus_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetDefenseBonus", Erl)
 End Function
 
 Public Function GetMaxMana(ByVal UserIndex As Integer) As Long
+    On Error Goto GetMaxMana_Err
     With UserList(UserIndex)
         GetMaxMana = .Stats.UserAtributos(e_Atributos.Inteligencia) * ModClase(.clase).ManaInicial
         GetMaxMana = GetMaxMana + (ModClase(.clase).MultMana * .Stats.UserAtributos(e_Atributos.Inteligencia)) * (.Stats.ELV - 1)
     End With
+    Exit Function
+GetMaxMana_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetMaxMana", Erl)
 End Function
 
 Public Function GetHitModifier(ByVal UserIndex As Integer) As Long
+    On Error Goto GetHitModifier_Err
     With UserList(UserIndex)
         If .Stats.ELV <= 36 Then
             GetHitModifier = (.Stats.ELV - 1) * ModClase(.clase).HitPre36
@@ -3841,46 +4202,70 @@ Public Function GetHitModifier(ByVal UserIndex As Integer) As Long
             GetHitModifier = GetHitModifier + (.Stats.ELV - 36) * ModClase(.clase).HitPost36
         End If
     End With
+    Exit Function
+GetHitModifier_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetHitModifier", Erl)
 End Function
 
 Public Function GetMaxStamina(ByVal UserIndex As Integer) As Integer
+    On Error Goto GetMaxStamina_Err
     With UserList(UserIndex)
         GetMaxStamina = 60 + (.Stats.ELV - 1) * ModClase(.clase).AumentoSta
     End With
+    Exit Function
+GetMaxStamina_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetMaxStamina", Erl)
 End Function
 
 Public Function GetMaxHp(ByVal UserIndex As Integer) As Integer
+    On Error Goto GetMaxHp_Err
     With UserList(UserIndex)
         GetMaxHp = (ModClase(.clase).Vida - (21 - .Stats.UserAtributos(e_Atributos.Constitucion)) * 0.5) * (.Stats.ELV - 1) + .Stats.UserAtributos(e_Atributos.Constitucion)
     End With
+    Exit Function
+GetMaxHp_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetMaxHp", Erl)
 End Function
 
 Public Function GetUserSpouse(ByVal UserIndex As Integer) As String
+    On Error Goto GetUserSpouse_Err
     With UserList(UserIndex)
         If .flags.SpouseId = 0 Then
             Exit Function
         End If
         GetUserSpouse = GetUserName(.flags.SpouseId)
     End With
+    Exit Function
+GetUserSpouse_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetUserSpouse", Erl)
 End Function
 
 Public Sub RegisterNewAttack(ByVal targetUser As Integer, ByVal attackerIndex As Integer)
+    On Error Goto RegisterNewAttack_Err
     With UserList(targetUser)
         If .Stats.MinHp > 0 Then
             Call SetUserRef(.flags.LastAttacker, attackerIndex)
             .flags.LastAttackedByUserTime = GlobalFrameTime
         End If
     End With
+    Exit Sub
+RegisterNewAttack_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.RegisterNewAttack", Erl)
 End Sub
 
 Public Sub RegisterNewHelp(ByVal targetUser As Integer, ByVal attackerIndex As Integer)
+    On Error Goto RegisterNewHelp_Err
     With UserList(targetUser)
         Call SetUserRef(.flags.LastHelpUser, attackerIndex)
         .flags.LastHelpByTime = GlobalFrameTime
     End With
+    Exit Sub
+RegisterNewHelp_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.RegisterNewHelp", Erl)
 End Sub
 
 Public Sub SaveDCUserCache(ByVal UserIndex As Integer)
+    On Error Goto SaveDCUserCache_Err
     On Error GoTo SaveDCUserCache_Err
 100  With UserList(UserIndex)
         Dim InsertIndex As Integer
@@ -3900,9 +4285,13 @@ Public Sub SaveDCUserCache(ByVal UserIndex As Integer)
 SaveDCUserCache_Err:
         Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SaveDCUserCache_Err", Erl)
         Resume Next
+    Exit Sub
+SaveDCUserCache_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.SaveDCUserCache", Erl)
 End Sub
 
 Public Sub RestoreDCUserCache(ByVal UserIndex As Integer)
+    On Error Goto RestoreDCUserCache_Err
     On Error GoTo RestoreDCUserCache_Err
 100     With UserList(UserIndex)
             Dim StartIndex As Integer
@@ -3927,9 +4316,13 @@ Public Sub RestoreDCUserCache(ByVal UserIndex As Integer)
 RestoreDCUserCache_Err:
         Call TraceError(Err.Number, Err.Description, "UsUaRiOs.RestoreDCUserCache", Erl)
         Resume Next
+    Exit Sub
+RestoreDCUserCache_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.RestoreDCUserCache", Erl)
 End Sub
 
 Public Function GetUserMRForNpc(ByVal UserIndex As Integer) As Integer
+    On Error Goto GetUserMRForNpc_Err
     With UserList(UserIndex)
         Dim MR As Integer
         MR = 0
@@ -3953,9 +4346,13 @@ Public Function GetUserMRForNpc(ByVal UserIndex As Integer) As Integer
         End If
         GetUserMRForNpc = MR + 100 * ModClase(.clase).ResistenciaMagica
     End With
+    Exit Function
+GetUserMRForNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetUserMRForNpc", Erl)
 End Function
 
 Public Function GetUserMR(ByVal UserIndex As Integer) As Integer
+    On Error Goto GetUserMR_Err
     With UserList(UserIndex)
         Dim MR As Integer
         MR = 0
@@ -3979,4 +4376,7 @@ Public Function GetUserMR(ByVal UserIndex As Integer) As Integer
         End If
         GetUserMR = MR + 100 * ModClase(.clase).ResistenciaMagica
     End With
+    Exit Function
+GetUserMR_Err:
+    Call TraceError(Err.Number, Err.Description, "Modulo_UsUaRiOs.GetUserMR", Erl)
 End Function

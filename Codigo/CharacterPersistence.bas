@@ -30,6 +30,7 @@ Option Explicit
 Option Base 0
 
 Private Function db_load_house_key(ByRef user As t_User) As Boolean
+    On Error Goto db_load_house_key_Err
     db_load_house_key = False
     With user
         Debug.Assert .Stats.tipoUsuario = tAventurero Or .Stats.tipoUsuario = tHeroe Or .Stats.tipoUsuario = tLeyenda
@@ -46,9 +47,13 @@ Private Function db_load_house_key(ByRef user As t_User) As Boolean
             Wend
         End If
     End With
+    Exit Function
+db_load_house_key_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.db_load_house_key", Erl)
 End Function
 
 Public Function GetCharacterName(ByVal UserId As Long) As String
+    On Error Goto GetCharacterName_Err
     On Error GoTo GetCharacterName_Err
         Dim RS As ADODB.Recordset
 100     Set RS = Query("select name from user where id=?", UserId)
@@ -57,9 +62,13 @@ Public Function GetCharacterName(ByVal UserId As Long) As String
         Exit Function
 GetCharacterName_Err:
     Call LogDatabaseError("Error en GetCharacterName: " & UserId & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+    Exit Function
+GetCharacterName_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.GetCharacterName", Erl)
 End Function
 
 Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
+    On Error Goto LoadCharacterBank_Err
     On Error GoTo LoadCharacterBank_Err
 100     With UserList(UserIndex)
             Dim RS As ADODB.Recordset
@@ -90,9 +99,13 @@ Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
 
 LoadCharacterBank_Err:
     Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterBank: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+    Exit Function
+LoadCharacterBank_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.LoadCharacterBank", Erl)
 End Function
 
 Public Function get_num_inv_slots_from_tier(ByVal t As e_TipoUsuario) As Integer
+    On Error Goto get_num_inv_slots_from_tier_Err
     'By default MAX_USERINVENTORY_SLOTS
     get_num_inv_slots_from_tier = MAX_USERINVENTORY_SLOTS
     Select Case t
@@ -106,11 +119,15 @@ Public Function get_num_inv_slots_from_tier(ByVal t As e_TipoUsuario) As Integer
             Const EXTRA_SLOTS_AVENTURERO As Integer = 6
             get_num_inv_slots_from_tier = MAX_USERINVENTORY_SLOTS + EXTRA_SLOTS_AVENTURERO
     End Select
+    Exit Function
+get_num_inv_slots_from_tier_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.get_num_inv_slots_from_tier", Erl)
 End Function
 
 
 
 Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
+    On Error Goto LoadCharacterInventory_Err
     On Error GoTo LoadCharacterInventory_Err
        With UserList(UserIndex)
             Dim RS As ADODB.Recordset
@@ -155,9 +172,13 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
 
 LoadCharacterInventory_Err:
     Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterInventory: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+    Exit Function
+LoadCharacterInventory_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.LoadCharacterInventory", Erl)
 End Function
 
 Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
+    On Error Goto LoadCharacterFromDB_Err
     On Error GoTo ErrorHandler
     
     Dim RS As ADODB.Recordset
@@ -233,10 +254,14 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
 ErrorHandler:
     Call LogDatabaseError("Error en LoadCharacterFromDB: " & UserList(UserIndex).name & ". " & _
                            Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+    Exit Function
+LoadCharacterFromDB_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.LoadCharacterFromDB", Erl)
 End Function
 
 
 Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset)
+    On Error Goto SetupUserBasicInfo_Err
     With User
         .Id = RS!Id
         .name = RS!name
@@ -281,10 +306,14 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .GuildIndex = SanitizeNullValue(RS!Guild_Index, 0)
         .LastGuildRejection = SanitizeNullValue(RS!guild_rejected_because, vbNullString)
     End With
+    Exit Sub
+SetupUserBasicInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.SetupUserBasicInfo", Erl)
 End Sub
 
 
 Private Sub SetupUserFlags(ByRef User As t_User, ByRef RS As ADODB.Recordset)
+    On Error Goto SetupUserFlags_Err
     With User.flags
         .Desnudo = RS!is_naked
         .Envenenado = RS!is_poisoned
@@ -306,9 +335,13 @@ Private Sub SetupUserFlags(ByRef User As t_User, ByRef RS As ADODB.Recordset)
         .ReturnPos.x = RS!return_x
         .ReturnPos.y = RS!return_y
     End With
+    Exit Sub
+SetupUserFlags_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.SetupUserFlags", Erl)
 End Sub
 
 Private Sub SetupUserFactionInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset)
+    On Error Goto SetupUserFactionInfo_Err
     With User.Faccion
         .ciudadanosMatados = RS!ciudadanos_matados
         .CriminalesMatados = RS!criminales_matados
@@ -322,10 +355,14 @@ Private Sub SetupUserFactionInfo(ByRef User As t_User, ByRef RS As ADODB.Records
         .Status = RS!Status
         .FactionScore = RS!faction_score
     End With
+    Exit Sub
+SetupUserFactionInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.SetupUserFactionInfo", Erl)
 End Sub
 
 
 Private Sub SetupUserSpells(ByRef User As t_User)
+    On Error Goto SetupUserSpells_Err
     Dim RS As ADODB.Recordset
     Set RS = Query("SELECT number, spell_id FROM spell WHERE user_id = ?;", User.Id)
     If Not RS Is Nothing Then
@@ -334,9 +371,13 @@ Private Sub SetupUserSpells(ByRef User As t_User)
             RS.MoveNext
         Wend
     End If
+    Exit Sub
+SetupUserSpells_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.SetupUserSpells", Erl)
 End Sub
 
 Private Sub SetupUserPets(ByRef User As t_User)
+    On Error Goto SetupUserPets_Err
     Dim RS As ADODB.Recordset
     Set RS = Query("SELECT number, pet_id FROM pet WHERE user_id = ?;", User.Id)
     If Not RS Is Nothing Then
@@ -348,10 +389,14 @@ Private Sub SetupUserPets(ByRef User As t_User)
             RS.MoveNext
         Wend
     End If
+    Exit Sub
+SetupUserPets_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.SetupUserPets", Erl)
 End Sub
 
 
 Private Sub SetupUserBankInventory(ByRef User As t_User)
+    On Error Goto SetupUserBankInventory_Err
     Dim RS As ADODB.Recordset
     Dim counter As Long
     counter = 0
@@ -374,9 +419,13 @@ Private Sub SetupUserBankInventory(ByRef User As t_User)
         Wend
         User.BancoInvent.NroItems = counter
     End If
+    Exit Sub
+SetupUserBankInventory_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.SetupUserBankInventory", Erl)
 End Sub
 
 Private Sub SetupUserSkills(ByRef User As t_User)
+    On Error Goto SetupUserSkills_Err
     Dim RS As ADODB.Recordset
     Set RS = Query("SELECT number, value FROM skillpoint WHERE user_id = ?;", User.Id)
     If Not RS Is Nothing Then
@@ -385,9 +434,13 @@ Private Sub SetupUserSkills(ByRef User As t_User)
             RS.MoveNext
         Wend
     End If
+    Exit Sub
+SetupUserSkills_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.SetupUserSkills", Erl)
 End Sub
 
 Private Sub SetupUserQuests(ByRef User As t_User)
+    On Error Goto SetupUserQuests_Err
     Dim RS As ADODB.Recordset
     Dim LoopC As Byte
     Set RS = Query("SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = ?;", User.Id)
@@ -417,10 +470,14 @@ Private Sub SetupUserQuests(ByRef User As t_User)
             RS.MoveNext
         Wend
     End If
+    Exit Sub
+SetupUserQuests_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.SetupUserQuests", Erl)
 End Sub
 
 
 Private Sub SetupUserQuestsDone(ByRef User As t_User)
+    On Error Goto SetupUserQuestsDone_Err
     Dim RS As ADODB.Recordset
     Dim LoopC As Byte
     Set RS = Query("SELECT quest_id FROM quest_done WHERE user_id = ?;", User.Id)
@@ -436,6 +493,9 @@ Private Sub SetupUserQuestsDone(ByRef User As t_User)
             Wend
         End If
     End If
+    Exit Sub
+SetupUserQuestsDone_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.SetupUserQuestsDone", Erl)
 End Sub
 
 
@@ -447,6 +507,7 @@ End Sub
 ''' <param name="tier">The user tier.</param>
 ''' <returns>The maximum number of characters allowed.</returns>
 Public Function MaxCharacterForTier(ByVal tier As e_TipoUsuario)
+    On Error Goto MaxCharacterForTier_Err
 
 #If DEBUGGING Then
     MaxCharacterForTier = 10
@@ -462,9 +523,13 @@ Public Function MaxCharacterForTier(ByVal tier As e_TipoUsuario)
             MaxCharacterForTier = 1
     End Select
 #End If
+    Exit Function
+MaxCharacterForTier_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.MaxCharacterForTier", Erl)
 End Function
 
 Public Function GetPatronTierFromAccountID(ByVal account_id) As e_TipoUsuario
+    On Error Goto GetPatronTierFromAccountID_Err
 On Error GoTo ErrorHandler_GetPatronTierFromAccountID
         GetPatronTierFromAccountID = e_TipoUsuario.tNormal
 
@@ -487,9 +552,13 @@ On Error GoTo ErrorHandler_GetPatronTierFromAccountID
        Exit Function
 ErrorHandler_GetPatronTierFromAccountID:
      Call LogDatabaseError("Error en GetPatronTierFromAccountID: " & account_id & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+    Exit Function
+GetPatronTierFromAccountID_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.GetPatronTierFromAccountID", Erl)
 End Function
 
 Public Sub LoadPatronCreditsFromDB(ByVal UserIndex As Integer)
+    On Error Goto LoadPatronCreditsFromDB_Err
     Dim RS As ADODB.Recordset
     With UserList(UserIndex)
         Set RS = Query("Select offline_patron_credits from account where id = ?;", .AccountID)
@@ -499,9 +568,13 @@ Public Sub LoadPatronCreditsFromDB(ByVal UserIndex As Integer)
             .Stats.Creditos = 0
         End If
     End With
+    Exit Sub
+LoadPatronCreditsFromDB_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.LoadPatronCreditsFromDB", Erl)
 End Sub
 
 Public Sub SaveCharacterDB(ByVal userIndex As Integer)
+    On Error Goto SaveCharacterDB_Err
 
         On Error GoTo ErrorHandler
         Dim PerformanceTimer As Long
@@ -783,9 +856,13 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 ErrorHandler:
 636     Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(userIndex).Name & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Sub
+SaveCharacterDB_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.SaveCharacterDB", Erl)
 End Sub
 
 Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
+    On Error Goto SaveNewCharacterDB_Err
         On Error GoTo ErrorHandler
         Dim LoopC As Long
         Dim ParamC As Integer
@@ -916,6 +993,9 @@ ErrorHandler:
     
 322     Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(userIndex).Name & ". " & Err.Number & " - " & Err.Description)
 
+    Exit Sub
+SaveNewCharacterDB_Err:
+    Call TraceError(Err.Number, Err.Description, "CharacterPersistence.SaveNewCharacterDB", Erl)
 End Sub
 
 

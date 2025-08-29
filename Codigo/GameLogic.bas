@@ -30,6 +30,7 @@ Option Explicit
 
 Public m_NameIndex As New Dictionary
 Public Function esCiudad(ByVal map As Integer) As Boolean
+    On Error Goto esCiudad_Err
 
     Dim i As Byte
     
@@ -40,17 +41,25 @@ Public Function esCiudad(ByVal map As Integer) As Boolean
         End If
     Next i
     
+    Exit Function
+esCiudad_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.esCiudad", Erl)
 End Function
 
 Public Sub AgregarAConsola(ByVal Text As String)
+    On Error Goto AgregarAConsola_Err
         On Error GoTo AgregarAConsola_Err
         frmMain.List1.AddItem (Text)
         Exit Sub
 AgregarAConsola_Err:
         Call TraceError(Err.Number, Err.Description, "ModLadder.AgregarAConsola", Erl)
+    Exit Sub
+AgregarAConsola_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.AgregarAConsola", Erl)
 End Sub
 
 Public Function NameIndex(ByRef username As String) As t_UserReference
+    On Error Goto NameIndex_Err
         Dim UserRef As t_UserReference
         Dim key As String
         Dim wrapper As clsUserRefWrapper
@@ -63,9 +72,13 @@ Public Function NameIndex(ByRef username As String) As t_UserReference
             Call SetUserRef(UserRef, 0)
         End If
         NameIndex = UserRef
+    Exit Function
+NameIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.NameIndex", Erl)
 End Function
 
 Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef X As Byte, ByRef Y As Byte)
+    On Error Goto FindLegalPos_Err
         '***************************************************
         'Autor: ZaMa
         'Last Modification: 26/03/2009
@@ -156,9 +169,13 @@ FindLegalPos_Err:
 150     Call TraceError(Err.Number, Err.Description, "Extra.FindLegalPos", Erl)
 
         
+    Exit Sub
+FindLegalPos_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.FindLegalPos", Erl)
 End Sub
 
 Public Function EsNewbie(ByVal UserIndex As Integer) As Boolean
+    On Error Goto EsNewbie_Err
         On Error GoTo EsNewbie_Err
         
 100     If UserIndex > 0 Then EsNewbie = UserList(UserIndex).Stats.ELV <= LimiteNewbie
@@ -169,9 +186,13 @@ EsNewbie_Err:
 102     Call TraceError(Err.Number, Err.Description, "Extra.EsNewbie", Erl)
 
         
+    Exit Function
+EsNewbie_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.EsNewbie", Erl)
 End Function
 
 Public Function esCiudadano(ByVal UserIndex As Integer) As Boolean
+    On Error Goto esCiudadano_Err
         On Error GoTo esCiudadano_Err
         
 100     If UserIndex > 0 Then esCiudadano = Status(UserIndex) = Ciudadano
@@ -181,9 +202,13 @@ Public Function esCiudadano(ByVal UserIndex As Integer) As Boolean
 esCiudadano_Err:
 102     Call TraceError(Err.Number, Err.Description, "Extra.esCiudadano", Erl)
 
+    Exit Function
+esCiudadano_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.esCiudadano", Erl)
 End Function
 
 Public Function esCriminal(ByVal UserIndex As Integer) As Boolean
+    On Error Goto esCriminal_Err
         On Error GoTo esCriminal_Err
         
 100     If UserIndex > 0 Then esCriminal = Status(UserIndex) = Criminal
@@ -193,9 +218,13 @@ Public Function esCriminal(ByVal UserIndex As Integer) As Boolean
 esCriminal_Err:
 102     Call TraceError(Err.Number, Err.Description, "Extra.esCriminal", Erl)
 
+    Exit Function
+esCriminal_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.esCriminal", Erl)
 End Function
 
 Public Function esArmada(ByVal UserIndex As Integer) As Boolean
+    On Error Goto esArmada_Err
         On Error GoTo esArmada_Err
         
 100     If UserIndex > 0 Then esArmada = (UserList(UserIndex).Faccion.status = e_Facciones.Armada Or UserList(UserIndex).Faccion.status = e_Facciones.consejo)
@@ -206,17 +235,25 @@ esArmada_Err:
 102     Call TraceError(Err.Number, Err.Description, "Extra.esArmada", Erl)
 
         
+    Exit Function
+esArmada_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.esArmada", Erl)
 End Function
 
 Public Function esCaos(ByVal UserIndex As Integer) As Boolean
+    On Error Goto esCaos_Err
     On Error GoTo esCaos_Err
 100 If UserIndex > 0 Then esCaos = (UserList(UserIndex).Faccion.Status = e_Facciones.Caos Or UserList(UserIndex).Faccion.Status = e_Facciones.concilio)
     Exit Function
 esCaos_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.esCaos", Erl)
+    Exit Function
+esCaos_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.esCaos", Erl)
 End Function
 
 Public Function FactionCanAttackFaction(ByVal AttackerFaction As e_Facciones, ByVal TargetFaction As e_Facciones)
+    On Error Goto FactionCanAttackFaction_Err
     Select Case AttackerFaction
         Case e_Facciones.Ciudadano, e_Facciones.Armada, e_Facciones.consejo
             If TargetFaction = e_Facciones.Armada Or TargetFaction = e_Facciones.Ciudadano Or TargetFaction = e_Facciones.consejo Then
@@ -228,9 +265,13 @@ Public Function FactionCanAttackFaction(ByVal AttackerFaction As e_Facciones, By
             End If
     End Select
     FactionCanAttackFaction = True
+    Exit Function
+FactionCanAttackFaction_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.FactionCanAttackFaction", Erl)
 End Function
 
 Public Function FactionCanHelpFaction(ByVal SourceFaction As e_Facciones, ByVal TargetFaction As e_Facciones) As e_InteractionResult
+    On Error Goto FactionCanHelpFaction_Err
 Select Case SourceFaction
     Case e_Facciones.Ciudadano, e_Facciones.Armada, e_Facciones.consejo
         If TargetFaction = e_Facciones.Caos Or TargetFaction = e_Facciones.concilio Then
@@ -248,9 +289,13 @@ Select Case SourceFaction
     Case Else
 End Select
     FactionCanHelpFaction = eInteractionOk
+    Exit Function
+FactionCanHelpFaction_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.FactionCanHelpFaction", Erl)
 End Function
 
 Public Function EsGM(ByVal UserIndex As Integer) As Boolean
+    On Error Goto EsGM_Err
         '***************************************************
         'Autor: Pablo (ToxicWaste)
         'Last Modification: 23/01/2007
@@ -271,9 +316,13 @@ EsGM_Err:
 106     Call TraceError(Err.Number, Err.Description, "Extra.EsGM", Erl)
 
         
+    Exit Function
+EsGM_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.EsGM", Erl)
 End Function
 
 Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As Integer) As Boolean
+    On Error Goto CheckMapRestrictions_Err
 
 100     With UserList(UserIndex)
 
@@ -359,9 +408,13 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
 
         End With
 
+    Exit Function
+CheckMapRestrictions_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.CheckMapRestrictions", Erl)
 End Function
 
 Public Function GetTransportNextIndex(ByVal Map As Integer, ByVal PosX As Byte, ByVal PosY As Byte) As Integer
+    On Error Goto GetTransportNextIndex_Err
     Dim i As Integer
     With MapInfo(Map)
     For i = 0 To UBound(.TransportNetwork)
@@ -372,17 +425,25 @@ Public Function GetTransportNextIndex(ByVal Map As Integer, ByVal PosX As Byte, 
     Next i
     End With
     GetTransportNextIndex = -1
+    Exit Function
+GetTransportNextIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.GetTransportNextIndex", Erl)
 End Function
 
 Public Function GetExitTransport(ByVal Map As Integer, ByVal ExcludeIndex As Integer) As Integer
+    On Error Goto GetExitTransport_Err
     Dim output As Integer
     Do
         output = RandomNumber(0, UBound(MapInfo(Map).TransportNetwork))
     Loop While output = excludeIndex
     GetExitTransport = output
+    Exit Function
+GetExitTransport_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.GetExitTransport", Erl)
 End Function
 
 Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+    On Error Goto DoTileEvents_Err
 
         '***************************************************
         'Autor: Pablo (ToxicWaste) & Unknown (orginal version)
@@ -497,9 +558,13 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, ".DotileEvents", Erl)
+    Exit Sub
+DoTileEvents_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.DoTileEvents", Erl)
 End Sub
 
 Public Sub ClearAttackerNpc(ByVal UserIndex As Integer)
+    On Error Goto ClearAttackerNpc_Err
 On Error GoTo ClearAttackerNpc_err
     With UserList(UserIndex)
         Dim aN As Integer
@@ -535,9 +600,13 @@ On Error GoTo ClearAttackerNpc_err
     Exit Sub
 ClearAttackerNpc_err:
     Call TraceError(Err.Number, Err.Description, "Extra.ClearAttackerNpc failed to clear userindex" & userIndex & "(" & UserList(userIndex).VersionId & ")", Erl)
+    Exit Sub
+ClearAttackerNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.ClearAttackerNpc", Erl)
 End Sub
 
 Function InRangoVision(ByVal UserIndex As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+    On Error Goto InRangoVision_Err
         
         On Error GoTo InRangoVision_Err
         
@@ -560,9 +629,13 @@ InRangoVision_Err:
 108     Call TraceError(Err.Number, Err.Description, "Extra.InRangoVision", Erl)
 
         
+    Exit Function
+InRangoVision_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.InRangoVision", Erl)
 End Function
 
 Function InRangoVisionNPC(ByVal NpcIndex As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    On Error Goto InRangoVisionNPC_Err
         
         On Error GoTo InRangoVisionNPC_Err
         
@@ -585,9 +658,13 @@ InRangoVisionNPC_Err:
 108     Call TraceError(Err.Number, Err.Description, "Extra.InRangoVisionNPC", Erl)
 
         
+    Exit Function
+InRangoVisionNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.InRangoVisionNPC", Erl)
 End Function
 
 Function InMapBounds(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+    On Error Goto InMapBounds_Err
         
         On Error GoTo InMapBounds_Err
         
@@ -605,9 +682,13 @@ InMapBounds_Err:
 106     Call TraceError(Err.Number, Err.Description, "Extra.InMapBounds", Erl)
 
         
+    Exit Function
+InMapBounds_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.InMapBounds", Erl)
 End Function
 
 Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, ByVal MaxRange As Integer, Optional ByVal IgnoreUsers As Boolean, Optional ByVal IgnoreDeadUsers As Boolean) As t_WorldPos
+    On Error Goto ClosestLegalPosNPC_Err
 
         On Error GoTo ErrHandler
 
@@ -658,9 +739,13 @@ ErrHandler:
 130     Call TraceError(Err.Number, Err.Description, "Extra.ClosestLegalPosNPC")
 
         
+    Exit Function
+ClosestLegalPosNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.ClosestLegalPosNPC", Erl)
 End Function
 
 Private Function ValidNPCSpawnPos(OutPos As t_WorldPos, ByVal map As Integer, ByVal X As Integer, ByVal y As Integer, ByVal AguaValida As Boolean, ByVal TierraValida As Boolean, ByVal IgnoreUsers As Boolean, ByVal IgnoreDeadUsers As Boolean) As Boolean
+    On Error Goto ValidNPCSpawnPos_Err
 
 100     If LegalPos(Map, X, Y, AguaValida, TierraValida, , False) Then
 102         If TestSpawnTrigger(Map, X, Y) Then
@@ -674,9 +759,13 @@ Private Function ValidNPCSpawnPos(OutPos As t_WorldPos, ByVal map As Integer, By
             End If
         End If
 
+    Exit Function
+ValidNPCSpawnPos_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.ValidNPCSpawnPos", Erl)
 End Function
 
 Sub ClosestLegalPos(Pos As t_WorldPos, ByRef nPos As t_WorldPos, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True)
+    On Error Goto ClosestLegalPos_Err
         '*****************************************************************
         'Author: Unknown (original version)
         'Last Modification: 24/01/2007 (ToxicWaste)
@@ -733,9 +822,13 @@ ClosestLegalPos_Err:
 134     Call TraceError(Err.Number, Err.Description, "Extra.ClosestLegalPos", Erl)
 
         
+    Exit Sub
+ClosestLegalPos_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.ClosestLegalPos", Erl)
 End Sub
 
 Sub ClosestStablePos(Pos As t_WorldPos, ByRef nPos As t_WorldPos)
+    On Error Goto ClosestStablePos_Err
         '*****************************************************************
         'Encuentra la posicion legal mas cercana que no sea un portal y la guarda en nPos
         '*****************************************************************
@@ -794,9 +887,13 @@ ClosestStablePos_Err:
 134     Call TraceError(Err.Number, Err.Description, "Extra.ClosestStablePos", Erl)
 
         
+    Exit Sub
+ClosestStablePos_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.ClosestStablePos", Erl)
 End Sub
 
 Function IP_Index(ByVal inIP As String) As Integer
+    On Error Goto IP_Index_Err
         
         On Error GoTo IP_Index_Err
         
@@ -835,10 +932,14 @@ IP_Index_Err:
 116     Call TraceError(Err.Number, Err.Description, "Extra.IP_Index", Erl)
 
         
+    Exit Function
+IP_Index_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.IP_Index", Erl)
 End Function
 
 
 Sub HeadtoPos(ByVal Head As e_Heading, ByRef Pos As t_WorldPos)
+    On Error Goto HeadtoPos_Err
         On Error GoTo HeadtoPos_Err
         '*****************************************************************
         'Toma una posicion y se mueve hacia donde esta perfilado
@@ -871,10 +972,14 @@ Sub HeadtoPos(ByVal Head As e_Heading, ByRef Pos As t_WorldPos)
         Exit Sub
 HeadtoPos_Err:
 132     Call TraceError(Err.Number, Err.Description, "Extra.HeadtoPos", Erl)
+    Exit Sub
+HeadtoPos_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.HeadtoPos", Erl)
 End Sub
 
 'Returns the front left positon from current heading
 Public Sub GetHeadingLeft(ByVal head As e_Heading, ByRef pos As t_WorldPos)
+    On Error Goto GetHeadingLeft_Err
         Dim X, Y, nX, nY As Integer
 100     X = pos.X
 102     Y = pos.Y
@@ -897,10 +1002,14 @@ Public Sub GetHeadingLeft(ByVal head As e_Heading, ByRef pos As t_WorldPos)
         'Devuelve valores
 128     pos.X = nX
 130     pos.Y = nY
+    Exit Sub
+GetHeadingLeft_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.GetHeadingLeft", Erl)
 End Sub
 
 'Returns the front right positon from current heading
 Sub GetHeadingRight(ByVal head As e_Heading, ByRef pos As t_WorldPos)
+    On Error Goto GetHeadingRight_Err
         Dim X, Y, nX, nY As Integer
 100     X = pos.X
 102     Y = pos.Y
@@ -923,18 +1032,26 @@ Sub GetHeadingRight(ByVal head As e_Heading, ByRef pos As t_WorldPos)
         'Devuelve valores
 128     pos.X = nX
 130     pos.Y = nY
+    Exit Sub
+GetHeadingRight_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.GetHeadingRight", Erl)
 End Sub
 
 ' Autor: WyroX - 20/01/2021
 ' Retorna el heading recibo como parámetro pero rotado, según el valor R.
 ' Si R es 1, rota en sentido horario. Si R es -1, en sentido antihorario.
 Function Rotate_Heading(ByVal Heading As e_Heading, ByVal R As Integer) As e_Heading
+    On Error Goto Rotate_Heading_Err
     
 100     Rotate_Heading = (Heading + R + 3) Mod 4 + 1
     
+    Exit Function
+Rotate_Heading_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.Rotate_Heading", Erl)
 End Function
 
 Function LegalPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal Montado As Boolean = False, Optional ByVal PuedeTraslado As Boolean = True, Optional ByVal PuedeBloqueoParcial As Boolean = True) As Boolean
+    On Error Goto LegalPos_Err
         '***************************************************
         'Autor: Pablo (ToxicWaste) & Unknown (orginal version)
         'Last Modification: 23/01/2007
@@ -984,9 +1101,13 @@ Function LegalPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, 
 LegalPos_Err:
 128     Call TraceError(Err.Number, Err.Description, "Extra.LegalPos", Erl)
         
+    Exit Function
+LegalPos_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.LegalPos", Erl)
 End Function
 
 Function LegalPosDestrabar(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal Montado As Boolean = False, Optional ByVal PuedeTraslado As Boolean = True, Optional ByVal PuedeBloqueoParcial As Boolean = True) As Boolean
+    On Error Goto LegalPosDestrabar_Err
         On Error GoTo LegalPosDestrabar_Err
         
 100     If Map <= 0 Or Map > NumMaps Then Exit Function
@@ -1028,9 +1149,13 @@ Function LegalPosDestrabar(ByVal Map As Integer, ByVal X As Integer, ByVal Y As 
 LegalPosDestrabar_Err:
 128     Call TraceError(Err.Number, Err.Description, "Extra.LegalPosDestrabar", Erl)
         
+    Exit Function
+LegalPosDestrabar_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.LegalPosDestrabar", Erl)
 End Function
 
 Function LegalWalk(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Heading As e_Heading, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal Montado As Boolean = False, Optional ByVal PuedeTraslado As Boolean = True, Optional ByVal WalkerIndex As Integer) As Boolean
+    On Error Goto LegalWalk_Err
         On Error GoTo LegalWalk_Err
         
 
@@ -1082,9 +1207,13 @@ LegalWalk_Err:
 130     Call TraceError(Err.Number, Err.Description, "Extra.LegalWalk", Erl)
 
         
+    Exit Function
+LegalWalk_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.LegalWalk", Erl)
 End Function
 
 Function LegalPosNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal AguaValida As Byte, Optional ByVal IsPet As Boolean = False) As Boolean
+    On Error Goto LegalPosNPC_Err
         
         On Error GoTo LegalPosNPC_Err
         
@@ -1112,9 +1241,13 @@ LegalPosNPC_Err:
 114     Call TraceError(Err.Number, Err.Description, "Extra.LegalPosNPC", Erl)
 
         
+    Exit Function
+LegalPosNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.LegalPosNPC", Erl)
 End Function
 
 Function LegalWalkNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Heading As e_Heading, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal IgnoraInvalida As Boolean = False, Optional ByVal PuedePisar As Boolean, Optional ByVal esGuardia As Boolean = False) As Boolean
+    On Error Goto LegalWalkNPC_Err
     ' Reescrito por WyroX
 
     On Error GoTo LegalWalkNPC_Err
@@ -1174,9 +1307,13 @@ LegalWalkNPC_Err:
 134     Call TraceError(Err.Number, Err.Description, "Extra.LegalWalkNPC", Erl)
 
         
+    Exit Function
+LegalWalkNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.LegalWalkNPC", Erl)
 End Function
 
 Sub SendHelp(ByVal Index As Integer)
+    On Error Goto SendHelp_Err
         
         On Error GoTo SendHelp_Err
         
@@ -1198,9 +1335,13 @@ SendHelp_Err:
 108     Call TraceError(Err.Number, Err.Description, "Extra.SendHelp", Erl)
 
         
+    Exit Sub
+SendHelp_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.SendHelp", Erl)
 End Sub
 
 Public Sub Expresar(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
+    On Error Goto Expresar_Err
         
         On Error GoTo Expresar_Err
         
@@ -1221,9 +1362,13 @@ Expresar_Err:
 106     Call TraceError(Err.Number, Err.Description, "Extra.Expresar", Erl)
 
         
+    Exit Sub
+Expresar_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.Expresar", Erl)
 End Sub
 
 Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+    On Error Goto LookatTile_Err
         
         On Error GoTo LookatTile_Err
         
@@ -1762,9 +1907,13 @@ LookatTile_Err:
         End If
 
         
+    Exit Sub
+LookatTile_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.LookatTile", Erl)
 End Sub
 
 Function FindDirection(Pos As t_WorldPos, Target As t_WorldPos) As e_Heading
+    On Error Goto FindDirection_Err
         
         On Error GoTo FindDirection_Err
         
@@ -1850,10 +1999,14 @@ FindDirection_Err:
 140     Call TraceError(Err.Number, Err.Description, "Extra.FindDirection", Erl)
 
         
+    Exit Function
+FindDirection_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.FindDirection", Erl)
 End Function
 
 '[Barrin 30-11-03]
 Public Function ItemNoEsDeMapa(ByVal Index As Integer) As Boolean
+    On Error Goto ItemNoEsDeMapa_Err
         
         On Error GoTo ItemNoEsDeMapa_Err
         
@@ -1867,11 +2020,15 @@ ItemNoEsDeMapa_Err:
 102     Call TraceError(Err.Number, Err.Description, "Extra.ItemNoEsDeMapa", Erl)
 
         
+    Exit Function
+ItemNoEsDeMapa_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.ItemNoEsDeMapa", Erl)
 End Function
 
 '[/Barrin 30-11-03]
 
 Public Function MostrarCantidad(ByVal Index As Integer) As Boolean
+    On Error Goto MostrarCantidad_Err
         
         On Error GoTo MostrarCantidad_Err
         
@@ -1884,9 +2041,13 @@ MostrarCantidad_Err:
 102     Call TraceError(Err.Number, Err.Description, "Extra.MostrarCantidad", Erl)
 
         
+    Exit Function
+MostrarCantidad_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.MostrarCantidad", Erl)
 End Function
 
 Public Function EsObjetoFijo(ByVal OBJType As e_OBJType) As Boolean
+    On Error Goto EsObjetoFijo_Err
         
         On Error GoTo EsObjetoFijo_Err
         
@@ -1900,15 +2061,23 @@ EsObjetoFijo_Err:
 102     Call TraceError(Err.Number, Err.Description, "Extra.EsObjetoFijo", Erl)
 
         
+    Exit Function
+EsObjetoFijo_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.EsObjetoFijo", Erl)
 End Function
 
 Public Function HayPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+    On Error Goto HayPuerta_Err
 100     If MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
 102         HayPuerta = (ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otPuertas) And ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Cerrada = 1 And (ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Llave = 0)
         End If
+    Exit Function
+HayPuerta_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.HayPuerta", Erl)
 End Function
 
 Public Sub CargarMapasEspeciales()
+    On Error Goto CargarMapasEspeciales_Err
         
         Dim File As clsIniManager
 100     Set File = New clsIniManager
@@ -1946,9 +2115,13 @@ Public Sub CargarMapasEspeciales()
     
 138     Set File = Nothing
 
+    Exit Sub
+CargarMapasEspeciales_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.CargarMapasEspeciales", Erl)
 End Sub
 
 Public Function EsMapaEvento(ByVal destMap As Long) As Boolean
+    On Error Goto EsMapaEvento_Err
     Dim i As Long
     
     For i = 1 To UBound(MapasEventos)
@@ -1959,9 +2132,13 @@ Public Function EsMapaEvento(ByVal destMap As Long) As Boolean
     Next i
     EsMapaEvento = False
     
+    Exit Function
+EsMapaEvento_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.EsMapaEvento", Erl)
 End Function
 
 Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As Boolean = False)
+    On Error Goto resetPj_Err
 
 
 100     With UserList(UserIndex)
@@ -2086,10 +2263,14 @@ Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As 
         End With
 
     'Call WarpUserChar(UserIndex, 1, 55, 45, True)
+    Exit Sub
+resetPj_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.resetPj", Erl)
 End Sub
 
 
 Public Sub ResucitarOCurar(ByVal UserIndex As Integer)
+    On Error Goto ResucitarOCurar_Err
 
     If UserList(UserIndex).flags.Muerto = 1 Then
         Call RevivirUsuario(UserIndex)
@@ -2121,9 +2302,13 @@ Public Sub ResucitarOCurar(ByVal UserIndex As Integer)
         Call WriteLocaleMsg(UserIndex, "496", e_FontTypeNames.FONTTYPE_INFO)
 
     End If
+    Exit Sub
+ResucitarOCurar_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.ResucitarOCurar", Erl)
 End Sub
 
 Public Function ByteArr2String(ByRef arr() As Byte) As String
+    On Error Goto ByteArr2String_Err
     
     Dim str As String
     Dim i As Long
@@ -2133,10 +2318,14 @@ Public Function ByteArr2String(ByRef arr() As Byte) As String
     
     ByteArr2String = str
     
+    Exit Function
+ByteArr2String_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.ByteArr2String", Erl)
 End Function
 
 
 Public Function PacketIdToString(ByVal PacketId As Long) As String
+    On Error Goto PacketIdToString_Err
 
     Select Case PacketId
         Case 1
@@ -2189,9 +2378,13 @@ Public Function PacketIdToString(ByVal PacketId As Long) As String
             Exit Function
     End Select
     
+    Exit Function
+PacketIdToString_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.PacketIdToString", Erl)
 End Function
 
 Public Sub TimerQuestOrco()
+    On Error Goto TimerQuestOrco_Err
     Dim UserIndex As Integer
     
         For UserIndex = 1 To LastUser
@@ -2214,9 +2407,13 @@ Public Sub TimerQuestOrco()
     Next UserIndex
     
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(156, NO_3D_SOUND, NO_3D_SOUND))
+    Exit Sub
+TimerQuestOrco_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.TimerQuestOrco", Erl)
 End Sub
 
 Public Function TestRequiredEquipedItem(ByRef inventory As t_Inventario, ByVal RequiredItemsFlag As Long, ByVal RequiredWeaponMask As Integer) As e_SpellRequirementMask
+    On Error Goto TestRequiredEquipedItem_Err
     If IsSet(requiredItemsFlag, e_SpellRequirementMask.eArmor) And _
       inventory.ArmourEqpObjIndex = 0 Then
         TestRequiredEquipedItem = e_SpellRequirementMask.eArmor
@@ -2266,9 +2463,13 @@ Public Function TestRequiredEquipedItem(ByRef inventory As t_Inventario, ByVal R
         End If
     End If
     TestRequiredEquipedItem = e_SpellRequirementMask.eNone
+    Exit Function
+TestRequiredEquipedItem_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.TestRequiredEquipedItem", Erl)
 End Function
 
 Public Sub SendrequiredItemMessage(ByVal UserIndex As Integer, ByVal itemMask As e_SpellRequirementMask, ByVal Message As String)
+    On Error Goto SendrequiredItemMessage_Err
     Select Case itemMask
         Case e_SpellRequirementMask.eArmor
             ' Msg497=Necesitás una armadura
@@ -2298,9 +2499,13 @@ Public Sub SendrequiredItemMessage(ByVal UserIndex As Integer, ByVal itemMask As
              ' Msg571=Necesitás un arma
             Call WriteLocaleMsg(UserIndex, "571", Message, e_FontTypeNames.FONTTYPE_INFO)
     End Select
+    Exit Sub
+SendrequiredItemMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.SendrequiredItemMessage", Erl)
 End Sub
 
 Public Sub SendHelpInteractionMessage(ByVal UserIndex As Integer, ByVal CanHelpResult As e_InteractionResult)
+    On Error Goto SendHelpInteractionMessage_Err
     Select Case CanHelpResult
             Case eOposingFaction
 108             Call WriteLocaleMsg(UserIndex, MsgFactionForbidAction, e_FontTypeNames.FONTTYPE_INFO)
@@ -2311,9 +2516,13 @@ Public Sub SendHelpInteractionMessage(ByVal UserIndex As Integer, ByVal CanHelpR
             Case Else
                 Debug.Assert "Invalid message"
         End Select
+    Exit Sub
+SendHelpInteractionMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.SendHelpInteractionMessage", Erl)
 End Sub
 
 Public Sub SendAttackInteractionMessage(ByVal UserIndex As Integer, ByVal CanAttackResult As e_AttackInteractionResult)
+    On Error Goto SendAttackInteractionMessage_Err
     Select Case CanAttackResult
         Case e_AttackInteractionResult.eCanAttack
             'Do nothing
@@ -2371,9 +2580,13 @@ Public Sub SendAttackInteractionMessage(ByVal UserIndex As Integer, ByVal CanAtt
             ' Msg511=Target inválido.
             Call WriteLocaleMsg(UserIndex, "511", e_FontTypeNames.FONTTYPE_INFOIAO)
     End Select
+    Exit Sub
+SendAttackInteractionMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.SendAttackInteractionMessage", Erl)
 End Sub
 
 Public Function PreferedTileForDirection(ByRef Direction As t_Vector, ByRef CurrentPosition As t_WorldPos) As t_WorldPos
+    On Error Goto PreferedTileForDirection_Err
     Dim Ret As t_WorldPos
     Dim Normal As t_Vector
     Ret.Map = CurrentPosition.Map
@@ -2396,4 +2609,7 @@ Public Function PreferedTileForDirection(ByRef Direction As t_Vector, ByRef Curr
     Else
         PreferedTileForDirection = Ret
     End If
+    Exit Function
+PreferedTileForDirection_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.PreferedTileForDirection", Erl)
 End Function

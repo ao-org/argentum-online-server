@@ -105,6 +105,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
+    On Error Goto Command1_Click_Err
         
         On Error GoTo Command1_Click_Err
         
@@ -126,9 +127,13 @@ Command1_Click_Err:
 108     Call TraceError(Err.Number, Err.Description, "frmAdmin.Command1_Click", Erl)
 110
         
+    Exit Sub
+Command1_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmAdmin.Command1_Click", Erl)
 End Sub
 
 Public Sub ActualizaListaPjs()
+    On Error Goto ActualizaListaPjs_Err
         
         On Error GoTo ActualizaListaPjs_Err
         
@@ -160,9 +165,13 @@ ActualizaListaPjs_Err:
 116     Call TraceError(Err.Number, Err.Description, "frmAdmin.ActualizaListaPjs", Erl)
 118
         
+    Exit Sub
+ActualizaListaPjs_Err:
+    Call TraceError(Err.Number, Err.Description, "frmAdmin.ActualizaListaPjs", Erl)
 End Sub
 
 Private Sub Command3_Click()
+    On Error Goto Command3_Click_Err
         
         On Error GoTo Command3_Click_Err
         
@@ -175,5 +184,8 @@ Command3_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmAdmin.Command3_Click", Erl)
 104
         
+    Exit Sub
+Command3_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmAdmin.Command3_Click", Erl)
 End Sub
 

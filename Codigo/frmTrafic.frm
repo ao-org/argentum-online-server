@@ -64,7 +64,11 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
+    On Error Goto Command1_Click_Err
 
 100     Me.Visible = False
    
+    Exit Sub
+Command1_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmTrafic.Command1_Click", Erl)
 End Sub

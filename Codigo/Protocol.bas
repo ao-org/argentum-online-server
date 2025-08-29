@@ -143,12 +143,17 @@ End Type
 Public Reader  As Network.Reader
 
 Public Sub InitializePacketList()
+    On Error Goto InitializePacketList_Err
     Call Protocol_Writes.InitializeAuxiliaryBuffer
+    Exit Sub
+InitializePacketList_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.InitializePacketList", Erl)
 End Sub
 
 
 
 Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As Network.Reader, Optional ByVal optional_user_index As Variant) As Boolean
+    On Error Goto HandleIncomingData_Err
 
 #Else
 
@@ -955,11 +960,15 @@ On Error Resume Next
     Call PerformTimeLimitCheck(performance_timer, "Protocol handling message " & PacketId, 100)
 
     HandleIncomingData = True
+    Exit Function
+HandleIncomingData_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleIncomingData", Erl)
 End Function
 
 #If PYMMO = 0 Then
 
 Private Sub HandleCreateAccount(ByVal ConnectionId As Long)
+    On Error Goto HandleCreateAccount_Err
     On Error GoTo HandleCreateAccount_Err:
     
     Dim username As String
@@ -997,9 +1006,13 @@ Private Sub HandleCreateAccount(ByVal ConnectionId As Long)
     Exit Sub
 HandleCreateAccount_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateAccount", Erl)
+    Exit Sub
+HandleCreateAccount_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateAccount", Erl)
 End Sub
 
 Private Sub HandleLoginAccount(ByVal ConnectionId As Long)
+    On Error Goto HandleLoginAccount_Err
     On Error GoTo LoginAccount_Err:
     
     Dim username As String
@@ -1039,16 +1052,24 @@ Private Sub HandleLoginAccount(ByVal ConnectionId As Long)
     Exit Sub
 LoginAccount_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginAccount", Erl)
+    Exit Sub
+HandleLoginAccount_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginAccount", Erl)
 End Sub
 
 Private Sub HandleDeleteCharacter(ByVal ConnectionId As Long)
+    On Error Goto HandleDeleteCharacter_Err
     On Error GoTo DeleteCharacter_Err:
 
 DeleteCharacter_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteCharacter", Erl)
+    Exit Sub
+HandleDeleteCharacter_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteCharacter", Erl)
 End Sub
 
 Private Sub HandleLoginExistingChar(ByVal ConnectionId As Long)
+    On Error Goto HandleLoginExistingChar_Err
         On Error GoTo ErrHandler
 
         Dim user_name    As String
@@ -1059,6 +1080,9 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionId As Long)
         Exit Sub
 ErrHandler:
         Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
+    Exit Sub
+HandleLoginExistingChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
 End Sub
 
 #End If
@@ -1066,6 +1090,7 @@ End Sub
 
 
 Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
+    On Error Goto HandleLoginExistingChar_Err
         On Error GoTo ErrHandler
 
         Dim user_name    As String
@@ -1141,9 +1166,13 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
 ErrHandler:
         Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
 
+    Exit Sub
+HandleLoginExistingChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
 End Sub
 
 Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
+    On Error Goto HandleLoginNewChar_Err
         On Error GoTo ErrHandler
 
 
@@ -1276,6 +1305,9 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
     
 ErrHandler:
      Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginNewChar", Erl)
+    Exit Sub
+HandleLoginNewChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginNewChar", Erl)
 End Sub
 
 #ElseIf PYMMO = 0 Then
@@ -1285,6 +1317,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleLoginNewChar(ByVal userindex As Integer)
+    On Error Goto HandleLoginNewChar_Err
 
         On Error GoTo ErrHandler
 
@@ -1333,6 +1366,9 @@ Private Sub HandleLoginNewChar(ByVal userindex As Integer)
     
 ErrHandler:
      Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginNewChar", Erl)
+    Exit Sub
+HandleLoginNewChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginNewChar", Erl)
 End Sub
 #End If
 
@@ -1343,6 +1379,7 @@ End Sub
 
 
 Private Sub HandleTalk(ByVal UserIndex As Integer)
+    On Error Goto HandleTalk_Err
 
         'Now hidden on boat pirats recover the proper boat body.
     
@@ -1408,6 +1445,9 @@ ErrHandler:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTalk", Erl)
 154
 
+    Exit Sub
+HandleTalk_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleTalk", Erl)
 End Sub
 
 ''
@@ -1416,6 +1456,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleYell(ByVal UserIndex As Integer)
+    On Error Goto HandleYell_Err
       
         On Error GoTo ErrHandler
 
@@ -1507,6 +1548,9 @@ ErrHandler:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandleYell", Erl)
 154
 
+    Exit Sub
+HandleYell_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleYell", Erl)
 End Sub
 
 ''
@@ -1515,6 +1559,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleWhisper(ByVal UserIndex As Integer)
+    On Error Goto HandleWhisper_Err
 
         On Error GoTo ErrHandler
 
@@ -1570,6 +1615,9 @@ ErrHandler:
 140     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWhisper", Erl)
 142
 
+    Exit Sub
+HandleWhisper_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleWhisper", Erl)
 End Sub
 
 ''
@@ -1578,6 +1626,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleWalk(ByVal UserIndex As Integer)
+    On Error Goto HandleWalk_Err
         
         On Error GoTo HandleWalk_Err
 
@@ -1738,6 +1787,9 @@ HandleWalk_Err:
 200     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWalk", Erl)
 202
         
+    Exit Sub
+HandleWalk_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleWalk", Erl)
 End Sub
 
 ''
@@ -1746,6 +1798,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleRequestPositionUpdate(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestPositionUpdate_Err
 
         On Error GoTo HandleRequestPositionUpdate_Err
         If UserList(userIndex).flags.SigueUsuario.ArrayIndex > 0 Then
@@ -1761,6 +1814,9 @@ HandleRequestPositionUpdate_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandlRequestPositionUpdate", Erl)
 104
         
+    Exit Sub
+HandleRequestPositionUpdate_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestPositionUpdate", Erl)
 End Sub
 
 ''
@@ -1769,6 +1825,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleAttack(ByVal UserIndex As Integer)
+    On Error Goto HandleAttack_Err
         
         On Error GoTo HandleAttack_Err
 
@@ -1836,6 +1893,9 @@ HandleAttack_Err:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAttack", Erl)
 154
         
+    Exit Sub
+HandleAttack_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleAttack", Erl)
 End Sub
 
 ''
@@ -1844,6 +1904,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandlePickUp(ByVal UserIndex As Integer)
+    On Error Goto HandlePickUp_Err
         
         On Error GoTo HandlePickUp_Err
 
@@ -1875,6 +1936,9 @@ HandlePickUp_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePickUp", Erl)
 114
         
+    Exit Sub
+HandlePickUp_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandlePickUp", Erl)
 End Sub
 
 ''
@@ -1883,6 +1947,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleSafeToggle(ByVal UserIndex As Integer)
+    On Error Goto HandleSafeToggle_Err
         
         On Error GoTo HandleSafeToggle_Err
 
@@ -1923,6 +1988,9 @@ HandleSafeToggle_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSafeToggle", Erl)
 112
         
+    Exit Sub
+HandleSafeToggle_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleSafeToggle", Erl)
 End Sub
 
 ' Handles the "PartySafeToggle" message.
@@ -1930,6 +1998,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandlePartyToggle(ByVal UserIndex As Integer)
+    On Error Goto HandlePartyToggle_Err
         
         On Error GoTo HandlePartyToggle_Err
         
@@ -1953,9 +2022,13 @@ HandlePartyToggle_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePartyToggle", Erl)
 112
         
+    Exit Sub
+HandlePartyToggle_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandlePartyToggle", Erl)
 End Sub
 
 Private Sub HandleSeguroClan(ByVal UserIndex As Integer)
+    On Error Goto HandleSeguroClan_Err
         
         On Error GoTo HandleSeguroClan_Err
 
@@ -1973,6 +2046,9 @@ HandleSeguroClan_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSeguroClan", Erl)
 108
         
+    Exit Sub
+HandleSeguroClan_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleSeguroClan", Erl)
 End Sub
 
 ''
@@ -1981,6 +2057,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleRequestGuildLeaderInfo(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestGuildLeaderInfo_Err
 
         On Error GoTo HandleRequestGuildLeaderInfo_Err
 
@@ -1992,6 +2069,9 @@ HandleRequestGuildLeaderInfo_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestGuildLeaderInfo", Erl)
 104
         
+    Exit Sub
+HandleRequestGuildLeaderInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestGuildLeaderInfo", Erl)
 End Sub
 
 ''
@@ -2000,6 +2080,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleRequestAtributes(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestAtributes_Err
         
         On Error GoTo HandleRequestAtributes_Err
 
@@ -2011,6 +2092,9 @@ HandleRequestAtributes_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestAtributes", Erl)
 104
         
+    Exit Sub
+HandleRequestAtributes_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestAtributes", Erl)
 End Sub
 
 ''
@@ -2019,6 +2103,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleRequestSkills(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestSkills_Err
         
         On Error GoTo HandleRequestSkills_Err
 
@@ -2030,6 +2115,9 @@ HandleRequestSkills_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestSkills", Erl)
 104
         
+    Exit Sub
+HandleRequestSkills_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestSkills", Erl)
 End Sub
 
 ''
@@ -2038,6 +2126,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleRequestMiniStats(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestMiniStats_Err
 
         On Error GoTo HandleRequestMiniStats_Err
 
@@ -2049,6 +2138,9 @@ HandleRequestMiniStats_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestMiniStats", Erl)
 104
         
+    Exit Sub
+HandleRequestMiniStats_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestMiniStats", Erl)
 End Sub
 
 ''
@@ -2057,6 +2149,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleCommerceEnd(ByVal UserIndex As Integer)
+    On Error Goto HandleCommerceEnd_Err
 
         On Error GoTo HandleCommerceEnd_Err
 
@@ -2078,6 +2171,9 @@ HandleCommerceEnd_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceEnd", Erl)
 112
         
+    Exit Sub
+HandleCommerceEnd_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceEnd", Erl)
 End Sub
 
 ''
@@ -2086,6 +2182,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleUserCommerceEnd(ByVal UserIndex As Integer)
+    On Error Goto HandleUserCommerceEnd_Err
         
         On Error GoTo HandleUserCommerceEnd_Err
 
@@ -2113,6 +2210,9 @@ HandleUserCommerceEnd_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUserCommerceEnd", Erl)
 112
         
+    Exit Sub
+HandleUserCommerceEnd_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleUserCommerceEnd", Erl)
 End Sub
 
 ''
@@ -2121,6 +2221,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleBankEnd(ByVal UserIndex As Integer)
+    On Error Goto HandleBankEnd_Err
         
         On Error GoTo HandleBankEnd_Err
        
@@ -2138,6 +2239,9 @@ HandleBankEnd_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankEnd", Erl)
 110
         
+    Exit Sub
+HandleBankEnd_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankEnd", Erl)
 End Sub
 
 ''
@@ -2146,6 +2250,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleUserCommerceOk(ByVal UserIndex As Integer)
+    On Error Goto HandleUserCommerceOk_Err
 
         On Error GoTo HandleUserCommerceOk_Err
 
@@ -2158,6 +2263,9 @@ HandleUserCommerceOk_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUserCommerceOk", Erl)
 104
         
+    Exit Sub
+HandleUserCommerceOk_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleUserCommerceOk", Erl)
 End Sub
 
 ''
@@ -2166,6 +2274,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleUserCommerceReject(ByVal UserIndex As Integer)
+    On Error Goto HandleUserCommerceReject_Err
         
         On Error GoTo HandleUserCommerceReject_Err
 
@@ -2199,6 +2308,9 @@ HandleUserCommerceReject_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUserCommerceReject", Erl)
 118
         
+    Exit Sub
+HandleUserCommerceReject_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleUserCommerceReject", Erl)
 End Sub
 
 ''
@@ -2207,6 +2319,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleDrop(ByVal UserIndex As Integer)
+    On Error Goto HandleDrop_Err
         
         On Error GoTo HandleDrop_Err
 
@@ -2322,8 +2435,12 @@ HandleDrop_Err:
 158     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDrop", Erl)
 160
         
+    Exit Sub
+HandleDrop_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleDrop", Erl)
 End Sub
 Public Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount As Long, ByRef LastTick As Long, ByRef Iterations, ByVal UserIndex As Integer, ByVal PacketName As String, Optional ByVal DeltaThreshold As Long = 100, Optional ByVal MaxIterations As Long = 5, Optional ByVal CloseClient As Boolean = False) As Boolean
+    On Error Goto verifyTimeStamp_Err
     
     Dim Ticks As Long, Delta As Long
     Ticks = GetTickCount
@@ -2363,6 +2480,9 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount As Lo
         
     verifyTimeStamp = True
     LastCount = ActualCount
+    Exit Function
+verifyTimeStamp_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.verifyTimeStamp", Erl)
 End Function
 
 
@@ -2370,6 +2490,7 @@ End Function
 ' Handles the "CastSpell" message.
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleCastSpell(ByVal UserIndex As Integer)
+    On Error Goto HandleCastSpell_Err
     On Error GoTo HandleCastSpell_Err
         Dim Spell As Byte
         Spell = Reader.ReadInt8()
@@ -2381,6 +2502,9 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
         Exit Sub
 HandleCastSpell_Err:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCastSpell", Erl)
+    Exit Sub
+HandleCastSpell_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCastSpell", Erl)
 End Sub
 
 ''
@@ -2389,6 +2513,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleLeftClick(ByVal UserIndex As Integer)
+    On Error Goto HandleLeftClick_Err
         
         On Error GoTo HandleLeftClick_Err
 
@@ -2418,6 +2543,9 @@ HandleLeftClick_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLeftClick", Erl)
 110
         
+    Exit Sub
+HandleLeftClick_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleLeftClick", Erl)
 End Sub
 
 ''
@@ -2426,6 +2554,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleDoubleClick(ByVal UserIndex As Integer)
+    On Error Goto HandleDoubleClick_Err
         
         On Error GoTo HandleDoubleClick_Err
 
@@ -2447,9 +2576,13 @@ HandleDoubleClick_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDoubleClick", Erl)
 110
         
+    Exit Sub
+HandleDoubleClick_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleDoubleClick", Erl)
 End Sub
 
 Private Sub HandleWork(ByVal UserIndex As Integer)
+    On Error Goto HandleWork_Err
         
         On Error GoTo HandleWork_Err
 
@@ -2551,6 +2684,9 @@ HandleWork_Err:
 146     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWork", Erl)
 148
         
+    Exit Sub
+HandleWork_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleWork", Erl)
 End Sub
 
 ''
@@ -2559,6 +2695,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleUseSpellMacro(ByVal UserIndex As Integer)
+    On Error Goto HandleUseSpellMacro_Err
         
         On Error GoTo HandleUseSpellMacro_Err
 
@@ -2579,6 +2716,9 @@ HandleUseSpellMacro_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseSpellMacro", Erl)
 110
         
+    Exit Sub
+HandleUseSpellMacro_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseSpellMacro", Erl)
 End Sub
 
 ''
@@ -2587,6 +2727,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleUseItem(ByVal UserIndex As Integer)
+    On Error Goto HandleUseItem_Err
 
         On Error GoTo HandleUseItem_Err
     
@@ -2624,6 +2765,9 @@ HandleUseItem_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseItem", Erl)
 112
         
+    Exit Sub
+HandleUseItem_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseItem", Erl)
 End Sub
 
 ''
@@ -2632,6 +2776,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleUseItemU(ByVal UserIndex As Integer)
+    On Error Goto HandleUseItemU_Err
         
         On Error GoTo HandleUseItemU_Err
     
@@ -2664,6 +2809,9 @@ HandleUseItemU_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseItemU", Erl)
 112
         
+    Exit Sub
+HandleUseItemU_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseItemU", Erl)
 End Sub
 
 ''
@@ -2672,6 +2820,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleCraftBlacksmith(ByVal UserIndex As Integer)
+    On Error Goto HandleCraftBlacksmith_Err
         
         On Error GoTo HandleCraftBlacksmith_Err
 
@@ -2690,6 +2839,9 @@ HandleCraftBlacksmith_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftBlacksmith", Erl)
 110
         
+    Exit Sub
+HandleCraftBlacksmith_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftBlacksmith", Erl)
 End Sub
 
 ''
@@ -2698,6 +2850,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleCraftCarpenter(ByVal UserIndex As Integer)
+    On Error Goto HandleCraftCarpenter_Err
         
         On Error GoTo HandleCraftCarpenter_Err
 
@@ -2728,9 +2881,13 @@ HandleCraftCarpenter_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftCarpenter", Erl)
 110
         
+    Exit Sub
+HandleCraftCarpenter_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftCarpenter", Erl)
 End Sub
 
 Private Sub HandleCraftAlquimia(ByVal UserIndex As Integer)
+    On Error Goto HandleCraftAlquimia_Err
         
         On Error GoTo HandleCraftAlquimia_Err
         
@@ -2751,9 +2908,13 @@ HandleCraftAlquimia_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftAlquimia", Erl)
 108
         
+    Exit Sub
+HandleCraftAlquimia_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftAlquimia", Erl)
 End Sub
 
 Private Sub HandleCraftSastre(ByVal UserIndex As Integer)
+    On Error Goto HandleCraftSastre_Err
         
         On Error GoTo HandleCraftSastre_Err
 
@@ -2770,6 +2931,9 @@ HandleCraftSastre_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftSastre", Erl)
 110
         
+    Exit Sub
+HandleCraftSastre_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftSastre", Erl)
 End Sub
 ''
 ' Handles the "WorkLeftClick" message.
@@ -2777,6 +2941,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
+    On Error Goto HandleWorkLeftClick_Err
         
         On Error GoTo HandleWorkLeftClick_Err
 
@@ -3414,6 +3579,9 @@ HandleWorkLeftClick_Err:
 714     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWorkLeftClick", Erl)
 716
         
+    Exit Sub
+HandleWorkLeftClick_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleWorkLeftClick", Erl)
 End Sub
 
 ''
@@ -3422,6 +3590,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
+    On Error Goto HandleCreateNewGuild_Err
 
     On Error GoTo ErrHandler
 
@@ -3463,6 +3632,9 @@ ErrHandler:
 126 Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateNewGuild", Erl)
 128
 
+    Exit Sub
+HandleCreateNewGuild_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateNewGuild", Erl)
 End Sub
 
 ''
@@ -3471,6 +3643,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleSpellInfo(ByVal UserIndex As Integer)
+    On Error Goto HandleSpellInfo_Err
         
         On Error GoTo HandleSpellInfo_Err
 
@@ -3509,6 +3682,9 @@ HandleSpellInfo_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSpellInfo", Erl)
 118
         
+    Exit Sub
+HandleSpellInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleSpellInfo", Erl)
 End Sub
 
 ''
@@ -3517,6 +3693,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleEquipItem(ByVal UserIndex As Integer)
+    On Error Goto HandleEquipItem_Err
         
         On Error GoTo HandleEquipItem_Err
 
@@ -3556,6 +3733,9 @@ HandleEquipItem_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEquipItem", Erl)
 116
         
+    Exit Sub
+HandleEquipItem_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleEquipItem", Erl)
 End Sub
 
 ''
@@ -3564,6 +3744,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleChange_Heading(ByVal UserIndex As Integer)
+    On Error Goto HandleChange_Heading_Err
         
         On Error GoTo HandleChange_Heading_Err
 
@@ -3597,6 +3778,9 @@ HandleChange_Heading_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChange_Heading", Erl)
 112
         
+    Exit Sub
+HandleChange_Heading_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleChange_Heading", Erl)
 End Sub
 
 ''
@@ -3605,6 +3789,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleModifySkills(ByVal UserIndex As Integer)
+    On Error Goto HandleModifySkills_Err
         
         On Error GoTo HandleModifySkills_Err
 
@@ -3667,6 +3852,9 @@ HandleModifySkills_Err:
 140     Call TraceError(Err.Number, Err.Description, "Protocol.HandleModifySkills", Erl)
 142
         
+    Exit Sub
+HandleModifySkills_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleModifySkills", Erl)
 End Sub
 
 ''
@@ -3675,6 +3863,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleTrain(ByVal UserIndex As Integer)
+    On Error Goto HandleTrain_Err
         
         On Error GoTo HandleTrain_Err
 
@@ -3712,6 +3901,9 @@ HandleTrain_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTrain", Erl)
 124
         
+    Exit Sub
+HandleTrain_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleTrain", Erl)
 End Sub
 
 ''
@@ -3720,6 +3912,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
+    On Error Goto HandleCommerceBuy_Err
         
         On Error GoTo HandleCommerceBuy_Err
 
@@ -3768,6 +3961,9 @@ HandleCommerceBuy_Err:
 124     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceBuy", Erl)
 126
         
+    Exit Sub
+HandleCommerceBuy_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceBuy", Erl)
 End Sub
 
 ''
@@ -3776,6 +3972,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
+    On Error Goto HandleBankExtractItem_Err
         
         On Error GoTo HandleBankExtractItem_Err
 
@@ -3813,6 +4010,9 @@ HandleBankExtractItem_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankExtractItem", Erl)
 120
         
+    Exit Sub
+HandleBankExtractItem_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankExtractItem", Erl)
 End Sub
 
 ''
@@ -3821,6 +4021,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
+    On Error Goto HandleCommerceSell_Err
         
         On Error GoTo HandleCommerceSell_Err
 
@@ -3860,6 +4061,9 @@ HandleCommerceSell_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceSell", Erl)
 120
         
+    Exit Sub
+HandleCommerceSell_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceSell", Erl)
 End Sub
 
 ''
@@ -3868,6 +4072,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
+    On Error Goto HandleBankDeposit_Err
         
         On Error GoTo HandleBankDeposit_Err
 
@@ -3910,6 +4115,9 @@ HandleBankDeposit_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankDeposit", Erl)
 124
         
+    Exit Sub
+HandleBankDeposit_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankDeposit", Erl)
 End Sub
 
 ''
@@ -3918,6 +4126,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleForumPost(ByVal UserIndex As Integer)
+    On Error Goto HandleForumPost_Err
 
         On Error GoTo ErrHandler
 
@@ -3981,6 +4190,9 @@ ErrHandler:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleForumPost", Erl)
 146
 
+    Exit Sub
+HandleForumPost_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleForumPost", Erl)
 End Sub
 
 ''
@@ -3989,6 +4201,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleMoveSpell(ByVal UserIndex As Integer)
+    On Error Goto HandleMoveSpell_Err
         
         On Error GoTo HandleMoveSpell_Err
 
@@ -4009,6 +4222,9 @@ HandleMoveSpell_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveSpell", Erl)
 112
         
+    Exit Sub
+HandleMoveSpell_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveSpell", Erl)
 End Sub
 
 ''
@@ -4017,6 +4233,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleClanCodexUpdate(ByVal UserIndex As Integer)
+    On Error Goto HandleClanCodexUpdate_Err
 
         On Error GoTo ErrHandler
 
@@ -4036,6 +4253,9 @@ ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveSpell", Erl)
 108
 
+    Exit Sub
+HandleClanCodexUpdate_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleClanCodexUpdate", Erl)
 End Sub
 
 ''
@@ -4044,6 +4264,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
+    On Error Goto HandleUserCommerceOffer_Err
         
         On Error GoTo HandleUserCommerceOffer_Err
 
@@ -4191,9 +4412,13 @@ HandleUserCommerceOffer_Err:
 172     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUserCommerceOffer", Erl)
 174
         
+    Exit Sub
+HandleUserCommerceOffer_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleUserCommerceOffer", Erl)
 End Sub
 
 Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildAcceptPeace_Err
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -4216,6 +4441,9 @@ Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptPeace", Erl)
+    Exit Sub
+HandleGuildAcceptPeace_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptPeace", Erl)
 End Sub
 
 ''
@@ -4224,6 +4452,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildRejectAlliance_Err
 
         On Error GoTo ErrHandler
 
@@ -4255,6 +4484,9 @@ ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRejectAlliance", Erl)
 116
 
+    Exit Sub
+HandleGuildRejectAlliance_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRejectAlliance", Erl)
 End Sub
 
 ''
@@ -4263,6 +4495,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildRejectPeace_Err
 
         On Error GoTo ErrHandler
 
@@ -4294,6 +4527,9 @@ ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRejectPeace", Erl)
 116
 
+    Exit Sub
+HandleGuildRejectPeace_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRejectPeace", Erl)
 End Sub
 
 ''
@@ -4302,6 +4538,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildAcceptAlliance_Err
 
         On Error GoTo ErrHandler
 
@@ -4332,6 +4569,9 @@ ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptAlliance", Erl)
 116
 
+    Exit Sub
+HandleGuildAcceptAlliance_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptAlliance", Erl)
 End Sub
 
 ''
@@ -4340,6 +4580,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildOfferPeace_Err
 
         On Error GoTo ErrHandler
 
@@ -4362,6 +4603,9 @@ ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOfferPeace", Erl)
 114
 
+    Exit Sub
+HandleGuildOfferPeace_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOfferPeace", Erl)
 End Sub
 
 ''
@@ -4370,6 +4614,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildOfferAlliance_Err
 
         On Error GoTo ErrHandler
 
@@ -4393,6 +4638,9 @@ ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOfferPeace", Erl)
 114
 
+    Exit Sub
+HandleGuildOfferAlliance_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOfferAlliance", Erl)
 End Sub
 
 ''
@@ -4401,6 +4649,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildAllianceDetails(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildAllianceDetails_Err
 
         On Error GoTo ErrHandler
 
@@ -4429,6 +4678,9 @@ ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOfferPeace", Erl)
 114
 
+    Exit Sub
+HandleGuildAllianceDetails_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAllianceDetails", Erl)
 End Sub
 
 ''
@@ -4437,6 +4689,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildPeaceDetails_Err
 
         On Error GoTo ErrHandler
 
@@ -4458,6 +4711,9 @@ ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildPeaceDetails", Erl)
 114
 
+    Exit Sub
+HandleGuildPeaceDetails_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildPeaceDetails", Erl)
 End Sub
 
 ''
@@ -4466,6 +4722,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildRequestJoinerInfo(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildRequestJoinerInfo_Err
 
         On Error GoTo ErrHandler
 
@@ -4494,6 +4751,9 @@ ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRequestJoinerInfo", Erl)
 114
 
+    Exit Sub
+HandleGuildRequestJoinerInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRequestJoinerInfo", Erl)
 End Sub
 
 ''
@@ -4502,6 +4762,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildAlliancePropList(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildAlliancePropList_Err
 
         On Error GoTo HandleGuildAlliancePropList_Err
 
@@ -4512,6 +4773,9 @@ HandleGuildAlliancePropList_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAlliancePropList", Erl)
 104
         
+    Exit Sub
+HandleGuildAlliancePropList_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAlliancePropList", Erl)
 End Sub
 
 ''
@@ -4520,6 +4784,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildPeacePropList(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildPeacePropList_Err
 
         On Error GoTo HandleGuildPeacePropList_Err
 
@@ -4531,6 +4796,9 @@ HandleGuildPeacePropList_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildPeacePropList", Erl)
 104
         
+    Exit Sub
+HandleGuildPeacePropList_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildPeacePropList", Erl)
 End Sub
 
 ''
@@ -4539,6 +4807,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildDeclareWar_Err
 
         On Error GoTo ErrHandler
 
@@ -4572,6 +4841,9 @@ ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildPeacePropList", Erl)
 120
 
+    Exit Sub
+HandleGuildDeclareWar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildDeclareWar", Erl)
 End Sub
 
 ''
@@ -4580,6 +4852,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildNewWebsite(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildNewWebsite_Err
 
         On Error GoTo ErrHandler
 
@@ -4591,6 +4864,9 @@ ErrHandler:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildNewWebsite", Erl)
 104
 
+    Exit Sub
+HandleGuildNewWebsite_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildNewWebsite", Erl)
 End Sub
 
 ''
@@ -4599,6 +4875,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildAcceptNewMember_Err
 
         On Error GoTo ErrHandler
 
@@ -4637,6 +4914,9 @@ ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptNewMember", Erl)
 122
 
+    Exit Sub
+HandleGuildAcceptNewMember_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptNewMember", Erl)
 End Sub
 
 ''
@@ -4645,6 +4925,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildRejectNewMember_Err
 
         On Error GoTo ErrHandler
 
@@ -4675,6 +4956,9 @@ ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptNewMember", Erl)
 120
 
+    Exit Sub
+HandleGuildRejectNewMember_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRejectNewMember", Erl)
 End Sub
 
 ''
@@ -4683,6 +4967,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildKickMember_Err
 
         On Error GoTo ErrHandler
 
@@ -4718,6 +5003,9 @@ ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildKickMember", Erl)
 120
 
+    Exit Sub
+HandleGuildKickMember_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildKickMember", Erl)
 End Sub
 
 ''
@@ -4726,6 +5014,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildUpdateNews(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildUpdateNews_Err
 
         On Error GoTo ErrHandler
 
@@ -4737,6 +5026,9 @@ ErrHandler:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildUpdateNews", Erl)
 104
 
+    Exit Sub
+HandleGuildUpdateNews_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildUpdateNews", Erl)
 End Sub
 
 ''
@@ -4745,6 +5037,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildMemberInfo(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildMemberInfo_Err
 
         On Error GoTo ErrHandler
 
@@ -4756,6 +5049,9 @@ ErrHandler:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildMemberInfo", Erl)
 104
 
+    Exit Sub
+HandleGuildMemberInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildMemberInfo", Erl)
 End Sub
 
 ''
@@ -4764,6 +5060,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildOpenElections_Err
         
         On Error GoTo HandleGuildOpenElections_Err
 
@@ -4781,6 +5078,9 @@ HandleGuildOpenElections_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOpenElections", Erl)
 110
         
+    Exit Sub
+HandleGuildOpenElections_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOpenElections", Erl)
 End Sub
 
 ''
@@ -4789,6 +5089,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildRequestMembership_Err
 
         On Error GoTo ErrHandler
 
@@ -4818,6 +5119,9 @@ ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRequestMembership", Erl)
 114
 
+    Exit Sub
+HandleGuildRequestMembership_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRequestMembership", Erl)
 End Sub
 
 ''
@@ -4826,6 +5130,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildRequestDetails(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildRequestDetails_Err
 
         On Error GoTo ErrHandler
  
@@ -4837,6 +5142,9 @@ ErrHandler:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRequestDetails", Erl)
 104
 
+    Exit Sub
+HandleGuildRequestDetails_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRequestDetails", Erl)
 End Sub
 
 
@@ -4847,6 +5155,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleQuit(ByVal UserIndex As Integer)
+    On Error Goto HandleQuit_Err
         
         On Error GoTo HandleQuit_Err
 
@@ -4896,6 +5205,9 @@ HandleQuit_Err:
 140     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuit", Erl)
 142
         
+    Exit Sub
+HandleQuit_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuit", Erl)
 End Sub
 
 ''
@@ -4904,6 +5216,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildLeave(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildLeave_Err
         
         On Error GoTo HandleGuildLeave_Err
 
@@ -4932,6 +5245,9 @@ HandleGuildLeave_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildLeave", Erl)
 114
         
+    Exit Sub
+HandleGuildLeave_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildLeave", Erl)
 End Sub
 
 ''
@@ -4940,6 +5256,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestAccountState_Err
         
         On Error GoTo HandleRequestAccountState_Err
 
@@ -4996,6 +5313,9 @@ HandleRequestAccountState_Err:
 134     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestAccountState", Erl)
 136
         
+    Exit Sub
+HandleRequestAccountState_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestAccountState", Erl)
 End Sub
 
 ''
@@ -5004,6 +5324,7 @@ End Sub
 ' @param    userIndex The index of the user sending the message.
 
 Private Sub HandlePetStand(ByVal UserIndex As Integer)
+    On Error Goto HandlePetStand_Err
 
         On Error GoTo HandlePetStand_Err
         
@@ -5045,6 +5366,9 @@ HandlePetStand_Err:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetStand", Erl)
 122
         
+    Exit Sub
+HandlePetStand_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetStand", Erl)
 End Sub
 
 ''
@@ -5053,6 +5377,7 @@ End Sub
 ' @param    userIndex The index of the user sending the message.
 
 Private Sub HandlePetFollow(ByVal UserIndex As Integer)
+    On Error Goto HandlePetFollow_Err
 
         On Error GoTo HandlePetFollow_Err
         
@@ -5096,6 +5421,9 @@ HandlePetFollow_Err:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetFollow", Erl)
 122
         
+    Exit Sub
+HandlePetFollow_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetFollow", Erl)
 End Sub
 
 ''
@@ -5104,6 +5432,7 @@ End Sub
 ' @param    userIndex The index of the user sending the message.
 
 Private Sub HandlePetLeave(ByVal UserIndex As Integer)
+    On Error Goto HandlePetLeave_Err
         
         On Error GoTo HandlePetLeave_Err
         
@@ -5137,6 +5466,9 @@ HandlePetLeave_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetLeave", Erl)
 116
         
+    Exit Sub
+HandlePetLeave_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetLeave", Erl)
 End Sub
 
 ''
@@ -5145,6 +5477,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGrupoMsg(ByVal UserIndex As Integer)
+    On Error Goto HandleGrupoMsg_Err
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
             Dim chat As String
@@ -5170,9 +5503,13 @@ ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGrupoMsg", Erl)
 122
 
+    Exit Sub
+HandleGrupoMsg_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGrupoMsg", Erl)
 End Sub
 
 Private Sub HandleTrainList(ByVal UserIndex As Integer)
+    On Error Goto HandleTrainList_Err
         On Error GoTo HandleTrainList_Err
         
 100     With UserList(UserIndex)
@@ -5206,6 +5543,9 @@ HandleTrainList_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTrainList", Erl)
 120
         
+    Exit Sub
+HandleTrainList_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleTrainList", Erl)
 End Sub
 
 ''
@@ -5214,6 +5554,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleRest(ByVal UserIndex As Integer)
+    On Error Goto HandleRest_Err
         
         On Error GoTo HandleRest_Err
 
@@ -5265,6 +5606,9 @@ HandleRest_Err:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRest", Erl)
 130
         
+    Exit Sub
+HandleRest_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRest", Erl)
 End Sub
 
 ''
@@ -5273,6 +5617,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleMeditate(ByVal UserIndex As Integer)
+    On Error Goto HandleMeditate_Err
         
         On Error GoTo HandleMeditate_Err
 
@@ -5366,6 +5711,9 @@ HandleMeditate_Err:
 148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMeditate", Erl)
 150
         
+    Exit Sub
+HandleMeditate_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleMeditate", Erl)
 End Sub
 
 ''
@@ -5374,6 +5722,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleResucitate(ByVal UserIndex As Integer)
+    On Error Goto HandleResucitate_Err
         
         On Error GoTo HandleResucitate_Err
 
@@ -5413,9 +5762,13 @@ HandleResucitate_Err:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResucitate", Erl)
 122
         
+    Exit Sub
+HandleResucitate_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleResucitate", Erl)
 End Sub
 
 Private Sub HandleHeal(ByVal UserIndex As Integer)
+    On Error Goto HandleHeal_Err
         On Error GoTo HandleHeal_Err
 100     With UserList(UserIndex)
             'Se asegura que el target es un npc
@@ -5441,6 +5794,9 @@ Private Sub HandleHeal(ByVal UserIndex As Integer)
         Exit Sub
 HandleHeal_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHeal", Erl)
+    Exit Sub
+HandleHeal_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleHeal", Erl)
 End Sub
 
 
@@ -5450,6 +5806,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
+    On Error Goto HandleCommerceStart_Err
         
         On Error GoTo HandleCommerceStart_Err
 
@@ -5581,9 +5938,13 @@ HandleCommerceStart_Err:
 168     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceStart", Erl)
 170
         
+    Exit Sub
+HandleCommerceStart_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceStart", Erl)
 End Sub
 
 Private Sub HandleBankStart(ByVal UserIndex As Integer)
+    On Error Goto HandleBankStart_Err
         On Error GoTo HandleBankStart_Err
 100     With UserList(UserIndex)
             'Dead people can't commerce
@@ -5616,9 +5977,13 @@ Private Sub HandleBankStart(ByVal UserIndex As Integer)
         Exit Sub
 HandleBankStart_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankStart", Erl)
+    Exit Sub
+HandleBankStart_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankStart", Erl)
 End Sub
 
 Private Sub HandleEnlist(ByVal UserIndex As Integer)
+    On Error Goto HandleEnlist_Err
         On Error GoTo HandleEnlist_Err
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
@@ -5646,9 +6011,13 @@ Private Sub HandleEnlist(ByVal UserIndex As Integer)
         Exit Sub
 HandleEnlist_Err:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEnlist", Erl)
+    Exit Sub
+HandleEnlist_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleEnlist", Erl)
 End Sub
 
 Private Sub HandleInformation(ByVal UserIndex As Integer)
+    On Error Goto HandleInformation_Err
         On Error GoTo HandleInformation_Err
 100     With UserList(UserIndex)
             'Validate target NPC
@@ -5692,6 +6061,9 @@ HandleInformation_Err:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleInformation", Erl)
 128
         
+    Exit Sub
+HandleInformation_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleInformation", Erl)
 End Sub
 
 ''
@@ -5700,6 +6072,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleReward(ByVal UserIndex As Integer)
+    On Error Goto HandleReward_Err
         
         On Error GoTo HandleReward_Err
 
@@ -5739,6 +6112,9 @@ HandleReward_Err:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReward", Erl)
 128
         
+    Exit Sub
+HandleReward_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleReward", Erl)
 End Sub
 
 ''
@@ -5747,6 +6123,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildMessage_Err
 
         On Error GoTo ErrHandler
 
@@ -5797,6 +6174,9 @@ ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildMessage", Erl)
 124
 
+    Exit Sub
+HandleGuildMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildMessage", Erl)
 End Sub
 
 ''
@@ -5805,6 +6185,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildOnline(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildOnline_Err
         
         On Error GoTo HandleGuildOnline_Err
 
@@ -5830,6 +6211,9 @@ HandleGuildOnline_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOnline", Erl)
 112
         
+    Exit Sub
+HandleGuildOnline_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOnline", Erl)
 End Sub
 
 ''
@@ -5838,6 +6222,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
+    On Error Goto HandleCouncilMessage_Err
 
         On Error GoTo ErrHandler
 
@@ -5873,6 +6258,9 @@ ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCouncilMessage", Erl)
 124
 
+    Exit Sub
+HandleCouncilMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCouncilMessage", Erl)
 End Sub
 
 ''
@@ -5881,6 +6269,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleChangeDescription(ByVal UserIndex As Integer)
+    On Error Goto HandleChangeDescription_Err
 
         On Error GoTo ErrHandler
 
@@ -5924,6 +6313,9 @@ ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeDescription", Erl)
 122
 
+    Exit Sub
+HandleChangeDescription_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeDescription", Erl)
 End Sub
 
 ''
@@ -5932,6 +6324,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildVote(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildVote_Err
 
         On Error GoTo ErrHandler
 
@@ -5952,6 +6345,9 @@ ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildVote", Erl)
 112
 
+    Exit Sub
+HandleGuildVote_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildVote", Erl)
 End Sub
 
 ''
@@ -5960,6 +6356,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
+    On Error Goto HandleBankExtractGold_Err
         
         On Error GoTo HandleBankExtractGold_Err
 
@@ -6005,9 +6402,13 @@ HandleBankExtractGold_Err:
 130     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankExtractGold", Erl)
 132
         
+    Exit Sub
+HandleBankExtractGold_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankExtractGold", Erl)
 End Sub
 
 Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
+    On Error Goto HandleLeaveFaction_Err
         On Error GoTo HandleLeaveFaction_Err
 100     With UserList(UserIndex)
             'Dead people can't leave a faction.. they can't talk...
@@ -6109,9 +6510,13 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
         Exit Sub
 HandleLeaveFaction_Err:
 168     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLeaveFaction", Erl)
+    Exit Sub
+HandleLeaveFaction_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleLeaveFaction", Erl)
 End Sub
 
 Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
+    On Error Goto HandleBankDepositGold_Err
         On Error GoTo HandleBankDepositGold_Err
 100     With UserList(UserIndex)
 
@@ -6153,10 +6558,14 @@ HandleBankDepositGold_Err:
 130     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankDepositGold", Erl)
 132
         
+    Exit Sub
+HandleBankDepositGold_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankDepositGold", Erl)
 End Sub
 
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildMemberList_Err
 
         On Error GoTo ErrHandler
 
@@ -6191,6 +6600,9 @@ Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildMemberList", Erl)
+    Exit Sub
+HandleGuildMemberList_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildMemberList", Erl)
 End Sub
 
 ''
@@ -6199,6 +6611,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleOnlineRoyalArmy(ByVal UserIndex As Integer)
+    On Error Goto HandleOnlineRoyalArmy_Err
         
         On Error GoTo HandleOnlineRoyalArmy_Err
 
@@ -6241,6 +6654,9 @@ HandleOnlineRoyalArmy_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleOnlineRoyalArmy", Erl)
 124
         
+    Exit Sub
+HandleOnlineRoyalArmy_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleOnlineRoyalArmy", Erl)
 End Sub
 
 ''
@@ -6249,6 +6665,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleOnlineChaosLegion(ByVal UserIndex As Integer)
+    On Error Goto HandleOnlineChaosLegion_Err
         
         On Error GoTo HandleOnlineChaosLegion_Err
 
@@ -6291,6 +6708,9 @@ HandleOnlineChaosLegion_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleOnlineChaosLegion", Erl)
 124
         
+    Exit Sub
+HandleOnlineChaosLegion_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleOnlineChaosLegion", Erl)
 End Sub
 
 ''
@@ -6299,6 +6719,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleComment(ByVal UserIndex As Integer)
+    On Error Goto HandleComment_Err
 
         On Error GoTo ErrHandler
 
@@ -6322,6 +6743,9 @@ ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleComment", Erl)
 112
 
+    Exit Sub
+HandleComment_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleComment", Erl)
 End Sub
 
 ''
@@ -6330,6 +6754,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleServerTime(ByVal UserIndex As Integer)
+    On Error Goto HandleServerTime_Err
         
         On Error GoTo HandleServerTime_Err
 
@@ -6349,9 +6774,13 @@ HandleServerTime_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleServerTime", Erl)
 110
         
+    Exit Sub
+HandleServerTime_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleServerTime", Erl)
 End Sub
 
 Private Sub HandleUseKey(ByVal UserIndex As Integer)
+    On Error Goto HandleUseKey_Err
         
         On Error GoTo HandleUseKey_Err
 
@@ -6370,9 +6799,13 @@ HandleUseKey_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseKey", Erl)
 108
         
+    Exit Sub
+HandleUseKey_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseKey", Erl)
 End Sub
 
 Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
+    On Error Goto HandleMensajeUser_Err
 
         On Error GoTo ErrHandler
 
@@ -6419,9 +6852,13 @@ ErrHandler:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMensajeUser", Erl)
 130
 
+    Exit Sub
+HandleMensajeUser_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleMensajeUser", Erl)
 End Sub
 
 Private Sub HandleTraerBoveda(ByVal UserIndex As Integer)
+    On Error Goto HandleTraerBoveda_Err
 
         On Error GoTo ErrHandler
 
@@ -6439,16 +6876,24 @@ ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTraerBoveda", Erl)
 108
 
+    Exit Sub
+HandleTraerBoveda_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleTraerBoveda", Erl)
 End Sub
 
 
 Private Sub HandleSendPosMovimiento(ByVal UserIndex As Integer)
+    On Error Goto HandleSendPosMovimiento_Err
 'TODO: delete
+    Exit Sub
+HandleSendPosMovimiento_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleSendPosMovimiento", Erl)
 End Sub
 
 ' Handles the "SendPosMovimiento" message.
 
 Private Sub HandleNotifyInventariohechizos(ByVal UserIndex As Integer)
+    On Error Goto HandleNotifyInventariohechizos_Err
 
         On Error GoTo ErrHandler
 
@@ -6474,6 +6919,9 @@ ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReviveChar", Erl)
 140
 
+    Exit Sub
+HandleNotifyInventariohechizos_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleNotifyInventariohechizos", Erl)
 End Sub
 'HarThaoS: Agrego perdón faccionario.
 
@@ -6481,6 +6929,7 @@ End Sub
 'Lee abajo
 'Lee arriba
 Private Sub HandlePerdonFaccion(ByVal userindex As Integer)
+    On Error Goto HandlePerdonFaccion_Err
 
         On Error GoTo ErrHandler
 
@@ -6551,6 +7000,9 @@ ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePerdonFaccion", Erl)
 140
 
+    Exit Sub
+HandlePerdonFaccion_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandlePerdonFaccion", Erl)
 End Sub
 
 ''
@@ -6559,6 +7011,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildOnlineMembers(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildOnlineMembers_Err
 
         On Error GoTo ErrHandler
 
@@ -6593,6 +7046,9 @@ ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOnlineMembers", Erl)
 120
 
+    Exit Sub
+HandleGuildOnlineMembers_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOnlineMembers", Erl)
 End Sub
 
 ''
@@ -6601,6 +7057,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
+    On Error Goto HandleRoyalArmyMessage_Err
 
         On Error GoTo ErrHandler
 
@@ -6622,6 +7079,9 @@ ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRoyalArmyMessage", Erl)
 110
 
+    Exit Sub
+HandleRoyalArmyMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRoyalArmyMessage", Erl)
 End Sub
 
 ''
@@ -6630,6 +7090,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
+    On Error Goto HandleChaosLegionMessage_Err
 
         On Error GoTo ErrHandler
 
@@ -6652,8 +7113,12 @@ ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChaosLegionMessage", Erl)
 110
 
+    Exit Sub
+HandleChaosLegionMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleChaosLegionMessage", Erl)
 End Sub
 Private Sub HandleFactionMessage(ByVal UserIndex As Integer)
+    On Error Goto HandleFactionMessage_Err
 
         On Error GoTo ErrHandler
 
@@ -6723,6 +7188,9 @@ Private Sub HandleFactionMessage(ByVal UserIndex As Integer)
 
 ErrHandler:
         Call TraceError(Err.Number, Err.Description, "Protocol.HandleFactionMessage", Erl)
+    Exit Sub
+HandleFactionMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleFactionMessage", Erl)
 End Sub
 ''
 ' Handles the "AcceptRoyalCouncilMember" message.
@@ -6730,6 +7198,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
+    On Error Goto HandleAcceptRoyalCouncilMember_Err
 
         On Error GoTo ErrHandler
 
@@ -6771,6 +7240,9 @@ ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAcceptRoyalCouncilMember", Erl)
 124
 
+    Exit Sub
+HandleAcceptRoyalCouncilMember_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleAcceptRoyalCouncilMember", Erl)
 End Sub
 
 ''
@@ -6779,6 +7251,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
+    On Error Goto HandleAcceptChaosCouncilMember_Err
 
         On Error GoTo ErrHandler
 
@@ -6825,6 +7298,9 @@ ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAcceptChaosCouncilMember", Erl)
 124
 
+    Exit Sub
+HandleAcceptChaosCouncilMember_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleAcceptChaosCouncilMember", Erl)
 End Sub
 
 ''
@@ -6833,6 +7309,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
+    On Error Goto HandleCouncilKick_Err
 
         On Error GoTo ErrHandler
 
@@ -6889,6 +7366,9 @@ ErrHandler:
 146     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCouncilKick", Erl)
 148
 
+    Exit Sub
+HandleCouncilKick_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCouncilKick", Erl)
 End Sub
 
 ''
@@ -6897,6 +7377,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildBan(ByVal UserIndex As Integer)
+    On Error Goto HandleGuildBan_Err
 
         On Error GoTo ErrHandler
 
@@ -6945,6 +7426,9 @@ ErrHandler:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildBan", Erl)
 154
 
+    Exit Sub
+HandleGuildBan_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildBan", Erl)
 End Sub
 
 ''
@@ -6953,6 +7437,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
+    On Error Goto HandleChaosLegionKick_Err
 
         On Error GoTo ErrHandler
 
@@ -7027,6 +7512,9 @@ ErrHandler:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChaosLegionKick", Erl)
 146
 
+    Exit Sub
+HandleChaosLegionKick_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleChaosLegionKick", Erl)
 End Sub
 
 ''
@@ -7035,6 +7523,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
+    On Error Goto HandleRoyalArmyKick_Err
 
         On Error GoTo ErrHandler
 
@@ -7109,6 +7598,9 @@ ErrHandler:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRoyalArmyKick", Erl)
 146
 
+    Exit Sub
+HandleRoyalArmyKick_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRoyalArmyKick", Erl)
 End Sub
 
 ''
@@ -7117,6 +7609,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Public Sub HandleChatColor(ByVal UserIndex As Integer)
+    On Error Goto HandleChatColor_Err
         
         On Error GoTo HandleChatColor_Err
 
@@ -7139,11 +7632,15 @@ HandleChatColor_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChatColor", Erl)
 110
         
+    Exit Sub
+HandleChatColor_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleChatColor", Erl)
 End Sub
 
 
 
 Public Sub HandleDonateGold(ByVal UserIndex As Integer)
+    On Error Goto HandleDonateGold_Err
         
         On Error GoTo handle
 
@@ -7220,9 +7717,13 @@ handle:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDonateGold", Erl)
 154
         
+    Exit Sub
+HandleDonateGold_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleDonateGold", Erl)
 End Sub
 
 Public Sub HandlePromedio(ByVal UserIndex As Integer)
+    On Error Goto HandlePromedio_Err
         
         On Error GoTo handle
 
@@ -7267,6 +7768,9 @@ handle:
 132     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePromedio", Erl)
 134
         
+    Exit Sub
+HandlePromedio_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandlePromedio", Erl)
 End Sub
 
 ''
@@ -7275,6 +7779,7 @@ End Sub
 ' @param UserIndex The index of the user sending the message
 
 Public Sub HandleShowGuildMessages(ByVal UserIndex As Integer)
+    On Error Goto HandleShowGuildMessages_Err
 
         'Allows admins to read guild messages
     
@@ -7298,6 +7803,9 @@ ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 110
 
+    Exit Sub
+HandleShowGuildMessages_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleShowGuildMessages", Erl)
 End Sub
 
 ''
@@ -7306,6 +7814,7 @@ End Sub
 ' @param UserIndex The index of the user sending the message
 
 Public Sub HandleDoBackUp(ByVal UserIndex As Integer)
+    On Error Goto HandleDoBackUp_Err
         
         On Error GoTo HandleDoBackUp_Err
 
@@ -7327,6 +7836,9 @@ HandleDoBackUp_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDoBackUp", Erl)
 110
         
+    Exit Sub
+HandleDoBackUp_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleDoBackUp", Erl)
 End Sub
 
 ''
@@ -7335,6 +7847,7 @@ End Sub
 ' @param UserIndex The index of the user sending the message
 
 Public Sub HandleNavigateToggle(ByVal UserIndex As Integer)
+    On Error Goto HandleNavigateToggle_Err
         
         On Error GoTo HandleNavigateToggle_Err
 
@@ -7366,6 +7879,9 @@ HandleNavigateToggle_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleNavigateToggle", Erl)
 116
         
+    Exit Sub
+HandleNavigateToggle_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleNavigateToggle", Erl)
 End Sub
 
 ''
@@ -7374,6 +7890,7 @@ End Sub
 ' @param UserIndex The index of the user sending the message
 
 Public Sub HandleServerOpenToUsersToggle(ByVal UserIndex As Integer)
+    On Error Goto HandleServerOpenToUsersToggle_Err
         
         On Error GoTo HandleServerOpenToUsersToggle_Err
 
@@ -7402,9 +7919,13 @@ HandleServerOpenToUsersToggle_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleServerOpenToUsersToggle", Erl)
 116
         
+    Exit Sub
+HandleServerOpenToUsersToggle_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleServerOpenToUsersToggle", Erl)
 End Sub
 
 Public Sub HandleParticipar(ByVal UserIndex As Integer)
+    On Error Goto HandleParticipar_Err
         On Error GoTo HandleParticipar_Err
 
         Dim handle As Integer
@@ -7439,6 +7960,9 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
         Exit Sub
 HandleParticipar_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleParticipar", Erl)
+    Exit Sub
+HandleParticipar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleParticipar", Erl)
 End Sub
 
 ''
@@ -7447,6 +7971,7 @@ End Sub
 ' @param UserIndex The index of the user sending the message
 
 Public Sub HandleResetFactions(ByVal UserIndex As Integer)
+    On Error Goto HandleResetFactions_Err
 
         On Error GoTo ErrHandler
 
@@ -7474,6 +7999,9 @@ ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetFactions", Erl)
 114
 
+    Exit Sub
+HandleResetFactions_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetFactions", Erl)
 End Sub
 
 ''
@@ -7482,6 +8010,7 @@ End Sub
 ' @param UserIndex The index of the user sending the message
 
 Public Sub HandleRemoveCharFromGuild(ByVal UserIndex As Integer)
+    On Error Goto HandleRemoveCharFromGuild_Err
 
         On Error GoTo ErrHandler
 
@@ -7516,6 +8045,9 @@ ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemoveCharFromGuild", Erl)
 120
 
+    Exit Sub
+HandleRemoveCharFromGuild_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemoveCharFromGuild", Erl)
 End Sub
 
 ''
@@ -7524,6 +8056,7 @@ End Sub
 ' @param UserIndex The index of the user sending the message
 
 Public Sub HandleSystemMessage(ByVal UserIndex As Integer)
+    On Error Goto HandleSystemMessage_Err
 
         'Send a message to all the users
         
@@ -7549,9 +8082,13 @@ ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSystemMessage", Erl)
 112
 
+    Exit Sub
+HandleSystemMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleSystemMessage", Erl)
 End Sub
 
 Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
+    On Error Goto HandleOfertaInicial_Err
         
         On Error GoTo HandleOfertaInicial_Err
     
@@ -7620,9 +8157,13 @@ HandleOfertaInicial_Err:
 158     Call TraceError(Err.Number, Err.Description, "Protocol.HandleOfertaInicial", Erl)
 160
         
+    Exit Sub
+HandleOfertaInicial_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleOfertaInicial", Erl)
 End Sub
 
 Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
+    On Error Goto HandleOfertaDeSubasta_Err
 
         On Error GoTo ErrHandler
 
@@ -7695,9 +8236,13 @@ ErrHandler:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 154
 
+    Exit Sub
+HandleOfertaDeSubasta_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleOfertaDeSubasta", Erl)
 End Sub
 
 Public Sub HandleDuel(ByVal UserIndex As Integer)
+    On Error Goto HandleDuel_Err
     
         On Error GoTo ErrHandler
         
@@ -7726,9 +8271,13 @@ ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDuel", Erl)
 114
 
+    Exit Sub
+HandleDuel_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleDuel", Erl)
 End Sub
 
 Private Sub HandleAcceptDuel(ByVal UserIndex As Integer)
+    On Error Goto HandleAcceptDuel_Err
 
         On Error GoTo ErrHandler
         
@@ -7749,9 +8298,13 @@ ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAcceptDuel", Erl)
 108
 
+    Exit Sub
+HandleAcceptDuel_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleAcceptDuel", Erl)
 End Sub
 
 Private Sub HandleCancelDuel(ByVal UserIndex As Integer)
+    On Error Goto HandleCancelDuel_Err
 
 100     With UserList(UserIndex)
 
@@ -7767,9 +8320,13 @@ Private Sub HandleCancelDuel(ByVal UserIndex As Integer)
 
         End With
 
+    Exit Sub
+HandleCancelDuel_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCancelDuel", Erl)
 End Sub
 
 Private Sub HandleQuitDuel(ByVal UserIndex As Integer)
+    On Error Goto HandleQuitDuel_Err
 
 100     With UserList(UserIndex)
 
@@ -7779,9 +8336,13 @@ Private Sub HandleQuitDuel(ByVal UserIndex As Integer)
 
         End With
 
+    Exit Sub
+HandleQuitDuel_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuitDuel", Erl)
 End Sub
 
 Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
+    On Error Goto HandleTransFerGold_Err
         'Author: Pablo Mercavides
 
         On Error GoTo ErrHandler
@@ -7866,9 +8427,13 @@ ErrHandler:
 160     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 162
 
+    Exit Sub
+HandleTransFerGold_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleTransFerGold", Erl)
 End Sub
 
 Private Sub HandleMoveItem(ByVal UserIndex As Integer)
+    On Error Goto HandleMoveItem_Err
         'Author: Pablo Mercavides
 
         On Error GoTo ErrHandler
@@ -8184,9 +8749,13 @@ ErrHandler:
 328     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveItem", Erl)
 330
 
+    Exit Sub
+HandleMoveItem_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveItem", Erl)
 End Sub
 
 Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
+    On Error Goto HandleBovedaMoveItem_Err
         'Author: Pablo Mercavides
     
         On Error GoTo ErrHandler
@@ -8231,9 +8800,13 @@ ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBovedaMoveItem", Erl)
 124
 
+    Exit Sub
+HandleBovedaMoveItem_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleBovedaMoveItem", Erl)
 End Sub
 
 Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
+    On Error Goto HandleQuieroFundarClan_Err
         'Author: Pablo Mercavides
 
         On Error GoTo ErrHandler
@@ -8274,9 +8847,13 @@ ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuieroFundarClan", Erl)
 122
 
+    Exit Sub
+HandleQuieroFundarClan_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuieroFundarClan", Erl)
 End Sub
 
 Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
+    On Error Goto HandleLlamadadeClan_Err
         'Author: Pablo Mercavides
 
         On Error GoTo ErrHandler
@@ -8309,9 +8886,13 @@ ErrHandler:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLlamadadeClan", Erl)
 118
 
+    Exit Sub
+HandleLlamadadeClan_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleLlamadadeClan", Erl)
 End Sub
 
 Private Sub HandleCasamiento(ByVal UserIndex As Integer)
+    On Error Goto HandleCasamiento_Err
 
         'Author: Pablo Mercavides
 
@@ -8374,11 +8955,15 @@ ErrHandler:
 158     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCasamiento", Erl)
 160
 
+    Exit Sub
+HandleCasamiento_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCasamiento", Erl)
 End Sub
 
 
 
 Private Sub HandleComenzarTorneo(ByVal UserIndex As Integer)
+    On Error Goto HandleComenzarTorneo_Err
 
         On Error GoTo ErrHandler
 
@@ -8398,11 +8983,15 @@ ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleComenzarTorneo", Erl)
 108
 
+    Exit Sub
+HandleComenzarTorneo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleComenzarTorneo", Erl)
 End Sub
 
 
 
 Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
+    On Error Goto HandleBusquedaTesoro_Err
 
         On Error GoTo ErrHandler
 
@@ -8488,9 +9077,13 @@ ErrHandler:
 158     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBusquedaTesoro", Erl)
 160
 
+    Exit Sub
+HandleBusquedaTesoro_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleBusquedaTesoro", Erl)
 End Sub
 
 Private Sub HandleFlagTrabajar(ByVal UserIndex As Integer)
+    On Error Goto HandleFlagTrabajar_Err
     
         On Error GoTo ErrHandler
 
@@ -8509,9 +9102,13 @@ ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 112
 
+    Exit Sub
+HandleFlagTrabajar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleFlagTrabajar", Erl)
 End Sub
 
 Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
+    On Error Goto HandleCompletarAccion_Err
 
         On Error GoTo ErrHandler
 
@@ -8543,9 +9140,13 @@ ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 116
 
+    Exit Sub
+HandleCompletarAccion_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCompletarAccion", Erl)
 End Sub
 
 Private Sub HandleInvitarGrupo(ByVal UserIndex As Integer)
+    On Error Goto HandleInvitarGrupo_Err
 
 100     With UserList(UserIndex)
 
@@ -8573,9 +9174,13 @@ HandleInvitarGrupo_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleInvitarGrupo", Erl)
 114
     
+    Exit Sub
+HandleInvitarGrupo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleInvitarGrupo", Erl)
 End Sub
 
 Private Sub HandleMarcaDeClan(ByVal UserIndex As Integer)
+    On Error Goto HandleMarcaDeClan_Err
         'Author: Pablo Mercavides
         
         On Error GoTo HandleMarcaDeClan_Err
@@ -8612,9 +9217,13 @@ Private Sub HandleMarcaDeClan(ByVal UserIndex As Integer)
 HandleMarcaDeClan_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMarcaDeClan", Erl)
 118
+    Exit Sub
+HandleMarcaDeClan_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleMarcaDeClan", Erl)
 End Sub
 
 Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
+    On Error Goto HandleResponderPregunta_Err
 
         On Error GoTo ErrHandler
 
@@ -8849,9 +9458,13 @@ ErrHandler:
 342     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResponderPregunta", Erl)
 344
 
+    Exit Sub
+HandleResponderPregunta_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleResponderPregunta", Erl)
 End Sub
 
 Private Sub HandleRequestGrupo(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestGrupo_Err
 
         On Error GoTo hErr
 
@@ -8865,9 +9478,13 @@ hErr:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestGrupo", Erl)
 104
 
+    Exit Sub
+HandleRequestGrupo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestGrupo", Erl)
 End Sub
 
 Private Sub HandleAbandonarGrupo(ByVal UserIndex As Integer)
+    On Error Goto HandleAbandonarGrupo_Err
         'Author: Pablo Mercavides
         
         On Error GoTo HandleAbandonarGrupo_Err
@@ -8889,9 +9506,13 @@ HandleAbandonarGrupo_Err:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAbandonarGrupo", Erl)
 130
     
+    Exit Sub
+HandleAbandonarGrupo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleAbandonarGrupo", Erl)
 End Sub
 
 Private Sub HandleHecharDeGrupo(ByVal UserIndex As Integer)
+    On Error Goto HandleHecharDeGrupo_Err
         'Author: Pablo Mercavides
         
         On Error GoTo HandleHecharDeGrupo_Err
@@ -8912,9 +9533,13 @@ HandleHecharDeGrupo_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHecharDeGrupo", Erl)
 108
     
+    Exit Sub
+HandleHecharDeGrupo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleHecharDeGrupo", Erl)
 End Sub
 
 Private Sub HandleMacroPos(ByVal UserIndex As Integer)
+    On Error Goto HandleMacroPos_Err
         'Author: Pablo Mercavides
         
         On Error GoTo HandleMacroPos_Err
@@ -8932,9 +9557,13 @@ HandleMacroPos_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMacroPos", Erl)
 108
     
+    Exit Sub
+HandleMacroPos_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleMacroPos", Erl)
 End Sub
 
 Private Sub HandleSubastaInfo(ByVal UserIndex As Integer)
+    On Error Goto HandleSubastaInfo_Err
         'Author: Pablo Mercavides
         
         On Error GoTo HandleSubastaInfo_Err
@@ -8975,9 +9604,13 @@ Private Sub HandleSubastaInfo(ByVal UserIndex As Integer)
 HandleSubastaInfo_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSubastaInfo", Erl)
 124
+    Exit Sub
+HandleSubastaInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleSubastaInfo", Erl)
 End Sub
 
 Private Sub HandleCancelarExit(ByVal UserIndex As Integer)
+    On Error Goto HandleCancelarExit_Err
         'Author: Pablo Mercavides
         
         On Error GoTo HandleCancelarExit_Err
@@ -8990,9 +9623,13 @@ HandleCancelarExit_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCancelarExit", Erl)
 104
         
+    Exit Sub
+HandleCancelarExit_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCancelarExit", Erl)
 End Sub
 
 Private Sub HandleEventoInfo(ByVal UserIndex As Integer)
+    On Error Goto HandleEventoInfo_Err
         'Author: Pablo Mercavides
         
         On Error GoTo HandleEventoInfo_Err
@@ -9057,9 +9694,13 @@ Private Sub HandleEventoInfo(ByVal UserIndex As Integer)
 HandleEventoInfo_Err:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEventoInfo", Erl)
 140
+    Exit Sub
+HandleEventoInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleEventoInfo", Erl)
 End Sub
 
 Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
+    On Error Goto HandleCrearEvento_Err
 
         On Error GoTo ErrHandler
 
@@ -9107,9 +9748,13 @@ ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 128
 
+    Exit Sub
+HandleCrearEvento_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCrearEvento", Erl)
 End Sub
 
 Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
+    On Error Goto HandleCompletarViaje_Err
         'Author: Pablo Mercavides
 
         On Error GoTo ErrHandler
@@ -9231,9 +9876,13 @@ ErrHandler:
 200     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCompletarViaje", Erl)
 202
 
+    Exit Sub
+HandleCompletarViaje_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCompletarViaje", Erl)
 End Sub
 
 Public Sub HandleQuest(ByVal UserIndex As Integer)
+    On Error Goto HandleQuest_Err
         
         On Error GoTo HandleQuest_Err
 
@@ -9264,9 +9913,13 @@ HandleQuest_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuest", Erl)
 116
         
+    Exit Sub
+HandleQuest_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuest", Erl)
 End Sub
 
 Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
+    On Error Goto HandleQuestAccept_Err
         
         On Error GoTo HandleQuestAccept_Err
 
@@ -9329,9 +9982,13 @@ HandleQuestAccept_Err:
 170     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestAccept", Erl)
 
         
+    Exit Sub
+HandleQuestAccept_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestAccept", Erl)
 End Sub
 
 Public Sub HandleQuestDetailsRequest(ByVal UserIndex As Integer)
+    On Error Goto HandleQuestDetailsRequest_Err
         
         On Error GoTo HandleQuestDetailsRequest_Err
 
@@ -9353,9 +10010,13 @@ HandleQuestDetailsRequest_Err:
 104     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestDetailsRequest", Erl)
 106
         
+    Exit Sub
+HandleQuestDetailsRequest_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestDetailsRequest", Erl)
 End Sub
  
 Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
+    On Error Goto HandleQuestAbandon_Err
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         'Maneja el paquete QuestAbandon.
         'Last modified: 31/01/2010 by Amraphen
@@ -9425,9 +10086,13 @@ HandleQuestAbandon_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestAbandon", Erl)
 108
         
+    Exit Sub
+HandleQuestAbandon_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestAbandon", Erl)
 End Sub
 
 Public Sub HandleQuestListRequest(ByVal UserIndex As Integer)
+    On Error Goto HandleQuestListRequest_Err
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         'Maneja el paquete QuestListRequest.
         'Last modified: 30/01/2010 by Amraphen
@@ -9443,6 +10108,9 @@ HandleQuestListRequest_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestListRequest", Erl)
 104
         
+    Exit Sub
+HandleQuestListRequest_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestListRequest", Erl)
 End Sub
 
 ''
@@ -9451,6 +10119,7 @@ End Sub
 ' @param    userIndex The index of the user sending the message.
 
 Private Sub HandleConsulta(ByVal UserIndex As Integer)
+    On Error Goto HandleConsulta_Err
 
         'Habilita/Deshabilita el modo consulta.
         'Agrego validaciones.
@@ -9562,9 +10231,13 @@ ErrHandler:
 176     Call TraceError(Err.Number, Err.Description, "Protocol.HandleConsulta", Erl)
 178
 
+    Exit Sub
+HandleConsulta_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleConsulta", Erl)
 End Sub
 
 Private Sub HandleGetMapInfo(ByVal UserIndex As Integer)
+    On Error Goto HandleGetMapInfo_Err
 
 100     With UserList(UserIndex)
 
@@ -9593,10 +10266,14 @@ Private Sub HandleGetMapInfo(ByVal UserIndex As Integer)
     
         End With
 
+    Exit Sub
+HandleGetMapInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGetMapInfo", Erl)
 End Sub
 
 
 Private Sub HandleSeguroResu(ByVal UserIndex As Integer)
+    On Error Goto HandleSeguroResu_Err
 
 100     With UserList(UserIndex)
 
@@ -9606,8 +10283,12 @@ Private Sub HandleSeguroResu(ByVal UserIndex As Integer)
     
         End With
 
+    Exit Sub
+HandleSeguroResu_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleSeguroResu", Erl)
 End Sub
 Private Sub HandleLegionarySecure(ByVal UserIndex As Integer)
+    On Error Goto HandleLegionarySecure_Err
 
         With UserList(UserIndex)
 
@@ -9618,9 +10299,13 @@ Private Sub HandleLegionarySecure(ByVal UserIndex As Integer)
     
         End With
 
+    Exit Sub
+HandleLegionarySecure_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleLegionarySecure", Erl)
 End Sub
 
 Private Sub HandleCuentaExtractItem(ByVal UserIndex As Integer)
+    On Error Goto HandleCuentaExtractItem_Err
         
         On Error GoTo HandleCuentaExtractItem_Err
 100     With UserList(UserIndex)
@@ -9648,9 +10333,13 @@ HandleCuentaExtractItem_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCuentaExtractItem", Erl)
 118
         
+    Exit Sub
+HandleCuentaExtractItem_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCuentaExtractItem", Erl)
 End Sub
 
 Private Sub HandleCuentaDeposit(ByVal UserIndex As Integer)
+    On Error Goto HandleCuentaDeposit_Err
         On Error GoTo HandleCuentaDeposit_Err
 100     With UserList(UserIndex)
 
@@ -9686,9 +10375,13 @@ Private Sub HandleCuentaDeposit(ByVal UserIndex As Integer)
         Exit Sub
 HandleCuentaDeposit_Err:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCuentaDeposit", Erl)
+    Exit Sub
+HandleCuentaDeposit_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCuentaDeposit", Erl)
 End Sub
 
 Private Sub HandleCommerceSendChatMessage(ByVal UserIndex As Integer)
+    On Error Goto HandleCommerceSendChatMessage_Err
 
         On Error GoTo ErrHandler
     
@@ -9713,9 +10406,13 @@ ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceSendChatMessage", Erl)
 110
     
+    Exit Sub
+HandleCommerceSendChatMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceSendChatMessage", Erl)
 End Sub
 
 Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
+    On Error Goto HandleLogMacroClickHechizo_Err
     With UserList(UserIndex)
         Dim tipoMacro As Byte
         Dim mensaje As String
@@ -9750,20 +10447,28 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
             Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje & motivo & ".", e_FontTypeNames.FONTTYPE_INFO))
         End If
     End With
+    Exit Sub
+HandleLogMacroClickHechizo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleLogMacroClickHechizo", Erl)
 End Sub
 
 Private Function IsUnassistedSpellAllowed(ByVal spellID As Integer) As Boolean
+    On Error Goto IsUnassistedSpellAllowed_Err
     Select Case spellID
         Case SPELL_UNASSISTED_FULGOR, SPELL_UNASSISTED_ECO, SPELL_UNASSISTED_DESTELLO
             IsUnassistedSpellAllowed = True
         Case Else
             IsUnassistedSpellAllowed = False
     End Select
+    Exit Function
+IsUnassistedSpellAllowed_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.IsUnassistedSpellAllowed", Erl)
 End Function
 
 
 
 Private Sub HandleHome(ByVal UserIndex As Integer)
+    On Error Goto HandleHome_Err
         
         On Error GoTo HandleHome_Err
 
@@ -9829,9 +10534,13 @@ HandleHome_Err:
 134     Call TraceError(Err.Number, Err.Description, "Hogar.HandleHome", Erl)
 
         
+    Exit Sub
+HandleHome_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleHome", Erl)
 End Sub
 
 Private Sub HandleAddItemCrafting(ByVal UserIndex As Integer)
+    On Error Goto HandleAddItemCrafting_Err
 
         On Error GoTo ErrHandler
     
@@ -9887,9 +10596,13 @@ Private Sub HandleAddItemCrafting(ByVal UserIndex As Integer)
 ErrHandler:
 142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAddItemCrafting", Erl)
 144
+    Exit Sub
+HandleAddItemCrafting_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleAddItemCrafting", Erl)
 End Sub
 
 Private Sub HandleRemoveItemCrafting(ByVal UserIndex As Integer)
+    On Error Goto HandleRemoveItemCrafting_Err
     
         On Error GoTo ErrHandler
     
@@ -9946,9 +10659,13 @@ Private Sub HandleRemoveItemCrafting(ByVal UserIndex As Integer)
 ErrHandler:
 148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemoveItemCrafting", Erl)
 150
+    Exit Sub
+HandleRemoveItemCrafting_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemoveItemCrafting", Erl)
 End Sub
 
 Private Sub HandleAddCatalyst(ByVal UserIndex As Integer)
+    On Error Goto HandleAddCatalyst_Err
 
         On Error GoTo ErrHandler
     
@@ -9986,9 +10703,13 @@ Private Sub HandleAddCatalyst(ByVal UserIndex As Integer)
 ErrHandler:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAddCatalyst", Erl)
 130
+    Exit Sub
+HandleAddCatalyst_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleAddCatalyst", Erl)
 End Sub
 
 Private Sub HandleRemoveCatalyst(ByVal UserIndex As Integer)
+    On Error Goto HandleRemoveCatalyst_Err
 
         On Error GoTo ErrHandler
     
@@ -10032,9 +10753,13 @@ Private Sub HandleRemoveCatalyst(ByVal UserIndex As Integer)
 ErrHandler:
 134     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemoveCatalyst", Erl)
 136
+    Exit Sub
+HandleRemoveCatalyst_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemoveCatalyst", Erl)
 End Sub
 
 Sub HandleCraftItem(ByVal UserIndex As Integer)
+    On Error Goto HandleCraftItem_Err
 
         On Error GoTo ErrHandler
 
@@ -10047,9 +10772,13 @@ Sub HandleCraftItem(ByVal UserIndex As Integer)
 ErrHandler:
 104     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftItem", Erl)
 106
+    Exit Sub
+HandleCraftItem_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftItem", Erl)
 End Sub
 
 Private Sub HandleCloseCrafting(ByVal UserIndex As Integer)
+    On Error Goto HandleCloseCrafting_Err
 
         On Error GoTo ErrHandler
     
@@ -10064,9 +10793,13 @@ Private Sub HandleCloseCrafting(ByVal UserIndex As Integer)
 ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCloseCrafting", Erl)
 108
+    Exit Sub
+HandleCloseCrafting_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCloseCrafting", Erl)
 End Sub
 
 Private Sub HandleMoveCraftItem(ByVal UserIndex As Integer)
+    On Error Goto HandleMoveCraftItem_Err
 
         On Error GoTo ErrHandler
     
@@ -10100,9 +10833,13 @@ Private Sub HandleMoveCraftItem(ByVal UserIndex As Integer)
 ErrHandler:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveCraftItem", Erl)
 130
+    Exit Sub
+HandleMoveCraftItem_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveCraftItem", Erl)
 End Sub
 
 Private Sub HandlePetLeaveAll(ByVal UserIndex As Integer)
+    On Error Goto HandlePetLeaveAll_Err
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
     
@@ -10126,10 +10863,14 @@ Private Sub HandlePetLeaveAll(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetLeaveAll", Erl)
+    Exit Sub
+HandlePetLeaveAll_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetLeaveAll", Erl)
 End Sub
 
 
 Private Sub HandleResetChar(ByVal UserIndex As Integer)
+    On Error Goto HandleResetChar_Err
         On Error GoTo HandleResetChar_Err:
         
 100     Dim Nick As String: Nick = Reader.ReadString8()
@@ -10190,8 +10931,12 @@ Private Sub HandleResetChar(ByVal UserIndex As Integer)
 
 HandleResetChar_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetChar", Erl)
+    Exit Sub
+HandleResetChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetChar", Erl)
 End Sub
 Private Sub HandleResetearPersonaje(ByVal UserIndex As Integer)
+    On Error Goto HandleResetearPersonaje_Err
     On Error GoTo HandleResetearPersonaje_Err:
 
    ' Call resetPj(UserIndex)
@@ -10200,9 +10945,13 @@ Private Sub HandleResetearPersonaje(ByVal UserIndex As Integer)
 
 HandleResetearPersonaje_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetearPersonaje", Erl)
+    Exit Sub
+HandleResetearPersonaje_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetearPersonaje", Erl)
 End Sub
 
 Private Sub HandleRomperCania(ByVal UserIndex As Integer)
+    On Error Goto HandleRomperCania_Err
 
     On Error GoTo HandleRomperCania_Err:
     
@@ -10247,8 +10996,12 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
     
 HandleRomperCania_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRomperCania", Erl)
+    Exit Sub
+HandleRomperCania_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRomperCania", Erl)
 End Sub
 Private Sub HandleFinalizarPescaEspecial(ByVal UserIndex As Integer)
+    On Error Goto HandleFinalizarPescaEspecial_Err
 
     On Error GoTo HandleFinalizarPescaEspecial_Err:
     
@@ -10258,9 +11011,13 @@ Private Sub HandleFinalizarPescaEspecial(ByVal UserIndex As Integer)
 
 HandleFinalizarPescaEspecial_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleFinalizarPescaEspecial", Erl)
+    Exit Sub
+HandleFinalizarPescaEspecial_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleFinalizarPescaEspecial", Erl)
 End Sub
 
 Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
+    On Error Goto HandleRepeatMacro_Err
 
     On Error GoTo HandleRepeatMacro_Err:
     'Call LogMacroCliente("El usuario " & UserList(UserIndex).name & " iteró el paquete click o u." & GetTickCount)
@@ -10268,9 +11025,13 @@ Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
 
 HandleRepeatMacro_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRepeatMacro", Erl)
+    Exit Sub
+HandleRepeatMacro_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRepeatMacro", Erl)
 End Sub
 
 Private Sub HandleBuyShopItem(ByVal userindex As Integer)
+    On Error Goto HandleBuyShopItem_Err
 
     On Error GoTo HandleBuyShopItem_Err:
     Dim obj_to_buy As Long
@@ -10283,9 +11044,13 @@ Private Sub HandleBuyShopItem(ByVal userindex As Integer)
 
 HandleBuyShopItem_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBuyShopItem", Erl)
+    Exit Sub
+HandleBuyShopItem_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleBuyShopItem", Erl)
 End Sub
 
 Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
+    On Error Goto HandlePublicarPersonajeMAO_Err
 
     On Error GoTo HandlePublicarPersonajeMAO_Err:
     Dim Valor As Long
@@ -10336,9 +11101,13 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
 
 HandlePublicarPersonajeMAO_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePublicarPersonajeMAO", Erl)
+    Exit Sub
+HandlePublicarPersonajeMAO_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandlePublicarPersonajeMAO", Erl)
 End Sub
 
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
+    On Error Goto HandleDeleteItem_Err
     On Error GoTo HandleDeleteItem_Err:
 
     Dim Slot As Byte
@@ -10378,9 +11147,13 @@ Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
 
 HandleDeleteItem_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteItem", Erl)
+    Exit Sub
+HandleDeleteItem_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteItem", Erl)
 End Sub
 
 Public Sub HandleActionOnGroupFrame(ByVal UserIndex As Integer)
+    On Error Goto HandleActionOnGroupFrame_Err
 On Error GoTo HandleActionOnGroupFrame_Err:
     Dim TargetGroupMember As Byte
     TargetGroupMember = Reader.ReadInt8
@@ -10427,10 +11200,14 @@ On Error GoTo HandleActionOnGroupFrame_Err:
     Exit Sub
 HandleActionOnGroupFrame_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleActionOnGroupFrame UserId:" & UserIndex, Erl)
+    Exit Sub
+HandleActionOnGroupFrame_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleActionOnGroupFrame", Erl)
 End Sub
 
 
 Public Sub HandleSetHotkeySlot(ByVal UserIndex As Integer)
+    On Error Goto HandleSetHotkeySlot_Err
 On Error GoTo HandleSetHotkeySlot_Err:
     With UserList(UserIndex)
         Dim SlotIndex As Byte
@@ -10449,9 +11226,13 @@ On Error GoTo HandleSetHotkeySlot_Err:
     Exit Sub
 HandleSetHotkeySlot_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSetHotkeySlot", Erl)
+    Exit Sub
+HandleSetHotkeySlot_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleSetHotkeySlot", Erl)
 End Sub
 
 Public Sub HandleUseHKeySlot(ByVal UserIndex As Integer)
+    On Error Goto HandleUseHKeySlot_Err
 On Error GoTo HandleUseHKeySlot_Err:
     Dim SlotIndex As Byte
     SlotIndex = Reader.ReadInt8
@@ -10488,10 +11269,14 @@ On Error GoTo HandleUseHKeySlot_Err:
     Exit Sub
 HandleUseHKeySlot_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseHKeySlot", Erl)
+    Exit Sub
+HandleUseHKeySlot_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseHKeySlot", Erl)
 End Sub
 
 
 Public Sub HandleAntiCheatMessage(ByVal UserIndex As Integer)
+    On Error Goto HandleAntiCheatMessage_Err
 On Error GoTo AntiCheatMessage_Err:
     Dim Data() As Byte
     Call Reader.ReadSafeArrayInt8(Data)
@@ -10499,11 +11284,18 @@ On Error GoTo AntiCheatMessage_Err:
     Exit Sub
 AntiCheatMessage_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.AntiCheatMessage", Erl)
+    Exit Sub
+HandleAntiCheatMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleAntiCheatMessage", Erl)
 End Sub
 
 Public Sub HendleRequestLobbyList(ByVal UserIndex As Integer)
+    On Error Goto HendleRequestLobbyList_Err
 On Error GoTo HendleRequestLobbyList_Err:
     Call WriteUpdateLobbyList(UserIndex)
+    Exit Sub
+HendleRequestLobbyList_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HendleRequestLobbyList", Erl)
     Exit Sub
 HendleRequestLobbyList_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HendleRequestLobbyList", Erl)

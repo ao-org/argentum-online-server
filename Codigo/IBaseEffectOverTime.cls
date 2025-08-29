@@ -76,6 +76,10 @@ Public Property Get EotId() As Integer
 End Property
 
 Public Sub Update(ByVal deltaTime As Long)
+    On Error Goto Update_Err
+    Exit Sub
+Update_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseEffectOverTime.Update", Erl)
 End Sub
 
 Public Property Get EffectType() As e_EffectType
@@ -88,40 +92,80 @@ Public Property Let RemoveMe(ByVal value As Boolean)
 End Property
 
 Public Function Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
+    On Error Goto Reset_Err
+    Exit Function
+Reset_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseEffectOverTime.Reset", Erl)
 End Function
 
 Public Sub OnRemove()
+    On Error Goto OnRemove_Err
+    Exit Sub
+OnRemove_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseEffectOverTime.OnRemove", Erl)
 End Sub
 
 'called when the owner of the effect cast any spell
 Public Sub TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
+    On Error Goto TargetUseMagic_Err
+    Exit Sub
+TargetUseMagic_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseEffectOverTime.TargetUseMagic", Erl)
 End Sub
 
 'called when the owner of the effect is attacking some target it should handle a ditHit or FailedAttack after this call
 Public Sub TartgetWillAtack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto TartgetWillAtack_Err
+    Exit Sub
+TartgetWillAtack_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseEffectOverTime.TartgetWillAtack", Erl)
 End Sub
 
 'called when the owner of the effect hit something
 Public Sub TartgetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto TartgetDidHit_Err
+    Exit Sub
+TartgetDidHit_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseEffectOverTime.TartgetDidHit", Erl)
 End Sub
 
 'called when the owner of the effect fails and attacks
 Public Sub TargetFailedAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto TargetFailedAttack_Err
+    Exit Sub
+TargetFailedAttack_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseEffectOverTime.TargetFailedAttack", Erl)
 End Sub
 
 'called when the owner of the effect is damaged
 Public Sub TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto TargetWasDamaged_Err
+    Exit Sub
+TargetWasDamaged_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseEffectOverTime.TargetWasDamaged", Erl)
 End Sub
 
 'called to get damage reduction if requiered
 Public Function ApplyDamageReduction(ByVal Damage As Long, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType) As Long
+    On Error Goto ApplyDamageReduction_Err
+    Exit Function
+ApplyDamageReduction_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseEffectOverTime.ApplyDamageReduction", Erl)
 End Function
 
 'called when the owner of the effect attack a position (like a player attack anything infornt of him)
 Public Sub TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
+    On Error Goto TargetWillAttackPosition_Err
+    Exit Sub
+TargetWillAttackPosition_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseEffectOverTime.TargetWillAttackPosition", Erl)
 End Sub
 
 Public Function ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
+    On Error Goto ChangeTarget_Err
+    Exit Function
+ChangeTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseEffectOverTime.ChangeTarget", Erl)
 End Function
 
 Public Property Get KeepAfterDead() As Boolean
@@ -131,4 +175,8 @@ Public Property Get CallBacksMask() As Long
 End Property
 
 Public Sub TargetChangeTerrain()
+    On Error Goto TargetChangeTerrain_Err
+    Exit Sub
+TargetChangeTerrain_Err:
+    Call TraceError(Err.Number, Err.Description, "IBaseEffectOverTime.TargetChangeTerrain", Erl)
 End Sub

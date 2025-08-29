@@ -96,6 +96,7 @@ End Enum
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Public Sub LoadGuildsDB()
+    On Error Goto LoadGuildsDB_Err
         
         On Error GoTo LoadGuildsDB_Err
 
@@ -120,9 +121,13 @@ Public Sub LoadGuildsDB()
         Exit Sub
 LoadGuildsDB_Err:
 122     Call TraceError(Err.Number, Err.Description, "modGuilds.LoadGuildsDB", Erl)
+    Exit Sub
+LoadGuildsDB_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.LoadGuildsDB", Erl)
 End Sub
 
 Public Function m_ConectarMiembroAClan(ByVal UserIndex As Integer, ByVal GuildIndex As Integer) As Boolean
+    On Error Goto m_ConectarMiembroAClan_Err
         
         On Error GoTo m_ConectarMiembroAClan_Err
         
@@ -136,9 +141,13 @@ Public Function m_ConectarMiembroAClan(ByVal UserIndex As Integer, ByVal GuildIn
         Exit Function
 m_ConectarMiembroAClan_Err:
 110     Call TraceError(Err.Number, Err.Description, "modGuilds.m_ConectarMiembroAClan", Erl)
+    Exit Function
+m_ConectarMiembroAClan_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.m_ConectarMiembroAClan", Erl)
 End Function
 
 Public Sub m_DesconectarMiembroDelClan(ByVal UserIndex As Integer, ByVal GuildIndex As Integer)
+    On Error Goto m_DesconectarMiembroDelClan_Err
         
         On Error GoTo m_DesconectarMiembroDelClan_Err
         
@@ -153,17 +162,25 @@ m_DesconectarMiembroDelClan_Err:
 104     Call TraceError(Err.Number, Err.Description, "modGuilds.m_DesconectarMiembroDelClan", Erl)
 
         
+    Exit Sub
+m_DesconectarMiembroDelClan_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.m_DesconectarMiembroDelClan", Erl)
 End Sub
 
 Private Function m_EsGuildLeader(ByRef UserId As Long, ByVal GuildIndex As Integer) As Boolean
+    On Error Goto m_EsGuildLeader_Err
     On Error GoTo m_EsGuildLeader_Err
 100     m_EsGuildLeader = (UserId = guilds(GuildIndex).GetLeader)
         Exit Function
 m_EsGuildLeader_Err:
 102     Call TraceError(Err.Number, Err.Description, "modGuilds.m_EsGuildLeader", Erl)
+    Exit Function
+m_EsGuildLeader_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.m_EsGuildLeader", Erl)
 End Function
 
 Private Function m_EsGuildFounder(ByRef PJ As String, ByVal GuildIndex As Integer) As Boolean
+    On Error Goto m_EsGuildFounder_Err
         
         On Error GoTo m_EsGuildFounder_Err
         
@@ -176,9 +193,13 @@ m_EsGuildFounder_Err:
 102     Call TraceError(Err.Number, Err.Description, "modGuilds.m_EsGuildFounder", Erl)
 
         
+    Exit Function
+m_EsGuildFounder_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.m_EsGuildFounder", Erl)
 End Function
 
 Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal ExpellUserId As Long) As Integer
+    On Error Goto m_EcharMiembroDeClan_Err
     On Error GoTo m_EcharMiembroDeClan_Err
 
         'UI echa a Expulsado del clan de Expulsado
@@ -240,9 +261,13 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal ExpellUs
         Exit Function
 m_EcharMiembroDeClan_Err:
 166     Call TraceError(Err.Number, Err.Description, "modGuilds.m_EcharMiembroDeClan", Erl)
+    Exit Function
+m_EcharMiembroDeClan_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.m_EcharMiembroDeClan", Erl)
 End Function
 
 Public Sub ActualizarWebSite(ByVal UserIndex As Integer, ByRef Web As String)
+    On Error Goto ActualizarWebSite_Err
         
         On Error GoTo ActualizarWebSite_Err
         
@@ -264,9 +289,13 @@ ActualizarWebSite_Err:
 108     Call TraceError(Err.Number, Err.Description, "modGuilds.ActualizarWebSite", Erl)
 
         
+    Exit Sub
+ActualizarWebSite_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.ActualizarWebSite", Erl)
 End Sub
 
 Public Sub ChangeCodexAndDesc(ByRef Desc As String, ByVal GuildIndex As Integer)
+    On Error Goto ChangeCodexAndDesc_Err
         
         On Error GoTo ChangeCodexAndDesc_Err
         
@@ -287,9 +316,13 @@ ChangeCodexAndDesc_Err:
 106     Call TraceError(Err.Number, Err.Description, "modGuilds.ChangeCodexAndDesc", Erl)
 
         
+    Exit Sub
+ChangeCodexAndDesc_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.ChangeCodexAndDesc", Erl)
 End Sub
 
 Public Sub ActualizarNoticias(ByVal UserIndex As Integer, ByRef Datos As String)
+    On Error Goto ActualizarNoticias_Err
         
         On Error GoTo ActualizarNoticias_Err
         
@@ -311,9 +344,13 @@ ActualizarNoticias_Err:
 108     Call TraceError(Err.Number, Err.Description, "modGuilds.ActualizarNoticias", Erl)
 
         
+    Exit Sub
+ActualizarNoticias_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.ActualizarNoticias", Erl)
 End Sub
 
 Public Function CrearNuevoClan(ByVal FundadorIndex As Integer, ByRef Desc As String, ByRef GuildName As String, ByVal Alineacion As e_ALINEACION_GUILD, ByRef refError As String) As Boolean
+    On Error Goto CrearNuevoClan_Err
         
         On Error GoTo CrearNuevoClan_Err
         
@@ -388,9 +425,13 @@ CrearNuevoClan_Err:
 154     Call TraceError(Err.Number, Err.Description, "modGuilds.CrearNuevoClan", Erl)
 
         
+    Exit Function
+CrearNuevoClan_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.CrearNuevoClan", Erl)
 End Function
 
 Public Sub SendGuildNews(ByVal UserIndex As Integer, ByRef guildList() As String)
+    On Error Goto SendGuildNews_Err
         
         On Error GoTo SendGuildNews_Err
         
@@ -423,9 +464,13 @@ SendGuildNews_Err:
 114     Call TraceError(Err.Number, Err.Description, "modGuilds.SendGuildNews", Erl)
 
         
+    Exit Sub
+SendGuildNews_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.SendGuildNews", Erl)
 End Sub
 
 Public Function m_PuedeSalirDeClan(ByRef UserId As Long, ByVal GuildIndex As Integer, ByVal QuienLoEchaUI As Integer) As Boolean
+    On Error Goto m_PuedeSalirDeClan_Err
         'sale solo si no es fundador del clan.
         On Error GoTo m_PuedeSalirDeClan_Err
 
@@ -451,9 +496,13 @@ Public Function m_PuedeSalirDeClan(ByRef UserId As Long, ByVal GuildIndex As Int
         Exit Function
 m_PuedeSalirDeClan_Err:
 116     Call TraceError(Err.Number, Err.Description, "modGuilds.m_PuedeSalirDeClan", Erl)
+    Exit Function
+m_PuedeSalirDeClan_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.m_PuedeSalirDeClan", Erl)
 End Function
 
 Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion As e_ALINEACION_GUILD, ByRef refError As String) As Boolean
+    On Error Goto PuedeFundarUnClan_Err
         
         On Error GoTo PuedeFundarUnClan_Err
         
@@ -538,9 +587,13 @@ PuedeFundarUnClan_Err:
 138     Call TraceError(Err.Number, Err.Description, "modGuilds.PuedeFundarUnClan", Erl)
 
         
+    Exit Function
+PuedeFundarUnClan_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.PuedeFundarUnClan", Erl)
 End Function
 
 Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal GuildIndex As Integer) As Boolean
+    On Error Goto m_EstadoPermiteEntrarChar_Err
         
         On Error GoTo m_EstadoPermiteEntrarChar_Err
         
@@ -600,9 +653,13 @@ m_EstadoPermiteEntrarChar_Err:
 130     Call TraceError(Err.Number, Err.Description, "modGuilds.m_EstadoPermiteEntrarChar", Erl)
 
         
+    Exit Function
+m_EstadoPermiteEntrarChar_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.m_EstadoPermiteEntrarChar", Erl)
 End Function
 
 Private Function m_EstadoPermiteEntrar(ByVal UserIndex As Integer, ByVal GuildIndex As Integer) As Boolean
+    On Error Goto m_EstadoPermiteEntrar_Err
         On Error GoTo m_EstadoPermiteEntrar_Err
 
 100     Select Case guilds(GuildIndex).Alineacion
@@ -630,9 +687,13 @@ m_EstadoPermiteEntrar_Err:
 112     Call TraceError(Err.Number, Err.Description, "modGuilds.m_EstadoPermiteEntrar", Erl)
 
 
+    Exit Function
+m_EstadoPermiteEntrar_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.m_EstadoPermiteEntrar", Erl)
 End Function
 
 Public Function String2Alineacion(ByRef S As String) As e_ALINEACION_GUILD
+    On Error Goto String2Alineacion_Err
         
         On Error GoTo String2Alineacion_Err
 
@@ -658,9 +719,13 @@ String2Alineacion_Err:
 112     Call TraceError(Err.Number, Err.Description, "modGuilds.String2Alineacion", Erl)
 
         
+    Exit Function
+String2Alineacion_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.String2Alineacion", Erl)
 End Function
 
 Public Function Alineacion2String(ByVal Alineacion As e_ALINEACION_GUILD) As String
+    On Error Goto Alineacion2String_Err
         
         On Error GoTo Alineacion2String_Err
         
@@ -690,9 +755,13 @@ Alineacion2String_Err:
 112     Call TraceError(Err.Number, Err.Description, "modGuilds.Alineacion2String", Erl)
 
         
+    Exit Function
+Alineacion2String_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.Alineacion2String", Erl)
 End Function
 
 Public Function Relacion2String(ByVal Relacion As e_RELACIONES_GUILD) As String
+    On Error Goto Relacion2String_Err
         
         On Error GoTo Relacion2String_Err
         
@@ -720,9 +789,13 @@ Relacion2String_Err:
 116     Call TraceError(Err.Number, Err.Description, "modGuilds.Relacion2String", Erl)
 
         
+    Exit Function
+Relacion2String_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.Relacion2String", Erl)
 End Function
 
 Public Function String2Relacion(ByVal S As String) As e_RELACIONES_GUILD
+    On Error Goto String2Relacion_Err
         
         On Error GoTo String2Relacion_Err
         
@@ -750,9 +823,13 @@ String2Relacion_Err:
 116     Call TraceError(Err.Number, Err.Description, "modGuilds.String2Relacion", Erl)
 
         
+    Exit Function
+String2Relacion_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.String2Relacion", Erl)
 End Function
 
 Private Function GuildNameValido(ByVal cad As String) As Boolean
+    On Error Goto GuildNameValido_Err
         
         On Error GoTo GuildNameValido_Err
         
@@ -785,9 +862,13 @@ GuildNameValido_Err:
 114     Call TraceError(Err.Number, Err.Description, "modGuilds.GuildNameValido", Erl)
 
         
+    Exit Function
+GuildNameValido_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GuildNameValido", Erl)
 End Function
 
 Public Function YaExiste(ByVal GuildName As String) As Boolean
+    On Error Goto YaExiste_Err
     On Error GoTo YaExiste_Err
         Dim i As Integer
 100     YaExiste = False
@@ -799,9 +880,13 @@ Public Function YaExiste(ByVal GuildName As String) As Boolean
         Exit Function
 YaExiste_Err:
 112     Call TraceError(Err.Number, Err.Description, "modGuilds.YaExiste", Erl)
+    Exit Function
+YaExiste_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.YaExiste", Erl)
 End Function
 
 Public Function GuildIndex(ByRef GuildName As String) As Integer
+    On Error Goto GuildIndex_Err
         On Error GoTo GuildIndex_Err
 
         'me da el indice del guildname
@@ -820,9 +905,13 @@ Public Function GuildIndex(ByRef GuildName As String) As Integer
 
 GuildIndex_Err:
 112     Call TraceError(Err.Number, Err.Description, "modGuilds.GuildIndex", Erl)
+    Exit Function
+GuildIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GuildIndex", Erl)
 End Function
 
 Public Function m_ListaDeMiembrosOnline(ByVal UserIndex As Integer, ByVal GuildIndex As Integer) As String
+    On Error Goto m_ListaDeMiembrosOnline_Err
         
         On Error GoTo m_ListaDeMiembrosOnline_Err
         
@@ -853,9 +942,13 @@ m_ListaDeMiembrosOnline_Err:
 114     Call TraceError(Err.Number, Err.Description, "modGuilds.m_ListaDeMiembrosOnline", Erl)
 
         
+    Exit Function
+m_ListaDeMiembrosOnline_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.m_ListaDeMiembrosOnline", Erl)
 End Function
 
 Public Function PrepareGuildsList() As String()
+    On Error Goto PrepareGuildsList_Err
         
         On Error GoTo PrepareGuildsList_Err
         
@@ -884,9 +977,13 @@ PrepareGuildsList_Err:
 114     Call TraceError(Err.Number, Err.Description, "modGuilds.PrepareGuildsList", Erl)
 
         
+    Exit Function
+PrepareGuildsList_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.PrepareGuildsList", Erl)
 End Function
 
 Public Sub SendGuildDetails(ByVal UserIndex As Integer, ByRef GuildName As String)
+    On Error Goto SendGuildDetails_Err
         
         On Error GoTo SendGuildDetails_Err
         
@@ -913,9 +1010,13 @@ SendGuildDetails_Err:
 108     Call TraceError(Err.Number, Err.Description, "modGuilds.SendGuildDetails", Erl)
 
         
+    Exit Sub
+SendGuildDetails_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.SendGuildDetails", Erl)
 End Sub
 
 Public Sub SendGuildLeaderInfo(ByVal UserIndex As Integer)
+    On Error Goto SendGuildLeaderInfo_Err
     On Error GoTo SendGuildLeaderInfo_Err
     
         Dim GI              As Integer
@@ -954,9 +1055,13 @@ SendGuildLeaderInfo_Err:
 120     Call TraceError(Err.Number, Err.Description, "modGuilds.SendGuildLeaderInfo", Erl)
 
         
+    Exit Sub
+SendGuildLeaderInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.SendGuildLeaderInfo", Erl)
 End Sub
 
 Public Function m_Iterador_ProximoUserIndex(ByVal GuildIndex As Integer) As Integer
+    On Error Goto m_Iterador_ProximoUserIndex_Err
         'itera sobre los onlinemembers
         
         On Error GoTo m_Iterador_ProximoUserIndex_Err
@@ -975,9 +1080,13 @@ m_Iterador_ProximoUserIndex_Err:
 106     Call TraceError(Err.Number, Err.Description, "modGuilds.m_Iterador_ProximoUserIndex", Erl)
 
         
+    Exit Function
+m_Iterador_ProximoUserIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.m_Iterador_ProximoUserIndex", Erl)
 End Function
 
 Public Function Iterador_ProximoGM(ByVal GuildIndex As Integer) As Integer
+    On Error Goto Iterador_ProximoGM_Err
         'itera sobre los gms escuchando este clan
         
         On Error GoTo Iterador_ProximoGM_Err
@@ -994,9 +1103,13 @@ Public Function Iterador_ProximoGM(ByVal GuildIndex As Integer) As Integer
 
 Iterador_ProximoGM_Err:
 106     Call TraceError(Err.Number, Err.Description, "modGuilds.Iterador_ProximoGM", Erl)
+    Exit Function
+Iterador_ProximoGM_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.Iterador_ProximoGM", Erl)
 End Function
 
 Public Function GMEscuchaClan(ByVal UserIndex As Integer, ByVal GuildName As String) As Integer
+    On Error Goto GMEscuchaClan_Err
         
         On Error GoTo GMEscuchaClan_Err
         
@@ -1049,9 +1162,13 @@ GMEscuchaClan_Err:
 134     Call TraceError(Err.Number, Err.Description, "modGuilds.GMEscuchaClan", Erl)
 
         
+    Exit Function
+GMEscuchaClan_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GMEscuchaClan", Erl)
 End Function
 
 Public Sub GMDejaDeEscucharClan(ByVal UserIndex As Integer, ByVal GuildIndex As Integer)
+    On Error Goto GMDejaDeEscucharClan_Err
         'el index lo tengo que tener de cuando me puse a escuchar
         
         On Error GoTo GMDejaDeEscucharClan_Err
@@ -1066,17 +1183,25 @@ GMDejaDeEscucharClan_Err:
 104     Call TraceError(Err.Number, Err.Description, "modGuilds.GMDejaDeEscucharClan", Erl)
 
         
+    Exit Sub
+GMDejaDeEscucharClan_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GMDejaDeEscucharClan", Erl)
 End Sub
 
 Public Function PersonajeEsLeader(ByVal CharId As Long) As Boolean
+    On Error Goto PersonajeEsLeader_Err
         Dim GuildIndex As Integer
 100     GuildIndex = GetUserGuildIndexDatabase(CharId)
 102     If GuildIndex > 0 Then
 104         If m_EsGuildLeader(CharId, GuildIndex) Then PersonajeEsLeader = True
         End If
+    Exit Function
+PersonajeEsLeader_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.PersonajeEsLeader", Erl)
 End Function
 
 Public Sub a_RechazarAspiranteChar(ByRef Aspirante As String, ByVal guild As Integer, ByRef Detalles As String)
+    On Error Goto a_RechazarAspiranteChar_Err
         
         On Error GoTo a_RechazarAspiranteChar_Err
         
@@ -1105,9 +1230,13 @@ a_RechazarAspiranteChar_Err:
 114     Call TraceError(Err.Number, Err.Description, "modGuilds.a_RechazarAspiranteChar", Erl)
 
         
+    Exit Sub
+a_RechazarAspiranteChar_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.a_RechazarAspiranteChar", Erl)
 End Sub
 
 Public Function a_RechazarAspirante(ByVal UserIndex As Integer, ByRef nombre As String, ByRef refError As String) As Boolean
+    On Error Goto a_RechazarAspirante_Err
         
         On Error GoTo a_RechazarAspirante_Err
 
@@ -1130,9 +1259,13 @@ Public Function a_RechazarAspirante(ByVal UserIndex As Integer, ByRef nombre As 
 
 a_RechazarAspirante_Err:
 120     Call TraceError(Err.Number, Err.Description, "modGuilds.a_RechazarAspirante", Erl)
+    Exit Function
+a_RechazarAspirante_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.a_RechazarAspirante", Erl)
 End Function
 
 Public Function a_DetallesAspirante(ByVal UserIndex As Integer, ByRef name As String) As String
+    On Error Goto a_DetallesAspirante_Err
         
         On Error GoTo a_DetallesAspirante_Err
 
@@ -1156,9 +1289,13 @@ a_DetallesAspirante_Err:
 112     Call TraceError(Err.Number, Err.Description, "modGuilds.a_DetallesAspirante", Erl)
 
         
+    Exit Function
+a_DetallesAspirante_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.a_DetallesAspirante", Erl)
 End Function
 
 Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As String)
+    On Error Goto SendDetallesPersonaje_Err
 
         Dim GI     As Integer
         Dim NroAsp As Integer
@@ -1225,9 +1362,13 @@ Error:
         Else
 146         Call LogError("[" & Err.Number & "] " & Err.Description & " En la rutina SendDetallesPersonaje, por el usuario " & UserList(UserIndex).Name & " (" & UserIndex & " ), pidiendo informacion sobre el personaje " & Personaje)
         End If
+    Exit Sub
+SendDetallesPersonaje_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.SendDetallesPersonaje", Erl)
 End Sub
 
 Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As String, ByRef Solicitud As String, ByRef refError As String) As Boolean
+    On Error Goto a_NuevoAspirante_Err
         
         On Error GoTo a_NuevoAspirante_Err
         
@@ -1309,9 +1450,13 @@ a_NuevoAspirante_Err:
 152     Call TraceError(Err.Number, Err.Description, "modGuilds.a_NuevoAspirante", Erl)
 
         
+    Exit Function
+a_NuevoAspirante_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.a_NuevoAspirante", Erl)
 End Function
 
 Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante As String, ByRef refError As String) As Boolean
+    On Error Goto a_AceptarAspirante_Err
         
         On Error GoTo a_AceptarAspirante_Err
         
@@ -1407,9 +1552,13 @@ a_AceptarAspirante_Err:
 166     Call TraceError(Err.Number, Err.Description, "modGuilds.a_AceptarAspirante", Erl)
 
         
+    Exit Function
+a_AceptarAspirante_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.a_AceptarAspirante", Erl)
 End Function
 
 Public Function GuildName(ByVal GuildIndex As Integer) As String
+    On Error Goto GuildName_Err
         
         On Error GoTo GuildName_Err
         
@@ -1425,9 +1574,13 @@ GuildName_Err:
 104     Call TraceError(Err.Number, Err.Description, "modGuilds.GuildName", Erl)
 
         
+    Exit Function
+GuildName_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GuildName", Erl)
 End Function
 
 Public Function GuildLeader(ByVal GuildIndex As Integer) As String
+    On Error Goto GuildLeader_Err
         
         On Error GoTo GuildLeader_Err
         
@@ -1442,9 +1595,13 @@ GuildLeader_Err:
 104     Call TraceError(Err.Number, Err.Description, "modGuilds.GuildLeader", Erl)
 
         
+    Exit Function
+GuildLeader_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GuildLeader", Erl)
 End Function
 
 Public Function GuildAlignment(ByVal GuildIndex As Integer) As String
+    On Error Goto GuildAlignment_Err
         
         On Error GoTo GuildAlignment_Err
         
@@ -1460,10 +1617,14 @@ GuildAlignment_Err:
 104     Call TraceError(Err.Number, Err.Description, "modGuilds.GuildAlignment", Erl)
 
         
+    Exit Function
+GuildAlignment_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GuildAlignment", Erl)
 End Function
 
 
 Public Function GuildAlignmentIndex(ByVal GuildIndex As Integer) As e_ALINEACION_GUILD
+    On Error Goto GuildAlignmentIndex_Err
         
         On Error GoTo GuildAlignmentIndex_Err
         
@@ -1478,9 +1639,13 @@ GuildAlignmentIndex_Err:
 104     Call TraceError(Err.Number, Err.Description, "modGuilds.GuildAlignmentIndex", Erl)
 
         
+    Exit Function
+GuildAlignmentIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GuildAlignmentIndex", Erl)
 End Function
 
 Public Function NivelDeClan(ByVal GuildIndex As Integer) As Byte
+    On Error Goto NivelDeClan_Err
         
         On Error GoTo NivelDeClan_Err
         
@@ -1496,9 +1661,13 @@ NivelDeClan_Err:
 104     Call TraceError(Err.Number, Err.Description, "modGuilds.NivelDeClan", Erl)
 
         
+    Exit Function
+NivelDeClan_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.NivelDeClan", Erl)
 End Function
 
 Public Function Alineacion(ByVal GuildIndex As Integer) As Byte
+    On Error Goto Alineacion_Err
         
         On Error GoTo Alineacion_Err
         
@@ -1514,9 +1683,13 @@ Alineacion_Err:
 104     Call TraceError(Err.Number, Err.Description, "modGuilds.Alineacion", Erl)
 
         
+    Exit Function
+Alineacion_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.Alineacion", Erl)
 End Function
 
 Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
+    On Error Goto CheckClanExp_Err
         
         On Error GoTo CheckClanExp_Err
         
@@ -1574,9 +1747,13 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
 CheckClanExp_Err:
 154     Call TraceError(Err.Number, Err.Description, "modGuilds.CheckClanExp", Erl)
         
+    Exit Sub
+CheckClanExp_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.CheckClanExp", Erl)
 End Sub
 
 Public Function GetRequiredExpForGuildLevel(ByVal CurrentLevel As Integer) As Long
+    On Error Goto GetRequiredExpForGuildLevel_Err
 128         If CurrentLevel = 1 Then
 130             GetRequiredExpForGuildLevel = 1000
 132         ElseIf CurrentLevel = 2 Then
@@ -1590,8 +1767,12 @@ Public Function GetRequiredExpForGuildLevel(ByVal CurrentLevel As Integer) As Lo
             Else
 144             GetRequiredExpForGuildLevel = 0
             End If
+    Exit Function
+GetRequiredExpForGuildLevel_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GetRequiredExpForGuildLevel", Erl)
 End Function
 Public Function MiembrosPermite(ByVal GI As Integer) As Byte
+    On Error Goto MiembrosPermite_Err
         
         On Error GoTo MiembrosPermite_Err
         
@@ -1629,9 +1810,13 @@ MiembrosPermite_Err:
 118     Call TraceError(Err.Number, Err.Description, "modGuilds.MiembrosPermite", Erl)
 
         
+    Exit Function
+MiembrosPermite_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.MiembrosPermite", Erl)
 End Function
 
 Public Function GetUserGuildMember(ByVal UserName As String) As String
+    On Error Goto GetUserGuildMember_Err
         
         On Error GoTo GetUserGuildMember_Err
 
@@ -1643,9 +1828,13 @@ GetUserGuildMember_Err:
 106     Call TraceError(Err.Number, Err.Description, "modGuilds.GetUserGuildMember", Erl)
 
         
+    Exit Function
+GetUserGuildMember_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GetUserGuildMember", Erl)
 End Function
 
 Public Function GetUserGuildAspirant(ByVal UserName As String) As Integer
+    On Error Goto GetUserGuildAspirant_Err
         
         On Error GoTo GetUserGuildAspirant_Err
 
@@ -1657,9 +1846,13 @@ GetUserGuildAspirant_Err:
 106     Call TraceError(Err.Number, Err.Description, "modGuilds.GetUserGuildAspirant", Erl)
 
         
+    Exit Function
+GetUserGuildAspirant_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GetUserGuildAspirant", Erl)
 End Function
 
 Public Function GetUserGuildPedidos(ByVal UserName As String) As String
+    On Error Goto GetUserGuildPedidos_Err
         
         On Error GoTo GetUserGuildPedidos_Err
 
@@ -1671,9 +1864,13 @@ GetUserGuildPedidos_Err:
 106     Call TraceError(Err.Number, Err.Description, "modGuilds.GetUserGuildPedidos", Erl)
 
         
+    Exit Function
+GetUserGuildPedidos_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GetUserGuildPedidos", Erl)
 End Function
 
 Public Sub SaveUserGuildRejectionReason(ByVal UserName As String, ByVal Reason As String)
+    On Error Goto SaveUserGuildRejectionReason_Err
         
         On Error GoTo SaveUserGuildRejectionReason_Err
 
@@ -1685,9 +1882,13 @@ SaveUserGuildRejectionReason_Err:
 106     Call TraceError(Err.Number, Err.Description, "modGuilds.SaveUserGuildRejectionReason", Erl)
 
         
+    Exit Sub
+SaveUserGuildRejectionReason_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.SaveUserGuildRejectionReason", Erl)
 End Sub
 
 Public Sub SaveUserGuildIndex(ByVal UserId As Long, ByVal GuildIndex As Integer)
+    On Error Goto SaveUserGuildIndex_Err
         
         On Error GoTo SaveUserGuildIndex_Err
 
@@ -1699,9 +1900,13 @@ SaveUserGuildIndex_Err:
 106     Call TraceError(Err.Number, Err.Description, "modGuilds.SaveUserGuildIndex", Erl)
 
         
+    Exit Sub
+SaveUserGuildIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.SaveUserGuildIndex", Erl)
 End Sub
 
 Public Sub SaveUserGuildAspirant(ByVal UserId As Long, ByVal AspirantIndex As Integer)
+    On Error Goto SaveUserGuildAspirant_Err
         
         On Error GoTo SaveUserGuildAspirant_Err
         
@@ -1713,17 +1918,25 @@ SaveUserGuildAspirant_Err:
 106     Call TraceError(Err.Number, Err.Description, "modGuilds.SaveUserGuildAspirant", Erl)
 
         
+    Exit Sub
+SaveUserGuildAspirant_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.SaveUserGuildAspirant", Erl)
 End Sub
 
 Public Sub SaveUserGuildMember(ByVal UserId As Long, ByVal guilds As String)
+    On Error Goto SaveUserGuildMember_Err
     On Error GoTo SaveUserGuildMember_Err
 104     Call SaveUserGuildMemberDatabase(UserId, guilds)
         Exit Sub
 SaveUserGuildMember_Err:
 106     Call TraceError(Err.Number, Err.Description, "modGuilds.SaveUserGuildMember", Erl)
+    Exit Sub
+SaveUserGuildMember_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.SaveUserGuildMember", Erl)
 End Sub
 
 Public Sub SaveUserGuildPedidos(ByVal UserName As String, ByVal Pedidos As String)
+    On Error Goto SaveUserGuildPedidos_Err
         
         On Error GoTo SaveUserGuildPedidos_Err
         
@@ -1733,9 +1946,13 @@ Public Sub SaveUserGuildPedidos(ByVal UserName As String, ByVal Pedidos As Strin
 
 SaveUserGuildPedidos_Err:
 106     Call TraceError(Err.Number, Err.Description, "modGuilds.SaveUserGuildPedidos", Erl)
+    Exit Sub
+SaveUserGuildPedidos_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.SaveUserGuildPedidos", Erl)
 End Sub
 
 Public Function GetGuildMemberList(ByVal GuildName As String) As Long()
+    On Error Goto GetGuildMemberList_Err
 On Error GoTo GetGuildMemberList_Err
     Dim i As Integer
     GuildName = UCase$(GuildName)
@@ -1747,6 +1964,9 @@ On Error GoTo GetGuildMemberList_Err
     Next i
     Dim EmptyList(0) As Long
     GetGuildMemberList = EmptyList
+    Exit Function
+GetGuildMemberList_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GetGuildMemberList", Erl)
     Exit Function
 GetGuildMemberList_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.GetGuildMemberList", Erl)

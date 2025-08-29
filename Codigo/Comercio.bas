@@ -46,6 +46,7 @@ Public Const REDUCTOR_PRECIOVENTA As Byte = 3
 ' @param Slot Specifies which slot are you trying to sell / buy
 ' @param Cantidad Specifies how many items in that slot are you trying to sell / buy
 Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal Slot As Integer, ByVal Cantidad As Integer)
+    On Error Goto Comercio_Err
         
         On Error GoTo Comercio_Err
         
@@ -238,9 +239,13 @@ Comercio_Err:
 230     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.Comercio", Erl)
 
         
+    Exit Sub
+Comercio_Err:
+    Call TraceError(Err.Number, Err.Description, "Comercio.Comercio", Erl)
 End Sub
 
 Public Sub IniciarComercioNPC(ByVal UserIndex As Integer)
+    On Error Goto IniciarComercioNPC_Err
         '*************************************************
         'Author: Nacho (Integer)
         'Last modified: 2/8/06
@@ -266,9 +271,13 @@ IniciarComercioNPC_Err:
 110     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.IniciarComercioNPC", Erl)
 
         
+    Exit Sub
+IniciarComercioNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "Comercio.IniciarComercioNPC", Erl)
 End Sub
 
 Private Function SlotEnNPCInv(ByVal NpcIndex As Integer, ByVal Objeto As Integer, ByVal Cantidad As Integer) As Integer
+    On Error Goto SlotEnNPCInv_Err
         '*************************************************
         'Devuelve el slot en el cual se debe agregar el nuevo objeto, o 0 si no se debe asignar en ningun lado
         '*************************************************
@@ -312,9 +321,13 @@ SlotEnNPCInv_Err:
 130     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.SlotEnNPCInv", Erl)
 
         
+    Exit Function
+SlotEnNPCInv_Err:
+    Call TraceError(Err.Number, Err.Description, "Comercio.SlotEnNPCInv", Erl)
 End Function
 
 Private Function Descuento(ByVal UserIndex As Integer) As Single
+    On Error Goto Descuento_Err
         '*************************************************
         'Author: Nacho (Integer)
         'Last modified: 2/8/06
@@ -331,6 +344,9 @@ Descuento_Err:
 102     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.Descuento", Erl)
 
         
+    Exit Function
+Descuento_Err:
+    Call TraceError(Err.Number, Err.Description, "Comercio.Descuento", Erl)
 End Function
 
 ''
@@ -340,6 +356,7 @@ End Function
 ' @param npcIndex The index of the NPC
 
 Private Sub UpdateNpcInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal Slot As Byte)
+    On Error Goto UpdateNpcInv_Err
         
             On Error GoTo EnviarNpcInv_Err
 
@@ -393,6 +410,9 @@ EnviarNpcInv_Err:
 132         Call TraceError(Err.Number, Err.Description, "modSistemaComercio.UpdateNpcInv", Erl)
 
         
+    Exit Sub
+UpdateNpcInv_Err:
+    Call TraceError(Err.Number, Err.Description, "Comercio.UpdateNpcInv", Erl)
 End Sub
 
 ''
@@ -403,6 +423,7 @@ End Sub
 ' @param slot The slot to update
 
 Public Sub UpdateNpcInvToAll(ByVal UpdateAll As Boolean, ByVal NpcIndex As Integer, ByVal Slot As Byte)
+    On Error Goto UpdateNpcInvToAll_Err
     '***************************************************
     On Error GoTo ErrHandler:
 
@@ -435,6 +456,9 @@ ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.UpdateNpcInvToAll")
 
     
+    Exit Sub
+UpdateNpcInvToAll_Err:
+    Call TraceError(Err.Number, Err.Description, "Comercio.UpdateNpcInvToAll", Erl)
 End Sub
 
 ''
@@ -443,6 +467,7 @@ End Sub
 ' @param valor  El valor de compra de objeto
 
 Public Function SalePrice(ByVal ObjIndex As Integer) As Single
+    On Error Goto SalePrice_Err
         
         On Error GoTo SalePrice_Err
         
@@ -463,5 +488,8 @@ SalePrice_Err:
 106     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.SalePrice", Erl)
 
         
+    Exit Function
+SalePrice_Err:
+    Call TraceError(Err.Number, Err.Description, "Comercio.SalePrice", Erl)
 End Function
 

@@ -29,6 +29,7 @@ Option Explicit
 
 ' Handles the "Online" message.
 Public Sub HandleOnline(ByVal UserIndex As Integer)
+    On Error Goto HandleOnline_Err
         
         On Error GoTo HandleOnline_Err
         'Ladder 17/12/20 : Envio records de usuarios y uptime
@@ -64,10 +65,14 @@ HandleOnline_Err:
 146     Call TraceError(Err.Number, Err.Description, "Protocol.HandleOnline", Erl)
 148
         
+    Exit Sub
+HandleOnline_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleOnline", Erl)
 End Sub
 
 ' Handles the "Help" message.
 Public Sub HandleHelp(ByVal UserIndex As Integer)
+    On Error Goto HandleHelp_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         On Error GoTo HandleHelp_Err
 
@@ -79,10 +84,14 @@ HandleHelp_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHelp", Erl)
 104
         
+    Exit Sub
+HandleHelp_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleHelp", Erl)
 End Sub
 
 ' Handles the "RequestStats" message.
 Public Sub HandleRequestStats(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestStats_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         On Error GoTo HandleRequestStats_Err
 
@@ -94,10 +103,14 @@ HandleRequestStats_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestStats", Erl)
 104
         
+    Exit Sub
+HandleRequestStats_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleRequestStats", Erl)
 End Sub
 
 ' Handles the "RequestMOTD" message.
 Public Sub HandleRequestMOTD(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestMOTD_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         On Error GoTo HandleRequestMOTD_Err
 
@@ -109,11 +122,15 @@ HandleRequestMOTD_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestMOTD", Erl)
 104
         
+    Exit Sub
+HandleRequestMOTD_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleRequestMOTD", Erl)
 End Sub
 
 
 ' Handles the "UpTime" message.
 Public Sub HandleUpTime(ByVal UserIndex As Integer)
+    On Error Goto HandleUpTime_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         On Error GoTo HandleUpTime_Err
 
@@ -148,10 +165,14 @@ HandleUpTime_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUpTime", Erl)
 124
         
+    Exit Sub
+HandleUpTime_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleUpTime", Erl)
 End Sub
 
 ' Handles the "RoleMasterRequest" message.
 Public Sub HandleRoleMasterRequest(ByVal UserIndex As Integer)
+    On Error Goto HandleRoleMasterRequest_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         On Error GoTo ErrHandler
 
@@ -175,9 +196,13 @@ ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRoleMasterRequest", Erl)
 112
 
+    Exit Sub
+HandleRoleMasterRequest_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleRoleMasterRequest", Erl)
 End Sub
 
 Public Sub HandlePunishments(ByVal UserIndex As Integer)
+    On Error Goto HandlePunishments_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         On Error GoTo ErrHandler
 
@@ -255,9 +280,13 @@ ErrHandler:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePunishments", Erl)
 154
 
+    Exit Sub
+HandlePunishments_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandlePunishments", Erl)
 End Sub
 
 Public Sub HandleGamble(ByVal UserIndex As Integer)
+    On Error Goto HandleGamble_Err
     On Error GoTo HandleGamble_Err
 
     With UserList(UserIndex)
@@ -322,17 +351,29 @@ Public Sub HandleGamble(ByVal UserIndex As Integer)
 
 HandleGamble_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGamble", Erl)
+    Exit Sub
+HandleGamble_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleGamble", Erl)
 End Sub
 
 Public Function GetWinnerMsgID() As Integer
+    On Error Goto GetWinnerMsgID_Err
     GetWinnerMsgID = 1328 + Int(Rnd * 4)
+    Exit Function
+GetWinnerMsgID_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.GetWinnerMsgID", Erl)
 End Function
 
 Public Function GetLoserMsgID() As Integer
+    On Error Goto GetLoserMsgID_Err
     GetLoserMsgID = 1332 + Int(Rnd * 4)
+    Exit Function
+GetLoserMsgID_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.GetLoserMsgID", Erl)
 End Function
 
 Public Sub HandleMapPriceEntrance(ByVal UserIndex As Integer)
+    On Error Goto HandleMapPriceEntrance_Err
     On Error GoTo HandleMapPriceEntrance_Err
     With UserList(UserIndex)
 
@@ -385,10 +426,14 @@ Public Sub HandleMapPriceEntrance(ByVal UserIndex As Integer)
 
 HandleMapPriceEntrance_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMapPriceEntrance", Erl)
+    Exit Sub
+HandleMapPriceEntrance_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleMapPriceEntrance", Erl)
 End Sub
 
  
 Public Sub HandleDenounce(ByVal UserIndex As Integer)
+    On Error Goto HandleDenounce_Err
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
 
@@ -440,9 +485,13 @@ Public Sub HandleDenounce(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDenounce", Erl)
+    Exit Sub
+HandleDenounce_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleDenounce", Erl)
 End Sub
 
 Public Sub HandleGMMessage(ByVal UserIndex As Integer)
+    On Error Goto HandleGMMessage_Err
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
             Dim Message As String
@@ -463,9 +512,13 @@ ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGMMessage", Erl)
 116
 
+    Exit Sub
+HandleGMMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleGMMessage", Erl)
 End Sub
 
 Public Sub HandleShowName(ByVal UserIndex As Integer)
+    On Error Goto HandleShowName_Err
         
         On Error GoTo HandleShowName_Err
 
@@ -488,9 +541,13 @@ HandleShowName_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleShowName", Erl)
 110
         
+    Exit Sub
+HandleShowName_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleShowName", Erl)
 End Sub
 
 Public Sub HandleGoNearby(ByVal UserIndex As Integer)
+    On Error Goto HandleGoNearby_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         On Error GoTo ErrHandler
 
@@ -564,9 +621,13 @@ Public Sub HandleGoNearby(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 154     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGoNearby", Erl)
+    Exit Sub
+HandleGoNearby_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleGoNearby", Erl)
 End Sub
 
 Public Sub HandleWhere(ByVal UserIndex As Integer)
+    On Error Goto HandleWhere_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
@@ -593,9 +654,13 @@ Public Sub HandleWhere(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWhere", Erl)
+    Exit Sub
+HandleWhere_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleWhere", Erl)
 End Sub
 
 Public Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
+    On Error Goto HandleCreaturesInMap_Err
         
         On Error GoTo HandleCreaturesInMap_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -697,9 +762,13 @@ Public Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
         Exit Sub
 HandleCreaturesInMap_Err:
 210     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreaturesInMap", Erl)
+    Exit Sub
+HandleCreaturesInMap_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleCreaturesInMap", Erl)
 End Sub
 
 Public Sub HandleWarpMeToTarget(ByVal UserIndex As Integer)
+    On Error Goto HandleWarpMeToTarget_Err
         
         On Error GoTo HandleWarpMeToTarget_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -719,9 +788,13 @@ HandleWarpMeToTarget_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWarpMeToTarget", Erl)
 110
         
+    Exit Sub
+HandleWarpMeToTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleWarpMeToTarget", Erl)
 End Sub
 
 Public Sub HandleWarpChar(ByVal UserIndex As Integer)
+    On Error Goto HandleWarpChar_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         On Error GoTo ErrHandler
 
@@ -797,9 +870,13 @@ ErrHandler:
 146     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWarpChar", Erl)
 148
 
+    Exit Sub
+HandleWarpChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleWarpChar", Erl)
 End Sub
 
 Public Sub HandleSilence(ByVal UserIndex As Integer)
+    On Error Goto HandleSilence_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         On Error GoTo ErrHandler
 
@@ -888,9 +965,13 @@ ErrHandler:
 164     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSilence", Erl)
 166
 
+    Exit Sub
+HandleSilence_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleSilence", Erl)
 End Sub
 
 Public Sub HandleSOSShowList(ByVal UserIndex As Integer)
+    On Error Goto HandleSOSShowList_Err
         
         On Error GoTo HandleSOSShowList_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -909,10 +990,14 @@ HandleSOSShowList_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSOSShowList", Erl)
 108
         
+    Exit Sub
+HandleSOSShowList_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleSOSShowList", Erl)
 End Sub
 
 
 Public Sub HandleSOSRemove(ByVal UserIndex As Integer)
+    On Error Goto HandleSOSRemove_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         On Error GoTo ErrHandler
 
@@ -931,9 +1016,13 @@ ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSOSRemove", Erl)
 108
 
+    Exit Sub
+HandleSOSRemove_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleSOSRemove", Erl)
 End Sub
 
 Public Sub HandleGoToChar(ByVal UserIndex As Integer)
+    On Error Goto HandleGoToChar_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         On Error GoTo ErrHandler
 
@@ -993,9 +1082,13 @@ ErrHandler:
 142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGoToChar", Erl)
 144
 
+    Exit Sub
+HandleGoToChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleGoToChar", Erl)
 End Sub
 
 Public Sub HandleInvisible(ByVal UserIndex As Integer)
+    On Error Goto HandleInvisible_Err
         On Error GoTo HandleInvisible_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
 100     With UserList(UserIndex)
@@ -1008,9 +1101,13 @@ HandleInvisible_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleInvisible", Erl)
 108
         
+    Exit Sub
+HandleInvisible_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleInvisible", Erl)
 End Sub
 
 Public Sub HandleGMPanel(ByVal UserIndex As Integer)
+    On Error Goto HandleGMPanel_Err
         
         On Error GoTo HandleGMPanel_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -1028,9 +1125,13 @@ HandleGMPanel_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGMPanel", Erl)
 108
         
+    Exit Sub
+HandleGMPanel_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleGMPanel", Erl)
 End Sub
 
 Public Sub HandleRequestUserList(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestUserList_Err
         On Error GoTo HandleRequestUserList_Err
 
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -1072,9 +1173,13 @@ HandleRequestUserList_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestUserList", Erl)
 124
         
+    Exit Sub
+HandleRequestUserList_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleRequestUserList", Erl)
 End Sub
 
 Public Sub HandleWorking(ByVal UserIndex As Integer)
+    On Error Goto HandleWorking_Err
         
         On Error GoTo HandleWorking_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -1114,9 +1219,13 @@ HandleWorking_Err:
 124     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWorking", Erl)
 126
         
+    Exit Sub
+HandleWorking_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleWorking", Erl)
 End Sub
 
 Public Sub HandleHiding(ByVal UserIndex As Integer)
+    On Error Goto HandleHiding_Err
         
         On Error GoTo HandleHiding_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -1160,9 +1269,13 @@ HandleHiding_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHiding", Erl)
 124
         
+    Exit Sub
+HandleHiding_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleHiding", Erl)
 End Sub
 
 Public Sub HandleJail(ByVal UserIndex As Integer)
+    On Error Goto HandleJail_Err
 
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         On Error GoTo ErrHandler
@@ -1239,9 +1352,13 @@ ErrHandler:
 158     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHiding", Erl)
 160
 
+    Exit Sub
+HandleJail_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleJail", Erl)
 End Sub
 
 Public Sub HandleKillNPC(ByVal UserIndex As Integer)
+    On Error Goto HandleKillNPC_Err
         
         On Error GoTo HandleKillNPC_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -1276,9 +1393,13 @@ HandleKillNPC_Err:
 
 128
         
+    Exit Sub
+HandleKillNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleKillNPC", Erl)
 End Sub
 
 Public Sub HandleWarnUser(ByVal UserIndex As Integer)
+    On Error Goto HandleWarnUser_Err
     
         On Error GoTo ErrHandler
 
@@ -1355,9 +1476,13 @@ Public Sub HandleWarnUser(ByVal UserIndex As Integer)
 ErrHandler:
 
 160     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWarnUser", Erl)
+    Exit Sub
+HandleWarnUser_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleWarnUser", Erl)
 End Sub
 
 Public Sub HandleEditChar(ByVal UserIndex As Integer)
+    On Error Goto HandleEditChar_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 
@@ -1795,9 +1920,13 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
 
 ErrHandler:
 716     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEditChar", Erl)
+    Exit Sub
+HandleEditChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleEditChar", Erl)
 End Sub
 
 Public Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestCharInfo_Err
 
         'Author: Fredy Horacio Treboux (liquid)
         'Last Modification: 01/08/07
@@ -1826,10 +1955,14 @@ Public Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharInfo", Erl)
+    Exit Sub
+HandleRequestCharInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleRequestCharInfo", Erl)
 End Sub
 
 ' Handles the "RequestCharStats" message.
 Public Sub HandleRequestCharStats(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestCharStats_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 
@@ -1852,10 +1985,14 @@ Public Sub HandleRequestCharStats(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharStats", Erl)
+    Exit Sub
+HandleRequestCharStats_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleRequestCharStats", Erl)
 End Sub
 
 ' Handles the "RequestCharGold" message.
 Public Sub HandleRequestCharGold(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestCharGold_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 
@@ -1885,11 +2022,15 @@ Public Sub HandleRequestCharGold(ByVal UserIndex As Integer)
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharGold", Erl)
 
+    Exit Sub
+HandleRequestCharGold_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleRequestCharGold", Erl)
 End Sub
 
 
 ' Handles the "RequestCharInventory" message.
 Public Sub HandleRequestCharInventory(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestCharInventory_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 
@@ -1915,9 +2056,13 @@ Public Sub HandleRequestCharInventory(ByVal UserIndex As Integer)
 
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharInventory", Erl)
+    Exit Sub
+HandleRequestCharInventory_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleRequestCharInventory", Erl)
 End Sub
 
 Public Sub HandleRequestCharBank(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestCharBank_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 
@@ -1945,9 +2090,13 @@ Public Sub HandleRequestCharBank(ByVal UserIndex As Integer)
 
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharBank", Erl)
+    Exit Sub
+HandleRequestCharBank_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleRequestCharBank", Erl)
 End Sub
 
 Public Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
+    On Error Goto HandleRequestCharSkills_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 
@@ -1982,9 +2131,13 @@ Public Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 132     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharSkills", Erl)
+    Exit Sub
+HandleRequestCharSkills_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleRequestCharSkills", Erl)
 End Sub
 
 Public Sub HandleReviveChar(ByVal UserIndex As Integer)
+    On Error Goto HandleReviveChar_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 
@@ -2040,9 +2193,13 @@ Public Sub HandleReviveChar(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReviveChar", Erl)
+    Exit Sub
+HandleReviveChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleReviveChar", Erl)
 End Sub
 
 Public Sub HandleOnlineGM(ByVal UserIndex As Integer)
+    On Error Goto HandleOnlineGM_Err
         On Error GoTo HandleOnlineGM_Err
         'Author: Fredy Horacio Treboux (liquid)
         Dim i    As Long
@@ -2076,9 +2233,13 @@ Public Sub HandleOnlineGM(ByVal UserIndex As Integer)
 
 HandleOnlineGM_Err:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleOnlineGM", Erl)
+    Exit Sub
+HandleOnlineGM_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleOnlineGM", Erl)
 End Sub
 
 Public Sub HandleOnlineMap(ByVal UserIndex As Integer)
+    On Error Goto HandleOnlineMap_Err
         On Error GoTo HandleOnlineMap_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2108,9 +2269,13 @@ Public Sub HandleOnlineMap(ByVal UserIndex As Integer)
 
 HandleOnlineMap_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleOnlineMap", Erl)
+    Exit Sub
+HandleOnlineMap_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleOnlineMap", Erl)
 End Sub
 
 Public Sub HandleForgive(ByVal UserIndex As Integer)
+    On Error Goto HandleForgive_Err
         On Error GoTo HandleForgive_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2185,9 +2350,13 @@ Public Sub HandleForgive(ByVal UserIndex As Integer)
 
 HandleForgive_Err:
 142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleForgive", Erl)
+    Exit Sub
+HandleForgive_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleForgive", Erl)
 End Sub
 
 Public Sub HandleKick(ByVal UserIndex As Integer)
+    On Error Goto HandleKick_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 
@@ -2223,9 +2392,13 @@ Public Sub HandleKick(ByVal UserIndex As Integer)
 ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleKick", Erl)
 
+    Exit Sub
+HandleKick_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleKick", Erl)
 End Sub
 
 Public Sub HandleExecute(ByVal UserIndex As Integer)
+    On Error Goto HandleExecute_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
@@ -2252,9 +2425,13 @@ Public Sub HandleExecute(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleExecute", Erl)
+    Exit Sub
+HandleExecute_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleExecute", Erl)
 End Sub
 
 Public Sub HandleBanChar(ByVal UserIndex As Integer)
+    On Error Goto HandleBanChar_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 
@@ -2273,9 +2450,13 @@ Public Sub HandleBanChar(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBanChar", Erl)
+    Exit Sub
+HandleBanChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleBanChar", Erl)
 End Sub
 
 Public Sub HandleUnbanChar(ByVal UserIndex As Integer)
+    On Error Goto HandleUnbanChar_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
@@ -2304,9 +2485,13 @@ Public Sub HandleUnbanChar(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 124     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUnbanChar", Erl)
+    Exit Sub
+HandleUnbanChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleUnbanChar", Erl)
 End Sub
 
 Public Sub HandleNPCFollow(ByVal UserIndex As Integer)
+    On Error Goto HandleNPCFollow_Err
         On Error GoTo HandleNPCFollow_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2327,9 +2512,13 @@ Public Sub HandleNPCFollow(ByVal UserIndex As Integer)
 
 HandleNPCFollow_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleNPCFollow", Erl)
+    Exit Sub
+HandleNPCFollow_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleNPCFollow", Erl)
 End Sub
 
 Public Sub HandleSummonChar(ByVal UserIndex As Integer)
+    On Error Goto HandleSummonChar_Err
     'Author: Nicolas Matias Gonzalez (NIGO)
     On Error GoTo ErrHandler
 100 With UserList(UserIndex)
@@ -2414,9 +2603,13 @@ Public Sub HandleSummonChar(ByVal UserIndex As Integer)
     Exit Sub
 ErrHandler:
 156 Call TraceError(Err.Number, Err.Description, "Protocol.HandleSummonChar", Erl)
+    Exit Sub
+HandleSummonChar_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleSummonChar", Erl)
 End Sub
 
 Public Sub HandleSpawnListRequest(ByVal UserIndex As Integer)
+    On Error Goto HandleSpawnListRequest_Err
         On Error GoTo HandleSpawnListRequest_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2436,9 +2629,13 @@ Public Sub HandleSpawnListRequest(ByVal UserIndex As Integer)
         Exit Sub
 HandleSpawnListRequest_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSpawnListRequest", Erl)
+    Exit Sub
+HandleSpawnListRequest_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleSpawnListRequest", Erl)
 End Sub
 
 Public Sub HandleSpawnCreature(ByVal UserIndex As Integer)
+    On Error Goto HandleSpawnCreature_Err
         On Error GoTo HandleSpawnCreature_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2461,9 +2658,13 @@ Public Sub HandleSpawnCreature(ByVal UserIndex As Integer)
 
 HandleSpawnCreature_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSpawnCreature", Erl)
+    Exit Sub
+HandleSpawnCreature_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleSpawnCreature", Erl)
 End Sub
 
 Public Sub HandleResetNPCInventory(ByVal UserIndex As Integer)
+    On Error Goto HandleResetNPCInventory_Err
         On Error GoTo HandleResetNPCInventory_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2479,9 +2680,13 @@ Public Sub HandleResetNPCInventory(ByVal UserIndex As Integer)
         Exit Sub
 HandleResetNPCInventory_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetNPCInventory", Erl)
+    Exit Sub
+HandleResetNPCInventory_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleResetNPCInventory", Erl)
 End Sub
 
 Public Sub HandleCleanWorld(ByVal UserIndex As Integer)
+    On Error Goto HandleCleanWorld_Err
         On Error GoTo HandleCleanWorld_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2497,9 +2702,13 @@ Public Sub HandleCleanWorld(ByVal UserIndex As Integer)
 
 HandleCleanWorld_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCleanWorld", Erl)
+    Exit Sub
+HandleCleanWorld_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleCleanWorld", Erl)
 End Sub
 
 Public Sub HandleServerMessage(ByVal UserIndex As Integer)
+    On Error Goto HandleServerMessage_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
@@ -2520,9 +2729,13 @@ Public Sub HandleServerMessage(ByVal UserIndex As Integer)
 
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleServerMessage", Erl)
+    Exit Sub
+HandleServerMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleServerMessage", Erl)
 End Sub
 
 Public Sub HandleNickToIP(ByVal UserIndex As Integer)
+    On Error Goto HandleNickToIP_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         'Pablo (ToxicWaste): Agrego para uqe el /nick2ip tambien diga los nicks en esa ip por pedido de la DGM.
         On Error GoTo ErrHandler
@@ -2577,9 +2790,13 @@ Public Sub HandleNickToIP(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleNickToIP", Erl)
+    Exit Sub
+HandleNickToIP_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleNickToIP", Erl)
 End Sub
 
 Public Sub HandleIPToNick(ByVal UserIndex As Integer)
+    On Error Goto HandleIPToNick_Err
         On Error GoTo HandleIPToNick_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2622,9 +2839,13 @@ Public Sub HandleIPToNick(ByVal UserIndex As Integer)
 HandleIPToNick_Err:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleIPToNick", Erl)
     
+    Exit Sub
+HandleIPToNick_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleIPToNick", Erl)
 End Sub
 
 Public Sub HandleTeleportCreate(ByVal UserIndex As Integer)
+    On Error Goto HandleTeleportCreate_Err
         On Error GoTo HandleTeleportCreate_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2682,9 +2903,13 @@ Public Sub HandleTeleportCreate(ByVal UserIndex As Integer)
         Exit Sub
 HandleTeleportCreate_Err:
 142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTeleportCreate", Erl)
+    Exit Sub
+HandleTeleportCreate_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleTeleportCreate", Erl)
 End Sub
 
 Public Sub HandleTeleportDestroy(ByVal UserIndex As Integer)
+    On Error Goto HandleTeleportDestroy_Err
         On Error GoTo HandleTeleportDestroy_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2730,9 +2955,13 @@ Public Sub HandleTeleportDestroy(ByVal UserIndex As Integer)
 
 HandleTeleportDestroy_Err:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTeleportDestroy", Erl)
+    Exit Sub
+HandleTeleportDestroy_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleTeleportDestroy", Erl)
 End Sub
 
 Public Sub HandleRainToggle(ByVal UserIndex As Integer)
+    On Error Goto HandleRainToggle_Err
         On Error GoTo HandleRainToggle_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2755,9 +2984,13 @@ Public Sub HandleRainToggle(ByVal UserIndex As Integer)
         Exit Sub
 HandleRainToggle_Err:
 124     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRainToggle", Erl)
+    Exit Sub
+HandleRainToggle_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleRainToggle", Erl)
 End Sub
 
 Public Sub HandleSetCharDescription(ByVal UserIndex As Integer)
+    On Error Goto HandleSetCharDescription_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
@@ -2777,9 +3010,13 @@ Public Sub HandleSetCharDescription(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSetCharDescription", Erl)
+    Exit Sub
+HandleSetCharDescription_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleSetCharDescription", Erl)
 End Sub
 
 Public Sub HanldeForceMIDIToMap(ByVal UserIndex As Integer)
+    On Error Goto HanldeForceMIDIToMap_Err
         On Error GoTo HanldeForceMIDIToMap_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2807,9 +3044,13 @@ Public Sub HanldeForceMIDIToMap(ByVal UserIndex As Integer)
         Exit Sub
 HanldeForceMIDIToMap_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HanldeForceMIDIToMap", Erl)
+    Exit Sub
+HanldeForceMIDIToMap_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HanldeForceMIDIToMap", Erl)
 End Sub
 
 Public Sub HandleForceWAVEToMap(ByVal UserIndex As Integer)
+    On Error Goto HandleForceWAVEToMap_Err
         On Error GoTo HandleForceWAVEToMap_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2836,9 +3077,13 @@ Public Sub HandleForceWAVEToMap(ByVal UserIndex As Integer)
         Exit Sub
 HandleForceWAVEToMap_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleForceWAVEToMap", Erl)
+    Exit Sub
+HandleForceWAVEToMap_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleForceWAVEToMap", Erl)
 End Sub
 
 Public Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
+    On Error Goto HandleTalkAsNPC_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
@@ -2858,9 +3103,13 @@ Public Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTalkAsNPC", Erl)
+    Exit Sub
+HandleTalkAsNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleTalkAsNPC", Erl)
 End Sub
 
 Public Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
+    On Error Goto HandleDestroyAllItemsInArea_Err
         On Error GoTo HandleDestroyAllItemsInArea_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2889,9 +3138,13 @@ Public Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
         Exit Sub
 HandleDestroyAllItemsInArea_Err:
 124     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDestroyAllItemsInArea", Erl)
+    Exit Sub
+HandleDestroyAllItemsInArea_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleDestroyAllItemsInArea", Erl)
 End Sub
 
 Public Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
+    On Error Goto HandleItemsInTheFloor_Err
         On Error GoTo HandleItemsInTheFloor_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2919,9 +3172,13 @@ Public Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
         Exit Sub
 HandleItemsInTheFloor_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleItemsInTheFloor", Erl)
+    Exit Sub
+HandleItemsInTheFloor_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleItemsInTheFloor", Erl)
 End Sub
 
 Public Sub HandleMakeDumb(ByVal UserIndex As Integer)
+    On Error Goto HandleMakeDumb_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
@@ -2943,9 +3200,13 @@ Public Sub HandleMakeDumb(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMakeDumb", Erl)
+    Exit Sub
+HandleMakeDumb_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleMakeDumb", Erl)
 End Sub
 
 Public Sub HandleMakeDumbNoMore(ByVal UserIndex As Integer)
+    On Error Goto HandleMakeDumbNoMore_Err
         'Last Modification: 12/30/06
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
@@ -2967,9 +3228,13 @@ Public Sub HandleMakeDumbNoMore(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMakeDumbNoMore", Erl)
+    Exit Sub
+HandleMakeDumbNoMore_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleMakeDumbNoMore", Erl)
 End Sub
 
 Public Sub HandleSetTrigger(ByVal UserIndex As Integer)
+    On Error Goto HandleSetTrigger_Err
         On Error GoTo HandleSetTrigger_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -2989,9 +3254,13 @@ Public Sub HandleSetTrigger(ByVal UserIndex As Integer)
         Exit Sub
 HandleSetTrigger_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSetTrigger", Erl)
+    Exit Sub
+HandleSetTrigger_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleSetTrigger", Erl)
 End Sub
 
 Public Sub HandleAskTrigger(ByVal UserIndex As Integer)
+    On Error Goto HandleAskTrigger_Err
         On Error GoTo HandleAskTrigger_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         Dim tTrigger As Byte
@@ -3005,11 +3274,15 @@ Public Sub HandleAskTrigger(ByVal UserIndex As Integer)
         Exit Sub
 HandleAskTrigger_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAskTrigger", Erl)
+    Exit Sub
+HandleAskTrigger_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleAskTrigger", Erl)
 End Sub
 
 
 
 Public Sub HandleCreateItem(ByVal UserIndex As Integer)
+    On Error Goto HandleCreateItem_Err
         On Error GoTo HandleCreateItem_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -3077,9 +3350,13 @@ Public Sub HandleCreateItem(ByVal UserIndex As Integer)
         Exit Sub
 HandleCreateItem_Err:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateItem", Erl)
+    Exit Sub
+HandleCreateItem_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleCreateItem", Erl)
 End Sub
 
 Public Sub HandleDestroyItems(ByVal UserIndex As Integer)
+    On Error Goto HandleDestroyItems_Err
         On Error GoTo HandleDestroyItems_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -3096,9 +3373,13 @@ Public Sub HandleDestroyItems(ByVal UserIndex As Integer)
         Exit Sub
 HandleDestroyItems_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDestroyItems", Erl)
+    Exit Sub
+HandleDestroyItems_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleDestroyItems", Erl)
 End Sub
 
 Public Sub HandleForceMIDIAll(ByVal UserIndex As Integer)
+    On Error Goto HandleForceMIDIAll_Err
         On Error GoTo HandleForceMIDIAll_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -3116,9 +3397,13 @@ Public Sub HandleForceMIDIAll(ByVal UserIndex As Integer)
         Exit Sub
 HandleForceMIDIAll_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleForceMIDIAll", Erl)
+    Exit Sub
+HandleForceMIDIAll_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleForceMIDIAll", Erl)
 End Sub
 
 Public Sub HandleForceWAVEAll(ByVal UserIndex As Integer)
+    On Error Goto HandleForceWAVEAll_Err
         On Error GoTo HandleForceWAVEAll_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -3134,9 +3419,13 @@ Public Sub HandleForceWAVEAll(ByVal UserIndex As Integer)
         Exit Sub
 HandleForceWAVEAll_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleForceWAVEAll", Erl)
+    Exit Sub
+HandleForceWAVEAll_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleForceWAVEAll", Erl)
 End Sub
 
 Public Sub HandleRemovePunishment(ByVal UserIndex As Integer)
+    On Error Goto HandleRemovePunishment_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 
@@ -3174,9 +3463,13 @@ Public Sub HandleRemovePunishment(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 134     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemovePunishment", Erl)
+    Exit Sub
+HandleRemovePunishment_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleRemovePunishment", Erl)
 End Sub
 
 Public Sub HandleTile_BlockedToggle(ByVal UserIndex As Integer)
+    On Error Goto HandleTile_BlockedToggle_Err
         On Error GoTo HandleTile_BlockedToggle_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -3198,9 +3491,13 @@ Public Sub HandleTile_BlockedToggle(ByVal UserIndex As Integer)
         Exit Sub
 HandleTile_BlockedToggle_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTile_BlockedToggle", Erl)
+    Exit Sub
+HandleTile_BlockedToggle_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleTile_BlockedToggle", Erl)
 End Sub
 
 Public Sub HandleKillNPCNoRespawn(ByVal UserIndex As Integer)
+    On Error Goto HandleKillNPCNoRespawn_Err
         On Error GoTo HandleKillNPCNoRespawn_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
@@ -3217,9 +3514,13 @@ Public Sub HandleKillNPCNoRespawn(ByVal UserIndex As Integer)
         Exit Sub
 HandleKillNPCNoRespawn_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleKillNPCNoRespawn", Erl)
+    Exit Sub
+HandleKillNPCNoRespawn_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleKillNPCNoRespawn", Erl)
 End Sub
 
 Public Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
+    On Error Goto HandleKillAllNearbyNPCs_Err
         On Error GoTo HandleKillAllNearbyNPCs_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         'ReyarB
@@ -3247,9 +3548,13 @@ Public Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
         Exit Sub
 HandleKillAllNearbyNPCs_Err:
 124     Call TraceError(Err.Number, Err.Description, "Protocol.HandleKillAllNearbyNPCs", Erl)
+    Exit Sub
+HandleKillAllNearbyNPCs_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleKillAllNearbyNPCs", Erl)
 End Sub
 
 Public Sub HandleLastIP(ByVal UserIndex As Integer)
+    On Error Goto HandleLastIP_Err
         'Author: Martín Trionfetti (HarThaoS) - Fernando Quinteros (Lord Fers)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
@@ -3327,9 +3632,13 @@ Public Sub HandleLastIP(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLastIP", Erl)
+    Exit Sub
+HandleLastIP_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleLastIP", Erl)
 End Sub
 
 Public Sub HandleChangeMOTD(ByVal UserIndex As Integer)
+    On Error Goto HandleChangeMOTD_Err
         On Error GoTo HandleChangeMOTD_Err
         'Author: Juan Martín sotuyo Dodero (Maraxus)
 100     With UserList(UserIndex)
@@ -3352,9 +3661,13 @@ Public Sub HandleChangeMOTD(ByVal UserIndex As Integer)
         Exit Sub
 HandleChangeMOTD_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMOTD", Erl)
+    Exit Sub
+HandleChangeMOTD_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleChangeMOTD", Erl)
 End Sub
 
 Public Sub HandleSetMOTD(ByVal UserIndex As Integer)
+    On Error Goto HandleSetMOTD_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
@@ -3388,9 +3701,13 @@ Public Sub HandleSetMOTD(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSetMOTD", Erl)
+    Exit Sub
+HandleSetMOTD_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleSetMOTD", Erl)
 End Sub
 
 Public Sub HandleCreateNPC(ByVal UserIndex As Integer)
+    On Error Goto HandleCreateNPC_Err
     On Error GoTo HandleCreateNPC_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
 100     With UserList(UserIndex)
@@ -3413,9 +3730,13 @@ Public Sub HandleCreateNPC(ByVal UserIndex As Integer)
         Exit Sub
 HandleCreateNPC_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateNPC", Erl)
+    Exit Sub
+HandleCreateNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleCreateNPC", Erl)
 End Sub
 
 Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
+    On Error Goto HandleCreateNPCWithRespawn_Err
         On Error GoTo HandleCreateNPCWithRespawn_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
 100     With UserList(UserIndex)
@@ -3438,9 +3759,13 @@ Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
 
 HandleCreateNPCWithRespawn_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateNPCWithRespawn", Erl)
+    Exit Sub
+HandleCreateNPCWithRespawn_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleCreateNPCWithRespawn", Erl)
 End Sub
 
 Public Sub HandleImperialArmour(ByVal UserIndex As Integer)
+    On Error Goto HandleImperialArmour_Err
         On Error GoTo HandleImperialArmour_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
 100     With UserList(UserIndex)
@@ -3467,9 +3792,13 @@ Public Sub HandleImperialArmour(ByVal UserIndex As Integer)
         Exit Sub
 HandleImperialArmour_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleImperialArmour", Erl)
+    Exit Sub
+HandleImperialArmour_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleImperialArmour", Erl)
 End Sub
 
 Public Sub HandleChaosArmour(ByVal UserIndex As Integer)
+    On Error Goto HandleChaosArmour_Err
         
         On Error GoTo HandleChaosArmour_Err
 
@@ -3498,9 +3827,13 @@ Public Sub HandleChaosArmour(ByVal UserIndex As Integer)
         Exit Sub
 HandleChaosArmour_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChaosArmour", Erl)
+    Exit Sub
+HandleChaosArmour_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleChaosArmour", Erl)
 End Sub
 
 Public Sub HandleTurnCriminal(ByVal UserIndex As Integer)
+    On Error Goto HandleTurnCriminal_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         On Error GoTo ErrHandler
 
@@ -3518,9 +3851,13 @@ Public Sub HandleTurnCriminal(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTurnCriminal", Erl)
+    Exit Sub
+HandleTurnCriminal_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleTurnCriminal", Erl)
 End Sub
 
 Public Sub HandleAlterName(ByVal UserIndex As Integer)
+    On Error Goto HandleAlterName_Err
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
     On Error GoTo ErrHandler
 
@@ -3585,9 +3922,13 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
 
 ErrHandler:
 150     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAlterName", Erl)
+    Exit Sub
+HandleAlterName_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleAlterName", Erl)
 End Sub
 
 Public Sub HandleDoBackUp(ByVal UserIndex As Integer)
+    On Error Goto HandleDoBackUp_Err
         On Error GoTo HandleDoBackUp_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)
 100     With UserList(UserIndex)
@@ -3598,9 +3939,13 @@ Public Sub HandleDoBackUp(ByVal UserIndex As Integer)
         Exit Sub
 HandleDoBackUp_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDoBackUp", Erl)
+    Exit Sub
+HandleDoBackUp_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleDoBackUp", Erl)
 End Sub
 
 Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
+    On Error Goto HandleChangeMapInfoPK_Err
         
         On Error GoTo HandleChangeMapInfoPK_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)
@@ -3620,9 +3965,13 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
         Exit Sub
 HandleChangeMapInfoPK_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoPK", Erl)
+    Exit Sub
+HandleChangeMapInfoPK_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleChangeMapInfoPK", Erl)
 End Sub
 
 Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
+    On Error Goto HandleChangeMapInfoBackup_Err
         On Error GoTo HandleChangeMapInfoBackup_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)
         'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
@@ -3648,9 +3997,13 @@ Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
 
 HandleChangeMapInfoBackup_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoBackup", Erl)
+    Exit Sub
+HandleChangeMapInfoBackup_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleChangeMapInfoBackup", Erl)
 End Sub
 
 Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
+    On Error Goto HandleChangeMapInfoRestricted_Err
         'Author: Pablo (ToxicWaste)
         'Restringido -> Options: "NEWBIE", "SINMAGIA", "SININVI", "NOPKS", "NOCIUD".
         On Error GoTo ErrHandler
@@ -3697,9 +4050,13 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 150     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoRestricted", Erl)
+    Exit Sub
+HandleChangeMapInfoRestricted_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleChangeMapInfoRestricted", Erl)
 End Sub
 
 Public Sub HandleChangeMapInfoNoMagic(ByVal UserIndex As Integer)
+    On Error Goto HandleChangeMapInfoNoMagic_Err
         On Error GoTo HandleChangeMapInfoNoMagic_Err
         'Author: Pablo (ToxicWaste)
         'MagiaSinEfecto -> Options: "1" , "0".
@@ -3713,9 +4070,13 @@ Public Sub HandleChangeMapInfoNoMagic(ByVal UserIndex As Integer)
         Exit Sub
 HandleChangeMapInfoNoMagic_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoNoMagic", Erl)
+    Exit Sub
+HandleChangeMapInfoNoMagic_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleChangeMapInfoNoMagic", Erl)
 End Sub
 
 Public Sub HandleChangeMapInfoNoInvi(ByVal UserIndex As Integer)
+    On Error Goto HandleChangeMapInfoNoInvi_Err
         On Error GoTo HandleChangeMapInfoNoInvi_Err
         'Author: Pablo (ToxicWaste)
         'InviSinEfecto -> Options: "1", "0"
@@ -3730,9 +4091,13 @@ Public Sub HandleChangeMapInfoNoInvi(ByVal UserIndex As Integer)
         Exit Sub
 HandleChangeMapInfoNoInvi_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoNoInvi", Erl)
+    Exit Sub
+HandleChangeMapInfoNoInvi_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleChangeMapInfoNoInvi", Erl)
 End Sub
 
 Public Sub HandleChangeMapInfoNoResu(ByVal UserIndex As Integer)
+    On Error Goto HandleChangeMapInfoNoResu_Err
         On Error GoTo HandleChangeMapInfoNoResu_Err
         Dim noresu As Boolean
     
@@ -3745,9 +4110,13 @@ Public Sub HandleChangeMapInfoNoResu(ByVal UserIndex As Integer)
         Exit Sub
 HandleChangeMapInfoNoResu_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoNoResu", Erl)
+    Exit Sub
+HandleChangeMapInfoNoResu_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleChangeMapInfoNoResu", Erl)
 End Sub
 
 Public Sub HandleChangeMapInfoLand(ByVal UserIndex As Integer)
+    On Error Goto HandleChangeMapInfoLand_Err
         'Author: Pablo (ToxicWaste)
         'Terreno -> Opciones: "BOSQUE", "NIEVE", "DESIERTO", "CIUDAD", "CAMPO", "DUNGEON".
         On Error GoTo ErrHandler
@@ -3771,9 +4140,13 @@ Public Sub HandleChangeMapInfoLand(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Exit Sub
+HandleChangeMapInfoLand_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleChangeMapInfoLand", Erl)
 End Sub
 
 Public Sub HandleChangeMapInfoZone(ByVal UserIndex As Integer)
+    On Error Goto HandleChangeMapInfoZone_Err
         'Author: Pablo (ToxicWaste)
         'Zona -> Opciones: "BOSQUE", "NIEVE", "DESIERTO", "CIUDAD", "CAMPO", "DUNGEON".
         On Error GoTo ErrHandler
@@ -3798,9 +4171,13 @@ Public Sub HandleChangeMapInfoZone(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Exit Sub
+HandleChangeMapInfoZone_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleChangeMapInfoZone", Erl)
 End Sub
 
 Public Sub HandleChangeMapSetting(ByVal UserIndex As Integer)
+    On Error Goto HandleChangeMapSetting_Err
 On Error GoTo ChangeMapSetting_Err
         Dim SettingType As Byte
         SettingType = Reader.ReadInt8()
@@ -3831,9 +4208,13 @@ On Error GoTo ChangeMapSetting_Err
         Exit Sub
 ChangeMapSetting_Err:
 130     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMapSetting", Erl)
+    Exit Sub
+HandleChangeMapSetting_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleChangeMapSetting", Erl)
 End Sub
 
 Public Sub HandleSaveChars(ByVal UserIndex As Integer)
+    On Error Goto HandleSaveChars_Err
         On Error GoTo HandleSaveChars_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)
 100     With UserList(UserIndex)
@@ -3848,9 +4229,13 @@ Public Sub HandleSaveChars(ByVal UserIndex As Integer)
         Exit Sub
 HandleSaveChars_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSaveChars", Erl)
+    Exit Sub
+HandleSaveChars_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleSaveChars", Erl)
 End Sub
 
 Public Sub HandleCleanSOS(ByVal UserIndex As Integer)
+    On Error Goto HandleCleanSOS_Err
         On Error GoTo HandleCleanSOS_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)
 100     With UserList(UserIndex)
@@ -3862,9 +4247,13 @@ Public Sub HandleCleanSOS(ByVal UserIndex As Integer)
 
 HandleCleanSOS_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCleanSOS", Erl)
+    Exit Sub
+HandleCleanSOS_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleCleanSOS", Erl)
 End Sub
 
 Public Sub HandleShowServerForm(ByVal UserIndex As Integer)
+    On Error Goto HandleShowServerForm_Err
         On Error GoTo HandleShowServerForm_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)
 100     With UserList(UserIndex)
@@ -3876,9 +4265,13 @@ Public Sub HandleShowServerForm(ByVal UserIndex As Integer)
         Exit Sub
 HandleShowServerForm_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleShowServerForm", Erl)
+    Exit Sub
+HandleShowServerForm_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleShowServerForm", Erl)
 End Sub
 
 Public Sub HandleNight(ByVal UserIndex As Integer)
+    On Error Goto HandleNight_Err
         On Error GoTo HandleNight_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)
         'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
@@ -3894,9 +4287,13 @@ Public Sub HandleNight(ByVal UserIndex As Integer)
         Exit Sub
 HandleNight_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleNight", Erl)
+    Exit Sub
+HandleNight_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleNight", Erl)
 End Sub
 
 Public Sub HandleKickAllChars(ByVal UserIndex As Integer)
+    On Error Goto HandleKickAllChars_Err
         On Error GoTo HandleKickAllChars_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)
 100     With UserList(UserIndex)
@@ -3907,9 +4304,13 @@ Public Sub HandleKickAllChars(ByVal UserIndex As Integer)
         Exit Sub
 HandleKickAllChars_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleKickAllChars", Erl)
+    Exit Sub
+HandleKickAllChars_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleKickAllChars", Erl)
 End Sub
 
 Public Sub HandleReloadNPCs(ByVal UserIndex As Integer)
+    On Error Goto HandleReloadNPCs_Err
         On Error GoTo HandleReloadNPCs_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)
         'Reload the Server`s NPC
@@ -3923,9 +4324,13 @@ Public Sub HandleReloadNPCs(ByVal UserIndex As Integer)
         Exit Sub
 HandleReloadNPCs_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReloadNPCs", Erl)
+    Exit Sub
+HandleReloadNPCs_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleReloadNPCs", Erl)
 End Sub
 
 Public Sub HandleReloadServerIni(ByVal UserIndex As Integer)
+    On Error Goto HandleReloadServerIni_Err
         On Error GoTo HandleReloadServerIni_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)
         'Reload the Server`s INI
@@ -3939,9 +4344,13 @@ Public Sub HandleReloadServerIni(ByVal UserIndex As Integer)
         Exit Sub
 HandleReloadServerIni_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReloadServerIni", Erl)
+    Exit Sub
+HandleReloadServerIni_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleReloadServerIni", Erl)
 End Sub
 
 Public Sub HandleReloadSpells(ByVal UserIndex As Integer)
+    On Error Goto HandleReloadSpells_Err
         On Error GoTo HandleReloadSpells_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)
 100     With UserList(UserIndex)
@@ -3952,9 +4361,13 @@ Public Sub HandleReloadSpells(ByVal UserIndex As Integer)
         Exit Sub
 HandleReloadSpells_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReloadSpells", Erl)
+    Exit Sub
+HandleReloadSpells_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleReloadSpells", Erl)
 End Sub
 
 Public Sub HandleReloadObjects(ByVal UserIndex As Integer)
+    On Error Goto HandleReloadObjects_Err
         On Error GoTo HandleReloadObjects_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)
 100     With UserList(UserIndex)
@@ -3969,9 +4382,13 @@ Public Sub HandleReloadObjects(ByVal UserIndex As Integer)
         Exit Sub
 HandleReloadObjects_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReloadObjects", Erl)
+    Exit Sub
+HandleReloadObjects_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleReloadObjects", Erl)
 End Sub
 
 Public Sub HandleIgnored(ByVal UserIndex As Integer)
+    On Error Goto HandleIgnored_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero)) Then
@@ -3981,9 +4398,13 @@ Public Sub HandleIgnored(ByVal UserIndex As Integer)
         Exit Sub
 HandleIgnored_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleIgnored", Erl)
+    Exit Sub
+HandleIgnored_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleIgnored", Erl)
 End Sub
 
 Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
+    On Error Goto HandleCheckSlot_Err
         'Author: Pablo (ToxicWaste)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
@@ -4018,9 +4439,13 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCheckSlot", Erl)
+    Exit Sub
+HandleCheckSlot_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleCheckSlot", Erl)
 End Sub
 
 Public Sub HandleSetSpeed(ByVal UserIndex As Integer)
+    On Error Goto HandleSetSpeed_Err
 On Error GoTo HandleGlobalOnOff_Err
         Dim Speed As Single
         Speed = Reader.ReadReal32()
@@ -4033,9 +4458,13 @@ On Error GoTo HandleGlobalOnOff_Err
         Exit Sub
 HandleGlobalOnOff_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGlobalOnOff", Erl)
+    Exit Sub
+HandleSetSpeed_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleSetSpeed", Erl)
 End Sub
 
 Public Sub HandleGlobalMessage(ByVal UserIndex As Integer)
+    On Error Goto HandleGlobalMessage_Err
         Dim TActual     As Long
         Dim ElapsedTime As Long
 
@@ -4078,9 +4507,13 @@ Public Sub HandleGlobalMessage(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 134     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Exit Sub
+HandleGlobalMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleGlobalMessage", Erl)
 End Sub
 
 Public Sub HandleGlobalOnOff(ByVal UserIndex As Integer)
+    On Error Goto HandleGlobalOnOff_Err
  On Error GoTo HandleGlobalOnOff_Err
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then Exit Sub
@@ -4096,9 +4529,13 @@ Public Sub HandleGlobalOnOff(ByVal UserIndex As Integer)
         Exit Sub
 HandleGlobalOnOff_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGlobalOnOff", Erl)
+    Exit Sub
+HandleGlobalOnOff_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleGlobalOnOff", Erl)
 End Sub
 
 Public Sub HandleDay(ByVal UserIndex As Integer)
+    On Error Goto HandleDay_Err
         On Error GoTo HandleDay_Err
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
@@ -4112,9 +4549,13 @@ Public Sub HandleDay(ByVal UserIndex As Integer)
         Exit Sub
 HandleDay_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDay", Erl)
+    Exit Sub
+HandleDay_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleDay", Erl)
 End Sub
 
 Public Sub HandleSetTime(ByVal UserIndex As Integer)
+    On Error Goto HandleSetTime_Err
         On Error GoTo HandleSetTime_Err
 100     With UserList(UserIndex)
             Dim HoraDia As Long
@@ -4130,9 +4571,13 @@ Public Sub HandleSetTime(ByVal UserIndex As Integer)
         Exit Sub
 HandleSetTime_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSetTime", Erl)
+    Exit Sub
+HandleSetTime_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleSetTime", Erl)
 End Sub
 
 Public Sub HandleGiveItem(ByVal UserIndex As Integer)
+    On Error Goto HandleGiveItem_Err
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -4181,9 +4626,13 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGiveItem", Erl)
+    Exit Sub
+HandleGiveItem_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleGiveItem", Erl)
 End Sub
 
 Public Sub HandleQuestionGM(ByVal UserIndex As Integer)
+    On Error Goto HandleQuestionGM_Err
         Dim TActual     As Long
         Dim ElapsedTime As Long
         
@@ -4235,9 +4684,13 @@ Public Sub HandleQuestionGM(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Exit Sub
+HandleQuestionGM_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleQuestionGM", Erl)
 End Sub
 
 Public Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
+    On Error Goto HandleCuentaRegresiva_Err
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
             Dim Seconds As Byte
@@ -4250,9 +4703,13 @@ Public Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCuentaRegresiva", Erl)
+    Exit Sub
+HandleCuentaRegresiva_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleCuentaRegresiva", Erl)
 End Sub
 
 Public Sub HandlePossUser(ByVal UserIndex As Integer)
+    On Error Goto HandlePossUser_Err
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
             Dim username As String
@@ -4285,9 +4742,13 @@ Public Sub HandlePossUser(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePossUser", Erl)
+    Exit Sub
+HandlePossUser_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandlePossUser", Erl)
 End Sub
 
 Public Sub HandleNieveToggle(ByVal UserIndex As Integer)
+    On Error Goto HandleNieveToggle_Err
         On Error GoTo HandleNieveToggle_Err
         'Author: Pablo Mercavides
 100     With UserList(UserIndex)
@@ -4304,9 +4765,13 @@ Public Sub HandleNieveToggle(ByVal UserIndex As Integer)
 HandleNieveToggle_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleNieveToggle", Erl)
  
+    Exit Sub
+HandleNieveToggle_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleNieveToggle", Erl)
 End Sub
 
 Public Sub HandleNieblaToggle(ByVal UserIndex As Integer)
+    On Error Goto HandleNieblaToggle_Err
         On Error GoTo HandleNieblaToggle_Err
         'Author: Pablo Mercavides
 100     With UserList(UserIndex)
@@ -4322,9 +4787,13 @@ Public Sub HandleNieblaToggle(ByVal UserIndex As Integer)
         Exit Sub
 HandleNieblaToggle_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleNieblaToggle", Erl)
+    Exit Sub
+HandleNieblaToggle_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleNieblaToggle", Erl)
 End Sub
 
 Public Sub HandleGenio(ByVal UserIndex As Integer)
+    On Error Goto HandleGenio_Err
         'Author: Pablo Mercavides
         On Error GoTo HandleGenio_Err
 100     With UserList(UserIndex)
@@ -4340,9 +4809,13 @@ Public Sub HandleGenio(ByVal UserIndex As Integer)
         Exit Sub
 HandleGenio_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGenio", Erl)
+    Exit Sub
+HandleGenio_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleGenio", Erl)
 End Sub
 
 Public Sub HandleBanCuenta(ByVal UserIndex As Integer)
+    On Error Goto HandleBanCuenta_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
@@ -4360,9 +4833,13 @@ Public Sub HandleBanCuenta(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBanCuenta", Erl)
+    Exit Sub
+HandleBanCuenta_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleBanCuenta", Erl)
 End Sub
 
 Public Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
+    On Error Goto HandleUnBanCuenta_Err
         ' /unbancuenta namepj
         ' /unbancuenta email
         On Error GoTo ErrHandler
@@ -4386,9 +4863,13 @@ Public Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUnBanCuenta", Erl)
+    Exit Sub
+HandleUnBanCuenta_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleUnBanCuenta", Erl)
 End Sub
 
 Public Sub HandleCerrarCliente(ByVal UserIndex As Integer)
+    On Error Goto HandleCerrarCliente_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 
         On Error GoTo ErrHandler
@@ -4412,9 +4893,13 @@ Public Sub HandleCerrarCliente(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCerrarCliente", Erl)
+    Exit Sub
+HandleCerrarCliente_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleCerrarCliente", Erl)
 End Sub
 
 Public Sub HandleEventoInfo(ByVal UserIndex As Integer)
+    On Error Goto HandleEventoInfo_Err
         'Author: Pablo Mercavides
         On Error GoTo HandleEventoInfo_Err
 
@@ -4459,9 +4944,13 @@ Public Sub HandleEventoInfo(ByVal UserIndex As Integer)
         Exit Sub
 HandleEventoInfo_Err:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEventoInfo", Erl)
+    Exit Sub
+HandleEventoInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleEventoInfo", Erl)
 End Sub
 
 Public Sub HandleCrearEvento(ByVal UserIndex As Integer)
+    On Error Goto HandleCrearEvento_Err
         'Author: Pablo Mercavides
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
@@ -4498,9 +4987,13 @@ Public Sub HandleCrearEvento(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Exit Sub
+HandleCrearEvento_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleCrearEvento", Erl)
 End Sub
 
 Public Sub HandleBanTemporal(ByVal UserIndex As Integer)
+    On Error Goto HandleBanTemporal_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 
         On Error GoTo ErrHandler
@@ -4523,9 +5016,13 @@ Public Sub HandleBanTemporal(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Exit Sub
+HandleBanTemporal_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleBanTemporal", Erl)
 End Sub
 
 Public Sub HandleCancelarExit(ByVal UserIndex As Integer)
+    On Error Goto HandleCancelarExit_Err
         'Author: Pablo Mercavides
         On Error GoTo HandleCancelarExit_Err
 100     Call CancelExit(UserIndex)
@@ -4533,9 +5030,13 @@ Public Sub HandleCancelarExit(ByVal UserIndex As Integer)
 
 HandleCancelarExit_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCancelarExit", Erl)
+    Exit Sub
+HandleCancelarExit_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleCancelarExit", Erl)
 End Sub
 
 Public Sub HandleCrearTorneo(ByVal UserIndex As Integer)
+    On Error Goto HandleCrearTorneo_Err
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
             Dim NivelMinimo As Byte
@@ -4624,9 +5125,13 @@ Public Sub HandleCrearTorneo(ByVal UserIndex As Integer)
 
 ErrHandler:
 190     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCrearTorneo", Erl)
+    Exit Sub
+HandleCrearTorneo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleCrearTorneo", Erl)
 End Sub
 
 Public Sub HandleComenzarTorneo(ByVal UserIndex As Integer)
+    On Error Goto HandleComenzarTorneo_Err
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
 102         If EsGM(UserIndex) Then
@@ -4636,9 +5141,13 @@ Public Sub HandleComenzarTorneo(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleComenzarTorneo", Erl)
+    Exit Sub
+HandleComenzarTorneo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleComenzarTorneo", Erl)
 End Sub
 
 Public Sub HandleCancelarTorneo(ByVal UserIndex As Integer)
+    On Error Goto HandleCancelarTorneo_Err
 
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
@@ -4650,9 +5159,13 @@ Public Sub HandleCancelarTorneo(ByVal UserIndex As Integer)
 
 ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleComenzarTorneo", Erl)
+    Exit Sub
+HandleCancelarTorneo_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleCancelarTorneo", Erl)
 End Sub
 
 Public Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
+    On Error Goto HandleBusquedaTesoro_Err
 
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
@@ -4708,9 +5221,13 @@ Public Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 158     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBusquedaTesoro", Erl)
+    Exit Sub
+HandleBusquedaTesoro_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleBusquedaTesoro", Erl)
 End Sub
 
 Public Sub HandleMarcaDeGM(ByVal UserIndex As Integer)
+    On Error Goto HandleMarcaDeGM_Err
         'Author: Pablo Mercavides
         On Error GoTo HandleMarcaDeGM_Err
 100     Call WriteWorkRequestTarget(UserIndex, e_Skill.MarcaDeGM)
@@ -4718,9 +5235,13 @@ Public Sub HandleMarcaDeGM(ByVal UserIndex As Integer)
 
 HandleMarcaDeGM_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMarcaDeGM", Erl)
+    Exit Sub
+HandleMarcaDeGM_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleMarcaDeGM", Erl)
 End Sub
 
 Public Sub HandleFinEvento(ByVal UserIndex As Integer)
+    On Error Goto HandleFinEvento_Err
         On Error GoTo HandleDenounce_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
 100     With UserList(UserIndex)
@@ -4739,9 +5260,13 @@ Public Sub HandleFinEvento(ByVal UserIndex As Integer)
         Exit Sub
 HandleDenounce_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDenounce", Erl)
+    Exit Sub
+HandleFinEvento_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleFinEvento", Erl)
 End Sub
 
 Public Sub HandleCreateEvent(ByVal UserIndex As Integer)
+    On Error Goto HandleCreateEvent_Err
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -4767,9 +5292,13 @@ Public Sub HandleCreateEvent(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateEvent", Erl)
+    Exit Sub
+HandleCreateEvent_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleCreateEvent", Erl)
 End Sub
 
 Public Sub HandleStartEvent(ByVal UserIndex As Integer)
+    On Error Goto HandleStartEvent_Err
 On Error GoTo ErrHandler
     Dim eventType As Byte
     eventType = Reader.ReadInt8()
@@ -4792,9 +5321,13 @@ On Error GoTo ErrHandler
     Exit Sub
 ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartEvent", Erl)
+    Exit Sub
+HandleStartEvent_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleStartEvent", Erl)
 End Sub
 
 Public Sub HandleCancelarEvento(ByVal UserIndex As Integer)
+    On Error Goto HandleCancelarEvento_Err
     On Error GoTo ErrHandler
     If (UserList(userIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) = 0 Then
         'Msg528=Servidor » Comando deshabilitado para tu cargo.
@@ -4820,9 +5353,13 @@ Public Sub HandleCancelarEvento(ByVal UserIndex As Integer)
     Exit Sub
 ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCancelarCaptura", Erl)
+    Exit Sub
+HandleCancelarEvento_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleCancelarEvento", Erl)
 End Sub
 
 Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
+    On Error Goto HandleSeguirMouse_Err
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
             Dim username As String
@@ -4962,9 +5499,13 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
         Exit Sub
 ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReviveChar", Erl)
+    Exit Sub
+HandleSeguirMouse_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleSeguirMouse", Erl)
 End Sub
 
 Public Sub HandleEventoFaccionario(ByVal UserIndex As Integer)
+    On Error Goto HandleEventoFaccionario_Err
     On Error GoTo HandleEventoFaccionario_Err:
     If (UserList(UserIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
         EnEventoFaccionario = Not EnEventoFaccionario
@@ -4973,9 +5514,13 @@ Public Sub HandleEventoFaccionario(ByVal UserIndex As Integer)
     Exit Sub
 HandleEventoFaccionario_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEventoFaccionario", Erl)
+    Exit Sub
+HandleEventoFaccionario_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleEventoFaccionario", Erl)
 End Sub
 
 Public Sub HandleDebugRequest(ByVal UserIndex As Integer)
+    On Error Goto HandleDebugRequest_Err
 On Error GoTo HandleDebugRequest_Err:
     Dim debugType As Byte
     Dim Args() As String
@@ -4997,9 +5542,13 @@ On Error GoTo HandleDebugRequest_Err:
     Exit Sub
 HandleDebugRequest_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDebugRequest", Erl)
+    Exit Sub
+HandleDebugRequest_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleDebugRequest", Erl)
 End Sub
 
 Public Sub HandleLobbyCommand(ByVal UserIndex As Integer)
+    On Error Goto HandleLobbyCommand_Err
 On Error GoTo HandleLobbyCommand_err
     Dim Command As Byte
     Dim hasPermission As Integer
@@ -5021,9 +5570,13 @@ On Error GoTo HandleLobbyCommand_err
 HandleLobbyCommand_err:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLobbyCommand", Erl)
 
+    Exit Sub
+HandleLobbyCommand_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleLobbyCommand", Erl)
 End Sub
 
 Public Sub HandleFeatureToggle(ByVal UserIndex As Integer)
+    On Error Goto HandleFeatureToggle_Err
 On Error GoTo HandleFeatureToggle_Err:
     Dim value As Byte
     Dim name As String
@@ -5051,10 +5604,14 @@ On Error GoTo HandleFeatureToggle_Err:
     Exit Sub
 HandleFeatureToggle_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleFeatureToggle", Erl)
+    Exit Sub
+HandleFeatureToggle_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleFeatureToggle", Erl)
 End Sub
 
 'HarThaoS: Iniciar captura de bandera
 Public Sub HandleIniciarCaptura(EventSettings As t_NewScenearioSettings)
+    On Error Goto HandleIniciarCaptura_Err
         On Error GoTo ErrHandler
                 If Not InstanciaCaptura Is Nothing Then
                     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1008, "", e_FontTypeNames.FONTTYPE_GLOBAL))
@@ -5088,4 +5645,7 @@ Public Sub HandleIniciarCaptura(EventSettings As t_NewScenearioSettings)
         Exit Sub
 ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleIniciarCaptura", Erl)
+    Exit Sub
+HandleIniciarCaptura_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_GmCommands.HandleIniciarCaptura", Erl)
 End Sub

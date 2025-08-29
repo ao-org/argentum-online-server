@@ -40,17 +40,33 @@ Attribute VB_Exposed = False
 Dim UserRef As t_UserReference
 
 Public Sub SetFromIndex(ByVal UserIndex As Integer)
+    On Error Goto SetFromIndex_Err
     Call SetUserRef(UserRef, UserIndex)
+    Exit Sub
+SetFromIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "clsUserReferenceWrapper.SetFromIndex", Erl)
 End Sub
 
 Public Function IsValid() As Boolean
+    On Error Goto IsValid_Err
     IsValid = IsValidUserRef(UserRef)
+    Exit Function
+IsValid_Err:
+    Call TraceError(Err.Number, Err.Description, "clsUserReferenceWrapper.IsValid", Erl)
 End Function
 
 Public Function PlayerIndex() As Integer
+    On Error Goto PlayerIndex_Err
     PlayerIndex = UserRef.ArrayIndex
+    Exit Function
+PlayerIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "clsUserReferenceWrapper.PlayerIndex", Erl)
 End Function
 
 Public Function VersionId() As Integer
+    On Error Goto VersionId_Err
     VersionId = UserRef.VersionId
+    Exit Function
+VersionId_Err:
+    Call TraceError(Err.Number, Err.Description, "clsUserReferenceWrapper.VersionId", Erl)
 End Function

@@ -69,6 +69,7 @@ Public Enum SendTarget
 End Enum
 
 Public Sub SendToConnection(ByVal ConnectionId, Optional Args As Variant)
+    On Error Goto SendToConnection_Err
 On Error GoTo SendToConnection_Err
 #If DIRECT_PLAY = 0 Then
     Dim writer As Network.writer
@@ -84,9 +85,13 @@ On Error GoTo SendToConnection_Err
 SendToConnection_Err:
     Call TraceError(Err.Number, Err.Description, "modSendData.SendToConnection", Erl)
     Call writer.Clear
+    Exit Sub
+SendToConnection_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToConnection", Erl)
 End Sub
 
 Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Optional Args As Variant, Optional ByVal validateInvi As Boolean = False)
+    On Error Goto SendData_Err
 On Error GoTo SendData_Err
     
 #If DIRECT_PLAY = 0 Then
@@ -307,10 +312,14 @@ SendData_Err:
         If (Err.Number <> 0) Then
 366         Call TraceError(Err.Number, Err.Description, "modSendData.SendData", Erl)
         End If
+    Exit Sub
+SendData_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendData", Erl)
 End Sub
 
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToUserAliveArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer, Optional ByVal validateInvi As Boolean = False)
+    On Error Goto SendToUserAliveArea_Err
 #Else
 Private Sub SendToUserAliveArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean = False)
 #End If
@@ -371,10 +380,14 @@ SendToUserArea_Err:
 124     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserArea", Erl)
 
         
+    Exit Sub
+SendToUserAliveArea_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAliveArea", Erl)
 End Sub
 
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer, Optional ByVal validateInvi As Boolean)
+    On Error Goto SendToUserArea_Err
 #Else
 Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean)
 #End If
@@ -435,10 +448,14 @@ SendToUserArea_Err:
 124     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserArea", Erl)
 
         
+    Exit Sub
+SendToUserArea_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserArea", Erl)
 End Sub
 
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToUserAreaButFollowerAndIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+    On Error Goto SendToUserAreaButFollowerAndIndex_Err
 #Else
 Private Sub SendToUserAreaButFollowerAndIndex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
 #End If
@@ -482,10 +499,14 @@ SendToUserAreaButFollower_Err:
 124     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAreaButFollower", Erl)
 
         
+    Exit Sub
+SendToUserAreaButFollowerAndIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAreaButFollowerAndIndex", Erl)
 End Sub
 
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToPCDeadArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+    On Error Goto SendToPCDeadArea_Err
 #Else
 Private Sub SendToPCDeadArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
 #End If
@@ -531,10 +552,14 @@ SendToUserArea_Err:
 126     Call TraceError(Err.Number, Err.Description, "modSendData.SendToPCDeadArea", Erl)
 
         
+    Exit Sub
+SendToPCDeadArea_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToPCDeadArea", Erl)
 End Sub
 
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToPCDeadAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+    On Error Goto SendToPCDeadAreaButIndex_Err
 #Else
 Private Sub SendToPCDeadAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
 #End If
@@ -579,11 +604,15 @@ SendToUserArea_Err:
 126     Call TraceError(Err.Number, Err.Description, "modSendData.SendToPCDeadArea", Erl)
 
         
+    Exit Sub
+SendToPCDeadAreaButIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToPCDeadAreaButIndex", Erl)
 End Sub
 
 
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToSuperioresArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+    On Error Goto SendToSuperioresArea_Err
 #Else
 Private Sub SendToSuperioresArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
 #End If
@@ -635,10 +664,14 @@ SendToSuperioresArea_Err:
 
 
         
+    Exit Sub
+SendToSuperioresArea_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToSuperioresArea", Erl)
 End Sub
 
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer, Optional ByVal validateInvi As Boolean = False)
+    On Error Goto SendToUserAreaButindex_Err
 #Else
 Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean = False)
 #End If
@@ -708,10 +741,14 @@ SendToUserAreaButindex_Err:
 130     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAreaButindex", Erl)
 
         
+    Exit Sub
+SendToUserAreaButindex_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAreaButindex", Erl)
 End Sub
 
 #If DIRECT_PLAY = 0 Then
 Private Function CanSendToUser(ByRef SourceUser As t_User, ByRef TargetUser As t_User, ByVal TargetIndex As Integer, ByRef Buffer As Network.Writer, ByVal ValidateInvi As Boolean) As Boolean
+    On Error Goto CanSendToUser_Err
 #Else
 Private Function CanSendToUser(ByRef SourceUser As t_User, ByRef TargetUser As t_User, ByVal TargetIndex As Integer, ByRef Buffer As clsNetWriter, ByVal ValidateInvi As Boolean) As Boolean
 #End If
@@ -730,9 +767,13 @@ Private Function CanSendToUser(ByRef SourceUser As t_User, ByRef TargetUser As t
         End If
     End If
     CanSendToUser = True
+    Exit Function
+CanSendToUser_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.CanSendToUser", Erl)
 End Function
 
 Public Function CheckGuildSend(ByRef SourceUser As t_User, ByRef TargetUser As t_User) As Boolean
+    On Error Goto CheckGuildSend_Err
     CheckGuildSend = False
     If SourceUser.GuildIndex = 0 Then Exit Function
     If SourceUser.GuildIndex <> TargetUser.GuildIndex Then Exit Function
@@ -741,10 +782,14 @@ Public Function CheckGuildSend(ByRef SourceUser As t_User, ByRef TargetUser As t
         Exit Function
     End If
     CheckGuildSend = True
+    Exit Function
+CheckGuildSend_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.CheckGuildSend", Erl)
 End Function
 
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToUserAliveAreaButindex(ByVal UserIndex As Integer, ByRef Buffer As Network.Writer, Optional ByVal ValidateInvi As Boolean = False)
+    On Error Goto SendToUserAliveAreaButindex_Err
 #Else
 Private Sub SendToUserAliveAreaButindex(ByVal UserIndex As Integer, ByRef Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean = False)
 #End If
@@ -771,10 +816,14 @@ On Error GoTo SendToUserAliveAreaButindex_Err
 
 SendToUserAliveAreaButindex_Err:
 124     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAliveAreaButindex", Erl)
+    Exit Sub
+SendToUserAliveAreaButindex_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAliveAreaButindex", Erl)
 End Sub
 
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+    On Error Goto SendToAdminAreaButIndex_Err
 #Else
 Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
 #End If
@@ -828,10 +877,14 @@ SendToUserAreaButindex_Err:
 130     Call TraceError(Err.Number, Err.Description, "modSendData.SendToAdminAreaButIndex", Erl)
 
         
+    Exit Sub
+SendToAdminAreaButIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToAdminAreaButIndex", Erl)
 End Sub
 
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+    On Error Goto SendToUserAreaButGMs_Err
 #Else
 Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
 #End If
@@ -887,10 +940,14 @@ SendToUserAreaButindex_Err:
 130     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAreaButindex", Erl)
 
         
+    Exit Sub
+SendToUserAreaButGMs_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAreaButGMs", Erl)
 End Sub
 
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+    On Error Goto SendToUserGuildArea_Err
 #Else
 Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
 #End If
@@ -935,10 +992,14 @@ SendToUserGuildArea_Err:
 126     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserGuildArea", Erl)
 
         
+    Exit Sub
+SendToUserGuildArea_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserGuildArea", Erl)
 End Sub
 
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal Buffer As Network.Writer)
+    On Error Goto SendToNpcArea_Err
 #Else
 Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal Buffer As clsNetWriter)
 #End If
@@ -989,9 +1050,13 @@ SendToNpcArea_Err:
 128     Call TraceError(Err.Number, Err.Description, "modSendData.SendToNpcArea", Erl)
 
         
+    Exit Sub
+SendToNpcArea_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToNpcArea", Erl)
 End Sub
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToNpcAliveArea(ByVal NpcIndex As Long, ByVal Buffer As Network.Writer)
+    On Error Goto SendToNpcAliveArea_Err
 #Else
 Private Sub SendToNpcAliveArea(ByVal NpcIndex As Long, ByVal Buffer As clsNetWriter)
 #End If
@@ -1043,9 +1108,13 @@ SendToNpcArea_Err:
 128     Call TraceError(Err.Number, Err.Description, "modSendData.SendToNpcArea", Erl)
 
         
+    Exit Sub
+SendToNpcAliveArea_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToNpcAliveArea", Erl)
 End Sub
 
 Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal AreaY As Integer, ParamArray Args() As Variant)
+    On Error Goto SendToAreaByPos_Err
         
         On Error GoTo SendToAreaByPos_Err
         
@@ -1096,9 +1165,13 @@ SendToAreaByPos_Err:
         If (Err.Number <> 0) Then
 124         Call TraceError(Err.Number, Err.Description, "modSendData.SendToAreaByPos", Erl)
         End If
+    Exit Sub
+SendToAreaByPos_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToAreaByPos", Erl)
 End Sub
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToMap(ByVal Map As Integer, ByVal Buffer As Network.Writer)
+    On Error Goto SendToMap_Err
 #Else
 Private Sub SendToMap(ByVal Map As Integer, ByVal Buffer As clsNetWriter)
 #End If
@@ -1125,9 +1198,13 @@ SendToMap_Err:
 112     Call TraceError(Err.Number, Err.Description, "modSendData.SendToMap", Erl)
 
         
+    Exit Sub
+SendToMap_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToMap", Erl)
 End Sub
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToMapButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+    On Error Goto SendToMapButIndex_Err
 #Else
 Private Sub SendToMapButIndex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
 #End If
@@ -1163,9 +1240,13 @@ SendToMapButIndex_Err:
 116     Call TraceError(Err.Number, Err.Description, "modSendData.SendToMapButIndex", Erl)
 
         
+    Exit Sub
+SendToMapButIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToMapButIndex", Erl)
 End Sub
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToGroup(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+    On Error Goto SendToGroup_Err
 #Else
 Private Sub SendToGroup(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
 #End If
@@ -1183,9 +1264,13 @@ On Error GoTo SendToGroup_Err
         Exit Sub
 SendToGroup_Err:
     Call TraceError(Err.Number, Err.Description, "modSendData.SendToGroup", Erl)
+    Exit Sub
+SendToGroup_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToGroup", Erl)
 End Sub
 #If DIRECT_PLAY = 0 Then
 Private Sub SendToGroupButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+    On Error Goto SendToGroupButIndex_Err
 #Else
 Private Sub SendToGroupButIndex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
 #End If
@@ -1201,6 +1286,9 @@ On Error GoTo SendToGroupButIndex_Err
             Next LoopC
         End With
         Exit Sub
+SendToGroupButIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToGroupButIndex", Erl)
+    Exit Sub
 SendToGroupButIndex_Err:
     Call TraceError(Err.Number, Err.Description, "modSendData.SendToGroupButIndex", Erl)
 End Sub

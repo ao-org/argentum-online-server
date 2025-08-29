@@ -30,6 +30,7 @@ Option Explicit
 Public Const MAX_SLOTS_CRAFTEO = 5
 
 Public Sub SortIntegerArray(Data() As Integer, ByVal First As Integer, ByVal Last As Integer)
+    On Error Goto SortIntegerArray_Err
     
         On Error GoTo SortIntegerArray_Err:
     
@@ -66,9 +67,13 @@ Public Sub SortIntegerArray(Data() As Integer, ByVal First As Integer, ByVal Las
 SortIntegerArray_Err:
 132     Call TraceError(Err.Number, Err.Description, "modCrafteos.SortIntegerArray", Erl)
     
+    Exit Sub
+SortIntegerArray_Err:
+    Call TraceError(Err.Number, Err.Description, "modCrafteos.SortIntegerArray", Erl)
 End Sub
 
 Public Function GetRecipeKey(Data() As Integer) As String
+    On Error Goto GetRecipeKey_Err
     
         On Error GoTo GetRecipeKey_Err:
     
@@ -82,9 +87,13 @@ Public Function GetRecipeKey(Data() As Integer) As String
 GetRecipeKey_Err:
 104     Call TraceError(Err.Number, Err.Description, "modCrafteos.GetRecipeKey", Erl)
     
+    Exit Function
+GetRecipeKey_Err:
+    Call TraceError(Err.Number, Err.Description, "modCrafteos.GetRecipeKey", Erl)
 End Function
 
 Public Sub ReturnCraftingItems(ByVal UserIndex As Integer)
+    On Error Goto ReturnCraftingItems_Err
     
         On Error GoTo ReturnCraftingItems_Err:
     
@@ -123,9 +132,13 @@ Public Sub ReturnCraftingItems(ByVal UserIndex As Integer)
 ReturnCraftingItems_Err:
 128     Call TraceError(Err.Number, Err.Description, "modCrafteos.ReturnCraftingItems", Erl)
     
+    Exit Sub
+ReturnCraftingItems_Err:
+    Call TraceError(Err.Number, Err.Description, "modCrafteos.ReturnCraftingItems", Erl)
 End Sub
 
 Public Function CheckCraftingResult(ByVal UserIndex As Integer) As clsCrafteo
+    On Error Goto CheckCraftingResult_Err
     
         On Error GoTo CheckCraftingResult_Err:
     
@@ -150,9 +163,13 @@ Public Function CheckCraftingResult(ByVal UserIndex As Integer) As clsCrafteo
 CheckCraftingResult_Err:
 112     Call TraceError(Err.Number, Err.Description, "modCrafteos.CheckCraftingResult", Erl)
     
+    Exit Function
+CheckCraftingResult_Err:
+    Call TraceError(Err.Number, Err.Description, "modCrafteos.CheckCraftingResult", Erl)
 End Function
 
 Public Sub DoCraftItem(ByVal UserIndex As Integer)
+    On Error Goto DoCraftItem_Err
     
         On Error GoTo DoCraftItem_Err:
     
@@ -215,9 +232,13 @@ Public Sub DoCraftItem(ByVal UserIndex As Integer)
 DoCraftItem_Err:
 144     Call TraceError(Err.Number, Err.Description, "modCrafteos.DoCraftItem", Erl)
     
+    Exit Sub
+DoCraftItem_Err:
+    Call TraceError(Err.Number, Err.Description, "modCrafteos.DoCraftItem", Erl)
 End Sub
 
 Public Function CalculateCraftProb(ByVal UserIndex As Integer, ByVal PorcentajeBase As Byte) As Byte
+    On Error Goto CalculateCraftProb_Err
     
         On Error GoTo CalculateCraftProb_Err:
     
@@ -239,4 +260,7 @@ Public Function CalculateCraftProb(ByVal UserIndex As Integer, ByVal PorcentajeB
 CalculateCraftProb_Err:
 110     Call TraceError(Err.Number, Err.Description, "modCrafteos.CalculateCraftProb", Erl)
     
+    Exit Function
+CalculateCraftProb_Err:
+    Call TraceError(Err.Number, Err.Description, "modCrafteos.CalculateCraftProb", Erl)
 End Function

@@ -51,6 +51,7 @@ Private ActiveUpdateSlots As t_IndexHeap
 Const InitialUpdateSize = 20
 
 Private Sub InitializeUpdateStacks()
+    On Error Goto InitializeUpdateStacks_Err
     ReDim ScenarioUpdateList(InitialUpdateSize) As IBaseScenario
     ReDim AvailableUpdateSlots.IndexInfo(InitialUpdateSize)
     ReDim ActiveUpdateSlots.IndexInfo(InitialUpdateSize)
@@ -60,9 +61,13 @@ Private Sub InitializeUpdateStacks()
     Next i
     AvailableUpdateSlots.currentIndex = InitialUpdateSize
     ActiveUpdateSlots.currentIndex = 0
+    Exit Sub
+InitializeUpdateStacks_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.InitializeUpdateStacks", Erl)
 End Sub
 
 Private Sub IncreaseArraySize(ByVal ExtraSlots As Integer)
+    On Error Goto IncreaseArraySize_Err
     Dim NewSize As Integer
     NewSize = UBound(ScenarioUpdateList) + ExtraSlots
     ReDim Preserve ScenarioUpdateList(NewSize) As IBaseScenario
@@ -73,8 +78,12 @@ Private Sub IncreaseArraySize(ByVal ExtraSlots As Integer)
         AvailableUpdateSlots.IndexInfo(i) = NewSize - (i - 1)
     Next i
     AvailableUpdateSlots.currentIndex = ExtraSlots
+    Exit Sub
+IncreaseArraySize_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.IncreaseArraySize", Erl)
 End Sub
 Public Function GetMap(ByVal mapIndex As Integer) As IBaseScenario
+    On Error Goto GetMap_Err
 On Error GoTo GetMap_Err:
     Set GetMap = Nothing
     If CustomScenarioList.Exists(mapIndex) Then
@@ -83,17 +92,29 @@ On Error GoTo GetMap_Err:
     Exit Function
 GetMap_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.GetMap " & mapIndex, Erl)
+    Exit Function
+GetMap_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.GetMap", Erl)
 End Function
 
 Public Sub SetCustomScenario(ByVal mapIndex As Integer, ByRef scenario As IBaseScenario)
+    On Error Goto SetCustomScenario_Err
     Call CustomScenarioList.Add(mapIndex, scenario)
+    Exit Sub
+SetCustomScenario_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.SetCustomScenario", Erl)
 End Sub
 
 Public Sub RemoveCustomScenario(ByVal mapIndex As Integer)
+    On Error Goto RemoveCustomScenario_Err
     Call CustomScenarioList.Remove(mapIndex)
+    Exit Sub
+RemoveCustomScenario_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.RemoveCustomScenario", Erl)
 End Sub
 
 Public Function AddUpdateScenario(ByRef scenario As IBaseScenario) As Integer
+    On Error Goto AddUpdateScenario_Err
 On Error GoTo AddUpdateScenario_Err:
        Dim Pos As Integer
 100    If AvailableUpdateSlots.currentIndex = 0 And ActiveUpdateSlots.currentIndex = 0 Then
@@ -111,9 +132,13 @@ On Error GoTo AddUpdateScenario_Err:
        Exit Function
 AddUpdateScenario_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.AddUpdateScenario", Erl)
+    Exit Function
+AddUpdateScenario_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.AddUpdateScenario", Erl)
 End Function
 
 Public Sub RemoveUpdateScenario(ByRef Index As Integer)
+    On Error Goto RemoveUpdateScenario_Err
     Debug.Assert Index < UBound(ScenarioUpdateList)
     Set ScenarioUpdateList(Index) = Nothing
     Dim i As Integer
@@ -125,9 +150,13 @@ Public Sub RemoveUpdateScenario(ByRef Index As Integer)
             AvailableUpdateSlots.IndexInfo(AvailableUpdateSlots.currentIndex) = Index
         End If
     Next
+    Exit Sub
+RemoveUpdateScenario_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.RemoveUpdateScenario", Erl)
 End Sub
 
 Public Sub UpdateAll()
+    On Error Goto UpdateAll_Err
 On Error GoTo UpdateAll_Err:
     Dim i As Integer
     For i = 0 To ActiveUpdateSlots.currentIndex - 1
@@ -138,9 +167,13 @@ On Error GoTo UpdateAll_Err:
     Exit Sub
 UpdateAll_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.UpdateAll", Erl)
+    Exit Sub
+UpdateAll_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.UpdateAll", Erl)
 End Sub
 
 Public Sub Reset(ByVal MapNumber As Integer)
+    On Error Goto Reset_Err
 On Error GoTo Reset_Err:
     Dim scenario As IBaseScenario
     Set scenario = GetMap(MapNumber)
@@ -151,9 +184,13 @@ On Error GoTo Reset_Err:
     Exit Sub
 Reset_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.Reset " & mapNumber, Erl)
+    Exit Sub
+Reset_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.Reset", Erl)
 End Sub
 
 Public Sub PlayerKillNpc(ByVal MapNumber As Integer, ByVal npcIndex As Integer, ByVal userIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
+    On Error Goto PlayerKillNpc_Err
 On Error GoTo PlayerKillNpc_Err:
     Dim scenario As IBaseScenario
     Set scenario = GetMap(MapNumber)
@@ -164,9 +201,13 @@ On Error GoTo PlayerKillNpc_Err:
     Exit Sub
 PlayerKillNpc_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.PlayerKillNpc map:" & mapNumber & " npc: " & npcIndex & " user: " & userIndex, Erl)
+    Exit Sub
+PlayerKillNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.PlayerKillNpc", Erl)
 End Sub
 
 Public Sub NPcKillPlayer(ByVal MapNumber As Integer, ByVal npcIndex As Integer, ByVal userIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
+    On Error Goto NPcKillPlayer_Err
 On Error GoTo NPcKillPlayer_Err:
     Dim scenario As IBaseScenario
     Set scenario = GetMap(MapNumber)
@@ -177,9 +218,13 @@ On Error GoTo NPcKillPlayer_Err:
     Exit Sub
 NPcKillPlayer_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.NPcKillPlayer", Erl)
+    Exit Sub
+NPcKillPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.NPcKillPlayer", Erl)
 End Sub
 
 Public Sub PlayerKillPlayer(ByVal MapNumber As Integer, ByVal killerIndex As Integer, ByVal deadIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
+    On Error Goto PlayerKillPlayer_Err
 On Error GoTo PlayerKillPlayer_Err:
     Dim scenario As IBaseScenario
     Set scenario = GetMap(MapNumber)
@@ -190,9 +235,13 @@ On Error GoTo PlayerKillPlayer_Err:
     Exit Sub
 PlayerKillPlayer_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.PlayerKillPlayer", Erl)
+    Exit Sub
+PlayerKillPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.PlayerKillPlayer", Erl)
 End Sub
 
 Public Sub UserDie(ByVal UserIndex As Integer)
+    On Error Goto UserDie_Err
 On Error GoTo UserDie_Err:
     Dim Scenario As IBaseScenario
     Set Scenario = GetMap(UserList(UserIndex).pos.Map)
@@ -203,9 +252,13 @@ On Error GoTo UserDie_Err:
     Exit Sub
 UserDie_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserDie", Erl)
+    Exit Sub
+UserDie_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserDie", Erl)
 End Sub
 
 Public Sub NpcDie(ByVal NpcIndex As Integer)
+    On Error Goto NpcDie_Err
 On Error GoTo NpcDie_Err:
     Dim Scenario As IBaseScenario
     Set Scenario = GetMap(NpcList(NpcIndex).pos.Map)
@@ -216,10 +269,14 @@ On Error GoTo NpcDie_Err:
     Exit Sub
 NpcDie_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.NpcDie", Erl)
+    Exit Sub
+NpcDie_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.NpcDie", Erl)
 End Sub
 
 'inform that user want to pickup an item, return false if user can't pick up item at pos
 Public Function UserCanPickUpItem(ByVal UserIndex As Integer) As Boolean
+    On Error Goto UserCanPickUpItem_Err
   On Error GoTo UserPickUpItem_Err:
     UserCanPickUpItem = True
     Dim Scenario As IBaseScenario
@@ -236,9 +293,13 @@ Public Function UserCanPickUpItem(ByVal UserIndex As Integer) As Boolean
     Exit Function
 UserPickUpItem_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserCanPickUpItem", Erl)
+    Exit Function
+UserCanPickUpItem_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserCanPickUpItem", Erl)
 End Function
 
 Public Sub UserDidPickupItem(ByVal UserIndex As Integer, ByVal ItemId As Integer)
+    On Error Goto UserDidPickupItem_Err
 On Error GoTo UserDidPickupItem_Err:
     Dim Scenario As IBaseScenario
     Dim InventoryInterface As IInventoryInterface
@@ -254,10 +315,14 @@ On Error GoTo UserDidPickupItem_Err:
     Exit Sub
 UserDidPickupItem_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserDidPickupItem", Erl)
+    Exit Sub
+UserDidPickupItem_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserDidPickupItem", Erl)
 End Sub
 
 'inform that user want to drop an item
 Public Sub UserDropItem(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
+    On Error Goto UserDropItem_Err
   On Error GoTo UserDropItem_Err:
     Dim Scenario As IBaseScenario
     Dim InventoryInterface As IInventoryInterface
@@ -273,9 +338,13 @@ Public Sub UserDropItem(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal
     Exit Sub
 UserDropItem_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserDropItem", Erl)
+    Exit Sub
+UserDropItem_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserDropItem", Erl)
 End Sub
 
 Public Function UserCanDropItem(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer) As Boolean
+    On Error Goto UserCanDropItem_Err
   On Error GoTo UserCanDropItem_Err:
     UserCanDropItem = True
     Dim Scenario As IBaseScenario
@@ -292,9 +361,13 @@ Public Function UserCanDropItem(ByVal UserIndex As Integer, ByVal Slot As Intege
     Exit Function
 UserCanDropItem_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserCanDropItem", Erl)
+    Exit Function
+UserCanDropItem_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserCanDropItem", Erl)
 End Function
 
 Public Sub PrepareNewEvent(ByVal eventType As e_EventType, ByVal LobbyIndex As Integer)
+    On Error Goto PrepareNewEvent_Err
 On Error GoTo PrepareNewEvent_Err:
     Debug.Assert LobbyIndex < UBound(LobbyList)
     Select Case EventType
@@ -311,9 +384,13 @@ On Error GoTo PrepareNewEvent_Err:
     Exit Sub
 PrepareNewEvent_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.PrepareNewEvent", Erl)
+    Exit Sub
+PrepareNewEvent_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.PrepareNewEvent", Erl)
 End Sub
 
 Public Sub ClearMap(ByVal mapNumber As Integer)
+    On Error Goto ClearMap_Err
 On Error GoTo ClearMap_Err:
     Dim x As Long
     Dim y As Long
@@ -331,9 +408,13 @@ On Error GoTo ClearMap_Err:
 ClearMap_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.ClearMap", Erl)
     Resume Next
+    Exit Sub
+ClearMap_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.ClearMap", Erl)
 End Sub
 
 Public Function IsEventActive() As Boolean
+    On Error Goto IsEventActive_Err
     If CurrentActiveEventType = CaptureTheFlag Then
         IsEventActive = Not InstanciaCaptura Is Nothing
     Else
@@ -343,17 +424,29 @@ Public Function IsEventActive() As Boolean
             IsEventActive = False
         End If
     End If
+    Exit Function
+IsEventActive_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.IsEventActive", Erl)
 End Function
 
 Public Sub UserDisconnected(ByVal mapNumber As Integer, ByVal userIndex As Integer)
+    On Error Goto UserDisconnected_Err
     Call RegisterDisconnectedUser(UserIndex)
+    Exit Sub
+UserDisconnected_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserDisconnected", Erl)
 End Sub
 
 Public Sub UserConnected(ByVal userIndex)
+    On Error Goto UserConnected_Err
     Call RegisterReconnectedUser(UserIndex)
+    Exit Sub
+UserConnected_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserConnected", Erl)
 End Sub
 
 Public Sub GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)
+    On Error Goto GetNextWaypointForNpc_Err
     Dim Scenario As IBaseScenario
     Set Scenario = GetMap(NpcList(NpcIndex).pos.Map)
     If Scenario Is Nothing Then
@@ -361,4 +454,7 @@ Public Sub GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Intege
     End If
     Call Scenario.GetNextWaypointForNpc(NpcIndex, PosX, PosY)
     Exit Sub
+    Exit Sub
+GetNextWaypointForNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.GetNextWaypointForNpc", Erl)
 End Sub

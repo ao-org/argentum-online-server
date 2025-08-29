@@ -57,23 +57,36 @@ Const MaxActiveConnections = 10000
 Private PendingConnections As New Dictionary
 
 Private Sub OnServerError(ByVal Code As Long, ByVal Description As String)
+    On Error Goto OnServerError_Err
     Debug.Print "Server error:", Code, Description
+    Exit Sub
+OnServerError_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerError", Erl)
 End Sub
 
 Public Sub Listen(ByVal Limit As Long, ByVal Address As String, ByVal Service As String)
+    On Error Goto Listen_Err
     Set Server = New Network.Server
     ReDim Mapping(1 To MaxActiveConnections) As t_ConnectionMapping
     
     Call Server.Attach(AddressOf OnServerConnect, AddressOf OnServerClose, AddressOf OnServerSend, AddressOf OnServerRecv, AddressOf OnServerError)
     
     Call Server.Listen(Limit, Address, Service)
+    Exit Sub
+Listen_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Listen", Erl)
 End Sub
 
 Public Sub Disconnect()
+    On Error Goto Disconnect_Err
     Call Server.Close
+    Exit Sub
+Disconnect_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Disconnect", Erl)
 End Sub
 
 Public Sub Tick(ByVal Delta As Single)
+    On Error Goto Tick_Err
     Time(0) = Time(0) + Delta
     Time(1) = Time(1) + Delta
     Dim PerformanceTimer As Long
@@ -91,26 +104,46 @@ Public Sub Tick(ByVal Delta As Single)
         Call Server.Flush
     End If
     Call PerformTimeLimitCheck(PerformanceTimer, "modNetwork flush", 200)
+    Exit Sub
+Tick_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Tick", Erl)
 End Sub
 
 Public Sub Poll()
+    On Error Goto Poll_Err
     Call Server.Poll
     Call Server.Flush
+    Exit Sub
+Poll_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Poll", Erl)
 End Sub
 
 Public Sub Send(ByVal UserIndex As Long, ByRef Buffer As Network.Writer)
+    On Error Goto Send_Err
     Call Server.Send(UserList(UserIndex).ConnectionDetails.ConnID, False, Buffer)
+    Exit Sub
+Send_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Send", Erl)
 End Sub
 
 Public Sub SendToConnection(ByVal ConnectionId As Long, ByRef Buffer As Network.Writer)
+    On Error Goto SendToConnection_Err
     Call Server.Send(ConnectionId, False, Buffer)
+    Exit Sub
+SendToConnection_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.SendToConnection", Erl)
 End Sub
 
 Public Sub Flush(ByVal UserIndex As Long)
+    On Error Goto Flush_Err
     Call Server.Flush(UserList(UserIndex).ConnectionDetails.ConnID)
+    Exit Sub
+Flush_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Flush", Erl)
 End Sub
 
 Public Sub Kick(ByVal Connection As Long, Optional ByVal message As String = vbNullString)
+    On Error Goto Kick_Err
 On Error GoTo Kick_ErrHandler:
     If IsFeatureEnabled("debug_connections") Then
         If (Message <> vbNullString) Then
@@ -136,14 +169,22 @@ On Error GoTo Kick_ErrHandler:
     
 Kick_ErrHandler:
     Call TraceError(Err.Number, Err.Description, "modNetwork.Kick", Erl)
+    Exit Sub
+Kick_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Kick", Erl)
 End Sub
 
 Public Function GetTimeOfNextFlush() As Single
+    On Error Goto GetTimeOfNextFlush_Err
     GetTimeOfNextFlush = max(0, TIME_SEND_FREQUENCY - Time(1))
+    Exit Function
+GetTimeOfNextFlush_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.GetTimeOfNextFlush", Erl)
 End Function
 
 
 Public Sub close_not_logged_sockets_if_timeout()
+    On Error Goto close_not_logged_sockets_if_timeout_Err
 On Error GoTo close_not_logged_sockets_if_timeout_ErrHandler:
         Dim i As Integer
         Dim key As Variant
@@ -166,9 +207,13 @@ On Error GoTo close_not_logged_sockets_if_timeout_ErrHandler:
         Exit Sub
 close_not_logged_sockets_if_timeout_ErrHandler:
     Call TraceError(Err.Number, Err.Description, "modNetwork.Kick", Erl)
+    Exit Sub
+close_not_logged_sockets_if_timeout_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.close_not_logged_sockets_if_timeout", Erl)
 End Sub
 
 Private Sub OnServerConnect(ByVal Connection As Long, ByVal Address As String)
+    On Error Goto OnServerConnect_Err
     On Error GoTo OnServerConnect_Err:
 100     NewFrameConnections = NewFrameConnections + 1
 102     If IsFeatureEnabled("debug_connections") Then
@@ -205,9 +250,13 @@ Private Sub OnServerConnect(ByVal Connection As Long, ByVal Address As String)
 OnServerConnect_Err:
 144     Call Kick(Connection)
 146     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerConnect", Erl)
+    Exit Sub
+OnServerConnect_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerConnect", Erl)
 End Sub
 
 Private Sub OnServerClose(ByVal Connection As Long)
+    On Error Goto OnServerClose_Err
 On Error GoTo OnServerClose_Err:
     
     Dim UserRef As t_UserReference
@@ -240,9 +289,13 @@ On Error GoTo OnServerClose_Err:
 OnServerClose_Err:
     Call ForcedClose(UserRef.ArrayIndex, Connection)
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerClose", Erl)
+    Exit Sub
+OnServerClose_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerClose", Erl)
 End Sub
 
 Private Sub OnServerSend(ByVal Connection As Long, ByVal Message As Network.Reader)
+    On Error Goto OnServerSend_Err
 On Error GoTo OnServerSend_Err:
     
     Exit Sub
@@ -250,9 +303,13 @@ On Error GoTo OnServerSend_Err:
 OnServerSend_Err:
     Call Kick(Connection)
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerSend", Erl)
+    Exit Sub
+OnServerSend_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerSend", Erl)
 End Sub
 
 Private Sub OnServerRecv(ByVal Connection As Long, ByVal Message As Network.Reader)
+    On Error Goto OnServerRecv_Err
 On Error GoTo OnServerRecv_Err:
     
     Dim UserRef As t_UserReference
@@ -274,9 +331,13 @@ On Error GoTo OnServerRecv_Err:
 OnServerRecv_Err:
     Call Kick(Connection)
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerRecv", Erl)
+    Exit Sub
+OnServerRecv_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerRecv", Erl)
 End Sub
 
 Private Sub ForcedClose(ByVal UserIndex As Integer, Connection As Long)
+    On Error Goto ForcedClose_Err
 On Error GoTo ForcedClose_Err:
 100     UserList(UserIndex).ConnectionDetails.ConnIDValida = False
 102     UserList(UserIndex).ConnectionDetails.ConnID = 0
@@ -287,9 +348,13 @@ On Error GoTo ForcedClose_Err:
         Exit Sub
 ForcedClose_Err:
     Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)
+    Exit Sub
+ForcedClose_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)
 End Sub
 
 Public Sub KickConnection(Connection As Long)
+    On Error Goto KickConnection_Err
 On Error GoTo ForcedClose_Err:
 104     Call Server.Flush(Connection)
 106     Call Server.Kick(Connection, True)
@@ -300,9 +365,13 @@ On Error GoTo ForcedClose_Err:
         Exit Sub
 ForcedClose_Err:
     Call TraceError(Err.Number, Err.Description, "modNetwork.KickConnection", Erl)
+    Exit Sub
+KickConnection_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.KickConnection", Erl)
 End Sub
 
 Public Sub CheckDisconnectedUsers()
+    On Error Goto CheckDisconnectedUsers_Err
     On Error GoTo CheckDisconnectedUsers_Err:
 100     If DisconnectTimeout <= 0 Then
             Exit Sub
@@ -337,9 +406,13 @@ Public Sub CheckDisconnectedUsers()
         Exit Sub
 CheckDisconnectedUsers_Err:
 130     Call TraceError(Err.Number, Err.Description, "modNetwork.CheckDisconnectedUsers", Erl)
+    Exit Sub
+CheckDisconnectedUsers_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.CheckDisconnectedUsers", Erl)
 End Sub
 
 Public Function MapConnectionToUser(ByVal ConnectionId As Long) As Integer
+    On Error Goto MapConnectionToUser_Err
      On Error GoTo CheckDisconnectedUsers_Err:
         Dim FreeUser As Long
 100     If Not PendingConnections.Exists(ConnectionId) Then
@@ -375,14 +448,21 @@ Public Function MapConnectionToUser(ByVal ConnectionId As Long) As Integer
         Exit Function
 CheckDisconnectedUsers_Err:
 136     Call TraceError(Err.Number, Err.Description, "modNetwork.MapConnectionToUser", Erl)
+    Exit Function
+MapConnectionToUser_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.MapConnectionToUser", Erl)
 End Function
 
 Public Sub ClearConnection(ByVal Connection)
+    On Error Goto ClearConnection_Err
     With Mapping(Connection)
         .TimeLastReset = 0
         .PacketCount = 0
         Call ClearUserRef(.UserRef)
     End With
+    Exit Sub
+ClearConnection_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.ClearConnection", Erl)
 End Sub
 #Else
 'DIRECT_PLAY
@@ -391,6 +471,7 @@ Public Mapping As New Dictionary
 
 
 Public Function MapConnectionToUser(ByVal ConnectionID As Long) As Integer
+    On Error Goto MapConnectionToUser_Err
 On Error GoTo CheckDisconnectedUsers_Err:
         MapConnectionToUser = 0
         Dim FreeUser As Long
@@ -433,15 +514,23 @@ On Error GoTo CheckDisconnectedUsers_Err:
         
 CheckDisconnectedUsers_Err:
         Call TraceError(Err.Number, Err.Description, "modNetwork.MapConnectionToUser", Erl)
+    Exit Function
+MapConnectionToUser_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.MapConnectionToUser", Erl)
 End Function
 
 
 'DirectPlay
 Public Sub CheckDisconnectedUsers()
+    On Error Goto CheckDisconnectedUsers_Err
+    Exit Sub
+CheckDisconnectedUsers_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.CheckDisconnectedUsers", Erl)
 End Sub
 
 
 Public Sub Listen(ByVal Limit As Long, ByVal Address As String, ByVal Service As String)
+    On Error Goto Listen_Err
 On Error GoTo listen_err
     Err.Clear
     Dim AppDesc As DPN_APPLICATION_DESC
@@ -499,12 +588,20 @@ listen_err:
     If Err.Number <> 0 Then
         Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.CreatePlayer", Erl)
     End If
+    Exit Sub
+Listen_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Listen", Erl)
 End Sub
 Public Sub close_not_logged_sockets_if_timeout()
+    On Error Goto close_not_logged_sockets_if_timeout_Err
 
+    Exit Sub
+close_not_logged_sockets_if_timeout_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.close_not_logged_sockets_if_timeout", Erl)
 End Sub
 
 Public Sub CreatePlayer(ByVal lPlayerID As Long, fRejectMsg As Boolean)
+    On Error Goto CreatePlayer_Err
 On Error GoTo create_player_err
     Debug.Print "DPLAY > CreatePlayer ID:" & lPlayerID
     Err.Clear
@@ -543,9 +640,13 @@ create_player_err:
     End If
     Call KickConnection(lPlayerID)
 
+    Exit Sub
+CreatePlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.CreatePlayer", Erl)
 End Sub
 
 Public Sub DestroyPlayer(ByVal lPlayerID As Long, ByVal lReason As Long, fRejectMsg As Boolean)
+    On Error Goto DestroyPlayer_Err
 On Error GoTo OnServerClose_Err:
     Debug.Print "DPLAY > DestroyPlayer ID:" & lPlayerID
     Err.Clear
@@ -568,8 +669,12 @@ OnServerClose_Err:
     If Err.Number <> 0 Then
         Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.DestroyPlayer", Erl)
     End If
+    Exit Sub
+DestroyPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.DestroyPlayer", Erl)
 End Sub
 Public Sub Receive(dpnotify As DxVBLibA.DPNMSG_RECEIVE, fRejectMsg As Boolean)
+    On Error Goto Receive_Err
 On Error GoTo receive_error:
     Err.Clear
     With dpnotify
@@ -592,8 +697,12 @@ receive_error:
      If Err.Number <> 0 Then
         Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.Receive", Erl)
     End If
+    Exit Sub
+Receive_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Receive", Erl)
 End Sub
 Public Sub Send(ByVal user_index As Long, ByRef writer As clsNetWriter)
+    On Error Goto Send_Err
 On Error GoTo send_error:
     Debug.Assert user_index >= LBound(UserList) And user_index <= UBound(UserList)
     Err.Clear
@@ -605,8 +714,12 @@ send_error:
      If Err.Number <> 0 Then
         Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.Send", Erl)
     End If
+    Exit Sub
+Send_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Send", Erl)
 End Sub
 Public Sub SendToConnection(ByVal ConnectionID As Long, ByRef writer As clsNetWriter)
+    On Error Goto SendToConnection_Err
 On Error GoTo sendtoconnection_error:
     Err.Clear
     Call writer.Send(ConnectionID)
@@ -615,12 +728,20 @@ sendtoconnection_error:
      If Err.Number <> 0 Then
         Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.SendToConnection", Erl)
     End If
+    Exit Sub
+SendToConnection_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.SendToConnection", Erl)
 End Sub
 Public Sub Flush(ByVal user_index As Long)
+    On Error Goto Flush_Err
     'Nothing
+    Exit Sub
+Flush_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Flush", Erl)
 End Sub
 
 Public Sub KickConnection(ByVal connection As Long)
+    On Error Goto KickConnection_Err
 On Error GoTo KickConnection_err:
     Err.Clear
     Call dps.DestroyClient(connection, 0, 0, 0)
@@ -629,9 +750,13 @@ KickConnection_err:
     If Err.Number <> 0 Then
         Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.KickConnection", Erl)
     End If
+    Exit Sub
+KickConnection_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.KickConnection", Erl)
 End Sub
 
 Public Sub Kick(ByVal connection As Long, Optional ByVal Message As String = vbNullString)
+    On Error Goto Kick_Err
 On Error GoTo Kick_ErrHandler:
     If IsFeatureEnabled("debug_connections") Then
         If (Message <> vbNullString) Then
@@ -656,13 +781,24 @@ On Error GoTo Kick_ErrHandler:
     
 Kick_ErrHandler:
     Call TraceError(Err.Number, Err.Description, "modNetwork.Kick", Erl)
+    Exit Sub
+Kick_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Kick", Erl)
 End Sub
 
 Public Sub Disconnect()
+    On Error Goto Disconnect_Err
     'Nothing
+    Exit Sub
+Disconnect_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Disconnect", Erl)
 End Sub
 Public Sub Poll()
+    On Error Goto Poll_Err
     'Nothing to do here when using DPLAY
+    Exit Sub
+Poll_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Poll", Erl)
 End Sub
 #End If
 

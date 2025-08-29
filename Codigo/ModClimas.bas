@@ -43,6 +43,7 @@ Public ProbabilidadNublar  As Byte
 Public ProbabilidadLLuvia  As Byte
 
 Public Sub ResetMeteo()
+    On Error Goto ResetMeteo_Err
         
         On Error GoTo ResetMeteo_Err
         
@@ -60,4 +61,7 @@ ResetMeteo_Err:
 112     Call TraceError(Err.Number, Err.Description, "ModClimas.ResetMeteo", Erl)
 
         
+    Exit Sub
+ResetMeteo_Err:
+    Call TraceError(Err.Number, Err.Description, "ModClimas.ResetMeteo", Erl)
 End Sub

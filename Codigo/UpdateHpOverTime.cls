@@ -57,6 +57,7 @@ Private DotInfo As t_BaseDotInfo
 Private source As t_AnyReference
 
 Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
+    On Error Goto Setup_Err
                  ByVal EffectId As Integer, ByVal Id As Long)
     TimeSinceLastTick = 0
     TickCount = 0
@@ -96,6 +97,9 @@ Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceTy
             End If
         End If
     End If
+    Exit Sub
+Setup_Err:
+    Call TraceError(Err.Number, Err.Description, "UpdateHpOverTime.Setup", Erl)
 End Sub
 
 Public Property Get IBaseEffectOverTime_TypeId() As Integer
@@ -147,6 +151,7 @@ Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
 End Property
 
 Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
+    On Error Goto IBaseEffectOverTime_Update_Err
     If TickCount >= TargetTicks Or Not IsValidRef(DotInfo.TargetRef) Then
         DotInfo.RemoveEffect = True
         Exit Sub
@@ -157,6 +162,9 @@ Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
         TickCount = TickCount + 1
         Call PerformAction
     End If
+    Exit Sub
+IBaseEffectOverTime_Update_Err:
+    Call TraceError(Err.Number, Err.Description, "UpdateHpOverTime.IBaseEffectOverTime_Update", Erl)
 End Sub
 
 Public Property Get IBaseEffectOverTime_RemoveMe() As Boolean
@@ -168,11 +176,15 @@ Public Property Let IBaseEffectOverTime_RemoveMe(ByVal value As Boolean)
 End Property
 
 Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
+    On Error Goto IBaseEffectOverTime_Reset_Err
     IBaseEffectOverTime_Reset = True
     TickCount = 0
     If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, (TickTime * TargetTicks) - TimeSinceLastTick, TickTime * TargetTicks, EffectOverTime(DotInfo.EotId).buffType)
     End If
+    Exit Function
+IBaseEffectOverTime_Reset_Err:
+    Call TraceError(Err.Number, Err.Description, "UpdateHpOverTime.IBaseEffectOverTime_Reset", Erl)
 End Function
 
 Public Property Get IBaseEffectOverTime_EotId() As Integer
@@ -180,6 +192,7 @@ Public Property Get IBaseEffectOverTime_EotId() As Integer
 End Property
 
 Public Sub IBaseEffectOverTime_OnRemove()
+    On Error Goto IBaseEffectOverTime_OnRemove_Err
     If DotInfo.Removed Then Exit Sub
     DotInfo.Removed = True
     DotInfo.RemoveEffect = True
@@ -187,31 +200,63 @@ Public Sub IBaseEffectOverTime_OnRemove()
         Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, _
                                     DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
     End If
+    Exit Sub
+IBaseEffectOverTime_OnRemove_Err:
+    Call TraceError(Err.Number, Err.Description, "UpdateHpOverTime.IBaseEffectOverTime_OnRemove", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
+    On Error Goto IBaseEffectOverTime_TargetUseMagic_Err
+    Exit Sub
+IBaseEffectOverTime_TargetUseMagic_Err:
+    Call TraceError(Err.Number, Err.Description, "UpdateHpOverTime.IBaseEffectOverTime_TargetUseMagic", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TartgetWillAtack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TartgetWillAtack_Err
+    Exit Sub
+IBaseEffectOverTime_TartgetWillAtack_Err:
+    Call TraceError(Err.Number, Err.Description, "UpdateHpOverTime.IBaseEffectOverTime_TartgetWillAtack", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TartgetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TartgetDidHit_Err
+    Exit Sub
+IBaseEffectOverTime_TartgetDidHit_Err:
+    Call TraceError(Err.Number, Err.Description, "UpdateHpOverTime.IBaseEffectOverTime_TartgetDidHit", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetFailedAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TargetFailedAttack_Err
+    Exit Sub
+IBaseEffectOverTime_TargetFailedAttack_Err:
+    Call TraceError(Err.Number, Err.Description, "UpdateHpOverTime.IBaseEffectOverTime_TargetFailedAttack", Erl)
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto IBaseEffectOverTime_TargetWasDamaged_Err
+    Exit Sub
+IBaseEffectOverTime_TargetWasDamaged_Err:
+    Call TraceError(Err.Number, Err.Description, "UpdateHpOverTime.IBaseEffectOverTime_TargetWasDamaged", Erl)
 End Sub
 
 Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType) As Long
+    On Error Goto IBaseEffectOverTime_ApplyDamageReduction_Err
     IBaseEffectOverTime_ApplyDamageReduction = Damage
+    Exit Function
+IBaseEffectOverTime_ApplyDamageReduction_Err:
+    Call TraceError(Err.Number, Err.Description, "UpdateHpOverTime.IBaseEffectOverTime_ApplyDamageReduction", Erl)
 End Function
 
 Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
+    On Error Goto IBaseEffectOverTime_TargetWillAttackPosition_Err
+    Exit Sub
+IBaseEffectOverTime_TargetWillAttackPosition_Err:
+    Call TraceError(Err.Number, Err.Description, "UpdateHpOverTime.IBaseEffectOverTime_TargetWillAttackPosition", Erl)
 End Sub
 
 Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
+    On Error Goto IBaseEffectOverTime_ChangeTarget_Err
     If DotInfo.TargetRef.RefType = eUser Then
         If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, DotInfo.EotId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
     End If
@@ -220,6 +265,9 @@ Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer
         Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, (TickTime * (TargetTicks - TickCount)) - TimeSinceLastTick, TickTime * TargetTicks, EffectOverTime(DotInfo.EotId).buffType)
     End If
     IBaseEffectOverTime_ChangeTarget = True
+    Exit Function
+IBaseEffectOverTime_ChangeTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "UpdateHpOverTime.IBaseEffectOverTime_ChangeTarget", Erl)
 End Function
 
 Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
@@ -230,9 +278,14 @@ Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
     IBaseEffectOverTime_KeepAfterDead = False
 End Property
 Public Sub IBaseEffectOverTime_TargetChangeTerrain()
+    On Error Goto IBaseEffectOverTime_TargetChangeTerrain_Err
+    Exit Sub
+IBaseEffectOverTime_TargetChangeTerrain_Err:
+    Call TraceError(Err.Number, Err.Description, "UpdateHpOverTime.IBaseEffectOverTime_TargetChangeTerrain", Erl)
 End Sub
 
 Public Sub PerformAction()
+    On Error Goto PerformAction_Err
     Dim TickHP As Integer
     TickHP = RandomNumber(DotHpMin, DotHpMax) * EffectBonus
     If DotInfo.TargetRef.RefType = e_ReferenceType.eUser Then
@@ -275,6 +328,9 @@ Public Sub PerformAction()
         End If
         If TickEffect > 0 Then Call SendData(SendTarget.ToNPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(NpcList(DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, NpcList(DotInfo.TargetRef.ArrayIndex).pos.X, NpcList(DotInfo.TargetRef.ArrayIndex).pos.y))
     End If
+    Exit Sub
+PerformAction_Err:
+    Call TraceError(Err.Number, Err.Description, "UpdateHpOverTime.PerformAction", Erl)
 End Sub
 
 

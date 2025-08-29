@@ -35,6 +35,7 @@ Private IdNpcLibres As t_IndexHeap
 Option Explicit
 
 Public Sub InitializeNpcIndexHeap(Optional ByVal size As Integer = NpcIndexHeapSize)
+    On Error Goto InitializeNpcIndexHeap_Err
 On Error GoTo ErrHandler_InitizlizeNpcIndex
     ReDim IdNpcLibres.IndexInfo(size)
     Dim i As Integer
@@ -45,9 +46,13 @@ On Error GoTo ErrHandler_InitizlizeNpcIndex
     Exit Sub
 ErrHandler_InitizlizeNpcIndex:
     Call TraceError(Err.Number, Err.Description, "NPCs.InitializeNpcIndexHeap", Erl)
+    Exit Sub
+InitializeNpcIndexHeap_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.InitializeNpcIndexHeap", Erl)
 End Sub
 
 Public Function IsValidNpcRef(ByRef NpcRef As t_NpcReference) As Boolean
+    On Error Goto IsValidNpcRef_Err
     IsValidNpcRef = False
     If NpcRef.ArrayIndex < LBound(NpcList) Or NpcRef.ArrayIndex > UBound(NpcList) Then
         Exit Function
@@ -56,9 +61,13 @@ Public Function IsValidNpcRef(ByRef NpcRef As t_NpcReference) As Boolean
         Exit Function
     End If
     IsValidNpcRef = True
+    Exit Function
+IsValidNpcRef_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.IsValidNpcRef", Erl)
 End Function
 
 Public Function SetNpcRef(ByRef NpcRef As t_NpcReference, ByVal Index As Integer) As Boolean
+    On Error Goto SetNpcRef_Err
     SetNpcRef = False
     NpcRef.ArrayIndex = Index
     If index < LBound(NpcList) Or NpcRef.ArrayIndex > UBound(NpcList) Then
@@ -66,14 +75,22 @@ Public Function SetNpcRef(ByRef NpcRef As t_NpcReference, ByVal Index As Integer
     End If
     NpcRef.VersionId = NpcList(Index).VersionId
     SetNpcRef = True
+    Exit Function
+SetNpcRef_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.SetNpcRef", Erl)
 End Function
 
 Public Sub ClearNpcRef(ByRef NpcRef As t_NpcReference)
+    On Error Goto ClearNpcRef_Err
     NpcRef.ArrayIndex = 0
     NpcRef.VersionId = -1
+    Exit Sub
+ClearNpcRef_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.ClearNpcRef", Erl)
 End Sub
 
 Public Sub IncreaseNpcVersionId(ByVal NpcIndex As Integer)
+    On Error Goto IncreaseNpcVersionId_Err
     With NpcList(NpcIndex)
         If .VersionId > 32760 Then
             .VersionId = 0
@@ -81,9 +98,13 @@ Public Sub IncreaseNpcVersionId(ByVal NpcIndex As Integer)
             .VersionId = .VersionId + 1
         End If
     End With
+    Exit Sub
+IncreaseNpcVersionId_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.IncreaseNpcVersionId", Erl)
 End Sub
 
 Public Function ReleaseNpc(ByVal NpcIndex As Integer, ByVal reason As e_DeleteSource) As Boolean
+    On Error Goto ReleaseNpc_Err
 On Error GoTo ErrHandler
     If Not NpcList(NpcIndex).flags.NPCActive Then
         Call TraceError(Err.Number, "Trying to release the id twice, last reset reason: " & NpcList(NpcIndex).LastReset & " current reason " & reason, "NPCs.ReleaseNpc", Erl)
@@ -102,13 +123,21 @@ On Error GoTo ErrHandler
 ErrHandler:
     ReleaseNpc = False
     Call TraceError(Err.Number, Err.Description, "NPCs.ReleaseNpc", Erl)
+    Exit Function
+ReleaseNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.ReleaseNpc", Erl)
 End Function
 
 Public Function GetAvailableNpcIndex() As Integer
+    On Error Goto GetAvailableNpcIndex_Err
     GetAvailableNpcIndex = IdNpcLibres.currentIndex
+    Exit Function
+GetAvailableNpcIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.GetAvailableNpcIndex", Erl)
 End Function
 
 Public Function GetNextAvailableNpc() As Integer
+    On Error Goto GetNextAvailableNpc_Err
 On Error GoTo ErrHandler
     If (IdNpcLibres.CurrentIndex = 0) Then
         GetNextAvailableNpc = 0
@@ -122,9 +151,13 @@ On Error GoTo ErrHandler
     Exit Function
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "NPCs.GetNextAvailableNpc", Erl)
+    Exit Function
+GetNextAvailableNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.GetNextAvailableNpc", Erl)
 End Function
 
 Sub QuitarMascotaNpc(ByVal Maestro As Integer)
+    On Error Goto QuitarMascotaNpc_Err
         
         On Error GoTo QuitarMascotaNpc_Err
         
@@ -137,9 +170,13 @@ QuitarMascotaNpc_Err:
 102     Call TraceError(Err.Number, Err.Description, "NPCs.QuitarMascotaNpc", Erl)
 
         
+    Exit Sub
+QuitarMascotaNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.QuitarMascotaNpc", Erl)
 End Sub
 
 Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
+    On Error Goto MuereNpc_Err
 
         '********************************************************
         'Author: Unknown
@@ -307,9 +344,13 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 ErrHandler:
 226     Call TraceError(Err.Number, Err.Description & "->" & Erl(), "NPCs.MuereNpc", Erl())
 
+    Exit Sub
+MuereNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.MuereNpc", Erl)
 End Sub
 
 Sub ResetNpcFlags(ByVal NpcIndex As Integer)
+    On Error Goto ResetNpcFlags_Err
         'Clear the npc's flags
         
         On Error GoTo ResetNpcFlags_Err
@@ -353,9 +394,13 @@ ResetNpcFlags_Err:
 158     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcFlags", Erl)
 
         
+    Exit Sub
+ResetNpcFlags_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.ResetNpcFlags", Erl)
 End Sub
 
 Sub ResetNpcCounters(ByVal NpcIndex As Integer)
+    On Error Goto ResetNpcCounters_Err
         
         On Error GoTo ResetNpcCounters_Err
         
@@ -375,9 +420,13 @@ ResetNpcCounters_Err:
 114     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcCounters", Erl)
 
         
+    Exit Sub
+ResetNpcCounters_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.ResetNpcCounters", Erl)
 End Sub
 
 Sub ResetNpcCharInfo(ByVal NpcIndex As Integer)
+    On Error Goto ResetNpcCharInfo_Err
         
         On Error GoTo ResetNpcCharInfo_Err
         
@@ -399,9 +448,13 @@ ResetNpcCharInfo_Err:
 120     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcCharInfo", Erl)
 
         
+    Exit Sub
+ResetNpcCharInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.ResetNpcCharInfo", Erl)
 End Sub
 
 Sub ResetNpcCriatures(ByVal NpcIndex As Integer)
+    On Error Goto ResetNpcCriatures_Err
         
         On Error GoTo ResetNpcCriatures_Err
         
@@ -422,9 +475,13 @@ ResetNpcCriatures_Err:
 110     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcCriatures", Erl)
 
         
+    Exit Sub
+ResetNpcCriatures_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.ResetNpcCriatures", Erl)
 End Sub
 
 Sub ResetExpresiones(ByVal NpcIndex As Integer)
+    On Error Goto ResetExpresiones_Err
         
         On Error GoTo ResetExpresiones_Err
         
@@ -444,9 +501,13 @@ ResetExpresiones_Err:
 108     Call TraceError(Err.Number, Err.Description, "NPCs.ResetExpresiones", Erl)
 
         
+    Exit Sub
+ResetExpresiones_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.ResetExpresiones", Erl)
 End Sub
 
 Sub ResetDrop(ByVal NpcIndex As Integer)
+    On Error Goto ResetDrop_Err
         
         On Error GoTo ResetDrop_Err
         
@@ -466,9 +527,13 @@ ResetDrop_Err:
 108     Call TraceError(Err.Number, Err.Description, "NPCs.ResetDrop", Erl)
 
         
+    Exit Sub
+ResetDrop_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.ResetDrop", Erl)
 End Sub
 
 Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
+    On Error Goto ResetNpcMainInfo_Err
         
         On Error GoTo ResetNpcMainInfo_Err
         
@@ -521,9 +586,13 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
         Exit Sub
 ResetNpcMainInfo_Err:
 180     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcMainInfo", Erl)
+    Exit Sub
+ResetNpcMainInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.ResetNpcMainInfo", Erl)
 End Sub
 
 Sub QuitarNPC(ByVal NpcIndex As Integer, ByVal releaseReason As e_DeleteSource)
+    On Error Goto QuitarNPC_Err
 
         On Error GoTo ErrHandler
 
@@ -592,9 +661,13 @@ Sub QuitarNPC(ByVal NpcIndex As Integer, ByVal releaseReason As e_DeleteSource)
 
 ErrHandler:
 132     Call LogError("Error en QuitarNPC")
+    Exit Sub
+QuitarNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.QuitarNPC", Erl)
 End Sub
 
 Function TestSpawnTrigger(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+    On Error Goto TestSpawnTrigger_Err
 
         On Error GoTo TestSpawnTrigger_Err
 
@@ -606,9 +679,13 @@ TestSpawnTrigger_Err:
 102     Call TraceError(Err.Number, Err.Description, "NPCs.TestSpawnTrigger", Erl)
 
         
+    Exit Function
+TestSpawnTrigger_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.TestSpawnTrigger", Erl)
 End Function
 
 Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldPos, Optional ByVal CustomHead As Integer)
+    On Error Goto CrearNPC_Err
         'Crea un NPC del tipo NRONPC
         
         On Error GoTo CrearNPC_Err
@@ -706,9 +783,13 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
 CrearNPC_Err:
 176     Call TraceError(Err.Number, Err.Description, "NPCs.CrearNPC", Erl)
 
+    Exit Function
+CrearNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.CrearNPC", Erl)
 End Function
 
 Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+    On Error Goto MakeNPCChar_Err
         
         On Error GoTo MakeNPCChar_Err
         
@@ -816,9 +897,13 @@ MakeNPCChar_Err:
 164     Call TraceError(Err.Number, Err.Description, "NPCs.MakeNPCChar", Erl)
 
         
+    Exit Sub
+MakeNPCChar_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.MakeNPCChar", Erl)
 End Sub
 
 Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As e_Heading)
+    On Error Goto ChangeNPCChar_Err
         
         On Error GoTo ChangeNPCChar_Err
         
@@ -844,9 +929,13 @@ ChangeNPCChar_Err:
 114     Call TraceError(Err.Number, Err.Description, "NPCs.ChangeNPCChar", Erl)
 
         
+    Exit Sub
+ChangeNPCChar_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.ChangeNPCChar", Erl)
 End Sub
 
 Sub EraseNPCChar(ByVal NpcIndex As Integer)
+    On Error Goto EraseNPCChar_Err
         
         On Error GoTo EraseNPCChar_Err
         
@@ -882,9 +971,13 @@ EraseNPCChar_Err:
 118     Call TraceError(Err.Number, Err.Description, "NPCs.EraseNPCChar", Erl)
 
         
+    Exit Sub
+EraseNPCChar_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.EraseNPCChar", Erl)
 End Sub
 
 Public Sub TranslateNpcChar(ByVal npcIndex As Integer, ByRef NewPos As t_WorldPos, ByVal Speed As Long)
+    On Error Goto TranslateNpcChar_Err
 On Error GoTo TranslateNpcChar_Err
     With NpcList(npcIndex)
         If MapData(.pos.map, NewPos.x, NewPos.y).UserIndex Then
@@ -902,9 +995,13 @@ On Error GoTo TranslateNpcChar_Err
     Exit Sub
 TranslateNpcChar_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.TranslateNpcChar", Erl)
+    Exit Sub
+TranslateNpcChar_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.TranslateNpcChar", Erl)
 End Sub
 
 Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) As Boolean
+    On Error Goto MoveNPCChar_Err
         On Error GoTo errh
 
         Dim nPos      As t_WorldPos
@@ -984,9 +1081,13 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
 errh:
 162     LogError ("Error en move npc " & NpcIndex & ". Error: " & Err.Number & " - " & Err.Description)
 
+    Exit Function
+MoveNPCChar_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.MoveNPCChar", Erl)
 End Function
 
 Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
+    On Error Goto NpcEnvenenarUser_Err
         
         On Error GoTo NpcEnvenenarUser_Err
         
@@ -1013,9 +1114,13 @@ NpcEnvenenarUser_Err:
 110     Call TraceError(Err.Number, Err.Description, "NPCs.NpcEnvenenarUser", Erl)
 
         
+    Exit Sub
+NpcEnvenenarUser_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.NpcEnvenenarUser", Erl)
 End Sub
 
 Function SpawnNpc(ByVal NpcIndex As Integer, Pos As t_WorldPos, ByVal FX As Boolean, ByVal Respawn As Boolean, Optional Avisar As Boolean = False, Optional ByVal MaestroUser As Integer = 0) As Integer
+    On Error Goto SpawnNpc_Err
         
         On Error GoTo SpawnNpc_Err
         
@@ -1097,9 +1202,13 @@ SpawnNpc_Err:
 148     Call TraceError(Err.Number, Err.Description, "NPCs.SpawnNpc", Erl)
 
         
+    Exit Function
+SpawnNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.SpawnNpc", Erl)
 End Function
 
 Sub ReSpawnNpc(MiNPC As t_Npc)
+    On Error Goto ReSpawnNpc_Err
         
         On Error GoTo ReSpawnNpc_Err
         
@@ -1113,10 +1222,14 @@ ReSpawnNpc_Err:
 102     Call TraceError(Err.Number, Err.Description, "NPCs.ReSpawnNpc", Erl)
 
         
+    Exit Sub
+ReSpawnNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.ReSpawnNpc", Erl)
 End Sub
 
 'Devuelve el nro de enemigos que hay en el Mapa Map
 Function NPCHostiles(ByVal Map As Integer) As Integer
+    On Error Goto NPCHostiles_Err
         
         On Error GoTo NPCHostiles_Err
         
@@ -1147,9 +1260,13 @@ NPCHostiles_Err:
 112     Call TraceError(Err.Number, Err.Description, "NPCs.NPCHostiles", Erl)
 
         
+    Exit Function
+NPCHostiles_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.NPCHostiles", Erl)
 End Function
 
 Sub NPCTirarOro(MiNPC As t_Npc, ByVal UserIndex As Integer)
+    On Error Goto NPCTirarOro_Err
         
             On Error GoTo NPCTirarOro_Err
             
@@ -1186,9 +1303,13 @@ NPCTirarOro_Err:
 136         Call TraceError(Err.Number, Err.Description, "NPCs.NPCTirarOro", Erl)
 
         
+    Exit Sub
+NPCTirarOro_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.NPCTirarOro", Erl)
 End Sub
 
 Function UpdateNpcSpeed(ByVal npcIndex As Integer)
+    On Error Goto UpdateNpcSpeed_Err
     With NpcList(npcIndex)
 214     If .IntervaloMovimiento = 0 Then
 216         .IntervaloMovimiento = 380
@@ -1199,17 +1320,29 @@ Function UpdateNpcSpeed(ByVal npcIndex As Integer)
         .Char.speeding = .Char.speeding * max(0, (1 + .Modifiers.MovementSpeed))
         Call SendData(SendTarget.ToNPCArea, npcIndex, PrepareMessageSpeedingACT(.Char.charindex, .Char.speeding))
     End With
+    Exit Function
+UpdateNpcSpeed_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.UpdateNpcSpeed", Erl)
 End Function
 
 Function GetNpcSpeedModifiers(ByVal NpcIndex As Integer) As Single
+    On Error Goto GetNpcSpeedModifiers_Err
     GetNpcSpeedModifiers = max(0, (1 + NpcList(NpcIndex).Modifiers.MovementSpeed))
+    Exit Function
+GetNpcSpeedModifiers_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.GetNpcSpeedModifiers", Erl)
 End Function
 
 Function GetNpcName(ByVal NpcNumber As Integer) As String
+    On Error Goto GetNpcName_Err
    GetNpcName = LeerNPCs.GetValue("NPC" & NpcNumber, "Name")
+    Exit Function
+GetNpcName_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.GetNpcName", Erl)
 End Function
 
 Function OpenNPC(ByVal NpcNumber As Integer, _
+    On Error Goto OpenNPC_Err
                  Optional ByVal Respawn As Boolean = True, _
                  Optional ByVal Reload As Boolean = False) As Integer
         
@@ -1631,9 +1764,13 @@ OpenNPC_Err:
 456     Call TraceError(Err.Number, Err.Description, "NPCs.OpenNPC", Erl)
 
         
+    Exit Function
+OpenNPC_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.OpenNPC", Erl)
 End Function
 
 Function NpcSellsItem(ByVal NpcNumber As Integer, ByVal NroObjeto As Integer) As Boolean
+    On Error Goto NpcSellsItem_Err
         
         On Error GoTo NpcSellsItem_Err
     
@@ -1669,9 +1806,13 @@ NpcSellsItem_Err:
 456     Call TraceError(Err.Number, Err.Description, "NPCs.NpcSellsItem", Erl)
 
         
+    Exit Function
+NpcSellsItem_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.NpcSellsItem", Erl)
 End Function
 
 Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
+    On Error Goto DoFollow_Err
         
         On Error GoTo DoFollow_Err
         
@@ -1705,9 +1846,13 @@ DoFollow_Err:
 124     Call TraceError(Err.Number, Err.Description, "NPCs.DoFollow", Erl)
 
         
+    Exit Sub
+DoFollow_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.DoFollow", Erl)
 End Sub
 
 Public Sub FollowAmo(ByVal NpcIndex As Integer)
+    On Error Goto FollowAmo_Err
         On Error GoTo FollowAmo_Err
 
 100     With NpcList(NpcIndex)
@@ -1722,9 +1867,13 @@ Public Sub FollowAmo(ByVal NpcIndex As Integer)
 
 FollowAmo_Err:
 112     Call TraceError(Err.Number, Err.Description, "NPCs.FollowAmo", Erl)
+    Exit Sub
+FollowAmo_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.FollowAmo", Erl)
 End Sub
 
 Public Sub AllFollowAmo(ByVal UserIndex As Integer)
+    On Error Goto AllFollowAmo_Err
             On Error GoTo AllFollowAmo_Err
 
             Dim j As Long
@@ -1743,10 +1892,14 @@ Public Sub AllFollowAmo(ByVal UserIndex As Integer)
 AllFollowAmo_Err:
 108         Call TraceError(Err.Number, Err.Description, "SistemaCombate.AllFollowAmo", Erl)
 
+    Exit Sub
+AllFollowAmo_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.AllFollowAmo", Erl)
 End Sub
 
 
 Public Function ObtenerIndiceRespawn() As Integer
+    On Error Goto ObtenerIndiceRespawn_Err
 
         On Error GoTo ErrHandler
 
@@ -1762,9 +1915,13 @@ Public Function ObtenerIndiceRespawn() As Integer
 ErrHandler:
 108     Call LogError("Error en ObtenerIndiceRespawn")
 
+    Exit Function
+ObtenerIndiceRespawn_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.ObtenerIndiceRespawn", Erl)
 End Function
 
 Sub QuitarMascota(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+    On Error Goto QuitarMascota_Err
         '***************************************************
         'Author: Unknown
         'Last Modification: -
@@ -1795,9 +1952,13 @@ QuitarMascota_Err:
 112     Call TraceError(Err.Number, Err.Description, "NPCs.QuitarMascota", Erl)
 
         
+    Exit Sub
+QuitarMascota_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.QuitarMascota", Erl)
 End Sub
 
 Sub AnimacionIdle(ByVal NpcIndex As Integer, ByVal Show As Boolean)
+    On Error Goto AnimacionIdle_Err
     
         On Error GoTo Handler
     
@@ -1817,9 +1978,13 @@ Sub AnimacionIdle(ByVal NpcIndex As Integer, ByVal Show As Boolean)
 Handler:
 110     Call TraceError(Err.Number, Err.Description, "NPCs.AnimacionIdle", Erl)
 
+    Exit Sub
+AnimacionIdle_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.AnimacionIdle", Erl)
 End Sub
 
 Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Byte, ByVal X As Integer, ByVal Y As Integer, Optional ByVal FX As Boolean = False)
+    On Error Goto WarpNpcChar_Err
 
         Dim NuevaPos                    As t_WorldPos
         Dim FuturePos                   As t_WorldPos
@@ -1845,12 +2010,16 @@ Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Byte, ByVal X As Integer
 
         End If
 
+    Exit Sub
+WarpNpcChar_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.WarpNpcChar", Erl)
 End Sub
 
 ' Autor: WyroX - 20/01/2021
 ' Intenta moverlo hacia un "costado" según el heading indicado. Se usa para mover NPCs del camino de otro char.
 ' Si no hay un lugar válido a los lados, lo mueve a la posición válida más cercana.
 Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As e_Heading)
+    On Error Goto MoveNpcToSide_Err
 
         On Error GoTo Handler
 
@@ -1882,9 +2051,13 @@ Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As e_Heading)
 Handler:
 116     Call TraceError(Err.Number, Err.Description, "NPCs.MoveNpcToSide", Erl)
 
+    Exit Sub
+MoveNpcToSide_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.MoveNpcToSide", Erl)
 End Sub
 
 Public Sub DummyTargetAttacked(ByVal NpcIndex As Integer)
+    On Error Goto DummyTargetAttacked_Err
 
 100     With NpcList(NpcIndex)
 102         .Contadores.UltimoAtaque = 30
@@ -1896,9 +2069,13 @@ Public Sub DummyTargetAttacked(ByVal NpcIndex As Integer)
             End If
 
         End With
+    Exit Sub
+DummyTargetAttacked_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.DummyTargetAttacked", Erl)
 End Sub
 
 Public Sub KillRandomNpc()
+    On Error Goto KillRandomNpc_Err
     Dim validNpc As Boolean: validNpc = False
     Dim NpcIndex As Integer: NpcIndex = 0
     If GetAvailableNpcIndex > 8000 Or GetAvailableNpcIndex = 0 Then
@@ -1911,21 +2088,37 @@ Public Sub KillRandomNpc()
         End If
     Loop
     Call MuereNpc(NpcIndex, 0)
+    Exit Sub
+KillRandomNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.KillRandomNpc", Erl)
 End Sub
 
 Public Function CanMove(ByRef counter As t_NpcCounters, ByRef flags As t_NPCFlags) As Boolean
+    On Error Goto CanMove_Err
     CanMove = flags.Inmovilizado + flags.Paralizado = 0 And counter.StunEndTime < GetTickCount() And Not flags.TranslationActive
+    Exit Function
+CanMove_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.CanMove", Erl)
 End Function
 
 Public Function CanAttack(ByRef counter As t_NpcCounters, ByRef flags As t_NPCFlags) As Boolean
+    On Error Goto CanAttack_Err
     CanAttack = flags.Paralizado = 0 And counter.StunEndTime < GetTickCount()
+    Exit Function
+CanAttack_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.CanAttack", Erl)
 End Function
 
 Public Sub StunNPc(ByRef Counters As t_NpcCounters)
+    On Error Goto StunNPc_Err
     Counters.StunEndTime = GetTickCount() + NpcStunTime
+    Exit Sub
+StunNPc_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.StunNPc", Erl)
 End Sub
 
 Public Function ModifyHealth(ByVal npcIndex As Integer, ByVal amount As Long, Optional ByVal minValue = 0) As Boolean
+    On Error Goto ModifyHealth_Err
     With NpcList(npcIndex)
         ModifyHealth = False
         .Stats.MinHp = .Stats.MinHp + amount
@@ -1938,9 +2131,13 @@ Public Function ModifyHealth(ByVal npcIndex As Integer, ByVal amount As Long, Op
         End If
         Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageNpcUpdateHP(npcIndex))
     End With
+    Exit Function
+ModifyHealth_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.ModifyHealth", Erl)
 End Function
 
 Public Function DoDamageOrHeal(ByVal npcIndex As Integer, ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal amount As Long, _
+    On Error Goto DoDamageOrHeal_Err
                                ByVal DamageSourceType As e_DamageSourceType, ByVal DamageSourceIndex As Integer, Optional ByVal DamageColor As Long = vbRed) As e_DamageResult
 On Error GoTo DoDamageOrHeal_Err
     Dim DamageStr As String
@@ -2001,9 +2198,13 @@ On Error GoTo DoDamageOrHeal_Err
     Exit Function
 DoDamageOrHeal_Err:
 134     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.DoDamageOrHeal_Err", Erl)
+    Exit Function
+DoDamageOrHeal_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.DoDamageOrHeal", Erl)
 End Function
 
 Public Function UserCanAttackNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As t_AttackInteractionResult
+    On Error Goto UserCanAttackNpc_Err
 On Error GoTo UserCanAttackNpc_Err
 
 UserCanAttackNpc.CanAttack = False
@@ -2179,9 +2380,13 @@ UserCanAttackNpc.TurnPK = False
      Exit Function
 UserCanAttackNpc_Err:
 222     Call TraceError(Err.Number, Err.Description, "Npcs.UserCanAttackNpc", Erl)
+    Exit Function
+UserCanAttackNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.UserCanAttackNpc", Erl)
 End Function
 
 Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer, ByVal Time As Integer, ByVal FX As Integer) As Boolean
+    On Error Goto Inmovilize_Err
     With NpcList(TargetIndex)
 142     Call NPCAtacado(TargetIndex, SourceIndex)
 172     .flags.Inmovilizado = 1
@@ -2192,25 +2397,45 @@ Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As In
 184     Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(.Char.charindex, FX, 0, .pos.x, .pos.y))
     Inmovilize = True
     End With
+    Exit Function
+Inmovilize_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.Inmovilize", Erl)
 End Function
 
 Public Function GetPhysicalDamageModifier(ByRef npc As t_Npc) As Single
+    On Error Goto GetPhysicalDamageModifier_Err
     GetPhysicalDamageModifier = max(1 + npc.Modifiers.PhysicalDamageBonus, 0)
+    Exit Function
+GetPhysicalDamageModifier_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.GetPhysicalDamageModifier", Erl)
 End Function
 
 Public Function GetMagicDamageModifier(ByRef npc As t_Npc) As Single
+    On Error Goto GetMagicDamageModifier_Err
     GetMagicDamageModifier = max(1 + npc.Modifiers.MagicDamageBonus, 0)
+    Exit Function
+GetMagicDamageModifier_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.GetMagicDamageModifier", Erl)
 End Function
 
 Public Function GetMagicDamageReduction(ByRef npc As t_Npc) As Single
+    On Error Goto GetMagicDamageReduction_Err
     GetMagicDamageReduction = max(1 - npc.Modifiers.MagicDamageReduction, 0)
+    Exit Function
+GetMagicDamageReduction_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.GetMagicDamageReduction", Erl)
 End Function
 
 Public Function GetPhysicDamageReduction(ByRef npc As t_Npc) As Single
+    On Error Goto GetPhysicDamageReduction_Err
     GetPhysicDamageReduction = max(1 - npc.Modifiers.PhysicalDamageReduction, 0)
+    Exit Function
+GetPhysicDamageReduction_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.GetPhysicDamageReduction", Erl)
 End Function
 
 Public Function CanAttackUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As e_AttackInteractionResult
+    On Error Goto CanAttackUser_Err
     With NpcList(NpcIndex)
         If Not IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackUsers) Then
             CanAttackUser = eNotEnougthPrivileges
@@ -2252,9 +2477,13 @@ Public Function CanAttackUser(ByVal NpcIndex As Integer, ByVal UserIndex As Inte
         End If
     End With
     CanAttackUser = eCanAttack
+    Exit Function
+CanAttackUser_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.CanAttackUser", Erl)
 End Function
 
 Public Function CanHelpUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As e_InteractionResult
+    On Error Goto CanHelpUser_Err
     With NpcList(NpcIndex)
         If Not IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eHelpUsers) Then
             CanHelpUser = eCantHelpUsers
@@ -2280,17 +2509,25 @@ Public Function CanHelpUser(ByVal NpcIndex As Integer, ByVal UserIndex As Intege
         End If
         CanHelpUser = eInteractionOk
     End With
+    Exit Function
+CanHelpUser_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.CanHelpUser", Erl)
 End Function
 
 Public Function CanHelpNpc(ByVal NpcIndex As Integer, ByVal TargetNpc As Integer) As e_InteractionResult
+    On Error Goto CanHelpNpc_Err
     CanHelpNpc = eInteractionOk
     If NpcList(NpcIndex).flags.Team > 0 And NpcList(NpcIndex).flags.Team <> NpcList(TargetNpc).flags.Team Then
         CanHelpNpc = eOposingFaction
         Exit Function
     End If
+    Exit Function
+CanHelpNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.CanHelpNpc", Erl)
 End Function
 
 Public Function CanAttackNpc(ByVal NpcIndex As Integer, ByVal TargetIndex As Integer) As e_AttackInteractionResult
+    On Error Goto CanAttackNpc_Err
 
     If NpcIndex = TargetIndex Then
         CanAttackNpc = eSameFaction
@@ -2342,40 +2579,72 @@ Public Function CanAttackNpc(ByVal NpcIndex As Integer, ByVal TargetIndex As Int
     End With
     
     CanAttackNpc = eCanAttack
+    Exit Function
+CanAttackNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.CanAttackNpc", Erl)
 End Function
 Public Function GetEvasionBonus(ByRef Npc As t_Npc) As Integer
+    On Error Goto GetEvasionBonus_Err
     GetEvasionBonus = Npc.Modifiers.EvasionBonus
+    Exit Function
+GetEvasionBonus_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.GetEvasionBonus", Erl)
 End Function
 
 Public Function GetHitBonus(ByRef Npc As t_Npc) As Integer
+    On Error Goto GetHitBonus_Err
     GetHitBonus = Npc.Modifiers.HitBonus
+    Exit Function
+GetHitBonus_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.GetHitBonus", Erl)
 End Function
 
 'Defines the healing bonus when using a potion, a spell or any other healing source
 Public Function GetSelfHealingBonus(ByRef Npc As t_Npc) As Single
+    On Error Goto GetSelfHealingBonus_Err
     GetSelfHealingBonus = max(1 + Npc.Modifiers.SelfHealingBonus, 0)
+    Exit Function
+GetSelfHealingBonus_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.GetSelfHealingBonus", Erl)
 End Function
 
 'Defines bonus when healing someone with magic
 Public Function GetMagicHealingBonus(ByRef Npc As t_Npc) As Single
+    On Error Goto GetMagicHealingBonus_Err
     GetMagicHealingBonus = max(1 + Npc.Modifiers.MagicHealingBonus, 0)
+    Exit Function
+GetMagicHealingBonus_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.GetMagicHealingBonus", Erl)
 End Function
 
 Public Function CanSeeUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
+    On Error Goto CanSeeUser_Err
     CanSeeUser = UserMod.IsVisible(UserList(UserIndex))
+    Exit Function
+CanSeeUser_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.CanSeeUser", Erl)
 End Function
 
 Public Function CanPerformAttackAction(ByVal NpcIndex As Integer, ByVal AttackInterval As Long)
+    On Error Goto CanPerformAttackAction_Err
     With NpcList(NpcIndex)
         CanPerformAttackAction = GlobalFrameTime - .Contadores.IntervaloLanzarHechizo > AttackInterval And GlobalFrameTime - .Contadores.IntervaloAtaque > AttackInterval
     End With
+    Exit Function
+CanPerformAttackAction_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.CanPerformAttackAction", Erl)
 End Function
 
 Public Function GetLinearDamageBonus(ByVal NpcIndex As Integer) As Integer
+    On Error Goto GetLinearDamageBonus_Err
     GetLinearDamageBonus = NpcList(NpcIndex).Modifiers.PhysicalDamageLinearBonus
+    Exit Function
+GetLinearDamageBonus_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.GetLinearDamageBonus", Erl)
 End Function
 
 Public Sub SetBlockTileState(ByVal NpcIndex As Integer, ByVal Block As Boolean)
+    On Error Goto SetBlockTileState_Err
     Dim CurrentValue As Boolean
     With NpcList(NpcIndex)
         CurrentValue = IsSet(.flags.StatusMask, e_StatusMask.eDontBlockTile)
@@ -2387,14 +2656,22 @@ Public Sub SetBlockTileState(ByVal NpcIndex As Integer, ByVal Block As Boolean)
         End If
         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareUpdateCharValue(.Char.Charindex, e_CharValue.eDontBlockTile, Block))
     End With
+    Exit Sub
+SetBlockTileState_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.SetBlockTileState", Erl)
 End Sub
 
 Public Function GetDefenseBonus(ByVal NpcIndex As Integer) As Integer
+    On Error Goto GetDefenseBonus_Err
     GetDefenseBonus = NpcList(NpcIndex).Modifiers.DefenseBonus
+    Exit Function
+GetDefenseBonus_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.GetDefenseBonus", Erl)
 End Function
 
 ' Retorna el usuario que esta atacando al NPC actualmente (medido con tiempo)
 Public Function GetOwnedBy(ByVal NpcIndex As Integer) As Integer
+    On Error Goto GetOwnedBy_Err
     GetOwnedBy = 0
     With NpcList(NpcIndex).flags
         If .AttackedBy = vbNullString Then Exit Function
@@ -2403,10 +2680,14 @@ Public Function GetOwnedBy(ByVal NpcIndex As Integer) As Integer
         If Not IsValidUserRef(Attacker) Then Exit Function
         GetOwnedBy = Attacker.ArrayIndex
     End With
+    Exit Function
+GetOwnedBy_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.GetOwnedBy", Erl)
 End Function
 
 ' Retorna si un NPC puede atacar un usuario diferente al que lo esta atacando
 Public Function CanAttackNotOwner(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+    On Error Goto CanAttackNotOwner_Err
     Dim AttackResult As t_AttackInteractionResult
     AttackResult = UserCanAttackNpc(UserIndex, NpcIndex)
     
@@ -2419,4 +2700,7 @@ Public Function CanAttackNotOwner(ByVal NpcIndex As Integer, ByVal UserIndex As 
         ' Excepto que no pueda atacar por los siguientes motivos: esta montado, esta fuera de su campo de vision
         CanAttackNotOwner = AttackResult.Result = eMounted Or AttackResult.Result = eOutOfRange
     End If
+    Exit Function
+CanAttackNotOwner_Err:
+    Call TraceError(Err.Number, Err.Description, "MODULO_NPCs.CanAttackNotOwner", Erl)
 End Function

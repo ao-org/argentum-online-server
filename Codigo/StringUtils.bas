@@ -1,5 +1,6 @@
 Attribute VB_Name = "StringUtils"
 Function ValidWordsDescription(ByVal cad As String) As Boolean
+    On Error Goto ValidWordsDescription_Err
     On Error GoTo ValidWordsDescription_Err
 
     Dim i As Integer
@@ -23,8 +24,12 @@ Function ValidWordsDescription(ByVal cad As String) As Boolean
 
 ValidWordsDescription_Err:
     Call TraceError(Err.Number, Err.Description, "StringUtils.ValidWordsDescription", Erl)
+    Exit Function
+ValidWordsDescription_Err:
+    Call TraceError(Err.Number, Err.Description, "StringUtils.ValidWordsDescription", Erl)
 End Function
 Private Function NormalizeText(ByVal cad As String) As String
+    On Error Goto NormalizeText_Err
     On Error GoTo NormalizeText_Err
     ' Esta función normaliza una cadena para facilitar la detección de palabras/frases prohibidas
     Dim PunctuationMarks As String
@@ -52,9 +57,13 @@ Private Function NormalizeText(ByVal cad As String) As String
 
 NormalizeText_Err:
     Call TraceError(Err.Number, Err.Description, "StringUtils.NormalizeText", Erl)
+    Exit Function
+NormalizeText_Err:
+    Call TraceError(Err.Number, Err.Description, "StringUtils.NormalizeText", Erl)
 End Function
 
 Function ValidDescription(ByVal cad As String) As Boolean
+    On Error Goto ValidDescription_Err
         
         On Error GoTo ValidDescription_Err
         Dim car As Byte
@@ -78,4 +87,7 @@ Function ValidDescription(ByVal cad As String) As Boolean
 
 ValidDescription_Err:
 114     Call TraceError(Err.Number, Err.Description, "StringUtils.ValidDescription", Erl)
+    Exit Function
+ValidDescription_Err:
+    Call TraceError(Err.Number, Err.Description, "StringUtils.ValidDescription", Erl)
 End Function

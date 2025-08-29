@@ -227,6 +227,7 @@ Attribute VB_Exposed = False
 '
 '
 Private Sub cmdActualizarObjetos_Click()
+    On Error Goto cmdActualizarObjetos_Click_Err
   On Error Resume Next
         If MsgBox("La siguiente acción es demasiado costosa para el servidor, ¿Desea continuar?", vbYesNo) = vbYes Then
             pbarDb.Visible = True
@@ -261,25 +262,41 @@ Private Sub cmdActualizarObjetos_Click()
             pbarDb.Visible = False
         
         End If
+    Exit Sub
+cmdActualizarObjetos_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmDbControl.cmdActualizarObjetos_Click", Erl)
 End Sub
 
 Private Sub cmdBoveda_Click()
+    On Error Goto cmdBoveda_Click_Err
     If txtQuery.Text <> "" Then
         Call getData("select o.number, o.name, i.amount from bank_item i inner join object o on i.item_id = o.number  where user_id = (select id from user where name = '" & txtQuery.Text & "') and amount > 0")
     End If
+    Exit Sub
+cmdBoveda_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmDbControl.cmdBoveda_Click", Erl)
 End Sub
 
 Private Sub cmdEjecutarQuery_Click()
+    On Error Goto cmdEjecutarQuery_Click_Err
    Call getData(txtQuery.Text)
+    Exit Sub
+cmdEjecutarQuery_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmDbControl.cmdEjecutarQuery_Click", Erl)
 End Sub
 
 Private Sub cmdInventario_Click()
+    On Error Goto cmdInventario_Click_Err
     If txtQuery.Text <> "" Then
         Call getData("select o.number, o.name, i.amount from inventory_item i inner join object o on i.item_id = o.number  where user_id = (select id from user where name = '" & txtQuery.Text & "') and amount > 0")
     End If
+    Exit Sub
+cmdInventario_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmDbControl.cmdInventario_Click", Erl)
 End Sub
 
 Private Sub getData(ByVal queryStr As String)
+    On Error Goto getData_Err
      
     Dim RS As Recordset
     
@@ -289,17 +306,32 @@ Private Sub getData(ByVal queryStr As String)
         Set DataGrid1.DataSource = RS
     End If
     DataGrid1.DefColWidth = 0
+    Exit Sub
+getData_Err:
+    Call TraceError(Err.Number, Err.Description, "frmDbControl.getData", Erl)
 End Sub
 
 Private Sub cmdRastrearBoveda_Click()
+    On Error Goto cmdRastrearBoveda_Click_Err
     Call getData("select u.name, o.name, bi.amount from user u inner join bank_item bi on u.id = bi.user_id inner join object o on bi.item_id = o.number where o.name like '%" & txtQuery.Text & "%' and bi.amount > 0 order by bi.amount desc")
+    Exit Sub
+cmdRastrearBoveda_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmDbControl.cmdRastrearBoveda_Click", Erl)
 End Sub
 
 Private Sub cmdRastrearInventario_Click()
+    On Error Goto cmdRastrearInventario_Click_Err
     Call getData("select u.name, o.name, ii.amount from user u inner join inventory_item ii on u.id = ii.user_id inner join object o on ii.item_id = o.number where o.name like '%" & txtQuery.Text & "%' and ii.amount > 0 order by ii.amount desc")
+    Exit Sub
+cmdRastrearInventario_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmDbControl.cmdRastrearInventario_Click", Erl)
 End Sub
 
 Private Sub Command2_Click()
+    On Error Goto Command2_Click_Err
     Call getData("select * from user")
+    Exit Sub
+Command2_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmDbControl.Command2_Click", Erl)
 End Sub
 

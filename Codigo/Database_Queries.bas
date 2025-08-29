@@ -51,12 +51,17 @@ Public QUERY_UPSERT_PETS As String
 
 
 Public Sub Contruir_Querys()
+    On Error Goto Contruir_Querys_Err
         Call ConstruirQuery_CargarPersonaje
 100     Call ConstruirQuery_CrearPersonaje
 102     Call ConstruirQuery_GuardarPersonaje
+    Exit Sub
+Contruir_Querys_Err:
+    Call TraceError(Err.Number, Err.Description, "Database_Queries.Contruir_Querys", Erl)
 End Sub
 
 Private Sub ConstruirQuery_CargarPersonaje()
+    On Error Goto ConstruirQuery_CargarPersonaje_Err
         Dim LoopC As Long
     
 100     Set QueryBuilder = New cStringBuilder
@@ -144,9 +149,13 @@ Private Sub ConstruirQuery_CargarPersonaje()
         ' Limpio el constructor de querys
 200     Call QueryBuilder.Clear
 
+    Exit Sub
+ConstruirQuery_CargarPersonaje_Err:
+    Call TraceError(Err.Number, Err.Description, "Database_Queries.ConstruirQuery_CargarPersonaje", Erl)
 End Sub
 
 Private Sub ConstruirQuery_CrearPersonaje()
+    On Error Goto ConstruirQuery_CrearPersonaje_Err
         Dim LoopC As Long
     
 100     Set QueryBuilder = New cStringBuilder
@@ -282,9 +291,13 @@ Private Sub ConstruirQuery_CrearPersonaje()
         ' Limpio el constructor de querys
 296     Call QueryBuilder.Clear
     
+    Exit Sub
+ConstruirQuery_CrearPersonaje_Err:
+    Call TraceError(Err.Number, Err.Description, "Database_Queries.ConstruirQuery_CrearPersonaje", Erl)
 End Sub
 
 Private Sub ConstruirQuery_GuardarPersonaje()
+    On Error Goto ConstruirQuery_GuardarPersonaje_Err
 
         Dim LoopC As Long
     
@@ -457,4 +470,7 @@ Private Sub ConstruirQuery_GuardarPersonaje()
         ' Limpio el constructor de querys
         Call QueryBuilder.Clear
 
+    Exit Sub
+ConstruirQuery_GuardarPersonaje_Err:
+    Call TraceError(Err.Number, Err.Description, "Database_Queries.ConstruirQuery_GuardarPersonaje", Erl)
 End Sub

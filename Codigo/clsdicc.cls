@@ -53,6 +53,7 @@ Private p_elementos(1 To MAX_ELEM) As t_diccElem 'visual basic es una mierda par
 Private p_cant                     As Integer
 
 Public Sub Class_Initialize()
+    On Error Goto Class_Initialize_Err
         'constructor
         
         On Error GoTo Class_Initialize_Err
@@ -66,12 +67,19 @@ Class_Initialize_Err:
 102     Call TraceError(Err.Number, Err.Description, "diccionario.Class_Initialize", Erl)
 104
         
+    Exit Sub
+Class_Initialize_Err:
+    Call TraceError(Err.Number, Err.Description, "clsdicc.Class_Initialize", Erl)
 End Sub
 
 Public Sub Class_Terminate()
+    On Error Goto Class_Terminate_Err
 
     'destructor
     'destruir los variants?????
+    Exit Sub
+Class_Terminate_Err:
+    Call TraceError(Err.Number, Err.Description, "clsdicc.Class_Terminate", Erl)
 End Sub
 
 Public Property Get CantElem() As Integer
@@ -90,6 +98,7 @@ CantElem_Err:
 End Property
 
 Public Function AtPut(ByVal clave As String, ByRef elem As Variant) As Boolean
+    On Error Goto AtPut_Err
         
         On Error GoTo AtPut_Err
         
@@ -135,9 +144,13 @@ AtPut_Err:
 130     Call TraceError(Err.Number, Err.Description, "diccionario.AtPut", Erl)
 132
         
+    Exit Function
+AtPut_Err:
+    Call TraceError(Err.Number, Err.Description, "clsdicc.AtPut", Erl)
 End Function
 
 Public Function At(ByVal clave As String) As Variant
+    On Error Goto At_Err
         
         On Error GoTo At_Err
         
@@ -165,9 +178,13 @@ At_Err:
 112     Call TraceError(Err.Number, Err.Description, "diccionario.At", Erl)
 114
         
+    Exit Function
+At_Err:
+    Call TraceError(Err.Number, Err.Description, "clsdicc.At", Erl)
 End Function
 
 Public Function AtIndex(ByVal i As Integer) As String
+    On Error Goto AtIndex_Err
         
         On Error GoTo AtIndex_Err
         
@@ -180,9 +197,13 @@ AtIndex_Err:
 102     Call TraceError(Err.Number, Err.Description, "diccionario.AtIndex", Erl)
 104
         
+    Exit Function
+AtIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "clsdicc.AtIndex", Erl)
 End Function
 
 Public Function MayorValor(ByRef cant As Integer) As String
+    On Error Goto MayorValor_Err
         
         On Error GoTo MayorValor_Err
         
@@ -219,9 +240,13 @@ MayorValor_Err:
 120     Call TraceError(Err.Number, Err.Description, "diccionario.MayorValor", Erl)
 122
         
+    Exit Function
+MayorValor_Err:
+    Call TraceError(Err.Number, Err.Description, "clsdicc.MayorValor", Erl)
 End Function
 
 Public Sub DumpAll()
+    On Error Goto DumpAll_Err
         
         On Error GoTo DumpAll_Err
         
@@ -242,4 +267,7 @@ DumpAll_Err:
 110     Call TraceError(Err.Number, Err.Description, "diccionario.DumpAll", Erl)
 112
         
+    Exit Sub
+DumpAll_Err:
+    Call TraceError(Err.Number, Err.Description, "clsdicc.DumpAll", Erl)
 End Sub

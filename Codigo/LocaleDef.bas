@@ -121,6 +121,7 @@ Public Const MsgThanksForTravelArghal = 491
 
 
 Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer
+    On Error Goto GetRequiredWeaponLocaleId_Err
     Select Case WeaponType
         Case e_WeaponType.eAxe
             GetRequiredWeaponLocaleId = 426
@@ -141,6 +142,9 @@ Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As I
         Case Else
             Debug.Assert False
     End Select
+    Exit Function
+GetRequiredWeaponLocaleId_Err:
+    Call TraceError(Err.Number, Err.Description, "LocaleDef.GetRequiredWeaponLocaleId", Erl)
 End Function
 
 

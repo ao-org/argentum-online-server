@@ -49,17 +49,29 @@ Public HasPowerUp As Boolean
 Public UserSlotIteration As Long
 
 Public Sub Reset()
+    On Error Goto Reset_Err
     EquipedElementCount = 0
+    Exit Sub
+Reset_Err:
+    Call TraceError(Err.Number, Err.Description, "clsRespawnInfo.Reset", Erl)
 End Sub
 
 Public Sub AddEquipedElement(ByVal Slot As Integer)
+    On Error Goto AddEquipedElement_Err
     EquipedSlots(EquipedElementCount) = Slot
     EquipedElementCount = EquipedElementCount + 1
+    Exit Sub
+AddEquipedElement_Err:
+    Call TraceError(Err.Number, Err.Description, "clsRespawnInfo.AddEquipedElement", Erl)
 End Sub
 
 Public Function GetActiveSlot(ByVal index As Integer) As Integer
+    On Error Goto GetActiveSlot_Err
     Debug.Assert index < EquipedElementCount
     GetActiveSlot = EquipedSlots(index)
+    Exit Function
+GetActiveSlot_Err:
+    Call TraceError(Err.Number, Err.Description, "clsRespawnInfo.GetActiveSlot", Erl)
 End Function
 
 

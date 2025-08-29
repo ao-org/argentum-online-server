@@ -29,6 +29,7 @@ Attribute VB_Name = "modBanco"
 Option Explicit
 
 Sub IniciarDeposito(ByVal UserIndex As Integer)
+    On Error Goto IniciarDeposito_Err
 
     On Error GoTo ErrHandler
         
@@ -47,9 +48,13 @@ Sub IniciarDeposito(ByVal UserIndex As Integer)
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "modBanco.IniciarDeposito", Erl)
 
+    Exit Sub
+IniciarDeposito_Err:
+    Call TraceError(Err.Number, Err.Description, "modBanco.IniciarDeposito", Erl)
 End Sub
 
 Sub IniciarBanco(ByVal UserIndex As Integer)
+    On Error Goto IniciarBanco_Err
         On Error GoTo IniciarBanco_Err
 
 104     Call WriteGoliathInit(UserIndex)
@@ -61,9 +66,13 @@ IniciarBanco_Err:
 106     Call TraceError(Err.Number, Err.Description, "modBanco.IniciarBanco", Erl)
 
         
+    Exit Sub
+IniciarBanco_Err:
+    Call TraceError(Err.Number, Err.Description, "modBanco.IniciarBanco", Erl)
 End Sub
 
 Sub SendBanObj(UserIndex As Integer, Slot As Byte, Object As t_UserOBJ)
+    On Error Goto SendBanObj_Err
         
         On Error GoTo SendBanObj_Err
         
@@ -79,9 +88,13 @@ SendBanObj_Err:
 104     Call TraceError(Err.Number, Err.Description, "modBanco.SendBanObj", Erl)
 
         
+    Exit Sub
+SendBanObj_Err:
+    Call TraceError(Err.Number, Err.Description, "modBanco.SendBanObj", Erl)
 End Sub
 
 Sub UpdateBanUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal Slot As Byte, caller As String)
+    On Error Goto UpdateBanUserInv_Err
         
         On Error GoTo UpdateBanUserInv_Err
         
@@ -129,9 +142,13 @@ UpdateBanUserInv_Err:
 118     Call TraceError(Err.Number, Err.Description + " UI: " & UserIndex & " Slot:" & Slot, "modBanco.UpdateBanUserInv " & "userID: " & UserList(UserIndex).ID & " Slot: " & Slot & " Caller: " & caller, Erl)
 
         
+    Exit Sub
+UpdateBanUserInv_Err:
+    Call TraceError(Err.Number, Err.Description, "modBanco.UpdateBanUserInv", Erl)
 End Sub
 
 Sub UserRetiraItem(ByVal UserIndex As Integer, ByVal i As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer)
+    On Error Goto UserRetiraItem_Err
 
         On Error GoTo ErrHandler
 
@@ -161,9 +178,13 @@ ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "modBanco.UsaRetiraItem")
 
     
+    Exit Sub
+UserRetiraItem_Err:
+    Call TraceError(Err.Number, Err.Description, "modBanco.UserRetiraItem", Erl)
 End Sub
 
 Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer) As Long
+    On Error Goto UserReciveObj_Err
         
         On Error GoTo UserReciveObj_Err
     
@@ -269,9 +290,13 @@ UserReciveObj_Err:
 156     Call TraceError(Err.Number, Err.Description, "modBanco.UserReciveObj", Erl)
 
         
+    Exit Function
+UserReciveObj_Err:
+    Call TraceError(Err.Number, Err.Description, "modBanco.UserReciveObj", Erl)
 End Function
 
 Sub QuitarBancoInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Cantidad As Integer)
+    On Error Goto QuitarBancoInvItem_Err
         
         On Error GoTo QuitarBancoInvItem_Err
         
@@ -298,9 +323,13 @@ QuitarBancoInvItem_Err:
 112     Call TraceError(Err.Number, Err.Description, "modBanco.QuitarBancoInvItem", Erl)
 
         
+    Exit Sub
+QuitarBancoInvItem_Err:
+    Call TraceError(Err.Number, Err.Description, "modBanco.QuitarBancoInvItem", Erl)
 End Sub
 
 Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer)
+    On Error Goto UserDepositaItem_Err
 
         On Error GoTo ErrHandler
 
@@ -329,9 +358,13 @@ ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "modBanco.UserDepositaItem")
 
     
+    Exit Sub
+UserDepositaItem_Err:
+    Call TraceError(Err.Number, Err.Description, "modBanco.UserDepositaItem", Erl)
 End Sub
 
 Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer) As Long
+    On Error Goto UserDejaObj_Err
         
         On Error GoTo UserDejaObj_Err
         
@@ -430,9 +463,13 @@ UserDejaObj_Err:
 158     Call TraceError(Err.Number, Err.Description, "modBanco.UserDejaObj", Erl)
 
         
+    Exit Function
+UserDejaObj_Err:
+    Call TraceError(Err.Number, Err.Description, "modBanco.UserDejaObj", Erl)
 End Function
 
 Sub SendUserBovedaTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
+    On Error Goto SendUserBovedaTxt_Err
         
         On Error GoTo SendUserBovedaTxt_Err
 
@@ -456,4 +493,7 @@ SendUserBovedaTxt_Err:
 110     Call TraceError(Err.Number, Err.Description, "modBanco.SendUserBovedaTxt", Erl)
 
         
+    Exit Sub
+SendUserBovedaTxt_Err:
+    Call TraceError(Err.Number, Err.Description, "modBanco.SendUserBovedaTxt", Erl)
 End Sub

@@ -31,6 +31,7 @@ Option Explicit
 Private Const PATREON_HEAD = 900
 
 Public Function IsObjecIndextInInventory(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Boolean
+    On Error Goto IsObjecIndextInInventory_Err
 On Error GoTo IsObjecIndextInInventory_Err
     Debug.Assert UserIndex >= LBound(UserList) And UserIndex <= UBound(UserList)
     ' If no match is found, return False
@@ -53,9 +54,13 @@ On Error GoTo IsObjecIndextInInventory_Err
 
 IsObjecIndextInInventory_Err:
     Call TraceError(Err.Number, Err.Description, "IsObjecIndextInInventory", Erl)
+    Exit Function
+IsObjecIndextInInventory_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.IsObjecIndextInInventory", Erl)
 End Function
 
 Public Function get_object_amount_from_inventory(ByVal user_index, ByVal obj_index As Integer) As Integer
+    On Error Goto get_object_amount_from_inventory_Err
 On Error GoTo get_object_amount_from_inventory_Err
     Debug.Assert user_index >= LBound(UserList) And user_index <= UBound(UserList)
     ' If no match is found, return 0
@@ -75,10 +80,14 @@ On Error GoTo get_object_amount_from_inventory_Err
     Exit Function
 get_object_amount_from_inventory_Err:
     Call TraceError(Err.Number, Err.Description, "get_object_amount_from_inventory", Erl)
+    Exit Function
+get_object_amount_from_inventory_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.get_object_amount_from_inventory", Erl)
 End Function
 
 
 Public Function TieneObjetosRobables(ByVal UserIndex As Integer) As Boolean
+    On Error Goto TieneObjetosRobables_Err
         On Error GoTo TieneObjetosRobables_Err
       
 
@@ -108,9 +117,13 @@ TieneObjetosRobables_Err:
 112     Call TraceError(Err.Number, Err.Description, "InvUsuario.TieneObjetosRobables", Erl)
 
         
+    Exit Function
+TieneObjetosRobables_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.TieneObjetosRobables", Erl)
 End Function
 
 Function ClasePuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional Slot As Byte) As Boolean
+    On Error Goto ClasePuedeUsarItem_Err
 
         On Error GoTo manejador
 
@@ -150,9 +163,13 @@ Function ClasePuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Intege
 manejador:
 120     LogError ("Error en ClasePuedeUsarItem")
 
+    Exit Function
+ClasePuedeUsarItem_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.ClasePuedeUsarItem", Erl)
 End Function
 
 Function RazaPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional Slot As Byte) As Boolean
+    On Error Goto RazaPuedeUsarItem_Err
         On Error GoTo RazaPuedeUsarItem_Err
 
         Dim Objeto As t_ObjData, i As Long
@@ -208,9 +225,13 @@ Function RazaPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer
 RazaPuedeUsarItem_Err:
 142     LogError ("Error en RazaPuedeUsarItem")
 
+    Exit Function
+RazaPuedeUsarItem_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.RazaPuedeUsarItem", Erl)
 End Function
 
 Sub QuitarNewbieObj(ByVal UserIndex As Integer)
+    On Error Goto QuitarNewbieObj_Err
         
         On Error GoTo QuitarNewbieObj_Err
         
@@ -260,9 +281,13 @@ QuitarNewbieObj_Err:
 144     Call TraceError(Err.Number, Err.Description, "InvUsuario.QuitarNewbieObj", Erl)
 
         
+    Exit Sub
+QuitarNewbieObj_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.QuitarNewbieObj", Erl)
 End Sub
 
 Sub LimpiarInventario(ByVal UserIndex As Integer)
+    On Error Goto LimpiarInventario_Err
 On Error GoTo LimpiarInventario_Err
         Dim j As Integer
         With UserList(UserIndex)
@@ -306,9 +331,13 @@ LimpiarInventario_Err:
 158     Call TraceError(Err.Number, Err.Description, "InvUsuario.LimpiarInventario", Erl)
 
         
+    Exit Sub
+LimpiarInventario_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.LimpiarInventario", Erl)
 End Sub
 
 Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
+    On Error Goto TirarOro_Err
 
         '***************************************************
         'Autor: Unknown (orginal version)
@@ -392,9 +421,13 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
 ErrHandler:
 162 Call TraceError(Err.Number, Err.Description, "InvUsuario.TirarOro", Erl())
     
+    Exit Sub
+TirarOro_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.TirarOro", Erl)
 End Sub
 
 Public Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Cantidad As Integer)
+    On Error Goto QuitarUserInvItem_Err
         
         On Error GoTo QuitarUserInvItem_Err
         
@@ -432,9 +465,13 @@ QuitarUserInvItem_Err:
 118     Call TraceError(Err.Number, Err.Description, "InvUsuario.QuitarUserInvItem", Erl)
 
         
+    Exit Sub
+QuitarUserInvItem_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.QuitarUserInvItem", Erl)
 End Sub
 
 Public Sub UpdateUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal Slot As Byte)
+    On Error Goto UpdateUserInv_Err
  On Error GoTo UpdateUserInv_Err
 
         Dim NullObj As t_UserOBJ
@@ -477,9 +514,13 @@ UpdateUserInv_Err:
 118     Call TraceError(Err.Number, Err.Description, "InvUsuario.UpdateUserInv", Erl)
 
         
+    Exit Sub
+UpdateUserInv_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.UpdateUserInv", Erl)
 End Sub
 
 Sub DropObj(ByVal UserIndex As Integer, _
+    On Error Goto DropObj_Err
             ByVal Slot As Byte, _
             ByVal num As Integer, _
             ByVal Map As Integer, _
@@ -542,9 +583,13 @@ Sub DropObj(ByVal UserIndex As Integer, _
         Exit Sub
 DropObj_Err:
 138     Call TraceError(Err.Number, Err.Description, "InvUsuario.DropObj", Erl)
+    Exit Sub
+DropObj_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.DropObj", Erl)
 End Sub
 
 Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+    On Error Goto EraseObj_Err
         
         On Error GoTo EraseObj_Err
         
@@ -572,9 +617,13 @@ EraseObj_Err:
 114     Call TraceError(Err.Number, Err.Description, "InvUsuario.EraseObj", Erl)
 
         
+    Exit Sub
+EraseObj_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.EraseObj", Erl)
 End Sub
 
 Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, Optional ByVal Limpiar As Boolean = True)
+    On Error Goto MakeObj_Err
         
         On Error GoTo MakeObj_Err
 
@@ -607,9 +656,13 @@ Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal X As Integer, ByVal 
 
 MakeObj_Err:
 120     Call TraceError(Err.Number, Err.Description, "InvUsuario.MakeObj", Erl)
+    Exit Sub
+MakeObj_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.MakeObj", Erl)
 End Sub
 
 Function GetSlotForItemInInventory(ByVal UserIndex As Integer, ByRef MyObject As t_Obj) As Integer
+    On Error Goto GetSlotForItemInInventory_Err
 On Error GoTo GetSlotForItemInInventory_Err
     GetSlotForItemInInventory = -1
 100 Dim i As Integer
@@ -627,9 +680,13 @@ On Error GoTo GetSlotForItemInInventory_Err
     Exit Function
 GetSlotForItemInInventory_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.GetSlotForItemInInventory", Erl)
+    Exit Function
+GetSlotForItemInInventory_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.GetSlotForItemInInventory", Erl)
 End Function
 
 Function GetSlotInInventory(ByVal UserIndex As Integer, ByVal objIndex As Integer) As Integer
+    On Error Goto GetSlotInInventory_Err
     On Error GoTo GetSlotInInventory_Err
     GetSlotInInventory = -1
     Dim i As Integer
@@ -643,9 +700,13 @@ Function GetSlotInInventory(ByVal UserIndex As Integer, ByVal objIndex As Intege
     Exit Function
 GetSlotInInventory_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.GetSlotInInventory", Erl)
+    Exit Function
+GetSlotInInventory_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.GetSlotInInventory", Erl)
 End Function
 
 Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj) As Boolean
+    On Error Goto MeterItemEnInventario_Err
 
         On Error GoTo MeterItemEnInventario_Err
 
@@ -692,9 +753,13 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
         Exit Function
 MeterItemEnInventario_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.MeterItemEnInventario", Erl)
+    Exit Function
+MeterItemEnInventario_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.MeterItemEnInventario", Erl)
 End Function
 
 Function HayLugarEnInventario(ByVal UserIndex As Integer, ByVal TargetItemIndex As Integer, ByVal ItemCount) As Boolean
+    On Error Goto HayLugarEnInventario_Err
 On Error GoTo HayLugarEnInventario_err
         Dim X    As Integer
         Dim Y    As Integer
@@ -713,9 +778,13 @@ On Error GoTo HayLugarEnInventario_err
         Exit Function
 HayLugarEnInventario_err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.HayLugarEnInventario", Erl)
+    Exit Function
+HayLugarEnInventario_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.HayLugarEnInventario", Erl)
 End Function
 
 Sub PickObj(ByVal UserIndex As Integer)
+    On Error Goto PickObj_Err
         
         On Error GoTo PickObj_Err
         
@@ -815,9 +884,13 @@ PickObj_Err:
 150     Call TraceError(Err.Number, Err.Description, "InvUsuario.PickObj", Erl)
 
         
+    Exit Sub
+PickObj_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.PickObj", Erl)
 End Sub
 
 Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
+    On Error Goto Desequipar_Err
         
         On Error GoTo Desequipar_Err
     
@@ -1030,9 +1103,13 @@ Desequipar_Err:
 352     Call TraceError(Err.Number, Err.Description, "InvUsuario.Desequipar", Erl)
 
         
+    Exit Sub
+Desequipar_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.Desequipar", Erl)
 End Sub
 
 Function SexoPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Boolean
+    On Error Goto SexoPuedeUsarItem_Err
 
         On Error GoTo ErrHandler
 
@@ -1054,9 +1131,13 @@ Function SexoPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer
 ErrHandler:
 114     Call LogError("SexoPuedeUsarItem")
 
+    Exit Function
+SexoPuedeUsarItem_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.SexoPuedeUsarItem", Erl)
 End Function
 
 Function FaccionPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Boolean
+    On Error Goto FaccionPuedeUsarItem_Err
         
         On Error GoTo FaccionPuedeUsarItem_Err
         
@@ -1094,9 +1175,13 @@ FaccionPuedeUsarItem_Err:
 124     Call TraceError(Err.Number, Err.Description, "InvUsuario.FaccionPuedeUsarItem", Erl)
 
         
+    Exit Function
+FaccionPuedeUsarItem_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.FaccionPuedeUsarItem", Erl)
 End Function
 
 Function JerarquiaPuedeUsarItem(ByVal userindex As Integer, ByVal ObjIndex As Integer) As Boolean
+    On Error Goto JerarquiaPuedeUsarItem_Err
        
     With UserList(userindex)
         If .Faccion.RecompensasCaos >= ObjData(ObjIndex).Jerarquia Then
@@ -1110,9 +1195,13 @@ Function JerarquiaPuedeUsarItem(ByVal userindex As Integer, ByVal ObjIndex As In
         End If
     End With
         
+    Exit Function
+JerarquiaPuedeUsarItem_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.JerarquiaPuedeUsarItem", Erl)
 End Function
 'Equipa barco y hace el cambio de ropaje correspondiente
 Sub EquiparBarco(ByVal UserIndex As Integer)
+    On Error Goto EquiparBarco_Err
         On Error GoTo EquiparBarco_Err
 
         Dim Barco As t_ObjData
@@ -1196,10 +1285,14 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
 EquiparBarco_Err:
 158     Call TraceError(Err.Number, Err.Description, "InvUsuario.EquiparBarco", Erl)
 
+    Exit Sub
+EquiparBarco_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.EquiparBarco", Erl)
 End Sub
 
 'Equipa un item del inventario
 Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
+    On Error Goto EquiparInvItem_Err
         On Error GoTo ErrHandler
 
         Dim obj       As t_ObjData
@@ -1685,9 +1778,13 @@ ErrHandler:
 566     Debug.Print errordesc
 568     Call LogError("EquiparInvItem Slot:" & Slot & " - Error: " & Err.Number & " - Error Description : " & Err.Description & "- " & errordesc)
 
+    Exit Sub
+EquiparInvItem_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.EquiparInvItem", Erl)
 End Sub
 
 Public Sub EquipAura(ByVal Slot As Integer, ByRef inventory As t_Inventario, ByVal UserIndex As Integer)
+    On Error Goto EquipAura_Err
     
     If inventory.Object(Slot).Equipped Then
         inventory.Object(Slot).Equipped = False
@@ -1711,9 +1808,13 @@ Public Sub EquipAura(ByVal Slot As Integer, ByRef inventory As t_Inventario, ByV
         End If
     Next Index
     inventory.Object(Slot).Equipped = 1
+    Exit Sub
+EquipAura_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.EquipAura", Erl)
 End Sub
 
 Public Function CheckClaseTipo(ByVal UserIndex As Integer, ItemIndex As Integer) As Boolean
+    On Error Goto CheckClaseTipo_Err
 
         On Error GoTo ErrHandler
 
@@ -1753,9 +1854,13 @@ Public Function CheckClaseTipo(ByVal UserIndex As Integer, ItemIndex As Integer)
 ErrHandler:
 130     Call LogError("Error CheckClaseTipo ItemIndex:" & ItemIndex)
 
+    Exit Function
+CheckClaseTipo_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.CheckClaseTipo", Erl)
 End Function
 
 Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As Byte)
+    On Error Goto UseInvItem_Err
 
         On Error GoTo hErr
 
@@ -3282,6 +3387,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 hErr:
 1350    LogError "Error en useinvitem Usuario: " & UserList(UserIndex).Name & " item:" & obj.Name & " index: " & UserList(UserIndex).Invent.Object(Slot).ObjIndex
 
+    Exit Sub
+UseInvItem_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.UseInvItem", Erl)
 End Sub
 
 '**************************************************************
@@ -3295,6 +3403,7 @@ End Sub
 '                       False if the potion should be consumed
 '**************************************************************
 Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatus As e_Trigger6) As Boolean
+    On Error Goto IsPotionFreeZone_Err
     Dim currentMap As Integer
     Dim isTriggerZone As Boolean
     Dim isTierUser As Boolean
@@ -3334,9 +3443,13 @@ Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatu
 
     ' Si esta en alguna de las zonas anteriores, no se consume la poción
     IsPotionFreeZone = (isHouseZone Or isSpecialZone Or isTrainingZone Or isArena)
+    Exit Function
+IsPotionFreeZone_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.IsPotionFreeZone", Erl)
 End Function
 
 Sub EnivarArmasConstruibles(ByVal UserIndex As Integer)
+    On Error Goto EnivarArmasConstruibles_Err
         
         On Error GoTo EnivarArmasConstruibles_Err
         
@@ -3350,9 +3463,13 @@ EnivarArmasConstruibles_Err:
 102     Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarArmasConstruibles", Erl)
 
         
+    Exit Sub
+EnivarArmasConstruibles_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarArmasConstruibles", Erl)
 End Sub
  
 Sub EnivarObjConstruibles(ByVal UserIndex As Integer)
+    On Error Goto EnivarObjConstruibles_Err
         
         On Error GoTo EnivarObjConstruibles_Err
         
@@ -3366,9 +3483,13 @@ EnivarObjConstruibles_Err:
 102     Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarObjConstruibles", Erl)
 
         
+    Exit Sub
+EnivarObjConstruibles_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarObjConstruibles", Erl)
 End Sub
 
 Sub SendCraftableElementRunes(ByVal UserIndex As Integer)
+    On Error Goto SendCraftableElementRunes_Err
         
         On Error GoTo SendCraftableElementRunes_Err
         
@@ -3382,9 +3503,13 @@ SendCraftableElementRunes_Err:
 102     Call TraceError(Err.Number, Err.Description, "InvUsuario.SendCraftableElementRunes", Erl)
 
         
+    Exit Sub
+SendCraftableElementRunes_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.SendCraftableElementRunes", Erl)
 End Sub
 
 Sub EnivarObjConstruiblesAlquimia(ByVal UserIndex As Integer)
+    On Error Goto EnivarObjConstruiblesAlquimia_Err
         
         On Error GoTo EnivarObjConstruiblesAlquimia_Err
         
@@ -3398,9 +3523,13 @@ EnivarObjConstruiblesAlquimia_Err:
 102     Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarObjConstruiblesAlquimia", Erl)
 
         
+    Exit Sub
+EnivarObjConstruiblesAlquimia_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarObjConstruiblesAlquimia", Erl)
 End Sub
 
 Sub EnivarObjConstruiblesSastre(ByVal UserIndex As Integer)
+    On Error Goto EnivarObjConstruiblesSastre_Err
         
         On Error GoTo EnivarObjConstruiblesSastre_Err
         
@@ -3414,9 +3543,13 @@ EnivarObjConstruiblesSastre_Err:
 102     Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarObjConstruiblesSastre", Erl)
 
         
+    Exit Sub
+EnivarObjConstruiblesSastre_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarObjConstruiblesSastre", Erl)
 End Sub
 
 Sub EnivarArmadurasConstruibles(ByVal UserIndex As Integer)
+    On Error Goto EnivarArmadurasConstruibles_Err
         
         On Error GoTo EnivarArmadurasConstruibles_Err
         
@@ -3430,9 +3563,13 @@ EnivarArmadurasConstruibles_Err:
 102     Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarArmadurasConstruibles", Erl)
 
         
+    Exit Sub
+EnivarArmadurasConstruibles_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarArmadurasConstruibles", Erl)
 End Sub
 
 Public Function ItemSeCae(ByVal Index As Integer) As Boolean
+    On Error Goto ItemSeCae_Err
         
         On Error GoTo ItemSeCae_Err
         
@@ -3446,9 +3583,13 @@ ItemSeCae_Err:
 102     Call TraceError(Err.Number, Err.Description, "InvUsuario.ItemSeCae", Erl)
 
         
+    Exit Function
+ItemSeCae_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.ItemSeCae", Erl)
 End Function
 
 Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
+    On Error Goto PirataCaeItem_Err
 
         On Error GoTo PirataCaeItem_Err
 
@@ -3481,9 +3622,13 @@ Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 PirataCaeItem_Err:
 112     Call TraceError(Err.Number, Err.Description, "InvUsuario.PirataCaeItem", Erl)
 
+    Exit Function
+PirataCaeItem_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.PirataCaeItem", Erl)
 End Function
 
 Sub TirarTodosLosItems(ByVal UserIndex As Integer)
+    On Error Goto TirarTodosLosItems_Err
         
         On Error GoTo TirarTodosLosItems_Err
 
@@ -3544,9 +3689,13 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
 
 TirarTodosLosItems_Err:
 140     Call TraceError(Err.Number, Err.Description, "InvUsuario.TirarTodosLosItems", Erl)
+    Exit Sub
+TirarTodosLosItems_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.TirarTodosLosItems", Erl)
 End Sub
 
 Function DropAmmount(ByRef invent As t_Inventario, ByVal objectIndex As Integer) As Integer
+    On Error Goto DropAmmount_Err
 100 DropAmmount = invent.Object(objectIndex).amount
 102 If invent.MagicoObjIndex > 0 Then
         With ObjData(invent.MagicoObjIndex)
@@ -3577,9 +3726,13 @@ Function DropAmmount(ByRef invent As t_Inventario, ByVal objectIndex As Integer)
         End If
         End With
     End If
+    Exit Function
+DropAmmount_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.DropAmmount", Erl)
 End Function
 
 Function ItemNewbie(ByVal ItemIndex As Integer) As Boolean
+    On Error Goto ItemNewbie_Err
         
         On Error GoTo ItemNewbie_Err
         
@@ -3589,15 +3742,23 @@ Function ItemNewbie(ByVal ItemIndex As Integer) As Boolean
 
 ItemNewbie_Err:
 102     Call TraceError(Err.Number, Err.Description, "InvUsuario.ItemNewbie", Erl)
+    Exit Function
+ItemNewbie_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.ItemNewbie", Erl)
 End Function
 
 Public Function IsItemInCooldown(ByRef User As t_User, ByRef obj As t_UserOBJ) As Boolean
+    On Error Goto IsItemInCooldown_Err
     Dim elapsedTime As Long
     ElapsedTime = GetTickCount() - User.CdTimes(ObjData(obj.objIndex).cdType)
     IsItemInCooldown = ElapsedTime < ObjData(obj.objIndex).Cooldown
+    Exit Function
+IsItemInCooldown_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.IsItemInCooldown", Erl)
 End Function
 
 Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
+    On Error Goto UserTargetableItem_Err
 On Error GoTo UserTargetableItem_Err
     With UserList(UserIndex)
         If IsItemInCooldown(UserList(UserIndex), .invent.Object(.flags.UsingItemSlot)) Then
@@ -3631,9 +3792,13 @@ On Error GoTo UserTargetableItem_Err
     Exit Sub
 UserTargetableItem_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.UserTargetableItem", Erl)
+    Exit Sub
+UserTargetableItem_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.UserTargetableItem", Erl)
 End Sub
 
 Public Sub ResurrectWithItem(ByVal UserIndex As Integer)
+    On Error Goto ResurrectWithItem_Err
 On Error GoTo ResurrectWithItem_Err
     With UserList(UserIndex)
 100     Dim CanHelpResult As e_InteractionResult
@@ -3681,14 +3846,22 @@ On Error GoTo ResurrectWithItem_Err
     Exit Sub
 ResurrectWithItem_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.ResurrectWithItem", Erl)
+    Exit Sub
+ResurrectWithItem_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.ResurrectWithItem", Erl)
 End Sub
 
 Public Sub RemoveItemFromInventory(ByVal UserIndex As Integer, ByVal Slot As Integer)
+    On Error Goto RemoveItemFromInventory_Err
     Call QuitarUserInvItem(UserIndex, Slot, 1)
     Call UpdateUserInv(True, UserIndex, Slot)
+    Exit Sub
+RemoveItemFromInventory_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.RemoveItemFromInventory", Erl)
 End Sub
 
 Public Sub PlaceTrap(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
+    On Error Goto PlaceTrap_Err
     With UserList(UserIndex)
         If Distance(TileX, TileY, .pos.x, .pos.y) > 3 Then
             Call WriteLocaleMsg(UserIndex, MsgToFar, e_FontTypeNames.FONTTYPE_INFO)
@@ -3724,9 +3897,13 @@ Public Sub PlaceTrap(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal T
         Call EffectsOverTime.CreateTrap(UserIndex, eUser, .pos.map, TileX, TileY, ObjData(objIndex).EfectoMagico)
         Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.UsingItemSlot)
     End With
+    Exit Sub
+PlaceTrap_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.PlaceTrap", Erl)
 End Sub
 
 Public Sub UseArpon(ByVal UserIndex As Integer)
+    On Error Goto UseArpon_Err
     With UserList(UserIndex)
 100     Dim CanAttackResult As e_AttackInteractionResult
         Dim TargetRef As t_AnyReference
@@ -3785,9 +3962,13 @@ Public Sub UseArpon(ByVal UserIndex As Integer)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(.pos.x, .pos.y, TargetPos.x, TargetPos.y, ObjData(ObjIndex).ProjectileType))
         End If
     End With
+    Exit Sub
+UseArpon_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.UseArpon", Erl)
 End Sub
 
 Public Sub UseHandCannon(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
+    On Error Goto UseHandCannon_Err
     With UserList(UserIndex)
         If Distance(TileX, TileY, .pos.x, .pos.y) > 10 Then
             Call WriteLocaleMsg(UserIndex, MsgToFar, e_FontTypeNames.FONTTYPE_INFO)
@@ -3807,9 +3988,13 @@ Public Sub UseHandCannon(ByVal UserIndex As Integer, ByVal TileX As Integer, ByV
         If ObjData(ObjIndex).Snd1 <> 0 Then Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(ObjData(ObjIndex).Snd1, .pos.x, .pos.y))
         Call RemoveUserInvisibility(UserIndex)
     End With
+    Exit Sub
+UseHandCannon_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.UseHandCannon", Erl)
 End Sub
 
 Public Sub AddOrResetEffect(ByVal UserIndex As Integer, ByVal EffectId As Integer)
+    On Error Goto AddOrResetEffect_Err
     With UserList(UserIndex)
         Dim Effect As IBaseEffectOverTime
         Set Effect = EffectsOverTime.FindEffectOnTarget(UserIndex, .EffectOverTime, EffectId)
@@ -3821,9 +4006,13 @@ Public Sub AddOrResetEffect(ByVal UserIndex As Integer, ByVal EffectId As Intege
             End If
         End If
     End With
+    Exit Sub
+AddOrResetEffect_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.AddOrResetEffect", Erl)
 End Sub
 
 Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
+    On Error Goto UpdateCharWithEquipedItems_Err
     With UserList(UserIndex)
         If .flags.Navegando > 0 Then
             Call EquiparBarco(UserIndex)
@@ -3876,25 +4065,37 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
         End If
         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
     End With
+    Exit Sub
+UpdateCharWithEquipedItems_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.UpdateCharWithEquipedItems", Erl)
 End Sub
 
 Function RemoveGold(ByVal UserIndex As Integer, ByVal Amount As Long) As Boolean
+    On Error Goto RemoveGold_Err
     With UserList(UserIndex)
         If .Stats.GLD < Amount Then Exit Function
         .Stats.GLD = .Stats.GLD - Amount
         Call WriteUpdateGold(UserIndex)
         RemoveGold = True
     End With
+    Exit Function
+RemoveGold_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.RemoveGold", Erl)
 End Function
 
 Sub AddGold(ByVal UserIndex As Integer, ByVal Amount As Long)
+    On Error Goto AddGold_Err
     With UserList(UserIndex)
         .Stats.GLD = .Stats.GLD + Amount
         Call WriteUpdateGold(UserIndex)
     End With
+    Exit Sub
+AddGold_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.AddGold", Erl)
 End Sub
 
 Function ObtenerRopaje(ByVal UserIndex As Integer, ByRef Obj As t_ObjData) As Integer
+    On Error Goto ObtenerRopaje_Err
     Dim Race As e_Raza
     Race = UserList(UserIndex).raza
     
@@ -3953,8 +4154,12 @@ Function ObtenerRopaje(ByVal UserIndex As Integer, ByRef Obj As t_ObjData) As In
     End Select
     
     ObtenerRopaje = Obj.Ropaje
+    Exit Function
+ObtenerRopaje_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.ObtenerRopaje", Erl)
 End Function
 Sub EliminarLlaves(ByVal ClaveLlave As Integer, ByVal UserIndex As Integer)
+    On Error Goto EliminarLlaves_Err
     ' Abrir el archivo "Eliminarllaves.dat" para lectura
     Open "Eliminarllaves.dat" For Input As #1
 
@@ -3987,9 +4192,13 @@ Sub EliminarLlaves(ByVal ClaveLlave As Integer, ByVal UserIndex As Integer)
 
     ' Cerrar el archivo
     Close #1
+    Exit Sub
+EliminarLlaves_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.EliminarLlaves", Erl)
 End Sub
 
 Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal TargetSlot As Integer, ByVal SourceSlot As Integer) As Boolean
+    On Error Goto CanElementalTagBeApplied_Err
     CanElementalTagBeApplied = False
     Dim TargetObj As t_ObjData
     Dim SourceObj As t_ObjData
@@ -4053,5 +4262,8 @@ Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal Targe
     UserList(UserIndex).invent.Object(TargetSlot).ElementalTags = SourceObj.ElementalTags
     CanElementalTagBeApplied = True
     
+    Exit Function
+CanElementalTagBeApplied_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.CanElementalTagBeApplied", Erl)
 End Function
 

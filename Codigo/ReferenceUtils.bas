@@ -28,6 +28,7 @@ Attribute VB_Name = "ModReferenceUtils"
 Option Explicit
 
 Public Function GetPosition(ByRef Reference As t_AnyReference) As t_WorldPos
+    On Error Goto GetPosition_Err
     If Not IsValidRef(Reference) Then
         Exit Function
     End If
@@ -36,9 +37,13 @@ Public Function GetPosition(ByRef Reference As t_AnyReference) As t_WorldPos
     ElseIf Reference.RefType = eUser Then
         GetPosition = UserList(Reference.ArrayIndex).pos
     End If
+    Exit Function
+GetPosition_Err:
+    Call TraceError(Err.Number, Err.Description, "ReferenceUtils.GetPosition", Erl)
 End Function
 
 Public Sub SetTranslationState(ByRef Reference As t_AnyReference, ByVal NewState As Boolean)
+    On Error Goto SetTranslationState_Err
     If Not IsValidRef(Reference) Then
         Exit Sub
     End If
@@ -47,25 +52,37 @@ Public Sub SetTranslationState(ByRef Reference As t_AnyReference, ByVal NewState
     ElseIf Reference.RefType = eUser Then
         UserList(Reference.ArrayIndex).flags.TranslationActive = NewState
     End If
+    Exit Sub
+SetTranslationState_Err:
+    Call TraceError(Err.Number, Err.Description, "ReferenceUtils.SetTranslationState", Erl)
 End Sub
 
 Public Function UserCanAttack(ByVal UserIndex As Integer, ByVal UserVersionId, ByRef Reference As t_AnyReference) As e_AttackInteractionResult
+    On Error Goto UserCanAttack_Err
     If Reference.RefType = eUser Then
         UserCanAttack = UserMod.CanAttackUser(UserIndex, UserVersionId, Reference.ArrayIndex, Reference.VersionId)
     Else
         UserCanAttack = UserCanAttackNpc(UserIndex, Reference.ArrayIndex).result
     End If
+    Exit Function
+UserCanAttack_Err:
+    Call TraceError(Err.Number, Err.Description, "ReferenceUtils.UserCanAttack", Erl)
 End Function
 
 Public Function NpcCanAttack(ByVal NpcIndex As Integer, ByRef Reference As t_AnyReference) As e_AttackInteractionResult
+    On Error Goto NpcCanAttack_Err
     If Reference.RefType = eUser Then
         NpcCanAttack = NPCs.CanAttackUser(NpcIndex, Reference.ArrayIndex)
     Else
         NpcCanAttack = NPCs.CanAttackNpc(NpcIndex, Reference.ArrayIndex)
     End If
+    Exit Function
+NpcCanAttack_Err:
+    Call TraceError(Err.Number, Err.Description, "ReferenceUtils.NpcCanAttack", Erl)
 End Function
 
 Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modifier As e_ModifierTypes, ByVal Value As Single)
+    On Error Goto UpdateIncreaseModifier_Err
     If Reference.RefType = eUser Then
         Select Case Modifier
             Case e_ModifierTypes.MagicBonus
@@ -119,9 +136,13 @@ Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modif
                 Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.DefenseBonus, Value)
         End Select
     End If
+    Exit Sub
+UpdateIncreaseModifier_Err:
+    Call TraceError(Err.Number, Err.Description, "ReferenceUtils.UpdateIncreaseModifier", Erl)
 End Sub
 
 Public Function DoDamageToTarget(ByVal UserIndex As Integer, ByRef TargetRef As t_AnyReference, ByVal Damage As Integer, _
+    On Error Goto DoDamageToTarget_Err
                                  ByVal DamageType As e_DamageSourceType, ByVal ObjIndex As Integer) As e_DamageResult
     If Not IsValidRef(TargetRef) Then
         Exit Function
@@ -131,9 +152,13 @@ Public Function DoDamageToTarget(ByVal UserIndex As Integer, ByRef TargetRef As 
     ElseIf TargetRef.RefType = eUser Then
         DoDamageToTarget = UserDoDamageToUser(UserIndex, TargetRef.ArrayIndex, Damage, DamageType, ObjIndex)
     End If
+    Exit Function
+DoDamageToTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "ReferenceUtils.DoDamageToTarget", Erl)
 End Function
 
 Public Function NpcDoDamageToTarget(ByVal NpcIndex As Integer, ByRef TargetRef As t_AnyReference, ByVal Damage As Integer, _
+    On Error Goto NpcDoDamageToTarget_Err
                                  ByVal DamageType As e_DamageSourceType, ByVal ObjIndex As Integer) As e_DamageResult
     If Not IsValidRef(TargetRef) Then
         Exit Function
@@ -143,9 +168,13 @@ Public Function NpcDoDamageToTarget(ByVal NpcIndex As Integer, ByRef TargetRef A
     ElseIf TargetRef.RefType = eUser Then
         NpcDoDamageToTarget = NpcDoDamageToUser(NpcIndex, TargetRef.ArrayIndex, Damage, DamageType, ObjIndex)
     End If
+    Exit Function
+NpcDoDamageToTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "ReferenceUtils.NpcDoDamageToTarget", Erl)
 End Function
 
 Public Function RefDoDamageToTarget(ByRef SourceRef As t_AnyReference, ByRef TargetRef As t_AnyReference, ByVal Damage As Integer, _
+    On Error Goto RefDoDamageToTarget_Err
                                  ByVal DamageType As e_DamageSourceType, ByVal ObjIndex As Integer) As e_DamageResult
     If Not IsValidRef(SourceRef) Then
         Exit Function
@@ -155,9 +184,13 @@ Public Function RefDoDamageToTarget(ByRef SourceRef As t_AnyReference, ByRef Tar
     ElseIf SourceRef.RefType = eUser Then
         RefDoDamageToTarget = DoDamageToTarget(SourceRef.ArrayIndex, TargetRef, Damage, DamageType, ObjIndex)
     End If
+    Exit Function
+RefDoDamageToTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "ReferenceUtils.RefDoDamageToTarget", Erl)
 End Function
 
 Public Function AddShieldToReference(ByRef SourceRef As t_AnyReference, ByVal ShieldSize As Long)
+    On Error Goto AddShieldToReference_Err
     If SourceRef.RefType = eUser Then
         Call IncreaseLong(UserList(SourceRef.ArrayIndex).Stats.Shield, ShieldSize)
         WriteUpdateHP (SourceRef.ArrayIndex)
@@ -165,36 +198,55 @@ Public Function AddShieldToReference(ByRef SourceRef As t_AnyReference, ByVal Sh
         Call IncreaseLong(NpcList(SourceRef.ArrayIndex).Stats.Shield, ShieldSize)
         Call SendData(SendTarget.ToNPCAliveArea, SourceRef.ArrayIndex, PrepareMessageNpcUpdateHP(SourceRef.ArrayIndex))
     End If
+    Exit Function
+AddShieldToReference_Err:
+    Call TraceError(Err.Number, Err.Description, "ReferenceUtils.AddShieldToReference", Erl)
 End Function
 
 Public Function GetName(ByRef SourceRef As t_AnyReference) As String
+    On Error Goto GetName_Err
     If SourceRef.RefType = eUser Then
         GetName = UserList(SourceRef.ArrayIndex).name
     Else
         GetName = NpcList(SourceRef.ArrayIndex).name
     End If
+    Exit Function
+GetName_Err:
+    Call TraceError(Err.Number, Err.Description, "ReferenceUtils.GetName", Erl)
 End Function
 
 Public Sub SetStatusMask(ByRef TargetRef As t_AnyReference, ByVal Mask As Long)
+    On Error Goto SetStatusMask_Err
     If TargetRef.RefType = eUser Then
         Call SetMask(UserList(TargetRef.ArrayIndex).flags.StatusMask, Mask)
     Else
         Call SetMask(NpcList(TargetRef.ArrayIndex).flags.StatusMask, Mask)
     End If
+    Exit Sub
+SetStatusMask_Err:
+    Call TraceError(Err.Number, Err.Description, "ReferenceUtils.SetStatusMask", Erl)
 End Sub
 
 Public Sub UnsetStatusMask(ByRef TargetRef As t_AnyReference, ByVal Mask As Long)
+    On Error Goto UnsetStatusMask_Err
     If TargetRef.RefType = eUser Then
         Call UnsetMask(UserList(TargetRef.ArrayIndex).flags.StatusMask, Mask)
     Else
         Call UnsetMask(NpcList(TargetRef.ArrayIndex).flags.StatusMask, Mask)
     End If
+    Exit Sub
+UnsetStatusMask_Err:
+    Call TraceError(Err.Number, Err.Description, "ReferenceUtils.UnsetStatusMask", Erl)
 End Sub
 
 Public Function IsDead(ByRef TargetRef As t_AnyReference)
+    On Error Goto IsDead_Err
     If TargetRef.RefType = eUser Then
         IsDead = UserList(TargetRef.ArrayIndex).flags.Muerto = 1
     Else
         IsDead = NpcList(TargetRef.ArrayIndex).Stats.MinHp = 0
     End If
+    Exit Function
+IsDead_Err:
+    Call TraceError(Err.Number, Err.Description, "ReferenceUtils.IsDead", Erl)
 End Function

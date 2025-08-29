@@ -99,6 +99,7 @@ Dim MinArenaSize As Integer
 Dim LobbyIndex As Integer
 
 Private Sub Class_Initialize()
+    On Error Goto Class_Initialize_Err
 On Error GoTo DeathMatch_Initialize_Err:
     Debug.Assert FileExist(DatPath & configPath)
     Dim ScenarioIni As clsIniManager
@@ -128,9 +129,13 @@ On Error GoTo DeathMatch_Initialize_Err:
     Exit Sub
 DeathMatch_Initialize_Err:
     Call TraceError(Err.Number, Err.Description, "DeathMatch.Initialize ", Erl)
+    Exit Sub
+Class_Initialize_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.Class_Initialize", Erl)
 End Sub
 
 Private Sub LoadItemsToSpawn(ScenearioIni As clsIniManager)
+    On Error Goto LoadItemsToSpawn_Err
     Dim itemCount As Integer
     Dim i As Integer
     Dim spawInterval As Long
@@ -144,9 +149,13 @@ Private Sub LoadItemsToSpawn(ScenearioIni As clsIniManager)
         spawInterval = val(ScenearioIni.GetValue("SpawnItem" & i + 1, "SpawnInterval"))
         Call SetTimer(ItemsToSpawn(i).timer, spawInterval * 1000)
     Next i
+    Exit Sub
+LoadItemsToSpawn_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.LoadItemsToSpawn", Erl)
 End Sub
 
 Private Sub LoadForbidenItems(ScenearioIni As clsIniManager)
+    On Error Goto LoadForbidenItems_Err
     Dim forbiddenItemCount As Integer
     Dim i As Integer
     forbiddenItemCount = val(ScenearioIni.GetValue("FORBIDDEN", "Count"))
@@ -154,18 +163,26 @@ Private Sub LoadForbidenItems(ScenearioIni As clsIniManager)
     For i = 0 To forbiddenItemCount - 1
         ForbbidenItemId(i) = val(ScenearioIni.GetValue("FORBIDDEN", "ItemId" & i + 1))
     Next i
+    Exit Sub
+LoadForbidenItems_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.LoadForbidenItems", Erl)
 End Sub
 
 Private Sub UpdateFightAreaForPlayerCount()
+    On Error Goto UpdateFightAreaForPlayerCount_Err
     Dim size As Integer
     Size = MinArenaSize + LobbyList(LobbyIndex).RegisteredPlayers * PlayerAreaIncreaseModifier
     FightAreaTopLeft.X = 50 - size
     FightAreaTopLeft.y = 50 - size
     FightAreaBottomRight.X = 50 + size
     FightAreaBottomRight.y = 50 + size
+    Exit Sub
+UpdateFightAreaForPlayerCount_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.UpdateFightAreaForPlayerCount", Erl)
 End Sub
 
 Private Sub AddItemToUser(ByVal UserIndex As Integer, ByVal ItemId As Integer, ByVal ItemCount As Integer)
+    On Error Goto AddItemToUser_Err
     With UserList(UserIndex)
         Dim Slot As Integer
         For Slot = 1 To UBound(.invent.Object)
@@ -176,9 +193,13 @@ Private Sub AddItemToUser(ByVal UserIndex As Integer, ByVal ItemId As Integer, B
             End If
         Next Slot
     End With
+    Exit Sub
+AddItemToUser_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.AddItemToUser", Erl)
 End Sub
 
 Private Sub RemoveForbiddenItems(ByVal UserIndex As Integer)
+    On Error Goto RemoveForbiddenItems_Err
     Dim i As Integer
     Dim j As Integer
     With UserList(UserIndex)
@@ -209,9 +230,13 @@ Private Sub RemoveForbiddenItems(ByVal UserIndex As Integer)
             Call UpdateUserInv(True, UserIndex, 0)
         End If
     End With
+    Exit Sub
+RemoveForbiddenItems_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.RemoveForbiddenItems", Erl)
 End Sub
 
 Private Sub LimitFightArea()
+    On Error Goto LimitFightArea_Err
     Dim X As Integer
     Dim y As Integer
     Dim MiObj As t_Obj
@@ -258,9 +283,13 @@ Private Sub LimitFightArea()
     SpawnPos.X = FightAreaBottomRight.X + 1
     SpawnPos.y = FightAreaBottomRight.y + 1
     Call TirarItemAlPiso(SpawnPos, MiObj, 0)
+    Exit Sub
+LimitFightArea_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.LimitFightArea", Erl)
 End Sub
 
 Private Sub CloseScenario()
+    On Error Goto CloseScenario_Err
 On Error GoTo CloseScenario_Err:
 100    Call ModLobby.ReturnAllPlayers(LobbyList(LobbyIndex))
 102    Set LobbyList(LobbyIndex).Scenario = Nothing
@@ -274,9 +303,13 @@ On Error GoTo CloseScenario_Err:
     Exit Sub
 CloseScenario_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.CloseScenario ", Erl)
+    Exit Sub
+CloseScenario_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.CloseScenario", Erl)
 End Sub
 
 Private Sub ClearMap()
+    On Error Goto ClearMap_Err
     On Error GoTo ClearMap_Err:
 100     CustomScenarios.RemoveCustomScenario (MapNumber)
 102     CustomScenarios.RemoveUpdateScenario (UpdateIndex)
@@ -298,9 +331,13 @@ Private Sub ClearMap()
     Exit Sub
 ClearMap_Err:
 130 Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ClearMap", Erl)
+    Exit Sub
+ClearMap_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.ClearMap", Erl)
 End Sub
 
 Private Function IsForbidden(ByVal itemId As Integer) As Boolean
+    On Error Goto IsForbidden_Err
     Dim i As Integer
     If itemId = 0 Then
         IsForbidden = False
@@ -313,41 +350,77 @@ Private Function IsForbidden(ByVal itemId As Integer) As Boolean
         End If
     Next i
     IsForbidden = False
+    Exit Function
+IsForbidden_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IsForbidden", Erl)
 End Function
 
 Public Sub IBaseScenario_SetLobbyIndex(ByVal Value As Integer)
+    On Error Goto IBaseScenario_SetLobbyIndex_Err
     LobbyIndex = Value
     Call ConfigMapLobby
+    Exit Sub
+IBaseScenario_SetLobbyIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_SetLobbyIndex", Erl)
 End Sub
 
 Public Function IBaseScenario_GetScenarioName() As String
+    On Error Goto IBaseScenario_GetScenarioName_Err
     IBaseScenario_GetScenarioName = "DeathMatch"
+    Exit Function
+IBaseScenario_GetScenarioName_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_GetScenarioName", Erl)
 End Function
 
 Public Sub IBaseScenario_BroadcastOpenScenario()
+    On Error Goto IBaseScenario_BroadcastOpenScenario_Err
     'queda pendiente hacer un mensaje de broadcast de deathmatch
     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgDeathMatchInstructions, "", e_FontTypeNames.FONTTYPE_GUILD))
+    Exit Sub
+IBaseScenario_BroadcastOpenScenario_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_BroadcastOpenScenario", Erl)
 End Sub
 
 Public Sub IBaseScenario_SendRules(ByVal UserIndex As Integer)
+    On Error Goto IBaseScenario_SendRules_Err
     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgDeathMathInstructions, "", e_FontTypeNames.FONTTYPE_GUILD))
+    Exit Sub
+IBaseScenario_SendRules_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_SendRules", Erl)
 End Sub
 
 Public Function IBaseScenario_GetExtraInterfaces() As Long
+    On Error Goto IBaseScenario_GetExtraInterfaces_Err
     IBaseScenario_GetExtraInterfaces = 0
+    Exit Function
+IBaseScenario_GetExtraInterfaces_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_GetExtraInterfaces", Erl)
 End Function
 
 Public Sub IBaseScenario_Reset()
+    On Error Goto IBaseScenario_Reset_Err
+    Exit Sub
+IBaseScenario_Reset_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_Reset", Erl)
 End Sub
 
 Public Function IBaseScenario_RequiresSpawn() As Boolean
+    On Error Goto IBaseScenario_RequiresSpawn_Err
     IBaseScenario_RequiresSpawn = False
+    Exit Function
+IBaseScenario_RequiresSpawn_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_RequiresSpawn", Erl)
 End Function
 
 Public Function IBaseScenario_ValidateUser(ByVal UserIndex As Integer) As Integer
+    On Error Goto IBaseScenario_ValidateUser_Err
+    Exit Function
+IBaseScenario_ValidateUser_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_ValidateUser", Erl)
 End Function
 
 Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
+    On Error Goto IBaseScenario_WillSummonPlayer_Err
     Dim spawnPos As t_WorldPos
     spawnPos.map = MapNumber
     spawnPos.X = RandomNumber(50 - MinArenaSize, 50 - MinArenaSize)
@@ -382,9 +455,13 @@ Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
         End If
     End With
     
+    Exit Sub
+IBaseScenario_WillSummonPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_WillSummonPlayer", Erl)
 End Sub
 
 Public Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef newState As e_LobbyState)
+    On Error Goto IBaseScenario_UpdateLobbyState_Err
     If oldState = newState Then
         Exit Sub
     End If
@@ -394,15 +471,27 @@ Public Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef 
     If newState = Closed Then
         Call MatchCompleted
     End If
+    Exit Sub
+IBaseScenario_UpdateLobbyState_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_UpdateLobbyState", Erl)
 End Sub
 
 Public Sub IBaseScenario_PlayerKillNpc(ByVal npcIndex As Integer, ByVal UserIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
+    On Error Goto IBaseScenario_PlayerKillNpc_Err
+    Exit Sub
+IBaseScenario_PlayerKillNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_PlayerKillNpc", Erl)
 End Sub
 
 Public Sub IBaseScenario_NPcKillPlayer(ByVal npcIndex As Integer, ByVal UserIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
+    On Error Goto IBaseScenario_NPcKillPlayer_Err
+    Exit Sub
+IBaseScenario_NPcKillPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_NPcKillPlayer", Erl)
 End Sub
 
 Public Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal deadIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
+    On Error Goto IBaseScenario_PlayerKillPlayer_Err
     Call Board.UpdatePlayerScore(deadIndex, -1)
     If killerIndex <> deadIndex Then
         If Board.UpdatePlayerScore(killerIndex, 3) >= TargetScore Then
@@ -418,9 +507,13 @@ Public Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal de
             End If
         End If
     End If
+    Exit Sub
+IBaseScenario_PlayerKillPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_PlayerKillPlayer", Erl)
 End Sub
 
 Public Sub IBaseScenario_Update()
+    On Error Goto IBaseScenario_Update_Err
     Dim frametime As Long
     frametime = GetTickCount() - LastFrameTime
     LastFrameTime = GetTickCount()
@@ -466,18 +559,30 @@ Public Sub IBaseScenario_Update()
     ElseIf LobbyList(LobbyIndex).State = e_LobbyState.Closed Then
         Call CloseScenario
     End If
+    Exit Sub
+IBaseScenario_Update_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_Update", Erl)
 End Sub
 
 Public Sub IBaseScenario_OnUserDisconnected(ByVal userIndex As Integer)
+    On Error Goto IBaseScenario_OnUserDisconnected_Err
     Call Board.DisconnectUser(userIndex, UserList(userIndex).ID)
     Call RemoveForbiddenItems(UserIndex)
+    Exit Sub
+IBaseScenario_OnUserDisconnected_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_OnUserDisconnected", Erl)
 End Sub
 
 Public Sub IBaseScenario_OnUserReconnect(ByVal userIndex As Integer)
+    On Error Goto IBaseScenario_OnUserReconnect_Err
     Call Board.RestoreDisconnectUser(userIndex, UserList(userIndex).ID)
+    Exit Sub
+IBaseScenario_OnUserReconnect_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_OnUserReconnect", Erl)
 End Sub
 
 Private Sub StartGame()
+    On Error Goto StartGame_Err
     Call SetTimer(BroadCastTimer, 60000)
     Call SetTimer(ScoreBroadcastTimer, 20000)
     LastFrameTime = GetTickCount()
@@ -505,9 +610,13 @@ Private Sub StartGame()
         Next j
     Next i
     Call ConfigMapEvent
+    Exit Sub
+StartGame_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.StartGame", Erl)
 End Sub
 
 Private Sub Respawn(ByVal player As Integer)
+    On Error Goto Respawn_Err
     Dim spawnPos As t_WorldPos
     spawnPos.map = MapNumber
     SpawnPos.X = RandomNumber(FightAreaTopLeft.X, FightAreaBottomRight.X)
@@ -517,9 +626,13 @@ Private Sub Respawn(ByVal player As Integer)
     UserList(player).Counters.timeFx = 3
 114 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessageParticleFX(UserList(player).Char.charindex, e_ParticulasIndex.Curar, 100, False, , UserList(player).Pos.x, UserList(player).Pos.y))
 116 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessagePlayWave("104", UserList(player).Pos.x, UserList(player).Pos.y))
+    Exit Sub
+Respawn_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.Respawn", Erl)
 End Sub
 
 Private Sub MatchCompleted()
+    On Error Goto MatchCompleted_Err
     MapInfo(MapNumber).Seguro = 1
     Call SetTimer(CountdownTimer, 1000)
     Dim i As Integer
@@ -538,9 +651,13 @@ Private Sub MatchCompleted()
     Call CustomScenarios.ClearMap(MapNumber)
     MapInfo(MapNumber).Seguro = 1
     MapInfo(MapNumber).SafeFightMap = False
+    Exit Sub
+MatchCompleted_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.MatchCompleted", Erl)
 End Sub
 
 Private Sub BroadcastPendingTime(ByVal frametime As Long)
+    On Error Goto BroadcastPendingTime_Err
     Dim pendingTime As Long
     'we add frame time here again so we round up
     pendingTime = (MaxTime - ElapsedTime + frametime) / 1000
@@ -555,9 +672,13 @@ Private Sub BroadcastPendingTime(ByVal frametime As Long)
     If pendingTime <= 1 Then
         Call SetTimer(BroadCastTimer, 1000)
     End If
+    Exit Sub
+BroadcastPendingTime_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.BroadcastPendingTime", Erl)
 End Sub
 
 Private Sub RespawnPlayers()
+    On Error Goto RespawnPlayers_Err
     Dim key As Variant
     Dim Keys As Variant
     Dim currentTime As Long
@@ -583,9 +704,13 @@ Private Sub RespawnPlayers()
             Call PlayerRespawn.Remove(key)
         End If
     Next key
+    Exit Sub
+RespawnPlayers_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.RespawnPlayers", Erl)
 End Sub
 
 Private Sub RespawnItems(ByVal frametime As Long)
+    On Error Goto RespawnItems_Err
     Dim i, j As Integer
     Dim SpawnCount As Integer
     Dim StackToCreate As Integer
@@ -598,9 +723,13 @@ Private Sub RespawnItems(ByVal frametime As Long)
             Next j
         End If
     Next i
+    Exit Sub
+RespawnItems_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.RespawnItems", Erl)
 End Sub
 
 Private Sub SpawnItem(ByVal itemId As Integer, ByVal stackSize As Integer)
+    On Error Goto SpawnItem_Err
     Dim MiObj As t_Obj
     MiObj.amount = stackSize
     MiObj.objIndex = itemId
@@ -609,16 +738,24 @@ Private Sub SpawnItem(ByVal itemId As Integer, ByVal stackSize As Integer)
     SpawnPos.X = RandomNumber(FightAreaTopLeft.X, FightAreaBottomRight.X)
     SpawnPos.y = RandomNumber(FightAreaTopLeft.y, FightAreaBottomRight.y)
     Call TirarItemAlPiso(spawnPos, MiObj, 0)
+    Exit Sub
+SpawnItem_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.SpawnItem", Erl)
 End Sub
 
 Private Sub ConfigMapEvent()
+    On Error Goto ConfigMapEvent_Err
     MapInfo(MapNumber).Seguro = 0
     MapInfo(MapNumber).SinInviOcul = True
     MapInfo(mapNumber).SafeFightMap = True
     MapInfo(MapNumber).FriendlyFire = False
+    Exit Sub
+ConfigMapEvent_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.ConfigMapEvent", Erl)
 End Sub
 
 Private Sub ConfigMapLobby()
+    On Error Goto ConfigMapLobby_Err
     PrevMapState = MapInfo(MapNumber).Seguro
     MapDropItems = MapInfo(MapNumber).DropItems
     SafeFigthState = MapInfo(mapNumber).SafeFightMap
@@ -626,17 +763,29 @@ Private Sub ConfigMapLobby()
     MapInfo(MapNumber).Seguro = 1
     MapInfo(MapNumber).SinInviOcul = True
     MapInfo(MapNumber).DropItems = False
+    Exit Sub
+ConfigMapLobby_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.ConfigMapLobby", Erl)
 End Sub
 
 Public Sub IBaseScenario_GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)
+    On Error Goto IBaseScenario_GetNextWaypointForNpc_Err
 
+    Exit Sub
+IBaseScenario_GetNextWaypointForNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_GetNextWaypointForNpc", Erl)
 End Sub
 
 Public Sub IBaseScenario_NpcDie(ByVal NpcIndex)
+    On Error Goto IBaseScenario_NpcDie_Err
 
+    Exit Sub
+IBaseScenario_NpcDie_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_NpcDie", Erl)
 End Sub
 
 Public Sub IBaseScenario_UserDie(ByVal UserIndex)
+    On Error Goto IBaseScenario_UserDie_Err
     Dim RespawnInfo As clsRespawnInfo
     Set RespawnInfo = New clsRespawnInfo
     RespawnInfo.RespawnTime = GetTickCount()
@@ -655,10 +804,14 @@ Public Sub IBaseScenario_UserDie(ByVal UserIndex)
         End If
     End With
     Call PlayerRespawn.Add(UserIndex, RespawnInfo)
+    Exit Sub
+IBaseScenario_UserDie_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.IBaseScenario_UserDie", Erl)
 End Sub
 
 
 Sub GiveRewards()
+    On Error Goto GiveRewards_Err
     On Error GoTo GiveRewards_Err:
         Dim Teams() As String
         Dim Rewards(1 To 3) As Long
@@ -727,4 +880,7 @@ Sub GiveRewards()
         Exit Sub
 GiveRewards_Err:
     Call TraceError(Err.Number, Err.Description, "DeathMatch.GiveRewards ", Erl)
+    Exit Sub
+GiveRewards_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioDeathMatch.GiveRewards", Erl)
 End Sub

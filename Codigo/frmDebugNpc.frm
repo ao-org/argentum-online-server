@@ -93,6 +93,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
+    On Error Goto Command1_Click_Err
         
         On Error GoTo Command1_Click_Err
         
@@ -116,9 +117,13 @@ Command1_Click_Err:
 114     Call TraceError(Err.Number, Err.Description, "frmDebugNpc.Command1_Click", Erl)
 116
         
+    Exit Sub
+Command1_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmDebugNpc.Command1_Click", Erl)
 End Sub
 
 Private Sub Command2_Click()
+    On Error Goto Command2_Click_Err
         
         On Error GoTo Command2_Click_Err
         
@@ -131,5 +136,8 @@ Command2_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmDebugNpc.Command2_Click", Erl)
 104
         
+    Exit Sub
+Command2_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmDebugNpc.Command2_Click", Erl)
 End Sub
 

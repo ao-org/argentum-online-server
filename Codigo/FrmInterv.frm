@@ -809,6 +809,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Public Sub AplicarIntervalos()
+    On Error Goto AplicarIntervalos_Err
         
         On Error GoTo AplicarIntervalos_Err
         
@@ -850,9 +851,13 @@ AplicarIntervalos_Err:
 148     Call TraceError(Err.Number, Err.Description, "FrmInterv.AplicarIntervalos", Erl)
 150
         
+    Exit Sub
+AplicarIntervalos_Err:
+    Call TraceError(Err.Number, Err.Description, "FrmInterv.AplicarIntervalos", Erl)
 End Sub
 
 Private Sub Command1_Click()
+    On Error Goto Command1_Click_Err
         
         On Error GoTo Command1_Click_Err
 
@@ -864,9 +869,13 @@ Command1_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "FrmInterv.Command1_Click", Erl)
 
         
+    Exit Sub
+Command1_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "FrmInterv.Command1_Click", Erl)
 End Sub
 
 Private Sub Command2_Click()
+    On Error Goto Command2_Click_Err
 
         On Error GoTo Err
 
@@ -905,10 +914,14 @@ Private Sub Command2_Click()
 Err:
 148     MsgBox "Error al intentar grabar los intervalos"
 
+    Exit Sub
+Command2_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "FrmInterv.Command2_Click", Erl)
 End Sub
 
 
 Private Sub ok_Click()
+    On Error Goto ok_Click_Err
         
         On Error GoTo ok_Click_Err
         
@@ -921,5 +934,8 @@ ok_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "FrmInterv.ok_Click", Erl)
 104
         
+    Exit Sub
+ok_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "FrmInterv.ok_Click", Erl)
 End Sub
 

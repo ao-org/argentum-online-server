@@ -33,6 +33,7 @@ Public Retos As t_Retos
 Private ListaDeEspera As New Dictionary
 
 Public Sub CargarInfoRetos()
+    On Error Goto CargarInfoRetos_Err
     Dim File As clsIniManager
 100 Set File = New clsIniManager
 
@@ -78,9 +79,13 @@ Public Sub CargarInfoRetos()
         End With
     
 146     Set File = Nothing
+    Exit Sub
+CargarInfoRetos_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.CargarInfoRetos", Erl)
 End Sub
 
 Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal Apuesta As Long, ByVal PocionesMaximas As Integer, Optional ByVal CaenItems As Boolean = False)
+    On Error Goto CrearReto_Err
     
         On Error GoTo ErrHandler
     
@@ -201,9 +206,13 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
 ErrHandler:
 210     Call TraceError(Err.Number, Err.Description, "ModRetos.CrearReto", Erl)
 
+    Exit Sub
+CrearReto_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.CrearReto", Erl)
 End Sub
 
 Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
+    On Error Goto AceptarReto_Err
 
         On Error GoTo ErrHandler
 
@@ -288,9 +297,13 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
     
 ErrHandler:
 166     Call TraceError(Err.Number, Err.Description, "ModRetos.AceptarReto", Erl)
+    Exit Sub
+AceptarReto_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.AceptarReto", Erl)
 End Sub
 
 Public Sub CancelarSolicitudReto(ByVal Oferente As Integer, Mensaje As String)
+    On Error Goto CancelarSolicitudReto_Err
     
         On Error GoTo ErrHandler
     
@@ -332,9 +345,13 @@ Public Sub CancelarSolicitudReto(ByVal Oferente As Integer, Mensaje As String)
 ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "ModRetos.CancelarSolicitudReto", Erl)
     
+    Exit Sub
+CancelarSolicitudReto_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.CancelarSolicitudReto", Erl)
 End Sub
 
 Private Sub BuscarSala(ByVal Oferente As Integer)
+    On Error Goto BuscarSala_Err
 
         On Error GoTo ErrHandler
     
@@ -364,9 +381,13 @@ Private Sub BuscarSala(ByVal Oferente As Integer)
     
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "ModRetos.BuscarSala", Erl)
+    Exit Sub
+BuscarSala_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.BuscarSala", Erl)
 End Sub
 
 Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
+    On Error Goto IniciarReto_Err
 
         On Error GoTo ErrHandler
     
@@ -469,9 +490,13 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
 ErrHandler:
 186     Call TraceError(Err.Number, Err.Description, "ModRetos.IniciarReto", Erl)
     
+    Exit Sub
+IniciarReto_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.IniciarReto", Erl)
 End Sub
 
 Private Sub IniciarRonda(ByVal Sala As Integer)
+    On Error Goto IniciarRonda_Err
 
 100     With Retos.Salas(Sala)
     
@@ -510,9 +535,13 @@ Private Sub IniciarRonda(ByVal Sala As Integer)
     
         End With
     
+    Exit Sub
+IniciarRonda_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.IniciarRonda", Erl)
 End Sub
 
 Public Sub MuereEnReto(ByVal UserIndex As Integer)
+    On Error Goto MuereEnReto_Err
         On Error GoTo ErrorHandler
         
         Dim Sala As Integer, Equipo As e_EquipoReto
@@ -546,9 +575,13 @@ Public Sub MuereEnReto(ByVal UserIndex As Integer)
         Exit Sub
 ErrorHandler:
 118     Call TraceError(Err.Number, Err.Description, "ModRetos.MuereEnReto", Erl)
+    Exit Sub
+MuereEnReto_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.MuereEnReto", Erl)
 End Sub
 
 Private Sub ProcesarRondaGanada(ByVal Sala As Integer, ByVal Equipo As e_EquipoReto)
+    On Error Goto ProcesarRondaGanada_Err
 
 100     With Retos.Salas(Sala)
 
@@ -603,9 +636,13 @@ Private Sub ProcesarRondaGanada(ByVal Sala As Integer, ByVal Equipo As e_EquipoR
         Exit Sub
 ErrorHandler:
 138     Call TraceError(Err.Number, Err.Description, "ModRetos.ProcesarRondaGanada", Erl)
+    Exit Sub
+ProcesarRondaGanada_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.ProcesarRondaGanada", Erl)
 End Sub
 
 Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As Boolean)
+    On Error Goto FinalizarReto_Err
         On Error GoTo ErrorHandler
         
 100     With Retos.Salas(Sala)
@@ -813,8 +850,12 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
         Exit Sub
 ErrorHandler:
 280     Call TraceError(Err.Number, Err.Description, "ModRetos.FinalizarReto", Erl)
+    Exit Sub
+FinalizarReto_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.FinalizarReto", Erl)
 End Sub
 Public Sub TirarItemsEnPos(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
+    On Error Goto TirarItemsEnPos_Err
             
         On Error GoTo TirarItemsEnPos_Err
 
@@ -866,10 +907,14 @@ TirarItemsEnPos_Err:
 
 
             
+    Exit Sub
+TirarItemsEnPos_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.TirarItemsEnPos", Erl)
 End Sub
 
 
 Public Sub IniciarDepositoItems(ByVal Sala As Integer)
+    On Error Goto IniciarDepositoItems_Err
         Dim i As Byte
          Dim Ganador As e_EquipoReto
             
@@ -903,9 +948,13 @@ Public Sub IniciarDepositoItems(ByVal Sala As Integer)
         End With
     
     
+    Exit Sub
+IniciarDepositoItems_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.IniciarDepositoItems", Erl)
 End Sub
 
 Public Sub TerminarTiempoAgarrarItems(ByVal Sala As Integer)
+    On Error Goto TerminarTiempoAgarrarItems_Err
         
         
     
@@ -944,9 +993,13 @@ Public Sub TerminarTiempoAgarrarItems(ByVal Sala As Integer)
     
     
 134     Call SalaLiberada(Sala)
+    Exit Sub
+TerminarTiempoAgarrarItems_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.TerminarTiempoAgarrarItems", Erl)
 End Sub
 
 Public Sub AbandonarReto(ByVal UserIndex As Integer, Optional ByVal Desconexion As Boolean)
+    On Error Goto AbandonarReto_Err
     
         Dim Sala As Integer, Equipo As e_EquipoReto
 100     With UserList(UserIndex)
@@ -1021,9 +1074,13 @@ Public Sub AbandonarReto(ByVal UserIndex As Integer, Optional ByVal Desconexion 
     
         End With
     
+    Exit Sub
+AbandonarReto_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.AbandonarReto", Erl)
 End Sub
 
 Private Sub SalaLiberada(ByVal Sala As Integer)
+    On Error Goto SalaLiberada_Err
 
         On Error GoTo ErrHandler
     
@@ -1044,9 +1101,13 @@ Private Sub SalaLiberada(ByVal Sala As Integer)
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "ModRetos.SalaLiberada", Erl)
     
+    Exit Sub
+SalaLiberada_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.SalaLiberada", Erl)
 End Sub
 
 Public Function PuedeReto(ByVal UserIndex As Integer) As Boolean
+    On Error Goto PuedeReto_Err
     
 100     With UserList(UserIndex)
         
@@ -1066,9 +1127,13 @@ Public Function PuedeReto(ByVal UserIndex As Integer) As Boolean
     
 114     PuedeReto = True
     
+    Exit Function
+PuedeReto_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.PuedeReto", Erl)
 End Function
 
 Public Function PuedeRetoConMensaje(ByVal UserIndex As Integer) As Boolean
+    On Error Goto PuedeRetoConMensaje_Err
 
 100     With UserList(UserIndex)
         
@@ -1106,9 +1171,13 @@ Public Function PuedeRetoConMensaje(ByVal UserIndex As Integer) As Boolean
 
 122     PuedeRetoConMensaje = True
 
+    Exit Function
+PuedeRetoConMensaje_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.PuedeRetoConMensaje", Erl)
 End Function
 
 Private Function IndiceJugadorEnSolicitud(ByVal UserIndex As Integer, ByVal Oferente As Integer) As Integer
+    On Error Goto IndiceJugadorEnSolicitud_Err
 
 100     With UserList(Oferente).flags.SolicitudReto
     
@@ -1126,9 +1195,13 @@ Private Function IndiceJugadorEnSolicitud(ByVal UserIndex As Integer, ByVal Ofer
     
         End With
 
+    Exit Function
+IndiceJugadorEnSolicitud_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.IndiceJugadorEnSolicitud", Erl)
 End Function
 
 Private Sub MensajeATodosSolicitud(ByVal Oferente As Integer, Mensaje As String, ByVal Fuente As e_FontTypeNames)
+    On Error Goto MensajeATodosSolicitud_Err
     
 100     With UserList(Oferente).flags.SolicitudReto
 
@@ -1143,9 +1216,13 @@ Private Sub MensajeATodosSolicitud(ByVal Oferente As Integer, Mensaje As String,
 
         End With
     
+    Exit Sub
+MensajeATodosSolicitud_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.MensajeATodosSolicitud", Erl)
 End Sub
 
 Private Function TodosPuedenReto(ByVal Oferente As Integer) As Boolean
+    On Error Goto TodosPuedenReto_Err
 
         On Error GoTo ErrHandler
     
@@ -1194,25 +1271,37 @@ Private Function TodosPuedenReto(ByVal Oferente As Integer) As Boolean
 ErrHandler:
 134     Call TraceError(Err.Number, Err.Description, "ModRetos.TodosPuedenReto", Erl)
     
+    Exit Function
+TodosPuedenReto_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.TodosPuedenReto", Erl)
 End Function
 
 Private Function EquipoContrario(ByVal Equipo As e_EquipoReto) As e_EquipoReto
+    On Error Goto EquipoContrario_Err
 100     If Equipo = e_EquipoReto.Izquierda Then
 102         EquipoContrario = e_EquipoReto.Derecha
         Else
 104         EquipoContrario = e_EquipoReto.Izquierda
         End If
+    Exit Function
+EquipoContrario_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.EquipoContrario", Erl)
 End Function
 
 Private Function ObtenerTamañoEquipo(ByVal Sala As Integer, ByVal Equipo As e_EquipoReto) As Integer
+    On Error Goto ObtenerTamañoEquipo_Err
 100     If Equipo = e_EquipoReto.Izquierda Then
 102         ObtenerTamañoEquipo = Retos.Salas(Sala).TamañoEquipoIzq
         Else
 104         ObtenerTamañoEquipo = Retos.Salas(Sala).TamañoEquipoDer
         End If
+    Exit Function
+ObtenerTamañoEquipo_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.ObtenerTamañoEquipo", Erl)
 End Function
 
 Private Sub RevivirYLimpiar(ByVal UserIndex As Integer)
+    On Error Goto RevivirYLimpiar_Err
     
 100         Call WriteStopped(UserIndex, False)
     
@@ -1224,4 +1313,7 @@ Private Sub RevivirYLimpiar(ByVal UserIndex As Integer)
         ' Si está muerto lo revivimos, sino lo curamos
 106     Call RevivirUsuario(UserIndex)
 
+    Exit Sub
+RevivirYLimpiar_Err:
+    Call TraceError(Err.Number, Err.Description, "ModRetos.RevivirYLimpiar", Erl)
 End Sub

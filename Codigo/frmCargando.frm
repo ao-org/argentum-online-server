@@ -124,19 +124,28 @@ Private mlngX As Long
 Private mlngY As Long
 
 Private Sub Form_Load()
+    On Error Goto Form_Load_Err
         ' Mostramos este form arriba de todo.
 100     Call SetWindowPos(Me.hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE)
 102     Call Me.ZOrder(0)
+    Exit Sub
+Form_Load_Err:
+    Call TraceError(Err.Number, Err.Description, "frmCargando.Form_Load", Erl)
 End Sub
 
 Private Sub lblDragForm_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+    On Error Goto lblDragForm_MouseDown_Err
 100     If Button = vbLeftButton Then
 102         mlngX = x
 104         mlngY = y
         End If
+    Exit Sub
+lblDragForm_MouseDown_Err:
+    Call TraceError(Err.Number, Err.Description, "frmCargando.lblDragForm_MouseDown", Erl)
 End Sub
 
 Private Sub lblDragForm_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    On Error Goto lblDragForm_MouseMove_Err
         Dim lngLeft As Long
         Dim lngTop As Long
     
@@ -145,4 +154,7 @@ Private Sub lblDragForm_MouseMove(Button As Integer, Shift As Integer, x As Sing
 104         lngTop = Me.Top + y - mlngY
 106         Call Me.Move(lngLeft, lngTop)
         End If
+    Exit Sub
+lblDragForm_MouseMove_Err:
+    Call TraceError(Err.Number, Err.Description, "frmCargando.lblDragForm_MouseMove", Erl)
 End Sub

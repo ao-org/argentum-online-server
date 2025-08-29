@@ -36,6 +36,7 @@ Public Const ELEMENTAL_FUEGO      As Integer = 962
 Public Const RANGO_VISION_X  As Byte = DEFAULT_NPC_VISION_RANGE_X
 Public Const RANGO_VISION_Y  As Byte = DEFAULT_NPC_VISION_RANGE_Y
 Public Sub NpcDummyUpdate(ByVal NpcIndex As Integer)
+    On Error Goto NpcDummyUpdate_Err
     With NpcList(NpcIndex)
         Debug.Assert .npcType = DummyTarget
         If .Stats.MinHp < .Stats.MaxHp Then
@@ -46,9 +47,13 @@ Public Sub NpcDummyUpdate(ByVal NpcIndex As Integer)
             End If
         End If
     End With
+    Exit Sub
+NpcDummyUpdate_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.NpcDummyUpdate", Erl)
 End Sub
 
 Public Sub NpcAI(ByVal NpcIndex As Integer)
+    On Error Goto NpcAI_Err
         On Error GoTo ErrorHandler
 
 100     With NpcList(NpcIndex)
@@ -119,9 +124,13 @@ ErrorHandler:
 140     Call QuitarNPC(NpcIndex, eAiResetNpc)
 142     Call ReSpawnNpc(MiNPC)
 
+    Exit Sub
+NpcAI_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.NpcAI", Erl)
 End Sub
 
 Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
+    On Error Goto PerseguirUsuarioCercano_Err
         On Error GoTo ErrorHandler
 
         Dim i            As Long
@@ -232,9 +241,13 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 ErrorHandler:
 166     Call TraceError(Err.Number, Err.Description, "AI_NPC.PerseguirUsuarioCercano", Erl)
 
+    Exit Sub
+PerseguirUsuarioCercano_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.PerseguirUsuarioCercano", Erl)
 End Sub
 
 Private Sub AttackFromPos(ByVal NpcIndex As Integer)
+    On Error Goto AttackFromPos_Err
 
     With NpcList(NpcIndex)
         Dim NearTarget As Integer
@@ -267,9 +280,13 @@ Private Sub AttackFromPos(ByVal NpcIndex As Integer)
         End If
     End With
     
+    Exit Sub
+AttackFromPos_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.AttackFromPos", Erl)
 End Sub
 
 Public Function SelectNearestUser(ByVal NpcIndex As Integer, ByRef NearestTargetDistance As Single) As Integer
+    On Error Goto SelectNearestUser_Err
     Dim i As Integer
     Dim UserIndex As Integer
     NearestTargetDistance = 0
@@ -288,9 +305,13 @@ Public Function SelectNearestUser(ByVal NpcIndex As Integer, ByRef NearestTarget
             End If
         Next i
     End With
+    Exit Function
+SelectNearestUser_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.SelectNearestUser", Erl)
 End Function
 
 Public Function SelectNearestNpc(ByVal NpcIndex, ByRef NearestTargetDistance As Single) As Integer
+    On Error Goto SelectNearestNpc_Err
     Dim i As Integer
     Dim TargetIndex As Integer
     With NpcList(NpcIndex)
@@ -307,9 +328,13 @@ Public Function SelectNearestNpc(ByVal NpcIndex, ByRef NearestTargetDistance As 
             End If
         Next i
     End With
+    Exit Function
+SelectNearestNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.SelectNearestNpc", Erl)
 End Function
 
 Public Function SelectCurrentTarget(ByVal NpcIndex, ByVal NearestUser As Integer) As t_AnyReference
+    On Error Goto SelectCurrentTarget_Err
     Dim CurrentTarget As t_AnyReference
     With NpcList(NpcIndex)
         If IsSet(.flags.StatusMask, eTaunted) Then
@@ -332,9 +357,13 @@ Public Function SelectCurrentTarget(ByVal NpcIndex, ByVal NearestUser As Integer
         End If
     End With
     SelectCurrentTarget = CurrentTarget
+    Exit Function
+SelectCurrentTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.SelectCurrentTarget", Erl)
 End Function
 
 Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
+    On Error Goto AI_RangeAttack_Err
     On Error GoTo AI_RangeAttack_Err
     
         Dim CurrentTarget As t_AnyReference
@@ -380,11 +409,15 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
     Exit Sub
 AI_RangeAttack_Err:
     Call TraceError(Err.Number, Err.Description, "AI_NPC.AI_RangeAttack", Erl)
+    Exit Sub
+AI_RangeAttack_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.AI_RangeAttack", Erl)
 End Sub
 ' Cuando un NPC no tiene target y se puede mover libremente pero cerca de su lugar de origen.
 ' La mayoria de los NPC deberian mantenerse cerca de su posicion de origen, algunos quedaran quietos
 ' en su posicion y otros se moveran libremente cerca de su posicion de origen.
 Private Sub AI_CaminarSinRumboCercaDeOrigen(ByVal NpcIndex As Integer)
+    On Error Goto AI_CaminarSinRumboCercaDeOrigen_Err
         On Error GoTo AI_CaminarSinRumboCercaDeOrigen_Err
 
 100     With NpcList(NpcIndex)
@@ -406,10 +439,14 @@ AI_CaminarSinRumboCercaDeOrigen_Err:
 116     Call TraceError(Err.Number, Err.Description, "AI.AI_CaminarSinRumboCercaDeOrigen_Err", Erl)
 
         
+    Exit Sub
+AI_CaminarSinRumboCercaDeOrigen_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.AI_CaminarSinRumboCercaDeOrigen", Erl)
 End Sub
 
 ' Cuando un NPC no tiene target y se tiene que mover libremente
 Private Sub AI_CaminarSinRumbo(ByVal NpcIndex As Integer)
+    On Error Goto AI_CaminarSinRumbo_Err
 
         On Error GoTo AI_CaminarSinRumbo_Err
 
@@ -430,9 +467,13 @@ AI_CaminarSinRumbo_Err:
 108     Call TraceError(Err.Number, Err.Description, "AI.AI_CaminarSinRumbo", Erl)
 
         
+    Exit Sub
+AI_CaminarSinRumbo_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.AI_CaminarSinRumbo", Erl)
 End Sub
 
 Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_WorldPos)
+    On Error Goto AI_CaminarConRumbo_Err
         On Error GoTo AI_CaminarConRumbo_Err
     
 100     If Not NPCs.CanMove(NpcList(npcIndex).Contadores, NpcList(npcIndex).flags) Then
@@ -475,8 +516,12 @@ AI_CaminarConRumbo_Err:
 118     errorDescription = Err.Description & vbNewLine & " NpcIndex: " & NpcIndex & " NPCList.size= " & UBound(NpcList)
 120     Call TraceError(Err.Number, errorDescription, "AI.AI_CaminarConRumbo", Erl)
 
+    Exit Sub
+AI_CaminarConRumbo_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.AI_CaminarConRumbo", Erl)
 End Sub
 Private Function NpcLanzaSpellInmovilizado(ByVal NpcIndex As Integer, ByVal tIndex As Integer) As Boolean
+    On Error Goto NpcLanzaSpellInmovilizado_Err
         
     NpcLanzaSpellInmovilizado = False
     
@@ -512,9 +557,13 @@ Private Function NpcLanzaSpellInmovilizado(ByVal NpcIndex As Integer, ByVal tInd
         End If
     End With
     
+    Exit Function
+NpcLanzaSpellInmovilizado_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.NpcLanzaSpellInmovilizado", Erl)
 End Function
 
 Public Function ComputeNextHeadingPos(ByVal NpcIndex As Integer) As t_WorldPos
+    On Error Goto ComputeNextHeadingPos_Err
 On Error Resume Next
 With NpcList(NpcIndex)
     ComputeNextHeadingPos.Map = .Pos.Map
@@ -540,9 +589,13 @@ With NpcList(NpcIndex)
         
     End Select
 End With
+    Exit Function
+ComputeNextHeadingPos_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.ComputeNextHeadingPos", Erl)
 End Function
 
 Public Function NPCHasAUserInFront(ByVal NpcIndex As Integer, ByRef UserIndex As Integer) As Boolean
+    On Error Goto NPCHasAUserInFront_Err
     On Error Resume Next
     Dim NextPosNPC As t_WorldPos
     
@@ -556,10 +609,14 @@ Public Function NPCHasAUserInFront(ByVal NpcIndex As Integer, ByRef UserIndex As
     NextPosNPC = ComputeNextHeadingPos(NpcIndex)
     UserIndex = MapData(NextPosNPC.Map, NextPosNPC.X, NextPosNPC.Y).UserIndex
     NPCHasAUserInFront = (UserIndex > 0)
+    Exit Function
+NPCHasAUserInFront_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.NPCHasAUserInFront", Erl)
 End Function
 
 
 Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
+    On Error Goto AI_AtacarUsuarioObjetivo_Err
         On Error GoTo ErrorHandler
 
         Dim AtacaConMagia As Boolean
@@ -631,9 +688,13 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
 ErrorHandler:
 132     Call TraceError(Err.Number, Err.Description, "AIv2.AI_AtacarUsuarioObjetivo", Erl)
 
+    Exit Sub
+AI_AtacarUsuarioObjetivo_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.AI_AtacarUsuarioObjetivo", Erl)
 End Sub
 
 Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
+    On Error Goto AI_GuardiaPersigueNpc_Err
         On Error GoTo ErrorHandler
         Dim targetPos As t_WorldPos
         
@@ -677,9 +738,13 @@ ErrorHandler:
 136     Call TraceError(Err.Number, Err.Description, "AIv2.AI_GuardiaAtacaNpc", Erl)
 
 
+    Exit Sub
+AI_GuardiaPersigueNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.AI_GuardiaPersigueNpc", Erl)
 End Sub
 
 Public Sub AI_SupportAndAttackNpc(ByVal NpcIndex As Integer)
+    On Error Goto AI_SupportAndAttackNpc_Err
         On Error GoTo ErrorHandler
         
 100     With NpcList(NpcIndex)
@@ -691,9 +756,13 @@ Public Sub AI_SupportAndAttackNpc(ByVal NpcIndex As Integer)
         Exit Sub
 ErrorHandler:
 136     Call TraceError(Err.Number, Err.Description, "AIv2.AI_SupportAndAttackNpc", Erl)
+    Exit Sub
+AI_SupportAndAttackNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.AI_SupportAndAttackNpc", Erl)
 End Sub
 
 Public Sub AI_BgTankBehavior(ByVal NpcIndex As Integer)
+    On Error Goto AI_BgTankBehavior_Err
 On Error GoTo ErrorHandler
     With NpcList(NpcIndex)
         Dim CurrentTarget As t_AnyReference
@@ -720,9 +789,13 @@ On Error GoTo ErrorHandler
     Exit Sub
 ErrorHandler:
     Call TraceError(Err.Number, Err.Description, "AIv2.AI_BgTankBehavior", Erl)
+    Exit Sub
+AI_BgTankBehavior_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.AI_BgTankBehavior", Erl)
 End Sub
 
 Public Sub AI_BGSupportBehavior(ByVal NpcIndex As Integer)
+    On Error Goto AI_BGSupportBehavior_Err
 On Error GoTo ErrorHandler
     With NpcList(NpcIndex)
         If IntervaloPermiteLanzarHechizo(NpcIndex) Then
@@ -755,9 +828,13 @@ On Error GoTo ErrorHandler
     Exit Sub
 ErrorHandler:
     Call TraceError(Err.Number, Err.Description, "AIv2.AI_BGSupportBehavior", Erl)
+    Exit Sub
+AI_BGSupportBehavior_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.AI_BGSupportBehavior", Erl)
 End Sub
 
 Public Sub AI_BGRangedBehavior(ByVal NpcIndex As Integer)
+    On Error Goto AI_BGRangedBehavior_Err
 On Error GoTo ErrorHandler
     With NpcList(NpcIndex)
         Dim CurrentTarget As t_AnyReference
@@ -809,9 +886,13 @@ On Error GoTo ErrorHandler
     Exit Sub
 ErrorHandler:
     Call TraceError(Err.Number, Err.Description, "AIv2.AI_BGRangedBehavior", Erl)
+    Exit Sub
+AI_BGRangedBehavior_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.AI_BGRangedBehavior", Erl)
 End Sub
 
 Public Sub AI_BGBossBehavior(ByVal NpcIndex As Integer)
+    On Error Goto AI_BGBossBehavior_Err
 On Error GoTo ErrorHandler
     With NpcList(NpcIndex)
         Dim CurrentTarget As t_AnyReference
@@ -846,9 +927,13 @@ On Error GoTo ErrorHandler
     Exit Sub
 ErrorHandler:
     Call TraceError(Err.Number, Err.Description, "AIv2.AI_BGBossBehavior", Erl)
+    Exit Sub
+AI_BGBossBehavior_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.AI_BGBossBehavior", Erl)
 End Sub
 
 Public Sub AI_BGBossReturnToOrigin(ByVal NpcIndex As Integer)
+    On Error Goto AI_BGBossReturnToOrigin_Err
 On Error GoTo ErrorHandler
     With NpcList(NpcIndex)
         Call AI_CaminarConRumbo(NpcIndex, .Orig)
@@ -863,13 +948,21 @@ On Error GoTo ErrorHandler
     Exit Sub
 ErrorHandler:
     Call TraceError(Err.Number, Err.Description, "AIv2.AI_BGBossBehavior", Erl)
+    Exit Sub
+AI_BGBossReturnToOrigin_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.AI_BGBossReturnToOrigin", Erl)
 End Sub
 
 Private Function DistanciaRadial(OrigenPos As t_WorldPos, DestinoPos As t_WorldPos) As Long
+    On Error Goto DistanciaRadial_Err
 100     DistanciaRadial = max(Abs(OrigenPos.X - DestinoPos.X), Abs(OrigenPos.Y - DestinoPos.Y))
+    Exit Function
+DistanciaRadial_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.DistanciaRadial", Erl)
 End Function
 
 Private Function BuscarNpcEnArea(ByVal NpcIndex As Integer) As Integer
+    On Error Goto BuscarNpcEnArea_Err
         
         On Error GoTo BuscarNpcEnArea
         
@@ -906,10 +999,14 @@ BuscarNpcEnArea:
 126     Call TraceError(Err.Number, Err.Description, "Extra.BuscarNpcEnArea", Erl)
 
         
+    Exit Function
+BuscarNpcEnArea_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.BuscarNpcEnArea", Erl)
 End Function
 
 
 Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer, Optional ByVal ChangeTargetMovement As Boolean = True)
+    On Error Goto AI_NpcAtacaNpc_Err
         On Error GoTo ErrorHandler
         Dim targetPos As t_WorldPos
     
@@ -934,9 +1031,13 @@ Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer, Optional ByVal ChangeTarget
         Exit Sub
 ErrorHandler:
 118     Call TraceError(Err.Number, Err.Description, "AIv2.AI_NpcAtacaNpc", Erl)
+    Exit Sub
+AI_NpcAtacaNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.AI_NpcAtacaNpc", Erl)
 End Sub
 
 Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
+    On Error Goto SeguirAgresor_Err
         ' La IA que se ejecuta cuando alguien le pega al maestro de una Mascota/Elemental
         ' o si atacas a los NPCs con Movement = e_TipoAI.NpcDefensa
         ' A diferencia de IrUsuarioCercano(), aca no buscamos objetivos cercanos en el area
@@ -958,9 +1059,13 @@ SeguirAgresor_Err:
 106     Call TraceError(Err.Number, Err.Description, "AI.SeguirAgresor", Erl)
 
 
+    Exit Sub
+SeguirAgresor_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.SeguirAgresor", Erl)
 End Sub
 
 Public Sub SeguirAmo(ByVal NpcIndex As Integer)
+    On Error Goto SeguirAmo_Err
         On Error GoTo ErrorHandler
         
 100     With NpcList(NpcIndex)
@@ -987,9 +1092,13 @@ Public Sub SeguirAmo(ByVal NpcIndex As Integer)
         Exit Sub
 ErrorHandler:
 114     Call TraceError(Err.Number, Err.Description, "AIv2.SeguirAmo", Erl)
+    Exit Sub
+SeguirAmo_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.SeguirAmo", Erl)
 End Sub
 
 Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
+    On Error Goto RestoreOldMovement_Err
 
         On Error GoTo RestoreOldMovement_Err
 
@@ -1021,9 +1130,13 @@ RestoreOldMovement_Err:
 116     Call TraceError(Err.Number, Err.Description, "AI.RestoreOldMovement", Erl)
 
 
+    Exit Sub
+RestoreOldMovement_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.RestoreOldMovement", Erl)
 End Sub
 
 Private Sub HacerCaminata(ByVal NpcIndex As Integer)
+    On Error Goto HacerCaminata_Err
         On Error GoTo Handler
     
         Dim Destino As t_WorldPos
@@ -1102,9 +1215,13 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
 Handler:
 148     Call TraceError(Err.Number, Err.Description, "AI.HacerCaminata", Erl)
 
+    Exit Sub
+HacerCaminata_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.HacerCaminata", Erl)
 End Sub
 
 Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
+    On Error Goto MovimientoInvasion_Err
         On Error GoTo Handler
     
 100     With NpcList(NpcIndex)
@@ -1178,12 +1295,16 @@ Handler:
         Dim errorDescription As String
 144     errorDescription = Err.Description & vbNewLine & "NpcId=" & NpcList(NpcIndex).Numero & " InvasionIndex:" & NpcList(NpcIndex).flags.InvasionIndex & " SpawnBox:" & NpcList(NpcIndex).flags.SpawnBox & vbNewLine
 146     Call TraceError(Err.Number, errorDescription, "AI.MovimientoInvasion", Erl)
+    Exit Sub
+MovimientoInvasion_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.MovimientoInvasion", Erl)
 End Sub
 
 ' El NPC elige un hechizo al azar dentro de su listado, con un potencial Target.
 ' Depdendiendo el tipo de spell que elije, se elije un target distinto que puede ser:
 ' - El .Target, el NPC mismo o area.
 Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
+    On Error Goto NpcLanzaUnSpell_Err
 
         On Error GoTo NpcLanzaUnSpell_Err
 
@@ -1250,9 +1371,13 @@ NpcLanzaUnSpell_Err:
 
 
 
+    Exit Sub
+NpcLanzaUnSpell_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.NpcLanzaUnSpell", Erl)
 End Sub
 
 Private Sub NpcLanzaUnSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer)
+    On Error Goto NpcLanzaUnSpellSobreNpc_Err
         On Error GoTo NpcLanzaUnSpellSobreNpc_Err
     
 100     With NpcList(NpcIndex)
@@ -1273,6 +1398,9 @@ NpcLanzaUnSpellSobreNpc_Err:
 110     Call TraceError(Err.Number, Err.Description, "AI.NpcLanzaUnSpellSobreNpc", Erl)
 
 
+    Exit Sub
+NpcLanzaUnSpellSobreNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.NpcLanzaUnSpellSobreNpc", Erl)
 End Sub
 
 
@@ -1281,6 +1409,7 @@ End Sub
 ' ---------------------------------------------------------------------------------------------------
 
 Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+    On Error Goto EsObjetivoValido_Err
 100     If UserIndex = 0 Then Exit Function
 
         ' Esta condicion debe ejecutarse independiemente de el modo de busqueda.
@@ -1291,9 +1420,13 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
         Dim EsAdmin As Boolean: EsAdmin = EsGM(UserIndex) And Not UserList(UserIndex).flags.AdminPerseguible
         EsObjetivoValido = EsObjetivoValido And Not EsAdmin
 
+    Exit Function
+EsObjetivoValido_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.EsObjetivoValido", Erl)
 End Function
 
 Private Function EsEnemigo(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+    On Error Goto EsEnemigo_Err
 
         On Error GoTo EsEnemigo_Err
 
@@ -1332,9 +1465,13 @@ EsEnemigo_Err:
 122     Call TraceError(Err.Number, Err.Description, "AI.EsEnemigo", Erl)
 
 
+    Exit Function
+EsEnemigo_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.EsEnemigo", Erl)
 End Function
 
 Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+    On Error Goto EnRangoVision_Err
 
         On Error GoTo EnRangoVision_Err
 
@@ -1365,9 +1502,13 @@ EnRangoVision_Err:
 112     Call TraceError(Err.Number, Err.Description, "AI.EnRangoVision", Erl)
 
 
+    Exit Function
+EnRangoVision_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.EnRangoVision", Erl)
 End Function
 
 Private Function UsuarioAtacableConMagia(ByVal targetUserIndex As Integer) As Boolean
+    On Error Goto UsuarioAtacableConMagia_Err
 
         On Error GoTo UsuarioAtacableConMagia_Err
 
@@ -1391,9 +1532,13 @@ UsuarioAtacableConMagia_Err:
 106     Call TraceError(Err.Number, Err.Description, "AI.UsuarioAtacableConMagia", Erl)
 
 
+    Exit Function
+UsuarioAtacableConMagia_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.UsuarioAtacableConMagia", Erl)
 End Function
 
 Private Function UsuarioAtacableConMelee(ByVal NpcIndex As Integer, ByVal targetUserIndex As Integer) As Boolean
+    On Error Goto UsuarioAtacableConMelee_Err
 
         On Error GoTo UsuarioAtacableConMelee_Err
 
@@ -1420,13 +1565,21 @@ UsuarioAtacableConMelee_Err:
 108     Call TraceError(Err.Number, Err.Description, "AI.UsuarioAtacableConMelee", Erl)
 
 
+    Exit Function
+UsuarioAtacableConMelee_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.UsuarioAtacableConMelee", Erl)
 End Function
 
 Private Function CanCastSpell(ByRef npc As t_Npc, ByVal Slot As Integer) As Boolean
+    On Error Goto CanCastSpell_Err
      CanCastSpell = GlobalFrameTime - npc.Spells(Slot).LastUse > (npc.Spells(Slot).Cd * 1000)
+    Exit Function
+CanCastSpell_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.CanCastSpell", Erl)
 End Function
 
 Public Function GetAvailableSpellEffects(ByVal NpcIndex As Integer) As Long
+    On Error Goto GetAvailableSpellEffects_Err
     Dim SpellIndex As Integer
     With NpcList(NpcIndex)
         For SpellIndex = 1 To .flags.LanzaSpells
@@ -1435,10 +1588,14 @@ Public Function GetAvailableSpellEffects(ByVal NpcIndex As Integer) As Long
             End If
         Next SpellIndex
     End With
+    Exit Function
+GetAvailableSpellEffects_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.GetAvailableSpellEffects", Erl)
 End Function
 
 ' To help npc they need to be listed in the map for ai with the setting: AddToMapAiList=1
 Private Function SelectSupportSpellAndTarget(ByVal NpcIndex As Integer, ByRef Target As t_AnyReference, ByVal AvailableSpellEffect As Long) As Integer
+    On Error Goto SelectSupportSpellAndTarget_Err
     With NpcList(NpcIndex)
         If Not IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eHelpUsers Or e_BehaviorFlags.eHelpNpc) Then
             Call ClearRef(Target)
@@ -1536,9 +1693,13 @@ Private Function SelectSupportSpellAndTarget(ByVal NpcIndex As Integer, ByRef Ta
             End If
         End If
     End With
+    Exit Function
+SelectSupportSpellAndTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.SelectSupportSpellAndTarget", Erl)
 End Function
 
 Private Function SelectAttackSpellAndTarget(ByVal NpcIndex As Integer, ByRef Target As t_AnyReference, ByVal AvailableSpellEffect As Long) As Integer
+    On Error Goto SelectAttackSpellAndTarget_Err
     With NpcList(NpcIndex)
         If Not IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackUsers Or e_BehaviorFlags.eAttackNpc) Then
             Exit Function
@@ -1632,9 +1793,13 @@ Private Function SelectAttackSpellAndTarget(ByVal NpcIndex As Integer, ByRef Tar
             End If
         End If
     End With
+    Exit Function
+SelectAttackSpellAndTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.SelectAttackSpellAndTarget", Erl)
 End Function
 
 Public Function TryCastHelpSpell(ByVal NpcIndex As Integer, ByVal AvailableSpellEffect As Long) As Boolean
+    On Error Goto TryCastHelpSpell_Err
     Dim CurrentTarget As t_AnyReference
     Dim SpellIndex As Integer
     SpellIndex = SelectSupportSpellAndTarget(NpcIndex, CurrentTarget, AvailableSpellEffect)
@@ -1647,9 +1812,13 @@ Public Function TryCastHelpSpell(ByVal NpcIndex As Integer, ByVal AvailableSpell
         NpcList(NpcIndex).Spells(SpellIndex).LastUse = GlobalFrameTime
         TryCastHelpSpell = True
     End If
+    Exit Function
+TryCastHelpSpell_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.TryCastHelpSpell", Erl)
 End Function
 
 Public Function TryCastAttackSpell(ByVal NpcIndex As Integer, ByVal AvailableSpellEffect As Long) As Boolean
+    On Error Goto TryCastAttackSpell_Err
     Dim CurrentTarget As t_AnyReference
     Dim SpellIndex As Integer
     CurrentTarget = SelectCurrentTarget(NpcIndex, 0)
@@ -1663,9 +1832,13 @@ Public Function TryCastAttackSpell(ByVal NpcIndex As Integer, ByVal AvailableSpe
         NpcList(NpcIndex).Spells(SpellIndex).LastUse = GlobalFrameTime
         TryCastAttackSpell = True
     End If
+    Exit Function
+TryCastAttackSpell_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.TryCastAttackSpell", Erl)
 End Function
 
 Public Function TrySupportThenAttackSpells(ByVal NpcIndex As Integer) As Boolean
+    On Error Goto TrySupportThenAttackSpells_Err
     Dim AvailableSpellEffects As Long
     AvailableSpellEffects = GetAvailableSpellEffects(NpcIndex)
     With NpcList(NpcIndex)
@@ -1678,16 +1851,24 @@ Public Function TrySupportThenAttackSpells(ByVal NpcIndex As Integer) As Boolean
             TrySupportThenAttackSpells = TryCastAttackSpell(NpcIndex, AvailableSpellEffects)
         End If
     End With
+    Exit Function
+TrySupportThenAttackSpells_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.TrySupportThenAttackSpells", Erl)
 End Function
 
 Public Function GoToNextWp(ByVal NpcIndex As Integer) As t_WorldPos
+    On Error Goto GoToNextWp_Err
     Dim TargetPos As t_WorldPos
     TargetPos = NpcList(NpcIndex).pos
     Call GetNextWaypointForNpc(NpcIndex, TargetPos.x, TargetPos.y)
     GoToNextWp = TargetPos
+    Exit Function
+GoToNextWp_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.GoToNextWp", Erl)
 End Function
 
 Public Sub SetMovement(ByVal NpcIndex As Integer, ByVal NewMovement As e_TipoAI)
+    On Error Goto SetMovement_Err
     NpcList(NpcIndex).Movement = NewMovement
     If IsValidUserRef(NpcList(NpcIndex).MaestroUser) Then
         If NewMovement = e_TipoAI.Estatico Or NewMovement = SigueAmo Then
@@ -1696,4 +1877,7 @@ Public Sub SetMovement(ByVal NpcIndex As Integer, ByVal NewMovement As e_TipoAI)
             Call SetBlockTileState(NpcIndex, False)
         End If
     End If
+    Exit Sub
+SetMovement_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.SetMovement", Erl)
 End Sub

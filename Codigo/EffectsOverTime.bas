@@ -47,6 +47,7 @@ Public Enum e_EffectCallbackMask
 End Enum
 
 Public Sub InitializePools()
+    On Error Goto InitializePools_Err
 On Error GoTo InitializePools_Err
     Dim i As Integer
     Dim j As Integer
@@ -66,9 +67,13 @@ On Error GoTo InitializePools_Err
     Exit Sub
 InitializePools_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.InitializePools", Erl)
+    Exit Sub
+InitializePools_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.InitializePools", Erl)
 End Sub
 
 Public Sub UpdateEffectOverTime()
+    On Error Goto UpdateEffectOverTime_Err
 On Error GoTo Update_Err
     Dim CurrTime As Long
     Dim ElapsedTime As Long
@@ -90,9 +95,13 @@ On Error GoTo Update_Err
     Exit Sub
 Update_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.Update", Erl)
+    Exit Sub
+UpdateEffectOverTime_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.UpdateEffectOverTime", Erl)
 End Sub
 
 Private Function UpdateEffect(ByVal Index As Integer, ByVal ElapsedTime As Long) As Boolean
+    On Error Goto UpdateEffect_Err
 On Error GoTo UpdateEffect_Err
     'this should never happend but it covers us for breaking all effects if something goes wrong
 100 If ActiveEffects.EffectList(index) Is Nothing Then
@@ -121,14 +130,22 @@ UpdateEffect_Err:
     Call TraceError(Err.Number, Err.Description, "EffectsOverTime.UpdateEffect", Erl)
     Set ActiveEffects.EffectList(index) = Nothing
     UpdateEffect = True
+    Exit Function
+UpdateEffect_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.UpdateEffect", Erl)
 End Function
 
 Private Function GetNextId() As Long
+    On Error Goto GetNextId_Err
     UniqueIdCounter = (UniqueIdCounter + 1) And &H7FFFFFFF
     GetNextId = UniqueIdCounter
+    Exit Function
+GetNextId_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.GetNextId", Erl)
 End Function
 
 Public Sub CreateEffect(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceType, _
+    On Error Goto CreateEffect_Err
                                   ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
                                   ByVal EffectIndex As Integer)
 On Error GoTo CreateEffect_Err
@@ -293,9 +310,13 @@ On Error GoTo CreateEffect_Err
     Exit Sub
 CreateEffect_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateEffect EffectIndex:" & EffectIndex, Erl)
+    Exit Sub
+CreateEffect_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateEffect", Erl)
 End Sub
 
 Public Sub CreateTrap(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal map As Integer, ByVal TileX As Integer, ByVal TileY As Integer, ByVal EffectTypeId As Integer)
+    On Error Goto CreateTrap_Err
 On Error GoTo CreateTrap_Err
     Dim EffectType As e_EffectOverTimeType
 100 EffectType = e_EffectOverTimeType.eTrap
@@ -312,9 +333,13 @@ On Error GoTo CreateTrap_Err
     Exit Sub
 CreateTrap_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateTrap", Erl)
+    Exit Sub
+CreateTrap_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateTrap", Erl)
 End Sub
 
 Public Sub CreateDelayedBlast(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal Map As Integer, ByVal TileX As Integer, _
+    On Error Goto CreateDelayedBlast_Err
                               ByVal TileY As Integer, ByVal EffectTypeId As Integer, ByVal SourceObjIndex As Integer)
 On Error GoTo CreateDelayedBlast_Err
     Dim EffectType As e_EffectOverTimeType
@@ -332,9 +357,13 @@ On Error GoTo CreateDelayedBlast_Err
     Exit Sub
 CreateDelayedBlast_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateTrap", Erl)
+    Exit Sub
+CreateDelayedBlast_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateDelayedBlast", Erl)
 End Sub
 
 Public Sub CreateUnequip(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, ByVal ItemSlotType As Long)
+    On Error Goto CreateUnequip_Err
 On Error GoTo CreateDelayedBlast_Err
     If Not IsFeatureEnabled("bandit_unequip_bonus") Then Exit Sub
     Dim EffectType As e_EffectOverTimeType
@@ -350,9 +379,13 @@ On Error GoTo CreateDelayedBlast_Err
     Exit Sub
 CreateDelayedBlast_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateTrap", Erl)
+    Exit Sub
+CreateUnequip_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateUnequip", Erl)
 End Sub
 
 Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBaseEffectOverTime
+    On Error Goto InstantiateEOT_Err
     Select Case EffectType
         Case e_EffectOverTimeType.eHealthModifier
             Set InstantiateEOT = New UpdateHpOverTime
@@ -391,9 +424,13 @@ Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBa
         Case Else
             Debug.Assert False
     End Select
+    Exit Function
+InstantiateEOT_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.InstantiateEOT", Erl)
 End Function
 
 Private Function GetEOT(ByVal EffectType As e_EffectOverTimeType) As IBaseEffectOverTime
+    On Error Goto GetEOT_Err
 On Error GoTo GetEOT_Err
 100 Set GetEOT = Nothing
 102 If EffectPools(EffectType).EffectCount = 0 Then
@@ -406,21 +443,33 @@ On Error GoTo GetEOT_Err
     Exit Function
 GetEOT_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.GetEOT", Erl)
+    Exit Function
+GetEOT_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.GetEOT", Erl)
 End Function
 
 Private Sub RecycleEffect(ByRef Effect As IBaseEffectOverTime)
+    On Error Goto RecycleEffect_Err
     Call AddEffect(EffectPools(Effect.TypeId), Effect)
+    Exit Sub
+RecycleEffect_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.RecycleEffect", Erl)
 End Sub
 
 Public Sub AddEffectToUpdate(ByRef Effect As IBaseEffectOverTime)
+    On Error Goto AddEffectToUpdate_Err
 On Error GoTo AddEffectToUpdate_Err
     Call AddEffect(ActiveEffects, Effect)
     Exit Sub
 AddEffectToUpdate_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.AddEffectToUpdate", Erl)
+    Exit Sub
+AddEffectToUpdate_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.AddEffectToUpdate", Erl)
 End Sub
 
 Public Sub AddEffect(ByRef EffectList As t_EffectOverTimeList, ByRef Effect As IBaseEffectOverTime)
+    On Error Goto AddEffect_Err
 On Error GoTo AddEffect_Err
 100 If Not IsArrayInitialized(EffectList.EffectList) Then
 104     ReDim EffectList.EffectList(ACTIVE_EFFECT_LIST_SIZE) As IBaseEffectOverTime
@@ -433,9 +482,13 @@ On Error GoTo AddEffect_Err
     Exit Sub
 AddEffect_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.AddEffect", Erl)
+    Exit Sub
+AddEffect_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.AddEffect", Erl)
 End Sub
 
 Public Sub RemoveEffect(ByRef EffectList As t_EffectOverTimeList, ByRef Effect As IBaseEffectOverTime, Optional ByVal CallRemove As Boolean = True)
+    On Error Goto RemoveEffect_Err
 On Error GoTo RemoveEffect_Err
     Dim i As Integer
 100 For i = 0 To EffectList.EffectCount - 1
@@ -447,9 +500,13 @@ On Error GoTo RemoveEffect_Err
     Exit Sub
 RemoveEffect_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.RemoveEffect", Erl)
+    Exit Sub
+RemoveEffect_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.RemoveEffect", Erl)
 End Sub
 
 Public Function FindEffectOfTypeOnTarget(ByRef EffectList As t_EffectOverTimeList, ByVal TargetType As e_EffectType) As IBaseEffectOverTime
+    On Error Goto FindEffectOfTypeOnTarget_Err
 On Error GoTo FindEffectOfTypeOnTarget_Err
     Set FindEffectOfTypeOnTarget = Nothing
     Dim i As Integer
@@ -462,9 +519,13 @@ On Error GoTo FindEffectOfTypeOnTarget_Err
     Exit Function
 FindEffectOfTypeOnTarget_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.FindEffectOnTarget", Erl)
+    Exit Function
+FindEffectOfTypeOnTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.FindEffectOfTypeOnTarget", Erl)
 End Function
 
 Public Function FindEffectOnTarget(ByVal CasterIndex As Integer, ByRef EffectList As t_EffectOverTimeList, ByVal EffectId As Integer) As IBaseEffectOverTime
+    On Error Goto FindEffectOnTarget_Err
 On Error GoTo FindEffectOnTarget_Err
 100 Set FindEffectOnTarget = Nothing
 102 Dim EffectLimit As e_EOTTargetLimit
@@ -508,9 +569,13 @@ On Error GoTo FindEffectOnTarget_Err
     Exit Function
 FindEffectOnTarget_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.FindEffectOnTarget", Erl)
+    Exit Function
+FindEffectOnTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.FindEffectOnTarget", Erl)
 End Function
 
 Public Sub ClearEffectList(ByRef EffectList As t_EffectOverTimeList, Optional ByVal Filter As e_EffectType = e_EffectType.eAny, Optional ByVal ClearForDeath As Boolean = False)
+    On Error Goto ClearEffectList_Err
 On Error GoTo ClearEffectList_Err
     Dim i As Integer
 100 Do While i < EffectList.EffectCount
@@ -525,9 +590,13 @@ On Error GoTo ClearEffectList_Err
 Exit Sub
 ClearEffectList_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.ClearEffectList", Erl)
+    Exit Sub
+ClearEffectList_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.ClearEffectList", Erl)
 End Sub
 
 Public Sub RemoveEffectAtPos(ByRef EffectList As t_EffectOverTimeList, ByVal position As Integer, Optional ByVal CallRemove As Boolean = True)
+    On Error Goto RemoveEffectAtPos_Err
 On Error GoTo RemoveEffectAtPos_Err
     Dim RegenerateMask As Boolean
     RegenerateMask = EffectList.EffectList(Position).CallBacksMask > 0
@@ -547,42 +616,62 @@ On Error GoTo RemoveEffectAtPos_Err
     Exit Sub
 RemoveEffectAtPos_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.RemoveEffectAtPos", Erl)
+    Exit Sub
+RemoveEffectAtPos_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.RemoveEffectAtPos", Erl)
 End Sub
 
 
 Public Sub TargetUseMagic(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
+    On Error Goto TargetUseMagic_Err
     If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTargetUseMagic) Then Exit Sub
     Dim i As Integer
     For i = 0 To EffectList.EffectCount - 1
          Call EffectList.EffectList(i).TargetUseMagic(TargetUserId, SourceType, MagicId)
     Next i
+    Exit Sub
+TargetUseMagic_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.TargetUseMagic", Erl)
 End Sub
 
 Public Sub TartgetWillAtack(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto TartgetWillAtack_Err
     If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTartgetWillAtack) Then Exit Sub
     Dim i As Integer
     For i = 0 To EffectList.EffectCount - 1
          Call EffectList.EffectList(i).TartgetWillAtack(TargetUserId, SourceType, AttackType)
     Next i
+    Exit Sub
+TartgetWillAtack_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.TartgetWillAtack", Erl)
 End Sub
 
 Public Sub TartgetDidHit(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto TartgetDidHit_Err
     If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTartgetDidHit) Then Exit Sub
     Dim i As Integer
     For i = 0 To EffectList.EffectCount - 1
          Call EffectList.EffectList(i).TartgetDidHit(TargetUserId, SourceType, AttackType)
     Next i
+    Exit Sub
+TartgetDidHit_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.TartgetDidHit", Erl)
 End Sub
 
 Public Sub TargetFailedAttack(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto TargetFailedAttack_Err
     If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTargetFailedAttack) Then Exit Sub
     Dim i As Integer
     For i = 0 To EffectList.EffectCount - 1
          Call EffectList.EffectList(i).TargetFailedAttack(TargetUserId, SourceType, AttackType)
     Next i
+    Exit Sub
+TargetFailedAttack_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.TargetFailedAttack", Erl)
 End Sub
 
 Public Function TargetApplyDamageReduction(ByRef EffectList As t_EffectOverTimeList, ByVal Damage As Long, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType) As Long
+    On Error Goto TargetApplyDamageReduction_Err
     If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTargetApplyDamageReduction) Then
         TargetApplyDamageReduction = Damage
         Exit Function
@@ -595,33 +684,49 @@ Public Function TargetApplyDamageReduction(ByRef EffectList As t_EffectOverTimeL
          End If
     Next i
     TargetApplyDamageReduction = Damage
+    Exit Function
+TargetApplyDamageReduction_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.TargetApplyDamageReduction", Erl)
 End Function
 
 Public Sub TargetWasDamaged(ByRef EffectList As t_EffectOverTimeList, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    On Error Goto TargetWasDamaged_Err
     If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTargetWasDamaged) Then Exit Sub
     Dim i As Integer
     For i = 0 To EffectList.EffectCount - 1
          Call EffectList.EffectList(i).TargetWasDamaged(SourceUserId, SourceType, AttackType)
     Next i
+    Exit Sub
+TargetWasDamaged_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.TargetWasDamaged", Erl)
 End Sub
 
 Public Sub TargetWillAttackPosition(ByRef EffectList As t_EffectOverTimeList, ByRef Position As t_WorldPos)
+    On Error Goto TargetWillAttackPosition_Err
     If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTargetWillAttackPosition) Then Exit Sub
     Dim i As Integer
     For i = 0 To EffectList.EffectCount - 1
          Call EffectList.EffectList(i).TargetWillAttackPosition(Position.Map, Position.x, Position.y)
     Next i
+    Exit Sub
+TargetWillAttackPosition_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.TargetWillAttackPosition", Erl)
 End Sub
 
 Public Sub TargetUpdateTerrain(ByRef EffectList As t_EffectOverTimeList)
+    On Error Goto TargetUpdateTerrain_Err
     If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTargetChangeTerrain) Then Exit Sub
     Dim i As Integer
     For i = 0 To EffectList.EffectCount - 1
          Call EffectList.EffectList(i).TargetChangeTerrain
     Next i
+    Exit Sub
+TargetUpdateTerrain_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.TargetUpdateTerrain", Erl)
 End Sub
 
 Public Sub ChangeOwner(ByVal CurrentOwner As Integer, ByVal CurrentOwnerType As e_ReferenceType, ByVal NewOwner As Integer, _
+    On Error Goto ChangeOwner_Err
                        ByVal NewOwnerType As e_ReferenceType, ByRef Effect As IBaseEffectOverTime)
     If CurrentOwnerType = eUser Then
         Call RemoveEffect(UserList(CurrentOwner).EffectOverTime, Effect, False)
@@ -653,9 +758,13 @@ Public Sub ChangeOwner(ByVal CurrentOwner As Integer, ByVal CurrentOwnerType As 
             Effect.RemoveMe = True
         End If
     End If
+    Exit Sub
+ChangeOwner_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.ChangeOwner", Erl)
 End Sub
 
 Public Function ConvertToClientBuff(ByVal buffType As e_EffectType) As e_EffectType
+    On Error Goto ConvertToClientBuff_Err
     Select Case buffType
         Case e_EffectType.eInformativeBuff
             ConvertToClientBuff = eBuff
@@ -664,9 +773,13 @@ Public Function ConvertToClientBuff(ByVal buffType As e_EffectType) As e_EffectT
         Case Else
         ConvertToClientBuff = buffType
     End Select
+    Exit Function
+ConvertToClientBuff_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.ConvertToClientBuff", Erl)
 End Function
 
 Public Function ApplyEotModifier(ByRef TargetRef As t_AnyReference, ByRef EffectStats As t_EffectOverTime, Optional ByVal Modifier As Single = 0)
+    On Error Goto ApplyEotModifier_Err
     If IsValidRef(TargetRef) Then
         Call UpdateIncreaseModifier(TargetRef, MagicBonus, EffectStats.MagicDamageDone + EffectStats.MagicDamageDone * Modifier)
         Call UpdateIncreaseModifier(TargetRef, PhysiccalBonus, EffectStats.PhysicalDamageDone + EffectStats.PhysicalDamageDone * Modifier)
@@ -693,9 +806,13 @@ Public Function ApplyEotModifier(ByRef TargetRef As t_AnyReference, ByRef Effect
         End If
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.DefenseBonus, EffectStats.DefenseBonus + EffectStats.DefenseBonus * Modifier)
     End If
+    Exit Function
+ApplyEotModifier_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.ApplyEotModifier", Erl)
 End Function
 
 Public Function RemoveEotModifier(ByRef TargetRef As t_AnyReference, ByRef EffectStats As t_EffectOverTime, Optional ByVal Modifier As Single = 0)
+    On Error Goto RemoveEotModifier_Err
     If IsValidRef(TargetRef) Then
         Call UpdateIncreaseModifier(TargetRef, MagicBonus, -(EffectStats.MagicDamageDone + EffectStats.MagicDamageDone * Modifier))
         Call UpdateIncreaseModifier(TargetRef, PhysiccalBonus, -(EffectStats.PhysicalDamageDone + EffectStats.PhysicalDamageDone * Modifier))
@@ -712,4 +829,7 @@ Public Function RemoveEotModifier(ByRef TargetRef As t_AnyReference, ByRef Effec
         End If
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.DefenseBonus, -(EffectStats.DefenseBonus + EffectStats.DefenseBonus * Modifier))
     End If
+    Exit Function
+RemoveEotModifier_Err:
+    Call TraceError(Err.Number, Err.Description, "EffectsOverTime.RemoveEotModifier", Erl)
 End Function

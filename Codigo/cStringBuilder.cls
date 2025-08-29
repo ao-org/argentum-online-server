@@ -205,6 +205,7 @@ TheString_Err:
 End Property
 
 Public Sub Clear()
+    On Error Goto Clear_Err
         
         On Error GoTo Clear_Err
     
@@ -220,9 +221,13 @@ Clear_Err:
 106     Call TraceError(Err.Number, Err.Description, "cStringBuilder.Clear", Erl)
 
         
+    Exit Sub
+Clear_Err:
+    Call TraceError(Err.Number, Err.Description, "cStringBuilder.Clear", Erl)
 End Sub
 
 Public Sub AppendNL(ByRef sThis As String)
+    On Error Goto AppendNL_Err
         
         On Error GoTo AppendNL_Err
     
@@ -237,9 +242,13 @@ AppendNL_Err:
 104     Call TraceError(Err.Number, Err.Description, "cStringBuilder.AppendNL", Erl)
 
         
+    Exit Sub
+AppendNL_Err:
+    Call TraceError(Err.Number, Err.Description, "cStringBuilder.AppendNL", Erl)
 End Sub
 
 Public Sub Append(ByRef sThis As String)
+    On Error Goto Append_Err
         
         On Error GoTo Append_Err
     
@@ -278,9 +287,13 @@ Append_Err:
 120     Call TraceError(Err.Number, Err.Description, "cStringBuilder.Append", Erl)
 
         
+    Exit Sub
+Append_Err:
+    Call TraceError(Err.Number, Err.Description, "cStringBuilder.Append", Erl)
 End Sub
 
 Public Sub AppendByVal(ByVal sThis As String)
+    On Error Goto AppendByVal_Err
         
         On Error GoTo AppendByVal_Err
     
@@ -294,9 +307,13 @@ AppendByVal_Err:
 102     Call TraceError(Err.Number, Err.Description, "cStringBuilder.AppendByVal", Erl)
 
         
+    Exit Sub
+AppendByVal_Err:
+    Call TraceError(Err.Number, Err.Description, "cStringBuilder.AppendByVal", Erl)
 End Sub
 
 Public Sub Insert(ByVal iIndex As Long, ByRef sThis As String)
+    On Error Goto Insert_Err
         
         On Error GoTo Insert_Err
     
@@ -342,9 +359,13 @@ Insert_Err:
 122     Call TraceError(Err.Number, Err.Description, "cStringBuilder.Insert", Erl)
 
         
+    Exit Sub
+Insert_Err:
+    Call TraceError(Err.Number, Err.Description, "cStringBuilder.Insert", Erl)
 End Sub
 
 Public Sub InsertByVal(ByVal iIndex As Long, ByVal sThis As String)
+    On Error Goto InsertByVal_Err
         
         On Error GoTo InsertByVal_Err
     
@@ -358,9 +379,13 @@ InsertByVal_Err:
 102     Call TraceError(Err.Number, Err.Description, "cStringBuilder.InsertByVal", Erl)
 
         
+    Exit Sub
+InsertByVal_Err:
+    Call TraceError(Err.Number, Err.Description, "cStringBuilder.InsertByVal", Erl)
 End Sub
 
 Public Sub Remove(ByVal iIndex As Long, ByVal lLen As Long)
+    On Error Goto Remove_Err
         
         On Error GoTo Remove_Err
     
@@ -399,9 +424,13 @@ Remove_Err:
 118     Call TraceError(Err.Number, Err.Description, "cStringBuilder.Remove", Erl)
 
         
+    Exit Sub
+Remove_Err:
+    Call TraceError(Err.Number, Err.Description, "cStringBuilder.Remove", Erl)
 End Sub
 
 Public Function Find(ByVal sToFind As String, _
+    On Error Goto Find_Err
                      Optional ByVal lStartIndex As Long = 1, _
                      Optional ByVal compare As VbCompareMethod = vbTextCompare) As Long
         
@@ -430,9 +459,13 @@ Find_Err:
 110     Call TraceError(Err.Number, Err.Description, "cStringBuilder.Find", Erl)
 
         
+    Exit Function
+Find_Err:
+    Call TraceError(Err.Number, Err.Description, "cStringBuilder.Find", Erl)
 End Function
 
 Public Sub HeapMinimize()
+    On Error Goto HeapMinimize_Err
         
         On Error GoTo HeapMinimize_Err
     
@@ -460,9 +493,13 @@ HeapMinimize_Err:
 112     Call TraceError(Err.Number, Err.Description, "cStringBuilder.HeapMinimize", Erl)
 
         
+    Exit Sub
+HeapMinimize_Err:
+    Call TraceError(Err.Number, Err.Description, "cStringBuilder.HeapMinimize", Erl)
 End Sub
 
 Private Function UnsignedAdd(Start As Long, Incr As Long) As Long
+    On Error Goto UnsignedAdd_Err
         ' This function is useful when doing pointer arithmetic,
         ' but note it only works for positive values of Incr
         
@@ -486,9 +523,13 @@ UnsignedAdd_Err:
 110     Call TraceError(Err.Number, Err.Description, "cStringBuilder.UnsignedAdd", Erl)
 
         
+    Exit Function
+UnsignedAdd_Err:
+    Call TraceError(Err.Number, Err.Description, "cStringBuilder.UnsignedAdd", Erl)
 End Function
 
 Private Sub Class_Initialize()
+    On Error Goto Class_Initialize_Err
         ' The default allocation: 8192 characters.
         
         On Error GoTo Class_Initialize_Err
@@ -503,5 +544,8 @@ Class_Initialize_Err:
 102     Call TraceError(Err.Number, Err.Description, "cStringBuilder.Class_Initialize", Erl)
 
         
+    Exit Sub
+Class_Initialize_Err:
+    Call TraceError(Err.Number, Err.Description, "cStringBuilder.Class_Initialize", Erl)
 End Sub
 

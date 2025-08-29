@@ -183,6 +183,7 @@ Public IpList                       As New Collection
 Public Baneos     As New Collection
 
 Sub ReSpawnOrigPosNpcs()
+    On Error Goto ReSpawnOrigPosNpcs_Err
         On Error GoTo Handler
         Dim i     As Integer
         Dim MiNPC As t_Npc
@@ -200,9 +201,13 @@ Sub ReSpawnOrigPosNpcs()
         Exit Sub
 Handler:
 114 Call TraceError(Err.Number, Err.Description, "Admin.ReSpawnOrigPosNpcs", Erl)
+    Exit Sub
+ReSpawnOrigPosNpcs_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.ReSpawnOrigPosNpcs", Erl)
 End Sub
 
 Sub WorldSave()
+    On Error Goto WorldSave_Err
 
         On Error GoTo Handler
 
@@ -243,9 +248,13 @@ Handler:
 128 Call TraceError(Err.Number, Err.Description, "Admin.WorldSave", Erl)
 
 
+    Exit Sub
+WorldSave_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.WorldSave", Erl)
 End Sub
 
 Public Sub PurgarPenas()
+    On Error Goto PurgarPenas_Err
         
         On Error GoTo PurgarPenas_Err
         
@@ -278,10 +287,14 @@ PurgarPenas_Err:
 118     Call TraceError(Err.Number, Err.Description, "Admin.PurgarPenas", Erl)
 
         
+    Exit Sub
+PurgarPenas_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.PurgarPenas", Erl)
 End Sub
 
 
 Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optional ByVal GmName As String = vbNullString)
+    On Error Goto Encarcelar_Err
         
         On Error GoTo Encarcelar_Err
         
@@ -305,9 +318,13 @@ Encarcelar_Err:
 112     Call TraceError(Err.Number, Err.Description, "Admin.Encarcelar", Erl)
 
         
+    Exit Sub
+Encarcelar_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.Encarcelar", Erl)
 End Sub
 
 Public Function BANCheck(ByVal Name As String) As Boolean
+    On Error Goto BANCheck_Err
         
         On Error GoTo BANCheck_Err
 
@@ -319,21 +336,33 @@ BANCheck_Err:
 106     Call TraceError(Err.Number, Err.Description, "Admin.BANCheck", Erl)
 
         
+    Exit Function
+BANCheck_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.BANCheck", Erl)
 End Function
 
 Public Function PersonajeExiste(ByVal Name As String) As Boolean
+    On Error Goto PersonajeExiste_Err
         On Error GoTo PersonajeExiste_Err
 102         PersonajeExiste = GetUserValue(LCase$(Name), "COUNT(*)") > 0
         Exit Function
 PersonajeExiste_Err:
 106     Call TraceError(Err.Number, Err.Description, "Admin.PersonajeExiste", Erl)
+    Exit Function
+PersonajeExiste_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.PersonajeExiste", Erl)
 End Function
 
 Public Function IsValidUserId(ByVal UserId As Long) As Boolean
+    On Error Goto IsValidUserId_Err
     IsValidUserId = GetUserValueById(UserId, "COUNT(*)") > 0
+    Exit Function
+IsValidUserId_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.IsValidUserId", Erl)
 End Function
 
 Public Function UnBan(ByVal Name As String) As Boolean
+    On Error Goto UnBan_Err
         
         On Error GoTo UnBan_Err
 
@@ -349,9 +378,13 @@ UnBan_Err:
 114     Call TraceError(Err.Number, Err.Description, "Admin.UnBan", Erl)
 
         
+    Exit Function
+UnBan_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.UnBan", Erl)
 End Function
 
 Public Function UserDarPrivilegioLevel(ByVal Name As String) As e_PlayerType
+    On Error Goto UserDarPrivilegioLevel_Err
         
         On Error GoTo UserDarPrivilegioLevel_Err
         
@@ -380,9 +413,13 @@ UserDarPrivilegioLevel_Err:
 118     Call TraceError(Err.Number, Err.Description, "Admin.UserDarPrivilegioLevel", Erl)
 
         
+    Exit Function
+UserDarPrivilegioLevel_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.UserDarPrivilegioLevel", Erl)
 End Function
 
 Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As String, Baneador As String)
+    On Error Goto BanTemporal_Err
         
         On Error GoTo BanTemporal_Err
         
@@ -405,9 +442,13 @@ BanTemporal_Err:
 116     Call TraceError(Err.Number, Err.Description, "Admin.BanTemporal", Erl)
 
         
+    Exit Sub
+BanTemporal_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.BanTemporal", Erl)
 End Sub
 
 Sub SaveBans()
+    On Error Goto SaveBans_Err
         
         On Error GoTo SaveBans_Err
         
@@ -430,9 +471,13 @@ SaveBans_Err:
 112     Call TraceError(Err.Number, Err.Description, "Admin.SaveBans", Erl)
 
         
+    Exit Sub
+SaveBans_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.SaveBans", Erl)
 End Sub
 
 Sub SaveBan(num As Integer)
+    On Error Goto SaveBan_Err
         
         On Error GoTo SaveBan_Err
         
@@ -453,9 +498,13 @@ SaveBan_Err:
 120     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Admin.SaveBan", Erl)
 
         
+    Exit Sub
+SaveBan_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.SaveBan", Erl)
 End Sub
 
 Sub LoadBans()
+    On Error Goto LoadBans_Err
         
         On Error GoTo LoadBans_Err
         
@@ -492,15 +541,23 @@ LoadBans_Err:
 120     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Admin.LoadBans", Erl)
 
         
+    Exit Sub
+LoadBans_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.LoadBans", Erl)
 End Sub
 
 Public Function CompararUserPrivilegios(ByVal Personaje_1 As Integer, ByVal Personaje_2 As Integer) As Integer
+    On Error Goto CompararUserPrivilegios_Err
     
 100     CompararUserPrivilegios = CompararPrivilegios(UserList(Personaje_1).flags.Privilegios, UserList(Personaje_2).flags.Privilegios)
         
+    Exit Function
+CompararUserPrivilegios_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.CompararUserPrivilegios", Erl)
 End Function
 
 Public Function CompararPrivilegiosUser(ByVal Personaje_1 As Integer, ByVal Personaje_2 As Integer) As Integer
+    On Error Goto CompararPrivilegiosUser_Err
         On Error GoTo CompararPrivilegiosUser_Err
         
 100     CompararPrivilegiosUser = CompararPrivilegios(UserList(Personaje_1).flags.Privilegios, UserList(Personaje_2).flags.Privilegios)
@@ -511,9 +568,13 @@ CompararPrivilegiosUser_Err:
 102     Call TraceError(Err.Number, Err.Description, "Admin.CompararPrivilegiosUser", Erl)
 
         
+    Exit Function
+CompararPrivilegiosUser_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.CompararPrivilegiosUser", Erl)
 End Function
 
 Public Function CompararPrivilegios(ByVal Izquierda As e_PlayerType, ByVal Derecha As e_PlayerType) As Integer
+    On Error Goto CompararPrivilegios_Err
     '**************************************************************************************************************************
     'Author: Jopi
     'Last Modification: 05/07/2020
@@ -553,4 +614,7 @@ CompararPrivilegios_Err:
 118     Call TraceError(Err.Number, Err.Description, "Admin.CompararPrivilegios", Erl)
 
         
+    Exit Function
+CompararPrivilegios_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.CompararPrivilegios", Erl)
 End Function

@@ -50,7 +50,11 @@ Public Probabilidad As Byte
 Public Resultado As Integer
 
 Public Sub SetItems(Data() As Integer)
+    On Error Goto SetItems_Err
     m_Items = Data
+    Exit Sub
+SetItems_Err:
+    Call TraceError(Err.Number, Err.Description, "clsCrafteo.SetItems", Erl)
 End Sub
 
 Public Property Get Tamaño() As Integer

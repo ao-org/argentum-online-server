@@ -30,6 +30,7 @@ Option Explicit
 Public base64_chars(1 To 65) As String
 
 Public Function Encrypt(ByVal hex_key As String, ByVal plain_text As String) As String
+    On Error Goto Encrypt_Err
     Dim iv() As Byte
     Dim key() As Byte
     Dim plain_text_byte() As Byte
@@ -45,10 +46,14 @@ Public Function Encrypt(ByVal hex_key As String, ByVal plain_text As String) As 
     plain_text_byte = cnvBytesFromHexStr(plain_text)
     Encrypt = cnvToBase64(cipherEncryptBytes2(plain_text_byte, key, iv, algstr))
    
+    Exit Function
+Encrypt_Err:
+    Call TraceError(Err.Number, Err.Description, "AO20CryptoSysWrapper.Encrypt", Erl)
 End Function
 
 
 Public Function Decrypt(ByVal hex_key As String, ByVal encrypted_text_b64 As String) As String
+    On Error Goto Decrypt_Err
     Dim iv() As Byte
     Dim key() As Byte
     Dim encrypted_text_byte() As Byte
@@ -66,10 +71,14 @@ Public Function Decrypt(ByVal hex_key As String, ByVal encrypted_text_b64 As Str
     encrypted_text_byte = cnvBytesFromHexStr(encrypted_text_hex)
     Decrypt = cnvStringFromHexStr(cnvToHex(cipherDecryptBytes2(encrypted_text_byte, key, iv, algstr)))
    
+    Exit Function
+Decrypt_Err:
+    Call TraceError(Err.Number, Err.Description, "AO20CryptoSysWrapper.Decrypt", Erl)
 End Function
 
 'HarThaoS: Convierto el str en arr() bytes
 Public Sub Str2ByteArr(ByVal str As String, ByRef arr() As Byte, Optional ByVal length As Long = 0)
+    On Error Goto Str2ByteArr_Err
     Dim i As Long
     Dim asd As String
     If length = 0 Then
@@ -84,9 +93,13 @@ Public Sub Str2ByteArr(ByVal str As String, ByRef arr() As Byte, Optional ByVal 
         Next i
     End If
     
+    Exit Sub
+Str2ByteArr_Err:
+    Call TraceError(Err.Number, Err.Description, "AO20CryptoSysWrapper.Str2ByteArr", Erl)
 End Sub
 
 Public Function ByteArr2String(ByRef arr() As Byte) As String
+    On Error Goto ByteArr2String_Err
     
     Dim str As String
     Dim i As Long
@@ -96,38 +109,58 @@ Public Function ByteArr2String(ByRef arr() As Byte) As String
     
     ByteArr2String = str
     
+    Exit Function
+ByteArr2String_Err:
+    Call TraceError(Err.Number, Err.Description, "AO20CryptoSysWrapper.ByteArr2String", Erl)
 End Function
 
 Public Function hiByte(ByVal w As Integer) As Byte
+    On Error Goto hiByte_Err
     Dim hi As Integer
     If w And &H8000 Then hi = &H4000
     
     hiByte = (w And &H7FFE) \ 256
     hiByte = (hiByte Or (hi \ 128))
     
+    Exit Function
+hiByte_Err:
+    Call TraceError(Err.Number, Err.Description, "AO20CryptoSysWrapper.hiByte", Erl)
 End Function
 
 Public Function LoByte(w As Integer) As Byte
+    On Error Goto LoByte_Err
  LoByte = w And &HFF
+    Exit Function
+LoByte_Err:
+    Call TraceError(Err.Number, Err.Description, "AO20CryptoSysWrapper.LoByte", Erl)
 End Function
 
 Public Function MakeInt(ByVal LoByte As Byte, _
+    On Error Goto MakeInt_Err
    ByVal hiByte As Byte) As Integer
 
 MakeInt = ((hiByte * &H100) + LoByte)
 
+    Exit Function
+MakeInt_Err:
+    Call TraceError(Err.Number, Err.Description, "AO20CryptoSysWrapper.MakeInt", Erl)
 End Function
 
 Public Sub CopyBytes(ByRef src() As Byte, ByRef dst() As Byte, ByVal size As Long, Optional ByVal offset As Long = 0)
+    On Error Goto CopyBytes_Err
     Dim i As Long
     
     For i = 0 To (size - 1)
         dst(i + offset) = src(i)
     Next i
     
+    Exit Sub
+CopyBytes_Err:
+    Call TraceError(Err.Number, Err.Description, "AO20CryptoSysWrapper.CopyBytes", Erl)
 End Sub
 
 Public Function ByteArrayToHex(ByRef ByteArray() As Byte) As String
+    On Error Goto ByteArrayToHex_Err
     Dim l As Long, strRet As String
     
     For l = LBound(ByteArray) To UBound(ByteArray)
@@ -136,9 +169,13 @@ Public Function ByteArrayToHex(ByRef ByteArray() As Byte) As String
     
     'Remove last space at end.
     ByteArrayToHex = Left$(strRet, Len(strRet) - 1)
+    Exit Function
+ByteArrayToHex_Err:
+    Call TraceError(Err.Number, Err.Description, "AO20CryptoSysWrapper.ByteArrayToHex", Erl)
 End Function
 
 Public Sub initBase64Chars()
+    On Error Goto initBase64Chars_Err
     base64_chars(1) = "B"
     base64_chars(2) = "C"
     base64_chars(3) = "D"
@@ -204,9 +241,13 @@ Public Sub initBase64Chars()
     base64_chars(63) = "/"
     base64_chars(64) = "="
     base64_chars(65) = "A"
+    Exit Sub
+initBase64Chars_Err:
+    Call TraceError(Err.Number, Err.Description, "AO20CryptoSysWrapper.initBase64Chars", Erl)
 End Sub
 
 Public Function IsBase64(ByVal str As String) As Boolean
+    On Error Goto IsBase64_Err
 
     Dim i As Long, j As Long
     Dim isInStr As Boolean
@@ -233,6 +274,9 @@ Public Function IsBase64(ByVal str As String) As Boolean
     
     IsBase64 = True
     
+    Exit Function
+IsBase64_Err:
+    Call TraceError(Err.Number, Err.Description, "AO20CryptoSysWrapper.IsBase64", Erl)
 End Function
 
 

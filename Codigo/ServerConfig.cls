@@ -43,14 +43,19 @@ Option Base 0
 Private mSettings As Dictionary
 
 Public Function GetValue(ByVal key As String) As Variant
+    On Error Goto GetValue_Err
     Debug.Assert Not mSettings Is Nothing
     Debug.Assert mSettings.Exists(key)
     If mSettings.Exists(key) Then
         GetValue = mSettings.Item(key)
     End If
+    Exit Function
+GetValue_Err:
+    Call TraceError(Err.Number, Err.Description, "ServerConfig.GetValue", Erl)
 End Function
 
 Private Sub DumpSettings()
+    On Error Goto DumpSettings_Err
     Debug.Assert Not mSettings Is Nothing
     Dim key
     Dim value
@@ -58,9 +63,13 @@ Private Sub DumpSettings()
         value = mSettings.Item(key)
         Debug.Print "[Settings] " & key & " -> " & value
     Next key
+    Exit Sub
+DumpSettings_Err:
+    Call TraceError(Err.Number, Err.Description, "ServerConfig.DumpSettings", Erl)
 End Sub
 
 Public Function LoadSettings(ByVal Filename As String) As Long
+    On Error Goto LoadSettings_Err
     LoadSettings = -1
     Dim reader As clsIniManager
     Set reader = New clsIniManager
@@ -198,8 +207,15 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     
     LoadSettings = 0
     DumpSettings
+    Exit Function
+LoadSettings_Err:
+    Call TraceError(Err.Number, Err.Description, "ServerConfig.LoadSettings", Erl)
 End Function
 
 Private Sub Class_Initialize()
+    On Error Goto Class_Initialize_Err
     Set mSettings = New Dictionary
+    Exit Sub
+Class_Initialize_Err:
+    Call TraceError(Err.Number, Err.Description, "ServerConfig.Class_Initialize", Erl)
 End Sub

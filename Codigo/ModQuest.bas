@@ -30,6 +30,7 @@ Option Explicit
 'Constantes de las quests
 
 Public Function TieneQuest(ByVal UserIndex As Integer, ByVal QuestNumber As Integer) As Byte
+    On Error Goto TieneQuest_Err
         
         On Error GoTo TieneQuest_Err
         
@@ -59,9 +60,13 @@ TieneQuest_Err:
 110     Call TraceError(Err.Number, Err.Description, "ModQuest.TieneQuest", Erl)
 
         
+    Exit Function
+TieneQuest_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.TieneQuest", Erl)
 End Function
  
 Public Function FreeQuestSlot(ByVal UserIndex As Integer) As Byte
+    On Error Goto FreeQuestSlot_Err
         
         On Error GoTo FreeQuestSlot_Err
         
@@ -91,9 +96,13 @@ FreeQuestSlot_Err:
 110     Call TraceError(Err.Number, Err.Description, "ModQuest.FreeQuestSlot", Erl)
 
         
+    Exit Function
+FreeQuestSlot_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.FreeQuestSlot", Erl)
 End Function
  
 Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte)
+    On Error Goto FinishQuest_Err
         On Error GoTo FinishQuest_Err
         'Maneja el evento de terminar una quest.
         Dim i, j           As Integer
@@ -275,9 +284,13 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 
 FinishQuest_Err:
     Call TraceError(Err.Number, Err.Description, "ModQuest.FinishQuest", Erl)
+    Exit Sub
+FinishQuest_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.FinishQuest", Erl)
 End Sub
  
 Public Sub AddDoneQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer)
+    On Error Goto AddDoneQuest_Err
         
         On Error GoTo AddDoneQuest_Err
         
@@ -300,9 +313,13 @@ AddDoneQuest_Err:
 108     Call TraceError(Err.Number, Err.Description, "ModQuest.AddDoneQuest", Erl)
 
         
+    Exit Sub
+AddDoneQuest_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.AddDoneQuest", Erl)
 End Sub
  
 Public Function UserDoneQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer) As Boolean
+    On Error Goto UserDoneQuest_Err
         
         On Error GoTo UserDoneQuest_Err
         
@@ -346,9 +363,13 @@ UserDoneQuest_Err:
 118     Call TraceError(Err.Number, Err.Description, "ModQuest.UserDoneQuest", Erl)
 
         
+    Exit Function
+UserDoneQuest_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.UserDoneQuest", Erl)
 End Function
  
 Public Sub CleanQuestSlot(ByVal UserIndex As Integer, ByVal QuestSlot As Integer)
+    On Error Goto CleanQuestSlot_Err
         
         On Error GoTo CleanQuestSlot_Err
         
@@ -393,9 +414,13 @@ CleanQuestSlot_Err:
 134     Call TraceError(Err.Number, Err.Description, "ModQuest.CleanQuestSlot", Erl)
 
         
+    Exit Sub
+CleanQuestSlot_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.CleanQuestSlot", Erl)
 End Sub
  
 Public Sub ResetQuestStats(ByVal UserIndex As Integer)
+    On Error Goto ResetQuestStats_Err
         
         On Error GoTo ResetQuestStats_Err
         
@@ -423,9 +448,13 @@ ResetQuestStats_Err:
 112     Call TraceError(Err.Number, Err.Description, "ModQuest.ResetQuestStats", Erl)
 
         
+    Exit Sub
+ResetQuestStats_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.ResetQuestStats", Erl)
 End Sub
  
 Public Sub LoadQuests()
+    On Error Goto LoadQuests_Err
 
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         'Carga el archivo QUESTS.DAT en el array QuestList.
@@ -556,9 +585,13 @@ Public Sub LoadQuests()
                     
 ErrorHandler:
     MsgBox "Error cargando el archivo QUESTS.DAT.", vbOKOnly + vbCritical
+    Exit Sub
+LoadQuests_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.LoadQuests", Erl)
 End Sub
  
 Public Sub ArrangeUserQuests(ByVal UserIndex As Integer)
+    On Error Goto ArrangeUserQuests_Err
         
         On Error GoTo ArrangeUserQuests_Err
         
@@ -601,9 +634,13 @@ ArrangeUserQuests_Err:
 118     Call TraceError(Err.Number, Err.Description, "ModQuest.ArrangeUserQuests", Erl)
 
         
+    Exit Sub
+ArrangeUserQuests_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.ArrangeUserQuests", Erl)
 End Sub
  
 Public Sub EnviarQuest(ByVal UserIndex As Integer)
+    On Error Goto EnviarQuest_Err
         On Error GoTo EnviarQuest_Err
         Dim NpcIndex As Integer
         Dim tmpByte  As Byte
@@ -657,9 +694,13 @@ EnviarQuest_Err:
 126     Call TraceError(Err.Number, Err.Description, "ModQuest.EnviarQuest", Erl)
 
         
+    Exit Sub
+EnviarQuest_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.EnviarQuest", Erl)
 End Sub
 
 Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte) As Boolean
+    On Error Goto FinishQuestCheck_Err
         On Error GoTo FinishQuestCheck_Err
         Dim i              As Integer
         Dim InvSlotsLibres As Byte
@@ -714,9 +755,13 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
         Exit Function
 FinishQuestCheck_Err:
 136     Call TraceError(Err.Number, Err.Description, "ModQuest.FinishQuestCheck", Erl)
+    Exit Function
+FinishQuestCheck_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.FinishQuestCheck", Erl)
 End Function
 
 Function FaltanItemsQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal ObjIndex As Integer) As Boolean
+    On Error Goto FaltanItemsQuest_Err
 
         On Error GoTo Handler
 
@@ -750,9 +795,13 @@ Handler:
 112     Call TraceError(Err.Number, Err.Description, "ModQuest.FaltanItemsQuest", Erl)
 
 
+    Exit Function
+FaltanItemsQuest_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.FaltanItemsQuest", Erl)
 End Function
 
 Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal QuestIndex As Integer, ByRef tmpQuest As t_Quest) As Boolean
+    On Error Goto CanUserAcceptQuest_Err
     On Error GoTo ErrHandler
 
     CanUserAcceptQuest = False
@@ -822,6 +871,9 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "ModQuest.CanUserAcceptQuest", Erl)
 
+    Exit Function
+CanUserAcceptQuest_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.CanUserAcceptQuest", Erl)
 End Function
 
 

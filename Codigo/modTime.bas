@@ -54,15 +54,20 @@ Public Type t_Timer
 End Type
 
 Public Function GetTickCount() As Long
+    On Error Goto GetTickCount_Err
         On Error GoTo GetTickCount_Err
         'recovers time as MILISECONDS
         GetTickCount = timeGetTime And &H7FFFFFFF
         Exit Function
 GetTickCount_Err:
         Call TraceError(Err.Number, Err.Description, "ModLadder.GetTickCount", Erl)
+    Exit Function
+GetTickCount_Err:
+    Call TraceError(Err.Number, Err.Description, "modTime.GetTickCount", Erl)
 End Function
 
 Function GetTimeFormated() As String
+    On Error Goto GetTimeFormated_Err
         On Error GoTo GetTimeFormated_Err
         Dim Elapsed As Long
         Elapsed = (GetTickCount() - HoraMundo) / SvrConfig.GetValue("DayLength")
@@ -76,9 +81,13 @@ Function GetTimeFormated() As String
         Exit Function
 GetTimeFormated_Err:
      Call TraceError(Err.Number, Err.Description, "ModLadder.GetTimeFormated - " + Erl, Erl)
+    Exit Function
+GetTimeFormated_Err:
+    Call TraceError(Err.Number, Err.Description, "modTime.GetTimeFormated", Erl)
 End Function
 
 Public Sub GetHoraActual()
+    On Error Goto GetHoraActual_Err
         On Error GoTo GetHoraActual_Err
         GetSystemTime theTime
         HoraActual = (theTime.wHour - 3)
@@ -90,9 +99,13 @@ Public Sub GetHoraActual()
         Exit Sub
 GetHoraActual_Err:
      Call TraceError(Err.Number, Err.Description, "ModLadder.GetHoraActual", Erl)
+    Exit Sub
+GetHoraActual_Err:
+    Call TraceError(Err.Number, Err.Description, "modTime.GetHoraActual", Erl)
 End Sub
 
 Public Function SumarTiempo(segundos As Integer) As String
+    On Error Goto SumarTiempo_Err
         On Error GoTo SumarTiempo_Err
         Dim a As Variant, b As Variant
         Dim X As Integer
@@ -109,24 +122,36 @@ Public Function SumarTiempo(segundos As Integer) As String
         Exit Function
 SumarTiempo_Err:
      Call TraceError(Err.Number, Err.Description, "ModLadder.SumarTiempo", Erl)
+    Exit Function
+SumarTiempo_Err:
+    Call TraceError(Err.Number, Err.Description, "modTime.SumarTiempo", Erl)
 End Function
 
 Public Sub SetTimer(ByRef timer As t_Timer, ByVal Interval As Long)
+    On Error Goto SetTimer_Err
     timer.ElapsedTime = 0
     timer.Interval = Interval
     timer.Occurrences = 0
+    Exit Sub
+SetTimer_Err:
+    Call TraceError(Err.Number, Err.Description, "modTime.SetTimer", Erl)
 End Sub
 
 Public Function UpdateTime(ByRef timer As t_Timer, ByVal deltaTime As Long) As Boolean
+    On Error Goto UpdateTime_Err
     timer.ElapsedTime = timer.ElapsedTime + deltaTime
     UpdateTime = timer.ElapsedTime - timer.Interval > 0
     timer.ElapsedTime = timer.ElapsedTime Mod timer.Interval
     If UpdateTime Then
         timer.Occurrences = timer.Occurrences + 1
     End If
+    Exit Function
+UpdateTime_Err:
+    Call TraceError(Err.Number, Err.Description, "modTime.UpdateTime", Erl)
 End Function
 
 Public Function GetTimeString(ByVal Minutes As Integer, ByVal Seconds As Integer)
+    On Error Goto GetTimeString_Err
     Dim Output As String
     If Minutes > 1 Then
         Output = Minutes & " minutos"
@@ -142,4 +167,7 @@ Public Function GetTimeString(ByVal Minutes As Integer, ByVal Seconds As Integer
         Output = Output & "1 segundo"
     End If
     GetTimeString = Output
+    Exit Function
+GetTimeString_Err:
+    Call TraceError(Err.Number, Err.Description, "modTime.GetTimeString", Erl)
 End Function

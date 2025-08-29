@@ -58,6 +58,7 @@ Public RegaloX              As Byte
 Public RegaloY              As Byte
 
 Public Sub InitTesoro()
+    On Error Goto InitTesoro_Err
         
         On Error GoTo InitTesoro_Err
 
@@ -133,9 +134,13 @@ InitTesoro_Err:
 158     Call TraceError(Err.Number, Err.Description, "ModTesoros.InitTesoro", Erl)
 
         
+    Exit Sub
+InitTesoro_Err:
+    Call TraceError(Err.Number, Err.Description, "ModTesoros.InitTesoro", Erl)
 End Sub
 
 Public Sub InitRegalo()
+    On Error Goto InitRegalo_Err
         
         On Error GoTo InitRegalo_Err
         
@@ -193,9 +198,13 @@ InitRegalo_Err:
 142     Call TraceError(Err.Number, Err.Description, "ModTesoros.InitRegalo", Erl)
 
         
+    Exit Sub
+InitRegalo_Err:
+    Call TraceError(Err.Number, Err.Description, "ModTesoros.InitRegalo", Erl)
 End Sub
 
 Public Sub PerderTesoro()
+    On Error Goto PerderTesoro_Err
         
         On Error GoTo PerderTesoro_Err
         
@@ -246,9 +255,13 @@ PerderTesoro_Err:
 142     Call TraceError(Err.Number, Err.Description, "ModTesoros.PerderTesoro", Erl)
 
         
+    Exit Sub
+PerderTesoro_Err:
+    Call TraceError(Err.Number, Err.Description, "ModTesoros.PerderTesoro", Erl)
 End Sub
 
 Public Sub PerderRegalo()
+    On Error Goto PerderRegalo_Err
         
         On Error GoTo PerderRegalo_Err
         
@@ -300,5 +313,8 @@ PerderRegalo_Err:
 142     Call TraceError(Err.Number, Err.Description, "ModTesoros.PerderRegalo", Erl)
 
         
+    Exit Sub
+PerderRegalo_Err:
+    Call TraceError(Err.Number, Err.Description, "ModTesoros.PerderRegalo", Erl)
 End Sub
 

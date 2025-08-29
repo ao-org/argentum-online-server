@@ -29,15 +29,20 @@ Option Explicit
 
 
 Public Function get_map_name(ByVal map As Long) As String
+    On Error Goto get_map_name_Err
 On Error GoTo get_map_name_Err
         get_map_name = MapInfo(map).map_name
         Exit Function
 get_map_name_Err:
      Call TraceError(Err.Number, Err.Description, "ModLadder.get_map_name", Erl)
+    Exit Function
+get_map_name_Err:
+    Call TraceError(Err.Number, Err.Description, "Acciones.get_map_name", Erl)
 End Function
 
 
 Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer, Optional ByVal writeInConsole As Boolean = False) As Byte
+    On Error Goto PuedeUsarObjeto_Err
         On Error GoTo PuedeUsarObjeto_Err
 
         Dim Objeto As t_ObjData
@@ -97,10 +102,14 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer, Option
 PuedeUsarObjeto_Err:
      Call TraceError(Err.Number, Err.Description, "ModLadder.PuedeUsarObjeto", Erl)
 
+    Exit Function
+PuedeUsarObjeto_Err:
+    Call TraceError(Err.Number, Err.Description, "Acciones.PuedeUsarObjeto", Erl)
 End Function
 
 
 Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
+    On Error Goto CompletarAccionFin_Err
         
         On Error GoTo CompletarAccionFin_Err
         
@@ -434,6 +443,9 @@ CompletarAccionFin_Err:
      Call TraceError(Err.Number, Err.Description, "ModLadder.CompletarAccionFin", Erl)
 
         
+    Exit Sub
+CompletarAccionFin_Err:
+    Call TraceError(Err.Number, Err.Description, "Acciones.CompletarAccionFin", Erl)
 End Sub
 
 ''
@@ -449,6 +461,7 @@ End Sub
 ' @param Y Y
 
 Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+    On Error Goto Accion_Err
         
         On Error GoTo Accion_Err
 
@@ -888,10 +901,14 @@ Accion_Err:
 390     Call TraceError(Err.Number, Err.Description, "Acciones.Accion", Erl)
 
         
+    Exit Sub
+Accion_Err:
+    Call TraceError(Err.Number, Err.Description, "Acciones.Accion", Erl)
 End Sub
 
 
 Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
+    On Error Goto AccionParaYunque_Err
         
         On Error GoTo AccionParaYunque_Err
 
@@ -932,9 +949,13 @@ AccionParaYunque_Err:
 124     Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaYunque", Erl)
 
         
+    Exit Sub
+AccionParaYunque_Err:
+    Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaYunque", Erl)
 End Sub
 
 Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal UserIndex As Integer, Optional ByVal SinDistancia As Boolean)
+    On Error Goto AccionParaPuerta_Err
         On Error GoTo Handler
 
         Dim puerta As t_ObjData 'ver ReyarB
@@ -989,9 +1010,13 @@ Handler:
 136 Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaPuerta", Erl)
 
 
+    Exit Sub
+AccionParaPuerta_Err:
+    Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaPuerta", Erl)
 End Sub
 
 Sub AccionParaPuertaNpc(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal NpcIndex As Integer)
+    On Error Goto AccionParaPuertaNpc_Err
         On Error GoTo Handler
 
         Dim puerta As t_ObjData 'ver ReyarB
@@ -1019,9 +1044,13 @@ Handler:
 116 Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaPuertaNpc", Erl)
 
 
+    Exit Sub
+AccionParaPuertaNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaPuertaNpc", Erl)
 End Sub
 
 Sub AccionParaCartel(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
+    On Error Goto AccionParaCartel_Err
 
         On Error GoTo Handler
 
@@ -1041,9 +1070,13 @@ Sub AccionParaCartel(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 Handler:
 106 Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaCartel", Erl)
 
+    Exit Sub
+AccionParaCartel_Err:
+    Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaCartel", Erl)
 End Sub
 
 Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
+    On Error Goto AccionParaRamita_Err
 
     On Error GoTo Handler
 
@@ -1141,4 +1174,7 @@ Handler:
 156 Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaRamita", Erl)
 
 
+    Exit Sub
+AccionParaRamita_Err:
+    Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaRamita", Erl)
 End Sub

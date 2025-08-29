@@ -79,7 +79,11 @@ GuildName_Err:
 End Property
 
 Private Sub UpdateGuildValue(ByVal ColumnName As String, ByVal Value As Variant)
+    On Error Goto UpdateGuildValue_Err
     Call Execute("UPDATE guilds SET " & ColumnName & " = ? WHERE id = ?;", Value, p_GuildId)
+    Exit Sub
+UpdateGuildValue_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.UpdateGuildValue", Erl)
 End Sub
 '
 'ALINEACION Y ANTIFACCION
@@ -93,32 +97,45 @@ Alineacion_Err:
 End Property
 
 Public Function CambiarAlineacion(ByVal NuevaAlineacion As e_ALINEACION_GUILD) As Boolean
+    On Error Goto CambiarAlineacion_Err
         On Error GoTo CambiarAlineacion_Err
 100     p_Alineacion = NuevaAlineacion
         Call UpdateGuildValue("alignment", p_Alineacion)
         Exit Function
 CambiarAlineacion_Err:
 104     Call TraceError(Err.Number, Err.Description, "clsClan.CambiarAlineacion", Erl)
+    Exit Function
+CambiarAlineacion_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.CambiarAlineacion", Erl)
 End Function
 
 Private Sub Class_Initialize()
+    On Error Goto Class_Initialize_Err
     Set p_OnlineMembers = New Collection
     Set p_GMsOnline = New Collection
     p_IteradorOnlineMembers = 0
     p_IteradorOnlineGMs = 0
     MemberListLoaded = False
+    Exit Sub
+Class_Initialize_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.Class_Initialize", Erl)
 End Sub
 
 Private Sub Class_Terminate()
+    On Error Goto Class_Terminate_Err
         On Error GoTo Class_Terminate_Err
 100     Set p_OnlineMembers = Nothing
 102     Set p_GMsOnline = Nothing
         Exit Sub
 Class_Terminate_Err:
 108     Call TraceError(Err.Number, Err.Description, "clsClan.Class_Terminate", Erl)
+    Exit Sub
+Class_Terminate_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.Class_Terminate", Erl)
 End Sub
 
 Public Sub InitFromRecord(RS As Recordset, ByVal GuildNumber As Integer)
+    On Error Goto InitFromRecord_Err
 On Error GoTo Inicializar_Err
     p_GuildName = RS!guild_name
     p_GuildId = RS!id
@@ -129,12 +146,16 @@ On Error GoTo Inicializar_Err
     Exit Sub
 Inicializar_Err:
 154     Call TraceError(Err.Number, Err.Description, "clsClan.Inicializar", Erl)
+    Exit Sub
+InitFromRecord_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.InitFromRecord", Erl)
 End Sub
 
 
 ' @param Fundador Nombre del fundador del clan
 '
 Public Sub InicializarNuevoClan(ByVal GuildName As String, ByVal GuildNumber As Integer, ByVal alignment As e_ALINEACION_GUILD, ByVal founder As Long)
+    On Error Goto InicializarNuevoClan_Err
     On Error GoTo InicializarNuevoClan_Err
         p_GuildName = GuildName
         p_Alineacion = alignment
@@ -153,13 +174,20 @@ Public Sub InicializarNuevoClan(ByVal GuildName As String, ByVal GuildNumber As 
         Exit Sub
 InicializarNuevoClan_Err:
 128     Call TraceError(Err.Number, Err.Description, "clsClan.InicializarNuevoClan", Erl)
+    Exit Sub
+InicializarNuevoClan_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.InicializarNuevoClan", Erl)
 End Sub
 
 Public Sub ProcesarFundacionDeOtroClan()
+    On Error Goto ProcesarFundacionDeOtroClan_Err
         On Error GoTo ProcesarFundacionDeOtroClan_Err
         Exit Sub
 ProcesarFundacionDeOtroClan_Err:
 104     Call TraceError(Err.Number, Err.Description, "clsClan.ProcesarFundacionDeOtroClan", Erl)
+    Exit Sub
+ProcesarFundacionDeOtroClan_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.ProcesarFundacionDeOtroClan", Erl)
 End Sub
 
 '
@@ -183,22 +211,31 @@ CantidadDeMiembros_Err:
 End Property
 
 Public Sub SetLeader(ByRef Leader As Long)
+    On Error Goto SetLeader_Err
     On Error GoTo SetLeader_Err
         Call UpdateGuildValue("leader", Leader)
         Exit Sub
 SetLeader_Err:
 102     Call TraceError(Err.Number, Err.Description, "clsClan.SetLeader", Erl)
+    Exit Sub
+SetLeader_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.SetLeader", Erl)
 End Sub
 
 Public Function GetLeader() As Long
+    On Error Goto GetLeader_Err
         On Error GoTo GetLeader_Err
 100     GetLeader = p_Leader
         Exit Function
 GetLeader_Err:
 102     Call TraceError(Err.Number, Err.Description, "clsClan.GetLeader", Erl)
+    Exit Function
+GetLeader_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.GetLeader", Erl)
 End Function
 
 Private Sub ReloadMemberList()
+    On Error Goto ReloadMemberList_Err
     On Error GoTo ReloadMemberList_Err
 100     If MemberListLoaded Then Exit Sub
         Dim RS As ADODB.Recordset
@@ -219,9 +256,13 @@ Private Sub ReloadMemberList()
         Exit Sub
 ReloadMemberList_Err:
 118    Call TraceError(Err.Number, Err.Description, "clsClan.ReloadMemberList", Erl)
+    Exit Sub
+ReloadMemberList_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.ReloadMemberList", Erl)
 End Sub
 
 Public Function GetMemberList() As Long()
+    On Error Goto GetMemberList_Err
     On Error GoTo GetMemberList_Err
         Call ReloadMemberList
         If MemberCount < (UBound(MemberList) + 1) Then
@@ -238,9 +279,13 @@ Public Function GetMemberList() As Long()
         Exit Function
 GetMemberList_Err:
 112     Call TraceError(Err.Number, Err.Description, "clsClan.GetMemberList", Erl)
+    Exit Function
+GetMemberList_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.GetMemberList", Erl)
 End Function
 
 Public Sub ConectarMiembro(ByVal UserIndex As Integer)
+    On Error Goto ConectarMiembro_Err
         On Error GoTo ConectarMiembro_Err
         
 100     p_OnlineMembers.Add UserIndex
@@ -253,9 +298,13 @@ Public Sub ConectarMiembro(ByVal UserIndex As Integer)
         Exit Sub
 ConectarMiembro_Err:
 108     Call TraceError(Err.Number, Err.Description, "clsClan.ConectarMiembro", Erl)
+    Exit Sub
+ConectarMiembro_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.ConectarMiembro", Erl)
 End Sub
 
 Public Sub DesConectarMiembro(ByVal UserIndex As Integer)
+    On Error Goto DesConectarMiembro_Err
         On Error GoTo DesConectarMiembro_Err
 
         Dim i As Integer
@@ -274,9 +323,13 @@ Public Sub DesConectarMiembro(ByVal UserIndex As Integer)
         Exit Sub
 DesConectarMiembro_Err:
 114     Call TraceError(Err.Number, Err.Description, "clsClan.DesConectarMiembro", Erl)
+    Exit Sub
+DesConectarMiembro_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.DesConectarMiembro", Erl)
 End Sub
 
 Public Sub AceptarNuevoMiembro(ByRef UserId As Long)
+    On Error Goto AceptarNuevoMiembro_Err
     On Error GoTo AceptarNuevoMiembro_Err
 100     If IsValidUserId(UserId) Then
 102         Call SaveUserGuildIndex(UserId, p_GuildNumber)
@@ -293,9 +346,13 @@ Public Sub AceptarNuevoMiembro(ByRef UserId As Long)
         Exit Sub
 AceptarNuevoMiembro_Err:
 118     Call TraceError(Err.Number, Err.Description, "clsClan.AceptarNuevoMiembro", Erl)
+    Exit Sub
+AceptarNuevoMiembro_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.AceptarNuevoMiembro", Erl)
 End Sub
 
 Public Sub ExpulsarMiembro(ByVal CharId As Long)
+    On Error Goto ExpulsarMiembro_Err
 On Error GoTo ExpulsarMiembro_Err
         Call Execute("DELETE FROM guild_members WHERE user_id = ? AND guild_id = ?;", CharId, p_GuildId)
         Dim i As Integer
@@ -314,6 +371,9 @@ On Error GoTo ExpulsarMiembro_Err
         Exit Sub
 ExpulsarMiembro_Err:
 142     Call TraceError(Err.Number, Err.Description, "clsClan.ExpulsarMiembro", Erl)
+    Exit Sub
+ExpulsarMiembro_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.ExpulsarMiembro", Erl)
 End Sub
 
 '
@@ -321,6 +381,7 @@ End Sub
 '
 
 Public Function GetAspirantes() As String()
+    On Error Goto GetAspirantes_Err
         
     On Error GoTo GetAspirantes_Err
         Dim RS As ADODB.Recordset
@@ -344,9 +405,13 @@ Public Function GetAspirantes() As String()
         Exit Function
 GetAspirantes_Err:
 116     Call TraceError(Err.Number, Err.Description, "clsClan.GetAspirantes", Erl)
+    Exit Function
+GetAspirantes_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.GetAspirantes", Erl)
 End Function
 
 Public Function HasGuildRequest(ByVal UserId As Long) As Boolean
+    On Error Goto HasGuildRequest_Err
     On Error GoTo HasGuildRequest_Err
         Dim RS As ADODB.Recordset
         Dim list() As String
@@ -355,8 +420,12 @@ Public Function HasGuildRequest(ByVal UserId As Long) As Boolean
         Exit Function
 HasGuildRequest_Err:
 116     Call TraceError(Err.Number, Err.Description, "clsClan.HasGuildRequest", Erl)
+    Exit Function
+HasGuildRequest_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.HasGuildRequest", Erl)
 End Function
 Public Function CantidadAspirantes() As Integer
+    On Error Goto CantidadAspirantes_Err
         On Error GoTo CantidadAspirantes_Err
         Dim RS As ADODB.Recordset
 100     Set RS = Query("SELECT COUNT(*) FROM guild_request where guild_id = ?", p_GuildId)
@@ -365,9 +434,13 @@ Public Function CantidadAspirantes() As Integer
         Exit Function
 CantidadAspirantes_Err:
 108     Call TraceError(Err.Number, Err.Description, "clsClan.CantidadAspirantes", Erl)
+    Exit Function
+CantidadAspirantes_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.CantidadAspirantes", Erl)
 End Function
 
 Public Function DetallesSolicitudAspirante(ByVal username As String) As String
+    On Error Goto DetallesSolicitudAspirante_Err
     On Error GoTo DetallesSolicitudAspirante_Err
         Dim CharId As Long
         CharId = GetCharacterIdWithName(username)
@@ -381,9 +454,13 @@ Public Function DetallesSolicitudAspirante(ByVal username As String) As String
         Exit Function
 DetallesSolicitudAspirante_Err:
 104     Call TraceError(Err.Number, Err.Description, "clsClan.DetallesSolicitudAspirante", Erl)
+    Exit Function
+DetallesSolicitudAspirante_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.DetallesSolicitudAspirante", Erl)
 End Function
 
 Public Sub NuevoAspirante(ByRef name As String, ByRef Peticion As String)
+    On Error Goto NuevoAspirante_Err
         On Error GoTo NuevoAspirante_Err
         Dim CharId As Long
         CharId = GetCharacterIdWithName(name)
@@ -394,9 +471,13 @@ Public Sub NuevoAspirante(ByRef name As String, ByRef Peticion As String)
         Exit Sub
 NuevoAspirante_Err:
 122     Call TraceError(Err.Number, Err.Description, "clsClan.NuevoAspirante", Erl)
+    Exit Sub
+NuevoAspirante_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.NuevoAspirante", Erl)
 End Sub
 
 Public Sub RetirarAspirante(ByRef name As String)
+    On Error Goto RetirarAspirante_Err
         
         On Error GoTo RetirarAspirante_Err
         Dim CharId As Long
@@ -411,6 +492,9 @@ Public Sub RetirarAspirante(ByRef name As String)
         Exit Sub
 RetirarAspirante_Err:
 136     Call TraceError(Err.Number, Err.Description, "clsClan.RetirarAspirante", Erl)
+    Exit Sub
+RetirarAspirante_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.RetirarAspirante", Erl)
 End Sub
 
 '
@@ -418,6 +502,7 @@ End Sub
 '
 
 Public Function GetFechaFundacion() As String
+    On Error Goto GetFechaFundacion_Err
         
     On Error GoTo GetFechaFundacion_Err
         Dim RS As ADODB.Recordset
@@ -427,9 +512,13 @@ Public Function GetFechaFundacion() As String
         Exit Function
 GetFechaFundacion_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.GetFechaFundacion", Erl)
+    Exit Function
+GetFechaFundacion_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.GetFechaFundacion", Erl)
 End Function
 
 Public Sub SetURL(ByRef URL As String)
+    On Error Goto SetURL_Err
         On Error GoTo SetURL_Err
 100     Call ReplaceInvalidChars(URL)
 110     Call UpdateGuildValue("url", URL)
@@ -437,9 +526,13 @@ Public Sub SetURL(ByRef URL As String)
 
 SetURL_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.SetURL", Erl)
+    Exit Sub
+SetURL_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.SetURL", Erl)
 End Sub
 
 Public Function GetURL() As String
+    On Error Goto GetURL_Err
     On Error GoTo GetURL_Err
         Dim RS As ADODB.Recordset
 100     Set RS = Query("SELECT url FROM guilds where id = ?", p_GuildId)
@@ -448,25 +541,37 @@ Public Function GetURL() As String
         Exit Function
 GetURL_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.GetURL", Erl)
+    Exit Function
+GetURL_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.GetURL", Erl)
 End Function
 
 Public Sub SetNivelDeClan(ByRef nivel As Byte)
+    On Error Goto SetNivelDeClan_Err
     On Error GoTo SetNivelDeClan_Err
         Call UpdateGuildValue("level", nivel)
         p_GuildLevel = nivel
         Exit Sub
 SetNivelDeClan_Err:
 102     Call TraceError(Err.Number, Err.Description, "clsClan.SetNivelDeClan", Erl)
+    Exit Sub
+SetNivelDeClan_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.SetNivelDeClan", Erl)
 End Sub
 
 Public Function GetNivelDeClan() As Integer
+    On Error Goto GetNivelDeClan_Err
     If p_GuildLevel = 0 Then
         p_GuildLevel = GetStoredClanLevel
     End If
     GetNivelDeClan = p_GuildLevel
+    Exit Function
+GetNivelDeClan_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.GetNivelDeClan", Erl)
 End Function
 
 Public Function GetStoredClanLevel() As Byte
+    On Error Goto GetStoredClanLevel_Err
     On Error GoTo GetNivelDeClan_Err
         Dim RS As ADODB.Recordset
 100     Set RS = Query("SELECT level FROM guilds where id = ?", p_GuildId)
@@ -475,18 +580,26 @@ Public Function GetStoredClanLevel() As Byte
         Exit Function
 GetNivelDeClan_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.GetNivelDeClan", Erl)
+    Exit Function
+GetStoredClanLevel_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.GetStoredClanLevel", Erl)
 End Function
 
 Public Sub SetExpActual(ByRef Exp As Integer)
+    On Error Goto SetExpActual_Err
     On Error GoTo SetExpActual_Err
         Call UpdateGuildValue("current_exp", Exp)
         p_CurrentExp = Exp
     Exit Sub
 SetExpActual_Err:
 102     Call TraceError(Err.Number, Err.Description, "clsClan.SetExpActual", Erl)
+    Exit Sub
+SetExpActual_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.SetExpActual", Erl)
 End Sub
 
 Public Function GetExpActual() As Integer
+    On Error Goto GetExpActual_Err
     On Error GoTo GetExpActual_Err
         If p_CurrentExp = 0 Then
             Dim RS As ADODB.Recordset
@@ -498,9 +611,13 @@ Public Function GetExpActual() As Integer
         Exit Function
 GetExpActual_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.GetExpActual", Erl)
+    Exit Function
+GetExpActual_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.GetExpActual", Erl)
 End Function
 
 Public Sub SetGuildNews(ByRef News As String)
+    On Error Goto SetGuildNews_Err
     On Error GoTo SetGuildNews_Err
         
 100     Call ReplaceInvalidChars(News)
@@ -509,9 +626,13 @@ Public Sub SetGuildNews(ByRef News As String)
         Exit Sub
 SetGuildNews_Err:
 106     Call TraceError(Err.Number, Err.Description, "clsClan.SetGuildNews", Erl)
+    Exit Sub
+SetGuildNews_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.SetGuildNews", Erl)
 End Sub
 
 Public Function GetGuildNews() As String
+    On Error Goto GetGuildNews_Err
     On Error GoTo GetGuildNews_Err
         If p_GuildNews = "" Then
             Dim RS As ADODB.Recordset
@@ -523,9 +644,13 @@ Public Function GetGuildNews() As String
         Exit Function
 GetGuildNews_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.GetGuildNews", Erl)
+    Exit Function
+GetGuildNews_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.GetGuildNews", Erl)
 End Function
 
 Public Sub SetDesc(ByRef Desc As String)
+    On Error Goto SetDesc_Err
         On Error GoTo SetDesc_Err
 100     Call ReplaceInvalidChars(Desc)
 102     Desc = Left$(Desc, DESCLENGTH)
@@ -533,9 +658,13 @@ Public Sub SetDesc(ByRef Desc As String)
         Exit Sub
 SetDesc_Err:
 106     Call TraceError(Err.Number, Err.Description, "clsClan.SetDesc", Erl)
+    Exit Sub
+SetDesc_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.SetDesc", Erl)
 End Sub
 
 Public Function GetDesc() As String
+    On Error Goto GetDesc_Err
         
     On Error GoTo GetDesc_Err
         Dim RS As ADODB.Recordset
@@ -545,11 +674,15 @@ Public Function GetDesc() As String
         Exit Function
 GetDesc_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.GetDesc", Erl)
+    Exit Function
+GetDesc_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.GetDesc", Erl)
 End Function
 
 
 
 Public Function m_Iterador_ProximoUserIndex() As Integer
+    On Error Goto m_Iterador_ProximoUserIndex_Err
     On Error GoTo m_Iterador_ProximoUserIndex_Err
 100     If p_IteradorOnlineMembers < p_OnlineMembers.Count Then
 102         p_IteradorOnlineMembers = p_IteradorOnlineMembers + 1
@@ -561,9 +694,13 @@ Public Function m_Iterador_ProximoUserIndex() As Integer
         Exit Function
 m_Iterador_ProximoUserIndex_Err:
 110     Call TraceError(Err.Number, Err.Description, "clsClan.m_Iterador_ProximoUserIndex", Erl)
+    Exit Function
+m_Iterador_ProximoUserIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.m_Iterador_ProximoUserIndex", Erl)
 End Function
 
 Public Function Iterador_ProximoGM() As Integer
+    On Error Goto Iterador_ProximoGM_Err
         On Error GoTo Iterador_ProximoGM_Err
 100     If p_IteradorOnlineGMs < p_GMsOnline.Count Then
 102         p_IteradorOnlineGMs = p_IteradorOnlineGMs + 1
@@ -575,19 +712,27 @@ Public Function Iterador_ProximoGM() As Integer
         Exit Function
 Iterador_ProximoGM_Err:
 110     Call TraceError(Err.Number, Err.Description, "clsClan.Iterador_ProximoGM", Erl)
+    Exit Function
+Iterador_ProximoGM_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.Iterador_ProximoGM", Erl)
 End Function
 
 
 'ADMINISTRATIVAS
 Public Sub ConectarGM(ByVal UserIndex As Integer)
+    On Error Goto ConectarGM_Err
         On Error GoTo ConectarGM_Err
 100     p_GMsOnline.Add UserIndex
         Exit Sub
 ConectarGM_Err:
 102     Call TraceError(Err.Number, Err.Description, "clsClan.ConectarGM", Erl)
+    Exit Sub
+ConectarGM_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.ConectarGM", Erl)
 End Sub
 
 Public Sub DesconectarGM(ByVal UserIndex As Integer)
+    On Error Goto DesconectarGM_Err
         On Error GoTo DesconectarGM_Err
 
         Dim i As Integer
@@ -599,12 +744,16 @@ Public Sub DesconectarGM(ByVal UserIndex As Integer)
         Exit Sub
 DesconectarGM_Err:
 108     Call TraceError(Err.Number, Err.Description, "clsClan.DesconectarGM", Erl)
+    Exit Sub
+DesconectarGM_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.DesconectarGM", Erl)
 End Sub
 
 '
 'VARIAS, EXTRAS Y DEMASES
 '
 Private Sub ReplaceInvalidChars(ByRef S As String)
+    On Error Goto ReplaceInvalidChars_Err
         On Error GoTo ReplaceInvalidChars_Err
 100     If InStrB(S, Chr$(13)) <> 0 Then
 102         S = Replace(S, Chr$(13), vbNullString)
@@ -620,5 +769,8 @@ Private Sub ReplaceInvalidChars(ByRef S As String)
         Exit Sub
 ReplaceInvalidChars_Err:
 112     Call TraceError(Err.Number, Err.Description, "clsClan.ReplaceInvalidChars", Erl)
+    Exit Sub
+ReplaceInvalidChars_Err:
+    Call TraceError(Err.Number, Err.Description, "clsClan.ReplaceInvalidChars", Erl)
 End Sub
 

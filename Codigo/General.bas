@@ -37,6 +37,7 @@ Global LeerNPCs As New clsIniManager
 
 
 Sub SetNakedBody(ByRef user As t_User)
+    On Error Goto SetNakedBody_Err
         Const man_human_naked_body As Integer = 3000
         Const man_drow_naked_body As Integer = 3001
         Const man_elf_naked_body As Integer = 3002
@@ -89,9 +90,13 @@ Sub SetNakedBody(ByRef user As t_User)
                         user.Char.body = woman_human_naked_body
                 End Select
         End Select
+    Exit Sub
+SetNakedBody_Err:
+    Call TraceError(Err.Number, Err.Description, "General.SetNakedBody", Erl)
 End Sub
 
 Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal b As Byte)
+    On Error Goto Bloquear_Err
         'b ahora es boolean,
         'b=true bloquea el tile en (x,y)
         'b=false desbloquea el tile en (x,y)
@@ -111,9 +116,13 @@ Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integ
         Exit Sub
 Bloquear_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.Bloquear", Erl)
+    Exit Sub
+Bloquear_Err:
+    Call TraceError(Err.Number, Err.Description, "General.Bloquear", Erl)
 End Sub
 
 Sub BlockAndInform(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal NewState As Integer)
+    On Error Goto BlockAndInform_Err
 100    If NewState Then
 110        MapData(Map, X, Y).Blocked = e_Block.ALL_SIDES Or e_Block.GM
        Else
@@ -121,9 +130,13 @@ Sub BlockAndInform(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
        End If
         
 114    Call Bloquear(True, Map, X, Y, MapData(Map, X, Y).Blocked)
+    Exit Sub
+BlockAndInform_Err:
+    Call TraceError(Err.Number, Err.Description, "General.BlockAndInform", Erl)
 End Sub
 
 Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, _
+    On Error Goto MostrarBloqueosPuerta_Err
                           ByVal sndIndex As Integer, _
                           ByVal X As Integer, _
                           ByVal Y As Integer)
@@ -207,9 +220,13 @@ Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, _
 MostrarBloqueosPuerta_Err:
 174     Call TraceError(Err.Number, Err.Description, "General.MostrarBloqueosPuerta", Erl)
         
+    Exit Sub
+MostrarBloqueosPuerta_Err:
+    Call TraceError(Err.Number, Err.Description, "General.MostrarBloqueosPuerta", Erl)
 End Sub
 
 Sub BloquearPuerta(ByVal Map As Integer, _
+    On Error Goto BloquearPuerta_Err
                    ByVal X As Integer, _
                    ByVal Y As Integer, _
                    ByVal Bloquear As Boolean)
@@ -291,9 +308,13 @@ Sub BloquearPuerta(ByVal Map As Integer, _
 BloquearPuerta_Err:
 170     Call TraceError(Err.Number, Err.Description, "General.BloquearPuerta", Erl)
         
+    Exit Sub
+BloquearPuerta_Err:
+    Call TraceError(Err.Number, Err.Description, "General.BloquearPuerta", Erl)
 End Sub
 
 Function HayCosta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+    On Error Goto HayCosta_Err
         
         On Error GoTo HayCosta_Err
         
@@ -320,9 +341,13 @@ HayCosta_Err:
 110     Call TraceError(Err.Number, Err.Description, "General.HayCosta", Erl)
 
         
+    Exit Function
+HayCosta_Err:
+    Call TraceError(Err.Number, Err.Description, "General.HayCosta", Erl)
 End Function
 
 Function HayAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+    On Error Goto HayAgua_Err
         
         On Error GoTo HayAgua_Err
         
@@ -351,9 +376,13 @@ HayAgua_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.HayAgua", Erl)
 
         
+    Exit Function
+HayAgua_Err:
+    Call TraceError(Err.Number, Err.Description, "General.HayAgua", Erl)
 End Function
 
 Function EsArbol(ByVal GrhIndex As Long) As Boolean
+    On Error Goto EsArbol_Err
         
         On Error GoTo EsArbol_Err
         
@@ -372,9 +401,13 @@ EsArbol_Err:
 102     Call TraceError(Err.Number, Err.Description, "General.EsArbol", Erl)
 
         
+    Exit Function
+EsArbol_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EsArbol", Erl)
 End Function
 
 Private Function HayLava(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+    On Error Goto HayLava_Err
         
         On Error GoTo HayLava_Err
 
@@ -398,9 +431,13 @@ HayLava_Err:
 110     Call TraceError(Err.Number, Err.Description, "General.HayLava", Erl)
 
         
+    Exit Function
+HayLava_Err:
+    Call TraceError(Err.Number, Err.Description, "General.HayLava", Erl)
 End Function
 
 Sub ApagarFogatas()
+    On Error Goto ApagarFogatas_Err
 
         'Ladder /ApagarFogatas
         On Error GoTo ErrHandler
@@ -437,10 +474,14 @@ Sub ApagarFogatas()
 ErrHandler:
 124     Call LogError("Error producido al apagar las fogatas de " & X & "-" & Y & " del mapa: " & MapaActual & "    -" & Err.Description)
 
+    Exit Sub
+ApagarFogatas_Err:
+    Call TraceError(Err.Number, Err.Description, "General.ApagarFogatas", Erl)
 End Sub
 
 
 Private Sub InicializarConstantes()
+    On Error Goto InicializarConstantes_Err
         
         On Error GoTo InicializarConstantes_Err
     
@@ -533,9 +574,13 @@ Private Sub InicializarConstantes()
 
 InicializarConstantes_Err:
 302     Call TraceError(Err.Number, Err.Description, "General.InicializarConstantes", Erl)
+    Exit Sub
+InicializarConstantes_Err:
+    Call TraceError(Err.Number, Err.Description, "General.InicializarConstantes", Erl)
 End Sub
 
 Sub Main()
+    On Error Goto Main_Err
 On Error GoTo Handler
 #If DIRECT_PLAY = 1 Then
         InitDPlay
@@ -788,9 +833,13 @@ On Error GoTo Handler
         Exit Sub
 Handler:
 334     Call TraceError(Err.Number, Err.Description, "General.Main", Erl)
+    Exit Sub
+Main_Err:
+    Call TraceError(Err.Number, Err.Description, "General.Main", Erl)
 End Sub
 
 Function FileExist(ByVal File As String, Optional FileType As VbFileAttribute = vbNormal) As Boolean
+    On Error Goto FileExist_Err
 
         'Se fija si existe el archivo
 
@@ -806,9 +855,13 @@ FileExist_Err:
 102     Call TraceError(Err.Number, Err.Description, "General.FileExist", Erl)
 
         
+    Exit Function
+FileExist_Err:
+    Call TraceError(Err.Number, Err.Description, "General.FileExist", Erl)
 End Function
 
 Function ReadField(ByVal Pos As Integer, ByRef Text As String, ByVal SepASCII As Byte) As String
+    On Error Goto ReadField_Err
         
         On Error GoTo ReadField_Err
         
@@ -843,9 +896,13 @@ ReadField_Err:
 116     Call TraceError(Err.Number, Err.Description, "General.ReadField", Erl)
 
         
+    Exit Function
+ReadField_Err:
+    Call TraceError(Err.Number, Err.Description, "General.ReadField", Erl)
 End Function
 
 Function MapaValido(ByVal Map As Integer) As Boolean
+    On Error Goto MapaValido_Err
         
         On Error GoTo MapaValido_Err
         
@@ -858,9 +915,13 @@ MapaValido_Err:
 102     Call TraceError(Err.Number, Err.Description, "General.MapaValido", Erl)
 
         
+    Exit Function
+MapaValido_Err:
+    Call TraceError(Err.Number, Err.Description, "General.MapaValido", Erl)
 End Function
 
 Sub MostrarNumUsers()
+    On Error Goto MostrarNumUsers_Err
 On Error GoTo MostrarNumUsers_Err
         Call SendData(SendTarget.ToAll, 0, PrepareMessageOnlineUser(NumUsers))
         frmMain.CantUsuarios.Caption = "Numero de usuarios jugando: " & NumUsers
@@ -870,12 +931,16 @@ MostrarNumUsers_Err:
 106     Call TraceError(Err.Number, Err.Description, "General.MostrarNumUsers", Erl)
 
         
+    Exit Sub
+MostrarNumUsers_Err:
+    Call TraceError(Err.Number, Err.Description, "General.MostrarNumUsers", Erl)
 End Sub
 
 
 
 
 Sub Restart()
+    On Error Goto Restart_Err
         
         On Error GoTo Restart_Err
         
@@ -932,9 +997,13 @@ Restart_Err:
 164     Call TraceError(Err.Number, Err.Description, "General.Restart", Erl)
 
         
+    Exit Sub
+Restart_Err:
+    Call TraceError(Err.Number, Err.Description, "General.Restart", Erl)
 End Sub
 
 Public Function Intemperie(ByVal UserIndex As Integer) As Boolean
+    On Error Goto Intemperie_Err
         
         On Error GoTo Intemperie_Err
         
@@ -953,9 +1022,13 @@ Intemperie_Err:
 106     Call TraceError(Err.Number, Err.Description, "General.Intemperie", Erl)
 
         
+    Exit Function
+Intemperie_Err:
+    Call TraceError(Err.Number, Err.Description, "General.Intemperie", Erl)
 End Function
 
 Public Sub TiempoInvocacion(ByVal UserIndex As Integer)
+    On Error Goto TiempoInvocacion_Err
         
         On Error GoTo TiempoInvocacion_Err
     
@@ -981,9 +1054,13 @@ TiempoInvocacion_Err:
 112     Call TraceError(Err.Number, Err.Description, "General.TiempoInvocacion", Erl)
 
         
+    Exit Sub
+TiempoInvocacion_Err:
+    Call TraceError(Err.Number, Err.Description, "General.TiempoInvocacion", Erl)
 End Sub
 
 Public Sub EfectoFrio(ByVal UserIndex As Integer)
+    On Error Goto EfectoFrio_Err
         On Error GoTo EfectoFrio_Err
 100     If Not Intemperie(UserIndex) Then Exit Sub
 102     With UserList(UserIndex)
@@ -1022,9 +1099,13 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
         Exit Sub
 EfectoFrio_Err:
 140     Call TraceError(Err.Number, Err.Description, "General.EfectoFrio", Erl)
+    Exit Sub
+EfectoFrio_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EfectoFrio", Erl)
 End Sub
 
 Public Sub EfectoStamina(ByVal UserIndex As Integer)
+    On Error Goto EfectoStamina_Err
 
     Dim HambreOSed As Boolean
     Dim bEnviarStats_HP As Boolean
@@ -1070,9 +1151,13 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
 138         Call WriteUpdateHP(UserIndex)
         End If
     End With
+    Exit Sub
+EfectoStamina_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EfectoStamina", Erl)
 End Sub
 
 Public Sub EfectoLava(ByVal UserIndex As Integer)
+    On Error Goto EfectoLava_Err
         On Error GoTo EfectoLava_Err
 100     With UserList(UserIndex)
 102         If .Counters.Lava < IntervaloFrio Then 'Usamos el mismo intervalo que el del frio
@@ -1094,6 +1179,9 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
         Exit Sub
 EfectoLava_Err:
 122     Call TraceError(Err.Number, Err.Description, "General.EfectoLava", Erl)
+    Exit Sub
+EfectoLava_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EfectoLava", Erl)
 End Sub
 
 ''
@@ -1103,6 +1191,7 @@ End Sub
 '
 
 Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
+    On Error Goto EfectoMimetismo_Err
         
         On Error GoTo EfectoMimetismo_Err
     
@@ -1147,9 +1236,13 @@ EfectoMimetismo_Err:
 132     Call TraceError(Err.Number, Err.Description, "General.EfectoMimetismo", Erl)
 
         
+    Exit Sub
+EfectoMimetismo_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EfectoMimetismo", Erl)
 End Sub
 
 Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
+    On Error Goto EfectoInvisibilidad_Err
         
     On Error GoTo EfectoInvisibilidad_Err
         
@@ -1182,9 +1275,13 @@ EfectoInvisibilidad_Err:
     Call TraceError(Err.Number, Err.Description, "General.EfectoInvisibilidad", Erl)
 
         
+    Exit Sub
+EfectoInvisibilidad_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EfectoInvisibilidad", Erl)
 End Sub
 
 Public Sub EfectoParalisisNpc(ByVal NpcIndex As Integer)
+    On Error Goto EfectoParalisisNpc_Err
         On Error GoTo EfectoParalisisNpc_Err
         
 100     If NpcList(NpcIndex).Contadores.Paralisis > 0 Then
@@ -1200,9 +1297,13 @@ EfectoParalisisNpc_Err:
 106     Call TraceError(Err.Number, Err.Description, "General.EfectoParalisisNpc", Erl)
 
         
+    Exit Sub
+EfectoParalisisNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EfectoParalisisNpc", Erl)
 End Sub
 
 Public Sub EfectoInmovilizadoNpc(ByVal NpcIndex As Integer)
+    On Error Goto EfectoInmovilizadoNpc_Err
         On Error GoTo EfectoInmovilizadoNpc_Err
 
 100     If NpcList(NpcIndex).Contadores.Inmovilizado > 0 Then
@@ -1218,10 +1319,14 @@ EfectoInmovilizadoNpc_Err:
 106     Call TraceError(Err.Number, Err.Description, "General.EfectoInmovilizadoNpc", Erl)
 
         
+    Exit Sub
+EfectoInmovilizadoNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EfectoInmovilizadoNpc", Erl)
 End Sub
 
 
 Public Sub EfectoCeguera(ByVal UserIndex As Integer)
+    On Error Goto EfectoCeguera_Err
         
         On Error GoTo EfectoCeguera_Err
         
@@ -1245,9 +1350,13 @@ EfectoCeguera_Err:
 110     Call TraceError(Err.Number, Err.Description, "General.EfectoCeguera", Erl)
 
         
+    Exit Sub
+EfectoCeguera_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EfectoCeguera", Erl)
 End Sub
 
 Public Sub EfectoEstupidez(ByVal UserIndex As Integer)
+    On Error Goto EfectoEstupidez_Err
         
         On Error GoTo EfectoEstupidez_Err
         
@@ -1272,9 +1381,13 @@ EfectoEstupidez_Err:
 110     Call TraceError(Err.Number, Err.Description, "General.EfectoEstupidez", Erl)
 
         
+    Exit Sub
+EfectoEstupidez_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EfectoEstupidez", Erl)
 End Sub
 
 Public Sub EfectoParalisisUser(ByVal UserIndex As Integer)
+    On Error Goto EfectoParalisisUser_Err
         
         On Error GoTo EfectoParalisisUser_Err
         
@@ -1300,9 +1413,13 @@ EfectoParalisisUser_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.EfectoParalisisUser", Erl)
 
         
+    Exit Sub
+EfectoParalisisUser_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EfectoParalisisUser", Erl)
 End Sub
 
 Public Sub EfectoVelocidadUser(ByVal UserIndex As Integer)
+    On Error Goto EfectoVelocidadUser_Err
         
         On Error GoTo EfectoVelocidadUser_Err
         
@@ -1320,9 +1437,13 @@ EfectoVelocidadUser_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.EfectoVelocidadUser", Erl)
 
         
+    Exit Sub
+EfectoVelocidadUser_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EfectoVelocidadUser", Erl)
 End Sub
 
 Public Sub EfectoMaldicionUser(ByVal UserIndex As Integer)
+    On Error Goto EfectoMaldicionUser_Err
         
         On Error GoTo EfectoMaldicionUser_Err
         
@@ -1343,9 +1464,13 @@ EfectoMaldicionUser_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.EfectoMaldicionUser", Erl)
 
         
+    Exit Sub
+EfectoMaldicionUser_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EfectoMaldicionUser", Erl)
 End Sub
 
 Public Sub EfectoInmoUser(ByVal UserIndex As Integer)
+    On Error Goto EfectoInmoUser_Err
         
         On Error GoTo EfectoInmoUser_Err
         
@@ -1370,9 +1495,13 @@ EfectoInmoUser_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.EfectoInmoUser", Erl)
 
         
+    Exit Sub
+EfectoInmoUser_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EfectoInmoUser", Erl)
 End Sub
 
 Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal Intervalo As Integer)
+    On Error Goto RecStamina_Err
             On Error GoTo RecStamina_Err
 
             Dim trigger As Byte
@@ -1451,9 +1580,13 @@ RecStamina_Err:
 176         Call TraceError(Err.Number, Err.Description, "General.RecStamina", Erl)
 
 
+    Exit Sub
+RecStamina_Err:
+    Call TraceError(Err.Number, Err.Description, "General.RecStamina", Erl)
 End Sub
 
 Public Sub PierdeEnergia(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal Intervalo As Integer)
+    On Error Goto PierdeEnergia_Err
 
         On Error GoTo RecStamina_Err
 
@@ -1490,9 +1623,13 @@ RecStamina_Err:
 120     Call TraceError(Err.Number, Err.Description, "General.PierdeEnergia", Erl)
 
         
+    Exit Sub
+PierdeEnergia_Err:
+    Call TraceError(Err.Number, Err.Description, "General.PierdeEnergia", Erl)
 End Sub
 
 Public Sub EfectoVeneno(ByVal UserIndex As Integer)
+    On Error Goto EfectoVeneno_Err
     On Error GoTo EfectoVeneno_Err
         Dim damage As Long
 100     If UserList(UserIndex).Counters.Veneno < IntervaloVeneno Then
@@ -1521,11 +1658,15 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
         Exit Sub
 EfectoVeneno_Err:
 130     Call TraceError(Err.Number, Err.Description, "General.EfectoVeneno", Erl)
+    Exit Sub
+EfectoVeneno_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EfectoVeneno", Erl)
 End Sub
 
 
 ' El incineramiento tiene una logica particular, que es hacer daño sostenido en el tiempo.
 Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
+    On Error Goto EfectoIncineramiento_Err
     On Error GoTo EfectoIncineramiento_Err
             Dim damage As Integer
 100         With UserList(UserIndex)
@@ -1555,9 +1696,13 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
             Exit Sub
 EfectoIncineramiento_Err:
 130         Call TraceError(Err.Number, Err.Description, "General.EfectoIncineramiento", Erl)
+    Exit Sub
+EfectoIncineramiento_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EfectoIncineramiento", Erl)
 End Sub
 
 Public Sub DuracionPociones(ByVal UserIndex As Integer)
+    On Error Goto DuracionPociones_Err
         
         On Error GoTo DuracionPociones_Err
         
@@ -1589,9 +1734,13 @@ DuracionPociones_Err:
 116     Call TraceError(Err.Number, Err.Description, "General.DuracionPociones", Erl)
 
         
+    Exit Sub
+DuracionPociones_Err:
+    Call TraceError(Err.Number, Err.Description, "General.DuracionPociones", Erl)
 End Sub
 
 Public Function HambreYSed(ByVal UserIndex As Integer) As Boolean
+    On Error Goto HambreYSed_Err
          
         On Error GoTo HambreYSed_Err
         
@@ -1643,9 +1792,13 @@ HambreYSed_Err:
 138     Call TraceError(Err.Number, Err.Description, "General.HambreYSed", Erl)
 
         
+    Exit Function
+HambreYSed_Err:
+    Call TraceError(Err.Number, Err.Description, "General.HambreYSed", Erl)
 End Function
 
 Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal Intervalo As Integer)
+    On Error Goto Sanar_Err
         
         On Error GoTo Sanar_Err
         
@@ -1676,9 +1829,13 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         Exit Sub
 Sanar_Err:
 124     Call TraceError(Err.Number, Err.Description, "General.Sanar", Erl)
+    Exit Sub
+Sanar_Err:
+    Call TraceError(Err.Number, Err.Description, "General.Sanar", Erl)
 End Sub
 
 Public Sub CargaNpcsDat(Optional ByVal ActualizarNPCsExistentes As Boolean = False)
+    On Error Goto CargaNpcsDat_Err
         
             On Error GoTo CargaNpcsDat_Err
         
@@ -1711,9 +1868,13 @@ CargaNpcsDat_Err:
 118         Call TraceError(Err.Number, Err.Description, "General.CargaNpcsDat", Erl)
 
         
+    Exit Sub
+CargaNpcsDat_Err:
+    Call TraceError(Err.Number, Err.Description, "General.CargaNpcsDat", Erl)
 End Sub
 
 Sub PasarSegundo()
+    On Error Goto PasarSegundo_Err
 
         On Error GoTo ErrHandler
 
@@ -1968,11 +2129,15 @@ Sub PasarSegundo()
 ErrHandler:
 326     Call TraceError(Err.Number, Err.Description, "General.PasarSegundo", Erl)
 
+    Exit Sub
+PasarSegundo_Err:
+    Call TraceError(Err.Number, Err.Description, "General.PasarSegundo", Erl)
 End Sub
 
 
  
 Sub GuardarUsuarios()
+    On Error Goto GuardarUsuarios_Err
         
         On Error GoTo GuardarUsuarios_Err
         
@@ -2013,9 +2178,13 @@ GuardarUsuarios_Err:
 128     Call TraceError(Err.Number, Err.Description, "General.GuardarUsuarios", Erl)
 
         
+    Exit Sub
+GuardarUsuarios_Err:
+    Call TraceError(Err.Number, Err.Description, "General.GuardarUsuarios", Erl)
 End Sub
 
 Public Sub FreeNPCs()
+    On Error Goto FreeNPCs_Err
         
         On Error GoTo FreeNPCs_Err
 
@@ -2035,9 +2204,13 @@ FreeNPCs_Err:
 106     Call TraceError(Err.Number, Err.Description, "General.FreeNPCs", Erl)
 
         
+    Exit Sub
+FreeNPCs_Err:
+    Call TraceError(Err.Number, Err.Description, "General.FreeNPCs", Erl)
 End Sub
 
 Public Sub FreeCharIndexes()
+    On Error Goto FreeCharIndexes_Err
 
         'Releases all char indexes
         ' Free all char indexes (set them all to 0)
@@ -2053,9 +2226,13 @@ FreeCharIndexes_Err:
 102     Call TraceError(Err.Number, Err.Description, "General.FreeCharIndexes", Erl)
 
         
+    Exit Sub
+FreeCharIndexes_Err:
+    Call TraceError(Err.Number, Err.Description, "General.FreeCharIndexes", Erl)
 End Sub
 
 Function RandomString(cb As Integer, Optional ByVal OnlyUpper As Boolean = False) As String
+    On Error Goto RandomString_Err
         
         On Error GoTo RandomString_Err
         
@@ -2088,10 +2265,14 @@ RandomString_Err:
 116     Call TraceError(Err.Number, Err.Description, "General.RandomString", Erl)
 
         
+    Exit Function
+RandomString_Err:
+    Call TraceError(Err.Number, Err.Description, "General.RandomString", Erl)
 End Function
 
 
 Function RandomName(cb As Integer, Optional ByVal OnlyUpper As Boolean = False) As String
+    On Error Goto RandomName_Err
         
         On Error GoTo RandomString_Err
         
@@ -2121,6 +2302,9 @@ RandomString_Err:
 116     Call TraceError(Err.Number, Err.Description, "General.RandomString", Erl)
 
         
+    Exit Function
+RandomName_Err:
+    Call TraceError(Err.Number, Err.Description, "General.RandomName", Erl)
 End Function
 
 '
@@ -2128,6 +2312,7 @@ End Function
 '
 '  Corregida por Maraxus para que reconozca como válidas casillas con puntos antes de la arroba y evitar un chequeo innecesario
 Public Function CheckMailString(ByVal sString As String) As Boolean
+    On Error Goto CheckMailString_Err
 
         On Error GoTo errHnd
 
@@ -2164,10 +2349,14 @@ Public Function CheckMailString(ByVal sString As String) As Boolean
 
 errHnd:
 
+    Exit Function
+CheckMailString_Err:
+    Call TraceError(Err.Number, Err.Description, "General.CheckMailString", Erl)
 End Function
 
 '  Corregida por Maraxus para que reconozca como válidas casillas con puntos antes de la arroba
 Private Function CMSValidateChar_(ByVal iAsc As Integer) As Boolean
+    On Error Goto CMSValidateChar__Err
         
         On Error GoTo CMSValidateChar__Err
         
@@ -2180,9 +2369,13 @@ CMSValidateChar__Err:
 102     Call TraceError(Err.Number, Err.Description, "General.CMSValidateChar_", Erl)
 
         
+    Exit Function
+CMSValidateChar__Err:
+    Call TraceError(Err.Number, Err.Description, "General.CMSValidateChar_", Erl)
 End Function
 
 Public Function Tilde(ByRef Data As String) As String
+    On Error Goto Tilde_Err
     
         On Error GoTo Tilde_Err
     
@@ -2202,9 +2395,13 @@ Tilde_Err:
 112     Call TraceError(Err.Number, Err.Description, "Mod_General.Tilde", Erl)
 
     
+    Exit Function
+Tilde_Err:
+    Call TraceError(Err.Number, Err.Description, "General.Tilde", Erl)
 End Function
 
 Public Sub CerrarServidor()
+    On Error Goto CerrarServidor_Err
         'Save stats!!!
 102     Call frmMain.QuitarIconoSystray
     
@@ -2222,10 +2419,14 @@ Public Sub CerrarServidor()
  
 124     End
    
+    Exit Sub
+CerrarServidor_Err:
+    Call TraceError(Err.Number, Err.Description, "General.CerrarServidor", Erl)
 End Sub
 
 
 Public Function PonerPuntos(ByVal Numero As Long) As String
+    On Error Goto PonerPuntos_Err
     
         On Error GoTo PonerPuntos_Err
     
@@ -2267,10 +2468,14 @@ PonerPuntos_Err:
 118     Call TraceError(Err.Number, Err.Description, "ModLadder.PonerPuntos", Erl)
 
     
+    Exit Function
+PonerPuntos_Err:
+    Call TraceError(Err.Number, Err.Description, "General.PonerPuntos", Erl)
 End Function
 
 ' Autor: WyroX
 Function CalcularPromedioVida(ByVal UserIndex As Integer) As Double
+    On Error Goto CalcularPromedioVida_Err
 
 100     With UserList(UserIndex)
 102         If .Stats.ELV = 1 Then
@@ -2281,11 +2486,15 @@ Function CalcularPromedioVida(ByVal UserIndex As Integer) As Double
             End If
         End With
 
+    Exit Function
+CalcularPromedioVida_Err:
+    Call TraceError(Err.Number, Err.Description, "General.CalcularPromedioVida", Erl)
 End Function
 
 ' Adaptado desde https://stackoverflow.com/questions/29325069/how-to-generate-random-numbers-biased-towards-one-value-in-a-range/29325222#29325222
 ' By WyroX
 Function RandomIntBiased(ByVal Min As Double, ByVal max As Double, ByVal Bias As Double, ByVal Influence As Double) As Double
+    On Error Goto RandomIntBiased_Err
 
         On Error GoTo handle
 
@@ -2312,30 +2521,46 @@ handle:
 106     Call TraceError(Err.Number, Err.Description, "General.RandomIntBiased")
 108     RandomIntBiased = Bias
 
+    Exit Function
+RandomIntBiased_Err:
+    Call TraceError(Err.Number, Err.Description, "General.RandomIntBiased", Erl)
 End Function
 
 'Very efficient function for testing whether this code is running in the IDE or compiled
 'https://www.vbforums.com/showthread.php?231468-VB-Detect-if-you-are-running-in-the-IDE&p=5413357&viewfull=1#post5413357
 Public Function RunningInVB(Optional ByRef b As Boolean = True) As Boolean
+    On Error Goto RunningInVB_Err
 100     If b Then Debug.Assert Not RunningInVB(RunningInVB) Else b = True
+    Exit Function
+RunningInVB_Err:
+    Call TraceError(Err.Number, Err.Description, "General.RunningInVB", Erl)
 End Function
 
 '  Mensaje a todo el mundo
 Public Sub MensajeGlobal(texto As String, Fuente As e_FontTypeNames)
+    On Error Goto MensajeGlobal_Err
 100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(texto, Fuente))
+    Exit Sub
+MensajeGlobal_Err:
+    Call TraceError(Err.Number, Err.Description, "General.MensajeGlobal", Erl)
 End Sub
 
 '  Devuelve si X e Y están dentro del Rectangle
 Public Function InsideRectangle(R As t_Rectangle, ByVal X As Integer, ByVal Y As Integer) As Boolean
+    On Error Goto InsideRectangle_Err
 100     If X < R.X1 Then Exit Function
 102     If X > R.X2 Then Exit Function
 104     If Y < R.Y1 Then Exit Function
 106     If Y > R.Y2 Then Exit Function
 108     InsideRectangle = True
+    Exit Function
+InsideRectangle_Err:
+    Call TraceError(Err.Number, Err.Description, "General.InsideRectangle", Erl)
 End Function
 
 ' Based on: https://stackoverflow.com/questions/1378604/end-process-from-task-manager-using-vb-6-code (ultima respuesta)
 Public Function GetProcessCount(ByVal processName As String) As Byte
+    On Error Goto GetProcessCount_Err
     
         Dim oService As Object
         Dim servicename As String
@@ -2361,9 +2586,13 @@ Public Function GetProcessCount(ByVal processName As String) As Byte
     
 112     GetProcessCount = processCount
 
+    Exit Function
+GetProcessCount_Err:
+    Call TraceError(Err.Number, Err.Description, "General.GetProcessCount", Erl)
 End Function
 
 Public Function EsMapaInterdimensional(ByVal Map As Integer) As Boolean
+    On Error Goto EsMapaInterdimensional_Err
         Dim i As Integer
 100     For i = 1 To UBound(MapasInterdimensionales)
 102         If Map = MapasInterdimensionales(i) Then
@@ -2371,9 +2600,13 @@ Public Function EsMapaInterdimensional(ByVal Map As Integer) As Boolean
                 Exit Function
             End If
         Next
+    Exit Function
+EsMapaInterdimensional_Err:
+    Call TraceError(Err.Number, Err.Description, "General.EsMapaInterdimensional", Erl)
 End Function
 
 Public Function IsValidIPAddress(ByVal IP As String) As Boolean
+    On Error Goto IsValidIPAddress_Err
 
         On Error GoTo Handler
 
@@ -2393,9 +2626,13 @@ Public Function IsValidIPAddress(ByVal IP As String) As Boolean
 
 Handler:
 
+    Exit Function
+IsValidIPAddress_Err:
+    Call TraceError(Err.Number, Err.Description, "General.IsValidIPAddress", Erl)
 End Function
 
 Function Ceil(X As Variant) As Variant
+    On Error Goto Ceil_Err
         
         On Error GoTo Ceil_Err
         
@@ -2408,9 +2645,13 @@ Ceil_Err:
 
 
         
+    Exit Function
+Ceil_Err:
+    Call TraceError(Err.Number, Err.Description, "General.Ceil", Erl)
 End Function
 
 Function Clamp(X As Variant, a As Variant, b As Variant) As Variant
+    On Error Goto Clamp_Err
         
         On Error GoTo Clamp_Err
         
@@ -2423,9 +2664,13 @@ Clamp_Err:
 
 
         
+    Exit Function
+Clamp_Err:
+    Call TraceError(Err.Number, Err.Description, "General.Clamp", Erl)
 End Function
 
 Private Function GetElapsed() As Single
+    On Error Goto GetElapsed_Err
     Static sTime1     As Currency
     Static sTime2     As Currency
     Static sFrequency As Currency
@@ -2443,9 +2688,13 @@ Private Function GetElapsed() As Single
     
     'Get next end time
     Call QueryPerformanceCounter(sTime2)
+    Exit Function
+GetElapsed_Err:
+    Call TraceError(Err.Number, Err.Description, "General.GetElapsed", Erl)
 End Function
 
 Public Function RunScriptInFile(ByVal FilePath As String) As Boolean
+    On Error Goto RunScriptInFile_Err
     Dim Script As String
     Script = FileText(FilePath)
     Script = Replace(Replace(Script, Chr(10), ""), Chr(13), "")
@@ -2458,6 +2707,9 @@ Public Function RunScriptInFile(ByVal FilePath As String) As Boolean
         End If
     End If
     RunScriptInFile = True
+    Exit Function
+RunScriptInFile_Err:
+    Call TraceError(Err.Number, Err.Description, "General.RunScriptInFile", Erl)
 End Function
 'Reads the files inside the ScriptsDB folder, it can be a create table, alter, etc.
 'we are calling this files dbmigrations, this function check this
@@ -2465,6 +2717,7 @@ End Function
 'the file should store the name in the format of YYYYMMDD-XX-description text.sql
 'where the XX is the number of migrations generated the same day
 Public Sub LoadDBMigrations()
+    On Error Goto LoadDBMigrations_Err
    
         On Error GoTo LoadDBMigrations_Err
     'Consulto a la DB a ver si existe la tabla migrations
@@ -2508,18 +2761,29 @@ LoadDBMigrations_Err:
 122     Call TraceError(err.Number, err.Description, "modGuilds.LoadDBMigrations", Erl)
         Call MsgBox(DBError & vbNewLine & "Script:" & err.Description, vbCritical, "ERROR MIGRATIONS")
         
+    Exit Sub
+LoadDBMigrations_Err:
+    Call TraceError(Err.Number, Err.Description, "General.LoadDBMigrations", Erl)
 End Sub
 Function FileText(filename$) As String
+    On Error Goto FileText_Err
     Dim handle As Integer
     handle = FreeFile
     Open filename$ For Input As #handle
     FileText = Input$(LOF(handle), handle)
     Close #handle
+    Exit Function
+FileText_Err:
+    Call TraceError(Err.Number, Err.Description, "General.FileText", Erl)
 End Function
 
 Public Function IsArrayInitialized(ByRef arr) As Boolean
+    On Error Goto IsArrayInitialized_Err
   Dim rv As Long
   On Error Resume Next
   rv = UBound(arr)
   IsArrayInitialized = (Err.Number = 0) And rv >= 0
+    Exit Function
+IsArrayInitialized_Err:
+    Call TraceError(Err.Number, Err.Description, "General.IsArrayInitialized", Erl)
 End Function

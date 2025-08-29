@@ -29,6 +29,7 @@ Option Explicit
 
 
 Public Sub init_transaction(ByVal obj_num As Long, ByVal userindex As Integer)
+    On Error Goto init_transaction_Err
 On Error GoTo init_transaction_Err
     Dim obj As t_ObjData
     
@@ -74,9 +75,13 @@ On Error GoTo init_transaction_Err
     Exit Sub
 init_transaction_Err:
     Call TraceError(Err.Number, Err.Description, "ShopAo20.init_transaction", Erl)
+    Exit Sub
+init_transaction_Err:
+    Call TraceError(Err.Number, Err.Description, "ModShopAO20.init_transaction", Erl)
 End Sub
 
 Private Function is_purchaseable_item(ByRef obj As t_ObjData) As Boolean
+    On Error Goto is_purchaseable_item_Err
     Dim i As Long
     
     For i = 1 To UBound(ObjShop)
@@ -90,12 +95,19 @@ Private Function is_purchaseable_item(ByRef obj As t_ObjData) As Boolean
     
     is_purchaseable_item = False
     
+    Exit Function
+is_purchaseable_item_Err:
+    Call TraceError(Err.Number, Err.Description, "ModShopAO20.is_purchaseable_item", Erl)
 End Function
 
 Private Sub RegisterTransaction(ByVal AccId As Long, ByVal CharId As Long, ByVal itemId As Long, ByVal Price As Long, ByVal CreditLeft As Long)
+    On Error Goto RegisterTransaction_Err
 On Error GoTo RegisterTransaction_Err
 100 Call Query("insert into patreon_shop_audit (acc_id, char_id, item_id, price, credit_left, time) VALUES (?,?,?,?,?, STRFTIME('%s'));", AccId, CharId, itemId, price, CreditLeft)
     Exit Sub
 RegisterTransaction_Err:
     Call TraceError(Err.Number, Err.Description, "ShopAo20.RegisterTransaction", Erl)
+    Exit Sub
+RegisterTransaction_Err:
+    Call TraceError(Err.Number, Err.Description, "ModShopAO20.RegisterTransaction", Erl)
 End Sub

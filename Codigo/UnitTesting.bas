@@ -37,6 +37,7 @@ Public decrypted_token As String
 Public character_name As String
 
 Public Sub init()
+    On Error Goto init_Err
     'We can mock the key value to test errors...
     private_key = PrivateKey
     character_name = "seneca"
@@ -50,20 +51,32 @@ Public Sub init()
     'Add a fake token to be using when exercising the protocol for LoginNewChar
     Call AddTokenDatabase(encrypted_token, decrypted_token, "MORGOLOCK2002@YAHOO.COM.AR")
     
+    Exit Sub
+init_Err:
+    Call TraceError(Err.Number, Err.Description, "UnitTesting.init", Erl)
 End Sub
 
 Public Sub shutdown()
+    On Error Goto shutdown_Err
     Call UnitClient.Disconnect
+    Exit Sub
+shutdown_Err:
+    Call TraceError(Err.Number, Err.Description, "UnitTesting.shutdown", Erl)
 End Sub
 
 Sub test_make_user(ByVal UserIndex As Integer, ByVal map As Integer, ByVal X As Integer, ByVal y As Integer)
+    On Error Goto test_make_user_Err
     UserList(UserIndex).Pos.map = map
     UserList(UserIndex).Pos.X = X
     UserList(UserIndex).Pos.y = y
     Call MakeUserChar(True, 17, UserIndex, map, X, y, 1)
+    Exit Sub
+test_make_user_Err:
+    Call TraceError(Err.Number, Err.Description, "UnitTesting.test_make_user", Erl)
 End Sub
 
 Function test_percentage() As Boolean
+    On Error Goto test_percentage_Err
     Dim sw As Instruments
     Set sw = New Instruments
     sw.start
@@ -81,9 +94,13 @@ Function test_percentage() As Boolean
     Next i
     Debug.Print "Porcentaje took " & sw.ElapsedMilliseconds; " ms"
     test_percentage = True
+    Exit Function
+test_percentage_Err:
+    Call TraceError(Err.Number, Err.Description, "UnitTesting.test_percentage", Erl)
 End Function
 
 Function test_distance() As Boolean
+    On Error Goto test_distance_Err
     Dim sw As Instruments
     Set sw = New Instruments
     sw.start
@@ -97,10 +114,14 @@ Function test_distance() As Boolean
     Next i
     Debug.Print "distace took " & sw.ElapsedMilliseconds; " ms"
     test_distance = True
+    Exit Function
+test_distance_Err:
+    Call TraceError(Err.Number, Err.Description, "UnitTesting.test_distance", Erl)
 End Function
 
 
 Function test_random_number() As Boolean
+    On Error Goto test_random_number_Err
     Dim sw As Instruments
     Set sw = New Instruments
     sw.start
@@ -121,14 +142,22 @@ Function test_random_number() As Boolean
     
     Debug.Print "random_bumber took " & sw.ElapsedMilliseconds; " ms"
     test_random_number = True
+    Exit Function
+test_random_number_Err:
+    Call TraceError(Err.Number, Err.Description, "UnitTesting.test_random_number", Erl)
 End Function
 
 
 Function test_maths() As Boolean
+    On Error Goto test_maths_Err
     test_maths = test_percentage() And test_random_number() And test_distance()
+    Exit Function
+test_maths_Err:
+    Call TraceError(Err.Number, Err.Description, "UnitTesting.test_maths", Erl)
 End Function
 
 Function test_make_user_char() As Boolean
+    On Error Goto test_make_user_char_Err
     'Create first User
     Call test_make_user(1, 1, 54, 51)
     Debug.Assert (MapData(1, 54, 51).UserIndex = 1)
@@ -180,13 +209,20 @@ Function test_make_user_char() As Boolean
     Debug.Assert (MapData(1, 68, 66).UserIndex = 1)
     Debug.Assert (UserList(1).Char.CharIndex <> 0)
     test_make_user_char = True
+    Exit Function
+test_make_user_char_Err:
+    Call TraceError(Err.Number, Err.Description, "UnitTesting.test_make_user_char", Erl)
 End Function
 
 Function test_suite() As Boolean
+    On Error Goto test_suite_Err
     Dim result As Boolean
     result = test_make_user_char()
     result = result And test_maths()
     test_suite = result
+    Exit Function
+test_suite_Err:
+    Call TraceError(Err.Number, Err.Description, "UnitTesting.test_suite", Erl)
 End Function
 
 #End If

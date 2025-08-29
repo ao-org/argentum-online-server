@@ -33,6 +33,7 @@ Public Const NUMCIUDADES    As Byte = 8
 Public Ciudades(1 To NUMCIUDADES)         As t_WorldPos
 
 Public Sub goHome(ByVal UserIndex As Integer)
+    On Error Goto goHome_Err
       
         On Error GoTo goHome_Err
         
@@ -68,6 +69,9 @@ goHome_Err:
 122     Call TraceError(Err.Number, Err.Description, "Hogar.goHome", Erl)
 
         
+    Exit Sub
+goHome_Err:
+    Call TraceError(Err.Number, Err.Description, "Hogar.goHome", Erl)
 End Sub
 
 
@@ -78,6 +82,7 @@ End Sub
 '
 
 Public Sub TravelingEffect(ByVal UserIndex As Integer)
+    On Error Goto TravelingEffect_Err
 
         On Error GoTo TravelingEffect_Err
     
@@ -93,10 +98,14 @@ TravelingEffect_Err:
 104     Call TraceError(Err.Number, Err.Description, "Hogar.TravelingEffect", Erl)
 
         
+    Exit Sub
+TravelingEffect_Err:
+    Call TraceError(Err.Number, Err.Description, "Hogar.TravelingEffect", Erl)
 End Sub
 
 
 Public Sub HomeArrival(ByVal UserIndex As Integer)
+    On Error Goto HomeArrival_Err
 
         'Teleports user to its home.
 
@@ -153,9 +162,13 @@ HomeArrival_Err:
 134     Call TraceError(Err.Number, Err.Description, "Hogar.HomeArrival", Erl)
 
         
+    Exit Sub
+HomeArrival_Err:
+    Call TraceError(Err.Number, Err.Description, "Hogar.HomeArrival", Erl)
 End Sub
 
 Public Function IntervaloGoHome(ByVal UserIndex As Integer, _
+    On Error Goto IntervaloGoHome_Err
                                 Optional ByVal TimeInterval As Long, _
                                 Optional ByVal Actualizar As Boolean = False) As Boolean
         
@@ -191,5 +204,8 @@ IntervaloGoHome_Err:
 114     Call TraceError(Err.Number, Err.Description, "Hogar.IntervaloGoHome", Erl)
 
         
+    Exit Function
+IntervaloGoHome_Err:
+    Call TraceError(Err.Number, Err.Description, "Hogar.IntervaloGoHome", Erl)
 End Function
 

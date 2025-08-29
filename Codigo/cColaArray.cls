@@ -46,9 +46,13 @@ Private m_firstelem As Integer
 Private m_size      As Integer
 
 Public Function IsEmpty() As Boolean
+    On Error Goto IsEmpty_Err
 
 100     IsEmpty = m_size = 0
 
+    Exit Function
+IsEmpty_Err:
+    Call TraceError(Err.Number, Err.Description, "cColaArray.IsEmpty", Erl)
 End Function
 
 Public Property Get Count() As Integer
@@ -56,13 +60,18 @@ Public Property Get Count() As Integer
 End Property
 
 Public Function IsFull() As Boolean
+    On Error Goto IsFull_Err
     On Error GoTo 0
         
 100     IsFull = m_size = m_maxelem
 
+    Exit Function
+IsFull_Err:
+    Call TraceError(Err.Number, Err.Description, "cColaArray.IsFull", Erl)
 End Function
 
 Public Function Push(ByVal aString As String) As Boolean
+    On Error Goto Push_Err
         
 100     If Not Me.IsFull Then
     
@@ -80,9 +89,13 @@ Public Function Push(ByVal aString As String) As Boolean
 
         End If
 
+    Exit Function
+Push_Err:
+    Call TraceError(Err.Number, Err.Description, "cColaArray.Push", Erl)
 End Function
 
 Public Function Pop() As String
+    On Error Goto Pop_Err
         
         On Error GoTo 0
         
@@ -108,9 +121,13 @@ Public Function Pop() As String
     
         End If
 
+    Exit Function
+Pop_Err:
+    Call TraceError(Err.Number, Err.Description, "cColaArray.Pop", Erl)
 End Function
 
 Private Sub Class_Initialize()
+    On Error Goto Class_Initialize_Err
         
         On Error GoTo 0
         
@@ -121,6 +138,9 @@ Private Sub Class_Initialize()
 
 108     ReDim m_array(1 To m_maxelem)
 
+    Exit Sub
+Class_Initialize_Err:
+    Call TraceError(Err.Number, Err.Description, "cColaArray.Class_Initialize", Erl)
 End Sub
 
 Public Property Get MaxElems() As Long

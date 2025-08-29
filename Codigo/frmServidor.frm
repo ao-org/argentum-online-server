@@ -543,10 +543,15 @@ Option Explicit
 
 
 Private Sub cmdReloadGuilds_Click()
+    On Error Goto cmdReloadGuilds_Click_Err
     Call modGuilds.LoadGuildsDB
+    Exit Sub
+cmdReloadGuilds_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.cmdReloadGuilds_Click", Erl)
 End Sub
 
 Private Sub Command1_Click()
+    On Error Goto Command1_Click_Err
         
         On Error GoTo Command1_Click_Err
         
@@ -561,9 +566,13 @@ Command1_Click_Err:
 106     Call TraceError(Err.Number, Err.Description, "frmServidor.Command1_Click", Erl)
 
         
+    Exit Sub
+Command1_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command1_Click", Erl)
 End Sub
 
 Private Sub Command10_Click()
+    On Error Goto Command10_Click_Err
         
         On Error GoTo Command10_Click_Err
         
@@ -576,9 +585,13 @@ Command10_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command10_Click", Erl)
 
         
+    Exit Sub
+Command10_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command10_Click", Erl)
 End Sub
 
 Private Sub Command12_Click()
+    On Error Goto Command12_Click_Err
         
         On Error GoTo Command12_Click_Err
         
@@ -591,9 +604,13 @@ Command12_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command12_Click", Erl)
 
         
+    Exit Sub
+Command12_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command12_Click", Erl)
 End Sub
 
 Private Sub Command14_Click()
+    On Error Goto Command14_Click_Err
         
         On Error GoTo Command14_Click_Err
         
@@ -606,9 +623,13 @@ Command14_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command14_Click", Erl)
 
         
+    Exit Sub
+Command14_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command14_Click", Erl)
 End Sub
 
 Private Sub Command15_Click()
+    On Error Goto Command15_Click_Err
         
         On Error GoTo Command15_Click_Err
     
@@ -655,9 +676,13 @@ Command15_Click_Err:
 126     Call TraceError(Err.Number, Err.Description, "frmServidor.Command15_Click", Erl)
 
         
+    Exit Sub
+Command15_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command15_Click", Erl)
 End Sub
 
 Private Sub Command16_Click()
+    On Error Goto Command16_Click_Err
         
         On Error GoTo Command16_Click_Err
         
@@ -672,9 +697,13 @@ Command16_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command16_Click", Erl)
 
         
+    Exit Sub
+Command16_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command16_Click", Erl)
 End Sub
 
 Private Sub Command17_Click()
+    On Error Goto Command17_Click_Err
         
         On Error GoTo Command17_Click_Err
         
@@ -687,9 +716,13 @@ Command17_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command17_Click", Erl)
 
         
+    Exit Sub
+Command17_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command17_Click", Erl)
 End Sub
 
 Private Sub Command18_Click()
+    On Error Goto Command18_Click_Err
         
         On Error GoTo Command18_Click_Err
         
@@ -705,10 +738,14 @@ Command18_Click_Err:
 108     Call TraceError(Err.Number, Err.Description, "frmServidor.Command18_Click", Erl)
 
         
+    Exit Sub
+Command18_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command18_Click", Erl)
 End Sub
 
 
 Private Sub Command2_Click()
+    On Error Goto Command2_Click_Err
         
         On Error GoTo Command2_Click_Err
         
@@ -721,9 +758,13 @@ Command2_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command2_Click", Erl)
 
         
+    Exit Sub
+Command2_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command2_Click", Erl)
 End Sub
 
 Private Sub Command20_Click()
+    On Error Goto Command20_Click_Err
         
         On Error GoTo Command20_Click_Err
         
@@ -746,10 +787,14 @@ Command20_Click_Err:
 108     Call TraceError(Err.Number, Err.Description, "frmServidor.Command20_Click", Erl)
 
         
+    Exit Sub
+Command20_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command20_Click", Erl)
 End Sub
 
 'Barrin 29/9/03
 Private Sub Command21_Click()
+    On Error Goto Command21_Click_Err
         
         On Error GoTo Command21_Click_Err
         
@@ -772,9 +817,13 @@ Command21_Click_Err:
 114     Call TraceError(Err.Number, Err.Description, "frmServidor.Command21_Click", Erl)
 
         
+    Exit Sub
+Command21_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command21_Click", Erl)
 End Sub
 
 Private Sub Command22_Click()
+    On Error Goto Command22_Click_Err
         
         On Error GoTo Command22_Click_Err
         
@@ -788,9 +837,13 @@ Command22_Click_Err:
 104     Call TraceError(Err.Number, Err.Description, "frmServidor.Command22_Click", Erl)
 
         
+    Exit Sub
+Command22_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command22_Click", Erl)
 End Sub
 
 Private Sub Command23_Click()
+    On Error Goto Command23_Click_Err
         
         On Error GoTo Command23_Click_Err
         
@@ -818,9 +871,13 @@ Command23_Click_Err:
 110     Call TraceError(Err.Number, Err.Description, "frmServidor.Command23_Click", Erl)
 
         
+    Exit Sub
+Command23_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command23_Click", Erl)
 End Sub
 
 Private Sub Command27_Click()
+    On Error Goto Command27_Click_Err
         
         On Error GoTo Command27_Click_Err
         
@@ -833,9 +890,13 @@ Command27_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command27_Click", Erl)
 
         
+    Exit Sub
+Command27_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command27_Click", Erl)
 End Sub
 
 Private Sub Command28_Click()
+    On Error Goto Command28_Click_Err
         
         On Error GoTo Command28_Click_Err
         
@@ -848,9 +909,13 @@ Command28_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command28_Click", Erl)
 
         
+    Exit Sub
+Command28_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command28_Click", Erl)
 End Sub
 
 Private Sub Command3_Click()
+    On Error Goto Command3_Click_Err
         
         On Error GoTo Command3_Click_Err
         
@@ -868,9 +933,13 @@ Command3_Click_Err:
 106     Call TraceError(Err.Number, Err.Description, "frmServidor.Command3_Click", Erl)
 
         
+    Exit Sub
+Command3_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command3_Click", Erl)
 End Sub
 
 Private Sub Command4_Click()
+    On Error Goto Command4_Click_Err
 
         On Error GoTo eh
 
@@ -884,9 +953,13 @@ Private Sub Command4_Click()
 eh:
 110     Call TraceError(Err.Number, Err.Description, "frmServidor.Command4_Click", Erl)
 
+    Exit Sub
+Command4_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command4_Click", Erl)
 End Sub
 
 Private Sub Command5_Click()
+    On Error Goto Command5_Click_Err
         
         On Error GoTo Command5_Click_Err
     
@@ -938,9 +1011,13 @@ Command5_Click_Err:
 144     Call TraceError(Err.Number, Err.Description, "frmServidor.Command5_Click", Erl)
 
         
+    Exit Sub
+Command5_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command5_Click", Erl)
 End Sub
 
 Private Sub Command6_Click()
+    On Error Goto Command6_Click_Err
         
         On Error GoTo Command6_Click_Err
         
@@ -953,9 +1030,13 @@ Command6_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command6_Click", Erl)
 
         
+    Exit Sub
+Command6_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command6_Click", Erl)
 End Sub
 
 Private Sub Command7_Click()
+    On Error Goto Command7_Click_Err
         
         On Error GoTo Command7_Click_Err
         
@@ -968,9 +1049,13 @@ Command7_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command7_Click", Erl)
 
         
+    Exit Sub
+Command7_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command7_Click", Erl)
 End Sub
 
 Private Sub Command8_Click()
+    On Error Goto Command8_Click_Err
         
         On Error GoTo Command8_Click_Err
         
@@ -983,9 +1068,13 @@ Command8_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command8_Click", Erl)
 
         
+    Exit Sub
+Command8_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command8_Click", Erl)
 End Sub
 
 Private Sub Command9_Click()
+    On Error Goto Command9_Click_Err
         
         On Error GoTo Command9_Click_Err
         
@@ -998,9 +1087,13 @@ Command9_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command9_Click", Erl)
 
         
+    Exit Sub
+Command9_Click_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command9_Click", Erl)
 End Sub
 
 Private Sub Form_Deactivate()
+    On Error Goto Form_Deactivate_Err
         
         On Error GoTo Form_Deactivate_Err
         
@@ -1013,9 +1106,13 @@ Form_Deactivate_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Form_Deactivate", Erl)
 
         
+    Exit Sub
+Form_Deactivate_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Form_Deactivate", Erl)
 End Sub
 
 Private Sub Form_Load()
+    On Error Goto Form_Load_Err
         
         On Error GoTo Form_Load_Err
 
@@ -1027,4 +1124,7 @@ Form_Load_Err:
 104     Call TraceError(Err.Number, Err.Description, "frmServidor.Form_Load", Erl)
 
         
+    Exit Sub
+Form_Load_Err:
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Form_Load", Erl)
 End Sub

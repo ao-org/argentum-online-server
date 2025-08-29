@@ -143,6 +143,7 @@ Private AvailableLobby As t_IndexHeap
 Private ActiveLobby As t_IndexHeap
 
 Public Sub InitializeLobbyList()
+    On Error Goto InitializeLobbyList_Err
     ReDim AvailableLobby.IndexInfo(0 To LobbyCount) As Integer
     ReDim ActiveLobby.IndexInfo(0 To LobbyCount) As Integer
     For i = 0 To LobbyCount
@@ -151,9 +152,13 @@ Public Sub InitializeLobbyList()
     AvailableLobby.currentIndex = LobbyCount
     ActiveLobby.currentIndex = -1
     GlobalLobbyIndex = -1
+    Exit Sub
+InitializeLobbyList_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.InitializeLobbyList", Erl)
 End Sub
 
 Public Sub ReleaseLobby(ByVal LobbyIndex As Integer)
+    On Error Goto ReleaseLobby_Err
     Dim i As Integer
     Dim FoundActiveLobby As Boolean
     For i = 0 To ActiveLobby.currentIndex
@@ -173,9 +178,13 @@ Public Sub ReleaseLobby(ByVal LobbyIndex As Integer)
     If GlobalLobbyIndex = LobbyIndex Then
         GlobalLobbyIndex = -1
     End If
+    Exit Sub
+ReleaseLobby_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.ReleaseLobby", Erl)
 End Sub
 
 Public Function GetAvailableLobby() As Integer
+    On Error Goto GetAvailableLobby_Err
     If AvailableLobby.currentIndex < 0 Then
         GetAvailableLobby = -1
         Exit Function
@@ -184,9 +193,13 @@ Public Function GetAvailableLobby() As Integer
     AvailableLobby.currentIndex = AvailableLobby.currentIndex - 1
     ActiveLobby.currentIndex = ActiveLobby.currentIndex + 1
     ActiveLobby.IndexInfo(ActiveLobby.currentIndex) = GetAvailableLobby
+    Exit Function
+GetAvailableLobby_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.GetAvailableLobby", Erl)
 End Function
 
 Public Sub InitializeLobby(ByRef instance As t_Lobby)
+    On Error Goto InitializeLobby_Err
     instance.MinLevel = 1
     instance.MaxLevel = 47
     instance.MaxPlayers = 100
@@ -206,9 +219,13 @@ Public Sub InitializeLobby(ByRef instance As t_Lobby)
     Instance.Description = ""
     Instance.MapOpenTime = 0
     Instance.IsGlobal = False
+    Exit Sub
+InitializeLobby_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.InitializeLobby", Erl)
 End Sub
 
 Public Sub SetupLobby(ByRef Instance As t_Lobby, ByRef LobbySettings As t_NewScenearioSettings)
+    On Error Goto SetupLobby_Err
     Instance.MinLevel = LobbySettings.MinLevel
     Instance.MaxLevel = LobbySettings.MaxLevel
     Instance.MinPlayers = LobbySettings.MinPlayers
@@ -218,42 +235,74 @@ Public Sub SetupLobby(ByRef Instance As t_Lobby, ByRef LobbySettings As t_NewSce
     Instance.Description = LobbySettings.Description
     Instance.Password = LobbySettings.Password
     Instance.InscriptionPrice = LobbySettings.InscriptionFee
+    Exit Sub
+SetupLobby_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.SetupLobby", Erl)
 End Sub
 Public Sub SetSummonCoordinates(ByRef instance As t_Lobby, ByVal map As Integer, ByVal posX As Integer, ByVal posY As Integer)
+    On Error Goto SetSummonCoordinates_Err
     instance.SummonCoordinates.map = map
     instance.SummonCoordinates.X = posX
     instance.SummonCoordinates.y = posY
+    Exit Sub
+SetSummonCoordinates_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.SetSummonCoordinates", Erl)
 End Sub
 
 Public Sub SetMaxPlayers(ByRef instance As t_Lobby, ByVal playerCount As Integer)
+    On Error Goto SetMaxPlayers_Err
     instance.MaxPlayers = playerCount
     ReDim instance.Players(0 To playerCount - 1)
+    Exit Sub
+SetMaxPlayers_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.SetMaxPlayers", Erl)
 End Sub
 
 Public Sub SetMinPlayers(ByRef instance As t_Lobby, ByVal playerCount As Integer)
+    On Error Goto SetMinPlayers_Err
     instance.MinPlayers = playerCount
+    Exit Sub
+SetMinPlayers_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.SetMinPlayers", Erl)
 End Sub
 
 Public Sub SetMinLevel(ByRef instance As t_Lobby, ByVal level As Byte)
+    On Error Goto SetMinLevel_Err
     instance.MinLevel = level
+    Exit Sub
+SetMinLevel_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.SetMinLevel", Erl)
 End Sub
 
 Public Sub SetMaxLevel(ByRef instance As t_Lobby, ByVal level As Byte)
+    On Error Goto SetMaxLevel_Err
     instance.MaxLevel = level
+    Exit Sub
+SetMaxLevel_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.SetMaxLevel", Erl)
 End Sub
 
 Public Sub SetClassFilter(ByRef instance As t_Lobby, ByVal Class As Integer)
+    On Error Goto SetClassFilter_Err
     instance.ClassFilter = Class
+    Exit Sub
+SetClassFilter_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.SetClassFilter", Erl)
 End Sub
 
 Public Sub UpdateLobbyState(ByRef instance As t_Lobby, ByVal newState As e_LobbyState)
+    On Error Goto UpdateLobbyState_Err
     If Not instance.Scenario Is Nothing Then
         Call instance.Scenario.UpdateLobbyState(instance.State, newState)
     End If
     instance.State = newState
+    Exit Sub
+UpdateLobbyState_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.UpdateLobbyState", Erl)
 End Sub
 
 Private Sub ClearUserSocket(ByRef instance As t_Lobby, ByVal index As Integer)
+    On Error Goto ClearUserSocket_Err
     Dim i As Integer
     For i = index To instance.RegisteredPlayers - 2
         instance.Players(i) = instance.Players(i + 1)
@@ -265,9 +314,13 @@ Private Sub ClearUserSocket(ByRef instance As t_Lobby, ByVal index As Integer)
     Call ClearUserRef(instance.Players(i).user)
     instance.Players(i).userID = 0
     instance.RegisteredPlayers = instance.RegisteredPlayers - 1
+    Exit Sub
+ClearUserSocket_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.ClearUserSocket", Erl)
 End Sub
 
 Public Function CanPlayerJoin(ByRef instance As t_Lobby, ByVal UserIndex As Integer) As t_response
+    On Error Goto CanPlayerJoin_Err
     On Error GoTo CanPlayerJoin_Err
 100    With UserList(userIndex)
 102        If .Stats.ELV < instance.MinLevel Or .Stats.ELV > instance.MaxLevel Then
@@ -341,9 +394,13 @@ Public Function CanPlayerJoin(ByRef instance As t_Lobby, ByVal UserIndex As Inte
         Exit Function
 CanPlayerJoin_Err:
 184    Call TraceError(Err.Number, Err.Description, "ModLobby.CanPlayerJoin", Erl)
+    Exit Function
+CanPlayerJoin_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.CanPlayerJoin", Erl)
 End Function
 
 Public Function AddPlayer(ByRef instance As t_Lobby, ByVal UserIndex As Integer, Optional Team As Integer = 0) As t_response
+    On Error Goto AddPlayer_Err
 On Error GoTo AddPlayer_Err
    With UserList(UserIndex)
        AddPlayer = CanPlayerJoin(instance, UserIndex)
@@ -380,9 +437,13 @@ On Error GoTo AddPlayer_Err
    Exit Function
 AddPlayer_Err:
    Call TraceError(Err.Number, Err.Description, "ModLobby.AddPlayer", Erl)
+    Exit Function
+AddPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.AddPlayer", Erl)
 End Function
 
 Public Function AddPlayerOrGroup(ByRef Instance As t_Lobby, ByVal UserIndex As Integer, ByVal Password As String) As t_response
+    On Error Goto AddPlayerOrGroup_Err
 On Error GoTo AddPlayerOrGroup_Err
 100    With UserList(UserIndex)
             If Password <> Instance.Password Then
@@ -434,9 +495,13 @@ On Error GoTo AddPlayerOrGroup_Err
 188    Exit Function
 AddPlayerOrGroup_Err:
        Call TraceError(Err.Number, Err.Description, "ModLobby.AddPlayerOrGroup", Erl)
+    Exit Function
+AddPlayerOrGroup_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.AddPlayerOrGroup", Erl)
 End Function
 
 Public Sub SummonPlayer(ByRef instance As t_Lobby, ByVal user As Integer)
+    On Error Goto SummonPlayer_Err
 On Error GoTo SummonPlayer_Err
 100        Dim userIndex As Integer
 102        With instance.Players(user)
@@ -456,9 +521,13 @@ On Error GoTo SummonPlayer_Err
 124        Exit Sub
 SummonPlayer_Err:
 126    Call TraceError(Err.Number, Err.Description, "ModLobby.SummonPlayer_Err", Erl)
+    Exit Sub
+SummonPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.SummonPlayer", Erl)
 End Sub
 
 Public Sub SummonAll(ByRef instance As t_Lobby)
+    On Error Goto SummonAll_Err
 On Error GoTo ReturnAllPlayer_Err
 100    Dim i As Integer
 102    For i = 0 To instance.RegisteredPlayers - 1
@@ -467,9 +536,13 @@ On Error GoTo ReturnAllPlayer_Err
 108    Exit Sub
 ReturnAllPlayer_Err:
 110     Call TraceError(Err.Number, Err.Description, "ModLobby.SummonAll", Erl)
+    Exit Sub
+SummonAll_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.SummonAll", Erl)
 End Sub
 
 Public Sub ReturnPlayer(ByRef instance As t_Lobby, ByVal user As Integer)
+    On Error Goto ReturnPlayer_Err
 On Error GoTo ReturnPlayer_Err
 100    With instance.Players(user)
 103        If Not IsValidUserRef(.user) Then
@@ -486,9 +559,13 @@ On Error GoTo ReturnPlayer_Err
     Exit Sub
 ReturnPlayer_Err:
     Call TraceError(Err.Number, Err.Description, "ModLobby.ReturnPlayer return user:" & user, Erl)
+    Exit Sub
+ReturnPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.ReturnPlayer", Erl)
 End Sub
 
 Public Sub ReturnAllPlayers(ByRef instance As t_Lobby)
+    On Error Goto ReturnAllPlayers_Err
 On Error GoTo ReturnAllPlayer_Err
 100    Dim i As Integer
 102    For i = 0 To instance.RegisteredPlayers - 1
@@ -497,9 +574,13 @@ On Error GoTo ReturnAllPlayer_Err
 108    Exit Sub
 ReturnAllPlayer_Err:
 110     Call TraceError(Err.Number, Err.Description, "ModLobby.ReturnAllPlayer", Erl)
+    Exit Sub
+ReturnAllPlayers_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.ReturnAllPlayers", Erl)
 End Sub
 
 Public Sub CancelLobby(ByRef instance As t_Lobby)
+    On Error Goto CancelLobby_Err
 On Error GoTo CancelLobby_Err
        instance.Canceled = True
        If instance.InscriptionPrice > 0 Then
@@ -514,9 +595,13 @@ On Error GoTo CancelLobby_Err
 106    Exit Sub
 CancelLobby_Err:
 108     Call TraceError(Err.Number, Err.Description, "ModLobby.CancelLobby", Erl)
+    Exit Sub
+CancelLobby_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.CancelLobby", Erl)
 End Sub
 
 Public Function GiveGoldToPlayer(ByRef instance As t_Lobby, ByVal UserSlotIndex As Integer, ByVal amount As Long) As Boolean
+    On Error Goto GiveGoldToPlayer_Err
 On Error GoTo GiveMoneyToPlayer_Err
     If amount > instance.AvailableInscriptionMoney Then
         Call LogError("Instance is trying to give gold to " & instance.Players(UserSlotIndex).UserId & " but there is not enought gold collected")
@@ -530,9 +615,13 @@ On Error GoTo GiveMoneyToPlayer_Err
     Exit Function
 GiveMoneyToPlayer_Err:
     Call TraceError(Err.Number, Err.Description, "ModLobby.GiveGoldToPlayer", Erl)
+    Exit Function
+GiveGoldToPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.GiveGoldToPlayer", Erl)
 End Function
 
 Public Sub ListPlayers(ByRef instance As t_Lobby, ByVal UserIndex As Integer)
+    On Error Goto ListPlayers_Err
 On Error GoTo ListPlayers_Err
        Dim i As Integer
 100    For i = 0 To instance.RegisteredPlayers - 1
@@ -545,9 +634,13 @@ On Error GoTo ListPlayers_Err
 114    Exit Sub
 ListPlayers_Err:
 116    Call TraceError(Err.Number, Err.Description, "ModLobby.ListPlayers", Erl)
+    Exit Sub
+ListPlayers_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.ListPlayers", Erl)
 End Sub
 
 Public Function OpenLobby(ByRef instance As t_Lobby, ByVal IsPublic As Boolean) As t_response
+    On Error Goto OpenLobby_Err
 On Error GoTo OpenLobby_Err
     Dim Ret As t_response
     Dim RequiresSpawn As Boolean
@@ -584,15 +677,23 @@ On Error GoTo OpenLobby_Err
    Exit Function
 OpenLobby_Err:
     Call TraceError(Err.Number, Err.Description, "ModLobby.OpenLobby", Erl)
+    Exit Function
+OpenLobby_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.OpenLobby", Erl)
 End Function
 
 Public Function WaitForPlayersTimeUp(ByRef Instance As t_Lobby) As Boolean
+    On Error Goto WaitForPlayersTimeUp_Err
    'global events waiting time is handled by game masters
    If Instance.IsGlobal Then Exit Function
    WaitForPlayersTimeUp = GlobalFrameTime - Instance.MapOpenTime > WaitingForPlayersTime
+    Exit Function
+WaitForPlayersTimeUp_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.WaitForPlayersTimeUp", Erl)
 End Function
 
 Public Sub UpdateWaitingForPlayers(ByVal FrameTime As Long, ByRef Instance As t_Lobby)
+    On Error Goto UpdateWaitingForPlayers_Err
     Dim i As Integer
     If Instance.IsPublic Then
         If UpdateTime(Instance.BroadOpenEvent, FrameTime) Then
@@ -634,9 +735,13 @@ Public Sub UpdateWaitingForPlayers(ByVal FrameTime As Long, ByRef Instance As t_
             Call StartLobby(Instance, -1)
         End If
     End If
+    Exit Sub
+UpdateWaitingForPlayers_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.UpdateWaitingForPlayers", Erl)
 End Sub
 
 Public Sub BroadcastOpenLobby(ByRef instance As t_Lobby)
+    On Error Goto BroadcastOpenLobby_Err
     If Not Instance.IsGlobal Then Exit Sub
     Dim EventName As String: EventName = "Evento"
         If Not instance.Scenario Is Nothing Then
@@ -646,9 +751,13 @@ Public Sub BroadcastOpenLobby(ByRef instance As t_Lobby)
     If instance.InscriptionPrice > 0 Then
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgBoardcastInscriptionPrice, instance.InscriptionPrice, e_FontTypeNames.FONTTYPE_GUILD))
     End If
+    Exit Sub
+BroadcastOpenLobby_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.BroadcastOpenLobby", Erl)
 End Sub
 
 Public Sub ForceReset(ByRef instance As t_Lobby)
+    On Error Goto ForceReset_Err
 On Error GoTo ForceReset_Err
 
 100    instance.MinLevel = 1
@@ -669,16 +778,24 @@ On Error GoTo ForceReset_Err
 ForceReset_Err:
 128     Call TraceError(Err.Number, Err.Description, "ModLobby.ForceReset", Erl)
         Resume Next
+    Exit Sub
+ForceReset_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.ForceReset", Erl)
 End Sub
 
 Public Sub RegisterDisconnectedUser(ByVal DisconnectedUserIndex As Integer)
+    On Error Goto RegisterDisconnectedUser_Err
     Dim i As Integer
     For i = 0 To ActiveLobby.currentIndex
         Call RegisterDisconnectedUserOnLobby(LobbyList(i), DisconnectedUserIndex)
     Next i
+    Exit Sub
+RegisterDisconnectedUser_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.RegisterDisconnectedUser", Erl)
 End Sub
 
 Public Sub RegisterDisconnectedUserOnLobby(ByRef Instance As t_Lobby, ByVal DisconnectedUserIndex As Integer)
+    On Error Goto RegisterDisconnectedUserOnLobby_Err
 On Error GoTo RegisterDisconnectedUser_Err
 100    If instance.State < AcceptingPlayers Then
 102        Exit Sub
@@ -701,16 +818,24 @@ On Error GoTo RegisterDisconnectedUser_Err
 134    Exit Sub
 RegisterDisconnectedUser_Err:
 136     Call TraceError(Err.Number, Err.Description, "ModLobby.RegisterDisconnectedUser", Erl)
+    Exit Sub
+RegisterDisconnectedUserOnLobby_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.RegisterDisconnectedUserOnLobby", Erl)
 End Sub
 
 Public Sub RegisterReconnectedUser(ByVal DisconnectedUserIndex As Integer)
+    On Error Goto RegisterReconnectedUser_Err
     Dim i As Integer
     For i = 0 To ActiveLobby.currentIndex
         Call RegisterReconnectedUserOnLobby(LobbyList(i), DisconnectedUserIndex)
     Next i
+    Exit Sub
+RegisterReconnectedUser_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.RegisterReconnectedUser", Erl)
 End Sub
 
 Public Sub RegisterReconnectedUserOnLobby(ByRef Instance As t_Lobby, ByVal UserIndex As Integer)
+    On Error Goto RegisterReconnectedUserOnLobby_Err
 On Error GoTo RegisterReconnectedUser_Err
 100    If instance.State < AcceptingPlayers Or instance.State >= Closed Then
 102        Exit Sub
@@ -735,9 +860,13 @@ On Error GoTo RegisterReconnectedUser_Err
 138    Exit Sub
 RegisterReconnectedUser_Err:
 140     Call TraceError(Err.Number, Err.Description, "ModLobby.RegisterReconnectedUser", Erl)
+    Exit Sub
+RegisterReconnectedUserOnLobby_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.RegisterReconnectedUserOnLobby", Erl)
 End Sub
 
 Public Function SetTeamSize(ByRef instance As t_Lobby, ByVal TeamSize As Integer, ByVal TeamType As e_TeamTypes) As t_response
+    On Error Goto SetTeamSize_Err
 On Error GoTo SetTeamSize_Err
 100 Dim response As t_response
 102 If instance.MaxPlayers Mod TeamSize <> 0 Then
@@ -761,9 +890,13 @@ On Error GoTo SetTeamSize_Err
     Exit Function
 SetTeamSize_Err:
 140     Call TraceError(Err.Number, Err.Description, "ModLobby.SetTeamSize", Erl)
+    Exit Function
+SetTeamSize_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.SetTeamSize", Erl)
 End Function
 
 Public Function SetTeamCount(ByRef instance As t_Lobby, ByVal TeamCount As Integer, ByVal TeamType As e_TeamTypes) As t_response
+    On Error Goto SetTeamCount_Err
 On Error GoTo SetTeamSize_Err
 100 Dim response As t_response
 102 If instance.MaxPlayers Mod TeamCount <> 0 Then
@@ -787,9 +920,13 @@ On Error GoTo SetTeamSize_Err
     Exit Function
 SetTeamSize_Err:
 140     Call TraceError(Err.Number, Err.Description, "ModLobby.SetTeamSize", Erl)
+    Exit Function
+SetTeamCount_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.SetTeamCount", Erl)
 End Function
 
 Public Sub StartLobby(ByRef instance As t_Lobby, ByVal UserIndex As Integer)
+    On Error Goto StartLobby_Err
     If Instance.State = Initialized And UserIndex >= 0 Then
         Call WriteLocaleMsg(UserIndex, 1605, e_FontTypeNames.FONTTYPE_INFO) 'Msg1605= El evento ya fue iniciado.
         Exit Sub
@@ -799,9 +936,13 @@ Public Sub StartLobby(ByRef instance As t_Lobby, ByVal UserIndex As Integer)
     End If
     Call ModLobby.UpdateLobbyState(instance, e_LobbyState.InProgress)
     If UserIndex >= 0 Then Call WriteLocaleMsg(UserIndex, 1606, e_FontTypeNames.FONTTYPE_INFO) 'Msg1606= Evento iniciado
+    Exit Sub
+StartLobby_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.StartLobby", Erl)
 End Sub
 
 Public Function HandleRemoteLobbyCommand(ByVal Command, ByVal Params As String, ByVal UserIndex As Integer, ByVal LobbyIndex As Integer) As Boolean
+    On Error Goto HandleRemoteLobbyCommand_Err
 On Error GoTo HandleRemoteLobbyCommand_Err
 100 Dim Arguments()    As String
     Dim RetValue As t_response
@@ -869,17 +1010,25 @@ On Error GoTo HandleRemoteLobbyCommand_Err
     Exit Function
 HandleRemoteLobbyCommand_Err:
     Call TraceError(Err.Number, Err.Description, "ModLobby.HandleRemoteLobbyCommand", Erl)
+    Exit Function
+HandleRemoteLobbyCommand_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.HandleRemoteLobbyCommand", Erl)
 End Function
 
 Function SetIncriptionPrice(ByRef instance As t_Lobby, ByVal price As Long) As Boolean
+    On Error Goto SetIncriptionPrice_Err
     If instance.State <> Initialized Then
         Exit Function
     End If
     instance.InscriptionPrice = price
     SetIncriptionPrice = True
+    Exit Function
+SetIncriptionPrice_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.SetIncriptionPrice", Erl)
 End Function
 
 Private Function GetHigherLvlWithoutTeam(ByRef instance As t_Lobby) As Integer
+    On Error Goto GetHigherLvlWithoutTeam_Err
     Dim i As Integer
     Dim currentMaxLevel As Integer
     Dim currentIndex As Integer
@@ -896,10 +1045,14 @@ Private Function GetHigherLvlWithoutTeam(ByRef instance As t_Lobby) As Integer
         End If
     Next i
     GetHigherLvlWithoutTeam = currentIndex
+    Exit Function
+GetHigherLvlWithoutTeam_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.GetHigherLvlWithoutTeam", Erl)
 End Function
 
     
 Public Sub SortTeams(ByRef instance As t_Lobby)
+    On Error Goto SortTeams_Err
 On Error GoTo SortTeams_Err
 100 If instance.TeamSize < 1 Or (instance.MaxPlayers / instance.TeamSize) < 1 Then Exit Sub
 102 Dim currentIndex As Integer
@@ -944,18 +1097,26 @@ On Error GoTo SortTeams_Err
     Exit Sub
 SortTeams_Err:
     Call TraceError(Err.Number, Err.Description, "ModLobby.SortTeams", Erl)
+    Exit Sub
+SortTeams_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.SortTeams", Erl)
 End Sub
 
 Public Function KickPlayer(ByRef instance As t_Lobby, ByVal index As Integer) As t_response
+    On Error Goto KickPlayer_Err
 On Error GoTo KickPlayer_Err
     Call ReturnPlayer(instance, index)
     Call ClearUserSocket(instance, index)
     Exit Function
 KickPlayer_Err:
     Call TraceError(Err.Number, Err.Description, "ModLobby.KickPlayer", Erl)
+    Exit Function
+KickPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.KickPlayer", Erl)
 End Function
 
 Public Function AllPlayersReady(ByRef instance As t_Lobby) As t_response
+    On Error Goto AllPlayersReady_Err
 On Error GoTo AllPlayersReady_Err
 100 Dim Ret As t_response
 102 Dim i As Integer
@@ -970,9 +1131,13 @@ On Error GoTo AllPlayersReady_Err
     Exit Function
 AllPlayersReady_Err:
     Call TraceError(Err.Number, Err.Description, "ModLobby.AllPlayersReady", Erl)
+    Exit Function
+AllPlayersReady_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.AllPlayersReady", Erl)
 End Function
 
 Public Function GetOpenLobbyList(ByRef IdList() As Integer) As Integer
+    On Error Goto GetOpenLobbyList_Err
     Dim i As Integer
     Dim OpenCount As Integer
     If ActiveLobby.currentIndex < 0 Then
@@ -988,9 +1153,13 @@ Public Function GetOpenLobbyList(ByRef IdList() As Integer) As Integer
         End If
     Next i
     GetOpenLobbyList = OpenCount
+    Exit Function
+GetOpenLobbyList_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.GetOpenLobbyList", Erl)
 End Function
 
 Public Function ValidateLobbySettings(ByRef LobbySettings As t_NewScenearioSettings)
+    On Error Goto ValidateLobbySettings_Err
     If LobbySettings.MinLevel < 1 Or LobbySettings.MaxLevel > 47 Then
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1607, "", e_FontTypeNames.FONTTYPE_GLOBAL))
         Exit Function
@@ -1000,9 +1169,13 @@ Public Function ValidateLobbySettings(ByRef LobbySettings As t_NewScenearioSetti
         Exit Function
     End If
     ValidateLobbySettings = True
+    Exit Function
+ValidateLobbySettings_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.ValidateLobbySettings", Erl)
 End Function
 
 Public Sub CreatePublicEvent(ByRef LobbySettings As t_NewScenearioSettings)
+    On Error Goto CreatePublicEvent_Err
     GlobalLobbyIndex = GetAvailableLobby()
     If Not ValidateLobbySettings(LobbySettings) Then
         Exit Sub
@@ -1011,11 +1184,15 @@ Public Sub CreatePublicEvent(ByRef LobbySettings As t_NewScenearioSettings)
     Call ModLobby.SetupLobby(LobbyList(GlobalLobbyIndex), LobbySettings)
     Call CustomScenarios.PrepareNewEvent(LobbySettings.ScenearioType, GlobalLobbyIndex)
     Call OpenLobby(LobbyList(GlobalLobbyIndex), True)
+    Exit Sub
+CreatePublicEvent_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.CreatePublicEvent", Erl)
 End Sub
 
 
 
 Public Sub initEventLobby(ByVal UserIndex As Integer, ByVal eventType As Integer, LobbySettings As t_NewScenearioSettings)
+    On Error Goto initEventLobby_Err
 'aca se podria validar por nivel de patreon
 
 If eventType = 0 Then
@@ -1036,4 +1213,7 @@ If eventType = 0 Then
             End If
         End With
     End If
+    Exit Sub
+initEventLobby_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.initEventLobby", Erl)
 End Sub
