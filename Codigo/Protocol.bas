@@ -2227,7 +2227,9 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             Packet_ID = PacketNames.Drop
             
             
-            'If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), userindex, "Drop", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+            If Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots Then
+                Exit Sub
+            End If
             
 106         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
             If .flags.PescandoEspecial = True Then Exit Sub
@@ -2274,7 +2276,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 136                     ElseIf ObjData(.Invent.Object(Slot).ObjIndex).Intirable = 1 And EsGM(UserIndex) Then
 138                         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
 140                             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-142                             Call DropObj(UserIndex, Slot, amount, .Pos.map, .Pos.X, .Pos.Y)
+142                             Call DropObj(UserIndex, Slot, amount, .Pos.Map, .Pos.x, .Pos.y)
                             End If
                             Exit Sub
                         End If
@@ -2306,7 +2308,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             
 154                 If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
 
-156                 Call DropObj(UserIndex, Slot, amount, .Pos.Map, .Pos.X, .Pos.Y)
+156                 Call DropObj(UserIndex, Slot, amount, .Pos.Map, .Pos.x, .Pos.y)
 
                 End If
 
@@ -4050,9 +4052,16 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             Dim tUser  As Integer
             Dim Slot   As Byte
             Dim amount As Long
+            Dim ElementalTags As Long
             
 102         Slot = Reader.ReadInt8()
 104         amount = Reader.ReadInt32()
+
+            If Slot <> FLAGORO Then
+                'Natural elemental tags are the one in the object
+                'User added elemental tags are the one in the user slots
+                ElementalTags = UserList(UserIndex).invent.Object(Slot).ElementalTags
+            End If
             
             
             'Is the commerce attempt valid??
@@ -4165,9 +4174,10 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 Dim ObjAEnviar As t_Obj
                 
 166             ObjAEnviar.amount = amount
+                ObjAEnviar.ElementalTags = ElementalTags
 
                 'Si no es oro tmb le agrego el objInex
-168             If Slot <> FLAGORO Then ObjAEnviar.ObjIndex = UserList(UserIndex).Invent.Object(Slot).ObjIndex
+168             If Slot <> FLAGORO Then ObjAEnviar.ObjIndex = UserList(UserIndex).invent.Object(Slot).ObjIndex
                 'Llamos a la funcion
 170             Call EnviarObjetoTransaccion(tUser, UserIndex, ObjAEnviar)
 
@@ -7872,6 +7882,9 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 104         SlotNuevo = Reader.ReadInt8()
         
             Dim Objeto    As t_Obj
+            Dim AppliedElementalTags As Boolean
+            Dim tmpElementalTags As Long
+            
             Dim Equipado  As Boolean
             Dim Equipado2 As Boolean
             Dim Equipado3 As Boolean
@@ -7904,6 +7917,15 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                 End If
                 
             End If
+
+
+            If IsFeatureEnabled("elemental_tags") Then
+                    AppliedElementalTags = False
+                If CanElementalTagBeApplied(UserIndex, SlotNuevo, SlotViejo) Then
+                    AppliedElementalTags = True
+                    Call RemoveItemFromInventory(UserIndex, SlotViejo)
+                End If
+            End If
             
         
 106         If (SlotViejo > .CurrentInventorySlots) Or (SlotNuevo > .CurrentInventorySlots) Then
@@ -7911,7 +7933,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                 Call WriteLocaleMsg(UserIndex, "1235", e_FontTypeNames.FONTTYPE_INFO)
             Else
     
-110             If .Invent.Object(SlotNuevo).ObjIndex = .Invent.Object(SlotViejo).ObjIndex Then
+110             If .invent.Object(SlotNuevo).ObjIndex = .invent.Object(SlotViejo).ObjIndex And .invent.Object(SlotNuevo).ElementalTags = .invent.Object(SlotViejo).ElementalTags Then
 112                 .Invent.Object(SlotNuevo).amount = .Invent.Object(SlotNuevo).amount + .Invent.Object(SlotViejo).amount
                     
                     Dim Excedente As Integer
@@ -8000,10 +8022,10 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                 
                 Else
 
-180                 If .Invent.Object(SlotNuevo).ObjIndex <> 0 Then
+180                 If .invent.Object(SlotNuevo).ObjIndex <> 0 And Not AppliedElementalTags Then
 182                     Objeto.amount = .Invent.Object(SlotViejo).amount
 184                     Objeto.ObjIndex = .Invent.Object(SlotViejo).ObjIndex
-                    
+                        tmpElementalTags = .invent.Object(SlotViejo).ElementalTags
 186                     If .Invent.Object(SlotViejo).Equipped = 1 Then
 188                         Equipado = True
     
@@ -8020,10 +8042,11 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                     
 194                     .Invent.Object(SlotViejo).ObjIndex = .Invent.Object(SlotNuevo).ObjIndex
 196                     .Invent.Object(SlotViejo).amount = .Invent.Object(SlotNuevo).amount
+                        .invent.Object(SlotViejo).ElementalTags = .invent.Object(SlotNuevo).ElementalTags
                     
 198                     .Invent.Object(SlotNuevo).ObjIndex = Objeto.ObjIndex
 200                     .Invent.Object(SlotNuevo).amount = Objeto.amount
-                    
+                        .invent.Object(SlotNuevo).ElementalTags = tmpElementalTags
 202                     If Equipado Then
 204                         .Invent.Object(SlotNuevo).Equipped = 1
                         Else
@@ -8127,14 +8150,16 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
     
                     End If
                 
-310                 If Objeto.ObjIndex = 0 Then
+310                 If Objeto.ObjIndex = 0 And Not AppliedElementalTags Then
 312                     .Invent.Object(SlotNuevo).ObjIndex = .Invent.Object(SlotViejo).ObjIndex
 314                     .Invent.Object(SlotNuevo).amount = .Invent.Object(SlotViejo).amount
 316                     .Invent.Object(SlotNuevo).Equipped = .Invent.Object(SlotViejo).Equipped
+                        .invent.Object(SlotNuevo).ElementalTags = .invent.Object(SlotViejo).ElementalTags
                             
 318                     .Invent.Object(SlotViejo).ObjIndex = 0
 320                     .Invent.Object(SlotViejo).amount = 0
 322                     .Invent.Object(SlotViejo).Equipped = 0
+                        .invent.Object(SlotViejo).ElementalTags = 0
     
                     End If
                     
@@ -8182,12 +8207,15 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
             If SlotViejo > MAX_BANCOINVENTORY_SLOTS Or SlotNuevo > MAX_BANCOINVENTORY_SLOTS Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
 106         Objeto.ObjIndex = UserList(UserIndex).BancoInvent.Object(SlotViejo).ObjIndex
 108         Objeto.amount = UserList(UserIndex).BancoInvent.Object(SlotViejo).amount
+            Objeto.ElementalTags = UserList(UserIndex).BancoInvent.Object(SlotViejo).ElementalTags
         
 110         UserList(UserIndex).BancoInvent.Object(SlotViejo).ObjIndex = UserList(UserIndex).BancoInvent.Object(SlotNuevo).ObjIndex
 112         UserList(UserIndex).BancoInvent.Object(SlotViejo).amount = UserList(UserIndex).BancoInvent.Object(SlotNuevo).amount
+            UserList(UserIndex).BancoInvent.Object(SlotViejo).ElementalTags = UserList(UserIndex).BancoInvent.Object(SlotNuevo).ElementalTags
          
 114         UserList(UserIndex).BancoInvent.Object(SlotNuevo).ObjIndex = Objeto.ObjIndex
 116         UserList(UserIndex).BancoInvent.Object(SlotNuevo).amount = Objeto.amount
+            UserList(UserIndex).BancoInvent.Object(SlotNuevo).ElementalTags = Objeto.ElementalTags
     
             'Actualizamos el banco
 118         Call UpdateBanUserInv(False, UserIndex, SlotViejo, "HandleBovedaMoveItem - slot viejo")
@@ -8668,6 +8696,12 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                             
 202                         Case e_Ciudad.cArkhein
 204                             DeDonde = " Arkhein"
+
+                            Case e_Ciudad.cEldoria
+                             DeDonde = " Eldoria"
+
+                            Case e_Ciudad.cPenthar
+                             DeDonde = " Penthar"
                             
 206                         Case Else
 208                             DeDonde = "Ullathorpe"
@@ -8795,6 +8829,13 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                             
 312                         Case e_Ciudad.cArkhein
 314                             DeDonde = " Arkhein"
+                             
+                            Case e_Ciudad.cEldoria
+                                DeDonde = " Eldoria"
+                                
+                                Case e_Ciudad.cPenthar
+                                DeDonde = " Penthar"
+
                             
 316                         Case Else
 318                             DeDonde = "Ullathorpe"
@@ -9136,6 +9177,12 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
                         
 132                 Case e_Ciudad.cArkhein
 134                     DeDonde = CityArkhein
+
+                    Case e_Ciudad.cEldoria
+                        DeDonde = CityEldoria
+                        
+                    Case e_Ciudad.cPenthar
+                        DeDonde = CityPenthar
                         
 136                 Case Else
 138                     DeDonde = CityUllathorpe

@@ -56,11 +56,15 @@ Const MaxActiveConnections = 10000
 
 Private PendingConnections As New Dictionary
 
+Private Sub OnServerError(ByVal Code As Long, ByVal Description As String)
+    Debug.Print "Server error:", Code, Description
+End Sub
+
 Public Sub Listen(ByVal Limit As Long, ByVal Address As String, ByVal Service As String)
     Set Server = New Network.Server
     ReDim Mapping(1 To MaxActiveConnections) As t_ConnectionMapping
     
-    Call Server.Attach(AddressOf OnServerConnect, AddressOf OnServerClose, AddressOf OnServerSend, AddressOf OnServerRecv)
+    Call Server.Attach(AddressOf OnServerConnect, AddressOf OnServerClose, AddressOf OnServerSend, AddressOf OnServerRecv, AddressOf OnServerError)
     
     Call Server.Listen(Limit, Address, Service)
 End Sub

@@ -403,6 +403,11 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 100     With UserList(UserIndex)
             'Controla las salidas
 102         If InMapBounds(Map, X, Y) Then
+
+                If MapData(Map, x, y).trigger = e_Trigger.TRANSFER_ONLY_DEAD Then
+                    If .flags.Muerto <> 1 Then Exit Sub  ' si está vivo, no teletransportar
+                End If
+                
                 If MapData(Map, X, Y).trigger = AUTORESU Then
                     Call ResucitarOCurar(UserIndex)
                 End If
@@ -1295,8 +1300,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
 160             If MostrarCantidad(UserList(UserIndex).flags.TargetObj) Then
 
-162                 Call WriteConsoleMsg(UserIndex, "O*" & UserList(UserIndex).flags.TargetObj & "* - " & MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount & "", e_FontTypeNames.FONTTYPE_INFO)
-                Else
+162                 Call WriteConsoleMsg(UserIndex, "O*" & UserList(UserIndex).flags.TargetObj & "* - " & MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount & " *" & (MapData(Map, x, y).ObjInfo.ElementalTags Or ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).ElementalTags) & "*" & "", e_FontTypeNames.FONTTYPE_INFO)
+
+            Else
 
 164                 If ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otYacimiento Then
 166                     Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
@@ -1606,9 +1612,12 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
                 End If
 
-                If EsGM(UserIndex) And GetOwnedBy(TempCharIndex) <> 0 Then
-                    estatus = estatus & " | Owned by " & NpcList(TempCharIndex).flags.AttackedBy
+                If GetOwnedBy(TempCharIndex) <> 0 Then
+                    estatus = estatus & " | Fighting with " & NpcList(TempCharIndex).flags.AttackedBy
+                    estatus = estatus & " (" & CInt((IntervaloNpcOwner - (GlobalFrameTime - NpcList(TempCharIndex).flags.AttackedTime)) / 1000)
+                    estatus = estatus & "s)"
                 End If
+                
 #If DEBUGGING Then
                 estatus = estatus & " | NpcIndex = " & TempCharIndex
 #End If
@@ -1650,11 +1659,11 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     End If
 470             ElseIf IsValidUserRef(NpcList(TempCharIndex).MaestroUser) Then
                     If UserList(UserIndex).flags.Muerto = 0 Then
-472                     Call WriteLocaleMsg(UserIndex, 1621, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).name & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).name & "¬" & estatus) 'Msg1621=NPC ¬1 es mascota de ¬2 ¬3
+472                     Call WriteLocaleMsg(UserIndex, 1621, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Name & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).Name & "¬" & estatus) 'Msg1621=NPC ¬1 es mascota de ¬2 ¬3
                     End If
                 Else
                     If UserList(UserIndex).flags.Muerto = 0 Then
-                        Call WriteLocaleMsg(UserIndex, 1622, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).name & "¬" & estatus)  'Msg1622=NPC ¬1 ¬2
+                        Call WriteLocaleMsg(UserIndex, 1622, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Name & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & estatus)  'Msg1622=NPC ¬1 ¬2
                     End If
                 End If
                ' End If
@@ -2047,6 +2056,7 @@ Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As 
 102             .BancoInvent.Object(i).amount = 0
 104             .BancoInvent.Object(i).Equipped = 0
 106             .BancoInvent.Object(i).ObjIndex = 0
+                .BancoInvent.Object(i).ElementalTags = 0
             Next i
 
             .Invent.Object(slot_libre).ObjIndex = POCION_RESET
