@@ -2715,6 +2715,10 @@ Public Sub CalculateElementalTagsModifiers(ByVal UserIndex As Integer, ByVal Npc
 
     ' Get the bitmask of elements from the equipped weapon if the weapon naturally has tags OR if the user has enchanted his own weapon
     With UserList(UserIndex).invent
+        If .WeaponEqpObjIndex = 0 Or .WeaponEqpSlot = 0 Then
+            Exit Sub
+        End If
+
         attackerElementMask = ObjData(.WeaponEqpObjIndex).ElementalTags Or .Object(.WeaponEqpSlot).ElementalTags
     End With
     ' Get the bitmask of elements from the NPC
