@@ -2449,7 +2449,7 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, _
 
         If GetOwnedBy(TargetNpcIndex) <> 0 Then
             Call SetMask(NpcStatusMask, e_NpcInfoMask.Fighting)
-            extraStrings = extraStrings & .flags.AttackedBy
+            extraStrings = extraStrings & .flags.AttackedBy & "|"
             extraStrings = extraStrings & CInt((IntervaloNpcOwner - (GlobalFrameTime - .flags.AttackedTime)) / 1000) & "-"
         Else
             extraStrings = extraStrings & "-"
