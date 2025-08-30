@@ -1427,7 +1427,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 470             ElseIf IsValidUserRef(NpcList(TempCharIndex).MaestroUser) Then
                     If UserList(UserIndex).flags.Muerto = 0 Then
                         estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex, NpcStatusMask)
-472                     Call WriteLocaleMsg(UserIndex, 1621, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Name & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).Name & "¬" & estatus) 'Msg1621=NPC ¬1 es mascota de ¬2 ¬3
+472                     Call WriteLocaleMsg(UserIndex, 1621, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).name & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & estatus & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).name)  'Msg1621=NPC ¬1 ¬2 es mascota de ¬3
                     End If
                 Else
                     If UserList(UserIndex).flags.Muerto = 0 Then
@@ -2429,23 +2429,27 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, _
             
         If .flags.Paralizado = 1 Then
             If UserSurvivalSkill >= 100 Then
-                extraStrings = extraStrings & CInt(.Contadores.Paralisis / 6.5) & "-"
+                extraStrings = extraStrings & CInt(.Contadores.Paralisis / 6.5)
             End If
-        Call SetMask(NpcStatusMask, e_NpcInfoMask.Paralized)
-        extraStrings = extraStrings & "-"
+            Call SetMask(NpcStatusMask, e_NpcInfoMask.Paralized)
+            extraStrings = extraStrings & "-"
+        Else
+            extraStrings = extraStrings & "-"
         End If
 
         If .flags.Inmovilizado = 1 Then
             If UserSurvivalSkill >= 100 Then
-                extraStrings = extraStrings & CInt(.Contadores.Inmovilizado / 6.5) & "-"
+                extraStrings = extraStrings & CInt(.Contadores.Inmovilizado / 6.5)
             End If
             Call SetMask(NpcStatusMask, e_NpcInfoMask.Inmovilized)
+            extraStrings = extraStrings & "-"
+        Else
             extraStrings = extraStrings & "-"
         End If
 
         If GetOwnedBy(TargetNpcIndex) <> 0 Then
             Call SetMask(NpcStatusMask, e_NpcInfoMask.Fighting)
-            extraStrings = extraStrings & .flags.AttackedBy & "-"
+            extraStrings = extraStrings & .flags.AttackedBy
             extraStrings = extraStrings & CInt((IntervaloNpcOwner - (GlobalFrameTime - .flags.AttackedTime)) / 1000) & "-"
         Else
             extraStrings = extraStrings & "-"
@@ -2457,9 +2461,10 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, _
             extraStrings = extraStrings & "-"
         End If
 
-    PrepareStatusMsgsForNpcs = extraStrings & "|" & NpcStatusMask
+    PrepareStatusMsgsForNpcs = extraStrings & NpcStatusMask
     End With
     Exit Function
 PrepareStatusMsgsForNpcs_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.PrepareStatusMsgsForNpcs", Erl)
 End Function
+
