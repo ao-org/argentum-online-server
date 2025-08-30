@@ -2396,7 +2396,7 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, _
 
     With NpcList(TargetNpcIndex)
         Select Case UserSurvivalSkill
-            Case Is >= 75, EsGm(SourceUserIndex)
+            Case Is >= 75
                 extraStrings = extraStrings & .Stats.MinHp & "/" & .Stats.MaxHp & "-"
             Case Is >= 50
                 extraStrings = extraStrings & Round((.Stats.MinHp / .Stats.MaxHp) * 100#, 0) & "%" & "-"
