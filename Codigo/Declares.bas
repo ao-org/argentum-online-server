@@ -40,6 +40,26 @@ Public Enum e_AccionBarra
     CancelarAccion = 99
 End Enum
 
+
+Public Enum e_RoyalArmyRanks
+    NotEnlisted = 0
+    FirstHierarchy = 1
+    SecondHierarchy = 2
+    ThirdHierarchy = 3
+    FourthHierarchy = 4
+    FifthHierarchy = 5
+End Enum
+
+Public Enum e_ChaosArmyRanks
+    NotEnlisted = 0
+    FirstHierarchy = 1
+    SecondHierarchy = 2
+    ThirdHierarchy = 3
+    FourthHierarchy = 4
+    FifthHierarchy = 5
+End Enum
+
+
 Public Enum e_elecciones
     HayGanador = 1
     HayGanadorPeroAbandono = 2
@@ -477,6 +497,68 @@ Public Enum e_Trigger
     NADOCOMBINADO = 18
     CARCEL = 19
 End Enum
+
+
+Public Enum e_NpcInfoMask
+    AlmostDead = 1
+    SeriouslyWounded = 2
+    Wounded = 4
+    LightlyWounded = 8
+    Intact = 16
+    Poisoned = 32
+    Paralized = 64
+    Inmovilized = 128
+    Fighting = 256
+End Enum
+
+Public Enum e_UsersInfoMask
+    Newbie = 1
+    Poisoned = 2
+    Blind = 4
+    Paralized = 8
+    Inmovilized = 16
+    Working = 32
+    Invisible = 64
+    Hidden = 128
+    Stupid = 256
+    Cursed = 512
+    Silenced = 1024
+    Trading = 2048
+    Resting = 4096
+    Focusing = 8192
+    Incinerated = 16384
+    Dead = 32768
+    AlmostDead = 65536
+    SeriouslyWounded = 131072
+    Wounded = 262144
+    LightlyWounded = 524288
+    Intact = 1048576
+    Counselor = 2097152
+    DemiGod = 4194304
+    God = 8388608
+    Admin = 16777216
+    RoleMaster = 33554432
+End Enum
+
+Public Enum e_UsersInfoMask2
+    ChaoticCouncil = 1
+    Chaotic = 2
+    Criminal = 4
+    RoyalCouncil = 8
+    Army = 16
+    Citizen = 32
+    ArmyFirstHierarchy = 64
+    ArmySecondHierarchy = 128
+    ArmyThirdHierarchy = 256
+    ArmyFourthHierarchy = 512
+    ArmyFifthHierarchy = 1024
+    ChaosFirstHierarchy = 2048
+    ChaosSecondHierarchy = 4096
+    ChaosThirdHierarchy = 8192
+    ChaosFourthHierarchy = 16384
+    ChaosFifthHierarchy = 32768
+End Enum
+
 
 ''
 ' constantes para el trigger 6
