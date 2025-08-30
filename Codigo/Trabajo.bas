@@ -3747,21 +3747,21 @@ Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByVal ItemIndex 
 
     Select Case JobType
         Case e_JobsTypes.Miner
-            tmpExp = SvrConfig.GetValue("MinarExp")
+            tmpExp = SvrConfig.GetValue("MiningExp")
         Case e_JobsTypes.Woodcutter
-            tmpExp = SvrConfig.GetValue("TalarExp")
+            tmpExp = SvrConfig.GetValue("FellingExp")
         Case e_JobsTypes.Blacksmith
-            tmpExp = SvrConfig.GetValue("ForjarExp")
+            tmpExp = SvrConfig.GetValue("ForgingExp")
         Case e_JobsTypes.Carpenter
-            tmpExp = SvrConfig.GetValue("CarpinteriaExp")
+            tmpExp = SvrConfig.GetValue("CarpentryExp")
         Case e_JobsTypes.Woodcutter
-            tmpExp = SvrConfig.GetValue("TalarExp")
+            tmpExp = SvrConfig.GetValue("FellingExp")
         Case e_JobsTypes.Fisherman
             If ObjData(ItemIndex).Power >= 2 Then
-                tmpExp = SvrConfig.GetValue("PescarExp")
+                tmpExp = SvrConfig.GetValue("FishingExp")
             End If
         Case e_JobsTypes.Alchemist
-            tmpExp = SvrConfig.GetValue("MezclarExp")
+            tmpExp = SvrConfig.GetValue("MixingExp")
         Case Else
             tmpExp = SvrConfig.GetValue("ElseExp")
     End Select
