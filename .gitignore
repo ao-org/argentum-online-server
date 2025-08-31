@@ -30,3 +30,5 @@ Database.db
 AoServerTools.dll
 AOACServer.pdb
 .aider*
+vb6_build.log
+vb6_build_client.log
