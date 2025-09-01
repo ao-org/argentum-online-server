@@ -285,6 +285,15 @@ Public Enum e_Minerales
 
 End Enum
 
+Public Enum e_JobsTypes
+    Miner = 1
+    Blacksmith = 2
+    Carpenter = 3
+    Woodcutter = 4
+    Fisherman = 5
+    Alchemist = 6
+End Enum
+
 Public Type t_LlamadaGM
 
     Usuario As String * 255
