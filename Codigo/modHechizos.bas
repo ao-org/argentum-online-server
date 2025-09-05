@@ -677,6 +677,7 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
 
                     If UserAttackInteractionResult.result = e_AttackInteractionResult.eAttackCitizenNpc Or _
                        UserAttackInteractionResult.result = e_AttackInteractionResult.eRemoveSafeCitizenNpc Or _
+                       UserAttackInteractionResult.Result = e_AttackInteractionResult.eSameFaction Or _
                        UserAttackInteractionResult.result = e_AttackInteractionResult.eRemoveSafe Then
                         Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.result)
                         If UserAttackInteractionResult.CanAttack Then
