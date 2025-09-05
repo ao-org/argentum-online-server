@@ -1199,7 +1199,7 @@ EquiparBarco_Err:
 End Sub
 
 'Equipa un item del inventario
-Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
+Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal UserIsLoggingIn As Boolean = False)
         On Error GoTo ErrHandler
 
         Dim obj       As t_ObjData
@@ -1482,10 +1482,12 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     End If
   
                     'Si esta equipando armadura faccionaria fuera de zona segura o fuera de trigger seguro
-                    If obj.Real > 0 Or obj.Caos > 0 Then
-                        If Not MapData(.Pos.Map, .Pos.x, .Pos.y).trigger = e_Trigger.ZonaSegura And Not MapInfo(.Pos.Map).Seguro = 1 Then
-                            Call WriteLocaleMsg(UserIndex, "2091", e_FontTypeNames.FONTTYPE_INFO)
-                            Exit Sub
+                    If Not UserIsLoggingIn Then
+                        If obj.Real > 0 Or obj.Caos > 0 Then
+                            If Not MapData(.pos.Map, .pos.x, .pos.y).trigger = e_Trigger.ZonaSegura And Not MapInfo(.pos.Map).Seguro = 1 Then
+                                Call WriteLocaleMsg(UserIndex, "2091", e_FontTypeNames.FONTTYPE_INFO)
+                                Exit Sub
+                            End If
                         End If
                     End If
                     

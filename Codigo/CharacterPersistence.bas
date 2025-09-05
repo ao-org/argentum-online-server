@@ -137,7 +137,7 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
                                     .Equipped = False
                                     .ElementalTags = RS!elemental_tags
                                     If RS!is_equipped Then
-                                        Call EquiparInvItem(UserIndex, RS!Number)
+                                        Call EquiparInvItem(UserIndex, RS!Number, True)
                                     End If
                                 Else
                                    .ObjIndex = 0
