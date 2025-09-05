@@ -2228,8 +2228,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             
             
             If Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots Then
-                'slot 200 is for gold
-                If Slot <> 200 Then
+                If Slot <> GOLD_SLOT Then
                     Exit Sub
                 End If
             End If
