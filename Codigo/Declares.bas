@@ -452,6 +452,8 @@ Public Const EXPERT_SKILL_CUTOFF As Integer = 17
 
 Public Const NONEXPERT_SKILL_CUTOFF As Integer = 10
 
+Public Const GOLD_SLOT As Byte = 200
+
 Public Const VelocidadNormal       As Single = 1
 
 Public Const VelocidadMuerto       As Single = 1.4
