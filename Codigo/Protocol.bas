@@ -2228,7 +2228,9 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             
             
             If Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots Then
-                Exit Sub
+                If Slot <> GOLD_SLOT Then
+                    Exit Sub
+                End If
             End If
             
 106         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
