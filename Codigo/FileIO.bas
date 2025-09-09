@@ -1428,7 +1428,7 @@ Sub LoadOBJData()
 196                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
 
                     Case e_OBJType.otBackpack
-                        .BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
+                        '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
         
 198                 Case e_OBJType.otWeapon
 200                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))

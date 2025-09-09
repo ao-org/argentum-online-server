@@ -1346,7 +1346,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, _
              
                 If .flags.Montado = 0 Then
                     If .flags.Navegando = 0 Then
-                        .Char.BackpackAnim = obj.BackpackAnim
+                        .Char.BackpackAnim = obj.Ropaje
                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                     End If
 
