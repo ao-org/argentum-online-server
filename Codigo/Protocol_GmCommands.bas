@@ -2909,7 +2909,7 @@ Public Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
 108             For y = 5 To 95
 110                 tObj = MapData(.Pos.map, X, y).ObjInfo.objIndex
 112                 If tObj > 0 Then
-114                     If ObjData(tObj).OBJType <> e_OBJType.otArboles Then
+114                     If ObjData(tObj).OBJType <> e_OBJType.otTrees Then
                             Call WriteConsoleMsg(UserIndex, "(" & x & "," & y & ") " & ObjData(tObj).name, e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     End If

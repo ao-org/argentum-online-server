@@ -1263,7 +1263,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 120         ElseIf MapData(Map, X + 1, Y).ObjInfo.ObjIndex > 0 Then
 
                 'Informa el nombre
-122             If ObjData(MapData(Map, X + 1, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otPuertas Then
+122             If ObjData(MapData(Map, X + 1, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors Then
 124                 UserList(UserIndex).flags.TargetObjMap = Map
 126                 UserList(UserIndex).flags.TargetObjX = X + 1
 128                 UserList(UserIndex).flags.TargetObjY = Y
@@ -1273,7 +1273,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
 132         ElseIf MapData(Map, X + 1, Y + 1).ObjInfo.ObjIndex > 0 Then
 
-134             If ObjData(MapData(Map, X + 1, Y + 1).ObjInfo.ObjIndex).OBJType = e_OBJType.otPuertas Then
+134             If ObjData(MapData(Map, X + 1, Y + 1).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors Then
                     'Informa el nombre
 136                 UserList(UserIndex).flags.TargetObjMap = Map
 138                 UserList(UserIndex).flags.TargetObjX = X + 1
@@ -1284,7 +1284,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
 144         ElseIf MapData(Map, X, Y + 1).ObjInfo.ObjIndex > 0 Then
 
-146             If ObjData(MapData(Map, X, Y + 1).ObjInfo.ObjIndex).OBJType = e_OBJType.otPuertas Then
+146             If ObjData(MapData(Map, X, Y + 1).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors Then
                     'Informa el nombre
 148                 UserList(UserIndex).flags.TargetObjMap = Map
 150                 UserList(UserIndex).flags.TargetObjX = X
@@ -1304,11 +1304,11 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
             Else
 
-164                 If ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otYacimiento Then
+164                 If ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otOreDeposit Then
 166                     Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
 168                     Call WriteLocaleMsg(UserIndex, 1618, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount))   'Msg1618=¬1 - (Minerales disponibles: ¬2)
 
-170                 ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otArboles Then
+170                 ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otTrees Then
 172                     Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
 174                     Call WriteLocaleMsg(UserIndex, 1619, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount)) 'Msg1619=¬1 - (Recursos disponibles: ¬2)
 176                 ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otTeleport Then
@@ -1627,7 +1627,7 @@ Public Function ItemNoEsDeMapa(ByVal Index As Integer) As Boolean
         On Error GoTo ItemNoEsDeMapa_Err
         
 
-100     ItemNoEsDeMapa = ObjData(Index).OBJType <> e_OBJType.otPuertas And ObjData(Index).OBJType <> e_OBJType.otCarteles And ObjData(Index).OBJType <> e_OBJType.otArboles And ObjData(Index).OBJType <> e_OBJType.otYacimiento And ObjData(Index).OBJType <> e_OBJType.otTeleport And ObjData(Index).OBJType <> e_OBJType.OtCorreo And ObjData(Index).OBJType <> e_OBJType.OtDecoraciones
+100     ItemNoEsDeMapa = ObjData(Index).OBJType <> e_OBJType.otDoors And ObjData(Index).OBJType <> e_OBJType.otSignBoards And ObjData(Index).OBJType <> e_OBJType.otTrees And ObjData(Index).OBJType <> e_OBJType.otOreDeposit And ObjData(Index).OBJType <> e_OBJType.otTeleport And ObjData(Index).OBJType <> e_OBJType.otMail And ObjData(Index).OBJType <> e_OBJType.otDecorations
 
         
         Exit Function
@@ -1644,7 +1644,7 @@ Public Function MostrarCantidad(ByVal Index As Integer) As Boolean
         
         On Error GoTo MostrarCantidad_Err
         
-100     MostrarCantidad = ObjData(Index).OBJType <> e_OBJType.otPuertas And ObjData(Index).OBJType <> e_OBJType.otCarteles And ObjData(Index).OBJType <> e_OBJType.otYacimiento And ObjData(Index).OBJType <> e_OBJType.otArboles And ObjData(Index).OBJType <> e_OBJType.OtCorreo And ObjData(Index).OBJType <> e_OBJType.otTeleport
+100     MostrarCantidad = ObjData(Index).OBJType <> e_OBJType.otDoors And ObjData(Index).OBJType <> e_OBJType.otSignBoards And ObjData(Index).OBJType <> e_OBJType.otOreDeposit And ObjData(Index).OBJType <> e_OBJType.otTrees And ObjData(Index).OBJType <> e_OBJType.otMail And ObjData(Index).OBJType <> e_OBJType.otTeleport
 
         
         Exit Function
@@ -1660,7 +1660,7 @@ Public Function EsObjetoFijo(ByVal OBJType As e_OBJType) As Boolean
         On Error GoTo EsObjetoFijo_Err
         
 
-100     EsObjetoFijo = OBJType = OBJType = e_OBJType.otCarteles Or OBJType = e_OBJType.otArboles Or OBJType = e_OBJType.otYacimiento Or OBJType = e_OBJType.OtDecoraciones
+100     EsObjetoFijo = OBJType = OBJType = e_OBJType.otSignBoards Or OBJType = e_OBJType.otTrees Or OBJType = e_OBJType.otOreDeposit Or OBJType = e_OBJType.otDecorations
 
         
         Exit Function
@@ -1673,7 +1673,7 @@ End Function
 
 Public Function HayPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
 100     If MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
-102         HayPuerta = (ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otPuertas) And ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Cerrada = 1 And (ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Llave = 0)
+102         HayPuerta = (ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors) And ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Cerrada = 1 And (ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Llave = 0)
         End If
 End Function
 
@@ -1987,48 +1987,48 @@ End Sub
 
 Public Function TestRequiredEquipedItem(ByRef inventory As t_Inventario, ByVal RequiredItemsFlag As Long, ByVal RequiredWeaponMask As Integer) As e_SpellRequirementMask
     If IsSet(requiredItemsFlag, e_SpellRequirementMask.eArmor) And _
-      inventory.ArmourEqpObjIndex = 0 Then
+      inventory.EquippedArmorObjIndex = 0 Then
         TestRequiredEquipedItem = e_SpellRequirementMask.eArmor
         Exit Function
     End If
     If IsSet(requiredItemsFlag, e_SpellRequirementMask.eHelm) And _
-      inventory.CascoEqpObjIndex = 0 Then
+      inventory.EquippedHelmetObjIndex = 0 Then
         TestRequiredEquipedItem = e_SpellRequirementMask.eHelm
         Exit Function
     End If
     If IsSet(requiredItemsFlag, e_SpellRequirementMask.eMagicItem) And _
-      inventory.MagicoObjIndex = 0 Then
+      inventory.EquippedAmuletAccesoryObjIndex = 0 Then
         TestRequiredEquipedItem = e_SpellRequirementMask.eMagicItem
         Exit Function
     End If
     If IsSet(requiredItemsFlag, e_SpellRequirementMask.eProjectile) And _
-      inventory.MunicionEqpObjIndex = 0 Then
+      inventory.EquippedMunitionObjIndex = 0 Then
         TestRequiredEquipedItem = e_SpellRequirementMask.eProjectile
         Exit Function
     End If
     If IsSet(requiredItemsFlag, e_SpellRequirementMask.eShield) And _
-      inventory.EscudoEqpObjIndex = 0 Then
+      inventory.EquippedShieldObjIndex = 0 Then
         TestRequiredEquipedItem = e_SpellRequirementMask.eShield
         Exit Function
     End If
     If IsSet(requiredItemsFlag, e_SpellRequirementMask.eShip) And _
-      inventory.BarcoObjIndex = 0 Then
+      inventory.EquippedShipObjIndex = 0 Then
         TestRequiredEquipedItem = e_SpellRequirementMask.eShip
         Exit Function
     End If
     If IsSet(requiredItemsFlag, e_SpellRequirementMask.eTool) And _
-      inventory.HerramientaEqpObjIndex = 0 Then
+      inventory.EquippedWorkingToolObjIndex = 0 Then
         TestRequiredEquipedItem = e_SpellRequirementMask.eTool
         Exit Function
     End If
     If IsSet(RequiredItemsFlag, e_SpellRequirementMask.eWeapon) Then
-        If inventory.WeaponEqpObjIndex = 0 Then
+        If inventory.EquippedWeaponObjIndex = 0 Then
             If Not IsIntSet(RequiredWeaponMask, e_WeaponType.eFist) Then
                 TestRequiredEquipedItem = e_SpellRequirementMask.eWeapon
                 Exit Function
             End If
         ElseIf RequiredWeaponMask > 0 Then
-            If Not IsIntSet(RequiredWeaponMask, ShiftLeft(1, ObjData(inventory.WeaponEqpObjIndex).WeaponType)) Then
+            If Not IsIntSet(RequiredWeaponMask, ShiftLeft(1, ObjData(inventory.EquippedWeaponObjIndex).WeaponType)) Then
                 TestRequiredEquipedItem = e_SpellRequirementMask.eWeapon
                 Exit Function
             End If

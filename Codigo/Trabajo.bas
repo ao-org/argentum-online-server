@@ -127,10 +127,10 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 
                 Case e_Skill.Pescar
 
-288                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
-290                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> e_OBJType.otHerramientas Then Exit Sub
+288                 If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
+290                 If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
 
-294                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
+294                 Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
 
                         Case e_ToolsSubtype.eFishingRod
 
@@ -181,13 +181,13 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 
                 Case e_Skill.Mineria
 
-454                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
-456                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> e_OBJType.otHerramientas Then Exit Sub
+454                 If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
+456                 If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
 
                     'Check interval
 458                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
 
-460                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
+460                 Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
 
                         Case 8  ' Herramientas de Mineria - Piquete
                             'Target whatever is in the tile
@@ -206,14 +206,14 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                                 End If
 
                                 '¡Hay un yacimiento donde clickeo?
-474                             If ObjData(DummyInt).OBJType = e_OBJType.otYacimiento Then
+474                             If ObjData(DummyInt).OBJType = e_OBJType.otOreDeposit Then
 
                                     ' Si el Yacimiento requiere herramienta `Dorada` y la herramienta no lo es, o vice versa.
                                     ' Se usa para el yacimiento de Oro.
-476                                 If ObjData(DummyInt).Dorada <> ObjData(.invent.HerramientaEqpObjIndex).Dorada Or ObjData(DummyInt).Blodium <> ObjData(.invent.HerramientaEqpObjIndex).Blodium Then
+476                                 If ObjData(DummyInt).Dorada <> ObjData(.invent.EquippedWorkingToolObjIndex).Dorada Or ObjData(DummyInt).Blodium <> ObjData(.invent.EquippedWorkingToolObjIndex).Blodium Then
 478
 
-                                        If ObjData(DummyInt).Blodium <> ObjData(.invent.HerramientaEqpObjIndex).Blodium Then
+                                        If ObjData(DummyInt).Blodium <> ObjData(.invent.EquippedWorkingToolObjIndex).Blodium Then
                                            ' Msg597=El pico minero especial solo puede extraer minerales del yacimiento de Blodium.
                                             Call WriteLocaleMsg(UserIndex, "597", e_FontTypeNames.FONTTYPE_INFO)
                                             Call WriteWorkRequestTarget(UserIndex, 0)
@@ -237,7 +237,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 
                                     End If
 
-490                                 Call DoMineria(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
+490                                 Call DoMineria(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.invent.EquippedWorkingToolObjIndex).Dorada = 1)
                                 Else
 492                                 ' Msg599=Ahí no hay ningún yacimiento.
                                     Call WriteLocaleMsg(UserIndex, "599", e_FontTypeNames.FONTTYPE_INFO)
@@ -256,13 +256,13 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 
                 Case e_Skill.Talar
 
-350                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
-352                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> e_OBJType.otHerramientas Then Exit Sub
+350                 If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
+352                 If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
 
                     'Check interval
 354                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
 
-356                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
+356                 Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
 
                         Case 6      ' Herramientas de Carpinteria - Hacha
 358                         DummyInt = MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex
@@ -284,7 +284,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 
                                 End If
 
-374                             If ObjData(DummyInt).Elfico <> ObjData(.Invent.HerramientaEqpObjIndex).Elfico Then
+374                             If ObjData(DummyInt).Elfico <> ObjData(.invent.EquippedWorkingToolObjIndex).Elfico Then
 376                                 ' Msg601=Sólo puedes talar árboles elficos con un hacha élfica.
                                     Call WriteLocaleMsg(UserIndex, "601", e_FontTypeNames.FONTTYPE_INFO)
 378                                 Call WriteWorkRequestTarget(UserIndex, 0)
@@ -292,7 +292,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 
                                 End If
 
-379                             If ObjData(DummyInt).Pino <> ObjData(.invent.HerramientaEqpObjIndex).Pino Then
+379                             If ObjData(DummyInt).Pino <> ObjData(.invent.EquippedWorkingToolObjIndex).Pino Then
                                     ' Msg602=Sólo puedes talar árboles de pino nudoso con un hacha de pino.
                                     Call WriteLocaleMsg(UserIndex, "602", e_FontTypeNames.FONTTYPE_INFO)
                                     Call WriteWorkRequestTarget(UserIndex, 0)
@@ -310,8 +310,8 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                                 End If
 
                                 '¡Hay un arbol donde clickeo?
-388                             If ObjData(DummyInt).OBJType = e_OBJType.otArboles Then
-390                                 Call DoTalar(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
+388                             If ObjData(DummyInt).OBJType = e_OBJType.otTrees Then
+390                                 Call DoTalar(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.invent.EquippedWorkingToolObjIndex).Dorada = 1)
 
                                 End If
 
@@ -336,7 +336,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 
                     'Check there is a proper item there
 580                 If .flags.TargetObj > 0 Then
-582                     If ObjData(.flags.TargetObj).OBJType = e_OBJType.otFragua Then
+582                     If ObjData(.flags.TargetObj).OBJType = e_OBJType.otForge Then
 
                             'Validate other items
 584                         If .flags.TargetObjInvSlot < 1 Or .flags.TargetObjInvSlot > UserList(UserIndex).CurrentInventorySlots Then
@@ -565,7 +565,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 
 100     With UserList(UserIndex)
 
-102         If .Invent.BarcoObjIndex <> .Invent.Object(Slot).ObjIndex Then
+102         If .invent.EquippedShipObjIndex <> .invent.Object(Slot).ObjIndex Then
 104             If Not EsGM(UserIndex) Then
 
 106                 Select Case Barco.Subtipo
@@ -603,18 +603,18 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 
                 End If
 
-124             If .Invent.BarcoObjIndex = 0 Then
+124             If .invent.EquippedShipObjIndex = 0 Then
 126                 Call WriteNavigateToggle(UserIndex, True)
 128                 .flags.Navegando = 1
                     Call TargetUpdateTerrain(.EffectOverTime)
 
                 End If
 
-130             .Invent.BarcoObjIndex = .Invent.Object(Slot).ObjIndex
-132             .Invent.BarcoSlot = Slot
+130             .invent.EquippedShipObjIndex = .invent.Object(Slot).ObjIndex
+132             .invent.EquippedShipSlot = Slot
 
 134             If .flags.Montado > 0 Then
-136                 Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
+136                 Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
 
                 End If
 
@@ -634,25 +634,25 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 150             Call WriteNavigateToggle(UserIndex, False)
 152
                 Call TargetUpdateTerrain(.EffectOverTime)
-154             .Invent.BarcoObjIndex = 0
-156             .Invent.BarcoSlot = 0
+154             .invent.EquippedShipObjIndex = 0
+156             .invent.EquippedShipSlot = 0
 
 158             If .flags.Muerto = 0 Then
 160                 .Char.Head = .OrigChar.Head
 
-162                 If .Invent.ArmourEqpObjIndex > 0 Then
-164                     .Char.Body = ObtenerRopaje(UserIndex, ObjData(.Invent.ArmourEqpObjIndex))
+162                 If .invent.EquippedArmorObjIndex > 0 Then
+164                     .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
                     Else
                         Call SetNakedBody(UserList(userIndex))
 
                     End If
 
-168                 If .Invent.EscudoEqpObjIndex > 0 Then .Char.ShieldAnim = ObjData(.Invent.EscudoEqpObjIndex).ShieldAnim
-170                 If .Invent.WeaponEqpObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.WeaponEqpObjIndex).WeaponAnim
-174                 If .Invent.HerramientaEqpObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.HerramientaEqpObjIndex).WeaponAnim
-176                 If .Invent.CascoEqpObjIndex > 0 Then .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
-177                 If .invent.MagicoObjIndex > 0 Then
-                        If ObjData(.invent.MagicoObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.MagicoObjIndex).Ropaje
+168                 If .invent.EquippedShieldObjIndex > 0 Then .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
+170                 If .invent.EquippedWeaponObjIndex > 0 Then .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
+174                 If .invent.EquippedWorkingToolObjIndex > 0 Then .Char.WeaponAnim = ObjData(.invent.EquippedWorkingToolObjIndex).WeaponAnim
+176                 If .invent.EquippedHelmetObjIndex > 0 Then .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+177                 If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
+                        If ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
 
                     End If
 
@@ -711,7 +711,7 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
 
 108         SkillRequerido = ObjData(UserList(UserIndex).flags.TargetObjInvIndex).MinSkill
 
-110         If ObjData(UserList(UserIndex).flags.TargetObjInvIndex).OBJType = e_OBJType.otMinerales And UserList(UserIndex).Stats.UserSkills(e_Skill.Mineria) >= SkillRequerido Then
+110         If ObjData(UserList(UserIndex).flags.TargetObjInvIndex).OBJType = e_OBJType.otMinerals And UserList(UserIndex).Stats.UserSkills(e_Skill.Mineria) >= SkillRequerido Then
 112             Call DoLingotes(UserIndex)
 114         ElseIf SkillRequerido > 100 Then
 116             ' Msg608=Los mortales no pueden fundir este mineral.
@@ -1457,7 +1457,7 @@ Public Function PuedeConstruirHerreria(ByVal ItemIndex As Integer) As Boolean
 106             Next i
     
     
-            Case e_OBJType.otArmadura, e_OBJType.otCasco, e_OBJType.otEscudo, e_OBJType.otMagicos, e_OBJType.otResistencia
+            Case e_OBJType.otArmor, e_OBJType.otHelmet, e_OBJType.otShield, e_OBJType.otAmulets, e_OBJType.otRingAccesory
 108             For i = 1 To UBound(ArmadurasHerrero)
 110                 If ArmadurasHerrero(i) = ItemIndex Then
 112                     PuedeConstruirHerreria = True
@@ -1511,11 +1511,11 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
             Select Case ObjData(ItemIndex).OBJType
                 Case e_OBJType.otWeapon
                     Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
-                Case e_OBJType.otEscudo
+                Case e_OBJType.otShield
                     Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
-                Case e_OBJType.otCasco
+                Case e_OBJType.otHelmet
                     Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
-                Case e_OBJType.otArmadura
+                Case e_OBJType.otArmor
                     Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
                 Case e_OBJType.otElementalRune
                     Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
@@ -1633,7 +1633,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, _
 104     If ItemIndex = 0 Then Exit Sub
 
         'Si no tiene equipado el serrucho
-106     If UserList(UserIndex).Invent.HerramientaEqpObjIndex = 0 Then
+106     If UserList(UserIndex).invent.EquippedWorkingToolObjIndex = 0 Then
             ' Antes de usar la herramienta deberias equipartela.
 108         Call WriteLocaleMsg(UserIndex, "376", e_FontTypeNames.FONTTYPE_INFO)
 110         Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -1657,7 +1657,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, _
 
         End If
 
-112     If CarpinteroTieneMateriales(UserIndex, ItemIndex, cantidad_a_construir) And UserList(UserIndex).Stats.UserSkills(e_Skill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria And PuedeConstruirCarpintero(ItemIndex) And ObjData(UserList(UserIndex).invent.HerramientaEqpObjIndex).OBJType = e_OBJType.otHerramientas And ObjData(UserList(UserIndex).invent.HerramientaEqpObjIndex).Subtipo = 5 Then
+112     If CarpinteroTieneMateriales(UserIndex, ItemIndex, cantidad_a_construir) And UserList(UserIndex).Stats.UserSkills(e_Skill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria And PuedeConstruirCarpintero(ItemIndex) And ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).OBJType = e_OBJType.otWorkingTools And ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = 5 Then
 
 114         If UserList(UserIndex).Stats.MinSta > 2 Then
 116             Call QuitarSta(UserIndex, 2)
@@ -1728,10 +1728,10 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
 
     ' Check if the equipped tool index is valid
     Dim ToolIndex As Integer
-    ToolIndex = UserList(UserIndex).Invent.HerramientaEqpObjIndex
+    ToolIndex = UserList(UserIndex).invent.EquippedWorkingToolObjIndex
 
     If ToolIndex < LBound(ObjData) Or ToolIndex > UBound(ObjData) Then
-        Call TraceError(1003, "HerramientaEqpObjIndex out of range: " & ToolIndex, "AlquimistaConstruirItem", Erl)
+        Call TraceError(1003, "EquippedWorkingToolObjIndex out of range: " & ToolIndex, "AlquimistaConstruirItem", Erl)
         Exit Sub
     End If
 
@@ -1739,7 +1739,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
 104 If AlquimistaTieneMateriales(UserIndex, ItemIndex) And _
        UserList(UserIndex).Stats.UserSkills(e_Skill.Alquimia) >= ObjData(ItemIndex).SkPociones And _
        PuedeConstruirAlquimista(ItemIndex) And _
-       ObjData(ToolIndex).OBJType = e_OBJType.otHerramientas And _
+       ObjData(ToolIndex).OBJType = e_OBJType.otWorkingTools And _
        ObjData(ToolIndex).Subtipo = 4 And _
        KnowsCraftingRecipe(UserIndex, ItemIndex) Then
 
@@ -1785,12 +1785,12 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
         End If
 
         If ItemIndex = 0 Then Exit Sub
-        If UserList(UserIndex).invent.HerramientaEqpObjIndex = 0 Then
+        If UserList(UserIndex).invent.EquippedWorkingToolObjIndex = 0 Then
             Exit Sub
 
         End If
 
-106     If SastreTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(e_Skill.Sastreria) >= ObjData(ItemIndex).SkSastreria And PuedeConstruirSastre(ItemIndex) And ObjData(UserList(UserIndex).invent.HerramientaEqpObjIndex).OBJType = e_OBJType.otHerramientas And ObjData(UserList(UserIndex).invent.HerramientaEqpObjIndex).Subtipo = 9 Then
+106     If SastreTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(e_Skill.Sastreria) >= ObjData(ItemIndex).SkSastreria And PuedeConstruirSastre(ItemIndex) And ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).OBJType = e_OBJType.otWorkingTools And ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = 9 Then
 108         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
 110         Call WriteUpdateSta(UserIndex)
 112         Call SastreQuitarMateriales(UserIndex, ItemIndex)
@@ -1875,7 +1875,7 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
 112     cant = RandomNumber(10, 20)
 114     necesarios = MineralesParaLingote(obji, cant)
 
-116     If UserList(UserIndex).invent.Object(Slot).amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> e_OBJType.otMinerales Then
+116     If UserList(UserIndex).invent.Object(Slot).amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> e_OBJType.otMinerals Then
 118         ' Msg645=No tienes suficientes minerales para hacer un lingote.
             Call WriteLocaleMsg(UserIndex, "645", e_FontTypeNames.FONTTYPE_INFO)
 120         Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -2229,7 +2229,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
             'Bonificación según el nivel
 121         bonificacionLvl = 1 + bonificacionPescaLvl(.Stats.ELV)
             'Bonificacion de la caña dependiendo de su poder:
-122         bonificacionCaña = PoderCanas(ObjData(.invent.HerramientaEqpObjIndex).Power) / 10
+122         bonificacionCaña = PoderCanas(ObjData(.invent.EquippedWorkingToolObjIndex).Power) / 10
             'Bonificación total
 123         bonificacionTotal = bonificacionCaña * bonificacionLvl * SvrConfig.GetValue("RecoleccionMult")
             'Si es zona segura se aplica una penalización
@@ -2272,14 +2272,14 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
                 Dim objValue As Integer
 
                 If IsFeatureEnabled("gain_exp_while_working") Then
-                        Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.HerramientaEqpObjIndex, e_JobsTypes.Fisherman)
+                        Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Fisherman)
                         Call WriteUpdateExp(UserIndex)
                         Call CheckUserLevel(UserIndex)
                 End If
 
                 ' Shugar: al final no importa el valor del pez ya que se ajusta la cantidad...
                 ' Genero el obj pez que pesqué y su cantidad
-126             MiObj.ObjIndex = ObtenerPezRandom(ObjData(.invent.HerramientaEqpObjIndex).Power)
+126             MiObj.ObjIndex = ObtenerPezRandom(ObjData(.invent.EquippedWorkingToolObjIndex).Power)
 127             objValue = max(ObjData(MiObj.ObjIndex).Valor / 3, 1)
                 'si esta macreando y para que esten mas atentos les mando un NPC y saco el macro de trabajar
                 If MiObj.ObjIndex = (SvrConfig.GetValue("FISHING_SPECIALFISH1_ID") Or MiObj.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH2_ID")) And (UserList(UserIndex).pos.Map) <> SvrConfig.GetValue("FISHING_MAP_SPECIAL_FISH1_ID") Then
@@ -2623,8 +2623,8 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 238                         If .clase = e_Class.Thief Then
 
                                 'Si no tiene puestos los guantes de hurto roba un 50% menos.
-240                             If .invent.WeaponEqpObjIndex > 0 Then
-242                                 If ObjData(.invent.WeaponEqpObjIndex).Subtipo = 5 Then
+240                             If .invent.EquippedWeaponObjIndex > 0 Then
+242                                 If ObjData(.invent.EquippedWeaponObjIndex).Subtipo = 5 Then
 244                                     n = RandomNumber(.Stats.ELV * 50 * Extra, .Stats.ELV * 100 * Extra) * SvrConfig.GetValue("GoldMult")
                                     Else
 246                                     n = RandomNumber(.Stats.ELV * 25 * Extra, .Stats.ELV * 50 * Extra) * SvrConfig.GetValue("GoldMult")
@@ -2703,7 +2703,7 @@ Public Function ObjEsRobable(ByVal VictimaIndex As Integer, _
         Dim OI As Integer
 
 100     OI = UserList(VictimaIndex).Invent.Object(Slot).ObjIndex
-102     ObjEsRobable = ObjData(OI).OBJType <> e_OBJType.otLlaves And ObjData(OI).OBJType <> e_OBJType.otBarcos And ObjData(OI).OBJType <> e_OBJType.otMonturas And ObjData(OI).OBJType <> e_OBJType.otRunas And ObjData(OI).ObjDonador = 0 And ObjData(OI).Instransferible = 0 And ObjData(OI).Real = 0 And ObjData(OI).Caos = 0 And UserList(VictimaIndex).invent.Object(Slot).Equipped = 0
+102     ObjEsRobable = ObjData(OI).OBJType <> e_OBJType.otKeys And ObjData(OI).OBJType <> e_OBJType.otShips And ObjData(OI).OBJType <> e_OBJType.otSaddles And ObjData(OI).OBJType <> e_OBJType.otRecallStones And ObjData(OI).ObjDonador = 0 And ObjData(OI).Instransferible = 0 And ObjData(OI).Real = 0 And ObjData(OI).Caos = 0 And UserList(VictimaIndex).invent.Object(Slot).Equipped = 0
         Exit Function
 ObjEsRobable_Err:
 104     Call TraceError(Err.Number, Err.Description, "Trabajo.ObjEsRobable", Erl)
@@ -3200,13 +3200,13 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
             .Counters.TiempoInicioMeditar = .Counters.TiempoInicioMeditar + 1
 
 104         If .Counters.TimerMeditar >= IntervaloMeditar And .Counters.TiempoInicioMeditar > 20 Then
-                If e_Class.Bard And .invent.DañoMagicoEqpObjIndex = CommonLuteIndex Then
+                If e_Class.Bard And .invent.EquippedRingAccesoryObjIndex = CommonLuteIndex Then
                      Mana = Porcentaje(.Stats.MaxMAN, Porcentaje(PorcentajeRecuperoMana, RecoveryMana + .Stats.UserSkills(e_Skill.Meditar) * MultiplierManaxSkills)) _
                      + ManaCommonLute
-                ElseIf e_Class.Bard And .invent.DañoMagicoEqpObjIndex = MagicLuteIndex Then
+                ElseIf e_Class.Bard And .invent.EquippedRingAccesoryObjIndex = MagicLuteIndex Then
                      Mana = Porcentaje(.Stats.MaxMAN, Porcentaje(PorcentajeRecuperoMana, RecoveryMana + .Stats.UserSkills(e_Skill.Meditar) * MultiplierManaxSkills)) _
                      + ManaMagicLute
-                ElseIf e_Class.Bard And .invent.DañoMagicoEqpObjIndex = ElvenLuteIndex Then
+                ElseIf e_Class.Bard And .invent.EquippedRingAccesoryObjIndex = ElvenLuteIndex Then
                      Mana = Porcentaje(.Stats.MaxMAN, Porcentaje(PorcentajeRecuperoMana, RecoveryMana + .Stats.UserSkills(e_Skill.Meditar) * MultiplierManaxSkills)) _
                      + ManaElvenLute
                 Else
@@ -3301,16 +3301,16 @@ Public Sub DoMontar(ByVal UserIndex As Integer, _
 
             End If
 
-128         If .flags.Montado = 1 And .Invent.MonturaObjIndex > 0 Then
-130             If ObjData(.Invent.MonturaObjIndex).ResistenciaMagica > 0 Then
-132                 Call UpdateUserInv(False, UserIndex, .Invent.MonturaSlot)
+128         If .flags.Montado = 1 And .invent.EquippedSaddleObjIndex > 0 Then
+130             If ObjData(.invent.EquippedSaddleObjIndex).ResistenciaMagica > 0 Then
+132                 Call UpdateUserInv(False, UserIndex, .invent.EquippedSaddleSlot)
 
                 End If
 
             End If
 
-134         .Invent.MonturaObjIndex = .Invent.Object(Slot).ObjIndex
-136         .Invent.MonturaSlot = Slot
+134         .invent.EquippedSaddleObjIndex = .invent.Object(Slot).ObjIndex
+136         .invent.EquippedSaddleSlot = Slot
 
 138         If .flags.Montado = 0 Then
 140             .Char.Body = Montura.Ropaje
@@ -3326,18 +3326,18 @@ Public Sub DoMontar(ByVal UserIndex As Integer, _
 154             .Char.Head = .OrigChar.Head
                 Call TargetUpdateTerrain(.EffectOverTime)
 
-156             If .Invent.ArmourEqpObjIndex > 0 Then
-158                 .Char.Body = ObtenerRopaje(UserIndex, ObjData(.Invent.ArmourEqpObjIndex))
+156             If .invent.EquippedArmorObjIndex > 0 Then
+158                 .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
                 Else
                     Call SetNakedBody(UserList(userIndex))
 
                 End If
 
-162             If .Invent.EscudoEqpObjIndex > 0 Then .Char.ShieldAnim = ObjData(.Invent.EscudoEqpObjIndex).ShieldAnim
-164             If .Invent.WeaponEqpObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.WeaponEqpObjIndex).WeaponAnim
-166             If .Invent.CascoEqpObjIndex > 0 Then .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
-167             If .invent.MagicoObjIndex > 0 Then
-                    If ObjData(.invent.MagicoObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.MagicoObjIndex).Ropaje
+162             If .invent.EquippedShieldObjIndex > 0 Then .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
+164             If .invent.EquippedWeaponObjIndex > 0 Then .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
+166             If .invent.EquippedHelmetObjIndex > 0 Then .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+167             If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
+                    If ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
 
                 End If
 
@@ -3643,8 +3643,8 @@ Public Sub FishOrThrowNet(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-102         If ObjData(.invent.HerramientaEqpObjIndex).OBJType <> e_OBJType.otHerramientas Then Exit Sub
-104         If ObjData(.invent.HerramientaEqpObjIndex).Subtipo = e_ToolsSubtype.eFishingNet Then
+102         If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
+104         If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo = e_ToolsSubtype.eFishingNet Then
 106             If MapInfo(.pos.Map).Seguro = 1 Or Not ExpectObjectTypeAt(e_OBJType.otFishingPool, .pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y) Then
 
 108                 If IsValidUserRef(.flags.TargetUser) Or IsValidNpcRef(.flags.TargetNPC) Then
@@ -3674,9 +3674,9 @@ Sub ThrowNetToTarget(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-102         If .invent.HerramientaEqpObjIndex = 0 Then Exit Sub
-104         If ObjData(.invent.HerramientaEqpObjIndex).OBJType <> e_OBJType.otHerramientas Then Exit Sub
-106         If ObjData(.invent.HerramientaEqpObjIndex).Subtipo <> e_ToolsSubtype.eFishingNet Then Exit Sub
+102         If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
+104         If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
+106         If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo <> e_ToolsSubtype.eFishingNet Then Exit Sub
 
             'If it's outside range log it and exit
 108         If Abs(.pos.x - .Trabajo.Target_X) > RANGO_VISION_X Or Abs(.pos.y - .Trabajo.Target_Y) > RANGO_VISION_Y Then
@@ -3775,9 +3775,9 @@ Sub ThrowNetToTarget(ByVal UserIndex As Integer)
             End If
 
             If ThrowNet Then
-190             Call UpdateCd(UserIndex, ObjData(.invent.HerramientaEqpObjIndex).cdType)
-192             Call QuitarUserInvItem(UserIndex, .invent.HerramientaEqpSlot, 1)
-194             Call UpdateUserInv(True, UserIndex, .invent.HerramientaEqpSlot)
+190             Call UpdateCd(UserIndex, ObjData(.invent.EquippedWorkingToolObjIndex).cdType)
+192             Call QuitarUserInvItem(UserIndex, .invent.EquippedWorkingToolSlot, 1)
+194             Call UpdateUserInv(True, UserIndex, .invent.EquippedWorkingToolSlot)
 196             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, .Trabajo.Target_X, .Trabajo.Target_Y, 3))
 
             End If

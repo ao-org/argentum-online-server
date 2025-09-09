@@ -987,9 +987,9 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
         On Error GoTo EfectoFrio_Err
 100     If Not Intemperie(UserIndex) Then Exit Sub
 102     With UserList(UserIndex)
-104         If .Invent.ArmourEqpObjIndex > 0 Then
+104         If .Invent.EquippedArmorObjIndex > 0 Then
                 '  Ropa invernal
-106             If ObjData(.Invent.ArmourEqpObjIndex).Invernal Then Exit Sub
+106             If ObjData(.Invent.EquippedArmorObjIndex).Invernal Then Exit Sub
             End If
 108         If .Counters.Frio < IntervaloFrio Then
 110             .Counters.Frio = .Counters.Frio + 1

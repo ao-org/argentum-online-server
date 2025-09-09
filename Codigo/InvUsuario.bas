@@ -90,7 +90,7 @@ Public Function TieneObjetosRobables(ByVal UserIndex As Integer) As Boolean
 102             ObjIndex = UserList(UserIndex).Invent.Object(i).ObjIndex
     
 104             If ObjIndex > 0 Then
-106                 If (ObjData(ObjIndex).OBJType <> e_OBJType.otLlaves And ObjData(ObjIndex).OBJType <> e_OBJType.otBarcos And ObjData(ObjIndex).OBJType <> e_OBJType.otMonturas And ObjData(ObjIndex).OBJType <> e_OBJType.OtDonador And ObjData(ObjIndex).OBJType <> e_OBJType.otRunas) Then
+106                 If (ObjData(ObjIndex).OBJType <> e_OBJType.otKeys And ObjData(ObjIndex).OBJType <> e_OBJType.otShips And ObjData(ObjIndex).OBJType <> e_OBJType.otSaddles And ObjData(ObjIndex).OBJType <> e_OBJType.otDonator And ObjData(ObjIndex).OBJType <> e_OBJType.otRecallStones) Then
 108                     TieneObjetosRobables = True
                         Exit Function
     
@@ -199,7 +199,7 @@ Function RazaPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer
             End Select
         End If
         
-        If RazaPuedeUsarItem And Objeto.OBJType = e_OBJType.otArmadura Then
+        If RazaPuedeUsarItem And Objeto.OBJType = e_OBJType.otArmor Then
             RazaPuedeUsarItem = ObtenerRopaje(UserIndex, Objeto) <> 0
         End If
         
@@ -276,28 +276,28 @@ On Error GoTo LimpiarInventario_Err
                 Next
             End If
             .invent.NroItems = 0
-            .invent.ArmourEqpObjIndex = 0
-            .invent.ArmourEqpSlot = 0
-            .invent.WeaponEqpObjIndex = 0
-            .invent.WeaponEqpSlot = 0
-            .invent.HerramientaEqpObjIndex = 0
-            .invent.HerramientaEqpSlot = 0
-            .invent.CascoEqpObjIndex = 0
-            .invent.CascoEqpSlot = 0
-            .invent.EscudoEqpObjIndex = 0
-            .invent.EscudoEqpSlot = 0
-            .invent.DañoMagicoEqpObjIndex = 0
-            .invent.DañoMagicoEqpSlot = 0
-            .invent.ResistenciaEqpObjIndex = 0
-            .invent.ResistenciaEqpSlot = 0
-            .invent.MunicionEqpObjIndex = 0
-            .invent.MunicionEqpSlot = 0
-            .invent.BarcoObjIndex = 0
-            .invent.BarcoSlot = 0
-            .invent.MonturaObjIndex = 0
-            .invent.MonturaSlot = 0
-            .invent.MagicoObjIndex = 0
-            .invent.MagicoSlot = 0
+            .invent.EquippedArmorObjIndex = 0
+            .invent.EquippedArmorSlot = 0
+            .invent.EquippedWeaponObjIndex = 0
+            .invent.EquippedWeaponSlot = 0
+            .invent.EquippedWorkingToolObjIndex = 0
+            .invent.EquippedWorkingToolSlot = 0
+            .invent.EquippedHelmetObjIndex = 0
+            .invent.EquippedHelmetSlot = 0
+            .invent.EquippedShieldObjIndex = 0
+            .invent.EquippedShieldSlot = 0
+            .invent.EquippedRingAccesoryObjIndex = 0
+            .invent.EquippedRingAccesorySlot = 0
+            .invent.EquippedRingAccesoryObjIndex = 0
+            .invent.EquippedRingAccesorySlot = 0
+            .invent.EquippedMunitionObjIndex = 0
+            .invent.EquippedMunitionSlot = 0
+            .invent.EquippedShipObjIndex = 0
+            .invent.EquippedShipSlot = 0
+            .invent.EquippedSaddleObjIndex = 0
+            .invent.EquippedSaddleSlot = 0
+            .invent.EquippedAmuletAccesoryObjIndex = 0
+            .invent.EquippedAmuletAccesorySlot = 0
         End With
         
         Exit Sub
@@ -836,8 +836,8 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
             Case e_OBJType.otWeapon
 108             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
-110             UserList(UserIndex).Invent.WeaponEqpObjIndex = 0
-112             UserList(UserIndex).Invent.WeaponEqpSlot = 0
+110             UserList(UserIndex).invent.EquippedWeaponObjIndex = 0
+112             UserList(UserIndex).invent.EquippedWeaponSlot = 0
 114             UserList(UserIndex).Char.Arma_Aura = ""
 116             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.charindex, 0, True, 1))
         
@@ -851,21 +851,21 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 126                 Call WriteUpdateDM(UserIndex)
                 End If
     
-128         Case e_OBJType.otFlechas
+128         Case e_OBJType.otArrows
 130             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
-132             UserList(UserIndex).Invent.MunicionEqpObjIndex = 0
-134             UserList(UserIndex).Invent.MunicionEqpSlot = 0
+132             UserList(UserIndex).invent.EquippedMunitionObjIndex = 0
+134             UserList(UserIndex).invent.EquippedMunitionSlot = 0
     
                 ' Case e_OBJType.otAnillos
                 '    UserList(UserIndex).Invent.Object(slot).Equipped = 0
                 '    UserList(UserIndex).Invent.AnilloEqpObjIndex = 0
                 ' UserList(UserIndex).Invent.AnilloEqpSlot = 0
             
-136         Case e_OBJType.otHerramientas
+136         Case e_OBJType.otWorkingTools
 137             If UserList(UserIndex).flags.PescandoEspecial = False Then
 138                 UserList(UserIndex).invent.Object(Slot).Equipped = 0
-140                 UserList(UserIndex).invent.HerramientaEqpObjIndex = 0
-142                 UserList(UserIndex).invent.HerramientaEqpSlot = 0
+140                 UserList(UserIndex).invent.EquippedWorkingToolObjIndex = 0
+142                 UserList(UserIndex).invent.EquippedWorkingToolSlot = 0
     
 144                 If UserList(UserIndex).flags.UsandoMacro = True Then
 146                     Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -878,7 +878,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     End If
                 End If
        
-154         Case e_OBJType.otMagicos
+154         Case e_OBJType.otAmulets
     
 156             Select Case obj.EfectoMagico
 
@@ -949,13 +949,13 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 230             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.charindex, 0, True, 5))
 232             UserList(UserIndex).Char.Otra_Aura = 0
 234             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
-236             UserList(UserIndex).Invent.MagicoObjIndex = 0
-238             UserList(UserIndex).Invent.MagicoSlot = 0
+236             UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex = 0
+238             UserList(UserIndex).invent.EquippedAmuletAccesorySlot = 0
         
-256         Case e_OBJType.otArmadura
+256         Case e_OBJType.otArmor
 258             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
-260             UserList(UserIndex).Invent.ArmourEqpObjIndex = 0
-262             UserList(UserIndex).Invent.ArmourEqpSlot = 0
+260             UserList(UserIndex).invent.EquippedArmorObjIndex = 0
+262             UserList(UserIndex).invent.EquippedArmorSlot = 0
         
 264             If UserList(UserIndex).flags.Navegando = 0 Then
 266                 If UserList(UserIndex).flags.Montado = 0 Then
@@ -972,10 +972,10 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 278                 Call WriteUpdateRM(UserIndex)
                 End If
     
-280         Case e_OBJType.otCasco
+280         Case e_OBJType.otHelmet
 282             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
-284             UserList(UserIndex).Invent.CascoEqpObjIndex = 0
-286             UserList(UserIndex).Invent.CascoEqpSlot = 0
+284             UserList(UserIndex).invent.EquippedHelmetObjIndex = 0
+286             UserList(UserIndex).invent.EquippedHelmetSlot = 0
 288             UserList(UserIndex).Char.Head_Aura = 0
 290             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.charindex, 0, True, 4))
 
@@ -986,10 +986,10 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 298                 Call WriteUpdateRM(UserIndex)
                 End If
     
-300         Case e_OBJType.otEscudo
+300         Case e_OBJType.otShield
 302             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
-304             UserList(UserIndex).Invent.EscudoEqpObjIndex = 0
-306             UserList(UserIndex).Invent.EscudoEqpSlot = 0
+304             UserList(UserIndex).invent.EquippedShieldObjIndex = 0
+306             UserList(UserIndex).invent.EquippedShieldSlot = 0
 308             UserList(UserIndex).Char.Escudo_Aura = 0
 310             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.charindex, 0, True, 3))
         
@@ -1003,21 +1003,23 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 320                 Call WriteUpdateRM(UserIndex)
                 End If
                 
-322         Case e_OBJType.otDañoMagico
+322         Case e_OBJType.otAmulets
 324             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
-326             UserList(UserIndex).invent.DañoMagicoEqpObjIndex = 0
-328             UserList(UserIndex).invent.DañoMagicoEqpSlot = 0
+326             UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex = 0
+328             UserList(UserIndex).invent.EquippedAmuletAccesorySlot = 0
 330             UserList(UserIndex).Char.DM_Aura = 0
 332             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.charindex, 0, True, 6))
 334             Call WriteUpdateDM(UserIndex)
+                Call WriteUpdateRM(UserIndex)
                 
-336         Case e_OBJType.otResistencia
+336         Case e_OBJType.otRingAccesory, e_OBJType.otMagicalInstrument
 338             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
-340             UserList(UserIndex).Invent.ResistenciaEqpObjIndex = 0
-342             UserList(UserIndex).Invent.ResistenciaEqpSlot = 0
+340             UserList(UserIndex).invent.EquippedRingAccesoryObjIndex = 0
+342             UserList(UserIndex).invent.EquippedRingAccesorySlot = 0
 344             UserList(UserIndex).Char.RM_Aura = 0
 346             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.charindex, 0, True, 7))
 348             Call WriteUpdateRM(UserIndex)
+                Call WriteUpdateDM(UserIndex)
         
         End Select
         
@@ -1118,8 +1120,8 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
         Dim Barco As t_ObjData
 
 100     With UserList(UserIndex)
-            If .Invent.BarcoObjIndex <= 0 Or .Invent.BarcoObjIndex > UBound(ObjData) Then Exit Sub
-102         Barco = ObjData(.Invent.BarcoObjIndex)
+            If .invent.EquippedShipObjIndex <= 0 Or .invent.EquippedShipObjIndex > UBound(ObjData) Then Exit Sub
+102         Barco = ObjData(.invent.EquippedShipObjIndex)
 
 104         If .flags.Muerto = 1 Then
 106             If Barco.Ropaje = iTraje Or Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw Then
@@ -1142,22 +1144,22 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
 118                 .Char.Body = iTraje
 120                 .Char.Head = .OrigChar.Head
 
-122                 If .Invent.CascoEqpObjIndex > 0 Then
-124                     .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
+122                 If .invent.EquippedHelmetObjIndex > 0 Then
+124                     .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
                     End If
                 ElseIf Barco.Ropaje = iTrajeAltoNw Then
                     .Char.Body = iTrajeAltoNw
                     .Char.Head = .OrigChar.Head
 
-                    If .Invent.CascoEqpObjIndex > 0 Then
-                        .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
+                    If .invent.EquippedHelmetObjIndex > 0 Then
+                        .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
                     End If
                 ElseIf Barco.Ropaje = iTrajeBajoNw Then
                     .Char.Body = iTrajeBajoNw
                     .Char.Head = .OrigChar.Head
 
-                    If .Invent.CascoEqpObjIndex > 0 Then
-                        .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
+                    If .invent.EquippedHelmetObjIndex > 0 Then
+                        .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
                     End If
                 Else
 126                 .Char.Head = 0
@@ -1246,21 +1248,21 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
                     End If
 
                     'Quitamos el elemento anterior
-126                 If .Invent.WeaponEqpObjIndex > 0 Then
-128                     Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
+126                 If .invent.EquippedWeaponObjIndex > 0 Then
+128                     Call Desequipar(UserIndex, .invent.EquippedWeaponSlot)
                     End If
             
-130                 If .Invent.HerramientaEqpObjIndex > 0 Then
-132                     Call Desequipar(UserIndex, .Invent.HerramientaEqpSlot)
+130                 If .invent.EquippedWorkingToolObjIndex > 0 Then
+132                     Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
                     End If
 
 138                 .Invent.Object(Slot).Equipped = 1
-140                 .Invent.WeaponEqpObjIndex = .Invent.Object(Slot).ObjIndex
-142                 .Invent.WeaponEqpSlot = Slot
+140                 .invent.EquippedWeaponObjIndex = .invent.Object(Slot).ObjIndex
+142                 .invent.EquippedWeaponSlot = Slot
             
 154                 If obj.DosManos = 1 Then
-156                     If .Invent.EscudoEqpObjIndex > 0 Then
-158                         Call Desequipar(UserIndex, .Invent.EscudoEqpSlot)
+156                     If .invent.EquippedShieldObjIndex > 0 Then
+158                         Call Desequipar(UserIndex, .invent.EquippedShieldSlot)
 160                         ' Msg674=No puedes usar armas dos manos si tienes un escudo equipado. Tu escudo fue desequipado.
                             Call WriteLocaleMsg(UserIndex, "674", e_FontTypeNames.FONTTYPE_INFOIAO)
                         End If
@@ -1292,7 +1294,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
 
                     End If
       
-186             Case e_OBJType.otHerramientas
+186             Case e_OBJType.otWorkingTools
                     If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eTool) Then
                         Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -1307,17 +1309,17 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
                     End If
 
                     'Quitamos el elemento anterior
-192                 If .Invent.HerramientaEqpObjIndex > 0 Then
-194                     Call Desequipar(UserIndex, .Invent.HerramientaEqpSlot)
+192                 If .invent.EquippedWorkingToolObjIndex > 0 Then
+194                     Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
                     End If
              
-196                 If .Invent.WeaponEqpObjIndex > 0 Then
-198                     Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
+196                 If .invent.EquippedWeaponObjIndex > 0 Then
+198                     Call Desequipar(UserIndex, .invent.EquippedWeaponSlot)
                     End If
              
 200                 .Invent.Object(Slot).Equipped = 1
-202                 .Invent.HerramientaEqpObjIndex = ObjIndex
-204                 .Invent.HerramientaEqpSlot = Slot
+202                 .invent.EquippedWorkingToolObjIndex = ObjIndex
+204                 .invent.EquippedWorkingToolSlot = Slot
              
 206                 If .flags.Montado = 0 Then
                 
@@ -1329,7 +1331,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
 
                     End If
        
-214             Case e_OBJType.otMagicos
+214             Case e_OBJType.otAmulets
 216                 errordesc = "Magico"
                     If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eMagicItem) Then
                         Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
@@ -1343,13 +1345,13 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
                     End If
 
                     'Quitamos el elemento anterior
-222                 If .Invent.MagicoObjIndex > 0 Then
-224                     Call Desequipar(UserIndex, .Invent.MagicoSlot)
+222                 If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
+224                     Call Desequipar(UserIndex, .invent.EquippedAmuletAccesorySlot)
                     End If
         
 226                 .Invent.Object(Slot).Equipped = 1
-228                 .Invent.MagicoObjIndex = .Invent.Object(Slot).ObjIndex
-230                 .Invent.MagicoSlot = Slot
+228                 .invent.EquippedAmuletAccesoryObjIndex = .invent.Object(Slot).ObjIndex
+230                 .invent.EquippedAmuletAccesorySlot = Slot
                 
 232                 Select Case obj.EfectoMagico
                         Case e_MagicItemEffect.eModifyAttributes 'Modif la fuerza, agilidad, carisma, etc
@@ -1422,7 +1424,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
 312                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Otra_Aura, False, 5))
                     End If
     
-354             Case e_OBJType.otFlechas
+354             Case e_OBJType.otArrows
                     If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eAmunition) Then
                         Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -1435,15 +1437,15 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
                     End If
                 
                     'Quitamos el elemento anterior
-360                 If .Invent.MunicionEqpObjIndex > 0 Then
-362                     Call Desequipar(UserIndex, .Invent.MunicionEqpSlot)
+360                 If .invent.EquippedMunitionObjIndex > 0 Then
+362                     Call Desequipar(UserIndex, .invent.EquippedMunitionSlot)
                     End If
         
 364                 .Invent.Object(Slot).Equipped = 1
-366                 .Invent.MunicionEqpObjIndex = .Invent.Object(Slot).ObjIndex
-368                 .Invent.MunicionEqpSlot = Slot
+366                 .invent.EquippedMunitionObjIndex = .invent.Object(Slot).ObjIndex
+368                 .invent.EquippedMunitionSlot = Slot
 
-370             Case e_OBJType.otArmadura
+370             Case e_OBJType.otArmor
                     If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eArmor) Then
                         Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -1474,9 +1476,9 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
                     End If
 
                     'Quita el anterior
-388                 If .Invent.ArmourEqpObjIndex > 0 Then
+388                 If .invent.EquippedArmorObjIndex > 0 Then
 390                     errordesc = "Armadura 2"
-392                     Call Desequipar(UserIndex, .Invent.ArmourEqpSlot)
+392                     Call Desequipar(UserIndex, .invent.EquippedArmorSlot)
 394                     errordesc = "Armadura 3"
 
                     End If
@@ -1499,8 +1501,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
                     End If
             
 402                 .Invent.Object(Slot).Equipped = 1
-404                 .Invent.ArmourEqpObjIndex = .Invent.Object(Slot).ObjIndex
-406                 .Invent.ArmourEqpSlot = Slot
+404                 .invent.EquippedArmorObjIndex = .invent.Object(Slot).ObjIndex
+406                 .invent.EquippedArmorSlot = Slot
 
 408                 If .flags.Montado = 0 And .flags.Navegando = 0 Then
 410                     .Char.Body = Ropaje
@@ -1514,7 +1516,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
 418                     Call WriteUpdateRM(UserIndex)
                     End If
     
-420             Case e_OBJType.otCasco
+420             Case e_OBJType.otHelmet
 
     
                     If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eHelm) Then
@@ -1534,8 +1536,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
                     End If
     
                     'Quita el anterior
-430                 If .Invent.CascoEqpObjIndex > 0 Then
-432                     Call Desequipar(UserIndex, .Invent.CascoEqpSlot)
+430                 If .invent.EquippedHelmetObjIndex > 0 Then
+432                     Call Desequipar(UserIndex, .invent.EquippedHelmetSlot)
                     End If
 
 434                 errordesc = "Casco"
@@ -1547,8 +1549,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
                     End If
             
 442                 .Invent.Object(Slot).Equipped = 1
-444                 .Invent.CascoEqpObjIndex = .Invent.Object(Slot).ObjIndex
-446                 .Invent.CascoEqpSlot = Slot
+444                 .invent.EquippedHelmetObjIndex = .invent.Object(Slot).ObjIndex
+446                 .invent.EquippedHelmetSlot = Slot
             
                     If .flags.Navegando = 0 Then
                         Dim nuevoHead As Integer
@@ -1582,7 +1584,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
 456                     Call WriteUpdateRM(UserIndex)
                     End If
 
-458             Case e_OBJType.otEscudo
+458             Case e_OBJType.otShield
                     If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eShiled) Then
                         Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -1603,14 +1605,14 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
                     End If
      
                     'Quita el anterior
-470                 If .Invent.EscudoEqpObjIndex > 0 Then
-472                     Call Desequipar(UserIndex, .Invent.EscudoEqpSlot)
+470                 If .invent.EquippedShieldObjIndex > 0 Then
+472                     Call Desequipar(UserIndex, .invent.EquippedShieldSlot)
                     End If
      
 
-484                 If .Invent.WeaponEqpObjIndex > 0 Then
-486                     If ObjData(.Invent.WeaponEqpObjIndex).DosManos = 1 Then
-488                         Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
+484                 If .invent.EquippedWeaponObjIndex > 0 Then
+486                     If ObjData(.invent.EquippedWeaponObjIndex).DosManos = 1 Then
+488                         Call Desequipar(UserIndex, .invent.EquippedWeaponSlot)
 490                         ' Msg677=No puedes equipar un escudo si tienes un arma dos manos equipada. Tu arma fue desequipada.
                             Call WriteLocaleMsg(UserIndex, "677", e_FontTypeNames.FONTTYPE_INFOIAO)
                         End If
@@ -1624,8 +1626,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
                     End If
 
 500                 .Invent.Object(Slot).Equipped = 1
-502                 .Invent.EscudoEqpObjIndex = .Invent.Object(Slot).ObjIndex
-504                 .Invent.EscudoEqpSlot = Slot
+502                 .invent.EquippedShieldObjIndex = .invent.Object(Slot).ObjIndex
+504                 .invent.EquippedShieldSlot = Slot
 
 506                 If .flags.Navegando = 0 And .flags.Montado = 0 Then
 508                     .Char.ShieldAnim = obj.ShieldAnim
@@ -1636,7 +1638,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
 514                     Call WriteUpdateRM(UserIndex)
                     End If
 
-516             Case e_OBJType.otDañoMagico, e_OBJType.otResistencia
+516             Case e_OBJType.otMagicalInstrument, e_OBJType.otRingAccesory
                     'Si esta equipado lo quita
 518                 If .Invent.Object(Slot).Equipped Then
 520                     Call Desequipar(UserIndex, Slot)
@@ -1644,24 +1646,19 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
                     End If
      
                     'Quita el anterior
-522                 If .invent.DañoMagicoEqpSlot > 0 Then
-524                     Call Desequipar(UserIndex, .invent.DañoMagicoEqpSlot)
+522                 If .invent.EquippedRingAccesorySlot > 0 Then
+524                     Call Desequipar(UserIndex, .invent.EquippedRingAccesorySlot)
                     End If
-
-546                 If .Invent.ResistenciaEqpSlot > 0 Then
-548                     Call Desequipar(UserIndex, .Invent.ResistenciaEqpSlot)
-                    End If
-                
 
 526                 .Invent.Object(Slot).Equipped = 1
 
-                    If ObjData(.Invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otResistencia Then
-                        .Invent.ResistenciaEqpObjIndex = .Invent.Object(Slot).ObjIndex
-530                     .Invent.ResistenciaEqpSlot = Slot
+                    If ObjData(.invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otRingAccesory Then
+                        .invent.EquippedRingAccesoryObjIndex = .invent.Object(Slot).ObjIndex
+530                     .invent.EquippedRingAccesorySlot = Slot
                         Call WriteUpdateRM(userindex)
-                    ElseIf ObjData(.invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otDañoMagico Then
-528                     .invent.DañoMagicoEqpObjIndex = .invent.Object(Slot).ObjIndex
-                        .invent.DañoMagicoEqpSlot = Slot
+                    ElseIf ObjData(.invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otMagicalInstrument Then
+528                     .invent.EquippedRingAccesoryObjIndex = .invent.Object(Slot).ObjIndex
+                        .invent.EquippedRingAccesorySlot = Slot
 538                     Call WriteUpdateDM(userindex)
                         
                     End If
@@ -1669,7 +1666,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVa
 534                     .Char.DM_Aura = obj.CreaGRH
 536                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.DM_Aura, False, 6))
                     End If
-                Case e_OBJType.OtDonador
+                Case e_OBJType.otDonator
                     If obj.Subtipo = 4 Then
                        Call EquipAura(Slot, .Invent, UserIndex)
                     End If
@@ -1704,7 +1701,7 @@ Public Sub EquipAura(ByVal Slot As Integer, ByRef inventory As t_Inventario, ByV
             If inventory.Object(Index).objIndex > 0 Then
                 If inventory.Object(Index).objIndex > 0 Then
                     obj = ObjData(inventory.Object(Index).objIndex)
-                    If obj.OBJType = OtDonador And obj.Subtipo = 4 Then
+                    If obj.OBJType = otDonator And obj.Subtipo = 4 Then
                        inventory.Object(Index).Equipped = 0
                        Call UpdateUserInv(False, UserIndex, Index)
                     End If
@@ -1891,7 +1888,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     
                     UserList(UserIndex).flags.ModificoInventario = True
                     
-160             Case e_OBJType.otGuita
+160             Case e_OBJType.otGoldCoin
     
 162                 If .flags.Muerto = 1 Then
                         'Msg77=¡¡Estás muerto!!.
@@ -1945,7 +1942,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Exit Sub
                     End If
             
-200             Case e_OBJType.otHerramientas
+200             Case e_OBJType.otWorkingTools
     
 202                 If .flags.Muerto = 1 Then
 204                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
@@ -2000,7 +1997,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
                     End Select
         
-252             Case e_OBJType.otPociones
+252             Case e_OBJType.otPotions
     
 254                 If .flags.Muerto = 1 Then
 256                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
@@ -2724,7 +2721,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 974                 Call WriteUpdateUserStats(UserIndex)
 976                 Call UpdateUserInv(False, UserIndex, Slot)
     
-978             Case e_OBJType.otBebidas
+978             Case e_OBJType.otDrinks
     
 980                 If .flags.Muerto = 1 Then
 982                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
@@ -2753,7 +2750,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             
 1000                 Call UpdateUserInv(False, UserIndex, Slot)
             
-1002             Case e_OBJType.OtCofre
+1002             Case e_OBJType.otChest
     
 1004                 If .flags.Muerto = 1 Then
 1006                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
@@ -2844,7 +2841,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
                     End Select
         
-1054             Case e_OBJType.otLlaves
+1054             Case e_OBJType.otKeys
                     If UserList(UserIndex).flags.Muerto = 1 Then
                         'Msg895= ¡¡Estas muerto!! Solo podes usar items cuando estas vivo.
                         Call WriteLocaleMsg(UserIndex, "895", e_FontTypeNames.FONTTYPE_INFO)
@@ -2854,7 +2851,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     If UserList(UserIndex).flags.TargetObj = 0 Then Exit Sub
                     TargObj = ObjData(UserList(UserIndex).flags.TargetObj)
                     '¿El objeto clickeado es una puerta?
-                    If TargObj.OBJType = e_OBJType.otPuertas Then
+                    If TargObj.OBJType = e_OBJType.otDoors Then
                         If TargObj.clave < 1000 Then
                             'Msg896= Las llaves en el inventario están desactivadas. Sólo se permiten en el llavero.
                             Call WriteLocaleMsg(UserIndex, "896", e_FontTypeNames.FONTTYPE_INFO)
@@ -2902,7 +2899,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         End If
                     End If
                     
-1058             Case e_OBJType.otBotellaVacia
+1058             Case e_OBJType.otEmptyBottle
     
 1060                If .flags.Muerto = 1 Then
 1062                    Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
@@ -2936,7 +2933,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             
 1078                 Call UpdateUserInv(False, UserIndex, Slot)
         
-1080             Case e_OBJType.otBotellaLlena
+1080             Case e_OBJType.otFullBottle
     
 1082                 If .flags.Muerto = 1 Then
 1084                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
@@ -2960,7 +2957,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             
 1104                 Call UpdateUserInv(False, UserIndex, Slot)
         
-1106             Case e_OBJType.otPergaminos
+1106             Case e_OBJType.otParchment
     
 1108                 If .flags.Muerto = 1 Then
 1110                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
@@ -2994,7 +2991,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
        
                           End If
             
-1124             Case e_OBJType.otMinerales
+1124             Case e_OBJType.otMinerals
     
 1126                 If .flags.Muerto = 1 Then
 1128                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
@@ -3005,7 +3002,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
 1130                 Call WriteWorkRequestTarget(UserIndex, FundirMetal)
            
-1132             Case e_OBJType.otInstrumentos
+1132             Case e_OBJType.otMusicalInstruments
     
 1134                 If .flags.Muerto = 1 Then
 1136                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
@@ -3056,7 +3053,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                           'Si llega aca es porque es o Laud o Tambor o Flauta
 1162                 Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
            
-1164             Case e_OBJType.otBarcos
+1164             Case e_OBJType.otShips
                 
                         ' Piratas y trabajadores navegan al nivel 23
                      If .invent.Object(Slot).objIndex <> iObjTrajeAltoNw And .invent.Object(Slot).objIndex <> iObjTrajeBajoNw And .invent.Object(Slot).objIndex <> iObjTraje Then
@@ -3073,13 +3070,13 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Exit Sub
                         End If
                     ElseIf .invent.Object(Slot).objIndex = iObjTrajeAltoNw Or .invent.Object(Slot).objIndex = iObjTrajeBajoNw Then
-                        If (.flags.Navegando = 0 Or (.invent.BarcoObjIndex <> iObjTrajeAltoNw And .invent.BarcoObjIndex <> iObjTrajeBajoNw)) And MapData(.pos.Map, .pos.X + 1, .pos.y).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.X - 1, .pos.y).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.X, .pos.y + 1).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.X, .pos.y - 1).trigger <> e_Trigger.DETALLEAGUA Then
+                        If (.flags.Navegando = 0 Or (.invent.EquippedShipObjIndex <> iObjTrajeAltoNw And .invent.EquippedShipObjIndex <> iObjTrajeBajoNw)) And MapData(.pos.Map, .pos.x + 1, .pos.y).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.x - 1, .pos.y).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.x, .pos.y + 1).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.x, .pos.y - 1).trigger <> e_Trigger.DETALLEAGUA Then
                             'Msg913= Este traje es para aguas contaminadas.
                             Call WriteLocaleMsg(UserIndex, "913", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                     ElseIf .invent.Object(Slot).objIndex = iObjTraje Then
-                          If (.flags.Navegando = 0 Or .invent.BarcoObjIndex <> iObjTraje) And MapData(.pos.Map, .pos.X + 1, .pos.y).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.X - 1, .pos.y).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.X, .pos.y + 1).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.X, .pos.y - 1).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.X + 1, .pos.y).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.X - 1, .pos.y).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.X, .pos.y + 1).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.X, .pos.y - 1).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.X + 1, .pos.y).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.X - 1, .pos.y).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.X, .pos.y + 1).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.X, .pos.y - 1).trigger <> e_Trigger.NADOBAJOTECHO Then
+                          If (.flags.Navegando = 0 Or .invent.EquippedShipObjIndex <> iObjTraje) And MapData(.pos.Map, .pos.x + 1, .pos.y).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.x - 1, .pos.y).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.x, .pos.y + 1).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.x, .pos.y - 1).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.x + 1, .pos.y).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.x - 1, .pos.y).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.x, .pos.y + 1).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.x, .pos.y - 1).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.x + 1, .pos.y).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.x - 1, .pos.y).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.x, .pos.y + 1).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.x, .pos.y - 1).trigger <> e_Trigger.NADOBAJOTECHO Then
                             'Msg914= Este traje es para zonas poco profundas.
                             Call WriteLocaleMsg(UserIndex, "914", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
@@ -3097,7 +3094,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         End If
                     
                     Else
-1184                    If .invent.BarcoObjIndex <> .invent.Object(Slot).ObjIndex Then
+1184                    If .invent.EquippedShipObjIndex <> .invent.Object(Slot).ObjIndex Then
 1186                        Call DoNavega(UserIndex, obj, Slot)
                         Else
 1188                        If LegalWalk(.Pos.Map, .Pos.X - 1, .Pos.Y, e_Heading.WEST, False, True) Or LegalWalk(.Pos.Map, .Pos.X, .Pos.Y - 1, e_Heading.NORTH, False, True) Or LegalWalk(.Pos.Map, .Pos.X + 1, .Pos.Y, e_Heading.EAST, False, True) Or LegalWalk(.Pos.Map, .Pos.X, .Pos.Y + 1, e_Heading.SOUTH, False, True) Then
@@ -3110,7 +3107,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         End If
                     End If
             
-1194             Case e_OBJType.otMonturas
+1194             Case e_OBJType.otSaddles
                           'Verifica todo lo que requiere la montura
         
 1196                If .flags.Muerto = 1 Then
@@ -3136,7 +3133,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 
 1208                Call DoMontar(UserIndex, obj, Slot)
                 
-                 Case e_OBJType.OtDonador
+                 Case e_OBJType.otDonator
                     Select Case obj.Subtipo
                         Case 1
 1214                        If .Counters.Pena <> 0 Then
@@ -3162,7 +3159,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 1252                     Case 3
                             Exit Sub
                     End Select
-1262             Case e_OBJType.otpasajes
+1262             Case e_OBJType.otPassageTicket
     
 1264                 If .flags.Muerto = 1 Then
                         'Msg77=¡¡Estás muerto!!.
@@ -3182,7 +3179,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                           End If
             
 1276                 If .Pos.Map <> obj.DesdeMap Then
-1278                     Call WriteLocaleChatOverHead(UserIndex, "1354", "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex), vbWhite) ' Msg1354=El pasaje no lo compraste aquí! Largate!
+1278                     Call WriteLocaleChatOverHead(UserIndex, "1354", "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1354=El pasaje no lo compraste aquí! Largate!
                               Exit Sub
                           End If
             
@@ -3207,7 +3204,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 1304                Call QuitarUserInvItem(UserIndex, Slot, 1)
 1306                Call UpdateUserInv(False, UserIndex, Slot)
             
-1308             Case e_OBJType.otRunas
+1308             Case e_OBJType.otRecallStones
         
 1310                If .Counters.Pena <> 0 Then
 1312                    ' Msg691=No podés usar la runa estando en la cárcel.
@@ -3260,11 +3257,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 1344                         .Accion.ObjSlot = Slot
         
             
-1346             Case e_OBJType.otmapa
+1346             Case e_OBJType.otMap
 1348                 Call WriteShowFrmMapa(UserIndex)
                  Case e_OBJType.OtQuest
 1349                 If obj.QuestId > 0 Then Call WriteObjQuestSend(UserIndex, obj.QuestId, Slot)
-                 Case e_OBJType.otMagicos
+                 Case e_OBJType.otAmulets
                         Select Case ObjData(objIndex).Subtipo
                             Case e_MagicItemSubType.TargetUsable
                                 Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
@@ -3443,7 +3440,7 @@ Public Function ItemSeCae(ByVal Index As Integer) As Boolean
         On Error GoTo ItemSeCae_Err
         
 
-100     ItemSeCae = (ObjData(Index).Real <> 1 Or ObjData(Index).NoSeCae = 0) And (ObjData(Index).Caos <> 1 Or ObjData(Index).NoSeCae = 0) And ObjData(Index).OBJType <> e_OBJType.otLlaves And ObjData(Index).OBJType <> e_OBJType.otBarcos And ObjData(Index).OBJType <> e_OBJType.otMonturas And ObjData(Index).NoSeCae = 0 And Not ObjData(Index).Intirable = 1 And Not ObjData(Index).Destruye = 1 And Not ObjData(Index).Instransferible = 1
+100     ItemSeCae = (ObjData(Index).Real <> 1 Or ObjData(Index).NoSeCae = 0) And (ObjData(Index).Caos <> 1 Or ObjData(Index).NoSeCae = 0) And ObjData(Index).OBJType <> e_OBJType.otKeys And ObjData(Index).OBJType <> e_OBJType.otShips And ObjData(Index).OBJType <> e_OBJType.otSaddles And ObjData(Index).NoSeCae = 0 And Not ObjData(Index).Intirable = 1 And Not ObjData(Index).Destruye = 1 And Not ObjData(Index).Instransferible = 1
 
         
         Exit Function
@@ -3463,10 +3460,10 @@ Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 102         If .clase = e_Class.Pirat And .Stats.ELV >= 37 And .flags.Navegando = 1 Then
 
                 ' Si no está navegando, se caen los items
-104             If .Invent.BarcoObjIndex > 0 Then
+104             If .invent.EquippedShipObjIndex > 0 Then
 
                     ' Con galeón cada item tiene una probabilidad de caerse del 67%
-106                 If ObjData(.Invent.BarcoObjIndex).Ropaje = iGaleon Then
+106                 If ObjData(.invent.EquippedShipObjIndex).Ropaje = iGaleon Then
 
 108                     If RandomNumber(1, 100) <= 33 Then
                             Exit Function
@@ -3554,8 +3551,8 @@ End Sub
 
 Function DropAmmount(ByRef invent As t_Inventario, ByVal objectIndex As Integer) As Integer
 100 DropAmmount = invent.Object(objectIndex).amount
-102 If invent.MagicoObjIndex > 0 Then
-        With ObjData(invent.MagicoObjIndex)
+102 If invent.EquippedAmuletAccesoryObjIndex > 0 Then
+        With ObjData(invent.EquippedAmuletAccesoryObjIndex)
 104     If .EfectoMagico = 12 Then
             Dim unprotected As Single
             unprotected = 1
@@ -3853,30 +3850,30 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
         End If
         
         .Char.head = .OrigChar.head
-        If .invent.WeaponEqpObjIndex > 0 Then
-            .Char.WeaponAnim = ObjData(.invent.WeaponEqpObjIndex).WeaponAnim
-        ElseIf .invent.HerramientaEqpObjIndex > 0 Then
-            .Char.WeaponAnim = ObjData(.invent.HerramientaEqpObjIndex).WeaponAnim
+        If .invent.EquippedWeaponObjIndex > 0 Then
+            .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
+        ElseIf .invent.EquippedWorkingToolObjIndex > 0 Then
+            .Char.WeaponAnim = ObjData(.invent.EquippedWorkingToolObjIndex).WeaponAnim
         Else
             .Char.WeaponAnim = 0
         End If
-        If .invent.ArmourEqpObjIndex > 0 Then
-            .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.ArmourEqpObjIndex))
+        If .invent.EquippedArmorObjIndex > 0 Then
+            .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
         Else
             Call SetNakedBody(UserList(UserIndex))
         End If
-        If .invent.CascoEqpObjIndex > 0 Then
-            .Char.CascoAnim = ObjData(.invent.CascoEqpObjIndex).CascoAnim
+        If .invent.EquippedHelmetObjIndex > 0 Then
+            .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
         Else
             .Char.CascoAnim = 0
         End If
-        If .invent.MagicoObjIndex > 0 Then
-            .Char.CartAnim = ObjData(.invent.MagicoObjIndex).Ropaje
+        If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
+            .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
         Else
             .Char.CartAnim = 0
         End If
-        If .invent.EscudoEqpObjIndex > 0 Then
-            .Char.ShieldAnim = ObjData(.invent.EscudoEqpObjIndex).ShieldAnim
+        If .invent.EquippedShieldObjIndex > 0 Then
+            .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
         Else
             .Char.ShieldAnim = 0
         End If
@@ -4001,11 +3998,11 @@ Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal Targe
     Dim SourceObj As t_ObjData
 
 
-     If TargetSlot < 1 Or TargetSlot  > UserList(UserIndex).CurrentInventorySlots Then
+     If TargetSlot < 1 Or TargetSlot > UserList(UserIndex).CurrentInventorySlots Then
         Exit Function
     End If
     
-    If SourceSlot< 1 Or SourceSlot> UserList(UserIndex).CurrentInventorySlots Then
+    If SourceSlot < 1 Or SourceSlot > UserList(UserIndex).CurrentInventorySlots Then
         Exit Function
     End If
     

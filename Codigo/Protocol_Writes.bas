@@ -1869,14 +1869,16 @@ Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
 100     With UserList(UserIndex).Invent
 
             ' % daño mágico del arma
-102         If .WeaponEqpObjIndex > 0 Then
-104             Valor = Valor + ObjData(.WeaponEqpObjIndex).MagicDamageBonus
+102         If .EquippedWeaponObjIndex > 0 Then
+104             Valor = Valor + ObjData(.EquippedWeaponObjIndex).MagicDamageBonus
             End If
 
             ' % daño mágico del anillo
-106         If .DañoMagicoEqpObjIndex > 0 Then
-108             Valor = Valor + ObjData(.DañoMagicoEqpObjIndex).MagicDamageBonus
+106         If .EquippedRingAccesoryObjIndex > 0 Then
+108             Valor = Valor + ObjData(.EquippedRingAccesoryObjIndex).MagicDamageBonus
             End If
+            
+            
 
 110         Call Writer.WriteInt16(ServerPacketID.eUpdateDM)
 112         Call Writer.WriteInt16(Valor)
@@ -1903,23 +1905,23 @@ Public Sub WriteUpdateRM(ByVal UserIndex As Integer)
 100     With UserList(UserIndex).Invent
 
             ' Resistencia mágica de la armadura
-102         If .ArmourEqpObjIndex > 0 Then
-104             Valor = Valor + ObjData(.ArmourEqpObjIndex).ResistenciaMagica
+102         If .EquippedArmorObjIndex > 0 Then
+104             Valor = Valor + ObjData(.EquippedArmorObjIndex).ResistenciaMagica
             End If
 
             ' Resistencia mágica del anillo
-106         If .ResistenciaEqpObjIndex > 0 Then
-108             Valor = Valor + ObjData(.ResistenciaEqpObjIndex).ResistenciaMagica
+106         If .EquippedRingAccesoryObjIndex > 0 Then
+108             Valor = Valor + ObjData(.EquippedRingAccesoryObjIndex).ResistenciaMagica
             End If
 
             ' Resistencia mágica del escudo
-110         If .EscudoEqpObjIndex > 0 Then
-112             Valor = Valor + ObjData(.EscudoEqpObjIndex).ResistenciaMagica
+110         If .EquippedShieldObjIndex > 0 Then
+112             Valor = Valor + ObjData(.EquippedShieldObjIndex).ResistenciaMagica
             End If
 
             ' Resistencia mágica del casco
-114         If .CascoEqpObjIndex > 0 Then
-116             Valor = Valor + ObjData(.CascoEqpObjIndex).ResistenciaMagica
+114         If .EquippedHelmetObjIndex > 0 Then
+116             Valor = Valor + ObjData(.EquippedHelmetObjIndex).ResistenciaMagica
             End If
 
 118         Valor = Valor + 100 * ModClase(UserList(UserIndex).clase).ResistenciaMagica

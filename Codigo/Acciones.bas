@@ -263,8 +263,8 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                             Dim barca As t_ObjData
 
-                         barca = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
-                         Call DoNavega(UserIndex, barca, UserList(UserIndex).Invent.BarcoSlot)
+                         barca = ObjData(UserList(UserIndex).Invent.EquippedShipObjIndex)
+                         Call DoNavega(UserIndex, barca, UserList(UserIndex).Invent.EquippedShipSlot)
 
                         End If
                 
@@ -836,21 +836,21 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
         
 338             Select Case ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType
             
-                    Case e_OBJType.otPuertas 'Es una puerta
+                    Case e_OBJType.otDoors 'Es una puerta
 340                     Call AccionParaPuerta(Map, X, Y, UserIndex)
 
-342                 Case e_OBJType.otCarteles 'Es un cartel
+342                 Case e_OBJType.otSignBoards 'Es un cartel
 344                     Call AccionParaCartel(Map, X, Y, UserIndex)
 
-346                 Case e_OBJType.OtCorreo 'Es un cartel
+346                 Case e_OBJType.otMail 'Es un cartel
                         'Call AccionParaCorreo(Map, x, Y, UserIndex)
                         ' Msg586=El correo está temporalmente deshabilitado.
                         Call WriteLocaleMsg(UserIndex, "586", e_FontTypeNames.FONTTYPE_EJECUCION)
 
-356                 Case e_OBJType.otYunque 'Pozos
+356                 Case e_OBJType.otAnvil 'Pozos
 358                     Call AccionParaYunque(Map, X, Y, UserIndex)
 
-360                 Case e_OBJType.otLeña    'Leña
+360                 Case e_OBJType.otWood    'Leña
 
 362                     If MapData(Map, X, Y).ObjInfo.ObjIndex = FOGATA_APAG And UserList(UserIndex).flags.Muerto = 0 Then
 364                         Call AccionParaRamita(Map, X, Y, UserIndex)
@@ -867,7 +867,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
         
 370             Select Case ObjData(MapData(Map, X + 1, Y).ObjInfo.ObjIndex).OBJType
             
-                    Case e_OBJType.otPuertas 'Es una puerta
+                    Case e_OBJType.otDoors 'Es una puerta
 372                     Call AccionParaPuerta(Map, X + 1, Y, UserIndex)
             
                 End Select
@@ -877,7 +877,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
 378             Select Case ObjData(MapData(Map, X + 1, Y + 1).ObjInfo.ObjIndex).OBJType
             
-                    Case e_OBJType.otPuertas 'Es una puerta
+                    Case e_OBJType.otDoors 'Es una puerta
 380                     Call AccionParaPuerta(Map, X + 1, Y + 1, UserIndex)
             
                 End Select
@@ -887,7 +887,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
 386             Select Case ObjData(MapData(Map, X, Y + 1).ObjInfo.ObjIndex).OBJType
             
-                    Case e_OBJType.otPuertas 'Es una puerta
+                    Case e_OBJType.otDoors 'Es una puerta
 388                     Call AccionParaPuerta(Map, X, Y + 1, UserIndex)
 
                 End Select
@@ -922,13 +922,13 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 
         End If
     
-110     If UserList(UserIndex).Invent.HerramientaEqpObjIndex = 0 Then
+110     If UserList(UserIndex).Invent.EquippedWorkingToolObjIndex = 0 Then
             'Msg1071= Debes tener equipado un martillo de herrero para trabajar con el yunque.
             Call WriteLocaleMsg(UserIndex, "1071", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
-114     If ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo <> 7 Then
+114     If ObjData(UserList(UserIndex).Invent.EquippedWorkingToolObjIndex).Subtipo <> 7 Then
             'Msg1072= La herramienta que tienes no es la correcta, necesitas un martillo de herrero para poder trabajar.
             Call WriteLocaleMsg(UserIndex, "1072", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub

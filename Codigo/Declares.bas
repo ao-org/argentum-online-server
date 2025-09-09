@@ -952,50 +952,41 @@ Public Enum e_OBJType
 
     otUseOnce = 1
     otWeapon = 2
-    otArmadura = 3
-    otArboles = 4
-    otGuita = 5
-    otPuertas = 6
-    otContenedores = 7
-    otCarteles = 8
-    otLlaves = 9
-    otPociones = 11
-    otBebidas = 13
-    otLeña = 14
-    otFogata = 15
-    otEscudo = 16
-    otCasco = 17
-    otHerramientas = 18
+    otArmor = 3
+    otTrees = 4
+    otGoldCoin = 5
+    otDoors = 6
+    'otLibre = 7
+    otSignBoards = 8
+    otKeys = 9
+    'otLibre = 10
+    otPotions = 11
+    'otLibre = 12
+    otDrinks = 13
+    otWood = 14
+    'otLibre = 15
+    otShield = 16
+    otHelmet = 17
+    otWorkingTools = 18
     otTeleport = 19
-    OtDecoraciones = 20
-    otMagicos = 21
-    otYacimiento = 22
-    otMinerales = 23
-    otPergaminos = 24
-    otInstrumentos = 26
-    otYunque = 27
-    otFragua = 28
+    otDecorations = 20
+    otAmulets = 21
+    otOreDeposit = 22
+    otMinerals = 23
+    otParchment = 24
+    'otLibre = 25
+    otMusicalInstruments = 26
+    otAnvil = 27
+    otForge = 28
     otBlacksmithMaterial = 29
-    otDañoMagico = 30
-    otBarcos = 31
-    otFlechas = 32
-    otBotellaVacia = 33
-    otBotellaLlena = 34
-    otResistencia = 35
-    otpasajes = 36
-    otmapa = 38
-    OtPozos = 40
-    otMonturas = 44
-    otRunas = 45
-    OtCorreo = 47
     OtCofre = 48
     OtDonador = 50
     OtQuest = 51
     otFishingPool = 52
     otUsableOntarget = 53
-    otPlantas = 54
+    otPlants = 54
     otElementalRune = 55
-    otCualquiera = 100
+    otElse = 100
 End Enum
 
 Public Enum e_RuneType
@@ -1387,30 +1378,28 @@ End Type
 Public Type t_Inventario
 
     Object(1 To MAX_INVENTORY_SLOTS) As t_UserOBJ
-    WeaponEqpObjIndex As Integer
-    WeaponEqpSlot As Byte
-    ArmourEqpObjIndex As Integer
-    ArmourEqpSlot As Byte
-    EscudoEqpObjIndex As Integer
-    EscudoEqpSlot As Byte
-    CascoEqpObjIndex As Integer
-    CascoEqpSlot As Byte
-    MunicionEqpObjIndex As Integer
-    MunicionEqpSlot As Byte
-    DañoMagicoEqpObjIndex As Integer
-    DañoMagicoEqpSlot As Byte
-    ResistenciaEqpObjIndex As Integer
-    ResistenciaEqpSlot As Byte
-    HerramientaEqpObjIndex As Integer
-    HerramientaEqpSlot As Byte
-    BarcoObjIndex As Integer
-    BarcoSlot As Byte
+    EquippedWeaponObjIndex As Integer
+    EquippedWeaponSlot As Byte
+    EquippedArmorObjIndex As Integer
+    EquippedArmorSlot As Byte
+    EquippedShieldObjIndex As Integer
+    EquippedShieldSlot As Byte
+    EquippedHelmetObjIndex As Integer
+    EquippedHelmetSlot As Byte
+    EquippedMunitionObjIndex As Integer
+    EquippedMunitionSlot As Byte
+    EquippedWorkingToolObjIndex As Integer
+    EquippedWorkingToolSlot As Byte
+    EquippedShipObjIndex As Integer
+    EquippedShipSlot As Byte
+    EquippedSaddleObjIndex As Integer
+    EquippedSaddleSlot As Byte
+    EquippedRingAccesoryObjIndex As Integer
+    EquippedRingAccesorySlot As Byte
+    EquippedAmuletAccesoryObjIndex As Integer
+    EquippedAmuletAccesorySlot As Byte
     NroItems As Integer
-    MonturaObjIndex As Integer
-    MonturaSlot As Byte
-    MagicoObjIndex As Integer
-    MagicoSlot As Byte
-    
+
 End Type
 
 Public Type t_WorldPos
