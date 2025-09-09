@@ -1451,7 +1451,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
 122                         Call EquiparBarco(UserIndex)
 124                         ' Msg592=¡Has recuperado tu apariencia normal!
                             Call WriteLocaleMsg(UserIndex, "592", e_FontTypeNames.FONTTYPE_INFO)
-126                         Call ChangeUserChar(UserIndex, .char.body, .char.head, .char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
+126                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
 128                         Call RefreshCharStatus(UserIndex)
                         End If
     
@@ -1709,7 +1709,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 186                         Call EquiparBarco(UserIndex)
 188                         ' Msg592=¡Has recuperado tu apariencia normal!
                             Call WriteLocaleMsg(UserIndex, "592", e_FontTypeNames.FONTTYPE_INFO)
-190                         Call ChangeUserChar(UserIndex, .char.body, .char.head, .char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
+190                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
 192                         Call RefreshCharStatus(UserIndex)
                         End If
     
@@ -3587,7 +3587,7 @@ Private Sub HandleChange_Heading(ByVal UserIndex As Integer)
             'Validate heading (VB won't say invalid cast if not a valid index like .Net languages would do... *sigh*)
 104         If Heading > 0 And Heading < 5 Then
 106             .Char.Heading = Heading
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(.Char.body, .Char.head, .Char.Heading, .Char.charindex, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CartAnim, .Char.FX, .Char.loops, .Char.CascoAnim, False, .flags.Navegando))
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(.Char.body, .Char.head, .Char.Heading, .Char.charindex, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CartAnim, .Char.BackpackAnim, .Char.FX, .Char.loops, .Char.CascoAnim, False, .flags.Navegando))
 
             End If
 

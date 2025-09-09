@@ -397,6 +397,7 @@ Public Const NingunEscudo            As Integer = 2
 Public Const NingunCasco             As Integer = 2
 Public Const NingunArma              As Integer = 2
 Public Const NoCart                  As Integer = 2
+Public Const NoBackPack              As Integer = 2
 Public Const EspadaMataDragonesIndex As Integer = 402
 Public Const CommonLuteIndex         As Integer = 3986
 Public Const MagicLuteIndex          As Integer = 469
@@ -956,7 +957,7 @@ Public Enum e_OBJType
     otTrees = 4
     otGoldCoin = 5
     otDoors = 6
-    'otLibre = 7
+    otBackpack = 7
     otSignBoards = 8
     otKeys = 9
     'otLibre = 10
@@ -1416,6 +1417,8 @@ Public Type t_Inventario
     EquippedRingAccesorySlot As Byte
     EquippedAmuletAccesoryObjIndex As Integer
     EquippedAmuletAccesorySlot As Byte
+    EquippedBackpackObjIndex As Integer
+    EquippedBackpackSlot As Byte
     NroItems As Integer
 
 End Type
@@ -1496,11 +1499,11 @@ Public Type t_Char
     Head As Integer
     Body As Integer
     originalhead As Integer
-    
     WeaponAnim As Integer
     ShieldAnim As Integer
     CascoAnim As Integer
     CartAnim As Integer
+    BackpackAnim As Integer
     ParticulaFx As Integer
     FX As Integer
     loops As Integer
@@ -1509,6 +1512,7 @@ Public Type t_Char
     Body_Aura As String
     Arma_Aura As String
     Escudo_Aura As String
+    Backpack_Aura As String
     DM_Aura As String
     RM_Aura As String
     Otra_Aura As String
@@ -1800,6 +1804,7 @@ Public Type t_ObjData
     WeaponAnim As Integer ' Apunta a una anim de armas
     ShieldAnim As Integer ' Apunta a una anim de escudo
     CascoAnim As Integer
+    BackpackAnim As Integer
     
     Valor As Long     ' Precio
     

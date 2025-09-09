@@ -832,7 +832,7 @@ Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal Body As Integer, ByVal Head A
 108             .Char.Head = Head
 110             .Char.Heading = Heading
                 If .Char.charindex > 0 Then
-112                 Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharacterChange(body, head, Heading, .Char.charindex, 0, 0, 0, 0, 0, 0, .flags.NPCIdle, False))
+112                 Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharacterChange(body, head, Heading, .Char.charindex, 0, 0, 0, 0, 0, 0, 0, .flags.NPCIdle, False))
                 End If
             End If
         

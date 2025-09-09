@@ -1002,7 +1002,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
             End If
     
 206         Call ActualizarVelocidadDeUsuario(UserIndex)
-208         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
+208         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
             
          Call MakeUserChar(True, UserList(UserIndex).Pos.Map, UserIndex, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, 0)
         End With
@@ -1015,7 +1015,7 @@ RevivirUsuario_Err:
         
 End Sub
 
-Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As Byte, ByVal Arma As Integer, ByVal Escudo As Integer, ByVal Casco As Integer, ByVal Cart As Integer)
+Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As Byte, ByVal Arma As Integer, ByVal Escudo As Integer, ByVal Casco As Integer, ByVal Cart As Integer, ByVal BackPack As Integer)
         
         On Error GoTo ChangeUserChar_Err
         If IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTransformed) Then Exit Sub
@@ -1027,9 +1027,10 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal body As Integer, ByVal head
 110         .ShieldAnim = Escudo
 112         .CascoAnim = Casco
 114         .CartAnim = Cart
+            .BackpackAnim = BackPack
         End With
         If UserList(UserIndex).Char.charindex > 0 Then
-116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, UserList(UserIndex).Char.charindex, Arma, Escudo, Cart, UserList(UserIndex).Char.FX, UserList(UserIndex).Char.loops, Casco, False, UserList(UserIndex).flags.Navegando))
+116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, UserList(UserIndex).Char.charindex, Arma, Escudo, Cart, BackPack, UserList(UserIndex).Char.FX, UserList(UserIndex).Char.loops, Casco, False, UserList(UserIndex).flags.Navegando))
         End If
         
         Exit Sub
@@ -2292,7 +2293,7 @@ Sub UserDie(ByVal UserIndex As Integer)
                 
         
             '<< Actualizamos clientes >>
-228         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
+228         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
 
 230         If MapInfo(.Pos.Map).Seguro = 0 Then
 232             ' Msg524=Escribe /HOGAR si deseas regresar rápido a tu hogar.
@@ -3792,7 +3793,7 @@ Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
                     Call EquiparBarco(UserIndex)
                      ' Msg592=¡Has recuperado tu apariencia normal!
                     Call WriteLocaleMsg(UserIndex, "592", e_FontTypeNames.FONTTYPE_INFO)
-                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
+                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
                     Call RefreshCharStatus(UserIndex)
                 End If
             Else

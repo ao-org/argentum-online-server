@@ -844,7 +844,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 118             UserList(UserIndex).Char.WeaponAnim = NingunArma
             
 120             If UserList(UserIndex).flags.Montado = 0 Then
-122                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+122                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
                 End If
                 
 124             If obj.MagicDamageBonus > 0 Then
@@ -874,7 +874,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 148                 UserList(UserIndex).Char.WeaponAnim = NingunArma
                 
 150                 If UserList(UserIndex).flags.Montado = 0 Then
-152                     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+152                     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
                     End If
                 End If
        
@@ -918,7 +918,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 200                 Case e_MagicItemEffect.eProtectedResources
 202                     If UserList(UserIndex).flags.Muerto = 0 Then
                             UserList(UserIndex).Char.CartAnim = NoCart
-203                         Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+203                         Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
                         End If
                         
 206                 Case e_MagicItemEffect.eProtectedInventory
@@ -960,7 +960,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 264             If UserList(UserIndex).flags.Navegando = 0 Then
 266                 If UserList(UserIndex).flags.Montado = 0 Then
                         Call SetNakedBody(UserList(userIndex))
-270                     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+270                     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
                     End If
                 End If
         
@@ -980,7 +980,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 290             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.charindex, 0, True, 4))
 
 292             UserList(UserIndex).Char.CascoAnim = NingunCasco
-294             Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+294             Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
     
 296             If obj.ResistenciaMagica > 0 Then
 298                 Call WriteUpdateRM(UserIndex)
@@ -996,7 +996,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 312             UserList(UserIndex).Char.ShieldAnim = NingunEscudo
 
 314             If UserList(UserIndex).flags.Montado = 0 Then
-316                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+316                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
                 End If
                 
 318             If obj.ResistenciaMagica > 0 Then
@@ -1201,488 +1201,592 @@ EquiparBarco_Err:
 End Sub
 
 'Equipa un item del inventario
-Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal UserIsLoggingIn As Boolean = False)
-        On Error GoTo ErrHandler
+Sub EquiparInvItem(ByVal UserIndex As Integer, _
+                   ByVal Slot As Byte, _
+                   Optional ByVal UserIsLoggingIn As Boolean = False)
 
-        Dim obj       As t_ObjData
-        Dim ObjIndex  As Integer
-        Dim errordesc As String
+    On Error GoTo ErrHandler
+
+    Dim obj       As t_ObjData
+
+    Dim ObjIndex  As Integer
+
+    Dim errordesc As String
         
-100     ObjIndex = UserList(UserIndex).Invent.Object(Slot).ObjIndex
-102     obj = ObjData(ObjIndex)
+    ObjIndex = UserList(UserIndex).invent.Object(Slot).ObjIndex
+    obj = ObjData(ObjIndex)
         
-104     If PuedeUsarObjeto(UserIndex, ObjIndex, True) > 0 Then
-            Exit Sub
-        End If
-
-106     With UserList(UserIndex)
-
-108          If .flags.Muerto = 1 Then
-                 'Msg77=¡¡Estás muerto!!.
-110              Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                 Exit Sub
-
-             End If
-
-112         Select Case obj.OBJType
-                Case e_OBJType.otWeapon
-114                 errordesc = "Arma"
-                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eWeapon) Then
-                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-                    'Si esta equipado lo quita
-116                 If .Invent.Object(Slot).Equipped Then
-                        'Quitamos del inv el item
-118                     Call Desequipar(UserIndex, Slot)
-
-                        'Animacion por defecto
-120                     .Char.WeaponAnim = NingunArma
-
-122                     If .flags.Montado = 0 Then
-124                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
-                        End If
-
-                        Exit Sub
-
-                    End If
-
-                    'Quitamos el elemento anterior
-126                 If .invent.EquippedWeaponObjIndex > 0 Then
-128                     Call Desequipar(UserIndex, .invent.EquippedWeaponSlot)
-                    End If
-            
-130                 If .invent.EquippedWorkingToolObjIndex > 0 Then
-132                     Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
-                    End If
-
-138                 .Invent.Object(Slot).Equipped = 1
-140                 .invent.EquippedWeaponObjIndex = .invent.Object(Slot).ObjIndex
-142                 .invent.EquippedWeaponSlot = Slot
-            
-154                 If obj.DosManos = 1 Then
-156                     If .invent.EquippedShieldObjIndex > 0 Then
-158                         Call Desequipar(UserIndex, .invent.EquippedShieldSlot)
-160                         ' Msg674=No puedes usar armas dos manos si tienes un escudo equipado. Tu escudo fue desequipado.
-                            Call WriteLocaleMsg(UserIndex, "674", e_FontTypeNames.FONTTYPE_INFOIAO)
-                        End If
-                    End If
-
-                    'Sonido
-162                 If obj.SndAura = 0 Then
-164                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_SACARARMA, .Pos.X, .Pos.y))
-                    Else
-166                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.SndAura, .Pos.X, .Pos.y))
-                    End If
-
-168                 If Len(obj.CreaGRH) <> 0 Then
-170                     .Char.Arma_Aura = obj.CreaGRH
-172                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Arma_Aura, False, 1))
-                    End If
-
-174                 If obj.MagicDamageBonus > 0 Then
-176                     Call WriteUpdateDM(UserIndex)
-                    End If
-                
-178                 If .flags.Montado = 0 Then
-                
-180                     If .flags.Navegando = 0 Then
-182                         .Char.WeaponAnim = obj.WeaponAnim
-184                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
-
-                        End If
-
-                    End If
-      
-186             Case e_OBJType.otWorkingTools
-                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eTool) Then
-                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-                    'Si esta equipado lo quita
-188                 If .Invent.Object(Slot).Equipped Then
-
-                        'Quitamos del inv el item
-190                     Call Desequipar(UserIndex, Slot)
-                        Exit Sub
-
-                    End If
-
-                    'Quitamos el elemento anterior
-192                 If .invent.EquippedWorkingToolObjIndex > 0 Then
-194                     Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
-                    End If
-             
-196                 If .invent.EquippedWeaponObjIndex > 0 Then
-198                     Call Desequipar(UserIndex, .invent.EquippedWeaponSlot)
-                    End If
-             
-200                 .Invent.Object(Slot).Equipped = 1
-202                 .invent.EquippedWorkingToolObjIndex = ObjIndex
-204                 .invent.EquippedWorkingToolSlot = Slot
-             
-206                 If .flags.Montado = 0 Then
-                
-208                     If .flags.Navegando = 0 Then
-210                         .Char.WeaponAnim = obj.WeaponAnim
-212                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
-
-                        End If
-
-                    End If
-       
-214             Case e_OBJType.otAmulets
-216                 errordesc = "Magico"
-                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eMagicItem) Then
-                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-                    'Si esta equipado lo quita
-218                 If .Invent.Object(Slot).Equipped Then
-                        'Quitamos del inv el item
-220                     Call Desequipar(UserIndex, Slot)
-                        Exit Sub
-                    End If
-
-                    'Quitamos el elemento anterior
-222                 If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
-224                     Call Desequipar(UserIndex, .invent.EquippedAmuletAccesorySlot)
-                    End If
-        
-226                 .Invent.Object(Slot).Equipped = 1
-228                 .invent.EquippedAmuletAccesoryObjIndex = .invent.Object(Slot).ObjIndex
-230                 .invent.EquippedAmuletAccesorySlot = Slot
-                
-232                 Select Case obj.EfectoMagico
-                        Case e_MagicItemEffect.eModifyAttributes 'Modif la fuerza, agilidad, carisma, etc
-238                         .Stats.UserAtributosBackUP(obj.QueAtributo) = .Stats.UserAtributosBackUP(obj.QueAtributo) + obj.CuantoAumento
-240                         .Stats.UserAtributos(obj.QueAtributo) = MinimoInt(.Stats.UserAtributos(obj.QueAtributo) + obj.CuantoAumento, .Stats.UserAtributosBackUP(obj.QueAtributo) * 2)
-                
-242                         Call WriteFYA(UserIndex)
-
-244                     Case e_MagicItemEffect.eModifySkills
-            
-246                         .Stats.UserSkills(obj.Que_Skill) = .Stats.UserSkills(obj.Que_Skill) + obj.CuantoAumento
-
-248                     Case e_MagicItemEffect.eRegenerateHealth
-250                         .flags.RegeneracionHP = 1
-
-252                     Case e_MagicItemEffect.eRegenerateMana
-254                         .flags.RegeneracionMana = 1
-
-256                     Case e_MagicItemEffect.eIncreaseDamageToNpc
-258                         .Stats.MaxHit = .Stats.MaxHit + obj.CuantoAumento
-260                         .Stats.MinHIT = .Stats.MinHIT + obj.CuantoAumento
-
-262                     Case e_MagicItemEffect.eInmunityToNpcMagic
-264                         .flags.NoMagiaEfecto = 1
-
-266                     Case e_MagicItemEffect.eIncinerate
-268                         .flags.incinera = 1
-
-270                     Case e_MagicItemEffect.eParalize
-272                         .flags.Paraliza = 1
-
-274                     Case e_MagicItemEffect.eProtectedResources
-                            If .flags.Navegando = 0 And .flags.Montado = 0 Then
-                                 .Char.CartAnim = obj.Ropaje
-                                 Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
-                            End If
-                        
-280                     Case e_MagicItemEffect.eProtectedInventory
-282                         .flags.PendienteDelSacrificio = 1
-
-284                     Case e_MagicItemEffect.ePreventMagicWords
-286                         .flags.NoPalabrasMagicas = 1
-
-288                     Case e_MagicItemEffect.ePreventInvisibleDetection
-290                         .flags.NoDetectable = 1
-                   
-292                     Case e_MagicItemEffect.eIncreaseLearningSkills
-294                         .flags.PendienteDelExperto = 1
-
-296                     Case e_MagicItemEffect.ePoison
-298                         .flags.Envenena = 1
-
-300                     Case e_MagicItemEffect.eRingOfShadows
-302                         .flags.AnilloOcultismo = 1
-
-                        Case e_MagicItemEffect.eTalkToDead
-                            Call SetMask(.flags.StatusMask, e_StatusMask.eTalkToDead)
-                            ' Msg675=Entras al mundo de los muertos, ahora podrás comunicarte con ellos.
-                            Call WriteLocaleMsg(UserIndex, "675", e_FontTypeNames.FONTTYPE_WARNING)
-                            Call CheckUpdateNeededUser(UserIndex, USER_NUEVO, True, 1)
-                    End Select
-            
-                    'Sonido
-304                 If obj.SndAura <> 0 Then
-306                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.SndAura, .Pos.X, .Pos.y))
-                    End If
-            
-308                 If Len(obj.CreaGRH) <> 0 Then
-310                     .Char.Otra_Aura = obj.CreaGRH
-312                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Otra_Aura, False, 5))
-                    End If
-    
-354             Case e_OBJType.otArrows
-                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eAmunition) Then
-                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-                    'Si esta equipado lo quita
-356                 If .Invent.Object(Slot).Equipped Then
-                        'Quitamos del inv el item
-358                     Call Desequipar(UserIndex, Slot)
-                        Exit Sub
-                    End If
-                
-                    'Quitamos el elemento anterior
-360                 If .invent.EquippedMunitionObjIndex > 0 Then
-362                     Call Desequipar(UserIndex, .invent.EquippedMunitionSlot)
-                    End If
-        
-364                 .Invent.Object(Slot).Equipped = 1
-366                 .invent.EquippedMunitionObjIndex = .invent.Object(Slot).ObjIndex
-368                 .invent.EquippedMunitionSlot = Slot
-
-370             Case e_OBJType.otArmor
-                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eArmor) Then
-                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-                
-                    Dim Ropaje As Integer
-                    Ropaje = ObtenerRopaje(UserIndex, Obj)
-
-372                 If Ropaje = 0 Then
-374                     ' Msg676=Hay un error con este objeto. Infórmale a un administrador.
-                        Call WriteLocaleMsg(UserIndex, "676", e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-
-                    'Si esta equipado lo quita
-376                 If .Invent.Object(Slot).Equipped Then
-378                     Call Desequipar(UserIndex, Slot)
-
-380                     If .flags.Navegando = 0 And .flags.Montado = 0 Then
-                            Call SetNakedBody(UserList(userIndex))
-384                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
-                        Else
-386                         .flags.Desnudo = 1
-                        End If
-
-                        Exit Sub
-
-                    End If
-
-                    'Quita el anterior
-388                 If .invent.EquippedArmorObjIndex > 0 Then
-390                     errordesc = "Armadura 2"
-392                     Call Desequipar(UserIndex, .invent.EquippedArmorSlot)
-394                     errordesc = "Armadura 3"
-
-                    End If
-  
-                    'Si esta equipando armadura faccionaria fuera de zona segura o fuera de trigger seguro
-                    If Not UserIsLoggingIn Then
-                        If obj.Real > 0 Or obj.Caos > 0 Then
-                            If Not MapData(.pos.Map, .pos.x, .pos.y).trigger = e_Trigger.ZonaSegura And Not MapInfo(.pos.Map).Seguro = 1 Then
-                                Call WriteLocaleMsg(UserIndex, "2091", e_FontTypeNames.FONTTYPE_INFO)
-                                Exit Sub
-                            End If
-                        End If
-                    End If
-                    
-                    'Lo equipa
-396                 If Len(obj.CreaGRH) <> 0 Then
-398                     .Char.Body_Aura = obj.CreaGRH
-400                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Body_Aura, False, 2))
-
-                    End If
-            
-402                 .Invent.Object(Slot).Equipped = 1
-404                 .invent.EquippedArmorObjIndex = .invent.Object(Slot).ObjIndex
-406                 .invent.EquippedArmorSlot = Slot
-
-408                 If .flags.Montado = 0 And .flags.Navegando = 0 Then
-410                     .Char.Body = Ropaje
-
-412                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
-                    End If
-                    
-414                 .flags.Desnudo = 0
-
-416                 If obj.ResistenciaMagica > 0 Then
-418                     Call WriteUpdateRM(UserIndex)
-                    End If
-    
-420             Case e_OBJType.otHelmet
-
-    
-                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eHelm) Then
-                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-                    'Si esta equipado lo quita
-422                 If .Invent.Object(Slot).Equipped Then
-424                     Call Desequipar(UserIndex, Slot)
-                        .Char.CascoAnim = NingunCasco
-452                     If obj.Subtipo = 2 Then
-                            .Char.head = .Char.originalhead
-                        End If
-                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
-                        Exit Sub
-
-                    End If
-    
-                    'Quita el anterior
-430                 If .invent.EquippedHelmetObjIndex > 0 Then
-432                     Call Desequipar(UserIndex, .invent.EquippedHelmetSlot)
-                    End If
-
-434                 errordesc = "Casco"
-
-                    'Lo equipa
-436                 If Len(obj.CreaGRH) <> 0 Then
-438                     .Char.Head_Aura = obj.CreaGRH
-440                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Head_Aura, False, 4))
-                    End If
-            
-442                 .Invent.Object(Slot).Equipped = 1
-444                 .invent.EquippedHelmetObjIndex = .invent.Object(Slot).ObjIndex
-446                 .invent.EquippedHelmetSlot = Slot
-            
-                    If .flags.Navegando = 0 Then
-                        Dim nuevoHead As Integer
-                        Dim nuevoCasco As Integer
-                    
-                        If obj.Subtipo = 2 Then
-                            ' Si el casco cambia la cabeza entera
-                            If .Char.head < PATREON_HEAD Then
-                                .Char.originalhead = .Char.head
-                            End If
-                            nuevoHead = obj.CascoAnim
-                            nuevoCasco = NingunCasco
-                        Else
-                            ' Si el casco se superpone (no reemplaza la cabeza)
-                            nuevoHead = .Char.head
-                            If .Char.head >= PATREON_HEAD Then
-                                nuevoCasco = NingunCasco
-                            Else
-                                nuevoCasco = obj.CascoAnim
-                            End If
-                        End If
-                    
-                        ' Asignar cambios y aplicar actualización visual
-                        .Char.head = nuevoHead
-                        .Char.CascoAnim = nuevoCasco
-                    
-                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
-                    End If
-                
-454                 If obj.ResistenciaMagica > 0 Then
-456                     Call WriteUpdateRM(UserIndex)
-                    End If
-
-458             Case e_OBJType.otShield
-                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eShiled) Then
-                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-                    'Si esta equipado lo quita
-460                 If .Invent.Object(Slot).Equipped Then
-462                     Call Desequipar(UserIndex, Slot)
-                 
-464                     .Char.ShieldAnim = NingunEscudo
-
-466                     If .flags.Montado = 0 And .flags.Navegando = 0 Then
-468                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
-
-                        End If
-
-                        Exit Sub
-
-                    End If
-     
-                    'Quita el anterior
-470                 If .invent.EquippedShieldObjIndex > 0 Then
-472                     Call Desequipar(UserIndex, .invent.EquippedShieldSlot)
-                    End If
-     
-
-484                 If .invent.EquippedWeaponObjIndex > 0 Then
-486                     If ObjData(.invent.EquippedWeaponObjIndex).DosManos = 1 Then
-488                         Call Desequipar(UserIndex, .invent.EquippedWeaponSlot)
-490                         ' Msg677=No puedes equipar un escudo si tienes un arma dos manos equipada. Tu arma fue desequipada.
-                            Call WriteLocaleMsg(UserIndex, "677", e_FontTypeNames.FONTTYPE_INFOIAO)
-                        End If
-                    End If
-
-492                 errordesc = "Escudo"
-
-494                 If Len(obj.CreaGRH) <> 0 Then
-496                     .Char.Escudo_Aura = obj.CreaGRH
-498                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Escudo_Aura, False, 3))
-                    End If
-
-500                 .Invent.Object(Slot).Equipped = 1
-502                 .invent.EquippedShieldObjIndex = .invent.Object(Slot).ObjIndex
-504                 .invent.EquippedShieldSlot = Slot
-
-506                 If .flags.Navegando = 0 And .flags.Montado = 0 Then
-508                     .Char.ShieldAnim = obj.ShieldAnim
-510                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
-                    End If
-
-512                 If obj.ResistenciaMagica > 0 Then
-514                     Call WriteUpdateRM(UserIndex)
-                    End If
-
-516             Case e_OBJType.otMagicalInstrument, e_OBJType.otRingAccesory
-                    'Si esta equipado lo quita
-518                 If .Invent.Object(Slot).Equipped Then
-520                     Call Desequipar(UserIndex, Slot)
-                        Exit Sub
-                    End If
-     
-                    'Quita el anterior
-522                 If .invent.EquippedRingAccesorySlot > 0 Then
-524                     Call Desequipar(UserIndex, .invent.EquippedRingAccesorySlot)
-                    End If
-
-526                 .Invent.Object(Slot).Equipped = 1
-
-                    If ObjData(.invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otRingAccesory Then
-                        .invent.EquippedRingAccesoryObjIndex = .invent.Object(Slot).ObjIndex
-530                     .invent.EquippedRingAccesorySlot = Slot
-                        Call WriteUpdateRM(userindex)
-                    ElseIf ObjData(.invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otMagicalInstrument Then
-528                     .invent.EquippedRingAccesoryObjIndex = .invent.Object(Slot).ObjIndex
-                        .invent.EquippedRingAccesorySlot = Slot
-538                     Call WriteUpdateDM(userindex)
-                        
-                    End If
-532                 If Len(obj.CreaGRH) <> 0 Then
-534                     .Char.DM_Aura = obj.CreaGRH
-536                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.DM_Aura, False, 6))
-                    End If
-                Case e_OBJType.otDonator
-                    If obj.Subtipo = 4 Then
-                       Call EquipAura(Slot, .Invent, UserIndex)
-                    End If
-
-            End Select
-            
-        End With
-
-        'Actualiza
-564     Call UpdateUserInv(False, UserIndex, Slot)
+    If PuedeUsarObjeto(UserIndex, ObjIndex, True) > 0 Then
 
         Exit Sub
+
+    End If
+
+    With UserList(UserIndex)
+
+        If .flags.Muerto = 1 Then
+            'Msg77=¡¡Estás muerto!!.
+            Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
+
+            Exit Sub
+
+        End If
+
+        Select Case obj.OBJType
+
+            Case e_OBJType.otWeapon
+                errordesc = "Arma"
+
+                If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eWeapon) Then
+                    Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
+
+                    Exit Sub
+
+                End If
+
+                'Si esta equipado lo quita
+                If .invent.Object(Slot).Equipped Then
+                    'Quitamos del inv el item
+                    Call Desequipar(UserIndex, Slot)
+
+                    'Animacion por defecto
+                    .Char.WeaponAnim = NingunArma
+
+                    If .flags.Montado = 0 Then
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                    End If
+
+                    Exit Sub
+
+                End If
+
+                'Quitamos el elemento anterior
+                If .invent.EquippedWeaponObjIndex > 0 Then
+                    Call Desequipar(UserIndex, .invent.EquippedWeaponSlot)
+                End If
+            
+                If .invent.EquippedWorkingToolObjIndex > 0 Then
+                    Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
+                End If
+
+                .invent.Object(Slot).Equipped = 1
+                .invent.EquippedWeaponObjIndex = .invent.Object(Slot).ObjIndex
+                .invent.EquippedWeaponSlot = Slot
+            
+                If obj.DosManos = 1 Then
+                    If .invent.EquippedShieldObjIndex > 0 Then
+                        Call Desequipar(UserIndex, .invent.EquippedShieldSlot)
+                        ' Msg674=No puedes usar armas dos manos si tienes un escudo equipado. Tu escudo fue desequipado.
+                        Call WriteLocaleMsg(UserIndex, "674", e_FontTypeNames.FONTTYPE_INFOIAO)
+                    End If
+                End If
+
+                'Sonido
+                If obj.SndAura = 0 Then
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_SACARARMA, .pos.x, .pos.y))
+                Else
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.SndAura, .pos.x, .pos.y))
+                End If
+
+                If Len(obj.CreaGRH) <> 0 Then
+                    .Char.Arma_Aura = obj.CreaGRH
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Arma_Aura, False, 1))
+                End If
+
+                If obj.MagicDamageBonus > 0 Then
+                    Call WriteUpdateDM(UserIndex)
+                End If
+                
+                If .flags.Montado = 0 Then
+                
+                    If .flags.Navegando = 0 Then
+                        .Char.WeaponAnim = obj.WeaponAnim
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+
+                    End If
+
+                End If
+
+            Case e_OBJType.otBackpack
+                errordesc = "Backpack"
+
+                If .invent.Object(Slot).Equipped Then
+                    Call Desequipar(UserIndex, Slot)
+                    'Animacion por defecto
+                    .Char.BackpackAnim = NoBackPack
+
+                    If .flags.Montado = 0 Then
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+                    End If
+
+                    Exit Sub
+
+                End If
+
+                'Quitamos el elemento anterior
+                If .invent.EquippedBackpackObjIndex > 0 Then
+                    Call Desequipar(UserIndex, .invent.EquippedBackpackSlot)
+                End If
+
+                .invent.Object(Slot).Equipped = 1
+                .invent.EquippedBackpackObjIndex = .invent.Object(Slot).ObjIndex
+                .invent.EquippedBackpackSlot = Slot
+
+                'Sonido
+                If obj.SndAura = 0 Then
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_SACARARMA, .pos.x, .pos.y))
+                Else
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.SndAura, .pos.x, .pos.y))
+                End If
+
+                If Len(obj.CreaGRH) <> 0 Then
+                    .Char.Backpack_Aura = obj.CreaGRH
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Backpack_Aura, False, 1))
+                End If
+             
+                If .flags.Montado = 0 Then
+                    If .flags.Navegando = 0 Then
+                        .Char.BackpackAnim = obj.BackpackAnim
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+                    End If
+
+                End If
+
+            Case e_OBJType.otWorkingTools
+
+                If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eTool) Then
+                    Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
+
+                    Exit Sub
+
+                End If
+
+                'Si esta equipado lo quita
+                If .invent.Object(Slot).Equipped Then
+
+                    'Quitamos del inv el item
+                    Call Desequipar(UserIndex, Slot)
+
+                    Exit Sub
+
+                End If
+
+                'Quitamos el elemento anterior
+                If .invent.EquippedWorkingToolObjIndex > 0 Then
+                    Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
+                End If
+             
+                If .invent.EquippedWeaponObjIndex > 0 Then
+                    Call Desequipar(UserIndex, .invent.EquippedWeaponSlot)
+                End If
+             
+                .invent.Object(Slot).Equipped = 1
+                .invent.EquippedWorkingToolObjIndex = ObjIndex
+                .invent.EquippedWorkingToolSlot = Slot
+             
+                If .flags.Montado = 0 Then
+                
+                    If .flags.Navegando = 0 Then
+                        .Char.WeaponAnim = obj.WeaponAnim
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+
+                    End If
+
+                End If
+       
+            Case e_OBJType.otAmulets
+                errordesc = "Magico"
+
+                If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eMagicItem) Then
+                    Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
+
+                    Exit Sub
+
+                End If
+
+                'Si esta equipado lo quita
+                If .invent.Object(Slot).Equipped Then
+                    'Quitamos del inv el item
+                    Call Desequipar(UserIndex, Slot)
+
+                    Exit Sub
+
+                End If
+
+                'Quitamos el elemento anterior
+                If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
+                    Call Desequipar(UserIndex, .invent.EquippedAmuletAccesorySlot)
+                End If
+        
+                .invent.Object(Slot).Equipped = 1
+                .invent.EquippedAmuletAccesoryObjIndex = .invent.Object(Slot).ObjIndex
+                .invent.EquippedAmuletAccesorySlot = Slot
+                
+                Select Case obj.EfectoMagico
+
+                    Case e_MagicItemEffect.eModifyAttributes 'Modif la fuerza, agilidad, carisma, etc
+                        .Stats.UserAtributosBackUP(obj.QueAtributo) = .Stats.UserAtributosBackUP(obj.QueAtributo) + obj.CuantoAumento
+                        .Stats.UserAtributos(obj.QueAtributo) = MinimoInt(.Stats.UserAtributos(obj.QueAtributo) + obj.CuantoAumento, .Stats.UserAtributosBackUP(obj.QueAtributo) * 2)
+                
+                        Call WriteFYA(UserIndex)
+
+                    Case e_MagicItemEffect.eModifySkills
+            
+                        .Stats.UserSkills(obj.Que_Skill) = .Stats.UserSkills(obj.Que_Skill) + obj.CuantoAumento
+
+                    Case e_MagicItemEffect.eRegenerateHealth
+                        .flags.RegeneracionHP = 1
+
+                    Case e_MagicItemEffect.eRegenerateMana
+                        .flags.RegeneracionMana = 1
+
+                    Case e_MagicItemEffect.eIncreaseDamageToNpc
+                        .Stats.MaxHit = .Stats.MaxHit + obj.CuantoAumento
+                        .Stats.MinHIT = .Stats.MinHIT + obj.CuantoAumento
+
+                    Case e_MagicItemEffect.eInmunityToNpcMagic
+                        .flags.NoMagiaEfecto = 1
+
+                    Case e_MagicItemEffect.eIncinerate
+                        .flags.incinera = 1
+
+                    Case e_MagicItemEffect.eParalize
+                        .flags.Paraliza = 1
+
+                    Case e_MagicItemEffect.eProtectedResources
+
+                        If .flags.Navegando = 0 And .flags.Montado = 0 Then
+                            .Char.CartAnim = obj.Ropaje
+                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                        End If
+                        
+                    Case e_MagicItemEffect.eProtectedInventory
+                        .flags.PendienteDelSacrificio = 1
+
+                    Case e_MagicItemEffect.ePreventMagicWords
+                        .flags.NoPalabrasMagicas = 1
+
+                    Case e_MagicItemEffect.ePreventInvisibleDetection
+                        .flags.NoDetectable = 1
+                   
+                    Case e_MagicItemEffect.eIncreaseLearningSkills
+                        .flags.PendienteDelExperto = 1
+
+                    Case e_MagicItemEffect.ePoison
+                        .flags.Envenena = 1
+
+                    Case e_MagicItemEffect.eRingOfShadows
+                        .flags.AnilloOcultismo = 1
+
+                    Case e_MagicItemEffect.eTalkToDead
+                        Call SetMask(.flags.StatusMask, e_StatusMask.eTalkToDead)
+                        ' Msg675=Entras al mundo de los muertos, ahora podrás comunicarte con ellos.
+                        Call WriteLocaleMsg(UserIndex, "675", e_FontTypeNames.FONTTYPE_WARNING)
+                        Call CheckUpdateNeededUser(UserIndex, USER_NUEVO, True, 1)
+                End Select
+            
+                'Sonido
+                If obj.SndAura <> 0 Then
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.SndAura, .pos.x, .pos.y))
+                End If
+            
+                If Len(obj.CreaGRH) <> 0 Then
+                    .Char.Otra_Aura = obj.CreaGRH
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Otra_Aura, False, 5))
+                End If
+    
+            Case e_OBJType.otArrows
+
+                If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eAmunition) Then
+                    Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
+
+                    Exit Sub
+
+                End If
+
+                'Si esta equipado lo quita
+                If .invent.Object(Slot).Equipped Then
+                    'Quitamos del inv el item
+                    Call Desequipar(UserIndex, Slot)
+
+                    Exit Sub
+
+                End If
+                
+                'Quitamos el elemento anterior
+                If .invent.EquippedMunitionObjIndex > 0 Then
+                    Call Desequipar(UserIndex, .invent.EquippedMunitionSlot)
+                End If
+        
+                .invent.Object(Slot).Equipped = 1
+                .invent.EquippedMunitionObjIndex = .invent.Object(Slot).ObjIndex
+                .invent.EquippedMunitionSlot = Slot
+
+            Case e_OBJType.otArmor
+
+                If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eArmor) Then
+                    Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
+
+                    Exit Sub
+
+                End If
+                
+                Dim Ropaje As Integer
+
+                Ropaje = ObtenerRopaje(UserIndex, obj)
+
+                If Ropaje = 0 Then
+                    ' Msg676=Hay un error con este objeto. Infórmale a un administrador.
+                    Call WriteLocaleMsg(UserIndex, "676", e_FontTypeNames.FONTTYPE_INFO)
+
+                    Exit Sub
+
+                End If
+
+                'Si esta equipado lo quita
+                If .invent.Object(Slot).Equipped Then
+                    Call Desequipar(UserIndex, Slot)
+
+                    If .flags.Navegando = 0 And .flags.Montado = 0 Then
+                        Call SetNakedBody(UserList(UserIndex))
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                    Else
+                        .flags.Desnudo = 1
+                    End If
+
+                    Exit Sub
+
+                End If
+
+                'Quita el anterior
+                If .invent.EquippedArmorObjIndex > 0 Then
+                    errordesc = "Armadura 2"
+                    Call Desequipar(UserIndex, .invent.EquippedArmorSlot)
+                    errordesc = "Armadura 3"
+
+                End If
+  
+                'Si esta equipando armadura faccionaria fuera de zona segura o fuera de trigger seguro
+                If Not UserIsLoggingIn Then
+                    If obj.Real > 0 Or obj.Caos > 0 Then
+                        If Not MapData(.pos.Map, .pos.x, .pos.y).trigger = e_Trigger.ZonaSegura And Not MapInfo(.pos.Map).Seguro = 1 Then
+                            Call WriteLocaleMsg(UserIndex, "2091", e_FontTypeNames.FONTTYPE_INFO)
+
+                            Exit Sub
+
+                        End If
+                    End If
+                End If
+                    
+                'Lo equipa
+                If Len(obj.CreaGRH) <> 0 Then
+                    .Char.Body_Aura = obj.CreaGRH
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Body_Aura, False, 2))
+
+                End If
+            
+                .invent.Object(Slot).Equipped = 1
+                .invent.EquippedArmorObjIndex = .invent.Object(Slot).ObjIndex
+                .invent.EquippedArmorSlot = Slot
+
+                If .flags.Montado = 0 And .flags.Navegando = 0 Then
+                    .Char.body = Ropaje
+
+                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                End If
+                    
+                .flags.Desnudo = 0
+
+                If obj.ResistenciaMagica > 0 Then
+                    Call WriteUpdateRM(UserIndex)
+                End If
+    
+            Case e_OBJType.otHelmet
+    
+                If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eHelm) Then
+                    Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
+
+                    Exit Sub
+
+                End If
+
+                'Si esta equipado lo quita
+                If .invent.Object(Slot).Equipped Then
+                    Call Desequipar(UserIndex, Slot)
+                    .Char.CascoAnim = NingunCasco
+
+                    If obj.Subtipo = 2 Then
+                        .Char.head = .Char.originalhead
+                    End If
+
+                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+
+                    Exit Sub
+
+                End If
+    
+                'Quita el anterior
+                If .invent.EquippedHelmetObjIndex > 0 Then
+                    Call Desequipar(UserIndex, .invent.EquippedHelmetSlot)
+                End If
+
+                errordesc = "Casco"
+
+                'Lo equipa
+                If Len(obj.CreaGRH) <> 0 Then
+                    .Char.Head_Aura = obj.CreaGRH
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Head_Aura, False, 4))
+                End If
+            
+                .invent.Object(Slot).Equipped = 1
+                .invent.EquippedHelmetObjIndex = .invent.Object(Slot).ObjIndex
+                .invent.EquippedHelmetSlot = Slot
+            
+                If .flags.Navegando = 0 Then
+
+                    Dim nuevoHead  As Integer
+
+                    Dim nuevoCasco As Integer
+                    
+                    If obj.Subtipo = 2 Then
+
+                        ' Si el casco cambia la cabeza entera
+                        If .Char.head < PATREON_HEAD Then
+                            .Char.originalhead = .Char.head
+                        End If
+
+                        nuevoHead = obj.CascoAnim
+                        nuevoCasco = NingunCasco
+                    Else
+                        ' Si el casco se superpone (no reemplaza la cabeza)
+                        nuevoHead = .Char.head
+
+                        If .Char.head >= PATREON_HEAD Then
+                            nuevoCasco = NingunCasco
+                        Else
+                            nuevoCasco = obj.CascoAnim
+                        End If
+                    End If
+                    
+                    ' Asignar cambios y aplicar actualización visual
+                    .Char.head = nuevoHead
+                    .Char.CascoAnim = nuevoCasco
+                    
+                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+                End If
+                
+                If obj.ResistenciaMagica > 0 Then
+                    Call WriteUpdateRM(UserIndex)
+                End If
+
+            Case e_OBJType.otShield
+
+                If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eShiled) Then
+                    Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
+
+                    Exit Sub
+
+                End If
+
+                'Si esta equipado lo quita
+                If .invent.Object(Slot).Equipped Then
+                    Call Desequipar(UserIndex, Slot)
+                 
+                    .Char.ShieldAnim = NingunEscudo
+
+                    If .flags.Montado = 0 And .flags.Navegando = 0 Then
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+
+                    End If
+
+                    Exit Sub
+
+                End If
+     
+                'Quita el anterior
+                If .invent.EquippedShieldObjIndex > 0 Then
+                    Call Desequipar(UserIndex, .invent.EquippedShieldSlot)
+                End If
+
+                If .invent.EquippedWeaponObjIndex > 0 Then
+                    If ObjData(.invent.EquippedWeaponObjIndex).DosManos = 1 Then
+                        Call Desequipar(UserIndex, .invent.EquippedWeaponSlot)
+                        ' Msg677=No puedes equipar un escudo si tienes un arma dos manos equipada. Tu arma fue desequipada.
+                        Call WriteLocaleMsg(UserIndex, "677", e_FontTypeNames.FONTTYPE_INFOIAO)
+                    End If
+                End If
+
+                errordesc = "Escudo"
+
+                If Len(obj.CreaGRH) <> 0 Then
+                    .Char.Escudo_Aura = obj.CreaGRH
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Escudo_Aura, False, 3))
+                End If
+
+                .invent.Object(Slot).Equipped = 1
+                .invent.EquippedShieldObjIndex = .invent.Object(Slot).ObjIndex
+                .invent.EquippedShieldSlot = Slot
+
+                If .flags.Navegando = 0 And .flags.Montado = 0 Then
+                    .Char.ShieldAnim = obj.ShieldAnim
+                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+                End If
+
+                If obj.ResistenciaMagica > 0 Then
+                    Call WriteUpdateRM(UserIndex)
+                End If
+
+            Case e_OBJType.otMagicalInstrument, e_OBJType.otRingAccesory
+
+                'Si esta equipado lo quita
+                If .invent.Object(Slot).Equipped Then
+                    Call Desequipar(UserIndex, Slot)
+
+                    Exit Sub
+
+                End If
+     
+                'Quita el anterior
+                If .invent.EquippedRingAccesorySlot > 0 Then
+                    Call Desequipar(UserIndex, .invent.EquippedRingAccesorySlot)
+                End If
+
+                .invent.Object(Slot).Equipped = 1
+
+                If ObjData(.invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otRingAccesory Then
+                    .invent.EquippedRingAccesoryObjIndex = .invent.Object(Slot).ObjIndex
+                    .invent.EquippedRingAccesorySlot = Slot
+                    Call WriteUpdateRM(UserIndex)
+                ElseIf ObjData(.invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otMagicalInstrument Then
+                    .invent.EquippedRingAccesoryObjIndex = .invent.Object(Slot).ObjIndex
+                    .invent.EquippedRingAccesorySlot = Slot
+                    Call WriteUpdateDM(UserIndex)
+                        
+                End If
+
+                If Len(obj.CreaGRH) <> 0 Then
+                    .Char.DM_Aura = obj.CreaGRH
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.DM_Aura, False, 6))
+                End If
+
+            Case e_OBJType.otDonator
+
+                If obj.Subtipo = 4 Then
+                    Call EquipAura(Slot, .invent, UserIndex)
+                End If
+
+        End Select
+            
+    End With
+
+    'Actualiza
+    Call UpdateUserInv(False, UserIndex, Slot)
+
+    Exit Sub
     
 ErrHandler:
-566     Debug.Print errordesc
-568     Call LogError("EquiparInvItem Slot:" & Slot & " - Error: " & Err.Number & " - Error Description : " & Err.Description & "- " & errordesc)
+    Debug.Print errordesc
+    Call LogError("EquiparInvItem Slot:" & Slot & " - Error: " & Err.Number & " - Error Description : " & Err.Description & "- " & errordesc)
 
 End Sub
 
@@ -2245,7 +2349,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 440                         .Char.Head = CabezaFinal
 442                         .OrigChar.Head = CabezaFinal
                             .OrigChar.originalhead = CabezaFinal 'cabeza final
-444                         Call ChangeUserChar(UserIndex, .Char.body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
+444                         Call ChangeUserChar(UserIndex, .Char.body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                             'Quitamos del inv el item
                             
                             UserList(UserIndex).Counters.timeFx = 3
@@ -2327,7 +2431,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 
 518                         .Char.Head = CabezaFinal
 520                         .OrigChar.Head = CabezaFinal
-522                         Call ChangeUserChar(UserIndex, .Char.body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
+522                         Call ChangeUserChar(UserIndex, .Char.body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                             'Quitamos del inv el item
                             UserList(UserIndex).Counters.timeFx = 3
 524                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
@@ -2597,7 +2701,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             
 870                         .Char.Head = CabezaFinal
 872                         .OrigChar.Head = CabezaFinal
-874                         Call ChangeUserChar(UserIndex, .Char.body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
+874                         Call ChangeUserChar(UserIndex, .Char.body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
     
                             'Quitamos del inv el item
 876                         If CabezaActual <> CabezaFinal Then
@@ -3835,7 +3939,7 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
             .Char.ShieldAnim = 0
             .Char.WeaponAnim = 0
             'TODO place ship body
-            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, .Char.BackpackAnim)
             Exit Sub
         End If
         If .flags.Muerto = 1 Then
@@ -3845,7 +3949,7 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
 208         .Char.WeaponAnim = NingunArma
 210         .Char.CascoAnim = NingunCasco
 211         .Char.CartAnim = NoCart
-            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, .Char.BackpackAnim)
         Exit Sub
         End If
         
@@ -3877,7 +3981,7 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
         Else
             .Char.ShieldAnim = 0
         End If
-        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, .Char.BackpackAnim)
     End With
 End Sub
 

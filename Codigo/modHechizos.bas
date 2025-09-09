@@ -1895,7 +1895,7 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
 
 234             If UserList(tU).GuildIndex > 0 Then .NameMimetizado = .NameMimetizado & " <" & modGuilds.GuildName(UserList(tU).GuildIndex) & ">"
             
-236             Call ChangeUserChar(UserIndex, .char.body, .char.head, .char.Heading, .char.WeaponAnim, .char.ShieldAnim, .char.CascoAnim, .char.CartAnim)
+236             Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
 238             Call RefreshCharStatus(UserIndex)
             End With
            
@@ -2726,7 +2726,7 @@ Call WriteLocaleMsg(UserIndex, "819", e_FontTypeNames.FONTTYPE_INFO)
 270                 Call ClearClothes(.char)
 276                 .NameMimetizado = IIf(NpcList(NpcIndex).showName = 1, NpcList(NpcIndex).Name, vbNullString)
 
-278                 Call ChangeUserChar(UserIndex, .char.body, .char.head, .char.Heading, .char.WeaponAnim, .char.ShieldAnim, .char.CascoAnim, .char.CartAnim)
+278                 Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
 280                 Call RefreshCharStatus(UserIndex)
                 End With
                 

@@ -1133,7 +1133,7 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
 124             .flags.Mimetizado = e_EstadoMimetismo.Desactivado
             
 126             With .Char
-128                 Call ChangeUserChar(UserIndex, .body, .head, .Heading, .WeaponAnim, .ShieldAnim, .CascoAnim, .CartAnim)
+128                 Call ChangeUserChar(UserIndex, .body, .head, .Heading, .WeaponAnim, .ShieldAnim, .CascoAnim, .CartAnim, .BackpackAnim)
 130                 Call RefreshCharStatus(UserIndex)
                 End With
                 

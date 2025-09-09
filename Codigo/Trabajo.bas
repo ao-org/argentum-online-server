@@ -438,7 +438,7 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
 116                     Call EquiparBarco(UserIndex)
 124                     ' Msg592=¡Has recuperado tu apariencia normal!
                         Call WriteLocaleMsg(UserIndex, "592", e_FontTypeNames.FONTTYPE_INFO)
-126                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
+126                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
                         Call RefreshCharStatus(UserIndex)
 
                     End If
@@ -520,7 +520,7 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
 142                     .Char.Body = iFragataFantasmal
 144                     .flags.Oculto = 1
 146                     .Counters.TiempoOculto = IntervaloOculto
-148                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
+148                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
                         'Msg1024= ¡Te has camuflado como barco fantasma!
                         Call WriteLocaleMsg(UserIndex, "1024", e_FontTypeNames.FONTTYPE_INFO)
                         Call RefreshCharStatus(UserIndex)
@@ -677,7 +677,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 
             End If
 
-200         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
+200         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
 202         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(e_FXSound.BARCA_SOUND, .Pos.X, .Pos.y))
 
         End With
@@ -3344,7 +3344,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, _
             End If
 
 168         Call ActualizarVelocidadDeUsuario(UserIndex)
-170         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
+170         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
 172         Call UpdateUserInv(False, UserIndex, Slot)
 174         Call WriteEquiteToggle(UserIndex)
 

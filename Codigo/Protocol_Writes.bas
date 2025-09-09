@@ -1411,6 +1411,7 @@ Public Sub WriteCharacterChange(ByVal UserIndex As Integer, _
                                 ByVal weapon As Integer, _
                                 ByVal shield As Integer, _
                                 ByVal Cart As Integer, _
+                                ByVal BackPack As Integer, _
                                 ByVal FX As Integer, _
                                 ByVal FXLoops As Integer, _
                                 ByVal helmet As Integer, _
@@ -1420,7 +1421,7 @@ Public Sub WriteCharacterChange(ByVal UserIndex As Integer, _
         On Error GoTo WriteCharacterChange_Err
         
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterChange(Body, _
-                head, Heading, charindex, weapon, shield, Cart, FX, FXLoops, helmet, Idle, _
+                head, Heading, charindex, weapon, shield, Cart, BackPack, FX, FXLoops, helmet, Idle, _
                 Navegando))
         
         Exit Sub
@@ -5432,6 +5433,7 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, _
                                               ByVal weapon As Integer, _
                                               ByVal shield As Integer, _
                                               ByVal Cart As Integer, _
+                                              ByVal BackPack As Integer, _
                                               ByVal FX As Integer, _
                                               ByVal FXLoops As Integer, _
                                               ByVal helmet As Integer, _
