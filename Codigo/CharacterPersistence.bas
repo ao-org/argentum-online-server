@@ -280,6 +280,7 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .Stats.Advertencias = RS!warnings
         .GuildIndex = SanitizeNullValue(RS!Guild_Index, 0)
         .LastGuildRejection = SanitizeNullValue(RS!guild_rejected_because, vbNullString)
+        .OrigChar.BackpackAnim = RS!backpack_id
     End With
 End Sub
 
@@ -518,7 +519,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
                 Exit Sub
             End If
               
-104         ReDim Params(64)
+104         ReDim Params(65)
 
             Dim i As Integer
         
@@ -586,6 +587,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 284         Params(post_increment(i)) = .flags.ReturnPos.x
 286         Params(post_increment(i)) = .flags.ReturnPos.y
 287         Params(post_increment(i)) = .Stats.JineteLevel
+            Params(post_increment(i)) = .Char.BackpackAnim
 
 
             ' WHERE block
