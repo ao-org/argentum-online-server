@@ -154,7 +154,7 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 LoadCharacterInventory_Err:
-    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterInventory: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterInventory: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 End Function
 
 Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
@@ -260,6 +260,7 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .OrigChar.WeaponAnim = RS!weapon_id
         .OrigChar.CascoAnim = RS!helmet_id
         .OrigChar.ShieldAnim = RS!shield_id
+        .OrigChar.BackpackAnim = RS!backpack_id
         .OrigChar.Heading = RS!Heading
         .Stats.MaxHp = RS!max_hp
         .Stats.MinHp = RS!min_hp
@@ -280,7 +281,6 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .Stats.Advertencias = RS!warnings
         .GuildIndex = SanitizeNullValue(RS!Guild_Index, 0)
         .LastGuildRejection = SanitizeNullValue(RS!guild_rejected_because, vbNullString)
-        .OrigChar.BackpackAnim = RS!backpack_id
     End With
 End Sub
 
