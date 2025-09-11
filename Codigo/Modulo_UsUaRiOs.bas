@@ -322,15 +322,15 @@ On Error GoTo Complete_ConnectUser_Err
             .Stats.MinHp = Min(.Stats.MinHp, .Stats.MaxHp)
             .Stats.MinMAN = Min(.Stats.MinMAN, UserMod.GetMaxMana(UserIndex))
             'Obtiene el indice-objeto del arma
-175         If .invent.EquippedWeaponSlot > 0 Then
-180             If .invent.Object(.invent.EquippedWeaponSlot).ObjIndex > 0 Then
-185                 .invent.EquippedWeaponObjIndex = .invent.Object(.invent.EquippedWeaponSlot).ObjIndex
+175         If .Invent.WeaponEqpSlot > 0 Then
+180             If .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex > 0 Then
+185                 .Invent.WeaponEqpObjIndex = .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex
 
 190                 If .flags.Muerto = 0 Then
-195                     .Char.Arma_Aura = ObjData(.invent.EquippedWeaponObjIndex).CreaGRH
+195                     .Char.Arma_Aura = ObjData(.Invent.WeaponEqpObjIndex).CreaGRH
                     End If
                 Else
-200                 .invent.EquippedWeaponSlot = 0
+200                 .Invent.WeaponEqpSlot = 0
                 End If
             End If
             
@@ -341,15 +341,15 @@ On Error GoTo Complete_ConnectUser_Err
                 .HotkeyList(n).Type = Unknown
             Next n
             'Obtiene el indice-objeto del armadura
-205         If .invent.EquippedArmorSlot > 0 Then
-210             If .invent.Object(.invent.EquippedArmorSlot).ObjIndex > 0 Then
-215                 .invent.EquippedArmorObjIndex = .invent.Object(.invent.EquippedArmorSlot).ObjIndex
+205         If .Invent.ArmourEqpSlot > 0 Then
+210             If .Invent.Object(.Invent.ArmourEqpSlot).ObjIndex > 0 Then
+215                 .Invent.ArmourEqpObjIndex = .Invent.Object(.Invent.ArmourEqpSlot).ObjIndex
 
 220                 If .flags.Muerto = 0 Then
-225                     .Char.Body_Aura = ObjData(.invent.EquippedArmorObjIndex).CreaGRH
+225                     .Char.Body_Aura = ObjData(.Invent.ArmourEqpObjIndex).CreaGRH
                     End If
                 Else
-230                 .invent.EquippedArmorSlot = 0
+230                 .Invent.ArmourEqpSlot = 0
                 End If
 235             .flags.Desnudo = 0
             Else
@@ -357,118 +357,118 @@ On Error GoTo Complete_ConnectUser_Err
             End If
 
             'Obtiene el indice-objeto del escudo
-245         If .invent.EquippedShieldSlot > 0 Then
-250             If .invent.Object(.invent.EquippedShieldSlot).ObjIndex > 0 Then
-255                 .invent.EquippedShieldObjIndex = .invent.Object(.invent.EquippedShieldSlot).ObjIndex
+245         If .Invent.EscudoEqpSlot > 0 Then
+250             If .Invent.Object(.Invent.EscudoEqpSlot).ObjIndex > 0 Then
+255                 .Invent.EscudoEqpObjIndex = .Invent.Object(.Invent.EscudoEqpSlot).ObjIndex
 
 260                 If .flags.Muerto = 0 Then
-265                     .Char.Escudo_Aura = ObjData(.invent.EquippedShieldObjIndex).CreaGRH
+265                     .Char.Escudo_Aura = ObjData(.Invent.EscudoEqpObjIndex).CreaGRH
                     End If
                 Else
-270                 .invent.EquippedShieldSlot = 0
+270                 .Invent.EscudoEqpSlot = 0
                 End If
             End If
         
             'Obtiene el indice-objeto del casco
-275         If .invent.EquippedHelmetSlot > 0 Then
-280             If .invent.Object(.invent.EquippedHelmetSlot).ObjIndex > 0 Then
-285                 .invent.EquippedHelmetObjIndex = .invent.Object(.invent.EquippedHelmetSlot).ObjIndex
+275         If .Invent.CascoEqpSlot > 0 Then
+280             If .Invent.Object(.Invent.CascoEqpSlot).ObjIndex > 0 Then
+285                 .Invent.CascoEqpObjIndex = .Invent.Object(.Invent.CascoEqpSlot).ObjIndex
 
 290                 If .flags.Muerto = 0 Then
-295                     .Char.Head_Aura = ObjData(.invent.EquippedHelmetObjIndex).CreaGRH
+295                     .Char.Head_Aura = ObjData(.Invent.CascoEqpObjIndex).CreaGRH
                     End If
                 Else
-300                 .invent.EquippedHelmetSlot = 0
+300                 .Invent.CascoEqpSlot = 0
                 End If
             End If
 
             'Obtiene el indice-objeto barco
-305         If .invent.EquippedShipSlot > 0 Then
-310             If .invent.Object(.invent.EquippedShipSlot).ObjIndex > 0 Then
-315                 .invent.EquippedShipObjIndex = .invent.Object(.invent.EquippedShipSlot).ObjIndex
+305         If .Invent.BarcoSlot > 0 Then
+310             If .Invent.Object(.Invent.BarcoSlot).ObjIndex > 0 Then
+315                 .Invent.BarcoObjIndex = .Invent.Object(.Invent.BarcoSlot).ObjIndex
                 Else
-320                 .invent.EquippedShipSlot = 0
+320                 .Invent.BarcoSlot = 0
                 End If
             End If
 
             'Obtiene el indice-objeto municion
-325         If .invent.EquippedMunitionSlot > 0 Then
-330             If .invent.Object(.invent.EquippedMunitionSlot).ObjIndex > 0 Then
-335                 .invent.EquippedMunitionObjIndex = .invent.Object(.invent.EquippedMunitionSlot).ObjIndex
+325         If .Invent.MunicionEqpSlot > 0 Then
+330             If .Invent.Object(.Invent.MunicionEqpSlot).ObjIndex > 0 Then
+335                 .Invent.MunicionEqpObjIndex = .Invent.Object(.Invent.MunicionEqpSlot).ObjIndex
                 Else
-340                 .invent.EquippedMunitionSlot = 0
+340                 .Invent.MunicionEqpSlot = 0
                 End If
             End If
 
             ' DM
-345         If .invent.EquippedRingAccesorySlot > 0 Then
-350             If .invent.Object(.invent.EquippedRingAccesorySlot).ObjIndex > 0 Then
-355                 .invent.EquippedRingAccesoryObjIndex = .invent.Object(.invent.EquippedRingAccesorySlot).ObjIndex
+345         If .invent.DañoMagicoEqpSlot > 0 Then
+350             If .invent.Object(.invent.DañoMagicoEqpSlot).ObjIndex > 0 Then
+355                 .invent.DañoMagicoEqpObjIndex = .invent.Object(.invent.DañoMagicoEqpSlot).ObjIndex
 
 360                 If .flags.Muerto = 0 Then
-365                     .Char.DM_Aura = ObjData(.invent.EquippedRingAccesoryObjIndex).CreaGRH
+365                     .Char.DM_Aura = ObjData(.invent.DañoMagicoEqpObjIndex).CreaGRH
                     End If
                 Else
-370                 .invent.EquippedRingAccesorySlot = 0
+370                 .invent.DañoMagicoEqpSlot = 0
                 End If
             End If
             
-            If .invent.EquippedAmuletAccesorySlot > 0 Then
-                .invent.EquippedAmuletAccesoryObjIndex = .invent.Object(.invent.EquippedAmuletAccesorySlot).ObjIndex
-                If ObjData(.invent.EquippedAmuletAccesoryObjIndex).CreaGRH <> "" Then
-                    .Char.Otra_Aura = ObjData(.invent.EquippedAmuletAccesoryObjIndex).CreaGRH
+            If .invent.MagicoSlot > 0 Then
+                .invent.MagicoObjIndex = .invent.Object(.invent.MagicoSlot).ObjIndex
+                If ObjData(.invent.MagicoObjIndex).CreaGRH <> "" Then
+                    .Char.Otra_Aura = ObjData(.invent.MagicoObjIndex).CreaGRH
                      Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Otra_Aura, False, 5))
                 End If
-                If ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje > 0 Then
-                    .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
+                If ObjData(.invent.MagicoObjIndex).Ropaje > 0 Then
+                    .Char.CartAnim = ObjData(.invent.MagicoObjIndex).Ropaje
                 End If
             End If
             
             ' RM
-375         If .invent.EquippedRingAccesorySlot > 0 Then
-380             If .invent.Object(.invent.EquippedRingAccesorySlot).ObjIndex > 0 Then
-385                 .invent.EquippedRingAccesoryObjIndex = .invent.Object(.invent.EquippedRingAccesorySlot).ObjIndex
+375         If .Invent.ResistenciaEqpSlot > 0 Then
+380             If .Invent.Object(.Invent.ResistenciaEqpSlot).ObjIndex > 0 Then
+385                 .Invent.ResistenciaEqpObjIndex = .Invent.Object(.Invent.ResistenciaEqpSlot).ObjIndex
 
 390                 If .flags.Muerto = 0 Then
-395                     .Char.RM_Aura = ObjData(.invent.EquippedRingAccesoryObjIndex).CreaGRH
+395                     .Char.RM_Aura = ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH
                     End If
                 Else
-400                 .invent.EquippedRingAccesorySlot = 0
+400                 .Invent.ResistenciaEqpSlot = 0
                 End If
             End If
 
-405         If .invent.EquippedSaddleSlot > 0 Then
-410             If .invent.Object(.invent.EquippedSaddleSlot).ObjIndex > 0 Then
-415                 .invent.EquippedSaddleObjIndex = .invent.Object(.invent.EquippedSaddleSlot).ObjIndex
+405         If .Invent.MonturaSlot > 0 Then
+410             If .Invent.Object(.Invent.MonturaSlot).ObjIndex > 0 Then
+415                 .Invent.MonturaObjIndex = .Invent.Object(.Invent.MonturaSlot).ObjIndex
                 Else
-420                 .invent.EquippedSaddleSlot = 0
+420                 .Invent.MonturaSlot = 0
                 End If
             End If
         
-425         If .invent.EquippedWorkingToolSlot > 0 Then
-430             If .invent.Object(.invent.EquippedWorkingToolSlot).ObjIndex Then
-435                 .invent.EquippedWorkingToolObjIndex = .invent.Object(.invent.EquippedWorkingToolSlot).ObjIndex
+425         If .Invent.HerramientaEqpSlot > 0 Then
+430             If .Invent.Object(.Invent.HerramientaEqpSlot).ObjIndex Then
+435                 .Invent.HerramientaEqpObjIndex = .Invent.Object(.Invent.HerramientaEqpSlot).ObjIndex
                 Else
-440                 .invent.EquippedWorkingToolSlot = 0
+440                 .Invent.HerramientaEqpSlot = 0
                 End If
             End If
         
-475         If .invent.EquippedAmuletAccesorySlot > 0 Then
-480             If .invent.Object(.invent.EquippedAmuletAccesorySlot).ObjIndex Then
-485                 .invent.EquippedAmuletAccesoryObjIndex = .invent.Object(.invent.EquippedAmuletAccesorySlot).ObjIndex
+475         If .Invent.MagicoSlot > 0 Then
+480             If .Invent.Object(.Invent.MagicoSlot).ObjIndex Then
+485                 .Invent.MagicoObjIndex = .Invent.Object(.Invent.MagicoSlot).ObjIndex
 
 490                 If .flags.Muerto = 0 Then
-495                     .Char.Otra_Aura = ObjData(.invent.EquippedAmuletAccesoryObjIndex).CreaGRH
+495                     .Char.Otra_Aura = ObjData(.Invent.MagicoObjIndex).CreaGRH
                     End If
                 Else
-500                 .invent.EquippedAmuletAccesorySlot = 0
+500                 .Invent.MagicoSlot = 0
                 End If
             End If
             
-505         If .invent.EquippedShieldSlot = 0 Then .Char.ShieldAnim = NingunEscudo
-510         If .invent.EquippedHelmetSlot = 0 Then .Char.CascoAnim = NingunCasco
-515         If .invent.EquippedWeaponSlot = 0 And .invent.EquippedWorkingToolSlot = 0 Then .Char.WeaponAnim = NingunArma
-516         If .invent.EquippedAmuletAccesorySlot = 0 Then .Char.CartAnim = NoCart
+505         If .Invent.EscudoEqpSlot = 0 Then .Char.ShieldAnim = NingunEscudo
+510         If .Invent.CascoEqpSlot = 0 Then .Char.CascoAnim = NingunCasco
+515         If .invent.WeaponEqpSlot = 0 And .invent.HerramientaEqpSlot = 0 Then .Char.WeaponAnim = NingunArma
+516         If .invent.MagicoSlot = 0 Then .Char.CartAnim = NoCart
             ' -----------------------------------------------------------------------
             '   FIN - INFORMACION INICIAL DEL PERSONAJE
             ' -----------------------------------------------------------------------
@@ -617,8 +617,8 @@ On Error GoTo Complete_ConnectUser_Err
                 End If
                 slotBarco = GetSlotInInventory(UserIndex, itemBuscado)
                 If slotBarco > -1 Then
-                    .invent.EquippedShipObjIndex = itemBuscado
-                    .invent.EquippedShipSlot = slotBarco
+                    .invent.BarcoObjIndex = itemBuscado
+                    .invent.BarcoSlot = slotBarco
                 End If
                 
             ElseIf Trigger = e_Trigger.VALIDONADO Or Trigger = e_Trigger.NADOCOMBINADO Then  'Esta en zona de nado comun obj 197
@@ -626,29 +626,29 @@ On Error GoTo Complete_ConnectUser_Err
                 itemBuscado = iObjTraje
                 slotBarco = GetSlotInInventory(UserIndex, itemBuscado)
                 If slotBarco > -1 Then
-                    .invent.EquippedShipObjIndex = itemBuscado
-                    .invent.EquippedShipSlot = slotBarco
+                    .invent.BarcoObjIndex = itemBuscado
+                    .invent.BarcoSlot = slotBarco
                 End If
             End If
             
-760         If .invent.EquippedShipObjIndex > 0 And (MapData(.pos.Map, .pos.x, .pos.y).Blocked And FLAG_AGUA) <> 0 Then
+760         If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
 765             .flags.Navegando = 1
 770             Call EquiparBarco(UserIndex)
             ElseIf .flags.Navegando = 1 And (MapData(.pos.Map, .pos.x, .pos.y).Blocked And FLAG_AGUA) <> 0 Then
                 Dim iSlot As Integer
                 For iSlot = 1 To UBound(.invent.Object)
                     If .invent.Object(iSlot).ObjIndex > 0 Then
-                        If ObjData(.invent.Object(iSlot).ObjIndex).OBJType = otShips And ObjData(.invent.Object(iSlot).ObjIndex).Subtipo > 0 Then
-                            .invent.EquippedShipObjIndex = .invent.Object(iSlot).ObjIndex
-                            .invent.EquippedShipSlot = iSlot
+                        If ObjData(.invent.Object(iSlot).ObjIndex).OBJType = otBarcos And ObjData(.invent.Object(iSlot).ObjIndex).Subtipo > 0 Then
+                            .invent.BarcoObjIndex = .invent.Object(iSlot).ObjIndex
+                            .invent.BarcoSlot = iSlot
                             Exit For
                         End If
                     End If
                 Next
             End If
             
-775         If .invent.EquippedAmuletAccesoryObjIndex <> 0 Then
-780             If ObjData(.invent.EquippedAmuletAccesoryObjIndex).EfectoMagico = 11 Then .flags.Paraliza = 1
+775         If .Invent.MagicoObjIndex <> 0 Then
+780             If ObjData(.Invent.MagicoObjIndex).EfectoMagico = 11 Then .flags.Paraliza = 1
             End If
 
 785         Call WriteUserIndexInServer(UserIndex) 'Enviamos el User index
@@ -921,31 +921,31 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 
 122             .Char.Head = .OrigChar.Head
     
-124             If .invent.EquippedHelmetObjIndex > 0 Then
-126                 .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+124             If .Invent.CascoEqpObjIndex > 0 Then
+126                 .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
                 End If
     
-128             If .invent.EquippedShieldObjIndex > 0 Then
-130                 .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
+128             If .Invent.EscudoEqpObjIndex > 0 Then
+130                 .Char.ShieldAnim = ObjData(.Invent.EscudoEqpObjIndex).ShieldAnim
     
                 End If
     
-132             If .invent.EquippedWeaponObjIndex > 0 Then
-134                 .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
+132             If .Invent.WeaponEqpObjIndex > 0 Then
+134                 .Char.WeaponAnim = ObjData(.Invent.WeaponEqpObjIndex).WeaponAnim
         
-136                 If ObjData(.invent.EquippedWeaponObjIndex).CreaGRH <> "" Then
-138                     .Char.Arma_Aura = ObjData(.invent.EquippedWeaponObjIndex).CreaGRH
+136                 If ObjData(.Invent.WeaponEqpObjIndex).CreaGRH <> "" Then
+138                     .Char.Arma_Aura = ObjData(.Invent.WeaponEqpObjIndex).CreaGRH
 140                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Arma_Aura, False, 1))
     
                     End If
             
                 End If
     
-142             If .invent.EquippedArmorObjIndex > 0 Then
-144                 .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
+142             If .Invent.ArmourEqpObjIndex > 0 Then
+144                 .Char.Body = ObtenerRopaje(UserIndex, ObjData(.Invent.ArmourEqpObjIndex))
         
-146                 If ObjData(.invent.EquippedArmorObjIndex).CreaGRH <> "" Then
-148                     .Char.Body_Aura = ObjData(.invent.EquippedArmorObjIndex).CreaGRH
+146                 If ObjData(.Invent.ArmourEqpObjIndex).CreaGRH <> "" Then
+148                     .Char.Body_Aura = ObjData(.Invent.ArmourEqpObjIndex).CreaGRH
 150                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Body_Aura, False, 2))
     
                     End If
@@ -955,46 +955,46 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
             
                 End If
     
-154             If .invent.EquippedShieldObjIndex > 0 Then
-156                 .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
+154             If .Invent.EscudoEqpObjIndex > 0 Then
+156                 .Char.ShieldAnim = ObjData(.Invent.EscudoEqpObjIndex).ShieldAnim
     
-158                 If ObjData(.invent.EquippedShieldObjIndex).CreaGRH <> "" Then
-160                     .Char.Escudo_Aura = ObjData(.invent.EquippedShieldObjIndex).CreaGRH
+158                 If ObjData(.Invent.EscudoEqpObjIndex).CreaGRH <> "" Then
+160                     .Char.Escudo_Aura = ObjData(.Invent.EscudoEqpObjIndex).CreaGRH
 162                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Escudo_Aura, False, 3))
                     End If
                 End If
     
-164             If .invent.EquippedHelmetObjIndex > 0 Then
-166                 .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+164             If .Invent.CascoEqpObjIndex > 0 Then
+166                 .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
     
-168                 If ObjData(.invent.EquippedHelmetObjIndex).CreaGRH <> "" Then
-170                     .Char.Head_Aura = ObjData(.invent.EquippedHelmetObjIndex).CreaGRH
+168                 If ObjData(.Invent.CascoEqpObjIndex).CreaGRH <> "" Then
+170                     .Char.Head_Aura = ObjData(.Invent.CascoEqpObjIndex).CreaGRH
 172                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Head_Aura, False, 4))
     
                     End If
             
                 End If
     
-174             If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
-176                 If ObjData(.invent.EquippedAmuletAccesoryObjIndex).CreaGRH <> "" Then
-178                     .Char.Otra_Aura = ObjData(.invent.EquippedAmuletAccesoryObjIndex).CreaGRH
+174             If .Invent.MagicoObjIndex > 0 Then
+176                 If ObjData(.Invent.MagicoObjIndex).CreaGRH <> "" Then
+178                     .Char.Otra_Aura = ObjData(.Invent.MagicoObjIndex).CreaGRH
 180                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Otra_Aura, False, 5))
                     End If
-                    If ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje > 0 Then
-                        .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
+                    If ObjData(.invent.MagicoObjIndex).Ropaje > 0 Then
+                        .Char.CartAnim = ObjData(.invent.MagicoObjIndex).Ropaje
                     End If
                 End If
                 
-190             If .invent.EquippedRingAccesoryObjIndex > 0 Then
-192                 If ObjData(.invent.EquippedRingAccesoryObjIndex).CreaGRH <> "" Then
-194                     .Char.DM_Aura = ObjData(.invent.EquippedRingAccesoryObjIndex).CreaGRH
+190             If .invent.DañoMagicoEqpObjIndex > 0 Then
+192                 If ObjData(.invent.DañoMagicoEqpObjIndex).CreaGRH <> "" Then
+194                     .Char.DM_Aura = ObjData(.invent.DañoMagicoEqpObjIndex).CreaGRH
 196                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.DM_Aura, False, 6))
                     End If
                 End If
                 
-198             If .invent.EquippedRingAccesoryObjIndex > 0 Then
-200                 If ObjData(.invent.EquippedRingAccesoryObjIndex).CreaGRH <> "" Then
-202                     .Char.RM_Aura = ObjData(.invent.EquippedRingAccesoryObjIndex).CreaGRH
+198             If .Invent.ResistenciaEqpObjIndex > 0 Then
+200                 If ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH <> "" Then
+202                     .Char.RM_Aura = ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH
 204                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.RM_Aura, False, 7))
                     End If
                 End If
@@ -1002,7 +1002,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
             End If
     
 206         Call ActualizarVelocidadDeUsuario(UserIndex)
-208         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+208         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
             
          Call MakeUserChar(True, UserList(UserIndex).Pos.Map, UserIndex, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, 0)
         End With
@@ -1015,7 +1015,7 @@ RevivirUsuario_Err:
         
 End Sub
 
-Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As Byte, ByVal Arma As Integer, ByVal Escudo As Integer, ByVal Casco As Integer, ByVal Cart As Integer, ByVal BackPack As Integer)
+Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As Byte, ByVal Arma As Integer, ByVal Escudo As Integer, ByVal Casco As Integer, ByVal Cart As Integer)
         
         On Error GoTo ChangeUserChar_Err
         If IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTransformed) Then Exit Sub
@@ -1027,10 +1027,9 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal body As Integer, ByVal head
 110         .ShieldAnim = Escudo
 112         .CascoAnim = Casco
 114         .CartAnim = Cart
-            .BackpackAnim = BackPack
         End With
         If UserList(UserIndex).Char.charindex > 0 Then
-116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, UserList(UserIndex).Char.charindex, Arma, Escudo, Cart, BackPack, UserList(UserIndex).Char.FX, UserList(UserIndex).Char.loops, Casco, False, UserList(UserIndex).flags.Navegando))
+116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, UserList(UserIndex).Char.charindex, Arma, Escudo, Cart, UserList(UserIndex).Char.FX, UserList(UserIndex).Char.loops, Casco, False, UserList(UserIndex).flags.Navegando))
         End If
         
         Exit Sub
@@ -1203,7 +1202,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
 
                                     
 140                 Call WriteCharacterCreate(sndIndex, _
-                                    .Char.body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CartAnim, .Char.BackpackAnim, _
+                                    .Char.body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CartAnim, _
                                     .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, _
                                     .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, _
                                     .Char.Escudo_Aura, .Char.speeding, 0, appear, .Grupo.Lider.ArrayIndex, .GuildIndex, clan_nivel, _
@@ -1528,7 +1527,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                 Exit Function
             End If
             
-            If .flags.Navegando And .invent.EquippedShipObjIndex = iObjTraje And Not (MapData(.pos.Map, nPos.x, nPos.y).trigger = e_Trigger.DETALLEAGUA Or MapData(.pos.Map, nPos.x, nPos.y).trigger = e_Trigger.NADOCOMBINADO Or MapData(.pos.Map, nPos.x, nPos.y).trigger = e_Trigger.VALIDONADO Or MapData(.pos.Map, nPos.x, nPos.y).trigger = e_Trigger.NADOBAJOTECHO) Then
+            If .flags.Navegando And .invent.BarcoObjIndex = iObjTraje And Not (MapData(.pos.Map, nPos.X, nPos.y).Trigger = e_Trigger.DETALLEAGUA Or MapData(.pos.Map, nPos.X, nPos.y).Trigger = e_Trigger.NADOCOMBINADO Or MapData(.pos.Map, nPos.X, nPos.y).Trigger = e_Trigger.VALIDONADO Or MapData(.pos.Map, nPos.X, nPos.y).Trigger = e_Trigger.NADOBAJOTECHO) Then
                 Exit Function
             End If
 
@@ -1781,21 +1780,21 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 Call WriteLocaleMsg(sendIndex, "1295", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Name)
 102     Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1857, UserList(UserIndex).Stats.ELV & "¬" & UserList(UserIndex).Stats.Exp & "¬" & ExpLevelUp(UserList(UserIndex).Stats.ELV), e_FontTypeNames.FONTTYPE_INFO)) ' Msg1857=Nivel: ¬1  EXP: ¬2/¬3
 104     Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1858, UserList(UserIndex).Stats.MinHp & "¬" & UserList(UserIndex).Stats.MaxHp & "¬" & UserList(UserIndex).Stats.MinMAN & "¬" & UserList(UserIndex).Stats.MaxMAN & "¬" & UserList(UserIndex).Stats.MinSta & "¬" & UserList(UserIndex).Stats.MaxSta, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1858=Salud: ¬1/¬2  Mana: ¬3/¬4  Vitalidad: ¬5/¬6
-106     If UserList(UserIndex).invent.EquippedWeaponObjIndex > 0 Then
-108         Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1859, UserList(UserIndex).Stats.MinHIT & "¬" & UserList(UserIndex).Stats.MaxHit & "¬" & ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MinHIT & "¬" & ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MaxHit, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1859=Menor Golpe/Mayor Golpe: ¬1/¬2 (¬3/¬4)
+106     If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
+108         Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1859, UserList(UserIndex).Stats.MinHIT & "¬" & UserList(UserIndex).Stats.MaxHit & "¬" & ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MinHIT & "¬" & ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MaxHit, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1859=Menor Golpe/Mayor Golpe: ¬1/¬2 (¬3/¬4)
         Else
 110         Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1860, UserList(UserIndex).Stats.MinHIT & "¬" & UserList(UserIndex).Stats.MaxHit, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1860=Menor Golpe/Mayor Golpe: ¬1/¬2
 
         End If
     
-112     If UserList(UserIndex).invent.EquippedArmorObjIndex > 0 Then
-114         If UserList(UserIndex).invent.EquippedShieldObjIndex > 0 Then
+112     If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
+114         If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then
 116             Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1861, _
-                    ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).MinDef + ObjData(UserList(UserIndex).invent.EquippedShieldObjIndex).MinDef & "¬" & _
-                    ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).MaxDef + ObjData(UserList(UserIndex).invent.EquippedShieldObjIndex).MaxDef, _
+                    ObjData(UserList(UserIndex).invent.ArmourEqpObjIndex).MinDef + ObjData(UserList(UserIndex).invent.EscudoEqpObjIndex).MinDef & "¬" & _
+                    ObjData(UserList(UserIndex).invent.ArmourEqpObjIndex).MaxDef + ObjData(UserList(UserIndex).invent.EscudoEqpObjIndex).MaxDef, _
                     e_FontTypeNames.FONTTYPE_INFO)) ' Msg1861=(CUERPO) Min Def/Max Def: ¬1/¬2
             Else
-118             Call WriteConsoleMsg(sendIndex, "(CUERPO) Min Def/Max Def: " & ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).MinDef & "/" & ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).MaxDef, e_FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(sendIndex, "(CUERPO) Min Def/Max Def: " & ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).MinDef & "/" & ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).MaxDef, e_FontTypeNames.FONTTYPE_INFO)
 
             End If
 
@@ -1805,10 +1804,10 @@ Call WriteLocaleMsg(sendIndex, "1295", e_FontTypeNames.FONTTYPE_INFO, UserList(U
 
         End If
     
-122     If UserList(UserIndex).invent.EquippedHelmetObjIndex > 0 Then
+122     If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then
 124         Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1862, _
-                ObjData(UserList(UserIndex).invent.EquippedHelmetObjIndex).MinDef & "¬" & _
-                ObjData(UserList(UserIndex).invent.EquippedHelmetObjIndex).MaxDef, _
+                ObjData(UserList(UserIndex).invent.CascoEqpObjIndex).MinDef & "¬" & _
+                ObjData(UserList(UserIndex).invent.CascoEqpObjIndex).MaxDef, _
                 e_FontTypeNames.FONTTYPE_INFO)) ' Msg1862=(CABEZA) Min Def/Max Def: ¬1/¬2
         Else
             'Msg1099= (CABEZA) Min Def/Max Def: 0
@@ -2048,7 +2047,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
         Dim Lvl As Integer, maxPermitido As Integer
 100         Lvl = UserList(UserIndex).Stats.ELV
 
-102     If UserList(UserIndex).Stats.UserSkills(Skill) = MAXSKILLPOINTS Then
+102     If UserList(UserIndex).Stats.UserSkills(Skill) = MAXSKILLPOINTS Then 
             Exit Sub
         End If
 
@@ -2061,7 +2060,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 108         maxPermitido = (Lvl \ 2) * 5 + 3 - (((((Lvl - 1) \ 2) * 5) Mod 10) \ 5)
         End If
 
-110     If UserList(UserIndex).Stats.UserSkills(Skill) >= maxPermitido Then
+110     If UserList(UserIndex).Stats.UserSkills(Skill) >= maxPermitido Then 
             Exit Sub
         End If
 
@@ -2072,7 +2071,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
         Dim Aumenta As Integer
         Dim Prob    As Integer
         
-        'Cuadratic expression to sumarize old select case lvl bands
+        'Cuadratic expression to sumarize old select case lvl bands 
         Prob = Int(0.1 * (Lvl ^ 2) + 15)
          
         Aumenta = RandomNumber(1, Prob * DificultadSubirSkill)
@@ -2096,7 +2095,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 152     If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
 154         UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + BonusExp
 
-156         If UserList(UserIndex).Stats.Exp > MAXEXP Then
+156         If UserList(UserIndex).Stats.Exp > MAXEXP Then 
                 UserList(UserIndex).Stats.Exp = MAXEXP
             End If
 
@@ -2122,11 +2121,11 @@ Public Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
         On Error GoTo SubirSkillDeArmaActual_Err
 
 100     With UserList(UserIndex)
-102         If .invent.EquippedWeaponObjIndex > 0 Then
+102         If .Invent.WeaponEqpObjIndex > 0 Then
                 ' Arma con proyectiles, subimos armas a distancia
-104             If ObjData(.invent.EquippedWeaponObjIndex).Proyectil Then
+104             If ObjData(.Invent.WeaponEqpObjIndex).Proyectil Then
 106                 Call SubirSkill(UserIndex, e_Skill.Proyectiles)
-                ElseIf ObjData(.invent.EquippedWeaponObjIndex).WeaponType = eKnuckle Then
+                ElseIf ObjData(.invent.WeaponEqpObjIndex).WeaponType = eKnuckle Then
                     Call SubirSkill(UserIndex, e_Skill.Wrestling)
                 ' Sino, subimos combate con armas
                 Else
@@ -2204,20 +2203,20 @@ Sub UserDie(ByVal UserIndex As Integer)
                 End If
             End If
             
-            Call Desequipar(UserIndex, .invent.EquippedArmorSlot)
-            Call Desequipar(UserIndex, .invent.EquippedWeaponSlot)
-            Call Desequipar(UserIndex, .invent.EquippedShieldSlot)
-            Call Desequipar(UserIndex, .invent.EquippedHelmetSlot)
-            Call Desequipar(UserIndex, .invent.EquippedRingAccesorySlot)
-            Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
-            Call Desequipar(UserIndex, .invent.EquippedSaddleSlot)
-            Call Desequipar(UserIndex, .invent.EquippedMunitionSlot)
-            Call Desequipar(UserIndex, .invent.EquippedAmuletAccesorySlot)
-            Call Desequipar(UserIndex, .invent.EquippedRingAccesorySlot)
+            Call Desequipar(UserIndex, .Invent.ArmourEqpSlot)
+            Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
+            Call Desequipar(UserIndex, .Invent.EscudoEqpSlot)
+            Call Desequipar(UserIndex, .Invent.CascoEqpSlot)
+            Call Desequipar(UserIndex, .invent.DañoMagicoEqpSlot)
+            Call Desequipar(UserIndex, .Invent.HerramientaEqpSlot)
+            Call Desequipar(UserIndex, .Invent.MonturaSlot)
+            Call Desequipar(UserIndex, .Invent.MunicionEqpSlot)
+            Call Desequipar(UserIndex, .Invent.MagicoSlot)
+            Call Desequipar(UserIndex, .Invent.ResistenciaEqpSlot)
    
             'desequipar montura
 178         If .flags.Montado > 0 Then
-180             Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
+180             Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
             End If
         
             ' << Reseteamos los posibles FX sobre el personaje >>
@@ -2293,7 +2292,7 @@ Sub UserDie(ByVal UserIndex As Integer)
                 
         
             '<< Actualizamos clientes >>
-228         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
+228         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
 
 230         If MapInfo(.Pos.Map).Seguro = 0 Then
 232             ' Msg524=Escribe /HOGAR si deseas regresar rápido a tu hogar.
@@ -2737,7 +2736,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 216         If MapInfo(Map).zone = "DUNGEON" Or MapData(Map, X, Y).trigger >= 9 Then
 
 218             If .flags.Montado > 0 Then
-220                 Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
+220                 Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
                 End If
 
             End If
@@ -3044,9 +3043,9 @@ Function TieneArmaduraCazador(ByVal UserIndex As Integer) As Boolean
     
         
 
-100     If UserList(UserIndex).invent.EquippedArmorObjIndex > 0 Then
+100     If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
         
-102         If ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).Subtipo = 3 Then ' Aguante hardcodear números :D
+102         If ObjData(UserList(UserIndex).invent.ArmourEqpObjIndex).Subtipo = 3 Then ' Aguante hardcodear números :D
 104             TieneArmaduraCazador = True
             End If
         
@@ -3194,7 +3193,7 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
 150             If .flags.Navegando Then
             
 152                 If .flags.Muerto = 0 Then
-154                     .Char.body = ObjData(UserList(UserIndex).invent.EquippedShipObjIndex).Ropaje
+154                     .Char.Body = ObjData(UserList(UserIndex).Invent.BarcoObjIndex).Ropaje
                     Else
 156                     .Char.Body = iFragataFantasmal
                     End If
@@ -3251,12 +3250,12 @@ Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Sing
             End If
         
             ' El traje para nadar es considerado barco, de subtipo = 0
-114         If (.flags.Navegando + .flags.Nadando > 0) And (.invent.EquippedShipObjIndex > 0) Then
-116             modificadorItem = ObjData(.invent.EquippedShipObjIndex).velocidad
+114         If (.flags.Navegando + .flags.Nadando > 0) And (.Invent.BarcoObjIndex > 0) Then
+116             modificadorItem = ObjData(.Invent.BarcoObjIndex).velocidad
             End If
         
-118         If (.flags.Montado = 1) And (.invent.EquippedSaddleObjIndex > 0) Then
-120             modificadorItem = ObjData(.invent.EquippedSaddleObjIndex).velocidad
+118         If (.flags.Montado = 1) And (.Invent.MonturaObjIndex > 0) Then
+120             modificadorItem = ObjData(.Invent.MonturaObjIndex).velocidad
                 Select Case .Stats.JineteLevel
                     Case 1
                         JineteLevelSpeed = SvrConfig.GetValue("JineteLevel1Speed")
@@ -3512,7 +3511,7 @@ Public Function CanAttackUser(ByVal AttackerIndex As Integer, ByVal AttackerVers
             End If
         ElseIf esCaos(attackerIndex) And esCaos(TargetIndex) Then
             If (UserList(attackerIndex).flags.LegionarySecure) Then
-194             CanAttackUser = eSameFaction
+194             CanAttackUser = eSameFaction 
                 Exit Function
             End If
         End If
@@ -3725,10 +3724,10 @@ Public Function GetArmorPenetration(ByVal UserIndex As Integer, ByVal TargetArmo
     Dim ArmorPenetration As Integer
     If Not IsFeatureEnabled("armor_penetration_feature") Then Exit Function
     With UserList(UserIndex)
-        If .invent.EquippedWeaponObjIndex > 0 Then
-            ArmorPenetration = ObjData(.invent.EquippedWeaponObjIndex).IgnoreArmorAmmount
-            If ObjData(.invent.EquippedWeaponObjIndex).IgnoreArmorPercent > 0 Then
-                ArmorPenetration = ArmorPenetration + TargetArmor * ObjData(.invent.EquippedWeaponObjIndex).IgnoreArmorPercent
+        If .invent.WeaponEqpObjIndex > 0 Then
+            ArmorPenetration = ObjData(.invent.WeaponEqpObjIndex).IgnoreArmorAmmount
+            If ObjData(.invent.WeaponEqpObjIndex).IgnoreArmorPercent > 0 Then
+                ArmorPenetration = ArmorPenetration + TargetArmor * ObjData(.invent.WeaponEqpObjIndex).IgnoreArmorPercent
             End If
         End If
     End With
@@ -3740,7 +3739,7 @@ Public Function GetEvasionBonus(ByRef User As t_User) As Integer
 End Function
 
 Public Function GetHitBonus(ByRef User As t_User) As Integer
-    GetHitBonus = User.Modifiers.HitBonus + GetWeaponHitBonus(User.invent.EquippedWeaponObjIndex, User.clase)
+    GetHitBonus = User.Modifiers.HitBonus + GetWeaponHitBonus(User.invent.WeaponEqpObjIndex, User.clase)
 End Function
 
 'Defines the healing bonus when using a potion, a spell or any other healing source
@@ -3793,7 +3792,7 @@ Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
                     Call EquiparBarco(UserIndex)
                      ' Msg592=¡Has recuperado tu apariencia normal!
                     Call WriteLocaleMsg(UserIndex, "592", e_FontTypeNames.FONTTYPE_INFO)
-                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
+                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
                     Call RefreshCharStatus(UserIndex)
                 End If
             Else
@@ -3934,20 +3933,20 @@ Public Function GetUserMRForNpc(ByVal UserIndex As Integer) As Integer
     With UserList(UserIndex)
         Dim MR As Integer
         MR = 0
-        If .invent.EquippedArmorObjIndex > 0 Then
-            MR = MR + ObjData(.invent.EquippedArmorObjIndex).ResistenciaMagica
+        If .invent.ArmourEqpObjIndex > 0 Then
+            MR = MR + ObjData(.invent.ArmourEqpObjIndex).ResistenciaMagica
         End If
         ' Resistencia mágica anillo
-        If .invent.EquippedRingAccesoryObjIndex > 0 Then
-            MR = MR + ObjData(.invent.EquippedRingAccesoryObjIndex).ResistenciaMagica
+        If .invent.ResistenciaEqpObjIndex > 0 Then
+            MR = MR + ObjData(.invent.ResistenciaEqpObjIndex).ResistenciaMagica
         End If
         ' Resistencia mágica escudo
-        If .invent.EquippedShieldObjIndex > 0 Then
-            MR = MR + ObjData(.invent.EquippedShieldObjIndex).ResistenciaMagica
+        If .invent.EscudoEqpObjIndex > 0 Then
+            MR = MR + ObjData(.invent.EscudoEqpObjIndex).ResistenciaMagica
         End If
         ' Resistencia mágica casco
-        If .invent.EquippedHelmetObjIndex > 0 Then
-            MR = MR + ObjData(.invent.EquippedHelmetObjIndex).ResistenciaMagica
+        If .invent.CascoEqpObjIndex > 0 Then
+            MR = MR + ObjData(.invent.CascoEqpObjIndex).ResistenciaMagica
         End If
         If IsFeatureEnabled("mr-magic-bonus-damage") Then
             MR = MR + .Stats.UserSkills(Resistencia) * MRSkillNpcProtectionModifier
@@ -3960,20 +3959,20 @@ Public Function GetUserMR(ByVal UserIndex As Integer) As Integer
     With UserList(UserIndex)
         Dim MR As Integer
         MR = 0
-        If .invent.EquippedArmorObjIndex > 0 Then
-            MR = MR + ObjData(.invent.EquippedArmorObjIndex).ResistenciaMagica
+        If .invent.ArmourEqpObjIndex > 0 Then
+            MR = MR + ObjData(.invent.ArmourEqpObjIndex).ResistenciaMagica
         End If
         ' Resistencia mágica anillo
-        If .invent.EquippedRingAccesoryObjIndex > 0 Then
-            MR = MR + ObjData(.invent.EquippedRingAccesoryObjIndex).ResistenciaMagica
+        If .invent.ResistenciaEqpObjIndex > 0 Then
+            MR = MR + ObjData(.invent.ResistenciaEqpObjIndex).ResistenciaMagica
         End If
         ' Resistencia mágica escudo
-        If .invent.EquippedShieldObjIndex > 0 Then
-            MR = MR + ObjData(.invent.EquippedShieldObjIndex).ResistenciaMagica
+        If .invent.EscudoEqpObjIndex > 0 Then
+            MR = MR + ObjData(.invent.EscudoEqpObjIndex).ResistenciaMagica
         End If
         ' Resistencia mágica casco
-        If .invent.EquippedHelmetObjIndex > 0 Then
-            MR = MR + ObjData(.invent.EquippedHelmetObjIndex).ResistenciaMagica
+        If .invent.CascoEqpObjIndex > 0 Then
+            MR = MR + ObjData(.invent.CascoEqpObjIndex).ResistenciaMagica
         End If
         If IsFeatureEnabled("mr-magic-bonus-damage") Then
             MR = MR + .Stats.UserSkills(Resistencia) * MRSkillProtectionModifier

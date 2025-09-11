@@ -725,13 +725,13 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
             
 154         If .clase = e_Class.Mage And Not IsFeatureEnabled("remove-staff-requirements") Then
 156             If Hechizos(HechizoIndex).NeedStaff > 0 Then
-158                 If .invent.EquippedWeaponObjIndex = 0 Then
+158                 If .Invent.WeaponEqpObjIndex = 0 Then
                         'Msg781= Necesitás un báculo para lanzar este hechizo.
                         Call WriteLocaleMsg(UserIndex, "781", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Function
                     End If
                 
-162                 If ObjData(.invent.EquippedWeaponObjIndex).Power < Hechizos(HechizoIndex).NeedStaff Then
+162                 If ObjData(.Invent.WeaponEqpObjIndex).Power < Hechizos(HechizoIndex).NeedStaff Then
                         'Msg782= Necesitás un báculo más poderoso para lanzar este hechizo.
                         Call WriteLocaleMsg(UserIndex, "782", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Function
@@ -741,7 +741,7 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
             
             If .clase = e_Class.Druid Then
                 If Hechizos(HechizoIndex).RequiereInstrumento > 0 Then
-                    If .invent.EquippedRingAccesoryObjIndex = 0 Or ObjData(.invent.EquippedRingAccesoryObjIndex).InstrumentoRequerido <> 1 Then
+                    If .invent.DañoMagicoEqpObjIndex = 0 Or ObjData(.invent.DañoMagicoEqpObjIndex).InstrumentoRequerido <> 1 Then
                         'Msg783= Necesitás una flauta para invocar o desinvocar a tus mascotas.
                         Call WriteLocaleMsg(UserIndex, "783", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Function
@@ -750,11 +750,11 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
             End If
             
             If Hechizos(HechizoIndex).RequireWeaponType > 0 Then
-                If .invent.EquippedWeaponObjIndex = 0 Then
+                If .invent.WeaponEqpObjIndex = 0 Then
                     Call WriteLocaleMsg(UserIndex, GetRequiredWeaponLocaleId(Hechizos(HechizoIndex).RequireWeaponType), e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
-                If ObjData(.invent.EquippedWeaponObjIndex).WeaponType <> Hechizos(HechizoIndex).RequireWeaponType Then
+                If ObjData(.invent.WeaponEqpObjIndex).WeaponType <> Hechizos(HechizoIndex).RequireWeaponType Then
                     Call WriteLocaleMsg(UserIndex, GetRequiredWeaponLocaleId(Hechizos(HechizoIndex).RequireWeaponType), e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
@@ -1348,12 +1348,12 @@ Function HandlePhysicalSkill(ByVal SourceIndex As Integer, ByVal SourceType As e
             Dim Proyectile As Integer
             If SourceType = eUser Then
                 With UserList(SourceIndex)
-                    If .invent.EquippedMunitionObjIndex = 0 Then
+                    If .invent.MunicionEqpObjIndex = 0 Then
                         Exit Function
                     End If
-                    Damage = GetUserDamageWithItem(SourceIndex, .invent.EquippedWeaponObjIndex, .invent.EquippedMunitionObjIndex) / 2
-                    objectIndex = .invent.EquippedWeaponObjIndex
-                    Proyectile = ObjData(.invent.EquippedMunitionObjIndex).ProjectileType
+                    Damage = GetUserDamageWithItem(SourceIndex, .invent.WeaponEqpObjIndex, .invent.MunicionEqpObjIndex) / 2
+                    objectIndex = .invent.WeaponEqpObjIndex
+                    Proyectile = ObjData(.invent.MunicionEqpObjIndex).ProjectileType
                 End With
             Else
                 Damage = RandomNumber(NpcList(SourceIndex).Stats.MinHIT, NpcList(SourceIndex).Stats.MaxHit)
@@ -1494,10 +1494,10 @@ Public Function ManaHechizoPorClase(ByVal userindex As Integer, Hechizo As t_Hec
     Select Case UserList(UserIndex).clase
     
         Case e_Class.Bard
-            If Hechizos(HechizoIndex).nombre = MauveFlashIndex And UserList(UserIndex).invent.EquippedRingAccesoryObjIndex = MagicLuteIndex Then
+            If Hechizos(HechizoIndex).nombre = MauveFlashIndex And UserList(UserIndex).invent.DañoMagicoEqpObjIndex = MagicLuteIndex Then
                 ManaHechizoPorClase = 80
                 Exit Function
-            ElseIf Hechizos(HechizoIndex).nombre = FireEcoIndex And UserList(UserIndex).invent.EquippedRingAccesoryObjIndex = MagicLuteIndex Then
+            ElseIf Hechizos(HechizoIndex).nombre = FireEcoIndex And UserList(UserIndex).invent.DañoMagicoEqpObjIndex = MagicLuteIndex Then
                 ManaHechizoPorClase = 70
                 Exit Function
             End If
@@ -1895,7 +1895,7 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
 
 234             If UserList(tU).GuildIndex > 0 Then .NameMimetizado = .NameMimetizado & " <" & modGuilds.GuildName(UserList(tU).GuildIndex) & ">"
             
-236             Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+236             Call ChangeUserChar(UserIndex, .char.body, .char.head, .char.Heading, .char.WeaponAnim, .char.ShieldAnim, .char.CascoAnim, .char.CartAnim)
 238             Call RefreshCharStatus(UserIndex)
             End With
            
@@ -2386,22 +2386,22 @@ Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
 620             If UserList(UserIndex).clase <> Cleric Then
                     Dim PuedeRevivir As Boolean
                     
-622                 If UserList(UserIndex).invent.EquippedWeaponObjIndex <> 0 Then
-624                     If ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).Revive Then
+622                 If UserList(UserIndex).Invent.WeaponEqpObjIndex <> 0 Then
+624                     If ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).Revive Then
 626                         PuedeRevivir = True
                         End If
                     End If
                     
                     
                     
-628                 If UserList(UserIndex).invent.EquippedRingAccesoryObjIndex <> 0 Then
-630                     If ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).Revive Then
+628                 If UserList(UserIndex).invent.DañoMagicoEqpObjIndex <> 0 Then
+630                     If ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).Revive Then
 632                         PuedeRevivir = True
                         End If
                     End If
                     
-                    If UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex <> 0 Then
-                        If ObjData(UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex).Revive Then
+                    If UserList(userindex).Invent.MagicoObjIndex <> 0 Then
+                        If ObjData(UserList(userindex).Invent.MagicoObjIndex).Revive Then
                             PuedeRevivir = True
                         End If
                     End If
@@ -2726,7 +2726,7 @@ Call WriteLocaleMsg(UserIndex, "819", e_FontTypeNames.FONTTYPE_INFO)
 270                 Call ClearClothes(.char)
 276                 .NameMimetizado = IIf(NpcList(NpcIndex).showName = 1, NpcList(NpcIndex).Name, vbNullString)
 
-278                 Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+278                 Call ChangeUserChar(UserIndex, .char.body, .char.head, .char.Heading, .char.WeaponAnim, .char.ShieldAnim, .char.CascoAnim, .char.CartAnim)
 280                 Call RefreshCharStatus(UserIndex)
                 End With
                 
@@ -2807,21 +2807,21 @@ Call WriteLocaleMsg(UserIndex, "821", e_FontTypeNames.FONTTYPE_INFOIAO)
 136         Damage = Damage + Porcentaje(Damage, 3 * UserList(UserIndex).Stats.ELV)
             Dim MagicPenetration As Integer
             
-148         If UserList(UserIndex).invent.EquippedWeaponObjIndex > 0 Then
-150             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MagicDamageBonus)
-                MagicPenetration = ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MagicPenetration
-                Damage = Damage + ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MagicAbsoluteBonus
+148         If UserList(UserIndex).invent.WeaponEqpObjIndex > 0 Then
+150             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus)
+                MagicPenetration = ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicPenetration
+                Damage = Damage + ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicAbsoluteBonus
             End If
-151         If UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex > 0 Then
-                Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex).MagicDamageBonus)
-                Damage = Damage + ObjData(UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex).MagicAbsoluteBonus
-                MagicPenetration = MagicPenetration + ObjData(UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex).MagicPenetration
+151         If UserList(UserIndex).invent.MagicoObjIndex > 0 Then
+                Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicDamageBonus)
+                Damage = Damage + ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicAbsoluteBonus
+                MagicPenetration = MagicPenetration + ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicPenetration
             End If
             ' Magic Damage ring
-152         If UserList(UserIndex).invent.EquippedRingAccesoryObjIndex > 0 Then
-154             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicDamageBonus)
-                Damage = Damage + ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicAbsoluteBonus
-                MagicPenetration = MagicPenetration + ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicPenetration
+152         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
+154             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
+                Damage = Damage + ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicAbsoluteBonus
+                MagicPenetration = MagicPenetration + ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicPenetration
             End If
 156         b = True
 158         If NpcList(NpcIndex).flags.Snd2 > 0 Then
@@ -3388,20 +3388,20 @@ Call WriteLocaleMsg(UserIndex, "822", e_FontTypeNames.FONTTYPE_INFO)
 402         Damage = Damage + Porcentaje(Damage, 3 * UserList(UserIndex).Stats.ELV)
             ' Si al hechizo le afecta el daño mágico
             Dim PorcentajeRM As Integer
-            If UserList(UserIndex).invent.EquippedWeaponObjIndex > 0 Then
-                Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MagicDamageBonus)
-                PorcentajeRM = PorcentajeRM - ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MagicPenetration
-                Damage = Damage + ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MagicAbsoluteBonus
+            If UserList(UserIndex).invent.WeaponEqpObjIndex > 0 Then
+                Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus)
+                PorcentajeRM = PorcentajeRM - ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicPenetration
+                Damage = Damage + ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicAbsoluteBonus
             End If
-410         If UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex > 0 Then
-412             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex).MagicDamageBonus)
-                Damage = Damage + ObjData(UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex).MagicAbsoluteBonus
-                PorcentajeRM = PorcentajeRM - ObjData(UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex).MagicPenetration
+410         If UserList(UserIndex).invent.MagicoObjIndex > 0 Then
+412             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicDamageBonus)
+                Damage = Damage + ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicAbsoluteBonus
+                PorcentajeRM = PorcentajeRM - ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicPenetration
             End If
-418         If UserList(UserIndex).invent.EquippedRingAccesoryObjIndex > 0 Then
-420             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicDamageBonus)
-                Damage = Damage + ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicAbsoluteBonus
-                PorcentajeRM = PorcentajeRM - ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicPenetration
+418         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
+420             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
+                Damage = Damage + ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicAbsoluteBonus
+                PorcentajeRM = PorcentajeRM - ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicPenetration
             End If
 
             ' Si el hechizo no ignora la RM
@@ -3703,22 +3703,22 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             End If
             Dim MR As Integer
             ' Weapon Magic bonus
-280         If UserList(UserIndex).invent.EquippedWeaponObjIndex > 0 Then
-282             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MagicDamageBonus)
-                Damage = Damage + ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MagicAbsoluteBonus
-                MR = MR - ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MagicPenetration
+280         If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
+282             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus)
+                Damage = Damage + ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicAbsoluteBonus
+                MR = MR - ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicPenetration
             End If
             
             ' Magic ring bonus
-283         If UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex > 0 Then
-                Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex).MagicDamageBonus)
-                Damage = Damage + ObjData(UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex).MagicAbsoluteBonus
-                MR = MR - ObjData(UserList(UserIndex).invent.EquippedAmuletAccesoryObjIndex).MagicPenetration
+283         If UserList(UserIndex).invent.MagicoObjIndex > 0 Then
+                Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicDamageBonus)
+                Damage = Damage + ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicAbsoluteBonus
+                MR = MR - ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicPenetration
             End If
-284         If UserList(UserIndex).invent.EquippedRingAccesoryObjIndex > 0 Then
-286             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicDamageBonus)
-                Damage = Damage + ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicAbsoluteBonus
-                MR = MR - ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicPenetration
+284         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
+286             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
+                Damage = Damage + ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicAbsoluteBonus
+                MR = MR - ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicPenetration
             End If
             ' Si el hechizo no ignora la RM
 288         If Hechizos(h).AntiRm = 0 Then
@@ -4288,13 +4288,13 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 114             Hit = Hit + Porcentaje(Hit, 3 * UserList(UserIndex).Stats.ELV)
             
                 ' Daño mágico arma
-116             If UserList(UserIndex).invent.EquippedWeaponObjIndex > 0 Then
-118                 Hit = Hit + Porcentaje(Hit, ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MagicDamageBonus)
+116             If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
+118                 Hit = Hit + Porcentaje(Hit, ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).MagicDamageBonus)
                 End If
                 
                 ' Daño mágico anillo
-120             If UserList(UserIndex).invent.EquippedRingAccesoryObjIndex > 0 Then
-122                 Hit = Hit + Porcentaje(Hit, ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicDamageBonus)
+120             If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
+122                 Hit = Hit + Porcentaje(Hit, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
                 End If
 
                 ' Disminuir daño con distancia
@@ -4336,12 +4336,12 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 168             Hit = RandomNumber(Hechizos(h2).MinHp, Hechizos(h2).MaxHp)
 170             Hit = Hit + Porcentaje(Hit, 3 * UserList(UserIndex).Stats.ELV)
                 ' Daño mágico arma
-172             If UserList(UserIndex).invent.EquippedWeaponObjIndex > 0 Then
-174                 Hit = Hit + Porcentaje(Hit, ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MagicDamageBonus)
+172             If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
+174                 Hit = Hit + Porcentaje(Hit, ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).MagicDamageBonus)
                 End If
                 ' Daño mágico anillo
-176             If UserList(UserIndex).invent.EquippedRingAccesoryObjIndex > 0 Then
-178                 Hit = Hit + Porcentaje(Hit, ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicDamageBonus)
+176             If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
+178                 Hit = Hit + Porcentaje(Hit, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
                 End If
 
 180             If tilDif <> 0 Then
@@ -4355,23 +4355,23 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
                 ' Si el hechizo no ignora la RM
 190             If Hechizos(h2).AntiRm = 0 Then
                     ' Resistencia mágica armadura
-192                 If UserList(NpcIndex).invent.EquippedArmorObjIndex > 0 Then
-194                     Damage = Damage - Porcentaje(Damage, ObjData(UserList(NpcIndex).invent.EquippedArmorObjIndex).ResistenciaMagica)
+192                 If UserList(NpcIndex).Invent.ArmourEqpObjIndex > 0 Then
+194                     Damage = Damage - Porcentaje(Damage, ObjData(UserList(npcIndex).invent.ArmourEqpObjIndex).ResistenciaMagica)
                     End If
                     
                     ' Resistencia mágica anillo
-196                 If UserList(NpcIndex).invent.EquippedRingAccesoryObjIndex > 0 Then
-198                     Damage = Damage - Porcentaje(Damage, ObjData(UserList(NpcIndex).invent.EquippedRingAccesoryObjIndex).ResistenciaMagica)
+196                 If UserList(NpcIndex).Invent.ResistenciaEqpObjIndex > 0 Then
+198                     Damage = Damage - Porcentaje(Damage, ObjData(UserList(npcIndex).invent.ResistenciaEqpObjIndex).ResistenciaMagica)
                     End If
                     
                     ' Resistencia mágica escudo
-200                 If UserList(NpcIndex).invent.EquippedShieldObjIndex > 0 Then
-202                     Damage = Damage - Porcentaje(Damage, ObjData(UserList(NpcIndex).invent.EquippedShieldObjIndex).ResistenciaMagica)
+200                 If UserList(NpcIndex).Invent.EscudoEqpObjIndex > 0 Then
+202                     Damage = Damage - Porcentaje(Damage, ObjData(UserList(npcIndex).invent.EscudoEqpObjIndex).ResistenciaMagica)
                     End If
                     
                     ' Resistencia mágica casco
-204                 If UserList(NpcIndex).invent.EquippedHelmetObjIndex > 0 Then
-206                     Damage = Damage - Porcentaje(Damage, ObjData(UserList(NpcIndex).invent.EquippedHelmetObjIndex).ResistenciaMagica)
+204                 If UserList(NpcIndex).Invent.CascoEqpObjIndex > 0 Then
+206                     Damage = Damage - Porcentaje(Damage, ObjData(UserList(npcIndex).invent.CascoEqpObjIndex).ResistenciaMagica)
                     End If
                    
                     ' Resistencia mágica de la clase
@@ -4654,21 +4654,21 @@ Private Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIn
     
     BaseHit = UserList(UserIndex).Stats.ELV
 
-    If UserList(UserIndex).invent.EquippedWeaponObjIndex > 0 Then
+    If UserList(UserIndex).invent.WeaponEqpObjIndex > 0 Then
     
-        BonusFromItem = BonusFromItem + ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MagicDamageBonus
+        BonusFromItem = BonusFromItem + ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus
     
-        If ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MaderaElfica > 0 Then
+        If ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MaderaElfica > 0 Then
             BonusFromItem = BonusFromItem * 2
         End If
         
     End If
 
-    If UserList(UserIndex).invent.EquippedRingAccesoryObjIndex Then
+    If UserList(UserIndex).invent.DañoMagicoEqpObjIndex Then
     
-        BonusFromItem = BonusFromItem + ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicDamageBonus
+        BonusFromItem = BonusFromItem + ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus
         
-        If ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MaderaElfica > 0 Then
+        If ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MaderaElfica > 0 Then
             BonusFromItem = BonusFromItem * 2
         End If
         

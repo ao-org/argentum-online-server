@@ -132,7 +132,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 140         Call UpdateNpcInvToAll(False, NpcIndex, Slot)
 
             'Agregado para que no se vuelvan a vender las llaves si se recargan los .dat.
-142         If ObjData(Objeto.ObjIndex).OBJType = otKeys Then
+142         If ObjData(Objeto.ObjIndex).OBJType = otLlaves Then
 144             Call WriteVar(DatPath & "NPCs.dat", "NPC" & NpcList(NpcIndex).Numero, "obj" & Slot, Objeto.ObjIndex & "-0")
 146             Call logVentaCasa(UserList(UserIndex).Name & " compro " & ObjData(Objeto.ObjIndex).Name)
 
@@ -164,7 +164,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
                 Call WriteLocaleMsg(UserIndex, "1085", e_FontTypeNames.FONTTYPE_TALK)
                 Exit Sub
           
-178         ElseIf (NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> e_OBJType.otElse) Or Objeto.ObjIndex = iORO Then
+178         ElseIf (NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> e_OBJType.otCualquiera) Or Objeto.ObjIndex = iORO Then
 
                 'Agrego que si vende el item, lo compre tambien.
                 Dim LoVende As Boolean

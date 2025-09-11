@@ -1071,7 +1071,7 @@ Public Function PrepareLocalizedChatOverHead(ByVal msgId As Integer, _
     finalText = "LOCMSG*" & msgId & "*"
 
     For i = LBound(args) To UBound(args)
-        If i > LBound(Args) Then finalText = finalText & "¬"
+        If i > LBound(args) Then finalText = finalText & "¬"
         finalText = finalText & CStr(args(i))
     Next
 
@@ -1319,7 +1319,7 @@ End Sub
 ' @param    privileges Sets if the character is a normal one or any kind of administrative character.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As e_Heading, ByVal charindex As Integer, _
-                                ByVal x As Byte, ByVal y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal Cart As Integer, ByVal BackPack As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, _
+                                ByVal x As Byte, ByVal y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal Cart As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, _
                                 ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, _
                                 ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, _
                                 ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, _
@@ -1331,7 +1331,7 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal body As Intege
         On Error GoTo WriteCharacterCreate_Err
         
 100 Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterCreate(Body, Head, _
-            Heading, charindex, x, y, weapon, shield, Cart, BackPack, FX, FXLoops, helmet, name, Status, _
+            Heading, charindex, x, y, weapon, shield, Cart, FX, FXLoops, helmet, name, Status, _
             privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, _
             Otra_Aura, Escudo_Aura, speeding, EsNPC, appear, group_index, _
             clan_index, clan_nivel, UserMinHp, UserMaxHp, UserMinMAN, UserMaxMAN, Simbolo, _
@@ -1411,7 +1411,6 @@ Public Sub WriteCharacterChange(ByVal UserIndex As Integer, _
                                 ByVal weapon As Integer, _
                                 ByVal shield As Integer, _
                                 ByVal Cart As Integer, _
-                                ByVal BackPack As Integer, _
                                 ByVal FX As Integer, _
                                 ByVal FXLoops As Integer, _
                                 ByVal helmet As Integer, _
@@ -1421,7 +1420,7 @@ Public Sub WriteCharacterChange(ByVal UserIndex As Integer, _
         On Error GoTo WriteCharacterChange_Err
         
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterChange(Body, _
-                head, Heading, charindex, weapon, shield, Cart, BackPack, FX, FXLoops, helmet, Idle, _
+                head, Heading, charindex, weapon, shield, Cart, FX, FXLoops, helmet, Idle, _
                 Navegando))
         
         Exit Sub
@@ -1870,16 +1869,14 @@ Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
 100     With UserList(UserIndex).Invent
 
             ' % daño mágico del arma
-102         If .EquippedWeaponObjIndex > 0 Then
-104             Valor = Valor + ObjData(.EquippedWeaponObjIndex).MagicDamageBonus
+102         If .WeaponEqpObjIndex > 0 Then
+104             Valor = Valor + ObjData(.WeaponEqpObjIndex).MagicDamageBonus
             End If
 
             ' % daño mágico del anillo
-106         If .EquippedRingAccesoryObjIndex > 0 Then
-108             Valor = Valor + ObjData(.EquippedRingAccesoryObjIndex).MagicDamageBonus
+106         If .DañoMagicoEqpObjIndex > 0 Then
+108             Valor = Valor + ObjData(.DañoMagicoEqpObjIndex).MagicDamageBonus
             End If
-            
-            
 
 110         Call Writer.WriteInt16(ServerPacketID.eUpdateDM)
 112         Call Writer.WriteInt16(Valor)
@@ -1906,23 +1903,23 @@ Public Sub WriteUpdateRM(ByVal UserIndex As Integer)
 100     With UserList(UserIndex).Invent
 
             ' Resistencia mágica de la armadura
-102         If .EquippedArmorObjIndex > 0 Then
-104             Valor = Valor + ObjData(.EquippedArmorObjIndex).ResistenciaMagica
+102         If .ArmourEqpObjIndex > 0 Then
+104             Valor = Valor + ObjData(.ArmourEqpObjIndex).ResistenciaMagica
             End If
 
             ' Resistencia mágica del anillo
-106         If .EquippedRingAccesoryObjIndex > 0 Then
-108             Valor = Valor + ObjData(.EquippedRingAccesoryObjIndex).ResistenciaMagica
+106         If .ResistenciaEqpObjIndex > 0 Then
+108             Valor = Valor + ObjData(.ResistenciaEqpObjIndex).ResistenciaMagica
             End If
 
             ' Resistencia mágica del escudo
-110         If .EquippedShieldObjIndex > 0 Then
-112             Valor = Valor + ObjData(.EquippedShieldObjIndex).ResistenciaMagica
+110         If .EscudoEqpObjIndex > 0 Then
+112             Valor = Valor + ObjData(.EscudoEqpObjIndex).ResistenciaMagica
             End If
 
             ' Resistencia mágica del casco
-114         If .EquippedHelmetObjIndex > 0 Then
-116             Valor = Valor + ObjData(.EquippedHelmetObjIndex).ResistenciaMagica
+114         If .CascoEqpObjIndex > 0 Then
+116             Valor = Valor + ObjData(.CascoEqpObjIndex).ResistenciaMagica
             End If
 
 118         Valor = Valor + 100 * ModClase(UserList(UserIndex).clase).ResistenciaMagica
@@ -5348,7 +5345,7 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Function PrepareMessageCharacterCreate(ByVal body As Integer, ByVal head As Integer, ByVal Heading As e_Heading, _
                                               ByVal charindex As Integer, ByVal x As Byte, ByVal y As Byte, ByVal weapon As Integer, _
-                                              ByVal shield As Integer, ByVal Cart As Integer, ByVal BackPack As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, _
+                                              ByVal shield As Integer, ByVal Cart As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, _
                                               ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, _
                                               ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, _
                                               ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, _
@@ -5369,7 +5366,6 @@ Public Function PrepareMessageCharacterCreate(ByVal body As Integer, ByVal head 
 116     Call Writer.WriteInt16(shield)
 118     Call Writer.WriteInt16(helmet)
 119     Call Writer.WriteInt16(Cart)
-        Call Writer.WriteInt16(BackPack)
 120     Call Writer.WriteInt16(FX)
 122     Call Writer.WriteInt16(FXLoops)
 124     Call Writer.WriteString8(Name)
@@ -5434,7 +5430,6 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, _
                                               ByVal weapon As Integer, _
                                               ByVal shield As Integer, _
                                               ByVal Cart As Integer, _
-                                              ByVal BackPack As Integer, _
                                               ByVal FX As Integer, _
                                               ByVal FXLoops As Integer, _
                                               ByVal helmet As Integer, _
@@ -5452,7 +5447,6 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, _
 112     Call Writer.WriteInt16(shield)
 114     Call Writer.WriteInt16(helmet)
 116     Call Writer.WriteInt16(Cart)
-        Call Writer.WriteInt16(BackPack)
 118     Call Writer.WriteInt16(FX)
 120     Call Writer.WriteInt16(FXLoops)
         Dim flags As Byte

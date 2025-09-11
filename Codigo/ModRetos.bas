@@ -436,12 +436,12 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
             
                 ' Desmontamos
 160             If UserList(tUser.ArrayIndex).flags.Montado <> 0 Then
-162                 Call DoMontar(tUser.ArrayIndex, ObjData(UserList(tUser.ArrayIndex).Invent.EquippedSaddleObjIndex), UserList(tUser.ArrayIndex).Invent.EquippedSaddleSlot)
+162                 Call DoMontar(tUser.ArrayIndex, ObjData(UserList(tUser.ArrayIndex).Invent.MonturaObjIndex), UserList(tUser.ArrayIndex).Invent.MonturaSlot)
                 End If
             
                 ' Dejamos de navegar
 164             If UserList(tUser.ArrayIndex).flags.Nadando <> 0 Or UserList(tUser.ArrayIndex).flags.Navegando <> 0 Then
-166                 Call DoNavega(tUser.ArrayIndex, ObjData(UserList(tUser.ArrayIndex).Invent.EquippedShipObjIndex), UserList(tUser.ArrayIndex).Invent.EquippedShipSlot)
+166                 Call DoNavega(tUser.ArrayIndex, ObjData(UserList(tUser.ArrayIndex).Invent.BarcoObjIndex), UserList(tUser.ArrayIndex).Invent.BarcoSlot)
                 End If
             
                 ' Asignamos flags

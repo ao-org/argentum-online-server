@@ -1427,15 +1427,15 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
 156                     Call SaveUserBodyDatabase(username, val(Arg1))
                         Call WriteLocaleMsg(UserIndex, "1482", e_FontTypeNames.FONTTYPE_INFO, username)  ' Msg1482=Usuario Offline Alterado: ¬1
                     Else
-162                     Call ChangeUserChar(tUser.ArrayIndex, val(Arg1), UserList(tUser.ArrayIndex).Char.head, UserList(tUser.ArrayIndex).Char.Heading, UserList(tUser.ArrayIndex).Char.WeaponAnim, UserList(tUser.ArrayIndex).Char.ShieldAnim, UserList(tUser.ArrayIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+162                     Call ChangeUserChar(tUser.ArrayIndex, val(Arg1), UserList(tUser.ArrayIndex).char.head, UserList(tUser.ArrayIndex).char.Heading, UserList(tUser.ArrayIndex).char.WeaponAnim, UserList(tUser.ArrayIndex).char.ShieldAnim, UserList(tUser.ArrayIndex).char.CascoAnim, UserList(UserIndex).char.CartAnim)
                     End If
                    
 164             Case e_EditOptions.eo_Arma
-172                 Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).Char.body, UserList(tUser.ArrayIndex).Char.head, UserList(tUser.ArrayIndex).Char.Heading, val(Arg1), UserList(tUser.ArrayIndex).Char.ShieldAnim, UserList(tUser.ArrayIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.CartAnim)
+172                 Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).char.body, UserList(tUser.ArrayIndex).char.head, UserList(tUser.ArrayIndex).char.Heading, val(Arg1), UserList(tUser.ArrayIndex).char.ShieldAnim, UserList(tUser.ArrayIndex).char.CascoAnim, UserList(UserIndex).char.CartAnim)
 174             Case e_EditOptions.eo_Escudo
-182                 Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).Char.body, UserList(tUser.ArrayIndex).Char.head, UserList(tUser.ArrayIndex).Char.Heading, UserList(tUser.ArrayIndex).Char.WeaponAnim, val(Arg1), UserList(tUser.ArrayIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.CartAnim)
+182                 Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).char.body, UserList(tUser.ArrayIndex).char.head, UserList(tUser.ArrayIndex).char.Heading, UserList(tUser.ArrayIndex).char.WeaponAnim, val(Arg1), UserList(tUser.ArrayIndex).char.CascoAnim, UserList(UserIndex).char.CartAnim)
 184             Case e_EditOptions.eo_CASCO
-192                     Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).Char.body, UserList(tUser.ArrayIndex).Char.head, UserList(tUser.ArrayIndex).Char.Heading, UserList(tUser.ArrayIndex).Char.WeaponAnim, UserList(tUser.ArrayIndex).Char.ShieldAnim, val(Arg1), UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.CartAnim)
+192                     Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).char.body, UserList(tUser.ArrayIndex).char.head, UserList(tUser.ArrayIndex).char.Heading, UserList(tUser.ArrayIndex).char.WeaponAnim, UserList(tUser.ArrayIndex).char.ShieldAnim, val(Arg1), UserList(UserIndex).char.CartAnim)
 194             Case e_EditOptions.eo_Particula
 196                 If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
 198                 If Not .flags.Privilegios = Consejero Then
@@ -1448,7 +1448,7 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
 218                     Call SaveUserHeadDatabase(username, val(Arg1))
                         Call WriteLocaleMsg(UserIndex, "1483", e_FontTypeNames.FONTTYPE_INFO, username) ' Msg1483=Usuario Offline Alterado: ¬1
                     Else
-224                     Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).Char.body, val(Arg1), UserList(tUser.ArrayIndex).Char.Heading, UserList(tUser.ArrayIndex).Char.WeaponAnim, UserList(tUser.ArrayIndex).Char.ShieldAnim, UserList(tUser.ArrayIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.CartAnim)
+224                     Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).char.body, val(Arg1), UserList(tUser.ArrayIndex).char.Heading, UserList(tUser.ArrayIndex).char.WeaponAnim, UserList(tUser.ArrayIndex).char.ShieldAnim, UserList(tUser.ArrayIndex).char.CascoAnim, UserList(UserIndex).char.CartAnim)
                     End If
 226             Case e_EditOptions.eo_CriminalsKilled
 228                 If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
@@ -2154,7 +2154,7 @@ Public Sub HandleForgive(ByVal UserIndex As Integer)
 128         If .Faccion.ciudadanosMatados > 0 Then
                 Dim Donacion As Long
 130             Donacion = .Faccion.ciudadanosMatados * SvrConfig.GetValue("GoldMult") * SvrConfig.GetValue("CostoPerdonPorCiudadano")
-132             Call WriteLocaleChatOverHead(UserIndex, "1345", Donacion, priest.Char.charindex, vbWhite) ' Msg1345=Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. Pero si haces una generosa donación de, digamos, ¬1 monedas de oro, tal vez cambie de opinión...
+132             Call WriteLocaleChatOverHead(UserIndex, "1345", Donacion, priest.Char.charIndex, vbWhite) ' Msg1345=Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. Pero si haces una generosa donación de, digamos, ¬1 monedas de oro, tal vez cambie de opinión...
                 Exit Sub
             Else
             Donacion = SvrConfig.GetValue("CostoPerdonPorCiudadano") / 2
@@ -2909,7 +2909,7 @@ Public Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
 108             For y = 5 To 95
 110                 tObj = MapData(.Pos.map, X, y).ObjInfo.objIndex
 112                 If tObj > 0 Then
-114                     If ObjData(tObj).OBJType <> e_OBJType.otTrees Then
+114                     If ObjData(tObj).OBJType <> e_OBJType.otArboles Then
                             Call WriteConsoleMsg(UserIndex, "(" & x & "," & y & ") " & ObjData(tObj).name, e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     End If
@@ -3000,7 +3000,7 @@ Public Sub HandleAskTrigger(ByVal UserIndex As Integer)
         
 104         tTrigger = MapData(.Pos.map, .Pos.X, .Pos.y).trigger
 106         Call LogGM(.name, "Miro el trigger en " & .Pos.map & "," & .Pos.X & "," & .Pos.y & ". Era " & tTrigger)
-            Call WriteLocaleMsg(UserIndex, "1498", e_FontTypeNames.FONTTYPE_INFO, "MAP " & .pos.Map & "," & .pos.x & "," & .pos.y & ". = " & tTrigger) ' Msg1498=Trigger ¬1
+            Call WriteLocaleMsg(UserIndex, "1498", e_FontTypeNames.FONTTYPE_INFO, "MAP " & .Pos.Map & "," & .Pos.x & "," & .Pos.y & ". = " & tTrigger) ' Msg1498=Trigger ¬1
         End With
         Exit Sub
 HandleAskTrigger_Err:
@@ -3615,7 +3615,7 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
         
 108         Call LogGM(.name, .name & " ha cambiado la informacion sobre si es seguro el mapa.")
 110         MapInfo(.Pos.map).Seguro = IIf(isMapPk, 1, 0)
-            Call WriteLocaleMsg(UserIndex, "1506", e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "¬" & IIf(isMapPk, "No", "Sí"))
+            Call WriteLocaleMsg(UserIndex, "1506", e_FontTypeNames.FONTTYPE_INFO, CStr(.Pos.Map) & "¬" & IIf(isMapPk, "No", "Sí"))
         End With
         Exit Sub
 HandleChangeMapInfoPK_Err:
@@ -3641,7 +3641,7 @@ Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
         
             'Change the boolean to string in a fast way
 114         Call WriteVar(MapPath & "mapa" & .Pos.map & ".dat", "Mapa" & .Pos.map, "backup", MapInfo(.Pos.map).backup_mode)
-            Call WriteLocaleMsg(UserIndex, "1507", e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "¬" & IIf(doTheBackUp, "Sí", "No"))
+            Call WriteLocaleMsg(UserIndex, "1507", e_FontTypeNames.FONTTYPE_INFO, CStr(.Pos.Map) & "¬" & IIf(doTheBackUp, "Sí", "No"))
 
         End With
         Exit Sub
@@ -3662,30 +3662,30 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
 106             Select Case UCase$(tStr)
                     Case "NEWBIE"
 108                     MapInfo(.Pos.map).Newbie = Not MapInfo(.Pos.map).Newbie
-                        Call WriteLocaleMsg(UserIndex, "1508", e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "¬" & IIf(MapInfo(.pos.Map).Newbie, "Sí", "No"))  ' Msg1508=Mapa ¬1: Newbie = ¬2
+                        Call WriteLocaleMsg(UserIndex, "1508", e_FontTypeNames.FONTTYPE_INFO, CStr(.Pos.Map) & "¬" & IIf(MapInfo(.Pos.Map).Newbie, "Sí", "No"))  ' Msg1508=Mapa ¬1: Newbie = ¬2
 
-112                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .pos.Map & ": Newbie = " & MapInfo(.pos.Map).Newbie)
+112                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie)
                         
 114                 Case "SINMAGIA"
 116                     MapInfo(.Pos.map).SinMagia = Not MapInfo(.Pos.map).SinMagia
-                        Call WriteLocaleMsg(UserIndex, "1509", e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "¬" & IIf(MapInfo(.pos.Map).SinMagia, "Sí", "No"))  ' Msg1509=Mapa ¬1: SinMagia = ¬2
-120                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .pos.Map & ": SinMagia = " & MapInfo(.pos.Map).SinMagia)
+                        Call WriteLocaleMsg(UserIndex, "1509", e_FontTypeNames.FONTTYPE_INFO, CStr(.Pos.Map) & "¬" & IIf(MapInfo(.Pos.Map).SinMagia, "Sí", "No"))  ' Msg1509=Mapa ¬1: SinMagia = ¬2
+120                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia)
                         
 122                 Case "NOPKS"
 124                     MapInfo(.Pos.map).NoPKs = Not MapInfo(.Pos.map).NoPKs
-                        Call WriteLocaleMsg(UserIndex, "1510", e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "¬" & IIf(MapInfo(.pos.Map).NoPKs, "Sí", "No"))  ' Msg1510=Mapa ¬1: NoPKs = ¬2
-128                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .pos.Map & ": NoPKs = " & MapInfo(.pos.Map).NoPKs)
+                        Call WriteLocaleMsg(UserIndex, "1510", e_FontTypeNames.FONTTYPE_INFO, CStr(.Pos.Map) & "¬" & IIf(MapInfo(.Pos.Map).NoPKs, "Sí", "No"))  ' Msg1510=Mapa ¬1: NoPKs = ¬2
+128                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs)
                         
 130                 Case "NOCIUD"
 132                     MapInfo(.Pos.map).NoCiudadanos = Not MapInfo(.Pos.map).NoCiudadanos
-                        Call WriteLocaleMsg(UserIndex, "1511", e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "¬" & IIf(MapInfo(.pos.Map).NoCiudadanos, "Sí", "No"))  ' Msg1511=Mapa ¬1: NoCiudadanos = ¬2
-136                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .pos.Map & ": NoCiudadanos = " & MapInfo(.pos.Map).NoCiudadanos)
+                        Call WriteLocaleMsg(UserIndex, "1511", e_FontTypeNames.FONTTYPE_INFO, CStr(.Pos.Map) & "¬" & IIf(MapInfo(.Pos.Map).NoCiudadanos, "Sí", "No"))  ' Msg1511=Mapa ¬1: NoCiudadanos = ¬2
+136                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos)
                         
 138                 Case "SININVI"
 140                     MapInfo(.Pos.map).SinInviOcul = Not MapInfo(.Pos.map).SinInviOcul
-                        Call WriteLocaleMsg(UserIndex, "1512", e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "¬" & IIf(MapInfo(.pos.Map).SinInviOcul, "Sí", "No"))  ' Msg1512=Mapa ¬1: SinInvi = ¬2
+                        Call WriteLocaleMsg(UserIndex, "1512", e_FontTypeNames.FONTTYPE_INFO, CStr(.Pos.Map) & "¬" & IIf(MapInfo(.Pos.Map).SinInviOcul, "Sí", "No"))  ' Msg1512=Mapa ¬1: SinInvi = ¬2
 
-144                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .pos.Map & ": SinInvi = " & MapInfo(.pos.Map).SinInviOcul)
+144                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul)
                 
 146                 Case Else
                         'Msg989= Opciones para restringir: 'NEWBIE', 'SINMAGIA', 'SININVI', 'NOPKS', 'NOCIUD'
@@ -3759,7 +3759,7 @@ Public Sub HandleChangeMapInfoLand(ByVal UserIndex As Integer)
 108                 Call LogGM(.name, .name & " ha cambiado la informacion del Terreno del mapa.")
 110                 MapInfo(UserList(UserIndex).Pos.map).terrain = tStr
 112                 Call WriteVar(MapPath & "mapa" & UserList(UserIndex).Pos.map & ".dat", "Mapa" & UserList(UserIndex).Pos.map, "Terreno", tStr)
-                    Call WriteLocaleMsg(UserIndex, "1513", e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "¬" & tStr)  ' Msg1513=Mapa ¬1 Terreno: ¬2
+                    Call WriteLocaleMsg(UserIndex, "1513", e_FontTypeNames.FONTTYPE_INFO, CStr(.Pos.Map) & "¬" & tStr)  ' Msg1513=Mapa ¬1 Terreno: ¬2
                 Else
                     'Msg990= Opciones para terreno: 'BOSQUE', 'NIEVE', 'DESIERTO', 'CIUDAD', 'CAMPO', 'DUNGEON'
                     Call WriteLocaleMsg(UserIndex, "990", e_FontTypeNames.FONTTYPE_INFO)
@@ -3786,7 +3786,7 @@ Public Sub HandleChangeMapInfoZone(ByVal UserIndex As Integer)
 108                 Call LogGM(.name, .name & " ha cambiado la informacion de la Zona del mapa.")
 110                 MapInfo(UserList(UserIndex).Pos.map).zone = tStr
 112                 Call WriteVar(MapPath & "mapa" & UserList(UserIndex).Pos.map & ".dat", "Mapa" & UserList(UserIndex).Pos.map, "Zona", tStr)
-                    Call WriteLocaleMsg(UserIndex, "1514", e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "¬" & tStr)  ' Msg1514=Mapa ¬1 Zona: ¬2
+                    Call WriteLocaleMsg(UserIndex, "1514", e_FontTypeNames.FONTTYPE_INFO, CStr(.Pos.Map) & "¬" & tStr)  ' Msg1514=Mapa ¬1 Zona: ¬2
                 Else
                     'Msg992= Opciones para terreno: 'BOSQUE', 'NIEVE', 'DESIERTO', 'CIUDAD', 'CAMPO', 'DUNGEON'
                     Call WriteLocaleMsg(UserIndex, "992", e_FontTypeNames.FONTTYPE_INFO)
