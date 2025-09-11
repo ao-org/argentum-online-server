@@ -330,7 +330,7 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal npcIndex As In
             PoderAtaque = PoderAtaqueWrestling(UserIndex)
         End If
 
-114     ProbExito = MaximoInt(10, MinimoInt(90, 50 + ((PoderAtaque - NpcList(NpcIndex).PoderEvasion) * 0.4)))
+114     ProbExito = MaximoInt(10, MinimoInt(95, 50 + ((PoderAtaque - NpcList(NpcIndex).PoderEvasion) * 0.4)))
 116     UserImpactoNpc = (RandomNumber(1, 100) <= ProbExito)
 118     If UserImpactoNpc Then
 120         Call SubirSkillDeArmaActual(UserIndex)
@@ -1137,7 +1137,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
                 WeaponHitModifier = ObjData(UserList(AtacanteIndex).Invent.WeaponEqpObjIndex).ImprovedRangedHitChance
             End If
         End If
-140     ProbExito = Maximo(10, Minimo(90, 50 + ((PoderAtaque - UserPoderEvasion) * 0.4) + WeaponHitModifier))
+140     ProbExito = Maximo(10, Minimo(95, 50 + ((PoderAtaque - UserPoderEvasion) * 0.4) + WeaponHitModifier))
 
         ' Se reduce la evasion un 25%
         If UserList(VictimaIndex).flags.Meditando Then
