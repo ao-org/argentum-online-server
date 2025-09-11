@@ -587,18 +587,15 @@ Public Enum e_Trigger6
 
 End Enum
 
-'TODO : Reemplazar por un enum
-Public Const Bosque = "BOSQUE"
-
-Public Const Nieve = "NIEVE"
-
-Public Const Desierto = "DESIERTO"
-
-Public Const Ciudad = "CIUDAD"
-
-Public Const Campo = "CAMPO"
-
-Public Const Dungeon = "DUNGEON"
+Public Enum e_ZoneType
+    Bosque = 1
+    Nieve = 2
+    Desierto = 4
+    Ciudad = 8
+    Campo = 16
+    Dungeon = 32
+    Newbie = 64
+End Enum
 
 ' <<<<<< Targets >>>>>>
 Public Enum e_TargetType
@@ -2982,7 +2979,6 @@ Type t_MapInfo
     music_numberLow As Long
     Seguro As Byte
     zone As String
-    terrain As String
     Newbie As Boolean
     SinMagia As Boolean
     SinInviOcul As Boolean
@@ -2994,8 +2990,6 @@ Type t_MapInfo
     base_light As Long
     letter_grh As Long
     lluvia As Byte
-    Nieve As Byte
-    niebla As Byte
     NumUsers As Long
     ForceUpdate As Boolean
     MinLevel As Integer

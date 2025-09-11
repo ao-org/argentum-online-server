@@ -9611,7 +9611,6 @@ Private Sub HandleGetMapInfo(ByVal UserIndex As Integer)
 120             Response = Response & "NoPKs = " & MapInfo(.Pos.Map).NoPKs & vbNewLine
 122             Response = Response & "NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos & vbNewLine
 124             Response = Response & "Salida = " & MapInfo(.Pos.Map).Salida.Map & "-" & MapInfo(.Pos.Map).Salida.X & "-" & MapInfo(.Pos.Map).Salida.Y & vbNewLine
-126             Response = Response & "Terreno = " & MapInfo(.Pos.Map).terrain & vbNewLine
 128             Response = Response & "NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos & vbNewLine
 130             Response = Response & "Zona = " & MapInfo(.Pos.Map).zone & vbNewLine
             
@@ -9805,9 +9804,8 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
                 Exit Sub
 
             End If
-                
             'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
-108         If MapInfo(.Pos.Map).zone = "NEWBIE" Or MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
+108         If MapInfo(.Pos.Map).Newbie Or MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
                 'Msg1273= No pueder viajar a tu hogar desde este mapa.
                 Call WriteLocaleMsg(UserIndex, "1273", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub

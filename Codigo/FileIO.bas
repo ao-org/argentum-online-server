@@ -2267,14 +2267,11 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 364     MapInfo(map).lluvia = MapDat.lluvia
 366     MapInfo(map).music_numberHi = MapDat.music_numberHi
 368     MapInfo(map).music_numberLow = MapDat.music_numberLow
-370     MapInfo(map).niebla = MapDat.niebla
-372     MapInfo(map).Nieve = MapDat.Nieve
 374     MapInfo(map).MinLevel = MapDat.level And &HFF
 376     MapInfo(map).MaxLevel = (MapDat.level And &HFF00) / &H100
     
 378     MapInfo(map).Seguro = MapDat.Seguro
 
-380     MapInfo(map).terrain = MapDat.terrain
 382     MapInfo(map).zone = MapDat.zone
 383     MapInfo(map).DropItems = True
         MapInfo(map).FriendlyFire = True
