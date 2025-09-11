@@ -596,7 +596,12 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
                 End If
 114         ElseIf AtacaMelee Then
                 Dim ChangeHeading As Boolean
-                ChangeHeading = (.flags.Inmovilizado > 0 And tHeading = .Char.Heading) Or NPCs.CanMove(.Contadores, .flags)
+                ChangeHeading = (.flags.Inmovilizado > 0) Or NPCs.CanMove(.Contadores, .flags)
+                
+                If ChangeHeading Then
+                    NpcList(AtackerNpcIndex).Char.Heading = tHeading
+                    Call ChangeNPCChar(AtackerNpcIndex, .Char.body, .Char.head, .Char.Heading)
+                End If
                 
                 Dim UserIndexFront As Integer
                 NextPosNPC = ComputeNextHeadingPos(AtackerNpcIndex)
