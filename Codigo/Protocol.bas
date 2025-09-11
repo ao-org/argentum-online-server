@@ -3574,15 +3574,21 @@ Private Sub HandleChange_Heading(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
             Dim Heading As e_Heading
-102             Heading = Reader.ReadInt8()
+
+102         Heading = reader.ReadInt8()
                             
             Dim PacketCounter As Long
+
             PacketCounter = Reader.ReadInt32
                         
             Dim Packet_ID As Long
+
             Packet_ID = PacketNames.ChangeHeading
             
-            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "ChangeHeading", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), _
+                    .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, _
+                    "ChangeHeading", PacketTimerThreshold(Packet_ID), MacroIterations( _
+                    Packet_ID)) Then Exit Sub
         
             'Validate heading (VB won't say invalid cast if not a valid index like .Net languages would do... *sigh*)
 104         If Heading > 0 And Heading < 5 Then

@@ -1530,6 +1530,7 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
                 End If
             End If
         End If
+        Call AllMascotasAtacanNPC(UserList(UserIndex).flags.TargetNPC.ArrayIndex, UserIndex)
 100     Select Case Hechizos(uh).Tipo
             Case e_TipoHechizo.uEstado ' Afectan estados (por ejem : Envenenamiento)
 102             Call HechizoEstadoNPC(UserList(UserIndex).flags.TargetNPC.ArrayIndex, uh, b, UserIndex)
