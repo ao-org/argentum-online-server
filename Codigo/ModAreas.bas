@@ -264,7 +264,7 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
 218                     TempInt = MapData(Map, X, Y).ObjInfo.ObjIndex
 220                     If Not EsObjetoFijo(ObjData(TempInt).OBJType) Then
 222                         Call WriteObjectCreate(UserIndex, TempInt, MapData(Map, X, Y).ObjInfo.amount, X, Y)
-224                         If ObjData(TempInt).OBJType = e_OBJType.otPuertas And InMapBounds(Map, X, Y) Then
+224                         If ObjData(TempInt).OBJType = e_OBJType.otDoors And InMapBounds(Map, X, Y) Then
 226                             Call MostrarBloqueosPuerta(False, UserIndex, X, Y)
                             End If
                         End If

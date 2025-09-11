@@ -244,12 +244,12 @@ Private Function PoderEvasionEscudo(ByVal UserIndex As Integer) As Long
         
         On Error GoTo PoderEvasionEscudo_Err
         With UserList(userIndex)
-            If .Invent.EscudoEqpObjIndex <= 0 Then
+            If .invent.EquippedShieldObjIndex <= 0 Then
                 PoderEvasionEscudo = 0
                 Exit Function
             End If
             Dim itemModifier As Single
-100         itemModifier = CSng(ObjData(.Invent.EscudoEqpObjIndex).Porcentaje) / 100
+100         itemModifier = CSng(ObjData(.invent.EquippedShieldObjIndex).Porcentaje) / 100
 
 102         PoderEvasionEscudo = ((UserList(userIndex).Stats.UserSkills(e_Skill.Defensa) * ModEvasionDeEscudoClase(UserList(userIndex).clase)) / 2) * itemModifier
         End With
@@ -317,7 +317,7 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal npcIndex As In
         Dim PoderAtaque As Long
         Dim Arma        As Integer
         Dim ProbExito   As Long
-100     Arma = UserList(UserIndex).Invent.WeaponEqpObjIndex
+100     Arma = UserList(UserIndex).invent.EquippedWeaponObjIndex
         Dim RequiredSkill As e_Skill
         RequiredSkill = GetSkillRequiredForWeapon(Arma)
         If RequiredSkill = Wrestling Then
@@ -364,13 +364,13 @@ Private Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Intege
 108     SkillDefensa = UserList(UserIndex).Stats.UserSkills(e_Skill.Defensa)
 
         'Esta usando un escudo ???
-110     If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then UserEvasion = UserEvasion + PoderEvasioEscudo
+110     If UserList(UserIndex).invent.EquippedShieldObjIndex > 0 Then UserEvasion = UserEvasion + PoderEvasioEscudo
 112     ProbExito = Maximo(10, Minimo(90, 50 + ((NpcPoderAtaque - UserEvasion) * 0.4)))
 114     NpcImpacto = (RandomNumber(1, 100) <= ProbExito)
 
         ' el usuario esta usando un escudo ???
-116     If UserList(userIndex).Invent.EscudoEqpObjIndex > 0 Then
-            If ObjData(UserList(userIndex).Invent.EscudoEqpObjIndex).Porcentaje > 0 Then
+116     If UserList(UserIndex).invent.EquippedShieldObjIndex > 0 Then
+            If ObjData(UserList(UserIndex).invent.EquippedShieldObjIndex).Porcentaje > 0 Then
 118             If Not NpcImpacto Then
 120                 If SkillDefensa + SkillTacticas > 0 Then  'Evitamos división por cero
 122                     ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (SkillDefensa + SkillTacticas))))
@@ -397,7 +397,7 @@ End Function
 Private Function GetUserDamage(ByVal UserIndex As Integer) As Long
 On Error GoTo GetUserDamge_Err
 100 With UserList(UserIndex)
-        GetUserDamage = GetUserDamageWithItem(UserIndex, .invent.WeaponEqpObjIndex, .invent.MunicionEqpObjIndex) _
+        GetUserDamage = GetUserDamageWithItem(UserIndex, .invent.EquippedWeaponObjIndex, .invent.EquippedMunitionObjIndex) _
                         + UserMod.GetLinearDamageBonus(UserIndex)
     End With
     Exit Function
@@ -450,11 +450,11 @@ On Error GoTo GetUserDamageWithItem_Err
                 ' Base damage
 136             GetUserDamageWithItem = (3 * WeaponDamage + MaxWeaponDamage * 0.2 * Maximo(0, .Stats.UserAtributos(Fuerza) - 15) + UserDamage) * ClassModifier
                 ' Ship bonus
-142             If .flags.Navegando = 1 And .Invent.BarcoObjIndex > 0 Then
-144                 GetUserDamageWithItem = GetUserDamageWithItem + RandomNumber(ObjData(.invent.BarcoObjIndex).MinHIT, ObjData(.invent.BarcoObjIndex).MaxHit)
+142             If .flags.Navegando = 1 And .invent.EquippedShipObjIndex > 0 Then
+144                 GetUserDamageWithItem = GetUserDamageWithItem + RandomNumber(ObjData(.invent.EquippedShipObjIndex).MinHIT, ObjData(.invent.EquippedShipObjIndex).MaxHit)
                 ' mount bonus
-146             ElseIf .flags.Montado = 1 And .Invent.MonturaObjIndex > 0 Then
-148                 GetUserDamageWithItem = GetUserDamageWithItem + RandomNumber(ObjData(.invent.MonturaObjIndex).MinHIT, ObjData(.invent.MonturaObjIndex).MaxHit)
+146             ElseIf .flags.Montado = 1 And .invent.EquippedSaddleObjIndex > 0 Then
+148                 GetUserDamageWithItem = GetUserDamageWithItem + RandomNumber(ObjData(.invent.EquippedSaddleObjIndex).MinHIT, ObjData(.invent.EquippedSaddleObjIndex).MaxHit)
                 End If
             End With
             Exit Function
@@ -466,7 +466,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer,
 On Error GoTo UserDamageNpc_Err
 100     With UserList(UserIndex)
             Dim Damage As Long, DamageBase As Long, DamageExtra As Long, Color As Long, DamageStr As String
-102         If .Invent.WeaponEqpObjIndex = EspadaMataDragonesIndex And NpcList(NpcIndex).NPCtype = DRAGON Then
+102         If .invent.EquippedWeaponObjIndex = EspadaMataDragonesIndex And NpcList(NpcIndex).npcType = DRAGON Then
                 ' Espada MataDragones
 104             DamageBase = NpcList(npcIndex).Stats.MinHp + NpcList(npcIndex).Stats.def
                 ' La pierde una vez usada
@@ -542,16 +542,16 @@ On Error GoTo UserDamageNpc_Err
                 Damage = Damage + DamageExtra
             End If
             ' Restamos el daño al NPC
-168         If NPCs.DoDamageOrHeal(npcIndex, UserIndex, eUser, -damage, e_phisical, .invent.WeaponEqpObjIndex, Color) = eStillAlive Then
+168         If NPCs.DoDamageOrHeal(NpcIndex, UserIndex, eUser, -Damage, e_phisical, .invent.EquippedWeaponObjIndex, Color) = eStillAlive Then
                 'efectos
                 Dim ArmaObjInd, ObjInd As Integer
 180             ObjInd = 0
-182             ArmaObjInd = .Invent.WeaponEqpObjIndex
+182             ArmaObjInd = .invent.EquippedWeaponObjIndex
                 If ArmaObjInd > 0 Then
                     If ObjData(ArmaObjInd).Municion = 0 Then
 188                     ObjInd = ArmaObjInd
                     Else
-190                     ObjInd = .invent.MunicionEqpObjIndex
+190                     ObjInd = .invent.EquippedMunitionObjIndex
                     End If
                 End If
                 Dim rangeStun As Boolean
@@ -593,14 +593,14 @@ Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer
         Dim defbarco As Integer
         Dim obj As t_ObjData
 100     Damage = GetNpcDamage(npcIndex)
-104     If UserList(UserIndex).flags.Navegando = 1 And UserList(UserIndex).Invent.BarcoObjIndex > 0 Then
-106         obj = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
+104     If UserList(UserIndex).flags.Navegando = 1 And UserList(UserIndex).invent.EquippedShipObjIndex > 0 Then
+106         obj = ObjData(UserList(UserIndex).invent.EquippedShipObjIndex)
 108         defbarco = RandomNumber(obj.MinDef, obj.MaxDef)
         End If
     
         Dim defMontura As Integer
-110     If UserList(UserIndex).flags.Montado = 1 And UserList(UserIndex).Invent.MonturaObjIndex > 0 Then
-112         obj = ObjData(UserList(UserIndex).Invent.MonturaObjIndex)
+110     If UserList(UserIndex).flags.Montado = 1 And UserList(UserIndex).invent.EquippedSaddleObjIndex > 0 Then
+112         obj = ObjData(UserList(UserIndex).invent.EquippedSaddleObjIndex)
 114         defMontura = RandomNumber(obj.MinDef, obj.MaxDef)
         End If
     
@@ -610,24 +610,24 @@ Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer
             ' 1/6 de chances de que sea a la cabeza
             Case e_PartesCuerpo.bCabeza
                 'Si tiene casco absorbe el golpe
-120             If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then
+120             If UserList(UserIndex).invent.EquippedHelmetObjIndex > 0 Then
                     Dim Casco As t_ObjData
-122                 Casco = ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex)
+122                 Casco = ObjData(UserList(UserIndex).invent.EquippedHelmetObjIndex)
 124                 absorbido = absorbido + RandomNumber(Casco.MinDef, Casco.MaxDef)
                 End If
 
 126         Case Else
                 'Si tiene armadura absorbe el golpe
-128             If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
+128             If UserList(UserIndex).invent.EquippedArmorObjIndex > 0 Then
                     Dim Armadura As t_ObjData
-130                 Armadura = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex)
+130                 Armadura = ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex)
 132                 absorbido = absorbido + RandomNumber(Armadura.MinDef, Armadura.MaxDef)
                 End If
                 
                 'Si tiene escudo absorbe el golpe
-134             If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then
+134             If UserList(UserIndex).invent.EquippedShieldObjIndex > 0 Then
                     Dim Escudo As t_ObjData
-136                 Escudo = ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex)
+136                 Escudo = ObjData(UserList(UserIndex).invent.EquippedShieldObjIndex)
 138                 absorbido = absorbido + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
                 End If
         End Select
@@ -934,8 +934,8 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer
             ' Resta la vida del NPC
 140         Call UserDamageNpc(UserIndex, npcIndex, aType)
             
-142         Dim Arma As Integer: Arma = UserList(UserIndex).Invent.WeaponEqpObjIndex
-144         Dim municionIndex As Integer: municionIndex = UserList(UserIndex).Invent.MunicionEqpObjIndex
+142         Dim Arma As Integer: Arma = UserList(UserIndex).invent.EquippedWeaponObjIndex
+144         Dim municionIndex As Integer: municionIndex = UserList(UserIndex).invent.EquippedMunitionObjIndex
             Dim Particula As Integer
             Dim Tiempo    As Long
             
@@ -1097,7 +1097,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 106     SkillTacticas = UserList(VictimaIndex).Stats.UserSkills(e_Skill.Tacticas)
 108     SkillDefensa = UserList(VictimaIndex).Stats.UserSkills(e_Skill.Defensa)
 
-110     Arma = UserList(AtacanteIndex).Invent.WeaponEqpObjIndex
+110     Arma = UserList(AtacanteIndex).invent.EquippedWeaponObjIndex
 
 112     Dim RequiredSkill As e_Skill
         RequiredSkill = GetSkillRequiredForWeapon(Arma)
@@ -1114,8 +1114,8 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         'Calculamos el poder de evasion...
 126     UserPoderEvasion = PoderEvasion(VictimaIndex)
 
-128     If UserList(VictimaIndex).Invent.EscudoEqpObjIndex > 0 Then
-            ShieldChancePercentage = ObjData(UserList(VictimaIndex).invent.EscudoEqpObjIndex).Porcentaje
+128     If UserList(VictimaIndex).invent.EquippedShieldObjIndex > 0 Then
+            ShieldChancePercentage = ObjData(UserList(VictimaIndex).invent.EquippedShieldObjIndex).Porcentaje
             If ShieldChancePercentage > 0 Then
 130         UserPoderEvasion = UserPoderEvasion + PoderEvasionEscudo(VictimaIndex)
 132         If SkillDefensa > 0 Then
@@ -1131,11 +1131,11 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         End If
         Dim WeaponHitModifier As Integer
         WeaponHitModifier = 0
-        If UserList(AtacanteIndex).Invent.WeaponEqpObjIndex > 0 And IsFeatureEnabled("Improved-Hit-Chance") Then
+        If UserList(AtacanteIndex).invent.EquippedWeaponObjIndex > 0 And IsFeatureEnabled("Improved-Hit-Chance") Then
             If aType = Melee Then
-                WeaponHitModifier = ObjData(UserList(AtacanteIndex).Invent.WeaponEqpObjIndex).ImprovedMeleeHitChance
+                WeaponHitModifier = ObjData(UserList(AtacanteIndex).invent.EquippedWeaponObjIndex).ImprovedMeleeHitChance
             Else
-                WeaponHitModifier = ObjData(UserList(AtacanteIndex).Invent.WeaponEqpObjIndex).ImprovedRangedHitChance
+                WeaponHitModifier = ObjData(UserList(AtacanteIndex).invent.EquippedWeaponObjIndex).ImprovedRangedHitChance
             End If
         End If
 140     ProbExito = Maximo(10, Minimo(90, 50 + ((PoderAtaque - UserPoderEvasion) * 0.4) + WeaponHitModifier))
@@ -1256,9 +1256,9 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                 ' 1/6 de chances de que sea a la cabeza
                 Case e_PartesCuerpo.bCabeza
                     'Si tiene casco absorbe el golpe
-110                 If .Invent.CascoEqpObjIndex > 0 Then
+110                 If .invent.EquippedHelmetObjIndex > 0 Then
                         Dim Casco As t_ObjData
-112                     Casco = ObjData(.Invent.CascoEqpObjIndex)
+112                     Casco = ObjData(.invent.EquippedHelmetObjIndex)
 114                     Defensa = Defensa + RandomNumber(Casco.MinDef, Casco.MaxDef)
                     End If
 116             Case Else
@@ -1266,29 +1266,29 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                         Lugar = RandomNumber(bPiernaIzquierda, bTorso)
                     End If
                     'Si tiene armadura absorbe el golpe
-118                 If .Invent.ArmourEqpObjIndex > 0 Then
+118                 If .invent.EquippedArmorObjIndex > 0 Then
                         Dim Armadura As t_ObjData
-120                     Armadura = ObjData(.Invent.ArmourEqpObjIndex)
+120                     Armadura = ObjData(.invent.EquippedArmorObjIndex)
 122                     Defensa = Defensa + RandomNumber(Armadura.MinDef, Armadura.MaxDef)
                     End If
                     'Si tiene escudo absorbe el golpe
-124                 If .Invent.EscudoEqpObjIndex > 0 Then
+124                 If .invent.EquippedShieldObjIndex > 0 Then
                         Dim Escudo As t_ObjData
-126                     Escudo = ObjData(.Invent.EscudoEqpObjIndex)
+126                     Escudo = ObjData(.invent.EquippedShieldObjIndex)
 128                     Defensa = Defensa + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
                     End If
             End Select
 
             ' Defensa del barco de la víctima
-130         If .Invent.BarcoObjIndex > 0 Then
+130         If .invent.EquippedShipObjIndex > 0 Then
                 Dim Barco As t_ObjData
-132             Barco = ObjData(.Invent.BarcoObjIndex)
+132             Barco = ObjData(.invent.EquippedShipObjIndex)
 134             Defensa = Defensa + RandomNumber(Barco.MinDef, Barco.MaxDef)
 
             ' Defensa de la montura de la víctima
-136         ElseIf .Invent.MonturaObjIndex > 0 Then
+136         ElseIf .invent.EquippedSaddleObjIndex > 0 Then
                 Dim Montura As t_ObjData
-138             Montura = ObjData(.Invent.MonturaObjIndex)
+138             Montura = ObjData(.invent.EquippedSaddleObjIndex)
 140             Defensa = Defensa + RandomNumber(Montura.MinDef, Montura.MaxDef)
             End If
             Defensa = Defensa + UserMod.GetDefenseBonus(VictimaIndex)
@@ -1388,7 +1388,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                 End If
             End If
             
-240         If UserMod.DoDamageOrHeal(VictimaIndex, AtacanteIndex, e_ReferenceType.eUser, -Damage, e_DamageSourceType.e_phisical, .invent.WeaponEqpObjIndex, -1, -1, Color) = eStillAlive Then
+240         If UserMod.DoDamageOrHeal(VictimaIndex, AtacanteIndex, e_ReferenceType.eUser, -Damage, e_DamageSourceType.e_phisical, .invent.EquippedWeaponObjIndex, -1, -1, Color) = eStillAlive Then
                 'Sonido del golpe
 444             Call SendData(SendTarget.ToPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(AtacanteIndex).pos.X, UserList(AtacanteIndex).pos.y))
                 'Fx de sangre del golpe
@@ -1425,39 +1425,39 @@ Private Sub DesequiparObjetoDeUnGolpe(ByVal AttackerIndex As Integer, ByVal Vict
 102         Select Case parteDelCuerpo
             Case e_PartesCuerpo.bCabeza
                 ' Si pega en la cabeza, desequipamos el casco si tiene
-104             desequiparCasco = .Invent.CascoEqpObjIndex > 0
+104             desequiparCasco = .invent.EquippedHelmetObjIndex > 0
                 ' Si no tiene casco, intentaremos desequipar otra cosa porque un golpe en la cabeza
                 ' algo te tiene que desequipar.
-106             desequiparArma = (Not desequiparCasco) And (.Invent.WeaponEqpObjIndex > 0)
-108             desequiparEscudo = (Not desequiparCasco) And (Not desequiparArma) And (.Invent.EscudoEqpObjIndex > 0)
+106             desequiparArma = (Not desequiparCasco) And (.invent.EquippedWeaponObjIndex > 0)
+108             desequiparEscudo = (Not desequiparCasco) And (Not desequiparArma) And (.invent.EquippedShieldObjIndex > 0)
          
 110         Case e_PartesCuerpo.bBrazoDerecho, e_PartesCuerpo.bBrazoIzquierdo, e_PartesCuerpo.bTorso
-112             desequiparArma = (.Invent.WeaponEqpObjIndex > 0)
-114             desequiparEscudo = (Not desequiparArma) And (.Invent.EscudoEqpObjIndex > 0)
-116             desequiparCasco = (Not desequiparEscudo) And (Not desequiparArma) And (.invent.CascoEqpObjIndex > 0)
+112             desequiparArma = (.invent.EquippedWeaponObjIndex > 0)
+114             desequiparEscudo = (Not desequiparArma) And (.invent.EquippedShieldObjIndex > 0)
+116             desequiparCasco = (Not desequiparEscudo) And (Not desequiparArma) And (.invent.EquippedHelmetObjIndex > 0)
             
 118         Case e_PartesCuerpo.bPiernaDerecha, e_PartesCuerpo.bPiernaIzquierda
-120             desequiparEscudo = (.Invent.EscudoEqpObjIndex > 0)
-122             desequiparArma = (Not desequiparEscudo) And (.invent.WeaponEqpObjIndex > 0)
-124             desequiparCasco = (Not desequiparEscudo) And (Not desequiparArma) And (.invent.CascoEqpObjIndex > 0)
+120             desequiparEscudo = (.invent.EquippedShieldObjIndex > 0)
+122             desequiparArma = (Not desequiparEscudo) And (.invent.EquippedWeaponObjIndex > 0)
+124             desequiparCasco = (Not desequiparEscudo) And (Not desequiparArma) And (.invent.EquippedHelmetObjIndex > 0)
 
             
             End Select
         
 126         If desequiparCasco Then
-128             Call Desequipar(VictimIndex, .Invent.CascoEqpSlot)
+128             Call Desequipar(VictimIndex, .invent.EquippedHelmetSlot)
             
 130             Call WriteCombatConsoleMsg(AttackerIndex, "Has logrado desequipar el casco de tu oponente!")
 132             Call WriteCombatConsoleMsg(VictimIndex, UserList(AttackerIndex).Name & " te ha desequipado el casco.")
                 Call CreateUnequip(VictimIndex, eUser, e_InventorySlotMask.eHelm)
 134         ElseIf desequiparArma Then
-136             Call Desequipar(VictimIndex, .Invent.WeaponEqpSlot)
+136             Call Desequipar(VictimIndex, .invent.EquippedWeaponSlot)
                 
 138             Call WriteCombatConsoleMsg(AttackerIndex, "Has logrado desarmar a tu oponente!")
 140             Call WriteCombatConsoleMsg(VictimIndex, UserList(AttackerIndex).Name & " te ha desarmado.")
                 Call CreateUnequip(VictimIndex, eUser, e_InventorySlotMask.eWeapon)
 142         ElseIf desequiparEscudo Then
-144             Call Desequipar(VictimIndex, .Invent.EscudoEqpSlot)
+144             Call Desequipar(VictimIndex, .invent.EquippedShieldSlot)
                 
 146             Call WriteCombatConsoleMsg(AttackerIndex, "Has logrado desequipar el escudo de " & .Name & ".")
 148             Call WriteCombatConsoleMsg(VictimIndex, UserList(AttackerIndex).Name & " te ha desequipado el escudo.")
@@ -2105,7 +2105,7 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
         On Error GoTo UserDañoEspecial_Err
 
         Dim ArmaObjInd As Integer, ObjInd As Integer
-100     ArmaObjInd = UserList(AtacanteIndex).Invent.WeaponEqpObjIndex
+100     ArmaObjInd = UserList(AtacanteIndex).invent.EquippedWeaponObjIndex
 102     ObjInd = 0
         ' Preguntamos una vez mas, si no tiene Nudillos o Arma, no tiene sentido seguir.
 108     If ArmaObjInd = 0 Then
@@ -2115,7 +2115,7 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
 110     If ObjData(ArmaObjInd).Proyectil = 0 Or ObjData(ArmaObjInd).Municion = 0 Then
 112         ObjInd = ArmaObjInd
         Else
-114         ObjInd = UserList(AtacanteIndex).Invent.MunicionEqpObjIndex
+114         ObjInd = UserList(AtacanteIndex).invent.EquippedMunitionObjIndex
         End If
 
         Dim puedeEnvenenar, puedeEstupidizar, puedeIncinierar, puedeParalizar, rangeStun As Boolean
@@ -2282,8 +2282,8 @@ End Sub
 Private Function PuedeDesequiparDeUnGolpe(ByVal UserIndex As Integer) As Boolean
         On Error GoTo PuedeDesequiparDeUnGolpe_Err
 100     With UserList(UserIndex)
-            If .invent.WeaponEqpObjIndex > 0 Then
-                If ObjData(.invent.WeaponEqpObjIndex).WeaponType <> eKnuckle Then
+            If .invent.EquippedWeaponObjIndex > 0 Then
+                If ObjData(.invent.EquippedWeaponObjIndex).WeaponType <> eKnuckle Then
                     PuedeDesequiparDeUnGolpe = False
                     Exit Function
                 End If
@@ -2318,8 +2318,8 @@ Private Function PuedeApuñalar(ByVal UserIndex As Integer) As Boolean
         
 100     With UserList(UserIndex)
 
-102         If .Invent.WeaponEqpObjIndex > 0 Then
-104             PuedeApuñalar = (.clase = e_Class.Assasin Or .Stats.UserSkills(e_Skill.Apuñalar) >= MIN_APUÑALAR) And ObjData(.invent.WeaponEqpObjIndex).Apuñala = 1
+102         If .invent.EquippedWeaponObjIndex > 0 Then
+104             PuedeApuñalar = (.clase = e_Class.Assasin Or .Stats.UserSkills(e_Skill.Apuñalar) >= MIN_APUÑALAR) And ObjData(.invent.EquippedWeaponObjIndex).Apuñala = 1
             End If
             
         End With
@@ -2339,8 +2339,8 @@ Private Function PuedeGolpeCritico(ByVal UserIndex As Integer) As Boolean
         
 100     With UserList(UserIndex)
     
-102         If .Invent.WeaponEqpObjIndex > 0 Then
-104             PuedeGolpeCritico = .clase = e_Class.Bandit And ObjData(.Invent.WeaponEqpObjIndex).Subtipo = 2
+102         If .invent.EquippedWeaponObjIndex > 0 Then
+104             PuedeGolpeCritico = .clase = e_Class.Bandit And ObjData(.invent.EquippedWeaponObjIndex).Subtipo = 2
             End If
             
         End With
@@ -2381,7 +2381,7 @@ Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer, Optional ByVa
             End Select
             
             ' Daga especial da +5 de prob. de apu
-116         If ObjData(.Invent.WeaponEqpObjIndex).Subtipo = 42 Then
+116         If ObjData(.invent.EquippedWeaponObjIndex).Subtipo = 42 Then
 118             ProbabilidadApuñalar = ProbabilidadApuñalar + 5
             End If
             
@@ -2413,7 +2413,7 @@ Private Function ProbabilidadGolpeCritico(ByVal UserIndex As Integer) As Integer
         On Error GoTo ProbabilidadGolpeCritico_Err
 
         
-100     ProbabilidadGolpeCritico = 0.25 * UserList(UserIndex).Stats.UserSkills(GetSkillRequiredForWeapon(UserList(UserIndex).invent.WeaponEqpObjIndex))
+100     ProbabilidadGolpeCritico = 0.25 * UserList(UserIndex).Stats.UserSkills(GetSkillRequiredForWeapon(UserList(UserIndex).invent.EquippedWeaponObjIndex))
 
         Exit Function
 
@@ -2436,9 +2436,9 @@ Private Function ProbabilidadDesequipar(ByVal UserIndex As Integer) As Integer
                     ' Shugar: Hago que la probabilidad de desequipar sea proporcional a los skills
                     ' requeridos por el arma, en este caso combate sin armas para nudillos
                     
-                    ProbabilidadDesequipar = 0.2 * UserList(UserIndex).Stats.UserSkills(GetSkillRequiredForWeapon(UserList(UserIndex).invent.WeaponEqpObjIndex))
+                    ProbabilidadDesequipar = 0.2 * UserList(UserIndex).Stats.UserSkills(GetSkillRequiredForWeapon(UserList(UserIndex).invent.EquippedWeaponObjIndex))
                 Else
-104                 ProbabilidadDesequipar = 0.15 * UserList(UserIndex).Stats.UserSkills(GetSkillRequiredForWeapon(UserList(UserIndex).invent.WeaponEqpObjIndex))
+104                 ProbabilidadDesequipar = 0.15 * UserList(UserIndex).Stats.UserSkills(GetSkillRequiredForWeapon(UserList(UserIndex).invent.EquippedWeaponObjIndex))
                 End If
 106         Case e_Class.Thief
 108             ProbabilidadDesequipar = 0.33 * 100
@@ -2474,7 +2474,7 @@ Public Function MultiShot(ByVal UserIndex As Integer, ByRef targetPos As t_World
 On Error GoTo MultiShot_Err
     With UserList(UserIndex)
         Dim ArrowSlot As Integer
-        ArrowSlot = .invent.MunicionEqpSlot
+        ArrowSlot = .invent.EquippedMunitionSlot
         If ArrowSlot = 0 Then
             Call WriteLocaleMsg(UserIndex, MsgEquipedArrowRequired, FONTTYPE_INFO)
             Exit Function
@@ -2483,7 +2483,7 @@ On Error GoTo MultiShot_Err
             Call WriteLocaleMsg(UserIndex, MsgEquipedArrowRequired, FONTTYPE_INFO)
             Exit Function
         End If
-        If ObjData(.invent.Object(ArrowSlot).objIndex).Subtipo <> ObjData(.invent.WeaponEqpObjIndex).Municion Then
+        If ObjData(.invent.Object(ArrowSlot).ObjIndex).Subtipo <> ObjData(.invent.EquippedWeaponObjIndex).Municion Then
             Call WriteLocaleMsg(UserIndex, MsgEquipedArrowRequired, FONTTYPE_INFO)
             Exit Function
         End If
@@ -2589,25 +2589,25 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
     Dim AmunitionState As Integer
     Dim DidConsumeAmunition As Boolean
     With UserList(UserIndex).invent
-        If .WeaponEqpObjIndex < 1 Then Exit Sub
-        WeaponData = ObjData(.WeaponEqpObjIndex)
+        If .EquippedWeaponObjIndex < 1 Then Exit Sub
+        WeaponData = ObjData(.EquippedWeaponObjIndex)
         
         ProjectileType = GetProjectileView(UserList(UserIndex))
         If WeaponData.Proyectil = 1 And WeaponData.Municion = 0 Then
             AmunitionState = 0
-        ElseIf .WeaponEqpObjIndex = 0 Then
+        ElseIf .EquippedWeaponObjIndex = 0 Then
             AmunitionState = 1
-        ElseIf .WeaponEqpSlot < 1 Or .WeaponEqpSlot > UserList(UserIndex).CurrentInventorySlots Then
+        ElseIf .EquippedWeaponSlot < 1 Or .EquippedWeaponSlot > UserList(UserIndex).CurrentInventorySlots Then
             AmunitionState = 1
-        ElseIf .MunicionEqpSlot < 1 Or .MunicionEqpSlot > UserList(UserIndex).CurrentInventorySlots Then
+        ElseIf .EquippedMunitionSlot < 1 Or .EquippedMunitionSlot > UserList(UserIndex).CurrentInventorySlots Then
             AmunitionState = 1
-        ElseIf .MunicionEqpObjIndex = 0 Then
+        ElseIf .EquippedMunitionObjIndex = 0 Then
             AmunitionState = 1
-        ElseIf ObjData(.WeaponEqpObjIndex).Proyectil <> 1 Then
+        ElseIf ObjData(.EquippedWeaponObjIndex).Proyectil <> 1 Then
             AmunitionState = 2
-        ElseIf ObjData(.MunicionEqpObjIndex).OBJType <> e_OBJType.otFlechas Then
+        ElseIf ObjData(.EquippedMunitionObjIndex).OBJType <> e_OBJType.otArrows Then
             AmunitionState = 1
-        ElseIf .Object(.MunicionEqpSlot).amount < 1 Then
+        ElseIf .Object(.EquippedMunitionSlot).amount < 1 Then
             AmunitionState = 1
         End If
     
@@ -2616,7 +2616,7 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
                 ' Msg709=No tenés municiones.
                 Call WriteLocaleMsg(UserIndex, "709", e_FontTypeNames.FONTTYPE_INFO)
             End If
-            Call Desequipar(UserIndex, .MunicionEqpSlot)
+            Call Desequipar(UserIndex, .EquippedMunitionSlot)
             Call WriteWorkRequestTarget(UserIndex, 0)
             Exit Sub
         End If
@@ -2631,8 +2631,8 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
             ' Porque no es HandleAttack ???
             Call UsuarioAtacaUsuario(UserIndex, TargetIndex, Ranged)
             Dim FX As Integer
-            If .MunicionEqpObjIndex Then
-                FX = ObjData(.MunicionEqpObjIndex).CreaFX
+            If .EquippedMunitionObjIndex Then
+                FX = ObjData(.EquippedMunitionObjIndex).CreaFX
             End If
             If FX <> 0 Then
                 UserList(TargetIndex).Counters.timeFx = 3
@@ -2646,10 +2646,10 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.charindex, 1))
             End If
             
-            If .MunicionEqpObjIndex > 0 Then
-                If ObjData(.MunicionEqpObjIndex).CreaParticula <> "" Then
-                    Particula = val(ReadField(1, ObjData(.MunicionEqpObjIndex).CreaParticula, Asc(":")))
-                    Tiempo = val(ReadField(2, ObjData(.MunicionEqpObjIndex).CreaParticula, Asc(":")))
+            If .EquippedMunitionObjIndex > 0 Then
+                If ObjData(.EquippedMunitionObjIndex).CreaParticula <> "" Then
+                    Particula = val(ReadField(1, ObjData(.EquippedMunitionObjIndex).CreaParticula, Asc(":")))
+                    Tiempo = val(ReadField(2, ObjData(.EquippedMunitionObjIndex).CreaParticula, Asc(":")))
                     UserList(TargetIndex).Counters.timeFx = 3
                     Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageParticleFX(UserList(TargetIndex).Char.charindex, Particula, Tiempo, False, , UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
                 End If
@@ -2676,12 +2676,12 @@ Public Function GetProjectileView(ByRef user As t_User) As Integer
     Dim WeaponData As t_ObjData
     Dim ProjectileType As Byte
     With user.invent
-        If .WeaponEqpObjIndex < 1 Then Exit Function
-        WeaponData = ObjData(.WeaponEqpObjIndex)
+        If .EquippedWeaponObjIndex < 1 Then Exit Function
+        WeaponData = ObjData(.EquippedWeaponObjIndex)
         If WeaponData.Proyectil = 1 And WeaponData.Municion = 0 Then
             GetProjectileView = WeaponData.ProjectileType
-        ElseIf .MunicionEqpObjIndex > 0 Then
-            GetProjectileView = ObjData(.MunicionEqpObjIndex).ProjectileType
+        ElseIf .EquippedMunitionObjIndex > 0 Then
+            GetProjectileView = ObjData(.EquippedMunitionObjIndex).ProjectileType
         End If
     End With
 End Function
@@ -2689,17 +2689,17 @@ End Function
 Public Sub ConsumeAmunition(ByVal UserIndex As Integer)
     With UserList(UserIndex).invent
         Dim AmunitionSlot As Integer
-        AmunitionSlot = .MunicionEqpSlot
+        AmunitionSlot = .EquippedMunitionSlot
         If AmunitionSlot > 0 Then
             Call QuitarUserInvItem(UserIndex, AmunitionSlot, 1)
             If .Object(AmunitionSlot).amount > 0 Then
                 'QuitarUserInvItem unequipps the ammo, so we equip it again
-                .MunicionEqpSlot = AmunitionSlot
-                .MunicionEqpObjIndex = .Object(AmunitionSlot).objIndex
+                .EquippedMunitionSlot = AmunitionSlot
+                .EquippedMunitionObjIndex = .Object(AmunitionSlot).ObjIndex
                 .Object(AmunitionSlot).Equipped = 1
             Else
-                .MunicionEqpSlot = 0
-                .MunicionEqpObjIndex = 0
+                .EquippedMunitionSlot = 0
+                .EquippedMunitionObjIndex = 0
             End If
             Call UpdateUserInv(False, UserIndex, AmunitionSlot)
         End If
@@ -2716,11 +2716,11 @@ Public Sub CalculateElementalTagsModifiers(ByVal UserIndex As Integer, ByVal Npc
 
     ' Get the bitmask of elements from the equipped weapon if the weapon naturally has tags OR if the user has enchanted his own weapon
     With UserList(UserIndex).invent
-        If .WeaponEqpObjIndex = 0 Or .WeaponEqpSlot = 0 Then
+        If .EquippedWeaponObjIndex = 0 Or .EquippedWeaponSlot = 0 Then
             Exit Sub
         End If
 
-        attackerElementMask = ObjData(.WeaponEqpObjIndex).ElementalTags Or .Object(.WeaponEqpSlot).ElementalTags
+        attackerElementMask = ObjData(.EquippedWeaponObjIndex).ElementalTags Or .Object(.EquippedWeaponSlot).ElementalTags
     End With
     ' Get the bitmask of elements from the NPC
     defenderElementMask = NpcList(NpcIndex).flags.ElementalTags
@@ -2731,14 +2731,14 @@ Public Sub CalculateElementalTagsModifiers(ByVal UserIndex As Integer, ByVal Npc
     End If
 
     ' Loop over each possible attacker element (0 to 31)
-    For attackerIndex = 0 To MAX_ELEMENT_TAGS -1
+    For attackerIndex = 0 To MAX_ELEMENT_TAGS - 1
         ' Create a bitmask for the current attacker element
         attackerBit = ShiftLeft(1, attackerIndex)
         
         ' Ensure shift is valid and safe (only 0 to 31)
         If attackerBit <> 0 And IsSet(attackerElementMask, attackerBit) Then
             ' Loop over each possible defender element
-            For defenderIndex = 0 To MAX_ELEMENT_TAGS -1
+            For defenderIndex = 0 To MAX_ELEMENT_TAGS - 1
                 defenderBit = ShiftLeft(1, defenderIndex)
                 
                 If defenderBit <> 0 And IsSet(defenderElementMask, defenderBit) Then

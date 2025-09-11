@@ -154,7 +154,7 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 LoadCharacterInventory_Err:
-    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterInventory: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterInventory: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 End Function
 
 Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
@@ -260,6 +260,7 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .OrigChar.WeaponAnim = RS!weapon_id
         .OrigChar.CascoAnim = RS!helmet_id
         .OrigChar.ShieldAnim = RS!shield_id
+        .OrigChar.BackpackAnim = RS!backpack_id
         .OrigChar.Heading = RS!Heading
         .Stats.MaxHp = RS!max_hp
         .Stats.MinHp = RS!min_hp
@@ -518,7 +519,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
                 Exit Sub
             End If
               
-104         ReDim Params(64)
+104         ReDim Params(65)
 
             Dim i As Integer
         
@@ -586,6 +587,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 284         Params(post_increment(i)) = .flags.ReturnPos.x
 286         Params(post_increment(i)) = .flags.ReturnPos.y
 287         Params(post_increment(i)) = .Stats.JineteLevel
+            Params(post_increment(i)) = .Char.BackpackAnim
 
 
             ' WHERE block
