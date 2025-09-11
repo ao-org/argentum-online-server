@@ -1932,7 +1932,7 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
 276         If UserList(UserIndex).flags.Inmovilizado > 0 Then
 278             UserList(UserIndex).Counters.Inmovilizado = 0
 280             UserList(UserIndex).flags.Inmovilizado = 0
-                 If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
+                 If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
                      UserList(UserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
                 End If
 282             Call WriteInmovilizaOK(UserIndex)
@@ -1942,7 +1942,7 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
 286             UserList(UserIndex).Counters.Paralisis = 0
 288             UserList(UserIndex).flags.Paralizado = 0
 
-                 If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
+                 If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
                      UserList(UserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
                 End If
 290             Call WriteParalizeOK(UserIndex)
@@ -2305,7 +2305,7 @@ Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
         
 560         If UserList(tU).flags.Inmovilizado = 1 Then
 562             UserList(tU).Counters.Inmovilizado = 0
-                If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Hunter Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
+                If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
                      UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
                 End If
 564             UserList(tU).flags.Inmovilizado = 0
@@ -2316,7 +2316,7 @@ Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
             
 570         If UserList(tU).flags.Paralizado = 1 Then
 572             UserList(tU).flags.Paralizado = 0
-                 If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Hunter Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
+                 If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
                      UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
                 End If
 574             UserList(tU).Counters.Paralisis = 0
@@ -3856,7 +3856,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 414         UserList(UserIndex).flags.Incinerado = 0
 416         If UserList(UserIndex).flags.Inmovilizado = 1 Then
 418             UserList(UserIndex).Counters.Inmovilizado = 0
-                If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
+                If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
                      UserList(UserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
                 End If
 420             UserList(UserIndex).flags.Inmovilizado = 0
@@ -3865,7 +3865,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
     
 424         If UserList(UserIndex).flags.Paralizado = 1 Then
 426             UserList(UserIndex).Counters.Paralisis = 0
-                If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
+                If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
                      UserList(UserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
                 End If
 428             UserList(UserIndex).flags.Paralizado = 0
@@ -4044,7 +4044,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 634         If UserList(tU).flags.Inmovilizado = 1 Then
 636             UserList(tU).Counters.Inmovilizado = 0
 638             UserList(tU).flags.Inmovilizado = 0
-                If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Hunter Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
+                If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
                      UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
                 End If
 640             Call WriteInmovilizaOK(tU)
@@ -4055,7 +4055,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 646         If UserList(tU).flags.Paralizado = 1 Then
 648             UserList(tU).Counters.Paralisis = 0
 650             UserList(tU).flags.Paralizado = 0
-                If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Hunter Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
+                If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
                      UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
                 End If
 652             Call WriteParalizeOK(tU)
@@ -4589,7 +4589,7 @@ Call WriteLocaleMsg(NpcIndex, "832", e_FontTypeNames.FONTTYPE_INFO)
 426         If UserList(NpcIndex).flags.Inmovilizado = 1 Then
 428             UserList(NpcIndex).Counters.Inmovilizado = 0
 430             UserList(NpcIndex).flags.Inmovilizado = 0
-                If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Hunter Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = e_Class.Pirat Then
+                If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = e_Class.Pirat Then
                      UserList(NpcIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
                 End If
 432             Call WriteInmovilizaOK(NpcIndex)
@@ -4597,7 +4597,7 @@ Call WriteLocaleMsg(NpcIndex, "832", e_FontTypeNames.FONTTYPE_INFO)
 
 434         If UserList(NpcIndex).flags.Paralizado = 1 Then
 436             UserList(NpcIndex).flags.Paralizado = 0
-                If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Hunter Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = e_Class.Pirat Then
+                If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = e_Class.Pirat Then
                      UserList(NpcIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
                 End If
                 'no need to crypt this
@@ -4616,7 +4616,7 @@ Call WriteLocaleMsg(NpcIndex, "833", e_FontTypeNames.FONTTYPE_INFO)
 452         If UserList(NpcIndex).flags.Inmovilizado = 1 Then
 454             UserList(NpcIndex).Counters.Inmovilizado = 0
 456             UserList(NpcIndex).flags.Inmovilizado = 0
-                If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Hunter Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = e_Class.Pirat Then
+                If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = e_Class.Pirat Then
                      UserList(NpcIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
                 End If
 458             Call WriteInmovilizaOK(NpcIndex)
@@ -4624,7 +4624,7 @@ Call WriteLocaleMsg(NpcIndex, "833", e_FontTypeNames.FONTTYPE_INFO)
                     
 460         If UserList(NpcIndex).flags.Paralizado = 1 Then
 462             UserList(NpcIndex).flags.Paralizado = 0
-                If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Hunter Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = e_Class.Pirat Then
+                If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = e_Class.Pirat Then
                      UserList(NpcIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
                 End If
 464             UserList(NpcIndex).Counters.Paralisis = 0
