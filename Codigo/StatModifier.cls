@@ -58,8 +58,8 @@ Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceTy
         TickTime = .TickTime
         RequireTransform = .RequireTransform
         If IsSet(.EffectModifiers, e_ModifierTypes.MagicBonus) And SourceType = eUser Then
-            If UserList(SourceIndex).invent.EquippedWeaponObjIndex > 0 Then
-                Modifier = ObjData(UserList(SourceIndex).invent.EquippedWeaponObjIndex).MagicDamageBonus / 100
+            If UserList(SourceIndex).invent.WeaponEqpObjIndex > 0 Then
+                Modifier = ObjData(UserList(SourceIndex).invent.WeaponEqpObjIndex).MagicDamageBonus / 100
             End If
         End If
         If DotInfo.TargetRef.RefType = eUser And .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .TickTime, .buffType)

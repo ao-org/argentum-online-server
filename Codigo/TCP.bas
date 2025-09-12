@@ -416,12 +416,12 @@ Sub RellenarInventario(ByVal UserIndex As String)
                         
 232         .Invent.Object(NumItems).amount = 1
 234         .Invent.Object(NumItems).Equipped = 1
-236         .Invent.EquippedArmorSlot = NumItems
-238         .Invent.EquippedArmorObjIndex = .Invent.Object(NumItems).ObjIndex
+236         .Invent.ArmourEqpSlot = NumItems
+238         .Invent.ArmourEqpObjIndex = .Invent.Object(NumItems).ObjIndex
 240          NumItems = NumItems + 1
 
             ' Animación según raza
-242          .Char.Body = ObtenerRopaje(UserIndex, ObjData(.Invent.EquippedArmorObjIndex))
+242          .Char.Body = ObtenerRopaje(UserIndex, ObjData(.Invent.ArmourEqpObjIndex))
         
             ' Comida y bebida
 244         .invent.Object(NumItems).ObjIndex = 3684 ' Manzana
@@ -1683,7 +1683,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 128         errordesc = "ERROR AL DESMONTAR"
     
 130         If .flags.Montado > 0 Then
-132             Call DoMontar(UserIndex, ObjData(.Invent.EquippedSaddleObjIndex), .Invent.EquippedSaddleSlot)
+132             Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
             End If
             
 134         errordesc = "ERROR AL CANCELAR SOLICITUD DE RETO"
