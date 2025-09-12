@@ -3574,7 +3574,7 @@ Private Sub HandleChange_Heading(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
             Dim Heading As e_Heading
-102             Heading = Reader.ReadInt8()
+102         Heading = reader.ReadInt8()
                             
             Dim PacketCounter As Long
             PacketCounter = Reader.ReadInt32
@@ -3582,12 +3582,19 @@ Private Sub HandleChange_Heading(ByVal UserIndex As Integer)
             Dim Packet_ID As Long
             Packet_ID = PacketNames.ChangeHeading
             
-            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "ChangeHeading", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), _
+                    .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, _
+                    "ChangeHeading", PacketTimerThreshold(Packet_ID), MacroIterations( _
+                    Packet_ID)) Then Exit Sub
+
+            If .flags.Paralizado > 0 Then
+                Exit Sub
+            End If
         
             'Validate heading (VB won't say invalid cast if not a valid index like .Net languages would do... *sigh*)
 104         If Heading > 0 And Heading < 5 Then
 106             .Char.Heading = Heading
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(.Char.body, .Char.head, .Char.Heading, .Char.charindex, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CartAnim, .Char.FX, .Char.loops, .Char.CascoAnim, False, .flags.Navegando))
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(.Char.body .Char.head, .Char.Heading, .Char.charindex,.Char.weapon, .Char.ShieldAnim, .Char.CartAnim, .Char.FX, .Char.loops, .Char.CascoAnim, False, .flags.Navegando))
 
             End If
 
