@@ -728,6 +728,7 @@ Public Enum e_NPCType
     AO20ShopPjs = 22
     EventMaster = 23
     ArenaGuard = 24
+    MAOItemSeller = 25
 End Enum
 
 Public Const MIN_APUÑALAR As Byte = 10
@@ -3082,6 +3083,9 @@ Public PuedeCrearPersonajes              As Integer
 Public MinimumPriceMao                   As Long
 Public GoldPriceMao                      As Long
 Public MinimumLevelMao                   As Integer
+Public MinimumPriceMaoItems              As Long
+Public GoldPriceMaoItems                 As Long
+Public MinimumLevelMaoItems              As Integer
 Public ServerSoloGMs                     As Integer
 Public EnPausa                           As Boolean
 Public EnTesting                         As Boolean
