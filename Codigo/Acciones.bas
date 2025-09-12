@@ -101,7 +101,7 @@ Function PuedeUsarObjeto(UserIndex As Integer, _
 
         If (Objeto.SkillIndex > 0) Then
             If (.Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
-                CanUseItem = 4
+                PuedeUsarObjeto = 4
                 Msg = "Necesitas " & Objeto.SkillRequerido & " puntos en " & _
                         SkillsNames(Objeto.SkillIndex) & " para usar este item."
                 Call WriteConsoleMsg(UserIndex, Msg, e_FontTypeNames.FONTTYPE_INFO)
@@ -111,7 +111,7 @@ Function PuedeUsarObjeto(UserIndex As Integer, _
             End If
         End If
         
-        If CanUseItem = 0 Then
+        If PuedeUsarObjeto = 0 Then
 
             Exit Function
 
@@ -124,8 +124,8 @@ Function PuedeUsarObjeto(UserIndex As Integer, _
     End With
 
     Exit Function
-
-    Call TraceError(Err.Number, Err.Description, "Acciones.CanUseItem", Erl)
+PuedeUsarObjeto_Err:
+    Call TraceError(Err.Number, Err.Description, "Acciones.PuedeUsarObjeto", Erl)
 End Function
 
 
