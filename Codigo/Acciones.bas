@@ -36,66 +36,82 @@ get_map_name_Err:
      Call TraceError(Err.Number, Err.Description, "ModLadder.get_map_name", Erl)
 End Function
 
+Function PuedeUsarObjeto(UserIndex As Integer, _
+                         ByVal ObjIndex As Integer, _
+                         Optional ByVal writeInConsole As Boolean = False) As Byte
 
-Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer, Optional ByVal writeInConsole As Boolean = False) As Byte
-        On Error GoTo PuedeUsarObjeto_Err
+    On Error GoTo PuedeUsarObjeto_Err
 
-        Dim Objeto As t_ObjData
-        Dim Msg As String, i As Long
-     Objeto = ObjData(ObjIndex)
+    Dim Objeto As t_ObjData
+
+    Dim Msg    As String, i As Long
+
+    Dim Extra  As String
+
+    Objeto = ObjData(ObjIndex)
+    
+    PuedeUsarObjeto = 0
                 
-     With UserList(UserIndex)
+    With UserList(UserIndex)
      
-         If EsGM(UserIndex) Then
-             PuedeUsarObjeto = 0
-             Msg = ""
-    
-         ElseIf Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
-             PuedeUsarObjeto = 7
-             Msg = "Solo los newbies pueden usar este objeto."
-                
-         ElseIf .Stats.ELV < Objeto.MinELV Then
-             PuedeUsarObjeto = 6
-             Msg = "Necesitas ser nivel " & Objeto.MinELV & " para usar este objeto."
-             
-         ElseIf .Stats.ELV > Objeto.MaxLEV And Objeto.MaxLEV > 0 Then
-             PuedeUsarObjeto = 6
-             Msg = "Este objeto no puede ser utilizado por personajes de nivel " & Objeto.MaxLEV & " o superior."
-     
-         ElseIf Not FaccionPuedeUsarItem(UserIndex, ObjIndex) And JerarquiaPuedeUsarItem(UserIndex, ObjIndex) Then
-             PuedeUsarObjeto = 3
-             Msg = "Tu facción no te permite utilizarlo."
-    
-         ElseIf Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-             PuedeUsarObjeto = 2
-             Msg = "Tu clase no puede utilizar este objeto."
-    
-         ElseIf Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
-             PuedeUsarObjeto = 1
-             Msg = "Tu sexo no puede utilizar este objeto."
-    
-         ElseIf Not RazaPuedeUsarItem(UserIndex, ObjIndex) Then
-             PuedeUsarObjeto = 5
-             Msg = "Tu raza no puede utilizar este objeto."
-         ElseIf (Objeto.SkillIndex > 0) Then
-             If (.Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
-                 PuedeUsarObjeto = 4
-                 Msg = "Necesitas " & Objeto.SkillRequerido & " puntos en " & SkillsNames(Objeto.SkillIndex) & " para usar este item."
-                Else
-                 PuedeUsarObjeto = 0
-                 Msg = ""
-                End If
-            Else
-             PuedeUsarObjeto = 0
-             Msg = ""
+        If EsGM(UserIndex) Then
+            Msg = ""
+            Exit Function
+        End If
+
+        If Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
+            PuedeUsarObjeto = 7
+            Msg = "679"
+        End If
+
+        If .Stats.ELV < Objeto.MinELV Then
+            PuedeUsarObjeto = 6
+            Extra = Objeto.MinELV
+            Msg = "1926"
+        End If
+
+        If .Stats.ELV > Objeto.MaxLEV And Objeto.MaxLEV > 0 Then
+            PuedeUsarObjeto = 6
+            Extra = Objeto.MaxLEV
+            Msg = "1982"
+        End If
+
+        If Not FaccionPuedeUsarItem(UserIndex, ObjIndex) And JerarquiaPuedeUsarItem( _
+                UserIndex, ObjIndex) Then
+            PuedeUsarObjeto = 3
+            Msg = "416"
+        End If
+
+        If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+            PuedeUsarObjeto = 2
+            Msg = "265"
+        End If
+         
+        If Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
+            PuedeUsarObjeto = 1
+            Msg = "267"
+        End If
+
+        If Not RazaPuedeUsarItem(UserIndex, ObjIndex) Then
+            PuedeUsarObjeto = 5
+            Msg = "266"
+        End If
+
+        If (Objeto.SkillIndex > 0) Then
+            If (.Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
+                Extra = Objeto.SkillRequerido & "¬" & SkillsNames(Objeto.SkillIndex)
+                Msg = "Necesitas " & Objeto.SkillRequerido & " puntos en " & _
             End If
+        
+        If PuedeUsarObjeto = 0 Then
+        End If
+        
+            Call WriteLocaleMsg(UserIndex, Msg, e_FontTypeNames.FONTTYPE_INFO, Extra)
+        
     End With
-     If writeInConsole And Msg <> "" Then Call WriteConsoleMsg(UserIndex, Msg, e_FontTypeNames.FONTTYPE_INFO)
 
-        Exit Function
 
 PuedeUsarObjeto_Err:
-     Call TraceError(Err.Number, Err.Description, "ModLadder.PuedeUsarObjeto", Erl)
 
 End Function
 
