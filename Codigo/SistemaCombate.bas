@@ -870,6 +870,8 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer
             Exit Sub
         End If
 
+        Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
+
 102     If UserList(UserIndex).flags.invisible = 0 Then Call NPCAtacado(NpcIndex, UserIndex)
         Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
 104     If UserImpactoNpc(UserIndex, npcIndex, aType) Then
