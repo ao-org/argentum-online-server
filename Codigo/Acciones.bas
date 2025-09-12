@@ -27,13 +27,16 @@ Attribute VB_Name = "Acciones"
 '
 Option Explicit
 
-
 Public Function get_map_name(ByVal map As Long) As String
-On Error GoTo get_map_name_Err
-        get_map_name = MapInfo(map).map_name
-        Exit Function
+
+    On Error GoTo get_map_name_Err
+
+    get_map_name = MapInfo(Map).map_name
+
+    Exit Function
+
 get_map_name_Err:
-     Call TraceError(Err.Number, Err.Description, "ModLadder.get_map_name", Erl)
+    Call TraceError(Err.Number, Err.Description, "Acciones.get_map_name", Erl)
 End Function
 
 Function PuedeUsarObjeto(UserIndex As Integer, _
@@ -469,7 +472,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
         Exit Sub
 
 CompletarAccionFin_Err:
-     Call TraceError(Err.Number, Err.Description, "ModLadder.CompletarAccionFin", Erl)
+     Call TraceError(Err.Number, Err.Description, "Acciones.CompletarAccionFin", Erl)
 
         
 End Sub
