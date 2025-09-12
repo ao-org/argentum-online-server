@@ -1292,7 +1292,6 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
                 UserList(userindex).Counters.timeFx = 3
 110             Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageCreateFX(.Char.charindex, 106, 0, .Pos.X, .Pos.y))
 112             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_NIVEL, .Pos.X, .Pos.y))
-114             Call WriteLocaleMsg(UserIndex, "186", e_FontTypeNames.FONTTYPE_INFO)
             
 116             .Stats.Exp = .Stats.Exp - experienceToLevelUp
                 
@@ -1348,30 +1347,29 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 
         
                 'Notificamos al user
-154             If AumentoHP > 0 Then
-                    'Msg197= Has ganado " & AumentoHP & " puntos de vida.", e_FontTypeNames.FONTTYPE_INFO)
-156                 Call WriteLocaleMsg(UserIndex, "197", e_FontTypeNames.FONTTYPE_INFO, AumentoHP)
+                
+                'Msg186=¡Has subido al nivel ¬1!
+                Call WriteLocaleMsg(UserIndex, "186", e_FontTypeNames.FONTTYPE_INFO, .Stats.ELV)
 
+
+154             If AumentoHP > 0 Then
+                    'Msg197=Has ganado ¬1 puntos de vida. Tu vida actual es: ¬2
+156                 Call WriteLocaleMsg(UserIndex, "197", e_FontTypeNames.FONTTYPE_INFO, AumentoHP & "¬" & .Stats.MaxHp)
                 End If
 
 158             If AumentoSta > 0 Then
-                    'Msg198= Has ganado " & AumentoSTA & " puntos de vitalidad.", e_FontTypeNames.FONTTYPE_INFO)
-160                 Call WriteLocaleMsg(UserIndex, "198", e_FontTypeNames.FONTTYPE_INFO, AumentoSta)
-
+                    'Msg198=Has ganado ¬1 puntos de energía. Tu energía actual es: ¬2
+160                 Call WriteLocaleMsg(UserIndex, "198", e_FontTypeNames.FONTTYPE_INFO, AumentoSta & "¬" & .Stats.MaxSta)
                 End If
 
 162             If AumentoMANA > 0 Then
-164                 'Msg199= Has ganado " & AumentoMANA & " puntos de magia."
-                    Call WriteLocaleMsg(UserIndex, "199", e_FontTypeNames.FONTTYPE_INFO, AumentoMANA)
-
-                    
+164                 'Msg199=Has ganado ¬1 puntos de maná. Tu maná actual es: ¬2
+                    Call WriteLocaleMsg(UserIndex, "199", e_FontTypeNames.FONTTYPE_INFO, AumentoMANA & "¬" & .Stats.MaxMAN)
                 End If
 
 166             If AumentoHIT > 0 Then
-168                 Call WriteLocaleMsg(UserIndex, "200", e_FontTypeNames.FONTTYPE_INFO, AumentoHIT)
-
-'Msg1292= Tu golpe aumento en ¬1 puntos.
-Call WriteLocaleMsg(UserIndex, "1292", e_FontTypeNames.FONTTYPE_INFO, AumentoHIT)
+                    'Msg200=Tu golpe mínimo y máximo aumentaron en ¬1 puntos. Tus daños actuales son ¬2 / ¬3
+168                 Call WriteLocaleMsg(UserIndex, "200", e_FontTypeNames.FONTTYPE_INFO, AumentoHIT & "¬" & .Stats.MinHIT & "¬" & .Stats.MaxHit)
                 End If
 
 170             PasoDeNivel = True
@@ -1386,9 +1384,9 @@ Call WriteLocaleMsg(UserIndex, "1292", e_FontTypeNames.FONTTYPE_INFO, AumentoHIT
     
 178                     OroRecompenza = SvrConfig.GetValue("OroPorNivel") * .Stats.ELV * SvrConfig.GetValue("GoldMult")
 180                     .Stats.GLD = .Stats.GLD + OroRecompenza
-'Msg1293= Has ganado ¬1 monedas de oro.
-Call WriteLocaleMsg(UserIndex, "1293", e_FontTypeNames.FONTTYPE_INFO, OroRecompenza)
-182                     Call WriteLocaleMsg(UserIndex, "29", e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(OroRecompenza))
+
+                        'Msg1293= Has ganado ¬1 monedas de oro.
+                        Call WriteLocaleMsg(UserIndex, "1293", e_FontTypeNames.FONTTYPE_INFO, OroRecompenza)
                     End If
                 End If
             Loop
@@ -1401,13 +1399,11 @@ Call WriteLocaleMsg(UserIndex, "1293", e_FontTypeNames.FONTTYPE_INFO, OroRecompe
 194             Call WriteUpdateUserStats(UserIndex)
             
 196             If Pts > 0 Then
-                
 198                 .Stats.SkillPts = .Stats.SkillPts + Pts
 200                 Call WriteLevelUp(UserIndex, .Stats.SkillPts)
-202                 Call WriteLocaleMsg(UserIndex, "187", e_FontTypeNames.FONTTYPE_INFO, Pts)
 
-'Msg1294= Has ganado un total de ¬1 skillpoints.
-Call WriteLocaleMsg(UserIndex, "1294", e_FontTypeNames.FONTTYPE_INFO, Pts)
+                    'Msg187=¡Has ganado ¬1 skillpoints! Dispones de ¬2 puntos libres, se cuidadoso al momento de usarlos.
+202                 Call WriteLocaleMsg(UserIndex, "187", e_FontTypeNames.FONTTYPE_INFO, Pts & "¬" & .Stats.SkillPts)
                 End If
                 
                 If Not EsNewbie(UserIndex) And WasNewbie Then
