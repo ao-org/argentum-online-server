@@ -1494,7 +1494,6 @@ Public Type t_Char
     ShieldAnim As Integer
     CascoAnim As Integer
     CartAnim As Integer
-    BackpackAnim As Integer
     ParticulaFx As Integer
     FX As Integer
     loops As Integer
