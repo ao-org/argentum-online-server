@@ -56,7 +56,9 @@ Function PuedeUsarObjeto(UserIndex As Integer, _
      
         If EsGM(UserIndex) Then
             Msg = ""
+
             Exit Function
+
         End If
 
         If Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
@@ -99,20 +101,31 @@ Function PuedeUsarObjeto(UserIndex As Integer, _
 
         If (Objeto.SkillIndex > 0) Then
             If (.Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
-                Extra = Objeto.SkillRequerido & "¬" & SkillsNames(Objeto.SkillIndex)
+                CanUseItem = 4
                 Msg = "Necesitas " & Objeto.SkillRequerido & " puntos en " & _
+                        SkillsNames(Objeto.SkillIndex) & " para usar este item."
+                Call WriteConsoleMsg(UserIndex, Msg, e_FontTypeNames.FONTTYPE_INFO)
+
+                Exit Function
+
             End If
-        
-        If PuedeUsarObjeto = 0 Then
         End If
         
+        If CanUseItem = 0 Then
+
+            Exit Function
+
+        End If
+        
+        If Msg <> "" And writeInConsole Then
             Call WriteLocaleMsg(UserIndex, Msg, e_FontTypeNames.FONTTYPE_INFO, Extra)
+        End If
         
     End With
 
+    Exit Function
 
-PuedeUsarObjeto_Err:
-
+    Call TraceError(Err.Number, Err.Description, "Acciones.CanUseItem", Erl)
 End Function
 
 
