@@ -256,7 +256,7 @@ Private Sub TransformChacter()
             .flags.ActiveTransform = NpcId
             Dim CantidadAnimaciones As Integer
 144         CantidadAnimaciones = val(LeerNPCs.GetValue(NpcIndex, "Animaciones"))
-128         Call ChangeUserChar(DotInfo.TargetRef.ArrayIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
+128         Call ChangeUserChar(DotInfo.TargetRef.ArrayIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
             Call SetMask(.flags.StatusMask, StatusMask)
 130         Call RefreshCharStatus(DotInfo.TargetRef.ArrayIndex)
         End With
