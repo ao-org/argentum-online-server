@@ -134,6 +134,7 @@ Public Type t_PersonajeCuenta
     Escudo As Integer
     Casco As Integer
     ClanIndex As Integer
+    Backpack As Integer
 
 End Type
 
@@ -1000,43 +1001,63 @@ HandleCreateAccount_Err:
 End Sub
 
 Private Sub HandleLoginAccount(ByVal ConnectionId As Long)
-    On Error GoTo LoginAccount_Err:
-    
-    Dim username As String
-    Dim Password As String
-    username = Reader.ReadString8
-    Password = Reader.ReadString8
-    Dim UserIndex As Integer
-    UserIndex = MapConnectionToUser(ConnectionId)
-    If UserIndex < 1 Then
-        Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("No hay slot disponibles para el usuario."))
-        Call KickConnection(ConnectionId)
-        Exit Sub
-    End If
-    If (username = "" Or Password = "" Or LenB(Password) <= 3) Then
-        Call WriteErrorMsg(userindex, "Parametros incorrectos")
-        Call CloseSocket(userindex)
-        Exit Sub
-    End If
 
-    Dim result As ADODB.Recordset
-    Set result = Query("SELECT * FROM account WHERE UPPER(email)=UPPER(?) AND password=?", username, Password)
+        On Error GoTo LoginAccount_Err:
     
-    If (result.EOF) Then
-        Call WriteErrorMsg(UserIndex, "Usuario o Contraseña erronea.")
-        Call CloseSocket(userindex)
-        Exit Sub
-    End If
+        Dim username As String
+
+        Dim Password As String
+
+        username = reader.ReadString8
+        Password = reader.ReadString8
+
+        Dim UserIndex As Integer
+
+        UserIndex = MapConnectionToUser(ConnectionID)
+
+        If UserIndex < 1 Then
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox( _
+                    "No hay slot disponibles para el usuario."))
+            Call KickConnection(ConnectionID)
+
+            Exit Sub
+
+        End If
+
+        If (username = "" Or Password = "" Or LenB(Password) <= 3) Then
+            Call WriteErrorMsg(UserIndex, "Parametros incorrectos")
+            Call CloseSocket(UserIndex)
+
+            Exit Sub
+
+        End If
+
+        Dim Result As ADODB.Recordset
+
+        Set Result = Query( _
+                "SELECT * FROM account WHERE UPPER(email)=UPPER(?) AND password=?", _
+                username, Password)
+    
+        If (Result.EOF) Then
+            Call WriteErrorMsg(UserIndex, "Usuario o Contraseña erronea.")
+            Call CloseSocket(UserIndex)
+
+            Exit Sub
+
+        End If
         
-    UserList(userindex).AccountID = result!ID
+        UserList(UserIndex).AccountID = Result!Id
     
-    Dim Personajes(1 To 10) As t_PersonajeCuenta
-    Dim Count As Long
-    Count = GetPersonajesCuentaDatabase(result!ID, Personajes)
-    
-    Call WriteAccountCharacterList(userindex, Personajes, Count)
+        Dim Personajes(1 To 10) As t_PersonajeCuenta
 
-    Exit Sub
+        Dim count               As Long
+
+        count = GetPersonajesCuentaDatabase(Result!Id, Personajes)
+    
+        Call WriteAccountCharacterList(UserIndex, Personajes, count)
+
+        Exit Sub
+
 LoginAccount_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginAccount", Erl)
 End Sub

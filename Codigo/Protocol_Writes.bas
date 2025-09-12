@@ -69,6 +69,7 @@ Public Sub WriteAccountCharacterList(ByVal UserIndex As Integer, ByRef Personaje
                 Call Writer.WriteInt(.Casco)
                 Call Writer.WriteInt(.Escudo)
                 Call Writer.WriteInt(.Arma)
+                Call Writer.WriteInt(.Backpack)
             End With
         Next i
 
