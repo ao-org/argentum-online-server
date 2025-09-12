@@ -295,8 +295,8 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                             Dim barca As t_ObjData
 
-                         barca = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
-                         Call DoNavega(UserIndex, barca, UserList(UserIndex).Invent.BarcoSlot)
+                         barca = ObjData(UserList(UserIndex).Invent.EquippedShipObjIndex)
+                         Call DoNavega(UserIndex, barca, UserList(UserIndex).Invent.EquippedShipSlot)
 
                         End If
                 
@@ -970,22 +970,21 @@ Sub Accion(ByVal UserIndex As Integer, _
         
             Select Case ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).OBJType
             
-                Case e_OBJType.otPuertas 'Es una puerta
-                    Call AccionParaPuerta(Map, x, y, UserIndex)
+                    Case e_OBJType.otDoors 'Es una puerta
+340                     Call AccionParaPuerta(Map, X, Y, UserIndex)
 
-                Case e_OBJType.otCarteles 'Es un cartel
-                    Call AccionParaCartel(Map, x, y, UserIndex)
+342                 Case e_OBJType.otSignBoards 'Es un cartel
+344                     Call AccionParaCartel(Map, X, Y, UserIndex)
 
-                Case e_OBJType.OtCorreo 'Es un cartel
-                    'Call AccionParaCorreo(Map, x, Y, UserIndex)
-                    ' Msg586=El correo está temporalmente deshabilitado.
-                    Call WriteLocaleMsg(UserIndex, "586", _
-                            e_FontTypeNames.FONTTYPE_EJECUCION)
+346                 Case e_OBJType.otMail 'Es un cartel
+                        'Call AccionParaCorreo(Map, x, Y, UserIndex)
+                        ' Msg586=El correo está temporalmente deshabilitado.
+                        Call WriteLocaleMsg(UserIndex, "586", e_FontTypeNames.FONTTYPE_EJECUCION)
 
-                Case e_OBJType.otYunque 'Pozos
-                    Call AccionParaYunque(Map, x, y, UserIndex)
+356                 Case e_OBJType.otAnvil 'Pozos
+358                     Call AccionParaYunque(Map, X, Y, UserIndex)
 
-                Case e_OBJType.otLeña    'Leña
+360                 Case e_OBJType.otWood    'Leña
 
                     If MapData(Map, x, y).ObjInfo.ObjIndex = FOGATA_APAG And UserList( _
                             UserIndex).flags.Muerto = 0 Then
@@ -1003,10 +1002,10 @@ Sub Accion(ByVal UserIndex As Integer, _
         ElseIf MapData(Map, x + 1, y).ObjInfo.ObjIndex > 0 Then
             UserList(UserIndex).flags.TargetObj = MapData(Map, x + 1, y).ObjInfo.ObjIndex
         
-            Select Case ObjData(MapData(Map, x + 1, y).ObjInfo.ObjIndex).OBJType
-            
-                Case e_OBJType.otPuertas 'Es una puerta
-                    Call AccionParaPuerta(Map, x + 1, y, UserIndex)
+            Select Case ObjData(MapData(Map, x + 1, y).ObjInfo.ObjIndex).OBJType      
+                    Case e_OBJType.otDoors 'Es una puerta
+372                     Call AccionParaPuerta(Map, X + 1, Y, UserIndex)
+
             
             End Select
 
@@ -1016,8 +1015,8 @@ Sub Accion(ByVal UserIndex As Integer, _
 
             Select Case ObjData(MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex).OBJType
             
-                Case e_OBJType.otPuertas 'Es una puerta
-                    Call AccionParaPuerta(Map, x + 1, y + 1, UserIndex)
+                    Case e_OBJType.otDoors 'Es una puerta
+380                     Call AccionParaPuerta(Map, X + 1, Y + 1, UserIndex)
             
             End Select
 
@@ -1026,8 +1025,8 @@ Sub Accion(ByVal UserIndex As Integer, _
 
             Select Case ObjData(MapData(Map, x, y + 1).ObjInfo.ObjIndex).OBJType
             
-                Case e_OBJType.otPuertas 'Es una puerta
-                    Call AccionParaPuerta(Map, x, y + 1, UserIndex)
+                    Case e_OBJType.otDoors 'Es una puerta
+388                     Call AccionParaPuerta(Map, X, Y + 1, UserIndex)
 
             End Select
 
@@ -1063,7 +1062,7 @@ Sub AccionParaYunque(ByVal Map As Integer, _
 
         End If
     
-110     If UserList(UserIndex).Invent.HerramientaEqpObjIndex = 0 Then
+110     If UserList(UserIndex).Invent.EquippedWorkingToolObjIndex = 0 Then
             'Msg1071= Debes tener equipado un martillo de herrero para trabajar con el yunque.
             Call WriteLocaleMsg(UserIndex, "1071", e_FontTypeNames.FONTTYPE_INFO)
 
@@ -1071,7 +1070,7 @@ Sub AccionParaYunque(ByVal Map As Integer, _
 
         End If
         
-114     If ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo <> 7 Then
+114     If ObjData(UserList(UserIndex).Invent.EquippedWorkingToolObjIndex).Subtipo <> 7 Then
             'Msg1072= La herramienta que tienes no es la correcta, necesitas un martillo de herrero para poder trabajar.
             Call WriteLocaleMsg(UserIndex, "1072", e_FontTypeNames.FONTTYPE_INFO)
 

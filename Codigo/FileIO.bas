@@ -1401,18 +1401,18 @@ Sub LoadOBJData()
 
 162             Select Case .OBJType
 
-                    Case e_OBJType.otHerramientas
+                    Case e_OBJType.otWorkingTools
 164                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
 166                     .Power = val(Leer.GetValue(ObjKey, "Power"))
             
-168                 Case e_OBJType.otArmadura
+168                 Case e_OBJType.otArmor
 170                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 172                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
 173                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
 174                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
 176                     .Invernal = val(Leer.GetValue(ObjKey, "Invernal")) > 0
         
-178                 Case e_OBJType.otEscudo
+178                 Case e_OBJType.otShield
 180                     .ShieldAnim = val(Leer.GetValue(ObjKey, "Anim"))
 182                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 184                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
@@ -1420,12 +1420,15 @@ Sub LoadOBJData()
 186                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
                         .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
         
-188                 Case e_OBJType.otCasco
+188                 Case e_OBJType.otHelmet
 190                     .CascoAnim = val(Leer.GetValue(ObjKey, "Anim"))
 192                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 194                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
 195                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
 196                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+
+                    Case e_OBJType.otBackpack
+                        '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
         
 198                 Case e_OBJType.otWeapon
 200                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
@@ -1452,19 +1455,19 @@ Sub LoadOBJData()
                         .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
                         .WeaponType = val(Leer.GetValue(ObjKey, "WeaponType"))
                         
-236                 Case e_OBJType.otInstrumentos
+236                 Case e_OBJType.otMusicalInstruments
         
                         'Pablo (ToxicWaste)
 238                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 240                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
 241                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
         
-242                 Case e_OBJType.otPuertas, e_OBJType.otBotellaVacia, e_OBJType.otBotellaLlena
+242                 Case e_OBJType.otDoors, e_OBJType.otEmptyBottle, e_OBJType.otFullBottle
 244                     .IndexAbierta = val(Leer.GetValue(ObjKey, "IndexAbierta"))
 246                     .IndexCerrada = val(Leer.GetValue(ObjKey, "IndexCerrada"))
 248                     .IndexCerradaLlave = val(Leer.GetValue(ObjKey, "IndexCerradaLlave"))
         
-250                 Case otPociones
+250                 Case otPotions
 252                     .TipoPocion = val(Leer.GetValue(ObjKey, "TipoPocion"))
 254                     .MaxModificador = val(Leer.GetValue(ObjKey, "MaxModificador"))
 256                     .MinModificador = val(Leer.GetValue(ObjKey, "MinModificador"))
@@ -1494,12 +1497,12 @@ Sub LoadOBJData()
 262                     .SkPociones = val(Leer.GetValue(ObjKey, "SkPociones"))
 264                     .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
         
-266                 Case e_OBJType.otBarcos
+266                 Case e_OBJType.otShips
 268                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
 270                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
 272                     .velocidad = val(Leer.GetValue(ObjKey, "Velocidad"))
 
-274                 Case e_OBJType.otMonturas
+274                 Case e_OBJType.otSaddles
 276                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
 278                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
 280                     .MinDef = val(Leer.GetValue(ObjKey, "MINDEF"))
@@ -1509,7 +1512,7 @@ Sub LoadOBJData()
 287                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
 288                     .velocidad = val(Leer.GetValue(ObjKey, "Velocidad"))
         
-290                 Case e_OBJType.otFlechas
+290                 Case e_OBJType.otArrows
 292                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
 294                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
 296                     .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
@@ -1523,19 +1526,19 @@ Sub LoadOBJData()
 310                     .Snd2 = val(Leer.GetValue(ObjKey, "SND2"))
             
                         'Pasajes Ladder 05-05-08
-312                 Case e_OBJType.otpasajes
+312                 Case e_OBJType.otPassageTicket
 314                     .DesdeMap = val(Leer.GetValue(ObjKey, "DesdeMap"))
 316                     .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
 318                     .HastaX = val(Leer.GetValue(ObjKey, "X"))
 320                     .HastaY = val(Leer.GetValue(ObjKey, "Y"))
 322                     .NecesitaNave = val(Leer.GetValue(ObjKey, "NecesitaNave"))
-324                 Case e_OBJType.OtDonador
+324                 Case e_OBJType.otDonator
 326                     .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
 328                     .HastaX = val(Leer.GetValue(ObjKey, "X"))
 330                     .HastaY = val(Leer.GetValue(ObjKey, "Y"))
                     Case e_OBJType.OtQuest
                         .QuestId = val(Leer.GetValue(ObjKey, "QuestID"))
-332                 Case e_OBJType.otMagicos
+332                 Case e_OBJType.otAmulets
 334                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
                         .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
 336                     If .EfectoMagico = 15 Then
@@ -1545,7 +1548,7 @@ Sub LoadOBJData()
                             .MaxItems = val(Leer.GetValue(ObjKey, "Peces"))
                         End If
             
-340                 Case e_OBJType.otRunas
+340                 Case e_OBJType.otRecallStones
 342                     .TipoRuna = val(Leer.GetValue(ObjKey, "TipoRuna"))
 344                     .DesdeMap = val(Leer.GetValue(ObjKey, "DesdeMap"))
 346                     .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
@@ -1555,7 +1558,7 @@ Sub LoadOBJData()
 370                 Case e_OBJType.otTeleport
                         .Radio = val(Leer.GetValue(ObjKey, "Radio"))
                         
-372                 Case e_OBJType.OtCofre
+372                 Case e_OBJType.otChest
 374                     .CantItem = val(Leer.GetValue(ObjKey, "CantItem"))
 
 376                     Select Case .Subtipo
@@ -1588,7 +1591,7 @@ Sub LoadOBJData()
 
                         End Select
             
-400                 Case e_OBJType.otYacimiento
+400                 Case e_OBJType.otOreDeposit
 402                     .MineralIndex = val(Leer.GetValue(ObjKey, "MineralIndex"))
                         ' Drop gemas yacimientos
 404                     .CantItem = val(Leer.GetValue(ObjKey, "Gemas"))
@@ -1609,14 +1612,14 @@ Sub LoadOBJData()
                         .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
                         .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
                 
-422                 Case e_OBJType.otDañoMagico
+422                 Case e_OBJType.otAmulets
 
 426                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
 
-428                 Case e_OBJType.otResistencia
+428                 Case e_OBJType.otRingAccesory
 430                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
 
-432                 Case e_OBJType.otMinerales
+432                 Case e_OBJType.otMinerals
 434                     .LingoteIndex = val(Leer.GetValue(ObjKey, "LingoteIndex"))
                     Case e_OBJType.otUsableOntarget
                         .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
@@ -2174,7 +2177,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 262                 MapData(map, Objetos(i).x, Objetos(i).y).ObjInfo.objIndex = Objetos(i).objIndex
                     With ObjData(Objetos(i).objIndex)
 264                 Select Case .OBJType
-                        Case e_OBJType.otYacimiento, e_OBJType.otArboles
+                        Case e_OBJType.otOreDeposit, e_OBJType.otTrees
 266                         MapData(map, Objetos(i).x, Objetos(i).y).ObjInfo.amount = ObjData(Objetos(i).objIndex).VidaUtil
 268                         MapData(map, Objetos(i).x, Objetos(i).y).ObjInfo.Data = &H7FFFFFFF ' Ultimo uso = Max Long
 270                     Case Else

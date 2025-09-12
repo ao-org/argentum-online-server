@@ -108,7 +108,7 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
 110             LlaveObj = ObjData(.Keys(Slot))
 
                 '¿El objeto clickeado es una puerta?
-112             If TargObj.OBJType = e_OBJType.otPuertas Then
+112             If TargObj.OBJType = e_OBJType.otDoors Then
 
                     '¿Esta cerrada?
 114                 If TargObj.Cerrada = 1 Then
