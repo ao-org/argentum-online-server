@@ -582,14 +582,14 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
 
             'Si lanza a un npc y este es solo atacable para clanes y el usuario no tiene clan, le avisa y sale de la funcion
             If IsValidNpcRef(.flags.TargetNPC) Then
-                If NpcList(.flags.TargetNPC.ArrayIndex).OnlyForGuilds = 1 And UserList(UserIndex).GuildIndex <= 0 Then
+                If NpcList(.flags.TargetNPC.ArrayIndex).OnlyForGuilds = 1 And .GuildIndex <= 0 Then
                     'Msg2001=Debes pertenecer a un clan para atacar a este NPC
                     Call WriteLocaleMsg(UserIndex, "2001", e_FontTypeNames.FONTTYPE_WARNING)
                     Exit Function
                 End If
             End If
 
-104         If UserList(UserIndex).flags.EnConsulta Then
+104         If .flags.EnConsulta Then
 'Msg778= No puedes lanzar hechizos si estas en consulta.
 Call WriteLocaleMsg(UserIndex, "778", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
@@ -611,9 +611,9 @@ Call WriteLocaleMsg(UserIndex, "778", e_FontTypeNames.FONTTYPE_INFO)
             
             If IsSet(Hechizos(HechizoIndex).Effects, e_SpellEffects.CancelActiveEffect) And _
                 Hechizos(HechizoIndex).EotId > 0 And _
-                IsValidUserRef(UserList(UserIndex).flags.targetUser) Then
+                IsValidUserRef(.flags.targetUser) Then
                 Dim Effect As IBaseEffectOverTime
-                Set Effect = FindEffectOnTarget(UserIndex, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).EffectOverTime, Hechizos(HechizoIndex).EotId)
+                Set Effect = FindEffectOnTarget(UserIndex, UserList(.flags.targetUser.ArrayIndex).EffectOverTime, Hechizos(HechizoIndex).EotId)
                 If Not Effect Is Nothing Then
                     If Effect.EotId = Hechizos(HechizoIndex).EotId Then
                         Effect.RemoveMe = True
@@ -664,7 +664,7 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
                 End If
                 If Hechizos(HechizoIndex).TargetEffectType = e_TargetEffectType.eNegative Then
                     Dim UserAttackInteractionResultUser As e_AttackInteractionResult
-                    UserAttackInteractionResultUser = UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, .flags.TargetUser.ArrayIndex, .flags.TargetUser.VersionId)
+                    UserAttackInteractionResultUser = UserMod.CanAttackUser(UserIndex, .VersionId, .flags.TargetUser.ArrayIndex, .flags.TargetUser.VersionId)
                     If UserAttackInteractionResultUser <> e_AttackInteractionResult.eCanAttack Then
                         Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResultUser)
                         Exit Function
@@ -695,6 +695,17 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
 130             Actual = GetTickCount()
                 Dim Cooldown As Long
                 Cooldown = Hechizos(HechizoIndex).Cooldown
+
+
+                'cooldown reduction for Elven Wood items
+                If .EquippedWeaponObjIndex > 0 And ObjData(EquippedWeaponObjIndex).MaderaElfica > 0 Then
+                    Cooldown = Cooldown/2
+                End If
+
+                If .EquippedRingAccesoryObjIndex > 0 And ObjData(EquippedRingAccesoryObjIndex).MaderaElfica > 0 Then
+                    Cooldown = Cooldown/2
+                End If
+
                 Cooldown = Cooldown * 1000
 132             If .Counters.UserHechizosInterval(Slot) + Cooldown > Actual Then
 134                 SegundosFaltantes = Int((.Counters.UserHechizosInterval(Slot) + Cooldown - Actual) / 1000)
