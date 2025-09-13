@@ -811,43 +811,51 @@ Public Function NpcPerformAttackNpc(ByVal AttackerIndex As Integer, ByVal Target
 End Function
 
 Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Optional ByVal cambiarMovimiento As Boolean = True)
-        
-        On Error GoTo NpcAtacaNpc_Err
-        
-100     If Not IntervaloPermiteAtacarNPC(Atacante) Then Exit Sub
-        Dim Heading As e_Heading
-102     Heading = GetHeadingFromWorldPos(NpcList(Atacante).Pos, NpcList(Victima).Pos)
-        If Heading <> NpcList(Atacante).Char.Heading And NpcList(Atacante).flags.Inmovilizado = 1 Then
+    On Error GoTo NpcAtacaNpc_Err
+
+100 If Not IntervaloPermiteAtacarNPC(Atacante) Then Exit Sub
+
+    Dim Heading As e_Heading
+
+    ' Determina hacia dónde debe mirar el atacante
+102 Heading = GetHeadingFromWorldPos(NpcList(Atacante).pos, NpcList(Victima).pos)
+
+    ' Si no está mirando y está paralizado, no puede girar ni atacar
+    If Heading <> NpcList(Atacante).Char.Heading Then
+        If NpcList(Atacante).flags.Paralizado = 1 Then
             Call ClearNpcRef(NpcList(Atacante).TargetNPC)
             Call SetMovement(Atacante, e_TipoAI.MueveAlAzar)
             Exit Sub
         End If
+    End If
 
-104     Call ChangeNPCChar(Atacante, NpcList(Atacante).Char.Body, NpcList(Atacante).Char.Head, Heading)
-103     Heading = GetHeadingFromWorldPos(NpcList(Victima).Pos, NpcList(Atacante).Pos)
-        If Heading <> NpcList(Victima).Char.Heading Then
-            If NpcList(Victima).flags.Inmovilizado > 0 Then
-                cambiarMovimiento = False
-            End If
-        End If
-        
-106     If cambiarMovimiento Then
-108         Call SetNpcRef(NpcList(Victima).TargetNPC, Atacante)
-110         Call SetMovement(Victima, e_TipoAI.NpcAtacaNpc)
-        End If
+    ' Si puede girar, lo hace
+104 Call ChangeNPCChar(Atacante, NpcList(Atacante).Char.body, NpcList(Atacante).Char.head, Heading)
 
-112     If NpcList(Atacante).flags.Snd1 > 0 Then
-114         Call SendData(SendTarget.ToNPCAliveArea, Atacante, PrepareMessagePlayWave(NpcList(Atacante).flags.Snd1, NpcList(Atacante).Pos.X, NpcList(Atacante).Pos.y))
+    ' La víctima podría reaccionar
+103 Heading = GetHeadingFromWorldPos(NpcList(Victima).pos, NpcList(Atacante).pos)
+    If Heading <> NpcList(Victima).Char.Heading Then
+        If NpcList(Victima).flags.Paralizado = 1 Then
+            cambiarMovimiento = False ' Si está paralizado, no puede reaccionar
         End If
+    End If
 
-        Call NpcPerformAttackNpc(Atacante, Victima)
-        
-        Exit Sub
+106 If cambiarMovimiento Then
+108     Call SetNpcRef(NpcList(Victima).TargetNPC, Atacante)
+110     Call SetMovement(Victima, e_TipoAI.NpcAtacaNpc)
+    End If
+
+112 If NpcList(Atacante).flags.Snd1 > 0 Then
+114     Call SendData(SendTarget.ToNPCAliveArea, Atacante, PrepareMessagePlayWave(NpcList(Atacante).flags.Snd1, NpcList(Atacante).pos.x, NpcList(Atacante).pos.y))
+    End If
+
+    ' Ejecuta el ataque real
+    Call NpcPerformAttackNpc(Atacante, Victima)
+
+    Exit Sub
 
 NpcAtacaNpc_Err:
-130     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaNpc", Erl)
-
-        
+130 Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaNpc", Erl)
 End Sub
 
 Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal aType As AttackType)
