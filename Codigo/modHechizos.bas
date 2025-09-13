@@ -698,14 +698,19 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
 
 
                 'cooldown reduction for Elven Wood items
-                If .invent.EquippedWeaponObjIndex > 0 And ObjData(.invent.EquippedWeaponObjIndex).MaderaElfica > 0 Then
-                    Cooldown = Cooldown / 2
+                If .invent.EquippedWeaponObjIndex > 0 Then
+                    If ObjData(.invent.EquippedWeaponObjIndex).MaderaElfica > 0 Then
+                        Cooldown = Cooldown / 2
+                    End If
                 End If
-
-                If .invent.EquippedRingAccesoryObjIndex > 0 And ObjData(.invent.EquippedRingAccesoryObjIndex).MaderaElfica > 0 Then
-                    Cooldown = Cooldown / 2
+                
+                
+                If .invent.EquippedRingAccesoryObjIndex > 0 Then
+                    If ObjData(.invent.EquippedRingAccesoryObjIndex).MaderaElfica > 0 Then
+                        Cooldown = Cooldown / 2
+                    End If
                 End If
-
+                
                 Cooldown = Cooldown * 1000
 132             If .Counters.UserHechizosInterval(Slot) + Cooldown > Actual Then
 134                 SegundosFaltantes = Int((.Counters.UserHechizosInterval(Slot) + Cooldown - Actual) / 1000)
