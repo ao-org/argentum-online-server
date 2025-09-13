@@ -698,12 +698,12 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
 
 
                 'cooldown reduction for Elven Wood items
-                If .EquippedWeaponObjIndex > 0 And ObjData(EquippedWeaponObjIndex).MaderaElfica > 0 Then
-                    Cooldown = Cooldown/2
+                If .invent.EquippedWeaponObjIndex > 0 And ObjData(.invent.EquippedWeaponObjIndex).MaderaElfica > 0 Then
+                    Cooldown = Cooldown / 2
                 End If
 
-                If .EquippedRingAccesoryObjIndex > 0 And ObjData(EquippedRingAccesoryObjIndex).MaderaElfica > 0 Then
-                    Cooldown = Cooldown/2
+                If .invent.EquippedRingAccesoryObjIndex > 0 And ObjData(.invent.EquippedRingAccesoryObjIndex).MaderaElfica > 0 Then
+                    Cooldown = Cooldown / 2
                 End If
 
                 Cooldown = Cooldown * 1000
