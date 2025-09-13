@@ -180,6 +180,10 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
         End If
         
+        If NpcList(NpcIndex).ShowKillerConsole > 0 Then
+            'Msg1986=¬1 ha muerto en manos de ¬2
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1986", NpcList(NpcIndex).name & "¬" & UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_GLOBAL))
+        End If
       
 
         'Quitamos el npc
@@ -1369,6 +1373,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 210         .QuizaProb = val(Leer.GetValue("NPC" & NpcNumber, "QuizaProb"))
             .MinTameLevel = val(Leer.GetValue("NPC" & NpcNumber, "MinTameLevel", 1))
             .OnlyForGuilds = val(Leer.GetValue("NPC" & NpcNumber, "OnlyForGuilds", 0))
+            .ShowKillerConsole = val(Leer.GetValue("NPC" & NpcNumber, "ShowKillerConsole", 0))
         
 214         If .IntervaloMovimiento = 0 Then
 216             .IntervaloMovimiento = 380

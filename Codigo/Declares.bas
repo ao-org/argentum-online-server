@@ -2928,6 +2928,7 @@ Public Type t_Npc
     QuizaProb As Integer
     MinTameLevel As Byte
     OnlyForGuilds As Byte
+    ShowKillerConsole As Byte
         
     NumDestinos As Byte
     Dest() As String
