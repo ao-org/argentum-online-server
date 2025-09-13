@@ -751,7 +751,7 @@ Public Function GetUserGuildMemberDatabase(username As String) As String
         user_id = GetCharacterIdWithName(username)
         Dim RS As ADODB.Recordset
         Dim History As String
-100     Set RS = Query("SELECT guild_name FROM guild_member_history where user_id = ? order by request_time DESC", user_id)
+100     Set RS = Query("SELECT DISTINCT guild_name FROM guild_member_history where user_id = ? order by request_time DESC", user_id)
 102     If RS Is Nothing Then Exit Function
 104     If Not RS.RecordCount = 0 Then
             Dim i As Integer
@@ -794,7 +794,7 @@ Public Function GetUserGuildPedidosDatabase(username As String) As String
         user_id = GetCharacterIdWithName(username)
         Dim RS As ADODB.Recordset
         Dim History As String
-100     Set RS = Query("SELECT guild_name FROM guild_request_history where user_id = ? order by request_time DESC", user_id)
+100     Set RS = Query("SELECT DISTINCT guild_name FROM guild_request_history where user_id = ? order by request_time DESC", user_id)
 102     If RS Is Nothing Then Exit Function
 104     If Not RS.RecordCount = 0 Then
             Dim i As Integer
