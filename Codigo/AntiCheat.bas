@@ -169,7 +169,7 @@ Public Sub ClientActionRequired(ByRef UserRef As t_UserReference, ByVal Action A
         ReasonStr = GetStringFromPtr(ReasonString.Ptr, ReasonString.Len)
     End If
     If Action = eEOS_ACCCA_RemovePlayer And IsValidUserRef(UserRef) Then
-        Call modNetwork.Kick(UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID, ReasonStr)
+        'Call modNetwork.Kick(UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID, ReasonStr)
     End If
 End Sub
 
