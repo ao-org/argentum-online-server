@@ -51,7 +51,7 @@ Private Function PuedeUsarObjeto(ByVal UserIndex As Integer, _
 
     Dim Extra  As String
 
-    Dim i As Long
+    Dim i      As Long
 
     Extra = vbNullString
     Objeto = ObjData(ObjIndex)
@@ -109,12 +109,9 @@ Private Function PuedeUsarObjeto(ByVal UserIndex As Integer, _
 
         ' Only emit when we actually have a message
         If Msg <> vbNullString Then
-            Call WriteLocaleMsg(UserIndex, Msg, e_FontTypeNames.FONTTYPE_INFO, Extra)
-
-            ' If you still want console echo, prefer localized:
-            ' Call WriteLocaleConsole(UserIndex, Msg, Extra, e_FontTypeNames.FONTTYPE_INFO)
-            If writeInConsole Then Call WriteConsoleMsg(UserIndex, ResolveLocale(Msg, _
-                    Extra), e_FontTypeNames.FONTTYPE_INFO)
+            If writeInConsole Then
+                Call WriteLocaleMsg(UserIndex, Msg, e_FontTypeNames.FONTTYPE_INFO, Extra)
+            End If
         End If
 
     End With
