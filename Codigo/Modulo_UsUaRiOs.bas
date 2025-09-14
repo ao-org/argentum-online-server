@@ -865,7 +865,7 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal AttackerIndex As Integer)
 110         Call CheckUserLevel(AttackerIndex)
         End If
     
-112     Call WriteLocaleMsg(AttackerIndex, "184", e_FontTypeNames.FONTTYPE_FIGHT, UserList(VictimIndex).Name)
+112     Call WriteLocaleMsg(AttackerIndex, "76", e_FontTypeNames.FONTTYPE_FIGHT, UserList(VictimIndex).Name)
 114     Call WriteLocaleMsg(AttackerIndex, "140", e_FontTypeNames.FONTTYPE_EXP, DaExp)
 116     Call WriteLocaleMsg(VictimIndex, "185", e_FontTypeNames.FONTTYPE_FIGHT, UserList(AttackerIndex).Name)
     
