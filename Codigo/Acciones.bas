@@ -39,94 +39,88 @@ get_map_name_Err:
     Call TraceError(Err.Number, Err.Description, "Acciones.get_map_name", Erl)
 End Function
 
-Function PuedeUsarObjeto(UserIndex As Integer, _
-                         ByVal ObjIndex As Integer, _
-                         Optional ByVal writeInConsole As Boolean = False) As Byte
+Private Function PuedeUsarObjeto(ByVal UserIndex As Integer, _
+                                 ByVal ObjIndex As Integer, _
+                                 Optional ByVal writeInConsole As Boolean = False) As Byte
 
     On Error GoTo PuedeUsarObjeto_Err
 
     Dim Objeto As t_ObjData
 
-    Dim Msg    As String, i As Long
+    Dim Msg    As String
 
     Dim Extra  As String
 
+    Dim i As Long
+
+    Extra = vbNullString
     Objeto = ObjData(ObjIndex)
-    
-    PuedeUsarObjeto = 0
-                
+
     With UserList(UserIndex)
-     
+
         If EsGM(UserIndex) Then
-            Msg = ""
+            PuedeUsarObjeto = 0
+            Msg = vbNullString
 
             Exit Function
 
         End If
 
+        ' Keep the original priority: first match wins
         If Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
             PuedeUsarObjeto = 7
-            Msg = "679"
-        End If
-
-        If .Stats.ELV < Objeto.MinELV Then
+            Msg = "679" ' Only newbies can use this item.
+        ElseIf .Stats.ELV < Objeto.MinELV Then
             PuedeUsarObjeto = 6
-            Extra = Objeto.MinELV
-            Msg = "1926"
-        End If
-
-        If .Stats.ELV > Objeto.MaxLEV And Objeto.MaxLEV > 0 Then
+            Msg = "1926" ' Need level {0}
+            Extra = CStr(Objeto.MinELV)
+        ElseIf .Stats.ELV > Objeto.MaxLEV And Objeto.MaxLEV > 0 Then
             PuedeUsarObjeto = 6
-            Extra = Objeto.MaxLEV
-            Msg = "1982"
-        End If
-
-        If Not FaccionPuedeUsarItem(UserIndex, ObjIndex) And JerarquiaPuedeUsarItem( _
+            Msg = "1982" ' Not for level {0} or higher
+            Extra = CStr(Objeto.MaxLEV)
+        ElseIf Not FaccionPuedeUsarItem(UserIndex, ObjIndex) And JerarquiaPuedeUsarItem( _
                 UserIndex, ObjIndex) Then
             PuedeUsarObjeto = 3
-            Msg = "416"
-        End If
-
-        If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+            Msg = "416"  ' Faction doesn't allow it.
+        ElseIf Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
             PuedeUsarObjeto = 2
-            Msg = "265"
-        End If
-         
-        If Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
+            Msg = "265"  ' Class cannot use this item.
+        ElseIf Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
             PuedeUsarObjeto = 1
-            Msg = "267"
-        End If
-
-        If Not RazaPuedeUsarItem(UserIndex, ObjIndex) Then
+            Msg = "267"  ' Sex cannot use this item.
+        ElseIf Not RazaPuedeUsarItem(UserIndex, ObjIndex) Then
             PuedeUsarObjeto = 5
-            Msg = "266"
-        End If
+            Msg = "266"  ' Race cannot use this item.
+        ElseIf (Objeto.SkillIndex > 0) Then
 
-        If (Objeto.SkillIndex > 0) Then
             If (.Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
                 PuedeUsarObjeto = 4
-                Msg = "Necesitas " & Objeto.SkillRequerido & " puntos en " & _
-                        SkillsNames(Objeto.SkillIndex) & " para usar este item."
-                Call WriteConsoleMsg(UserIndex, Msg, e_FontTypeNames.FONTTYPE_INFO)
-
-                Exit Function
-
+                Msg = "NEED_SKILL_POINTS" ' e.g. "Necesitas {0} puntos en {1}..."
+                Extra = CStr(Objeto.SkillRequerido) & "¬" & SkillsNames(Objeto.SkillIndex)
+            Else
+                PuedeUsarObjeto = 0
+                Msg = vbNullString
             End If
-        End If
-        
-        If PuedeUsarObjeto = 0 Then
 
-            Exit Function
-
+        Else
+            PuedeUsarObjeto = 0
+            Msg = vbNullString
         End If
-        
-        If Msg <> "" And writeInConsole Then
+
+        ' Only emit when we actually have a message
+        If Msg <> vbNullString Then
             Call WriteLocaleMsg(UserIndex, Msg, e_FontTypeNames.FONTTYPE_INFO, Extra)
+
+            ' If you still want console echo, prefer localized:
+            ' Call WriteLocaleConsole(UserIndex, Msg, Extra, e_FontTypeNames.FONTTYPE_INFO)
+            If writeInConsole Then Call WriteConsoleMsg(UserIndex, ResolveLocale(Msg, _
+                    Extra), e_FontTypeNames.FONTTYPE_INFO)
         End If
-        
+
     End With
 
     Exit Function
+
 PuedeUsarObjeto_Err:
     Call TraceError(Err.Number, Err.Description, "Acciones.PuedeUsarObjeto", Erl)
 End Function
@@ -1002,7 +996,7 @@ Sub Accion(ByVal UserIndex As Integer, _
         ElseIf MapData(Map, x + 1, y).ObjInfo.ObjIndex > 0 Then
             UserList(UserIndex).flags.TargetObj = MapData(Map, x + 1, y).ObjInfo.ObjIndex
         
-            Select Case ObjData(MapData(Map, x + 1, y).ObjInfo.ObjIndex).OBJType      
+            Select Case ObjData(MapData(Map, x + 1, y).ObjInfo.ObjIndex).OBJType
                     Case e_OBJType.otDoors 'Es una puerta
 372                     Call AccionParaPuerta(Map, X + 1, Y, UserIndex)
 
