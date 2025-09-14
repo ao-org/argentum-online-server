@@ -39,7 +39,7 @@ get_map_name_Err:
     Call TraceError(Err.Number, Err.Description, "Acciones.get_map_name", Erl)
 End Function
 
-Private Function PuedeUsarObjeto(ByVal UserIndex As Integer, _
+Public Function PuedeUsarObjeto(ByVal UserIndex As Integer, _
                                  ByVal ObjIndex As Integer, _
                                  Optional ByVal writeInConsole As Boolean = False) As Byte
 
