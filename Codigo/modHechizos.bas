@@ -2556,6 +2556,21 @@ Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
 744         b = True
         End If
         
+        
+       If IsSet(Hechizos(h).Effects, e_SpellEffects.ToggleDivineBlood) Then
+               If UserList(UserIndex).flags.DivineBlood Then
+                UserList(UserIndex).flags.DivineBlood = 0
+                   If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, 0, 0, eBuff)
+               Else
+                UserList(UserIndex).flags.DivineBlood = 1
+                   If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, -1, -1, eBuff)
+               End If
+            b = True
+        End If
+        
+        
+        
+        
         Exit Sub
 
 HechizoEstadoUsuario_Err:
@@ -3382,6 +3397,12 @@ Call WriteLocaleMsg(UserIndex, "822", e_FontTypeNames.FONTTYPE_INFO)
 368         Damage = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
             Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
             Damage = Damage * UserMod.GetSelfHealingBonus(UserList(tempChr))
+            
+            If UserList(UserIndex).flags.DivineBlood > 0 Then
+                Damage = Damage * DivineBloodHealingMultiplierBonus
+            End If
+            
+            
 370         Call InfoHechizo(UserIndex)
             Call UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, h)
 376         DamageStr = PonerPuntos(Damage)
@@ -3553,21 +3574,21 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 
         Dim Damage As Integer
 
-        Dim tempChr           As Integer
+        Dim TargetUserIndex           As Integer
 
         Dim enviarInfoHechizo As Boolean
 
 100     enviarInfoHechizo = False
     
 102     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
-104     tempChr = UserList(UserIndex).flags.targetUser.ArrayIndex
+104     TargetUserIndex = UserList(UserIndex).flags.TargetUser.ArrayIndex
       
         ' <-------- Agilidad ---------->
 106     If Hechizos(h).SubeAgilidad = 1 Then
     
             'Para poder tirar cl a un pk en el ring
-108         If Not PeleaSegura(UserIndex, tempChr) Then
-110             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
+108         If Not PeleaSegura(UserIndex, TargetUserIndex) Then
+110             If Status(TargetUserIndex) = 0 And Status(UserIndex) = 1 Or Status(TargetUserIndex) = 2 And Status(UserIndex) = 1 Then
 112                 If esArmada(UserIndex) Then
 114                     Call WriteLocaleMsg(UserIndex, "379", e_FontTypeNames.FONTTYPE_INFO)
 116                     b = False
@@ -3589,44 +3610,44 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 124         enviarInfoHechizo = True
 126         Damage = RandomNumber(Hechizos(h).MinAgilidad, Hechizos(h).MaxAgilidad)
     
-128         UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
+128         UserList(TargetUserIndex).flags.DuracionEfecto = Hechizos(h).Duration
 
-130         UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) + Damage, UserList(tempChr).Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
+130         UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) + Damage, UserList(TargetUserIndex).Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
         
-132         UserList(tempChr).flags.TomoPocion = True
+132         UserList(TargetUserIndex).flags.TomoPocion = True
 134         b = True
-136         Call WriteFYA(tempChr)
+136         Call WriteFYA(TargetUserIndex)
     
 138     ElseIf Hechizos(h).SubeAgilidad = 2 Then
     
-140         If Not PuedeAtacar(UserIndex, tempChr) Then Exit Sub
+140         If Not PuedeAtacar(UserIndex, TargetUserIndex) Then Exit Sub
     
-142         If UserIndex <> tempChr Then
-144             Call UsuarioAtacadoPorUsuario(UserIndex, tempChr)
+142         If UserIndex <> TargetUserIndex Then
+144             Call UsuarioAtacadoPorUsuario(UserIndex, TargetUserIndex)
 
             End If
     
 146         enviarInfoHechizo = True
     
-148         UserList(tempChr).flags.TomoPocion = True
+148         UserList(TargetUserIndex).flags.TomoPocion = True
 150         Damage = RandomNumber(Hechizos(h).MinAgilidad, Hechizos(h).MaxAgilidad)
-152         UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
+152         UserList(TargetUserIndex).flags.DuracionEfecto = Hechizos(h).Duration
 
-154         If UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) - Damage < 6 Then
-156             UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) = MINATRIBUTOS
+154         If UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) - Damage < 6 Then
+156             UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) = MINATRIBUTOS
             Else
-158             UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) = UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) - Damage
+158             UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) = UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) - Damage
             End If
 160         b = True
-162         Call WriteFYA(tempChr)
+162         Call WriteFYA(TargetUserIndex)
         End If
 
         ' <-------- Fuerza ---------->
 164     If Hechizos(h).SubeFuerza = 1 Then
 
             'Para poder tirar fuerza a un pk en el ring
-166         If Not PeleaSegura(UserIndex, tempChr) Then
-168             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
+166         If Not PeleaSegura(UserIndex, TargetUserIndex) Then
+168             If Status(TargetUserIndex) = 0 And Status(UserIndex) = 1 Or Status(TargetUserIndex) = 2 And Status(UserIndex) = 1 Then
 170                 If esArmada(UserIndex) Then
                         'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
 172                     Call WriteLocaleMsg(UserIndex, "379", e_FontTypeNames.FONTTYPE_INFO)
@@ -3644,42 +3665,42 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             End If
     
 182         Damage = RandomNumber(Hechizos(h).MinFuerza, Hechizos(h).MaxFuerza)
-184         UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
-186         UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) + Damage, UserList(tempChr).Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
-188         UserList(tempChr).flags.TomoPocion = True
+184         UserList(TargetUserIndex).flags.DuracionEfecto = Hechizos(h).Duration
+186         UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) + Damage, UserList(TargetUserIndex).Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
+188         UserList(TargetUserIndex).flags.TomoPocion = True
 190         b = True
 192         enviarInfoHechizo = True
-194         Call WriteFYA(tempChr)
+194         Call WriteFYA(TargetUserIndex)
 196     ElseIf Hechizos(h).SubeFuerza = 2 Then
-198         If Not PuedeAtacar(UserIndex, tempChr) Then Exit Sub
-200         If UserIndex <> tempChr Then
-202             Call UsuarioAtacadoPorUsuario(UserIndex, tempChr)
+198         If Not PuedeAtacar(UserIndex, TargetUserIndex) Then Exit Sub
+200         If UserIndex <> TargetUserIndex Then
+202             Call UsuarioAtacadoPorUsuario(UserIndex, TargetUserIndex)
             End If
-204         UserList(tempChr).flags.TomoPocion = True
+204         UserList(TargetUserIndex).flags.TomoPocion = True
 206         Damage = RandomNumber(Hechizos(h).MinFuerza, Hechizos(h).MaxFuerza)
-208         UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
-210         If UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) - Damage < 6 Then
-212             UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) = MINATRIBUTOS
+208         UserList(TargetUserIndex).flags.DuracionEfecto = Hechizos(h).Duration
+210         If UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) - Damage < 6 Then
+212             UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) = MINATRIBUTOS
             Else
-214             UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) = UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) - Damage
+214             UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) = UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) - Damage
             End If
 216         b = True
 218         enviarInfoHechizo = True
-220         Call WriteFYA(tempChr)
+220         Call WriteFYA(TargetUserIndex)
         End If
 
         'Salud
 222     If IsSet(Hechizos(h).Effects, e_SpellEffects.eDoHeal) Then
             'Verifica que el usuario no este muerto
-224         If UserList(tempChr).flags.Muerto = 1 Then
+224         If UserList(TargetUserIndex).flags.Muerto = 1 Then
                 'Msg77=¡¡Estás muerto!!.
 226             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 228             b = False
                 Exit Sub
             End If
             'Para poder tirar curar a un pk en el ring
-230         If Not PeleaSegura(UserIndex, tempChr) Then
-232             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
+230         If Not PeleaSegura(UserIndex, TargetUserIndex) Then
+232             If Status(TargetUserIndex) = 0 And Status(UserIndex) = 1 Or Status(TargetUserIndex) = 2 And Status(UserIndex) = 1 Then
 234                 If esArmada(UserIndex) Then
 236                     Call WriteLocaleMsg(UserIndex, 379, e_FontTypeNames.FONTTYPE_INFO)
 238                     b = False
@@ -3694,24 +3715,29 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             End If
 246         Damage = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
             Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
-            Damage = Damage * UserMod.GetSelfHealingBonus(UserList(tempChr))
+            Damage = Damage * UserMod.GetSelfHealingBonus(UserList(TargetUserIndex))
+            
+            If UserList(UserIndex).flags.DivineBlood > 0 Then
+                Damage = Damage * DivineBloodHealingMultiplierBonus
+            End If
+            
 248         enviarInfoHechizo = True
-250         Call UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, h)
+250         Call UserMod.DoDamageOrHeal(TargetUserIndex, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, h)
     
-254         If UserIndex <> tempChr Then
-256             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1918, Damage & "¬" & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1918=Le has restaurado ¬1 puntos de vida a ¬2.
-258             Call WriteConsoleMsg(tempChr, PrepareMessageLocaleMsg(1919, UserList(UserIndex).name & "¬" & Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1919=¬1 te ha restaurado ¬2 puntos de vida.
+254         If UserIndex <> TargetUserIndex Then
+256             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1918, Damage & "¬" & UserList(TargetUserIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1918=Le has restaurado ¬1 puntos de vida a ¬2.
+258             Call WriteConsoleMsg(TargetUserIndex, PrepareMessageLocaleMsg(1919, UserList(UserIndex).name & "¬" & Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1919=¬1 te ha restaurado ¬2 puntos de vida.
             Else
 260             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1920, Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1920=Te has restaurado ¬1 puntos de vida.
             End If
 264         b = True
 
 266     ElseIf IsSet(Hechizos(h).Effects, e_SpellEffects.eDoDamage) Then ' Damage
-268         If UserIndex = tempChr Then
+268         If UserIndex = TargetUserIndex Then
 270             Call WriteLocaleMsg(UserIndex, "380", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
-271         If Not PuedeAtacar(UserIndex, tempChr) Then Exit Sub
+271         If Not PuedeAtacar(UserIndex, TargetUserIndex) Then Exit Sub
 272         Damage = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
 274         Damage = Damage + Porcentaje(Damage, 3 * UserList(UserIndex).Stats.ELV)
             ' mage has 30% damage reduction
@@ -3740,30 +3766,30 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             ' Si el hechizo no ignora la RM
 288         If Hechizos(h).AntiRm = 0 Then
                 ' Resistencia mágica armadura
-                MR = max(0, MR + GetUserMR(tempChr))
+                MR = max(0, MR + GetUserMR(TargetUserIndex))
 290             If MR > 0 Then
 292                 Damage = Damage - Porcentaje(Damage, MR)
                 End If
             End If
-            Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
+            Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, TargetUserIndex, eUser, e_DamageSourceType.e_magic)
             Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
-            Damage = Damage * UserMod.GetMagicDamageReduction(UserList(tempChr))
+            Damage = Damage * UserMod.GetMagicDamageReduction(UserList(TargetUserIndex))
             ' Prevengo daño negativo
 308         If Damage < 0 Then Damage = 0
     
-312         If UserIndex <> tempChr Then
-314             Call UsuarioAtacadoPorUsuario(UserIndex, tempChr)
+312         If UserIndex <> TargetUserIndex Then
+314             Call UsuarioAtacadoPorUsuario(UserIndex, TargetUserIndex)
             End If
     
 316         enviarInfoHechizo = True
-318         IsAlive = UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h) = eStillAlive
-321         Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
-324         Call SubirSkill(tempChr, Resistencia)
+318         IsAlive = UserMod.DoDamageOrHeal(TargetUserIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h) = eStillAlive
+321         Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, TargetUserIndex, eUser, e_DamageSourceType.e_magic)
+324         Call SubirSkill(TargetUserIndex, Resistencia)
 336         b = True
         End If
 
         Dim tU As Integer
-338     tU = tempChr
+338     tU = TargetUserIndex
 340     If IsSet(Hechizos(h).Effects, e_SpellEffects.Invisibility) Then
 342         If UserList(tU).flags.Muerto = 1 Then
                 'Msg77=¡¡Estás muerto!!.

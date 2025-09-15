@@ -776,8 +776,10 @@ Public Sub CargarHechizos()
 252         If val(Leer.GetValue("Hechizo" & Hechizo, "Ceguera")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Blindness)
 254         If val(Leer.GetValue("Hechizo" & Hechizo, "Estupidez")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Dumb)
 255         If val(Leer.GetValue("Hechizo" & Hechizo, "ToggleCleave")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.ToggleCleave)
+            If val(Leer.GetValue("Hechizo" & Hechizo, "ToggleDivineBlood")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.ToggleDivineBlood)
             If val(Leer.GetValue("Hechizo" & Hechizo, "AdjustStatsWithCaster")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.AdjustStatsWithCaster)
             If val(Leer.GetValue("Hechizo" & Hechizo, "CancelActiveEffect")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.CancelActiveEffect)
+            
 
 256         Hechizos(Hechizo).Invoca = val(Leer.GetValue("Hechizo" & Hechizo, "Invoca"))
 258         Hechizos(Hechizo).NumNpc = val(Leer.GetValue("Hechizo" & Hechizo, "NumNpc"))
@@ -1161,6 +1163,8 @@ Sub LoadBalance()
         FactionReKillTime = val(BalanceIni.GetValue("EXTRA", "FactionReKillTime"))
         AirHitReductParalisisTime = val(BalanceIni.GetValue("EXTRA", "AirHitReductParalisisTime"))
         PorcentajePescaSegura = val(BalanceIni.GetValue("EXTRA", "PorcentajePescaSegura"))
+        DivineBloodHealingMultiplierBonus = val(BalanceIni.GetValue("EXTRA", "DivineBloodHealingMultiplierBonus"))
+        
         
         'stun
         PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))

@@ -1174,7 +1174,8 @@ Public Enum e_SpellEffects
     StealBuff = 262144
     eDoDamage = 524288
     AdjustStatsWithCaster = 1048576
-    CancelActiveEffect = 2097152
+    ToggleDivineBlood = 2097152
+    CancelActiveEffect = 4194304
 End Enum
 
 Public Enum e_TargetEffectType
@@ -2183,6 +2184,7 @@ Public Type t_UserFlags
     Mimetizado As e_EstadoMimetismo
     MascotasGuardadas As Byte
     Cleave As Byte 'we might support more than one type of cleave
+    DivineBlood As Byte
     StatusMask As Long 'use the values from to set this flags e_StatusMask
     
     Navegando As Byte

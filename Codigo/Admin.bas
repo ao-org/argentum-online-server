@@ -164,6 +164,7 @@ Public HideAfterHitTime             As Long 'required time to hide again after a
 Public FactionReKillTime            As Long 'required time between killing the same user to get factions points
 Public AirHitReductParalisisTime    As Integer 'you can hit to the air to reduce inmo/paralisis time
 Public PorcentajePescaSegura        As Integer 'Porcentaje de reducción a la pesca en zona segura
+Public DivineBloodHealingMultiplierBonus As Single
 
 Public Puerto                       As Long
 Public ListenIp                     As String
