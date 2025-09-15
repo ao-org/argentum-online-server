@@ -1196,22 +1196,45 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
                 UserList(VictimaIndex).Counters.timeFx = 3
 114             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, FXSANGRE, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
             End If
-            
-            Call RemoveUserInvisibility(AtacanteIndex)
+
+            Select Case UserList(AtacanteIndex).clase
+                Case e_Class.Hunter
+                    'if i have an armor equipped
+                    if UserList(AtacanteIndex).invent.EquippedArmorObjIndex > 0 Then
+                        'and the armor has the camouflage property and i have 100 in stealth skill
+                        if ObjData(UserList(AtacanteIndex).invent.EquippedArmorObjIndex).Camouflage And UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+                            'dont remove invisibility
+                        Else
+                            Call RemoveUserInvisibility(AtacanteIndex)
+                        End If
+                    end if
+                Case Else
+                    Call RemoveUserInvisibility(AtacanteIndex)
+            End Select
+
 116         Call UserDamageToUser(AtacanteIndex, VictimaIndex, aType)
             Call EffectsOverTime.TartgetDidHit(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
             Call RegisterNewAttack(VictimaIndex, AtacanteIndex)
 
-
         Else
-
-            If UserList(AtacanteIndex).clase <> e_Class.Bandit Then
-                Call RemoveUserInvisibility(AtacanteIndex)
-            Else
-                If Not UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+            Select Case UserList(AtacanteIndex).clase
+                Case e_Class.Bandit
+                    If Not UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+                        Call RemoveUserInvisibility(AtacanteIndex)
+                    End If
+                Case e_Class.Hunter
+                    'if i have an armor equipped
+                    if UserList(AtacanteIndex).invent.EquippedArmorObjIndex > 0 Then
+                        'and the armor has the camouflage property and i have 100 in stealth skill
+                        if ObjData(UserList(AtacanteIndex).invent.EquippedArmorObjIndex).Camouflage And UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+                            'dont remove invisibility
+                        Else
+                            Call RemoveUserInvisibility(AtacanteIndex)
+                        End If
+                    end if
+                Case Else
                     Call RemoveUserInvisibility(AtacanteIndex)
-                End If
-            End If
+            End Select
 
             Call EffectsOverTime.TargetFailedAttack(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
 118         If UserList(AtacanteIndex).flags.invisible Or UserList(AtacanteIndex).flags.Oculto Then
