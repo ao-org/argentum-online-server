@@ -537,6 +537,8 @@ End Sub
 
 Sub Main()
 On Error GoTo Handler
+        Call Uptime_Init
+        
 #If DIRECT_PLAY = 1 Then
         InitDPlay
 #End If
