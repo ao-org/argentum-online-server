@@ -1918,7 +1918,7 @@ Public Type t_ObjData
     ObjFlags As Long 'use bitmask from enum e_ObjFlags
     JineteLevel As Byte
     ElementalTags As Long
-    Camouflage As Byte
+    Camouflage As Boolean
 End Type
 
 '[Pablo ToxicWaste]
