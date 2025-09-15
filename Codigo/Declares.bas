@@ -1662,132 +1662,59 @@ Public Enum e_ObjFlags
     e_UseOnSafeAreaOnly = 2
 End Enum
 
-'Tipos de objetos
 Public Type t_ObjData
-    Pino As Byte
-    Elfico As Byte
-    velocidad As Single
-    CantEntrega As Byte
-    CantItem As Byte
-    Item() As t_Obj
+    ' ---- 4-byte fields ----
+    Jerarquia As Long
+    OBJType As e_OBJType
+    GrhIndex As Long
+    DesdeMap As Long
+    HastaMap As Long
+    Cooldown As Long
+    DuracionEfecto As Long
+    Valor As Long
+    clave As Long
+    Madera As Long
+    MaderaElfica As Long
+    PuntosPesca As Long
+    ObjNum As Long
+    ObjDonador As Long
+    ElementalTags As Long
+    ObjFlags As Long
+
+    GrhSecundario As Integer
     ParticulaGolpeTime As Integer
     ParticulaGolpe As Integer
     ParticulaViaje As Integer
-    Jerarquia As Long
-    ClaseTipo As Byte
-    TipoRuna As Byte
-    Name As String 'Nombre del obj
-    OBJType As e_OBJType 'Tipo enum que determina cuales son las caract del obj
-    GrhIndex As Long ' Indice del grafico que representa el obj
-    GrhSecundario As Integer
-    
-    'Solo contenedores
     MaxItems As Integer
-    Conte As t_Inventario
-    Apuñala As Byte
-    
-    Paraliza As Byte
-    Estupidiza As Byte
-    Envenena As Byte
-    
-    NoSeLimpia As Byte
     Subastable As Integer
     HechizoIndex As Integer
-    
-    ForoID As String
-    
-    MinHp As Integer ' Minimo puntos de vida
-    MaxHp As Integer ' Maximo puntos de vida
-    
+    MinHp As Integer
+    MaxHp As Integer
     MineralIndex As Integer
     LingoteInex As Integer
-    
     Proyectil As Integer
     Municion As Integer
-    
-    Crucial As Byte
-    
-    ' Sistema de armas Dos Manos - SimP - 03/02/2021
-    DosManos As Byte
-    
     Newbie As Integer
-    
-    'By Ladder
-    CreaParticula As String
     CreaFX As Integer
-    CreaLuz As String
     CreaWav As Integer
-    
-    MinELV As Byte
-    MaxLEV As Byte
-    SkillIndex As Byte     ' El indice de Skill para equipar el item
-    SkillRequerido As Byte ' El valor MINIMO requerido de skillIndex para equipar el item
     InstrumentoRequerido As Integer
-    CreaGRH As String
     SndAura As Integer
-    Intirable As Byte
-    Instransferible As Byte
-    Destruye As Byte
-    
-    NecesitaNave As Byte
-
-    DesdeMap As Long
-    HastaMap As Long
-    HastaY As Byte
-    HastaX As Byte
-    
-    EfectoMagico As Byte
-    Que_Skill As Byte          ' Que skill recibe la bonificacion
-    CantidadSkill As Byte     ' Cuantos puntos de skill bonifica
-    
-    Subtipo As Byte ' 0: -, 1: Paraliza, 2: Incinera, 3: Envenena, 4: Explosiva
-    
-    Dorada  As Byte
-    
-    Blodium As Integer
-    
-    FireEssence As Integer
-    WaterEssence As Integer
-    EarthEssence As Integer
-    WindEssence As Integer
-    
-    VidaUtil As Integer
-    TiempoRegenerar As Integer
-    
-    CuantoAumento As Single ' Cuanto aumenta el atributo.
-    QueAtributo As Byte     ' Que attributo sube (Agilidad, Fuerza, etc)
-    incinera As Byte
-
-    'Puntos de Stamina que da
-    MinSta As Integer ' Minimo puntos de stamina
-    
-    Cooldown As Long
     CdType As Integer
     ImprovedRangedHitChance As Integer
     ImprovedMeleeHitChance As Integer
-    
-    'Pociones
-    TipoPocion As Byte
-    Porcentaje As Byte
     MaxModificador As Integer
     MinModificador As Integer
-    DuracionEfecto As Long
     MinSkill As Integer
     LingoteIndex As Integer
-    
-    MinHIT As Integer 'Minimo golpe
-    MaxHit As Integer 'Maximo golpe
+    MinHIT As Integer
+    MaxHit As Integer
     IgnoreArmorAmmount As Integer
-    IgnoreArmorPercent As Single
-    
     MinHam As Integer
     MinSed As Integer
-    
     def As Integer
-    MinDef As Integer ' Armaduras
-    MaxDef As Integer ' Armaduras
-    
-    Ropaje As Integer 'Indice del grafico del ropaje
+    MinDef As Integer
+    MaxDef As Integer
+    Ropaje As Integer
     RopajeHumano As Integer
     RopajeElfo As Integer
     RopajeElfoOscuro As Integer
@@ -1800,43 +1727,19 @@ Public Type t_ObjData
     RopajeEnana As Integer
     RopajeOrca As Integer
     RopajeGnoma As Integer
-
-    WeaponAnim As Integer ' Apunta a una anim de armas
-    ShieldAnim As Integer ' Apunta a una anim de escudo
+    WeaponAnim As Integer
+    ShieldAnim As Integer
     CascoAnim As Integer
     BackpackAnim As Integer
-    
-    Valor As Long     ' Precio
-    
     Cerrada As Integer
-    Llave As Byte
-    clave As Long 'si clave=llave la puerta se abre o cierra
-    
     IndexAbierta As Integer
     IndexCerrada As Integer
     IndexCerradaLlave As Integer
-    
-    RazaEnana As Byte
-    RazaDrow As Byte
-    RazaElfa As Byte
-    RazaGnoma As Byte
-    RazaHumana As Byte
-    
-    RazaOrca As Byte
-    
-    Mujer As Byte
-    Hombre As Byte
-    
-    Agarrable As Byte
-    
     Coal As Integer
     LingH As Integer
     LingO As Integer
     LingP As Integer
-    Madera As Long
-    MaderaElfica As Long
     MaderaPino As Integer
-    
     Hechizo As Integer
     Raices As Integer
     Cuchara As Integer
@@ -1859,67 +1762,114 @@ Public Type t_ObjData
     HojasRojas As Integer
     SemillasPros As Integer
     Pimiento As Integer
-    
-    SkPociones As Byte
-    
     PielLobo As Integer
     PielOsoPardo As Integer
     PielOsoPolaR As Integer
     PielLoboNegro As Integer
     PielTigre As Integer
     PielTigreBengala As Integer
-    SkSastreria As Byte
-    
-    Radio As Byte
-     
     SkHerreria As Integer
     SkCarpinteria As Integer
-    
-    texto As String
-    
-    'Clases que no tienen permitido usar este obj
-    ClaseProhibida(1 To NUMCLASES) As e_Class
-    
-    'Razas que no tienen permitido usar este obj
-    RazaProhibida(1 To NUMRAZAS) As e_Raza
-    
-    ClasePermitida As String
-    
     Snd1 As Integer
     Snd2 As Integer
     Snd3 As Integer
-
     Real As Integer
     Caos As Integer
-    LeadersOnly As Boolean
-
     NoSeCae As Integer
-    
     Power As Integer
     MagicDamageBonus As Integer
     MagicPenetration As Integer
     ResistenciaMagica As Integer
     MagicAbsoluteBonus As Integer
-    Revive As Boolean
-
-    Invernal As Boolean
-    
-    CatalizadorTipo As Byte
-    CatalizadorAumento As Single
     ApplyEffectId As Integer
-    Log As Byte 'es un objeto que queremos loguear? Pablo (ToxicWaste) 07/09/07
-    NoLog As Byte 'es un objeto que esta prohibido loguear?
     QuestId As Integer
-    PuntosPesca As Long
-    ObjNum As Long
-    ObjDonador As Long
-    WeaponType As e_WeaponType
     ProjectileType As Integer
-    ObjFlags As Long 'use bitmask from enum e_ObjFlags
-    
+    Blodium As Integer
+    FireEssence As Integer
+    WaterEssence As Integer
+    EarthEssence As Integer
+    WindEssence As Integer
+    VidaUtil As Integer
+    TiempoRegenerar As Integer
+    MinSta As Integer
+    SkPociones As Byte
+    SkSastreria As Byte
+    SkHerreria As Integer
+    SkCarpinteria As Integer
+
+    ' ---- Single (float, 4 bytes) ----
+    velocidad As Single
+    CuantoAumento As Single
+    IgnoreArmorPercent As Single
+    CatalizadorAumento As Single
+
+    ' ---- Reference types ----
+    name As String
+    ForoID As String
+    CreaParticula As String
+    CreaLuz As String
+    CreaGRH As String
+    texto As String
+    ClasePermitida As String
+    Item() As t_Obj
+    Conte As t_Inventario
+    ClaseProhibida(1 To NUMCLASES) As e_Class
+    RazaProhibida(1 To NUMRAZAS) As e_Raza
+
+    ' ---- Boolean (2 bytes) ----
+    LeadersOnly As Boolean
+    Revive As Boolean
+    Camouflage As Boolean
+    Invernal As Boolean
+
+    ' ---- 1-byte fields grouped at the end ----
+    Pino As Byte
+    Elfico As Byte
+    CantEntrega As Byte
+    CantItem As Byte
+    ClaseTipo As Byte
+    TipoRuna As Byte
+    Apuñala As Byte
+    Paraliza As Byte
+    Estupidiza As Byte
+    Envenena As Byte
+    NoSeLimpia As Byte
+    Crucial As Byte
+    DosManos As Byte
+    MinELV As Byte
+    MaxLEV As Byte
+    SkillIndex As Byte
+    SkillRequerido As Byte
+    Intirable As Byte
+    Instransferible As Byte
+    Destruye As Byte
+    NecesitaNave As Byte
+    HastaY As Byte
+    HastaX As Byte
+    EfectoMagico As Byte
+    Que_Skill As Byte
+    CantidadSkill As Byte
+    Subtipo As Byte
+    Dorada As Byte
+    QueAtributo As Byte
+    incinera As Byte
+    TipoPocion As Byte
+    Porcentaje As Byte
+    Llave As Byte
+    RazaEnana As Byte
+    RazaDrow As Byte
+    RazaElfa As Byte
+    RazaGnoma As Byte
+    RazaHumana As Byte
+    RazaOrca As Byte
+    Mujer As Byte
+    Hombre As Byte
+    Agarrable As Byte
+    Radio As Byte
+    CatalizadorTipo As Byte
+    Log As Byte
+    NoLog As Byte
     JineteLevel As Byte
-    ElementalTags As Long
-    
 End Type
 
 '[Pablo ToxicWaste]
@@ -3277,8 +3227,11 @@ Public Type t_BaseDotInfo
     Removed As Boolean
 End Type
 
-
-Public Sub SetBaseDot(ByRef DotInfo As t_BaseDotInfo, ByVal TargetIndex As Integer, ByVal RefType As e_ReferenceType, ByVal UniqueId As Long, ByVal EotId As Integer)
+Public Sub SetBaseDot(ByRef DotInfo As t_BaseDotInfo, _
+                      ByVal TargetIndex As Integer, _
+                      ByVal RefType As e_ReferenceType, _
+                      ByVal UniqueId As Long, _
+                      ByVal EotId As Integer)
     Call SetRef(DotInfo.TargetRef, TargetIndex, RefType)
     DotInfo.RemoveEffect = False
     DotInfo.Removed = False
@@ -3288,70 +3241,109 @@ End Sub
 
 Private Function ValidateUerRef(ByRef Ref As t_AnyReference) As Boolean
     ValidateUerRef = False
+
     If Ref.ArrayIndex < LBound(UserList) Then
+
         Exit Function
+
     End If
+
     If Ref.ArrayIndex > UBound(UserList) Then
-            Exit Function
-    End If
-    If UserList(Ref.ArrayIndex).VersionId <> Ref.VersionId Then
+
         Exit Function
+
     End If
+
+    If UserList(Ref.ArrayIndex).VersionId <> Ref.VersionId Then
+
+        Exit Function
+
+    End If
+
     ValidateUerRef = True
 End Function
 
 Private Function ValidateNpcRef(ByRef Ref As t_AnyReference) As Boolean
-     ValidateNpcRef = False
-     If Ref.ArrayIndex < LBound(NpcList) Then
+    ValidateNpcRef = False
+
+    If Ref.ArrayIndex < LBound(NpcList) Then
+
         Exit Function
+
     End If
-     If Ref.ArrayIndex > UBound(NpcList) Then
-            Exit Function
-        End If
-        If NpcList(Ref.ArrayIndex).VersionId <> Ref.VersionId Then
-            Exit Function
-        End If
-        ValidateNpcRef = True
+
+    If Ref.ArrayIndex > UBound(NpcList) Then
+
+        Exit Function
+
+    End If
+
+    If NpcList(Ref.ArrayIndex).VersionId <> Ref.VersionId Then
+
+        Exit Function
+
+    End If
+
+    ValidateNpcRef = True
 End Function
 
 Public Function IsValidRef(ByRef Ref As t_AnyReference) As Boolean
     IsValidRef = False
     
     If Ref.RefType = e_ReferenceType.eNone Then
+
         Exit Function
+
     ElseIf Ref.RefType = eUser Then
         IsValidRef = ValidateUerRef(Ref)
     Else
         IsValidRef = ValidateNpcRef(Ref)
     End If
+
 End Function
 
-Public Function SetRef(ByRef Ref As t_AnyReference, ByVal index As Integer, ByVal RefType As e_ReferenceType) As Boolean
+Public Function SetRef(ByRef Ref As t_AnyReference, _
+                       ByVal Index As Integer, _
+                       ByVal RefType As e_ReferenceType) As Boolean
     SetRef = False
     Ref.RefType = RefType
     Ref.ArrayIndex = index
+
     If RefType = eUser Then
         If index <= 0 Or Ref.ArrayIndex > UBound(UserList) Then
+
             Exit Function
+
         End If
+
         Ref.VersionId = UserList(index).VersionId
         Ref.UserId = UserList(Index).ID
     Else
+
         If index <= 0 Or Ref.ArrayIndex > UBound(NpcList) Then
+
             Exit Function
+
         End If
+
         Ref.VersionId = NpcList(index).VersionId
         Ref.UserId = 0
     End If
+
     SetRef = True
 End Function
 
-Public Function CastUserToAnyRef(ByRef UserRef As t_UserReference, ByRef AnyRef As t_AnyReference) As Boolean
+Public Function CastUserToAnyRef(ByRef UserRef As t_UserReference, _
+                                 ByRef AnyRef As t_AnyReference) As Boolean
     CastUserToAnyRef = False
+
     If Not IsValidUserRef(UserRef) Then
         Call ClearRef(AnyRef)
+
         Exit Function
+
     End If
+
     AnyRef.ArrayIndex = UserRef.ArrayIndex
     AnyRef.RefType = eUser
     AnyRef.VersionId = UserRef.VersionId
@@ -3359,12 +3351,17 @@ Public Function CastUserToAnyRef(ByRef UserRef As t_UserReference, ByRef AnyRef 
     CastUserToAnyRef = True
 End Function
 
-Public Function CastNpcToAnyRef(ByRef NpcRef As t_NpcReference, ByRef AnyRef As t_AnyReference) As Boolean
+Public Function CastNpcToAnyRef(ByRef NpcRef As t_NpcReference, _
+                                ByRef AnyRef As t_AnyReference) As Boolean
     CastNpcToAnyRef = False
+
     If Not IsValidNpcRef(NpcRef) Then
         Call ClearRef(AnyRef)
+
         Exit Function
+
     End If
+
     AnyRef.ArrayIndex = NpcRef.ArrayIndex
     AnyRef.RefType = eNpc
     AnyRef.VersionId = NpcRef.VersionId
@@ -3408,11 +3405,18 @@ End Sub
 
 ' Test the time since last call and update the time
 ' log if there time betwen calls exced the limit
-Public Sub PerformTimeLimitCheck(ByRef timer As Long, ByRef TestText As String, Optional ByVal TimeLimit As Long = 1000)
+Public Sub PerformTimeLimitCheck(ByRef timer As Long, _
+                                 ByRef TestText As String, _
+                                 Optional ByVal TimeLimit As Long = 1000)
+
     Dim CurrTime As Long
+
     CurrTime = GetTickCount() - timer
+
     If CurrTime > TimeLimit Then
-        Call LogPerformance("Performance warning at: " & TestText & " elapsed time: " & CurrTime)
+        Call LogPerformance("Performance warning at: " & TestText & " elapsed time: " & _
+                CurrTime)
     End If
+
     timer = GetTickCount()
 End Sub

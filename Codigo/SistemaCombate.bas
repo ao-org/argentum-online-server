@@ -1177,7 +1177,9 @@ UsuarioImpacto_Err:
 
 End Function
 
-Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType)
+Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, _
+                               ByVal VictimaIndex As Integer, _
+                               ByVal aType As AttackType)
         
         On Error GoTo UsuarioAtacaUsuario_Err
 
@@ -1185,47 +1187,105 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
 
 102     If Not PuedeAtacar(AtacanteIndex, VictimaIndex) Then Exit Sub
 
-104     If Distancia(UserList(AtacanteIndex).Pos, UserList(VictimaIndex).Pos) > MAXDISTANCIAARCO Then
+104     If Distancia(UserList(AtacanteIndex).pos, UserList(VictimaIndex).pos) > _
+                MAXDISTANCIAARCO Then
 106         Call WriteLocaleMsg(AtacanteIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-108     Call UsuarioAtacadoPorUsuario(AtacanteIndex, VictimaIndex)
-        Call EffectsOverTime.TartgetWillAtack(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
-110     If UsuarioImpacto(AtacanteIndex, VictimaIndex, aType) Then
-112         If UserList(VictimaIndex).flags.Navegando = 0 Or UserList(VictimaIndex).flags.Montado = 0 Then
-                UserList(VictimaIndex).Counters.timeFx = 3
-114             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, FXSANGRE, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
-            End If
-            
-            Call RemoveUserInvisibility(AtacanteIndex)
-116         Call UserDamageToUser(AtacanteIndex, VictimaIndex, aType)
-            Call EffectsOverTime.TartgetDidHit(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
-            Call RegisterNewAttack(VictimaIndex, AtacanteIndex)
 
+            Exit Sub
+
+        End If
+
+108     Call UsuarioAtacadoPorUsuario(AtacanteIndex, VictimaIndex)
+        Call EffectsOverTime.TartgetWillAtack(UserList(AtacanteIndex).EffectOverTime, _
+                VictimaIndex, eUser, e_phisical)
+
+110     If UsuarioImpacto(AtacanteIndex, VictimaIndex, aType) Then
+112         If UserList(VictimaIndex).flags.Navegando = 0 Or UserList( _
+                    VictimaIndex).flags.Montado = 0 Then
+                UserList(VictimaIndex).Counters.timeFx = 3
+114             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, _
+                        PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, _
+                        FXSANGRE, 0, UserList(VictimaIndex).pos.x, UserList( _
+                        VictimaIndex).pos.y))
+            End If
+
+            'if the attacker hits
+            Select Case UserList(AtacanteIndex).clase
+                
+                Case e_Class.Hunter
+
+                    If Not UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) _
+                            = 100 Then
+                        Call RemoveUserInvisibility(AtacanteIndex)
+                    ElseIf UserList(AtacanteIndex).invent.EquippedArmorObjIndex = 0 Then
+                        Call RemoveUserInvisibility(AtacanteIndex)
+                    ElseIf ObjData(UserList( _
+                            AtacanteIndex).invent.EquippedArmorObjIndex).Camouflage = 0 _
+                            Then
+                        Call RemoveUserInvisibility(AtacanteIndex)
+                    End If
+                
+                Case Else
+                    Call RemoveUserInvisibility(AtacanteIndex)
+    
+            End Select
+            
+116         Call UserDamageToUser(AtacanteIndex, VictimaIndex, aType)
+            Call EffectsOverTime.TartgetDidHit(UserList(AtacanteIndex).EffectOverTime, _
+                    VictimaIndex, eUser, e_phisical)
+            Call RegisterNewAttack(VictimaIndex, AtacanteIndex)
 
         Else
 
-            If UserList(AtacanteIndex).clase <> e_Class.Bandit Then
-                Call RemoveUserInvisibility(AtacanteIndex)
-            Else
-                If Not UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
-                    Call RemoveUserInvisibility(AtacanteIndex)
-                End If
-            End If
+            'if the attacker fails
+            Select Case UserList(AtacanteIndex).clase
+            
+                Case e_Class.Bandit
 
-            Call EffectsOverTime.TargetFailedAttack(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
-118         If UserList(AtacanteIndex).flags.invisible Or UserList(AtacanteIndex).flags.Oculto Then
+                    If Not UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) _
+                            = 100 Then
+                        Call RemoveUserInvisibility(AtacanteIndex)
+                    End If
+                
+                Case e_Class.Hunter
+
+                    If Not UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) _
+                            = 100 Then
+                        Call RemoveUserInvisibility(AtacanteIndex)
+                    ElseIf UserList(AtacanteIndex).invent.EquippedArmorObjIndex = 0 Then
+                        Call RemoveUserInvisibility(AtacanteIndex)
+                    ElseIf ObjData(UserList( _
+                            AtacanteIndex).invent.EquippedArmorObjIndex).Camouflage = 0 _
+                            Then
+                        Call RemoveUserInvisibility(AtacanteIndex)
+                    End If
+                
+                Case Else
+                    Call RemoveUserInvisibility(AtacanteIndex)
+    
+            End Select
+
+            Call EffectsOverTime.TargetFailedAttack(UserList( _
+                    AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
+
+118         If UserList(AtacanteIndex).flags.invisible Or UserList( _
+                    AtacanteIndex).flags.Oculto Then
 120             sendto = SendTarget.ToIndex
             Else
 122             sendto = SendTarget.toPCAliveArea
             End If
-124         Call SendData(sendto, AtacanteIndex, PrepareMessageCharSwing(UserList(AtacanteIndex).Char.charindex, , , IIf(UserList(AtacanteIndex).flags.invisible + UserList(AtacanteIndex).flags.Oculto > 0, False, True)))
+
+124         Call SendData(sendto, AtacanteIndex, PrepareMessageCharSwing(UserList( _
+                    AtacanteIndex).Char.charindex, , , IIf(UserList( _
+                    AtacanteIndex).flags.invisible + UserList( _
+                    AtacanteIndex).flags.Oculto > 0, False, True)))
         End If
+
         Exit Sub
 
 UsuarioAtacaUsuario_Err:
-126     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaUsuario", Erl)
-
+126     Call TraceError(Err.Number, Err.Description, _
+                "SistemaCombate.UsuarioAtacaUsuario", Erl)
 
 End Sub
 
