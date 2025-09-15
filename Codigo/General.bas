@@ -379,7 +379,7 @@ Private Function HayLava(ByVal Map As Integer, ByVal X As Integer, ByVal Y As In
         On Error GoTo HayLava_Err
 
 100     If Map > 0 And Map < NumMaps + 1 And X > 0 And X < 101 And Y > 0 And Y < 101 Then
-102         If MapData(Map, X, Y).Graphic(1) >= 5837 And MapData(Map, X, Y).Graphic(1) <= 5852 Then
+102         If MapData(Map, x, y).Graphic(1) >= 5837 And MapData(Map, x, y).Graphic(1) <= 5852 Or MapData(Map, x, y).Graphic(1) >= 16101 And MapData(Map, x, y).Graphic(1) <= 16116 Then
 104             HayLava = True
             Else
 106             HayLava = False
@@ -622,6 +622,7 @@ On Error GoTo Handler
 176     frmCargando.Label1(2).Caption = "Cargando Objetos de Herrería"
 178     Call LoadArmasHerreria
 180     Call LoadArmadurasHerreria
+        Call LoadBlackSmithElementalRunes
     
 182     frmCargando.Label1(2).Caption = "Cargando Objetos de Carpintería"
 184     Call LoadObjCarpintero
@@ -986,9 +987,9 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
         On Error GoTo EfectoFrio_Err
 100     If Not Intemperie(UserIndex) Then Exit Sub
 102     With UserList(UserIndex)
-104         If .Invent.ArmourEqpObjIndex > 0 Then
+104         If .Invent.EquippedArmorObjIndex > 0 Then
                 '  Ropa invernal
-106             If ObjData(.Invent.ArmourEqpObjIndex).Invernal Then Exit Sub
+106             If ObjData(.Invent.EquippedArmorObjIndex).Invernal Then Exit Sub
             End If
 108         If .Counters.Frio < IntervaloFrio Then
 110             .Counters.Frio = .Counters.Frio + 1
@@ -1132,7 +1133,7 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
 124             .flags.Mimetizado = e_EstadoMimetismo.Desactivado
             
 126             With .Char
-128                 Call ChangeUserChar(UserIndex, .body, .head, .Heading, .WeaponAnim, .ShieldAnim, .CascoAnim, .CartAnim)
+128                 Call ChangeUserChar(UserIndex, .body, .head, .Heading, .WeaponAnim, .ShieldAnim, .CascoAnim, .CartAnim, .BackpackAnim)
 130                 Call RefreshCharStatus(UserIndex)
                 End With
                 
@@ -1283,7 +1284,7 @@ Public Sub EfectoParalisisUser(ByVal UserIndex As Integer)
             Else
 104             .flags.Paralizado = 0
     
-                If .clase = e_Class.Warrior Or .clase = e_Class.Hunter Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
+                If .clase = e_Class.Warrior Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
                     .Counters.TiempoDeInmunidadParalisisNoMagicas = 3
                 End If
                 'UserList(UserIndex).Flags.AdministrativeParalisis = 0
@@ -1816,6 +1817,8 @@ Sub PasarSegundo()
 168                         Select Case .Accion.TipoAccion
                                 Case e_AccionBarra.Hogar
 170                                 Call HomeArrival(i)
+                                Case e_AccionBarra.Runa
+                                    Call CompletarAccionFin(i)
                             End Select
                             
 182                         .Accion.Particula = 0

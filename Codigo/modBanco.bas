@@ -192,7 +192,9 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
 
             '¿Ya tiene un objeto de este tipo?
 
-112         If UserList(UserIndex).Invent.Object(slotdestino).ObjIndex = obji And UserList(UserIndex).Invent.Object(slotdestino).amount + Cantidad <= MAX_INVENTORY_OBJS Then
+112         If UserList(UserIndex).Invent.Object(slotdestino).ObjIndex = obji And _ 
+               UserList(UserIndex).Invent.Object(slotdestino).amount + Cantidad <= MAX_INVENTORY_OBJS And _
+               UserList(UserIndex).Invent.Object(slotdestino).ElementalTags = UserList(UserIndex).BancoInvent.Object(ObjIndex).ElementalTags  Then
     
 114             slotvalido = True
 
@@ -205,7 +207,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
             '¿Ya tiene un objeto de este tipo?
 118         Slot = 1
 
-120         Do Until UserList(UserIndex).Invent.Object(Slot).ObjIndex = obji And UserList(UserIndex).Invent.Object(Slot).amount + Cantidad <= MAX_INVENTORY_OBJS
+120         Do Until UserList(UserIndex).Invent.Object(Slot).ObjIndex = obji And UserList(UserIndex).Invent.Object(Slot).amount + Cantidad <= MAX_INVENTORY_OBJS And UserList(UserIndex).Invent.Object(Slot).ElementalTags = UserList(UserIndex).BancoInvent.Object(ObjIndex).ElementalTags
     
 122             Slot = Slot + 1
 
@@ -249,6 +251,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
             'Menor que MAX_INV_OBJS
 148         UserList(UserIndex).Invent.Object(Slot).ObjIndex = obji
 150         UserList(UserIndex).Invent.Object(Slot).amount = UserList(UserIndex).Invent.Object(Slot).amount + Cantidad
+            UserLIst(UserIndex).Invent.Object(Slot).ElementalTags = UserList(UserIndex).BancoInvent.Object(ObjIndex).ElementalTags
 
             UserList(UserIndex).flags.ModificoInventario = True
     
@@ -283,6 +286,7 @@ Sub QuitarBancoInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Can
 106         UserList(UserIndex).BancoInvent.NroItems = UserList(UserIndex).BancoInvent.NroItems - 1
 108         UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex = 0
 110         UserList(UserIndex).BancoInvent.Object(Slot).amount = 0
+            UserList(UserIndex).BancoInvent.Object(Slot).ElementalTags = 0
 
         End If
         
@@ -296,18 +300,23 @@ QuitarBancoInvItem_Err:
         
 End Sub
 
-Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer)
+Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer)
 
         On Error GoTo ErrHandler
 
-100     If UserList(UserIndex).Invent.Object(Item).amount > 0 And Cantidad > 0 Then
-102         If Cantidad > UserList(UserIndex).Invent.Object(Item).amount Then Cantidad = UserList(UserIndex).Invent.Object(Item).amount
+        If Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots Then
+                Exit Sub
+        End If
+
+
+100     If UserList(UserIndex).invent.Object(Slot).amount > 0 And Cantidad > 0 Then
+102         If Cantidad > UserList(UserIndex).invent.Object(Slot).amount Then Cantidad = UserList(UserIndex).invent.Object(Slot).amount
         
             'Agregamos el obj que deposita al banco
-104         slotdestino = UserDejaObj(UserIndex, CInt(Item), Cantidad, slotdestino)
+104         slotdestino = UserDejaObj(UserIndex, CInt(Slot), Cantidad, slotdestino)
         
             'Actualizamos el inventario del usuario
-106         Call UpdateUserInv(False, UserIndex, Item)
+106         Call UpdateUserInv(False, UserIndex, Slot)
         
             'Actualizamos el inventario del banco
 108         Call UpdateBanUserInv(False, UserIndex, slotdestino, "UserDepositaItem")
@@ -320,28 +329,6 @@ ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "modBanco.UserDepositaItem")
 
     
-End Sub
-
-Sub UserDepositaItemDrop(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Cantidad As Integer)
-
-        On Error GoTo ErrHandler
-
-100     If UserList(UserIndex).Invent.Object(Item).amount > 0 And Cantidad > 0 Then
-102         If Cantidad > UserList(UserIndex).Invent.Object(Item).amount Then Cantidad = UserList(UserIndex).Invent.Object(Item).amount
-            'Agregamos el obj que deposita al banco
-104         Call UserDejaObj(UserIndex, CInt(Item), Cantidad, 0)
-        
-            'Actualizamos el inventario del usuario
-106         Call UpdateUserInv(True, UserIndex, 0)
-        
-        End If
-    
-        Exit Sub
-
-ErrHandler:
-108     Call TraceError(Err.Number, Err.Description, "modBanco.UserDepositaItemDrop")
-
-
 End Sub
 
 Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer) As Long
@@ -364,6 +351,7 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
             End If
 
 112         If UserList(UserIndex).BancoInvent.Object(slotdestino).ObjIndex = obji And _
+                UserList(UserIndex).BancoInvent.Object(slotdestino).ElementalTags = UserList(UserIndex).invent.Object(ObjIndex).ElementalTags And _
                 UserList(UserIndex).BancoInvent.Object(slotdestino).amount + Cantidad <= MAX_INVENTORY_OBJS Then '¿Ya tiene un objeto de este tipo?
                 
 114             slotvalido = True
@@ -377,6 +365,7 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
 118         Slot = 1
 
 120         Do Until UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex = obji And _
+                     UserList(UserIndex).BancoInvent.Object(Slot).ElementalTags = UserList(UserIndex).invent.Object(ObjIndex).ElementalTags And _
                      UserList(UserIndex).BancoInvent.Object(Slot).amount + Cantidad <= MAX_INVENTORY_OBJS
                      
 122             Slot = Slot + 1
@@ -421,6 +410,7 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
                 'Menor que MAX_INV_OBJS
 150             UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex = obji
 152             UserList(UserIndex).BancoInvent.Object(Slot).amount = UserList(UserIndex).BancoInvent.Object(Slot).amount + Cantidad
+                UserList(UserIndex).BancoInvent.Object(Slot).ElementalTags = UserList(UserIndex).invent.Object(ObjIndex).ElementalTags
                 
                 UserList(UserIndex).flags.ModificoInventarioBanco = True
                 

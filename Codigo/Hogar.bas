@@ -28,7 +28,7 @@ Attribute VB_Name = "Hogar"
 '
 Option Explicit
 
-Public Const NUMCIUDADES    As Byte = 7
+Public Const NUMCIUDADES    As Byte = 9
 
 Public Ciudades(1 To NUMCIUDADES)         As t_WorldPos
 
@@ -123,8 +123,8 @@ Public Sub HomeArrival(ByVal UserIndex As Integer)
 
                 Call TargetUpdateTerrain(.EffectOverTime)
 
-154             .invent.BarcoObjIndex = 0
-156             .invent.BarcoSlot = 0
+154             .invent.EquippedShipObjIndex = 0
+156             .invent.EquippedShipSlot = 0
             
 116             Call WriteNavigateToggle(UserIndex, .flags.Navegando)
 117             Call WriteNadarToggle(UserIndex, False)

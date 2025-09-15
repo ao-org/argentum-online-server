@@ -416,12 +416,12 @@ Sub RellenarInventario(ByVal UserIndex As String)
                         
 232         .Invent.Object(NumItems).amount = 1
 234         .Invent.Object(NumItems).Equipped = 1
-236         .Invent.ArmourEqpSlot = NumItems
-238         .Invent.ArmourEqpObjIndex = .Invent.Object(NumItems).ObjIndex
+236         .Invent.EquippedArmorSlot = NumItems
+238         .Invent.EquippedArmorObjIndex = .Invent.Object(NumItems).ObjIndex
 240          NumItems = NumItems + 1
 
             ' Animación según raza
-242          .Char.Body = ObtenerRopaje(UserIndex, ObjData(.Invent.ArmourEqpObjIndex))
+242          .Char.Body = ObtenerRopaje(UserIndex, ObjData(.Invent.EquippedArmorObjIndex))
         
             ' Comida y bebida
 244         .invent.Object(NumItems).ObjIndex = 3684 ' Manzana
@@ -736,6 +736,14 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
                     .Pos.map = 196
                     .Pos.x = 43
                     .Pos.y = 58
+                Case e_Ciudad.cEldoria
+                    .Pos.map = 440
+                    .Pos.x = 50
+                    .Pos.y = 88
+                Case e_Ciudad.cPenthar
+                    .pos.Map = 560
+                    .pos.x = 40
+                    .pos.y = 69
             End Select
         
 254         UltimoChar = UCase$(name)
@@ -1533,6 +1541,7 @@ Sub ResetUserBanco(ByVal UserIndex As Integer)
 102         UserList(UserIndex).BancoInvent.Object(LoopC).amount = 0
 104         UserList(UserIndex).BancoInvent.Object(LoopC).Equipped = 0
 106         UserList(UserIndex).BancoInvent.Object(LoopC).ObjIndex = 0
+            UserList(UserIndex).BancoInvent.Object(LoopC).ElementalTags = 0
 108     Next LoopC
     
 110     UserList(UserIndex).BancoInvent.NroItems = 0
@@ -1674,7 +1683,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 128         errordesc = "ERROR AL DESMONTAR"
     
 130         If .flags.Montado > 0 Then
-132             Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
+132             Call DoMontar(UserIndex, ObjData(.Invent.EquippedSaddleObjIndex), .Invent.EquippedSaddleSlot)
             End If
             
 134         errordesc = "ERROR AL CANCELAR SOLICITUD DE RETO"

@@ -180,6 +180,10 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
         End If
         
+        If NpcList(NpcIndex).ShowKillerConsole > 0 Then
+            'Msg1986=¬1 ha muerto en manos de ¬2
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1986", NpcList(NpcIndex).name & "¬" & UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_GLOBAL))
+        End If
       
 
         'Quitamos el npc
@@ -795,9 +799,9 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                 End If
                 
 156             If UserList(sndIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 90 Then
-158                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, .Char.CartAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Char.Ataque1)
+158                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, .Char.CartAnim, 0, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Char.Ataque1)
                 Else
-160                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, .Char.CartAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, 0, 0, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Char.Ataque1)
+160                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, .Char.CartAnim, 0, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, 0, 0, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Char.Ataque1)
                 End If
                 
                 If IsSet(.flags.StatusMask, e_StatusMask.eDontBlockTile) Then
@@ -832,7 +836,7 @@ Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal Body As Integer, ByVal Head A
 108             .Char.Head = Head
 110             .Char.Heading = Heading
                 If .Char.charindex > 0 Then
-112                 Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharacterChange(body, head, Heading, .Char.charindex, 0, 0, 0, 0, 0, 0, .flags.NPCIdle, False))
+112                 Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharacterChange(body, head, Heading, .Char.charindex, 0, 0, 0, 0, 0, 0, 0, .flags.NPCIdle, False))
                 End If
             End If
         
@@ -1276,6 +1280,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 128         .flags.AguaValida = val(Leer.GetValue("NPC" & NpcNumber, "AguaValida"))
 130         .flags.TierraInvalida = val(Leer.GetValue("NPC" & NpcNumber, "TierraInValida"))
 132         .flags.Faccion = val(Leer.GetValue("NPC" & NpcNumber, "Faccion"))
+            .flags.ElementalTags = val(Leer.GetValue("NPC" & NpcNumber, "ElementalTags"))
     
 134         .NPCtype = val(Leer.GetValue("NPC" & NpcNumber, "NpcType"))
     
@@ -1368,6 +1373,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 210         .QuizaProb = val(Leer.GetValue("NPC" & NpcNumber, "QuizaProb"))
             .MinTameLevel = val(Leer.GetValue("NPC" & NpcNumber, "MinTameLevel", 1))
             .OnlyForGuilds = val(Leer.GetValue("NPC" & NpcNumber, "OnlyForGuilds", 0))
+            .ShowKillerConsole = val(Leer.GetValue("NPC" & NpcNumber, "ShowKillerConsole", 0))
         
 214         If .IntervaloMovimiento = 0 Then
 216             .IntervaloMovimiento = 380
@@ -2113,7 +2119,9 @@ UserCanAttackNpc.TurnPK = False
                 End If
            End If
        End If
-    If Status(UserIndex) = Ciudadano Or Status(UserIndex) = Armada Or Status(UserIndex) = consejo Then
+    If Status(UserIndex) = e_Facciones.Ciudadano Or _
+       Status(UserIndex) = e_Facciones.Armada Or _
+       Status(UserIndex) = e_Facciones.consejo Then
         'Es el NPC mascota de alguien?
 180     If IsPet Then
 182         Select Case UserList(NpcList(NpcIndex).MaestroUser.ArrayIndex).Faccion.Status

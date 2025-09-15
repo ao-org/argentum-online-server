@@ -103,9 +103,9 @@ Public Sub KickUnregisteredPlayers()
     If EnableAnticheat Then
         Dim UserRef As t_UserReference
         Dim Result As Long
-        Result = QueryAndRemoveOldPendingRegistey(UserRef, 10000)
+        Result = QueryAndRemoveOldPendingRegistey(UserRef, 30000)
         If Result > 0 And IsValidUserRef(UserRef) Then
-            Call modNetwork.Kick(UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID, "Anticheat detection timeout")
+            'Call modNetwork.Kick(UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID, "Anticheat detection timeout")
         End If
     End If
 End Sub
@@ -169,7 +169,7 @@ Public Sub ClientActionRequired(ByRef UserRef As t_UserReference, ByVal Action A
         ReasonStr = GetStringFromPtr(ReasonString.Ptr, ReasonString.Len)
     End If
     If Action = eEOS_ACCCA_RemovePlayer And IsValidUserRef(UserRef) Then
-        Call modNetwork.Kick(UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID, ReasonStr)
+        'Call modNetwork.Kick(UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID, ReasonStr)
     End If
 End Sub
 

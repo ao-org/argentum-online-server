@@ -64,7 +64,7 @@ Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
 100     With UserList(UserIndex)
             Dim RS As ADODB.Recordset
             Dim counter As Long
-            Set RS = Query("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", .id)
+            Set RS = Query("SELECT number, item_id, amount,elemental_tags FROM bank_item WHERE user_id = ?;", .ID)
             counter = 0
 368         If Not RS Is Nothing Then
 372             While Not RS.EOF
@@ -74,6 +74,7 @@ Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
 380                         If LenB(ObjData(.ObjIndex).name) Then
                                 counter = counter + 1
 382                             .amount = RS!amount
+                                .ElementalTags = RS!elemental_tags
                             Else
 384                             .ObjIndex = 0
                             End If
@@ -117,7 +118,7 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
             Dim SQLQuery As String
             Dim max_slots_to_load As Integer
             max_slots_to_load = get_num_inv_slots_from_tier(.Stats.tipoUsuario)
-            SQLQuery = "SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE number <= " & max_slots_to_load & " AND user_id = ?;"
+            SQLQuery = "SELECT number, item_id, is_equipped, amount, elemental_tags FROM inventory_item WHERE number <= " & max_slots_to_load & " AND user_id = ?;"
             Set RS = Query(SQLQuery, .Id)
             counter = 0
             If Not RS Is Nothing Then
@@ -134,8 +135,9 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
                                     counter = counter + 1
                                     .amount = RS!amount
                                     .Equipped = False
+                                    .ElementalTags = RS!elemental_tags
                                     If RS!is_equipped Then
-                                        Call EquiparInvItem(UserIndex, RS!Number)
+                                        Call EquiparInvItem(UserIndex, RS!Number, True)
                                     End If
                                 Else
                                    .ObjIndex = 0
@@ -258,6 +260,7 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .OrigChar.WeaponAnim = RS!weapon_id
         .OrigChar.CascoAnim = RS!helmet_id
         .OrigChar.ShieldAnim = RS!shield_id
+        .OrigChar.BackpackAnim = RS!backpack_id
         .OrigChar.Heading = RS!Heading
         .Stats.MaxHp = RS!max_hp
         .Stats.MinHp = RS!min_hp
@@ -353,7 +356,7 @@ Private Sub SetupUserBankInventory(ByRef User As t_User)
     Dim RS As ADODB.Recordset
     Dim counter As Long
     counter = 0
-    Set RS = Query("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", User.Id)
+    Set RS = Query("SELECT number, item_id, amount, elemental_tags FROM bank_item WHERE user_id = ?;", User.ID)
     If Not RS Is Nothing Then
         While Not RS.EOF
             With User.BancoInvent.Object(RS!Number)
@@ -362,6 +365,7 @@ Private Sub SetupUserBankInventory(ByRef User As t_User)
                     If LenB(ObjData(.ObjIndex).name) > 0 Then
                         counter = counter + 1
                         .amount = RS!amount
+                        .ElementalTags = RS!elemental_tags
                     Else
                         .ObjIndex = 0
                     End If
@@ -515,7 +519,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
                 Exit Sub
             End If
               
-104         ReDim Params(64)
+104         ReDim Params(65)
 
             Dim i As Integer
         
@@ -583,6 +587,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 284         Params(post_increment(i)) = .flags.ReturnPos.x
 286         Params(post_increment(i)) = .flags.ReturnPos.y
 287         Params(post_increment(i)) = .Stats.JineteLevel
+            Params(post_increment(i)) = .Char.BackpackAnim
 
 
             ' WHERE block
@@ -605,7 +610,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
                 Call Execute(QUERY_UPSERT_SPELLS, Params)
             
             ' ************************** User inventory *********************************
-            ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
+            ReDim Params(MAX_INVENTORY_SLOTS * 6 - 1)
             ParamC = 0
 
 370         For LoopC = 1 To MAX_INVENTORY_SLOTS
@@ -614,14 +619,15 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 376             Params(ParamC + 2) = .Invent.Object(LoopC).objIndex
 378             Params(ParamC + 3) = .Invent.Object(LoopC).amount
 379             Params(ParamC + 4) = .Invent.Object(LoopC).Equipped
+                Params(ParamC + 5) = .invent.Object(LoopC).ElementalTags
                 
-382             ParamC = ParamC + 5
+382             ParamC = ParamC + 6
 384         Next LoopC
 
             Call Execute(QUERY_UPSERT_INVENTORY, Params)
 
             ' ************************** User bank inventory *********************************
-402             ReDim Params(MAX_BANCOINVENTORY_SLOTS * 4 - 1)
+402             ReDim Params(MAX_BANCOINVENTORY_SLOTS * 5 - 1)
 404             ParamC = 0
             
 406             For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
@@ -629,8 +635,8 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 410                 Params(ParamC + 1) = LoopC
 412                 Params(ParamC + 2) = .BancoInvent.Object(LoopC).objIndex
 414                 Params(ParamC + 3) = .BancoInvent.Object(LoopC).amount
-                
-416                 ParamC = ParamC + 4
+                    Params(ParamC + 4) = .BancoInvent.Object(LoopC).ElementalTags
+416                 ParamC = ParamC + 5
 418             Next LoopC
     
                 Call Execute(QUERY_SAVE_BANCOINV, Params)
@@ -848,7 +854,7 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
             Call Execute(QUERY_SAVE_SPELLS, Params)
         
             ' ******************* INVENTORY *******************
-244         ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
+244         ReDim Params(MAX_INVENTORY_SLOTS * 6 - 1)
 246         ParamC = 0
         
 248         For LoopC = 1 To MAX_INVENTORY_SLOTS
@@ -857,8 +863,8 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
 254             Params(ParamC + 2) = .Invent.Object(LoopC).objIndex
 256             Params(ParamC + 3) = .Invent.Object(LoopC).amount
 258             Params(ParamC + 4) = .Invent.Object(LoopC).Equipped
-            
-260             ParamC = ParamC + 5
+                Params(ParamC + 5) = .invent.Object(LoopC).ElementalTags
+260             ParamC = ParamC + 6
 262         Next LoopC
         
             Call Execute(QUERY_SAVE_INVENTORY, Params)

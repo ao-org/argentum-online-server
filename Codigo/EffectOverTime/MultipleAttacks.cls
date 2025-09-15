@@ -184,8 +184,8 @@ Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, B
 End Function
 
 Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
-     If UserList(mDotInfo.TargetRef.ArrayIndex).invent.WeaponEqpObjIndex > 0 Then
-        If ObjData(UserList(mDotInfo.TargetRef.ArrayIndex).invent.WeaponEqpObjIndex).WeaponType <> eKnuckle Then
+     If UserList(mDotInfo.TargetRef.ArrayIndex).invent.EquippedWeaponObjIndex > 0 Then
+        If ObjData(UserList(mDotInfo.TargetRef.ArrayIndex).invent.EquippedWeaponObjIndex).WeaponType <> eKnuckle Then
             mDotInfo.RemoveEffect = True
             Exit Sub
         End If

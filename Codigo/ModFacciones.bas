@@ -221,23 +221,13 @@ ExpulsarFaccionCaos_Err:
 
 End Sub
 
-Public Function TituloReal(ByVal UserIndex As Integer) As String
-            On Error GoTo TituloReal_Err
+Public Function TituloReal(ByVal UserIndex As Integer) As Byte
+    On Error GoTo TituloReal_Err
+    TituloReal = UserList(UserIndex).Faccion.RecompensasReal
 
-            Dim rank As Byte
-100             rank = UserList(UserIndex).Faccion.RecompensasReal
-
-102         If rank > 0 Then
-                'Los indices impares son los Rangos de Armada
-104             TituloReal = RangosFaccion(2 * rank - 1).Titulo
-            End If
-
-            Exit Function
-
+    Exit Function
 TituloReal_Err:
-106         Call TraceError(Err.Number, Err.Description, "ModFacciones.TituloReal", Erl)
-
-
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.TituloReal", Erl)
 End Function
 
 Public Sub EnlistarCaos(ByVal UserIndex As Integer)
@@ -383,23 +373,13 @@ RecompensaCaos_Err:
 
 End Sub
 
-Public Function TituloCaos(ByVal UserIndex As Integer) As String
-            On Error GoTo TituloCaos_Err
-
-            Dim rank As Byte
-100             rank = UserList(UserIndex).Faccion.RecompensasCaos
-
-102         If rank > 0 Then
-                'Los indices pares son los Rangos del Caos
-104             TituloCaos = RangosFaccion(2 * rank).Titulo
-            End If
-
-            Exit Function
+Public Function TituloCaos(ByVal UserIndex As Integer) As Byte
+    On Error GoTo TituloCaos_Err
+        TituloCaos = UserList(UserIndex).Faccion.RecompensasCaos
+    Exit Function
 
 TituloCaos_Err:
-106         Call TraceError(Err.Number, Err.Description, "ModFacciones.TituloCaos", Erl)
-
-
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.TituloCaos", Erl)
 End Function
 
 
@@ -473,7 +453,7 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
 124                     If PuedeUsarObjeto(UserIndex, recompensa.ObjIndex, False) = 0 Then
 126                         objetoRecompensa.amount = 1
 128                         objetoRecompensa.ObjIndex = recompensa.ObjIndex
-
+                            objetoRecompensa.ElementalTags = e_ElementalTags.Normal
 130                         If Not MeterItemEnInventario(UserIndex, objetoRecompensa) Then
 132                             Call TirarItemAlPiso(.Pos, objetoRecompensa)
 

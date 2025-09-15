@@ -417,19 +417,25 @@ ErrorHandler:
     
 End Function
 
-Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje() As t_PersonajeCuenta) As Byte
+Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, _
+                                            Personaje() As t_PersonajeCuenta) As Byte
         
         On Error GoTo GetPersonajesCuentaDatabase_Err
         
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE account_id = ?;", AccountID)
+
+100     Set RS = Query( _
+                "SELECT name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index,backpack_id, is_dead, is_sailing FROM user WHERE account_id = ?;", _
+                AccountID)
 
 102     If RS Is Nothing Then Exit Function
     
 104     GetPersonajesCuentaDatabase = RS.RecordCount
 
         Dim i As Integer
+
         If GetPersonajesCuentaDatabase = 0 Then Exit Function
+
 108     For i = 1 To GetPersonajesCuentaDatabase
 110         Personaje(i).nombre = RS!Name
 112         Personaje(i).Cabeza = RS!head_id
@@ -444,6 +450,7 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
 130         Personaje(i).Escudo = RS!shield_id
 132         Personaje(i).Arma = RS!weapon_id
 134         Personaje(i).ClanIndex = RS!Guild_Index
+            Personaje(i).Backpack = RS!backpack_id
         
 136         If EsRolesMaster(Personaje(i).nombre) Then
 138             Personaje(i).Status = 3
@@ -468,8 +475,8 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
         Exit Function
 
 GetPersonajesCuentaDatabase_Err:
-162     Call TraceError(Err.Number, Err.Description, "modDatabase.GetPersonajesCuentaDatabase", Erl)
-
+162     Call TraceError(Err.Number, Err.Description, _
+                "modDatabase.GetPersonajesCuentaDatabase", Erl)
         
 End Function
 
@@ -744,7 +751,7 @@ Public Function GetUserGuildMemberDatabase(username As String) As String
         user_id = GetCharacterIdWithName(username)
         Dim RS As ADODB.Recordset
         Dim History As String
-100     Set RS = Query("SELECT guild_name FROM guild_member_history where user_id = ? order by request_time DESC", user_id)
+100     Set RS = Query("SELECT DISTINCT guild_name FROM guild_member_history where user_id = ? order by request_time DESC", user_id)
 102     If RS Is Nothing Then Exit Function
 104     If Not RS.RecordCount = 0 Then
             Dim i As Integer
@@ -787,7 +794,7 @@ Public Function GetUserGuildPedidosDatabase(username As String) As String
         user_id = GetCharacterIdWithName(username)
         Dim RS As ADODB.Recordset
         Dim History As String
-100     Set RS = Query("SELECT guild_name FROM guild_request_history where user_id = ? order by request_time DESC", user_id)
+100     Set RS = Query("SELECT DISTINCT guild_name FROM guild_request_history where user_id = ? order by request_time DESC", user_id)
 102     If RS Is Nothing Then Exit Function
 104     If Not RS.RecordCount = 0 Then
             Dim i As Integer

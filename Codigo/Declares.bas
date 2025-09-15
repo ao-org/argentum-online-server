@@ -40,6 +40,26 @@ Public Enum e_AccionBarra
     CancelarAccion = 99
 End Enum
 
+
+Public Enum e_RoyalArmyRanks
+    NotEnlisted = 0
+    FirstHierarchy = 1
+    SecondHierarchy = 2
+    ThirdHierarchy = 3
+    FourthHierarchy = 4
+    FifthHierarchy = 5
+End Enum
+
+Public Enum e_ChaosArmyRanks
+    NotEnlisted = 0
+    FirstHierarchy = 1
+    SecondHierarchy = 2
+    ThirdHierarchy = 3
+    FourthHierarchy = 4
+    FifthHierarchy = 5
+End Enum
+
+
 Public Enum e_elecciones
     HayGanador = 1
     HayGanadorPeroAbandono = 2
@@ -257,7 +277,21 @@ Public Enum e_Minerales
     LingoteDeHierro = 386
     LingoteDePlata = 387
     LingoteDeOro = 388
+    Blodium = 3787
+    FireEssence = 5179
+    WaterEssence = 5180
+    EarthEssence = 5181
+    WindEssence = 5182
 
+End Enum
+
+Public Enum e_JobsTypes
+    Miner = 1
+    Blacksmith = 2
+    Carpenter = 3
+    Woodcutter = 4
+    Fisherman = 5
+    Alchemist = 6
 End Enum
 
 Public Type t_LlamadaGM
@@ -306,8 +340,11 @@ Public Enum e_Ciudad
     cBanderbill
     cLindos
     cArghal
-    cForgat
     cArkhein
+    cForgat
+    cEldoria
+    cPenthar
+
 
 End Enum
 
@@ -360,6 +397,7 @@ Public Const NingunEscudo            As Integer = 2
 Public Const NingunCasco             As Integer = 2
 Public Const NingunArma              As Integer = 2
 Public Const NoCart                  As Integer = 2
+Public Const NoBackPack              As Integer = 2
 Public Const EspadaMataDragonesIndex As Integer = 402
 Public Const CommonLuteIndex         As Integer = 3986
 Public Const MagicLuteIndex          As Integer = 469
@@ -378,6 +416,7 @@ Public Enum e_FXSound
     Casamiento_sound = 161
     BARCA_SOUND = 202
     MP_SOUND = 522
+    RUNE_SOUND = 528
 
 End Enum
 
@@ -410,11 +449,33 @@ Public Enum e_ParticulasIndex ' Particulas FX
 
 End Enum
 
+Public Const EXPERT_SKILL_CUTOFF As Integer = 17
+
+Public Const NONEXPERT_SKILL_CUTOFF As Integer = 10
+
+Public Const GOLD_SLOT As Byte = 200
+
 Public Const VelocidadNormal       As Single = 1
 
 Public Const VelocidadMuerto       As Single = 1.4
 
 Public Const TIEMPO_CARCEL_PIQUETE As Long = 5
+
+Public Enum e_ElementalTags
+    Normal = 0
+    Fire = 1
+    Water = 2
+    Earth = 4
+    Wind = 8
+    Light = 16
+    Dark = 32
+    Chaos = 64
+    'cant have more than 32 elements, so the last one is 2^31
+End Enum
+
+Public Const MAX_ELEMENT_TAGS = 4 'the maximum suported is 32
+
+Public ElementalMatrixForNpcs(1 To MAX_ELEMENT_TAGS, 1 To MAX_ELEMENT_TAGS) As Single
 
 ''
 ' TRIGGERS
@@ -442,11 +503,74 @@ Public Enum e_Trigger
     VALIDONADO = 11
     ESCALERA = 12
     WORKERONLY = 13
+    TRANSFER_ONLY_DEAD = 14
     NADOBAJOTECHO = 16
     VALIDOPUENTE = 17
     NADOCOMBINADO = 18
     CARCEL = 19
 End Enum
+
+
+Public Enum e_NpcInfoMask
+    AlmostDead = 1
+    SeriouslyWounded = 2
+    Wounded = 4
+    LightlyWounded = 8
+    Intact = 16
+    Poisoned = 32
+    Paralized = 64
+    Inmovilized = 128
+    Fighting = 256
+End Enum
+
+Public Enum e_UsersInfoMask
+    Newbie = 1
+    Poisoned = 2
+    Blind = 4
+    Paralized = 8
+    Inmovilized = 16
+    Working = 32
+    Invisible = 64
+    Hidden = 128
+    Stupid = 256
+    Cursed = 512
+    Silenced = 1024
+    Trading = 2048
+    Resting = 4096
+    Focusing = 8192
+    Incinerated = 16384
+    Dead = 32768
+    AlmostDead = 65536
+    SeriouslyWounded = 131072
+    Wounded = 262144
+    LightlyWounded = 524288
+    Intact = 1048576
+    Counselor = 2097152
+    DemiGod = 4194304
+    God = 8388608
+    Admin = 16777216
+    RoleMaster = 33554432
+End Enum
+
+Public Enum e_UsersInfoMask2
+    ChaoticCouncil = 1
+    Chaotic = 2
+    Criminal = 4
+    RoyalCouncil = 8
+    Army = 16
+    Citizen = 32
+    ArmyFirstHierarchy = 64
+    ArmySecondHierarchy = 128
+    ArmyThirdHierarchy = 256
+    ArmyFourthHierarchy = 512
+    ArmyFifthHierarchy = 1024
+    ChaosFirstHierarchy = 2048
+    ChaosSecondHierarchy = 4096
+    ChaosThirdHierarchy = 8192
+    ChaosFourthHierarchy = 16384
+    ChaosFifthHierarchy = 32768
+End Enum
+
 
 ''
 ' constantes para el trigger 6
@@ -530,9 +654,6 @@ Public Const MAXORO             As Long = 90000000
 Public Const MAXEXP             As Long = 1999999999
 Public Const MAXUSERMATADOS     As Long = 65000
 Public Const MINATRIBUTOS       As Byte = 6
-Public Const LingoteHierro      As Integer = 386 'OK
-Public Const LingotePlata       As Integer = 387 'OK
-Public Const LingoteOro         As Integer = 388 'OK
 Public Const Wood               As Integer = 58 'OK
 Public Const ElvenWood          As Integer = 2781 'OK
 Public Const Raices             As Integer = 888 'OK
@@ -580,7 +701,8 @@ Public Const BLODIUM_MINA       As Integer = 3787 'OK
 Public Const MAP_CAPTURE_THE_FLAG_1 As Integer = 275
 Public Const MAP_CAPTURE_THE_FLAG_2 As Integer = 276
 Public Const MAP_CAPTURE_THE_FLAG_3 As Integer = 277
-Public Const MAP_MESON_HOSTIGADO As Integer = 172
+Public Const MAP_MESON_HOSTIGADO As Integer = 170
+Public Const MAP_MESON_HOSTIGADO_TRADING_ZONE As Integer = 172
 Public Const MAP_ARENA_LINDOS As Integer = 297
 
 Public Enum e_NPCType
@@ -831,48 +953,65 @@ Public Enum e_OBJType
 
     otUseOnce = 1
     otWeapon = 2
-    otArmadura = 3
-    otArboles = 4
-    otGuita = 5
-    otPuertas = 6
-    otContenedores = 7
-    otCarteles = 8
-    otLlaves = 9
-    otPociones = 11
-    otBebidas = 13
-    otLeña = 14
-    otFogata = 15
-    otEscudo = 16
-    otCasco = 17
-    otHerramientas = 18
+    otArmor = 3
+    otTrees = 4
+    otGoldCoin = 5
+    otDoors = 6
+    otBackpack = 7
+    otSignBoards = 8
+    otKeys = 9
+    'otLibre = 10
+    otPotions = 11
+    'otLibre = 12
+    otDrinks = 13
+    otWood = 14
+    'otLibre = 15
+    otShield = 16
+    otHelmet = 17
+    otWorkingTools = 18
     otTeleport = 19
-    OtDecoraciones = 20
-    otMagicos = 21
-    otYacimiento = 22
-    otMinerales = 23
-    otPergaminos = 24
-    otInstrumentos = 26
-    otYunque = 27
-    otFragua = 28
-    otDañoMagico = 30
-    otBarcos = 31
-    otFlechas = 32
-    otBotellaVacia = 33
-    otBotellaLlena = 34
-    otResistencia = 35
-    otpasajes = 36
-    otmapa = 38
-    OtPozos = 40
-    otMonturas = 44
-    otRunas = 45
-    OtCorreo = 47
-    OtCofre = 48
-    OtDonador = 50
+    otDecorations = 20
+    otAmulets = 21
+    otOreDeposit = 22
+    otMinerals = 23
+    otParchment = 24
+    'otLibre = 25
+    otMusicalInstruments = 26
+    otAnvil = 27
+    otForge = 28
+    otBlacksmithMaterial = 29
+    otMagicalInstrument = 30
+    otShips = 31
+    otArrows = 32
+    otEmptyBottle = 33
+    otFullBottle = 34
+    otRingAccesory = 35
+    otPassageTicket = 36
+    'otLibre = 37
+    otMap = 38
+    'otLibre = 39
+    'otLibre = 40
+    'otLibre = 41
+    'otLibre = 42
+    'otLibre = 43
+    otSaddles = 44
+    otRecallStones = 45
+    'otLibre = 46
+    otMail = 47
+    otChest = 48
+    otDonator = 50
     OtQuest = 51
     otFishingPool = 52
     otUsableOntarget = 53
-    otPlantas = 54
-    otCualquiera = 100
+    otPlants = 54
+    otElementalRune = 55
+    otElse = 100
+End Enum
+
+Public Enum e_RuneType
+    ReturnHome = 1
+    Escape = 2
+    MesonSafePassage = 3
 End Enum
 
 Public Enum e_UseOnceSubType
@@ -1252,35 +1391,36 @@ Public Type t_UserOBJ
     ObjIndex As Integer
     amount As Integer
     Equipped As Byte
+    ElementalTags As Long
 End Type
 
 Public Type t_Inventario
 
     Object(1 To MAX_INVENTORY_SLOTS) As t_UserOBJ
-    WeaponEqpObjIndex As Integer
-    WeaponEqpSlot As Byte
-    ArmourEqpObjIndex As Integer
-    ArmourEqpSlot As Byte
-    EscudoEqpObjIndex As Integer
-    EscudoEqpSlot As Byte
-    CascoEqpObjIndex As Integer
-    CascoEqpSlot As Byte
-    MunicionEqpObjIndex As Integer
-    MunicionEqpSlot As Byte
-    DañoMagicoEqpObjIndex As Integer
-    DañoMagicoEqpSlot As Byte
-    ResistenciaEqpObjIndex As Integer
-    ResistenciaEqpSlot As Byte
-    HerramientaEqpObjIndex As Integer
-    HerramientaEqpSlot As Byte
-    BarcoObjIndex As Integer
-    BarcoSlot As Byte
+    EquippedWeaponObjIndex As Integer
+    EquippedWeaponSlot As Byte
+    EquippedArmorObjIndex As Integer
+    EquippedArmorSlot As Byte
+    EquippedShieldObjIndex As Integer
+    EquippedShieldSlot As Byte
+    EquippedHelmetObjIndex As Integer
+    EquippedHelmetSlot As Byte
+    EquippedMunitionObjIndex As Integer
+    EquippedMunitionSlot As Byte
+    EquippedWorkingToolObjIndex As Integer
+    EquippedWorkingToolSlot As Byte
+    EquippedShipObjIndex As Integer
+    EquippedShipSlot As Byte
+    EquippedSaddleObjIndex As Integer
+    EquippedSaddleSlot As Byte
+    EquippedRingAccesoryObjIndex As Integer
+    EquippedRingAccesorySlot As Byte
+    EquippedAmuletAccesoryObjIndex As Integer
+    EquippedAmuletAccesorySlot As Byte
+    EquippedBackpackObjIndex As Integer
+    EquippedBackpackSlot As Byte
     NroItems As Integer
-    MonturaObjIndex As Integer
-    MonturaSlot As Byte
-    MagicoObjIndex As Integer
-    MagicoSlot As Byte
-    
+
 End Type
 
 Public Type t_WorldPos
@@ -1359,11 +1499,11 @@ Public Type t_Char
     Head As Integer
     Body As Integer
     originalhead As Integer
-    
     WeaponAnim As Integer
     ShieldAnim As Integer
     CascoAnim As Integer
     CartAnim As Integer
+    BackpackAnim As Integer
     ParticulaFx As Integer
     FX As Integer
     loops As Integer
@@ -1372,6 +1512,7 @@ Public Type t_Char
     Body_Aura As String
     Arma_Aura As String
     Escudo_Aura As String
+    Backpack_Aura As String
     DM_Aura As String
     RM_Aura As String
     Otra_Aura As String
@@ -1385,6 +1526,7 @@ End Type
 Public Type t_Obj
 
     ObjIndex As Integer
+    ElementalTags As Long
     amount As Long
     Data As Double
 
@@ -1601,7 +1743,13 @@ Public Type t_ObjData
     Subtipo As Byte ' 0: -, 1: Paraliza, 2: Incinera, 3: Envenena, 4: Explosiva
     
     Dorada  As Byte
-    Blodium As Byte
+    
+    Blodium As Integer
+    
+    FireEssence As Integer
+    WaterEssence As Integer
+    EarthEssence As Integer
+    WindEssence As Integer
     
     VidaUtil As Integer
     TiempoRegenerar As Integer
@@ -1656,6 +1804,7 @@ Public Type t_ObjData
     WeaponAnim As Integer ' Apunta a una anim de armas
     ShieldAnim As Integer ' Apunta a una anim de escudo
     CascoAnim As Integer
+    BackpackAnim As Integer
     
     Valor As Long     ' Precio
     
@@ -1769,6 +1918,7 @@ Public Type t_ObjData
     ObjFlags As Long 'use bitmask from enum e_ObjFlags
     
     JineteLevel As Byte
+    ElementalTags As Long
     
 End Type
 
@@ -2602,6 +2752,9 @@ Public Type t_NPCFlags
     BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
     Team As Byte
+
+    ElementalTags As Long
+
 End Type
 
 Public Type t_CriaturasEntrenador
@@ -2775,6 +2928,7 @@ Public Type t_Npc
     QuizaProb As Integer
     MinTameLevel As Byte
     OnlyForGuilds As Byte
+    ShowKillerConsole As Byte
         
     NumDestinos As Byte
     Dest() As String
@@ -2963,6 +3117,7 @@ Public ForbidenNames()                    As String
 Public BlockedWordsDescription()           As String
 Public ArmasHerrero()                     As Integer
 Public ArmadurasHerrero()                 As Integer
+Public BlackSmithElementalRunes()          As Integer
 Public ObjCarpintero()                    As Integer
 Public ObjAlquimista()                    As Integer
 Public ObjSastre()                        As Integer
@@ -2988,6 +3143,8 @@ Public Lindos                             As t_WorldPos
 Public Arghal                             As t_WorldPos
 Public Forgat                             As t_WorldPos
 Public Arkhein                            As t_WorldPos
+Public Eldoria                            As t_WorldPos
+Public Penthar                            As t_WorldPos
 Public CityNix                            As t_CityWorldPos
 Public CityUllathorpe                     As t_CityWorldPos
 Public CityBanderbill                     As t_CityWorldPos
@@ -2997,6 +3154,7 @@ Public CityPenthar                        As t_CityWorldPos
 Public CityLindos                         As t_CityWorldPos
 Public CityEleusis                        As t_CityWorldPos
 Public CityArkhein                        As t_CityWorldPos
+Public CityEldoria                        As t_CityWorldPos
 Public Prision                            As t_WorldPos
 Public Libertad                           As t_WorldPos
 Public Renacimiento                       As t_WorldPos

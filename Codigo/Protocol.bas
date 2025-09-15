@@ -134,6 +134,7 @@ Public Type t_PersonajeCuenta
     Escudo As Integer
     Casco As Integer
     ClanIndex As Integer
+    Backpack As Integer
 
 End Type
 
@@ -1000,43 +1001,63 @@ HandleCreateAccount_Err:
 End Sub
 
 Private Sub HandleLoginAccount(ByVal ConnectionId As Long)
-    On Error GoTo LoginAccount_Err:
-    
-    Dim username As String
-    Dim Password As String
-    username = Reader.ReadString8
-    Password = Reader.ReadString8
-    Dim UserIndex As Integer
-    UserIndex = MapConnectionToUser(ConnectionId)
-    If UserIndex < 1 Then
-        Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("No hay slot disponibles para el usuario."))
-        Call KickConnection(ConnectionId)
-        Exit Sub
-    End If
-    If (username = "" Or Password = "" Or LenB(Password) <= 3) Then
-        Call WriteErrorMsg(userindex, "Parametros incorrectos")
-        Call CloseSocket(userindex)
-        Exit Sub
-    End If
 
-    Dim result As ADODB.Recordset
-    Set result = Query("SELECT * FROM account WHERE UPPER(email)=UPPER(?) AND password=?", username, Password)
+        On Error GoTo LoginAccount_Err:
     
-    If (result.EOF) Then
-        Call WriteErrorMsg(UserIndex, "Usuario o Contraseña erronea.")
-        Call CloseSocket(userindex)
-        Exit Sub
-    End If
+        Dim username As String
+
+        Dim Password As String
+
+        username = reader.ReadString8
+        Password = reader.ReadString8
+
+        Dim UserIndex As Integer
+
+        UserIndex = MapConnectionToUser(ConnectionID)
+
+        If UserIndex < 1 Then
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox( _
+                    "No hay slot disponibles para el usuario."))
+            Call KickConnection(ConnectionID)
+
+            Exit Sub
+
+        End If
+
+        If (username = "" Or Password = "" Or LenB(Password) <= 3) Then
+            Call WriteErrorMsg(UserIndex, "Parametros incorrectos")
+            Call CloseSocket(UserIndex)
+
+            Exit Sub
+
+        End If
+
+        Dim Result As ADODB.Recordset
+
+        Set Result = Query( _
+                "SELECT * FROM account WHERE UPPER(email)=UPPER(?) AND password=?", _
+                username, Password)
+    
+        If (Result.EOF) Then
+            Call WriteErrorMsg(UserIndex, "Usuario o Contraseña erronea.")
+            Call CloseSocket(UserIndex)
+
+            Exit Sub
+
+        End If
         
-    UserList(userindex).AccountID = result!ID
+        UserList(UserIndex).AccountID = Result!Id
     
-    Dim Personajes(1 To 10) As t_PersonajeCuenta
-    Dim Count As Long
-    Count = GetPersonajesCuentaDatabase(result!ID, Personajes)
-    
-    Call WriteAccountCharacterList(userindex, Personajes, Count)
+        Dim Personajes(1 To 10) As t_PersonajeCuenta
 
-    Exit Sub
+        Dim count               As Long
+
+        count = GetPersonajesCuentaDatabase(Result!Id, Personajes)
+    
+        Call WriteAccountCharacterList(UserIndex, Personajes, count)
+
+        Exit Sub
+
 LoginAccount_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginAccount", Erl)
 End Sub
@@ -1451,7 +1472,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
 122                         Call EquiparBarco(UserIndex)
 124                         ' Msg592=¡Has recuperado tu apariencia normal!
                             Call WriteLocaleMsg(UserIndex, "592", e_FontTypeNames.FONTTYPE_INFO)
-126                         Call ChangeUserChar(UserIndex, .char.body, .char.head, .char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
+126                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
 128                         Call RefreshCharStatus(UserIndex)
                         End If
     
@@ -1709,7 +1730,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 186                         Call EquiparBarco(UserIndex)
 188                         ' Msg592=¡Has recuperado tu apariencia normal!
                             Call WriteLocaleMsg(UserIndex, "592", e_FontTypeNames.FONTTYPE_INFO)
-190                         Call ChangeUserChar(UserIndex, .char.body, .char.head, .char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
+190                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
 192                         Call RefreshCharStatus(UserIndex)
                         End If
     
@@ -1796,20 +1817,20 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
             End If
         
             'If equiped weapon is ranged, can't attack this way
-106         If .Invent.WeaponEqpObjIndex > 0 Then
+106         If .invent.EquippedWeaponObjIndex > 0 Then
 
-108             If ObjData(.Invent.WeaponEqpObjIndex).Proyectil = 1 And ObjData(.Invent.WeaponEqpObjIndex).Municion > 0 Then
+108             If ObjData(.invent.EquippedWeaponObjIndex).Proyectil = 1 And ObjData(.invent.EquippedWeaponObjIndex).Municion > 0 Then
                     'Msg1125= No podés usar así esta arma.
                     Call WriteLocaleMsg(UserIndex, "1125", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
 
-                If IsItemInCooldown(UserList(UserIndex), .invent.Object(.invent.WeaponEqpSlot)) Then
+                If IsItemInCooldown(UserList(UserIndex), .invent.Object(.invent.EquippedWeaponSlot)) Then
                     Exit Sub
                 End If
             End If
         
-112         If .Invent.HerramientaEqpObjIndex > 0 Then
+112         If .invent.EquippedWorkingToolObjIndex > 0 Then
 114             ' Msg694=Para atacar debes desequipar la herramienta.
                 Call WriteLocaleMsg(UserIndex, "694", e_FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
@@ -2227,7 +2248,11 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             Packet_ID = PacketNames.Drop
             
             
-            'If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), userindex, "Drop", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+            If Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots Then
+                If Slot <> GOLD_SLOT Then
+                    Exit Sub
+                End If
+            End If
             
 106         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
             If .flags.PescandoEspecial = True Then Exit Sub
@@ -2274,7 +2299,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 136                     ElseIf ObjData(.Invent.Object(Slot).ObjIndex).Intirable = 1 And EsGM(UserIndex) Then
 138                         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
 140                             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-142                             Call DropObj(UserIndex, Slot, amount, .Pos.map, .Pos.X, .Pos.Y)
+142                             Call DropObj(UserIndex, Slot, amount, .Pos.Map, .Pos.x, .Pos.y)
                             End If
                             Exit Sub
                         End If
@@ -2288,7 +2313,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
     
                     End If
         
-148                 If ObjData(.Invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otBarcos And UserList(UserIndex).flags.Navegando Then
+148                 If ObjData(.invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otShips And UserList(UserIndex).flags.Navegando Then
 150                     ' Msg703=Para tirar la barca deberias estar en tierra firme.
                         Call WriteLocaleMsg(UserIndex, "703", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -2306,7 +2331,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             
 154                 If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
 
-156                 Call DropObj(UserIndex, Slot, amount, .Pos.Map, .Pos.X, .Pos.Y)
+156                 Call DropObj(UserIndex, Slot, amount, .Pos.Map, .Pos.x, .Pos.y)
 
                 End If
 
@@ -2841,28 +2866,28 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 
                     'Make sure the item is valid and there is ammo equipped.
 132                 With .Invent
-                        If .WeaponEqpObjIndex < 1 Then Exit Sub
-                        WeaponData = ObjData(.WeaponEqpObjIndex)
+                        If .EquippedWeaponObjIndex < 1 Then Exit Sub
+                        WeaponData = ObjData(.EquippedWeaponObjIndex)
 
-                        If IsItemInCooldown(UserList(UserIndex), .Object(.WeaponEqpSlot)) Then Exit Sub
+                        If IsItemInCooldown(UserList(UserIndex), .Object(.EquippedWeaponSlot)) Then Exit Sub
                         ProjectileType = GetProjectileView(UserList(UserIndex))
                         If WeaponData.Proyectil = 1 And WeaponData.Municion = 0 Then
                             DummyInt = 0
-                        ElseIf .WeaponEqpObjIndex = 0 Then
+                        ElseIf .EquippedWeaponObjIndex = 0 Then
 136                         DummyInt = 1
-138                     ElseIf .WeaponEqpSlot < 1 Or .WeaponEqpSlot > UserList(UserIndex).CurrentInventorySlots Then
+138                     ElseIf .EquippedWeaponSlot < 1 Or .EquippedWeaponSlot > UserList(UserIndex).CurrentInventorySlots Then
 140                         DummyInt = 1
-142                     ElseIf .MunicionEqpSlot < 1 Or .MunicionEqpSlot > UserList(UserIndex).CurrentInventorySlots Then
+142                     ElseIf .EquippedMunitionSlot < 1 Or .EquippedMunitionSlot > UserList(UserIndex).CurrentInventorySlots Then
 144                         DummyInt = 1
-146                     ElseIf .MunicionEqpObjIndex = 0 Then
+146                     ElseIf .EquippedMunitionObjIndex = 0 Then
 148                         DummyInt = 1
-150                     ElseIf ObjData(.WeaponEqpObjIndex).Proyectil <> 1 Then
+150                     ElseIf ObjData(.EquippedWeaponObjIndex).Proyectil <> 1 Then
 152                         DummyInt = 2
-154                     ElseIf ObjData(.MunicionEqpObjIndex).OBJType <> e_OBJType.otFlechas Then
+154                     ElseIf ObjData(.EquippedMunitionObjIndex).OBJType <> e_OBJType.otArrows Then
 156                         DummyInt = 1
-158                     ElseIf .Object(.MunicionEqpSlot).amount < 1 Then
+158                     ElseIf .Object(.EquippedMunitionSlot).amount < 1 Then
 160                         DummyInt = 1
-                        ElseIf ObjData(.MunicionEqpObjIndex).Subtipo <> WeaponData.Municion Then
+                        ElseIf ObjData(.EquippedMunitionObjIndex).Subtipo <> WeaponData.Municion Then
 161                         DummyInt = 1
 
                         End If
@@ -2872,7 +2897,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 166                             ' Msg709=No tenés municiones.
                                 Call WriteLocaleMsg(UserIndex, "709", e_FontTypeNames.FONTTYPE_INFO)
                             End If
-168                         Call Desequipar(UserIndex, .MunicionEqpSlot)
+168                         Call Desequipar(UserIndex, .EquippedMunitionSlot)
 170                         Call WriteWorkRequestTarget(UserIndex, 0)
                             Exit Sub
                         End If
@@ -2926,8 +2951,8 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         End If
 208                     Call UsuarioAtacaUsuario(UserIndex, tU, Ranged)
                         Dim FX As Integer
-                        If .Invent.MunicionEqpObjIndex Then
-                            FX = ObjData(.Invent.MunicionEqpObjIndex).CreaFX
+                        If .invent.EquippedMunitionObjIndex Then
+                            FX = ObjData(.invent.EquippedMunitionObjIndex).CreaFX
                         End If
 210                     If FX <> 0 Then
                             UserList(tU).Counters.timeFx = 3
@@ -2941,10 +2966,10 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.charindex, 1))
                         End If
                     
-214                     If .Invent.MunicionEqpObjIndex > 0 Then
-215                         If ObjData(.Invent.MunicionEqpObjIndex).CreaParticula <> "" Then
-216                             Particula = val(ReadField(1, ObjData(.Invent.MunicionEqpObjIndex).CreaParticula, Asc(":")))
-218                             Tiempo = val(ReadField(2, ObjData(.Invent.MunicionEqpObjIndex).CreaParticula, Asc(":")))
+214                     If .invent.EquippedMunitionObjIndex > 0 Then
+215                         If ObjData(.invent.EquippedMunitionObjIndex).CreaParticula <> "" Then
+216                             Particula = val(ReadField(1, ObjData(.invent.EquippedMunitionObjIndex).CreaParticula, Asc(":")))
+218                             Tiempo = val(ReadField(2, ObjData(.invent.EquippedMunitionObjIndex).CreaParticula, Asc(":")))
                                 UserList(tU).Counters.timeFx = 3
 220                             Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageParticleFX(UserList(tU).Char.charindex, Particula, Tiempo, False, , UserList(tU).Pos.X, UserList(tU).Pos.y))
                             End If
@@ -2988,9 +3013,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     
 242                 With .Invent
                         If WeaponData.Proyectil = 1 And WeaponData.Municion > 0 Then
-244                         DummyInt = .MunicionEqpSlot
-                            If ObjData(.WeaponEqpObjIndex).CreaWav > 0 Then
-                                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(ObjData(.WeaponEqpObjIndex).CreaWav, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+244                         DummyInt = .EquippedMunitionSlot
+                            If ObjData(.EquippedWeaponObjIndex).CreaWav > 0 Then
+                                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(ObjData(.EquippedWeaponObjIndex).CreaWav, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
                             End If
                             If DummyInt <> 0 Then
                                 'Take 1 arrow away - we do it AFTER hitting, since if Ammo Slot is 0 it gives a rt9 and kicks players
@@ -3000,12 +3025,12 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             
 250                             If .Object(DummyInt).amount > 0 Then
                                     'QuitarUserInvItem unequipps the ammo, so we equip it again
-252                                 .MunicionEqpSlot = DummyInt
-254                                 .MunicionEqpObjIndex = .Object(DummyInt).objIndex
+252                                 .EquippedMunitionSlot = DummyInt
+254                                 .EquippedMunitionObjIndex = .Object(DummyInt).ObjIndex
 256                                 .Object(DummyInt).Equipped = 1
                                 Else
-258                                 .MunicionEqpSlot = 0
-260                                 .MunicionEqpObjIndex = 0
+258                                 .EquippedMunitionSlot = 0
+260                                 .EquippedMunitionObjIndex = 0
                                 End If
 262                             Call UpdateUserInv(False, UserIndex, DummyInt)
                             End If
@@ -3048,8 +3073,8 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             
 286             Case e_Skill.Pescar
                     If .Counters.Trabajando = 0 And .Counters.LastTrabajo = 0 Then
-                        If .invent.HerramientaEqpSlot = 0 Then Exit Sub
-                        If IsItemInCooldown(UserList(UserIndex), .invent.Object(.invent.HerramientaEqpSlot)) Then Exit Sub
+                        If .invent.EquippedWorkingToolSlot = 0 Then Exit Sub
+                        If IsItemInCooldown(UserList(UserIndex), .invent.Object(.invent.EquippedWorkingToolSlot)) Then Exit Sub
                         Call LookatTile(UserIndex, .pos.map, X, y)
                         Call FishOrThrowNet(UserIndex)
                     End If
@@ -3060,14 +3085,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     
 400             Case e_Skill.Alquimia
             
-402                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
+402                 If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
                     
-404                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> e_OBJType.otHerramientas Then Exit Sub
+404                 If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
                     
                     'Check interval
 406                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
 
-408                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
+408                 Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
                 
                         Case 3  ' Herramientas de Alquimia - Tijeras
 
@@ -3110,7 +3135,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 End If
                                 
                                 '¡Hay un arbol donde clickeo?
-440                             If ObjData(DummyInt).OBJType = e_OBJType.otPlantas Then
+440                             If ObjData(DummyInt).OBJType = e_OBJType.otPlants Then
 442                                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TIJERAS, .Pos.X, .Pos.y))
 444                                 Call DoRaices(UserIndex, X, Y)
 
@@ -3240,7 +3265,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 
                     'Check there is a proper item there
 580                 If .flags.TargetObj > 0 Then
-582                     If ObjData(.flags.TargetObj).OBJType = e_OBJType.otFragua Then
+582                     If ObjData(.flags.TargetObj).OBJType = e_OBJType.otForge Then
 
                             'Validate other items
 584                         If .flags.TargetObjInvSlot < 1 Or .flags.TargetObjInvSlot > UserList(UserIndex).CurrentInventorySlots Then
@@ -3570,7 +3595,7 @@ Private Sub HandleChange_Heading(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
             Dim Heading As e_Heading
-102             Heading = Reader.ReadInt8()
+102         Heading = reader.ReadInt8()
                             
             Dim PacketCounter As Long
             PacketCounter = Reader.ReadInt32
@@ -3578,12 +3603,19 @@ Private Sub HandleChange_Heading(ByVal UserIndex As Integer)
             Dim Packet_ID As Long
             Packet_ID = PacketNames.ChangeHeading
             
-            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "ChangeHeading", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), _
+                    .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, _
+                    "ChangeHeading", PacketTimerThreshold(Packet_ID), MacroIterations( _
+                    Packet_ID)) Then Exit Sub
+
+            If .flags.Paralizado > 0 Then
+                Exit Sub
+            End If
         
             'Validate heading (VB won't say invalid cast if not a valid index like .Net languages would do... *sigh*)
 104         If Heading > 0 And Heading < 5 Then
 106             .Char.Heading = Heading
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(.Char.body, .Char.head, .Char.Heading, .Char.charindex, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CartAnim, .Char.FX, .Char.loops, .Char.CascoAnim, False, .flags.Navegando))
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(.Char.body, .Char.head, .Char.Heading, .Char.charindex, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CartAnim, .Char.BackpackAnim, .Char.FX, .Char.loops, .Char.CascoAnim, False, .flags.Navegando))
 
             End If
 
@@ -4050,9 +4082,16 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             Dim tUser  As Integer
             Dim Slot   As Byte
             Dim amount As Long
+            Dim ElementalTags As Long
             
 102         Slot = Reader.ReadInt8()
 104         amount = Reader.ReadInt32()
+
+            If Slot <> FLAGORO Then
+                'Natural elemental tags are the one in the object
+                'User added elemental tags are the one in the user slots
+                ElementalTags = UserList(UserIndex).invent.Object(Slot).ElementalTags
+            End If
             
             
             'Is the commerce attempt valid??
@@ -4133,7 +4172,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             
                 'Don't allow to sell boats if they are equipped (you can't take them off in the water and causes trouble)
 144             If .flags.Navegando = 1 Then
-146                 If .Invent.BarcoSlot = Slot Then
+146                 If .invent.EquippedShipSlot = Slot Then
                         'Msg1143= No podés vender tu barco mientras lo estás usando.
                         Call WriteLocaleMsg(UserIndex, "1143", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -4143,7 +4182,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 End If
             
 150             If .flags.Montado = 1 Then
-152                 If .Invent.MonturaSlot = Slot Then
+152                 If .invent.EquippedSaddleSlot = Slot Then
                         'Msg1144= No podés vender tu montura mientras la estás usando.
                         Call WriteLocaleMsg(UserIndex, "1144", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -4165,9 +4204,10 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 Dim ObjAEnviar As t_Obj
                 
 166             ObjAEnviar.amount = amount
+                ObjAEnviar.ElementalTags = ElementalTags
 
                 'Si no es oro tmb le agrego el objInex
-168             If Slot <> FLAGORO Then ObjAEnviar.ObjIndex = UserList(UserIndex).Invent.Object(Slot).ObjIndex
+168             If Slot <> FLAGORO Then ObjAEnviar.ObjIndex = UserList(UserIndex).invent.Object(Slot).ObjIndex
                 'Llamos a la funcion
 170             Call EnviarObjetoTransaccion(tUser, UserIndex, ObjAEnviar)
 
@@ -5304,7 +5344,7 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
                     If .Invent.Object(Index).objIndex > 0 Then
                         If .Invent.Object(Index).objIndex > 0 Then
                             obj = ObjData(.Invent.Object(Index).objIndex)
-                            If obj.OBJType = OtDonador And obj.Subtipo = 4 And .Invent.Object(Index).Equipped Then
+                            If obj.OBJType = otDonator And obj.Subtipo = 4 And .invent.Object(Index).Equipped Then
                                customEffect = obj.HechizoIndex
                                Exit For
                             End If
@@ -5475,7 +5515,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 'Does the NPC want to trade??
 116             If NpcList(.flags.TargetNPC.ArrayIndex).Comercia = 0 Then
 118                 If LenB(NpcList(.flags.TargetNPC.ArrayIndex).Desc) <> 0 Then
-120                     Call WriteLocaleChatOverHead(UserIndex, 1434, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex), vbWhite) ' Msg1434=No tengo ningún interés en comerciar.
+120                     Call WriteLocaleChatOverHead(UserIndex, 1434, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1434=No tengo ningún interés en comerciar.
                     End If
                     Exit Sub
                 End If
@@ -5661,16 +5701,16 @@ Private Sub HandleInformation(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
 
-                Call WriteLocaleChatOverHead(UserIndex, 1390, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1390=Tu deber es combatir criminales, cada 100 criminales que derrotes te darí una recompensa.
+                Call WriteLocaleChatOverHead(UserIndex, 1390, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1390=Tu deber es combatir criminales, cada 100 criminales que derrotes te darí una recompensa.
             Else
 
 120             If .Faccion.Status <> e_Facciones.Caos Or .Faccion.Status <> e_Facciones.concilio Then
-                    Call WriteLocaleChatOverHead(UserIndex, 1391, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1391=No perteneces a la legión oscura!!!
+                    Call WriteLocaleChatOverHead(UserIndex, 1391, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1391=No perteneces a la legión oscura!!!
                     Exit Sub
 
                 End If
 
-                Call WriteLocaleChatOverHead(UserIndex, 1392, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1392=Tu deber es sembrar el caos y la desesperanza, cada 100 ciudadanos que derrotes te darí una recompensa.
+                Call WriteLocaleChatOverHead(UserIndex, 1392, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1392=Tu deber es sembrar el caos y la desesperanza, cada 100 ciudadanos que derrotes te darí una recompensa.
 
             End If
 
@@ -5716,7 +5756,7 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
 118             Call RecompensaArmadaReal(UserIndex)
             Else
 120             If .Faccion.Status <> e_Facciones.Caos And .Faccion.Status <> e_Facciones.concilio Then
-                    Call WriteLocaleChatOverHead(UserIndex, 1394, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1394=No perteneces a la legión oscura!!!
+                    Call WriteLocaleChatOverHead(UserIndex, 1394, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1394=No perteneces a la legión oscura!!!
                     Exit Sub
                 End If
 124             Call RecompensaCaos(UserIndex)
@@ -5980,11 +6020,11 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
 118         If amount > 0 And amount <= .Stats.Banco Then
 120             .Stats.Banco = .Stats.Banco - amount
 122             .Stats.GLD = .Stats.GLD + amount
-                Call WriteLocaleChatOverHead(UserIndex, 1418, .Stats.Banco, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite) ' Msg1418=Tenés ¬1 monedas de oro en tu cuenta.
+                Call WriteLocaleChatOverHead(UserIndex, 1418, .Stats.Banco, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1418=Tenés ¬1 monedas de oro en tu cuenta.
 124             Call WriteUpdateGold(UserIndex)
                 Call WriteUpdateBankGld(UserIndex)
             Else
-                Call WriteLocaleChatOverHead(UserIndex, 1395, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1395=No tenés esa cantidad.
+                Call WriteLocaleChatOverHead(UserIndex, 1395, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1395=No tenés esa cantidad.
 
             End If
         End With
@@ -6047,17 +6087,17 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
                             Else
                                 'Me fijo si está en un clan armada, en ese caso no lo dejo salir de la facción
                                 If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
-                                    Call WriteLocaleChatOverHead(UserIndex, 1396, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1396=Para dejar la facción primero deberás ceder el liderazgo del clan
+                                    Call WriteLocaleChatOverHead(UserIndex, 1396, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1396=Para dejar la facción primero deberás ceder el liderazgo del clan
                                     Exit Sub
                                 End If
                             End If
                         End If
                     
 140                     Call ExpulsarFaccionReal(UserIndex)
-                        Call WriteLocaleChatOverHead(UserIndex, 1397, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1397=Serás bienvenido a las fuerzas imperiales si deseas regresar.
+                        Call WriteLocaleChatOverHead(UserIndex, 1397, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1397=Serás bienvenido a las fuerzas imperiales si deseas regresar.
                         Exit Sub
                     Else
-                        Call WriteLocaleChatOverHead(UserIndex, 1398, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1398=¡¡¡Sal de aquí bufón!!!
+                        Call WriteLocaleChatOverHead(UserIndex, 1398, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1398=¡¡¡Sal de aquí bufón!!!
 
                     End If
 
@@ -6078,20 +6118,20 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
                             Else
                                 'Me fijo si está en un clan CAOS, en ese caso no lo dejo salir de la facción
                                 If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
-                                    Call WriteLocaleChatOverHead(UserIndex, 1399, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1399=Para dejar la facción primero deberás ceder el liderazgo del clan
+                                    Call WriteLocaleChatOverHead(UserIndex, 1399, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1399=Para dejar la facción primero deberás ceder el liderazgo del clan
                                     Exit Sub
                                 End If
                             End If
                         End If
                     
 160                     Call ExpulsarFaccionCaos(UserIndex)
-                        Call WriteLocaleChatOverHead(UserIndex, 1400, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1400=Ya volverás arrastrandote.
+                        Call WriteLocaleChatOverHead(UserIndex, 1400, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1400=Ya volverás arrastrandote.
                     Else
-                        Call WriteLocaleChatOverHead(UserIndex, 1401, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1401=Sal de aquí maldito criminal
+                        Call WriteLocaleChatOverHead(UserIndex, 1401, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1401=Sal de aquí maldito criminal
 
                     End If
                 Else
-                    Call WriteLocaleChatOverHead(UserIndex, 1402, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1402=¡No perteneces a ninguna facción!
+                    Call WriteLocaleChatOverHead(UserIndex, 1402, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1402=¡No perteneces a ninguna facción!
 
                 End If
             End If
@@ -6130,11 +6170,11 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
                 'substract first in case there is overflow we don't dup gold
                 .Stats.GLD = .Stats.GLD - amount
                 .Stats.Banco = .Stats.Banco + amount
-                Call WriteLocaleChatOverHead(UserIndex, 1418, .Stats.Banco, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite) ' Msg1418=Tenés ¬1 monedas de oro en tu cuenta.
+                Call WriteLocaleChatOverHead(UserIndex, 1418, .Stats.Banco, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1418=Tenés ¬1 monedas de oro en tu cuenta.
 124             Call WriteUpdateGold(UserIndex)
                 Call WriteUpdateBankGld(UserIndex)
             Else
-128             Call WriteLocaleChatOverHead(UserIndex, 1419, "", NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite) ' Msg1419=No tenés esa cantidad.
+128             Call WriteLocaleChatOverHead(UserIndex, 1419, "", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1419=No tenés esa cantidad.
             End If
         End With
         Exit Sub
@@ -7166,13 +7206,13 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
             End If
 
 118         If .Faccion.Status = e_Facciones.Ciudadano Or .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Or .Faccion.Status = e_Facciones.concilio Or .Faccion.Status = e_Facciones.Caos Then
-120             Call WriteLocaleChatOverHead(UserIndex, 1377, "", NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite) ' Msg1377=No puedo aceptar tu donación en este momento...
+120             Call WriteLocaleChatOverHead(UserIndex, 1377, "", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1377=No puedo aceptar tu donación en este momento...
                 Exit Sub
             End If
 
 122         If .GuildIndex <> 0 Then
 124             If modGuilds.Alineacion(.GuildIndex) = 1 Then
-                    Call WriteLocaleChatOverHead(UserIndex, 1404, vbNullString, priest.Char.charIndex, vbWhite)  ' Msg1404=Te encuentras en un clan criminal... no puedo aceptar tu donación.
+                    Call WriteLocaleChatOverHead(UserIndex, 1404, vbNullString, priest.Char.charindex, vbWhite)  ' Msg1404=Te encuentras en un clan criminal... no puedo aceptar tu donación.
                     Exit Sub
                 End If
             End If
@@ -7199,7 +7239,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 140         Call WriteUpdateGold(UserIndex)
             'Msg1219= Has donado ¬1
             Call WriteLocaleMsg(UserIndex, "1219", e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Oro))
-            Call WriteLocaleChatOverHead(UserIndex, 1406, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charIndex, vbYellow)  ' Msg1406=¡Gracias por tu generosa donación! Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!
+            Call WriteLocaleChatOverHead(UserIndex, 1406, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbYellow)  ' Msg1406=¡Gracias por tu generosa donación! Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!
 146         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, "80", 100, False))
 148         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
 150         Call VolverCiudadano(UserIndex)
@@ -7573,7 +7613,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
             End If
         
 120         If .flags.Subastando = False Then
-                Call WriteLocaleChatOverHead(UserIndex, 1407, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1407=Oye amigo, tu no podés decirme cual es la oferta inicial.
+                Call WriteLocaleChatOverHead(UserIndex, 1407, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1407=Oye amigo, tu no podés decirme cual es la oferta inicial.
                 Exit Sub
             End If
         
@@ -7817,7 +7857,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 124         tUser = NameIndex(UserName)
             ' Enviar a vos mismo?
 126         If tUser.ArrayIndex = userIndex Then
-                Call WriteLocaleChatOverHead(UserIndex, 1408, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1408=¡No puedo enviarte oro a vos mismo!
+                Call WriteLocaleChatOverHead(UserIndex, 1408, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1408=¡No puedo enviarte oro a vos mismo!
                 Exit Sub
             End If
     
@@ -7826,7 +7866,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                     If GetTickCount() - .Counters.LastTransferGold >= 10000 Then
                         If PersonajeExiste(username) Then
 136                         If Not AddOroBancoDatabase(username, Cantidad) Then
-                                Call WriteLocaleChatOverHead(UserIndex, 1409, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1409=Error al realizar la operación.
+                                Call WriteLocaleChatOverHead(UserIndex, 1409, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1409=Error al realizar la operación.
                                 Exit Sub
                             Else
 150                             UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
@@ -7844,7 +7884,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                  UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
                  UserList(tUser.ArrayIndex).Stats.Banco = UserList(tUser.ArrayIndex).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
                 End If
-152             Call WriteLocaleChatOverHead(UserIndex, 1435, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex), vbWhite) ' Msg1435=¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath
+152             Call WriteLocaleChatOverHead(UserIndex, 1435, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1435=¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath
             Else
                 Call WriteLocaleChatOverHead(UserIndex, 1413, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1413=Los administradores no pueden transferir oro.
 158             Call LogGM(.Name, "Quizo transferirle oro a: " & UserName)
@@ -7872,6 +7912,9 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 104         SlotNuevo = Reader.ReadInt8()
         
             Dim Objeto    As t_Obj
+            Dim AppliedElementalTags As Boolean
+            Dim tmpElementalTags As Long
+            
             Dim Equipado  As Boolean
             Dim Equipado2 As Boolean
             Dim Equipado3 As Boolean
@@ -7904,6 +7947,15 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                 End If
                 
             End If
+
+
+            If IsFeatureEnabled("elemental_tags") Then
+                    AppliedElementalTags = False
+                If CanElementalTagBeApplied(UserIndex, SlotNuevo, SlotViejo) Then
+                    AppliedElementalTags = True
+                    Call RemoveItemFromInventory(UserIndex, SlotViejo)
+                End If
+            End If
             
         
 106         If (SlotViejo > .CurrentInventorySlots) Or (SlotNuevo > .CurrentInventorySlots) Then
@@ -7911,7 +7963,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                 Call WriteLocaleMsg(UserIndex, "1235", e_FontTypeNames.FONTTYPE_INFO)
             Else
     
-110             If .Invent.Object(SlotNuevo).ObjIndex = .Invent.Object(SlotViejo).ObjIndex Then
+110             If .invent.Object(SlotNuevo).ObjIndex = .invent.Object(SlotViejo).ObjIndex And .invent.Object(SlotNuevo).ElementalTags = .invent.Object(SlotViejo).ElementalTags Then
 112                 .Invent.Object(SlotNuevo).amount = .Invent.Object(SlotNuevo).amount + .Invent.Object(SlotViejo).amount
                     
                     Dim Excedente As Integer
@@ -7932,67 +7984,67 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 130                     .Invent.Object(SlotViejo).Equipped = 0
                     
                         'Cambiamos si alguno es un anillo
-132                     If .invent.DañoMagicoEqpSlot = SlotViejo Then
-134                         .invent.DañoMagicoEqpSlot = SlotNuevo
+132                     If .invent.EquippedRingAccesorySlot = SlotViejo Then
+134                         .invent.EquippedRingAccesorySlot = SlotNuevo
 
                         End If
 
-136                     If .Invent.ResistenciaEqpSlot = SlotViejo Then
-138                         .Invent.ResistenciaEqpSlot = SlotNuevo
+136                     If .invent.EquippedRingAccesorySlot = SlotViejo Then
+138                         .invent.EquippedRingAccesorySlot = SlotNuevo
 
                         End If
                         
                         'Cambiamos si alguno es un armor
-140                     If .Invent.ArmourEqpSlot = SlotViejo Then
-142                         .Invent.ArmourEqpSlot = SlotNuevo
+140                     If .invent.EquippedArmorSlot = SlotViejo Then
+142                         .invent.EquippedArmorSlot = SlotNuevo
 
                         End If
                         
                         'Cambiamos si alguno es un barco
-144                     If .Invent.BarcoSlot = SlotViejo Then
-146                         .Invent.BarcoSlot = SlotNuevo
+144                     If .invent.EquippedShipSlot = SlotViejo Then
+146                         .invent.EquippedShipSlot = SlotNuevo
 
                         End If
                         
                         'Cambiamos si alguno es una montura
-148                     If .Invent.MonturaSlot = SlotViejo Then
-150                         .Invent.MonturaSlot = SlotNuevo
+148                     If .invent.EquippedSaddleSlot = SlotViejo Then
+150                         .invent.EquippedSaddleSlot = SlotNuevo
 
                         End If
                         
                         'Cambiamos si alguno es un casco
-152                     If .Invent.CascoEqpSlot = SlotViejo Then
-154                         .Invent.CascoEqpSlot = SlotNuevo
+152                     If .invent.EquippedHelmetSlot = SlotViejo Then
+154                         .invent.EquippedHelmetSlot = SlotNuevo
 
                         End If
                         
                         'Cambiamos si alguno es un escudo
-156                     If .Invent.EscudoEqpSlot = SlotViejo Then
-158                         .Invent.EscudoEqpSlot = SlotNuevo
+156                     If .invent.EquippedShieldSlot = SlotViejo Then
+158                         .invent.EquippedShieldSlot = SlotNuevo
 
                         End If
                         
                         'Cambiamos si alguno es munición
-160                     If .Invent.MunicionEqpSlot = SlotViejo Then
-162                         .Invent.MunicionEqpSlot = SlotNuevo
+160                     If .invent.EquippedMunitionSlot = SlotViejo Then
+162                         .invent.EquippedMunitionSlot = SlotNuevo
 
                         End If
                         
                         'Cambiamos si alguno es un arma
-164                     If .Invent.WeaponEqpSlot = SlotViejo Then
-166                         .Invent.WeaponEqpSlot = SlotNuevo
+164                     If .invent.EquippedWeaponSlot = SlotViejo Then
+166                         .invent.EquippedWeaponSlot = SlotNuevo
 
                         End If
                         
                         'Cambiamos si alguno es un magico
-172                     If .Invent.MagicoSlot = SlotViejo Then
-174                         .Invent.MagicoSlot = SlotNuevo
+172                     If .invent.EquippedAmuletAccesorySlot = SlotViejo Then
+174                         .invent.EquippedAmuletAccesorySlot = SlotNuevo
 
                         End If
                         
                         'Cambiamos si alguno es una herramienta
-176                     If .Invent.HerramientaEqpSlot = SlotViejo Then
-178                         .Invent.HerramientaEqpSlot = SlotNuevo
+176                     If .invent.EquippedWorkingToolSlot = SlotViejo Then
+178                         .invent.EquippedWorkingToolSlot = SlotNuevo
 
                         End If
 
@@ -8000,10 +8052,10 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                 
                 Else
 
-180                 If .Invent.Object(SlotNuevo).ObjIndex <> 0 Then
+180                 If .invent.Object(SlotNuevo).ObjIndex <> 0 And Not AppliedElementalTags Then
 182                     Objeto.amount = .Invent.Object(SlotViejo).amount
 184                     Objeto.ObjIndex = .Invent.Object(SlotViejo).ObjIndex
-                    
+                        tmpElementalTags = .invent.Object(SlotViejo).ElementalTags
 186                     If .Invent.Object(SlotViejo).Equipped = 1 Then
 188                         Equipado = True
     
@@ -8020,10 +8072,11 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                     
 194                     .Invent.Object(SlotViejo).ObjIndex = .Invent.Object(SlotNuevo).ObjIndex
 196                     .Invent.Object(SlotViejo).amount = .Invent.Object(SlotNuevo).amount
+                        .invent.Object(SlotViejo).ElementalTags = .invent.Object(SlotNuevo).ElementalTags
                     
 198                     .Invent.Object(SlotNuevo).ObjIndex = Objeto.ObjIndex
 200                     .Invent.Object(SlotNuevo).amount = Objeto.amount
-                    
+                        .invent.Object(SlotNuevo).ElementalTags = tmpElementalTags
 202                     If Equipado Then
 204                         .Invent.Object(SlotNuevo).Equipped = 1
                         Else
@@ -8041,100 +8094,95 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                     End If
     
                     'Cambiamos si alguno es un anillo
-214                 If .invent.DañoMagicoEqpSlot = SlotViejo Then
-216                     .invent.DañoMagicoEqpSlot = SlotNuevo
-218                 ElseIf .invent.DañoMagicoEqpSlot = SlotNuevo Then
-220                     .invent.DañoMagicoEqpSlot = SlotViejo
-
-                    End If
-
-222                 If .Invent.ResistenciaEqpSlot = SlotViejo Then
-224                     .Invent.ResistenciaEqpSlot = SlotNuevo
-226                 ElseIf .Invent.ResistenciaEqpSlot = SlotNuevo Then
-228                     .Invent.ResistenciaEqpSlot = SlotViejo
+214                 If .invent.EquippedRingAccesorySlot = SlotViejo Then
+216                     .invent.EquippedRingAccesorySlot = SlotNuevo
+218                 ElseIf .invent.EquippedRingAccesorySlot = SlotNuevo Then
+220                     .invent.EquippedRingAccesorySlot = SlotViejo
 
                     End If
                     
                     'Cambiamos si alguno es un armor
-230                 If .Invent.ArmourEqpSlot = SlotViejo Then
-232                     .Invent.ArmourEqpSlot = SlotNuevo
-234                 ElseIf .Invent.ArmourEqpSlot = SlotNuevo Then
-236                     .Invent.ArmourEqpSlot = SlotViejo
+230                 If .invent.EquippedArmorSlot = SlotViejo Then
+232                     .invent.EquippedArmorSlot = SlotNuevo
+234                 ElseIf .invent.EquippedArmorSlot = SlotNuevo Then
+236                     .invent.EquippedArmorSlot = SlotViejo
     
                     End If
                     
                     'Cambiamos si alguno es un barco
-238                 If .Invent.BarcoSlot = SlotViejo Then
-240                     .Invent.BarcoSlot = SlotNuevo
-242                 ElseIf .Invent.BarcoSlot = SlotNuevo Then
-244                     .Invent.BarcoSlot = SlotViejo
+238                 If .invent.EquippedShipSlot = SlotViejo Then
+240                     .invent.EquippedShipSlot = SlotNuevo
+242                 ElseIf .invent.EquippedShipSlot = SlotNuevo Then
+244                     .invent.EquippedShipSlot = SlotViejo
     
                     End If
                      
                     'Cambiamos si alguno es una montura
-246                 If .Invent.MonturaSlot = SlotViejo Then
-248                     .Invent.MonturaSlot = SlotNuevo
-250                 ElseIf .Invent.MonturaSlot = SlotNuevo Then
-252                     .Invent.MonturaSlot = SlotViejo
+246                 If .invent.EquippedSaddleSlot = SlotViejo Then
+248                     .invent.EquippedSaddleSlot = SlotNuevo
+250                 ElseIf .invent.EquippedSaddleSlot = SlotNuevo Then
+252                     .invent.EquippedSaddleSlot = SlotViejo
     
                     End If
                     
                     'Cambiamos si alguno es un casco
-254                 If .Invent.CascoEqpSlot = SlotViejo Then
-256                     .Invent.CascoEqpSlot = SlotNuevo
-258                 ElseIf .Invent.CascoEqpSlot = SlotNuevo Then
-260                     .Invent.CascoEqpSlot = SlotViejo
+254                 If .invent.EquippedHelmetSlot = SlotViejo Then
+256                     .invent.EquippedHelmetSlot = SlotNuevo
+258                 ElseIf .invent.EquippedHelmetSlot = SlotNuevo Then
+260                     .invent.EquippedHelmetSlot = SlotViejo
     
                     End If
                     
                     'Cambiamos si alguno es un escudo
-262                 If .Invent.EscudoEqpSlot = SlotViejo Then
-264                     .Invent.EscudoEqpSlot = SlotNuevo
-266                 ElseIf .Invent.EscudoEqpSlot = SlotNuevo Then
-268                     .Invent.EscudoEqpSlot = SlotViejo
+262                 If .invent.EquippedShieldSlot = SlotViejo Then
+264                     .invent.EquippedShieldSlot = SlotNuevo
+266                 ElseIf .invent.EquippedShieldSlot = SlotNuevo Then
+268                     .invent.EquippedShieldSlot = SlotViejo
     
                     End If
                     
                     'Cambiamos si alguno es munición
-270                 If .Invent.MunicionEqpSlot = SlotViejo Then
-272                     .Invent.MunicionEqpSlot = SlotNuevo
-274                 ElseIf .Invent.MunicionEqpSlot = SlotNuevo Then
-276                     .Invent.MunicionEqpSlot = SlotViejo
+270                 If .invent.EquippedMunitionSlot = SlotViejo Then
+272                     .invent.EquippedMunitionSlot = SlotNuevo
+274                 ElseIf .invent.EquippedMunitionSlot = SlotNuevo Then
+276                     .invent.EquippedMunitionSlot = SlotViejo
     
                     End If
                     
                     'Cambiamos si alguno es un arma
-278                 If .Invent.WeaponEqpSlot = SlotViejo Then
-280                     .Invent.WeaponEqpSlot = SlotNuevo
-282                 ElseIf .Invent.WeaponEqpSlot = SlotNuevo Then
-284                     .Invent.WeaponEqpSlot = SlotViejo
+278                 If .invent.EquippedWeaponSlot = SlotViejo Then
+280                     .invent.EquippedWeaponSlot = SlotNuevo
+282                 ElseIf .invent.EquippedWeaponSlot = SlotNuevo Then
+284                     .invent.EquippedWeaponSlot = SlotViejo
     
                     End If
                      
                     'Cambiamos si alguno es un magico
-294                 If .Invent.MagicoSlot = SlotViejo Then
-296                     .Invent.MagicoSlot = SlotNuevo
-298                 ElseIf .Invent.MagicoSlot = SlotNuevo Then
-300                     .Invent.MagicoSlot = SlotViejo
+294                 If .invent.EquippedAmuletAccesorySlot = SlotViejo Then
+296                     .invent.EquippedAmuletAccesorySlot = SlotNuevo
+298                 ElseIf .invent.EquippedAmuletAccesorySlot = SlotNuevo Then
+300                     .invent.EquippedAmuletAccesorySlot = SlotViejo
     
                     End If
                      
                     'Cambiamos si alguno es una herramienta
-302                 If .Invent.HerramientaEqpSlot = SlotViejo Then
-304                     .Invent.HerramientaEqpSlot = SlotNuevo
-306                 ElseIf .Invent.HerramientaEqpSlot = SlotNuevo Then
-308                     .Invent.HerramientaEqpSlot = SlotViejo
+302                 If .invent.EquippedWorkingToolSlot = SlotViejo Then
+304                     .invent.EquippedWorkingToolSlot = SlotNuevo
+306                 ElseIf .invent.EquippedWorkingToolSlot = SlotNuevo Then
+308                     .invent.EquippedWorkingToolSlot = SlotViejo
     
                     End If
                 
-310                 If Objeto.ObjIndex = 0 Then
+310                 If Objeto.ObjIndex = 0 And Not AppliedElementalTags Then
 312                     .Invent.Object(SlotNuevo).ObjIndex = .Invent.Object(SlotViejo).ObjIndex
 314                     .Invent.Object(SlotNuevo).amount = .Invent.Object(SlotViejo).amount
 316                     .Invent.Object(SlotNuevo).Equipped = .Invent.Object(SlotViejo).Equipped
+                        .invent.Object(SlotNuevo).ElementalTags = .invent.Object(SlotViejo).ElementalTags
                             
 318                     .Invent.Object(SlotViejo).ObjIndex = 0
 320                     .Invent.Object(SlotViejo).amount = 0
 322                     .Invent.Object(SlotViejo).Equipped = 0
+                        .invent.Object(SlotViejo).ElementalTags = 0
     
                     End If
                     
@@ -8182,12 +8230,15 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
             If SlotViejo > MAX_BANCOINVENTORY_SLOTS Or SlotNuevo > MAX_BANCOINVENTORY_SLOTS Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
 106         Objeto.ObjIndex = UserList(UserIndex).BancoInvent.Object(SlotViejo).ObjIndex
 108         Objeto.amount = UserList(UserIndex).BancoInvent.Object(SlotViejo).amount
+            Objeto.ElementalTags = UserList(UserIndex).BancoInvent.Object(SlotViejo).ElementalTags
         
 110         UserList(UserIndex).BancoInvent.Object(SlotViejo).ObjIndex = UserList(UserIndex).BancoInvent.Object(SlotNuevo).ObjIndex
 112         UserList(UserIndex).BancoInvent.Object(SlotViejo).amount = UserList(UserIndex).BancoInvent.Object(SlotNuevo).amount
+            UserList(UserIndex).BancoInvent.Object(SlotViejo).ElementalTags = UserList(UserIndex).BancoInvent.Object(SlotNuevo).ElementalTags
          
 114         UserList(UserIndex).BancoInvent.Object(SlotNuevo).ObjIndex = Objeto.ObjIndex
 116         UserList(UserIndex).BancoInvent.Object(SlotNuevo).amount = Objeto.amount
+            UserList(UserIndex).BancoInvent.Object(SlotNuevo).ElementalTags = Objeto.ElementalTags
     
             'Actualizamos el banco
 118         Call UpdateBanUserInv(False, UserIndex, SlotViejo, "HandleBovedaMoveItem - slot viejo")
@@ -8325,10 +8376,10 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 140                             .flags.SpouseId = UserList(tUser.ArrayIndex).id
 142                             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_FXSound.Casamiento_sound, NO_3D_SOUND, NO_3D_SOUND))
 144                             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1651, get_map_name(.pos.Map) & "¬" & UserList(UserIndex).name & "¬" & UserList(tUser.ArrayIndex).name, e_FontTypeNames.FONTTYPE_WARNING)) 'Msg1651=El sacerdote de ¬1 celebra el casamiento entre ¬2 y ¬3.
-                                Call WriteLocaleChatOverHead(UserIndex, 1414, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1414=Los declaro unidos en legal matrimonio ¡Felicidades!
-                                Call WriteLocaleChatOverHead(tUser.ArrayIndex, 1415, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite)  ' Msg1415=Los declaro unidos en legal matrimonio ¡Felicidades!
+                                Call WriteLocaleChatOverHead(UserIndex, 1414, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1414=Los declaro unidos en legal matrimonio ¡Felicidades!
+                                Call WriteLocaleChatOverHead(tUser.ArrayIndex, 1415, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1415=Los declaro unidos en legal matrimonio ¡Felicidades!
                             Else
-150                             Call WriteLocaleChatOverHead(UserIndex, 1420, username, NpcList(.flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite) ' Msg1420=La solicitud de casamiento a sido enviada a ¬1.
+150                             Call WriteLocaleChatOverHead(UserIndex, 1420, username, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1420=La solicitud de casamiento a sido enviada a ¬1.
 152                             Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1956, .name, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1956=¬1 desea casarse contigo, para permitirlo haz click en el sacerdote y escribe /PROPONER ¬1.
 154                             .flags.Candidato = tUser
                             End If
@@ -8668,6 +8719,12 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                             
 202                         Case e_Ciudad.cArkhein
 204                             DeDonde = " Arkhein"
+
+                            Case e_Ciudad.cEldoria
+                             DeDonde = " Eldoria"
+
+                            Case e_Ciudad.cPenthar
+                             DeDonde = " Penthar"
                             
 206                         Case Else
 208                             DeDonde = "Ullathorpe"
@@ -8675,7 +8732,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         End Select
                     
 210                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-212                         Call WriteLocaleChatOverHead(UserIndex, 1421, UserList(UserIndex).name & "¬" & DeDonde, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite) ' Msg1421=¡Gracias ¬1! Ahora perteneces a la ciudad de ¬2.
+212                         Call WriteLocaleChatOverHead(UserIndex, 1421, UserList(UserIndex).name & "¬" & DeDonde, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1421=¡Gracias ¬1! Ahora perteneces a la ciudad de ¬2.
                         Else
                             'Msg1244= ¡Gracias ¬1
                             Call WriteLocaleMsg(UserIndex, "1244", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).name)
@@ -8717,8 +8774,15 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                                 For j = 1 To UBound(PecesEspeciales)
                                     If .Invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
                                         .Stats.PuntosPesca = .Stats.PuntosPesca + (ObjData(.Invent.Object(i).ObjIndex).PuntosPesca * .Invent.Object(i).amount)
-                                        .Stats.GLD = .Stats.GLD + (ObjData(.Invent.Object(i).ObjIndex).Valor * .Invent.Object(i).amount * 1.2)
-                                        Call WriteUpdateGold(userindex)
+                                        .Stats.GLD = .Stats.GLD + (ObjData(.invent.Object(i).ObjIndex).Valor * .invent.Object(i).amount * SvrConfig.GetValue("SpecialFishGoldMultiplier"))
+                                        Call WriteUpdateGold(UserIndex)
+
+                                        If IsFeatureEnabled("gain_exp_while_working") Then
+                                            .Stats.Exp = .Stats.Exp + (ObjData(.invent.Object(i).ObjIndex).Valor * .invent.Object(i).amount * SvrConfig.GetValue("SpecialFishExpMultiplier"))
+                                            Call WriteUpdateExp(UserIndex)
+                                            Call CheckUserLevel(UserIndex)
+                                        End If
+
                                         Call QuitarUserInvItem(UserIndex, i, .Invent.Object(i).amount)
                                         Call UpdateUserInv(False, UserIndex, i)
                                     End If
@@ -8788,6 +8852,13 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                             
 312                         Case e_Ciudad.cArkhein
 314                             DeDonde = " Arkhein"
+                             
+                            Case e_Ciudad.cEldoria
+                                DeDonde = " Eldoria"
+                                
+                                Case e_Ciudad.cPenthar
+                                DeDonde = " Penthar"
+
                             
 316                         Case Else
 318                             DeDonde = "Ullathorpe"
@@ -8795,7 +8866,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         End Select
                     
 320                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-322                         Call WriteLocaleChatOverHead(UserIndex, 1423, UserList(UserIndex).name & "¬" & DeDonde, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charIndex, vbWhite) ' Msg1423=¡No hay problema ¬1! Sos bienvenido en ¬2 cuando gustes.
+322                         Call WriteLocaleChatOverHead(UserIndex, 1423, UserList(UserIndex).name & "¬" & DeDonde, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1423=¡No hay problema ¬1! Sos bienvenido en ¬2 cuando gustes.
                         End If
 324                     UserList(UserIndex).PosibleHogar = UserList(UserIndex).Hogar
 326                 Case 4
@@ -9129,6 +9200,12 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
                         
 132                 Case e_Ciudad.cArkhein
 134                     DeDonde = CityArkhein
+
+                    Case e_Ciudad.cEldoria
+                        DeDonde = CityEldoria
+                        
+                    Case e_Ciudad.cPenthar
+                        DeDonde = CityPenthar
                         
 136                 Case Else
 138                     DeDonde = CityUllathorpe
@@ -10183,13 +10260,13 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
     Dim caniaOld As Integer
     With UserList(UserIndex)
     
-    obj.ObjIndex = .Invent.HerramientaEqpObjIndex
-    caniaOld = .Invent.HerramientaEqpObjIndex
+    obj.ObjIndex = .invent.EquippedWorkingToolObjIndex
+    caniaOld = .invent.EquippedWorkingToolObjIndex
     obj.amount = 1
     For LoopC = 1 To MAX_INVENTORY_SLOTS
             
         'Rastreo la caña que está usando en el inventario y se la rompo
-        If .Invent.Object(LoopC).ObjIndex = .Invent.HerramientaEqpObjIndex Then
+        If .invent.Object(LoopC).ObjIndex = .invent.EquippedWorkingToolObjIndex Then
             'Le quito una caña
             Call QuitarUserInvItem(UserIndex, LoopC, 1)
             Call UpdateUserInv(False, UserIndex, LoopC)
@@ -10215,7 +10292,7 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
 
     End With
     
-     'UserList(UserIndex).Invent.HerramientaEqpObjIndex
+     'UserList(UserIndex).Invent.EquippedWorkingToolObjIndex
     
 HandleRomperCania_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRomperCania", Erl)

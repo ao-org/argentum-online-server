@@ -117,7 +117,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
              Select Case obj.TipoRuna
 
-                    Case 1 'Cuando esta muerto lleva al lugar de Origen
+                    Case e_RuneType.ReturnHome 'lleva a la ciudad de origen vivo o muerto
 
                         Dim DeDonde As t_CityWorldPos
 
@@ -148,9 +148,15 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                                  
                              Case e_Ciudad.cForgat
                                  DeDonde = CityForgat
+
+                             Case e_Ciudad.cEldoria
+                                 DeDonde = CityEldoria
                         
                              Case e_Ciudad.cArkhein
                                  DeDonde = CityArkhein
+                                 
+                             Case e_Ciudad.cPenthar
+                                 DeDonde = CityPenthar
                         
                              Case Else
                                  DeDonde = CityUllathorpe
@@ -186,6 +192,13 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                         
                                  Case e_Ciudad.cArkhein
                                      DeDonde = CityArkhein
+                                 
+                                 Case e_Ciudad.cEldoria
+                                     DeDonde = CityEldoria
+                                     
+                                 Case e_Ciudad.cPenthar
+                                     DeDonde = CityPenthar
+
                         
                                  Case Else
                                      DeDonde = CityUllathorpe
@@ -216,6 +229,12 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                         
                                  Case e_Ciudad.cArkhein
                                      DeDonde = CityArkhein
+
+                                 Case e_Ciudad.cEldoria
+                                     DeDonde = CityEldoria
+                                     
+                                 Case e_Ciudad.cPenthar
+                                     DeDonde = CityPenthar
                         
                                  Case Else
                                      DeDonde = CityUllathorpe
@@ -244,8 +263,8 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                             Dim barca As t_ObjData
 
-                         barca = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
-                         Call DoNavega(UserIndex, barca, UserList(UserIndex).Invent.BarcoSlot)
+                         barca = ObjData(UserList(UserIndex).Invent.EquippedShipObjIndex)
+                         Call DoNavega(UserIndex, barca, UserList(UserIndex).Invent.EquippedShipSlot)
 
                         End If
                 
@@ -277,7 +296,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                      UserList(UserIndex).Accion.RunaObj = 0
                      UserList(UserIndex).Accion.ObjSlot = 0
               
-                 Case 2
+                 Case e_RuneType.Escape
                      map = obj.HastaMap
                      X = obj.HastaX
                      y = obj.HastaY
@@ -313,7 +332,38 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                      UserList(UserIndex).Accion.ObjSlot = 0
                      UserList(UserIndex).Accion.AccionPendiente = False
 
-            
+
+                    Case e_RuneType.MesonSafePassage
+
+                        If UserList(UserIndex).Pos.Map = MAP_MESON_HOSTIGADO or UserList(UserIndex).Pos.Map = MAP_MESON_HOSTIGADO_TRADING_ZONE Then
+                            'mensaje de error de "no puedes usar la runa estando en el meson"
+                            Call WriteLocaleMsg(UserIndex, "2081", e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
+
+                        If obj.HastaMap <> MAP_MESON_HOSTIGADO Then
+                            'mensaje de error de runa invalida, hay algo mal dateado llamar a un gm o avisar a soporte
+                            Call WriteLocaleMsg(UserIndex, "2080", e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
+                        
+                        UserList(UserIndex).flags.ReturnPos = UserList(UserIndex).Pos
+                        
+                        Map = obj.HastaMap
+                        x = obj.HastaX
+                        y = obj.HastaY
+                        
+                        Call WarpUserChar(UserIndex, Map, x, y, True)
+                        'Msg1066= Te has teletransportado por el mundo.
+                        Call WriteLocaleMsg(UserIndex, "1066", e_FontTypeNames.FONTTYPE_WARNING)
+                        
+                        UserList(UserIndex).Accion.Particula = 0
+                        UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
+                        UserList(UserIndex).Accion.HechizoPendiente = 0
+                        UserList(UserIndex).Accion.RunaObj = 0
+                        UserList(UserIndex).Accion.ObjSlot = 0
+                        UserList(UserIndex).Accion.AccionPendiente = False
+                        
                 End Select
                 
          Case e_AccionBarra.Hogar
@@ -683,13 +733,21 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 302                             DeDonde = "Lindos"
                             
 304                         Case e_Ciudad.cArghal
-306                             DeDonde = " Arghal"
+306                             DeDonde = "Arghal"
                         
                             Case e_Ciudad.cForgat
-                                DeDonde = " Forgat"
+                                DeDonde = "Forgat"
+
+                            Case e_Ciudad.cEldoria
+                                DeDonde = "Eldoria"
                             
 308                         Case e_Ciudad.cArkhein
-310                             DeDonde = " Arkhein"
+310                             DeDonde = "Arkhein"
+
+                            Case e_Ciudad.cPenthar
+                              DeDonde = "Penthar"
+
+
 
 312                         Case Else
 314                             DeDonde = "Ullathorpe"
@@ -778,21 +836,21 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
         
 338             Select Case ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType
             
-                    Case e_OBJType.otPuertas 'Es una puerta
+                    Case e_OBJType.otDoors 'Es una puerta
 340                     Call AccionParaPuerta(Map, X, Y, UserIndex)
 
-342                 Case e_OBJType.otCarteles 'Es un cartel
+342                 Case e_OBJType.otSignBoards 'Es un cartel
 344                     Call AccionParaCartel(Map, X, Y, UserIndex)
 
-346                 Case e_OBJType.OtCorreo 'Es un cartel
+346                 Case e_OBJType.otMail 'Es un cartel
                         'Call AccionParaCorreo(Map, x, Y, UserIndex)
                         ' Msg586=El correo está temporalmente deshabilitado.
                         Call WriteLocaleMsg(UserIndex, "586", e_FontTypeNames.FONTTYPE_EJECUCION)
 
-356                 Case e_OBJType.otYunque 'Pozos
+356                 Case e_OBJType.otAnvil 'Pozos
 358                     Call AccionParaYunque(Map, X, Y, UserIndex)
 
-360                 Case e_OBJType.otLeña    'Leña
+360                 Case e_OBJType.otWood    'Leña
 
 362                     If MapData(Map, X, Y).ObjInfo.ObjIndex = FOGATA_APAG And UserList(UserIndex).flags.Muerto = 0 Then
 364                         Call AccionParaRamita(Map, X, Y, UserIndex)
@@ -809,7 +867,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
         
 370             Select Case ObjData(MapData(Map, X + 1, Y).ObjInfo.ObjIndex).OBJType
             
-                    Case e_OBJType.otPuertas 'Es una puerta
+                    Case e_OBJType.otDoors 'Es una puerta
 372                     Call AccionParaPuerta(Map, X + 1, Y, UserIndex)
             
                 End Select
@@ -819,7 +877,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
 378             Select Case ObjData(MapData(Map, X + 1, Y + 1).ObjInfo.ObjIndex).OBJType
             
-                    Case e_OBJType.otPuertas 'Es una puerta
+                    Case e_OBJType.otDoors 'Es una puerta
 380                     Call AccionParaPuerta(Map, X + 1, Y + 1, UserIndex)
             
                 End Select
@@ -829,7 +887,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
 386             Select Case ObjData(MapData(Map, X, Y + 1).ObjInfo.ObjIndex).OBJType
             
-                    Case e_OBJType.otPuertas 'Es una puerta
+                    Case e_OBJType.otDoors 'Es una puerta
 388                     Call AccionParaPuerta(Map, X, Y + 1, UserIndex)
 
                 End Select
@@ -864,13 +922,13 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 
         End If
     
-110     If UserList(UserIndex).Invent.HerramientaEqpObjIndex = 0 Then
+110     If UserList(UserIndex).Invent.EquippedWorkingToolObjIndex = 0 Then
             'Msg1071= Debes tener equipado un martillo de herrero para trabajar con el yunque.
             Call WriteLocaleMsg(UserIndex, "1071", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
-114     If ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo <> 7 Then
+114     If ObjData(UserList(UserIndex).Invent.EquippedWorkingToolObjIndex).Subtipo <> 7 Then
             'Msg1072= La herramienta que tienes no es la correcta, necesitas un martillo de herrero para poder trabajar.
             Call WriteLocaleMsg(UserIndex, "1072", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
@@ -879,6 +937,7 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 
 118     Call EnivarArmasConstruibles(UserIndex)
 120     Call EnivarArmadurasConstruibles(UserIndex)
+        Call SendCraftableElementRunes(UserIndex)
 122     Call WriteShowBlacksmithForm(UserIndex)
 
         Exit Sub
@@ -930,7 +989,7 @@ Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByV
 122          Call AccionParaPuerta(Map, X - 3, Y + 1, UserIndex, True)
         End If
 
-124     Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(MapData(Map, X, Y).ObjInfo.ObjIndex, MapData(Map, X, Y).ObjInfo.amount, X, Y))
+124     Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(Map, x, y).ObjInfo.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y))
 126     If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = 59878 Or puerta.GrhIndex = 59877 Then
 128         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PUERTA_DUCTO, X, Y))
         Else
@@ -964,7 +1023,7 @@ Sub AccionParaPuertaNpc(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, 
 
         End If
 
-112     Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(MapData(Map, X, Y).ObjInfo.ObjIndex, MapData(Map, X, Y).ObjInfo.amount, X, Y))
+112     Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(Map, x, y).ObjInfo.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y))
 
 114     Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_PUERTA, X, Y))
 

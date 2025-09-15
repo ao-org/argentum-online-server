@@ -135,7 +135,8 @@ Private Sub ConstruirQuery_CargarPersonaje()
         QueryBuilder.Append "last_logout,"
         QueryBuilder.Append "is_reset,"
         QueryBuilder.Append "is_locked_in_mao,"
-        QueryBuilder.Append "jinete_level "
+        QueryBuilder.Append "jinete_level,"
+        QueryBuilder.Append "backpack_id"
         QueryBuilder.Append " FROM user WHERE name= ?"
     
         ' Guardo la query ensamblada
@@ -211,10 +212,10 @@ Private Sub ConstruirQuery_CrearPersonaje()
 232     Call QueryBuilder.Clear
     
         ' ******************* INVENTORY *******************
-234     QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
+234     QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped, elemental_tags) VALUES "
 
 236     For LoopC = 1 To MAX_INVENTORY_SLOTS
-238         QueryBuilder.Append "(?, ?, ?, ?, ?)"
+238         QueryBuilder.Append "(?, ?, ?, ?, ?, ?)"
 
 240         If LoopC < MAX_INVENTORY_SLOTS Then
 242             QueryBuilder.Append ", "
@@ -348,11 +349,12 @@ Private Sub ConstruirQuery_GuardarPersonaje()
 268     QueryBuilder.Append "guild_index = ?, "
 270     QueryBuilder.Append "chat_combate = ?, "
 272     QueryBuilder.Append "chat_global = ?, "
-276     QueryBuilder.Append "warnings = ?,"
-        QueryBuilder.Append "return_map = ?,"
-        QueryBuilder.Append "return_x = ?,"
+276     QueryBuilder.Append "warnings = ?, "
+        QueryBuilder.Append "return_map = ?, "
+        QueryBuilder.Append "return_x = ?, "
         QueryBuilder.Append "return_y = ?, "
         QueryBuilder.Append "jinete_level = ?, "
+        QueryBuilder.Append "backpack_id = ?, "
         QueryBuilder.Append "last_logout = strftime('%s','now') "
 278     QueryBuilder.Append "WHERE id = ?"
     
@@ -363,10 +365,10 @@ Private Sub ConstruirQuery_GuardarPersonaje()
 282     Call QueryBuilder.Clear
     
         ' ************************** User bank inventory **************************************
-284     QueryBuilder.Append "REPLACE INTO bank_item (user_id, number, item_id, amount) VALUES "
+284     QueryBuilder.Append "REPLACE INTO bank_item (user_id, number, item_id, amount, elemental_tags) VALUES "
 
 286     For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
-288         QueryBuilder.Append "(?, ?, ?, ?)"
+288         QueryBuilder.Append "(?, ?, ?, ?, ?)"
 
 290         If LoopC < MAX_BANCOINVENTORY_SLOTS Then
 292             QueryBuilder.Append ", "
@@ -401,10 +403,10 @@ Private Sub ConstruirQuery_GuardarPersonaje()
         Call QueryBuilder.Clear
     
         ' ******************* INVENTORY *******************
-        QueryBuilder.Append "REPLACE INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
+        QueryBuilder.Append "REPLACE INTO inventory_item (user_id, number, item_id, Amount, is_equipped, elemental_tags) VALUES "
 
         For LoopC = 1 To MAX_INVENTORY_SLOTS
-            QueryBuilder.Append "(?, ?, ?, ?, ?)"
+            QueryBuilder.Append "(?, ?, ?, ?, ?, ?)"
 
             If LoopC < MAX_INVENTORY_SLOTS Then
                 QueryBuilder.Append ", "
