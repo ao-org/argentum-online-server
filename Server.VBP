@@ -130,6 +130,7 @@ Class=clsNetReader; Codigo\clsNetReader.cls
 Class=clsNetWriter; Codigo\clsNetWriter.cls
 Module=StringUtils; Codigo\StringUtils.bas
 Module=Consts; Codigo\Consts.bas
+Module=modUptime; Codigo\modUptime.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
