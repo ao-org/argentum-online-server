@@ -1307,7 +1307,8 @@ Sub LoadOBJData()
 
         On Error GoTo ErrHandler
 
-100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando base de datos de los objetos."
+100     If frmMain.Visible Then frmMain.txStatus.Caption = _
+                "Cargando base de datos de los objetos."
 
         '*****************************************************************
         'Carga la lista de objetos
@@ -1315,6 +1316,7 @@ Sub LoadOBJData()
         Dim Object As Integer
 
         Dim Leer   As clsIniManager
+
 102     Set Leer = New clsIniManager
 104     Call Leer.Initialize(DatPath & "Obj.dat")
 
@@ -1331,10 +1333,13 @@ Sub LoadOBJData()
 
         ReDim ObjShop(1 To 1) As t_ObjData
         
-        Dim ObjKey As String
-        Dim str As String, Field() As String
+        Dim ObjKey  As String
+
+        Dim str     As String, Field() As String
+
         Dim Crafteo As clsCrafteo
-        Dim NFT As Boolean
+
+        Dim NFT     As Boolean
   
         'Llena la lista
 118     For Object = 1 To NumObjDatas
@@ -1394,8 +1399,11 @@ Sub LoadOBJData()
                 .ApplyEffectId = val(Leer.GetValue(ObjKey, "ApplyEffectId"))
                 .JineteLevel = val(Leer.GetValue(ObjKey, "JineteLevel"))
                 .ElementalTags = val(Leer.GetValue(ObjKey, "ElementalTags"))
-                If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
-                If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
+
+                If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask( _
+                        .ObjFlags, e_ObjFlags.e_Bindable)
+                If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call _
+                        SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
                 
                 Dim i As Integer
 
@@ -1409,15 +1417,18 @@ Sub LoadOBJData()
 170                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 172                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
 173                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
-174                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+174                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, _
+                                "ResistenciaMagica"))
 176                     .Invernal = val(Leer.GetValue(ObjKey, "Invernal")) > 0
+                        .Camouflage = val(Leer.GetValue(ObjKey, "Camouflage"))
         
 178                 Case e_OBJType.otShield
 180                     .ShieldAnim = val(Leer.GetValue(ObjKey, "Anim"))
 182                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 184                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
 185                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
-186                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+186                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, _
+                                "ResistenciaMagica"))
                         .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
         
 188                 Case e_OBJType.otHelmet
@@ -1425,7 +1436,8 @@ Sub LoadOBJData()
 192                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 194                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
 195                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
-196                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+196                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, _
+                                "ResistenciaMagica"))
 
                     Case e_OBJType.otBackpack
                         '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
@@ -1441,8 +1453,10 @@ Sub LoadOBJData()
 212                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
 213                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
 
-214                     .IgnoreArmorAmmount = val(Leer.GetValue(ObjKey, "IgnoreArmorAmmount"))
-215                     .IgnoreArmorPercent = val(Leer.GetValue(ObjKey, "IgnoreArmorPercent"))
+214                     .IgnoreArmorAmmount = val(Leer.GetValue(ObjKey, _
+                                "IgnoreArmorAmmount"))
+215                     .IgnoreArmorPercent = val(Leer.GetValue(ObjKey, _
+                                "IgnoreArmorPercent"))
 216                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
 218                     .Municion = val(Leer.GetValue(ObjKey, "Municiones"))
 220                     .Power = val(Leer.GetValue(ObjKey, "StaffPower"))
@@ -1462,10 +1476,12 @@ Sub LoadOBJData()
 240                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
 241                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
         
-242                 Case e_OBJType.otDoors, e_OBJType.otEmptyBottle, e_OBJType.otFullBottle
+242                 Case e_OBJType.otDoors, e_OBJType.otEmptyBottle, _
+                            e_OBJType.otFullBottle
 244                     .IndexAbierta = val(Leer.GetValue(ObjKey, "IndexAbierta"))
 246                     .IndexCerrada = val(Leer.GetValue(ObjKey, "IndexCerrada"))
-248                     .IndexCerradaLlave = val(Leer.GetValue(ObjKey, "IndexCerradaLlave"))
+248                     .IndexCerradaLlave = val(Leer.GetValue(ObjKey, _
+                                "IndexCerradaLlave"))
         
 250                 Case otPotions
 252                     .TipoPocion = val(Leer.GetValue(ObjKey, "TipoPocion"))
@@ -1532,18 +1548,23 @@ Sub LoadOBJData()
 318                     .HastaX = val(Leer.GetValue(ObjKey, "X"))
 320                     .HastaY = val(Leer.GetValue(ObjKey, "Y"))
 322                     .NecesitaNave = val(Leer.GetValue(ObjKey, "NecesitaNave"))
+
 324                 Case e_OBJType.otDonator
 326                     .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
 328                     .HastaX = val(Leer.GetValue(ObjKey, "X"))
 330                     .HastaY = val(Leer.GetValue(ObjKey, "Y"))
+
                     Case e_OBJType.OtQuest
                         .QuestId = val(Leer.GetValue(ObjKey, "QuestID"))
+
 332                 Case e_OBJType.otAmulets
 334                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
                         .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
+
 336                     If .EfectoMagico = 15 Then
 338                         PENDIENTE = Object
                         End If
+
                         If .EfectoMagico = 12 Then
                             .MaxItems = val(Leer.GetValue(ObjKey, "Peces"))
                         End If
@@ -1562,12 +1583,15 @@ Sub LoadOBJData()
 374                     .CantItem = val(Leer.GetValue(ObjKey, "CantItem"))
 
 376                     Select Case .Subtipo
+
                             Case 1
 378                             ReDim .Item(1 To .CantItem)
                     
 380                             For i = 1 To .CantItem
-382                                 .Item(i).objIndex = val(Leer.GetValue(ObjKey, "Item" & i))
-384                                 .Item(i).amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
+382                                 .Item(i).ObjIndex = val(Leer.GetValue(ObjKey, _
+                                            "Item" & i))
+384                                 .Item(i).amount = val(Leer.GetValue(ObjKey, _
+                                            "Cantidad" & i))
 386                             Next i
 
                             Case 2
@@ -1576,17 +1600,22 @@ Sub LoadOBJData()
 390                             .CantEntrega = val(Leer.GetValue(ObjKey, "CantEntrega"))
     
 392                             For i = 1 To .CantItem
-394                                 .Item(i).objIndex = val(Leer.GetValue(ObjKey, "Item" & i))
-396                                 .Item(i).amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
+394                                 .Item(i).ObjIndex = val(Leer.GetValue(ObjKey, _
+                                            "Item" & i))
+396                                 .Item(i).amount = val(Leer.GetValue(ObjKey, _
+                                            "Cantidad" & i))
 398                             Next i
 
                             Case 3
                                 ReDim .Item(1 To .CantItem)
     
                                 For i = 1 To .CantItem
-                                    .Item(i).objIndex = val(Leer.GetValue(ObjKey, "Item" & i))
-                                    .Item(i).amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
-                                    .Item(i).Data = 101 - val(Leer.GetValue(ObjKey, "Drop" & i))
+                                    .Item(i).ObjIndex = val(Leer.GetValue(ObjKey, _
+                                            "Item" & i))
+                                    .Item(i).amount = val(Leer.GetValue(ObjKey, _
+                                            "Cantidad" & i))
+                                    .Item(i).data = 101 - val(Leer.GetValue(ObjKey, _
+                                            "Drop" & i))
                                 Next i
 
                         End Select
@@ -1607,6 +1636,7 @@ Sub LoadOBJData()
 420                         Next i
 
                         End If
+
                     Case e_OBJType.otUsableOntarget
                         .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                         .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
@@ -1617,16 +1647,19 @@ Sub LoadOBJData()
 426                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
 
 428                 Case e_OBJType.otRingAccesory
-430                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+430                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, _
+                                "ResistenciaMagica"))
 
 432                 Case e_OBJType.otMinerals
 434                     .LingoteIndex = val(Leer.GetValue(ObjKey, "LingoteIndex"))
+
                     Case e_OBJType.otUsableOntarget
                         .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
                         
                     Case e_OBJType.otElementalRune
                         .Hechizo = val(Leer.GetValue(ObjKey, "Hechizo"))
                 End Select
+
 424             .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
 425             .MagicAbsoluteBonus = val(Leer.GetValue(ObjKey, "MagicAbsoluteBonus"))
 235             .MagicPenetration = val(Leer.GetValue(ObjKey, "MagicPenetration"))
@@ -1734,6 +1767,7 @@ Sub LoadOBJData()
     
                 'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico  -  Nunca más papu
                 Dim n As Integer
+
                 Dim s As String
 
 540             For i = 1 To NUMCLASES
@@ -1766,7 +1800,8 @@ Sub LoadOBJData()
             
 574                 n = 1
 
-576                 Do While LenB(Field(0)) > 0 And Tilde(SkillsNames(n)) <> Tilde(Field(0))
+576                 Do While LenB(Field(0)) > 0 And Tilde(SkillsNames(n)) <> Tilde( _
+                            Field(0))
 578                     n = n + 1
                     Loop
     
@@ -1799,10 +1834,12 @@ Sub LoadOBJData()
 600                     Field = Split(str, "-", MAX_SLOTS_CRAFTEO)
                     
                         Dim Items() As Integer
+
 602                     ReDim Items(1 To UBound(Field) + 1)
 
 604                     For i = 0 To UBound(Field)
 606                         Items(i + 1) = val(Field(i))
+
 608                         If Items(i + 1) > UBound(ObjData) Then Items(i + 1) = 0
                         Next
 
@@ -1811,7 +1848,8 @@ Sub LoadOBJData()
 612                     Set Crafteo = New clsCrafteo
 614                     Call Crafteo.SetItems(Items)
 616                     Crafteo.Tipo = val(Leer.GetValue(ObjKey, "TipoCrafteo"))
-618                     Crafteo.Probabilidad = Clamp(val(Leer.GetValue(ObjKey, "ProbCrafteo")), 0, 100)
+618                     Crafteo.Probabilidad = Clamp(val(Leer.GetValue(ObjKey, _
+                                "ProbCrafteo")), 0, 100)
 620                     Crafteo.precio = val(Leer.GetValue(ObjKey, "CostoCrafteo"))
 622                     Crafteo.Resultado = Object
 
@@ -1820,7 +1858,9 @@ Sub LoadOBJData()
                         End If
 
                         Dim ItemKey As String
+
 628                     ItemKey = GetRecipeKey(Items)
+
 630                     If Not Crafteos.Item(Crafteo.Tipo).Exists(ItemKey) Then
 632                         Call Crafteos.Item(Crafteo.Tipo).Add(ItemKey, Crafteo)
                         End If
@@ -1829,6 +1869,7 @@ Sub LoadOBJData()
 
                 ' Catalizadores
 634             .CatalizadorTipo = val(Leer.GetValue(ObjKey, "CatalizadorTipo"))
+
 636             If .CatalizadorTipo Then
 638                 .CatalizadorAumento = val(Leer.GetValue(ObjKey, "CatalizadorAumento"))
                 End If
@@ -1845,9 +1886,7 @@ Sub LoadOBJData()
                     ReDim Preserve ObjShop(1 To (UBound(ObjShop) + 1)) As t_ObjData
                 End If
                 
-                
 640             frmCargando.cargar.value = frmCargando.cargar.value + 1
-
         
             End With
             
@@ -1855,6 +1894,7 @@ Sub LoadOBJData()
 642         If Object Mod 10 = 0 Then DoEvents
         
 644     Next Object
+
         ReDim Preserve ObjShop(1 To (UBound(ObjShop) - 1)) As t_ObjData
 
 646     Set Leer = Nothing
@@ -1865,7 +1905,8 @@ Sub LoadOBJData()
         Exit Sub
 
 ErrHandler:
-652     MsgBox "error cargando objetos " & Err.Number & ": " & Err.Description & ". Error producido al cargar el objeto: " & Object
+652     MsgBox "error cargando objetos " & Err.Number & ": " & Err.Description & _
+                ". Error producido al cargar el objeto: " & Object
 
 End Sub
 
