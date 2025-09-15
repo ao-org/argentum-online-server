@@ -1663,7 +1663,7 @@ Public Enum e_ObjFlags
 End Enum
 
 Public Type t_ObjData
-    ' ---- 4-byte fields ----
+    ' -------- 4-byte fields --------
     Jerarquia As Long
     OBJType As e_OBJType
     GrhIndex As Long
@@ -1768,8 +1768,6 @@ Public Type t_ObjData
     PielLoboNegro As Integer
     PielTigre As Integer
     PielTigreBengala As Integer
-    SkHerreria As Integer
-    SkCarpinteria As Integer
     Snd1 As Integer
     Snd2 As Integer
     Snd3 As Integer
@@ -1792,18 +1790,17 @@ Public Type t_ObjData
     VidaUtil As Integer
     TiempoRegenerar As Integer
     MinSta As Integer
-    SkPociones As Byte
-    SkSastreria As Byte
     SkHerreria As Integer
     SkCarpinteria As Integer
+    WeaponType As e_WeaponType ' <-- Correct placement for alignment
 
-    ' ---- Single (float, 4 bytes) ----
+    ' -------- Single (float, 4 bytes) --------
     velocidad As Single
     CuantoAumento As Single
     IgnoreArmorPercent As Single
     CatalizadorAumento As Single
 
-    ' ---- Reference types ----
+    ' -------- Reference/custom types (4 bytes) --------
     name As String
     ForoID As String
     CreaParticula As String
@@ -1816,13 +1813,13 @@ Public Type t_ObjData
     ClaseProhibida(1 To NUMCLASES) As e_Class
     RazaProhibida(1 To NUMRAZAS) As e_Raza
 
-    ' ---- Boolean (2 bytes) ----
+    ' -------- Boolean (2 bytes) --------
     LeadersOnly As Boolean
     Revive As Boolean
     Camouflage As Boolean
     Invernal As Boolean
 
-    ' ---- 1-byte fields grouped at the end ----
+    ' -------- 1-byte fields grouped at the end --------
     Pino As Byte
     Elfico As Byte
     CantEntrega As Byte
@@ -1865,6 +1862,8 @@ Public Type t_ObjData
     Mujer As Byte
     Hombre As Byte
     Agarrable As Byte
+    SkPociones As Byte
+    SkSastreria As Byte
     Radio As Byte
     CatalizadorTipo As Byte
     Log As Byte
