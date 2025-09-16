@@ -432,7 +432,7 @@ End Enum
 Public Enum e_ParticleEffects ' Particulas FX
 
     Incinerar = 6
-    CurarCrimi = 12s
+    CurarCrimi = 12
     Intermundia = 16
     Resucitar = 22
     Curar = 23
