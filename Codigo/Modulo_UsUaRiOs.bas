@@ -2720,7 +2720,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 206             If FX Then 'FX
 208                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_WARP, X, y))
                     UserList(userindex).Counters.timeFx = 3
-210                 Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageCreateFX(.Char.charindex, e_FXIDs.FXWARP, 0, .Pos.X, .Pos.y))
+210                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, e_ParticleEffects.FXWARP, 0, .pos.x, .pos.y))
                 End If
 
             Else
@@ -3601,7 +3601,7 @@ End Function
 Public Sub ResurrectUser(ByVal UserIndex As Integer)
     ' Msg585=¡Has sido resucitado!
     Call WriteLocaleMsg(UserIndex, "585", e_FontTypeNames.FONTTYPE_INFO)
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Resucitar, 250, True))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Resucitar, 250, True))
     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y))
     Call RevivirUsuario(UserIndex, True)
 684 Call WriteUpdateHungerAndThirst(UserIndex)

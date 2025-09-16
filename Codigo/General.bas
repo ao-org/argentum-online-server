@@ -1505,7 +1505,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
               'Msg47=Estás envenenado, si no te curas morirás.
 108           Call WriteLocaleMsg(UserIndex, "47", e_FontTypeNames.FONTTYPE_VENENO)
               UserList(userindex).Counters.timeFx = 3
-110           Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Envenena, 30, False, , UserList(userindex).Pos.X, UserList(userindex).Pos.y))
+110           Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticleEffects.Envenena, 30, False, , UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
 112           .Counters.Veneno = 0
               ' El veneno saca un porcentaje de vida random.
 114           damage = RandomNumber(3, 5)
@@ -1860,7 +1860,7 @@ Sub PasarSegundo()
 222                         Mapa = .flags.PortalM
 224                         X = .flags.PortalX
 226                         Y = .flags.PortalY
-228                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, e_ParticulasIndex.TpVerde, 0))
+228                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageParticleFXToFloor(x, y, e_ParticleEffects.TpVerde, 0))
 230                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageLightFXToFloor(X, Y, 0, 105))
         
 232                         If MapData(Mapa, X, Y).TileExit.Map > 0 Then

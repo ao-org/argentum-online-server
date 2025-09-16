@@ -45,11 +45,11 @@ Public Sub goHome(ByVal UserIndex As Integer)
                 Else
 108                 .Counters.TimerBarra = HomeTimer
                 End If
-110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Runa, .Counters.TimerBarra * 100, False, , .Pos.X, .Pos.y))
+110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticleEffects.Runa, .Counters.TimerBarra * 100, False, , .pos.x, .pos.y))
 112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.charindex, .Counters.TimerBarra, e_AccionBarra.Hogar))
                 Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1994, .Counters.TimerBarra, e_FontTypeNames.FONTTYPE_New_Gris)) ' Msg1994=Volverás a tu hogar en ¬1 segundos.
                     
-114             .Accion.Particula = e_ParticulasIndex.Runa
+114             .Accion.Particula = e_ParticleEffects.Runa
 116             .Accion.AccionPendiente = True
 118             .Accion.TipoAccion = e_AccionBarra.Hogar
             

@@ -40,8 +40,8 @@ get_map_name_Err:
 End Function
 
 Public Function PuedeUsarObjeto(ByVal UserIndex As Integer, _
-                                 ByVal ObjIndex As Integer, _
-                                 Optional ByVal writeInConsole As Boolean = False) As Byte
+                                ByVal ObjIndex As Integer, _
+                                Optional ByVal writeInConsole As Boolean = False) As Byte
 
     On Error GoTo PuedeUsarObjeto_Err
 
@@ -78,8 +78,7 @@ Public Function PuedeUsarObjeto(ByVal UserIndex As Integer, _
             PuedeUsarObjeto = 6
             Msg = "1982" ' Not for level {0} or higher
             Extra = CStr(Objeto.MaxLEV)
-        ElseIf Not FaccionPuedeUsarItem(UserIndex, ObjIndex) And JerarquiaPuedeUsarItem( _
-                UserIndex, ObjIndex) Then
+        ElseIf Not FaccionPuedeUsarItem(UserIndex, ObjIndex) And JerarquiaPuedeUsarItem(UserIndex, ObjIndex) Then
             PuedeUsarObjeto = 3
             Msg = "416"  ' Faction doesn't allow it.
         ElseIf Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
@@ -122,349 +121,346 @@ PuedeUsarObjeto_Err:
     Call TraceError(Err.Number, Err.Description, "Acciones.PuedeUsarObjeto", Erl)
 End Function
 
-
 Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
         
-        On Error GoTo CompletarAccionFin_Err
+    On Error GoTo CompletarAccionFin_Err
+
+    Dim obj  As t_ObjData
+
+    Dim Slot As Byte
+
+    Select Case UserList(UserIndex).Accion.TipoAccion
+
+        Case e_AccionBarra.Runa
+            obj = ObjData(UserList(UserIndex).Accion.RunaObj)
+            Slot = UserList(UserIndex).Accion.ObjSlot
+
+            Select Case obj.TipoRuna
+
+                Case e_RuneType.ReturnHome 'lleva a la ciudad de origen vivo o muerto
+
+                    Dim DeDonde As t_CityWorldPos
+
+                    Dim Map     As Integer
+
+                    Dim x       As Byte
+
+                    Dim y       As Byte
         
+                    If UserList(UserIndex).flags.Muerto = 0 Then
 
-        Dim obj  As t_ObjData
+                        Select Case UserList(UserIndex).Hogar
 
-        Dim Slot As Byte
+                            Case e_Ciudad.cUllathorpe
+                                DeDonde = CityUllathorpe
+                        
+                            Case e_Ciudad.cNix
+                                DeDonde = CityNix
+            
+                            Case e_Ciudad.cBanderbill
+                                DeDonde = CityBanderbill
+                    
+                            Case e_Ciudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
+                                DeDonde = CityLindos
+                        
+                            Case e_Ciudad.cArghal
+                                DeDonde = CityArghal
+                                 
+                            Case e_Ciudad.cForgat
+                                DeDonde = CityForgat
 
-     Select Case UserList(UserIndex).Accion.TipoAccion
+                            Case e_Ciudad.cEldoria
+                                DeDonde = CityEldoria
+                        
+                            Case e_Ciudad.cArkhein
+                                DeDonde = CityArkhein
+                                 
+                            Case e_Ciudad.cPenthar
+                                DeDonde = CityPenthar
+                        
+                            Case Else
+                                DeDonde = CityUllathorpe
 
-            Case e_AccionBarra.Runa
-             obj = ObjData(UserList(UserIndex).Accion.RunaObj)
-             Slot = UserList(UserIndex).Accion.ObjSlot
+                        End Select
 
-             Select Case obj.TipoRuna
+                        Map = DeDonde.Map
+                        x = DeDonde.x
+                        y = DeDonde.y
+                    Else
 
-                    Case e_RuneType.ReturnHome 'lleva a la ciudad de origen vivo o muerto
+                        If MapInfo(UserList(UserIndex).pos.Map).ResuCiudad <> 0 Then
 
-                        Dim DeDonde As t_CityWorldPos
-
-                        Dim map     As Integer
-
-                        Dim X       As Byte
-
-                        Dim y       As Byte
-        
-                     If UserList(UserIndex).flags.Muerto = 0 Then
-
-                         Select Case UserList(UserIndex).Hogar
+                            Select Case MapInfo(UserList(UserIndex).pos.Map).ResuCiudad
 
                                 Case e_Ciudad.cUllathorpe
-                                 DeDonde = CityUllathorpe
+                                    DeDonde = CityUllathorpe
                         
-                             Case e_Ciudad.cNix
-                                 DeDonde = CityNix
+                                Case e_Ciudad.cNix
+                                    DeDonde = CityNix
             
-                             Case e_Ciudad.cBanderbill
-                                 DeDonde = CityBanderbill
+                                Case e_Ciudad.cBanderbill
+                                    DeDonde = CityBanderbill
                     
-                             Case e_Ciudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
-                                 DeDonde = CityLindos
+                                Case e_Ciudad.cLindos
+                                    DeDonde = CityLindos
                         
-                             Case e_Ciudad.cArghal
-                                 DeDonde = CityArghal
+                                Case e_Ciudad.cArghal
+                                    DeDonde = CityArghal
+                                     
+                                Case e_Ciudad.cForgat
+                                    DeDonde = CityForgat
+                        
+                                Case e_Ciudad.cArkhein
+                                    DeDonde = CityArkhein
                                  
-                             Case e_Ciudad.cForgat
-                                 DeDonde = CityForgat
-
-                             Case e_Ciudad.cEldoria
-                                 DeDonde = CityEldoria
+                                Case e_Ciudad.cEldoria
+                                    DeDonde = CityEldoria
+                                     
+                                Case e_Ciudad.cPenthar
+                                    DeDonde = CityPenthar
                         
-                             Case e_Ciudad.cArkhein
-                                 DeDonde = CityArkhein
-                                 
-                             Case e_Ciudad.cPenthar
-                                 DeDonde = CityPenthar
-                        
-                             Case Else
-                                 DeDonde = CityUllathorpe
+                                Case Else
+                                    DeDonde = CityUllathorpe
 
                             End Select
 
-                         map = DeDonde.map
-                         X = DeDonde.X
-                         y = DeDonde.y
                         Else
 
-                         If MapInfo(UserList(UserIndex).Pos.map).ResuCiudad <> 0 Then
+                            Select Case UserList(UserIndex).Hogar
 
-                             Select Case MapInfo(UserList(UserIndex).Pos.map).ResuCiudad
-
-                                    Case e_Ciudad.cUllathorpe
-                                     DeDonde = CityUllathorpe
+                                Case e_Ciudad.cUllathorpe
+                                    DeDonde = CityUllathorpe
                         
-                                 Case e_Ciudad.cNix
-                                     DeDonde = CityNix
+                                Case e_Ciudad.cNix
+                                    DeDonde = CityNix
             
-                                 Case e_Ciudad.cBanderbill
-                                     DeDonde = CityBanderbill
+                                Case e_Ciudad.cBanderbill
+                                    DeDonde = CityBanderbill
                     
-                                 Case e_Ciudad.cLindos
-                                     DeDonde = CityLindos
+                                Case e_Ciudad.cLindos
+                                    DeDonde = CityLindos
                         
-                                 Case e_Ciudad.cArghal
-                                     DeDonde = CityArghal
+                                Case e_Ciudad.cArghal
+                                    DeDonde = CityArghal
                                      
-                                 Case e_Ciudad.cForgat
-                                     DeDonde = CityForgat
+                                Case e_Ciudad.cForgat
+                                    DeDonde = CityForgat
                         
-                                 Case e_Ciudad.cArkhein
-                                     DeDonde = CityArkhein
-                                 
-                                 Case e_Ciudad.cEldoria
-                                     DeDonde = CityEldoria
+                                Case e_Ciudad.cArkhein
+                                    DeDonde = CityArkhein
+
+                                Case e_Ciudad.cEldoria
+                                    DeDonde = CityEldoria
                                      
-                                 Case e_Ciudad.cPenthar
-                                     DeDonde = CityPenthar
-
+                                Case e_Ciudad.cPenthar
+                                    DeDonde = CityPenthar
                         
-                                 Case Else
-                                     DeDonde = CityUllathorpe
+                                Case Else
+                                    DeDonde = CityUllathorpe
 
-                                End Select
+                            End Select
 
-                            Else
-
-                             Select Case UserList(UserIndex).Hogar
-
-                                    Case e_Ciudad.cUllathorpe
-                                     DeDonde = CityUllathorpe
-                        
-                                 Case e_Ciudad.cNix
-                                     DeDonde = CityNix
+                        End If
+                
+                        Map = DeDonde.MapaResu
+                        x = DeDonde.ResuX
+                        y = DeDonde.ResuY
+                
+                        Dim Resu As Boolean
+                
+                        Resu = True
             
-                                 Case e_Ciudad.cBanderbill
-                                     DeDonde = CityBanderbill
-                    
-                                 Case e_Ciudad.cLindos
-                                     DeDonde = CityLindos
-                        
-                                 Case e_Ciudad.cArghal
-                                     DeDonde = CityArghal
-                                     
-                                 Case e_Ciudad.cForgat
-                                     DeDonde = CityForgat
-                        
-                                 Case e_Ciudad.cArkhein
-                                     DeDonde = CityArkhein
-
-                                 Case e_Ciudad.cEldoria
-                                     DeDonde = CityEldoria
-                                     
-                                 Case e_Ciudad.cPenthar
-                                     DeDonde = CityPenthar
-                        
-                                 Case Else
-                                     DeDonde = CityUllathorpe
-
-                                End Select
-
-                            End If
+                    End If
                 
-                         map = DeDonde.MapaResu
-                         X = DeDonde.ResuX
-                         y = DeDonde.ResuY
+                    Call FindLegalPos(UserIndex, Map, x, y)
+                    Call WarpUserChar(UserIndex, Map, x, y, True)
+                    'Msg1065= Has regresado a tu ciudad de origen.
+                    Call WriteLocaleMsg(UserIndex, "1065", e_FontTypeNames.FONTTYPE_WARNING)
+
+                    'Call WriteFlashScreen(UserIndex, &HA4FFFF, 150, True)
+                    If UserList(UserIndex).flags.Navegando = 1 Then
+
+                        Dim barca As t_ObjData
+
+                        barca = ObjData(UserList(UserIndex).invent.EquippedShipObjIndex)
+                        Call DoNavega(UserIndex, barca, UserList(UserIndex).invent.EquippedShipSlot)
+
+                    End If
                 
-                            Dim Resu As Boolean
+                    If Resu Then
                 
-                         Resu = True
-            
-                        End If
+                        UserList(UserIndex).Counters.TimerBarra = 5
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Resucitar, UserList(UserIndex).Counters.TimerBarra, False))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.charindex, UserList(UserIndex).Counters.TimerBarra, e_AccionBarra.Resucitar))
                 
-                     Call FindLegalPos(UserIndex, map, X, y)
-                     Call WarpUserChar(UserIndex, map, X, y, True)
-                        'Msg1065= Has regresado a tu ciudad de origen.
-                        Call WriteLocaleMsg(UserIndex, "1065", e_FontTypeNames.FONTTYPE_WARNING)
+                        UserList(UserIndex).Accion.AccionPendiente = True
+                        UserList(UserIndex).Accion.Particula = e_ParticleEffects.Resucitar
+                        UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.Resucitar
 
-                        'Call WriteFlashScreen(UserIndex, &HA4FFFF, 150, True)
-                     If UserList(UserIndex).flags.Navegando = 1 Then
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+                        'Msg82=El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...
+                        Call WriteLocaleMsg(UserIndex, "82", e_FontTypeNames.FONTTYPE_INFOIAO)
 
-                            Dim barca As t_ObjData
-
-                         barca = ObjData(UserList(UserIndex).Invent.EquippedShipObjIndex)
-                         Call DoNavega(UserIndex, barca, UserList(UserIndex).Invent.EquippedShipSlot)
-
-                        End If
+                    End If
                 
-                     If Resu Then
-                
-                         UserList(UserIndex).Counters.TimerBarra = 5
-                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, e_ParticulasIndex.Resucitar, UserList(UserIndex).Counters.TimerBarra, False))
-                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Counters.TimerBarra, e_AccionBarra.Resucitar))
+                    If Not Resu Then
+                        UserList(UserIndex).Accion.AccionPendiente = False
+                        UserList(UserIndex).Accion.Particula = 0
+                        UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
 
-                
-                         UserList(UserIndex).Accion.AccionPendiente = True
-                         UserList(UserIndex).Accion.Particula = e_ParticulasIndex.Resucitar
-                         UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.Resucitar
+                    End If
 
-                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
-                            'Msg82=El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...
-                         Call WriteLocaleMsg(UserIndex, "82", e_FontTypeNames.FONTTYPE_INFOIAO)
-
-                        End If
-                
-                     If Not Resu Then
-                         UserList(UserIndex).Accion.AccionPendiente = False
-                         UserList(UserIndex).Accion.Particula = 0
-                         UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
-
-                        End If
-
-                     UserList(UserIndex).Accion.HechizoPendiente = 0
-                     UserList(UserIndex).Accion.RunaObj = 0
-                     UserList(UserIndex).Accion.ObjSlot = 0
+                    UserList(UserIndex).Accion.HechizoPendiente = 0
+                    UserList(UserIndex).Accion.RunaObj = 0
+                    UserList(UserIndex).Accion.ObjSlot = 0
               
-                 Case e_RuneType.Escape
-                     map = obj.HastaMap
-                     X = obj.HastaX
-                     y = obj.HastaY
+                Case e_RuneType.Escape
+                    Map = obj.HastaMap
+                    x = obj.HastaX
+                    y = obj.HastaY
             
-                     If obj.DesdeMap = 0 Then
-                         Call FindLegalPos(UserIndex, map, X, y)
-                         Call WarpUserChar(UserIndex, map, X, y, True)
-                            'Msg1066= Te has teletransportado por el mundo.
-                            Call WriteLocaleMsg(UserIndex, "1066", e_FontTypeNames.FONTTYPE_WARNING)
-                         Call QuitarUserInvItem(UserIndex, Slot, 1)
-                         Call UpdateUserInv(False, UserIndex, Slot)
-                        Else
-
-                         If UserList(UserIndex).Pos.map <> obj.DesdeMap Then
-                            'Msg1067= Esta runa no puede ser usada desde aquí.
-                            Call WriteLocaleMsg(UserIndex, "1067", e_FontTypeNames.FONTTYPE_INFO)
-                            Else
-                             Call QuitarUserInvItem(UserIndex, Slot, 1)
-                             Call UpdateUserInv(False, UserIndex, Slot)
-                             Call FindLegalPos(UserIndex, map, X, y)
-                             Call WarpUserChar(UserIndex, map, X, y, True)
-                            'Msg1068= Te has teletransportado por el mundo.
-                            Call WriteLocaleMsg(UserIndex, "1068", e_FontTypeNames.FONTTYPE_WARNING)
-
-                            End If
-
-                        End If
-        
-                     UserList(UserIndex).Accion.Particula = 0
-                     UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
-                     UserList(UserIndex).Accion.HechizoPendiente = 0
-                     UserList(UserIndex).Accion.RunaObj = 0
-                     UserList(UserIndex).Accion.ObjSlot = 0
-                     UserList(UserIndex).Accion.AccionPendiente = False
-
-
-                    Case e_RuneType.MesonSafePassage
-
-                        If UserList(UserIndex).Pos.Map = MAP_MESON_HOSTIGADO or UserList(UserIndex).Pos.Map = MAP_MESON_HOSTIGADO_TRADING_ZONE Then
-                            'mensaje de error de "no puedes usar la runa estando en el meson"
-                            Call WriteLocaleMsg(UserIndex, "2081", e_FontTypeNames.FONTTYPE_INFO)
-                            Exit Sub
-                        End If
-
-                        If obj.HastaMap <> MAP_MESON_HOSTIGADO Then
-                            'mensaje de error de runa invalida, hay algo mal dateado llamar a un gm o avisar a soporte
-                            Call WriteLocaleMsg(UserIndex, "2080", e_FontTypeNames.FONTTYPE_INFO)
-                            Exit Sub
-                        End If
-                        
-                        UserList(UserIndex).flags.ReturnPos = UserList(UserIndex).Pos
-                        
-                        Map = obj.HastaMap
-                        x = obj.HastaX
-                        y = obj.HastaY
-                        
+                    If obj.DesdeMap = 0 Then
+                        Call FindLegalPos(UserIndex, Map, x, y)
                         Call WarpUserChar(UserIndex, Map, x, y, True)
                         'Msg1066= Te has teletransportado por el mundo.
                         Call WriteLocaleMsg(UserIndex, "1066", e_FontTypeNames.FONTTYPE_WARNING)
-                        
-                        UserList(UserIndex).Accion.Particula = 0
-                        UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
-                        UserList(UserIndex).Accion.HechizoPendiente = 0
-                        UserList(UserIndex).Accion.RunaObj = 0
-                        UserList(UserIndex).Accion.ObjSlot = 0
-                        UserList(UserIndex).Accion.AccionPendiente = False
-                        
-                End Select
-                
-         Case e_AccionBarra.Hogar
-             Call HomeArrival(UserIndex)
-             UserList(UserIndex).Accion.AccionPendiente = False
-             UserList(UserIndex).Accion.Particula = 0
-             UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
-            
+                        Call QuitarUserInvItem(UserIndex, Slot, 1)
+                        Call UpdateUserInv(False, UserIndex, Slot)
+                    Else
 
-         Case e_AccionBarra.Intermundia
+                        If UserList(UserIndex).pos.Map <> obj.DesdeMap Then
+                            'Msg1067= Esta runa no puede ser usada desde aquí.
+                            Call WriteLocaleMsg(UserIndex, "1067", e_FontTypeNames.FONTTYPE_INFO)
+                        Else
+                            Call QuitarUserInvItem(UserIndex, Slot, 1)
+                            Call UpdateUserInv(False, UserIndex, Slot)
+                            Call FindLegalPos(UserIndex, Map, x, y)
+                            Call WarpUserChar(UserIndex, Map, x, y, True)
+                            'Msg1068= Te has teletransportado por el mundo.
+                            Call WriteLocaleMsg(UserIndex, "1068", e_FontTypeNames.FONTTYPE_WARNING)
+
+                        End If
+
+                    End If
         
-             If UserList(UserIndex).flags.Muerto = 0 Then
+                    UserList(UserIndex).Accion.Particula = 0
+                    UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
+                    UserList(UserIndex).Accion.HechizoPendiente = 0
+                    UserList(UserIndex).Accion.RunaObj = 0
+                    UserList(UserIndex).Accion.ObjSlot = 0
+                    UserList(UserIndex).Accion.AccionPendiente = False
 
-                    Dim uh As Integer
+                Case e_RuneType.MesonSafePassage
 
-                    Dim Mapaf, Xf, Yf As Integer
+                    If UserList(UserIndex).pos.Map = MAP_MESON_HOSTIGADO Or UserList(UserIndex).pos.Map = MAP_MESON_HOSTIGADO_TRADING_ZONE Then
+                        'mensaje de error de "no puedes usar la runa estando en el meson"
+                        Call WriteLocaleMsg(UserIndex, "2081", e_FontTypeNames.FONTTYPE_INFO)
 
-                 uh = UserList(UserIndex).Accion.HechizoPendiente
+                        Exit Sub
+
+                    End If
+
+                    If obj.HastaMap <> MAP_MESON_HOSTIGADO Then
+                        'mensaje de error de runa invalida, hay algo mal dateado llamar a un gm o avisar a soporte
+                        Call WriteLocaleMsg(UserIndex, "2080", e_FontTypeNames.FONTTYPE_INFO)
+
+                        Exit Sub
+
+                    End If
+                        
+                    UserList(UserIndex).flags.ReturnPos = UserList(UserIndex).pos
+                        
+                    Map = obj.HastaMap
+                    x = obj.HastaX
+                    y = obj.HastaY
+                        
+                    Call WarpUserChar(UserIndex, Map, x, y, True)
+                    'Msg1066= Te has teletransportado por el mundo.
+                    Call WriteLocaleMsg(UserIndex, "1066", e_FontTypeNames.FONTTYPE_WARNING)
+                        
+                    UserList(UserIndex).Accion.Particula = 0
+                    UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
+                    UserList(UserIndex).Accion.HechizoPendiente = 0
+                    UserList(UserIndex).Accion.RunaObj = 0
+                    UserList(UserIndex).Accion.ObjSlot = 0
+                    UserList(UserIndex).Accion.AccionPendiente = False
+                        
+            End Select
+                
+        Case e_AccionBarra.Hogar
+            Call HomeArrival(UserIndex)
+            UserList(UserIndex).Accion.AccionPendiente = False
+            UserList(UserIndex).Accion.Particula = 0
+            UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
+
+        Case e_AccionBarra.Intermundia
+        
+            If UserList(UserIndex).flags.Muerto = 0 Then
+
+                Dim uh As Integer
+
+                Dim Mapaf, Xf, Yf As Integer
+
+                uh = UserList(UserIndex).Accion.HechizoPendiente
     
-                 Mapaf = Hechizos(uh).TeleportXMap
-                 Xf = Hechizos(uh).TeleportXX
-                 Yf = Hechizos(uh).TeleportXY
+                Mapaf = Hechizos(uh).TeleportXMap
+                Xf = Hechizos(uh).TeleportXX
+                Yf = Hechizos(uh).TeleportXY
     
-                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(uh).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))  'Esta linea faltaba. Pablo (ToxicWaste)
-                 'Msg1069= ¡Has abierto la puerta a intermundia!
-                 Call WriteLocaleMsg(UserIndex, "1069", e_FontTypeNames.FONTTYPE_INFO)
-                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, e_ParticulasIndex.Runa, -1, True))
-                 UserList(UserIndex).flags.Portal = 10
-                 UserList(UserIndex).flags.PortalMDestino = Mapaf
-                 UserList(UserIndex).flags.PortalYDestino = Xf
-                 UserList(UserIndex).flags.PortalXDestino = Yf
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(uh).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))  'Esta linea faltaba. Pablo (ToxicWaste)
+                'Msg1069= ¡Has abierto la puerta a intermundia!
+                Call WriteLocaleMsg(UserIndex, "1069", e_FontTypeNames.FONTTYPE_INFO)
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Runa, -1, True))
+                UserList(UserIndex).flags.Portal = 10
+                UserList(UserIndex).flags.PortalMDestino = Mapaf
+                UserList(UserIndex).flags.PortalYDestino = Xf
+                UserList(UserIndex).flags.PortalXDestino = Yf
                 
-                    Dim Mapa As Integer
+                Dim Mapa As Integer
 
-                 Mapa = UserList(UserIndex).flags.PortalM
-                 X = UserList(UserIndex).flags.PortalX
-                 y = UserList(UserIndex).flags.PortalY
-                 MapData(Mapa, X, y).Particula = e_ParticulasIndex.TpVerde
-                 MapData(Mapa, X, y).TimeParticula = -1
-                 MapData(Mapa, X, y).TileExit.map = UserList(UserIndex).flags.PortalMDestino
-                 MapData(Mapa, X, y).TileExit.X = UserList(UserIndex).flags.PortalXDestino
-                 MapData(Mapa, X, y).TileExit.y = UserList(UserIndex).flags.PortalYDestino
+                Mapa = UserList(UserIndex).flags.PortalM
+                x = UserList(UserIndex).flags.PortalX
+                y = UserList(UserIndex).flags.PortalY
+                MapData(Mapa, x, y).Particula = e_ParticleEffects.TpVerde
+                MapData(Mapa, x, y).TimeParticula = -1
+                MapData(Mapa, x, y).TileExit.Map = UserList(UserIndex).flags.PortalMDestino
+                MapData(Mapa, x, y).TileExit.x = UserList(UserIndex).flags.PortalXDestino
+                MapData(Mapa, x, y).TileExit.y = UserList(UserIndex).flags.PortalYDestino
                 
-                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, y, e_ParticulasIndex.TpVerde, -1))
+                Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(x, y, e_ParticleEffects.TpVerde, -1))
                 
-                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageLightFXToFloor(X, y, &HFF80C0, 105))
+                Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageLightFXToFloor(x, y, &HFF80C0, 105))
 
-                End If
+            End If
                     
-             UserList(UserIndex).Accion.Particula = 0
-             UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
-             UserList(UserIndex).Accion.HechizoPendiente = 0
-             UserList(UserIndex).Accion.RunaObj = 0
-             UserList(UserIndex).Accion.ObjSlot = 0
-             UserList(UserIndex).Accion.AccionPendiente = False
+            UserList(UserIndex).Accion.Particula = 0
+            UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
+            UserList(UserIndex).Accion.HechizoPendiente = 0
+            UserList(UserIndex).Accion.RunaObj = 0
+            UserList(UserIndex).Accion.ObjSlot = 0
+            UserList(UserIndex).Accion.AccionPendiente = False
             
-                '
-         Case e_AccionBarra.Resucitar
-             ' Msg585=¡Has sido resucitado!
-             Call WriteLocaleMsg(UserIndex, "585", e_FontTypeNames.FONTTYPE_INFO)
-             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, e_ParticulasIndex.Resucitar, 250, True))
-             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("117", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
-             Call RevivirUsuario(UserIndex, True)
+            '
+        Case e_AccionBarra.Resucitar
+            ' Msg585=¡Has sido resucitado!
+            Call WriteLocaleMsg(UserIndex, "585", e_FontTypeNames.FONTTYPE_INFO)
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Resucitar, 250, True))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("117", UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+            Call RevivirUsuario(UserIndex, True)
                 
-             UserList(UserIndex).Accion.Particula = 0
-             UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
-             UserList(UserIndex).Accion.HechizoPendiente = 0
-             UserList(UserIndex).Accion.RunaObj = 0
-             UserList(UserIndex).Accion.ObjSlot = 0
-             UserList(UserIndex).Accion.AccionPendiente = False
+            UserList(UserIndex).Accion.Particula = 0
+            UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
+            UserList(UserIndex).Accion.HechizoPendiente = 0
+            UserList(UserIndex).Accion.RunaObj = 0
+            UserList(UserIndex).Accion.ObjSlot = 0
+            UserList(UserIndex).Accion.AccionPendiente = False
                       
-        End Select
+    End Select
                
-        Exit Sub
+    Exit Sub
 
 CompletarAccionFin_Err:
-     Call TraceError(Err.Number, Err.Description, "Acciones.CompletarAccionFin", Erl)
-
+    Call TraceError(Err.Number, Err.Description, "Acciones.CompletarAccionFin", Erl)
         
 End Sub
 
@@ -473,493 +469,449 @@ Sub Accion(ByVal UserIndex As Integer, _
            ByVal x As Integer, _
            ByVal y As Integer)
         
-    On Error GoTo Accion_Err
+        On Error GoTo Accion_Err
 
-    '¿Rango Visión? (ToxicWaste)
-    If (Abs(UserList(UserIndex).pos.y - y) > RANGO_VISION_Y) Or (Abs(UserList( _
-            UserIndex).pos.x - x) > RANGO_VISION_X) Then
+        '¿Rango Visión? (ToxicWaste)
+        If (Abs(UserList(UserIndex).pos.y - y) > RANGO_VISION_Y) Or (Abs(UserList(UserIndex).pos.x - x) > RANGO_VISION_X) Then
 
-        Exit Sub
+            Exit Sub
 
-    End If
+        End If
         
-    If UserIndex <= 0 Then Exit Sub
+        If UserIndex <= 0 Then Exit Sub
 
-    '¿Posicion valida?
-    If InMapBounds(Map, x, y) Then
+        '¿Posicion valida?
+        If InMapBounds(Map, x, y) Then
    
-        Dim FoundChar      As Byte
+            Dim FoundChar      As Byte
 
-        Dim FoundSomething As Byte
+            Dim FoundSomething As Byte
 
-        Dim TempCharIndex  As Integer
+            Dim TempCharIndex  As Integer
        
-        If MapData(Map, x, y).NpcIndex > 0 Then     'Acciones NPCs
-            TempCharIndex = MapData(Map, x, y).NpcIndex
+            If MapData(Map, x, y).NpcIndex > 0 Then     'Acciones NPCs
+                TempCharIndex = MapData(Map, x, y).NpcIndex
 
-            'Set the target NPC
-            Call SetNpcRef(UserList(UserIndex).flags.TargetNPC, TempCharIndex)
-            UserList(UserIndex).flags.TargetNpcTipo = NpcList(TempCharIndex).npcType
+                'Set the target NPC
+                Call SetNpcRef(UserList(UserIndex).flags.TargetNPC, TempCharIndex)
+                UserList(UserIndex).flags.TargetNpcTipo = NpcList(TempCharIndex).npcType
         
-            If NpcList(TempCharIndex).Comercia = 1 Then
+                If NpcList(TempCharIndex).Comercia = 1 Then
 
-                '¿Esta el user muerto? Si es asi no puede comerciar
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
+                    '¿Esta el user muerto? Si es asi no puede comerciar
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        'Msg77=¡¡Estás muerto!!.
+                        Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
             
-                'Is it already in commerce mode??
-                If UserList(UserIndex).flags.Comerciando Then
+                    'Is it already in commerce mode??
+                    If UserList(UserIndex).flags.Comerciando Then
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
             
-                If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 4 Then
-                    Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+                    If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 4 Then
+                        Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
                     
-                If NpcList(TempCharIndex).Movement = e_TipoAI.Caminata Then
-                    NpcList(TempCharIndex).Contadores.IntervaloMovimiento = _
-                            GetTickCount + 15000 - NpcList( _
-                            TempCharIndex).IntervaloMovimiento
-                End If
+                    If NpcList(TempCharIndex).Movement = e_TipoAI.Caminata Then
+                        NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(TempCharIndex).IntervaloMovimiento
+                    End If
             
-                'Iniciamos la rutina pa' comerciar.
-                Call IniciarComercioNPC(UserIndex)
+                    'Iniciamos la rutina pa' comerciar.
+                    Call IniciarComercioNPC(UserIndex)
         
-            ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Banquero Then
+                ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Banquero Then
 
-                '¿Esta el user muerto? Si es asi no puede comerciar
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
+                    '¿Esta el user muerto? Si es asi no puede comerciar
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        'Msg77=¡¡Estás muerto!!.
+                        Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
 
-                'Is it already in commerce mode??
-                If UserList(UserIndex).flags.Comerciando Then
+                    'Is it already in commerce mode??
+                    If UserList(UserIndex).flags.Comerciando Then
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
 
-                If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 4 Then
-                    Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+                    If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 4 Then
+                        Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
 
-                'A depositar de una
-                Call IniciarBanco(UserIndex)
+                    'A depositar de una
+                    Call IniciarBanco(UserIndex)
             
-            ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Pirata Then  'VIAJES
+                ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Pirata Then  'VIAJES
 
-                '¿Esta el user muerto? Si es asi no puede comerciar
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
+                    '¿Esta el user muerto? Si es asi no puede comerciar
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        'Msg77=¡¡Estás muerto!!.
+                        Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
 
-                'Is it already in commerce mode??
-                If UserList(UserIndex).flags.Comerciando Then
+                    'Is it already in commerce mode??
+                    If UserList(UserIndex).flags.Comerciando Then
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
             
-                If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 4 Then
-                    Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                    'Msg1070= Estas demasiado lejos del vendedor de pasajes.
-                    Call WriteLocaleMsg(UserIndex, "1070", e_FontTypeNames.FONTTYPE_INFO)
+                    If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 4 Then
+                        Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+                        'Msg1070= Estas demasiado lejos del vendedor de pasajes.
+                        Call WriteLocaleMsg(UserIndex, "1070", e_FontTypeNames.FONTTYPE_INFO)
+
+                        Exit Sub
+
+                    End If
+            
+                    If NpcList(TempCharIndex).SoundOpen <> 0 Then
+                        Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND, , 1)
+                    End If
+
+                    'A depositar de unaIniciarTransporte
+                    Call WriteViajarForm(UserIndex, TempCharIndex)
 
                     Exit Sub
-
-                End If
             
-                If NpcList(TempCharIndex).SoundOpen <> 0 Then
-                    Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, _
-                            NO_3D_SOUND, NO_3D_SOUND, , 1)
-                End If
+                ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Revividor Or NpcList(TempCharIndex).npcType = e_NPCType.ResucitadorNewbie Then
 
-                'A depositar de unaIniciarTransporte
-                Call WriteViajarForm(UserIndex, TempCharIndex)
+                    If Distancia(UserList(UserIndex).pos, NpcList(TempCharIndex).pos) > 5 Then
+                        'Msg8=El sacerdote no puede curarte debido a que estas demasiado lejos.
+                        Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 
-                Exit Sub
-            
-            ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Revividor Or NpcList( _
-                    TempCharIndex).npcType = e_NPCType.ResucitadorNewbie Then
+                        Exit Sub
 
-                If Distancia(UserList(UserIndex).pos, NpcList(TempCharIndex).pos) > 5 Then
-                    'Msg8=El sacerdote no puede curarte debido a que estas demasiado lejos.
-                    Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-
-                    Exit Sub
-
-                End If
+                    End If
                     
-                '  Hacemos que se detenga a hablar un momento :P
-                If NpcList(TempCharIndex).Movement = Caminata Then
-                    NpcList(TempCharIndex).Contadores.IntervaloMovimiento = _
-                            GetTickCount + 5000 - NpcList( _
-                            TempCharIndex).IntervaloMovimiento ' 5 segundos
-                End If
+                    '  Hacemos que se detenga a hablar un momento :P
+                    If NpcList(TempCharIndex).Movement = Caminata Then
+                        NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - NpcList(TempCharIndex).IntervaloMovimiento ' 5 segundos
+                    End If
             
-                UserList(UserIndex).flags.Envenenado = 0
-                UserList(UserIndex).flags.Incinerado = 0
+                    UserList(UserIndex).flags.Envenenado = 0
+                    UserList(UserIndex).flags.Incinerado = 0
       
-                'Revivimos si es necesario
-                If UserList(UserIndex).flags.Muerto = 1 And (NpcList( _
-                        TempCharIndex).npcType = e_NPCType.Revividor Or EsNewbie( _
-                        UserIndex)) Then
-                    ' Msg585=¡Has sido resucitado!
-                    Call WriteLocaleMsg(UserIndex, "585", e_FontTypeNames.FONTTYPE_INFO)
-                    Call RevivirUsuario(UserIndex)
-                    Call SendData(SendTarget.ToPCArea, UserIndex, _
-                            PrepareMessageParticleFX(UserList( _
-                            UserIndex).Char.charindex, e_ParticulasIndex.Resucitar, 30, _
-                            False))
-                    Call SendData(SendTarget.ToPCArea, UserIndex, _
-                            PrepareMessagePlayWave("117", UserList(UserIndex).pos.x, _
-                            UserList(UserIndex).pos.y))
+                    'Revivimos si es necesario
+                    If UserList(UserIndex).flags.Muerto = 1 And (NpcList(TempCharIndex).npcType = e_NPCType.Revividor Or EsNewbie(UserIndex)) Then
+                        ' Msg585=¡Has sido resucitado!
+                        Call WriteLocaleMsg(UserIndex, "585", e_FontTypeNames.FONTTYPE_INFO)
+                        Call RevivirUsuario(UserIndex)
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Resucitar, 30, False))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("117", UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
                 
-                Else
+                    Else
 
-                    'curamos totalmente
-                    If UserList(UserIndex).Stats.MinHp <> UserList( _
-                            UserIndex).Stats.MaxHp Then
-                        UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
-                        Call WritePlayWave(UserIndex, "117", UserList(UserIndex).pos.x, _
-                                UserList(UserIndex).pos.y)
-                        'Msg83=El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...¡Has sido curado!"
-                        Call WriteLocaleMsg(UserIndex, "83", _
-                                e_FontTypeNames.FONTTYPE_INFOIAO)
+                        'curamos totalmente
+                        If UserList(UserIndex).Stats.MinHp <> UserList(UserIndex).Stats.MaxHp Then
+                            UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
+                            Call WritePlayWave(UserIndex, "117", UserList(UserIndex).pos.x, UserList(UserIndex).pos.y)
+                            'Msg83=El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...¡Has sido curado!"
+                            Call WriteLocaleMsg(UserIndex, "83", e_FontTypeNames.FONTTYPE_INFOIAO)
                     
-                        Call WriteUpdateUserStats(UserIndex)
+                            Call WriteUpdateUserStats(UserIndex)
 
-                        If Status(UserIndex) = 4 Or Status(UserIndex) = 2 Or Status( _
-                                UserIndex) = 0 Then
-                            Call SendData(SendTarget.ToPCArea, UserIndex, _
-                                    PrepareMessageParticleFX(UserList( _
-                                    UserIndex).Char.charindex, _
-                                    e_ParticulasIndex.CurarCrimi, 100, False))
-                        Else
+                            If Status(UserIndex) = 4 Or Status(UserIndex) = 2 Or Status(UserIndex) = 0 Then
+                                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.CurarCrimi, 100, False))
+                            Else
            
-                            Call SendData(SendTarget.ToPCArea, UserIndex, _
-                                    PrepareMessageParticleFX(UserList( _
-                                    UserIndex).Char.charindex, e_ParticulasIndex.Curar, _
-                                    100, False))
+                                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Curar, 100, False))
+
+                            End If
 
                         End If
 
                     End If
-
-                End If
          
-            ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Subastador Then
+                ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Subastador Then
 
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        'Msg77=¡¡Estás muerto!!.
+                        Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
             
-                If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 1 Then
-                    Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+                    If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 1 Then
+                        Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
 
-                If NpcList(TempCharIndex).Movement = Caminata Then
-                    NpcList(TempCharIndex).Contadores.IntervaloMovimiento = _
-                            GetTickCount + 20000 - NpcList( _
-                            TempCharIndex).IntervaloMovimiento
-                End If
+                    If NpcList(TempCharIndex).Movement = Caminata Then
+                        NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 20000 - NpcList(TempCharIndex).IntervaloMovimiento
+                    End If
 
-                Call IniciarSubasta(UserIndex)
+                    Call IniciarSubasta(UserIndex)
             
-            ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Quest Then
+                ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Quest Then
 
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        'Msg77=¡¡Estás muerto!!.
+                        Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
                     
-                Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NpcList( _
-                        TempCharIndex).pos.x, NpcList(TempCharIndex).pos.y, 2, 1)
-                Call EnviarQuest(UserIndex)
+                    Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NpcList(TempCharIndex).pos.x, NpcList(TempCharIndex).pos.y, 2, 1)
+                    Call EnviarQuest(UserIndex)
             
-            ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Enlistador Then
+                ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Enlistador Then
 
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        'Msg77=¡¡Estás muerto!!.
+                        Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
             
-                If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 3 Then
-                    Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+                    If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 3 Then
+                        Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
         
-                If NpcList(TempCharIndex).flags.Faccion = 0 Then
-                    If UserList(UserIndex).Faccion.Status <> e_Facciones.Armada And _
-                            UserList(UserIndex).Faccion.Status <> e_Facciones.consejo _
-                            Then
-                        Call EnlistarArmadaReal(UserIndex)
-                    Else
-                        Call RecompensaArmadaReal(UserIndex)
+                    If NpcList(TempCharIndex).flags.Faccion = 0 Then
+                        If UserList(UserIndex).Faccion.Status <> e_Facciones.Armada And UserList(UserIndex).Faccion.Status <> e_Facciones.consejo Then
+                            Call EnlistarArmadaReal(UserIndex)
+                        Else
+                            Call RecompensaArmadaReal(UserIndex)
 
+                        End If
+
+                    Else
+
+                        If UserList(UserIndex).Faccion.Status <> e_Facciones.Caos And UserList(UserIndex).Faccion.Status <> e_Facciones.concilio Then
+                            Call EnlistarCaos(UserIndex)
+                        Else
+                            Call RecompensaCaos(UserIndex)
+                        End If
                     End If
 
-                Else
+                ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Gobernador Then
 
-                    If UserList(UserIndex).Faccion.Status <> e_Facciones.Caos And _
-                            UserList(UserIndex).Faccion.Status <> e_Facciones.concilio _
-                            Then
-                        Call EnlistarCaos(UserIndex)
-                    Else
-                        Call RecompensaCaos(UserIndex)
-                    End If
-                End If
-
-            ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Gobernador Then
-
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
-
-                    Exit Sub
-
-                End If
-            
-                If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 3 Then
-                    Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-
-                    'Msg8=Estas demasiado lejos del gobernador.
-                    Exit Sub
-
-                End If
-
-                Dim DeDonde    As String
-
-                Dim Gobernador As t_Npc
-
-                Gobernador = NpcList(TempCharIndex)
-            
-                If UserList(UserIndex).Hogar = Gobernador.GobernadorDe Then
-                    Call WriteLocaleChatOverHead(UserIndex, "1349", "", _
-                            Gobernador.Char.charindex, vbWhite) ' Msg1349=Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.
-
-                    Exit Sub
-
-                End If
-            
-                If UserList(UserIndex).Faccion.Status = 0 Or UserList( _
-                        UserIndex).Faccion.Status = 2 Then
-
-                    If Gobernador.GobernadorDe = e_Ciudad.cBanderbill Then
-                        Call WriteLocaleChatOverHead(UserIndex, "1350", "", _
-                                Gobernador.Char.charindex, vbWhite) ' Msg1350=Aquí no aceptamos criminales.
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        'Msg77=¡¡Estás muerto!!.
+                        Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
 
                         Exit Sub
 
                     End If
-
-                End If
             
-                If UserList(UserIndex).Faccion.Status = 3 Or UserList( _
-                        UserIndex).Faccion.Status = 1 Then
+                    If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 3 Then
+                        Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 
-                    If Gobernador.GobernadorDe = e_Ciudad.cArkhein Then
-                        Call WriteLocaleChatOverHead(UserIndex, "1351", "", _
-                                Gobernador.Char.charindex, vbWhite) ' Msg1351=¡¡Sal de aquí ciudadano asqueroso!!
-
+                        'Msg8=Estas demasiado lejos del gobernador.
                         Exit Sub
 
                     End If
 
-                End If
+                    Dim DeDonde    As String
+
+                    Dim Gobernador As t_Npc
+
+                    Gobernador = NpcList(TempCharIndex)
             
-                If UserList(UserIndex).Hogar <> Gobernador.GobernadorDe Then
+                    If UserList(UserIndex).Hogar = Gobernador.GobernadorDe Then
+                        Call WriteLocaleChatOverHead(UserIndex, "1349", "", Gobernador.Char.charindex, vbWhite) ' Msg1349=Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.
+
+                        Exit Sub
+
+                    End If
             
-                    UserList(UserIndex).PosibleHogar = Gobernador.GobernadorDe
+                    If UserList(UserIndex).Faccion.Status = 0 Or UserList(UserIndex).Faccion.Status = 2 Then
+
+                        If Gobernador.GobernadorDe = e_Ciudad.cBanderbill Then
+                            Call WriteLocaleChatOverHead(UserIndex, "1350", "", Gobernador.Char.charindex, vbWhite) ' Msg1350=Aquí no aceptamos criminales.
+
+                            Exit Sub
+
+                        End If
+
+                    End If
+            
+                    If UserList(UserIndex).Faccion.Status = 3 Or UserList(UserIndex).Faccion.Status = 1 Then
+
+                        If Gobernador.GobernadorDe = e_Ciudad.cArkhein Then
+                            Call WriteLocaleChatOverHead(UserIndex, "1351", "", Gobernador.Char.charindex, vbWhite) ' Msg1351=¡¡Sal de aquí ciudadano asqueroso!!
+
+                            Exit Sub
+
+                        End If
+
+                    End If
+            
+                    If UserList(UserIndex).Hogar <> Gobernador.GobernadorDe Then
+            
+                        UserList(UserIndex).PosibleHogar = Gobernador.GobernadorDe
                 
-                    Select Case UserList(UserIndex).PosibleHogar
+                        Select Case UserList(UserIndex).PosibleHogar
 
-                        Case e_Ciudad.cUllathorpe
-                            DeDonde = "Ullathorpe"
+                            Case e_Ciudad.cUllathorpe
+                                DeDonde = "Ullathorpe"
                             
-                        Case e_Ciudad.cNix
-                            DeDonde = "Nix"
+                            Case e_Ciudad.cNix
+                                DeDonde = "Nix"
                 
-                        Case e_Ciudad.cBanderbill
-                            DeDonde = "Banderbill"
+                            Case e_Ciudad.cBanderbill
+                                DeDonde = "Banderbill"
                         
-                        Case e_Ciudad.cLindos
-                            DeDonde = "Lindos"
+                            Case e_Ciudad.cLindos
+                                DeDonde = "Lindos"
                             
-                        Case e_Ciudad.cArghal
-                            DeDonde = "Arghal"
+                            Case e_Ciudad.cArghal
+                                DeDonde = "Arghal"
                         
-                        Case e_Ciudad.cForgat
-                            DeDonde = "Forgat"
+                            Case e_Ciudad.cForgat
+                                DeDonde = "Forgat"
 
-                        Case e_Ciudad.cEldoria
-                            DeDonde = "Eldoria"
+                            Case e_Ciudad.cEldoria
+                                DeDonde = "Eldoria"
                             
-                        Case e_Ciudad.cArkhein
-                            DeDonde = "Arkhein"
+                            Case e_Ciudad.cArkhein
+                                DeDonde = "Arkhein"
 
-                        Case e_Ciudad.cPenthar
-                            DeDonde = "Penthar"
+                            Case e_Ciudad.cPenthar
+                                DeDonde = "Penthar"
 
-                        Case Else
-                            DeDonde = "Ullathorpe"
+                            Case Else
+                                DeDonde = "Ullathorpe"
 
-                    End Select
+                        End Select
                     
-                    UserList(UserIndex).flags.pregunta = 3
-                    Call WritePreguntaBox(UserIndex, 1592, DeDonde)
+                        UserList(UserIndex).flags.pregunta = 3
+                        Call WritePreguntaBox(UserIndex, 1592, DeDonde)
                 
-                End If
+                    End If
 
-            ElseIf NpcList(TempCharIndex).npcType = e_NPCType.EntregaPesca Then
+                ElseIf NpcList(TempCharIndex).npcType = e_NPCType.EntregaPesca Then
 
-                Dim i                   As Integer, j As Integer
+                    Dim i                   As Integer, j As Integer
 
-                Dim PuntosTotales       As Long
+                    Dim PuntosTotales       As Long
                                                             
-                Dim CantPecesEspeciales As Long
+                    Dim CantPecesEspeciales As Long
 
-                Dim OroTotal            As Long
+                    Dim OroTotal            As Long
 
-                CantPecesEspeciales = UBound(PecesEspeciales)
+                    CantPecesEspeciales = UBound(PecesEspeciales)
                                                 
-                If CantPecesEspeciales > 0 Then
+                    If CantPecesEspeciales > 0 Then
 
-                    For i = 1 To MAX_INVENTORY_SLOTS
-                        For j = 1 To CantPecesEspeciales
+                        For i = 1 To MAX_INVENTORY_SLOTS
+                            For j = 1 To CantPecesEspeciales
 
-                            If UserList(UserIndex).invent.Object(i).ObjIndex = _
-                                    PecesEspeciales(j).ObjIndex Then
-                                PuntosTotales = PuntosTotales + (ObjData(UserList( _
-                                        UserIndex).invent.Object( _
-                                        i).ObjIndex).PuntosPesca * UserList( _
-                                        UserIndex).invent.Object(i).amount)
-                                OroTotal = OroTotal + (ObjData(UserList( _
-                                        UserIndex).invent.Object(i).ObjIndex).Valor * _
-                                        UserList(UserIndex).invent.Object(i).amount)
-                            End If
+                                If UserList(UserIndex).invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
+                                    PuntosTotales = PuntosTotales + (ObjData(UserList(UserIndex).invent.Object(i).ObjIndex).PuntosPesca * UserList(UserIndex).invent.Object(i).amount)
+                                    OroTotal = OroTotal + (ObjData(UserList(UserIndex).invent.Object(i).ObjIndex).Valor * UserList(UserIndex).invent.Object(i).amount)
+                                End If
 
-                        Next j
-                    Next i
+                            Next j
+                        Next i
 
-                End If
+                    End If
                     
-                If PuntosTotales > 0 Then
-                    UserList(UserIndex).flags.pregunta = 5
-                    Call WritePreguntaBox(UserIndex, 1593, PuntosTotales & "¬" & _
-                            PonerPuntos(OroTotal * 1.2)) 'Msg1593= Tienes un total de ¬1 puntos y ¬2 monedas de oro para reclamar, ¿Deseas aceptar?
-                Else
+                    If PuntosTotales > 0 Then
+                        UserList(UserIndex).flags.pregunta = 5
+                        Call WritePreguntaBox(UserIndex, 1593, PuntosTotales & "¬" & PonerPuntos(OroTotal * 1.2)) 'Msg1593= Tienes un total de ¬1 puntos y ¬2 monedas de oro para reclamar, ¿Deseas aceptar?
+                    Else
 
-                    Dim charindexstr As Integer
+                        Dim charindexstr As Integer
 
-                    charindexstr = str(NpcList(TempCharIndex).Char.charindex)
-                    Call WriteLocaleChatOverHead(UserIndex, "1352", "", charindexstr, _
-                            &HFFFF00) ' Msg1352=No tienes ningún trofeo de pesca para entregar.
-                End If
+                        charindexstr = str(NpcList(TempCharIndex).Char.charindex)
+                        Call WriteLocaleChatOverHead(UserIndex, "1352", "", charindexstr, &HFFFF00) ' Msg1352=No tienes ningún trofeo de pesca para entregar.
+                    End If
 
-            ElseIf NpcList(TempCharIndex).npcType = e_NPCType.AO20Shop Then
+                ElseIf NpcList(TempCharIndex).npcType = e_NPCType.AO20Shop Then
 
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        'Msg77=¡¡Estás muerto!!.
+                        Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
                     
-                Call WriteShopInit(UserIndex)
+                    Call WriteShopInit(UserIndex)
                 
-            ElseIf NpcList(TempCharIndex).npcType = e_NPCType.AO20ShopPjs Then
+                ElseIf NpcList(TempCharIndex).npcType = e_NPCType.AO20ShopPjs Then
 
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        'Msg77=¡¡Estás muerto!!.
+                        Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
                
-                Call WriteShopPjsInit(UserIndex)
-            ElseIf NpcList(TempCharIndex).npcType = e_NPCType.EventMaster Then
+                    Call WriteShopPjsInit(UserIndex)
+                ElseIf NpcList(TempCharIndex).npcType = e_NPCType.EventMaster Then
 
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        'Msg77=¡¡Estás muerto!!.
+                        Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
 
-                If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 4 Then
-                    Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+                    If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 4 Then
+                        Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
 
-                Call WriteUpdateLobbyList(UserIndex)
-            ElseIf NpcList(TempCharIndex).Craftea > 0 Then
+                    Call WriteUpdateLobbyList(UserIndex)
+                ElseIf NpcList(TempCharIndex).Craftea > 0 Then
 
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        'Msg77=¡¡Estás muerto!!.
+                        Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
             
-                If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 3 Then
-                    Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+                    If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 3 Then
+                        Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 
-                    Exit Sub
+                        Exit Sub
 
-                End If
+                    End If
                 
-                UserList(UserIndex).flags.Crafteando = NpcList(TempCharIndex).Craftea
-                Call WriteOpenCrafting(UserIndex, NpcList(TempCharIndex).Craftea)
-            End If
+                    UserList(UserIndex).flags.Crafteando = NpcList(TempCharIndex).Craftea
+                    Call WriteOpenCrafting(UserIndex, NpcList(TempCharIndex).Craftea)
+                End If
         
-            '¿Es un obj?
-        ElseIf MapData(Map, x, y).ObjInfo.ObjIndex > 0 Then
-            UserList(UserIndex).flags.TargetObj = MapData(Map, x, y).ObjInfo.ObjIndex
+                '¿Es un obj?
+            ElseIf MapData(Map, x, y).ObjInfo.ObjIndex > 0 Then
+                UserList(UserIndex).flags.TargetObj = MapData(Map, x, y).ObjInfo.ObjIndex
         
-            Select Case ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).OBJType
+                Select Case ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).OBJType
             
                     Case e_OBJType.otDoors 'Es una puerta
 340                     Call AccionParaPuerta(Map, X, Y, UserIndex)
@@ -977,58 +929,56 @@ Sub Accion(ByVal UserIndex As Integer, _
 
 360                 Case e_OBJType.otWood    'Leña
 
-                    If MapData(Map, x, y).ObjInfo.ObjIndex = FOGATA_APAG And UserList( _
-                            UserIndex).flags.Muerto = 0 Then
-                        Call AccionParaRamita(Map, x, y, UserIndex)
+                        If MapData(Map, x, y).ObjInfo.ObjIndex = FOGATA_APAG And UserList(UserIndex).flags.Muerto = 0 Then
+                            Call AccionParaRamita(Map, x, y, UserIndex)
 
-                    End If
+                        End If
 
-                Case Else
+                    Case Else
 
-                    Exit Sub
+                        Exit Sub
 
-            End Select
+                End Select
 
-            '>>>>>>>>>>>OBJETOS QUE OCUPAM MAS DE UN TILE<<<<<<<<<<<<<
-        ElseIf MapData(Map, x + 1, y).ObjInfo.ObjIndex > 0 Then
-            UserList(UserIndex).flags.TargetObj = MapData(Map, x + 1, y).ObjInfo.ObjIndex
+                '>>>>>>>>>>>OBJETOS QUE OCUPAM MAS DE UN TILE<<<<<<<<<<<<<
+            ElseIf MapData(Map, x + 1, y).ObjInfo.ObjIndex > 0 Then
+                UserList(UserIndex).flags.TargetObj = MapData(Map, x + 1, y).ObjInfo.ObjIndex
         
-            Select Case ObjData(MapData(Map, x + 1, y).ObjInfo.ObjIndex).OBJType
+                Select Case ObjData(MapData(Map, x + 1, y).ObjInfo.ObjIndex).OBJType
+
                     Case e_OBJType.otDoors 'Es una puerta
 372                     Call AccionParaPuerta(Map, X + 1, Y, UserIndex)
-
             
-            End Select
+                End Select
 
-        ElseIf MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex > 0 Then
-            UserList(UserIndex).flags.TargetObj = MapData(Map, x + 1, y + _
-                    1).ObjInfo.ObjIndex
+            ElseIf MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex > 0 Then
+                UserList(UserIndex).flags.TargetObj = MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex
 
-            Select Case ObjData(MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex).OBJType
+                Select Case ObjData(MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex).OBJType
             
                     Case e_OBJType.otDoors 'Es una puerta
 380                     Call AccionParaPuerta(Map, X + 1, Y + 1, UserIndex)
             
-            End Select
+                End Select
 
-        ElseIf MapData(Map, x, y + 1).ObjInfo.ObjIndex > 0 Then
-            UserList(UserIndex).flags.TargetObj = MapData(Map, x, y + 1).ObjInfo.ObjIndex
+            ElseIf MapData(Map, x, y + 1).ObjInfo.ObjIndex > 0 Then
+                UserList(UserIndex).flags.TargetObj = MapData(Map, x, y + 1).ObjInfo.ObjIndex
 
-            Select Case ObjData(MapData(Map, x, y + 1).ObjInfo.ObjIndex).OBJType
+                Select Case ObjData(MapData(Map, x, y + 1).ObjInfo.ObjIndex).OBJType
             
                     Case e_OBJType.otDoors 'Es una puerta
 388                     Call AccionParaPuerta(Map, X, Y + 1, UserIndex)
 
-            End Select
+                End Select
+
+            End If
 
         End If
-
-    End If
         
-    Exit Sub
+        Exit Sub
 
 Accion_Err:
-    Call TraceError(Err.Number, Err.Description, "Acciones.Accion", Erl)
+        Call TraceError(Err.Number, Err.Description, "Acciones.Accion", Erl)
         
 End Sub
 
@@ -1091,8 +1041,7 @@ Sub AccionParaPuerta(ByVal Map As Integer, _
 
         Dim puerta As t_ObjData 'ver ReyarB
         
-100     If Distance(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, x, y) > 2 And _
-                Not SinDistancia Then
+100     If Distance(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, x, y) > 2 And Not SinDistancia Then
 102         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 
             Exit Sub
@@ -1102,8 +1051,7 @@ Sub AccionParaPuerta(ByVal Map As Integer, _
 104     puerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex)
 
 106     If puerta.Llave = 1 And Not SinDistancia Then
-            If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = _
-                    59878 Or puerta.GrhIndex = 59877 Then
+            If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = 59878 Or puerta.GrhIndex = 59877 Then
                 'Msg1073= Al parecer, alguien cerró esta puerta. Debe haber algún interruptor por algún lado...
                 Call WriteLocaleMsg(UserIndex, "1073", e_FontTypeNames.FONTTYPE_INFO)
             Else
@@ -1119,8 +1067,7 @@ Sub AccionParaPuerta(ByVal Map As Integer, _
 112         MapData(Map, X, Y).ObjInfo.ObjIndex = puerta.IndexAbierta
 114         Call BloquearPuerta(Map, X, Y, False)
 
-            If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = _
-                    59878 Or puerta.GrhIndex = 59877 Then
+            If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = 59878 Or puerta.GrhIndex = 59877 Then
                 'Msg1075= Has abierto la compuerta del ducto.
                 Call WriteLocaleMsg(UserIndex, "1075", e_FontTypeNames.FONTTYPE_INFO)
             End If
@@ -1135,16 +1082,12 @@ Sub AccionParaPuerta(ByVal Map As Integer, _
 122         Call AccionParaPuerta(Map, x - 3, y + 1, UserIndex, True)
         End If
 
-124     Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData( _
-                Map, x, y).ObjInfo.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y))
+124     Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(Map, x, y).ObjInfo.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y))
 
-126     If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = _
-                59878 Or puerta.GrhIndex = 59877 Then
-128         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave( _
-                    SND_PUERTA_DUCTO, x, y))
+126     If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = 59878 Or puerta.GrhIndex = 59877 Then
+128         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PUERTA_DUCTO, x, y))
         Else
-132         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave( _
-                    SND_PUERTA, x, y))
+132         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PUERTA, x, y))
         End If
 
 134     UserList(UserIndex).flags.TargetObj = MapData(Map, X, Y).ObjInfo.ObjIndex
@@ -1177,11 +1120,9 @@ Sub AccionParaPuertaNpc(ByVal Map As Integer, _
 
         End If
 
-112     Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData( _
-                Map, x, y).ObjInfo.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y))
+112     Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(Map, x, y).ObjInfo.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y))
 
-114     Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave( _
-                SND_PUERTA, x, y))
+114     Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_PUERTA, x, y))
 
         Exit Sub
 
@@ -1252,8 +1193,7 @@ Sub AccionParaRamita(ByVal Map As Integer, _
 
             End If
 
-116         If MapData(Map, x, y).trigger = e_Trigger.ZonaSegura Or MapInfo(Map).Seguro _
-                    = 1 Then
+116         If MapData(Map, x, y).trigger = e_Trigger.ZonaSegura Or MapInfo(Map).Seguro = 1 Then
                 'Msg1077= En zona segura no podés hacer fogatas.
                 Call WriteLocaleMsg(UserIndex, "1077", e_FontTypeNames.FONTTYPE_INFO)
 
@@ -1261,10 +1201,7 @@ Sub AccionParaRamita(ByVal Map As Integer, _
 
             End If
 
-120         If MapData(Map, x - 1, y).ObjInfo.ObjIndex = FOGATA Or MapData(Map, x + 1, _
-                    y).ObjInfo.ObjIndex = FOGATA Or MapData(Map, x, y - _
-                    1).ObjInfo.ObjIndex = FOGATA Or MapData(Map, x, y + _
-                    1).ObjInfo.ObjIndex = FOGATA Then
+120         If MapData(Map, x - 1, y).ObjInfo.ObjIndex = FOGATA Or MapData(Map, x + 1, y).ObjInfo.ObjIndex = FOGATA Or MapData(Map, x, y - 1).ObjInfo.ObjIndex = FOGATA Or MapData(Map, x, y + 1).ObjInfo.ObjIndex = FOGATA Then
            
                 'Msg1078= Debes alejarte un poco de la otra fogata.
                 Call WriteLocaleMsg(UserIndex, "1078", e_FontTypeNames.FONTTYPE_INFO)

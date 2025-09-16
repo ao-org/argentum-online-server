@@ -408,7 +408,7 @@ Public Const MauveFlashIndex         As String = "Destello Malva (NPC)"
 
 Public Const MAXMASCOTASENTRENADOR   As Byte = 7
 
-Public Enum e_FXSound
+Public Enum e_SoundEffects
 
     Lobo_Sound = 124
     Gallo_Sound = 137
@@ -420,11 +420,6 @@ Public Enum e_FXSound
 
 End Enum
 
-Public Enum e_FXIDs
-    FXWARP = 30
-    FXMEDITARGRANDE = 42
-End Enum
-
 Public Enum e_Meditaciones
     MeditarInicial = 115
     MeditarMayor15 = 116
@@ -434,17 +429,19 @@ Public Enum e_Meditaciones
     MeditarMayor47 = 120
 End Enum
 
-Public Enum e_ParticulasIndex ' Particulas FX
+Public Enum e_ParticleEffects ' Particulas FX
 
-    Envenena = 32
     Incinerar = 6
+    CurarCrimi = 12s
     Intermundia = 16
     Resucitar = 22
     Curar = 23
-    LogeoLevel1 = 177
-    CurarCrimi = 12
     Paralizar = 27
+    FXWARP = 30
+    Envenena = 32
+    FXMEDITARGRANDE = 42
     Runa = 167
+    LogeoLevel1 = 177
     TpVerde = 229
 
 End Enum
@@ -3410,11 +3407,17 @@ End Sub
 
 ' Test the time since last call and update the time
 ' log if there time betwen calls exced the limit
-Public Sub PerformTimeLimitCheck(ByRef timer As Long, ByRef TestText As String, Optional ByVal TimeLimit As Long = 1000)
+Public Sub PerformTimeLimitCheck(ByRef timer As Long, _
+                                 ByRef TestText As String, _
+                                 Optional ByVal TimeLimit As Long = 1000)
+
     Dim CurrTime As Long
+
     CurrTime = GetTickCount() - timer
+
     If CurrTime > TimeLimit Then
         Call LogPerformance("Performance warning at: " & TestText & " elapsed time: " & CurrTime)
     End If
+
     timer = GetTickCount()
 End Sub

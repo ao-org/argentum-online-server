@@ -5430,7 +5430,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
         
 112         Call RevivirUsuario(UserIndex)
             UserList(userindex).Counters.timeFx = 3
-114         Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageParticleFX(UserList(userindex).Char.charindex, e_ParticulasIndex.Curar, 100, False, , UserList(userindex).Pos.X, UserList(userindex).Pos.y))
+114         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Curar, 100, False, , UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
 116         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
 118         ' Msg585=¡Has sido resucitado!
             Call WriteLocaleMsg(UserIndex, "585", e_FontTypeNames.FONTTYPE_INFO)
@@ -8374,7 +8374,7 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 136                             UserList(tUser.ArrayIndex).flags.SpouseId = UserList(UserIndex).id
 138                             .flags.Casado = 1
 140                             .flags.SpouseId = UserList(tUser.ArrayIndex).id
-142                             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_FXSound.Casamiento_sound, NO_3D_SOUND, NO_3D_SOUND))
+142                             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.Casamiento_sound, NO_3D_SOUND, NO_3D_SOUND))
 144                             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1651, get_map_name(.pos.Map) & "¬" & UserList(UserIndex).name & "¬" & UserList(tUser.ArrayIndex).name, e_FontTypeNames.FONTTYPE_WARNING)) 'Msg1651=El sacerdote de ¬1 celebra el casamiento entre ¬2 y ¬3.
                                 Call WriteLocaleChatOverHead(UserIndex, 1414, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1414=Los declaro unidos en legal matrimonio ¡Felicidades!
                                 Call WriteLocaleChatOverHead(tUser.ArrayIndex, 1415, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1415=Los declaro unidos en legal matrimonio ¡Felicidades!
