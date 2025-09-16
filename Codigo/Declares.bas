@@ -429,8 +429,18 @@ Public Enum e_Meditaciones
     MeditarMayor47 = 120
 End Enum
 
-Public Enum e_GraphicEffects
-    Paralizar = 8
+Public Enum e_GraphicEffects 'Image sequenced fxs like paralizar PrepareMessageCreateFX() or family of functions CreateFX()
+    OldGmWarp = 1
+    OldCurarVeneno = 2
+    OldFuerza = 3
+    ApocalipsisAtomicBomb = 4
+    OldFlechaElectrica = 5
+    AntraxAtomicBomb = 6
+    OldTormentaDeFuego = 7
+    OldParalizar = 8
+    
+    
+    
     FXWARP = 30
     FXMEDITARGRANDE = 42
     Runa = 167
@@ -438,7 +448,7 @@ Public Enum e_GraphicEffects
     TpVerde = 229
 End Enum
 
-Public Enum e_ParticleEffects ' Particulas FX
+Public Enum e_ParticleEffects 'particle sequenced fxs like fuerza2 and celeridad2 PrepareMessageParticleFX()
 
     WaterFountain = 1
     Starburst = 2

@@ -2740,15 +2740,27 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         
         If IsSet(Hechizos(h).Effects, e_SpellEffects.ToggleDivineBlood) Then
             If UserList(UserIndex).flags.DivineBlood Then
+            
                 UserList(UserIndex).flags.DivineBlood = 0
+                
                 If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, 0, 0, eBuff)
                 Character.Char.BackpackAnim = 0
                 Call WriteCharacterChange(UserIndex, Character.Char.body, Character.Char.head, Character.Char.Heading, Character.Char.charindex, Character.Char.WeaponAnim, Character.Char.ShieldAnim, 0, Character.Char.BackpackAnim, 0, 0, Character.Char.CascoAnim, False, False)
+                Character.Counters.timeFx = 3
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(Character.Char.charindex, e_GraphicEffects.OldParalizar, 0, Character.pos.x, Character.pos.y))
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.BARCA_SOUND, Character.pos.x, Character.pos.y))
+            
             Else
+            
                 UserList(UserIndex).flags.DivineBlood = 1
+                
                 If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, -1, -1, eBuff)
                 Character.Char.BackpackAnim = 4997
                 Call WriteCharacterChange(UserIndex, Character.Char.body, Character.Char.head, Character.Char.Heading, Character.Char.charindex, Character.Char.WeaponAnim, Character.Char.ShieldAnim, 0, Character.Char.BackpackAnim, 0, 0, Character.Char.CascoAnim, False, False)
+                Character.Counters.timeFx = 3
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(Character.Char.charindex, e_GraphicEffects.OldParalizar, 0, Character.pos.x, Character.pos.y))
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.BARCA_SOUND, Character.pos.x, Character.pos.y))
+            
             End If
 
             b = True
