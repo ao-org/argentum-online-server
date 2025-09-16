@@ -2741,15 +2741,13 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         If IsSet(Hechizos(h).Effects, e_SpellEffects.ToggleDivineBlood) Then
             If UserList(UserIndex).flags.DivineBlood Then
                 UserList(UserIndex).flags.DivineBlood = 0
-
                 If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, 0, 0, eBuff)
-                Character.Char.BackpackAnim = 4997
+                Character.Char.BackpackAnim = 0
                 Call WriteCharacterChange(UserIndex, Character.Char.body, Character.Char.head, Character.Char.Heading, Character.Char.charindex, Character.Char.WeaponAnim, Character.Char.ShieldAnim, 0, Character.Char.BackpackAnim, 0, 0, Character.Char.CascoAnim, False, False)
             Else
                 UserList(UserIndex).flags.DivineBlood = 1
-
                 If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, -1, -1, eBuff)
-                Character.Char.BackpackAnim = 0
+                Character.Char.BackpackAnim = 4997
                 Call WriteCharacterChange(UserIndex, Character.Char.body, Character.Char.head, Character.Char.Heading, Character.Char.charindex, Character.Char.WeaponAnim, Character.Char.ShieldAnim, 0, Character.Char.BackpackAnim, 0, 0, Character.Char.CascoAnim, False, False)
             End If
 
