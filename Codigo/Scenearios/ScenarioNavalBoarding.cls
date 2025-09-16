@@ -598,7 +598,7 @@ Private Sub Respawn(ByVal player As Integer)
     
     Call CreateEffect(0, e_ReferenceType.eNone, player, eUser, ShieldEffectIndex)
     Call RefillPotions(player)
-114 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessageParticleFX(UserList(player).Char.charindex, e_ParticleEffects.Curar, 100, False, , UserList(player).pos.x, UserList(player).pos.y))
+114 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessageParticleFX(UserList(player).Char.charindex, e_ParticleEffects.Corazones, 100, False, , UserList(player).pos.x, UserList(player).pos.y))
 116 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessagePlayWave("104", UserList(player).pos.x, UserList(player).pos.y))
 End Sub
 

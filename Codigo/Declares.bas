@@ -308,7 +308,7 @@ Public Type t_AttackInteractionResult
 End Type
 
 Public Enum e_PlayerType
-    user = &H1
+    User = &H1
     RoleMaster = &H2
     Consejero = &H4
     SemiDios = &H8
@@ -429,20 +429,259 @@ Public Enum e_Meditaciones
     MeditarMayor47 = 120
 End Enum
 
-Public Enum e_ParticleEffects ' Particulas FX
-
-    Incinerar = 6
-    CurarCrimi = 12
-    Intermundia = 16
-    Resucitar = 22
-    Curar = 23
-    Paralizar = 27
+Public Enum e_GraphicEffects
+    Paralizar = 8
     FXWARP = 30
-    Envenena = 32
     FXMEDITARGRANDE = 42
     Runa = 167
     LogeoLevel1 = 177
     TpVerde = 229
+End Enum
+
+Public Enum e_ParticleEffects ' Particulas FX
+
+    WaterFountain = 1
+    Starburst = 2
+    FireJest = 3
+    LargeWaterFountain = 4
+    HolyParticles = 5
+    Incinerar = 6
+    Waterfall = 7
+    Rain = 8
+    Insects = 9
+    Smoke = 10
+    GreatFire = 11
+    CurarCrimi = 12
+    SnowRain = 13
+    FireWall = 15
+    Intermundia = 16
+    HaloGold = 17
+    HaloGreen = 18
+    'Feo libre = 19
+    SmokeGreen = 20
+    Resucitar = 22
+    Corazones = 23
+    Bubbles = 24
+    ElectricBallWhite = 25
+    'Feo libre = 26
+    'Feo libre = 27
+    SmokeWallGreen = 28
+    MacabreSkullRed = 29
+    MacabreSkullWhite = 30
+    Marked = 31
+    PoisonGas = 32
+    WaterSprinkle = 33
+    SmokeGreenSmall = 34
+    Candelabro = 35
+    HolyParticleEnormous = 36
+    SmokeRedMedium = 37
+    SmokeHolyMedium = 38
+    'Feo libre = 39
+    'Feo libre = 40
+    'Feo libre = 41
+    'Feo libre = 42
+    'Feo libre = 43
+    'Feo libre = 44
+    FireVolcano = 45
+    ElectricBallYellow = 46
+    SlowHourGlass = 47
+    ElectricBallPurple = 48
+    ElectricBallBlue = 49
+    'Feo libre = 50
+    'Feo libre = 51
+    'Feo libre = 52
+    'Feo libre = 53
+    'Feo libre = 54
+    'Feo libre = 55
+    SnowFall = 56
+    SnowFall2 = 57
+    Rain2 = 58
+    SandStorm = 59
+    'Feo libre = 60
+    'Feo libre = 61
+    'Feo libre = 62
+    'Feo libre = 63
+    'Feo libre = 64
+    'Feo libre = 65
+    'Feo libre = 66
+    'Feo libre = 67
+    JuicioFinal = 68
+    'Feo libre = 69
+    'Feo libre = 70
+    SmokeYellowMedium = 71
+    'Feo libre = 72
+    'Feo libre = 73
+    MacabreSkullBlue = 74
+    'Feo libre = 75
+    Fuerza2 = 76
+    HaloRed = 77
+    'Feo libre = 78
+    'Feo libre = 79
+    CorazonesGreen = 80
+    'Feo libre = 81
+    'Feo libre = 82
+    ElectricBallRed = 83
+    'Feo libre = 84
+    'Feo libre = 85
+    'Feo libre = 86
+    Fog = 87
+    'Feo libre = 88
+    'Feo libre = 89
+    'Feo libre = 90
+    'Feo libre = 91
+    'Feo libre = 92
+    'Feo libre = 93
+    'Feo libre = 94
+    'Feo libre = 95
+    FireVolcanoSmall = 96
+    'Feo libre = 97
+    'Feo libre = 98
+    'Feo libre = 99
+    'Feo libre = 100
+    'Feo libre = 101
+    'Feo libre = 102
+    'Feo libre = 103
+    'Feo libre = 104
+    CauldronGasGreen = 105
+    'Feo libre = 106
+    'Feo libre = 107
+    'Feo libre = 108
+    'Feo libre = 109
+    'Feo libre = 110
+    'Feo libre = 111
+    'Feo libre = 112
+    'Feo libre = 113
+    'Feo libre = 114
+    'Feo libre = 115
+    'Feo libre = 116
+    'Feo libre = 117
+    FireWorksRed = 118
+    FireWorksRedFast = 119
+    FireWorkVioletFast = 120
+    FireWorkGreenFast = 121
+    FireWorkYellowWide = 122
+    'Feo libre = 123
+    'Feo libre = 124
+    'Feo libre = 125
+    'Feo libre = 126
+    'Feo libre = 127
+    'Feo libre = 128
+    'Feo libre = 129
+    'Feo libre = 130
+    'Feo libre = 131
+    'Feo libre = 132
+    'Feo libre = 133
+    'Feo libre = 134
+    'Feo libre = 135
+    'Feo libre = 136
+    'Feo libre = 137
+    'Feo libre = 138
+    'Feo libre = 139
+    'Feo libre = 140
+    FireWorkGiantExplosion = 141
+    FireWorkGiantExplosionGreen = 142
+    FireWorkGiantExplosionYellow = 143
+    FireWorkGiantExplosionRed = 144
+    'Feo libre = 145
+    'Feo libre = 146
+    'Feo libre = 147
+    'Feo libre = 148
+    'Feo libre = 149
+    'Feo libre = 150
+    'Feo libre = 151
+    'Feo libre = 152
+    'Feo libre = 153
+    'Feo libre = 154
+    'Feo libre = 155
+    'Feo libre = 156
+    'Feo libre = 157
+    'Feo libre = 158
+    'Feo libre = 159
+    'Feo libre = 160
+    'Feo libre = 161
+    'Feo libre = 162
+    'Feo libre = 163
+    'Feo libre = 164
+    'Feo libre = 165
+    'Feo libre = 166
+    'Feo libre = 167
+    'Feo libre = 168
+    'Feo libre = 169
+    'Feo libre = 170
+    'Feo libre = 171
+    FogGreen = 172
+    FogMulticolor = 173
+    'Feo libre = 174
+    'Feo libre = 175
+    MusicalNotesStorm = 176
+    'Feo libre = 177
+    'Feo libre = 178
+    'Feo libre = 179
+    FireplaceSmoke = 174
+    'Feo libre = 175
+    'Feo libre = 186
+    'Feo libre = 187
+    'Feo libre = 188
+    'Feo libre = 189
+    DivineBlessing = 190
+    'Feo libre = 191
+    Petrificar = 192
+    MacabreSkullPuple = 193
+    'Feo libre = 194
+    'Feo libre = 195
+    'Feo libre = 196
+    'Feo libre = 197
+    'Feo libre = 198
+    'Feo libre = 199
+    'Feo libre = 200
+    'Feo libre = 201
+    'Feo libre = 202
+    CharacterSelection1 = 203
+    'Feo libre = 204
+    'Feo libre = 204
+    'Feo libre = 205
+    'Feo libre = 206
+    'Feo libre = 207
+    'Feo libre = 208
+    'Feo libre = 209
+    'Feo libre = 210
+    'Feo libre = 211
+    'Feo libre = 212
+    'Feo libre = 213
+    'Feo libre = 214
+    'Feo libre = 215
+    'Feo libre = 216
+    'Feo libre = 217
+    'Feo libre = 218
+    'Feo libre = 219
+    'Feo libre = 220
+    FlareGreen = 221
+    FlareRed = 222
+    FlareBlue = 223
+    FlareGray = 224
+    FlareGreen2 = 225
+    FlarePurple = 226
+    FlareBalck = 227
+    FlareBrown = 228
+    CharacterSelection2 = 229
+    'Feo libre = 230
+    DancingSkullBlue = 231
+    DancingSkullRed = 232
+    'Feo libre = 233
+    FrostBreath = 245
+    'Feo libre = 251
+    'Feo libre = 252
+    'Feo libre = 253
+    'Feo libre = 254
+    'Feo libre = 255
+    'Feo libre = 316
+    Celeridad2 = 326
+    
+    
+    
+    
+    
+
 
 End Enum
 
@@ -527,7 +766,7 @@ Public Enum e_UsersInfoMask
     Paralized = 8
     Inmovilized = 16
     Working = 32
-    Invisible = 64
+    invisible = 64
     Hidden = 128
     Stupid = 256
     Cursed = 512
@@ -1032,7 +1271,7 @@ Public Enum e_MagicItemSubType
 End Enum
 
 Public Enum e_MagicItemEffect
-    eMagicResistance = 1
+    eMagicresistance = 1
     eModifyAttributes = 2
     eModifySkills = 3
     eRegenerateHealth = 4
@@ -1187,7 +1426,7 @@ Public Type t_Hechizo
     Duration As Integer
     RequiredHP As Integer
     
-    CoolDown As Integer
+    Cooldown As Integer
     CdEffectId As Integer
     
     ScreenColor As Long
@@ -1331,7 +1570,7 @@ Public Type t_EffectOverTime
     TickFX As Integer
     OnHitFx As Integer
     OnHitWav As Integer
-    BuffType As e_EffectType
+    buffType As e_EffectType
     Override As Boolean
     PhysicalDamageReduction As Single
     MagicDamageReduction As Single
@@ -1348,11 +1587,11 @@ Public Type t_EffectOverTime
     ClientEffectTypeId As Integer
     Area As Integer
     Aura As String
-    ApplyeffectID As Integer
+    ApplyEffectId As Integer
     SecondaryEffectId As Integer
     SpellRequirementMask As Long
     RequireWeaponType As Integer
-    npcId As Integer
+    NpcId As Integer
     ApplyStatusMask As Long
     SecondaryTargetModifier As Single
     RequireTransform As Integer
@@ -1423,14 +1662,14 @@ End Type
 
 Public Type t_WorldPos
     Map As Integer
-    X As Integer
-    Y As Integer
+    x As Integer
+    y As Integer
 End Type
 
 Public Type t_Position
 
-    X As Integer
-    Y As Integer
+    x As Integer
+    y As Integer
 
 End Type
 
@@ -1446,8 +1685,8 @@ End Enum
 
 Public Type t_Transport
     Map As Integer
-    StartX As Integer
-    StartY As Integer
+    startX As Integer
+    startY As Integer
     EndX As Integer
     EndY As Integer
     DestX As Byte
@@ -1464,8 +1703,8 @@ End Type
 Public Type t_CityWorldPos
 
     Map As Integer
-    X As Integer
-    Y As Integer
+    x As Integer
+    y As Integer
     MapaViaje As Integer
     ViajeX As Byte
     ViajeY As Byte
@@ -1492,10 +1731,10 @@ End Enum
 'Datos de user o npc
 Public Type t_Char
 
-    CharIndex As Integer
+    charindex As Integer
     charindex_bk As Integer
-    Head As Integer
-    Body As Integer
+    head As Integer
+    body As Integer
     originalhead As Integer
     WeaponAnim As Integer
     ShieldAnim As Integer
@@ -1526,7 +1765,7 @@ Public Type t_Obj
     ObjIndex As Integer
     ElementalTags As Long
     amount As Long
-    Data As Double
+    data As Double
 
 End Type
 
@@ -1599,7 +1838,7 @@ End Type
 
 ' ******************* RETOS ************************
 Public Enum e_SolicitudRetoEstado
-    Libre
+    libre
     Enviada
     EnCola
 End Enum
@@ -1611,7 +1850,7 @@ Public Type t_SolicitudJugador
 End Type
 
 Public Type t_SolicitudReto
-    estado As e_SolicitudRetoEstado
+    Estado As e_SolicitudRetoEstado
     Jugadores() As t_SolicitudJugador
     Apuesta As Long
     PocionesMaximas As Integer
@@ -1674,7 +1913,7 @@ Public Type t_ObjData
     Jerarquia As Long
     ClaseTipo As Byte
     TipoRuna As Byte
-    Name As String 'Nombre del obj
+    name As String 'Nombre del obj
     OBJType As e_OBJType 'Tipo enum que determina cuales son las caract del obj
     GrhIndex As Long ' Indice del grafico que representa el obj
     GrhSecundario As Integer
@@ -1760,7 +1999,7 @@ Public Type t_ObjData
     MinSta As Integer ' Minimo puntos de stamina
     
     Cooldown As Long
-    CdType As Integer
+    cdType As Integer
     ImprovedRangedHitChance As Integer
     ImprovedMeleeHitChance As Integer
     
@@ -2015,7 +2254,7 @@ Public Type t_UserStats
     
     MaxHp As Integer
     MinHp As Integer
-    Shield As Long
+    shield As Long
     
     MaxSta As Integer
     MinSta As Integer
@@ -2340,7 +2579,7 @@ Public Type t_UserCounters
     PiqueteC As Long
     Pena As Long
     SendMapCounter As t_WorldPos
-    Pasos As Integer
+    pasos As Integer
     '[Gonzalo]
     Saliendo As Boolean
     Salir As Integer
@@ -2531,7 +2770,7 @@ Public Const HotKeyCount As Integer = 10
 'Tipo de los Usuarios
 Public Type t_User
 
-    Name As String
+    name As String
     Cuenta As String
     
     'User types are created at startup and reused every time,
@@ -2539,7 +2778,7 @@ Public Type t_User
     'this value should be updated every time we reuse this instance
     VersionId As Integer
     InUse As Boolean 'Mark if the slot is un use, should be set when players connect and clear on dc, used for debug and error handling
-    ID As Long
+    Id As Long
     Trabajo As t_UserTrabajo
     AccountID As Long
     Grupo As Tgrupo
@@ -2563,10 +2802,10 @@ Public Type t_User
     PosibleHogar As e_Ciudad
     MENSAJEINFORMACION As String
         
-    Invent As t_Inventario
+    invent As t_Inventario
     Invent_bk As t_Inventario
     
-    Pos As t_WorldPos
+    pos As t_WorldPos
     
     ConnectionDetails As t_ConnectionInfo
     
@@ -2654,7 +2893,7 @@ Public Type t_NPCStats
     MinHp As Long
     MaxHit As Integer
     MinHIT As Integer
-    Shield As Long
+    shield As Long
     def As Integer
     defM As Integer 'direct magic reduction
     MagicResistance As Integer 'magic skill required to do full damage to npc
@@ -2750,7 +2989,7 @@ Public Type t_NPCFlags
 
     BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
-    Team As Byte
+    team As Byte
 
     ElementalTags As Long
 
@@ -2790,7 +3029,7 @@ Public Type t_NpcPathFindingInfo
 End Type
 
 Public Type t_Caminata
-    Offset As t_Position
+    offset As t_Position
     Espera As Long
 End Type
 
@@ -2844,7 +3083,7 @@ Public Type t_Npc
     DropQuest() As t_QuestObj
     
     InformarRespawn As Byte
-    Name As String
+    name As String
     SubName As String
     Char As t_Char 'Define como se vera
     Desc As String
@@ -2852,7 +3091,7 @@ Public Type t_Npc
     showName As Byte
     GobernadorDe As Byte
 
-    NPCtype As e_NPCType
+    npcType As e_NPCType
     Numero As Integer
 
     nivel As Integer
@@ -2871,7 +3110,7 @@ Public Type t_Npc
 
     Veneno As Byte
 
-    Pos As t_WorldPos 'Posicion
+    pos As t_WorldPos 'Posicion
     Orig As t_WorldPos
 
     Movement As e_TipoAI
@@ -2901,7 +3140,7 @@ Public Type t_Npc
     Modifiers As t_ActiveModifiers
     EffectOverTime As t_EffectOverTimeList
     
-    Invent As t_Inventario
+    invent As t_Inventario
     
     NroExpresiones As Byte
     Expresiones() As String ' le da vida ;)
@@ -2930,7 +3169,7 @@ Public Type t_Npc
     ShowKillerConsole As Byte
         
     NumDestinos As Byte
-    Dest() As String
+    dest() As String
     Interface As Byte
     
     'Para diferenciar entre clanes
@@ -3024,7 +3263,7 @@ Type t_MapInfo
 End Type
 
 Public Type t_IndexHeap
-    CurrentIndex As Integer
+    currentIndex As Integer
     IndexInfo() As Integer
 End Type
 
@@ -3033,7 +3272,7 @@ Public Type t_GlobalDrop
     MaxPercent As Single
     MinPercent As Single
     RequiredHPForMaxChance As Long
-    Amount As Integer
+    amount As Integer
 End Type
 
 '********** V A R I A B L E S     P U B L I C A S ***********
@@ -3168,11 +3407,11 @@ Public TotalMapasCiudades()               As String
 Public Ayuda                              As New cCola
 Public TiempoPesca As Long
 Public BotinInicial As Double
-Public Segundos As Long
+Public segundos As Long
 
-Public Declare Function writeprivateprofilestring Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpString As String, ByVal lpfilename As String) As Long
-Public Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nSize As Long, ByVal lpfilename As String) As Long
-Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal Length As Long)
+Public Declare Function writeprivateprofilestring Lib "Kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpString As String, ByVal lpfilename As String) As Long
+Public Declare Function GetPrivateProfileString Lib "Kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nSize As Long, ByVal lpfilename As String) As Long
+Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal length As Long)
 
 ' Los Objetos Criticos nunca desaparecen del inventario de los npcs vendedores, una vez que
 ' se venden los 10.000 (max. cantidad de items x slot) vuelven a reabastecer.
@@ -3216,13 +3455,13 @@ End Enum
 Public Type tPaso
 
     CantPasos As Byte
-    Wav() As Integer
+    wav() As Integer
 
 End Type
 
 Public Const NUM_PASOS       As Byte = 6
 
-Public Pasos()               As tPaso
+Public pasos()               As tPaso
 
 Public DBError As String
 
@@ -3325,21 +3564,21 @@ Public Function IsValidRef(ByRef Ref As t_AnyReference) As Boolean
     End If
 End Function
 
-Public Function SetRef(ByRef Ref As t_AnyReference, ByVal index As Integer, ByVal RefType As e_ReferenceType) As Boolean
+Public Function SetRef(ByRef Ref As t_AnyReference, ByVal Index As Integer, ByVal RefType As e_ReferenceType) As Boolean
     SetRef = False
     Ref.RefType = RefType
-    Ref.ArrayIndex = index
+    Ref.ArrayIndex = Index
     If RefType = eUser Then
-        If index <= 0 Or Ref.ArrayIndex > UBound(UserList) Then
+        If Index <= 0 Or Ref.ArrayIndex > UBound(UserList) Then
             Exit Function
         End If
-        Ref.VersionId = UserList(index).VersionId
-        Ref.UserId = UserList(Index).ID
+        Ref.VersionId = UserList(Index).VersionId
+        Ref.UserId = UserList(Index).Id
     Else
-        If index <= 0 Or Ref.ArrayIndex > UBound(NpcList) Then
+        If Index <= 0 Or Ref.ArrayIndex > UBound(NpcList) Then
             Exit Function
         End If
-        Ref.VersionId = NpcList(index).VersionId
+        Ref.VersionId = NpcList(Index).VersionId
         Ref.UserId = 0
     End If
     SetRef = True
@@ -3354,7 +3593,7 @@ Public Function CastUserToAnyRef(ByRef UserRef As t_UserReference, ByRef AnyRef 
     AnyRef.ArrayIndex = UserRef.ArrayIndex
     AnyRef.RefType = eUser
     AnyRef.VersionId = UserRef.VersionId
-    AnyRef.userID = UserList(UserRef.ArrayIndex).ID
+    AnyRef.UserId = UserList(UserRef.ArrayIndex).Id
     CastUserToAnyRef = True
 End Function
 
@@ -3401,8 +3640,8 @@ Public Sub IncreaseLong(ByRef dest As Long, ByVal amount As Long)
     dest = dest + amount
 End Sub
 
-Public Sub PerformanceTestStart(ByRef Timer As Long)
-    Timer = GetTickCount()
+Public Sub PerformanceTestStart(ByRef timer As Long)
+    timer = GetTickCount()
 End Sub
 
 ' Test the time since last call and update the time

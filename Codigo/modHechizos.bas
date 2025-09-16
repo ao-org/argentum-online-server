@@ -1172,7 +1172,7 @@ Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 116             If UserList(UserIndex).flags.Portal = 0 Then
 
-118                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Runa, -1, False))
+118                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_GraphicEffects.Runa, -1, False))
          
 120                 UserList(UserIndex).flags.PortalM = UserList(UserIndex).Pos.Map
 122                 UserList(UserIndex).flags.PortalX = UserList(UserIndex).flags.TargetX
@@ -1181,7 +1181,7 @@ Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
 126                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 600, e_AccionBarra.Intermundia))
 
 128                 UserList(UserIndex).Accion.AccionPendiente = True
-130                 UserList(UserIndex).Accion.Particula = e_ParticleEffects.Runa
+130                 UserList(UserIndex).Accion.Particula = e_GraphicEffects.Runa
 132                 UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.Intermundia
 134                 UserList(UserIndex).Accion.HechizoPendiente = uh
             

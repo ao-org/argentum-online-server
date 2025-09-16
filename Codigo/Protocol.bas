@@ -5430,7 +5430,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
         
 112         Call RevivirUsuario(UserIndex)
             UserList(userindex).Counters.timeFx = 3
-114         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Curar, 100, False, , UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+114         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Corazones, 100, False, , UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
 116         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
 118         ' Msg585=¡Has sido resucitado!
             Call WriteLocaleMsg(UserIndex, "585", e_FontTypeNames.FONTTYPE_INFO)

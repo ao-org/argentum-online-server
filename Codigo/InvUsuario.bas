@@ -3361,15 +3361,15 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 .Counters.TimerBarra = 5
                      End Select
 1326                         If Not EsGM(UserIndex) Then
-1328                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticleEffects.Runa, 400, False))
+1328                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, 400, False))
 1330                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 350, e_AccionBarra.Runa))
                                   Else
-1332                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticleEffects.Runa, 50, False))
+1332                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, 50, False))
 1334                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 100, e_AccionBarra.Runa))
     
                                   End If
     
-1336                         .Accion.Particula = e_ParticleEffects.Runa
+1336                         .Accion.Particula = e_GraphicEffects.Runa
 1338                         .Accion.AccionPendiente = True
 1340                         .Accion.TipoAccion = e_AccionBarra.Runa
 1342                         .Accion.RunaObj = ObjIndex
@@ -4163,11 +4163,11 @@ Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal Targe
         Case e_ElementalTags.Water
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.CurarCrimi, 10, False))
         Case e_ElementalTags.Earth
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Envenena, 10, False))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.PoisonGas, 10, False))
         Case e_ElementalTags.Wind
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Runa, 10, False))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_GraphicEffects.Runa, 10, False))
         Case Else
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Curar, 10, False))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Corazones, 10, False))
     End Select
     
     

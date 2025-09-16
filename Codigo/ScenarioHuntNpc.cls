@@ -421,7 +421,7 @@ Private Sub Respawn(ByVal player As Integer)
     Call WarpToLegalPos(player, MapNumber, SpawnPos.x, SpawnPos.y, True, True)
     Call RevivirUsuario(player)
     UserList(player).Counters.timeFx = 3
-114 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessageParticleFX(UserList(player).Char.charindex, e_ParticleEffects.Curar, 100, False, , UserList(player).pos.x, UserList(player).pos.y))
+114 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessageParticleFX(UserList(player).Char.charindex, e_ParticleEffects.Corazones, 100, False, , UserList(player).pos.x, UserList(player).pos.y))
 116 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessagePlayWave("104", UserList(player).Pos.x, UserList(player).Pos.y))
 End Sub
 

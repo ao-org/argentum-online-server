@@ -1084,7 +1084,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As t_WorldPos, ByVal FX As Bool
 
 136     If FX Then
 138         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessagePlayWave(SND_WARP, X, y))
-140         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.charindex, e_ParticleEffects.FXWARP, 0))
+140         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.charindex, e_GraphicEffects.FXWARP, 0))
 
         End If
 
@@ -1845,7 +1845,7 @@ Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Byte, ByVal X As Integer
 
 120         If FX Then                                    'FX
 122             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessagePlayWave(SND_WARP, NuevaPos.X, NuevaPos.y))
-124             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.charindex, e_ParticleEffects.FXWARP, 0))
+124             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.charindex, e_GraphicEffects.FXWARP, 0))
             End If
 
         End If
