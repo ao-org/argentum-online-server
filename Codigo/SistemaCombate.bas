@@ -330,7 +330,7 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal npcIndex As In
             PoderAtaque = PoderAtaqueWrestling(UserIndex)
         End If
 
-114     ProbExito = MaximoInt(10, MinimoInt(90, 50 + ((PoderAtaque - NpcList(NpcIndex).PoderEvasion) * 0.4)))
+114     ProbExito = MaximoInt(10, MinimoInt(95, 50 + ((PoderAtaque - NpcList(NpcIndex).PoderEvasion) * 0.4)))
 116     UserImpactoNpc = (RandomNumber(1, 100) <= ProbExito)
 118     If UserImpactoNpc Then
 120         Call SubirSkillDeArmaActual(UserIndex)
