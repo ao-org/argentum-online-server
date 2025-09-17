@@ -621,12 +621,19 @@ Call WriteLocaleMsg(UserIndex, "778", e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
             End If
+            
             If Hechizos(HechizoIndex).RequireTransform > 0 Then
                 If .flags.ActiveTransform <> Hechizos(HechizoIndex).RequireTransform Then
                     Call WriteLocaleMsg(UserIndex, MsgSpellRequiresTransform, e_FontTypeNames.FONTTYPE_INFO, GetNpcName(Hechizos(HechizoIndex).RequireTransform))
                     Exit Function
                 End If
             End If
+            
+            If .flags.DivineBlood > 0 And IsSet(Hechizos(HechizoIndex).Effects, e_SpellEffects.eDoDamage) Then
+                Call WriteLocaleMsg(UserIndex, 2092, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Function
+            End If
+            
 112         If .flags.Privilegios And e_PlayerType.Consejero Then
                 Exit Function
             End If
