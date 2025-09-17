@@ -2720,7 +2720,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 206             If FX Then 'FX
 208                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_WARP, X, y))
                     UserList(userindex).Counters.timeFx = 3
-210                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, e_GraphicEffects.FXWARP, 0, .pos.x, .pos.y))
+210                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, e_GraphicEffects.ModernGmWarp, 0, .pos.x, .pos.y))
                 End If
 
             Else
