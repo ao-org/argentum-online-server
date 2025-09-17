@@ -2188,6 +2188,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
                             Case 3 'Poción roja, restaura HP
                                 ' Usa el ítem
+                                If .flags.DivineBlood > 0 Then
+                                    Call WriteLocaleMsg(UserIndex, 2093, e_FontTypeNames.FONTTYPE_INFO)
+                                    Exit Sub
+                                End If
+                            
                                 Dim HealingAmount As Long
                                 Dim Source As Integer
                             
