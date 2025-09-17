@@ -2177,6 +2177,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 120         .flags.Paraliza = 0
 122         .flags.Envenena = 0
 124         .flags.Estupidiza = 0
+            .flags.DivineBlood = 0
 125         Call ClearEffectList(.EffectOverTime, e_EffectType.eAny, True)
 126         Call ClearModifiers(.Modifiers)
 127         .flags.Muerto = 1
@@ -3139,6 +3140,8 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
+            .flags.DivineBlood = 0
+            
             '<<<< Envenenamiento >>>>
 102         .flags.Envenenado = 0
         
