@@ -577,7 +577,7 @@ Public Enum e_SoundEffects
     'Libre = 170
     VaultOpeningSound = 171
     'Libre = 172 to 179
-    NewApunialar = 180
+    NewApunialar2 = 180
     'Libre = 181 to 187
     'Repetido OldRemoverParalisis = 188
     'Libre = 189
@@ -615,7 +615,7 @@ Public Enum e_SoundEffects
     'Libre = 252 to 253
     AtomicBomb = 264
     'Libre = 265 TO 311
-    GunShot = 312
+    GunShot2 = 312
     'Libre 313 TO 344
     PainScreamNagas = 345
     'Libre = 346
@@ -630,13 +630,13 @@ Public Enum e_SoundEffects
     'Libre = 377 to 379
     Chains = 380
     'Libre = 381 to 399
-    Thunder = 400
-    Thunder2 = 401
-    Thunder3 = 402
-    Thunder4 = 403
-    Thunder5 = 404
-    Thunder6 = 405
-    Thunder7 = 406
+    Thunder3 = 400
+    Thunder4 = 401
+    Thunder5 = 402
+    Thunder6 = 403
+    Thunder7 = 404
+    Thunder8 = 405
+    Thunder9 = 406
     'Libre = 407 to 447
     FulgorIgneo = 448
     'raro = 449

@@ -1164,7 +1164,7 @@ Sub LoadBalance()
         AirHitReductParalisisTime = val(BalanceIni.GetValue("EXTRA", "AirHitReductParalisisTime"))
         PorcentajePescaSegura = val(BalanceIni.GetValue("EXTRA", "PorcentajePescaSegura"))
         DivineBloodHealingMultiplierBonus = val(BalanceIni.GetValue("EXTRA", "DivineBloodHealingMultiplierBonus"))
-        
+        DivineBloodManaCostMultiplier = val(BalanceIni.GetValue("EXTRA", "DivineBloodManaCostMultiplier"))
         
         'stun
         PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))

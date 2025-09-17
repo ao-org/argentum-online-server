@@ -1286,8 +1286,13 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
             If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
 126             Call SubirSkill(UserIndex, Magia)
             End If
-128         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
-
+            
+            If UserList(UserIndex).flags.DivineBlood > 0 Then
+                UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - (Hechizos(uh).ManaRequerido * DivineBloodManaCostMultiplier)
+            Else
+                UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
+            End If
+            
 130         If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
 132         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
 
@@ -2746,9 +2751,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, 0, 0, eBuff)
                 Character.Char.BackpackAnim = 0
                 Call WriteCharacterChange(UserIndex, Character.Char.body, Character.Char.head, Character.Char.Heading, Character.Char.charindex, Character.Char.WeaponAnim, Character.Char.ShieldAnim, 0, Character.Char.BackpackAnim, 0, 0, Character.Char.CascoAnim, False, False)
-                Character.Counters.timeFx = 3
-                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(Character.Char.charindex, e_GraphicEffects.OldParalizar, 0, Character.pos.x, Character.pos.y))
-                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.BARCA_SOUND, Character.pos.x, Character.pos.y))
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(Character.Char.charindex, e_ParticleEffects.HaloGold, 45, False, 0, Character.pos.x, Character.pos.y))
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.BAOLegionHorn, Character.pos.x, Character.pos.y))
             
             Else
             
@@ -2758,8 +2762,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 Character.Char.BackpackAnim = 4997
                 Call WriteCharacterChange(UserIndex, Character.Char.body, Character.Char.head, Character.Char.Heading, Character.Char.charindex, Character.Char.WeaponAnim, Character.Char.ShieldAnim, 0, Character.Char.BackpackAnim, 0, 0, Character.Char.CascoAnim, False, False)
                 Character.Counters.timeFx = 3
-                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(Character.Char.charindex, e_GraphicEffects.OldParalizar, 0, Character.pos.x, Character.pos.y))
-                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.BARCA_SOUND, Character.pos.x, Character.pos.y))
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(Character.Char.charindex, e_GraphicEffects.CurarHeridasCriticasBAO, 0, Character.pos.x, Character.pos.y))
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.DivineBloodActivation, Character.pos.x, Character.pos.y))
             
             End If
 
