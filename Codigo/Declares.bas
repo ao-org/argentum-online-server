@@ -402,8 +402,8 @@ Public Const EspadaMataDragonesIndex As Integer = 402
 Public Const CommonLuteIndex         As Integer = 3986
 Public Const MagicLuteIndex          As Integer = 469
 Public Const ElvenLuteIndex          As Integer = 41
-Public Const FireEcoIndex            As String = "Eco Ígneo (NPC)"
-Public Const MauveFlashIndex         As String = "Destello Malva (NPC)"
+Public Const FireEcoIndex            As Integer = 61
+Public Const MauveFlashIndex         As Integer = 62
 
 
 Public Const MAXMASCOTASENTRENADOR   As Byte = 7

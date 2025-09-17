@@ -729,7 +729,7 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
             
-146         If .Stats.MinMAN < ManaHechizoPorClase(UserIndex, Hechizos(HechizoIndex), HechizoIndex) Then
+146         If .Stats.MinMAN < GetSpellManaCostModifierByClass(UserIndex, Hechizos(HechizoIndex), HechizoIndex) Then
 148             Call WriteLocaleMsg(UserIndex, "222", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
@@ -1287,11 +1287,7 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
 126             Call SubirSkill(UserIndex, Magia)
             End If
             
-            If UserList(UserIndex).flags.DivineBlood > 0 Then
-                UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - (Hechizos(uh).ManaRequerido * DivineBloodManaCostMultiplier)
-            Else
-                UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
-            End If
+            UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
             
 130         If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
 132         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
@@ -1341,7 +1337,7 @@ Function HandlePetSpell(ByVal UserIndex As Integer, ByVal uh As Integer) As Bool
     If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
         Call SubirSkill(UserIndex, Magia)
     End If
-    UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
+    UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
     If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
     UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
     If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
@@ -1475,8 +1471,8 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
             If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
 114             Call SubirSkill(UserIndex, Magia)
             End If
-                    
-116         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - ManaHechizoPorClase(UserIndex, Hechizos(uh), uh)
+
+116         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
            
 118         If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
 
@@ -1508,22 +1504,34 @@ HandleHechizoUsuario_Err:
 138     Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoUsuario", Erl)
 End Sub
 
-Public Function ManaHechizoPorClase(ByVal userindex As Integer, Hechizo As t_Hechizo, Optional ByVal HechizoIndex As Long) As Integer
+Public Function GetSpellManaCostModifierByClass(ByVal UserIndex As Integer, Hechizo As t_Hechizo, Optional ByVal HechizoIndex As Long) As Integer
         
-    ManaHechizoPorClase = Hechizo.ManaRequerido
+    GetSpellManaCostModifierByClass = Hechizo.ManaRequerido
 
-    Select Case UserList(UserIndex).clase
+    With UserList(UserIndex)
     
-        Case e_Class.Bard
-            If Hechizos(HechizoIndex).nombre = MauveFlashIndex And UserList(UserIndex).invent.EquippedRingAccesoryObjIndex = MagicLuteIndex Then
-                ManaHechizoPorClase = 80
-                Exit Function
-            ElseIf Hechizos(HechizoIndex).nombre = FireEcoIndex And UserList(UserIndex).invent.EquippedRingAccesoryObjIndex = MagicLuteIndex Then
-                ManaHechizoPorClase = 70
-                Exit Function
-            End If
-           
-    End Select
+        Select Case .clase
+        
+            Case e_Class.Bard
+                If HechizoIndex = MauveFlashIndex And .invent.EquippedRingAccesoryObjIndex = MagicLuteIndex Then
+                    GetSpellManaCostModifierByClass = 80
+                    Exit Function
+                ElseIf HechizoIndex = FireEcoIndex And .invent.EquippedRingAccesoryObjIndex = MagicLuteIndex Then
+                    GetSpellManaCostModifierByClass = 70
+                    Exit Function
+                End If
+                
+            Case e_Class.Cleric
+                If .flags.DivineBlood > 0 Then
+                    If IsSet(Hechizo.Effects, e_SpellEffects.eDoHeal) Then
+                        GetSpellManaCostModifierByClass = GetSpellManaCostModifierByClass * DivineBloodManaCostMultiplier
+                    End If
+                End If
+               
+        End Select
+    End With
+    
+    
 End Function
 
 Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
@@ -1576,7 +1584,7 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
             If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
 110             Call SubirSkill(UserIndex, Magia)
             End If
-            UserList(userindex).Stats.MinMAN = UserList(userindex).Stats.MinMAN - ManaHechizoPorClase(userindex, Hechizos(uh), uh)
+            UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
         
 116         If Hechizos(uh).RequiredHP > 0 Then
 118             If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
