@@ -1447,7 +1447,7 @@ Public Function PuedeConstruirHerreria(ByVal ItemIndex As Integer) As Boolean
 
         Select Case ObjData(ItemIndex).OBJType
         
-            Case e_OBJType.otWeapon
+            Case e_OBJType.otWeapon, e_OBJType.otArrows
     
 100             For i = 1 To UBound(ArmasHerrero)
 102                 If ArmasHerrero(i) = ItemIndex Then
