@@ -894,7 +894,7 @@ ActStats_Err:
         
 End Sub
 
-Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As Boolean)
+Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As Boolean, Optional ByVal CasterUserIndex As Integer = 0)
         
         On Error GoTo RevivirUsuario_Err
         
@@ -905,11 +905,15 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 
             ' El comportamiento cambia si usamos el hechizo Resucitar
 106         If MedianteHechizo Then
+                If CasterUserIndex > 0 And UserList(CasterUserIndex).flags.DivineBlood > 0 Then
+                    .Stats.MinHp = .Stats.MaxHp
+                Else
 108             .Stats.MinHp = 1
 110             .Stats.MinHam = 0
 112             .Stats.MinAGU = 0
                 .Stats.MinMAN = 0
 114             Call WriteUpdateHungerAndThirst(UserIndex)
+                End If
             End If
         
 116         Call WriteUpdateHP(UserIndex)
@@ -3601,13 +3605,13 @@ Public Function ModifyMana(ByVal UserIndex As Integer, ByVal Amount As Integer, 
     End With
 End Function
 
-Public Sub ResurrectUser(ByVal UserIndex As Integer)
+Public Sub ResurrectUser(ByVal targetUserIndex As Integer, Optional ByVal CasterUserIndex As Integer)
     ' Msg585=¡Has sido resucitado!
-    Call WriteLocaleMsg(UserIndex, "585", e_FontTypeNames.FONTTYPE_INFO)
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Resucitar, 250, True))
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y))
-    Call RevivirUsuario(UserIndex, True)
-684 Call WriteUpdateHungerAndThirst(UserIndex)
+    Call WriteLocaleMsg(targetUserIndex, "585", e_FontTypeNames.FONTTYPE_INFO)
+    Call SendData(SendTarget.ToPCArea, targetUserIndex, PrepareMessageParticleFX(UserList(targetUserIndex).Char.charindex, e_ParticleEffects.Resucitar, 250, True))
+    Call SendData(SendTarget.ToPCArea, targetUserIndex, PrepareMessagePlayWave(117, UserList(targetUserIndex).pos.x, UserList(targetUserIndex).pos.y))
+    Call RevivirUsuario(targetUserIndex, True, CasterUserIndex)
+684 Call WriteUpdateHungerAndThirst(targetUserIndex)
 End Sub
 
 Public Function DoDamageOrHeal(ByVal UserIndex As Integer, ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, _
