@@ -905,7 +905,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 
             ' El comportamiento cambia si usamos el hechizo Resucitar
 106         If MedianteHechizo Then
-                If IsFeatureEnabled("healers_and_tanks") And CasterUserIndex > 0 And UserList(CasterUserIndex).flags.DivineBlood > 0  Then
+                If IsFeatureEnabled("healers_and_tanks") And CasterUserIndex > 0 And UserList(CasterUserIndex).flags.DivineBlood > 0 Then
                     .Stats.MinHp = .Stats.MaxHp
                 Else
 108             .Stats.MinHp = 1
@@ -3287,6 +3287,12 @@ Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Sing
             ' Algun hechizo le afecto la velocidad
 122         If .flags.VelocidadHechizada > 0 Then
 124             modificadorHechizo = .flags.VelocidadHechizada
+            End If
+            
+            If .invent.EquippedArmorObjIndex > 0 Then
+                If ObjData(.invent.EquippedArmorObjIndex).velocidad <> 1 Then
+                    modificadorItem = modificadorItem * ObjData(.invent.EquippedArmorObjIndex).velocidad
+                End If
             End If
 
 126         velocidad = VelocidadNormal * modificadorItem * JineteLevelSpeed * modificadorHechizo * Max(0, (1 + .Modifiers.MovementSpeed))

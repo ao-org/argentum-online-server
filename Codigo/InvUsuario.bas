@@ -1561,7 +1561,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, _
                 'Si esta equipado lo quita
                 If .invent.Object(Slot).Equipped Then
                     Call Desequipar(UserIndex, Slot)
-
+                    Call ActualizarVelocidadDeUsuario(UserIndex)
                     If .flags.Navegando = 0 And .flags.Montado = 0 Then
                         Call SetNakedBody(UserList(UserIndex))
                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
@@ -1577,6 +1577,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, _
                 If .invent.EquippedArmorObjIndex > 0 Then
                     errordesc = "Armadura 2"
                     Call Desequipar(UserIndex, .invent.EquippedArmorSlot)
+                    Call ActualizarVelocidadDeUsuario(UserIndex)
                     errordesc = "Armadura 3"
 
                 End If
@@ -1603,11 +1604,12 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, _
                 .invent.Object(Slot).Equipped = 1
                 .invent.EquippedArmorObjIndex = .invent.Object(Slot).ObjIndex
                 .invent.EquippedArmorSlot = Slot
+                
+                Call ActualizarVelocidadDeUsuario(UserIndex)
 
                 If .flags.Montado = 0 And .flags.Navegando = 0 Then
                     .Char.body = Ropaje
-
-                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                 End If
                     
                 .flags.Desnudo = 0
