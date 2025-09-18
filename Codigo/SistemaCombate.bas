@@ -499,12 +499,16 @@ On Error GoTo UserDamageNpc_Err
             End If
 118         If Damage < 0 Then Damage = 0
 
-            If .clase = e_Class.Warrior And IsFeatureEnabled("healers_and_tanks") Then
-                .Stats.MinHp = .Stats.MinHp + Damage * WarriorLifeStealOnHitMultiplier
+            If IsFeatureEnabled("healers_and_tanks") And .clase = e_Class.Warrior Then
+                Dim Calc As Integer
+                Calc = Damage * WarriorLifeStealOnHitMultiplier
+                .Stats.MinHp = .Stats.MinHp + Calc
                 If .Stats.MinHp > .Stats.MaxHp Then
-                    .Stats.MinHp = .Stats.MinHp
+                    .Stats.MinHp = .Stats.MaxHp
                 End If
-                WriteUpdateHP (UserIndex)
+                Call WriteUpdateHP(UserIndex)
+                'no wrapper senddata because of extra params
+                Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageTextOverTile(Calc, .pos.x, .pos.y, vbGreen, 1300, -10, True))
             End If
 
             ' Golpe crítico

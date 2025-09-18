@@ -246,7 +246,7 @@ Public Sub PerformAction()
             TickHP = TickHP * UserMod.GetSelfHealingBonus(UserList(DotInfo.TargetRef.ArrayIndex))
         End If
         If IsValidRef(source) Then
-            If UserList(Source.ArrayIndex).flags.DivineBlood > 0 And IsFeatureEnabled("healers_and_tanks") Then
+            If IsFeatureEnabled("healers_and_tanks") And UserList(Source.ArrayIndex).flags.DivineBlood > 0  Then
                 TickHP = TickHP * DivineBloodHealingMultiplierBonus
             End If
             Call UserMod.DoDamageOrHeal(DotInfo.TargetRef.ArrayIndex, Source.ArrayIndex, Source.RefType, TickHP, e_dot, DotInfo.EotId)
