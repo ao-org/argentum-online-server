@@ -499,6 +499,14 @@ On Error GoTo UserDamageNpc_Err
             End If
 118         If Damage < 0 Then Damage = 0
 
+            If .clase = e_Class.Warrior And IsFeatureEnabled("healers_and_tanks") Then
+                .Stats.MinHp = .Stats.MinHp + Damage * WarriorLifeStealOnHitMultiplier
+                If .Stats.MinHp > .Stats.MaxHp Then
+                    .Stats.MinHp = .Stats.MinHp
+                End If
+                WriteUpdateHP (UserIndex)
+            End If
+
             ' Golpe crítico
 124         If PuedeGolpeCritico(UserIndex) Then
                 ' Si acertó - Doble chance contra NPCs

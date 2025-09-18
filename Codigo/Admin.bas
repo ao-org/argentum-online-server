@@ -166,6 +166,7 @@ Public AirHitReductParalisisTime    As Integer 'you can hit to the air to reduce
 Public PorcentajePescaSegura        As Integer 'Porcentaje de reducción a la pesca en zona segura
 Public DivineBloodHealingMultiplierBonus As Single
 Public DivineBloodManaCostMultiplier As Single
+Public WarriorLifeStealOnHitMultiplier As Single
 
 Public Puerto                       As Long
 Public ListenIp                     As String

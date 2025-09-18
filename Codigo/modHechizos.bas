@@ -629,7 +629,7 @@ Call WriteLocaleMsg(UserIndex, "778", e_FontTypeNames.FONTTYPE_INFO)
                 End If
             End If
             
-            If .flags.DivineBlood > 0 And IsSet(Hechizos(HechizoIndex).Effects, e_SpellEffects.eDoDamage) Then
+            If .flags.DivineBlood > 0 And IsSet(Hechizos(HechizoIndex).Effects, e_SpellEffects.eDoDamage) And IsFeatureEnabled("healers_and_tanks") Then
                 Call WriteLocaleMsg(UserIndex, 2092, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
@@ -1529,7 +1529,7 @@ Public Function GetSpellManaCostModifierByClass(ByVal UserIndex As Integer, Hech
                 End If
                 
             Case e_Class.Cleric
-                If .flags.DivineBlood > 0 Then
+                If .flags.DivineBlood > 0 And IsFeatureEnabled("healers_and_tanks") Then
                     If IsSet(Hechizo.Effects, e_SpellEffects.eDoHeal) Then
                         GetSpellManaCostModifierByClass = GetSpellManaCostModifierByClass * DivineBloodManaCostMultiplier
                     End If
@@ -2758,7 +2758,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
         Character = UserList(UserIndex)
         
-        If IsSet(Hechizos(h).Effects, e_SpellEffects.ToggleDivineBlood) Then
+        If IsSet(Hechizos(h).Effects, e_SpellEffects.ToggleDivineBlood) And IsFeatureEnabled("healers_and_tanks") Then
             If UserList(UserIndex).flags.DivineBlood Then
             
                 UserList(UserIndex).flags.DivineBlood = 0
@@ -3609,7 +3609,7 @@ Call WriteLocaleMsg(UserIndex, "822", e_FontTypeNames.FONTTYPE_INFO)
             Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
             Damage = Damage * UserMod.GetSelfHealingBonus(UserList(tempChr))
             
-            If UserList(UserIndex).flags.DivineBlood > 0 Then
+            If UserList(UserIndex).flags.DivineBlood > 0 And IsFeatureEnabled("healers_and_tanks") Then
                 Damage = Damage * DivineBloodHealingMultiplierBonus
             End If
             
@@ -3928,7 +3928,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
             Damage = Damage * UserMod.GetSelfHealingBonus(UserList(TargetUserIndex))
             
-            If UserList(UserIndex).flags.DivineBlood > 0 Then
+            If UserList(UserIndex).flags.DivineBlood > 0 And IsFeatureEnabled("healers_and_tanks") Then
                 Damage = Damage * DivineBloodHealingMultiplierBonus
             End If
             

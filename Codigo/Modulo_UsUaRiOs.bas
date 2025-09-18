@@ -905,7 +905,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 
             ' El comportamiento cambia si usamos el hechizo Resucitar
 106         If MedianteHechizo Then
-                If CasterUserIndex > 0 And UserList(CasterUserIndex).flags.DivineBlood > 0 Then
+                If CasterUserIndex > 0 And UserList(CasterUserIndex).flags.DivineBlood > 0 And IsFeatureEnabled("healers_and_tanks") Then
                     .Stats.MinHp = .Stats.MaxHp
                 Else
 108             .Stats.MinHp = 1
