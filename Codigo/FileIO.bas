@@ -1417,6 +1417,11 @@ Sub LoadOBJData()
 174                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
 176                     .Invernal = val(Leer.GetValue(ObjKey, "Invernal")) > 0
                         .Camouflage = val(Leer.GetValue(ObjKey, "Camouflage")) > 0
+                        If val(Leer.GetValue(ObjKey, "velocidad")) = 0 Then
+                            .velocidad = 1
+                        Else
+                            .velocidad = val(Leer.GetValue(ObjKey, "velocidad"))
+                        End If
         
 178                 Case e_OBJType.otShield
 180                     .ShieldAnim = val(Leer.GetValue(ObjKey, "Anim"))
