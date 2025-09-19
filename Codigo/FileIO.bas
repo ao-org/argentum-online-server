@@ -776,8 +776,10 @@ Public Sub CargarHechizos()
 252         If val(Leer.GetValue("Hechizo" & Hechizo, "Ceguera")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Blindness)
 254         If val(Leer.GetValue("Hechizo" & Hechizo, "Estupidez")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Dumb)
 255         If val(Leer.GetValue("Hechizo" & Hechizo, "ToggleCleave")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.ToggleCleave)
+            If val(Leer.GetValue("Hechizo" & Hechizo, "ToggleDivineBlood")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.ToggleDivineBlood)
             If val(Leer.GetValue("Hechizo" & Hechizo, "AdjustStatsWithCaster")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.AdjustStatsWithCaster)
             If val(Leer.GetValue("Hechizo" & Hechizo, "CancelActiveEffect")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.CancelActiveEffect)
+            
 
 256         Hechizos(Hechizo).Invoca = val(Leer.GetValue("Hechizo" & Hechizo, "Invoca"))
 258         Hechizos(Hechizo).NumNpc = val(Leer.GetValue("Hechizo" & Hechizo, "NumNpc"))
@@ -1161,6 +1163,9 @@ Sub LoadBalance()
         FactionReKillTime = val(BalanceIni.GetValue("EXTRA", "FactionReKillTime"))
         AirHitReductParalisisTime = val(BalanceIni.GetValue("EXTRA", "AirHitReductParalisisTime"))
         PorcentajePescaSegura = val(BalanceIni.GetValue("EXTRA", "PorcentajePescaSegura"))
+        DivineBloodHealingMultiplierBonus = val(BalanceIni.GetValue("EXTRA", "DivineBloodHealingMultiplierBonus"))
+        DivineBloodManaCostMultiplier = val(BalanceIni.GetValue("EXTRA", "DivineBloodManaCostMultiplier"))
+        WarriorLifeStealOnHitMultiplier = val(BalanceIni.GetValue("EXTRA", "WarriorLifeStealOnHitMultiplier"))
         
         'stun
         PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
@@ -1412,6 +1417,11 @@ Sub LoadOBJData()
 174                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
 176                     .Invernal = val(Leer.GetValue(ObjKey, "Invernal")) > 0
                         .Camouflage = val(Leer.GetValue(ObjKey, "Camouflage")) > 0
+                        If val(Leer.GetValue(ObjKey, "velocidad")) = 0 Then
+                            .velocidad = 1
+                        Else
+                            .velocidad = val(Leer.GetValue(ObjKey, "velocidad"))
+                        End If
         
 178                 Case e_OBJType.otShield
 180                     .ShieldAnim = val(Leer.GetValue(ObjKey, "Anim"))

@@ -330,7 +330,7 @@ Public Sub NpcDropeo(ByRef npc As t_Npc, ByRef UserIndex As Integer)
 126     Dropeo.amount = Cantidad 'Cantidad
 128     Dropeo.ObjIndex = obj 'NUMERO DEL ITEM EN EL OBJ.DAT
 130     Call TirarItemAlPiso(npc.Pos, Dropeo, npc.flags.AguaValida = 1)
-132     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(e_FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+132     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
     
         Exit Sub
 
@@ -354,7 +354,7 @@ On Error GoTo ErrHandler
             DropInfo.Amount = GlobalDropTable(i).Amount
             DropInfo.ObjIndex = GlobalDropTable(i).ObjectNumber
             Call TirarItemAlPiso(Npc.Pos, DropInfo, Npc.flags.AguaValida = 1)
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(e_FXSound.Dropeo_Sound, Npc.Pos.x, Npc.Pos.y))
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
         End If
     Next i
     Exit Sub
@@ -392,11 +392,11 @@ Public Sub DropObjQuest(ByRef npc As t_Npc, ByRef UserIndex As Integer)
 118                             Dropeo.ObjIndex = .ObjIndex
 
                                 'Call TirarItemAlPiso(npc.Pos, Dropeo)
-                                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+                                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
 
                                 '  Ahora te lo da en el inventario, si hay espacio, y el sonido lo escuchas vos solo
 120                             Call MeterItemEnInventario(UserIndex, Dropeo)
-122                             Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+122                             Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
                             End If
                         End If
                     End If

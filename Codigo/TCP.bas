@@ -1394,7 +1394,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 204         Call SetUserRef(.Candidato, 0)
 206         .UsandoMacro = False
 208         .pregunta = 0
-
+            .DivineBlood = 0
 210         .Subastando = False
 212         .Paraliza = 0
 214         .Envenena = 0
