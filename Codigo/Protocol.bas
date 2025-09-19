@@ -1321,7 +1321,7 @@ Private Sub HandleLoginNewChar(ByVal userindex As Integer)
 112     gender = Reader.ReadInt()
 113     Class = Reader.ReadInt()
 116     Head = Reader.ReadInt()
-118     Hogar = Reader.ReadInt()
+118     Hogar = cForgat
 
 126     If PuedeCrearPersonajes = 0 Then
 128         Call WriteShowMessageBox(UserIndex, 1780, vbNullString) 'Msg1780=La creación de personajes en este servidor se ha deshabilitado.
