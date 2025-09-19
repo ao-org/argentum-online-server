@@ -308,7 +308,7 @@ Public Type t_AttackInteractionResult
 End Type
 
 Public Enum e_PlayerType
-    User = &H1
+    user = &H1
     RoleMaster = &H2
     Consejero = &H4
     SemiDios = &H8
@@ -1172,7 +1172,7 @@ Public Enum e_UsersInfoMask
     Paralized = 8
     Inmovilized = 16
     Working = 32
-    invisible = 64
+    Invisible = 64
     Hidden = 128
     Stupid = 256
     Cursed = 512
@@ -1677,7 +1677,7 @@ Public Enum e_MagicItemSubType
 End Enum
 
 Public Enum e_MagicItemEffect
-    eMagicresistance = 1
+    eMagicResistance = 1
     eModifyAttributes = 2
     eModifySkills = 3
     eRegenerateHealth = 4
@@ -1816,8 +1816,7 @@ Public Enum e_SpellEffects
     StealBuff = 262144
     eDoDamage = 524288
     AdjustStatsWithCaster = 1048576
-    ToggleDivineBlood = 2097152
-    CancelActiveEffect = 4194304
+    CancelActiveEffect = 2097152
 End Enum
 
 Public Enum e_TargetEffectType
@@ -1832,7 +1831,7 @@ Public Type t_Hechizo
     Duration As Integer
     RequiredHP As Integer
     
-    Cooldown As Integer
+    CoolDown As Integer
     CdEffectId As Integer
     
     ScreenColor As Long
@@ -1976,7 +1975,7 @@ Public Type t_EffectOverTime
     TickFX As Integer
     OnHitFx As Integer
     OnHitWav As Integer
-    buffType As e_EffectType
+    BuffType As e_EffectType
     Override As Boolean
     PhysicalDamageReduction As Single
     MagicDamageReduction As Single
@@ -1993,11 +1992,11 @@ Public Type t_EffectOverTime
     ClientEffectTypeId As Integer
     Area As Integer
     Aura As String
-    ApplyEffectId As Integer
+    ApplyeffectID As Integer
     SecondaryEffectId As Integer
     SpellRequirementMask As Long
     RequireWeaponType As Integer
-    NpcId As Integer
+    npcId As Integer
     ApplyStatusMask As Long
     SecondaryTargetModifier As Single
     RequireTransform As Integer
@@ -2068,14 +2067,14 @@ End Type
 
 Public Type t_WorldPos
     Map As Integer
-    x As Integer
-    y As Integer
+    X As Integer
+    Y As Integer
 End Type
 
 Public Type t_Position
 
-    x As Integer
-    y As Integer
+    X As Integer
+    Y As Integer
 
 End Type
 
@@ -2091,8 +2090,8 @@ End Enum
 
 Public Type t_Transport
     Map As Integer
-    startX As Integer
-    startY As Integer
+    StartX As Integer
+    StartY As Integer
     EndX As Integer
     EndY As Integer
     DestX As Byte
@@ -2109,8 +2108,8 @@ End Type
 Public Type t_CityWorldPos
 
     Map As Integer
-    x As Integer
-    y As Integer
+    X As Integer
+    Y As Integer
     MapaViaje As Integer
     ViajeX As Byte
     ViajeY As Byte
@@ -2137,10 +2136,10 @@ End Enum
 'Datos de user o npc
 Public Type t_Char
 
-    charindex As Integer
+    CharIndex As Integer
     charindex_bk As Integer
-    head As Integer
-    body As Integer
+    Head As Integer
+    Body As Integer
     originalhead As Integer
     WeaponAnim As Integer
     ShieldAnim As Integer
@@ -2171,7 +2170,7 @@ Public Type t_Obj
     ObjIndex As Integer
     ElementalTags As Long
     amount As Long
-    data As Double
+    Data As Double
 
 End Type
 
@@ -2256,7 +2255,7 @@ Public Type t_SolicitudJugador
 End Type
 
 Public Type t_SolicitudReto
-    Estado As e_SolicitudRetoEstado
+    estado As e_SolicitudRetoEstado
     Jugadores() As t_SolicitudJugador
     Apuesta As Long
     PocionesMaximas As Integer
@@ -2319,7 +2318,7 @@ Public Type t_ObjData
     Jerarquia As Long
     ClaseTipo As Byte
     TipoRuna As Byte
-    name As String 'Nombre del obj
+    Name As String 'Nombre del obj
     OBJType As e_OBJType 'Tipo enum que determina cuales son las caract del obj
     GrhIndex As Long ' Indice del grafico que representa el obj
     GrhSecundario As Integer
@@ -2405,7 +2404,7 @@ Public Type t_ObjData
     MinSta As Integer ' Minimo puntos de stamina
     
     Cooldown As Long
-    cdType As Integer
+    CdType As Integer
     ImprovedRangedHitChance As Integer
     ImprovedMeleeHitChance As Integer
     
@@ -2659,7 +2658,7 @@ Public Type t_UserStats
     
     MaxHp As Integer
     MinHp As Integer
-    shield As Long
+    Shield As Long
     
     MaxSta As Integer
     MinSta As Integer
@@ -2825,7 +2824,6 @@ Public Type t_UserFlags
     Mimetizado As e_EstadoMimetismo
     MascotasGuardadas As Byte
     Cleave As Byte 'we might support more than one type of cleave
-    DivineBlood As Byte
     StatusMask As Long 'use the values from to set this flags e_StatusMask
     
     Navegando As Byte
@@ -2984,7 +2982,7 @@ Public Type t_UserCounters
     PiqueteC As Long
     Pena As Long
     SendMapCounter As t_WorldPos
-    pasos As Integer
+    Pasos As Integer
     '[Gonzalo]
     Saliendo As Boolean
     Salir As Integer
@@ -3175,7 +3173,7 @@ Public Const HotKeyCount As Integer = 10
 'Tipo de los Usuarios
 Public Type t_User
 
-    name As String
+    Name As String
     Cuenta As String
     
     'User types are created at startup and reused every time,
@@ -3183,7 +3181,7 @@ Public Type t_User
     'this value should be updated every time we reuse this instance
     VersionId As Integer
     InUse As Boolean 'Mark if the slot is un use, should be set when players connect and clear on dc, used for debug and error handling
-    Id As Long
+    ID As Long
     Trabajo As t_UserTrabajo
     AccountID As Long
     Grupo As Tgrupo
@@ -3207,10 +3205,10 @@ Public Type t_User
     PosibleHogar As e_Ciudad
     MENSAJEINFORMACION As String
         
-    invent As t_Inventario
+    Invent As t_Inventario
     Invent_bk As t_Inventario
     
-    pos As t_WorldPos
+    Pos As t_WorldPos
     
     ConnectionDetails As t_ConnectionInfo
     
@@ -3298,7 +3296,7 @@ Public Type t_NPCStats
     MinHp As Long
     MaxHit As Integer
     MinHIT As Integer
-    shield As Long
+    Shield As Long
     def As Integer
     defM As Integer 'direct magic reduction
     MagicResistance As Integer 'magic skill required to do full damage to npc
@@ -3394,7 +3392,7 @@ Public Type t_NPCFlags
 
     BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
-    team As Byte
+    Team As Byte
 
     ElementalTags As Long
 
@@ -3434,7 +3432,7 @@ Public Type t_NpcPathFindingInfo
 End Type
 
 Public Type t_Caminata
-    offset As t_Position
+    Offset As t_Position
     Espera As Long
 End Type
 
@@ -3488,7 +3486,7 @@ Public Type t_Npc
     DropQuest() As t_QuestObj
     
     InformarRespawn As Byte
-    name As String
+    Name As String
     SubName As String
     Char As t_Char 'Define como se vera
     Desc As String
@@ -3496,7 +3494,7 @@ Public Type t_Npc
     showName As Byte
     GobernadorDe As Byte
 
-    npcType As e_NPCType
+    NPCtype As e_NPCType
     Numero As Integer
 
     nivel As Integer
@@ -3515,7 +3513,7 @@ Public Type t_Npc
 
     Veneno As Byte
 
-    pos As t_WorldPos 'Posicion
+    Pos As t_WorldPos 'Posicion
     Orig As t_WorldPos
 
     Movement As e_TipoAI
@@ -3545,7 +3543,7 @@ Public Type t_Npc
     Modifiers As t_ActiveModifiers
     EffectOverTime As t_EffectOverTimeList
     
-    invent As t_Inventario
+    Invent As t_Inventario
     
     NroExpresiones As Byte
     Expresiones() As String ' le da vida ;)
@@ -3574,7 +3572,7 @@ Public Type t_Npc
     ShowKillerConsole As Byte
         
     NumDestinos As Byte
-    dest() As String
+    Dest() As String
     Interface As Byte
     
     'Para diferenciar entre clanes
@@ -3668,7 +3666,7 @@ Type t_MapInfo
 End Type
 
 Public Type t_IndexHeap
-    currentIndex As Integer
+    CurrentIndex As Integer
     IndexInfo() As Integer
 End Type
 
@@ -3677,7 +3675,7 @@ Public Type t_GlobalDrop
     MaxPercent As Single
     MinPercent As Single
     RequiredHPForMaxChance As Long
-    amount As Integer
+    Amount As Integer
 End Type
 
 '********** V A R I A B L E S     P U B L I C A S ***********
@@ -3812,11 +3810,11 @@ Public TotalMapasCiudades()               As String
 Public Ayuda                              As New cCola
 Public TiempoPesca As Long
 Public BotinInicial As Double
-Public segundos As Long
+Public Segundos As Long
 
-Public Declare Function writeprivateprofilestring Lib "Kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpString As String, ByVal lpfilename As String) As Long
-Public Declare Function GetPrivateProfileString Lib "Kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nSize As Long, ByVal lpfilename As String) As Long
-Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal length As Long)
+Public Declare Function writeprivateprofilestring Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpString As String, ByVal lpfilename As String) As Long
+Public Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nSize As Long, ByVal lpfilename As String) As Long
+Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal Length As Long)
 
 ' Los Objetos Criticos nunca desaparecen del inventario de los npcs vendedores, una vez que
 ' se venden los 10.000 (max. cantidad de items x slot) vuelven a reabastecer.
@@ -3860,13 +3858,13 @@ End Enum
 Public Type tPaso
 
     CantPasos As Byte
-    wav() As Integer
+    Wav() As Integer
 
 End Type
 
 Public Const NUM_PASOS       As Byte = 6
 
-Public pasos()               As tPaso
+Public Pasos()               As tPaso
 
 Public DBError As String
 
@@ -3969,21 +3967,21 @@ Public Function IsValidRef(ByRef Ref As t_AnyReference) As Boolean
     End If
 End Function
 
-Public Function SetRef(ByRef Ref As t_AnyReference, ByVal Index As Integer, ByVal RefType As e_ReferenceType) As Boolean
+Public Function SetRef(ByRef Ref As t_AnyReference, ByVal index As Integer, ByVal RefType As e_ReferenceType) As Boolean
     SetRef = False
     Ref.RefType = RefType
-    Ref.ArrayIndex = Index
+    Ref.ArrayIndex = index
     If RefType = eUser Then
-        If Index <= 0 Or Ref.ArrayIndex > UBound(UserList) Then
+        If index <= 0 Or Ref.ArrayIndex > UBound(UserList) Then
             Exit Function
         End If
-        Ref.VersionId = UserList(Index).VersionId
-        Ref.UserId = UserList(Index).Id
+        Ref.VersionId = UserList(index).VersionId
+        Ref.UserId = UserList(Index).ID
     Else
-        If Index <= 0 Or Ref.ArrayIndex > UBound(NpcList) Then
+        If index <= 0 Or Ref.ArrayIndex > UBound(NpcList) Then
             Exit Function
         End If
-        Ref.VersionId = NpcList(Index).VersionId
+        Ref.VersionId = NpcList(index).VersionId
         Ref.UserId = 0
     End If
     SetRef = True
@@ -3998,7 +3996,7 @@ Public Function CastUserToAnyRef(ByRef UserRef As t_UserReference, ByRef AnyRef 
     AnyRef.ArrayIndex = UserRef.ArrayIndex
     AnyRef.RefType = eUser
     AnyRef.VersionId = UserRef.VersionId
-    AnyRef.UserId = UserList(UserRef.ArrayIndex).Id
+    AnyRef.userID = UserList(UserRef.ArrayIndex).ID
     CastUserToAnyRef = True
 End Function
 
@@ -4045,23 +4043,17 @@ Public Sub IncreaseLong(ByRef dest As Long, ByVal amount As Long)
     dest = dest + amount
 End Sub
 
-Public Sub PerformanceTestStart(ByRef timer As Long)
-    timer = GetTickCount()
+Public Sub PerformanceTestStart(ByRef Timer As Long)
+    Timer = GetTickCount()
 End Sub
 
 ' Test the time since last call and update the time
 ' log if there time betwen calls exced the limit
-Public Sub PerformTimeLimitCheck(ByRef timer As Long, _
-                                 ByRef TestText As String, _
-                                 Optional ByVal TimeLimit As Long = 1000)
-
+Public Sub PerformTimeLimitCheck(ByRef timer As Long, ByRef TestText As String, Optional ByVal TimeLimit As Long = 1000)
     Dim CurrTime As Long
-
     CurrTime = GetTickCount() - timer
-
     If CurrTime > TimeLimit Then
         Call LogPerformance("Performance warning at: " & TestText & " elapsed time: " & CurrTime)
     End If
-
     timer = GetTickCount()
 End Sub
