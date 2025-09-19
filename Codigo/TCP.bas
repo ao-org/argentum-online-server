@@ -1031,24 +1031,27 @@ ErrHandler:
 
 End Function
 
-Sub SendMOTD(ByVal UserIndex As Integer)
-        
-        On Error GoTo SendMOTD_Err
-        
-
-        Dim j As Long
-
-100     For j = 1 To MaxLines
-102         Call WriteConsoleMsg(UserIndex, MOTD(j).texto, e_FontTypeNames.FONTTYPE_EXP)
-104     Next j
+Private Sub SendWelcomeUptime(ByVal UserIndex As Integer)
+    Dim msg As String
+    msg = "Server Uptime: " & FormatUptime()
     
-        
+    ' Pick the font/type you prefer. Examples used in this codebase include FONTTYPE_INFO or FONTTYPE_GUILD.
+    ' If your helper uses a different enum or function name, keep the same idea:
+    '   SendData(ToUser, UserIndex, PrepareMessageConsoleMsg(msg, e_FontTypeNames.FONTTYPE_INFO))
+    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(msg, e_FontTypeNames.FONTTYPE_INFO))
+End Sub
+
+
+Sub SendMOTD(ByVal UserIndex As Integer)
+  On Error GoTo SendMOTD_Err
+        Dim j As Long
+        For j = 1 To MaxLines
+            Call WriteConsoleMsg(UserIndex, MOTD(j).texto, e_FontTypeNames.FONTTYPE_EXP)
+        Next j
+        Call SendWelcomeUptime(UserIndex)
         Exit Sub
-
 SendMOTD_Err:
-106     Call TraceError(Err.Number, Err.Description, "TCP.SendMOTD", Erl)
-
-        
+     Call TraceError(Err.Number, Err.Description, "TCP.SendMOTD", Erl)
 End Sub
 
 Sub ResetFacciones(ByVal UserIndex As Integer)

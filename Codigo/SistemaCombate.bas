@@ -811,43 +811,51 @@ Public Function NpcPerformAttackNpc(ByVal AttackerIndex As Integer, ByVal Target
 End Function
 
 Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Optional ByVal cambiarMovimiento As Boolean = True)
-        
-        On Error GoTo NpcAtacaNpc_Err
-        
-100     If Not IntervaloPermiteAtacarNPC(Atacante) Then Exit Sub
-        Dim Heading As e_Heading
-102     Heading = GetHeadingFromWorldPos(NpcList(Atacante).Pos, NpcList(Victima).Pos)
-        If Heading <> NpcList(Atacante).Char.Heading And NpcList(Atacante).flags.Inmovilizado = 1 Then
+    On Error GoTo NpcAtacaNpc_Err
+
+100 If Not IntervaloPermiteAtacarNPC(Atacante) Then Exit Sub
+
+    Dim Heading As e_Heading
+
+    ' Determina hacia dónde debe mirar el atacante
+102 Heading = GetHeadingFromWorldPos(NpcList(Atacante).pos, NpcList(Victima).pos)
+
+    ' Si no está mirando y está paralizado, no puede girar ni atacar
+    If Heading <> NpcList(Atacante).Char.Heading Then
+        If NpcList(Atacante).flags.Paralizado = 1 Then
             Call ClearNpcRef(NpcList(Atacante).TargetNPC)
             Call SetMovement(Atacante, e_TipoAI.MueveAlAzar)
             Exit Sub
         End If
+    End If
 
-104     Call ChangeNPCChar(Atacante, NpcList(Atacante).Char.Body, NpcList(Atacante).Char.Head, Heading)
-103     Heading = GetHeadingFromWorldPos(NpcList(Victima).Pos, NpcList(Atacante).Pos)
-        If Heading <> NpcList(Victima).Char.Heading Then
-            If NpcList(Victima).flags.Inmovilizado > 0 Then
-                cambiarMovimiento = False
-            End If
-        End If
-        
-106     If cambiarMovimiento Then
-108         Call SetNpcRef(NpcList(Victima).TargetNPC, Atacante)
-110         Call SetMovement(Victima, e_TipoAI.NpcAtacaNpc)
-        End If
+    ' Si puede girar, lo hace
+104 Call ChangeNPCChar(Atacante, NpcList(Atacante).Char.body, NpcList(Atacante).Char.head, Heading)
 
-112     If NpcList(Atacante).flags.Snd1 > 0 Then
-114         Call SendData(SendTarget.ToNPCAliveArea, Atacante, PrepareMessagePlayWave(NpcList(Atacante).flags.Snd1, NpcList(Atacante).Pos.X, NpcList(Atacante).Pos.y))
+    ' La víctima podría reaccionar
+103 Heading = GetHeadingFromWorldPos(NpcList(Victima).pos, NpcList(Atacante).pos)
+    If Heading <> NpcList(Victima).Char.Heading Then
+        If NpcList(Victima).flags.Paralizado = 1 Then
+            cambiarMovimiento = False ' Si está paralizado, no puede reaccionar
         End If
+    End If
 
-        Call NpcPerformAttackNpc(Atacante, Victima)
-        
-        Exit Sub
+106 If cambiarMovimiento Then
+108     Call SetNpcRef(NpcList(Victima).TargetNPC, Atacante)
+110     Call SetMovement(Victima, e_TipoAI.NpcAtacaNpc)
+    End If
+
+112 If NpcList(Atacante).flags.Snd1 > 0 Then
+114     Call SendData(SendTarget.ToNPCAliveArea, Atacante, PrepareMessagePlayWave(NpcList(Atacante).flags.Snd1, NpcList(Atacante).pos.x, NpcList(Atacante).pos.y))
+    End If
+
+    ' Ejecuta el ataque real
+    Call NpcPerformAttackNpc(Atacante, Victima)
+
+    Exit Sub
 
 NpcAtacaNpc_Err:
-130     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaNpc", Erl)
-
-        
+130 Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaNpc", Erl)
 End Sub
 
 Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal aType As AttackType)
@@ -1196,22 +1204,45 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
                 UserList(VictimaIndex).Counters.timeFx = 3
 114             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, FXSANGRE, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
             End If
-            
-            Call RemoveUserInvisibility(AtacanteIndex)
+
+            Select Case UserList(AtacanteIndex).clase
+                Case e_Class.Hunter
+                    'if i have an armor equipped
+                    if UserList(AtacanteIndex).invent.EquippedArmorObjIndex > 0 Then
+                        'and the armor has the camouflage property and i have 100 in stealth skill
+                        if ObjData(UserList(AtacanteIndex).invent.EquippedArmorObjIndex).Camouflage And UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+                            'dont remove invisibility
+                        Else
+                            Call RemoveUserInvisibility(AtacanteIndex)
+                        End If
+                    end if
+                Case Else
+                    Call RemoveUserInvisibility(AtacanteIndex)
+            End Select
+
 116         Call UserDamageToUser(AtacanteIndex, VictimaIndex, aType)
             Call EffectsOverTime.TartgetDidHit(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
             Call RegisterNewAttack(VictimaIndex, AtacanteIndex)
 
-
         Else
-
-            If UserList(AtacanteIndex).clase <> e_Class.Bandit Then
-                Call RemoveUserInvisibility(AtacanteIndex)
-            Else
-                If Not UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+            Select Case UserList(AtacanteIndex).clase
+                Case e_Class.Bandit
+                    If Not UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+                        Call RemoveUserInvisibility(AtacanteIndex)
+                    End If
+                Case e_Class.Hunter
+                    'if i have an armor equipped
+                    if UserList(AtacanteIndex).invent.EquippedArmorObjIndex > 0 Then
+                        'and the armor has the camouflage property and i have 100 in stealth skill
+                        if ObjData(UserList(AtacanteIndex).invent.EquippedArmorObjIndex).Camouflage And UserList(AtacanteIndex).Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+                            'dont remove invisibility
+                        Else
+                            Call RemoveUserInvisibility(AtacanteIndex)
+                        End If
+                    end if
+                Case Else
                     Call RemoveUserInvisibility(AtacanteIndex)
-                End If
-            End If
+            End Select
 
             Call EffectsOverTime.TargetFailedAttack(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
 118         If UserList(AtacanteIndex).flags.invisible Or UserList(AtacanteIndex).flags.Oculto Then
