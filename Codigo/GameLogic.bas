@@ -1701,18 +1701,29 @@ Public Sub CargarMapasEspeciales()
     
         
 117     Cantidad = val(File.GetValue("MapasEventos", "Cantidad"))
-    
+
 128     If Cantidad > 0 Then
 130         ReDim MapasEventos(1 To Cantidad)
-        
+
 132         For i = 1 To Cantidad
 134             MapasEventos(i) = val(File.GetValue("MapasEventos", "Mapa" & i))
             Next
         Else
 136         ReDim MapasEventos(0)
         End If
-        
-    
+
+140     Cantidad = val(File.GetValue("MapasNoDrop", "Cantidad"))
+
+142     If Cantidad > 0 Then
+144         ReDim MapasNoDrop(1 To Cantidad)
+
+146         For i = 1 To Cantidad
+148             MapasNoDrop(i) = val(File.GetValue("MapasNoDrop", "Mapa" & i))
+            Next
+        Else
+150         ReDim MapasNoDrop(0)
+        End If
+
 138     Set File = Nothing
 
 End Sub
@@ -1728,6 +1739,19 @@ Public Function EsMapaEvento(ByVal destMap As Long) As Boolean
     Next i
     EsMapaEvento = False
     
+End Function
+
+Public Function EsMapaNoDrop(ByVal destMap As Long) As Boolean
+    Dim i As Long
+
+    For i = 1 To UBound(MapasNoDrop)
+        If MapasNoDrop(i) = destMap Then
+            EsMapaNoDrop = True
+            Exit Function
+        End If
+    Next i
+    EsMapaNoDrop = False
+
 End Function
 
 Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As Boolean = False)
