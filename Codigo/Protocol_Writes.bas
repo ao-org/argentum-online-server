@@ -5196,6 +5196,25 @@ PrepareMessage_BlockPosition_Err:
         
 End Function
 
+Public Function PrepareMessageTileGraphicUpdate(ByVal X As Byte, _
+                                                ByVal Y As Byte, _
+                                                ByVal Grh As Long)
+
+        On Error GoTo PrepareMessageTileGraphicUpdate_Err
+
+100     Call Writer.WriteInt16(ServerPacketID.eTileGraphicUpdate)
+102     Call Writer.WriteInt8(X)
+104     Call Writer.WriteInt8(Y)
+106     Call Writer.WriteInt32(Grh)
+
+        Exit Function
+
+PrepareMessageTileGraphicUpdate_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageTileGraphicUpdate", Erl)
+
+End Function
+
 Public Function PrepareTrapUpdate(ByVal State As Byte, ByVal x As Byte, ByVal y As Byte)
     On Error GoTo PrepareTrapUpdate_Err
 100     Call Writer.WriteInt16(ServerPacketID.eUpdateTrap)

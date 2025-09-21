@@ -31,6 +31,8 @@ Public Const GOLD_OBJ_INDEX As Long = 12
 
 Public Const FISHING_NET_FX As Long = 12
 
+Public Const TREE_DEPLETED_GRH As Long = 55341
+
 Public Const NET_INMO_DURATION = 10
 
 Function ExpectObjectTypeAt(ByVal objectType As Integer, _
@@ -2998,6 +3000,10 @@ Public Sub DoTalar(ByVal UserIndex As Integer, _
                 End If
 
 138             MapData(.Pos.Map, X, Y).ObjInfo.amount = MapData(.Pos.Map, X, Y).ObjInfo.amount - MiObj.amount
+                If MapData(.Pos.Map, X, Y).ObjInfo.amount <= 0 Then
+                    MapData(.Pos.Map, X, Y).ObjInfo.amount = 0
+                    Call UpdateTreeGraphicState(.Pos.Map, X, Y, MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex, True)
+                End If
                 ' AGREGAR FX
                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
 
@@ -3373,6 +3379,7 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal X As Integer, ByVal Y A
 104     If (TiempoActual - MapData(Map, X, Y).ObjInfo.Data) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then
 106         MapData(Map, X, Y).ObjInfo.amount = ObjData(ObjIndex).VidaUtil
 108         MapData(Map, X, Y).ObjInfo.Data = &H7FFFFFFF   ' Ultimo uso = Max Long
+        Call UpdateTreeGraphicState(Map, X, Y, ObjIndex, False)
 
         End If
 
@@ -3380,6 +3387,36 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal X As Integer, ByVal Y A
 ActualizarRecurso_Err:
 110     Call TraceError(Err.Number, Err.Description, "Trabajo.ActualizarRecurso", Erl)
 112
+
+End Sub
+
+Private Sub UpdateTreeGraphicState(ByVal Map As Integer, _
+                                   ByVal X As Integer, _
+                                   ByVal Y As Integer, _
+                                   ByVal ObjIndex As Integer, _
+                                   ByVal IsDepleted As Boolean)
+
+        On Error GoTo UpdateTreeGraphicState_Err
+
+        If ObjIndex <= 0 Then Exit Sub
+
+        Dim targetGrh As Long
+
+100     If IsDepleted Then
+102         targetGrh = TREE_DEPLETED_GRH
+        Else
+104         targetGrh = ObjData(ObjIndex).GrhIndex
+        End If
+
+106     If MapData(Map, X, Y).Graphic(3) = targetGrh Then Exit Sub
+
+108     MapData(Map, X, Y).Graphic(3) = targetGrh
+110     Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageTileGraphicUpdate(CByte(X), CByte(Y), targetGrh))
+
+        Exit Sub
+
+UpdateTreeGraphicState_Err:
+112     Call TraceError(Err.Number, Err.Description, "Trabajo.UpdateTreeGraphicState", Erl)
 
 End Sub
 
