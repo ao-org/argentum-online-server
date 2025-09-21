@@ -2286,6 +2286,9 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 380     MapInfo(map).terrain = MapDat.terrain
 382     MapInfo(map).zone = MapDat.zone
 383     MapInfo(map).DropItems = True
+        If EsMapaNoDrop(map) Then
+            MapInfo(map).DropItems = False
+        End If
         MapInfo(map).FriendlyFire = True
         MapInfo(Map).KeepInviOnAttack = val(GetVar(DatPath & "Map.dat", "KeepInviOnAttack", Map)) <> 0
         MapInfo(Map).ForceUpdate = val(GetVar(DatPath & "Map.dat", "ForceUpdateAi", Map)) <> 0
