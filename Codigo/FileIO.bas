@@ -1187,20 +1187,21 @@ Sub LoadBalance()
 770             ElementalMatrixForNpcs(i + 1, j + 1) = val(vals(j))
 780         Next j
 790     Else
-800         Exit For
-810     End If
-820 Next i
+800         ElementalMatrixForNpcs = 1
+810         Exit For
+820     End If
+830 Next i
     '--------------------
 
 
-830 Set BalanceIni = Nothing
-840 AgregarAConsola "Se cargó el balance (Balance.dat)"
+840 Set BalanceIni = Nothing
+850 AgregarAConsola "Se cargó el balance (Balance.dat)"
 
 
-850 Exit Sub
+860 Exit Sub
 
 LoadBalance_Err:
-860 Call TraceError(Err.Number, Err.Description, "ES.LoadBalance", Erl)
+870 Call TraceError(Err.Number, Err.Description, "ES.LoadBalance", Erl)
 
 
 End Sub
