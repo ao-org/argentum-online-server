@@ -101,6 +101,12 @@ Sub HandleFishingNet(ByVal UserIndex As Integer)
 
                 End If
 
+130             If MapInfo(.pos.Map).zone = "DUNGEON" Then
+                    Call WriteLocaleMsg(UserIndex, "596", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteWorkRequestTarget(UserIndex, 0)
+                    Exit Sub
+                End If
+
                 Call DoPescar(UserIndex, True)
             Else
 132             ' Msg596=Zona de pesca no Autorizada. Busca otro lugar para hacerlo.
@@ -138,7 +144,12 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 298                             If (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).Blocked And FLAG_AGUA) <> 0 Then
 300                                 .flags.PescandoEspecial = False
                                     If UserList(UserIndex).flags.Navegando = 0 Then
-                                        Call DoPescar(UserIndex, False)
+                                        If MapInfo(.Pos.Map).zone = "DUNGEON" Then
+                                            Call WriteLocaleMsg(UserIndex, "596", e_FontTypeNames.FONTTYPE_INFO)
+                                            Call WriteMacroTrabajoToggle(UserIndex, False)
+                                        Else
+                                            Call DoPescar(UserIndex, False)
+                                        End If
                                     Else
                                         Call WriteLocaleMsg(UserIndex, "1436", e_FontTypeNames.FONTTYPE_INFO)
                                         Call WriteMacroTrabajoToggle(UserIndex, False)
