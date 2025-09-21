@@ -545,32 +545,35 @@ loadAdministrativeUsers_Err:
         
 End Sub
 
-
 Public Function TxtDimension(ByVal Name As String) As Long
-        
-        On Error GoTo TxtDimension_Err
-        
 
-        Dim n As Integer, cad As String, Tam As Long
+Dim n                           As Integer
+Dim Tam                         As Long
+Dim cad                         As String
 
-100     n = FreeFile(1)
-102     Open Name For Input As #n
-104     Tam = 0
+10  On Error GoTo TxtDimension_Err
 
-106     Do While Not EOF(n)
-108         Tam = Tam + 1
-110         Line Input #n, cad
-        Loop
-112     Close n
-114     TxtDimension = Tam
+20  n = FreeFile(1)
 
-        
-        Exit Function
+30  If FileExist(name, vbArchive) Then
+40      Open name For Input As #n
+50      Tam = 0
+
+60      Do While Not EOF(n)
+70          Tam = Tam + 1
+80          Line Input #n, cad
+90      Loop
+100     Close n
+110     TxtDimension = Tam
+120 Else
+130     TxtDimension = 0
+140 End If
+
+150 Exit Function
 
 TxtDimension_Err:
-116     Call TraceError(Err.Number, Err.Description, "ES.TxtDimension", Erl)
+160 Call TraceError(Err.Number, Err.Description, "ES.TxtDimension", Erl)
 
-        
 End Function
 
 Public Sub CargarForbidenWords()
@@ -1076,127 +1079,130 @@ LoadRunasHerreria_Err:
 End Sub
 
 Sub LoadBalance()
-        
-        On Error GoTo LoadBalance_Err
-        
 
-        Dim BalanceIni As clsIniManager
-
-100     Set BalanceIni = New clsIniManager
-        
-102     BalanceIni.Initialize DatPath & "Balance.dat"
-        
-        Dim i, j As Long
-
-        Dim SearchVar As String
-
-        'Modificadores de Clase
-104     For i = 1 To NUMCLASES
-106         SearchVar = Replace$(Tilde(ListaClases(i)), " ", vbNullString)
-
-108         With ModClase(i)
-110             .Evasion = val(BalanceIni.GetValue("MODEVASION", SearchVar))
-112             .AtaqueArmas = val(BalanceIni.GetValue("MODATAQUEARMAS", SearchVar))
-114             .AtaqueProyectiles = val(BalanceIni.GetValue("MODATAQUEPROYECTILES", SearchVar))
-116             .DañoArmas = val(BalanceIni.GetValue("MODDANOARMAS", SearchVar))
-118             .DañoProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", SearchVar))
-120             .DañoWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", SearchVar))
-122             .Escudo = val(BalanceIni.GetValue("MODESCUDO", SearchVar))
-123             .ModApunalar = val(BalanceIni.GetValue("MODAPUNALAR", SearchVar, 1))
-124             .ModStabbingNPCMin = val(BalanceIni.GetValue("MODAPUNALARNPCMIN", SearchVar, 1))
-125             .ModStabbingNPCMax = val(BalanceIni.GetValue("MODAPUNALARNPCMAX", SearchVar, 1))
-126             .Vida = val(BalanceIni.GetValue("MODVIDA", SearchVar))
-128             .ManaInicial = val(BalanceIni.GetValue("MANA_INICIAL", SearchVar))
-130             .MultMana = val(BalanceIni.GetValue("MULT_MANA", SearchVar))
-132             .AumentoSta = val(BalanceIni.GetValue("AUMENTO_STA", SearchVar))
-134             .HitPre36 = val(BalanceIni.GetValue("GOLPE_PRE_36", SearchVar))
-136             .HitPost36 = val(BalanceIni.GetValue("GOLPE_POST_36", SearchVar))
-138             .ResistenciaMagica = val(BalanceIni.GetValue("MODRESISTENCIAMAGICA", SearchVar))
-140             .LevelSkillPoints = val(BalanceIni.GetValue("MODSKILLPOINTS", SearchVar))
-                For j = 1 To eWeaponTypeCount - 1
-                    .WeaponHitBonus(j) = val(BalanceIni.GetValue(SearchVar, WeaponTypeNames(j)))
-                Next j
-            End With
-
-141     Next i
-    
-        'Modificadores de Raza
-142     For i = 1 To NUMRAZAS
-144         SearchVar = Replace$(Tilde(ListaRazas(i)), " ", vbNullString)
-
-146         With ModRaza(i)
-148             .Fuerza = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Fuerza"))
-150             .Agilidad = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Agilidad"))
-152             .Inteligencia = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Inteligencia"))
-154             .Carisma = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Carisma"))
-156             .Constitucion = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Constitucion"))
-            End With
-
-158     Next i
-
-        'Extra
-160     PorcentajeRecuperoMana = val(BalanceIni.GetValue("EXTRA", "PorcentajeRecuperoMana"))
-        RecoveryMana = val(BalanceIni.GetValue("EXTRA", "RecoveryMana"))
-        MultiplierManaxSkills = val(BalanceIni.GetValue("EXTRA", "MultiplierManaxSkills"))
-        ManaCommonLute = val(BalanceIni.GetValue("EXTRA", "ManaCommonLute"))
-        ManaMagicLute = val(BalanceIni.GetValue("EXTRA", "ManaMagicLute"))
-        ManaElvenLute = val(BalanceIni.GetValue("EXTRA", "ManaElvenLute"))
-162     DificultadSubirSkill = val(BalanceIni.GetValue("EXTRA", "DificultadSubirSkill"))
-164     InfluenciaPromedioVidas = val(BalanceIni.GetValue("EXTRA", "InfluenciaPromedioVidas"))
-166     DesbalancePromedioVidas = val(BalanceIni.GetValue("EXTRA", "DesbalancePromedioVidas"))
-167     RangoVidas = val(BalanceIni.GetValue("EXTRA", "RangoVidas"))
-168     CapVidaMax = val(BalanceIni.GetValue("EXTRA", "CapVidaMax"))
-169     CapVidaMin = val(BalanceIni.GetValue("EXTRA", "CapVidaMin"))
-170     ModDañoGolpeCritico = val(BalanceIni.GetValue("EXTRA", "ModDañoGolpeCritico"))
-171     RequiredSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "RequiredSpellDisplayTime"))
-172     MaxInvisibleSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "MaxInvisibleSpellDisplayTime"))
-        MultiShotReduction = val(BalanceIni.GetValue("EXTRA", "MultiShotReduction"))
-        HomeTimer = val(BalanceIni.GetValue("EXTRA", "HomeTimer"))
-        MagicSkillBonusDamageModifier = val(BalanceIni.GetValue("EXTRA", "MagicSkillBonusDamageModifier"))
-        MRSkillProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifier"))
-        MRSkillNpcProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifierNpc"))
-        AssistDamageValidTime = val(BalanceIni.GetValue("EXTRA", "AssistDamageValidTime"))
-        AssistHelpValidTime = val(BalanceIni.GetValue("EXTRA", "AssistHelpValidTime"))
-        HideAfterHitTime = val(BalanceIni.GetValue("EXTRA", "HideAfterHitTime"))
-        FactionReKillTime = val(BalanceIni.GetValue("EXTRA", "FactionReKillTime"))
-        AirHitReductParalisisTime = val(BalanceIni.GetValue("EXTRA", "AirHitReductParalisisTime"))
-        PorcentajePescaSegura = val(BalanceIni.GetValue("EXTRA", "PorcentajePescaSegura"))
-        
-        'stun
-        PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
-        NpcStunTime = val(BalanceIni.GetValue("STUN", "NpcStunTime"))
-        PlayerInmuneTime = val(BalanceIni.GetValue("STUN", "PlayerInmuneTime"))
-
-        ' Exp
-173     For i = 1 To STAT_MAXELV
-174         ExpLevelUp(i) = val(BalanceIni.GetValue("EXP", i))
-        Next
+10  On Error GoTo LoadBalance_Err
 
 
-        'ElementalMatrixForNpcs
-        Dim vals() As String
-        Dim row As String
+    Dim BalanceIni              As clsIniManager
 
-        For i = 0 To MAX_ELEMENT_TAGS - 1
-        row = (CStr(BalanceIni.GetValue("ElementalMatrixForNpcs", "Row" & i + 1, "1")))
-        vals = Split(row, " ")
-                For j = 0 To MAX_ELEMENT_TAGS - 1
-                ElementalMatrixForNpcs(i + 1, j + 1) = val(vals(j))
-                Next j
-        Next i
-        '--------------------
-        
-    
-176     Set BalanceIni = Nothing
-178     AgregarAConsola "Se cargó el balance (Balance.dat)"
+20  Set BalanceIni = New clsIniManager
 
-        
-        Exit Sub
+30  BalanceIni.Initialize DatPath & "Balance.dat"
+
+    Dim i, j                    As Long
+
+    Dim SearchVar               As String
+
+    'Modificadores de Clase
+40  For i = 1 To NUMCLASES
+50      SearchVar = Replace$(Tilde(ListaClases(i)), " ", vbNullString)
+
+60      With ModClase(i)
+70          .Evasion = val(BalanceIni.GetValue("MODEVASION", SearchVar))
+80          .AtaqueArmas = val(BalanceIni.GetValue("MODATAQUEARMAS", SearchVar))
+90          .AtaqueProyectiles = val(BalanceIni.GetValue("MODATAQUEPROYECTILES", SearchVar))
+100         .DañoArmas = val(BalanceIni.GetValue("MODDANOARMAS", SearchVar))
+110         .DañoProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", SearchVar))
+120         .DañoWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", SearchVar))
+130         .Escudo = val(BalanceIni.GetValue("MODESCUDO", SearchVar))
+140         .ModApunalar = val(BalanceIni.GetValue("MODAPUNALAR", SearchVar, 1))
+150         .ModStabbingNPCMin = val(BalanceIni.GetValue("MODAPUNALARNPCMIN", SearchVar, 1))
+160         .ModStabbingNPCMax = val(BalanceIni.GetValue("MODAPUNALARNPCMAX", SearchVar, 1))
+170         .Vida = val(BalanceIni.GetValue("MODVIDA", SearchVar))
+180         .ManaInicial = val(BalanceIni.GetValue("MANA_INICIAL", SearchVar))
+190         .MultMana = val(BalanceIni.GetValue("MULT_MANA", SearchVar))
+200         .AumentoSta = val(BalanceIni.GetValue("AUMENTO_STA", SearchVar))
+210         .HitPre36 = val(BalanceIni.GetValue("GOLPE_PRE_36", SearchVar))
+220         .HitPost36 = val(BalanceIni.GetValue("GOLPE_POST_36", SearchVar))
+230         .ResistenciaMagica = val(BalanceIni.GetValue("MODRESISTENCIAMAGICA", SearchVar))
+240         .LevelSkillPoints = val(BalanceIni.GetValue("MODSKILLPOINTS", SearchVar))
+250         For j = 1 To eWeaponTypeCount - 1
+260             .WeaponHitBonus(j) = val(BalanceIni.GetValue(SearchVar, WeaponTypeNames(j)))
+270         Next j
+280     End With
+
+290 Next i
+
+    'Modificadores de Raza
+300 For i = 1 To NUMRAZAS
+310     SearchVar = Replace$(Tilde(ListaRazas(i)), " ", vbNullString)
+
+320     With ModRaza(i)
+330         .Fuerza = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Fuerza"))
+340         .Agilidad = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Agilidad"))
+350         .Inteligencia = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Inteligencia"))
+360         .Carisma = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Carisma"))
+370         .Constitucion = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Constitucion"))
+380     End With
+
+390 Next i
+
+    'Extra
+400 PorcentajeRecuperoMana = val(BalanceIni.GetValue("EXTRA", "PorcentajeRecuperoMana"))
+410 RecoveryMana = val(BalanceIni.GetValue("EXTRA", "RecoveryMana"))
+420 MultiplierManaxSkills = val(BalanceIni.GetValue("EXTRA", "MultiplierManaxSkills"))
+430 ManaCommonLute = val(BalanceIni.GetValue("EXTRA", "ManaCommonLute"))
+440 ManaMagicLute = val(BalanceIni.GetValue("EXTRA", "ManaMagicLute"))
+450 ManaElvenLute = val(BalanceIni.GetValue("EXTRA", "ManaElvenLute"))
+460 DificultadSubirSkill = val(BalanceIni.GetValue("EXTRA", "DificultadSubirSkill"))
+470 InfluenciaPromedioVidas = val(BalanceIni.GetValue("EXTRA", "InfluenciaPromedioVidas"))
+480 DesbalancePromedioVidas = val(BalanceIni.GetValue("EXTRA", "DesbalancePromedioVidas"))
+490 RangoVidas = val(BalanceIni.GetValue("EXTRA", "RangoVidas"))
+500 CapVidaMax = val(BalanceIni.GetValue("EXTRA", "CapVidaMax"))
+510 CapVidaMin = val(BalanceIni.GetValue("EXTRA", "CapVidaMin"))
+520 ModDañoGolpeCritico = val(BalanceIni.GetValue("EXTRA", "ModDañoGolpeCritico"))
+530 RequiredSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "RequiredSpellDisplayTime"))
+540 MaxInvisibleSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "MaxInvisibleSpellDisplayTime"))
+550 MultiShotReduction = val(BalanceIni.GetValue("EXTRA", "MultiShotReduction"))
+560 HomeTimer = val(BalanceIni.GetValue("EXTRA", "HomeTimer"))
+570 MagicSkillBonusDamageModifier = val(BalanceIni.GetValue("EXTRA", "MagicSkillBonusDamageModifier"))
+580 MRSkillProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifier"))
+590 MRSkillNpcProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifierNpc"))
+600 AssistDamageValidTime = val(BalanceIni.GetValue("EXTRA", "AssistDamageValidTime"))
+610 AssistHelpValidTime = val(BalanceIni.GetValue("EXTRA", "AssistHelpValidTime"))
+620 HideAfterHitTime = val(BalanceIni.GetValue("EXTRA", "HideAfterHitTime"))
+630 FactionReKillTime = val(BalanceIni.GetValue("EXTRA", "FactionReKillTime"))
+640 AirHitReductParalisisTime = val(BalanceIni.GetValue("EXTRA", "AirHitReductParalisisTime"))
+650 PorcentajePescaSegura = val(BalanceIni.GetValue("EXTRA", "PorcentajePescaSegura"))
+
+    'stun
+660 PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
+670 NpcStunTime = val(BalanceIni.GetValue("STUN", "NpcStunTime"))
+680 PlayerInmuneTime = val(BalanceIni.GetValue("STUN", "PlayerInmuneTime"))
+
+    ' Exp
+690 For i = 1 To STAT_MAXELV
+700     ExpLevelUp(i) = val(BalanceIni.GetValue("EXP", i))
+710 Next
+
+    'ElementalMatrixForNpcs
+    Dim vals()                  As String
+    Dim row                     As String
+
+720 For i = 0 To MAX_ELEMENT_TAGS - 1
+730     row = (CStr(BalanceIni.GetValue("ElementalMatrixForNpcs", "Row" & i + 1, "1")))
+740     If LenB(row) > 0 Then
+750         vals = Split(row, " ")
+760         For j = 0 To MAX_ELEMENT_TAGS - 1
+770             ElementalMatrixForNpcs(i + 1, j + 1) = val(vals(j))
+780         Next j
+790     Else
+800         Exit For
+810     End If
+820 Next i
+    '--------------------
+
+
+830 Set BalanceIni = Nothing
+840 AgregarAConsola "Se cargó el balance (Balance.dat)"
+
+
+850 Exit Sub
 
 LoadBalance_Err:
-180     Call TraceError(Err.Number, Err.Description, "ES.LoadBalance", Erl)
+860 Call TraceError(Err.Number, Err.Description, "ES.LoadBalance", Erl)
 
-        
+
 End Sub
 
 Sub LoadObjCarpintero()
