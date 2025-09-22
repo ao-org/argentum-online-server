@@ -182,10 +182,160 @@ Function test_make_user_char() As Boolean
     test_make_user_char = True
 End Function
 
+Function test_npc_pathfinding_attackable_state() As Boolean
+    Dim npcIndex As Integer
+    Dim attackCheck As t_AttackInteractionResult
+    npcIndex = 1
+
+    Call ResetNpcMainInfo(npcIndex)
+    Call ResetNpcFlags(npcIndex)
+    Call ResetNpcCounters(npcIndex)
+    ReDim NpcList(npcIndex).pathFindingInfo.Path(1 To MAX_PATH_LENGTH)
+
+    With NpcList(npcIndex)
+        .Attackable = 1
+        .Hostile = 1
+        .Pos.Map = 1
+        .Pos.X = 10
+        .Pos.Y = 10
+        .Orig = .Pos
+        .pathFindingInfo.RangoVision = 1
+        .pathFindingInfo.OriginalVision = 1
+        .pathFindingInfo.PathLength = 0
+        .flags.Faccion = e_Facciones.Ciudadano
+        .Humanoide = False
+    End With
+
+    NumMaps = 1
+    MinXBorder = XMinMapSize
+    MaxXBorder = XMaxMapSize
+    MinYBorder = YMinMapSize
+    MaxYBorder = YMaxMapSize
+    ReDim MapData(1 To 1, XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize)
+    ReDim MapInfo(1 To 1)
+    MapInfo(1).Seguro = False
+    MapInfo(1).SafeFightMap = False
+
+    MapData(1, 10, 10).NpcIndex = npcIndex
+    MapData(1, 9, 10).Blocked = e_Block.ALL_SIDES
+    MapData(1, 11, 10).Blocked = e_Block.ALL_SIDES
+    MapData(1, 10, 9).Blocked = e_Block.ALL_SIDES
+    MapData(1, 10, 11).Blocked = e_Block.ALL_SIDES
+
+    With UserList(1)
+        .VersionId = 1
+        .flags.Privilegios = e_PlayerType.user
+        .flags.Muerto = 0
+        .flags.Montado = 0
+        .flags.Inmunidad = 0
+        .flags.EnConsulta = False
+        .flags.Seguro = False
+        .flags.CurrentTeam = 0
+        .flags.AdminInvisible = 0
+        .Grupo.EnGrupo = False
+        .Grupo.Id = 0
+        .GuildIndex = 0
+        .Faccion.Status = e_Facciones.Criminal
+        .Pos.Map = 1
+        .Pos.X = 12
+        .Pos.Y = 10
+    End With
+    LastUser = 1
+    MapData(1, 12, 10).UserIndex = 1
+
+    Debug.Assert SetUserRef(NpcList(npcIndex).TargetUser, 1)
+
+    Call AI_CaminarConRumbo(npcIndex, UserList(1).Pos)
+
+    Debug.Assert NpcList(npcIndex).pathFindingInfo.TargetUnreachable
+    Debug.Assert NpcList(npcIndex).Attackable = 0
+    attackCheck = UserCanAttackNpc(1, npcIndex)
+    Debug.Assert attackCheck.Result = eInmuneNpc
+
+    MapData(1, 12, 10).UserIndex = 0
+    UserList(1).Pos.X = 10
+    UserList(1).Pos.Y = 10
+    MapData(1, 10, 10).UserIndex = 1
+    MapData(1, 9, 10).Blocked = 0
+
+    Call AI_CaminarConRumbo(npcIndex, UserList(1).Pos)
+
+    Debug.Assert Not NpcList(npcIndex).pathFindingInfo.TargetUnreachable
+    Debug.Assert NpcList(npcIndex).Attackable = 1
+    attackCheck = UserCanAttackNpc(1, npcIndex)
+    Debug.Assert attackCheck.Result = eCanAttack
+
+    Call ResetNpcMainInfo(npcIndex)
+    Call ResetNpcFlags(npcIndex)
+    Call ResetNpcCounters(npcIndex)
+    ReDim NpcList(npcIndex).pathFindingInfo.Path(1 To MAX_PATH_LENGTH)
+
+    With NpcList(npcIndex)
+        .Attackable = 1
+        .Hostile = 1
+        .Pos.Map = 1
+        .Pos.X = 10
+        .Pos.Y = 10
+        .Orig = .Pos
+        .AttackRange = 2
+        .pathFindingInfo.RangoVision = 1
+        .pathFindingInfo.OriginalVision = 1
+        .pathFindingInfo.PathLength = 0
+        .flags.Faccion = e_Facciones.Ciudadano
+        .Humanoide = False
+    End With
+
+    NumMaps = 1
+    MinXBorder = XMinMapSize
+    MaxXBorder = XMaxMapSize
+    MinYBorder = YMinMapSize
+    MaxYBorder = YMaxMapSize
+
+    ReDim MapData(1 To 1, XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize)
+    ReDim MapInfo(1 To 1)
+    MapInfo(1).Seguro = False
+    MapInfo(1).SafeFightMap = False
+
+    MapData(1, 10, 10).NpcIndex = npcIndex
+    MapData(1, 11, 10).Blocked = e_Block.ALL_SIDES
+    MapData(1, 12, 10).Blocked = e_Block.ALL_SIDES
+
+    With UserList(1)
+        .VersionId = 1
+        .flags.Privilegios = e_PlayerType.user
+        .flags.Muerto = 0
+        .flags.Montado = 0
+        .flags.Inmunidad = 0
+        .flags.EnConsulta = False
+        .flags.Seguro = False
+        .flags.CurrentTeam = 0
+        .flags.AdminInvisible = 0
+        .Grupo.EnGrupo = False
+        .Grupo.Id = 0
+        .GuildIndex = 0
+        .Faccion.Status = e_Facciones.Criminal
+        .Pos.Map = 1
+        .Pos.X = 12
+        .Pos.Y = 10
+    End With
+    MapData(1, 12, 10).UserIndex = 1
+    LastUser = 1
+
+    Debug.Assert SetUserRef(NpcList(npcIndex).TargetUser, 1)
+
+    Call AI_CaminarConRumbo(npcIndex, UserList(1).Pos)
+
+    Debug.Assert Not NpcList(npcIndex).pathFindingInfo.TargetUnreachable
+    Debug.Assert NpcList(npcIndex).Attackable = 1
+
+    test_npc_pathfinding_attackable_state = True
+End Function
+
 Function test_suite() As Boolean
     Dim result As Boolean
     result = test_make_user_char()
     result = result And test_maths()
+    result = result And test_npc_pathfinding_attackable_state()
     test_suite = result
 End Function
 
