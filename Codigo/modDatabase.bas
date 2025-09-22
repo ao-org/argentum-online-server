@@ -24,61 +24,69 @@ Attribute VB_Name = "Database"
 '    for more information about ORE please visit http://www.baronsoft.com/
 '
 '
-'
+
+Option Explicit '[/About] 22/09/2025 Bestias
+
 Public Const DatabaseFileName = "Database.db"
 
 Public Sub Database_Connect_Async()
-        On Error GoTo Database_Connect_AsyncErr
-        
-        Dim ConnectionID As String
 
-        If Len(Database_Source) <> 0 Then
-104         ConnectionID = "DATA SOURCE=" & Database_Source & ";"
-        Else
-106         ConnectionID = "DRIVER={SQLite3 ODBC Driver};" & "DATABASE=" & App.Path & "/Database.db"
-        End If
-                
-        Dim i As Byte
-        
-        For i = 1 To MAX_ASYNC
-            Set Connection_async(i) = New ADODB.Connection
-110         Connection_async(i).CursorLocation = adUseClient
-            Connection_async(i).ConnectionString = ConnectionID
-112         Call Connection_async(i).Open(, , , adAsyncConnect)
-        Next i
+Dim i                           As Byte
+Dim ConnectionID                As String
 
-        Current_async = 1
-        
-113     Set Builder = New cStringBuilder
+   On Error GoTo Database_Connect_Async_Error
 
-        Exit Sub
-    
-Database_Connect_AsyncErr:
-116     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - Database_Connect_Async")
+20  If Len(Database_Source) <> 0 Then
+30      ConnectionID = "DATA SOURCE=" & Database_Source & ";"
+40  Else
+50      ConnectionID = "DRIVER={SQLite3 ODBC Driver};" & "DATABASE=" & App.Path & "/Database.db"
+60  End If
+
+70  For i = 1 To MAX_ASYNC
+80      Set Connection_async(i) = New ADODB.connection
+90      Connection_async(i).CursorLocation = adUseClient
+100     Connection_async(i).ConnectionString = ConnectionID
+110     Call Connection_async(i).Open(, , , adAsyncConnect)
+120 Next i
+
+130 Current_async = 1
+
+140 Set Builder = New clsFastString
+
+   On Error GoTo 0
+   Exit Sub
+
+Database_Connect_Async_Error:
+
+160 Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - Database_Connect_Async")
+
 End Sub
+
 Public Sub Database_Connect()
-        On Error GoTo Database_Connect_Err
-        
-        Dim ConnectionID As String
 
-        If Len(Database_Source) <> 0 Then
-104         ConnectionID = "DATA SOURCE=" & Database_Source & ";"
-        Else
-106         ConnectionID = "DRIVER={SQLite3 ODBC Driver};" & "DATABASE=" & App.Path & "/" & DatabaseFileName
-        End If
-                
-        Set Connection = New ADODB.Connection
-110     Connection.CursorLocation = adUseClient
-        Connection.ConnectionString = ConnectionID
+Dim ConnectionID                As String
 
-113     Set Builder = New cStringBuilder
-        
-112     Call Connection.Open
+10  On Error GoTo Database_Connect_Err
 
-        Exit Sub
-    
+20  If Len(Database_Source) <> 0 Then
+30      ConnectionID = "DATA SOURCE=" & Database_Source & ";"
+40  Else
+50      ConnectionID = "DRIVER={SQLite3 ODBC Driver};" & "DATABASE=" & App.Path & "/" & DatabaseFileName
+60  End If
+
+70  Set connection = New ADODB.connection
+
+80  connection.CursorLocation = adUseClient
+90  connection.ConnectionString = ConnectionID
+
+100 Set Builder = New clsFastString
+
+110 Call connection.Open
+
+120 Exit Sub
+
 Database_Connect_Err:
-116     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - Database_Connect")
+130 Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - Database_Connect")
 End Sub
 
 Public Sub Database_Close()
@@ -724,7 +732,6 @@ Public Sub SendUserPunishmentsDatabase(ByVal userIndex As Integer, ByVal usernam
 
 108         While Not RS.EOF
 110             Call WriteConsoleMsg(userIndex, RS!Number & " - " & RS!Reason, e_FontTypeNames.FONTTYPE_INFO)
-            
 112             RS.MoveNext
             Wend
 
@@ -741,36 +748,44 @@ Public Function GetUserGuildIndexDatabase(ByVal CharId As Long) As Integer
 100     GetUserGuildIndexDatabase = SanitizeNullValue(GetUserValueById(CharId, "guild_index"), 0)
         Exit Function
 ErrorHandler:
-102     Call LogDatabaseError("Error in GetUserGuildIndexDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+102     Call LogDatabaseError("Error in GetUserGuildIndexDatabase: " & Err.Number & " - " & Err.Description)
 End Function
 
-Public Function GetUserGuildMemberDatabase(username As String) As String
+Public Function GetUserGuildMemberDatabase(username As String) As clsFastString
 
-        On Error GoTo ErrorHandler
-        Dim user_id As Long
-        user_id = GetCharacterIdWithName(username)
-        Dim RS As ADODB.Recordset
-        Dim History As String
-100     Set RS = Query("SELECT DISTINCT guild_name FROM guild_member_history where user_id = ? order by request_time DESC", user_id)
-102     If RS Is Nothing Then Exit Function
-104     If Not RS.RecordCount = 0 Then
-            Dim i As Integer
-            i = 0
-108         While Not RS.EOF
-110             History = History & SanitizeNullValue(RS!guild_name, "")
-                i = i + 1
-                If i < RS.RecordCount Then
-                    History = History & ", "
-                End If
-                RS.MoveNext
-            Wend
-        End If
-112     GetUserGuildMemberDatabase = History
+Dim i                           As Integer
+Dim user_id                     As Long
+Dim History                     As String
+Dim RS                          As ADODB.Recordset
 
-        Exit Function
+10  On Error GoTo ErrorHandler
+
+20  GetUserGuildMemberDatabase = New clsFastString
+30  user_id = GetCharacterIdWithName(username)
+
+40  Set RS = Query("SELECT DISTINCT guild_name FROM guild_member_history where user_id = ? order by request_time DESC", user_id)
+50  If RS Is Nothing Then Exit Function
+
+60  If Not RS.RecordCount = 0 Then
+
+70      i = 0
+80      While Not RS.EOF
+            'Utilizamos la nueva clase clsFastString que es mucho más rápida que cBuilder
+90          If i > 0 Then
+100             GetUserGuildMemberDatabase.Append ", " & RS!guild_name
+110         Else
+120             GetUserGuildMemberDatabase.Append RS!guild_name
+130         End If
+
+140         i = i + 1
+150         RS.MoveNext
+160     Wend
+170 End If
+
+180 Exit Function
 
 ErrorHandler:
-114     Call LogDatabaseError("Error in GetUserGuildMemberDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+190 Call LogDatabaseError("Error in GetUserGuildMemberDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -787,33 +802,45 @@ ErrorHandler:
 
 End Function
 
-Public Function GetUserGuildPedidosDatabase(username As String) As String
+Public Function GetUserGuildPedidosDatabase(username As String) As clsFastString
 
-        On Error GoTo ErrorHandler
-        Dim user_id As Long
-        user_id = GetCharacterIdWithName(username)
-        Dim RS As ADODB.Recordset
-        Dim History As String
-100     Set RS = Query("SELECT DISTINCT guild_name FROM guild_request_history where user_id = ? order by request_time DESC", user_id)
-102     If RS Is Nothing Then Exit Function
-104     If Not RS.RecordCount = 0 Then
-            Dim i As Integer
-            i = 0
-108         While Not RS.EOF
-110             History = History & SanitizeNullValue(RS!guild_name, "")
-                i = i + 1
-                If i < RS.RecordCount Then
-                    History = History & ", "
-                End If
-                RS.MoveNext
-            Wend
-        End If
-112     GetUserGuildPedidosDatabase = History
+Dim i                           As Integer
+Dim History                     As String
+Dim user_id                     As Long
+Dim RS                          As ADODB.Recordset
 
-        Exit Function
+10  On Error GoTo ErrorHandler
+
+20  user_id = GetCharacterIdWithName(username)
+
+30  Set GetUserGuildPedidosDatabase = New clsFastString
+
+40  Set RS = Query("SELECT DISTINCT guild_name FROM guild_request_history where user_id = ? order by request_time DESC", user_id)
+
+50  If RS Is Nothing Then Exit Function
+
+60  If Not RS.RecordCount = 0 Then
+
+70      i = 0
+80      While Not RS.EOF
+            'Utilizamos la nueva clase clsFastString que es mucho más rápida que cBuilder
+90          If i > 0 Then
+100             GetUserGuildPedidosDatabase.Append ", " & RS!guild_name
+110         Else
+120             GetUserGuildPedidosDatabase.Append RS!guild_name
+130         End If
+
+140         i = i + 1
+150         RS.MoveNext
+160     Wend
+170 End If
+
+    '160 GetUserGuildPedidosDatabase = History
+
+180 Exit Function
 
 ErrorHandler:
-114     Call LogDatabaseError("Error in GetUserGuildPedidosDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+190 Call LogDatabaseError("Error in GetUserGuildPedidosDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -834,7 +861,7 @@ Public Sub SaveUserGuildIndexDatabase(ByVal UserId As Long, ByVal GuildIndex As 
 100     Call SetUserValueByID(UserId, "guild_index", GuildIndex)
         Exit Sub
 ErrorHandler:
-102     Call LogDatabaseError("Error in SaveUserGuildIndexDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+102     Call LogDatabaseError("Error in SaveUserGuildIndexDatabase: " & Err.Number & " - " & Err.Description)
 End Sub
 
 Public Sub SaveUserGuildAspirantDatabase(ByVal UserId As Long, ByVal AspirantIndex As Integer)
@@ -842,14 +869,14 @@ Public Sub SaveUserGuildAspirantDatabase(ByVal UserId As Long, ByVal AspirantInd
 100     Call SetUserValueByID(UserId, "guild_aspirant_index", AspirantIndex)
         Exit Sub
 ErrorHandler:
-102     Call LogDatabaseError("Error in SaveUserGuildAspirantDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+102     Call LogDatabaseError("Error in SaveUserGuildAspirantDatabase: " & Err.Number & " - " & Err.Description)
 End Sub
 
 Public Sub SaveUserGuildMemberDatabase(ByVal user_id As Long, ByVal guilds As String)
         Call Execute("INSERT INTO guild_member_history (user_id, guild_name) VALUES (?, ?)", user_id, guilds)
         Exit Sub
 ErrorHandler:
-102     Call LogDatabaseError("Error in SaveUserGuildMemberDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+102     Call LogDatabaseError("Error in SaveUserGuildMemberDatabase: " & Err.Number & " - " & Err.Description)
 End Sub
 
 Public Sub SaveUserGuildPedidosDatabase(ByVal username As String, ByVal Pedidos As String)
@@ -867,51 +894,51 @@ End Sub
 
 Public Sub SendCharacterInfoDatabase(ByVal userIndex As Integer, ByVal username As String)
 
-        On Error GoTo ErrorHandler
+Dim IsLegion                    As Boolean
+Dim IsArmy                      As Boolean
+Dim GuildActual                 As Integer
+Dim GuilldHistory               As String
+Dim GuildRequestHistory         As String
+Dim GuildHistory                As String
+Dim gName                       As String
+Dim Miembro                     As String
+Dim RS                          As ADODB.Recordset
 
-        Dim gName       As String
+10  On Error GoTo ErrorHandler
 
-        Dim Miembro     As String
+20  Set RS = Query("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_index, status, ciudadanos_matados, criminales_matados FROM user WHERE UPPER(name) = ?;", UCase$(username))
 
-        Dim GuildActual As Integer
+30  If RS Is Nothing Then
+40      Call WriteConsoleMsg(UserIndex, "Pj Inexistente", e_FontTypeNames.FONTTYPE_INFO)
+50      Exit Sub
+60  End If
 
-        Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_index, status, ciudadanos_matados, criminales_matados FROM user WHERE UPPER(name) = ?;", UCase$(username))
-        Dim GuildRequestHistory As String
-        Dim GuildHistory As String
-102     If RS Is Nothing Then
-104         Call WriteConsoleMsg(userIndex, "Pj Inexistente", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
+70  GuildRequestHistory = GetUserGuildPedidosDatabase(username).ToString
+80  GuilldHistory = GetUserGuildMemberDatabase(username).ToString
+    ' Get the character's current guild
+90  GuildActual = SanitizeNullValue(RS!Guild_Index, 0)
 
-        End If
-        GuildRequestHistory = GetUserGuildPedidosDatabase(username)
-        GuilldHistory = GetUserGuildMemberDatabase(username)
-        ' Get the character's current guild
-106     GuildActual = SanitizeNullValue(RS!Guild_Index, 0)
+100 If GuildActual > 0 And GuildActual <= CANTIDADDECLANES Then
+110     gName = "<" & GuildName(GuildActual) & ">"
+120 Else
+130     gName = "Ninguno"
+140 End If
 
-108     If GuildActual > 0 And GuildActual <= CANTIDADDECLANES Then
-110         gName = "<" & GuildName(GuildActual) & ">"
-        Else
-112         gName = "Ninguno"
+    'Get previous guilds
+150 Miembro = SanitizeNullValue(GuilldHistory, vbNullString)
 
-        End If
+160 If Len(Miembro) > 400 Then
+170     Miembro = ".." & Right$(Miembro, 400)
+180 End If
 
-        'Get previous guilds
-114     Miembro = SanitizeNullValue(GuilldHistory, vbNullString)
+190 IsLegion = RS!Status = e_Facciones.concilio Or RS!Status = e_Facciones.Caos
+200 IsArmy = RS!Status = e_Facciones.consejo Or RS!Status = e_Facciones.Armada
 
-116     If Len(Miembro) > 400 Then
-118         Miembro = ".." & Right$(Miembro, 400)
+210 Call WriteCharacterInfo(UserIndex, username, RS!race_id, RS!class_id, RS!genre_id, RS!level, RS!gold, RS!bank_gold, GuildRequestHistory, gName, Miembro, IsArmy, IsLegion, RS!ciudadanos_matados, RS!criminales_matados)
 
-        End If
-        Dim IsLegion As Boolean
-        Dim IsArmy As Boolean
-        IsLegion = RS!Status = e_Facciones.concilio Or RS!Status = e_Facciones.Caos
-        IsArmy = RS!Status = e_Facciones.consejo Or RS!Status = e_Facciones.Armada
-120     Call WriteCharacterInfo(UserIndex, username, RS!race_id, RS!class_id, RS!genre_id, RS!level, RS!gold, RS!bank_gold, GuildRequestHistory, gName, Miembro, IsArmy, IsLegion, RS!ciudadanos_matados, RS!criminales_matados)
-
-        Exit Sub
+220 Exit Sub
 ErrorHandler:
-122     Call LogDatabaseError("Error in SendCharacterInfoDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+230 Call LogDatabaseError("Error in SendCharacterInfoDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -955,20 +982,36 @@ Public Function PersonajePerteneceID(ByVal username As String, ByVal AccountID A
 End Function
 
 Public Function GetCharacterIdWithName(ByVal username As String) As Long
-        Dim tUser    As t_UserReference
-        tUser = NameIndex(username)
-        If IsValidUserRef(tUser) Then
-            GetCharacterIdWithName = UserList(tUser.ArrayIndex).id
-            Exit Function
-        End If
-        Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT id FROM user WHERE name = ? COLLATE NOCASE;", username)
-102     If Not RS Is Nothing Then
-            If RS.EOF Then Exit Function
-104         GetCharacterIdWithName = RS!id
-            Exit Function
-        End If
-106     GetCharacterIdWithName = 0
+
+Dim tUser                       As t_UserReference
+Dim RS                          As ADODB.Recordset
+
+    On Error GoTo GetCharacterIdWithName_Error
+
+10  tUser = NameIndex(username)
+
+20  If IsValidUserRef(tUser) Then
+30      GetCharacterIdWithName = UserList(tUser.ArrayIndex).Id
+40      Exit Function
+50  End If
+
+60  Set RS = Query("SELECT id FROM user WHERE name = ? COLLATE NOCASE;", username)
+
+70  If Not RS Is Nothing Then
+80      If RS.EOF Then Exit Function
+90      GetCharacterIdWithName = RS!Id
+100     Exit Function
+110 End If
+
+120 GetCharacterIdWithName = 0
+
+    On Error GoTo 0
+    Exit Function
+
+GetCharacterIdWithName_Error:
+
+    Call Logging.TraceError(Err.Number, Err.Description, "Database.GetCharacterIdWithName", Erl())
+
 End Function
 
 Public Function SetPositionDatabase(username As String, ByVal map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
