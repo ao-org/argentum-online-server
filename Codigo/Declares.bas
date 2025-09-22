@@ -950,6 +950,40 @@ Public Const FLAG_AGUA               As Byte = &H20
 
 Public Const FLAG_ARBOL              As Byte = &H40
 
+Public Enum e_SubObjType
+    FishingRod = 1
+    FishingNet = 2
+    AlchemyScissors = 3
+    AlchemyPot = 4
+    CarpentrySaw = 5
+    LumberjackAxe = 6
+    BlacksmithHammer = 7
+    MinerPicket = 8
+    TailoringSewing = 9
+End Enum
+
+Public Enum e_TipoPocion
+    Agility = 1
+    Strength = 2
+    Hp = 3
+    Mp = 4
+    Poison = 5
+    RemoveParalisis = 6
+    Stamina = 7
+    ChangeHead = 8
+    ChangeSex = 9
+    Invisibility = 10
+    CleanEverything = 13
+    Rune = 14
+    Divorce = 15
+    Legendary = 17
+    Particle = 18
+    ResetSkill = 19
+    Suicide = 21
+    ResetCharacter = 22
+    PoisonWeapon = 23
+End Enum
+
 ' CATEGORIAS PRINCIPALES
 Public Enum e_OBJType
 
