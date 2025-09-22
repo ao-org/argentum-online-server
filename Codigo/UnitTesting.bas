@@ -182,9 +182,83 @@ Function test_make_user_char() As Boolean
     test_make_user_char = True
 End Function
 
+Function test_npc_pathfinding_attackable_state() As Boolean
+    Dim npcIndex As Integer
+    Dim userIndex As Integer
+
+    npcIndex = 1
+    userIndex = 1
+
+    NumMaps = 1
+    ReDim MapData(1 To NumMaps, XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As t_MapBlock
+    ReDim UserList(1 To 5) As t_User
+
+    With UserList(userIndex)
+        .VersionId = 1
+        .Pos.Map = 1
+        .Pos.X = 10
+        .Pos.Y = 12
+    End With
+    MapData(1, 10, 12).UserIndex = userIndex
+
+    GlobalFrameTime = 1000
+
+    With NpcList(npcIndex)
+        .Attackable = 1
+        .Hostile = 1
+        .Pos.Map = 1
+        .Pos.X = 10
+        .Pos.Y = 10
+        .SpellRange = 5
+        .AttackRange = 1
+        .flags.LanzaSpells = 1
+        .TargetUnreachable = False
+        .pathFindingInfo.RangoVision = 5
+        .pathFindingInfo.OriginalVision = 5
+        ReDim .pathFindingInfo.Path(1 To MAX_PATH_LENGTH)
+        .pathFindingInfo.PathLength = 0
+        .pathFindingInfo.destination.X = UserList(userIndex).Pos.X
+        .pathFindingInfo.destination.Y = UserList(userIndex).Pos.Y
+        ReDim .Spells(1 To 1)
+        .Spells(1).SpellIndex = 1
+        .Spells(1).Cd = 0
+        .Spells(1).LastUse = 0
+    End With
+
+    ReDim Hechizos(1 To 1) As t_Hechizo
+    Hechizos(1).Effects = e_SpellEffects.eDoDamage
+
+    Call SetUserRef(NpcList(npcIndex).TargetUser, userIndex)
+
+    MapData(1, 10, 10).NpcIndex = npcIndex
+    MapData(1, 10, 9).Blocked = e_Block.ALL_SIDES
+    MapData(1, 10, 11).Blocked = e_Block.ALL_SIDES
+    MapData(1, 9, 10).Blocked = e_Block.ALL_SIDES
+    MapData(1, 11, 10).Blocked = e_Block.ALL_SIDES
+
+    Dim pathFound As Boolean
+    pathFound = SeekPath(npcIndex, True)
+    Debug.Assert pathFound = False
+
+    Call NpcMarkTargetUnreachable(npcIndex)
+    Debug.Assert NpcList(npcIndex).Attackable = 1
+    Debug.Assert NpcList(npcIndex).TargetUnreachable = False
+
+    NpcList(npcIndex).Attackable = 1
+    NpcList(npcIndex).TargetUnreachable = False
+    NpcList(npcIndex).flags.LanzaSpells = 0
+    Hechizos(1).Effects = 0
+    Call NpcMarkTargetUnreachable(npcIndex)
+    Debug.Assert NpcList(npcIndex).Attackable = 0
+    Debug.Assert NpcList(npcIndex).TargetUnreachable = True
+
+    test_npc_pathfinding_attackable_state = True
+End Function
+
 Function test_suite() As Boolean
     Dim result As Boolean
     result = test_make_user_char()
+    result = result And test_npc_pathfinding_attackable_state()
     result = result And test_maths()
     test_suite = result
 End Function

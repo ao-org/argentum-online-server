@@ -478,6 +478,7 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
         
     With (NpcList(NpcIndex))
 100     .Attackable = 0
+        .TargetUnreachable = False
 102     .Comercia = 0
 104     .GiveEXP = 0
 106     .GiveEXPClan = 0

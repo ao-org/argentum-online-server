@@ -453,9 +453,11 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
                 ' Recalculamos el camino
 112             If SeekPath(NpcIndex, True) Then
                     ' Si consiguo un camino
+                NpcList(NpcIndex).TargetUnreachable = False
 114                 Call FollowPath(NpcIndex)
                 Else
                     ' Cannot find path
+                    Call NpcMarkTargetUnreachable(NpcIndex)
                     If NpcList(NpcIndex).Hostile = 1 And NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 Then
                         NpcList(NpcIndex).pathFindingInfo.RangoVision = Min(SvrConfig.GetValue("NPC_MAX_VISION_RANGE"), NpcList(NpcIndex).pathFindingInfo.RangoVision + PATH_VISION_DELTA)
                     End If
@@ -1426,6 +1428,47 @@ UsuarioAtacableConMelee_Err:
 
 
 End Function
+
+Private Function NpcCanAttackTargetFromPosition(ByVal NpcIndex As Integer) As Boolean
+    Dim availableSpellEffects As Long
+    Dim targetPos As t_WorldPos
+
+    With NpcList(NpcIndex)
+        If .flags.LanzaSpells <= 0 Then Exit Function
+        If .SpellRange <= 0 Then Exit Function
+
+        availableSpellEffects = GetAvailableSpellEffects(NpcIndex)
+        If Not IsSet(availableSpellEffects, e_SpellEffects.eDoDamage) Then Exit Function
+
+        If IsValidUserRef(.TargetUser) Then
+            targetPos = UserList(.TargetUser.ArrayIndex).Pos
+        ElseIf IsValidNpcRef(.TargetNPC) Then
+            targetPos = NpcList(.TargetNPC.ArrayIndex).Pos
+        Else
+            Exit Function
+        End If
+
+        If .Pos.Map <> targetPos.Map Then Exit Function
+
+        If Distancia(.Pos, targetPos) <= .SpellRange Then
+            NpcCanAttackTargetFromPosition = True
+        End If
+    End With
+End Function
+
+Public Sub NpcMarkTargetUnreachable(ByVal NpcIndex As Integer)
+    With NpcList(NpcIndex)
+        If Not (IsValidUserRef(.TargetUser) Or IsValidNpcRef(.TargetNPC)) Then Exit Sub
+
+        If NpcCanAttackTargetFromPosition(NpcIndex) Then
+            .TargetUnreachable = False
+            Exit Sub
+        End If
+
+        .TargetUnreachable = True
+        .Attackable = 0
+    End With
+End Sub
 
 Private Function CanCastSpell(ByRef npc As t_Npc, ByVal Slot As Integer) As Boolean
      CanCastSpell = GlobalFrameTime - npc.Spells(Slot).LastUse > (npc.Spells(Slot).Cd * 1000)

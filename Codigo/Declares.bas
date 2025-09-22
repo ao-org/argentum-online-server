@@ -2866,6 +2866,7 @@ Public Type t_Npc
     
     TargetUser As t_UserReference
     TargetNPC As t_NpcReference
+    TargetUnreachable As Boolean
     TipoItems As Integer
     
     SoundOpen As Integer
