@@ -2781,6 +2781,8 @@ Public Type t_NpcPathFindingInfo
     destination As t_Position ' The location where the NPC has to go
     RangoVision As Single
     OriginalVision As Single
+    TargetUnreachable As Boolean
+    PreviousAttackable As Byte
     
     
     '* By setting PathLenght to 0 we force the recalculation
