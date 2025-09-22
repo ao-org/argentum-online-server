@@ -2451,11 +2451,8 @@ End Function
 Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal targetIndex As Integer)
     Dim Score As Integer
     With UserList(UserIndex)
-        If CInt(.Stats.ELV) < CInt(UserList(targetIndex).Stats.ELV) Then
-            Score = 10 + CInt(UserList(targetIndex).Stats.ELV) - max(CInt(.Stats.ELV), 0)
-        Else
-            Score = 10 - max(CInt(.Stats.ELV) - CInt(UserList(targetIndex).Stats.ELV), 0)
-        End If
+        
+        Score = CalculateBaseFactionScore(UserIndex, TargetIndex)
 
         If ShouldApplyFactionBonus(UserIndex, targetIndex) Then
             Score = Int(Score * 1.5)
@@ -2515,12 +2512,8 @@ Sub PenalizeFactionScoreLegionAndCouncil(ByVal Attacker As Integer, ByVal Target
             Dim Score As Integer
     
             ' Calcular Score base según diferencia de niveles
-            If CInt(.Stats.ELV) < CInt(UserList(Target).Stats.ELV) Then
-                Score = 10 + CInt(UserList(Target).Stats.ELV) - max(CInt(.Stats.ELV), 0)
-            Else
-                Score = 10 - max(CInt(.Stats.ELV) - CInt(UserList(Target).Stats.ELV), 0)
-            End If
-    
+            Score = CalculateBaseFactionScore(Attacker, Target)
+            
             ' Aplicar bonus si corresponde
             If ShouldApplyFactionBonus(Attacker, Target) Then
                 Score = Int(Score * 1.5)
@@ -2550,6 +2543,17 @@ Private Function AreLegionsOrCouncils(ByVal Attacker As Integer, ByVal Target As
             And (UserList(Target).Faccion.Status = e_Facciones.concilio Or UserList(Target).Faccion.Status = e_Facciones.Caos))
                             
 
+End Function
+Private Function CalculateBaseFactionScore(ByVal Attacker As Integer, ByVal Target As Integer) As Integer
+    
+    With UserList(Attacker)
+        If CInt(.Stats.ELV) < CInt(UserList(Target).Stats.ELV) Then
+            CalculateBaseFactionScore = 10 + CInt(UserList(Target).Stats.ELV) - max(CInt(.Stats.ELV), 0)
+        Else
+            CalculateBaseFactionScore = 10 - max(CInt(.Stats.ELV) - CInt(UserList(Target).Stats.ELV), 0)
+        End If
+    End With
+    
 End Function
 Sub Tilelibre(ByRef Pos As t_WorldPos, ByRef nPos As t_WorldPos, ByRef obj As t_Obj, ByRef Agua As Boolean, ByRef Tierra As Boolean, Optional ByVal InitialPos As Boolean = True)
 
