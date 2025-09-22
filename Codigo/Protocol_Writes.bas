@@ -1231,12 +1231,12 @@ WriteShowMessageBox_Err:
 
 End Sub
 
-Public Function PrepareShowMessageBox(ByVal MessageId As Integer, ByVal Message As String)
+Public Function PrepareShowMessageBox(ByVal MessageId As Integer, Optional ByVal strExtra As String = vbNullString)
 
 10  On Error GoTo WriteShowMessageBox_Err
 20  Call Writer.WriteInt16(ServerPacketID.eShowMessageBox)
 30  Call Writer.WriteInt16(MessageId)
-40  Call Writer.WriteString8(Message)
+40  Call Writer.WriteString8(strExtra)
 50  Exit Function
 WriteShowMessageBox_Err:
 60  Call Writer.Clear
