@@ -760,7 +760,7 @@ Dim RS                          As ADODB.Recordset
 
 10  On Error GoTo ErrorHandler
 
-20  GetUserGuildMemberDatabase = New clsFastString
+20  Set GetUserGuildMemberDatabase = New clsFastString
 30  user_id = GetCharacterIdWithName(username)
 
 40  Set RS = Query("SELECT DISTINCT guild_name FROM guild_member_history where user_id = ? order by request_time DESC", user_id)

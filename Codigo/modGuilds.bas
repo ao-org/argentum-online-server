@@ -1169,6 +1169,8 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
 100     GI = UserList(UserIndex).GuildIndex
 102     Personaje = UCase$(Personaje)
 
+        If Len(Personaje) = 0 Then Exit Sub
+
         If Not PersonajeExiste(Personaje) Then
                 Call guilds(GI).ExpulsarMiembro(Personaje)
                 Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1945, vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG)) ' Msg1945=El personaje no existe y fue eliminado de la lista de miembros.
