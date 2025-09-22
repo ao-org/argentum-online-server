@@ -442,6 +442,7 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
         If NpcList(NpcIndex).pos.x = rumbo.x And NpcList(NpcIndex).pos.y = rumbo.y Then
             NpcList(NpcIndex).pathFindingInfo.PathLength = 0
             Call AnimacionIdle(NpcIndex, True)
+            Call NpcClearTargetUnreachable(NpcIndex)
             Exit Sub
         End If
 104     With NpcList(NpcIndex).pathFindingInfo
@@ -452,6 +453,7 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
 
                 ' Recalculamos el camino
 112             If SeekPath(NpcIndex, True) Then
+                    Call NpcClearTargetUnreachable(NpcIndex)
                     ' Si consiguo un camino
 114                 Call FollowPath(NpcIndex)
                 Else
@@ -459,11 +461,13 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
                     If NpcList(NpcIndex).Hostile = 1 And NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 Then
                         NpcList(NpcIndex).pathFindingInfo.RangoVision = Min(SvrConfig.GetValue("NPC_MAX_VISION_RANGE"), NpcList(NpcIndex).pathFindingInfo.RangoVision + PATH_VISION_DELTA)
                     End If
+                    Call NpcMarkTargetUnreachable(NpcIndex)
                         ' Si no hay camino, pasar a estado idle
                     Call AnimacionIdle(NpcIndex, True)
                 End If
             Else ' Avanzamos en el camino
-116             Call FollowPath(NpcIndex)
+116             Call NpcClearTargetUnreachable(NpcIndex)
+                Call FollowPath(NpcIndex)
             End If
 
         End With
@@ -1701,4 +1705,71 @@ Public Sub SetMovement(ByVal NpcIndex As Integer, ByVal NewMovement As e_TipoAI)
             Call SetBlockTileState(NpcIndex, False)
         End If
     End If
+End Sub
+
+Private Function HasOffensiveSpellCapability(ByVal AvailableSpellEffects As Long) As Boolean
+    HasOffensiveSpellCapability = _
+        IsSet(AvailableSpellEffects, e_SpellEffects.eDoDamage) Or _
+        IsSet(AvailableSpellEffects, e_SpellEffects.Paralize) Or _
+        IsSet(AvailableSpellEffects, e_SpellEffects.Immobilize)
+End Function
+
+Private Function NpcTryGetTargetPosition(ByVal NpcIndex As Integer, ByRef TargetPos As t_WorldPos) As Boolean
+    With NpcList(NpcIndex)
+        If IsValidUserRef(.TargetUser) Then
+            TargetPos = UserList(.TargetUser.ArrayIndex).pos
+            NpcTryGetTargetPosition = True
+        ElseIf IsValidNpcRef(.TargetNPC) Then
+            TargetPos = NpcList(.TargetNPC.ArrayIndex).Pos
+            NpcTryGetTargetPosition = True
+        End If
+    End With
+End Function
+
+Private Function NpcCanAttackFromCurrentPosition(ByVal NpcIndex As Integer, ByRef TargetPos As t_WorldPos) As Boolean
+    With NpcList(NpcIndex)
+        If .Pos.Map <> TargetPos.Map Then Exit Function
+        Dim distanceToTarget As Double
+        distanceToTarget = Distance(.Pos.X, .Pos.Y, TargetPos.X, TargetPos.Y)
+        If distanceToTarget <= .AttackRange Then
+            NpcCanAttackFromCurrentPosition = True
+            Exit Function
+        End If
+        If .flags.LanzaSpells <= 0 Then Exit Function
+        If distanceToTarget > .SpellRange Then Exit Function
+        Dim availableEffects As Long
+        availableEffects = GetAvailableSpellEffects(NpcIndex)
+        If HasOffensiveSpellCapability(availableEffects) Then
+            NpcCanAttackFromCurrentPosition = True
+        End If
+    End With
+End Function
+
+Public Sub NpcClearTargetUnreachable(ByVal NpcIndex As Integer)
+    With NpcList(NpcIndex)
+        If .pathFindingInfo.TargetUnreachable Then
+            .pathFindingInfo.TargetUnreachable = False
+            .Attackable = .pathFindingInfo.PreviousAttackable
+            .pathFindingInfo.PreviousAttackable = 0
+        End If
+    End With
+End Sub
+
+Public Sub NpcMarkTargetUnreachable(ByVal NpcIndex As Integer)
+    Dim targetPos As t_WorldPos
+    If Not NpcTryGetTargetPosition(NpcIndex, targetPos) Then
+        Call NpcClearTargetUnreachable(NpcIndex)
+        Exit Sub
+    End If
+    If NpcCanAttackFromCurrentPosition(NpcIndex, targetPos) Then
+        Call NpcClearTargetUnreachable(NpcIndex)
+        Exit Sub
+    End If
+    With NpcList(NpcIndex)
+        If Not .pathFindingInfo.TargetUnreachable Then
+            .pathFindingInfo.PreviousAttackable = .Attackable
+        End If
+        .pathFindingInfo.TargetUnreachable = True
+        .Attackable = 0
+    End With
 End Sub

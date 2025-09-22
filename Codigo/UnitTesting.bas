@@ -182,10 +182,127 @@ Function test_make_user_char() As Boolean
     test_make_user_char = True
 End Function
 
+Function test_npc_pathfinding_attackable_state() As Boolean
+    Dim npcIndex As Integer
+    Dim userIndex As Integer
+    Dim arrUpper As Long
+
+    npcIndex = 1
+    userIndex = 1
+
+    On Error Resume Next
+    arrUpper = UBound(NpcList)
+    If Err.Number <> 0 Then
+        Err.Clear
+        ReDim NpcList(1 To npcIndex)
+    ElseIf arrUpper < npcIndex Then
+        ReDim Preserve NpcList(1 To npcIndex)
+    End If
+
+    arrUpper = UBound(UserList)
+    If Err.Number <> 0 Then
+        Err.Clear
+        ReDim UserList(1 To userIndex)
+    ElseIf arrUpper < userIndex Then
+        ReDim Preserve UserList(1 To userIndex)
+    End If
+
+    arrUpper = UBound(Hechizos)
+    If Err.Number <> 0 Then
+        Err.Clear
+        ReDim Hechizos(1 To 1)
+    ElseIf arrUpper < 1 Then
+        ReDim Preserve Hechizos(1 To 1)
+    End If
+
+    arrUpper = UBound(MapData, 1)
+    If Err.Number <> 0 Then
+        Err.Clear
+        ReDim MapData(1 To 1, XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize)
+    End If
+    On Error GoTo 0
+
+    Call InitPathFinding
+    GlobalFrameTime = 0
+
+    Call SetUserRef(NpcList(npcIndex).TargetUser, 0)
+    Call ClearNpcRef(NpcList(npcIndex).TargetNPC)
+
+    With UserList(userIndex)
+        .Char.CharIndex = 1
+        .Pos.Map = 1
+        .Pos.X = 12
+        .Pos.Y = 10
+        .flags.Muerto = 0
+        .flags.Inmunidad = 0
+        .flags.invisible = 0
+        .flags.Oculto = 0
+    End With
+
+    With NpcList(npcIndex)
+        .Char.CharIndex = 1
+        .Hostile = 1
+        .Attackable = 1
+        .Pos.Map = 1
+        .Pos.X = 10
+        .Pos.Y = 10
+        .AttackRange = 1
+        .SpellRange = 5
+        .flags.LanzaSpells = 1
+        ReDim .Spells(1 To 1)
+        .Spells(1).SpellIndex = 1
+        .Spells(1).Cd = 0
+        .Spells(1).LastUse = -1000
+        ReDim .pathFindingInfo.Path(1 To MAX_PATH_LENGTH)
+        .pathFindingInfo.PathLength = 0
+        .pathFindingInfo.RangoVision = 1
+        .pathFindingInfo.OriginalVision = 1
+        .pathFindingInfo.TargetUnreachable = False
+        .pathFindingInfo.PreviousAttackable = 0
+    End With
+
+    Hechizos(1).Effects = e_SpellEffects.eDoDamage
+
+    MapData(1, 9, 10).NpcIndex = 0
+    MapData(1, 11, 10).NpcIndex = 0
+    MapData(1, 10, 9).NpcIndex = 0
+    MapData(1, 10, 11).NpcIndex = 0
+    MapData(1, 12, 10).UserIndex = 0
+
+    MapData(1, 9, 10).NpcIndex = 99
+    MapData(1, 11, 10).NpcIndex = 99
+    MapData(1, 10, 9).NpcIndex = 99
+    MapData(1, 10, 11).NpcIndex = 99
+    MapData(1, 12, 10).UserIndex = userIndex
+
+    Call SetUserRef(NpcList(npcIndex).TargetUser, userIndex)
+
+    With NpcList(npcIndex).pathFindingInfo
+        .destination.X = UserList(userIndex).Pos.X
+        .destination.Y = UserList(userIndex).Pos.Y
+    End With
+
+    Debug.Assert SeekPath(npcIndex, True) = False
+
+    Call NpcMarkTargetUnreachable(npcIndex)
+
+    Debug.Assert NpcList(npcIndex).Attackable = 1
+    Debug.Assert NpcList(npcIndex).pathFindingInfo.TargetUnreachable = False
+
+    MapData(1, 9, 10).NpcIndex = 0
+    MapData(1, 11, 10).NpcIndex = 0
+    MapData(1, 10, 9).NpcIndex = 0
+    MapData(1, 10, 11).NpcIndex = 0
+    MapData(1, 12, 10).UserIndex = 0
+
+    test_npc_pathfinding_attackable_state = True
+End Function
+
 Function test_suite() As Boolean
     Dim result As Boolean
     result = test_make_user_char()
     result = result And test_maths()
+    result = result And test_npc_pathfinding_attackable_state()
     test_suite = result
 End Function
 
