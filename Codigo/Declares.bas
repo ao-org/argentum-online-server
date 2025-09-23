@@ -1816,7 +1816,8 @@ Public Enum e_SpellEffects
     StealBuff = 262144
     eDoDamage = 524288
     AdjustStatsWithCaster = 1048576
-    CancelActiveEffect = 2097152
+    ToggleDivineBlood = 2097152
+    CancelActiveEffect = 4194304
 End Enum
 
 Public Enum e_TargetEffectType
@@ -2804,6 +2805,7 @@ Public Type t_UserFlags
     Meditando As Boolean
     Crafteando As Byte
     IsSlotFree As Boolean
+    DivineBlood As Boolean
 
     Descuento As String
     PuedeMoverse As Byte
