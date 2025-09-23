@@ -67,6 +67,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
           End If
           
 128     ElseIf IsSet(Hechizos(Spell).Effects, e_SpellEffects.eDoDamage) Then
+          UserList(UserIndex).Counters.EnCombate = IntervaloEnCombate
 130       Damage = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
           Damage = Damage * (1 + NpcList(NpcIndex).Stats.MagicBonus)
           ' Si el hechizo no ignora la RM
