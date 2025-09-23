@@ -29,7 +29,7 @@ Option Explicit
 
 'Constructor de queries.
 'Me permite concatenar strings MUCHO MAS rapido
-Private QueryBuilder            As clsFastString
+Private QueryBuilder            As cStringBuilder
 
 Public QUERY_LOAD_MAINPJ        As String
 
@@ -61,7 +61,7 @@ Dim LoopC                       As Long
 
 10  On Error GoTo ConstruirQuery_CargarPersonaje_Error
 
-20  Set QueryBuilder = New clsFastString
+20  Set QueryBuilder = New cStringBuilder
 
     ' ************************** Basic user data ********************************
 30  QueryBuilder.Append "SELECT "
@@ -159,7 +159,7 @@ End Sub
 Private Sub ConstruirQuery_CrearPersonaje()
 Dim LoopC                       As Long
 
-10  Set QueryBuilder = New clsFastString
+10  Set QueryBuilder = New cStringBuilder
 
     ' ************************** Basic user data ********************************
 20  QueryBuilder.Append "INSERT INTO user ("

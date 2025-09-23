@@ -51,7 +51,7 @@ Dim ConnectionID                As String
 
 130 Current_async = 1
 
-140 Set Builder = New clsFastString
+140 Set Builder = New cStringBuilder
 
    On Error GoTo 0
    Exit Sub
@@ -79,7 +79,7 @@ Dim ConnectionID                As String
 80  connection.CursorLocation = adUseClient
 90  connection.ConnectionString = ConnectionID
 
-100 Set Builder = New clsFastString
+100 Set Builder = New cStringBuilder
 
 110 Call connection.Open
 
@@ -751,7 +751,7 @@ ErrorHandler:
 102     Call LogDatabaseError("Error in GetUserGuildIndexDatabase: " & Err.Number & " - " & Err.Description)
 End Function
 
-Public Function GetUserGuildMemberDatabase(username As String) As clsFastString
+Public Function GetUserGuildMemberDatabase(username As String) As String
 
 Dim i                           As Integer
 Dim user_id                     As Long
@@ -760,32 +760,29 @@ Dim RS                          As ADODB.Recordset
 
 10  On Error GoTo ErrorHandler
 
-20  Set GetUserGuildMemberDatabase = New clsFastString
-30  user_id = GetCharacterIdWithName(username)
+20  user_id = GetCharacterIdWithName(username)
 
-40  Set RS = Query("SELECT DISTINCT guild_name FROM guild_member_history where user_id = ? order by request_time DESC", user_id)
-50  If RS Is Nothing Then Exit Function
+30  Set RS = Query("SELECT DISTINCT guild_name FROM guild_member_history where user_id = ? order by request_time DESC", user_id)
+40  If RS Is Nothing Then Exit Function
 
-60  If Not RS.RecordCount = 0 Then
+50  If Not RS.RecordCount = 0 Then
+60      i = 0
+70      While Not RS.EOF
+80          History = History & SanitizeNullValue(RS!guild_name, "")
+90          i = i + 1
+100         If i < RS.RecordCount Then
+110             History = History & ", "
+120         End If
+130         RS.MoveNext
+140     Wend
+150 End If
 
-70      i = 0
-80      While Not RS.EOF
-            'Utilizamos la nueva clase clsFastString que es mucho más rápida que cBuilder
-90          If i > 0 Then
-100             GetUserGuildMemberDatabase.Append ", " & RS!guild_name
-110         Else
-120             GetUserGuildMemberDatabase.Append RS!guild_name
-130         End If
+160 GetUserGuildMemberDatabase = History
 
-140         i = i + 1
-150         RS.MoveNext
-160     Wend
-170 End If
-
-180 Exit Function
+170 Exit Function
 
 ErrorHandler:
-190 Call LogDatabaseError("Error in GetUserGuildMemberDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+180 Call LogDatabaseError("Error in GetUserGuildMemberDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -802,7 +799,7 @@ ErrorHandler:
 
 End Function
 
-Public Function GetUserGuildPedidosDatabase(username As String) As clsFastString
+Public Function GetUserGuildPedidosDatabase(username As String) As String
 
 Dim i                           As Integer
 Dim History                     As String
@@ -813,34 +810,29 @@ Dim RS                          As ADODB.Recordset
 
 20  user_id = GetCharacterIdWithName(username)
 
-30  Set GetUserGuildPedidosDatabase = New clsFastString
+30  Set RS = Query("SELECT DISTINCT guild_name FROM guild_request_history where user_id = ? order by request_time DESC", user_id)
 
-40  Set RS = Query("SELECT DISTINCT guild_name FROM guild_request_history where user_id = ? order by request_time DESC", user_id)
+40  If RS Is Nothing Then Exit Function
 
-50  If RS Is Nothing Then Exit Function
+50  If Not RS.RecordCount = 0 Then
 
-60  If Not RS.RecordCount = 0 Then
+60      i = 0
+70      While Not RS.EOF
+80          History = History & SanitizeNullValue(RS!guild_name, "")
+90          i = i + 1
+100         If i < RS.RecordCount Then
+110             History = History & ", "
+120         End If
+130         RS.MoveNext
+140     Wend
+150 End If
 
-70      i = 0
-80      While Not RS.EOF
-            'Utilizamos la nueva clase clsFastString que es mucho más rápida que cBuilder
-90          If i > 0 Then
-100             GetUserGuildPedidosDatabase.Append ", " & RS!guild_name
-110         Else
-120             GetUserGuildPedidosDatabase.Append RS!guild_name
-130         End If
+160 GetUserGuildPedidosDatabase = History
 
-140         i = i + 1
-150         RS.MoveNext
-160     Wend
-170 End If
-
-    '160 GetUserGuildPedidosDatabase = History
-
-180 Exit Function
+170 Exit Function
 
 ErrorHandler:
-190 Call LogDatabaseError("Error in GetUserGuildPedidosDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+180 Call LogDatabaseError("Error in GetUserGuildPedidosDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -913,8 +905,8 @@ Dim RS                          As ADODB.Recordset
 50      Exit Sub
 60  End If
 
-70  GuildRequestHistory = GetUserGuildPedidosDatabase(username).ToString
-80  GuilldHistory = GetUserGuildMemberDatabase(username).ToString
+70  GuildRequestHistory = GetUserGuildPedidosDatabase(username)
+80  GuilldHistory = GetUserGuildMemberDatabase(username)
     ' Get the character's current guild
 90  GuildActual = SanitizeNullValue(RS!Guild_Index, 0)
 
