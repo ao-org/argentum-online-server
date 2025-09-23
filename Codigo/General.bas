@@ -1035,8 +1035,9 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
 100 With UserList(UserIndex)
 102     HambreOSed = .Stats.MinHam = 0 Or .Stats.MinAGU = 0
     
-104     If Not HambreOSed Then 'Si no tiene hambre ni sed
-106         If .Stats.MinHp < .Stats.MaxHp Then
+        'if hunger or thirst = 0 and not in combat
+104     If Not HambreOSed And .Counters.EnCombate = 0 Then
+106         If .Stats.MinHp < .Stats.MaxHp  Then
 108             Call Sanar(UserIndex, bEnviarStats_HP, IIf(.flags.Descansar, SanaIntervaloDescansar, SanaIntervaloSinDescansar))
             End If
         End If

@@ -702,6 +702,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
 112     NpcAtacaUser = True
 
 114     Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
+        UserList(UserIndex).Counters.EnCombate = IntervaloEnCombate
 
 116     If Not IsValidUserRef(NpcList(npcIndex).TargetUser) Then
             Call SetUserRef(NpcList(npcIndex).TargetUser, UserIndex)
