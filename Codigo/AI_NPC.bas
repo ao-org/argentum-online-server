@@ -433,58 +433,58 @@ AI_CaminarSinRumbo_Err:
 End Sub
 
 Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_WorldPos)
-     On Error GoTo AI_CaminarConRumbo_Err
+        On Error GoTo AI_CaminarConRumbo_Err
     
-     If NpcList(NpcIndex).TargetUser.ArrayIndex = 0 Then
-         Call NpcClearTargetUnreachable(NpcIndex)
-     End If
-    If Not NPCs.CanMove(NpcList(NpcIndex).Contadores, NpcList(NpcIndex).flags) Then
-        Call AnimacionIdle(NpcIndex, True)
-         Exit Sub
-     End If
-     If NpcList(NpcIndex).pos.x = rumbo.x And NpcList(NpcIndex).pos.y = rumbo.y Then
-         Call NpcClearTargetUnreachable(NpcIndex)
-         NpcList(NpcIndex).pathFindingInfo.PathLength = 0
-         Call AnimacionIdle(NpcIndex, True)
-         Exit Sub
-     End If
-    With NpcList(NpcIndex).pathFindingInfo
-         ' Si no tiene un camino calculado o si el destino cambio
-        If .PathLength = 0 Or .destination.x <> rumbo.x Or .destination.y <> rumbo.y Then
-            .destination.x = rumbo.x
-            .destination.y = rumbo.y
-
-             ' Recalculamos el camino
-            If SeekPath(NpcIndex, True) Then
-                 ' Si consiguo un camino
-                Call NpcClearTargetUnreachable(NpcIndex)
-                Call FollowPath(NpcIndex)
-             Else
-                 ' Cannot find path
-                 If NpcList(NpcIndex).Hostile = 1 And NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 Then
-                     NpcList(NpcIndex).pathFindingInfo.RangoVision = Min(SvrConfig.GetValue("NPC_MAX_VISION_RANGE"), NpcList(NpcIndex).pathFindingInfo.RangoVision + PATH_VISION_DELTA)
-                 End If
-
-                 If NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 And NpcList(NpcIndex).flags.LanzaSpells = 0 Then
-
-                     Call NpcMarkTargetUnreachable(NpcIndex)
-                 End If
-                     ' Si no hay camino, pasar a estado idle
-                 Call AnimacionIdle(NpcIndex, True)
-             End If
-         Else ' Avanzamos en el camino
+98      If NpcList(NpcIndex).TargetUser.ArrayIndex = 0 Then
+99          Call NpcClearTargetUnreachable(NpcIndex)
+        End If
+100     If Not NPCs.CanMove(NpcList(npcIndex).Contadores, NpcList(npcIndex).flags) Then
+102         Call AnimacionIdle(NpcIndex, True)
+            Exit Sub
+        End If
+        If NpcList(NpcIndex).pos.x = rumbo.x And NpcList(NpcIndex).pos.y = rumbo.y Then
             Call NpcClearTargetUnreachable(NpcIndex)
-            Call FollowPath(NpcIndex)
-         End If
+            NpcList(NpcIndex).pathFindingInfo.PathLength = 0
+            Call AnimacionIdle(NpcIndex, True)
+            Exit Sub
+        End If
+104     With NpcList(NpcIndex).pathFindingInfo
+            ' Si no tiene un camino calculado o si el destino cambio
+106         If .PathLength = 0 Or .destination.X <> rumbo.X Or .destination.Y <> rumbo.Y Then
+108             .destination.X = rumbo.X
+110             .destination.Y = rumbo.Y
 
-     End With
+                ' Recalculamos el camino
+112             If SeekPath(NpcIndex, True) Then
+                    ' Si consiguo un camino
+114                 Call NpcClearTargetUnreachable(NpcIndex)
+115                 Call FollowPath(NpcIndex)
+                Else
+                    ' Cannot find path
+                    If NpcList(NpcIndex).Hostile = 1 And NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 Then
+                        NpcList(NpcIndex).pathFindingInfo.RangoVision = Min(SvrConfig.GetValue("NPC_MAX_VISION_RANGE"), NpcList(NpcIndex).pathFindingInfo.RangoVision + PATH_VISION_DELTA)
+                    End If
 
-     Exit Sub
+                    If NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 And NpcList(NpcIndex).flags.LanzaSpells = 0 Then
+
+                        Call NpcMarkTargetUnreachable(NpcIndex)
+                    End If
+                        ' Si no hay camino, pasar a estado idle
+                    Call AnimacionIdle(NpcIndex, True)
+                End If
+            Else ' Avanzamos en el camino
+116             Call NpcClearTargetUnreachable(NpcIndex)
+118             Call FollowPath(NpcIndex)
+            End If
+
+        End With
+
+        Exit Sub
 
 AI_CaminarConRumbo_Err:
-     Dim errorDescription As String
-     errorDescription = Err.Description & vbNewLine & " NpcIndex: " & NpcIndex & " NPCList.size= " & UBound(NpcList)
-     Call TraceError(Err.Number, errorDescription, "AI.AI_CaminarConRumbo", Erl)
+        Dim errorDescription As String
+        errorDescription = Err.Description & vbNewLine & " NpcIndex: " & NpcIndex & " NPCList.size= " & UBound(NpcList)
+        Call TraceError(Err.Number, errorDescription, "AI.AI_CaminarConRumbo", Erl)
 
 End Sub
 
