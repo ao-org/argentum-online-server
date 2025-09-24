@@ -269,6 +269,8 @@ Public MapasInterdimensionales() As Integer
 
 Public MapasEventos() As Integer
 
+Public MapasNoDrop() As Integer
+
 Public Enum e_Minerales
     Coal = 3391
     HierroCrudo = 192

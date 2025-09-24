@@ -1231,15 +1231,17 @@ WriteShowMessageBox_Err:
 
 End Sub
 
+Public Function PrepareShowMessageBox(ByVal MessageId As Integer, Optional ByVal strExtra As String = vbNullString)
 
-Public Function PrepareShowMessageBox(ByVal Message As String)
-        On Error GoTo WriteShowMessageBox_Err
-100     Call Writer.WriteInt16(ServerPacketID.eShowMessageBox)
-102     Call Writer.WriteString8(Message)
-        Exit Function
+10  On Error GoTo WriteShowMessageBox_Err
+20  Call Writer.WriteInt16(ServerPacketID.eShowMessageBox)
+30  Call Writer.WriteInt16(MessageId)
+40  Call Writer.WriteString8(strExtra)
+50  Exit Function
 WriteShowMessageBox_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowMessageBox", Erl)
+60  Call Writer.Clear
+70  Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowMessageBox", Erl)
+
 End Function
 
 Public Sub WriteMostrarCuenta(ByVal UserIndex As Integer)
