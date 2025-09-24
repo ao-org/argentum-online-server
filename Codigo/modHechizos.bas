@@ -67,7 +67,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
           End If
           
 128     ElseIf IsSet(Hechizos(Spell).Effects, e_SpellEffects.eDoDamage) Then
-          UserList(UserIndex).Counters.EnCombate = IntervaloEnCombate
+          .Counters.EnCombate = IntervaloEnCombate
 130       Damage = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
           Damage = Damage * (1 + NpcList(NpcIndex).Stats.MagicBonus)
           ' Si el hechizo no ignora la RM
@@ -86,12 +86,12 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 158       Call WriteLocaleMsg(UserIndex, 1627, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr) 'Msg1627=¬1 te ha quitado ¬2 puntos de vida.
 
 162       Call SubirSkill(UserIndex, Resistencia)
-          If NpcList(npcIndex).Char.CastAnimation > 0 Then Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageCharAtaca(NpcList(npcIndex).Char.charindex, UserList(UserIndex).Char.charindex, DamageStr, NpcList(npcIndex).Char.CastAnimation))
+          If NpcList(npcIndex).Char.CastAnimation > 0 Then Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageCharAtaca(NpcList(npcIndex).Char.charindex, .Char.charindex, DamageStr, NpcList(npcIndex).Char.CastAnimation))
         End If
         If IsAlive Then
             Dim Effect As IBaseEffectOverTime
             If Hechizos(Spell).EotId > 0 Then
-                Set Effect = FindEffectOnTarget(npcIndex, UserList(UserIndex).EffectOverTime, Hechizos(Spell).EotId)
+                Set Effect = FindEffectOnTarget(npcIndex, .EffectOverTime, Hechizos(Spell).EotId)
                 If Effect Is Nothing Then
                     Call CreateEffect(npcIndex, eNpc, UserIndex, eUser, Hechizos(Spell).EotId)
                 Else
@@ -136,7 +136,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         End If
         If IsSet(Hechizos(Spell).Effects, e_SpellEffects.RemoveDebuff) Then
             Dim NegativeEffect As IBaseEffectOverTime
-            Set NegativeEffect = EffectsOverTime.FindEffectOfTypeOnTarget(UserList(UserIndex).EffectOverTime, eDebuff)
+            Set NegativeEffect = EffectsOverTime.FindEffectOfTypeOnTarget(.EffectOverTime, eDebuff)
             If Not NegativeEffect Is Nothing Then
                 NegativeEffect.RemoveMe = True
                 Exit Sub
@@ -144,7 +144,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         End If
         If IsSet(Hechizos(Spell).Effects, e_SpellEffects.StealBuff) Then
             Dim TargetBuff As IBaseEffectOverTime
-            Set TargetBuff = EffectsOverTime.FindEffectOfTypeOnTarget(UserList(UserIndex).EffectOverTime, eBuff)
+            Set TargetBuff = EffectsOverTime.FindEffectOfTypeOnTarget(.EffectOverTime, eBuff)
             If Not TargetBuff Is Nothing Then
                 Call EffectsOverTime.ChangeOwner(UserIndex, eUser, NpcIndex, eNpc, TargetBuff)
             End If
