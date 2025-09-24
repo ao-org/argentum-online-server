@@ -478,6 +478,9 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
         
     With (NpcList(NpcIndex))
 100     .Attackable = 0
+        .pathFindingInfo.TargetUnreachable = False
+        .pathFindingInfo.PreviousAttackable = 0
+        .pathFindingInfo.PathLength = 0
 102     .Comercia = 0
 104     .GiveEXP = 0
 106     .GiveEXPClan = 0
@@ -1557,6 +1560,8 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
             '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< PATHFINDING >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             .pathFindingInfo.RangoVision = val(Leer.GetValue("NPC" & NpcNumber, "Distancia", RANGO_VISION_X))
             .pathFindingInfo.OriginalVision = .pathFindingInfo.RangoVision
+            .pathFindingInfo.TargetUnreachable = False
+            .pathFindingInfo.PreviousAttackable = .Attackable
             ReDim .pathFindingInfo.Path(1 To MAX_PATH_LENGTH)
     
             '<<<<<<<<<<<<<< Sistema de Viajes NUEVO >>>>>>>>>>>>>>>>
@@ -2044,7 +2049,7 @@ UserCanAttackNpc.TurnPK = False
      End If
      
      'Es una criatura atacable?
-128  If NpcList(NpcIndex).Attackable = 0 Then
+128  If NpcList(NpcIndex).Attackable = 0 Or NpcList(NpcIndex).pathFindingInfo.TargetUnreachable Then
 132     UserCanAttackNpc.Result = eInmuneNpc
         Exit Function
      End If
