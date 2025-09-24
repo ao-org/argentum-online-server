@@ -242,6 +242,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 482                                 If MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount <= 0 Then
 484                                     ' Msg598=Este yacimiento no tiene más minerales para entregar.
                                         Call WriteLocaleMsg(UserIndex, "598", e_FontTypeNames.FONTTYPE_INFO)
+                                        Call SendResourceTileStateToUser(UserIndex, .Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y)
 486                                     Call WriteWorkRequestTarget(UserIndex, 0)
 488                                     Call WriteMacroTrabajoToggle(UserIndex, False)
                                         Exit Sub
@@ -314,6 +315,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 380                             If MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount <= 0 Then
 382                                 ' Msg603=El árbol ya no te puede entregar más leña.
                                     Call WriteLocaleMsg(UserIndex, "603", e_FontTypeNames.FONTTYPE_INFO)
+                                    Call SendResourceTileStateToUser(UserIndex, .Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y)
 384                                 Call WriteWorkRequestTarget(UserIndex, 0)
 386                                 Call WriteMacroTrabajoToggle(UserIndex, False)
                                     Exit Sub
@@ -2282,6 +2284,8 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
 
                 Dim objValue As Integer
 
+                Dim previousAmount As Long
+
                 If IsFeatureEnabled("gain_exp_while_working") Then
                         Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Fisherman)
                         Call WriteUpdateExp(UserIndex)
@@ -2325,7 +2329,9 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
                     End If
 
                     ' Resto los recursos que saqué
+                    previousAmount = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount
                     MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount - MiObj.amount
+                    Call NotifyResourceAmountChange(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y, previousAmount)
 
                 End If
 
@@ -2417,6 +2423,31 @@ Public Sub DoPescar(ByVal UserIndex As Integer, _
         Exit Sub
 ErrHandler:
 192     Call LogError("Error en DoPescar. Error " & Err.Number & " - " & Err.Description & " Line number: " & Erl)
+
+End Sub
+
+Private Sub SendResourceTileStateToUser(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+
+        On Error GoTo SendResourceTileStateToUser_Err
+
+        Dim objIndex As Integer
+        Dim maxAmount As Long
+
+        If UserIndex < LBound(UserList) Or UserIndex > UBound(UserList) Then Exit Sub
+        If Not UserList(UserIndex).ConnectionDetails.ConnIDValida Then Exit Sub
+        If Not MapaValido(Map) Then Exit Sub
+
+        With MapData(Map, X, Y).ObjInfo
+            objIndex = .ObjIndex
+            If objIndex < LBound(ObjData) Or objIndex > UBound(ObjData) Then Exit Sub
+
+            maxAmount = ObjData(objIndex).VidaUtil
+            Call Protocol_Writes.WriteResourceTileState(UserIndex, Map, X, Y, objIndex, .amount, maxAmount)
+        End With
+
+        Exit Sub
+SendResourceTileStateToUser_Err:
+        Call TraceError(Err.Number, Err.Description, "Trabajo.SendResourceTileStateToUser", Erl)
 
 End Sub
 
@@ -2854,6 +2885,7 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
         Dim Suerte As Integer
 
         Dim res    As Integer
+        Dim previousAmount As Long
 
 100     With UserList(UserIndex)
 
@@ -2895,12 +2927,14 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
                 ' End If
 128             MiObj.amount = Round(MiObj.amount * 2.5 * SvrConfig.GetValue("RecoleccionMult"))
 130             MiObj.ObjIndex = Raices
+                previousAmount = MapData(.Pos.Map, X, Y).ObjInfo.amount
 132             MapData(.Pos.Map, X, Y).ObjInfo.amount = MapData(.Pos.Map, X, Y).ObjInfo.amount - MiObj.amount
 
 134             If MapData(.Pos.Map, X, Y).ObjInfo.amount < 0 Then
 136                 MapData(.Pos.Map, X, Y).ObjInfo.amount = 0
 
                 End If
+                Call NotifyResourceAmountChange(.Pos.Map, X, Y, previousAmount)
 
 140             If Not MeterItemEnInventario(UserIndex, MiObj) Then
 142                 Call TirarItemAlPiso(.Pos, MiObj)
@@ -2942,6 +2976,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, _
         Dim Suerte As Integer
 
         Dim res    As Integer
+        Dim previousAmount As Long
 
 100     With UserList(UserIndex)
 
@@ -3008,7 +3043,9 @@ Public Sub DoTalar(ByVal UserIndex As Integer, _
 
                 End If
 
+                previousAmount = MapData(.Pos.Map, X, Y).ObjInfo.amount
 138             MapData(.Pos.Map, X, Y).ObjInfo.amount = MapData(.Pos.Map, X, Y).ObjInfo.amount - MiObj.amount
+                Call NotifyResourceAmountChange(.Pos.Map, X, Y, previousAmount)
                 ' AGREGAR FX
                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
 
@@ -3081,6 +3118,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, _
         Dim Metal      As Integer
 
         Dim Yacimiento As t_ObjData
+        Dim previousAmount As Long
 
 100     With UserList(UserIndex)
 
@@ -3141,8 +3179,10 @@ Public Sub DoMineria(ByVal UserIndex As Integer, _
 
                 End If
 
+                previousAmount = MapData(.Pos.Map, X, Y).ObjInfo.amount
 136             MapData(.Pos.Map, X, Y).ObjInfo.amount = MapData(.Pos.Map, X, Y).ObjInfo.amount - MiObj.amount
 
+                Call NotifyResourceAmountChange(.Pos.Map, X, Y, previousAmount)
 138             If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
                 ' AGREGAR FX
                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
@@ -3368,6 +3408,37 @@ DoMontar_Err:
 
 End Sub
 
+Private Sub NotifyResourceAmountChange(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal PreviousAmount As Long)
+
+        On Error GoTo NotifyResourceAmountChange_Err
+
+        Dim wasDepleted As Boolean
+        Dim isDepleted As Boolean
+        Dim objIndex As Integer
+        Dim maxAmount As Long
+
+        If Not MapaValido(Map) Then Exit Sub
+
+        With MapData(Map, X, Y).ObjInfo
+            objIndex = .ObjIndex
+            If objIndex < LBound(ObjData) Or objIndex > UBound(ObjData) Then Exit Sub
+
+            wasDepleted = (PreviousAmount <= 0)
+            isDepleted = (.amount <= 0)
+
+            If wasDepleted <> isDepleted Then
+                maxAmount = ObjData(objIndex).VidaUtil
+                Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageResourceTileState(Map, X, Y, objIndex, .amount, maxAmount))
+                Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(objIndex, .amount, X, Y, .ElementalTags))
+            End If
+        End With
+
+        Exit Sub
+NotifyResourceAmountChange_Err:
+        Call TraceError(Err.Number, Err.Description, "Trabajo.NotifyResourceAmountChange", Erl)
+
+End Sub
+
 Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
 
         On Error GoTo ActualizarRecurso_Err
@@ -3380,11 +3451,18 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal X As Integer, ByVal Y A
 
 102     TiempoActual = GetTickCount()
 
+        Dim previousAmount As Long
+
+        previousAmount = MapData(Map, X, Y).ObjInfo.amount
+
         ' Data = Ultimo uso
 104     If (TiempoActual - MapData(Map, X, Y).ObjInfo.Data) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then
 106         MapData(Map, X, Y).ObjInfo.amount = ObjData(ObjIndex).VidaUtil
 108         MapData(Map, X, Y).ObjInfo.Data = &H7FFFFFFF   ' Ultimo uso = Max Long
 
+            If MapData(Map, X, Y).ObjInfo.amount <> previousAmount Then
+                Call NotifyResourceAmountChange(Map, X, Y, previousAmount)
+            End If
         End If
 
         Exit Sub

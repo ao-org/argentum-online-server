@@ -1462,6 +1462,26 @@ WriteObjectCreate_Err:
         
 End Sub
 
+Public Sub WriteResourceTileState(ByVal UserIndex As Integer, _
+                                  ByVal Map As Integer, _
+                                  ByVal X As Integer, _
+                                  ByVal Y As Integer, _
+                                  ByVal ObjIndex As Integer, _
+                                  ByVal amount As Long, _
+                                  ByVal MaxAmount As Long)
+
+        On Error GoTo WriteResourceTileState_Err
+
+100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageResourceTileState(Map, X, Y, ObjIndex, amount, MaxAmount))
+
+        Exit Sub
+
+WriteResourceTileState_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteResourceTileState", Erl)
+
+End Sub
+
 Public Sub WriteUpdateTrapState(ByVal UserIndex As Integer, State As Integer, ByVal x As Integer, ByVal y As Integer)
 On Error GoTo WriteUpdateTrapState_Err
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareTrapUpdate(State, x, y))
@@ -5263,6 +5283,30 @@ PrepareMessageObjectCreate_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageObjectCreate", Erl)
         
+End Function
+
+Public Function PrepareMessageResourceTileState(ByVal Map As Integer, _
+                                                 ByVal X As Integer, _
+                                                 ByVal Y As Integer, _
+                                                 ByVal ObjIndex As Integer, _
+                                                 ByVal amount As Long, _
+                                                 ByVal MaxAmount As Long)
+        On Error GoTo PrepareMessageResourceTileState_Err
+
+100     Call Writer.WriteInt16(ServerPacketID.eResourceTileState)
+102     Call Writer.WriteInt16(Map)
+104     Call Writer.WriteInt8(X)
+106     Call Writer.WriteInt8(Y)
+108     Call Writer.WriteInt16(ObjIndex)
+110     Call Writer.WriteInt32(amount)
+112     Call Writer.WriteInt32(MaxAmount)
+
+        Exit Function
+
+PrepareMessageResourceTileState_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageResourceTileState", Erl)
+
 End Function
 
 Public Function PrepareMessageFxPiso(ByVal GrhIndex As Integer, _

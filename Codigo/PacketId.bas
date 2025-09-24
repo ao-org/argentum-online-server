@@ -199,6 +199,7 @@ Public Enum ServerPacketID
     eShopPjsInit
     eDebugDataResponse
     eCreateProjectile
+    eResourceTileState      ' Update gatherable resource tiles
     eUpdateTrap
     eUpdateGroupInfo
     eUpdateCharValue 'updates some char index value based on enum
