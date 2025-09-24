@@ -435,8 +435,8 @@ End Sub
 Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_WorldPos)
         On Error GoTo AI_CaminarConRumbo_Err
     
-98      If NpcList(NpcIndex).TargetUser.ArrayIndex = 0 Then
-99          Call NpcClearTargetUnreachable(NpcIndex)
+        If NpcList(NpcIndex).TargetUser.ArrayIndex = 0 Then
+            Call NpcClearTargetUnreachable(NpcIndex)
         End If
 100     If Not NPCs.CanMove(NpcList(npcIndex).Contadores, NpcList(npcIndex).flags) Then
 102         Call AnimacionIdle(NpcIndex, True)
@@ -457,8 +457,8 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
                 ' Recalculamos el camino
 112             If SeekPath(NpcIndex, True) Then
                     ' Si consiguo un camino
-114                 Call NpcClearTargetUnreachable(NpcIndex)
-115                 Call FollowPath(NpcIndex)
+                    Call NpcClearTargetUnreachable(NpcIndex)
+                    Call FollowPath(NpcIndex)
                 Else
                     ' Cannot find path
                     If NpcList(NpcIndex).Hostile = 1 And NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 Then
