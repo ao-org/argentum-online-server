@@ -1255,16 +1255,8 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
         
         On Error GoTo HandleHechizoTerreno_Err
         
-
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 01/10/07
-        'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
-        'Antes de procesar cualquier hechizo chequea de que este en modo de combate el
-        'usuario
-        '***************************************************
         Dim b As Boolean
-
+        With UserList(UserIndex)
 100     Select Case Hechizos(uh).Tipo
         
             Case e_TipoHechizo.uInvocacion 'Tipo 1
@@ -1284,9 +1276,9 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
 
             Case e_TipoHechizo.uMultiShoot
                 Dim targetPos As t_WorldPos
-                targetPos.map = UserList(UserIndex).pos.map
-                targetPos.x = UserList(UserIndex).flags.targetX
-                targetPos.y = UserList(UserIndex).flags.targetY
+                targetPos.map = .pos.map
+                targetPos.x = .flags.targetX
+                targetPos.y = .flags.targetY
                 b = MultiShot(UserIndex, targetPos)
         End Select
 
@@ -1295,18 +1287,18 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
 126             Call SubirSkill(UserIndex, Magia)
             End If
             
-            UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
+            .Stats.MinMAN = .Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
             
-130         If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
-132         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
+130         If .Stats.MinMAN < 0 Then .Stats.MinMAN = 0
+132         .Stats.MinSta = .Stats.MinSta - Hechizos(uh).StaRequerido
 
-134         If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
+134         If .Stats.MinSta < 0 Then .Stats.MinSta = 0
 136         Call WriteUpdateMana(UserIndex)
 138         Call WriteUpdateSta(UserIndex)
 
         End If
 
-        
+        End With
         Exit Sub
 
 HandleHechizoTerreno_Err:
@@ -1315,43 +1307,45 @@ End Sub
 
 Function HandlePetSpell(ByVal UserIndex As Integer, ByVal uh As Integer) As Boolean
     With UserList(UserIndex)
-        If .NroMascotas = 0 Then
-            Exit Function
-        End If
-        If Hechizos(uh).EotId = 0 Then
-            Exit Function
-        End If
-    
-    Dim j As Integer
-    For j = 1 To MAXMASCOTAS
-        If IsValidNpcRef(.MascotasIndex(j)) Then
-            Dim Effect As IBaseEffectOverTime
-            Set Effect = FindEffectOnTarget(UserIndex, NpcList(.MascotasIndex(j).ArrayIndex).EffectOverTime, Hechizos(uh).EotId)
-            If Not Effect Is Nothing Then
-                If Not EffectOverTime(Hechizos(uh).EotId).Override Then
-                    Exit For
+            If .NroMascotas = 0 Then
+                Exit Function
+            End If
+            If Hechizos(uh).EotId = 0 Then
+                Exit Function
+            End If
+        
+        Dim j As Integer
+        For j = 1 To MAXMASCOTAS
+            If IsValidNpcRef(.MascotasIndex(j)) Then
+                Dim Effect As IBaseEffectOverTime
+                Set Effect = FindEffectOnTarget(UserIndex, NpcList(.MascotasIndex(j).ArrayIndex).EffectOverTime, Hechizos(uh).EotId)
+                If Not Effect Is Nothing Then
+                    If Not EffectOverTime(Hechizos(uh).EotId).Override Then
+                        Exit For
+                    End If
+                End If
+                If Effect Is Nothing Then
+                    Call CreateEffect(UserIndex, eUser, .MascotasIndex(j).ArrayIndex, eNpc, Hechizos(uh).EotId)
+                Else
+                    If Not Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId) Then
+                        Exit For
+                    End If
                 End If
             End If
-            If Effect Is Nothing Then
-                Call CreateEffect(UserIndex, eUser, .MascotasIndex(j).ArrayIndex, eNpc, Hechizos(uh).EotId)
-            Else
-                If Not Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId) Then
-                    Exit For
-                End If
-            End If
+        Next j
+        If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
+            Call SubirSkill(UserIndex, Magia)
         End If
-    Next j
+        .Stats.MinMAN = .Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
+        If .Stats.MinMAN < 0 Then .Stats.MinMAN = 0
+        .Stats.MinSta = .Stats.MinSta - Hechizos(uh).StaRequerido
+        If .Stats.MinSta < 0 Then .Stats.MinSta = 0
+        Call WriteUpdateMana(UserIndex)
+        Call WriteUpdateSta(UserIndex)
+        HandlePetSpell = True
     End With
-    If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
-        Call SubirSkill(UserIndex, Magia)
-    End If
-    UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
-    If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
-    UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
-    If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
-    Call WriteUpdateMana(UserIndex)
-    Call WriteUpdateSta(UserIndex)
-    HandlePetSpell = True
+
+
 End Function
 
 Function HandlePhysicalSkill(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
@@ -1428,22 +1422,14 @@ Function HandlePhysicalSkill(ByVal SourceIndex As Integer, ByVal SourceType As e
 End Function
 
 Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 01/10/07
-        'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
-        'Antes de procesar cualquier hechizo chequea de que este en modo de combate el
-        'usuario
-        '***************************************************
-        
         On Error GoTo HandleHechizoUsuario_Err
-        
         Dim IsAlive As Boolean
         IsAlive = True
         Dim b As Boolean
         Dim Effect As IBaseEffectOverTime
-        If Hechizos(uh).EotId > 0 And IsValidUserRef(UserList(UserIndex).flags.targetUser) Then
-            Set Effect = FindEffectOnTarget(UserIndex, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).EffectOverTime, Hechizos(uh).EotId)
+        With UserList(UserIndex)
+        If Hechizos(uh).EotId > 0 And IsValidUserRef(.flags.targetUser) Then
+            Set Effect = FindEffectOnTarget(UserIndex, UserList(.flags.targetUser.ArrayIndex).EffectOverTime, Hechizos(uh).EotId)
             If Not Effect Is Nothing Then
                 If Not EffectOverTime(Hechizos(uh).EotId).Override Then
                     Call WriteLocaleMsg(UserIndex, MsgTargetAlreadyAffected, e_FontTypeNames.FONTTYPE_INFO)
@@ -1462,14 +1448,14 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 108         Case e_TipoHechizo.uCombinados
 110             Call HechizoCombinados(UserIndex, b, IsAlive)
             Case e_TipoHechizo.uPhysicalSkill
-                b = HandlePhysicalSkill(UserIndex, eUser, UserList(UserIndex).flags.targetUser.ArrayIndex, eUser, _
-                                        UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo), IsAlive)
+                b = HandlePhysicalSkill(UserIndex, eUser, .flags.targetUser.ArrayIndex, eUser, _
+                                        .Stats.UserHechizos(.flags.Hechizo), IsAlive)
         End Select
 
 112     If b Then
             If Hechizos(uh).EotId > 0 And IsAlive Then
                 If Effect Is Nothing Then
-                    Call CreateEffect(UserIndex, eUser, UserList(UserIndex).flags.targetUser.ArrayIndex, eUser, Hechizos(uh).EotId)
+                    Call CreateEffect(UserIndex, eUser, .flags.targetUser.ArrayIndex, eUser, Hechizos(uh).EotId)
                 Else
                     If Not Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId) Then
                         Exit Sub
@@ -1480,23 +1466,23 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 114             Call SubirSkill(UserIndex, Magia)
             End If
 
-116         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
+116         .Stats.MinMAN = .Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
            
-118         If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
+118         If .Stats.MinMAN < 0 Then .Stats.MinMAN = 0
 
 120         If Hechizos(uh).RequiredHP > 0 Then
                 Call UserMod.ModifyHealth(UserIndex, -Hechizos(uh).RequiredHP, 1)
             End If
 
-128         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
-130         If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
+128         .Stats.MinSta = .Stats.MinSta - Hechizos(uh).StaRequerido
+130         If .Stats.MinSta < 0 Then .Stats.MinSta = 0
 
             If IsSet(Hechizos(uh).Effects, e_SpellEffects.Resurrect) Then
             
-                If Not PeleaSegura(UserIndex, UserList(UserIndex).flags.targetUser.ArrayIndex) Then
-                    If MapInfo(UserList(UserIndex).Pos.map).Seguro = 0 Then
+                If Not PeleaSegura(UserIndex, .flags.targetUser.ArrayIndex) Then
+                    If MapInfo(.Pos.map).Seguro = 0 Then
                         Dim costoVidaResu As Long
-                        costoVidaResu = UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Stats.ELV * 1.5 + UserList(UserIndex).Stats.MinHp * 0.45
+                        costoVidaResu = UserList(.flags.targetUser.ArrayIndex).Stats.ELV * 1.5 + .Stats.MinHp * 0.45
                         Call UserMod.ModifyHealth(UserIndex, -costoVidaResu, 1)
                     End If
                 End If
@@ -1507,6 +1493,7 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
             Call WriteUpdateHP(UserIndex)
 134         Call WriteUpdateSta(UserIndex)
         End If
+        End With
         Exit Sub
 HandleHechizoUsuario_Err:
 138     Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoUsuario", Erl)
@@ -1545,68 +1532,61 @@ End Function
 Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
         
         On Error GoTo HandleHechizoNPC_Err
-        
-
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 01/10/07
-        'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
-        'Antes de procesar cualquier hechizo chequea de que este en modo de combate el
-        'usuario
-        '***************************************************
         Dim b As Boolean
         Dim Effect As IBaseEffectOverTime
         Dim IsAlive As Boolean
-        IsAlive = True
-        If Hechizos(uh).EotId > 0 And IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-            Set Effect = FindEffectOnTarget(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).EffectOverTime, Hechizos(uh).EotId)
-            If Not Effect Is Nothing Then
-                If Not EffectOverTime(Hechizos(uh).EotId).Override Then
-                    Call WriteLocaleMsg(UserIndex, MsgTargetAlreadyAffected, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-            End If
-        End If
-        Call AllMascotasAtacanNPC(UserList(UserIndex).flags.TargetNPC.ArrayIndex, UserIndex)
-100     Select Case Hechizos(uh).Tipo
-            Case e_TipoHechizo.uEstado ' Afectan estados (por ejem : Envenenamiento)
-102             Call HechizoEstadoNPC(UserList(UserIndex).flags.TargetNPC.ArrayIndex, uh, b, UserIndex)
+        With UserList(UserIndex)
 
-104         Case e_TipoHechizo.uPropiedades ' Afectan HP,MANA,STAMINA,ETC
-106             Call HechizoPropNPC(uh, UserList(UserIndex).flags.TargetNPC.ArrayIndex, UserIndex, b, IsAlive)
-            Case e_TipoHechizo.uPhysicalSkill
-                b = HandlePhysicalSkill(UserIndex, eUser, UserList(UserIndex).flags.TargetNPC.ArrayIndex, eNpc, _
-                                        UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo), IsAlive)
-        End Select
-
-108     If b Then
-            If Hechizos(uh).EotId > 0 And IsAlive Then
-                If Effect Is Nothing Then
-                    Call CreateEffect(UserIndex, eUser, UserList(UserIndex).flags.TargetNPC.ArrayIndex, eNpc, Hechizos(uh).EotId)
-                Else
-                    If Not Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId) Then
+            IsAlive = True
+            If Hechizos(uh).EotId > 0 And IsValidNpcRef(.flags.TargetNPC) Then
+                Set Effect = FindEffectOnTarget(UserIndex, NpcList(.flags.TargetNPC.ArrayIndex).EffectOverTime, Hechizos(uh).EotId)
+                If Not Effect Is Nothing Then
+                    If Not EffectOverTime(Hechizos(uh).EotId).Override Then
+                        Call WriteLocaleMsg(UserIndex, MsgTargetAlreadyAffected, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 End If
             End If
-            If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
-110             Call SubirSkill(UserIndex, Magia)
+            Call AllMascotasAtacanNPC(.flags.TargetNPC.ArrayIndex, UserIndex)
+    100     Select Case Hechizos(uh).Tipo
+                Case e_TipoHechizo.uEstado ' Afectan estados (por ejem : Envenenamiento)
+    102             Call HechizoEstadoNPC(.flags.TargetNPC.ArrayIndex, uh, b, UserIndex)
+
+    104         Case e_TipoHechizo.uPropiedades ' Afectan HP,MANA,STAMINA,ETC
+    106             Call HechizoPropNPC(uh, .flags.TargetNPC.ArrayIndex, UserIndex, b, IsAlive)
+                Case e_TipoHechizo.uPhysicalSkill
+                    b = HandlePhysicalSkill(UserIndex, eUser, .flags.TargetNPC.ArrayIndex, eNpc, _
+                                            .Stats.UserHechizos(.flags.Hechizo), IsAlive)
+            End Select
+
+    108     If b Then
+                If Hechizos(uh).EotId > 0 And IsAlive Then
+                    If Effect Is Nothing Then
+                        Call CreateEffect(UserIndex, eUser, .flags.TargetNPC.ArrayIndex, eNpc, Hechizos(uh).EotId)
+                    Else
+                        If Not Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId) Then
+                            Exit Sub
+                        End If
+                    End If
+                End If
+                If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
+    110             Call SubirSkill(UserIndex, Magia)
+                End If
+                .Stats.MinMAN = .Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
+            
+    116         If Hechizos(uh).RequiredHP > 0 Then
+    118             If .Stats.MinMAN < 0 Then .Stats.MinMAN = 0
+    120             Call UserMod.ModifyHealth(UserIndex, -Hechizos(uh).RequiredHP, 1)
+                End If
+
+    126         .Stats.MinSta = .Stats.MinSta - Hechizos(uh).StaRequerido
+
+    128         If .Stats.MinSta < 0 Then .Stats.MinSta = 0
+    130         Call WriteUpdateMana(UserIndex)
+    132         Call WriteUpdateSta(UserIndex)
+
             End If
-            UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
-        
-116         If Hechizos(uh).RequiredHP > 0 Then
-118             If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
-120             Call UserMod.ModifyHealth(UserIndex, -Hechizos(uh).RequiredHP, 1)
-            End If
-
-126         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
-
-128         If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
-130         Call WriteUpdateMana(UserIndex)
-132         Call WriteUpdateSta(UserIndex)
-
-        End If
-
+        End With
         
         Exit Sub
 
