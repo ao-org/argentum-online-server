@@ -2391,8 +2391,15 @@ Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
             If CInt(UserList(Atacante).Stats.ELV) - CInt(UserList(Muerto).Stats.ELV) > 10 Then Exit Sub
             Dim AttackerStatus As e_Facciones
             AttackerStatus = Status(Atacante)
+            
 106         If Status(Muerto) = e_Facciones.Criminal Or Status(Muerto) = e_Facciones.Caos Or Status(Muerto) = e_Facciones.concilio Then
-108             If Not AlreadyKilledBy(Muerto, Atacante) Then
+108
+                'Si es un enfrentamiento entre Concilio–Caos penaliza siempre
+                If AreLegionsOrCouncils(Atacante, Muerto) Then
+                    Call PenalizeFactionScoreLegionAndCouncil(Atacante, Muerto)
+                End If
+                
+                If Not AlreadyKilledBy(Muerto, Atacante) Then
 110                 Call RegisterRecentKiller(Muerto, Atacante)
 112                 If UserList(Atacante).Faccion.CriminalesMatados < MAXUSERMATADOS Then
 114                     UserList(Atacante).Faccion.CriminalesMatados = UserList(Atacante).Faccion.CriminalesMatados + 1
@@ -2403,7 +2410,7 @@ Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
                 End If
 
 116         ElseIf Status(Muerto) = e_Facciones.Ciudadano Or Status(Muerto) = e_Facciones.Armada Or Status(Muerto) = e_Facciones.consejo Then
-118              If Not AlreadyKilledBy(Muerto, Atacante) Then
+                If Not AlreadyKilledBy(Muerto, Atacante) Then
 120                 Call RegisterRecentKiller(Muerto, Atacante)
 122                 If UserList(Atacante).Faccion.ciudadanosMatados < MAXUSERMATADOS Then
 124                     UserList(Atacante).Faccion.ciudadanosMatados = UserList(Atacante).Faccion.ciudadanosMatados + 1
@@ -2444,11 +2451,8 @@ End Function
 Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal targetIndex As Integer)
     Dim Score As Integer
     With UserList(UserIndex)
-        If CInt(.Stats.ELV) < CInt(UserList(targetIndex).Stats.ELV) Then
-            Score = 10 + CInt(UserList(targetIndex).Stats.ELV) - max(CInt(.Stats.ELV), 0)
-        Else
-            Score = 10 - max(CInt(.Stats.ELV) - CInt(UserList(targetIndex).Stats.ELV), 0)
-        End If
+        
+        Score = CalculateBaseFactionScore(UserIndex, TargetIndex)
 
         If ShouldApplyFactionBonus(UserIndex, targetIndex) Then
             Score = Int(Score * 1.5)
@@ -2470,7 +2474,14 @@ Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal targetIndex As I
                 Call HandleFactionScoreForAssist(UserList(targetIndex).flags.LastAttacker.ArrayIndex, targetIndex)
             End If
         End If
-        .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
+        
+        If AreLegionsOrCouncils(UserIndex, TargetIndex) Then
+            Call PenalizeFactionScoreLegionAndCouncil(UserIndex, TargetIndex)
+        Else
+            'Mantener comportamiento original
+            .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
+        End If
+
     End With
 End Sub
 
@@ -2478,12 +2489,72 @@ Sub HandleFactionScoreForAssist(ByVal UserIndex As Integer, ByVal TargetIndex As
     Dim Score As Integer
     
     With UserList(UserIndex)
+        'Calcular el puntaje base de asistencia
         Score = 10 - max(CInt(.Stats.ELV) - CInt(UserList(TargetIndex).Stats.ELV), 0)
         Score = Score / 2
-        .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
+        
+        If AreLegionsOrCouncils(UserIndex, TargetIndex) Then
+            'Penalizar asistencias entre Legión y Concilio
+            Dim newScore As Long
+            newScore = .Faccion.FactionScore - Abs(Score)
+            If newScore < 0 Then newScore = 0  ' Evitar que baje de 0
+            .Faccion.FactionScore = newScore
+        Else
+            'Mantener comportamiento original
+            .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
+        End If
     End With
 End Sub
+Sub PenalizeFactionScoreLegionAndCouncil(ByVal Attacker As Integer, ByVal Target As Integer)
+    On Error GoTo PenalizeFactionScoreLegionAndCouncil_Err
+    
+        With UserList(Attacker)
+            Dim Score As Integer
+    
+            ' Calcular Score base según diferencia de niveles
+            Score = CalculateBaseFactionScore(Attacker, Target)
+            
+            ' Aplicar bonus si corresponde
+            If ShouldApplyFactionBonus(Attacker, Target) Then
+                Score = Int(Score * 1.5)
+            End If
+    
+            ' Limitar tope máximo
+            If Score > 20 Then Score = 20
+    
+            ' Forzar penalización: siempre resta para Concilio–Caos
+            Score = -Abs(Score)
+    
+            ' Aplicar y evitar bajar de 0
+            Dim newScore As Long
+            newScore = .Faccion.FactionScore + Score
+            If newScore < 0 Then newScore = 0
+            .Faccion.FactionScore = newScore
+        End With
+        Exit Sub
+    
+PenalizeFactionScoreLegionAndCouncil_Err:
+        Call TraceError(Err.Number, Err.Description, "UsUaRiOs.PenalizeFactionScoreLegionAndCouncil", Erl)
+End Sub
+Private Function AreLegionsOrCouncils(ByVal Attacker As Integer, ByVal Target As Integer) As Boolean
 
+    AreLegionsOrCouncils = _
+        ((UserList(Attacker).Faccion.Status = e_Facciones.concilio Or UserList(Attacker).Faccion.Status = e_Facciones.Caos) _
+            And (UserList(Target).Faccion.Status = e_Facciones.concilio Or UserList(Target).Faccion.Status = e_Facciones.Caos))
+                            
+
+End Function
+Private Function CalculateBaseFactionScore(ByVal Attacker As Integer, ByVal Target As Integer) As Integer
+    
+    With UserList(Attacker)
+        If CInt(.Stats.ELV) < CInt(UserList(Target).Stats.ELV) Then
+            CalculateBaseFactionScore = 10 + CInt(UserList(Target).Stats.ELV) - max(CInt(.Stats.ELV), 0)
+        Else
+            CalculateBaseFactionScore = 10 - max(CInt(.Stats.ELV) - CInt(UserList(Target).Stats.ELV), 0)
+        End If
+    End With
+    
+End Function
 Sub Tilelibre(ByRef Pos As t_WorldPos, ByRef nPos As t_WorldPos, ByRef obj As t_Obj, ByRef Agua As Boolean, ByRef Tierra As Boolean, Optional ByVal InitialPos As Boolean = True)
 
         
