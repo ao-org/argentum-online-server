@@ -166,9 +166,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Mapping(ConnectionID).TimeLastReset = actual_time
             Mapping(ConnectionID).PacketCount = 0
         End If
-        If PacketId <> ClientPacketID.eSendPosSeguimiento Then
-            Mapping(ConnectionID).PacketCount = Mapping(ConnectionID).PacketCount + 1
-        End If
         If Mapping(ConnectionID).PacketCount > 100 Then
             'Lo kickeo
             If UserIndex > 0 Then
@@ -515,8 +512,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleReviveChar(UserIndex)
         Case ClientPacketID.eSeguirMouse
             Call HandleSeguirMouse(UserIndex)
-        Case ClientPacketID.eSendPosSeguimiento
-            Call HandleSendPosMovimiento(UserIndex)
         Case ClientPacketID.eNotifyInventarioHechizos
             Call HandleNotifyInventariohechizos(UserIndex)
         Case ClientPacketID.eOnlineGM
@@ -855,16 +850,12 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandlePetLeaveAll(UserIndex)
         Case ClientPacketID.eResetChar
             Call HandleResetChar(UserIndex)
-        Case ClientPacketID.eResetearPersonaje
-            Call HandleResetearPersonaje(UserIndex)
         Case ClientPacketID.eDeleteItem
             Call HandleDeleteItem(UserIndex)
         Case ClientPacketID.eFinalizarPescaEspecial
             Call HandleFinalizarPescaEspecial(UserIndex)
         Case ClientPacketID.eRomperCania
             Call HandleRomperCania(UserIndex)
-        Case ClientPacketID.eRepeatMacro
-            Call HandleRepeatMacro(UserIndex)
         Case ClientPacketID.eBuyShopItem
             Call HandleBuyShopItem(UserIndex)
         Case ClientPacketID.ePublicarPersonajeMAO
@@ -4922,10 +4913,6 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTraerBoveda", Erl)
 End Sub
 
-Private Sub HandleSendPosMovimiento(ByVal UserIndex As Integer)
-    'TODO: delete
-End Sub
-
 ' Handles the "SendPosMovimiento" message.
 Private Sub HandleNotifyInventariohechizos(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
@@ -7607,14 +7594,6 @@ HandleResetChar_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetChar", Erl)
 End Sub
 
-Private Sub HandleResetearPersonaje(ByVal UserIndex As Integer)
-    On Error GoTo HandleResetearPersonaje_Err:
-    ' Call resetPj(UserIndex)
-    Exit Sub
-HandleResetearPersonaje_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetearPersonaje", Erl)
-End Sub
-
 Private Sub HandleRomperCania(ByVal UserIndex As Integer)
     On Error GoTo HandleRomperCania_Err:
     Dim LoopC    As Integer
@@ -7656,14 +7635,6 @@ Private Sub HandleFinalizarPescaEspecial(ByVal UserIndex As Integer)
     Exit Sub
 HandleFinalizarPescaEspecial_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleFinalizarPescaEspecial", Erl)
-End Sub
-
-Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
-    On Error GoTo HandleRepeatMacro_Err:
-    'Call LogMacroCliente("El usuario " & UserList(UserIndex).name & " iteró el paquete click o u." & GetTickCount)
-    Exit Sub
-HandleRepeatMacro_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRepeatMacro", Erl)
 End Sub
 
 Private Sub HandleBuyShopItem(ByVal UserIndex As Integer)

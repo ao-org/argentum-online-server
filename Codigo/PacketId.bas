@@ -515,18 +515,15 @@ Public Enum ClientPacketID
     eMoveCraftItem
     ePetLeaveAll
     eResetChar              '/RESET NICK
-    eResetearPersonaje
     eDeleteItem
     eFinalizarPescaEspecial
     eRomperCania
     eUseItemU
-    eRepeatMacro
     eBuyShopItem
     ePerdonFaccion              '/PERDONFACCION NAME
     eStartEvent           '/EVENTO CAPTURA/LOBBY
     eCancelarEvento          '/CANCELAREVENTO
     eSeguirMouse
-    eSendPosSeguimiento
     eNotifyInventarioHechizos
     ePublicarPersonajeMAO
     eEventoFaccionario

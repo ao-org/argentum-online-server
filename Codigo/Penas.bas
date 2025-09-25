@@ -150,7 +150,7 @@ BanearCuenta_Err:
     Call TraceError(Err.Number, Err.Description, "Penas.BanearCuenta", Erl)
 End Sub
 
-Public Function DesbanearCuenta(ByVal BannerIndex As Integer, ByVal UserNameOEmail As String) As Boolean
+Public Function DesbanearCuenta(ByVal UserNameOEmail As String) As Boolean
     On Error GoTo DesbanearCuenta_Err
     ' Seteamos is_banned = 0 en la DB
     If InStr(1, UserNameOEmail, "@") Then
