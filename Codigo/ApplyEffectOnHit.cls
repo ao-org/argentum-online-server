@@ -173,7 +173,7 @@ End Sub
 Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
 End Sub
 
-Public Sub IBaseEffectOverTime_TartgetWillAtack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+Public Sub IBaseEffectOverTime_TargetWillAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
     If SourceType = eNpc Then
         AttackedNpcVersion = NpcList(TargetUserId).VersionId
     End If
@@ -244,7 +244,7 @@ Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer
 End Function
 
 Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
-    IBaseEffectOverTime_CallBacksMask = e_EffectCallbackMask.eTargetDidHit Or e_EffectCallbackMask.eTartgetWillAtack
+    IBaseEffectOverTime_CallBacksMask = e_EffectCallbackMask.eTargetDidHit Or e_EffectCallbackMask.eTargetWillAttack
 End Property
 
 Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean

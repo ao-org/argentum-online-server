@@ -46,7 +46,7 @@ The `EffectsOverTime.bas` module acts as a manager and factory for various effec
 *   **`FindEffectOnTarget(CasterIndex, EffectList, EffectId) As IBaseEffectOverTime`**: Finds a specific effect instance on a target based on its `EffectId` and caster, respecting stacking rules.
 *   **`ClearEffectList(EffectList As t_EffectOverTimeList, ...)`**: Removes multiple effects from a list, with optional filters.
 *   **Callback Functions:**
-    *   `TargetUseMagic`, `TartgetWillAtack`, `TargetDidHit`, `TargetFailedAttack`, `TargetApplyDamageReduction`, `TargetWasDamaged`, `TargetWillAttackPosition`, `TargetUpdateTerrain`: These functions are called by other game systems when a relevant event occurs. They iterate through the effects on the target and invoke the corresponding method on effects that have registered for that event.
+    *   `TargetUseMagic`, `TargetWillAttack`, `TargetDidHit`, `TargetFailedAttack`, `TargetApplyDamageReduction`, `TargetWasDamaged`, `TargetWillAttackPosition`, `TargetUpdateTerrain`: These functions are called by other game systems when a relevant event occurs. They iterate through the effects on the target and invoke the corresponding method on effects that have registered for that event.
 *   **`ChangeOwner(...)`**: Transfers an effect from one entity to another.
 *   **`ConvertToClientBuff(buffType As e_EffectType) As e_EffectType`**: Maps internal effect types to simpler types for client display.
 *   **`ApplyEotModifier(...)`**: Applies a set of stat modifications (from an `EffectStats` structure) to a target entity.
