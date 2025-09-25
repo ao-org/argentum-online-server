@@ -27,169 +27,103 @@ Attribute VB_Name = "Hogar"
 '
 '
 Option Explicit
-
-Public Const NUMCIUDADES    As Byte = 9
-
-Public Ciudades(1 To NUMCIUDADES)         As t_WorldPos
+Public Const NUMCIUDADES          As Byte = 9
+Public Ciudades(1 To NUMCIUDADES) As t_WorldPos
 
 Public Sub goHome(ByVal UserIndex As Integer)
-      
-        On Error GoTo goHome_Err
-        
-100     With UserList(UserIndex)
-
-102         If .flags.Muerto = 1 Then
-
-104             If EsGM(UserIndex) Then
-106                 .Counters.TimerBarra = 5
-                Else
-108                 .Counters.TimerBarra = HomeTimer
-                End If
-110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Runa, .Counters.TimerBarra * 100, False, , .Pos.X, .Pos.y))
-112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.charindex, .Counters.TimerBarra, e_AccionBarra.Hogar))
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1994, .Counters.TimerBarra, e_FontTypeNames.FONTTYPE_New_Gris)) ' Msg1994=Volverás a tu hogar en ¬1 segundos.
-                    
-114             .Accion.Particula = e_ParticulasIndex.Runa
-116             .Accion.AccionPendiente = True
-118             .Accion.TipoAccion = e_AccionBarra.Hogar
-            
+    On Error GoTo goHome_Err
+    With UserList(UserIndex)
+        If .flags.Muerto = 1 Then
+            If EsGM(UserIndex) Then
+                .Counters.TimerBarra = 5
             Else
-        
-120             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1995, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1995=Debes estar muerto para poder utilizar este comando.
-
+                .Counters.TimerBarra = HomeTimer
             End If
-        
-        End With
-    
-        
-        Exit Sub
-
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, .Counters.TimerBarra * 100, False, , .pos.x, .pos.y))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.charindex, .Counters.TimerBarra, e_AccionBarra.Hogar))
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1994, .Counters.TimerBarra, e_FontTypeNames.FONTTYPE_New_Gris)) ' Msg1994=Volverás a tu hogar en ¬1 segundos.
+            .Accion.Particula = e_GraphicEffects.Runa
+            .Accion.AccionPendiente = True
+            .Accion.TipoAccion = e_AccionBarra.Hogar
+        Else
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1995, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1995=Debes estar muerto para poder utilizar este comando.
+        End If
+    End With
+    Exit Sub
 goHome_Err:
-122     Call TraceError(Err.Number, Err.Description, "Hogar.goHome", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "Hogar.goHome", Erl)
 End Sub
-
 
 ''
 ' Maneja el tiempo de arrivo al hogar
 '
 ' @param UserIndex  El index del usuario a ser afectado por el /hogar
 '
-
 Public Sub TravelingEffect(ByVal UserIndex As Integer)
-
-        On Error GoTo TravelingEffect_Err
-    
-        ' Si ya paso el tiempo de penalizacion
-100     If IntervaloGoHome(UserIndex) Then
-102         Call HomeArrival(UserIndex)
-        End If
-
-        
-        Exit Sub
-
+    On Error GoTo TravelingEffect_Err
+    ' Si ya paso el tiempo de penalizacion
+    If IntervaloGoHome(UserIndex) Then
+        Call HomeArrival(UserIndex)
+    End If
+    Exit Sub
 TravelingEffect_Err:
-104     Call TraceError(Err.Number, Err.Description, "Hogar.TravelingEffect", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "Hogar.TravelingEffect", Erl)
 End Sub
-
 
 Public Sub HomeArrival(ByVal UserIndex As Integer)
-
-        'Teleports user to its home.
-
-        On Error GoTo HomeArrival_Err
-    
-        
-    
-        Dim tX   As Integer
-        Dim tY   As Integer
-        Dim tMap As Integer
-
-100     With UserList(UserIndex)
-
-            'Antes de que el pj llegue a la ciudad, lo hacemos dejar de navegar para que no se buguee.
-102         If .flags.Navegando = 1 Then
-104             .Char.body = iCuerpoMuerto
-106             .Char.head = 0
-108             .Char.ShieldAnim = NingunEscudo
-110             .Char.WeaponAnim = NingunArma
-112             .Char.CascoAnim = NingunCasco
-            
-114             .flags.Navegando = 0
-115             .flags.Nadando = 0
-
-                Call TargetUpdateTerrain(.EffectOverTime)
-
-154             .invent.EquippedShipObjIndex = 0
-156             .invent.EquippedShipSlot = 0
-            
-116             Call WriteNavigateToggle(UserIndex, .flags.Navegando)
-117             Call WriteNadarToggle(UserIndex, False)
-
-                'Le sacamos el navegando, pero no le mostramos a los demas porque va a ser sumoneado hasta ulla.
-            End If
-        
-118         tX = Ciudades(.Hogar).X
-120         tY = Ciudades(.Hogar).y
-122         tMap = Ciudades(.Hogar).map
-        
-124         Call FindLegalPos(UserIndex, tMap, CByte(tX), CByte(tY))
-126         Call WarpUserChar(UserIndex, tMap, tX, tY, True)
-        
-128         Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1996, vbNullString, e_FontTypeNames.FONTTYPE_WARNING)) ' Msg1996=Has regresado a tu ciudad de origen.
-        
-130         .flags.Traveling = 0
-132         .Counters.goHome = 0
-        
-        End With
-    
-        
-        Exit Sub
-
+    'Teleports user to its home.
+    On Error GoTo HomeArrival_Err
+    Dim tX   As Integer
+    Dim tY   As Integer
+    Dim tMap As Integer
+    With UserList(UserIndex)
+        'Antes de que el pj llegue a la ciudad, lo hacemos dejar de navegar para que no se buguee.
+        If .flags.Navegando = 1 Then
+            .Char.body = iCuerpoMuerto
+            .Char.head = 0
+            .Char.ShieldAnim = NingunEscudo
+            .Char.WeaponAnim = NingunArma
+            .Char.CascoAnim = NingunCasco
+            .flags.Navegando = 0
+            .flags.Nadando = 0
+            Call TargetUpdateTerrain(.EffectOverTime)
+            .invent.EquippedShipObjIndex = 0
+            .invent.EquippedShipSlot = 0
+            Call WriteNavigateToggle(UserIndex, .flags.Navegando)
+            Call WriteNadarToggle(UserIndex, False)
+            'Le sacamos el navegando, pero no le mostramos a los demas porque va a ser sumoneado hasta ulla.
+        End If
+        tX = Ciudades(.Hogar).x
+        tY = Ciudades(.Hogar).y
+        tMap = Ciudades(.Hogar).Map
+        Call FindLegalPos(UserIndex, tMap, CByte(tX), CByte(tY))
+        Call WarpUserChar(UserIndex, tMap, tX, tY, True)
+        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1996, vbNullString, e_FontTypeNames.FONTTYPE_WARNING)) ' Msg1996=Has regresado a tu ciudad de origen.
+        .flags.Traveling = 0
+        .Counters.goHome = 0
+    End With
+    Exit Sub
 HomeArrival_Err:
-134     Call TraceError(Err.Number, Err.Description, "Hogar.HomeArrival", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "Hogar.HomeArrival", Erl)
 End Sub
 
-Public Function IntervaloGoHome(ByVal UserIndex As Integer, _
-                                Optional ByVal TimeInterval As Long, _
-                                Optional ByVal Actualizar As Boolean = False) As Boolean
-        
-        On Error GoTo IntervaloGoHome_Err
-
-        'Add the Timer which determines wether the user can be teleported to its home or not
-
-        Dim TActual As Long
-100         TActual = GetTickCount()
-    
-102     With UserList(UserIndex)
-
-            ' Inicializa el timer
-104         If Actualizar Then
-        
-106             .flags.Traveling = 1
-108             .Counters.goHome = TActual + TimeInterval
-            
-            Else
-
-110             If TActual >= .Counters.goHome Then
-112                 IntervaloGoHome = True
-                End If
-
+Public Function IntervaloGoHome(ByVal UserIndex As Integer, Optional ByVal TimeInterval As Long, Optional ByVal Actualizar As Boolean = False) As Boolean
+    On Error GoTo IntervaloGoHome_Err
+    'Add the Timer which determines wether the user can be teleported to its home or not
+    Dim TActual As Long
+    TActual = GetTickCount()
+    With UserList(UserIndex)
+        ' Inicializa el timer
+        If Actualizar Then
+            .flags.Traveling = 1
+            .Counters.goHome = TActual + TimeInterval
+        Else
+            If TActual >= .Counters.goHome Then
+                IntervaloGoHome = True
             End If
-
-        End With
-
-        
-        Exit Function
-
+        End If
+    End With
+    Exit Function
 IntervaloGoHome_Err:
-114     Call TraceError(Err.Number, Err.Description, "Hogar.IntervaloGoHome", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "Hogar.IntervaloGoHome", Erl)
 End Function
-

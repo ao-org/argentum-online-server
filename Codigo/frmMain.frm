@@ -588,11 +588,9 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-
 Public ESCUCHADAS As Long
 
 Private Type NOTIFYICONDATA
-
     cbSize As Long
     hwnd As Long
     uID As Long
@@ -600,9 +598,8 @@ Private Type NOTIFYICONDATA
     uCallbackMessage As Long
     hIcon As Long
     szTip As String * 64
-
 End Type
-   
+
 Const NIM_ADD = 0
 Const NIM_DELETE = 2
 Const NIF_MESSAGE = 1
@@ -611,23 +608,20 @@ Const NIF_TIP = 4
 Const WM_MOUSEMOVE = &H200
 Const WM_LBUTTONDBLCLK = &H203
 Const WM_RBUTTONUP = &H205
-
-Public GuardarYCerrar As Boolean
+Public GuardarYCerrar           As Boolean
 Private tHechizosMinutesCounter As Byte
-
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
 Private Declare Function Shell_NotifyIconA Lib "SHELL32" (ByVal dwMessage As Long, lpData As NOTIFYICONDATA) As Integer
-
 Private SERVER_UPTIME As Long
-
 #If DIRECT_PLAY = 1 Then
-Implements DirectPlay8Event
-Private mfExit As Boolean
-Private Enum MsgTypes
-    Msg_NoOtherPlayers
-    Msg_NumPlayers
-    Msg_SendWave
-End Enum
+    Implements DirectPlay8Event
+    Private mfExit As Boolean
+
+    Private Enum MsgTypes
+        Msg_NoOtherPlayers
+        Msg_NumPlayers
+        Msg_SendWave
+    End Enum
 
 Private Sub Form_Load()
     Dim lCount As Long
@@ -636,7 +630,7 @@ Private Sub Form_Load()
     'First load our list of Service Providers into our box
     For lCount = 1 To dps.GetCountServiceProviders
         dpn = dps.GetServiceProvider(lCount)
-        Debug.Print dpn.Name; " " & dpn.Guid
+        Debug.Print dpn.name; " " & dpn.Guid
     Next
 End Sub
 
@@ -722,82 +716,49 @@ Private Sub DirectPlay8Event_TerminateSession(dpnotify As DxVBLibA.DPNMSG_TERMIN
 End Sub
 #End If
 
-
-
-Private Function setNOTIFYICONDATA(hwnd As Long, ID As Long, flags As Long, CallbackMessage As Long, Icon As Long, Tip As String) As NOTIFYICONDATA
-        
-        On Error GoTo setNOTIFYICONDATA_Err
-        
-
-        Dim nidTemp As NOTIFYICONDATA
-
-100     nidTemp.cbSize = Len(nidTemp)
-102     nidTemp.hwnd = hwnd
-104     nidTemp.uID = ID
-106     nidTemp.uFlags = flags
-108     nidTemp.uCallbackMessage = CallbackMessage
-110     nidTemp.hIcon = Icon
-112     nidTemp.szTip = Tip & Chr$(0)
-
-114     setNOTIFYICONDATA = nidTemp
-
-        
-        Exit Function
-
+Private Function setNOTIFYICONDATA(hwnd As Long, Id As Long, flags As Long, CallbackMessage As Long, Icon As Long, Tip As String) As NOTIFYICONDATA
+    On Error GoTo setNOTIFYICONDATA_Err
+    Dim nidTemp As NOTIFYICONDATA
+    nidTemp.cbSize = Len(nidTemp)
+    nidTemp.hwnd = hwnd
+    nidTemp.uID = Id
+    nidTemp.uFlags = flags
+    nidTemp.uCallbackMessage = CallbackMessage
+    nidTemp.hIcon = Icon
+    nidTemp.szTip = Tip & Chr$(0)
+    setNOTIFYICONDATA = nidTemp
+    Exit Function
 setNOTIFYICONDATA_Err:
-116     Call TraceError(Err.Number, Err.Description, "frmMain.setNOTIFYICONDATA", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.setNOTIFYICONDATA", Erl)
 End Function
 
 Sub CheckIdleUser()
-        
-        On Error GoTo CheckIdleUser_Err
-        
-
-        Dim iUserIndex As Long
-    
-100     For iUserIndex = 1 To MaxUsers
-
-            'Conexion activa? y es un usuario loggeado?
-102         If UserList(iUserIndex).ConnectionDetails.ConnIDValida And UserList(iUserIndex).flags.UserLogged Then
-                'Actualiza el contador de inactividad
-104             UserList(iUserIndex).Counters.IdleCount = UserList(iUserIndex).Counters.IdleCount + 1
-
-106             If UserList(iUserIndex).Counters.IdleCount >= IdleLimit Then
-108                 Call WriteShowMessageBox(iUserIndex, 1775, vbNullString) 'Msg1775=Demasiado tiempo inactivo. Has sido desconectado...
-
-                    'mato los comercios seguros
-110                 If IsValidUserRef(UserList(iUserIndex).ComUsu.DestUsu) Then
-112                     If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
-114                         If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = iUserIndex Then
-116                             Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(1844, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1844=Comercio cancelado por el otro usuario.
-118                             Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex)
-                            
-
-                            End If
-
+    On Error GoTo CheckIdleUser_Err
+    Dim iUserIndex As Long
+    For iUserIndex = 1 To MaxUsers
+        'Conexion activa? y es un usuario loggeado?
+        If UserList(iUserIndex).ConnectionDetails.ConnIDValida And UserList(iUserIndex).flags.UserLogged Then
+            'Actualiza el contador de inactividad
+            UserList(iUserIndex).Counters.IdleCount = UserList(iUserIndex).Counters.IdleCount + 1
+            If UserList(iUserIndex).Counters.IdleCount >= IdleLimit Then
+                Call WriteShowMessageBox(iUserIndex, 1775, vbNullString) 'Msg1775=Demasiado tiempo inactivo. Has sido desconectado...
+                'mato los comercios seguros
+                If IsValidUserRef(UserList(iUserIndex).ComUsu.DestUsu) Then
+                    If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
+                        If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = iUserIndex Then
+                            Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(1844, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1844=Comercio cancelado por el otro usuario.
+                            Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex)
                         End If
-
-120                     Call FinComerciarUsu(iUserIndex)
-
                     End If
-
-122                 Call Cerrar_Usuario(iUserIndex)
-
+                    Call FinComerciarUsu(iUserIndex)
                 End If
-
+                Call Cerrar_Usuario(iUserIndex)
             End If
-
-124     Next iUserIndex
-
-        
-        Exit Sub
-
+        End If
+    Next iUserIndex
+    Exit Sub
 CheckIdleUser_Err:
-126     Call TraceError(Err.Number, Err.Description, "frmMain.CheckIdleUser", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.CheckIdleUser", Erl)
 End Sub
 
 Private Sub cmdDbControl_Click()
@@ -808,69 +769,48 @@ Private Sub Command3_Click()
     Call CargarDonadores
 End Sub
 
-
-
-
 Private Sub Segundo_Timer()
-
     On Error GoTo errhand
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
     ' WyroX - Control de estabilidad del servidor
-    Static LastTime As Currency
+    Static LastTime  As Currency
     Static Frequency As Currency
-    Dim CurTime As Currency
-    
+    Dim CurTime      As Currency
     'Get the timer frequency
     If Frequency = 0 Then
         Call QueryPerformanceFrequency(Frequency)
     End If
-
     Call QueryPerformanceCounter(CurTime)
-
     If LastTime <> 0 Then
         Estabilidad.Caption = Round(Clamp(200 + (LastTime - CurTime) * 100 / Frequency, 0, 100), 1) & "%"
     End If
-
     LastTime = CurTime
     ' -----------------------------------
-
     Call PasarSegundo 'sistema de desconexion de 10 segs
     Call CheckDisconnectedUsers
     Call PerformTimeLimitCheck(PerformanceTimer, "Segundo_Timer", 100)
     Exit Sub
-
 errhand:
     Call TraceError(Err.Number, Err.Description, "frmMain.Auditoria", Erl)
-        
 End Sub
 
 Private Sub CerrarYForzarActualizar_Click()
     On Error GoTo Command4_Click_Err
-
-100     If MsgBox("¿Está seguro que desea guardar, forzar actualización a los usuarios y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
-        
-102     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1659, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1659=Servidor » Cerrando servidor y lanzando nuevo parche.
-
-106     Call GuardarUsuarios
-108     Call EcharPjsNoPrivilegiados
-
-110     GuardarYCerrar = True
-112     Unload frmMain
-        
-        Exit Sub
-
+    If MsgBox("¿Está seguro que desea guardar, forzar actualización a los usuarios y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1659, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1659=Servidor » Cerrando servidor y lanzando nuevo parche.
+    Call GuardarUsuarios
+    Call EcharPjsNoPrivilegiados
+    GuardarYCerrar = True
+    Unload frmMain
+    Exit Sub
 Command4_Click_Err:
-114     Call TraceError(Err.Number, Err.Description, "frmMain.CerrarYForzarActualizar", Erl)
-
+    Call TraceError(Err.Number, Err.Description, "frmMain.CerrarYForzarActualizar", Erl)
 End Sub
 
 Private Sub Invasion_Timer()
-
-
-On Error GoTo Handler
+    On Error GoTo Handler
     Dim i As Integer
-
     ' **********************************
     ' **********  Invasiones  **********
     ' **********************************
@@ -879,51 +819,41 @@ On Error GoTo Handler
             ' Aumentamos el contador para controlar cuando
             ' inicia la invasión o cuando debe terminar
             .TimerInvasion = .TimerInvasion + 1
-
             If .Activa Then
                 ' Chequeamos si el evento debe terminar
                 If .TimerInvasion >= .Duracion Then
                     Call FinalizarInvasion(i)
-                
                 Else
                     ' Descripción del evento
                     .TimerRepetirDesc = .TimerRepetirDesc + 1
-    
                     If .TimerRepetirDesc >= .RepetirDesc Then
                         Call MensajeGlobal(.Desc, e_FontTypeNames.FONTTYPE_New_Eventos)
                         .TimerRepetirDesc = 0
                     End If
                 End If
-            
-            ' Si no está activa, chequeamos si debemos iniciarla
+                ' Si no está activa, chequeamos si debemos iniciarla
             ElseIf .Intervalo > 0 Then
                 If .TimerInvasion >= .Intervalo Then
                     Call IniciarInvasion(i)
-    
-                ' Si no está activa ni hay que iniciar, chequeamos si hay que avisar que se acerca el evento
+                    ' Si no está activa ni hay que iniciar, chequeamos si hay que avisar que se acerca el evento
                 ElseIf .TimerInvasion >= .Intervalo - .AvisarTiempo Then
                     .TimerRepetirAviso = .TimerRepetirAviso - 1
-    
                     If .TimerRepetirAviso <= 0 Then
                         Call MensajeGlobal(.aviso, e_FontTypeNames.FONTTYPE_New_Eventos)
                         .TimerRepetirAviso = .RepetirAviso
                     End If
                 End If
             End If
-        
         End With
     Next
     Exit Sub
-    
 Handler:
     Call TraceError(Err.Number, Err.Description, "frmMain.Invasion_Timer")
-
-    
     ' **********************************
 End Sub
 
 Private Sub t_Extraer_Timer()
-    Dim i As Long
+    Dim i                As Long
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
     For i = 1 To LastUser
@@ -935,23 +865,17 @@ Private Sub t_Extraer_Timer()
 End Sub
 
 Private Sub T_UsersOnline_Timer()
-
-On Error GoTo T_UsersOnline_Err
-
+    On Error GoTo T_UsersOnline_Err
     Call MostrarNumUsers
-    
     Exit Sub
-
 T_UsersOnline_Err:
-106     Call TraceError(Err.Number, Err.Description, "General.T_UsersOnline", Erl)
-
+    Call TraceError(Err.Number, Err.Description, "General.T_UsersOnline", Erl)
 End Sub
 
 Private Sub tControlHechizos_Timer()
     Dim UserIndex As Integer
     'Reseteo control de hechizos
     tHechizosMinutesCounter = tHechizosMinutesCounter + 1
-    
     If tHechizosMinutesCounter = 2 Then
         For UserIndex = 1 To LastUser
             With UserList(UserIndex)
@@ -961,24 +885,18 @@ Private Sub tControlHechizos_Timer()
         Next UserIndex
         tHechizosMinutesCounter = 0
     End If
-        
 End Sub
 
 '  Comprobamos cada 10 segundos, porque no es necesaria tanta precisión
 Private Sub TiempoRetos_Timer()
-
-On Error GoTo Handler
-    
+    On Error GoTo Handler
     Dim IntervaloTimerRetosEnSegundos As Integer
     IntervaloTimerRetosEnSegundos = TiempoRetos.Interval * 0.001
-    
     Dim Sala As Integer
     For Sala = 1 To Retos.TotalSalas
-        
         With Retos.Salas(Sala)
             If .EnUso Then
                 .TiempoRestante = .TiempoRestante - IntervaloTimerRetosEnSegundos
-                
                 If .TiempoItems > 0 Then
                     .TiempoItems = .TiempoItems - IntervaloTimerRetosEnSegundos
                     If .TiempoItems <= 0 Then Call TerminarTiempoAgarrarItems(Sala)
@@ -987,14 +905,10 @@ On Error GoTo Handler
                 End If
             End If
         End With
-
     Next
     Exit Sub
-    
 Handler:
     Call TraceError(Err.Number, Err.Description, "frmMain.TiempoRetos_Timer")
-
-    
 End Sub
 
 Private Sub TimerBarco_Timer()
@@ -1010,10 +924,9 @@ Private Sub TimerBarco_Timer()
 End Sub
 
 Private Function GetPassSlot(ByVal UserIndex As Integer) As Integer
-Dim i As Integer
+    Dim i As Integer
     With UserList(UserIndex)
         For i = 1 To UBound(.invent.Object)
-            
             ' Le saco el item requerido de Forgat a Nix
             ' Es el mismo item que de Nix a Arghal y de Arghal a Forgat
             If .invent.Object(i).ObjIndex = BarcoNavegandoForgatNix.RequiredPassID Then
@@ -1029,224 +942,175 @@ Private Sub MsnEnbarque(ByRef ShipInfo As t_Transport)
     On Error GoTo SendToMap_Err
     Dim LoopC     As Long
     Dim tempIndex As Integer
-
-100     If Not MapaValido(ShipInfo.map) Then Exit Sub
-
-102     For LoopC = 1 To ConnGroups(ShipInfo.map).CountEntrys
-104         tempIndex = ConnGroups(ShipInfo.map).UserEntrys(LoopC)
-106         If UserList(tempIndex).ConnectionDetails.ConnIDValida And UserList(tempIndex).pos.x >= ShipInfo.startX And UserList(tempIndex).pos.x <= ShipInfo.EndX And UserList(tempIndex).pos.y >= ShipInfo.startY And UserList(tempIndex).pos.y <= ShipInfo.EndY Then
-                If Not GetPassSlot(tempIndex) > 0 Then
-                    Call WriteLocaleMsg(tempIndex, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
-                Else
-                    Call WriteLocaleMsg(tempIndex, MsgStartingTrip, e_FontTypeNames.FONTTYPE_GUILD)
-                End If
+    If Not MapaValido(ShipInfo.Map) Then Exit Sub
+    For LoopC = 1 To ConnGroups(ShipInfo.Map).CountEntrys
+        tempIndex = ConnGroups(ShipInfo.Map).UserEntrys(LoopC)
+        If UserList(tempIndex).ConnectionDetails.ConnIDValida And UserList(tempIndex).pos.x >= ShipInfo.startX And UserList(tempIndex).pos.x <= ShipInfo.EndX And UserList( _
+                tempIndex).pos.y >= ShipInfo.startY And UserList(tempIndex).pos.y <= ShipInfo.EndY Then
+            If Not GetPassSlot(tempIndex) > 0 Then
+                Call WriteLocaleMsg(tempIndex, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
+            Else
+                Call WriteLocaleMsg(tempIndex, MsgStartingTrip, e_FontTypeNames.FONTTYPE_GUILD)
             End If
-110     Next LoopC
-        Exit Sub
-
+        End If
+    Next LoopC
+    Exit Sub
 SendToMap_Err:
-112     Call TraceError(Err.Number, Err.Description, "modSendData.SendToMap", Erl)
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToMap", Erl)
 End Sub
-Private Sub UpdateBarcoForgatNix()
 
+Private Sub UpdateBarcoForgatNix()
     Dim TileX, TileY As Integer
-    Dim user As Integer
+    Dim User      As Integer
     Dim PassFound As Boolean
-    Dim PassSlot As Integer
-    
+    Dim PassSlot  As Integer
     ' Modificado por Shugar 5/6/24
     ' Viaje de Forgat a Nix
-    
     ' Verificar si el barco está en un muelle:
     ' Para ver si está en el muelle o no, miramos hay un NpcIndex en Map DockX DockY del mapa BarcoNavegando.
     ' Ese Npc solía ser un muelle, y se usa de referencia para saber si el barco partió o sigue quieto.
     ' Si no hay NPC ahí es que el barco está navegando, por lo tanto no hay movimiento de pasajeros.
-    
     If MapData(BarcoNavegandoForgatNix.Map, BarcoNavegandoForgatNix.DockX, BarcoNavegandoForgatNix.DockY).NpcIndex = 0 Then
         Exit Sub
     End If
-          
-    
     ' Desembarcar: bajamos del barco a los usuarios que llegan a Nix
-    
     ' Para cada tile en el área del barco
     For TileX = BarcoNavegandoForgatNix.startX To BarcoNavegandoForgatNix.EndX
         For TileY = BarcoNavegandoForgatNix.startY To BarcoNavegandoForgatNix.EndY
-        
             ' Si hay un usuario en el tile del barco
-            user = MapData(BarcoNavegandoForgatNix.Map, TileX, TileY).UserIndex
-            If user > 0 Then
-            
+            User = MapData(BarcoNavegandoForgatNix.Map, TileX, TileY).UserIndex
+            If User > 0 Then
                 ' Enviar usuario a Nix
-                Call WarpToLegalPos(user, NixDock.Map, NixDock.DestX, NixDock.DestY, True)
-                Call WriteLocaleMsg(user, MsgThanksForTravelNix, e_FontTypeNames.FONTTYPE_GUILD)
-                
+                Call WarpToLegalPos(User, NixDock.Map, NixDock.DestX, NixDock.DestY, True)
+                Call WriteLocaleMsg(User, MsgThanksForTravelNix, e_FontTypeNames.FONTTYPE_GUILD)
             End If
         Next TileY
     Next TileX
-        
     ' Embarcacar: subimos al barco a los usuarios que salen de Forgat
-    
     ' Para cada tile en el área del muelle de Forgat
     For TileX = ForgatDock.startX To ForgatDock.EndX
         For TileY = ForgatDock.startY To ForgatDock.EndY
-        
             ' Si hay un usuario en el tile del muelle
-            user = MapData(ForgatDock.Map, TileX, TileY).UserIndex
-            If user > 0 Then
-            
+            User = MapData(ForgatDock.Map, TileX, TileY).UserIndex
+            If User > 0 Then
                 ' Sacarle el pasaje y moverlo al barco navegando
-                PassSlot = GetPassSlot(user)
+                PassSlot = GetPassSlot(User)
                 If PassSlot > 0 Then
-                   Call WriteLocaleMsg(user, MsgPassForgat, e_FontTypeNames.FONTTYPE_GUILD)
-                   Call QuitarUserInvItem(user, PassSlot, 1)
-                   Call UpdateUserInv(False, user, PassSlot)
-                   Call WarpToLegalPos(user, BarcoNavegandoForgatNix.Map, BarcoNavegandoForgatNix.DestX, BarcoNavegandoForgatNix.DestY, True)
+                    Call WriteLocaleMsg(User, MsgPassForgat, e_FontTypeNames.FONTTYPE_GUILD)
+                    Call QuitarUserInvItem(User, PassSlot, 1)
+                    Call UpdateUserInv(False, User, PassSlot)
+                    Call WarpToLegalPos(User, BarcoNavegandoForgatNix.Map, BarcoNavegandoForgatNix.DestX, BarcoNavegandoForgatNix.DestY, True)
                 Else
-                   Call WriteLocaleMsg(user, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
+                    Call WriteLocaleMsg(User, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
                 End If
             End If
         Next TileY
     Next TileX
-
 End Sub
 
-
 Private Sub UpdateBarcoNixArghal()
-
     Dim TileX, TileY As Integer
-    Dim user As Integer
+    Dim User      As Integer
     Dim PassFound As Boolean
-    Dim PassSlot As Integer
-    
+    Dim PassSlot  As Integer
     ' Modificado por Shugar 5/6/24
     ' Viaje de Nix a Arghal
-    
     ' Verificar si el barco está en un muelle:
     ' Para ver si está en el muelle o no, miramos hay un NpcIndex en Map DockX DockY del mapa BarcoNavegando.
     ' Ese Npc solía ser un muelle, y se usa de referencia para saber si el barco partió o sigue quieto.
     ' Si no hay NPC ahí es que el barco está navegando, por lo tanto no hay movimiento de pasajeros.
-    
     If MapData(BarcoNavegandoNixArghal.Map, BarcoNavegandoNixArghal.DockX, BarcoNavegandoNixArghal.DockY).NpcIndex = 0 Then
         Exit Sub
     End If
-    
     ' Desembarcar: bajamos del barco a los usuarios que llegan a Arghal
-    
     ' Para cada tile en el área del barco
     For TileX = BarcoNavegandoNixArghal.startX To BarcoNavegandoNixArghal.EndX
         For TileY = BarcoNavegandoNixArghal.startY To BarcoNavegandoNixArghal.EndY
-        
             ' Si hay un usuario en el tile del barco
-            user = MapData(BarcoNavegandoNixArghal.Map, TileX, TileY).UserIndex
-            If user > 0 Then
-            
+            User = MapData(BarcoNavegandoNixArghal.Map, TileX, TileY).UserIndex
+            If User > 0 Then
                 ' Enviar al usuario a Arghal
-                Call WarpToLegalPos(user, ArghalDock.Map, ArghalDock.DestX, ArghalDock.DestY, True)
-                Call WriteLocaleMsg(user, MsgThanksForTravelArghal, e_FontTypeNames.FONTTYPE_GUILD)
-                
+                Call WarpToLegalPos(User, ArghalDock.Map, ArghalDock.DestX, ArghalDock.DestY, True)
+                Call WriteLocaleMsg(User, MsgThanksForTravelArghal, e_FontTypeNames.FONTTYPE_GUILD)
             End If
         Next TileY
     Next TileX
-  
     ' Embarcacar: subimos al barco a los usuarios que salen de Nix
-    
     ' Para cada tile en el área del muelle de Nix
     For TileX = NixDock.startX To NixDock.EndX
         For TileY = NixDock.startY To NixDock.EndY
-        
             ' Si hay un usuario en el tile del muelle
-            user = MapData(NixDock.Map, TileX, TileY).UserIndex
-            If user > 0 Then
-            
+            User = MapData(NixDock.Map, TileX, TileY).UserIndex
+            If User > 0 Then
                 ' Sacarle el pasaje y moverlo al barco navegando
-                PassSlot = GetPassSlot(user)
+                PassSlot = GetPassSlot(User)
                 If PassSlot > 0 Then
-                   Call WriteLocaleMsg(user, MsgPassNix, e_FontTypeNames.FONTTYPE_GUILD)
-                   Call QuitarUserInvItem(user, PassSlot, 1)
-                   Call UpdateUserInv(False, user, PassSlot)
-                   Call WarpToLegalPos(user, BarcoNavegandoNixArghal.Map, BarcoNavegandoNixArghal.DestX, BarcoNavegandoNixArghal.DestY, True)
+                    Call WriteLocaleMsg(User, MsgPassNix, e_FontTypeNames.FONTTYPE_GUILD)
+                    Call QuitarUserInvItem(User, PassSlot, 1)
+                    Call UpdateUserInv(False, User, PassSlot)
+                    Call WarpToLegalPos(User, BarcoNavegandoNixArghal.Map, BarcoNavegandoNixArghal.DestX, BarcoNavegandoNixArghal.DestY, True)
                 Else
-                   Call WriteLocaleMsg(user, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
+                    Call WriteLocaleMsg(User, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
                 End If
             End If
         Next TileY
     Next TileX
-
 End Sub
 
 Private Sub UpdateBarcoArghalForgat()
-
     Dim TileX, TileY As Integer
-    Dim user As Integer
+    Dim User      As Integer
     Dim PassFound As Boolean
-    Dim PassSlot As Integer
-    
+    Dim PassSlot  As Integer
     ' Modificado por Shugar 5/6/24
     ' Viaje de Arghal a Forgat
-    
     ' Verificar si el barco está en un muelle:
     ' Para ver si está en el muelle o no, miramos hay un NpcIndex en Map DockX DockY del mapa BarcoNavegando.
     ' Ese Npc solía ser un muelle, y se usa de referencia para saber si el barco partió o sigue quieto.
     ' Si no hay NPC ahí es que el barco está navegando, por lo tanto no hay movimiento de pasajeros.
-    
     If MapData(BarcoNavegandoArghalForgat.Map, BarcoNavegandoArghalForgat.DockX, BarcoNavegandoArghalForgat.DockY).NpcIndex = 0 Then
         Exit Sub
     End If
-    
     ' Desembarcar: bajamos del barco a los usuarios que llegan a Forgat
-    
     ' Para cada tile en el área del barco
     For TileX = BarcoNavegandoArghalForgat.startX To BarcoNavegandoArghalForgat.EndX
         For TileY = BarcoNavegandoArghalForgat.startY To BarcoNavegandoArghalForgat.EndY
-        
             ' Si hay un usuario en el tile del barco
-            user = MapData(BarcoNavegandoArghalForgat.Map, TileX, TileY).UserIndex
-            If user > 0 Then
-            
+            User = MapData(BarcoNavegandoArghalForgat.Map, TileX, TileY).UserIndex
+            If User > 0 Then
                 ' Enviar al usuario a Forgat
-                Call WarpToLegalPos(user, ForgatDock.Map, ForgatDock.DestX, ForgatDock.DestY, True)
-                Call WriteLocaleMsg(user, MsgThanksForTravelForgat, e_FontTypeNames.FONTTYPE_GUILD)
-                
+                Call WarpToLegalPos(User, ForgatDock.Map, ForgatDock.DestX, ForgatDock.DestY, True)
+                Call WriteLocaleMsg(User, MsgThanksForTravelForgat, e_FontTypeNames.FONTTYPE_GUILD)
             End If
         Next TileY
     Next TileX
-            
-    
     ' Embarcacar: subimos al barco a los usuarios que salen de Arghal
-    
     ' Para cada tile en el área del muelle de Arghal
     For TileX = ArghalDock.startX To ArghalDock.EndX
         For TileY = ArghalDock.startY To ArghalDock.EndY
-        
             ' Si hay un usuario en el tile del muelle
-            user = MapData(ArghalDock.Map, TileX, TileY).UserIndex
-            If user > 0 Then
-            
+            User = MapData(ArghalDock.Map, TileX, TileY).UserIndex
+            If User > 0 Then
                 ' Sacarle el pasaje y moverlo al barco navegando
-                PassSlot = GetPassSlot(user)
+                PassSlot = GetPassSlot(User)
                 If PassSlot > 0 Then
-                   Call WriteLocaleMsg(user, MsgPassArghal, e_FontTypeNames.FONTTYPE_GUILD)
-                   Call QuitarUserInvItem(user, PassSlot, 1)
-                   Call UpdateUserInv(False, user, PassSlot)
-                   Call WarpToLegalPos(user, BarcoNavegandoArghalForgat.Map, BarcoNavegandoArghalForgat.DestX, BarcoNavegandoArghalForgat.DestY, True)
+                    Call WriteLocaleMsg(User, MsgPassArghal, e_FontTypeNames.FONTTYPE_GUILD)
+                    Call QuitarUserInvItem(User, PassSlot, 1)
+                    Call UpdateUserInv(False, User, PassSlot)
+                    Call WarpToLegalPos(User, BarcoNavegandoArghalForgat.Map, BarcoNavegandoArghalForgat.DestX, BarcoNavegandoArghalForgat.DestY, True)
                 Else
-                   Call WriteLocaleMsg(user, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
+                    Call WriteLocaleMsg(User, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
                 End If
             End If
         Next TileY
     Next TileX
-
 End Sub
 
-
-
 Private Sub TimerGuardarUsuarios_Timer()
-
-On Error GoTo Handler
+    On Error GoTo Handler
     If IsFeatureEnabled("auto_save_chars") Then
         ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
-        Dim UserIndex As Integer, UserGuardados As Integer
+        Dim UserIndex        As Integer, UserGuardados As Integer
         Dim PerformanceTimer As Long
         Call PerformanceTestStart(PerformanceTimer)
         For UserIndex = 1 To LastUser
@@ -1270,291 +1134,184 @@ Handler:
 End Sub
 
 Private Sub Minuto_Timer()
-
     On Error GoTo ErrHandler
-
     'fired every minute
     Static minutos          As Long
-
     Static MinutosLatsClean As Long
-
     Dim i                   As Integer
-
-    Dim Num                 As Long
-    Dim PerformanceTimer As Long
+    Dim num                 As Long
+    Dim PerformanceTimer    As Long
     Call PerformanceTestStart(PerformanceTimer)
     MinsRunning = MinsRunning + 1
-
     If MinsRunning = 60 Then
         horas = horas + 1
-
         If horas = 24 Then
             DayStats.MaxUsuarios = 0
             DayStats.segundos = 0
             DayStats.Promedio = 0
-        
             horas = 0
-        
         End If
-
         MinsRunning = 0
-
     End If
-    
     minutos = minutos + 1
-    
     If MinutosLatsClean >= 15 Then
         MinutosLatsClean = 0
         Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
     Else
         MinutosLatsClean = MinutosLatsClean + 1
     End If
-
     Call PurgarPenas
-
-   ' If IdleLimit > 0 Then
-   '     Call CheckIdleUser
-   ' End If
-
+    ' If IdleLimit > 0 Then
+    '     Call CheckIdleUser
+    ' End If
     If IsFeatureEnabled("automatic_events") Then
         Call Automatic_Event_Timer
     End If
     Call dump_stats
     Call PerformTimeLimitCheck(PerformanceTimer, "Minuto_Timer", 500)
     Exit Sub
-        
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "General.Minuto_Timer", Erl)
-        
 End Sub
 
 Private Sub CMDDUMP_Click()
-On Error GoTo CMDDUMP_Click_Err
-        Dim i As Integer
-
-100     For i = 1 To MaxUsers
-102         Call LogCriticEvent(i & ") ConnIDValida: " & UserList(i).ConnectionDetails.ConnIDValida & " Name: " & UserList(i).name & " UserLogged: " & UserList(i).flags.UserLogged)
-104     Next i
-
-106     Call LogCriticEvent("Lastuser: " & LastUser & " NextOpenUser: " & NextOpenUser)
-        Exit Sub
-
+    On Error GoTo CMDDUMP_Click_Err
+    Dim i As Integer
+    For i = 1 To MaxUsers
+        Call LogCriticEvent(i & ") ConnIDValida: " & UserList(i).ConnectionDetails.ConnIDValida & " Name: " & UserList(i).name & " UserLogged: " & UserList(i).flags.UserLogged)
+    Next i
+    Call LogCriticEvent("Lastuser: " & LastUser & " NextOpenUser: " & NextOpenUser)
+    Exit Sub
 CMDDUMP_Click_Err:
-108     Call TraceError(Err.Number, Err.Description, "frmMain.CMDDUMP_Click", Erl)
+    Call TraceError(Err.Number, Err.Description, "frmMain.CMDDUMP_Click", Erl)
 End Sub
 
 Private Sub Command1_Click()
-        
-        On Error GoTo Command1_Click_Err
-        
-100     Call SendData(SendTarget.ToAll, 0, PrepareMessageShowMessageBox(BroadMsg.Text))
-
-        
-        Exit Sub
-
+    On Error GoTo Command1_Click_Err
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageShowMessageBox(BroadMsg.Text))
+    Exit Sub
 Command1_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmMain.Command1_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command1_Click", Erl)
 End Sub
 
 Public Sub InitMain(ByVal f As Byte)
-        
-        On Error GoTo InitMain_Err
-        
-
-100     If f = 1 Then
-102         Call mnuSystray_Click
-        Else
-104         Call frmMain.Show
-        End If
-
-        
-        Exit Sub
-
+    On Error GoTo InitMain_Err
+    If f = 1 Then
+        Call mnuSystray_Click
+    Else
+        Call frmMain.Show
+    End If
+    Exit Sub
 InitMain_Err:
-106     Call TraceError(Err.Number, Err.Description, "frmMain.InitMain", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.InitMain", Erl)
 End Sub
 
 Private Sub Command10_Click()
-        
-        On Error GoTo Command10_Click_Err
-        
-100     Call GuardarUsuarios
-
-        
-        Exit Sub
-
+    On Error GoTo Command10_Click_Err
+    Call GuardarUsuarios
+    Exit Sub
 Command10_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmMain.Command10_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command10_Click", Erl)
 End Sub
 
 Private Sub Command11_Click()
-        
-        On Error GoTo Command11_Click_Err
-        
-100     Call LoadSini
-        Call LoadMD5
-133     Call LoadPrivateKey
-        
-        Exit Sub
-
+    On Error GoTo Command11_Click_Err
+    Call LoadSini
+    Call LoadMD5
+    Call LoadPrivateKey
+    Exit Sub
 Command11_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmMain.Command11_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command11_Click", Erl)
 End Sub
 
 Private Sub Command12_Click()
-        
-        On Error GoTo Command12_Click_Err
-        
-100     Call LoadMainConfigFile
-        
-        Exit Sub
-
+    On Error GoTo Command12_Click_Err
+    Call LoadMainConfigFile
+    Exit Sub
 Command12_Click_Err:
-104     Call TraceError(Err.Number, Err.Description, "frmMain.Command12_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command12_Click", Erl)
 End Sub
 
 Private Sub Command13_Click()
-        
-        On Error GoTo Command13_Click_Err
-        
-100     Call LoadBalance
-
-        
-        Exit Sub
-
+    On Error GoTo Command13_Click_Err
+    Call LoadBalance
+    Exit Sub
 Command13_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmMain.Command13_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command13_Click", Erl)
 End Sub
 
 Private Sub Command2_Click()
-        
-        On Error GoTo Command2_Click_Err
-        
-100     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1660, BroadMsg.Text, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1660=Servidor » ¬1
-        
-        Exit Sub
-
+    On Error GoTo Command2_Click_Err
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1660, BroadMsg.Text, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1660=Servidor » ¬1
+    Exit Sub
 Command2_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmMain.Command2_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command2_Click", Erl)
 End Sub
 
 Private Sub Command4_Click()
-        
-        On Error GoTo Command4_Click_Err
-
-100     If MsgBox("¿Está seguro que desea guardar y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
-        
-102     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1661, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1661=Servidor » Cerrando servidor.
-
-104     Call GuardarUsuarios
-106     Call EcharPjsNoPrivilegiados
-
-108     GuardarYCerrar = True
-110     Unload frmMain
-
-        
-        Exit Sub
-
+    On Error GoTo Command4_Click_Err
+    If MsgBox("¿Está seguro que desea guardar y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1661, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1661=Servidor » Cerrando servidor.
+    Call GuardarUsuarios
+    Call EcharPjsNoPrivilegiados
+    GuardarYCerrar = True
+    Unload frmMain
+    Exit Sub
 Command4_Click_Err:
-112     Call TraceError(Err.Number, Err.Description, "frmMain.Command4_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command4_Click", Erl)
 End Sub
 
-
 Private Sub Command6_Click()
-        
-        On Error GoTo Command6_Click_Err
-        
-100     Call LoadIntervalos
-101     Call LoadPacketRatePolicy
-        
-        Exit Sub
-
+    On Error GoTo Command6_Click_Err
+    Call LoadIntervalos
+    Call LoadPacketRatePolicy
+    Exit Sub
 Command6_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmMain.Command6_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command6_Click", Erl)
 End Sub
 
 Private Sub Command7_Click()
-        
-        On Error GoTo Command7_Click_Err
-        
-100     Call loadAdministrativeUsers
-
-        
-        Exit Sub
-
+    On Error GoTo Command7_Click_Err
+    Call loadAdministrativeUsers
+    Exit Sub
 Command7_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmMain.Command7_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command7_Click", Erl)
 End Sub
 
 Private Sub Command8_Click()
-        
-        On Error GoTo Command8_Click_Err
-        
-100     Call LoadOBJData
-102     Call LoadPesca
-104     Call LoadRecursosEspeciales
-106     Call LoadRangosFaccion
-108     Call LoadRecompensasFaccion
-
-
-        Exit Sub
-
+    On Error GoTo Command8_Click_Err
+    Call LoadOBJData
+    Call LoadPesca
+    Call LoadRecursosEspeciales
+    Call LoadRangosFaccion
+    Call LoadRecompensasFaccion
+    Exit Sub
 Command8_Click_Err:
-110     Call TraceError(Err.Number, Err.Description, "frmMain.Command8_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command8_Click", Erl)
 End Sub
 
 Private Sub Command9_Click()
-        
-        On Error GoTo Command9_Click_Err
-        
-100     Call CargaNpcsDat(True)
-
-        
-        Exit Sub
-
+    On Error GoTo Command9_Click_Err
+    Call CargaNpcsDat(True)
+    Exit Sub
 Command9_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmMain.Command9_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.Command9_Click", Erl)
 End Sub
 
 Private Sub EstadoTimer_Timer()
     On Error GoTo EstadoTimer_Timer_Err
     Call GetHoraActual
-    Dim i As Long
+    Dim i                As Long
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
-    For i = 1 To Baneos.Count
+    For i = 1 To Baneos.count
         If Baneos(i).FechaLiberacion <= Now Then
             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1787, Baneos(i).name, e_FontTypeNames.FONTTYPE_SERVER)) ' Msg1787=Servidor » Se ha concluido la sentencia de ban para ¬1.
-            Call UnBan(Baneos(i).Name)
+            Call UnBan(Baneos(i).name)
             Call Baneos.Remove(i)
             Call SaveBans
         End If
     Next
-
     Select Case frmMain.lblhora.Caption
         Case "0:00:00"
             HoraEvento = 0
@@ -1615,26 +1372,18 @@ EstadoTimer_Timer_Err:
 End Sub
 
 Private Sub Automatic_Event_Timer()
-        
     On Error GoTo Evento_Timer_Err
-
     'validacion para captura la bandera que es unico
     If EventoActivo Then Exit Sub
-    
-    Dim CurrentDay As Byte
-    Dim CurrentHour As Byte
-
+    Dim CurrentDay    As Byte
+    Dim CurrentHour   As Byte
     Dim EventOfTheDay As Integer
-
     CurrentDay = Weekday(Date) 'domingo=1 , lunes=2, martes=3, miercoles=4, jueves=5, viernes=6, sabado=7
     CurrentHour = Hour(Time) 'number between 0 and 23
-
     'si no es la hora de activar el evento salimos
     If SvrConfig.GetValue("AUTOEVENTHOURCALENDAR_Horarios") <> CurrentHour Then
         Exit Sub
     End If
-    
-    
     If AlreadyDidAutoEventToday Then
         '3600000 = 1 hora en milisegundos
         If GetTickCount - LastAutoEventAttempt > 3600000 Then
@@ -1642,7 +1391,6 @@ Private Sub Automatic_Event_Timer()
         End If
         Exit Sub
     End If
-    
     Select Case CurrentDay
         Case 1 'domingo
             EventOfTheDay = SvrConfig.GetValue("AUTOEVENTDAYCALENDAR_Domingo")
@@ -1659,17 +1407,12 @@ Private Sub Automatic_Event_Timer()
         Case 7 'sÃ¡bado
             EventOfTheDay = SvrConfig.GetValue("AUTOEVENTDAYCALENDAR_Sabado")
     End Select
-
     'no hay evento programado para hoy
     If EventOfTheDay = 0 Then
         Exit Sub
     End If
-
     Dim LobbySettings As t_NewScenearioSettings
-
-    
     Select Case EventOfTheDay
-
         Case e_EventType.CaptureTheFlag
             LobbySettings.ScenearioType = e_EventType.CaptureTheFlag
             LobbySettings.MinLevel = SvrConfig.GetValue("AUTOCAPTURETHEFLAG_MinLevel")
@@ -1681,7 +1424,6 @@ Private Sub Automatic_Event_Timer()
             LobbySettings.RoundNumber = SvrConfig.GetValue("AUTOCAPTURETHEFLAG_RoundNumber")
             LobbySettings.InscriptionFee = SvrConfig.GetValue("AUTOCAPTURETHEFLAG_InscriptionFee")
             LobbySettings.Description = SvrConfig.GetValue("AUTOCAPTURETHEFLAG_Description")
-
         Case e_EventType.NpcHunt
             LobbySettings.ScenearioType = e_EventType.NpcHunt
             LobbySettings.MinLevel = SvrConfig.GetValue("AUTONPCHUNT_MinLevel")
@@ -1693,7 +1435,6 @@ Private Sub Automatic_Event_Timer()
             LobbySettings.RoundNumber = SvrConfig.GetValue("AUTONPCHUNT_RoundNumber")
             LobbySettings.InscriptionFee = SvrConfig.GetValue("AUTONPCHUNT_InscriptionFee")
             LobbySettings.Description = SvrConfig.GetValue("AUTONPCHUNT_Description")
-
         Case e_EventType.DeathMatch
             LobbySettings.ScenearioType = e_EventType.DeathMatch
             LobbySettings.MinLevel = SvrConfig.GetValue("AUTODEATHMATCH_MinLevel")
@@ -1705,7 +1446,6 @@ Private Sub Automatic_Event_Timer()
             LobbySettings.RoundNumber = SvrConfig.GetValue("AUTODEATHMATCH_RoundNumber")
             LobbySettings.InscriptionFee = SvrConfig.GetValue("AUTODEATHMATCH_InscriptionFee")
             LobbySettings.Description = SvrConfig.GetValue("AUTODEATHMATCH_Description")
-
         Case e_EventType.NavalBattle
             LobbySettings.ScenearioType = e_EventType.NavalBattle
             LobbySettings.MinLevel = SvrConfig.GetValue("AUTONAVALBATTLE_MinLevel")
@@ -1718,130 +1458,84 @@ Private Sub Automatic_Event_Timer()
             LobbySettings.InscriptionFee = SvrConfig.GetValue("AUTONAVALBATTLE_InscriptionFee")
             LobbySettings.Description = SvrConfig.GetValue("AUTONAVALBATTLE_Description")
     End Select
-
     LobbySettings.Password = ""
-
     CurrentActiveEventType = LobbySettings.ScenearioType
-    
     If LobbySettings.ScenearioType = e_EventType.CaptureTheFlag Then
         Call HandleIniciarCaptura(LobbySettings)
     Else
         Call CreatePublicEvent(LobbySettings)
     End If
-    
     AlreadyDidAutoEventToday = True
     LastAutoEventAttempt = GetTickCount
-    
     Exit Sub
 Evento_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Evento_Timer", Erl)
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-        
-        On Error GoTo Form_MouseMove_Err
-   
-100     If Not Visible Then
-
-102         Select Case X \ Screen.TwipsPerPixelX
-                
-                Case WM_LBUTTONDBLCLK
-104                 WindowState = vbNormal
-106                 Visible = True
-
-                    Dim hProcess As Long
-
-108                 GetWindowThreadProcessId hwnd, hProcess
-110                 AppActivate hProcess
-
-112             Case WM_RBUTTONUP
-114                 hHook = SetWindowsHookEx(WH_CALLWNDPROC, AddressOf AppHook, App.hInstance, App.ThreadID)
-116                 PopupMenu mnuPopUp
-
-118                 If hHook Then
-120                     UnhookWindowsHookEx hHook
-122                     hHook = 0
-                    End If
-
-
-            End Select
-
-        End If
-   
-        
-        Exit Sub
-
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    On Error GoTo Form_MouseMove_Err
+    If Not Visible Then
+        Select Case x \ Screen.TwipsPerPixelX
+            Case WM_LBUTTONDBLCLK
+                WindowState = vbNormal
+                Visible = True
+                Dim hProcess As Long
+                GetWindowThreadProcessId hwnd, hProcess
+                AppActivate hProcess
+            Case WM_RBUTTONUP
+                hHook = SetWindowsHookEx(WH_CALLWNDPROC, AddressOf AppHook, App.hInstance, App.ThreadID)
+                PopupMenu mnuPopUp
+                If hHook Then
+                    UnhookWindowsHookEx hHook
+                    hHook = 0
+                End If
+        End Select
+    End If
+    Exit Sub
 Form_MouseMove_Err:
-124     Call TraceError(Err.Number, Err.Description, "frmMain.Form_MouseMove", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.Form_MouseMove", Erl)
 End Sub
 
 Public Sub QuitarIconoSystray()
-        
-        On Error GoTo QuitarIconoSystray_Err
-    
-        
-
-        
-
-        'Borramos el icono del systray
-        Dim i   As Integer
-        Dim nid As NOTIFYICONDATA
-
-100     nid = setNOTIFYICONDATA(frmMain.hwnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, vbNull, frmMain.Icon, "")
-
-102     i = Shell_NotifyIconA(NIM_DELETE, nid)
-
-        
-        Exit Sub
-
+    On Error GoTo QuitarIconoSystray_Err
+    'Borramos el icono del systray
+    Dim i   As Integer
+    Dim nid As NOTIFYICONDATA
+    nid = setNOTIFYICONDATA(frmMain.hwnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, vbNull, frmMain.Icon, "")
+    i = Shell_NotifyIconA(NIM_DELETE, nid)
+    Exit Sub
 QuitarIconoSystray_Err:
-104     Call TraceError(Err.Number, Err.Description, "frmMain.QuitarIconoSystray", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.QuitarIconoSystray", Erl)
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-        
-        On Error GoTo Form_QueryUnload_Err
-    
-        
-100     If GuardarYCerrar Then Exit Sub
-102     If MsgBox("¿Deseas FORZAR el CIERRE del servidor?" & vbNewLine & vbNewLine & "Ten en cuenta que ES POSIBLE PIERDAS DATOS!", vbYesNo, "¡FORZAR CIERRE!") = vbNo Then
-104         Cancel = True
-        End If
-    
-        
-        Exit Sub
-
+    On Error GoTo Form_QueryUnload_Err
+    If GuardarYCerrar Then Exit Sub
+    If MsgBox("¿Deseas FORZAR el CIERRE del servidor?" & vbNewLine & vbNewLine & "Ten en cuenta que ES POSIBLE PIERDAS DATOS!", vbYesNo, "¡FORZAR CIERRE!") = vbNo Then
+        Cancel = True
+    End If
+    Exit Sub
 Form_QueryUnload_Err:
-106     Call TraceError(Err.Number, Err.Description, "frmMain.Form_QueryUnload", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.Form_QueryUnload", Erl)
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
-        
-
-  Call CerrarServidor
-
-        
+    Call CerrarServidor
 End Sub
 
 Private Sub GameTimer_Timer()
-On Error GoTo HayError
-    Dim iUserIndex   As Long
+    On Error GoTo HayError
+    Dim iUserIndex       As Long
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
     '<<<<<< Procesa eventos de los usuarios >>>>>>
     For iUserIndex = 1 To LastUser
         With UserList(iUserIndex)
             If .flags.UserLogged Then
-                Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.X, .Pos.Y)
+                Call DoTileEvents(iUserIndex, .pos.Map, .pos.x, .pos.y)
                 If .flags.Muerto = 0 Then
                     'Efectos en mapas
-                    If (.flags.Privilegios And e_PlayerType.user) <> 0 Then
+                    If (.flags.Privilegios And e_PlayerType.User) <> 0 Then
                         Call EfectoLava(iUserIndex)
                         Call EfectoFrio(iUserIndex)
                         If .flags.Envenenado <> 0 Then Call EfectoVeneno(iUserIndex)
@@ -1867,14 +1561,12 @@ HayError:
 End Sub
 
 Private Sub HoraFantasia_Timer()
-        
     On Error GoTo HoraFantasia_Timer_Err
     If Lloviendo Then
         Label6.Caption = "Lloviendo"
     Else
         Label6.Caption = "No llueve"
     End If
-
     If ServidorNublado Then
         Label7.Caption = "Nublado"
     Else
@@ -1886,63 +1578,34 @@ HoraFantasia_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.HoraFantasia_Timer", Erl)
 End Sub
 
-
 Private Sub mnuCerrar_Click()
-        
-        On Error GoTo mnuCerrar_Click_Err
-        
-
-100     If MsgBox("¡¡Atencion!! Si cierra el servidor puede provocar la perdida de datos. ¿Desea hacerlo de todas maneras?", vbYesNo) = vbYes Then
-
-            Dim f
-102         For Each f In Forms
-104             Unload f
-            Next
-
-        End If
-
-        
-        Exit Sub
-
+    On Error GoTo mnuCerrar_Click_Err
+    If MsgBox("¡¡Atencion!! Si cierra el servidor puede provocar la perdida de datos. ¿Desea hacerlo de todas maneras?", vbYesNo) = vbYes Then
+        Dim f
+        For Each f In Forms
+            Unload f
+        Next
+    End If
+    Exit Sub
 mnuCerrar_Click_Err:
-106     Call TraceError(Err.Number, Err.Description, "frmMain.mnuCerrar_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.mnuCerrar_Click", Erl)
 End Sub
 
 Private Sub mnusalir_Click()
-        
-        On Error GoTo mnusalir_Click_Err
-        
-100     Call mnuCerrar_Click
-
-        
-        Exit Sub
-
+    On Error GoTo mnusalir_Click_Err
+    Call mnuCerrar_Click
+    Exit Sub
 mnusalir_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmMain.mnusalir_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.mnusalir_Click", Erl)
 End Sub
 
 Public Sub mnuMostrar_Click()
-        
-        On Error GoTo mnuMostrar_Click_Err
-    
-        
-
-        
-
-100     WindowState = vbNormal
-102     Form_MouseMove 0, 0, 7725, 0
-
-        
-        Exit Sub
-
+    On Error GoTo mnuMostrar_Click_Err
+    WindowState = vbNormal
+    Form_MouseMove 0, 0, 7725, 0
+    Exit Sub
 mnuMostrar_Click_Err:
-104     Call TraceError(Err.Number, Err.Description, "frmMain.mnuMostrar_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.mnuMostrar_Click", Erl)
 End Sub
 
 Private Sub KillLog_Timer()
@@ -1964,48 +1627,29 @@ KillLog_Timer_Err:
 End Sub
 
 Private Sub mnuServidor_Click()
-        
-        On Error GoTo mnuServidor_Click_Err
-        
-100     frmServidor.Visible = True
-
-        
-        Exit Sub
-
+    On Error GoTo mnuServidor_Click_Err
+    frmServidor.Visible = True
+    Exit Sub
 mnuServidor_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmMain.mnuServidor_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.mnuServidor_Click", Erl)
 End Sub
 
 Private Sub mnuSystray_Click()
-        
-        On Error GoTo mnuSystray_Click_Err
-        
-
-        Dim i   As Integer
-        Dim S   As String
-        Dim nid As NOTIFYICONDATA
-
-100     S = "ARGENTUM-ONLINE"
-102     nid = setNOTIFYICONDATA(frmMain.hwnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, WM_MOUSEMOVE, frmMain.Icon, S)
-104     i = Shell_NotifyIconA(NIM_ADD, nid)
-    
-106     If WindowState <> vbMinimized Then WindowState = vbMinimized
-
-108     Visible = False
-
-        
-        Exit Sub
-
+    On Error GoTo mnuSystray_Click_Err
+    Dim i   As Integer
+    Dim s   As String
+    Dim nid As NOTIFYICONDATA
+    s = "ARGENTUM-ONLINE"
+    nid = setNOTIFYICONDATA(frmMain.hwnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, WM_MOUSEMOVE, frmMain.Icon, s)
+    i = Shell_NotifyIconA(NIM_ADD, nid)
+    If WindowState <> vbMinimized Then WindowState = vbMinimized
+    Visible = False
+    Exit Sub
 mnuSystray_Click_Err:
-110     Call TraceError(Err.Number, Err.Description, "frmMain.mnuSystray_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmMain.mnuSystray_Click", Erl)
 End Sub
 
 Private Sub SubastaTimer_Timer()
-        
     On Error GoTo SubastaTimer_Timer_Err
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
@@ -2015,7 +1659,6 @@ Private Sub SubastaTimer_Timer()
         Subasta.MinutosDeSubasta = 4
         Subasta.PosibleCancelo = True
     End If
-    
     'Si ya pasaron dos minutos y no hubo ofertas, cancelamos la subasta
     If Subasta.TiempoRestanteSubasta = 180 And Subasta.HuboOferta = False Then
         Subasta.HaySubastaActiva = False
@@ -2024,11 +1667,9 @@ Private Sub SubastaTimer_Timer()
         Call DevolverItem
         Exit Sub
     End If
-
     If Subasta.PosibleCancelo = True Then
         Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta - 1
     End If
-    
     If Subasta.TiempoRestanteSubasta > 0 And Subasta.PosibleCancelo = False Then
         If Subasta.TiempoRestanteSubasta = 240 Then
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1664, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1664=¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
@@ -2038,58 +1679,45 @@ Private Sub SubastaTimer_Timer()
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1665, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1665=¡Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
             Subasta.MinutosDeSubasta = "3"
         End If
-
         If Subasta.TiempoRestanteSubasta = 120 Then
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1666, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1666=¡Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
             Subasta.MinutosDeSubasta = "2"
         End If
-
         If Subasta.TiempoRestanteSubasta = 60 Then
             Subasta.MinutosDeSubasta = "1"
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1667, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1667=¡Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
         End If
         Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta - 1
     End If
-    
     If Subasta.TiempoRestanteSubasta = 1 Then
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1668, Subasta.Comprador, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1668=¡La subasta ha terminado! El ganador fue: ¬1
-
         Call FinalizarSubasta
     End If
     Call PerformTimeLimitCheck(PerformanceTimer, "SubastaTimer_Timer")
-        
     Exit Sub
-
 SubastaTimer_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.SubastaTimer_Timer", Erl)
-
-        
 End Sub
-
-
-
-
-
 
 Private Sub TIMER_AI_Timer()
     On Error GoTo ErrorHandler
-    Dim NpcIndex As Long
+    Dim NpcIndex         As Long
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
     If Not haciendoBK And Not EnPausa Then
         For NpcIndex = 1 To LastNPC
             With NpcList(NpcIndex)
-                If .Pos.Map > 0 Then
-                    If MapInfo(.Pos.Map).NumUsers > 0 Or MapInfo(.Pos.Map).ForceUpdate Then
-                                If .flags.NPCActive Then
-                                    If .npcType = DummyTarget Then
-                                        Call NpcDummyUpdate(NpcIndex)
-                                     Else
-                                        If .flags.Paralizado > 0 Then Call EfectoParalisisNpc(NpcIndex)
-                                        If .flags.Inmovilizado > 0 Then Call EfectoInmovilizadoNpc(NpcIndex)
-                                        If IntervaloPermiteMoverse(NpcIndex) Then Call NpcAI(NpcIndex)
-                                    End If 'If .npcType = DummyTarget Then
-                                End If 'If .flags.NPCActive Then
+                If .pos.Map > 0 Then
+                    If MapInfo(.pos.Map).NumUsers > 0 Or MapInfo(.pos.Map).ForceUpdate Then
+                        If .flags.NPCActive Then
+                            If .npcType = DummyTarget Then
+                                Call NpcDummyUpdate(NpcIndex)
+                            Else
+                                If .flags.Paralizado > 0 Then Call EfectoParalisisNpc(NpcIndex)
+                                If .flags.Inmovilizado > 0 Then Call EfectoInmovilizadoNpc(NpcIndex)
+                                If IntervaloPermiteMoverse(NpcIndex) Then Call NpcAI(NpcIndex)
+                            End If 'If .npcType = DummyTarget Then
+                        End If 'If .flags.NPCActive Then
                     End If 'If MapInfo(.Pos.Map).NumUsers > 0 Then
                 End If 'If .Pos.Map > 0 Then
             End With
@@ -2097,26 +1725,19 @@ Private Sub TIMER_AI_Timer()
     End If
     Call PerformTimeLimitCheck(PerformanceTimer, "TIMER_AI_Timer", 600)
     Exit Sub
-
 ErrorHandler:
-    Call TraceError(Err.Number, Err.Description & vbNewLine & _
-                                    "NPC: " & NpcList(NpcIndex).Name & _
-                                    " en la posicion: " & NpcList(NpcIndex).Pos.Map & "-" & NpcList(NpcIndex).Pos.X & "-" & NpcList(NpcIndex).Pos.Y, "frmMain.Timer_AI", Erl)
+    Call TraceError(Err.Number, Err.Description & vbNewLine & "NPC: " & NpcList(NpcIndex).name & " en la posicion: " & NpcList(NpcIndex).pos.Map & "-" & NpcList(NpcIndex).pos.x _
+            & "-" & NpcList(NpcIndex).pos.y, "frmMain.Timer_AI", Erl)
     Call MuereNpc(NpcIndex, 0)
-
 End Sub
 
 Private Sub TimerMeteorologia_Timer()
     'Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1741, TimerMeteorologico, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1741=Servidor > Timer de lluvia en : ¬1
-        
     On Error GoTo TimerMeteorologia_Timer_Err
-        
-
     If TimerMeteorologico > 7 Then
         TimerMeteorologico = TimerMeteorologico - 1
         Exit Sub
     End If
-
     If TimerMeteorologico = 7 Then
         ProbabilidadNublar = RandomNumber(1, 3)
         If ProbabilidadNublar = 1 Then
@@ -2137,7 +1758,6 @@ Private Sub TimerMeteorologia_Timer()
             Exit Sub
         End If
     End If
-
     If TimerMeteorologico < 7 And TimerMeteorologico > 3 Then
         TimerMeteorologico = TimerMeteorologico - 1
         'Enviar Truenos y rayos
@@ -2146,7 +1766,6 @@ Private Sub TimerMeteorologia_Timer()
         Call AgregarAConsola("Servidor » Truenos y nubes activados.")
         Exit Sub
     End If
-
     If TimerMeteorologico = 3 Then
         ProbabilidadLLuvia = RandomNumber(1, 5)
         If ProbabilidadLLuvia = 1 Then
@@ -2170,12 +1789,10 @@ Private Sub TimerMeteorologia_Timer()
             Exit Sub
         End If
     End If
-
     If TimerMeteorologico < 3 And TimerMeteorologico > 0 Then
         TimerMeteorologico = TimerMeteorologico - 1
         Exit Sub
     End If
-
     If TimerMeteorologico = 0 Then
         'dejar de llover y sacar nubes
         Nieblando = False
@@ -2195,9 +1812,8 @@ TimerMeteorologia_Timer_Err:
 End Sub
 
 Private Sub TimerRespawn_Timer()
-
     On Error GoTo ErrorHandler
-    Dim NpcIndex As Long
+    Dim NpcIndex         As Long
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
     'Update NPCs
@@ -2208,7 +1824,7 @@ Private Sub TimerRespawn_Timer()
                 RespawnList(NpcIndex).Contadores.IntervaloRespawn = RespawnList(NpcIndex).Contadores.IntervaloRespawn - 1
             Else
                 RespawnList(NpcIndex).flags.NPCActive = False
-                If RespawnList(NpcIndex).InformarRespawn = 1 Then 
+                If RespawnList(NpcIndex).InformarRespawn = 1 Then
                     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1788, RespawnList(NpcIndex).Numero, e_FontTypeNames.FONTTYPE_EXP)) ' Msg1788=¬1 ha vuelto a este mundo.
                     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
                 End If
@@ -2218,37 +1834,30 @@ Private Sub TimerRespawn_Timer()
     Next NpcIndex
     Call PerformTimeLimitCheck(PerformanceTimer, "TimerRespawn_Timer")
     Exit Sub
-
 ErrorHandler:
-    Call TraceError(Err.Number, Err.Description & vbNewLine & _
-                                    "NPC: " & NpcList(NpcIndex).Name & _
-                                    " en la posicion: " & NpcList(NpcIndex).Pos.Map & "-" & NpcList(NpcIndex).Pos.X & "-" & NpcList(NpcIndex).Pos.Y, "frmMain.TimerRespawn_Timer", Erl)
+    Call TraceError(Err.Number, Err.Description & vbNewLine & "NPC: " & NpcList(NpcIndex).name & " en la posicion: " & NpcList(NpcIndex).pos.Map & "-" & NpcList(NpcIndex).pos.x _
+            & "-" & NpcList(NpcIndex).pos.y, "frmMain.TimerRespawn_Timer", Erl)
     Call MuereNpc(NpcIndex, 0)
-
 End Sub
 
 Private Sub tPiqueteC_Timer()
-
     On Error GoTo ErrHandler
-
-    Static segundos As Integer
-    Dim NuevaA      As Boolean
-    Dim NuevoL      As Boolean
-    Dim GI          As Integer
+    Static segundos      As Integer
+    Dim NuevaA           As Boolean
+    Dim NuevoL           As Boolean
+    Dim GI               As Integer
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
     segundos = segundos + 6
-
     Dim i As Long
     For i = 1 To LastUser
         If UserList(i).flags.UserLogged Then
-            If MapData(UserList(i).Pos.Map, UserList(i).Pos.X, UserList(i).Pos.Y).trigger = e_Trigger.ANTIPIQUETE Then
+            If MapData(UserList(i).pos.Map, UserList(i).pos.x, UserList(i).pos.y).trigger = e_Trigger.ANTIPIQUETE Then
                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
                 ' Le empiezo a avisar a partir de los 18 segundos, para no spamear
                 If UserList(i).Counters.PiqueteC > 3 Then
                     Call WriteLocaleMsg(i, "70", e_FontTypeNames.FONTTYPE_INFO)
                 End If
-            
                 If UserList(i).Counters.PiqueteC > 10 Then
                     UserList(i).Counters.PiqueteC = 0
                     'Call Encarcelar(i, TIEMPO_CARCEL_PIQUETE)
@@ -2261,7 +1870,7 @@ Private Sub tPiqueteC_Timer()
                 If UserList(i).Counters.PiqueteC > 0 Then UserList(i).Counters.PiqueteC = 0
             End If
             If segundos >= 18 Then
-                If segundos >= 18 Then UserList(i).Counters.Pasos = 0
+                If segundos >= 18 Then UserList(i).Counters.pasos = 0
             End If
         End If
     Next i
@@ -2297,4 +1906,3 @@ Private Sub UptimeTimer_Timer()
 UptimeTimer_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.UptimeTimer_Timer", Erl)
 End Sub
-

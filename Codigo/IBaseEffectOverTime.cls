@@ -75,7 +75,7 @@ End Property
 Public Property Get EotId() As Integer
 End Property
 
-Public Sub Update(ByVal deltaTime As Long)
+Public Sub Update(ByVal DeltaTime As Long)
 End Sub
 
 Public Property Get EffectType() As e_EffectType

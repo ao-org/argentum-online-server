@@ -38,48 +38,44 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-
 Const RequiredWeaponId = 1847
 Const MaxActiveNpc = 30
 Const configPath = "../dat/Scenarios/NpcHunt.ini"
 Const RequireItemMessage = 403
 Const MillisecondInSecond = 1000
-
 Implements IBaseScenario
-
-Dim MatchNpc As New Dictionary
+Dim MatchNpc           As New Dictionary
 Dim SpawnCreatureCount As Integer
-Dim ElapsedTime As Long
-Dim LastFrameTime As Long
-Dim LastScoreUpdate As Long
-Dim ActiveNpc As Integer
+Dim ElapsedTime        As Long
+Dim LastFrameTime      As Long
+Dim LastScoreUpdate    As Long
+Dim ActiveNpc          As Integer
 Dim SpawnedCreaturesId As New Dictionary
-Dim MapNumber As Integer
-Dim UpdateIndex As Integer
-Dim MaxTime As Long
-Dim TargetScore As Integer
-Dim BroadCastInterval As Long
-Attribute BroadCastInterval.VB_VarHelpID = -1
-Dim LastBroadCastTime As Long
-Dim frametime As Long
-Dim Board As New ScoreBoard
-Dim StartTimer As t_Timer
-Dim PrevMapState As Integer
-Dim MapDropItems As Boolean
-Dim PlayerRespawn As New Dictionary
-Dim PlayerRespawnTime As Long
-Dim LobbyIndex As Integer
+Dim MapNumber          As Integer
+Dim UpdateIndex        As Integer
+Dim MaxTime            As Long
+Dim TargetScore        As Integer
+Dim BroadCastInterval  As Long
+Dim LastBroadCastTime  As Long
+Dim frametime          As Long
+Dim Board              As New ScoreBoard
+Dim StartTimer         As t_Timer
+Dim PrevMapState       As Integer
+Dim MapDropItems       As Boolean
+Dim PlayerRespawn      As New Dictionary
+Dim PlayerRespawnTime  As Long
+Dim LobbyIndex         As Integer
 
 Friend Sub RegisterNpc(ByVal Tag, ByVal sectionSize, ByRef registry As Dictionary, ByRef File As clsIniManager)
-    Dim i As Integer
+    Dim i        As Integer
     Dim npcEntry As EventNpcDefinition
     For i = 1 To sectionSize
         Set npcEntry = New EventNpcDefinition
-        npcEntry.npcId = val(File.GetValue(Tag & i, "NPCID"))
+        npcEntry.NpcId = val(File.GetValue(Tag & i, "NPCID"))
         npcEntry.SpawnCount = val(File.GetValue(Tag & i, "count"))
         npcEntry.Score = val(File.GetValue(Tag & i, "score"))
-        If Not registry.Exists(npcEntry.npcId) Then
-            Call registry.Add(npcEntry.npcId, npcEntry)
+        If Not registry.Exists(npcEntry.NpcId) Then
+            Call registry.Add(npcEntry.NpcId, npcEntry)
         End If
     Next i
 End Sub
@@ -93,52 +89,52 @@ End Sub
 
 Private Sub Class_Initialize()
     On Error GoTo Hunt_Initialize_Err:
-        Dim validNpcCount As Integer
-        Dim ScenarioIni As clsIniManager
-100     Set ScenarioIni = New clsIniManager
-102     Debug.Assert FileExist(DatPath & configPath)
-        Dim OriginalMap As Integer
-104     Call ScenarioIni.Initialize(DatPath & configPath)
-106     validNpcCount = val(ScenarioIni.GetValue("INIT", "TargetNpc"))
-108     OriginalMap = val(ScenarioIni.GetValue("INIT", "MapNumber"))
-110     MapNumber = InstanceManager.GetNextAvailableInstance
-112     Call InstanceManager.CloneMap(OriginalMap, MapNumber)
-114     MaxTime = val(ScenarioIni.GetValue("INIT", "MaxTime"))
-116     MaxTime = MaxTime * 1000
-118     PlayerRespawnTime = val(ScenarioIni.GetValue("INIT", "PlayerRespawnTime"))
-120     PlayerRespawnTime = PlayerRespawnTime * 1000
-122     TargetScore = val(ScenarioIni.GetValue("INIT", "TargetScore"))
-124     Call RegisterNpc("TARGET", validNpcCount, MatchNpc, ScenarioIni)
-126     UpdateIndex = AddUpdateScenario(Me)
-128     Call CustomScenarios.SetCustomScenario(MapNumber, Me)
-130     LastBroadCastTime = 0
-        Exit Sub
+    Dim validNpcCount As Integer
+    Dim ScenarioIni   As clsIniManager
+    Set ScenarioIni = New clsIniManager
+    Debug.Assert FileExist(DatPath & configPath)
+    Dim OriginalMap As Integer
+    Call ScenarioIni.Initialize(DatPath & configPath)
+    validNpcCount = val(ScenarioIni.GetValue("INIT", "TargetNpc"))
+    OriginalMap = val(ScenarioIni.GetValue("INIT", "MapNumber"))
+    MapNumber = InstanceManager.GetNextAvailableInstance
+    Call InstanceManager.CloneMap(OriginalMap, MapNumber)
+    MaxTime = val(ScenarioIni.GetValue("INIT", "MaxTime"))
+    MaxTime = MaxTime * 1000
+    PlayerRespawnTime = val(ScenarioIni.GetValue("INIT", "PlayerRespawnTime"))
+    PlayerRespawnTime = PlayerRespawnTime * 1000
+    TargetScore = val(ScenarioIni.GetValue("INIT", "TargetScore"))
+    Call RegisterNpc("TARGET", validNpcCount, MatchNpc, ScenarioIni)
+    UpdateIndex = AddUpdateScenario(Me)
+    Call CustomScenarios.SetCustomScenario(MapNumber, Me)
+    LastBroadCastTime = 0
+    Exit Sub
 Hunt_Initialize_Err:
-136 Call TraceError(Err.Number, Err.Description, "ScenarioHunt.Initialize ", Erl)
+    Call TraceError(Err.Number, Err.Description, "ScenarioHunt.Initialize ", Erl)
 End Sub
 
 Private Sub CloseScenario()
     On Error GoTo CloseScenario_Err:
-100    Call ModLobby.ReturnAllPlayers(LobbyList(LobbyIndex))
-102    Set LobbyList(LobbyIndex).Scenario = Nothing
-104    Call ModLobby.UpdateLobbyState(LobbyList(LobbyIndex), e_LobbyState.UnInitilized)
-106    Call ClearMap
-108    If MapNumber > 0 Then
-110         Call ReleaseLobby(LobbyIndex)
-112         Call ReleaseInstance(MapNumber)
-114         MapNumber = 0
-       End If
+    Call ModLobby.ReturnAllPlayers(LobbyList(LobbyIndex))
+    Set LobbyList(LobbyIndex).Scenario = Nothing
+    Call ModLobby.UpdateLobbyState(LobbyList(LobbyIndex), e_LobbyState.UnInitilized)
+    Call ClearMap
+    If MapNumber > 0 Then
+        Call ReleaseLobby(LobbyIndex)
+        Call ReleaseInstance(MapNumber)
+        MapNumber = 0
+    End If
     Exit Sub
 CloseScenario_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.CloseScenario ", Erl)
 End Sub
 
 Private Sub ClearMap()
-On Error GoTo ClearMap_Err:
-106    CustomScenarios.RemoveCustomScenario (MapNumber)
-108    CustomScenarios.RemoveUpdateScenario (UpdateIndex)
-110    MapInfo(MapNumber).Seguro = PrevMapState
-112    MapInfo(MapNumber).DropItems = MapDropItems
+    On Error GoTo ClearMap_Err:
+    CustomScenarios.RemoveCustomScenario (MapNumber)
+    CustomScenarios.RemoveUpdateScenario (UpdateIndex)
+    MapInfo(MapNumber).Seguro = PrevMapState
+    MapInfo(MapNumber).DropItems = MapDropItems
     Exit Sub
 ClearMap_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ClearMap", Erl)
@@ -166,7 +162,7 @@ Public Function IBaseScenario_GetExtraInterfaces() As Long
 End Function
 
 Public Sub IBaseScenario_Reset()
-106        Call ClearMap
+    Call ClearMap
 End Sub
 
 Private Function IBaseScenario_RequiresSpawn() As Boolean
@@ -174,18 +170,18 @@ Private Function IBaseScenario_RequiresSpawn() As Boolean
 End Function
 
 Private Function IBaseScenario_ValidateUser(ByVal UserIndex As Integer) As Integer
-On Error GoTo ValidateUser_Err:
-       Dim i As Integer
-100    With UserList(UserIndex)
-102        For i = 1 To UBound(.invent.Object)
-104            If .invent.Object(i).ObjIndex = RequiredWeaponId Then
-106                IBaseScenario_ValidateUser = 0
-108                Exit Function
-110            End If
-112        Next i
-114        IBaseScenario_ValidateUser = RequireItemMessage
-116    End With
-       Exit Function
+    On Error GoTo ValidateUser_Err:
+    Dim i As Integer
+    With UserList(UserIndex)
+        For i = 1 To UBound(.invent.Object)
+            If .invent.Object(i).ObjIndex = RequiredWeaponId Then
+                IBaseScenario_ValidateUser = 0
+                Exit Function
+            End If
+        Next i
+        IBaseScenario_ValidateUser = RequireItemMessage
+    End With
+    Exit Function
 ValidateUser_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ValidateUser userIndex: " & UserIndex, Erl)
 End Function
@@ -213,7 +209,7 @@ End Sub
 
 Private Sub StartGame()
     Dim key As Variant
-    Dim i As Integer
+    Dim i   As Integer
     For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
         Dim SpawnPos As t_WorldPos
         SpawnPos.Map = MapNumber
@@ -227,7 +223,7 @@ Private Sub StartGame()
     Next i
     For Each key In MatchNpc.Keys
         For i = 1 To MatchNpc(key).SpawnCount
-            SpawnNpc (MatchNpc(key).npcId)
+            SpawnNpc (MatchNpc(key).NpcId)
         Next i
     Next key
     LastFrameTime = GetTickCount()
@@ -246,13 +242,12 @@ Private Sub IBaseScenario_PlayerKillNpc(ByVal NpcIndex As Integer, ByVal UserInd
             If Board.UpdatePlayerScore(UserIndex, MatchNpc.Item(npcType).Score) >= TargetScore Then
                 LobbyList(LobbyIndex).State = Completed
                 Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1731, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1731=Â¡Tenemos un ganador!
-
                 Call MatchComplete
                 Exit Sub
             End If
         End If
     Else
-        Call WriteLocaleMsg(UserIndex, 402, FONTTYPE_INFO, ObjData(RequiredWeaponId).Name)
+        Call WriteLocaleMsg(UserIndex, 402, FONTTYPE_INFO, ObjData(RequiredWeaponId).name)
     End If
     Call SpawnedCreaturesId.Remove(NpcIndex)
     Call SpawnNpc(npcType)
@@ -314,21 +309,20 @@ Public Sub IBaseScenario_OnUserReconnect(ByVal UserIndex As Integer)
 End Sub
 
 Private Sub MatchComplete()
-On Error GoTo MatchComplete_Err:
-100    Dim i As Integer
-       If Not LobbyList(LobbyIndex).Canceled Then
-101        Call Board.PublishScoreboard(SendTarget.toMap, MapNumber, LobbyList(LobbyIndex), True)
-102        Call GiveRewards
-       End If
-103    LobbyList(LobbyIndex).State = Completed
-104    Call CustomScenarios.ClearMap(MapNumber)
-
-108    ElapsedTime = MaxTime
-110    Dim key As Variant
-112    For Each key In SpawnedCreaturesId.Keys
-114        Call QuitarNPC(key, eClearHunt)
-116    Next key
-       Exit Sub
+    On Error GoTo MatchComplete_Err:
+    Dim i As Integer
+    If Not LobbyList(LobbyIndex).Canceled Then
+        Call Board.PublishScoreboard(SendTarget.toMap, MapNumber, LobbyList(LobbyIndex), True)
+        Call GiveRewards
+    End If
+    LobbyList(LobbyIndex).State = Completed
+    Call CustomScenarios.ClearMap(MapNumber)
+    ElapsedTime = MaxTime
+    Dim key As Variant
+    For Each key In SpawnedCreaturesId.Keys
+        Call QuitarNPC(key, eClearHunt)
+    Next key
+    Exit Sub
 MatchComplete_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.MatchComplete ", Erl)
     Resume Next
@@ -336,15 +330,15 @@ End Sub
 
 Private Sub SpawnNpc(ByVal npcType As Integer)
     Dim SpawnPos As t_WorldPos
-    Dim npcId As Integer
+    Dim NpcId    As Integer
     SpawnPos.Map = MapNumber
     SpawnPos.x = RandomNumber(12, 85)
     SpawnPos.y = RandomNumber(12, 85)
-    npcId = CrearNPC(npcType, MapNumber, SpawnPos)
-    If npcId > 0 Then
-        NpcList(npcId).flags.Respawn = 1
-        NpcList(npcId).Contadores.IntervaloRespawn = 0
-        Call SpawnedCreaturesId.Add(npcId, 0)
+    NpcId = CrearNPC(npcType, MapNumber, SpawnPos)
+    If NpcId > 0 Then
+        NpcList(NpcId).flags.Respawn = 1
+        NpcList(NpcId).Contadores.IntervaloRespawn = 0
+        Call SpawnedCreaturesId.Add(NpcId, 0)
     Else
         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1792, npcType, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1792=No se pudo spawnear el npc Â¬1, revisar.
         Call TraceError(Err.Number, "failed to spawn Npc " & npcType, "ScenarioHunt.SpawnNpc ", Erl)
@@ -359,7 +353,6 @@ Private Sub CloseCountDown()
         Exit Sub
     End If
     Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1821, pendingTime, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1821=El mapa se cerrarÃ¡ en Â¬1 segundos.
-
 End Sub
 
 Private Sub BroadCastTimeUpdate()
@@ -385,11 +378,9 @@ Private Sub BroadCastTimeUpdate()
 End Sub
 
 Public Sub IBaseScenario_GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)
-
 End Sub
 
 Public Sub IBaseScenario_NpcDie(ByVal NpcIndex)
-
 End Sub
 
 Public Sub IBaseScenario_UserDie(ByVal UserIndex)
@@ -421,16 +412,17 @@ Private Sub Respawn(ByVal player As Integer)
     Call WarpToLegalPos(player, MapNumber, SpawnPos.x, SpawnPos.y, True, True)
     Call RevivirUsuario(player)
     UserList(player).Counters.timeFx = 3
-114 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessageParticleFX(UserList(player).Char.charindex, e_ParticulasIndex.Curar, 100, False, , UserList(player).Pos.x, UserList(player).Pos.y))
-116 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessagePlayWave("104", UserList(player).Pos.x, UserList(player).Pos.y))
+    Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessageParticleFX(UserList(player).Char.charindex, e_ParticleEffects.Corazones, 100, False, , UserList(player).pos.x, _
+            UserList(player).pos.y))
+    Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessagePlayWave("104", UserList(player).pos.x, UserList(player).pos.y))
 End Sub
 
 Private Sub RespawnPlayers()
-    Dim key As Variant
-    Dim Keys As Variant
+    Dim key         As Variant
+    Dim Keys        As Variant
     Dim currentTime As Long
     Dim RespawnInfo As clsRespawnInfo
-    Dim i As Integer
+    Dim i           As Integer
     currentTime = GetTickCount()
     Keys = PlayerRespawn.Keys
     For Each key In Keys
@@ -455,68 +447,67 @@ End Sub
 
 Sub GiveRewards()
     On Error GoTo GiveRewards_Err:
-        Dim Teams() As String
-        Dim Rewards(1 To 3) As Long
-        Dim Reward As Long
-        Dim Ranking() As e_Rank
-        Dim RewardStr As String
-        Dim i As Integer
-        Dim j As Integer
-        
-        If LobbyList(LobbyIndex).TeamSize = 0 Then
-            LobbyList(LobbyIndex).TeamSize = 1
-        End If
-        
-100     If (LobbyList(LobbyIndex).RegisteredPlayers / LobbyList(LobbyIndex).TeamSize) = 2 Then
-102         Rewards(1) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.55
-104         Rewards(2) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.35
-        Else
-106         Rewards(1) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.4
-108         Rewards(2) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.3
-110         Rewards(3) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.2
-        End If
-112     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgMatchComplete, Me.IBaseScenario_GetScenarioName(), e_FontTypeNames.FONTTYPE_GUILD))
-114     If LobbyList(LobbyIndex).TeamSize > 1 Then
-116         ReDim Teams(0 To LobbyList(LobbyIndex).RegisteredPlayers / LobbyList(LobbyIndex).TeamSize) As String
-118         Ranking = Board.GetTeamRanking(LobbyList(LobbyIndex))
-120         For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
-122             If IsValidUserRef(LobbyList(LobbyIndex).Players(i).User) Then
-124                 Teams(LobbyList(LobbyIndex).Players(i).Team) = Teams(LobbyList(LobbyIndex).Players(i).Team) & UserList(LobbyList(LobbyIndex).Players(i).User.ArrayIndex).Name & " "
-                End If
-126         Next i
-128         For i = 1 To 3
-130             If LobbyList(LobbyIndex).AvailableInscriptionMoney > 0 Then
-132                 Reward = Rewards(i) / LobbyList(LobbyIndex).TeamSize
-134                 For j = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
-136                     If IsValidUserRef(LobbyList(LobbyIndex).Players(j).User) Then
-138                         If LobbyList(LobbyIndex).Players(j).Team = Ranking(i).PlayerIndex Then
-140                             Call GiveGoldToPlayer(LobbyList(LobbyIndex), j, Reward)
-                            End If
+    Dim Teams()         As String
+    Dim Rewards(1 To 3) As Long
+    Dim Reward          As Long
+    Dim Ranking()       As e_Rank
+    Dim RewardStr       As String
+    Dim i               As Integer
+    Dim j               As Integer
+    If LobbyList(LobbyIndex).TeamSize = 0 Then
+        LobbyList(LobbyIndex).TeamSize = 1
+    End If
+    If (LobbyList(LobbyIndex).RegisteredPlayers / LobbyList(LobbyIndex).TeamSize) = 2 Then
+        Rewards(1) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.55
+        Rewards(2) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.35
+    Else
+        Rewards(1) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.4
+        Rewards(2) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.3
+        Rewards(3) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.2
+    End If
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgMatchComplete, Me.IBaseScenario_GetScenarioName(), e_FontTypeNames.FONTTYPE_GUILD))
+    If LobbyList(LobbyIndex).TeamSize > 1 Then
+        ReDim Teams(0 To LobbyList(LobbyIndex).RegisteredPlayers / LobbyList(LobbyIndex).TeamSize) As String
+        Ranking = Board.GetTeamRanking(LobbyList(LobbyIndex))
+        For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
+            If IsValidUserRef(LobbyList(LobbyIndex).Players(i).User) Then
+                Teams(LobbyList(LobbyIndex).Players(i).team) = Teams(LobbyList(LobbyIndex).Players(i).team) & UserList(LobbyList(LobbyIndex).Players(i).User.ArrayIndex).name & " "
+            End If
+        Next i
+        For i = 1 To 3
+            If LobbyList(LobbyIndex).AvailableInscriptionMoney > 0 Then
+                Reward = Rewards(i) / LobbyList(LobbyIndex).TeamSize
+                For j = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
+                    If IsValidUserRef(LobbyList(LobbyIndex).Players(j).User) Then
+                        If LobbyList(LobbyIndex).Players(j).team = Ranking(i).PlayerIndex Then
+                            Call GiveGoldToPlayer(LobbyList(LobbyIndex), j, Reward)
                         End If
-142                 Next j
-144                 RewardStr = ", ganaron " & PonerPuntos(Reward) & " Modenas de oro cada uno."
-                End If
-146             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1823, i & "Â¬" & Teams(Ranking(i).PlayerIndex) & "Â¬" & Ranking(i).Score & "Â¬" & RewardStr, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1823=Â¬1) Â¬2: Â¬3 puntosÂ¬4
-
-148         Next i
-        Else
-150         Ranking = Board.GetRanking(3)
-152         For i = 0 To UBound(Ranking) - 1
-154             If LobbyList(LobbyIndex).AvailableInscriptionMoney > 0 Then
-156                 For j = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
-158                     If IsValidUserRef(LobbyList(LobbyIndex).Players(j).User) Then
-160                         If LobbyList(LobbyIndex).Players(j).User.ArrayIndex = Ranking(i).PlayerIndex Then
-162                             Call GiveGoldToPlayer(LobbyList(LobbyIndex), j, Rewards(i + 1))
-                                Exit For
-                            End If
+                    End If
+                Next j
+                RewardStr = ", ganaron " & PonerPuntos(Reward) & " Modenas de oro cada uno."
+            End If
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1823, i & "Â¬" & Teams(Ranking(i).PlayerIndex) & "Â¬" & Ranking(i).Score & "Â¬" & RewardStr, _
+                    e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1823=Â¬1) Â¬2: Â¬3 puntosÂ¬4
+        Next i
+    Else
+        Ranking = Board.GetRanking(3)
+        For i = 0 To UBound(Ranking) - 1
+            If LobbyList(LobbyIndex).AvailableInscriptionMoney > 0 Then
+                For j = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
+                    If IsValidUserRef(LobbyList(LobbyIndex).Players(j).User) Then
+                        If LobbyList(LobbyIndex).Players(j).User.ArrayIndex = Ranking(i).PlayerIndex Then
+                            Call GiveGoldToPlayer(LobbyList(LobbyIndex), j, Rewards(i + 1))
+                            Exit For
                         End If
-164                 Next j
-166                 RewardStr = ", gano " & PonerPuntos(Rewards(i + 1)) & " Modenas de oro."
-                End If
-168             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1824, (i + 1) & "Â¬" & UserList(Ranking(i).PlayerIndex).Name & "Â¬" & Ranking(i).Score & "Â¬" & RewardStr, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1824=Â¬1) Â¬2: Â¬3 puntosÂ¬4
-170         Next i
-        End If
-        Exit Sub
+                    End If
+                Next j
+                RewardStr = ", gano " & PonerPuntos(Rewards(i + 1)) & " Modenas de oro."
+            End If
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1824, (i + 1) & "Â¬" & UserList(Ranking(i).PlayerIndex).name & "Â¬" & Ranking(i).Score & "Â¬" & RewardStr, _
+                    e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1824=Â¬1) Â¬2: Â¬3 puntosÂ¬4
+        Next i
+    End If
+    Exit Sub
 GiveRewards_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.GiveRewards ", Erl)
 End Sub

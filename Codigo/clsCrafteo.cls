@@ -38,19 +38,14 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-
-Private m_Items() As Integer
-
-Public Tipo As Byte
-
-Public Precio As Long
-
+Private m_Items()   As Integer
+Public Tipo         As Byte
+Public precio       As Long
 Public Probabilidad As Byte
+Public Resultado    As Integer
 
-Public Resultado As Integer
-
-Public Sub SetItems(Data() As Integer)
-    m_Items = Data
+Public Sub SetItems(data() As Integer)
+    m_Items = data
 End Sub
 
 Public Property Get Tamaño() As Integer

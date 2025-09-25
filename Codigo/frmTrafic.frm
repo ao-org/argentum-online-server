@@ -60,11 +60,8 @@ Attribute VB_Exposed = False
 '
 '
 '
-
 Option Explicit
 
 Private Sub Command1_Click()
-
-100     Me.Visible = False
-   
+    Me.Visible = False
 End Sub

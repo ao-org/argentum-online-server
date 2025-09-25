@@ -1,4 +1,5 @@
 Attribute VB_Name = "ModViajar"
+
 ' Argentum 20 Game Server
 '
 '    Copyright (C) 2023 Noland Studios LTD
@@ -27,10 +28,10 @@ Attribute VB_Name = "ModViajar"
 '
 '
 Public Sub IniciarTransporte(ByVal UserIndex As Integer)
-        On Error GoTo IniciarTransporte_Err
-        Dim destinos As Byte
-100     destinos = NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).NumDestinos
-        Exit Sub
+    On Error GoTo IniciarTransporte_Err
+    Dim destinos As Byte
+    destinos = NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).NumDestinos
+    Exit Sub
 IniciarTransporte_Err:
-102     Call TraceError(Err.Number, Err.Description, "ModViajar.IniciarTransporte", Erl)
+    Call TraceError(Err.Number, Err.Description, "ModViajar.IniciarTransporte", Erl)
 End Sub

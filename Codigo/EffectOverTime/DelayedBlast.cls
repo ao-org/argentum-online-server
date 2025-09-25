@@ -38,26 +38,30 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-
 Implements IBaseEffectOverTime
-
-Dim TickTime As Long
-Dim TimeSinceLastTick As Long
-Private DotInfo As t_BaseDotInfo
-Private TargetX As Integer
-Private TargetY As Integer
-Private TargetMap As Integer
+Dim TickTime           As Long
+Dim TimeSinceLastTick  As Long
+Private DotInfo        As t_BaseDotInfo
+Private TargetX        As Integer
+Private TargetY        As Integer
+Private TargetMap      As Integer
 Private SourceObjIndex As Integer
 
-Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal EffectId As Integer, ByVal id As Long, _
-                 ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer, ByVal SourceObj As Integer)
-    Call SetBaseDot(DotInfo, SourceIndex, SourceType, ID, EffectId)
+Public Sub Setup(ByVal SourceIndex As Integer, _
+                 ByVal SourceType As e_ReferenceType, _
+                 ByVal EffectId As Integer, _
+                 ByVal Id As Long, _
+                 ByVal Map As Integer, _
+                 ByVal TileX As Integer, _
+                 ByVal TileY As Integer, _
+                 ByVal SourceObj As Integer)
+    Call SetBaseDot(DotInfo, SourceIndex, SourceType, Id, EffectId)
     TimeSinceLastTick = 0
     TargetX = TileX
     TargetY = TileY
     TargetMap = Map
     Dim Distance As t_Vector
-    Dim CurrPos As t_WorldPos
+    Dim CurrPos  As t_WorldPos
     CurrPos = GetPosition(DotInfo.TargetRef)
     SourceObjIndex = SourceObj
     With EffectOverTime(EffectId)
@@ -90,7 +94,7 @@ Public Property Get IBaseEffectOverTime_CasterRefType() As e_ReferenceType
 End Property
 
 Public Property Get IBaseEffectOverTime_CasterUserId() As Long
-    IBaseEffectOverTime_CasterUserId = DotInfo.TargetRef.userID
+    IBaseEffectOverTime_CasterUserId = DotInfo.TargetRef.UserId
 End Property
 
 Public Property Get IBaseEffectOverTime_TargetIsValid() As Boolean
@@ -106,15 +110,15 @@ Public Property Get IBaseEffectOverTime_TargetRefType() As e_ReferenceType
 End Property
 
 Public Property Get IBaseEffectOverTime_TargetUserId() As Long
-    IBaseEffectOverTime_TargetUserId = DotInfo.TargetRef.userID
+    IBaseEffectOverTime_TargetUserId = DotInfo.TargetRef.UserId
 End Property
 
 Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
     IBaseEffectOverTime_EffectType = EffectOverTime(DotInfo.EotId).buffType
 End Property
 
-Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
-    TimeSinceLastTick = TimeSinceLastTick + deltaTime
+Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
+    TimeSinceLastTick = TimeSinceLastTick + DeltaTime
     If TimeSinceLastTick >= TickTime Or Not IsValidRef(DotInfo.TargetRef) Then
         DotInfo.RemoveEffect = True
     End If
@@ -124,8 +128,8 @@ Public Property Get IBaseEffectOverTime_RemoveMe() As Boolean
     IBaseEffectOverTime_RemoveMe = DotInfo.RemoveEffect
 End Property
 
-Public Property Let IBaseEffectOverTime_RemoveMe(ByVal Value As Boolean)
-    DotInfo.RemoveEffect = Value
+Public Property Let IBaseEffectOverTime_RemoveMe(ByVal value As Boolean)
+    DotInfo.RemoveEffect = value
 End Property
 
 Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
@@ -158,7 +162,10 @@ End Sub
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
-Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType) As Long
+Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
+                                                         ByVal SourceUserId As Integer, _
+                                                         ByVal SourceType As e_ReferenceType, _
+                                                         ByVal AttackType As e_DamageSourceType) As Long
     IBaseEffectOverTime_ApplyDamageReduction = Damage
 End Function
 
@@ -184,8 +191,10 @@ Private Sub DoBlast()
     Dim Area As Integer
     Area = EffectOverTime(DotInfo.EotId).Area
     Debug.Assert Area > 0
-    If EffectOverTime(DotInfo.EotId).OnHitFx > 0 Then Call modSendData.SendToAreaByPos(TargetMap, TargetX, TargetY, PrepareMessageFxPiso(EffectOverTime(DotInfo.EotId).OnHitFx, TargetX, TargetY))
-    If EffectOverTime(DotInfo.EotId).OnHitWav > 0 Then Call modSendData.SendToAreaByPos(TargetMap, TargetX, TargetY, PrepareMessagePlayWave(EffectOverTime(DotInfo.EotId).OnHitWav, TargetX, TargetY, False))
+    If EffectOverTime(DotInfo.EotId).OnHitFx > 0 Then Call modSendData.SendToAreaByPos(TargetMap, TargetX, TargetY, PrepareMessageFxPiso(EffectOverTime(DotInfo.EotId).OnHitFx, _
+            TargetX, TargetY))
+    If EffectOverTime(DotInfo.EotId).OnHitWav > 0 Then Call modSendData.SendToAreaByPos(TargetMap, TargetX, TargetY, PrepareMessagePlayWave(EffectOverTime( _
+            DotInfo.EotId).OnHitWav, TargetX, TargetY, False))
     Dim x, y, w, h, Map As Integer
     x = TargetX - Area \ 2
     y = TargetY - Area \ 2
@@ -202,48 +211,50 @@ Private Sub DoBlast()
             'we can't taunt someone already taunted
             If MapData(TargetMap, j, i).UserIndex > 0 Then
                 If DotInfo.TargetRef.RefType = eUser Then
-                    If UserMod.CanAttackUser(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.VersionId, MapData(TargetMap, j, i).UserIndex, UserList(MapData(TargetMap, j, i).UserIndex).VersionId) = eCanAttack Then
-                        Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetUserDamageWithItem(DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
+                    If UserMod.CanAttackUser(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.VersionId, MapData(TargetMap, j, i).UserIndex, UserList(MapData(TargetMap, j, _
+                            i).UserIndex).VersionId) = eCanAttack Then
+                        Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetUserDamageWithItem( _
+                                DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
                         Call RegisterNewAttack(MapData(TargetMap, j, i).UserIndex, DotInfo.TargetRef.ArrayIndex)
                     End If
                 Else
                     If NPCs.CanAttackUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex) = eCanAttack Then
-                        Call NpcDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetNpcDamage(DotInfo.TargetRef.ArrayIndex)), e_phisical, SourceObjIndex)
+                        Call NpcDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetNpcDamage( _
+                                DotInfo.TargetRef.ArrayIndex)), e_phisical, SourceObjIndex)
                     End If
                 End If
-            ElseIf MapData(TargetMap, j, i).npcIndex > 0 Then
+            ElseIf MapData(TargetMap, j, i).NpcIndex > 0 Then
                 If DotInfo.TargetRef.RefType = eUser Then
                     Dim UserAttackInteractionResult As t_AttackInteractionResult
                     UserAttackInteractionResult = UserCanAttackNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex)
                     If UserAttackInteractionResult.CanAttack Then
                         If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(DotInfo.TargetRef.ArrayIndex)
-                        Call UserDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).npcIndex, GetDamageForTile(j, i, GetUserDamageWithItem(DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
+                        Call UserDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex, GetDamageForTile(j, i, GetUserDamageWithItem( _
+                                DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
                     End If
                 Else
                     If NPCs.CanAttackNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex) = eCanAttack Then
-                        Call NpcDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).npcIndex, GetDamageForTile(j, i, GetNpcDamage(DotInfo.TargetRef.ArrayIndex)))
+                        Call NpcDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex, GetDamageForTile(j, i, GetNpcDamage(DotInfo.TargetRef.ArrayIndex)))
                     End If
                 End If
             End If
             'add damage to itself (only for user as IA can't avoid this)
             If DotInfo.TargetRef.RefType = eUser Then
                 If MapData(TargetMap, j, i).UserIndex = DotInfo.TargetRef.ArrayIndex Then
-                    Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetUserDamageWithItem(DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
+                    Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetUserDamageWithItem( _
+                            DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
                 End If
             End If
-            
         Next j
     Next i
 End Sub
 
 Private Function GetDamageForTile(ByVal TileX As Integer, ByVal TileY As Integer, ByVal BaseDamage As Long) As Integer
-    Dim Distance As Double
+    Dim Distance  As Double
     Dim BlastArea As Double
-    Dim Percent As Double
+    Dim Percent   As Double
     BlastArea = max(EffectOverTime(DotInfo.EotId).Area / 2, 1) * 2
     Distance = Matematicas.Distance(TileX, TileY, TargetX, TargetY)
     Percent = (BlastArea - Distance) / BlastArea
     GetDamageForTile = max(0, BaseDamage * Percent)
 End Function
-
-

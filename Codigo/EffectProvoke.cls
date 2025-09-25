@@ -38,22 +38,23 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-
 Implements IBaseEffectOverTime
-
-Dim TickTime As Long
-Dim TimeSinceLastTick As Long
-Private DotInfo As t_BaseDotInfo
-Private Source As t_AnyReference
+Dim TickTime                  As Long
+Dim TimeSinceLastTick         As Long
+Private DotInfo               As t_BaseDotInfo
+Private Source                As t_AnyReference
 Private PhysicalDamageModfier As Single
-Private MagicDamageModifier As Single
-Private ReductionActive As Boolean
-Const TaunteffectId As Integer = 4
+Private MagicDamageModifier   As Single
+Private ReductionActive       As Boolean
+Const TaunteffectId           As Integer = 4
 
-
-Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
-                 ByVal EffectId As Integer, ByVal id As Long)
-    Call SetBaseDot(DotInfo, TargetIndex, TargetType, ID, EffectId)
+Public Sub Setup(ByVal SourceIndex As Integer, _
+                 ByVal SourceType As e_ReferenceType, _
+                 ByVal TargetIndex As Integer, _
+                 ByVal TargetType As e_ReferenceType, _
+                 ByVal EffectId As Integer, _
+                 ByVal Id As Long)
+    Call SetBaseDot(DotInfo, TargetIndex, TargetType, Id, EffectId)
     Call SetRef(Source, SourceIndex, SourceType)
     TimeSinceLastTick = 0
     ReductionActive = False
@@ -67,7 +68,7 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
     With EffectOverTime(EffectId)
         TickTime = .TickTime
         If TargetType = eUser Then
-            If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .TickTime, .buffType)
+            If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, Id, .TickTime, .TickTime, .buffType)
         End If
         Call ApplyEffectToArea(.Area)
         UserList(SourceIndex).Char.Otra_Aura = .Aura
@@ -100,7 +101,7 @@ Public Property Get IBaseEffectOverTime_CasterRefType() As e_ReferenceType
 End Property
 
 Public Property Get IBaseEffectOverTime_CasterUserId() As Long
-    IBaseEffectOverTime_CasterUserId = Source.userID
+    IBaseEffectOverTime_CasterUserId = Source.UserId
 End Property
 
 Public Property Get IBaseEffectOverTime_TargetIsValid() As Boolean
@@ -116,15 +117,15 @@ Public Property Get IBaseEffectOverTime_TargetRefType() As e_ReferenceType
 End Property
 
 Public Property Get IBaseEffectOverTime_TargetUserId() As Long
-    IBaseEffectOverTime_TargetUserId = DotInfo.TargetRef.userID
+    IBaseEffectOverTime_TargetUserId = DotInfo.TargetRef.UserId
 End Property
 
 Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
-    IBaseEffectOverTime_EffectType = EffectOverTime(DotInfo.EotId).BuffType
+    IBaseEffectOverTime_EffectType = EffectOverTime(DotInfo.EotId).buffType
 End Property
 
-Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
-    TimeSinceLastTick = TimeSinceLastTick + deltaTime
+Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
+    TimeSinceLastTick = TimeSinceLastTick + DeltaTime
     If TimeSinceLastTick >= TickTime Or Not IsValidRef(DotInfo.TargetRef) Then
         DotInfo.RemoveEffect = True
     End If
@@ -162,7 +163,8 @@ Public Sub IBaseEffectOverTime_OnRemove()
         End If
     End If
     UserList(Source.ArrayIndex).Char.Otra_Aura = ""
-    Call SendData(SendTarget.ToPCAliveArea, Source.ArrayIndex, PrepareMessageAuraToChar(UserList(Source.ArrayIndex).Char.charindex, UserList(Source.ArrayIndex).Char.Body_Aura, True, 5))
+    Call SendData(SendTarget.ToPCAliveArea, Source.ArrayIndex, PrepareMessageAuraToChar(UserList(Source.ArrayIndex).Char.charindex, UserList(Source.ArrayIndex).Char.Body_Aura, _
+            True, 5))
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
@@ -180,7 +182,10 @@ End Sub
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
-Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType) As Long
+Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
+                                                         ByVal SourceUserId As Integer, _
+                                                         ByVal SourceType As e_ReferenceType, _
+                                                         ByVal AttackType As e_DamageSourceType) As Long
     IBaseEffectOverTime_ApplyDamageReduction = Damage
 End Function
 
@@ -204,15 +209,15 @@ End Sub
 
 Private Sub ApplyEffectToArea(ByVal Area As Integer)
     Debug.Assert Area > 0
-    Dim x, y, w, h, map As Integer
+    Dim x, y, w, h, Map As Integer
     If Source.RefType = eUser Then
         x = UserList(Source.ArrayIndex).pos.x - Area / 2
         y = UserList(Source.ArrayIndex).pos.y - Area / 2
-        map = UserList(Source.ArrayIndex).pos.map
+        Map = UserList(Source.ArrayIndex).pos.Map
     Else
         x = NpcList(Source.ArrayIndex).pos.x - Area / 2
         y = NpcList(Source.ArrayIndex).pos.y - Area / 2
-        map = NpcList(Source.ArrayIndex).pos.map
+        Map = NpcList(Source.ArrayIndex).pos.Map
     End If
     w = x + Area
     h = y + Area
@@ -225,16 +230,16 @@ Private Sub ApplyEffectToArea(ByVal Area As Integer)
     For i = y To h
         For j = x To w
             'we can't taunt someone already taunted
-            If MapData(map, j, i).UserIndex > 0 Then
+            If MapData(Map, j, i).UserIndex > 0 Then
                 If UserMod.CanAttackUser(Source.ArrayIndex, Source.VersionId, MapData(Map, j, i).UserIndex, UserList(MapData(Map, j, i).UserIndex).VersionId) = eCanAttack Then
-                    Set Effect = FindEffectOnTarget(0, UserList(MapData(map, j, i).UserIndex).EffectOverTime, TaunteffectId)
-                    If Effect Is Nothing Then Call CreateEffect(Source.ArrayIndex, Source.RefType, MapData(map, j, i).UserIndex, eUser, TaunteffectId)
+                    Set Effect = FindEffectOnTarget(0, UserList(MapData(Map, j, i).UserIndex).EffectOverTime, TaunteffectId)
+                    If Effect Is Nothing Then Call CreateEffect(Source.ArrayIndex, Source.RefType, MapData(Map, j, i).UserIndex, eUser, TaunteffectId)
                     Call RegisterNewAttack(MapData(Map, j, i).UserIndex, Source.ArrayIndex)
                 End If
-            ElseIf MapData(map, j, i).npcIndex > 0 Then
+            ElseIf MapData(Map, j, i).NpcIndex > 0 Then
                 If UserCanAttackNpc(Source.ArrayIndex, MapData(Map, j, i).NpcIndex).CanAttack = True Then
-                    Set Effect = FindEffectOnTarget(0, NpcList(MapData(map, j, i).npcIndex).EffectOverTime, TaunteffectId)
-                    If Effect Is Nothing Then Call CreateEffect(Source.ArrayIndex, Source.RefType, MapData(map, j, i).npcIndex, eNpc, TaunteffectId)
+                    Set Effect = FindEffectOnTarget(0, NpcList(MapData(Map, j, i).NpcIndex).EffectOverTime, TaunteffectId)
+                    If Effect Is Nothing Then Call CreateEffect(Source.ArrayIndex, Source.RefType, MapData(Map, j, i).NpcIndex, eNpc, TaunteffectId)
                 End If
             End If
         Next j

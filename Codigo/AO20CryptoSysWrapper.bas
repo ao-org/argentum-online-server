@@ -26,51 +26,42 @@ Attribute VB_Name = "AO20CryptoSysWrapper"
 '
 '
 Option Explicit
-
 Public base64_chars(1 To 65) As String
 
-Public Function Encrypt(ByVal hex_key As String, ByVal plain_text As String) As String
-    Dim iv() As Byte
-    Dim key() As Byte
+Public Function ENCRYPT(ByVal hex_key As String, ByVal plain_text As String) As String
+    Dim iv()              As Byte
+    Dim key()             As Byte
     Dim plain_text_byte() As Byte
-    
-    Dim algstr As String
+    Dim algstr            As String
     algstr = "Aes128/CFB/nopad"
     key = cnvBytesFromHexStr(hex_key)
     iv = key
-    
     ' "Now is the time for all good men to"
-    
     plain_text = cnvHexStrFromString(plain_text)
     plain_text_byte = cnvBytesFromHexStr(plain_text)
-    Encrypt = cnvToBase64(cipherEncryptBytes2(plain_text_byte, key, iv, algstr))
-   
+    ENCRYPT = cnvToBase64(cipherEncryptBytes2(plain_text_byte, key, iv, algstr))
 End Function
 
-
-Public Function Decrypt(ByVal hex_key As String, ByVal encrypted_text_b64 As String) As String
-    Dim iv() As Byte
-    Dim key() As Byte
+Public Function DECRYPT(ByVal hex_key As String, ByVal encrypted_text_b64 As String) As String
+    Dim iv()                  As Byte
+    Dim key()                 As Byte
     Dim encrypted_text_byte() As Byte
-    Dim decrypted_text() As Byte
-    Dim encrypted_text_hex As String
-    Dim algstr As String
+    Dim decrypted_text()      As Byte
+    Dim encrypted_text_hex    As String
+    Dim algstr                As String
     algstr = "Aes128/CFB/nopad"
     key = cnvBytesFromHexStr(hex_key)
     iv = key
-    
     ' "Now is the time for all good men to"
-    
     encrypted_text_byte = cnvFromBase64(encrypted_text_b64)
     encrypted_text_hex = cnvToHex(encrypted_text_byte)
     encrypted_text_byte = cnvBytesFromHexStr(encrypted_text_hex)
-    Decrypt = cnvStringFromHexStr(cnvToHex(cipherDecryptBytes2(encrypted_text_byte, key, iv, algstr)))
-   
+    DECRYPT = cnvStringFromHexStr(cnvToHex(cipherDecryptBytes2(encrypted_text_byte, key, iv, algstr)))
 End Function
 
 'HarThaoS: Convierto el str en arr() bytes
 Public Sub Str2ByteArr(ByVal str As String, ByRef arr() As Byte, Optional ByVal length As Long = 0)
-    Dim i As Long
+    Dim i   As Long
     Dim asd As String
     If length = 0 Then
         ReDim arr(0 To (Len(str) - 1))
@@ -83,57 +74,44 @@ Public Sub Str2ByteArr(ByVal str As String, ByRef arr() As Byte, Optional ByVal 
             arr(i) = Asc(mid$(str, i + 1, 1))
         Next i
     End If
-    
 End Sub
 
 Public Function ByteArr2String(ByRef arr() As Byte) As String
-    
     Dim str As String
-    Dim i As Long
+    Dim i   As Long
     For i = 0 To UBound(arr)
         str = str + Chr(arr(i))
     Next i
-    
     ByteArr2String = str
-    
 End Function
 
 Public Function hiByte(ByVal w As Integer) As Byte
     Dim hi As Integer
     If w And &H8000 Then hi = &H4000
-    
     hiByte = (w And &H7FFE) \ 256
     hiByte = (hiByte Or (hi \ 128))
-    
 End Function
 
 Public Function LoByte(w As Integer) As Byte
- LoByte = w And &HFF
+    LoByte = w And &HFF
 End Function
 
-Public Function MakeInt(ByVal LoByte As Byte, _
-   ByVal hiByte As Byte) As Integer
-
-MakeInt = ((hiByte * &H100) + LoByte)
-
+Public Function MakeInt(ByVal LoByte As Byte, ByVal hiByte As Byte) As Integer
+    MakeInt = ((hiByte * &H100) + LoByte)
 End Function
 
-Public Sub CopyBytes(ByRef src() As Byte, ByRef dst() As Byte, ByVal size As Long, Optional ByVal offset As Long = 0)
+Public Sub CopyBytes(ByRef src() As Byte, ByRef dst() As Byte, ByVal Size As Long, Optional ByVal offset As Long = 0)
     Dim i As Long
-    
-    For i = 0 To (size - 1)
+    For i = 0 To (Size - 1)
         dst(i + offset) = src(i)
     Next i
-    
 End Sub
 
 Public Function ByteArrayToHex(ByRef ByteArray() As Byte) As String
     Dim l As Long, strRet As String
-    
     For l = LBound(ByteArray) To UBound(ByteArray)
         strRet = strRet & Hex$(ByteArray(l)) & " "
     Next l
-    
     'Remove last space at end.
     ByteArrayToHex = Left$(strRet, Len(strRet) - 1)
 End Function
@@ -207,33 +185,22 @@ Public Sub initBase64Chars()
 End Sub
 
 Public Function IsBase64(ByVal str As String) As Boolean
-
-    Dim i As Long, j As Long
-    Dim isInStr As Boolean
+    Dim i          As Long, j As Long
+    Dim isInStr    As Boolean
     Dim token_char As String
-    
     For i = 1 To Len(str)
-    
         isInStr = False
         token_char = mid$(str, i, 1)
-        
         For j = 1 To UBound(base64_chars)
             If token_char = base64_chars(j) Then
                 isInStr = True
                 Exit For
             End If
         Next j
-        
         If Not isInStr Then
             IsBase64 = False
             Exit Function
         End If
-        
     Next i
-    
     IsBase64 = True
-    
 End Function
-
-
-

@@ -1,7 +1,6 @@
 Attribute VB_Name = "AntiCheat"
 Option Explicit
 
-
 Public Enum e_ACInitResult
     eOk = 0
     eFailedPlatform
@@ -55,27 +54,26 @@ Private Declare Sub Update Lib "AOACServer.dll" ()
 Private Declare Sub AddPendingRegister Lib "AOACServer.dll" (ByRef UserReference As t_UserReference)
 Private Declare Function QueryAndRemoveOldPendingRegistey Lib "AOACServer.dll" (ByRef UserReference As t_UserReference, ByVal ElapsedThreshold As Long) As Long
 Private Declare Sub UnRegisterClient Lib "AOACServer.dll" (ByVal UserIndex As Integer)
-Private Declare Sub HandleRemoteMessage Lib "AOACServer.dll" (ByRef UserReference As t_UserReference, ByRef Data As Byte, ByVal DataSize As Integer)
-
+Private Declare Sub HandleRemoteMessage Lib "AOACServer.dll" (ByRef UserReference As t_UserReference, ByRef data As Byte, ByVal DataSize As Integer)
 Dim EnableAnticheat As Boolean
 
-Private Function GetStringFromPtr(ByVal Ptr As Long, ByVal size As Long) As String
+Private Function GetStringFromPtr(ByVal Ptr As Long, ByVal Size As Long) As String
     Dim Buffer() As Byte
-    ReDim Buffer(0 To (size - 1)) As Byte
-    CopyMemory Buffer(0), ByVal Ptr, size
+    ReDim Buffer(0 To (Size - 1)) As Byte
+    CopyMemory Buffer(0), ByVal Ptr, Size
     GetStringFromPtr = StrConv(Buffer, vbUnicode)
 End Function
 
 Private Function FARPROC(pfn As Long) As Long
-  FARPROC = pfn
+    FARPROC = pfn
 End Function
 
 Public Sub InitializeAntiCheat()
-On Error GoTo InitializeAC_Err
+    On Error GoTo InitializeAC_Err
     EnableAnticheat = IsFeatureEnabled("anti-cheat")
     If EnableAnticheat Then
         Dim InitResult As e_ACInitResult
-        Dim Callbacks As t_AntiCheatCallbacks
+        Dim Callbacks  As t_AntiCheatCallbacks
         Callbacks.SendToClient = FARPROC(AddressOf SendToClientCB)
         Callbacks.LogMessage = FARPROC(AddressOf LogMessageCB)
         Callbacks.RegisterRemoteUserId = FARPROC(AddressOf RegisterRemoteUserIdCb)
@@ -102,7 +100,7 @@ End Sub
 Public Sub KickUnregisteredPlayers()
     If EnableAnticheat Then
         Dim UserRef As t_UserReference
-        Dim Result As Long
+        Dim Result  As Long
         Result = QueryAndRemoveOldPendingRegistey(UserRef, 30000)
         If Result > 0 And IsValidUserRef(UserRef) Then
             'Call modNetwork.Kick(UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID, "Anticheat detection timeout")
@@ -113,10 +111,10 @@ End Sub
 Public Sub AntiCheatUpdate()
     If EnableAnticheat Then
         Call Update
-#If DIRECT_PLAY = 0 Then
-        'Needs debugging to understand why this does not work with DPLAY, suspect the problem is in Read/Write/SafeArray
-        Call KickUnregisteredPlayers
-#End If
+        #If DIRECT_PLAY = 0 Then
+            'Needs debugging to understand why this does not work with DPLAY, suspect the problem is in Read/Write/SafeArray
+            Call KickUnregisteredPlayers
+        #End If
     End If
 End Sub
 
@@ -125,19 +123,20 @@ Public Sub UnloadAntiCheat()
         Call UnloadAC
     End If
 End Sub
-Public Sub SendToClientCB(ByRef TargetUser As t_UserReference, ByVal Data As Long, ByVal DataSize As Long)
+
+Public Sub SendToClientCB(ByRef TargetUser As t_UserReference, ByVal data As Long, ByVal DataSize As Long)
     If EnableAnticheat Then
         If IsValidUserRef(TargetUser) Then
-            Call WriteAntiCheatMessage(TargetUser.ArrayIndex, Data, DataSize)
+            Call WriteAntiCheatMessage(TargetUser.ArrayIndex, data, DataSize)
         End If
     End If
 End Sub
 
-Public Sub HandleAntiCheatServerMessage(ByVal UserIndex As Integer, ByRef Data() As Byte)
+Public Sub HandleAntiCheatServerMessage(ByVal UserIndex As Integer, ByRef data() As Byte)
     If EnableAnticheat Then
         Dim UserRef As t_UserReference
         Call SetUserRef(UserRef, UserIndex)
-        Call HandleRemoteMessage(UserRef, Data(0), UBound(Data))
+        Call HandleRemoteMessage(UserRef, data(0), UBound(data))
     End If
 End Sub
 
