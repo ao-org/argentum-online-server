@@ -38,12 +38,9 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-
 Const configPath = "../dat/Scenarios/NavalBattle.ini"
-
 Implements IBaseScenario
 Implements IInventoryInterface
-
 Const TopMapNumber = 0
 Const CargoMapNumber = 1
 Const CannonSpell = 256
@@ -109,161 +106,163 @@ Private Type t_UserList
     RegisteredUserCount As Integer
 End Type
 
-Dim MapNumbers(0 To 1) As Integer
-Dim TileBlocks() As t_TilePos
-
-Dim SpawnedUserList As t_UserList
-Dim MaxTime As Long
-Dim CountdownTimer As t_Timer
-Dim BroadCastTimer As t_Timer
-Dim ScoreBroadcastTimer As t_Timer
-Dim UpdateIndex As Integer
-Dim LastFrameTime As Long
-Dim ElapsedTime As Long
-Dim Team1Waypoints() As t_Waypoint
-Dim Team2Waypoints() As t_Waypoint
-Dim PlayerRespawn As New Dictionary
-Dim ForbbidenItemId() As Integer
+Dim MapNumbers(0 To 1)   As Integer
+Dim TileBlocks()         As t_TilePos
+Dim SpawnedUserList      As t_UserList
+Dim MaxTime              As Long
+Dim CountdownTimer       As t_Timer
+Dim BroadCastTimer       As t_Timer
+Dim ScoreBroadcastTimer  As t_Timer
+Dim UpdateIndex          As Integer
+Dim LastFrameTime        As Long
+Dim ElapsedTime          As Long
+Dim Team1Waypoints()     As t_Waypoint
+Dim Team2Waypoints()     As t_Waypoint
+Dim PlayerRespawn        As New Dictionary
+Dim ForbbidenItemId()    As Integer
 Dim CaptainState(1 To 2) As t_CaptinState
-Dim MinFireTime As Long
-Dim MaxFireTime As Long
-Dim FireStartTime As Long
-Dim Team1SpawnX As Byte
-Dim Team2SpawnX As Byte
-Dim NpcSpawnList() As t_NpcSpawnInfo
-Dim RespawnWp As Byte
+Dim MinFireTime          As Long
+Dim MaxFireTime          As Long
+Dim FireStartTime        As Long
+Dim Team1SpawnX          As Byte
+Dim Team2SpawnX          As Byte
+Dim NpcSpawnList()       As t_NpcSpawnInfo
+Dim RespawnWp            As Byte
 Dim PlayerMinRespawnTime As Long
-Dim RespawnInterval As Long
-Dim ElapsedResapwnTime As Long
-Dim CaptianNpcId As Integer
-Dim UserLoot As New Dictionary
-Dim TeamCargo(1 To 2) As t_Cargo
-Dim ManaPotId As Integer
-Dim HpPotId As Integer
+Dim RespawnInterval      As Long
+Dim ElapsedResapwnTime   As Long
+Dim CaptianNpcId         As Integer
+Dim UserLoot             As New Dictionary
+Dim TeamCargo(1 To 2)    As t_Cargo
+Dim ManaPotId            As Integer
+Dim HpPotId              As Integer
 Dim RespawnManaPotAmount As Integer
-Dim RespawnHPPotAmount As Integer
-Dim Winner As Integer
-Dim LobbyIndex As Integer
+Dim RespawnHPPotAmount   As Integer
+Dim Winner               As Integer
+Dim LobbyIndex           As Integer
 
 Friend Sub Class_Initialize()
     On Error GoTo NavalBoarding_Initialize_Err:
-100     Debug.Assert FileExist(DatPath & configPath)
-        Dim ScenarioIni As clsIniManager
-        Dim WpCount As Byte
-        Dim OriginalTop As Integer
-        Dim OriginalBottom As Integer
-        Dim Translations(1) As t_TranslationMapping
-102     Set ScenarioIni = New clsIniManager
-104     Call ScenarioIni.Initialize(DatPath & configPath)
-106     OriginalTop = val(ScenarioIni.GetValue("INIT", "MapNumber1"))
-108     OriginalBottom = val(ScenarioIni.GetValue("INIT", "MapNumber2"))
-110     MapNumbers(TopMapNumber) = InstanceManager.GetNextAvailableInstance
-112     MapNumbers(CargoMapNumber) = InstanceManager.GetNextAvailableInstance
-114     Translations(0).OriginalTarget = OriginalBottom
-116     Translations(0).NewTarget = MapNumbers(CargoMapNumber)
-118     Call InstanceManager.CloneMapWithTranslations(OriginalTop, MapNumbers(TopMapNumber), Translations)
-120     Translations(0).OriginalTarget = OriginalTop
-122     Translations(0).NewTarget = MapNumbers(TopMapNumber)
-124     Call InstanceManager.CloneMapWithTranslations(OriginalBottom, MapNumbers(CargoMapNumber), Translations)
-126     MaxTime = val(ScenarioIni.GetValue("INIT", "MaxTime"))
-128     Team1SpawnX = val(ScenarioIni.GetValue("INIT", "Team1SpawnX"))
-130     Team2SpawnX = val(ScenarioIni.GetValue("INIT", "Team2SpawnX"))
-132     RespawnWp = val(ScenarioIni.GetValue("RESPAWN", "Waypoint"))
-134     PlayerMinRespawnTime = val(ScenarioIni.GetValue("RESPAWN", "PlayerMinRespawnTime"))
-136     RespawnInterval = val(ScenarioIni.GetValue("RESPAWN", "RespawnInterval"))
-138     MaxTime = MaxTime * 1000
-140     RespawnInterval = RespawnInterval * 1000
-142     PlayerMinRespawnTime = PlayerMinRespawnTime * 1000
-144     WpCount = val(ScenarioIni.GetValue("INIT", "WaypointCount"))
-146     CaptianNpcId = val(ScenarioIni.GetValue("CaptainNpc", "NpcId"))
-148     MinFireTime = val(ScenarioIni.GetValue("INIT", "MinFireTime"))
-150     MaxFireTime = val(ScenarioIni.GetValue("INIT", "MaxFireTime"))
-152     FireStartTime = val(ScenarioIni.GetValue("INIT", "FireStartTime"))
-154     ManaPotId = val(ScenarioIni.GetValue("INIT", "ManaPotionsId"))
-156     HpPotId = val(ScenarioIni.GetValue("INIT", "HPPotionId"))
-158     RespawnHPPotAmount = val(ScenarioIni.GetValue("INIT", "RespawnHPPotAmount"))
-160     RespawnManaPotAmount = val(ScenarioIni.GetValue("INIT", "RespawnManaPotAmount"))
-162     Call LoadTeamWeapoints(1, Team1Waypoints, WpCount, ScenarioIni)
-164     Call LoadTeamWeapoints(2, Team2Waypoints, WpCount, ScenarioIni)
-166     Call LoadForbidenItems(ScenarioIni)
-168     Call LoadTileBlock(TileBlocks, ScenarioIni)
-170     UpdateIndex = AddUpdateScenario(Me)
-172     Call CustomScenarios.SetCustomScenario(MapNumbers(0), Me)
-174     Call CustomScenarios.SetCustomScenario(MapNumbers(1), Me)
-178     Call LoadNpcSpawnInfo(NpcSpawnList, ScenarioIni)
-180     Call LoadTeamCargo(TeamCargo(1), 1, ScenarioIni)
-182     Call LoadTeamCargo(TeamCargo(2), 2, ScenarioIni)
-        Exit Sub
+    Debug.Assert FileExist(DatPath & configPath)
+    Dim ScenarioIni     As clsIniManager
+    Dim WpCount         As Byte
+    Dim OriginalTop     As Integer
+    Dim OriginalBottom  As Integer
+    Dim Translations(1) As t_TranslationMapping
+    Set ScenarioIni = New clsIniManager
+    Call ScenarioIni.Initialize(DatPath & configPath)
+    OriginalTop = val(ScenarioIni.GetValue("INIT", "MapNumber1"))
+    OriginalBottom = val(ScenarioIni.GetValue("INIT", "MapNumber2"))
+    MapNumbers(TopMapNumber) = InstanceManager.GetNextAvailableInstance
+    MapNumbers(CargoMapNumber) = InstanceManager.GetNextAvailableInstance
+    Translations(0).OriginalTarget = OriginalBottom
+    Translations(0).NewTarget = MapNumbers(CargoMapNumber)
+    Call InstanceManager.CloneMapWithTranslations(OriginalTop, MapNumbers(TopMapNumber), Translations)
+    Translations(0).OriginalTarget = OriginalTop
+    Translations(0).NewTarget = MapNumbers(TopMapNumber)
+    Call InstanceManager.CloneMapWithTranslations(OriginalBottom, MapNumbers(CargoMapNumber), Translations)
+    MaxTime = val(ScenarioIni.GetValue("INIT", "MaxTime"))
+    Team1SpawnX = val(ScenarioIni.GetValue("INIT", "Team1SpawnX"))
+    Team2SpawnX = val(ScenarioIni.GetValue("INIT", "Team2SpawnX"))
+    RespawnWp = val(ScenarioIni.GetValue("RESPAWN", "Waypoint"))
+    PlayerMinRespawnTime = val(ScenarioIni.GetValue("RESPAWN", "PlayerMinRespawnTime"))
+    RespawnInterval = val(ScenarioIni.GetValue("RESPAWN", "RespawnInterval"))
+    MaxTime = MaxTime * 1000
+    RespawnInterval = RespawnInterval * 1000
+    PlayerMinRespawnTime = PlayerMinRespawnTime * 1000
+    WpCount = val(ScenarioIni.GetValue("INIT", "WaypointCount"))
+    CaptianNpcId = val(ScenarioIni.GetValue("CaptainNpc", "NpcId"))
+    MinFireTime = val(ScenarioIni.GetValue("INIT", "MinFireTime"))
+    MaxFireTime = val(ScenarioIni.GetValue("INIT", "MaxFireTime"))
+    FireStartTime = val(ScenarioIni.GetValue("INIT", "FireStartTime"))
+    ManaPotId = val(ScenarioIni.GetValue("INIT", "ManaPotionsId"))
+    HpPotId = val(ScenarioIni.GetValue("INIT", "HPPotionId"))
+    RespawnHPPotAmount = val(ScenarioIni.GetValue("INIT", "RespawnHPPotAmount"))
+    RespawnManaPotAmount = val(ScenarioIni.GetValue("INIT", "RespawnManaPotAmount"))
+    Call LoadTeamWeapoints(1, Team1Waypoints, WpCount, ScenarioIni)
+    Call LoadTeamWeapoints(2, Team2Waypoints, WpCount, ScenarioIni)
+    Call LoadForbidenItems(ScenarioIni)
+    Call LoadTileBlock(TileBlocks, ScenarioIni)
+    UpdateIndex = AddUpdateScenario(Me)
+    Call CustomScenarios.SetCustomScenario(MapNumbers(0), Me)
+    Call CustomScenarios.SetCustomScenario(MapNumbers(1), Me)
+    Call LoadNpcSpawnInfo(NpcSpawnList, ScenarioIni)
+    Call LoadTeamCargo(TeamCargo(1), 1, ScenarioIni)
+    Call LoadTeamCargo(TeamCargo(2), 2, ScenarioIni)
+    Exit Sub
 NavalBoarding_Initialize_Err:
-186 Call TraceError(Err.Number, Err.Description, "NavalBoarding.Initialize ", Erl)
+    Call TraceError(Err.Number, Err.Description, "NavalBoarding.Initialize ", Erl)
 End Sub
 
 Private Sub LoadTileBlock(ByRef Tiles() As t_TilePos, ScenearioIni As clsIniManager)
     On Error GoTo LoadTileBlock_Err:
-        Dim TileCount As Integer
-100     TileCount = val(ScenearioIni.GetValue("LOBBY-BLOCK", "Count"))
-102     ReDim Tiles(1 To TileCount) As t_TilePos
-        Dim i As Integer
-104     For i = 1 To TileCount
-106         Tiles(i).PosX = val(ScenearioIni.GetValue("LOBBY-BLOCK", "TileX" & i))
-108         Tiles(i).PosY = val(ScenearioIni.GetValue("LOBBY-BLOCK", "TileY" & i))
-110         Call BlockAndInform(MapNumbers(CargoMapNumber), Tiles(i).PosX, Tiles(i).PosY, 1)
-112     Next i
-        Exit Sub
+    Dim TileCount As Integer
+    TileCount = val(ScenearioIni.GetValue("LOBBY-BLOCK", "Count"))
+    ReDim Tiles(1 To TileCount) As t_TilePos
+    Dim i As Integer
+    For i = 1 To TileCount
+        Tiles(i).PosX = val(ScenearioIni.GetValue("LOBBY-BLOCK", "TileX" & i))
+        Tiles(i).PosY = val(ScenearioIni.GetValue("LOBBY-BLOCK", "TileY" & i))
+        Call BlockAndInform(MapNumbers(CargoMapNumber), Tiles(i).PosX, Tiles(i).PosY, 1)
+    Next i
+    Exit Sub
 LoadTileBlock_Err:
-114    Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadTileBlock ", Erl)
+    Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadTileBlock ", Erl)
 End Sub
 
 Private Sub LoadTeamCargo(ByRef TeamCargo As t_Cargo, ByVal team As Integer, ScenearioIni As clsIniManager)
     On Error GoTo LoadTeamCargo_Err:
-100     TeamCargo.CargoItemId = val(ScenearioIni.GetValue("Team" & team & "Cargo", "CargoItemId"))
-102     TeamCargo.OriginalCargoArea.TopLeft.PosX = val(ScenearioIni.GetValue("Team" & team & "Cargo", "TopLeftX"))
-104     TeamCargo.OriginalCargoArea.TopLeft.PosY = val(ScenearioIni.GetValue("Team" & team & "Cargo", "TopLeftY"))
-106     TeamCargo.OriginalCargoArea.BottomRight.PosX = val(ScenearioIni.GetValue("Team" & team & "Cargo", "BottomLeftX"))
-108     TeamCargo.OriginalCargoArea.BottomRight.PosY = val(ScenearioIni.GetValue("Team" & team & "Cargo", "BottomLeftY"))
-110     TeamCargo.DropArea.TopLeft.PosX = val(ScenearioIni.GetValue("Team" & team & "Storage", "TopLeftX"))
-112     TeamCargo.DropArea.TopLeft.PosY = val(ScenearioIni.GetValue("Team" & team & "Storage", "TopLeftY"))
-114     TeamCargo.DropArea.BottomRight.PosX = val(ScenearioIni.GetValue("Team" & team & "Storage", "BottomLeftX"))
-116     TeamCargo.DropArea.BottomRight.PosY = val(ScenearioIni.GetValue("Team" & team & "Storage", "BottomLeftY"))
-        Dim CargoCount As Integer
-        Dim Width, Height As Integer
-118     Width = TeamCargo.OriginalCargoArea.BottomRight.PosX - TeamCargo.OriginalCargoArea.TopLeft.PosX + 1
-120     Height = TeamCargo.OriginalCargoArea.BottomRight.PosY - TeamCargo.OriginalCargoArea.TopLeft.PosY + 1
-122     CargoCount = Width * Height
-124     ReDim TeamCargo.ItemList(1 To CargoCount) As t_CargoElement
-        Dim i As Integer
-126     For i = 1 To CargoCount
-128         TeamCargo.ItemList(i).ItemIndex = TeamCargo.CargoItemId
-130         TeamCargo.ItemList(i).CarrierIndex = 0
-132         TeamCargo.ItemList(i).Id = team * 1000 + i
-134         TeamCargo.ItemList(i).WorldPos.x = TeamCargo.OriginalCargoArea.TopLeft.PosX + ((i - 1) Mod Width)
-136         TeamCargo.ItemList(i).WorldPos.y = TeamCargo.OriginalCargoArea.TopLeft.PosY + ((i - 1) \ Width)
-138         TeamCargo.ItemList(i).WorldPos.Map = MapNumbers(1)
-140     Next i
-        Exit Sub
+    TeamCargo.CargoItemId = val(ScenearioIni.GetValue("Team" & team & "Cargo", "CargoItemId"))
+    TeamCargo.OriginalCargoArea.TopLeft.PosX = val(ScenearioIni.GetValue("Team" & team & "Cargo", "TopLeftX"))
+    TeamCargo.OriginalCargoArea.TopLeft.PosY = val(ScenearioIni.GetValue("Team" & team & "Cargo", "TopLeftY"))
+    TeamCargo.OriginalCargoArea.BottomRight.PosX = val(ScenearioIni.GetValue("Team" & team & "Cargo", "BottomLeftX"))
+    TeamCargo.OriginalCargoArea.BottomRight.PosY = val(ScenearioIni.GetValue("Team" & team & "Cargo", "BottomLeftY"))
+    TeamCargo.DropArea.TopLeft.PosX = val(ScenearioIni.GetValue("Team" & team & "Storage", "TopLeftX"))
+    TeamCargo.DropArea.TopLeft.PosY = val(ScenearioIni.GetValue("Team" & team & "Storage", "TopLeftY"))
+    TeamCargo.DropArea.BottomRight.PosX = val(ScenearioIni.GetValue("Team" & team & "Storage", "BottomLeftX"))
+    TeamCargo.DropArea.BottomRight.PosY = val(ScenearioIni.GetValue("Team" & team & "Storage", "BottomLeftY"))
+    Dim CargoCount As Integer
+    Dim Width, Height As Integer
+    Width = TeamCargo.OriginalCargoArea.BottomRight.PosX - TeamCargo.OriginalCargoArea.TopLeft.PosX + 1
+    Height = TeamCargo.OriginalCargoArea.BottomRight.PosY - TeamCargo.OriginalCargoArea.TopLeft.PosY + 1
+    CargoCount = Width * Height
+    ReDim TeamCargo.ItemList(1 To CargoCount) As t_CargoElement
+    Dim i As Integer
+    For i = 1 To CargoCount
+        TeamCargo.ItemList(i).ItemIndex = TeamCargo.CargoItemId
+        TeamCargo.ItemList(i).CarrierIndex = 0
+        TeamCargo.ItemList(i).Id = team * 1000 + i
+        TeamCargo.ItemList(i).WorldPos.x = TeamCargo.OriginalCargoArea.TopLeft.PosX + ((i - 1) Mod Width)
+        TeamCargo.ItemList(i).WorldPos.y = TeamCargo.OriginalCargoArea.TopLeft.PosY + ((i - 1) \ Width)
+        TeamCargo.ItemList(i).WorldPos.Map = MapNumbers(1)
+    Next i
+    Exit Sub
 LoadTeamCargo_Err:
-142     Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadTeamCargo ", Erl)
+    Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadTeamCargo ", Erl)
 End Sub
 
 Private Sub LoadNpcSpawnInfo(ByRef NpcSpawnList() As t_NpcSpawnInfo, ScenarioIni As clsIniManager)
     On Error GoTo LoadNpcSpawnInfo_Err:
-        Dim StartIndex, TankCount, SupportCount, RandgedCount, CaptainCount As Integer
-100     TankCount = val(ScenarioIni.GetValue("TankNpc", "Count"))
-102     SupportCount = val(ScenarioIni.GetValue("SupportNpc", "Count"))
-104     RandgedCount = val(ScenarioIni.GetValue("RangedNpc", "Count"))
-106     CaptainCount = val(ScenarioIni.GetValue("CaptainNpc", "Count"))
-108     ReDim NpcSpawnList(1 To TankCount + SupportCount + RandgedCount + CaptainCount) As t_NpcSpawnInfo
-110     StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "TankNpc", 0, TankCount)
-112     StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "SupportNpc", StartIndex, SupportCount)
-114     StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "RangedNpc", StartIndex, RandgedCount)
-116     StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "CaptainNpc", StartIndex, CaptainCount)
-        Exit Sub
+    Dim StartIndex, TankCount, SupportCount, RandgedCount, CaptainCount As Integer
+    TankCount = val(ScenarioIni.GetValue("TankNpc", "Count"))
+    SupportCount = val(ScenarioIni.GetValue("SupportNpc", "Count"))
+    RandgedCount = val(ScenarioIni.GetValue("RangedNpc", "Count"))
+    CaptainCount = val(ScenarioIni.GetValue("CaptainNpc", "Count"))
+    ReDim NpcSpawnList(1 To TankCount + SupportCount + RandgedCount + CaptainCount) As t_NpcSpawnInfo
+    StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "TankNpc", 0, TankCount)
+    StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "SupportNpc", StartIndex, SupportCount)
+    StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "RangedNpc", StartIndex, RandgedCount)
+    StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "CaptainNpc", StartIndex, CaptainCount)
+    Exit Sub
 LoadNpcSpawnInfo_Err:
-118     Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadNpcSpawnInfo ", Erl)
+    Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadNpcSpawnInfo ", Erl)
 End Sub
 
-Private Function LoadNpcData(ByRef NpcSpawnList() As t_NpcSpawnInfo, ScenearioIni As clsIniManager, ByVal SectionName As String, _
-                             ByVal StartIndex As Integer, ByVal NpcCount As Integer) As Long
+Private Function LoadNpcData(ByRef NpcSpawnList() As t_NpcSpawnInfo, _
+                             ScenearioIni As clsIniManager, _
+                             ByVal SectionName As String, _
+                             ByVal StartIndex As Integer, _
+                             ByVal NpcCount As Integer) As Long
     Dim NpcId, i As Integer
     NpcId = val(ScenearioIni.GetValue(SectionName, "NpcId"))
     For i = 1 To NpcCount
@@ -275,28 +274,28 @@ End Function
 
 Private Sub LoadTeamWeapoints(ByVal team As Integer, ByRef WpArray() As t_Waypoint, ByVal WpCount As Byte, ScenearioIni As clsIniManager)
     On Error GoTo LoadTeamWeapoints_Err:
-        Dim i, j As Integer
-100     ReDim WpArray(1 To WpCount) As t_Waypoint
-        Dim NextWpCount As Byte
-102     For i = 1 To WpCount
-104         WpArray(i).PosX = val(ScenearioIni.GetValue("T" & team & "WP" & i, "X"))
-106         WpArray(i).PosY = val(ScenearioIni.GetValue("T" & team & "WP" & i, "Y"))
-108         WpArray(i).NextWpCount = val(ScenearioIni.GetValue("T" & team & "WP" & i, "NextWpSize"))
-110         If WpArray(i).NextWpCount > 0 Then
-112             ReDim WpArray(i).NextWp(1 To WpArray(i).NextWpCount) As Byte
-114             For j = 1 To WpArray(i).NextWpCount
-116                 WpArray(i).NextWp(j) = val(ScenearioIni.GetValue("T" & team & "WP" & i, "NextWp" & j))
-118             Next j
-            End If
-120     Next i
-        Exit Sub
+    Dim i, j As Integer
+    ReDim WpArray(1 To WpCount) As t_Waypoint
+    Dim NextWpCount As Byte
+    For i = 1 To WpCount
+        WpArray(i).PosX = val(ScenearioIni.GetValue("T" & team & "WP" & i, "X"))
+        WpArray(i).PosY = val(ScenearioIni.GetValue("T" & team & "WP" & i, "Y"))
+        WpArray(i).NextWpCount = val(ScenearioIni.GetValue("T" & team & "WP" & i, "NextWpSize"))
+        If WpArray(i).NextWpCount > 0 Then
+            ReDim WpArray(i).NextWp(1 To WpArray(i).NextWpCount) As Byte
+            For j = 1 To WpArray(i).NextWpCount
+                WpArray(i).NextWp(j) = val(ScenearioIni.GetValue("T" & team & "WP" & i, "NextWp" & j))
+            Next j
+        End If
+    Next i
+    Exit Sub
 LoadTeamWeapoints_Err:
-122     Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadTeamWeapoints " & team & " and wpCount: " & WpCount, Erl)
+    Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadTeamWeapoints " & team & " and wpCount: " & WpCount, Erl)
 End Sub
 
 Private Sub LoadForbidenItems(ScenearioIni As clsIniManager)
     Dim forbiddenItemCount As Integer
-    Dim i As Integer
+    Dim i                  As Integer
     forbiddenItemCount = val(ScenearioIni.GetValue("FORBIDDEN", "Count"))
     ReDim ForbbidenItemId(forbiddenItemCount) As Integer
     For i = 0 To forbiddenItemCount - 1
@@ -330,7 +329,6 @@ Private Sub RemoveForbiddenItems(ByVal UserIndex As Integer)
         If .flags.ModificoInventario Then
             Call UpdateUserInv(True, UserIndex, 0)
         End If
-        
         For i = 0 To SpawnedUserList.RegisteredUserCount - 1
             If SpawnedUserList.UserList(i).UserId = .Id Then
                 Exit For
@@ -339,9 +337,7 @@ Private Sub RemoveForbiddenItems(ByVal UserIndex As Integer)
         If i < SpawnedUserList.RegisteredUserCount Then
             For j = 0 To SpawnedUserList.UserList(i).RemovedItemCount - 1
                 If SpawnedUserList.UserList(i).RemovedItems(j).ItemId > 0 Then
-                    Call AddItemToUser(UserIndex, _
-                                       SpawnedUserList.UserList(i).RemovedItems(j).ItemId, _
-                                       SpawnedUserList.UserList(i).RemovedItems(j).ItemCount)
+                    Call AddItemToUser(UserIndex, SpawnedUserList.UserList(i).RemovedItems(j).ItemId, SpawnedUserList.UserList(i).RemovedItems(j).ItemCount)
                 End If
             Next j
             SpawnedUserList.UserList(i) = SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount - 1)
@@ -352,27 +348,27 @@ Private Sub RemoveForbiddenItems(ByVal UserIndex As Integer)
 End Sub
 
 Private Sub CloseScenario()
-On Error GoTo CloseScenario_Err:
-100    Call ModLobby.ReturnAllPlayers(LobbyList(LobbyIndex))
-102    Set LobbyList(LobbyIndex).Scenario = Nothing
-104    Call ModLobby.UpdateLobbyState(LobbyList(LobbyIndex), e_LobbyState.UnInitilized)
-106    Call ClearMap
-107    If MapNumbers(TopMapNumber) > 0 Then Call ReleaseLobby(LobbyIndex)
-108    If MapNumbers(TopMapNumber) > 0 Then Call ReleaseInstance(MapNumbers(TopMapNumber))
-110    MapNumbers(TopMapNumber) = 0
-112    If MapNumbers(CargoMapNumber) > 0 Then Call ReleaseInstance(MapNumbers(CargoMapNumber))
-114    MapNumbers(CargoMapNumber) = 0
+    On Error GoTo CloseScenario_Err:
+    Call ModLobby.ReturnAllPlayers(LobbyList(LobbyIndex))
+    Set LobbyList(LobbyIndex).Scenario = Nothing
+    Call ModLobby.UpdateLobbyState(LobbyList(LobbyIndex), e_LobbyState.UnInitilized)
+    Call ClearMap
+    If MapNumbers(TopMapNumber) > 0 Then Call ReleaseLobby(LobbyIndex)
+    If MapNumbers(TopMapNumber) > 0 Then Call ReleaseInstance(MapNumbers(TopMapNumber))
+    MapNumbers(TopMapNumber) = 0
+    If MapNumbers(CargoMapNumber) > 0 Then Call ReleaseInstance(MapNumbers(CargoMapNumber))
+    MapNumbers(CargoMapNumber) = 0
     Exit Sub
 CloseScenario_Err:
     Call TraceError(Err.Number, Err.Description, "NavalBoarding.CloseScenario ", Erl)
 End Sub
 
 Private Sub ClearMap()
-On Error GoTo ClearMap_Err:
-106    CustomScenarios.RemoveCustomScenario (MapNumbers(0))
-107    CustomScenarios.RemoveCustomScenario (MapNumbers(1))
-108    CustomScenarios.RemoveUpdateScenario (UpdateIndex)
-       MapInfo(MapNumbers(TopMapNumber)).ForceUpdate = False
+    On Error GoTo ClearMap_Err:
+    CustomScenarios.RemoveCustomScenario (MapNumbers(0))
+    CustomScenarios.RemoveCustomScenario (MapNumbers(1))
+    CustomScenarios.RemoveUpdateScenario (UpdateIndex)
+    MapInfo(MapNumbers(TopMapNumber)).ForceUpdate = False
     Exit Sub
 ClearMap_Err:
     Call TraceError(Err.Number, Err.Description, "NavalBoarding.ClearMap", Erl)
@@ -436,7 +432,7 @@ Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
     End If
     SpawnPos.y = 50
     Dim UserItemInfo As t_UserItemInfo
-    Dim i As Integer
+    Dim i            As Integer
     With UserList(UserIndex)
         For i = 0 To SpawnedUserList.RegisteredUserCount - 1
             If SpawnedUserList.UserList(i).UserId = .Id Then
@@ -487,7 +483,6 @@ Public Sub IBaseScenario_NPcKillPlayer(ByVal NpcIndex As Integer, ByVal UserInde
 End Sub
 
 Public Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal deadIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
-    
 End Sub
 
 Public Sub IBaseScenario_Update()
@@ -547,9 +542,8 @@ Public Sub IBaseScenario_OnUserDisconnected(ByVal UserIndex As Integer)
             Dim i, ItemTeam As Integer
             ItemTeam = UserLoot.Item(UserIndex) \ 1000
             For i = LBound(.invent.Object) To UBound(.invent.Object)
-                If .invent.Object(i).ObjIndex = TeamCargo(1).CargoItemId Or _
-                   .invent.Object(i).ObjIndex = TeamCargo(2).CargoItemId Then
-                    Call DropObj(UserIndex, i, .invent.Object(i).amount, .Pos.Map, .Pos.x, .Pos.y)
+                If .invent.Object(i).ObjIndex = TeamCargo(1).CargoItemId Or .invent.Object(i).ObjIndex = TeamCargo(2).CargoItemId Then
+                    Call DropObj(UserIndex, i, .invent.Object(i).amount, .pos.Map, .pos.x, .pos.y)
                     Exit For
                 End If
             Next i
@@ -559,10 +553,7 @@ Public Sub IBaseScenario_OnUserDisconnected(ByVal UserIndex As Integer)
 End Sub
 
 Public Sub IBaseScenario_OnUserReconnect(ByVal UserIndex As Integer)
-
 End Sub
-
-
 
 Private Sub StartGame()
     Call SetTimer(BroadCastTimer, 60000)
@@ -586,7 +577,6 @@ Private Sub Respawn(ByVal player As Integer)
             SpawnPos.x = Team2Waypoints(RespawnWp).PosX
             SpawnPos.y = Team2Waypoints(RespawnWp).PosY
         End If
-        
         Call WarpToLegalPos(player, SpawnPos.Map, SpawnPos.x, SpawnPos.y, True, True)
         Call RevivirUsuario(player)
         .Stats.MinMAN = .Stats.MaxMAN
@@ -595,11 +585,11 @@ Private Sub Respawn(ByVal player As Integer)
         Call WriteUpdateMana(player)
         Call WriteUpdateSta(player)
     End With
-    
     Call CreateEffect(0, e_ReferenceType.eNone, player, eUser, ShieldEffectIndex)
     Call RefillPotions(player)
-114 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessageParticleFX(UserList(player).Char.charindex, e_ParticleEffects.Corazones, 100, False, , UserList(player).pos.x, UserList(player).pos.y))
-116 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessagePlayWave("104", UserList(player).pos.x, UserList(player).pos.y))
+    Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessageParticleFX(UserList(player).Char.charindex, e_ParticleEffects.Corazones, 100, False, , UserList(player).pos.x, _
+            UserList(player).pos.y))
+    Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessagePlayWave("104", UserList(player).pos.x, UserList(player).pos.y))
 End Sub
 
 Private Sub MatchCompleted()
@@ -638,7 +628,6 @@ Private Sub BroadcastPendingTime(ByVal frametime As Long)
         pendingTime = pendingTime / 60
         Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(1884, pendingTime, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1884=Quedan ¬1 minutos.
         Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(1884, pendingTime, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1884=Quedan ¬1 minutos.
-
     ElseIf pendingTime <= 10 Then
         Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageConsoleMsg(pendingTime, e_FontTypeNames.FONTTYPE_GUILD))
         Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageConsoleMsg(pendingTime, e_FontTypeNames.FONTTYPE_GUILD))
@@ -649,11 +638,11 @@ Private Sub BroadcastPendingTime(ByVal frametime As Long)
 End Sub
 
 Private Sub RespawnPlayers()
-    Dim key As Variant
-    Dim Keys As Variant
+    Dim key         As Variant
+    Dim Keys        As Variant
     Dim currentTime As Long
     Dim RespawnInfo As clsRespawnInfo
-    Dim i As Integer
+    Dim i           As Integer
     currentTime = GetTickCount()
     Keys = PlayerRespawn.Keys
     For Each key In Keys
@@ -693,16 +682,14 @@ Private Sub ConfigMapEvent()
         Call BlockAndInform(MapNumbers(1), TileBlocks(i).PosX, TileBlocks(i).PosY, 0)
     Next i
     For i = LBound(TeamCargo(1).ItemList) To UBound(TeamCargo(1).ItemList)
-        Call SpawnItem(TeamCargo(1).ItemList(i).ItemIndex, 1, TeamCargo(1).ItemList(i).WorldPos.Map, _
-                       TeamCargo(1).ItemList(i).WorldPos.x, TeamCargo(1).ItemList(i).WorldPos.y)
-        Call SpawnItem(TeamCargo(2).ItemList(i).ItemIndex, 1, TeamCargo(2).ItemList(i).WorldPos.Map, _
-                       TeamCargo(2).ItemList(i).WorldPos.x, TeamCargo(2).ItemList(i).WorldPos.y)
+        Call SpawnItem(TeamCargo(1).ItemList(i).ItemIndex, 1, TeamCargo(1).ItemList(i).WorldPos.Map, TeamCargo(1).ItemList(i).WorldPos.x, TeamCargo(1).ItemList(i).WorldPos.y)
+        Call SpawnItem(TeamCargo(2).ItemList(i).ItemIndex, 1, TeamCargo(2).ItemList(i).WorldPos.Map, TeamCargo(2).ItemList(i).WorldPos.x, TeamCargo(2).ItemList(i).WorldPos.y)
     Next i
 End Sub
 
 Private Sub SpawnNpc(ByRef NpcInfo As t_NpcSpawnInfo, ByRef Waypoints() As t_Waypoint, ByVal team As Byte)
     Dim SpawnPos As t_WorldPos
-    Dim NpcId As Integer
+    Dim NpcId    As Integer
     SpawnPos.Map = MapNumbers(0)
     SpawnPos.x = Waypoints(NpcInfo.Waypoint).PosX
     SpawnPos.y = Waypoints(NpcInfo.Waypoint).PosY
@@ -732,9 +719,9 @@ Private Sub ConfigMapLobby()
 End Sub
 
 Private Function GetClosestWp(ByRef Npc As t_Npc, ByRef Waypoints() As t_Waypoint) As Integer
-    Dim ClosestWp As Integer
-    Dim MinDistance As Single
-    Dim i As Integer
+    Dim ClosestWp      As Integer
+    Dim MinDistance    As Single
+    Dim i              As Integer
     Dim CurrWpDistance As Single
     ClosestWp = -1
     For i = LBound(Waypoints) To UBound(Waypoints)
@@ -751,9 +738,7 @@ Private Function GetClosestWp(ByRef Npc As t_Npc, ByRef Waypoints() As t_Waypoin
         For i = 1 To Waypoints(GetClosestWp).NextWpCount
             Dim NextPossibleWp As Byte
             NextPossibleWp = Waypoints(GetClosestWp).NextWp(i)
-            CurrWpDistance = Distance(Npc.pos.x, Npc.pos.y, _
-                                      Waypoints(NextPossibleWp).PosX, _
-                                      Waypoints(NextPossibleWp).PosY)
+            CurrWpDistance = Distance(Npc.pos.x, Npc.pos.y, Waypoints(NextPossibleWp).PosX, Waypoints(NextPossibleWp).PosY)
             If ClosestWp < 0 Or CurrWpDistance < MinDistance Then
                 ClosestWp = NextPossibleWp
                 MinDistance = CurrWpDistance
@@ -822,18 +807,15 @@ Public Sub IBaseScenario_UserDie(ByVal UserIndex)
         If UserLoot.Exists(UserIndex) Then
             Dim ItemTeam As Integer
             ItemTeam = UserLoot.Item(UserIndex) \ 1000
-            
             For i = LBound(.invent.Object) To UBound(.invent.Object)
-                If .invent.Object(i).ObjIndex = TeamCargo(1).CargoItemId Or _
-                   .invent.Object(i).ObjIndex = TeamCargo(2).CargoItemId Then
-                    Call DropObj(UserIndex, i, .invent.Object(i).amount, .Pos.Map, .Pos.x, .Pos.y)
+                If .invent.Object(i).ObjIndex = TeamCargo(1).CargoItemId Or .invent.Object(i).ObjIndex = TeamCargo(2).CargoItemId Then
+                    Call DropObj(UserIndex, i, .invent.Object(i).amount, .pos.Map, .pos.x, .pos.y)
                     Exit For
                 End If
             Next i
         End If
     End With
     Call PlayerRespawn.Add(UserIndex, RespawnInfo)
-    
 End Sub
 
 Public Function IInventoryInterface_UserCanPickUpItem(ByVal UserIndex As Integer) As Boolean
@@ -851,7 +833,7 @@ Public Function IInventoryInterface_UserCanPickUpItem(ByVal UserIndex As Integer
 End Function
 
 Public Sub IInventoryInterface_UserDidPickupItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
-    Dim i As Integer
+    Dim i        As Integer
     Dim ItemTeam As Integer
     With UserList(UserIndex)
         ItemTeam = GetCargoItemTeam(ItemIndex)
@@ -859,18 +841,21 @@ Public Sub IInventoryInterface_UserDidPickupItem(ByVal UserIndex As Integer, ByV
             Exit Sub
         End If
         For i = LBound(TeamCargo(ItemTeam).ItemList) To UBound(TeamCargo(ItemTeam).ItemList)
-            If TeamCargo(ItemTeam).ItemList(i).WorldPos.x = .pos.x And _
-               TeamCargo(ItemTeam).ItemList(i).WorldPos.y = .pos.y And _
-               TeamCargo(ItemTeam).ItemList(i).WorldPos.Map = .pos.Map Then
-               TeamCargo(ItemTeam).ItemList(i).CarrierIndex = UserIndex
-               Call UserLoot.Add(UserIndex, TeamCargo(ItemTeam).ItemList(i).Id)
-            Exit Sub
+            If TeamCargo(ItemTeam).ItemList(i).WorldPos.x = .pos.x And TeamCargo(ItemTeam).ItemList(i).WorldPos.y = .pos.y And TeamCargo(ItemTeam).ItemList(i).WorldPos.Map = _
+                    .pos.Map Then
+                TeamCargo(ItemTeam).ItemList(i).CarrierIndex = UserIndex
+                Call UserLoot.Add(UserIndex, TeamCargo(ItemTeam).ItemList(i).Id)
+                Exit Sub
             End If
         Next i
     End With
 End Sub
 
-Public Function IInventoryInterface_UserCanDropItemAt(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer) As Boolean
+Public Function IInventoryInterface_UserCanDropItemAt(ByVal UserIndex As Integer, _
+                                                      ByVal Slot As Integer, _
+                                                      ByVal Map As Integer, _
+                                                      ByVal TileX As Integer, _
+                                                      ByVal TileY As Integer) As Boolean
     With UserList(UserIndex)
         Dim ItemTeam As Integer
         ItemTeam = GetCargoItemTeam(.invent.Object(Slot).ObjIndex)
@@ -910,8 +895,7 @@ Public Sub IInventoryInterface_UserDropItem(ByVal UserIndex As Integer, ByVal Sl
                 TeamCargo(ItemTeam).ItemList(Id).WorldPos.x = TileX
                 TeamCargo(ItemTeam).ItemList(Id).WorldPos.y = TileY
                 TeamCargo(ItemTeam).ItemList(Id).CarrierIndex = 0
-                If IsInsideArea(TeamCargo(.flags.CurrentTeam).DropArea, TileX, TileY) Or _
-                   IsInsideArea(TeamCargo(.flags.CurrentTeam).OriginalCargoArea, TileX, TileY) Then
+                If IsInsideArea(TeamCargo(.flags.CurrentTeam).DropArea, TileX, TileY) Or IsInsideArea(TeamCargo(.flags.CurrentTeam).OriginalCargoArea, TileX, TileY) Then
                     Call ValidateCargoAreasForTeam(.flags.CurrentTeam)
                 End If
             Else
@@ -919,7 +903,6 @@ Public Sub IInventoryInterface_UserDropItem(ByVal UserIndex As Integer, ByVal Sl
                 'TODO: LOG ERROR
                 Exit Sub
             End If
-            
         End If
     End With
 End Sub
@@ -978,11 +961,11 @@ Private Function TryPickupItemAt(ByVal UserIndex As Integer) As Boolean
 End Function
 
 Private Function IsInsideArea(ByRef Area As t_CargoArea, ByVal PosX As Integer, ByVal PosY As Integer) As Boolean
-100     If PosX < Area.TopLeft.PosX Then Exit Function
-102     If PosX > Area.BottomRight.PosX Then Exit Function
-104     If PosY < Area.TopLeft.PosY Then Exit Function
-106     If PosY > Area.BottomRight.PosY Then Exit Function
-108     IsInsideArea = True
+    If PosX < Area.TopLeft.PosX Then Exit Function
+    If PosX > Area.BottomRight.PosX Then Exit Function
+    If PosY < Area.TopLeft.PosY Then Exit Function
+    If PosY > Area.BottomRight.PosY Then Exit Function
+    IsInsideArea = True
 End Function
 
 Private Sub ValidateCargoAreasForTeam(ByVal team As Integer)
@@ -998,22 +981,16 @@ End Sub
 Private Function GetTeamCargoCount(ByVal team As Integer) As Integer
     Dim i, j As Integer
     Dim CargoCount As Integer
-    For i = TeamCargo(team).OriginalCargoArea.TopLeft.PosX To _
-        TeamCargo(team).OriginalCargoArea.BottomRight.PosX
-        For j = TeamCargo(team).OriginalCargoArea.TopLeft.PosY To _
-            TeamCargo(team).OriginalCargoArea.BottomRight.PosY
-            If MapData(MapNumbers(1), i, j).ObjInfo.ObjIndex = TeamCargo(1).CargoItemId Or _
-               MapData(MapNumbers(1), i, j).ObjInfo.ObjIndex = TeamCargo(2).CargoItemId Then
+    For i = TeamCargo(team).OriginalCargoArea.TopLeft.PosX To TeamCargo(team).OriginalCargoArea.BottomRight.PosX
+        For j = TeamCargo(team).OriginalCargoArea.TopLeft.PosY To TeamCargo(team).OriginalCargoArea.BottomRight.PosY
+            If MapData(MapNumbers(1), i, j).ObjInfo.ObjIndex = TeamCargo(1).CargoItemId Or MapData(MapNumbers(1), i, j).ObjInfo.ObjIndex = TeamCargo(2).CargoItemId Then
                 CargoCount = CargoCount + 1
             End If
         Next j
     Next i
-    For i = TeamCargo(team).DropArea.TopLeft.PosX To _
-        TeamCargo(team).DropArea.BottomRight.PosX
-        For j = TeamCargo(team).DropArea.TopLeft.PosY To _
-            TeamCargo(team).DropArea.BottomRight.PosY
-            If MapData(MapNumbers(1), i, j).ObjInfo.ObjIndex = TeamCargo(1).CargoItemId Or _
-               MapData(MapNumbers(1), i, j).ObjInfo.ObjIndex = TeamCargo(2).CargoItemId Then
+    For i = TeamCargo(team).DropArea.TopLeft.PosX To TeamCargo(team).DropArea.BottomRight.PosX
+        For j = TeamCargo(team).DropArea.TopLeft.PosY To TeamCargo(team).DropArea.BottomRight.PosY
+            If MapData(MapNumbers(1), i, j).ObjInfo.ObjIndex = TeamCargo(1).CargoItemId Or MapData(MapNumbers(1), i, j).ObjInfo.ObjIndex = TeamCargo(2).CargoItemId Then
                 CargoCount = CargoCount + 1
             End If
         Next j
@@ -1059,7 +1036,8 @@ Private Sub HandleCaptain(ByVal DeltaTime As Long, ByVal CaptainIndex As Integer
                 .NextFireTime = .NextFireTime / 2
             Else
                 Call SendData(SendTarget.toMap, NpcList(.NpcRef.ArrayIndex).pos.Map, PrepareMessageLocaleMsg(MsgCaptainFire, CaptainIndex, e_FontTypeNames.FONTTYPE_WARNING))
-                Call SendData(SendTarget.toMap, NpcList(.NpcRef.ArrayIndex).pos.Map, PrepareLocaleChatOverHead(MsgFire, "", NpcList(.NpcRef.ArrayIndex).Char.charindex, vbRed, , NpcList(.NpcRef.ArrayIndex).pos.x, NpcList(.NpcRef.ArrayIndex).pos.y))
+                Call SendData(SendTarget.toMap, NpcList(.NpcRef.ArrayIndex).pos.Map, PrepareLocaleChatOverHead(MsgFire, "", NpcList(.NpcRef.ArrayIndex).Char.charindex, vbRed, , _
+                        NpcList(.NpcRef.ArrayIndex).pos.x, NpcList(.NpcRef.ArrayIndex).pos.y))
             End If
         End If
     End With
@@ -1071,8 +1049,8 @@ Private Function CaptainFire(ByVal CaptainIndex As Integer) As Boolean
         TargetTeam = GetOposingTeam(CaptainIndex)
         Dim PossibleTargets(10) As Integer
         Dim PossibleTargetCount As Integer
-        Dim UserIndex As Integer
-        Dim i As Integer
+        Dim UserIndex           As Integer
+        Dim i                   As Integer
         For i = 1 To ModAreas.ConnGroups(NpcList(.NpcRef.ArrayIndex).pos.Map).CountEntrys
             UserIndex = ModAreas.ConnGroups(NpcList(.NpcRef.ArrayIndex).pos.Map).UserEntrys(i)
             If UserList(UserIndex).flags.CurrentTeam = TargetTeam Then
@@ -1088,10 +1066,10 @@ Private Function CaptainFire(ByVal CaptainIndex As Integer) As Boolean
         Dim CannonCount As Integer
         Dim TargetIndex As Integer
         CannonCount = Min(3, PossibleTargetCount)
-        Dim Particula As Integer
-        Dim Tiempo    As Long
+        Dim Particula        As Integer
+        Dim Tiempo           As Long
         Dim CannonProyectile As Integer
-        Dim TargetPos As t_WorldPos
+        Dim TargetPos        As t_WorldPos
         CannonProyectile = 4
         Particula = Hechizos(CannonSpell).Particle
         Tiempo = Hechizos(CannonSpell).TimeParticula
@@ -1099,9 +1077,12 @@ Private Function CaptainFire(ByVal CaptainIndex As Integer) As Boolean
             TargetIndex = RandomNumber(0, PossibleTargetCount - 1)
             UserIndex = PossibleTargets(TargetIndex)
             TargetPos = UserList(UserIndex).pos
-            Call SendData(SendTarget.toMap, NpcList(.NpcRef.ArrayIndex).pos.Map, PrepareMessageParticleFX(NpcList(.NpcRef.ArrayIndex).Char.charindex, Particula, Tiempo, False, , NpcList(.NpcRef.ArrayIndex).pos.x, NpcList(.NpcRef.ArrayIndex).pos.y))
-            Call SendData(SendTarget.toMap, NpcList(.NpcRef.ArrayIndex).pos.Map, PrepareCreateProjectile(NpcList(.NpcRef.ArrayIndex).pos.x, NpcList(.NpcRef.ArrayIndex).pos.y, TargetPos.x, TargetPos.y, CannonProyectile))
-            If Hechizos(CannonSpell).wav <> 0 Then Call SendData(SendTarget.ToNPCAliveArea, .NpcRef.ArrayIndex, PrepareMessagePlayWave(Hechizos(CannonSpell).wav, NpcList(.NpcRef.ArrayIndex).pos.x, NpcList(.NpcRef.ArrayIndex).pos.y))
+            Call SendData(SendTarget.toMap, NpcList(.NpcRef.ArrayIndex).pos.Map, PrepareMessageParticleFX(NpcList(.NpcRef.ArrayIndex).Char.charindex, Particula, Tiempo, False, , _
+                    NpcList(.NpcRef.ArrayIndex).pos.x, NpcList(.NpcRef.ArrayIndex).pos.y))
+            Call SendData(SendTarget.toMap, NpcList(.NpcRef.ArrayIndex).pos.Map, PrepareCreateProjectile(NpcList(.NpcRef.ArrayIndex).pos.x, NpcList(.NpcRef.ArrayIndex).pos.y, _
+                    TargetPos.x, TargetPos.y, CannonProyectile))
+            If Hechizos(CannonSpell).wav <> 0 Then Call SendData(SendTarget.ToNPCAliveArea, .NpcRef.ArrayIndex, PrepareMessagePlayWave(Hechizos(CannonSpell).wav, NpcList( _
+                    .NpcRef.ArrayIndex).pos.x, NpcList(.NpcRef.ArrayIndex).pos.y))
             Call CreateDelayedBlast(.NpcRef.ArrayIndex, eNpc, TargetPos.Map, TargetPos.x, TargetPos.y, Hechizos(CannonSpell).EotId, -1)
             PossibleTargets(TargetIndex) = PossibleTargets(PossibleTargetCount - 1)
             PossibleTargetCount = PossibleTargetCount - 1
@@ -1112,7 +1093,7 @@ End Function
 
 Sub RefillPotions(ByVal UserIndex As Integer)
     Dim FillBluePots As Integer
-    Dim FillRedPots As Integer
+    Dim FillRedPots  As Integer
     FillBluePots = RespawnManaPotAmount
     FillRedPots = RespawnHPPotAmount
     With UserList(UserIndex)
@@ -1154,9 +1135,9 @@ Sub RefillPotions(ByVal UserIndex As Integer)
 End Sub
 
 Sub GiveRewards()
-    Dim Team1 As String
-    Dim Team2 As String
-    Dim Reward As Long
+    Dim Team1    As String
+    Dim Team2    As String
+    Dim Reward   As Long
     Dim TeamSize As Integer
     If LobbyList(LobbyIndex).AvailableInscriptionMoney > 0 Then
         LobbyList(LobbyIndex).AvailableInscriptionMoney = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.95

@@ -101,79 +101,44 @@ Attribute VB_Exposed = False
 '
 '
 '
-
 Option Explicit
 
 Private Sub Command1_Click()
-        
-        On Error GoTo Command1_Click_Err
-        
-
-        Dim uUser As t_UserReference
-
-100     uUser = NameIndex(cboPjs.Text)
-
-102     If IsValidUserRef(uUser) Then
-104         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1641, UserList(uUser.ArrayIndex).name, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1641=Servidor » ¬1 ha sido echado.
-106         Call CloseSocket(uUser.ArrayIndex)
-
-        End If
-
-        
-        Exit Sub
-
+    On Error GoTo Command1_Click_Err
+    Dim uUser As t_UserReference
+    uUser = NameIndex(cboPjs.Text)
+    If IsValidUserRef(uUser) Then
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1641, UserList(uUser.ArrayIndex).name, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1641=Servidor » ¬1 ha sido echado.
+        Call CloseSocket(uUser.ArrayIndex)
+    End If
+    Exit Sub
 Command1_Click_Err:
-108     Call TraceError(Err.Number, Err.Description, "frmAdmin.Command1_Click", Erl)
-110
-        
+    Call TraceError(Err.Number, Err.Description, "frmAdmin.Command1_Click", Erl)
 End Sub
 
 Public Sub ActualizaListaPjs()
-        
-        On Error GoTo ActualizaListaPjs_Err
-        
-
-        Dim LoopC As Long
-
-100     With cboPjs
-102         .Clear
-    
-104         For LoopC = 1 To LastUser
-
-106             If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnectionDetails.ConnIDValida Then
-108                 If UserList(LoopC).flags.Privilegios And e_PlayerType.user Then
-110                     .AddItem UserList(LoopC).Name
-112                     .ItemData(.NewIndex) = LoopC
-
-                    End If
-
+    On Error GoTo ActualizaListaPjs_Err
+    Dim LoopC As Long
+    With cboPjs
+        .Clear
+        For LoopC = 1 To LastUser
+            If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnectionDetails.ConnIDValida Then
+                If UserList(LoopC).flags.Privilegios And e_PlayerType.User Then
+                    .AddItem UserList(LoopC).name
+                    .ItemData(.NewIndex) = LoopC
                 End If
-
-114         Next LoopC
-
-        End With
-
-        
-        Exit Sub
-
+            End If
+        Next LoopC
+    End With
+    Exit Sub
 ActualizaListaPjs_Err:
-116     Call TraceError(Err.Number, Err.Description, "frmAdmin.ActualizaListaPjs", Erl)
-118
-        
+    Call TraceError(Err.Number, Err.Description, "frmAdmin.ActualizaListaPjs", Erl)
 End Sub
 
 Private Sub Command3_Click()
-        
-        On Error GoTo Command3_Click_Err
-        
-100     Call EcharPjsNoPrivilegiados
-
-        
-        Exit Sub
-
+    On Error GoTo Command3_Click_Err
+    Call EcharPjsNoPrivilegiados
+    Exit Sub
 Command3_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmAdmin.Command3_Click", Erl)
-104
-        
+    Call TraceError(Err.Number, Err.Description, "frmAdmin.Command3_Click", Erl)
 End Sub
-

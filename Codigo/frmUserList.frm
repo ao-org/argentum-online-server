@@ -87,86 +87,49 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
-        
-        On Error GoTo Command1_Click_Err
-        
-
-        Dim LoopC As Integer
-
-100     Text2.Text = "MaxUsers: " & MaxUsers & vbCrLf
-102     Text2.Text = Text2.Text & "LastUser: " & LastUser & vbCrLf
-104     Text2.Text = Text2.Text & "NumUsers: " & NumUsers & vbCrLf
-        'Text2.Text = Text2.Text & "" & vbCrLf
-
-106     List1.Clear
-
-108     For LoopC = 1 To MaxUsers
-110         List1.AddItem Format$(LoopC, "000") & " " & IIf(UserList(LoopC).flags.UserLogged, UserList(LoopC).name, "")
-112         List1.ItemData(List1.NewIndex) = LoopC
-114     Next LoopC
-
-        
-        Exit Sub
-
+    On Error GoTo Command1_Click_Err
+    Dim LoopC As Integer
+    Text2.Text = "MaxUsers: " & MaxUsers & vbCrLf
+    Text2.Text = Text2.Text & "LastUser: " & LastUser & vbCrLf
+    Text2.Text = Text2.Text & "NumUsers: " & NumUsers & vbCrLf
+    'Text2.Text = Text2.Text & "" & vbCrLf
+    List1.Clear
+    For LoopC = 1 To MaxUsers
+        List1.AddItem Format$(LoopC, "000") & " " & IIf(UserList(LoopC).flags.UserLogged, UserList(LoopC).name, "")
+        List1.ItemData(List1.NewIndex) = LoopC
+    Next LoopC
+    Exit Sub
 Command1_Click_Err:
-116     Call TraceError(Err.Number, Err.Description, "frmUserList.Command1_Click", Erl)
-118
-        
+    Call TraceError(Err.Number, Err.Description, "frmUserList.Command1_Click", Erl)
 End Sub
 
 Private Sub Command2_Click()
-        
-        On Error GoTo Command2_Click_Err
-        
-
-        Dim LoopC As Integer
-
-100     For LoopC = 1 To MaxUsers
-
-102         If UserList(LoopC).ConnectionDetails.ConnIDValida And Not UserList(LoopC).flags.UserLogged Then
-104             Call CloseSocket(LoopC)
-
-            End If
-
-106     Next LoopC
-
-        
-        Exit Sub
-
+    On Error GoTo Command2_Click_Err
+    Dim LoopC As Integer
+    For LoopC = 1 To MaxUsers
+        If UserList(LoopC).ConnectionDetails.ConnIDValida And Not UserList(LoopC).flags.UserLogged Then
+            Call CloseSocket(LoopC)
+        End If
+    Next LoopC
+    Exit Sub
 Command2_Click_Err:
-108     Call TraceError(Err.Number, Err.Description, "frmUserList.Command2_Click", Erl)
-110
-        
+    Call TraceError(Err.Number, Err.Description, "frmUserList.Command2_Click", Erl)
 End Sub
 
 Private Sub List1_Click()
-        
-        On Error GoTo List1_Click_Err
-        
-
-        Dim UserIndex As Integer
-
-100     If List1.ListIndex <> -1 Then
-102         UserIndex = List1.ItemData(List1.ListIndex)
-
-104         If UserIndex > 0 And UserIndex <= MaxUsers Then
-
-106             With UserList(UserIndex)
-108                 Text1.Text = "UserLogged: " & .flags.UserLogged & vbCrLf
-110                 Text1.Text = Text1.Text & "IdleCount: " & .Counters.IdleCount & vbCrLf
-114                 Text1.Text = Text1.Text & "ConnIDValida: " & .ConnectionDetails.ConnIDValida & vbCrLf
-
-                End With
-
-            End If
-
+    On Error GoTo List1_Click_Err
+    Dim UserIndex As Integer
+    If List1.ListIndex <> -1 Then
+        UserIndex = List1.ItemData(List1.ListIndex)
+        If UserIndex > 0 And UserIndex <= MaxUsers Then
+            With UserList(UserIndex)
+                Text1.Text = "UserLogged: " & .flags.UserLogged & vbCrLf
+                Text1.Text = Text1.Text & "IdleCount: " & .Counters.IdleCount & vbCrLf
+                Text1.Text = Text1.Text & "ConnIDValida: " & .ConnectionDetails.ConnIDValida & vbCrLf
+            End With
         End If
-
-        
-        Exit Sub
-
+    End If
+    Exit Sub
 List1_Click_Err:
-116     Call TraceError(Err.Number, Err.Description, "frmUserList.List1_Click", Erl)
-118
-        
+    Call TraceError(Err.Number, Err.Description, "frmUserList.List1_Click", Erl)
 End Sub

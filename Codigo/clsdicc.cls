@@ -38,208 +38,122 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-
 Private Const MAX_ELEM = 100
 
 Private Type t_diccElem
-
     clave As String
     def As Variant
-
 End Type
 
 Private p_elementos(1 To MAX_ELEM) As t_diccElem 'visual basic es una mierda para usar memoria dinamica, asi que uso esto
-
 Private p_cant                     As Integer
 
 Public Sub Class_Initialize()
-        'constructor
-        
-        On Error GoTo Class_Initialize_Err
-        
-100     p_cant = 0
-
-        
-        Exit Sub
-
+    'constructor
+    On Error GoTo Class_Initialize_Err
+    p_cant = 0
+    Exit Sub
 Class_Initialize_Err:
-102     Call TraceError(Err.Number, Err.Description, "diccionario.Class_Initialize", Erl)
-104
-        
+    Call TraceError(Err.Number, Err.Description, "diccionario.Class_Initialize", Erl)
 End Sub
 
 Public Sub Class_Terminate()
-
     'destructor
     'destruir los variants?????
 End Sub
 
 Public Property Get CantElem() As Integer
-        
-        On Error GoTo CantElem_Err
-        
-100     CantElem = p_cant
-
-        
-        Exit Property
-
+    On Error GoTo CantElem_Err
+    CantElem = p_cant
+    Exit Property
 CantElem_Err:
-102     Call TraceError(Err.Number, Err.Description, "diccionario.CantElem", Erl)
-104
-        
+    Call TraceError(Err.Number, Err.Description, "diccionario.CantElem", Erl)
 End Property
 
 Public Function AtPut(ByVal clave As String, ByRef elem As Variant) As Boolean
-        
-        On Error GoTo AtPut_Err
-        
-
-        Dim i As Integer
-
-100     AtPut = False
-
-102     If LenB(clave) = 0 Then Exit Function
-
-104     clave = UCase$(clave)
-
-106     If p_cant = MAX_ELEM Then
-108         AtPut = False
-        Else
-
-110         For i = 1 To p_cant
-
-112             If clave = p_elementos(i).clave Then
-114                 p_elementos(i).def = elem
-116                 AtPut = True
-
-                    Exit For    ' epa ;)
-
-                End If
-
-118         Next i
-
-120         If Not AtPut Then
-122             p_cant = p_cant + 1
-124             p_elementos(p_cant).def = elem
-126             p_elementos(p_cant).clave = clave
-128             AtPut = True
-
+    On Error GoTo AtPut_Err
+    Dim i As Integer
+    AtPut = False
+    If LenB(clave) = 0 Then Exit Function
+    clave = UCase$(clave)
+    If p_cant = MAX_ELEM Then
+        AtPut = False
+    Else
+        For i = 1 To p_cant
+            If clave = p_elementos(i).clave Then
+                p_elementos(i).def = elem
+                AtPut = True
+                Exit For    ' epa ;)
             End If
-
+        Next i
+        If Not AtPut Then
+            p_cant = p_cant + 1
+            p_elementos(p_cant).def = elem
+            p_elementos(p_cant).clave = clave
+            AtPut = True
         End If
-
-        
-        Exit Function
-
+    End If
+    Exit Function
 AtPut_Err:
-130     Call TraceError(Err.Number, Err.Description, "diccionario.AtPut", Erl)
-132
-        
+    Call TraceError(Err.Number, Err.Description, "diccionario.AtPut", Erl)
 End Function
 
 Public Function At(ByVal clave As String) As Variant
-        
-        On Error GoTo At_Err
-        
-
-        Dim i As Integer
-
-100     clave = UCase$(clave)
-
-102     At = Null
-
-104     For i = 1 To p_cant
-
-106         If clave = p_elementos(i).clave Then
-108             At = p_elementos(i).def
-                Exit Function
-
-            End If
-
-110     Next i
-
-        
-        Exit Function
-
+    On Error GoTo At_Err
+    Dim i As Integer
+    clave = UCase$(clave)
+    At = Null
+    For i = 1 To p_cant
+        If clave = p_elementos(i).clave Then
+            At = p_elementos(i).def
+            Exit Function
+        End If
+    Next i
+    Exit Function
 At_Err:
-112     Call TraceError(Err.Number, Err.Description, "diccionario.At", Erl)
-114
-        
+    Call TraceError(Err.Number, Err.Description, "diccionario.At", Erl)
 End Function
 
 Public Function AtIndex(ByVal i As Integer) As String
-        
-        On Error GoTo AtIndex_Err
-        
-100     AtIndex = p_elementos(i).clave
-
-        
-        Exit Function
-
+    On Error GoTo AtIndex_Err
+    AtIndex = p_elementos(i).clave
+    Exit Function
 AtIndex_Err:
-102     Call TraceError(Err.Number, Err.Description, "diccionario.AtIndex", Erl)
-104
-        
+    Call TraceError(Err.Number, Err.Description, "diccionario.AtIndex", Erl)
 End Function
 
 Public Function MayorValor(ByRef cant As Integer) As String
-        
-        On Error GoTo MayorValor_Err
-        
-
-        'parchecito para el AO, me da la clave con mayor valor en valor
-        'y la cantidad de claves con ese valor (por si hay empate)
-        Dim i     As Integer
-
-        Dim max   As Integer
-
-        Dim clave As String
-
-100     max = -1
-102     cant = 0
-104     clave = vbNullString
-
-106     For i = 1 To p_cant
-
-108         If max <= CInt(p_elementos(i).def) Then
-110             cant = IIf(max = CInt(p_elementos(i).def), cant + 1, 1)
-112             clave = IIf(max = CInt(p_elementos(i).def), clave & "," & p_elementos(i).clave, p_elementos(i).clave)
-114             max = CInt(p_elementos(i).def)
-
-            End If
-
-116     Next i
-
-118     MayorValor = clave
-
-        
-        Exit Function
-
+    On Error GoTo MayorValor_Err
+    'parchecito para el AO, me da la clave con mayor valor en valor
+    'y la cantidad de claves con ese valor (por si hay empate)
+    Dim i     As Integer
+    Dim max   As Integer
+    Dim clave As String
+    max = -1
+    cant = 0
+    clave = vbNullString
+    For i = 1 To p_cant
+        If max <= CInt(p_elementos(i).def) Then
+            cant = IIf(max = CInt(p_elementos(i).def), cant + 1, 1)
+            clave = IIf(max = CInt(p_elementos(i).def), clave & "," & p_elementos(i).clave, p_elementos(i).clave)
+            max = CInt(p_elementos(i).def)
+        End If
+    Next i
+    MayorValor = clave
+    Exit Function
 MayorValor_Err:
-120     Call TraceError(Err.Number, Err.Description, "diccionario.MayorValor", Erl)
-122
-        
+    Call TraceError(Err.Number, Err.Description, "diccionario.MayorValor", Erl)
 End Function
 
 Public Sub DumpAll()
-        
-        On Error GoTo DumpAll_Err
-        
-
-        Dim i As Integer
-
-100     For i = 1 To MAX_ELEM
-102         p_elementos(i).clave = vbNullString
-104         p_elementos(i).def = Null
-106     Next i
-
-108     p_cant = 0
-
-        
-        Exit Sub
-
+    On Error GoTo DumpAll_Err
+    Dim i As Integer
+    For i = 1 To MAX_ELEM
+        p_elementos(i).clave = vbNullString
+        p_elementos(i).def = Null
+    Next i
+    p_cant = 0
+    Exit Sub
 DumpAll_Err:
-110     Call TraceError(Err.Number, Err.Description, "diccionario.DumpAll", Erl)
-112
-        
+    Call TraceError(Err.Number, Err.Description, "diccionario.DumpAll", Erl)
 End Sub

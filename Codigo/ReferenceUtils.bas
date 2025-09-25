@@ -53,7 +53,7 @@ Public Function UserCanAttack(ByVal UserIndex As Integer, ByVal UserVersionId, B
     If Reference.RefType = eUser Then
         UserCanAttack = UserMod.CanAttackUser(UserIndex, UserVersionId, Reference.ArrayIndex, Reference.VersionId)
     Else
-        UserCanAttack = UserCanAttackNpc(UserIndex, Reference.ArrayIndex).result
+        UserCanAttack = UserCanAttackNpc(UserIndex, Reference.ArrayIndex).Result
     End If
 End Function
 
@@ -65,64 +65,67 @@ Public Function NpcCanAttack(ByVal NpcIndex As Integer, ByRef Reference As t_Any
     End If
 End Function
 
-Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modifier As e_ModifierTypes, ByVal Value As Single)
+Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modifier As e_ModifierTypes, ByVal value As Single)
     If Reference.RefType = eUser Then
         Select Case Modifier
             Case e_ModifierTypes.MagicBonus
-                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.MagicDamageBonus, Value)
+                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.MagicDamageBonus, value)
             Case e_ModifierTypes.MagicReduction
-                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.MagicDamageReduction, Value)
+                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.MagicDamageReduction, value)
             Case e_ModifierTypes.MovementSpeed
-                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.MovementSpeed, Value)
+                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.MovementSpeed, value)
                 Call ActualizarVelocidadDeUsuario(Reference.ArrayIndex)
             Case e_ModifierTypes.PhysicalReduction
-                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageReduction, Value)
+                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageReduction, value)
             Case e_ModifierTypes.PhysiccalBonus
-                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageBonus, Value)
+                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageBonus, value)
             Case e_ModifierTypes.HitBonus
-                Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.HitBonus, Value)
+                Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.HitBonus, value)
             Case e_ModifierTypes.EvasionBonus
-                Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.EvasionBonus, Value)
+                Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.EvasionBonus, value)
             Case e_ModifierTypes.SelfHealingBonus
-                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.SelfHealingBonus, Value)
+                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.SelfHealingBonus, value)
             Case e_ModifierTypes.MagicHealingBonus
-                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.MagicHealingBonus, Value)
+                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.MagicHealingBonus, value)
             Case e_ModifierTypes.PhysicalLinearBonus
-                Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageLinearBonus, Value)
+                Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageLinearBonus, value)
             Case e_ModifierTypes.DefenseBonus
-                Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.DefenseBonus, Value)
+                Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.DefenseBonus, value)
         End Select
     Else
         Select Case Modifier
             Case e_ModifierTypes.MagicBonus
-                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.MagicDamageBonus, Value)
+                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.MagicDamageBonus, value)
             Case e_ModifierTypes.MagicReduction
-                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.MagicDamageReduction, Value)
+                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.MagicDamageReduction, value)
             Case e_ModifierTypes.MovementSpeed
-                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.MovementSpeed, Value)
+                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.MovementSpeed, value)
                 Call UpdateNpcSpeed(Reference.ArrayIndex)
             Case e_ModifierTypes.PhysicalReduction
-                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageReduction, Value)
+                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageReduction, value)
             Case e_ModifierTypes.PhysiccalBonus
-                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageBonus, Value)
+                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageBonus, value)
             Case e_ModifierTypes.HitBonus
-                Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.HitBonus, Value)
+                Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.HitBonus, value)
             Case e_ModifierTypes.EvasionBonus
-                Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.EvasionBonus, Value)
+                Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.EvasionBonus, value)
             Case e_ModifierTypes.SelfHealingBonus
-                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.SelfHealingBonus, Value)
+                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.SelfHealingBonus, value)
             Case e_ModifierTypes.MagicHealingBonus
-                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.MagicHealingBonus, Value)
+                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.MagicHealingBonus, value)
             Case e_ModifierTypes.PhysicalLinearBonus
-                Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageLinearBonus, Value)
+                Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageLinearBonus, value)
             Case e_ModifierTypes.DefenseBonus
-                Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.DefenseBonus, Value)
+                Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.DefenseBonus, value)
         End Select
     End If
 End Sub
 
-Public Function DoDamageToTarget(ByVal UserIndex As Integer, ByRef TargetRef As t_AnyReference, ByVal Damage As Integer, _
-                                 ByVal DamageType As e_DamageSourceType, ByVal ObjIndex As Integer) As e_DamageResult
+Public Function DoDamageToTarget(ByVal UserIndex As Integer, _
+                                 ByRef TargetRef As t_AnyReference, _
+                                 ByVal Damage As Integer, _
+                                 ByVal DamageType As e_DamageSourceType, _
+                                 ByVal ObjIndex As Integer) As e_DamageResult
     If Not IsValidRef(TargetRef) Then
         Exit Function
     End If
@@ -133,8 +136,11 @@ Public Function DoDamageToTarget(ByVal UserIndex As Integer, ByRef TargetRef As 
     End If
 End Function
 
-Public Function NpcDoDamageToTarget(ByVal NpcIndex As Integer, ByRef TargetRef As t_AnyReference, ByVal Damage As Integer, _
-                                 ByVal DamageType As e_DamageSourceType, ByVal ObjIndex As Integer) As e_DamageResult
+Public Function NpcDoDamageToTarget(ByVal NpcIndex As Integer, _
+                                    ByRef TargetRef As t_AnyReference, _
+                                    ByVal Damage As Integer, _
+                                    ByVal DamageType As e_DamageSourceType, _
+                                    ByVal ObjIndex As Integer) As e_DamageResult
     If Not IsValidRef(TargetRef) Then
         Exit Function
     End If
@@ -145,8 +151,11 @@ Public Function NpcDoDamageToTarget(ByVal NpcIndex As Integer, ByRef TargetRef A
     End If
 End Function
 
-Public Function RefDoDamageToTarget(ByRef SourceRef As t_AnyReference, ByRef TargetRef As t_AnyReference, ByVal Damage As Integer, _
-                                 ByVal DamageType As e_DamageSourceType, ByVal ObjIndex As Integer) As e_DamageResult
+Public Function RefDoDamageToTarget(ByRef SourceRef As t_AnyReference, _
+                                    ByRef TargetRef As t_AnyReference, _
+                                    ByVal Damage As Integer, _
+                                    ByVal DamageType As e_DamageSourceType, _
+                                    ByVal ObjIndex As Integer) As e_DamageResult
     If Not IsValidRef(SourceRef) Then
         Exit Function
     End If
@@ -159,10 +168,10 @@ End Function
 
 Public Function AddShieldToReference(ByRef SourceRef As t_AnyReference, ByVal ShieldSize As Long)
     If SourceRef.RefType = eUser Then
-        Call IncreaseLong(UserList(SourceRef.ArrayIndex).Stats.Shield, ShieldSize)
+        Call IncreaseLong(UserList(SourceRef.ArrayIndex).Stats.shield, ShieldSize)
         WriteUpdateHP (SourceRef.ArrayIndex)
     Else
-        Call IncreaseLong(NpcList(SourceRef.ArrayIndex).Stats.Shield, ShieldSize)
+        Call IncreaseLong(NpcList(SourceRef.ArrayIndex).Stats.shield, ShieldSize)
         Call SendData(SendTarget.ToNPCAliveArea, SourceRef.ArrayIndex, PrepareMessageNpcUpdateHP(SourceRef.ArrayIndex))
     End If
 End Function

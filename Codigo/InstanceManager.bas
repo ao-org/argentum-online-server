@@ -1,15 +1,14 @@
 Attribute VB_Name = "InstanceManager"
 Option Explicit
-
-
 Private AvailableInstanceMap As t_IndexHeap
+
 Public Type t_TranslationMapping
     OriginalTarget As Integer
     NewTarget As Integer
 End Type
 
 Public Sub InitializeInstanceHeap(ByVal Size As Integer, ByVal MapIndexStart As Integer)
-On Error GoTo ErrHandler_InitializeInstanceHeap
+    On Error GoTo ErrHandler_InitializeInstanceHeap
     ReDim AvailableInstanceMap.IndexInfo(Size)
     Dim i As Integer
     For i = 1 To Size
@@ -22,7 +21,7 @@ ErrHandler_InitializeInstanceHeap:
 End Sub
 
 Public Function ReleaseInstance(ByVal InstanceMapIndex As Integer) As Boolean
-On Error GoTo ErrHandler
+    On Error GoTo ErrHandler
     AvailableInstanceMap.currentIndex = AvailableInstanceMap.currentIndex + 1
     Debug.Assert AvailableInstanceMap.currentIndex <= UBound(AvailableInstanceMap.IndexInfo)
     AvailableInstanceMap.IndexInfo(AvailableInstanceMap.currentIndex) = InstanceMapIndex
@@ -39,7 +38,7 @@ Public Function GetAvailableInstanceCount() As Integer
 End Function
 
 Public Function GetNextAvailableInstance() As Integer
-On Error GoTo ErrHandler
+    On Error GoTo ErrHandler
     If (AvailableInstanceMap.currentIndex = 0) Then
         GetNextAvailableInstance = -1
         Exit Function
@@ -59,10 +58,10 @@ End Sub
 Public Sub CloneMapWithTranslations(ByVal SourceMapIndex As Integer, ByVal DestMapIndex As Integer, ByRef TranslationMappings() As t_TranslationMapping)
     MapInfo(DestMapIndex) = MapInfo(SourceMapIndex)
     MapInfo(DestMapIndex).MapResource = SourceMapIndex
-    Dim PosX As Integer
-    Dim PosY As Integer
+    Dim PosX             As Integer
+    Dim PosY             As Integer
     Dim PerformanceTimer As Long
-    Dim i As Integer
+    Dim i                As Integer
     Call PerformanceTestStart(PerformanceTimer)
     For PosY = YMinMapSize To YMaxMapSize
         For PosX = XMinMapSize To XMaxMapSize

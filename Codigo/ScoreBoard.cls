@@ -38,8 +38,7 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-
-Dim PlayersScore As New Dictionary
+Dim PlayersScore     As New Dictionary
 Dim DisconnectedUser As New Dictionary
 
 Public Sub AddPlayer(ByVal PlayerIndex As Long)
@@ -54,15 +53,15 @@ Public Function UpdatePlayerScore(ByVal PlayerIndex As Integer, ByVal modifyValu
     PlayersScore.Item(PlayerIndex) = UpdatePlayerScore
 End Function
 
-Friend Function GetRanking(ByVal size As Integer) As e_Rank()
-    ReDim rank(size) As e_Rank
-    Dim key As Variant
-    Dim pos As Integer
+Friend Function GetRanking(ByVal Size As Integer) As e_Rank()
+    ReDim rank(Size) As e_Rank
+    Dim key   As Variant
+    Dim pos   As Integer
     Dim value As Integer
     For Each key In PlayersScore.Keys
         value = PlayersScore.Item(key)
         pos = InsertionPos(value, rank)
-        If pos < size Then
+        If pos < Size Then
             Call ShiftElement(pos, rank)
             rank(pos).PlayerIndex = key
             rank(pos).Score = value
@@ -74,14 +73,14 @@ End Function
 Friend Function GetTeamRanking(ByRef Lobby As t_Lobby) As e_Rank()
     ReDim rank(Lobby.RegisteredPlayers / Lobby.TeamSize) As e_Rank
     Dim key As Variant
-    Dim i As Integer
+    Dim i   As Integer
     For i = i To UBound(rank)
         rank(i).PlayerIndex = i
     Next i
     For Each key In PlayersScore.Keys
         For i = 0 To Lobby.RegisteredPlayers - 1
-            If Lobby.Players(i).user.ArrayIndex = key Then
-                rank(Lobby.Players(i).Team).Score = rank(Lobby.Players(i).Team).Score + PlayersScore.Item(key)
+            If Lobby.Players(i).User.ArrayIndex = key Then
+                rank(Lobby.Players(i).team).Score = rank(Lobby.Players(i).team).Score + PlayersScore.Item(key)
             End If
         Next i
     Next key
@@ -94,7 +93,6 @@ Private Function InsertionPos(ByVal Score As Integer, ByRef rank() As e_Rank) As
         InsertionPos = UBound(rank) + 1
         Exit Function
     End If
-    
     Dim currentPosition As Integer
     For currentPosition = 0 To UBound(rank)
         If rank(currentPosition).Score < Score Then
@@ -107,9 +105,9 @@ End Function
 Private Sub SortRank(ByRef rank() As e_Rank)
     Dim CurrentMax As Integer
     Dim currentPos As Integer
-    Dim Temp As e_Rank
-    Dim i As Integer
-    Dim j As Integer
+    Dim Temp       As e_Rank
+    Dim i          As Integer
+    Dim j          As Integer
     For i = 1 To UBound(rank)
         currentPos = i
         CurrentMax = rank(currentPos).Score
@@ -127,15 +125,15 @@ Private Sub SortRank(ByRef rank() As e_Rank)
     Next i
 End Sub
 
-Private Sub ShiftElement(ByVal position As Integer, ByRef rank() As e_Rank)
+Private Sub ShiftElement(ByVal Position As Integer, ByRef rank() As e_Rank)
     Dim i As Integer
-    For i = UBound(rank) To position + 1 Step -1
+    For i = UBound(rank) To Position + 1 Step -1
         rank(i) = rank(i - 1)
     Next i
 End Sub
 
 Friend Sub PublishScoreboard(ByVal Audience As Integer, ByVal AudienceIndex, ByRef Lobby As t_Lobby, ByVal IsFinal As Boolean)
-    Dim i As Integer
+    Dim i      As Integer
     Dim rank() As e_Rank
     If IsFinal And Lobby.TeamSize > 1 Then
         Call PublishTeamScore(Audience, AudienceIndex, Lobby)
@@ -156,7 +154,8 @@ Friend Sub PublishScoreboard(ByVal Audience As Integer, ByVal AudienceIndex, ByR
             If i = 0 Then
                 Call SendData(Audience, AudienceIndex, PrepareMessageLocaleMsg(1838, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1838=Posiciones:
             End If
-            Call SendData(Audience, AudienceIndex, PrepareMessageLocaleMsg(1824, (i + 1) & "¬" & UserList(rank(i).PlayerIndex).name & "¬" & rank(i).Score & "¬", e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1824=¬1) ¬2: ¬3 puntos¬4
+            Call SendData(Audience, AudienceIndex, PrepareMessageLocaleMsg(1824, (i + 1) & "¬" & UserList(rank(i).PlayerIndex).name & "¬" & rank(i).Score & "¬", _
+                    e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1824=¬1) ¬2: ¬3 puntos¬4
         Next i
     End If
 End Sub
@@ -167,13 +166,12 @@ Friend Sub PublishTeamScore(ByVal Audience As Integer, ByVal AudienceIndex, ByRe
     Dim Winner As Integer
     Winner = rank(1).PlayerIndex
     Dim TeamPlayerList As String
-    Dim key As Variant
-    Dim i As Integer
+    Dim key            As Variant
+    Dim i              As Integer
     Call SendData(Audience, AudienceIndex, PrepareMessageLocaleMsg(1840, Winner & "¬" & rank(1).Score, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1840=Ganador equipo ¬1: ¬2
-
     For Each key In PlayersScore.Keys
         For i = 0 To Lobby.RegisteredPlayers - 1
-            If Lobby.Players(i).user.ArrayIndex = key And Lobby.Players(i).Team = Winner Then
+            If Lobby.Players(i).User.ArrayIndex = key And Lobby.Players(i).team = Winner Then
                 TeamPlayerList = TeamPlayerList & UserList(key).name & " (" & PlayersScore.Item(key) & ") "
             End If
         Next i
@@ -181,23 +179,22 @@ Friend Sub PublishTeamScore(ByVal Audience As Integer, ByVal AudienceIndex, ByRe
     Call SendData(Audience, AudienceIndex, PrepareMessageConsoleMsg(TeamPlayerList, e_FontTypeNames.FONTTYPE_GUILD))
 End Sub
 
-Public Sub DisconnectUser(ByVal userIndex As Integer, ByVal userID As Long)
-    If Not PlayersScore.Exists(userIndex) Then
+Public Sub DisconnectUser(ByVal UserIndex As Integer, ByVal UserId As Long)
+    If Not PlayersScore.Exists(UserIndex) Then
         Exit Sub
     End If
-    Call DisconnectedUser.Add(userID, PlayersScore.Item(userIndex))
-    PlayersScore.Remove (userIndex)
+    Call DisconnectedUser.Add(UserId, PlayersScore.Item(UserIndex))
+    PlayersScore.Remove (UserIndex)
 End Sub
 
-Public Sub RestoreDisconnectUser(ByVal userIndex As Integer, ByVal userID As Long)
-
-    If Not DisconnectedUser.Exists(userID) Then
+Public Sub RestoreDisconnectUser(ByVal UserIndex As Integer, ByVal UserId As Long)
+    If Not DisconnectedUser.Exists(UserId) Then
         Exit Sub
     End If
-    If PlayersScore.Exists(userIndex) Then
-        PlayersScore.Item(userIndex) = DisconnectedUser.Item(userID)
+    If PlayersScore.Exists(UserIndex) Then
+        PlayersScore.Item(UserIndex) = DisconnectedUser.Item(UserId)
     Else
-        Call PlayersScore.Add(userIndex, DisconnectedUser.Item(userID))
+        Call PlayersScore.Add(UserIndex, DisconnectedUser.Item(UserId))
     End If
-    DisconnectedUser.Remove (userID)
+    DisconnectedUser.Remove (UserId)
 End Sub

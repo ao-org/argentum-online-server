@@ -200,6 +200,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 ' Argentum 20 Game Server
 '
 '    Copyright (C) 2023 Noland Studios LTD
@@ -227,64 +228,56 @@ Attribute VB_Exposed = False
 '
 '
 Private Sub cmdActualizarObjetos_Click()
-  On Error Resume Next
-        If MsgBox("La siguiente acción es demasiado costosa para el servidor, ¿Desea continuar?", vbYesNo) = vbYes Then
-            pbarDb.Visible = True
-            Dim Object As Integer
-            Dim RS As Recordset
-                
-            Dim Leer   As clsIniManager
-102         Set Leer = New clsIniManager
-104         Call Leer.Initialize(DatPath & "Obj.dat")
-            Command3.Enabled = False
-            
-            Command3.Caption = "Actualizando..."
-            'obtiene el numero de obj
-106         NumObjDatas = val(Leer.GetValue("INIT", "NumObjs"))
-            
-            Dim ObjKey As String
-            Set RS = Query("delete from object")
-            pbarDb.max = NumObjDatas
-            'Llena la lista
-118         For Object = 1 To NumObjDatas
-122             ObjKey = "OBJ" & Object
-                Query ("INSERT INTO object (number, name) VALUES (" & Object & ", '" & Leer.GetValue(ObjKey, "Name") & "')")
-                Debug.Print Object
-                pbarDb.Value = Object
-644         Next Object
-    
-646         Set Leer = Nothing
-        
-            Command3.Enabled = True
-            
-            Command3.Caption = "Actualizar objetos DB"
-            pbarDb.Visible = False
-        
-        End If
+    On Error Resume Next
+    If MsgBox("La siguiente acción es demasiado costosa para el servidor, ¿Desea continuar?", vbYesNo) = vbYes Then
+        pbarDb.Visible = True
+        Dim Object As Integer
+        Dim RS     As Recordset
+        Dim Leer   As clsIniManager
+        Set Leer = New clsIniManager
+        Call Leer.Initialize(DatPath & "Obj.dat")
+        Command3.Enabled = False
+        Command3.Caption = "Actualizando..."
+        'obtiene el numero de obj
+        NumObjDatas = val(Leer.GetValue("INIT", "NumObjs"))
+        Dim ObjKey As String
+        Set RS = Query("delete from object")
+        pbarDb.max = NumObjDatas
+        'Llena la lista
+        For Object = 1 To NumObjDatas
+            ObjKey = "OBJ" & Object
+            Query ("INSERT INTO object (number, name) VALUES (" & Object & ", '" & Leer.GetValue(ObjKey, "Name") & "')")
+            Debug.Print Object
+            pbarDb.value = Object
+        Next Object
+        Set Leer = Nothing
+        Command3.Enabled = True
+        Command3.Caption = "Actualizar objetos DB"
+        pbarDb.Visible = False
+    End If
 End Sub
 
 Private Sub cmdBoveda_Click()
     If txtQuery.Text <> "" Then
-        Call getData("select o.number, o.name, i.amount from bank_item i inner join object o on i.item_id = o.number  where user_id = (select id from user where name = '" & txtQuery.Text & "') and amount > 0")
+        Call getData("select o.number, o.name, i.amount from bank_item i inner join object o on i.item_id = o.number  where user_id = (select id from user where name = '" & _
+                txtQuery.Text & "') and amount > 0")
     End If
 End Sub
 
 Private Sub cmdEjecutarQuery_Click()
-   Call getData(txtQuery.Text)
+    Call getData(txtQuery.Text)
 End Sub
 
 Private Sub cmdInventario_Click()
     If txtQuery.Text <> "" Then
-        Call getData("select o.number, o.name, i.amount from inventory_item i inner join object o on i.item_id = o.number  where user_id = (select id from user where name = '" & txtQuery.Text & "') and amount > 0")
+        Call getData("select o.number, o.name, i.amount from inventory_item i inner join object o on i.item_id = o.number  where user_id = (select id from user where name = '" & _
+                txtQuery.Text & "') and amount > 0")
     End If
 End Sub
 
 Private Sub getData(ByVal queryStr As String)
-     
     Dim RS As Recordset
-    
     Set RS = Query(queryStr)
-        
     If Not RS Is Nothing Then
         Set DataGrid1.DataSource = RS
     End If
@@ -292,14 +285,16 @@ Private Sub getData(ByVal queryStr As String)
 End Sub
 
 Private Sub cmdRastrearBoveda_Click()
-    Call getData("select u.name, o.name, bi.amount from user u inner join bank_item bi on u.id = bi.user_id inner join object o on bi.item_id = o.number where o.name like '%" & txtQuery.Text & "%' and bi.amount > 0 order by bi.amount desc")
+    Call getData("select u.name, o.name, bi.amount from user u inner join bank_item bi on u.id = bi.user_id inner join object o on bi.item_id = o.number where o.name like '%" & _
+            txtQuery.Text & "%' and bi.amount > 0 order by bi.amount desc")
 End Sub
 
 Private Sub cmdRastrearInventario_Click()
-    Call getData("select u.name, o.name, ii.amount from user u inner join inventory_item ii on u.id = ii.user_id inner join object o on ii.item_id = o.number where o.name like '%" & txtQuery.Text & "%' and ii.amount > 0 order by ii.amount desc")
+    Call getData( _
+            "select u.name, o.name, ii.amount from user u inner join inventory_item ii on u.id = ii.user_id inner join object o on ii.item_id = o.number where o.name like '%" & _
+            txtQuery.Text & "%' and ii.amount > 0 order by ii.amount desc")
 End Sub
 
 Private Sub Command2_Click()
     Call getData("select * from user")
 End Sub
-

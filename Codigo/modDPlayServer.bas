@@ -28,14 +28,12 @@ Attribute VB_Name = "modDPlayServer"
 '
 Option Explicit
 Option Base 0
-
 Public Const AppGuid = "{5726CF1F-702B-4008-98BC-BF9C95F9E288}"
-
-Public dx As New DirectX8
-Public dps As DirectPlay8Server
-Public dpa As DirectPlay8Address
+Public dx           As New DirectX8
+Public dps          As DirectPlay8Server
+Public dpa          As DirectPlay8Address
 Public glNumPlayers As Long
-Public gfStarted As Boolean
+Public gfStarted    As Boolean
 
 Public Sub InitDPlay()
     Set dps = dx.DirectPlayServerCreate
@@ -53,21 +51,21 @@ Public Sub Cleanup()
 End Sub
 
 Public Sub HandleDPlayError(ByVal ErrNumber As Long, ByVal ErrDescription As String, ByVal place As String, ByVal line As String)
-       Select Case Err.Number
-            Case DPNERR_INVALIDPLAYER
-                    Call TraceError(ErrNumber, "DPNERR_INVALIDPLAYER: The player ID is not recognized as a valid player ID for this game session.", place, line)
-            Case DPNERR_INVALIDPARAM
-                    Call TraceError(ErrNumber, "One or more of the parameters passed to the method are invalid.", place, line)
-            Case DPNERR_NOTHOST:
-                    Call TraceError(ErrNumber, "The client attempted to connect to a nonhost computer. Additionally, this error value may be returned by a nonhost that tried to set the application description. ", place, line)
-            Case DPNERR_INVALIDFLAGS
-                    Call TraceError(ErrNumber, "The flags passed to this method are invalid.", place, line)
-            Case DPNERR_TIMEDOUT
-                    Call TraceError(ErrNumber, "The operation could not complete because it has timed out.", place, line)
-            Case Else
-                    Call TraceError(ErrNumber, "Unknown error", place, line)
-        End Select
-        Err.Clear
+    Select Case Err.Number
+        Case DPNERR_INVALIDPLAYER
+            Call TraceError(ErrNumber, "DPNERR_INVALIDPLAYER: The player ID is not recognized as a valid player ID for this game session.", place, line)
+        Case DPNERR_INVALIDPARAM
+            Call TraceError(ErrNumber, "One or more of the parameters passed to the method are invalid.", place, line)
+        Case DPNERR_NOTHOST:
+            Call TraceError(ErrNumber, _
+                    "The client attempted to connect to a nonhost computer. Additionally, this error value may be returned by a nonhost that tried to set the application description. ", _
+                    place, line)
+        Case DPNERR_INVALIDFLAGS
+            Call TraceError(ErrNumber, "The flags passed to this method are invalid.", place, line)
+        Case DPNERR_TIMEDOUT
+            Call TraceError(ErrNumber, "The operation could not complete because it has timed out.", place, line)
+        Case Else
+            Call TraceError(ErrNumber, "Unknown error", place, line)
+    End Select
+    Err.Clear
 End Sub
-
-

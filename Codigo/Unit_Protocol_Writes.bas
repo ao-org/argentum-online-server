@@ -27,7 +27,7 @@ Attribute VB_Name = "Unit_Protocol_Writes"
 '
 Option Explicit
 #If UNIT_TEST = 1 Then
-Private Writer As Network.Writer
+    Private Writer As Network.Writer
 
 Public Function writer_is_nothing() As Boolean
     writer_is_nothing = Writer Is Nothing
@@ -58,7 +58,7 @@ End Sub
 
 Public Sub WriteLoginNewChar(ByVal public_key As String, ByVal username As String, _
     ByVal app_major As Byte, ByVal app_minor As Byte, ByVal app_revision As Byte, ByVal md5 As String, _
-    ByVal race As Byte, ByVal gender As Byte, ByVal class As Byte, ByVal body As Byte, _
+    ByVal race As Byte, ByVal gender As Byte, ByVal Class As Byte, ByVal body As Byte, _
     ByVal head As Byte, ByVal home As Byte)
      
      Dim encrypted_username_b64 As String
@@ -72,7 +72,7 @@ Public Sub WriteLoginNewChar(ByVal public_key As String, ByVal username As Strin
      Call Writer.WriteString8(md5)
      Call Writer.WriteInt8(race)
      Call Writer.WriteInt8(gender)
-     Call Writer.WriteInt8(class)
+     Call Writer.WriteInt8(Class)
      Call Writer.WriteInt16(head)
      Call Writer.WriteInt8(home)
      Call UnitClient.Send(Writer)
@@ -82,31 +82,31 @@ Public Sub WriteLong(ByVal value_to_send As Long)
     Call Writer.WriteInt16(value_to_send)
     Call UnitClient.Send(Writer)
 End Sub
-Public Sub HandleErrorMessageBox(ByRef Reader As Network.Reader)
+Public Sub HandleErrorMessageBox(ByRef reader As Network.reader)
     Dim mensaje As String
-    mensaje = Reader.ReadString8()
+    mensaje = reader.ReadString8()
     Debug.Print "HandleErrorMessageBox " & mensaje
 End Sub
-Public Sub HandleShowMessageBox(ByRef Reader As Network.Reader)
+Public Sub HandleShowMessageBox(ByRef reader As Network.reader)
     Dim mensaje As String
-    mensaje = Reader.ReadString8()
+    mensaje = reader.ReadString8()
     Debug.Print "HandleShowMessageBox " & mensaje
 End Sub
 
-Public Sub HandleCharacterChange(ByRef Reader As Network.Reader)
+Public Sub HandleCharacterChange(ByRef reader As Network.reader)
     Dim charindex As Integer
     Dim TempInt   As Integer
     Dim headIndex As Integer
-    Call Reader.ReadInt16
-    TempInt = Reader.ReadInt16()
-    headIndex = Reader.ReadInt16()
-    Call Reader.ReadInt8
-    TempInt = Reader.ReadInt16()
-    TempInt = Reader.ReadInt16()
-    TempInt = Reader.ReadInt16()
-    Reader.ReadInt16
-    Reader.ReadInt16
-    Reader.ReadInt8
+    Call reader.ReadInt16
+    TempInt = reader.ReadInt16()
+    headIndex = reader.ReadInt16()
+    Call reader.ReadInt8
+    TempInt = reader.ReadInt16()
+    TempInt = reader.ReadInt16()
+    TempInt = reader.ReadInt16()
+    reader.ReadInt16
+    reader.ReadInt16
+    reader.ReadInt8
 End Sub
 
 

@@ -26,21 +26,18 @@ Attribute VB_Name = "UnitClient"
 '
 '
 Option Explicit
-
 #If UNIT_TEST = 1 Then
 
-Public Enum ClientTests
-    TestInvalidBigPacketID = 100
-    TestInvalidNegativePacketID
-    TestWriteLoginExistingChar
-    TestEnd
-End Enum
+    Public Enum ClientTests
+        TestInvalidBigPacketID = 100
+        TestInvalidNegativePacketID
+        TestWriteLoginExistingChar
+        TestEnd
+    End Enum
 
-Private NextTest As ClientTests
-
-Private Client As Network.Client
-
-Public connected As Boolean
+    Private NextTest As ClientTests
+    Private Client   As Network.Client
+    Public Connected As Boolean
 
 Public Function GetNextTest() As ClientTests
 GetNextTest = NextTest
@@ -63,7 +60,7 @@ Public Sub Connect(ByVal Address As String, ByVal Service As String)
 End Sub
 
 Public Sub Disconnect()
-    connected = False
+    Connected = False
     If Not Client Is Nothing Then
         Call Client.Close(True)
     End If
@@ -81,7 +78,7 @@ Public Sub Poll()
 End Sub
 
 Public Sub Send(ByVal Buffer As Network.Writer)
-    If (connected) Then
+    If (Connected) Then
         Call Client.Send(False, Buffer)
     End If
     
@@ -130,7 +127,7 @@ End Sub
 
 Private Sub OnClientConnect()
     Debug.Print ("UnitClient.OnClientConnect")
-    connected = True
+    Connected = True
    
     Select Case NextTest
         Case ClientTests.TestInvalidBigPacketID
@@ -165,15 +162,15 @@ OnClientClose_Err:
     
 End Sub
 
-Private Sub OnClientSend(ByVal Message As Network.Reader)
+Private Sub OnClientSend(ByVal Message As Network.reader)
 
 End Sub
 
-Private Sub OnClientRecv(ByVal Message As Network.Reader)
-    Dim Reader As Network.Reader
-    Set Reader = Message
+Private Sub OnClientRecv(ByVal Message As Network.reader)
+    Dim reader As Network.reader
+    Set reader = Message
     Dim PacketId As Long
-    PacketId = Reader.ReadInt16
+    PacketId = reader.ReadInt16
     Debug.Print "UnitTesting recv PacketId " & PacketId
     Select Case PacketId
         Case ServerPacketID.eConnected
@@ -184,14 +181,14 @@ Private Sub OnClientRecv(ByVal Message As Network.Reader)
             Debug.Print "ServerPacketID.eDisconnect"
         Case ServerPacketID.eCharacterChange
             Debug.Print "CharacterChange"
-            Call Unit_Protocol_Writes.HandleCharacterChange(Reader)
+            Call Unit_Protocol_Writes.HandleCharacterChange(reader)
         Case ServerPacketID.eShowMessageBox
-            Call Unit_Protocol_Writes.HandleShowMessageBox(Reader)
+            Call Unit_Protocol_Writes.HandleShowMessageBox(reader)
         Case ServerPacketID.eErrorMsg
-            Call Unit_Protocol_Writes.HandleErrorMessageBox(Reader)
+            Call Unit_Protocol_Writes.HandleErrorMessageBox(reader)
         Case Else
-            While Reader.GetAvailable() > 0
-                Reader.ReadBool
+            While reader.GetAvailable() > 0
+                reader.ReadBool
             Wend
     End Select
     

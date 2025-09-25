@@ -38,21 +38,22 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-
 Implements IBaseEffectOverTime
-
-Dim TickTime As Long
-Dim TimeSinceLastTick As Long
-Private DotInfo As t_BaseDotInfo
-Private Source As t_AnyReference
+Dim TickTime                  As Long
+Dim TimeSinceLastTick         As Long
+Private DotInfo               As t_BaseDotInfo
+Private Source                As t_AnyReference
 Private PhysicalDamageModfier As Single
-Private MagicDamageModifier As Single
-Private ReductionActive As Boolean
+Private MagicDamageModifier   As Single
+Private ReductionActive       As Boolean
 
-
-Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
-                 ByVal EffectId As Integer, ByVal id As Long)
-    Call SetBaseDot(DotInfo, TargetIndex, TargetType, ID, EffectId)
+Public Sub Setup(ByVal SourceIndex As Integer, _
+                 ByVal SourceType As e_ReferenceType, _
+                 ByVal TargetIndex As Integer, _
+                 ByVal TargetType As e_ReferenceType, _
+                 ByVal EffectId As Integer, _
+                 ByVal Id As Long)
+    Call SetBaseDot(DotInfo, TargetIndex, TargetType, Id, EffectId)
     Call SetRef(Source, SourceIndex, SourceType)
     TimeSinceLastTick = 0
     ReductionActive = False
@@ -61,7 +62,7 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
         PhysicalDamageModfier = .PhysicalDamageDone
         MagicDamageModifier = .MagicDamageDone
         If TargetType = eUser Then
-            If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .TickTime, .buffType)
+            If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, Id, .TickTime, .TickTime, .buffType)
         End If
     End With
     If TargetType = eNpc Then
@@ -73,7 +74,6 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
             Call SetNpcRef(NpcList(TargetIndex).TargetNPC, SourceIndex)
         End If
         Call SetMask(NpcList(TargetIndex).flags.StatusMask, eTaunted)
-        
     End If
 End Sub
 
@@ -102,7 +102,7 @@ Public Property Get IBaseEffectOverTime_CasterRefType() As e_ReferenceType
 End Property
 
 Public Property Get IBaseEffectOverTime_CasterUserId() As Long
-    IBaseEffectOverTime_CasterUserId = Source.userID
+    IBaseEffectOverTime_CasterUserId = Source.UserId
 End Property
 
 Public Property Get IBaseEffectOverTime_TargetIsValid() As Boolean
@@ -118,15 +118,15 @@ Public Property Get IBaseEffectOverTime_TargetRefType() As e_ReferenceType
 End Property
 
 Public Property Get IBaseEffectOverTime_TargetUserId() As Long
-    IBaseEffectOverTime_TargetUserId = DotInfo.TargetRef.userID
+    IBaseEffectOverTime_TargetUserId = DotInfo.TargetRef.UserId
 End Property
 
 Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
-    IBaseEffectOverTime_EffectType = EffectOverTime(DotInfo.EotId).BuffType
+    IBaseEffectOverTime_EffectType = EffectOverTime(DotInfo.EotId).buffType
 End Property
 
-Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
-    TimeSinceLastTick = TimeSinceLastTick + deltaTime
+Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
+    TimeSinceLastTick = TimeSinceLastTick + DeltaTime
     If TimeSinceLastTick >= TickTime Or Not IsValidRef(DotInfo.TargetRef) Or Not IsValidRef(Source) Then
         DotInfo.RemoveEffect = True
     End If
@@ -175,7 +175,10 @@ End Sub
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
-Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType) As Long
+Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
+                                                         ByVal SourceUserId As Integer, _
+                                                         ByVal SourceType As e_ReferenceType, _
+                                                         ByVal AttackType As e_DamageSourceType) As Long
     IBaseEffectOverTime_ApplyDamageReduction = Damage
 End Function
 

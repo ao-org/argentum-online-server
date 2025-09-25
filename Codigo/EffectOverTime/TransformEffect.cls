@@ -38,31 +38,31 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-
 Implements IBaseEffectOverTime
-
-
-Dim DotHpMin As Integer
-Dim DotHpMax As Integer
-Dim TargetTicks As Integer
-Dim TickCount As Integer
-Dim TickManaConsumption As Integer
+Dim DotHpMin               As Integer
+Dim DotHpMax               As Integer
+Dim TargetTicks            As Integer
+Dim TickCount              As Integer
+Dim TickManaConsumption    As Integer
 Dim TickStaminaConsumption As Integer
-Dim TickTime As Long
-Dim TimeSinceLastTick As Long
-Dim TickEffect As Integer
-Dim Modifiers As Integer
-Dim EffectBonus As Single
-Dim npcId As Integer
-Dim StatusMask As Long
+Dim TickTime               As Long
+Dim TimeSinceLastTick      As Long
+Dim TickEffect             As Integer
+Dim Modifiers              As Integer
+Dim EffectBonus            As Single
+Dim NpcId                  As Integer
+Dim StatusMask             As Long
+Private DotInfo            As t_BaseDotInfo
+Private Source             As t_AnyReference
 
-Private DotInfo As t_BaseDotInfo
-Private Source As t_AnyReference
-
-Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
-                 ByVal EffectId As Integer, ByVal ID As Long)
+Public Sub Setup(ByVal SourceIndex As Integer, _
+                 ByVal SourceType As e_ReferenceType, _
+                 ByVal TargetIndex As Integer, _
+                 ByVal TargetType As e_ReferenceType, _
+                 ByVal EffectId As Integer, _
+                 ByVal Id As Long)
     TimeSinceLastTick = 0
-    Call SetBaseDot(DotInfo, TargetIndex, TargetType, ID, EffectId)
+    Call SetBaseDot(DotInfo, TargetIndex, TargetType, Id, EffectId)
     Call SetRef(Source, SourceIndex, SourceType)
     Call SetEffect(EffectId)
 End Sub
@@ -76,7 +76,7 @@ Public Sub SetEffect(ByVal EffectId As Integer)
         TargetTicks = .Ticks
         TickManaConsumption = .TickManaConsumption
         TickStaminaConsumption = .TickStaminaConsumption
-        npcId = .npcId
+        NpcId = .NpcId
         StatusMask = .ApplyStatusMask
         If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
             Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, .ClientEffectTypeId, DotInfo.UniqueId, .TickTime * TargetTicks, .TickTime * TargetTicks, .buffType)
@@ -110,7 +110,7 @@ Public Property Get IBaseEffectOverTime_CasterRefType() As e_ReferenceType
 End Property
 
 Public Property Get IBaseEffectOverTime_CasterUserId() As Long
-    IBaseEffectOverTime_CasterUserId = Source.userID
+    IBaseEffectOverTime_CasterUserId = Source.UserId
 End Property
 
 Public Property Get IBaseEffectOverTime_TargetIsValid() As Boolean
@@ -126,19 +126,19 @@ Public Property Get IBaseEffectOverTime_TargetRefType() As e_ReferenceType
 End Property
 
 Public Property Get IBaseEffectOverTime_TargetUserId() As Long
-    IBaseEffectOverTime_TargetUserId = DotInfo.TargetRef.userID
+    IBaseEffectOverTime_TargetUserId = DotInfo.TargetRef.UserId
 End Property
 
 Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
     IBaseEffectOverTime_EffectType = EffectOverTime(DotInfo.EotId).buffType
 End Property
 
-Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
+Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
     If TickCount >= TargetTicks Or Not IsValidRef(DotInfo.TargetRef) Then
         DotInfo.RemoveEffect = True
         Exit Sub
     End If
-    TimeSinceLastTick = TimeSinceLastTick + deltaTime
+    TimeSinceLastTick = TimeSinceLastTick + DeltaTime
     If TimeSinceLastTick >= TickTime Then
         TimeSinceLastTick = 0
         TickCount = TickCount + 1
@@ -159,8 +159,8 @@ Public Property Get IBaseEffectOverTime_RemoveMe() As Boolean
     IBaseEffectOverTime_RemoveMe = DotInfo.RemoveEffect
 End Property
 
-Public Property Let IBaseEffectOverTime_RemoveMe(ByVal Value As Boolean)
-    DotInfo.RemoveEffect = Value
+Public Property Let IBaseEffectOverTime_RemoveMe(ByVal value As Boolean)
+    DotInfo.RemoveEffect = value
 End Property
 
 Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
@@ -175,8 +175,8 @@ Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal S
     Call ReturnCharToNormal
     Call SetEffect(NewEffectId)
     If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
-        Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, _
-                                    DotInfo.UniqueId, (TickTime * TargetTicks) - TimeSinceLastTick, TickTime * TargetTicks, EffectOverTime(DotInfo.EotId).buffType)
+        Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, (TickTime * TargetTicks) - _
+                TimeSinceLastTick, TickTime * TargetTicks, EffectOverTime(DotInfo.EotId).buffType)
     End If
 End Function
 
@@ -190,8 +190,7 @@ Public Sub IBaseEffectOverTime_OnRemove()
     DotInfo.RemoveEffect = True
     Call ReturnCharToNormal
     If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
-        Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, _
-                                    0, 0, EffectOverTime(DotInfo.EotId).buffType)
+        Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
     End If
 End Sub
 
@@ -210,7 +209,10 @@ End Sub
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
-Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType) As Long
+Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
+                                                         ByVal SourceUserId As Integer, _
+                                                         ByVal SourceType As e_ReferenceType, _
+                                                         ByVal AttackType As e_DamageSourceType) As Long
     IBaseEffectOverTime_ApplyDamageReduction = Damage
 End Function
 
@@ -243,22 +245,23 @@ Private Sub TransformChacter()
     If (DotInfo.TargetRef.RefType = eUser) Then
         With UserList(DotInfo.TargetRef.ArrayIndex)
             Dim NpcIndex As String
-            NpcIndex = "NPC" & npcId
-136         .Char.body = val(LeerNPCs.GetValue(NpcIndex, "Body"))
-138         .Char.head = val(LeerNPCs.GetValue(NpcIndex, "Head"))
-142         .Char.BodyIdle = val(LeerNPCs.GetValue(NpcIndex, "BodyIdle"))
-143         .Char.Ataque1 = val(LeerNPCs.GetValue(NpcIndex, "Ataque1"))
-156         .Char.WeaponAnim = val(LeerNPCs.GetValue(NpcIndex, "Arma"))
-158         .Char.ShieldAnim = val(LeerNPCs.GetValue(NpcIndex, "Escudo"))
-160         .Char.CascoAnim = val(LeerNPCs.GetValue(NpcIndex, "Casco"))
-161         .Char.CartAnim = val(LeerNPCs.GetValue(NpcIndex, "Cart"))
+            NpcIndex = "NPC" & NpcId
+            .Char.body = val(LeerNPCs.GetValue(NpcIndex, "Body"))
+            .Char.head = val(LeerNPCs.GetValue(NpcIndex, "Head"))
+            .Char.BodyIdle = val(LeerNPCs.GetValue(NpcIndex, "BodyIdle"))
+            .Char.Ataque1 = val(LeerNPCs.GetValue(NpcIndex, "Ataque1"))
+            .Char.WeaponAnim = val(LeerNPCs.GetValue(NpcIndex, "Arma"))
+            .Char.ShieldAnim = val(LeerNPCs.GetValue(NpcIndex, "Escudo"))
+            .Char.CascoAnim = val(LeerNPCs.GetValue(NpcIndex, "Casco"))
+            .Char.CartAnim = val(LeerNPCs.GetValue(NpcIndex, "Cart"))
             .Char.CastAnimation = val(LeerNPCs.GetValue(NpcIndex, "CastAnimation"))
             .flags.ActiveTransform = NpcId
             Dim CantidadAnimaciones As Integer
-144         CantidadAnimaciones = val(LeerNPCs.GetValue(NpcIndex, "Animaciones"))
-128         Call ChangeUserChar(DotInfo.TargetRef.ArrayIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+            CantidadAnimaciones = val(LeerNPCs.GetValue(NpcIndex, "Animaciones"))
+            Call ChangeUserChar(DotInfo.TargetRef.ArrayIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
+                    .Char.BackpackAnim)
             Call SetMask(.flags.StatusMask, StatusMask)
-130         Call RefreshCharStatus(DotInfo.TargetRef.ArrayIndex)
+            Call RefreshCharStatus(DotInfo.TargetRef.ArrayIndex)
         End With
     End If
 End Sub
@@ -272,5 +275,3 @@ Private Sub ReturnCharToNormal()
         Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
     End If
 End Sub
-
-
