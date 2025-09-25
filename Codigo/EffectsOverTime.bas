@@ -36,8 +36,8 @@ Private EffectPools() As t_EffectOverTimeList
 
 Public Enum e_EffectCallbackMask
     eTargetUseMagic = 1
-    eTartgetWillAtack = 2
-    eTartgetDidHit = 4
+    eTargetWillAttack = 2
+    eTargetDidHit = 4
     eTargetFailedAttack = 8
     eTargetWasDamaged = 16
     eTargetWillAttackPosition = 32
@@ -565,19 +565,19 @@ Public Sub TargetUseMagic(ByRef EffectList As t_EffectOverTimeList, ByVal Target
     Next i
 End Sub
 
-Public Sub TartgetWillAtack(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-    If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTartgetWillAtack) Then Exit Sub
+Public Sub TargetWillAttack(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTargetWillAttack) Then Exit Sub
     Dim i As Integer
     For i = 0 To EffectList.EffectCount - 1
-        Call EffectList.EffectList(i).TartgetWillAtack(TargetUserId, SourceType, AttackType)
+        Call EffectList.EffectList(i).TargetWillAttack(TargetUserId, SourceType, AttackType)
     Next i
 End Sub
 
-Public Sub TartgetDidHit(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-    If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTartgetDidHit) Then Exit Sub
+Public Sub TargetDidHit(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTargetDidHit) Then Exit Sub
     Dim i As Integer
     For i = 0 To EffectList.EffectCount - 1
-        Call EffectList.EffectList(i).TartgetDidHit(TargetUserId, SourceType, AttackType)
+        Call EffectList.EffectList(i).TargetDidHit(TargetUserId, SourceType, AttackType)
     Next i
 End Sub
 
