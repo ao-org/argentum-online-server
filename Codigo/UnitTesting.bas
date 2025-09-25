@@ -27,16 +27,13 @@ Attribute VB_Name = "UnitTesting"
 '
 Option Explicit
 #If UNIT_TEST = 1 Then
+    Public public_key      As String
+    Public private_key     As String
+    Public encrypted_token As String
+    Public decrypted_token As String
+    Public character_name  As String
 
-Public public_key As String
-Public private_key As String
-
-Public encrypted_token As String
-Public decrypted_token As String
-
-Public character_name As String
-
-Public Sub init()
+Public Sub Init()
     'We can mock the key value to test errors...
     private_key = PrivateKey
     character_name = "seneca"
@@ -56,11 +53,11 @@ Public Sub shutdown()
     Call UnitClient.Disconnect
 End Sub
 
-Sub test_make_user(ByVal UserIndex As Integer, ByVal map As Integer, ByVal X As Integer, ByVal y As Integer)
-    UserList(UserIndex).Pos.map = map
-    UserList(UserIndex).Pos.X = X
-    UserList(UserIndex).Pos.y = y
-    Call MakeUserChar(True, 17, UserIndex, map, X, y, 1)
+Sub test_make_user(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
+    UserList(UserIndex).pos.Map = Map
+    UserList(UserIndex).pos.x = x
+    UserList(UserIndex).pos.y = y
+    Call MakeUserChar(True, 17, UserIndex, Map, x, y, 1)
 End Sub
 
 Function test_percentage() As Boolean
@@ -132,15 +129,15 @@ Function test_make_user_char() As Boolean
     'Create first User
     Call test_make_user(1, 1, 54, 51)
     Debug.Assert (MapData(1, 54, 51).UserIndex = 1)
-    Debug.Assert (UserList(1).Char.CharIndex <> 0)
+    Debug.Assert (UserList(1).Char.charindex <> 0)
     'Delete first user
     Call EraseUserChar(1, False, False)
     Debug.Assert (MapData(1, 54, 55).UserIndex = 0)
-    Debug.Assert (UserList(1).Char.CharIndex = 0)
+    Debug.Assert (UserList(1).Char.charindex = 0)
     'Delete all NPCs5
     Dim i
     For i = 1 To UBound(NpcList)
-            If NpcList(i).Char.CharIndex <> 0 Then
+            If NpcList(i).Char.charindex <> 0 Then
                 Call EraseNPCChar(1)
             End If
     Next i
@@ -148,57 +145,57 @@ Function test_make_user_char() As Boolean
     'Create two users on the same map pos
     Call test_make_user(2, 1, 54, 56)
     Debug.Assert (MapData(1, 54, 56).UserIndex = 2)
-    Debug.Assert (UserList(2).Char.CharIndex <> 0)
+    Debug.Assert (UserList(2).Char.charindex <> 0)
     
     Call test_make_user(1, 1, 50, 46)
     Debug.Assert (MapData(1, 50, 46).UserIndex = 1)
-    Debug.Assert (UserList(1).Char.CharIndex <> 0)
-    Debug.Assert (UserList(2).Char.CharIndex <> UserList(1).Char.CharIndex)
+    Debug.Assert (UserList(1).Char.charindex <> 0)
+    Debug.Assert (UserList(2).Char.charindex <> UserList(1).Char.charindex)
     
     'Delete user 2
     Call EraseUserChar(2, False, False)
     Debug.Assert (MapData(1, 54, 56).UserIndex = 0)
-    Debug.Assert (UserList(2).Char.CharIndex = 0)
+    Debug.Assert (UserList(2).Char.charindex = 0)
     'Create user 2 again
     Call test_make_user(2, 1, 54, 56)
     Debug.Assert (MapData(1, 54, 56).UserIndex = 2)
-    Debug.Assert (UserList(2).Char.CharIndex <> 0)
+    Debug.Assert (UserList(2).Char.charindex <> 0)
     
     For i = 1 To UBound(UserList)
-        If UserList(i).Char.CharIndex <> 0 Then
+        If UserList(i).Char.charindex <> 0 Then
             Call EraseUserChar(i, False, True)
         End If
     Next i
     
     Call test_make_user(1, 1, 64, 66)
     Debug.Assert (MapData(1, 64, 66).UserIndex = 1)
-    Debug.Assert (UserList(1).Char.CharIndex <> 0)
-    Debug.Assert (UserList(1).Char.CharIndex = 1)
+    Debug.Assert (UserList(1).Char.charindex <> 0)
+    Debug.Assert (UserList(1).Char.charindex = 1)
     
     
     Call test_make_user(1, 1, 68, 66)
     Debug.Assert (MapData(1, 68, 66).UserIndex = 1)
-    Debug.Assert (UserList(1).Char.CharIndex <> 0)
+    Debug.Assert (UserList(1).Char.charindex <> 0)
     test_make_user_char = True
 End Function
 
 Function test_npc_pathfinding_attackable_state() As Boolean
-    Dim npcIndex As Integer
+    Dim NpcIndex As Integer
     Dim attackCheck As t_AttackInteractionResult
-    npcIndex = 1
+    NpcIndex = 1
 
-    Call ResetNpcMainInfo(npcIndex)
-    Call ResetNpcFlags(npcIndex)
-    Call ResetNpcCounters(npcIndex)
-    ReDim NpcList(npcIndex).pathFindingInfo.Path(1 To MAX_PATH_LENGTH)
+    Call ResetNpcMainInfo(NpcIndex)
+    Call ResetNpcFlags(NpcIndex)
+    Call ResetNpcCounters(NpcIndex)
+    ReDim NpcList(NpcIndex).pathFindingInfo.Path(1 To MAX_PATH_LENGTH)
 
-    With NpcList(npcIndex)
+    With NpcList(NpcIndex)
         .Attackable = 1
         .Hostile = 1
-        .Pos.Map = 1
-        .Pos.X = 10
-        .Pos.Y = 10
-        .Orig = .Pos
+        .pos.Map = 1
+        .pos.x = 10
+        .pos.y = 10
+        .Orig = .pos
         .pathFindingInfo.RangoVision = 1
         .pathFindingInfo.OriginalVision = 1
         .pathFindingInfo.PathLength = 0
@@ -216,7 +213,7 @@ Function test_npc_pathfinding_attackable_state() As Boolean
     MapInfo(1).Seguro = False
     MapInfo(1).SafeFightMap = False
 
-    MapData(1, 10, 10).NpcIndex = npcIndex
+    MapData(1, 10, 10).NpcIndex = NpcIndex
     MapData(1, 9, 10).Blocked = e_Block.ALL_SIDES
     MapData(1, 11, 10).Blocked = e_Block.ALL_SIDES
     MapData(1, 10, 9).Blocked = e_Block.ALL_SIDES
@@ -224,7 +221,7 @@ Function test_npc_pathfinding_attackable_state() As Boolean
 
     With UserList(1)
         .VersionId = 1
-        .flags.Privilegios = e_PlayerType.user
+        .flags.Privilegios = e_PlayerType.User
         .flags.Muerto = 0
         .flags.Montado = 0
         .flags.Inmunidad = 0
@@ -236,44 +233,44 @@ Function test_npc_pathfinding_attackable_state() As Boolean
         .Grupo.Id = 0
         .GuildIndex = 0
         .Faccion.Status = e_Facciones.Criminal
-        .Pos.Map = 1
-        .Pos.X = 12
-        .Pos.Y = 10
+        .pos.Map = 1
+        .pos.x = 12
+        .pos.y = 10
     End With
     LastUser = 1
     MapData(1, 12, 10).UserIndex = 1
 
-    Debug.Assert SetUserRef(NpcList(npcIndex).TargetUser, 1)
+    Debug.Assert SetUserRef(NpcList(NpcIndex).TargetUser, 1)
 
-    Call AI_CaminarConRumbo(npcIndex, UserList(1).Pos)
+    Call AI_CaminarConRumbo(NpcIndex, UserList(1).pos)
 
-    Debug.Assert NpcList(npcIndex).pathFindingInfo.TargetUnreachable
-    Debug.Assert NpcList(npcIndex).Attackable = 0
-    attackCheck = UserCanAttackNpc(1, npcIndex)
+    Debug.Assert NpcList(NpcIndex).pathFindingInfo.TargetUnreachable
+    Debug.Assert NpcList(NpcIndex).Attackable = 0
+    attackCheck = UserCanAttackNpc(1, NpcIndex)
     Debug.Assert attackCheck.Result = eInmuneNpc
 
     MapData(1, 12, 10).UserIndex = 0
-    UserList(1).Pos.X = 10
-    UserList(1).Pos.Y = 10
+    UserList(1).pos.x = 10
+    UserList(1).pos.y = 10
     MapData(1, 10, 10).UserIndex = 1
     MapData(1, 9, 10).Blocked = 0
 
-    Call AI_CaminarConRumbo(npcIndex, UserList(1).Pos)
+    Call AI_CaminarConRumbo(NpcIndex, UserList(1).pos)
 
-    Debug.Assert Not NpcList(npcIndex).pathFindingInfo.TargetUnreachable
-    Debug.Assert NpcList(npcIndex).Attackable = 1
-    attackCheck = UserCanAttackNpc(1, npcIndex)
+    Debug.Assert Not NpcList(NpcIndex).pathFindingInfo.TargetUnreachable
+    Debug.Assert NpcList(NpcIndex).Attackable = 1
+    attackCheck = UserCanAttackNpc(1, NpcIndex)
     Debug.Assert attackCheck.Result = eCanAttack
 
     test_npc_pathfinding_attackable_state = True
 End Function
 
 Function test_suite() As Boolean
-    Dim result As Boolean
-    result = test_make_user_char()
-    result = result And test_maths()
-    result = result And test_npc_pathfinding_attackable_state()
-    test_suite = result
+    Dim Result As Boolean
+    Result = test_make_user_char()
+    Result = Result And test_maths()
+    Result = Result And test_npc_pathfinding_attackable_state()
+    test_suite = Result
 End Function
 
 #End If

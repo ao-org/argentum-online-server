@@ -27,48 +27,41 @@ Attribute VB_Name = "ModShopAO20"
 '
 Option Explicit
 
-
-Public Sub init_transaction(ByVal obj_num As Long, ByVal userindex As Integer)
-On Error GoTo init_transaction_Err
+Public Sub init_transaction(ByVal obj_num As Long, ByVal UserIndex As Integer)
+    On Error GoTo init_transaction_Err
     Dim obj As t_ObjData
-    
-100 obj.ObjNum = obj_num
-102 With UserList(userIndex)
-        
+    obj.ObjNum = obj_num
+    With UserList(UserIndex)
         'Me fijo si es un item de shop
-104     If Not is_purchaseable_item(obj) Then
+        If Not is_purchaseable_item(obj) Then
             'Msg1087= Error al realizar la transacción
             Call WriteLocaleMsg(UserIndex, "1087", e_FontTypeNames.FONTTYPE_INFO)
-108         Call LogShopErrors("El usuario " & .name & " intentó comprar un objeto que no es de shop (REVISAR) | " & obj.name)
+            Call LogShopErrors("El usuario " & .name & " intentó comprar un objeto que no es de shop (REVISAR) | " & obj.name)
             Exit Sub
         End If
         Call LoadPatronCreditsFromDB(UserIndex)
-110     If obj.Valor > .Stats.Creditos Then
+        If obj.Valor > .Stats.Creditos Then
             'Msg1088= Error al realizar la transacción.
             Call WriteLocaleMsg(UserIndex, "1088", e_FontTypeNames.FONTTYPE_INFO)
-114         Call LogShopErrors("El usuario " & .name & " intentó editar el valor del objeto (REVISAR) | " & obj.name)
+            Call LogShopErrors("El usuario " & .name & " intentó editar el valor del objeto (REVISAR) | " & obj.name)
             Exit Sub
         End If
-        
         'Me fijo si tiene espacio en el inventario
         Dim objInventario As t_Obj
-        
-116     objInventario.amount = 1
-118     objInventario.objIndex = obj.ObjNum
-        
+        objInventario.amount = 1
+        objInventario.ObjIndex = obj.ObjNum
         If GetSlotForItemInInventory(UserIndex, objInventario) <= 0 Then
             'Msg1089= Asegurate de tener espacio suficiente en tu inventario.
             Call WriteLocaleMsg(UserIndex, "1089", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-120     'Descuento los créditos
-124     .Stats.Creditos = .Stats.Creditos - obj.Valor
-          
+        'Descuento los créditos
+        .Stats.Creditos = .Stats.Creditos - obj.Valor
         'Genero un log de los créditos que gastó y cuantos le quedan luego de la transacción.
-126     Call LogShopTransactions(.name & " | Compró -> " & ObjData(obj.ObjNum).name & " | Valor -> " & obj.Valor)
-128     Call Query("update account set offline_patron_credits = ? where id = ?;", .Stats.Creditos, .AccountID)
-130     Call writeUpdateShopClienteCredits(UserIndex)
-132     Call RegisterTransaction(.AccountID, .ID, obj.ObjNum, obj.Valor, .Stats.Creditos)
+        Call LogShopTransactions(.name & " | Compró -> " & ObjData(obj.ObjNum).name & " | Valor -> " & obj.Valor)
+        Call Query("update account set offline_patron_credits = ? where id = ?;", .Stats.Creditos, .AccountID)
+        Call writeUpdateShopClienteCredits(UserIndex)
+        Call RegisterTransaction(.AccountID, .Id, obj.ObjNum, obj.Valor, .Stats.Creditos)
         Call MeterItemEnInventario(UserIndex, objInventario)
     End With
     Exit Sub
@@ -78,23 +71,20 @@ End Sub
 
 Private Function is_purchaseable_item(ByRef obj As t_ObjData) As Boolean
     Dim i As Long
-    
     For i = 1 To UBound(ObjShop)
         If ObjShop(i).ObjNum = obj.ObjNum Then
             'Si es un item de shop, aparte le agrego el valor (por ref)
-            obj.valor = ObjShop(i).valor
+            obj.Valor = ObjShop(i).Valor
             is_purchaseable_item = True
             Exit Function
         End If
     Next i
-    
     is_purchaseable_item = False
-    
 End Function
 
-Private Sub RegisterTransaction(ByVal AccId As Long, ByVal CharId As Long, ByVal itemId As Long, ByVal Price As Long, ByVal CreditLeft As Long)
-On Error GoTo RegisterTransaction_Err
-100 Call Query("insert into patreon_shop_audit (acc_id, char_id, item_id, price, credit_left, time) VALUES (?,?,?,?,?, STRFTIME('%s'));", AccId, CharId, itemId, price, CreditLeft)
+Private Sub RegisterTransaction(ByVal AccId As Long, ByVal CharId As Long, ByVal ItemId As Long, ByVal price As Long, ByVal CreditLeft As Long)
+    On Error GoTo RegisterTransaction_Err
+    Call Query("insert into patreon_shop_audit (acc_id, char_id, item_id, price, credit_left, time) VALUES (?,?,?,?,?, STRFTIME('%s'));", AccId, CharId, ItemId, price, CreditLeft)
     Exit Sub
 RegisterTransaction_Err:
     Call TraceError(Err.Number, Err.Description, "ShopAo20.RegisterTransaction", Erl)

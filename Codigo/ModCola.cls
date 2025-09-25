@@ -37,7 +37,6 @@ Attribute VB_Exposed = False
 '
 '
 '
-
 Option Explicit
 '                    Metodos publicos
 '
@@ -55,270 +54,146 @@ Option Explicit
 '
 ' Public Property Get Longitud() As Integer: devuelve la
 ' cantidad de elementos que tiene la cola.
-
 Private Const FRENTE = 1
-
 Private Cola As Collection
 
 Public Sub Reset()
-        
-        On Error GoTo Reset_Err
-    
-        
-
-        
-
-        Dim i As Integer
-
-100     For i = 1 To Me.Longitud
-102         Cola.Remove FRENTE
-104     Next i
-
-        
-        Exit Sub
-
+    On Error GoTo Reset_Err
+    Dim i As Integer
+    For i = 1 To Me.Longitud
+        Cola.Remove FRENTE
+    Next i
+    Exit Sub
 Reset_Err:
-106     Call TraceError(Err.Number, Err.Description, "cCola.Reset", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "cCola.Reset", Erl)
 End Sub
 
 Public Property Get Longitud() As Integer
-        
-        On Error GoTo Longitud_Err
-        
-100     Longitud = Cola.Count
-
-        
-        Exit Property
-
+    On Error GoTo Longitud_Err
+    Longitud = Cola.count
+    Exit Property
 Longitud_Err:
-102     Call TraceError(Err.Number, Err.Description, "cCola.Longitud", Erl)
-104
-        
+    Call TraceError(Err.Number, Err.Description, "cCola.Longitud", Erl)
 End Property
 
 Private Function IndexValido(ByVal i As Integer) As Boolean
-        
-        On Error GoTo IndexValido_Err
-        
-100     IndexValido = i >= 1 And i <= Me.Longitud
-
-        
-        Exit Function
-
+    On Error GoTo IndexValido_Err
+    IndexValido = i >= 1 And i <= Me.Longitud
+    Exit Function
 IndexValido_Err:
-102     Call TraceError(Err.Number, Err.Description, "cCola.IndexValido", Erl)
-104
-        
+    Call TraceError(Err.Number, Err.Description, "cCola.IndexValido", Erl)
 End Function
 
 Private Sub Class_Initialize()
-        
-        On Error GoTo Class_Initialize_Err
-        
-100     Set Cola = New Collection
-
-        
-        Exit Sub
-
+    On Error GoTo Class_Initialize_Err
+    Set Cola = New Collection
+    Exit Sub
 Class_Initialize_Err:
-102     Call TraceError(Err.Number, Err.Description, "cCola.Class_Initialize", Erl)
-104
-        
+    Call TraceError(Err.Number, Err.Description, "cCola.Class_Initialize", Erl)
 End Sub
 
 Public Function VerElemento(ByVal Index As Integer) As String
-        
-        On Error GoTo VerElemento_Err
-    
-        
-
-        
-
-100     If IndexValido(Index) Then
-102         VerElemento = Cola(Index)
-        Else
-104         VerElemento = 0
-
-        End If
-
-        
-        Exit Function
-
+    On Error GoTo VerElemento_Err
+    If IndexValido(Index) Then
+        VerElemento = Cola(Index)
+    Else
+        VerElemento = 0
+    End If
+    Exit Function
 VerElemento_Err:
-106     Call TraceError(Err.Number, Err.Description, "cCola.VerElemento", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "cCola.VerElemento", Erl)
 End Function
 
 Public Sub Push(ByVal nombre As String, ByVal Consulta As String, ByVal TipoDeConsulta As String)
-        
-        On Error GoTo Push_Err
-        
-        Dim FechaHoraDeConsulta As Date
-        FechaHoraDeConsulta = Now
-        
-        'Mete elemento en la cola
-100     Call Cola.Add(nombre & "Ø" & Consulta & "Ø" & TipoDeConsulta & "Ø" & FechaHoraDeConsulta)
-
-        
-        Exit Sub
-
+    On Error GoTo Push_Err
+    Dim FechaHoraDeConsulta As Date
+    FechaHoraDeConsulta = Now
+    'Mete elemento en la cola
+    Call Cola.Add(nombre & "Ø" & Consulta & "Ø" & TipoDeConsulta & "Ø" & FechaHoraDeConsulta)
+    Exit Sub
 Push_Err:
-102     Call TraceError(Err.Number, Err.Description, "cCola.Push", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "cCola.Push", Erl)
 End Sub
 
 Public Function Pop() As String
-        
-        On Error GoTo Pop_Err
-    
-        
-
-        
-
-        'Quita elemento de la cola
-100     If Cola.Count > 0 Then
-102         Pop = Cola(FRENTE)
-104         Call Cola.Remove(FRENTE)
-        Else
-106         Pop = 0
-
-        End If
-
-        
-        Exit Function
-
+    On Error GoTo Pop_Err
+    'Quita elemento de la cola
+    If Cola.count > 0 Then
+        Pop = Cola(FRENTE)
+        Call Cola.Remove(FRENTE)
+    Else
+        Pop = 0
+    End If
+    Exit Function
 Pop_Err:
-108     Call TraceError(Err.Number, Err.Description, "cCola.Pop", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "cCola.Pop", Erl)
 End Function
 
 Public Function PopByVal() As String
-        
-        On Error GoTo PopByVal_Err
-
-        'Quita elemento de la cola
-100     If Cola.Count > 0 Then
-102         PopByVal = Cola.Item(1)
-        Else
-104         PopByVal = 0
-
-        End If
-
-        
-        Exit Function
-
+    On Error GoTo PopByVal_Err
+    'Quita elemento de la cola
+    If Cola.count > 0 Then
+        PopByVal = Cola.Item(1)
+    Else
+        PopByVal = 0
+    End If
+    Exit Function
 PopByVal_Err:
-106     Call TraceError(Err.Number, Err.Description, "cCola.PopByVal", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "cCola.PopByVal", Erl)
 End Function
 
 Public Function Existe(ByVal nombre As String) As Boolean
-        
-        On Error GoTo Existe_Err
-    
-        
-
-        
-  
-        Dim V                  As String
-
-        Dim i                  As Integer
-
-        Dim NombreEnMayusculas As String
-
-100     NombreEnMayusculas = UCase$(nombre)
- 
-102     For i = 1 To Me.Longitud
-104         v = UCase$(ReadField(1, Me.VerElemento(i), Asc("Ø")))
-106         If V = NombreEnMayusculas Then
-108             Existe = True
-                Exit Function
-
-            End If
-
-        Next
-110     Existe = False
-
-        
-        Exit Function
-
+    On Error GoTo Existe_Err
+    Dim v                  As String
+    Dim i                  As Integer
+    Dim NombreEnMayusculas As String
+    NombreEnMayusculas = UCase$(nombre)
+    For i = 1 To Me.Longitud
+        v = UCase$(ReadField(1, Me.VerElemento(i), Asc("Ø")))
+        If v = NombreEnMayusculas Then
+            Existe = True
+            Exit Function
+        End If
+    Next
+    Existe = False
+    Exit Function
 Existe_Err:
-112     Call TraceError(Err.Number, Err.Description, "cCola.Existe", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "cCola.Existe", Erl)
 End Function
 
 Public Sub Quitar(ByVal nombre As String)
-        
-        On Error GoTo Quitar_Err
-    
-        
-
-        
-
-        Dim mensajeEncoladoCompleto As String
-        Dim mensajeSinTimestamp As String
-        Dim posicionUltimoDelimitador As Integer
-        Dim i As Integer
-  
-100     For i = 1 To Me.Longitud
-102         mensajeEncoladoCompleto = Me.VerElemento(i)
-            posicionUltimoDelimitador = InStrRev(mensajeEncoladoCompleto, "Ø")
-            mensajeSinTimestamp = Left(mensajeEncoladoCompleto, posicionUltimoDelimitador - 1)
-104         If mensajeSinTimestamp = nombre Then
-106             Call Cola.Remove(i)
-                Exit Sub
-
-            End If
-
-108     Next i
- 
-        
-        Exit Sub
-
+    On Error GoTo Quitar_Err
+    Dim mensajeEncoladoCompleto   As String
+    Dim mensajeSinTimestamp       As String
+    Dim posicionUltimoDelimitador As Integer
+    Dim i                         As Integer
+    For i = 1 To Me.Longitud
+        mensajeEncoladoCompleto = Me.VerElemento(i)
+        posicionUltimoDelimitador = InStrRev(mensajeEncoladoCompleto, "Ø")
+        mensajeSinTimestamp = Left(mensajeEncoladoCompleto, posicionUltimoDelimitador - 1)
+        If mensajeSinTimestamp = nombre Then
+            Call Cola.Remove(i)
+            Exit Sub
+        End If
+    Next i
+    Exit Sub
 Quitar_Err:
-110     Call TraceError(Err.Number, Err.Description, "cCola.Quitar", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "cCola.Quitar", Erl)
 End Sub
 
 Public Sub QuitarIndex(ByVal Index As Integer)
-        
-        On Error GoTo QuitarIndex_Err
-    
-        
-
-        
-
-100     If IndexValido(Index) Then Call Cola.Remove(Index)
-
-        
-        Exit Sub
-
+    On Error GoTo QuitarIndex_Err
+    If IndexValido(Index) Then Call Cola.Remove(Index)
+    Exit Sub
 QuitarIndex_Err:
-102     Call TraceError(Err.Number, Err.Description, "cCola.QuitarIndex", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "cCola.QuitarIndex", Erl)
 End Sub
 
 Private Sub Class_Terminate()
-        'Destruimos el objeto Cola
-        
-        On Error GoTo Class_Terminate_Err
-        
-100     Set Cola = Nothing
-
-        
-        Exit Sub
-
+    'Destruimos el objeto Cola
+    On Error GoTo Class_Terminate_Err
+    Set Cola = Nothing
+    Exit Sub
 Class_Terminate_Err:
-102     Call TraceError(Err.Number, Err.Description, "cCola.Class_Terminate", Erl)
-104
-        
+    Call TraceError(Err.Number, Err.Description, "cCola.Class_Terminate", Erl)
 End Sub

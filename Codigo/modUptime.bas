@@ -27,7 +27,6 @@ Attribute VB_Name = "modUptime"
 '
 '
 Option Explicit
-
 ' When the process starts, we save the current time.
 Public g_ServerStart As Date
 
@@ -43,12 +42,9 @@ End Function
 ' Human-friendly formatting: 3d 12:34:56
 Public Function FormatUptime() As String
     Dim total As Long, d As Long, h As Long, m As Long, s As Long
-    
     total = GetServerUptimeSeconds()
     d = total \ 86400: total = total Mod 86400
     h = total \ 3600: total = total Mod 3600
     m = total \ 60:   s = total Mod 60
-    
     FormatUptime = CStr(d) & "d " & Right$("0" & h, 2) & ":" & Right$("0" & m, 2) & ":" & Right$("0" & s, 2)
 End Function
-

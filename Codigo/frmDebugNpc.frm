@@ -89,47 +89,27 @@ Attribute VB_Exposed = False
 '
 '
 '
-
 Option Explicit
 
 Private Sub Command1_Click()
-        
-        On Error GoTo Command1_Click_Err
-        
-
-        Dim i As Integer, K As Integer
-
-100     For i = 1 To LastNPC
-
-102         If NpcList(i).flags.NPCActive Then K = K + 1
-104     Next i
-
-106     Label1.Caption = "Npcs Activos:" & K
-108     Label2.Caption = "Npcs Libres:" & MaxNPCs - K
-110     Label3.Caption = "LastNpcIndex:" & LastNPC
-112     Label4.Caption = "MAXNPCS:" & MaxNPCs
-
-        
-        Exit Sub
-
+    On Error GoTo Command1_Click_Err
+    Dim i As Integer, K As Integer
+    For i = 1 To LastNPC
+        If NpcList(i).flags.NPCActive Then K = K + 1
+    Next i
+    Label1.Caption = "Npcs Activos:" & K
+    Label2.Caption = "Npcs Libres:" & MaxNPCs - K
+    Label3.Caption = "LastNpcIndex:" & LastNPC
+    Label4.Caption = "MAXNPCS:" & MaxNPCs
+    Exit Sub
 Command1_Click_Err:
-114     Call TraceError(Err.Number, Err.Description, "frmDebugNpc.Command1_Click", Erl)
-116
-        
+    Call TraceError(Err.Number, Err.Description, "frmDebugNpc.Command1_Click", Erl)
 End Sub
 
 Private Sub Command2_Click()
-        
-        On Error GoTo Command2_Click_Err
-        
-100     Unload Me
-
-        
-        Exit Sub
-
+    On Error GoTo Command2_Click_Err
+    Unload Me
+    Exit Sub
 Command2_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmDebugNpc.Command2_Click", Erl)
-104
-        
+    Call TraceError(Err.Number, Err.Description, "frmDebugNpc.Command2_Click", Erl)
 End Sub
-

@@ -38,22 +38,23 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-
 Implements IBaseEffectOverTime
-
-Dim TargetTicks As Integer
-Dim TickCount As Integer
-Dim TickTime As Long
+Dim TargetTicks       As Integer
+Dim TickCount         As Integer
+Dim TickTime          As Long
 Dim TimeSinceLastTick As Long
+Private DotInfo       As t_BaseDotInfo
+Private Source        As t_AnyReference
+Private StartPos      As t_WorldPos
+Private CurrentStep   As Double
+Dim Direction         As t_Vector
 
-Private DotInfo As t_BaseDotInfo
-Private Source As t_AnyReference
-Private StartPos As t_WorldPos
-Private CurrentStep As Double
-Dim Direction As t_Vector
-
-Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
-                 ByVal EffectId As Integer, ByVal ID As Long)
+Public Sub Setup(ByVal SourceIndex As Integer, _
+                 ByVal SourceType As e_ReferenceType, _
+                 ByVal TargetIndex As Integer, _
+                 ByVal TargetType As e_ReferenceType, _
+                 ByVal EffectId As Integer, _
+                 ByVal Id As Long)
     TimeSinceLastTick = 0
     TickCount = 0
     If TargetType = eNpc Then
@@ -63,7 +64,7 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
             Exit Sub
         End If
     End If
-    Call SetBaseDot(DotInfo, TargetIndex, TargetType, ID, EffectId)
+    Call SetBaseDot(DotInfo, TargetIndex, TargetType, Id, EffectId)
     Call SetRef(Source, SourceIndex, SourceType)
     With EffectOverTime(EffectId)
         TargetTicks = .Ticks - 1 ' we perform the first translation right away
@@ -111,7 +112,7 @@ Public Property Get IBaseEffectOverTime_CasterRefType() As e_ReferenceType
 End Property
 
 Public Property Get IBaseEffectOverTime_CasterUserId() As Long
-    IBaseEffectOverTime_CasterUserId = Source.userID
+    IBaseEffectOverTime_CasterUserId = Source.UserId
 End Property
 
 Public Property Get IBaseEffectOverTime_TargetIsValid() As Boolean
@@ -127,19 +128,19 @@ Public Property Get IBaseEffectOverTime_TargetRefType() As e_ReferenceType
 End Property
 
 Public Property Get IBaseEffectOverTime_TargetUserId() As Long
-    IBaseEffectOverTime_TargetUserId = DotInfo.TargetRef.userID
+    IBaseEffectOverTime_TargetUserId = DotInfo.TargetRef.UserId
 End Property
 
 Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
-    IBaseEffectOverTime_EffectType = EffectOverTime(DotInfo.EotId).BuffType
+    IBaseEffectOverTime_EffectType = EffectOverTime(DotInfo.EotId).buffType
 End Property
 
-Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
+Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
     If TickCount >= TargetTicks Or Not IsValidRef(DotInfo.TargetRef) Then
         DotInfo.RemoveEffect = True
         Exit Sub
     End If
-    TimeSinceLastTick = TimeSinceLastTick + deltaTime
+    TimeSinceLastTick = TimeSinceLastTick + DeltaTime
     If TimeSinceLastTick >= TickTime Then
         TimeSinceLastTick = 0
         TickCount = TickCount + 1
@@ -186,7 +187,10 @@ End Sub
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
-Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType) As Long
+Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
+                                                         ByVal SourceUserId As Integer, _
+                                                         ByVal SourceType As e_ReferenceType, _
+                                                         ByVal AttackType As e_DamageSourceType) As Long
     IBaseEffectOverTime_ApplyDamageReduction = Damage
 End Function
 
@@ -208,26 +212,26 @@ End Property
 Public Sub IBaseEffectOverTime_TargetChangeTerrain()
 End Sub
 
-Public Function IsValidPos(ByVal map As Integer, ByVal TileX As Integer, ByVal TileY As Integer) As Boolean
+Public Function IsValidPos(ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer) As Boolean
     IsValidPos = False
     Dim CanGoWater As Boolean
-    Dim Mounted As Boolean
+    Dim Mounted    As Boolean
     If DotInfo.TargetRef.RefType = eUser Then
         CanGoWater = UserList(DotInfo.TargetRef.ArrayIndex).flags.Navegando
         Mounted = UserList(DotInfo.TargetRef.ArrayIndex).flags.Montado
     Else
         CanGoWater = NpcList(DotInfo.TargetRef.ArrayIndex).flags.AguaValida
     End If
-    IsValidPos = LegalPos(map, TileX, TileY, CanGoWater, Not CanGoWater, Mounted, False, False)
+    IsValidPos = LegalPos(Map, TileX, TileY, CanGoWater, Not CanGoWater, Mounted, False, False)
 End Function
 
 Private Sub PerformAction()
-    Dim currentPos As t_WorldPos
-    Dim TargetPoint As t_Vector
+    Dim currentPos        As t_WorldPos
+    Dim TargetPoint       As t_Vector
     Dim TargetTranslation As t_Vector
-    Dim TargetPos As t_WorldPos
-    Dim TranslationDiff As Double
-    Dim Tanslation As Integer
+    Dim TargetPos         As t_WorldPos
+    Dim TranslationDiff   As Double
+    Dim Tanslation        As Integer
     CurrentStep = CurrentStep + 1
     currentPos = GetPosition(DotInfo.TargetRef)
     TargetPoint.x = Direction.x * (CurrentStep) + StartPos.x
@@ -235,7 +239,7 @@ Private Sub PerformAction()
     TargetTranslation.x = TargetPoint.x - currentPos.x
     TargetTranslation.y = TargetPoint.y - currentPos.y
     TranslationDiff = Abs(TargetTranslation.x) - Abs(TargetTranslation.y)
-    TargetPos.map = currentPos.map
+    TargetPos.Map = currentPos.Map
     If Abs(TranslationDiff) < 0.3 Then 'if they are similar we are close to 45% let move in both directions
         TargetPos.x = currentPos.x + Sgn(TargetTranslation.x)
         TargetPos.y = currentPos.y + Sgn(TargetTranslation.y)
@@ -246,7 +250,7 @@ Private Sub PerformAction()
         TargetPos.x = currentPos.x
         TargetPos.y = currentPos.y + Sgn(TargetTranslation.y)
     End If
-    If IsValidPos(TargetPos.map, TargetPos.x, TargetPos.y) Then
+    If IsValidPos(TargetPos.Map, TargetPos.x, TargetPos.y) Then
         Call TranslateTo(TargetPos)
     Else
         DotInfo.RemoveEffect = True
@@ -261,11 +265,7 @@ Private Sub TranslateTo(ByRef TargetPos As t_WorldPos)
     End If
     Dim currentPos As t_WorldPos
     currentPos = GetPosition(DotInfo.TargetRef)
-    If Not MapData(currentPos.map, currentPos.x, currentPos.y).Trap Is Nothing Then
-         Call ModMap.ActivateTrap(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, currentPos.map, currentPos.x, currentPos.y)
+    If Not MapData(currentPos.Map, currentPos.x, currentPos.y).Trap Is Nothing Then
+        Call ModMap.ActivateTrap(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, currentPos.Map, currentPos.x, currentPos.y)
     End If
 End Sub
-
-
-
-

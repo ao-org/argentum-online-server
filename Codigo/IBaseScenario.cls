@@ -39,11 +39,12 @@ Attribute VB_Exposed = False
 '
 Option Explicit
 
-Public Sub SetLobbyIndex(ByVal Value As Integer)
+Public Sub SetLobbyIndex(ByVal value As Integer)
 End Sub
 
 Public Function GetScenarioName() As String
 End Function
+
 Public Sub BroadcastOpenScenario()
 End Sub
 
@@ -61,7 +62,7 @@ Public Function RequiresSpawn() As Boolean
     RequiresSpawn = False
 End Function
 
-Public Function ValidateUser(ByVal userIndex As Integer) As Integer
+Public Function ValidateUser(ByVal UserIndex As Integer) As Integer
     'empty interface
 End Function
 
@@ -69,43 +70,37 @@ Public Sub WillSummonPlayer(ByVal UserIndex As Integer)
     'empty interface
 End Sub
 
-Public Sub UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef newState As e_LobbyState)
-'empty interface
-End Sub
-
-Public Sub PlayerKillNpc(ByVal npcIndex As Integer, ByVal userIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
+Public Sub UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef NewState As e_LobbyState)
     'empty interface
 End Sub
 
-Public Sub NPcKillPlayer(ByVal npcIndex As Integer, ByVal userIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
+Public Sub PlayerKillNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
     'empty interface
 End Sub
 
-Public Sub PlayerKillPlayer(ByVal killerIndex As Integer, ByVal deadIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
+Public Sub NPcKillPlayer(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
+    'empty interface
+End Sub
+
+Public Sub PlayerKillPlayer(ByVal killerIndex As Integer, ByVal deadIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
     'empty interface
 End Sub
 
 Public Sub NpcDie(ByVal NpcIndex)
-
 End Sub
 
 Public Sub UserDie(ByVal UserIndex)
-
 End Sub
 
 Public Sub Update()
     'empty interface
 End Sub
 
-Public Sub OnUserDisconnected(ByVal userIndex As Integer)
-    
+Public Sub OnUserDisconnected(ByVal UserIndex As Integer)
 End Sub
 
-Public Sub OnUserReconnect(ByVal userIndex As Integer)
-
+Public Sub OnUserReconnect(ByVal UserIndex As Integer)
 End Sub
 
 Public Sub GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)
-
 End Sub
-

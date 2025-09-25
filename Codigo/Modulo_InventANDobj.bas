@@ -38,311 +38,190 @@ Option Explicit
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-Public Function TirarItemAlPiso(Pos As t_WorldPos, obj As t_Obj, Optional PuedeAgua As Boolean = True) As t_WorldPos
-
-        On Error GoTo ErrHandler
-
-        Dim NuevaPos As t_WorldPos
-
-100     NuevaPos.X = 0
-102     NuevaPos.Y = 0
-    
-104     Tilelibre Pos, NuevaPos, obj, PuedeAgua, True
-
-106     If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
-108         Call MakeObj(obj, Pos.Map, NuevaPos.X, NuevaPos.Y)
-        End If
-
-110     TirarItemAlPiso = NuevaPos
-
-        Exit Function
+Public Function TirarItemAlPiso(pos As t_WorldPos, obj As t_Obj, Optional PuedeAgua As Boolean = True) As t_WorldPos
+    On Error GoTo ErrHandler
+    Dim NuevaPos As t_WorldPos
+    NuevaPos.x = 0
+    NuevaPos.y = 0
+    Tilelibre pos, NuevaPos, obj, PuedeAgua, True
+    If NuevaPos.x <> 0 And NuevaPos.y <> 0 Then
+        Call MakeObj(obj, pos.Map, NuevaPos.x, NuevaPos.y)
+    End If
+    TirarItemAlPiso = NuevaPos
+    Exit Function
 ErrHandler:
-
 End Function
 
-Public Sub NPC_TIRAR_ITEMS(ByRef npc As t_Npc)
-        
-        On Error GoTo NPC_TIRAR_ITEMS_Err
-    
-        
-
-        'TIRA TODOS LOS ITEMS DEL NPC
-        
-
-100     If npc.Invent.NroItems > 0 Then
-    
-            Dim i     As Byte
-
-            Dim MiObj As t_Obj
-    
-102         For i = 1 To MAX_INVENTORY_SLOTS
-    
-104             If npc.Invent.Object(i).ObjIndex > 0 Then
-106                 MiObj.amount = npc.Invent.Object(i).amount
-108                 MiObj.ObjIndex = npc.Invent.Object(i).ObjIndex
-110                 Call TirarItemAlPiso(npc.Pos, MiObj, npc.flags.AguaValida = 1)
-
-                End If
-      
-112         Next i
-
-        End If
-
-        
-        Exit Sub
-
+Public Sub NPC_TIRAR_ITEMS(ByRef Npc As t_Npc)
+    On Error GoTo NPC_TIRAR_ITEMS_Err
+    'TIRA TODOS LOS ITEMS DEL NPC
+    If Npc.invent.NroItems > 0 Then
+        Dim i     As Byte
+        Dim MiObj As t_Obj
+        For i = 1 To MAX_INVENTORY_SLOTS
+            If Npc.invent.Object(i).ObjIndex > 0 Then
+                MiObj.amount = Npc.invent.Object(i).amount
+                MiObj.ObjIndex = Npc.invent.Object(i).ObjIndex
+                Call TirarItemAlPiso(Npc.pos, MiObj, Npc.flags.AguaValida = 1)
+            End If
+        Next i
+    End If
+    Exit Sub
 NPC_TIRAR_ITEMS_Err:
-114     Call TraceError(Err.Number, Err.Description, "InvNpc.NPC_TIRAR_ITEMS", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "InvNpc.NPC_TIRAR_ITEMS", Erl)
 End Sub
 
 Function QuedanItems(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Boolean
-        
-        On Error GoTo QuedanItems_Err
-
-        Dim i As Integer
-
-100     If NpcList(NpcIndex).Invent.NroItems > 0 Then
-
-102         For i = 1 To MAX_INVENTORY_SLOTS
-
-104             If NpcList(NpcIndex).Invent.Object(i).ObjIndex = ObjIndex Then
-106                 QuedanItems = True
-                    Exit Function
-
-                End If
-
-            Next
-
-        End If
-
-108     QuedanItems = False
-
-        
-        Exit Function
-
+    On Error GoTo QuedanItems_Err
+    Dim i As Integer
+    If NpcList(NpcIndex).invent.NroItems > 0 Then
+        For i = 1 To MAX_INVENTORY_SLOTS
+            If NpcList(NpcIndex).invent.Object(i).ObjIndex = ObjIndex Then
+                QuedanItems = True
+                Exit Function
+            End If
+        Next
+    End If
+    QuedanItems = False
+    Exit Function
 QuedanItems_Err:
-110     Call TraceError(Err.Number, Err.Description, "InvNpc.QuedanItems", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "InvNpc.QuedanItems", Erl)
 End Function
 
 Function EncontrarCant(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Integer
-        
-        On Error GoTo EncontrarCant_Err
-        
-        'Devuelve la cantidad original del obj de un npc
-
-        Dim ln As String, npcfile As String
-
-        Dim i  As Integer
-
-        'If NpcList(NpcIndex).Numero > 499 Then
-        '    npcfile = DatPath & "NPCs-HOSTILES.dat"
-        'Else
-100     npcfile = DatPath & "NPCs.dat"
-        'End If
- 
-102     For i = 1 To MAX_INVENTORY_SLOTS
-104         ln = GetVar(npcfile, "NPC" & NpcList(NpcIndex).Numero, "Obj" & i)
-
-106         If ObjIndex = val(ReadField(1, ln, 45)) Then
-108             EncontrarCant = val(ReadField(2, ln, 45))
-                Exit Function
-
-            End If
-
-        Next
-                   
-110     EncontrarCant = 0
-        
-        Exit Function
-
+    On Error GoTo EncontrarCant_Err
+    'Devuelve la cantidad original del obj de un npc
+    Dim ln As String, npcfile As String
+    Dim i  As Integer
+    'If NpcList(NpcIndex).Numero > 499 Then
+    '    npcfile = DatPath & "NPCs-HOSTILES.dat"
+    'Else
+    npcfile = DatPath & "NPCs.dat"
+    'End If
+    For i = 1 To MAX_INVENTORY_SLOTS
+        ln = GetVar(npcfile, "NPC" & NpcList(NpcIndex).Numero, "Obj" & i)
+        If ObjIndex = val(ReadField(1, ln, 45)) Then
+            EncontrarCant = val(ReadField(2, ln, 45))
+            Exit Function
+        End If
+    Next
+    EncontrarCant = 0
+    Exit Function
 EncontrarCant_Err:
-112     Call TraceError(Err.Number, Err.Description, "InvNpc.EncontrarCant", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "InvNpc.EncontrarCant", Erl)
 End Function
 
 Sub ResetNpcInv(ByVal NpcIndex As Integer)
-        
-        On Error GoTo ResetNpcInv_Err
-    
-        Dim i As Integer
-
-100     NpcList(NpcIndex).Invent.NroItems = 0
-
-102     For i = 1 To MAX_INVENTORY_SLOTS
-104         NpcList(NpcIndex).Invent.Object(i).ObjIndex = 0
-106         NpcList(NpcIndex).Invent.Object(i).amount = 0
-108     Next i
-
-110     NpcList(NpcIndex).InvReSpawn = 0
-        
-        Exit Sub
-
+    On Error GoTo ResetNpcInv_Err
+    Dim i As Integer
+    NpcList(NpcIndex).invent.NroItems = 0
+    For i = 1 To MAX_INVENTORY_SLOTS
+        NpcList(NpcIndex).invent.Object(i).ObjIndex = 0
+        NpcList(NpcIndex).invent.Object(i).amount = 0
+    Next i
+    NpcList(NpcIndex).InvReSpawn = 0
+    Exit Sub
 ResetNpcInv_Err:
-112     Call TraceError(Err.Number, Err.Description, "InvNpc.ResetNpcInv", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "InvNpc.ResetNpcInv", Erl)
 End Sub
 
 Sub QuitarNpcInvItem(ByVal NpcIndex As Integer, ByVal Slot As Byte, ByVal Cantidad As Integer)
-        
-        On Error GoTo QuitarNpcInvItem_Err
-        
-
-        Dim ObjIndex As Integer
-
-100     ObjIndex = NpcList(NpcIndex).Invent.Object(Slot).ObjIndex
-
-        'Quita un Obj
-102     If ObjData(NpcList(NpcIndex).Invent.Object(Slot).ObjIndex).Crucial = 0 Then
-104         NpcList(NpcIndex).Invent.Object(Slot).amount = NpcList(NpcIndex).Invent.Object(Slot).amount - Cantidad
-        
-106         If NpcList(NpcIndex).Invent.Object(Slot).amount <= 0 Then
-108             NpcList(NpcIndex).Invent.NroItems = NpcList(NpcIndex).Invent.NroItems - 1
-110             NpcList(NpcIndex).Invent.Object(Slot).ObjIndex = 0
-112             NpcList(NpcIndex).Invent.Object(Slot).amount = 0
-
-114             If NpcList(NpcIndex).Invent.NroItems = 0 And NpcList(NpcIndex).InvReSpawn <> 1 Then
-116                 Call CargarInvent(NpcIndex) 'Reponemos el inventario
-
-                End If
-
+    On Error GoTo QuitarNpcInvItem_Err
+    Dim ObjIndex As Integer
+    ObjIndex = NpcList(NpcIndex).invent.Object(Slot).ObjIndex
+    'Quita un Obj
+    If ObjData(NpcList(NpcIndex).invent.Object(Slot).ObjIndex).Crucial = 0 Then
+        NpcList(NpcIndex).invent.Object(Slot).amount = NpcList(NpcIndex).invent.Object(Slot).amount - Cantidad
+        If NpcList(NpcIndex).invent.Object(Slot).amount <= 0 Then
+            NpcList(NpcIndex).invent.NroItems = NpcList(NpcIndex).invent.NroItems - 1
+            NpcList(NpcIndex).invent.Object(Slot).ObjIndex = 0
+            NpcList(NpcIndex).invent.Object(Slot).amount = 0
+            If NpcList(NpcIndex).invent.NroItems = 0 And NpcList(NpcIndex).InvReSpawn <> 1 Then
+                Call CargarInvent(NpcIndex) 'Reponemos el inventario
             End If
-
-        Else
-118         NpcList(NpcIndex).Invent.Object(Slot).amount = NpcList(NpcIndex).Invent.Object(Slot).amount - Cantidad
-        
-120         If NpcList(NpcIndex).Invent.Object(Slot).amount <= 0 Then
-122             NpcList(NpcIndex).Invent.NroItems = NpcList(NpcIndex).Invent.NroItems - 1
-124             NpcList(NpcIndex).Invent.Object(Slot).ObjIndex = 0
-126             NpcList(NpcIndex).Invent.Object(Slot).amount = 0
-            
-128             If Not QuedanItems(NpcIndex, ObjIndex) Then
-
-                    Dim NoEsdeAca As Integer
-
-130                 NoEsdeAca = EncontrarCant(NpcIndex, ObjIndex)
-
-132                 If NoEsdeAca <> 0 Then
-134                     NpcList(NpcIndex).Invent.Object(Slot).ObjIndex = ObjIndex
-136                     NpcList(NpcIndex).Invent.Object(Slot).amount = EncontrarCant(NpcIndex, ObjIndex)
-138                     NpcList(NpcIndex).Invent.NroItems = NpcList(NpcIndex).Invent.NroItems + 1
-
-                    End If
-
-                End If
-            
-140             If NpcList(NpcIndex).Invent.NroItems = 0 And NpcList(NpcIndex).InvReSpawn <> 1 Then
-142                 Call CargarInvent(NpcIndex) 'Reponemos el inventario
-
-                End If
-
-            End If
-    
         End If
-
-        
-        Exit Sub
-
+    Else
+        NpcList(NpcIndex).invent.Object(Slot).amount = NpcList(NpcIndex).invent.Object(Slot).amount - Cantidad
+        If NpcList(NpcIndex).invent.Object(Slot).amount <= 0 Then
+            NpcList(NpcIndex).invent.NroItems = NpcList(NpcIndex).invent.NroItems - 1
+            NpcList(NpcIndex).invent.Object(Slot).ObjIndex = 0
+            NpcList(NpcIndex).invent.Object(Slot).amount = 0
+            If Not QuedanItems(NpcIndex, ObjIndex) Then
+                Dim NoEsdeAca As Integer
+                NoEsdeAca = EncontrarCant(NpcIndex, ObjIndex)
+                If NoEsdeAca <> 0 Then
+                    NpcList(NpcIndex).invent.Object(Slot).ObjIndex = ObjIndex
+                    NpcList(NpcIndex).invent.Object(Slot).amount = EncontrarCant(NpcIndex, ObjIndex)
+                    NpcList(NpcIndex).invent.NroItems = NpcList(NpcIndex).invent.NroItems + 1
+                End If
+            End If
+            If NpcList(NpcIndex).invent.NroItems = 0 And NpcList(NpcIndex).InvReSpawn <> 1 Then
+                Call CargarInvent(NpcIndex) 'Reponemos el inventario
+            End If
+        End If
+    End If
+    Exit Sub
 QuitarNpcInvItem_Err:
-144     Call TraceError(Err.Number, Err.Description, "InvNpc.QuitarNpcInvItem", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "InvNpc.QuitarNpcInvItem", Erl)
 End Sub
 
 Sub CargarInvent(ByVal NpcIndex As Integer)
-        
-        On Error GoTo CargarInvent_Err
-        
-
-        'Vuelve a cargar el inventario del npc NpcIndex
-        Dim LoopC   As Integer
-
-        Dim ln      As String
-
-        Dim npcfile As String
-
-        'If NpcList(NpcIndex).Numero > 499 Then
-        '    npcfile = DatPath & "NPCs-HOSTILES.dat"
-        'Else
-100     npcfile = DatPath & "NPCs.dat"
-        'End If
-
-102     NpcList(NpcIndex).Invent.NroItems = val(GetVar(npcfile, "NPC" & NpcList(NpcIndex).Numero, "NROITEMS"))
-        
-        If NpcList(NpcIndex).Invent.NroItems > 0 Then
-104         For LoopC = 1 To NpcList(NpcIndex).Invent.NroItems
-106             ln = GetVar(npcfile, "NPC" & NpcList(NpcIndex).Numero, "Obj" & LoopC)
-108             NpcList(NpcIndex).Invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))
-110             NpcList(NpcIndex).Invent.Object(LoopC).amount = val(ReadField(2, ln, 45))
-        
-112         Next LoopC
-        End If
-
-        
-        Exit Sub
-
+    On Error GoTo CargarInvent_Err
+    'Vuelve a cargar el inventario del npc NpcIndex
+    Dim LoopC   As Integer
+    Dim ln      As String
+    Dim npcfile As String
+    'If NpcList(NpcIndex).Numero > 499 Then
+    '    npcfile = DatPath & "NPCs-HOSTILES.dat"
+    'Else
+    npcfile = DatPath & "NPCs.dat"
+    'End If
+    NpcList(NpcIndex).invent.NroItems = val(GetVar(npcfile, "NPC" & NpcList(NpcIndex).Numero, "NROITEMS"))
+    If NpcList(NpcIndex).invent.NroItems > 0 Then
+        For LoopC = 1 To NpcList(NpcIndex).invent.NroItems
+            ln = GetVar(npcfile, "NPC" & NpcList(NpcIndex).Numero, "Obj" & LoopC)
+            NpcList(NpcIndex).invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))
+            NpcList(NpcIndex).invent.Object(LoopC).amount = val(ReadField(2, ln, 45))
+        Next LoopC
+    End If
+    Exit Sub
 CargarInvent_Err:
-114     Call TraceError(Err.Number, Err.Description, "InvNpc.CargarInvent", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "InvNpc.CargarInvent", Erl)
 End Sub
 
-Public Sub NpcDropeo(ByRef npc As t_Npc, ByRef UserIndex As Integer)
-
-        On Error GoTo ErrHandler
-
-100     If npc.NumQuiza = 0 Then Exit Sub
-102     If SvrConfig.GetValue("DropActive") = 0 Then Exit Sub 'Esta el Dropeo activado?
-
-        Dim Dropeo       As t_Obj
-
-        Dim Probabilidad As Long
-
-        Dim objRandom    As Byte
-
-        Dim ProbTiro     As Byte
-
-        Dim nfile        As Integer
-
-104     If npc.QuizaProb = 0 Then
-106         Probabilidad = RandomNumber(1, SvrConfig.GetValue("DropMult"))
-        Else
-108         Probabilidad = RandomNumber(1, npc.QuizaProb) 'Tiro Item?
-
-        End If
-
-118     If Probabilidad <> 1 Then Exit Sub
-
-120     objRandom = RandomNumber(1, npc.NumQuiza) 'Que item puede ser que tire?
-
-        Dim obj      As Integer
-
-        Dim Cantidad As Integer
-
-122     obj = val(ReadField(1, npc.QuizaDropea(objRandom), Asc("-")))
-124     Cantidad = val(ReadField(2, npc.QuizaDropea(objRandom), Asc("-")))
-
-126     Dropeo.amount = Cantidad 'Cantidad
-128     Dropeo.ObjIndex = obj 'NUMERO DEL ITEM EN EL OBJ.DAT
-130     Call TirarItemAlPiso(npc.Pos, Dropeo, npc.flags.AguaValida = 1)
-132     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
-    
-        Exit Sub
-
+Public Sub NpcDropeo(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
+    On Error GoTo ErrHandler
+    If Npc.NumQuiza = 0 Then Exit Sub
+    If SvrConfig.GetValue("DropActive") = 0 Then Exit Sub 'Esta el Dropeo activado?
+    Dim Dropeo       As t_Obj
+    Dim Probabilidad As Long
+    Dim objRandom    As Byte
+    Dim ProbTiro     As Byte
+    Dim nfile        As Integer
+    If Npc.QuizaProb = 0 Then
+        Probabilidad = RandomNumber(1, SvrConfig.GetValue("DropMult"))
+    Else
+        Probabilidad = RandomNumber(1, Npc.QuizaProb) 'Tiro Item?
+    End If
+    If Probabilidad <> 1 Then Exit Sub
+    objRandom = RandomNumber(1, Npc.NumQuiza) 'Que item puede ser que tire?
+    Dim obj      As Integer
+    Dim Cantidad As Integer
+    obj = val(ReadField(1, Npc.QuizaDropea(objRandom), Asc("-")))
+    Cantidad = val(ReadField(2, Npc.QuizaDropea(objRandom), Asc("-")))
+    Dropeo.amount = Cantidad 'Cantidad
+    Dropeo.ObjIndex = obj 'NUMERO DEL ITEM EN EL OBJ.DAT
+    Call TirarItemAlPiso(Npc.pos, Dropeo, Npc.flags.AguaValida = 1)
+    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
+    Exit Sub
 ErrHandler:
-134     Call LogError("Error al dropear el item " & ObjData(npc.QuizaDropea(objRandom)).Name & ", al usuario " & UserList(UserIndex).Name & ". " & Err.Description & ".")
-
+    Call LogError("Error al dropear el item " & ObjData(Npc.QuizaDropea(objRandom)).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.Description & ".")
 End Sub
 
 Public Sub DropFromGlobalDropTable(ByRef Npc As t_Npc, ByVal UserIndex As Integer)
-On Error GoTo ErrHandler
-    Dim i As Integer
-    Dim DropChance As Single
+    On Error GoTo ErrHandler
+    Dim i           As Integer
+    Dim DropChance  As Single
     Dim RandomValue As Long
     For i = 1 To UBound(GlobalDropTable)
         DropChance = Npc.Stats.MaxHp / GlobalDropTable(i).RequiredHPForMaxChance
@@ -350,65 +229,50 @@ On Error GoTo ErrHandler
         RandomValue = RandomNumber(1, 100000)
         DropChance = DropChance * 1000
         If RandomValue < (DropChance) Then
-            Dim DropInfo       As t_Obj
-            DropInfo.Amount = GlobalDropTable(i).Amount
+            Dim DropInfo As t_Obj
+            DropInfo.amount = GlobalDropTable(i).amount
             DropInfo.ObjIndex = GlobalDropTable(i).ObjectNumber
-            Call TirarItemAlPiso(Npc.Pos, DropInfo, Npc.flags.AguaValida = 1)
+            Call TirarItemAlPiso(Npc.pos, DropInfo, Npc.flags.AguaValida = 1)
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
         End If
     Next i
     Exit Sub
 ErrHandler:
-126     Call LogError("Error DropFromGlobalDropTable al dropear el item " & i & ", al usuario " & UserList(UserIndex).name & ". " & Err.Description & ".")
+    Call LogError("Error DropFromGlobalDropTable al dropear el item " & i & ", al usuario " & UserList(UserIndex).name & ". " & Err.Description & ".")
 End Sub
 
-Public Sub DropObjQuest(ByRef npc As t_Npc, ByRef UserIndex As Integer)
+Public Sub DropObjQuest(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
     'Dropeo por Quest
     'Ladder
     '3/12/2020
-        On Error GoTo ErrHandler
-
-100     If npc.NumDropQuest = 0 Then Exit Sub
-    
-        Dim Dropeo As t_Obj
-        Dim Probabilidad As Long
-        
-        Dim i As Byte
-    
-102     For i = 1 To npc.NumDropQuest
-
-104         With npc.DropQuest(i)
-
-106             If .QuestIndex > 0 <> 0 Then
-                    ' Tiene la quest?
-108                 If TieneQuest(UserIndex, .QuestIndex) <> 0 Then
-                        ' Si aún me faltan más de estos items de esta quest
-110                     If FaltanItemsQuest(UserIndex, .QuestIndex, .ObjIndex) Then
-
-112                         Probabilidad = RandomNumber(1, .Probabilidad) 'Tiro Item?
-    
-114                         If Probabilidad = 1 Then
-116                             Dropeo.amount = .amount
-118                             Dropeo.ObjIndex = .ObjIndex
-
-                                'Call TirarItemAlPiso(npc.Pos, Dropeo)
-                                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
-
-                                '  Ahora te lo da en el inventario, si hay espacio, y el sonido lo escuchas vos solo
-120                             Call MeterItemEnInventario(UserIndex, Dropeo)
-122                             Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
-                            End If
+    On Error GoTo ErrHandler
+    If Npc.NumDropQuest = 0 Then Exit Sub
+    Dim Dropeo       As t_Obj
+    Dim Probabilidad As Long
+    Dim i            As Byte
+    For i = 1 To Npc.NumDropQuest
+        With Npc.DropQuest(i)
+            If .QuestIndex > 0 <> 0 Then
+                ' Tiene la quest?
+                If TieneQuest(UserIndex, .QuestIndex) <> 0 Then
+                    ' Si aún me faltan más de estos items de esta quest
+                    If FaltanItemsQuest(UserIndex, .QuestIndex, .ObjIndex) Then
+                        Probabilidad = RandomNumber(1, .Probabilidad) 'Tiro Item?
+                        If Probabilidad = 1 Then
+                            Dropeo.amount = .amount
+                            Dropeo.ObjIndex = .ObjIndex
+                            'Call TirarItemAlPiso(npc.Pos, Dropeo)
+                            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+                            '  Ahora te lo da en el inventario, si hay espacio, y el sonido lo escuchas vos solo
+                            Call MeterItemEnInventario(UserIndex, Dropeo)
+                            Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
                         End If
                     End If
                 End If
-
-            End With
-124     Next i
-
-        Exit Sub
-
+            End If
+        End With
+    Next i
+    Exit Sub
 ErrHandler:
-126     Call LogError("Error DropObjQuest al dropear el item " & ObjData(npc.DropQuest(i).ObjIndex).Name & ", al usuario " & UserList(UserIndex).Name & ". " & Err.Description & ".")
-
+    Call LogError("Error DropObjQuest al dropear el item " & ObjData(Npc.DropQuest(i).ObjIndex).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.Description & ".")
 End Sub
-

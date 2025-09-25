@@ -37,12 +37,11 @@ Attribute VB_Exposed = False
 '
 '
 '
-Dim UserRef As t_UserReference
+Dim UserRef       As t_UserReference
 Public LastPosMap As Integer
-Public LastPosX As Byte
-Public LastPosY As Byte
-Public Team As Byte
-
+Public LastPosX   As Byte
+Public LastPosY   As Byte
+Public team       As Byte
 
 Public Sub SetPlayer(ByVal UserIndex As Integer)
     Call SetUserRef(UserRef, UserIndex)

@@ -25,57 +25,60 @@ Attribute VB_Name = "Matematicas"
 '
 '
 '
-
 Option Explicit
-
 Const PI As Double = 3.14159265
+
 Public Type t_Vector
-    X As Double
-    Y As Double
+    x As Double
+    y As Double
 End Type
 
 Function max(ByVal a As Double, ByVal b As Double) As Double
-        On Error GoTo max_Err
-100     If a > b Then
-102         max = a
-        Else
-104         max = b
-        End If
-        Exit Function
+    On Error GoTo max_Err
+    If a > b Then
+        max = a
+    Else
+        max = b
+    End If
+    Exit Function
 max_Err:
-106     Call TraceError(Err.Number, Err.Description, "General.max", Erl)
+    Call TraceError(Err.Number, Err.Description, "General.max", Erl)
 End Function
+
 Function Min(ByVal a As Double, ByVal b As Double) As Double
-        On Error GoTo min_Err
-100     If a < b Then
-102         Min = a
-        Else
-104         Min = b
-        End If
-        Exit Function
+    On Error GoTo min_Err
+    If a < b Then
+        Min = a
+    Else
+        Min = b
+    End If
+    Exit Function
 min_Err:
-106     Call TraceError(Err.Number, Err.Description, "General.min", Erl)
+    Call TraceError(Err.Number, Err.Description, "General.min", Erl)
 End Function
-Public Function Porcentaje(ByVal Total As Double, ByVal Porc As Double) As Double
-        On Error GoTo Porcentaje_Err
-100     Porcentaje = (Total * Porc) / 100
-        Exit Function
+
+Public Function Porcentaje(ByVal total As Double, ByVal Porc As Double) As Double
+    On Error GoTo Porcentaje_Err
+    Porcentaje = (total * Porc) / 100
+    Exit Function
 Porcentaje_Err:
-102     Call TraceError(Err.Number, Err.Description, "Matematicas.Porcentaje", Erl)
+    Call TraceError(Err.Number, Err.Description, "Matematicas.Porcentaje", Erl)
 End Function
+
 Function Distancia(ByRef wp1 As t_WorldPos, ByRef wp2 As t_WorldPos) As Long
-        On Error GoTo Distancia_Err
-100     Distancia = Abs(wp1.X - wp2.X) + Abs(wp1.Y - wp2.Y) + (Abs(wp1.Map - wp2.Map) * 100&)
-        Exit Function
+    On Error GoTo Distancia_Err
+    Distancia = Abs(wp1.x - wp2.x) + Abs(wp1.y - wp2.y) + (Abs(wp1.Map - wp2.Map) * 100&)
+    Exit Function
 Distancia_Err:
-102     Call TraceError(Err.Number, Err.Description, "Matematicas.Distancia", Erl)
+    Call TraceError(Err.Number, Err.Description, "Matematicas.Distancia", Erl)
 End Function
+
 Function Distance(ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Double
-        On Error GoTo Distance_Err
-100     Distance = Sqr(((Y1 - Y2) ^ 2 + (X1 - X2) ^ 2))
-        Exit Function
+    On Error GoTo Distance_Err
+    Distance = Sqr(((Y1 - Y2) ^ 2 + (X1 - X2) ^ 2))
+    Exit Function
 Distance_Err:
-102     Call TraceError(Err.Number, Err.Description, "Matematicas.Distance", Erl)
+    Call TraceError(Err.Number, Err.Description, "Matematicas.Distance", Erl)
 End Function
 
 Function GetDirection(ByRef From As t_WorldPos, ByRef ToPos As t_WorldPos) As t_Vector
@@ -86,13 +89,13 @@ Function GetDirection(ByRef From As t_WorldPos, ByRef ToPos As t_WorldPos) As t_
 End Function
 
 Function GetNormal(ByRef Vector As t_Vector) As t_Vector
-    Dim Length As Double
-    Dim ret As t_Vector
-    Length = distance(0, 0, Vector.X, Vector.Y)
+    Dim length As Double
+    Dim Ret    As t_Vector
+    length = Distance(0, 0, Vector.x, Vector.y)
     Debug.Assert length <> 0
-    ret.X = Vector.X / Length
-    ret.Y = Vector.Y / Length
-    GetNormal = ret
+    Ret.x = Vector.x / length
+    Ret.y = Vector.y / length
+    GetNormal = Ret
 End Function
 
 Public Function ToRadians(ByVal degree As Double) As Double
@@ -102,62 +105,59 @@ End Function
 Public Function RotateVector(ByRef v As t_Vector, ByVal angle As Double) As t_Vector
     Dim cosAngle As Double
     Dim sinAngle As Double
-    Dim newX As Double
-    Dim newY As Double
-    
+    Dim NewX     As Double
+    Dim NewY     As Double
     cosAngle = Cos(angle)
     sinAngle = Sin(angle)
-    
-    newX = v.x * cosAngle - v.y * sinAngle
-    newY = v.x * sinAngle + v.y * cosAngle
-    
-    RotateVector.x = newX
-    RotateVector.y = newY
+    NewX = v.x * cosAngle - v.y * sinAngle
+    NewY = v.x * sinAngle + v.y * cosAngle
+    RotateVector.x = NewX
+    RotateVector.y = NewY
 End Function
 
 Public Function RandomNumber(ByVal LowerBound As Long, ByVal UpperBound As Long) As Long
-        On Error GoTo RandomNumber_Err
-100     RandomNumber = Fix(Rnd * (UpperBound - LowerBound + 1)) + LowerBound
-        Exit Function
+    On Error GoTo RandomNumber_Err
+    RandomNumber = Fix(Rnd * (UpperBound - LowerBound + 1)) + LowerBound
+    Exit Function
 RandomNumber_Err:
-102     Call TraceError(Err.Number, Err.Description, "Matematicas.RandomNumber", Erl)
+    Call TraceError(Err.Number, Err.Description, "Matematicas.RandomNumber", Erl)
 End Function
 
 Public Function RandomRange(ByVal LowerBound As Single, ByVal UpperBound As Single) As Single
-        On Error GoTo RandomNumber_Err
-100     RandomRange = Rnd
-        RandomRange = RandomRange * (UpperBound - LowerBound) + LowerBound
-        Exit Function
+    On Error GoTo RandomNumber_Err
+    RandomRange = Rnd
+    RandomRange = RandomRange * (UpperBound - LowerBound) + LowerBound
+    Exit Function
 RandomNumber_Err:
-102     Call TraceError(Err.Number, Err.Description, "Matematicas.RandomNumber", Erl)
+    Call TraceError(Err.Number, Err.Description, "Matematicas.RandomNumber", Erl)
 End Function
 
-Public Sub SetMask(ByRef mask As Long, ByVal value As Long)
-    mask = mask Or value
+Public Sub SetMask(ByRef Mask As Long, ByVal value As Long)
+    Mask = Mask Or value
 End Sub
 
-Public Function IsSet(ByVal Mask As Long, ByVal Value As Long) As Boolean
+Public Function IsSet(ByVal Mask As Long, ByVal value As Long) As Boolean
     IsSet = (Mask And value) <> 0
 End Function
 
-Public Sub UnsetMask(ByRef mask As Long, ByVal value As Long)
-    mask = mask And Not value
+Public Sub UnsetMask(ByRef Mask As Long, ByVal value As Long)
+    Mask = Mask And Not value
 End Sub
 
-Public Sub ResetMask(ByRef mask As Long)
-    mask = 0
+Public Sub ResetMask(ByRef Mask As Long)
+    Mask = 0
 End Sub
 
-Public Sub SetIntMask(ByRef Mask As Integer, ByVal Value As Integer)
-    Mask = Mask Or Value
+Public Sub SetIntMask(ByRef Mask As Integer, ByVal value As Integer)
+    Mask = Mask Or value
 End Sub
 
 Public Function IsIntSet(ByVal Mask As Integer, ByVal value As Integer) As Boolean
     IsIntSet = (Mask And value) <> 0
 End Function
 
-Public Sub UnsetIntMask(ByRef Mask As Integer, ByVal Value As Integer)
-    Mask = Mask And Not Value
+Public Sub UnsetIntMask(ByRef Mask As Integer, ByVal value As Integer)
+    Mask = Mask And Not value
 End Sub
 
 Public Sub ResetIntMask(ByRef Mask As Integer)

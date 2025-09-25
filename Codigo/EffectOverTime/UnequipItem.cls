@@ -38,19 +38,17 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-
 Implements IBaseEffectOverTime
-
-Private mDotInfo As t_BaseDotInfo
-Private mElapsedTime As Long
-Private mTimeLimit As Long
+Private mDotInfo           As t_BaseDotInfo
+Private mElapsedTime       As Long
+Private mTimeLimit         As Long
 Private mUnequipedslotMask As Long
-Private mDebuffIcon As Integer
+Private mDebuffIcon        As Integer
 
-Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, ByVal EffectId As Integer, ByVal ID As Long, ByVal ItemSlotMask As Long)
+Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, ByVal EffectId As Integer, ByVal Id As Long, ByVal ItemSlotMask As Long)
     Debug.Assert TargetType = eUser
     mElapsedTime = 0
-    Call SetBaseDot(mDotInfo, TargetIndex, TargetType, ID, EffectId)
+    Call SetBaseDot(mDotInfo, TargetIndex, TargetType, Id, EffectId)
     mUnequipedslotMask = ItemSlotMask
     Call SetMask(UserList(TargetIndex).flags.DisabledSlot, mUnequipedslotMask)
     Select Case ItemSlotMask
@@ -64,7 +62,7 @@ Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceTy
     With EffectOverTime(EffectId)
         mTimeLimit = .TickTime
         If mDotInfo.TargetRef.RefType = eUser And mDebuffIcon > 0 Then
-            Call WriteSendSkillCdUpdate(TargetIndex, mDebuffIcon, id, .TickTime, .TickTime, .buffType)
+            Call WriteSendSkillCdUpdate(TargetIndex, mDebuffIcon, Id, .TickTime, .TickTime, .buffType)
         End If
     End With
 End Sub
@@ -94,7 +92,7 @@ Public Property Get IBaseEffectOverTime_CasterRefType() As e_ReferenceType
 End Property
 
 Public Property Get IBaseEffectOverTime_CasterUserId() As Long
-    IBaseEffectOverTime_CasterUserId = mDotInfo.TargetRef.userID
+    IBaseEffectOverTime_CasterUserId = mDotInfo.TargetRef.UserId
 End Property
 
 Public Property Get IBaseEffectOverTime_TargetIsValid() As Boolean
@@ -110,7 +108,7 @@ Public Property Get IBaseEffectOverTime_TargetRefType() As e_ReferenceType
 End Property
 
 Public Property Get IBaseEffectOverTime_TargetUserId() As Long
-    IBaseEffectOverTime_TargetUserId = mDotInfo.TargetRef.userID
+    IBaseEffectOverTime_TargetUserId = mDotInfo.TargetRef.UserId
 End Property
 
 Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
@@ -124,8 +122,8 @@ Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
     IBaseEffectOverTime_CallBacksMask = 0
 End Property
 
-Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
-    mElapsedTime = mElapsedTime + deltaTime
+Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
+    mElapsedTime = mElapsedTime + DeltaTime
     If mElapsedTime >= mTimeLimit Or Not IsValidRef(mDotInfo.TargetRef) Then
         mDotInfo.RemoveEffect = True
         Exit Sub
@@ -136,8 +134,8 @@ Public Property Get IBaseEffectOverTime_RemoveMe() As Boolean
     IBaseEffectOverTime_RemoveMe = mDotInfo.RemoveEffect
 End Property
 
-Public Property Let IBaseEffectOverTime_RemoveMe(ByVal Value As Boolean)
-    mDotInfo.RemoveEffect = Value
+Public Property Let IBaseEffectOverTime_RemoveMe(ByVal value As Boolean)
+    mDotInfo.RemoveEffect = value
 End Property
 
 Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
@@ -154,8 +152,7 @@ Public Sub IBaseEffectOverTime_OnRemove()
     mDotInfo.RemoveEffect = True
     Call UnsetMask(UserList(mDotInfo.TargetRef.ArrayIndex).flags.DisabledSlot, mUnequipedslotMask)
     If mDotInfo.TargetRef.RefType = eUser And mDebuffIcon > 0 Then
-        Call WriteSendSkillCdUpdate(mDotInfo.TargetRef.ArrayIndex, mDebuffIcon, _
-                                    mDotInfo.UniqueId, 0, 0, EffectOverTime(mDotInfo.EotId).buffType)
+        Call WriteSendSkillCdUpdate(mDotInfo.TargetRef.ArrayIndex, mDebuffIcon, mDotInfo.UniqueId, 0, 0, EffectOverTime(mDotInfo.EotId).buffType)
     End If
 End Sub
 
@@ -178,7 +175,10 @@ End Sub
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
-Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType) As Long
+Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
+                                                         ByVal SourceUserId As Integer, _
+                                                         ByVal SourceType As e_ReferenceType, _
+                                                         ByVal AttackType As e_DamageSourceType) As Long
     IBaseEffectOverTime_ApplyDamageReduction = Damage
 End Function
 
@@ -188,7 +188,3 @@ End Property
 
 Public Sub IBaseEffectOverTime_TargetChangeTerrain()
 End Sub
-
-
-
-

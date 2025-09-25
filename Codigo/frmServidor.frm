@@ -541,490 +541,284 @@ Attribute VB_Exposed = False
 '
 Option Explicit
 
-
 Private Sub cmdReloadGuilds_Click()
     Call modGuilds.LoadGuildsDB
 End Sub
 
 Private Sub Command1_Click()
-        
-        On Error GoTo Command1_Click_Err
-        
-100     Call LoadOBJData
-102     Call LoadPesca
-104     Call LoadRecursosEspeciales
-
-        
-        Exit Sub
-
+    On Error GoTo Command1_Click_Err
+    Call LoadOBJData
+    Call LoadPesca
+    Call LoadRecursosEspeciales
+    Exit Sub
 Command1_Click_Err:
-106     Call TraceError(Err.Number, Err.Description, "frmServidor.Command1_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command1_Click", Erl)
 End Sub
 
 Private Sub Command10_Click()
-        
-        On Error GoTo Command10_Click_Err
-        
-100     frmTrafic.Show
-
-        
-        Exit Sub
-
+    On Error GoTo Command10_Click_Err
+    frmTrafic.Show
+    Exit Sub
 Command10_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command10_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command10_Click", Erl)
 End Sub
 
 Private Sub Command12_Click()
-        
-        On Error GoTo Command12_Click_Err
-        
-100     frmDebugNpc.Show
-
-        
-        Exit Sub
-
+    On Error GoTo Command12_Click_Err
+    frmDebugNpc.Show
+    Exit Sub
 Command12_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command12_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command12_Click", Erl)
 End Sub
 
 Private Sub Command14_Click()
-        
-        On Error GoTo Command14_Click_Err
-        
-100     Call LoadMotd
-
-        
-        Exit Sub
-
+    On Error GoTo Command14_Click_Err
+    Call LoadMotd
+    Exit Sub
 Command14_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command14_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command14_Click", Erl)
 End Sub
 
 Private Sub Command15_Click()
-        
-        On Error GoTo Command15_Click_Err
-    
-        
-
-        
-
-        Dim Fn       As String
-
-        Dim cad$
-
-        Dim n        As Integer, K As Integer
-
-        Dim sENtrada As String
-
-100     sENtrada = InputBox("Escribe ""estoy DE acuerdo"" entre comillas y con distición de mayusculas minusculas para desbanear a todos los personajes", "UnBan", "hola")
-
-102     If sENtrada = "estoy DE acuerdo" Then
-
-104         Fn = App.Path & "\logs\GenteBanned.log"
-    
-106         If FileExist(Fn, vbNormal) Then
-108             n = FreeFile
-110             Open Fn For Input Shared As #n
-
-112             Do While Not EOF(n)
-114                 K = K + 1
-116                 Input #n, cad$
-118                 Call UnBan(cad$)
-            
-                Loop
-120             Close #n
-122             MsgBox "Se han habilitado " & K & " personajes."
-124             Kill Fn
-
-            End If
-
+    On Error GoTo Command15_Click_Err
+    Dim Fn       As String
+    Dim cad$
+    Dim n        As Integer, K As Integer
+    Dim sENtrada As String
+    sENtrada = InputBox("Escribe ""estoy DE acuerdo"" entre comillas y con distición de mayusculas minusculas para desbanear a todos los personajes", "UnBan", "hola")
+    If sENtrada = "estoy DE acuerdo" Then
+        Fn = App.Path & "\logs\GenteBanned.log"
+        If FileExist(Fn, vbNormal) Then
+            n = FreeFile
+            Open Fn For Input Shared As #n
+            Do While Not EOF(n)
+                K = K + 1
+                Input #n, cad$
+                Call UnBan(cad$)
+            Loop
+            Close #n
+            MsgBox "Se han habilitado " & K & " personajes."
+            Kill Fn
         End If
-
-        
-        Exit Sub
-
+    End If
+    Exit Sub
 Command15_Click_Err:
-126     Call TraceError(Err.Number, Err.Description, "frmServidor.Command15_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command15_Click", Erl)
 End Sub
 
 Private Sub Command16_Click()
-        
-        On Error GoTo Command16_Click_Err
-        
-100     Call LoadSini
-        Call LoadMD5
-        Call LoadPrivateKey
-
-        
-        Exit Sub
-
+    On Error GoTo Command16_Click_Err
+    Call LoadSini
+    Call LoadMD5
+    Call LoadPrivateKey
+    Exit Sub
 Command16_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command16_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command16_Click", Erl)
 End Sub
 
 Private Sub Command17_Click()
-        
-        On Error GoTo Command17_Click_Err
-        
-100     Call CargaNpcsDat
-
-        
-        Exit Sub
-
+    On Error GoTo Command17_Click_Err
+    Call CargaNpcsDat
+    Exit Sub
 Command17_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command17_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command17_Click", Erl)
 End Sub
 
 Private Sub Command18_Click()
-        
-        On Error GoTo Command18_Click_Err
-        
-100     Me.MousePointer = 11
-102     Call GuardarUsuarios
-104     Me.MousePointer = 0
-106     MsgBox "Grabado de personajes OK!"
-
-        
-        Exit Sub
-
+    On Error GoTo Command18_Click_Err
+    Me.MousePointer = 11
+    Call GuardarUsuarios
+    Me.MousePointer = 0
+    MsgBox "Grabado de personajes OK!"
+    Exit Sub
 Command18_Click_Err:
-108     Call TraceError(Err.Number, Err.Description, "frmServidor.Command18_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command18_Click", Erl)
 End Sub
 
-
 Private Sub Command2_Click()
-        
-        On Error GoTo Command2_Click_Err
-        
-100     frmServidor.Visible = False
-
-        
-        Exit Sub
-
+    On Error GoTo Command2_Click_Err
+    frmServidor.Visible = False
+    Exit Sub
 Command2_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command2_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command2_Click", Erl)
 End Sub
 
 Private Sub Command20_Click()
-        
-        On Error GoTo Command20_Click_Err
-        
-        Dim LoopC As Long
-        
-100     If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
-102         Call modNetwork.Disconnect
-
-104         For LoopC = 1 To MaxUsers
-106             Call CloseSocket(LoopC)
-            Next
-            
-            Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
-        End If
-
-        
-        Exit Sub
-
+    On Error GoTo Command20_Click_Err
+    Dim LoopC As Long
+    If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
+        Call modNetwork.Disconnect
+        For LoopC = 1 To MaxUsers
+            Call CloseSocket(LoopC)
+        Next
+        Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
+    End If
+    Exit Sub
 Command20_Click_Err:
-108     Call TraceError(Err.Number, Err.Description, "frmServidor.Command20_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command20_Click", Erl)
 End Sub
 
 'Barrin 29/9/03
 Private Sub Command21_Click()
-        
-        On Error GoTo Command21_Click_Err
-        
-
-100     If EnPausa = False Then
-102         EnPausa = True
-104         Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-106         Command21.Caption = "Reanudar el servidor"
-        Else
-108         EnPausa = False
-110         Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-112         Command21.Caption = "Pausar el servidor"
-
-        End If
-
-        
-        Exit Sub
-
+    On Error GoTo Command21_Click_Err
+    If EnPausa = False Then
+        EnPausa = True
+        Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
+        Command21.Caption = "Reanudar el servidor"
+    Else
+        EnPausa = False
+        Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
+        Command21.Caption = "Pausar el servidor"
+    End If
+    Exit Sub
 Command21_Click_Err:
-114     Call TraceError(Err.Number, Err.Description, "frmServidor.Command21_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command21_Click", Erl)
 End Sub
 
 Private Sub Command22_Click()
-        
-        On Error GoTo Command22_Click_Err
-        
-100     Me.Visible = False
-102     frmAdmin.Show
-
-        
-        Exit Sub
-
+    On Error GoTo Command22_Click_Err
+    Me.Visible = False
+    frmAdmin.Show
+    Exit Sub
 Command22_Click_Err:
-104     Call TraceError(Err.Number, Err.Description, "frmServidor.Command22_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command22_Click", Erl)
 End Sub
 
 Private Sub Command23_Click()
-        
-        On Error GoTo Command23_Click_Err
-        
-
-100     If MsgBox("Esta seguro que desea hacer WorldSave, guardar pjs y cerrar ?", vbYesNo, "Apagar Magicamente") = vbYes Then
-102         Me.MousePointer = 11
-    
-104         FrmStat.Show
-   
-            'WorldSave
-            '   Call DoBackUp
-
-            'Guardar Pjs
-106         Call GuardarUsuarios
-    
-            'Chauuu
-108         Unload frmMain
-
-        End If
-
-        
-        Exit Sub
-
+    On Error GoTo Command23_Click_Err
+    If MsgBox("Esta seguro que desea hacer WorldSave, guardar pjs y cerrar ?", vbYesNo, "Apagar Magicamente") = vbYes Then
+        Me.MousePointer = 11
+        FrmStat.Show
+        'WorldSave
+        '   Call DoBackUp
+        'Guardar Pjs
+        Call GuardarUsuarios
+        'Chauuu
+        Unload frmMain
+    End If
+    Exit Sub
 Command23_Click_Err:
-110     Call TraceError(Err.Number, Err.Description, "frmServidor.Command23_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command23_Click", Erl)
 End Sub
 
 Private Sub Command27_Click()
-        
-        On Error GoTo Command27_Click_Err
-        
-100     frmUserList.Show
-
-        
-        Exit Sub
-
+    On Error GoTo Command27_Click_Err
+    frmUserList.Show
+    Exit Sub
 Command27_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command27_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command27_Click", Erl)
 End Sub
 
 Private Sub Command28_Click()
-        
-        On Error GoTo Command28_Click_Err
-        
-100     Call LoadMainConfigFile
-
-        
-        Exit Sub
-
+    On Error GoTo Command28_Click_Err
+    Call LoadMainConfigFile
+    Exit Sub
 Command28_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command28_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command28_Click", Erl)
 End Sub
 
 Private Sub Command3_Click()
-        
-        On Error GoTo Command3_Click_Err
-        
-
-100     If MsgBox("¡¡Atencion!! Si reinicia el servidor puede provocar la perdida de datos de los usarios. ¿Desea reiniciar el servidor de todas maneras?", vbYesNo) = vbYes Then
-102         Me.Visible = False
-104         Call Restart
-
-        End If
-
-        
-        Exit Sub
-
+    On Error GoTo Command3_Click_Err
+    If MsgBox("¡¡Atencion!! Si reinicia el servidor puede provocar la perdida de datos de los usarios. ¿Desea reiniciar el servidor de todas maneras?", vbYesNo) = vbYes Then
+        Me.Visible = False
+        Call Restart
+    End If
+    Exit Sub
 Command3_Click_Err:
-106     Call TraceError(Err.Number, Err.Description, "frmServidor.Command3_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command3_Click", Erl)
 End Sub
 
 Private Sub Command4_Click()
-
-        On Error GoTo eh
-
-100     Me.MousePointer = 11
-102     FrmStat.Show
-104     Call DoBackUp
-106     Me.MousePointer = 0
-108     MsgBox "WORLDSAVE OK!!"
-
-        Exit Sub
+    On Error GoTo eh
+    Me.MousePointer = 11
+    FrmStat.Show
+    Call DoBackUp
+    Me.MousePointer = 0
+    MsgBox "WORLDSAVE OK!!"
+    Exit Sub
 eh:
-110     Call TraceError(Err.Number, Err.Description, "frmServidor.Command4_Click", Erl)
-
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command4_Click", Erl)
 End Sub
 
 Private Sub Command5_Click()
-        
-        On Error GoTo Command5_Click_Err
-    
-        
-
-        'Se asegura de que los sockets estan cerrados e ignora cualquier err
-        
-
-100     If frmMain.Visible Then frmMain.txStatus.Caption = "Reiniciando."
-
-102     FrmStat.Show
-
-104     If FileExist(App.Path & "\logs\errores.log", vbNormal) Then Kill App.Path & "\logs\errores.log"
-106     If FileExist(App.Path & "\logs\connect.log", vbNormal) Then Kill App.Path & "\logs\Connect.log"
-108     If FileExist(App.Path & "\logs\HackAttemps.log", vbNormal) Then Kill App.Path & "\logs\HackAttemps.log"
-110     If FileExist(App.Path & "\logs\Asesinatos.log", vbNormal) Then Kill App.Path & "\logs\Asesinatos.log"
-112     If FileExist(App.Path & "\logs\Resurrecciones.log", vbNormal) Then Kill App.Path & "\logs\Resurrecciones.log"
-114     If FileExist(App.Path & "\logs\Teleports.Log", vbNormal) Then Kill App.Path & "\logs\Teleports.Log"
-
-        Dim LoopC As Integer
-116     For LoopC = 1 To MaxUsers
-118         Call CloseSocket(LoopC)
-        Next
-        Call modNetwork.Disconnect
-
-120     LastUser = 0
-122     NumUsers = 0
-
-124     Call FreeNPCs
-126     Call FreeCharIndexes
-
-128     Call LoadSini
-        Call LoadMD5
-129     Call LoadPrivateKey
-130     Call LoadIntervalos
-132     Call CargarBackUp
-134     Call LoadOBJData
-136     Call LoadPesca
-138     Call LoadRecursosEspeciales
-
-140     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
-
-142     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
-
-        
-        Exit Sub
-
+    On Error GoTo Command5_Click_Err
+    'Se asegura de que los sockets estan cerrados e ignora cualquier err
+    If frmMain.Visible Then frmMain.txStatus.Caption = "Reiniciando."
+    FrmStat.Show
+    If FileExist(App.Path & "\logs\errores.log", vbNormal) Then Kill App.Path & "\logs\errores.log"
+    If FileExist(App.Path & "\logs\connect.log", vbNormal) Then Kill App.Path & "\logs\Connect.log"
+    If FileExist(App.Path & "\logs\HackAttemps.log", vbNormal) Then Kill App.Path & "\logs\HackAttemps.log"
+    If FileExist(App.Path & "\logs\Asesinatos.log", vbNormal) Then Kill App.Path & "\logs\Asesinatos.log"
+    If FileExist(App.Path & "\logs\Resurrecciones.log", vbNormal) Then Kill App.Path & "\logs\Resurrecciones.log"
+    If FileExist(App.Path & "\logs\Teleports.Log", vbNormal) Then Kill App.Path & "\logs\Teleports.Log"
+    Dim LoopC As Integer
+    For LoopC = 1 To MaxUsers
+        Call CloseSocket(LoopC)
+    Next
+    Call modNetwork.Disconnect
+    LastUser = 0
+    NumUsers = 0
+    Call FreeNPCs
+    Call FreeCharIndexes
+    Call LoadSini
+    Call LoadMD5
+    Call LoadPrivateKey
+    Call LoadIntervalos
+    Call CargarBackUp
+    Call LoadOBJData
+    Call LoadPesca
+    Call LoadRecursosEspeciales
+    Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
+    If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
+    Exit Sub
 Command5_Click_Err:
-144     Call TraceError(Err.Number, Err.Description, "frmServidor.Command5_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command5_Click", Erl)
 End Sub
 
 Private Sub Command6_Click()
-        
-        On Error GoTo Command6_Click_Err
-        
-100     Call ReSpawnOrigPosNpcs
-
-        
-        Exit Sub
-
+    On Error GoTo Command6_Click_Err
+    Call ReSpawnOrigPosNpcs
+    Exit Sub
 Command6_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command6_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command6_Click", Erl)
 End Sub
 
 Private Sub Command7_Click()
-        
-        On Error GoTo Command7_Click_Err
-        
-100     FrmInterv.Show
-
-        
-        Exit Sub
-
+    On Error GoTo Command7_Click_Err
+    FrmInterv.Show
+    Exit Sub
 Command7_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command7_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command7_Click", Erl)
 End Sub
 
 Private Sub Command8_Click()
-        
-        On Error GoTo Command8_Click_Err
-        
-100     Call CargarHechizos
-
-        
-        Exit Sub
-
+    On Error GoTo Command8_Click_Err
+    Call CargarHechizos
+    Exit Sub
 Command8_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command8_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command8_Click", Erl)
 End Sub
 
 Private Sub Command9_Click()
-        
-        On Error GoTo Command9_Click_Err
-        
-100     Call CargarForbidenWords
-
-        
-        Exit Sub
-
+    On Error GoTo Command9_Click_Err
+    Call CargarForbidenWords
+    Exit Sub
 Command9_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command9_Click", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Command9_Click", Erl)
 End Sub
 
 Private Sub Form_Deactivate()
-        
-        On Error GoTo Form_Deactivate_Err
-        
-100     frmServidor.Visible = False
-
-        
-        Exit Sub
-
+    On Error GoTo Form_Deactivate_Err
+    frmServidor.Visible = False
+    Exit Sub
 Form_Deactivate_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmServidor.Form_Deactivate", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Form_Deactivate", Erl)
 End Sub
 
 Private Sub Form_Load()
-        
-        On Error GoTo Form_Load_Err
-
-100     Command20.Visible = True
-      
-        Exit Sub
-
+    On Error GoTo Form_Load_Err
+    Command20.Visible = True
+    Exit Sub
 Form_Load_Err:
-104     Call TraceError(Err.Number, Err.Description, "frmServidor.Form_Load", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "frmServidor.Form_Load", Erl)
 End Sub

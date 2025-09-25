@@ -26,134 +26,89 @@ Attribute VB_Name = "ModLlaves"
 '
 '
 Option Explicit
-
 ' Cantidad máxima de llaves
 Public Const MAXKEYS As Byte = 10
 
-
-
 Public Sub SacarLlaveDeLLavero(ByVal UserIndex As Integer, ByVal Llave As Integer)
-
-        On Error GoTo ErrHandler
-    
-100     With UserList(UserIndex)
-
-            Dim i As Integer
-            
-102         For i = 1 To MAXKEYS
-104             If .Keys(i) = Llave Then
-106                 .Keys(i) = 0
-108                 Call WriteUpdateUserKey(UserIndex, i, 0)
-                    Exit Sub
-                End If
-            Next
-    
-        End With
-    
-        Exit Sub
-
+    On Error GoTo ErrHandler
+    With UserList(UserIndex)
+        Dim i As Integer
+        For i = 1 To MAXKEYS
+            If .Keys(i) = Llave Then
+                .Keys(i) = 0
+                Call WriteUpdateUserKey(UserIndex, i, 0)
+                Exit Sub
+            End If
+        Next
+    End With
+    Exit Sub
 ErrHandler:
-110     Call TraceError(Err.Number, Err.Description, "ModLlaves.SacarLlaveDeLLavero", Erl)
-
+    Call TraceError(Err.Number, Err.Description, "ModLlaves.SacarLlaveDeLLavero", Erl)
 End Sub
 
 Public Sub EnviarLlaves(ByVal UserIndex As Integer)
-        
-        On Error GoTo EnviarLlaves_Err
-    
-        
-    
-100     With UserList(UserIndex)
-
-            Dim i As Integer
-            
-102         For i = 1 To MAXKEYS
-104             If .Keys(i) <> 0 Then
-106                 Call WriteUpdateUserKey(UserIndex, i, .Keys(i))
-                End If
-            Next
-    
-        End With
-        
-        Exit Sub
-
+    On Error GoTo EnviarLlaves_Err
+    With UserList(UserIndex)
+        Dim i As Integer
+        For i = 1 To MAXKEYS
+            If .Keys(i) <> 0 Then
+                Call WriteUpdateUserKey(UserIndex, i, .Keys(i))
+            End If
+        Next
+    End With
+    Exit Sub
 EnviarLlaves_Err:
-108     Call TraceError(Err.Number, Err.Description, "ModLlaves.EnviarLlaves", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "ModLlaves.EnviarLlaves", Erl)
 End Sub
 
 Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
-        
-        On Error GoTo UsarLlave_Err
-    
-        
-
-100     If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
-    
-        Dim TargObj As t_ObjData
-        Dim LlaveObj As t_ObjData
-    
-102     With UserList(UserIndex)
-
-            If Slot > MAXKEYS Then
-                'Call BanearIP(0, UserList(UserIndex).name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
-                Call LogEdicionPaquete("El usuario " & UserList(UserIndex).Name & " editó el slot del llavero | Valor: " & Slot & ".")
-                Exit Sub
-            End If
-104         If .Keys(Slot) <> 0 Then
-106             If .flags.TargetObj = 0 Then Exit Sub
-            
-108             TargObj = ObjData(.flags.TargetObj)
-110             LlaveObj = ObjData(.Keys(Slot))
-
-                '¿El objeto clickeado es una puerta?
-112             If TargObj.OBJType = e_OBJType.otDoors Then
-
-                    '¿Esta cerrada?
-114                 If TargObj.Cerrada = 1 Then
-
-                        '¿Cerrada con llave?
-116                     If TargObj.Llave > 0 Then
-118                         If TargObj.clave = LlaveObj.clave Then 'Or LlaveObj.clave = "3450" Then
-120                             MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
-122                             .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
-                            
-124                             Call WriteLocaleMsg(UserIndex, "897", e_FontTypeNames.FONTTYPE_INFO)
-                            Else
-126                             Call WriteLocaleMsg(UserIndex, "898", e_FontTypeNames.FONTTYPE_INFO)
-
-                            End If
-
+    On Error GoTo UsarLlave_Err
+    If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
+    Dim TargObj  As t_ObjData
+    Dim LlaveObj As t_ObjData
+    With UserList(UserIndex)
+        If Slot > MAXKEYS Then
+            'Call BanearIP(0, UserList(UserIndex).name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
+            Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el slot del llavero | Valor: " & Slot & ".")
+            Exit Sub
+        End If
+        If .Keys(Slot) <> 0 Then
+            If .flags.TargetObj = 0 Then Exit Sub
+            TargObj = ObjData(.flags.TargetObj)
+            LlaveObj = ObjData(.Keys(Slot))
+            '¿El objeto clickeado es una puerta?
+            If TargObj.OBJType = e_OBJType.otDoors Then
+                '¿Esta cerrada?
+                If TargObj.Cerrada = 1 Then
+                    '¿Cerrada con llave?
+                    If TargObj.Llave > 0 Then
+                        If TargObj.clave = LlaveObj.clave Then 'Or LlaveObj.clave = "3450" Then
+                            MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, _
+                                    .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
+                            .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
+                            Call WriteLocaleMsg(UserIndex, "897", e_FontTypeNames.FONTTYPE_INFO)
                         Else
-128                         If TargObj.clave = LlaveObj.clave Then 'Or LlaveObj.clave = "3450" Then
-130                             MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerradaLlave
-132                             .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
-                            
-134                             'Msg899= Has cerrado con llave la puerta.
-                                Call WriteLocaleMsg(UserIndex, "899", e_FontTypeNames.FONTTYPE_INFO)
-                            Else
-
-136                             Call WriteLocaleMsg(UserIndex, "898", e_FontTypeNames.FONTTYPE_INFO)
-                            End If
-
+                            Call WriteLocaleMsg(UserIndex, "898", e_FontTypeNames.FONTTYPE_INFO)
                         End If
-
                     Else
-138                     'Msg901= No esta cerrada.
-                        Call WriteLocaleMsg(UserIndex, "901", e_FontTypeNames.FONTTYPE_INFO)
+                        If TargObj.clave = LlaveObj.clave Then 'Or LlaveObj.clave = "3450" Then
+                            MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, _
+                                    .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerradaLlave
+                            .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
+                            'Msg899= Has cerrado con llave la puerta.
+                            Call WriteLocaleMsg(UserIndex, "899", e_FontTypeNames.FONTTYPE_INFO)
+                        Else
+                            Call WriteLocaleMsg(UserIndex, "898", e_FontTypeNames.FONTTYPE_INFO)
+                        End If
                     End If
-
+                Else
+                    'Msg901= No esta cerrada.
+                    Call WriteLocaleMsg(UserIndex, "901", e_FontTypeNames.FONTTYPE_INFO)
                 End If
             End If
-    
-        End With
-
-        
-        Exit Sub
-
+        End If
+    End With
+    Exit Sub
 UsarLlave_Err:
-140     Call TraceError(Err.Number, Err.Description, "ModLlaves.UsarLlave", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "ModLlaves.UsarLlave", Erl)
 End Sub

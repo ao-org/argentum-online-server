@@ -47,12 +47,9 @@ Option Base 0
 ' @param    value String containing the value of the INI entry.
 ' @see      MainNode
 '
-
 Private Type ChildNode
-
-    Key As String
-    Value As String
-
+    key As String
+    value As String
 End Type
 
 ''
@@ -63,60 +60,41 @@ End Type
 'It's the key used when searching for a main section of the INI data.
 ' @param    values Array of ChildNodes, each containing a value entry along with it's key.
 ' @param    numValues Number of entrys in the main node.
-
 Private Type MainNode
-
-    Name As String
+    name As String
     values() As ChildNode
     numValues As Integer
-
 End Type
 
 ''
 'Containts all Main sections of the loaded INI file
 Private fileData() As MainNode
-
 ''
 'Stores the total number of main sections in the loaded INI file
 Private MainNodes  As Long
 
 ''
 'Default constructor. Does nothing.
-
 Private Sub Class_Initialize()
-
 End Sub
 
 ''
 'Destroy every array and deallocates al memory.
 '
-
 Private Sub Class_Terminate()
-    
     On Error GoTo Class_Terminate_Err
-
     Dim i As Long
-    
     'Clean up
     If MainNodes Then
-
         For i = 1 To MainNodes - 1
             Erase fileData(i).values
         Next i
-        
         Erase fileData
-
     End If
-    
     MainNodes = 0
-
-    
     Exit Sub
-
 Class_Terminate_Err:
     Call TraceError(Err.Number, Err.Description, "clsIniManager.Class_Terminate", Erl)
-    
-    
 End Sub
 
 ''
@@ -124,101 +102,63 @@ End Sub
 '
 ' @param    file Complete path of the INI file to be loaded.
 ' @see      GetValue
-
 Public Sub Initialize(ByVal File As String)
-    
     On Error GoTo Initialize_Err
-
     'Opens the requested file and loads it's data into memory
-
     Dim handle As Integer
-
     Dim Text   As String
-
-    Dim Pos    As Long
-    
+    Dim pos    As Long
     'Prevent memory losses if we are attempting to reload a file....
     Call Class_Terminate
-    
     'Get a free handle and start reading line by line until the end
     handle = FreeFile
-    
     Open File For Input As handle
-    
     Do Until EOF(handle)
         Line Input #handle, Text
-        
         'Is it null??
         If Len(Text) Then
-
             'If it starts with '[' it is a main node or nothing (GetPrivateProfileStringA works this way), otherwise it's a value
             If Left$(Text, 1) = "[" Then
                 'If it has an ending ']' it's a main node, otherwise it's nothing
-                Pos = InStr(2, Text, "]")
-
-                If Pos Then
+                pos = InStr(2, Text, "]")
+                If pos Then
                     'Add a main node
                     ReDim Preserve fileData(MainNodes) As MainNode
-                    
-                    fileData(MainNodes).Name = UCase$(Trim$(mid$(Text, 2, Pos - 2)))
-                    
+                    fileData(MainNodes).name = UCase$(Trim$(mid$(Text, 2, pos - 2)))
                     MainNodes = MainNodes + 1
-
                 End If
-
             Else
                 'So it's a value. Check if it has a '=', otherwise it's nothing
-                Pos = InStr(2, Text, "=")
-
-                If Pos Then
-
+                pos = InStr(2, Text, "=")
+                If pos Then
                     'Is it under any main node??
                     If MainNodes Then
-
                         With fileData(MainNodes - 1)
                             'Add it to the main node's value
                             ReDim Preserve .values(.numValues) As ChildNode
-                            
-                            .values(.numValues).Value = Right$(Text, Len(Text) - Pos)
-                            .values(.numValues).Key = UCase$(Left$(Text, Pos - 1))
-                            
+                            .values(.numValues).value = Right$(Text, Len(Text) - pos)
+                            .values(.numValues).key = UCase$(Left$(Text, pos - 1))
                             .numValues = .numValues + 1
-
                         End With
-
                     End If
-
                 End If
-
             End If
-
         End If
-
     Loop
-    
     Close handle
-
     If MainNodes Then
-    
         'Sort main nodes to allow binary search
         Call SortMainNodes(0, MainNodes - 1)
-        
         'Sort values of each node to allow binary search
         Dim i As Long
         For i = 0 To MainNodes - 1
             If fileData(i).numValues Then Call SortChildNodes(fileData(i), 0, fileData(i).numValues - 1)
         Next i
-
     End If
-
-    
     Exit Sub
-
 Initialize_Err:
     Close handle
     Call TraceError(Err.Number, Err.Description & vbNewLine & "Archivo: " & File, "clsIniManager.Initialize", Erl)
-    
-    
 End Sub
 
 ''
@@ -227,62 +167,39 @@ End Sub
 ' @param    Node The MainNode whose values are to be sorted.
 ' @param    first The first index to consider when sorting.
 ' @param    last The last index to be considered when sorting.
-
-Private Sub SortChildNodes(ByRef Node As MainNode, _
-                           ByVal First As Integer, _
-                           ByVal Last As Integer)
-    
+Private Sub SortChildNodes(ByRef Node As MainNode, ByVal First As Integer, ByVal Last As Integer)
     On Error GoTo SortChildNodes_Err
-
     'Sorts the list of values in a given MainNode using quicksort,
     'this allows the use of Binary Search for faster searches
-
     Dim Min  As Integer      'First item in the list
-
     Dim max  As Integer      'Last item in the list
-
     Dim comp As String      'Item used to compare
-
     Dim Temp As ChildNode
-    
     Min = First
     max = Last
-    
     With Node
-        comp = .values((Min + max) \ 2).Key
-    
+        comp = .values((Min + max) \ 2).key
         Do While Min <= max
-            Do While .values(Min).Key < comp And Min < Last
+            Do While .values(Min).key < comp And Min < Last
                 Min = Min + 1
             Loop
-
-            Do While .values(max).Key > comp And max > First
+            Do While .values(max).key > comp And max > First
                 max = max - 1
             Loop
-
             If Min <= max Then
                 Temp = .values(Min)
                 .values(Min) = .values(max)
                 .values(max) = Temp
                 Min = Min + 1
                 max = max - 1
-
             End If
-
         Loop
-
     End With
-    
     If First < max Then SortChildNodes Node, First, max
     If Min < Last Then SortChildNodes Node, Min, Last
-
-    
     Exit Sub
-
 SortChildNodes_Err:
     Call TraceError(Err.Number, Err.Description, "clsIniManager.SortChildNodes", Erl)
-    
-    
 End Sub
 
 ''
@@ -290,57 +207,37 @@ End Sub
 '
 ' @param    first The first index to consider when sorting.
 ' @param    last The last index to be considered when sorting.
-
 Private Sub SortMainNodes(ByVal First As Integer, ByVal Last As Integer)
-    
     On Error GoTo SortMainNodes_Err
-
     'Sorts the MainNodes list using quicksort,
     'this allows the use of Binary Search for faster searches
-
     Dim Min  As Integer      'First item in the list
-
     Dim max  As Integer      'Last item in the list
-
     Dim comp As String      'Item used to compare
-
     Dim Temp As MainNode
-    
     Min = First
     max = Last
-    
-    comp = fileData((Min + max) \ 2).Name
-    
+    comp = fileData((Min + max) \ 2).name
     Do While Min <= max
-        Do While fileData(Min).Name < comp And Min < Last
+        Do While fileData(Min).name < comp And Min < Last
             Min = Min + 1
         Loop
-
-        Do While fileData(max).Name > comp And max > First
+        Do While fileData(max).name > comp And max > First
             max = max - 1
         Loop
-
         If Min <= max Then
             Temp = fileData(Min)
             fileData(Min) = fileData(max)
             fileData(max) = Temp
             Min = Min + 1
             max = max - 1
-
         End If
-
     Loop
-    
     If First < max Then SortMainNodes First, max
     If Min < Last Then SortMainNodes Min, Last
-
-    
     Exit Sub
-
 SortMainNodes_Err:
     Call TraceError(Err.Number, Err.Description, "clsIniManager.SortMainNodes", Erl)
-    
-    
 End Sub
 
 ''
@@ -350,40 +247,26 @@ End Sub
 ' @param    key The key of the value we are looking for.
 ' @param    DefaultValue Default value if key is not found.
 ' @returns  The value asociated with the given key under the requeted main section of the INI file or a null string if it's not found.
-
 Public Function GetValue(ByVal Main As String, ByVal key As String, Optional ByVal DefaultValue As String = "") As String
-    
     On Error GoTo GetValue_Err
-
     'Returns a value if the key and main node exist, or a nullstring otherwise
-
     Dim i As Long
     Dim j As Long
-    
     'Search for the main node
     i = FindMain(UCase$(Main))
-    
     If i >= 0 Then
-    
         'If valid, binary search among keys
-        j = FindKey(fileData(i), UCase$(Key))
-        
+        j = FindKey(fileData(i), UCase$(key))
         'If we found it we return it
         If j >= 0 Then
-            GetValue = fileData(i).values(j).Value
+            GetValue = fileData(i).values(j).value
         Else
             GetValue = DefaultValue
         End If
-
     End If
-
-    
     Exit Function
-
 GetValue_Err:
     Call TraceError(Err.Number, Err.Description, "clsIniManager.GetValue", Erl)
-    
-    
 End Function
 
 ''
@@ -392,40 +275,25 @@ End Function
 ' @param    Main The name of the main section in which we will be searching.
 ' @param    key The key of the value we are looking for.
 ' @returns  The value asociated with the given key under the requeted main section of the INI file or a null string if it's not found.
-
-Public Sub ChangeValue(ByVal Main As String, ByVal Key As String, ByVal Value As String)
-    
+Public Sub ChangeValue(ByVal Main As String, ByVal key As String, ByVal value As String)
     On Error GoTo ChangeValue_Err
-
     'If the key and main node exist, changes the value
-
     Dim i As Long
-
     Dim j As Long
-    
     'Search for the main node
     i = FindMain(UCase$(Main))
-    
     If i < 0 Then i = AddNode(Main)
-    
     'If valid, binary search among keys
-    j = FindKey(fileData(i), UCase$(Key))
-    
+    j = FindKey(fileData(i), UCase$(key))
     If j < 0 Then
-        Call AddKey(Main, Key, Value)
+        Call AddKey(Main, key, value)
     Else
         'If we found it we change it
-        fileData(i).values(j).Value = Value
-
+        fileData(i).values(j).value = value
     End If
-
-    
     Exit Sub
-
 ChangeValue_Err:
     Call TraceError(Err.Number, Err.Description, "clsIniManager.ChangeValue", Erl)
-    
-    
 End Sub
 
 ''
@@ -434,50 +302,33 @@ End Sub
 ' @param    Node The MainNode among whose value entries we will be searching.
 ' @param    key The key of the value we are looking for.
 ' @returns  The index in which the value with the key we are looking for is stored or the negation of the index in which it should be if not found.
-
-Private Function FindKey(ByRef Node As MainNode, ByVal Key As String) As Long
-    
+Private Function FindKey(ByRef Node As MainNode, ByVal key As String) As Long
     On Error GoTo FindKey_Err
-
     'Returns the index of the value which key matches the requested one,
     'or the negation of the position were it should be if not found
-
     Dim Min As Long
-
     Dim max As Long
-
     Dim mid As Long
-    
     Min = 0
     max = Node.numValues - 1
-    
     Do While Min <= max
         mid = (Min + max) \ 2
-        
-        If Node.values(mid).Key < Key Then
+        If Node.values(mid).key < key Then
             Min = mid + 1
-        ElseIf Node.values(mid).Key > Key Then
+        ElseIf Node.values(mid).key > key Then
             max = mid - 1
         Else
             'We found it
             FindKey = mid
             Exit Function
-
         End If
-
     Loop
-    
     'Not found, return the negation of the position where it should be
     '(all higher values are to the right of the list and lower values are to the left)
     FindKey = Not Min
-
-    
     Exit Function
-
 FindKey_Err:
     Call TraceError(Err.Number, Err.Description, "clsIniManager.FindKey", Erl)
-    
-    
 End Function
 
 ''
@@ -485,50 +336,33 @@ End Function
 '
 ' @param    name The name of the MainNode we are looking for.
 ' @returns  The index in which the main section we are looking for is stored or the negation of the index in which it should be if not found.
-
-Private Function FindMain(ByVal Name As String) As Long
-    
+Private Function FindMain(ByVal name As String) As Long
     On Error GoTo FindMain_Err
-
     'Returns the index of the MainNode which name matches the requested one,
     'or the negation of the position were it should be if not found
-
     Dim Min As Long
-
     Dim max As Long
-
     Dim mid As Long
-    
     Min = 0
     max = MainNodes - 1
-    
     Do While Min <= max
         mid = (Min + max) \ 2
-        
-        If fileData(mid).Name < Name Then
+        If fileData(mid).name < name Then
             Min = mid + 1
-        ElseIf fileData(mid).Name > Name Then
+        ElseIf fileData(mid).name > name Then
             max = mid - 1
         Else
             'We found it
             FindMain = mid
             Exit Function
-
         End If
-
     Loop
-    
     'Not found, return the negation of the position where it should be
     '(all higher values are to the right of the list and lower values are to the left)
     FindMain = Not Min
-
-    
     Exit Function
-
 FindMain_Err:
     Call TraceError(Err.Number, Err.Description, "clsIniManager.FindMain", Erl)
-    
-    
 End Function
 
 ''
@@ -536,234 +370,136 @@ End Function
 '
 ' @param    name    The name of the element whose existance is being checked.
 ' @returns  True if the key exists, false otherwise.
-
-Public Function KeyExists(ByVal Name As String) As Boolean
-
+Public Function KeyExists(ByVal name As String) As Boolean
     'Returns true of the key exists, false otherwise.
-   
     On Error GoTo KeyExists_Err
-    
-    KeyExists = FindMain(UCase$(Name)) >= 0
-
-    
+    KeyExists = FindMain(UCase$(name)) >= 0
     Exit Function
-
 KeyExists_Err:
     Call TraceError(Err.Number, Err.Description, "clsIniManager.KeyExists", Erl)
-    
-    
 End Function
 
-Private Function AddNode(ByRef Name As String) As Long
-    
+Private Function AddNode(ByRef name As String) As Long
     On Error GoTo AddNode_Err
-
     Dim i       As Long
-
     Dim MainPos As Long
-
-    Name = UCase$(Name)
-
+    name = UCase$(name)
     'Add a main node
     ReDim Preserve fileData(MainNodes) As MainNode
-
     If MainNodes Then
         i = MainNodes - 1
-        MainPos = Not FindMain(Name)
-    
+        MainPos = Not FindMain(name)
         Do While i >= MainPos
             fileData(i + 1) = fileData(i)
             i = i - 1
         Loop
-    
         fileData(MainPos).numValues = 0
         Erase fileData(MainPos).values
-
     End If
-
-    fileData(MainPos).Name = Name
-
+    fileData(MainPos).name = name
     MainNodes = MainNodes + 1
-
     AddNode = MainPos
-
-    
     Exit Function
-
 AddNode_Err:
     Call TraceError(Err.Number, Err.Description, "clsIniManager.AddNode", Erl)
-    
-    
 End Function
 
-Private Function AddKey(ByRef Main As String, _
-                        ByRef Key As String, _
-                        Optional ByRef Value As String = vbNullString) As Long
-    
+Private Function AddKey(ByRef Main As String, ByRef key As String, Optional ByRef value As String = vbNullString) As Long
     On Error GoTo AddKey_Err
-
     Dim MainPos As Long
-
     Dim KeyPos  As Long
-
     Dim i       As Long
-
     Main = UCase$(Main)
-    Key = UCase$(Key)
-
+    key = UCase$(key)
     MainPos = FindMain(Main)
-
     If MainPos < 0 Then MainPos = AddNode(Main)
-
     With fileData(MainPos)
         'Add it to the main node's value
         ReDim Preserve .values(.numValues) As ChildNode
-    
         If .numValues > 0 Then
             i = .numValues - 1
-            KeyPos = Not FindKey(fileData(MainPos), Key)
-        
+            KeyPos = Not FindKey(fileData(MainPos), key)
             Do While i >= KeyPos
                 .values(i + 1) = .values(i)
                 i = i - 1
             Loop
-
         End If
-    
-        .values(KeyPos).Key = Key
-        .values(KeyPos).Value = Value
-    
+        .values(KeyPos).key = key
+        .values(KeyPos).value = value
         .numValues = .numValues + 1
-
     End With
-
     AddKey = KeyPos
-
-    
     Exit Function
-
 AddKey_Err:
     Call TraceError(Err.Number, Err.Description, "clsIniManager.AddKey", Erl)
-    
-    
 End Function
 
 Public Sub DumpFile(ByRef File As String)
-    
     On Error GoTo DumpFile_Err
-
     Dim hFile As Integer
-
     Dim i     As Long
-
     Dim j     As Long
-
     hFile = FreeFile()
-
     Open File For Output As hFile
-
     For i = 0 To MainNodes - 1
-
         With fileData(i)
-            Print #hFile, "[" & .Name & "]"
-            
+            Print #hFile, "[" & .name & "]"
             For j = 0 To .numValues - 1
-                Print #hFile, .values(j).Key & "=" & .values(j).Value
+                Print #hFile, .values(j).key & "=" & .values(j).value
             Next j
-            
             Print #hFile, ""
-
         End With
-
     Next i
-    
     Close hFile
-
     Exit Sub
-
 DumpFile_Err:
     Call TraceError(Err.Number, Err.Description, "clsIniManager.DumpFile", Erl)
-    
-    
 End Sub
 
 Public Function GetKey(ByVal Main As String, ByVal Index As Long) As String
-
-        On Error GoTo ErrHandler
-
-        Dim i As Long
-    
-        'Search for the main node
-100     i = FindMain(UCase$(Main))
-    
-102     If i >= 0 Then
-            
-104         GetKey = fileData(i).values(Index).Key
-
-        End If
-
-        
-        Exit Function
-
+    On Error GoTo ErrHandler
+    Dim i As Long
+    'Search for the main node
+    i = FindMain(UCase$(Main))
+    If i >= 0 Then
+        GetKey = fileData(i).values(Index).key
+    End If
+    Exit Function
 ErrHandler:
-     Call TraceError(Err.Number, Err.Description, "clsIniManager.GetKey", Erl)
-     
-        
+    Call TraceError(Err.Number, Err.Description, "clsIniManager.GetKey", Erl)
 End Function
 
 Public Property Get EntriesCount(ByVal Main As String) As Long
-
     On Error GoTo ErrHandler
-
-        Dim i As Long
-
-        'Search for the main node
-100     i = FindMain(UCase$(Main))
-    
-102     If i >= 0 Then
-            
-104         EntriesCount = fileData(i).numValues
-
-        End If
-
-        
-        Exit Function
-
+    Dim i As Long
+    'Search for the main node
+    i = FindMain(UCase$(Main))
+    If i >= 0 Then
+        EntriesCount = fileData(i).numValues
+    End If
+    Exit Function
 ErrHandler:
-108     Call TraceError(Err.Number, Err.Description, "clsIniManager.GetKey", Erl)
-110
-
+    Call TraceError(Err.Number, Err.Description, "clsIniManager.GetKey", Erl)
 End Property
 
-Public Sub GetPair(ByVal Main As String, ByVal Index As Long, ByRef Key As String, ByRef Value As String)
-
-        On Error GoTo ErrHandler
-
-        Dim i As Long
-
-        'Search for the main node
-100     i = FindMain(UCase$(Main))
-    
-102     If i >= 0 Then
-            
-            With fileData(i).values(Index)
-104             Key = .Key
-                Value = .Value
-            End With
-
-        End If
-
-        
-        Exit Sub
-
+Public Sub GetPair(ByVal Main As String, ByVal Index As Long, ByRef key As String, ByRef value As String)
+    On Error GoTo ErrHandler
+    Dim i As Long
+    'Search for the main node
+    i = FindMain(UCase$(Main))
+    If i >= 0 Then
+        With fileData(i).values(Index)
+            key = .key
+            value = .value
+        End With
+    End If
+    Exit Sub
 ErrHandler:
-108     Call TraceError(Err.Number, Err.Description, "clsIniManager.GetPair", Erl)
-110
-        
+    Call TraceError(Err.Number, Err.Description, "clsIniManager.GetPair", Erl)
 End Sub
 
 Public Function GetNode(ByVal i As Long) As String
-    GetNode = fileData(i).Name
+    GetNode = fileData(i).name
 End Function
 
 Public Property Get NodesCount() As Long

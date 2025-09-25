@@ -118,8 +118,6 @@ Public Const MsgInvalidPassword = 489
 Public Const MsgPassArghal = 490
 Public Const MsgThanksForTravelArghal = 491
 
-
-
 Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer
     Select Case WeaponType
         Case e_WeaponType.eAxe
@@ -142,6 +140,3 @@ Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As I
             Debug.Assert False
     End Select
 End Function
-
-
-

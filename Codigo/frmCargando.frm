@@ -114,35 +114,40 @@ Attribute VB_Exposed = False
 '
 '
 '
-Private Declare Function SetWindowPos Lib "user32" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetWindowPos _
+                Lib "user32" (ByVal hwnd As Long, _
+                              ByVal hWndInsertAfter As Long, _
+                              ByVal x As Long, _
+                              ByVal y As Long, _
+                              ByVal cx As Long, _
+                              ByVal cy As Long, _
+                              ByVal wFlags As Long) As Long
 Private Const HWND_TOPMOST = -1
 Private Const HWND_NOTOPMOST = -2
 Private Const SWP_NOSIZE = &H1
-
 ' For the label that allows yo to move the form
 Private mlngX As Long
 Private mlngY As Long
 
 Private Sub Form_Load()
-        ' Mostramos este form arriba de todo.
-100     Call SetWindowPos(Me.hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE)
-102     Call Me.ZOrder(0)
+    ' Mostramos este form arriba de todo.
+    Call SetWindowPos(Me.hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE)
+    Call Me.ZOrder(0)
 End Sub
 
 Private Sub lblDragForm_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-100     If Button = vbLeftButton Then
-102         mlngX = x
-104         mlngY = y
-        End If
+    If Button = vbLeftButton Then
+        mlngX = x
+        mlngY = y
+    End If
 End Sub
 
 Private Sub lblDragForm_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-        Dim lngLeft As Long
-        Dim lngTop As Long
-    
-100     If Button = vbLeftButton Then
-102         lngLeft = Me.Left + x - mlngX
-104         lngTop = Me.Top + y - mlngY
-106         Call Me.Move(lngLeft, lngTop)
-        End If
+    Dim lngLeft As Long
+    Dim lngTop  As Long
+    If Button = vbLeftButton Then
+        lngLeft = Me.Left + x - mlngX
+        lngTop = Me.Top + y - mlngY
+        Call Me.Move(lngLeft, lngTop)
+    End If
 End Sub
