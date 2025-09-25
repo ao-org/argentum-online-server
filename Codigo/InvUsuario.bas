@@ -1561,7 +1561,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, _
                 'Si esta equipado lo quita
                 If .invent.Object(Slot).Equipped Then
                     Call Desequipar(UserIndex, Slot)
-
+                    Call ActualizarVelocidadDeUsuario(UserIndex)
                     If .flags.Navegando = 0 And .flags.Montado = 0 Then
                         Call SetNakedBody(UserList(UserIndex))
                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
@@ -1577,6 +1577,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, _
                 If .invent.EquippedArmorObjIndex > 0 Then
                     errordesc = "Armadura 2"
                     Call Desequipar(UserIndex, .invent.EquippedArmorSlot)
+                    Call ActualizarVelocidadDeUsuario(UserIndex)
                     errordesc = "Armadura 3"
 
                 End If
@@ -1603,11 +1604,12 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, _
                 .invent.Object(Slot).Equipped = 1
                 .invent.EquippedArmorObjIndex = .invent.Object(Slot).ObjIndex
                 .invent.EquippedArmorSlot = Slot
+                
+                Call ActualizarVelocidadDeUsuario(UserIndex)
 
                 If .flags.Montado = 0 And .flags.Navegando = 0 Then
                     .Char.body = Ropaje
-
-                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                 End If
                     
                 .flags.Desnudo = 0
@@ -2188,6 +2190,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
                             Case 3 'Poción roja, restaura HP
                                 ' Usa el ítem
+                                If .flags.DivineBlood > 0 Then
+                                    Call WriteLocaleMsg(UserIndex, 2096, e_FontTypeNames.FONTTYPE_INFO)
+                                    Exit Sub
+                                End If
+                            
                                 Dim HealingAmount As Long
                                 Dim Source As Integer
                             
@@ -3361,15 +3368,15 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 .Counters.TimerBarra = 5
                      End Select
 1326                         If Not EsGM(UserIndex) Then
-1328                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Runa, 400, False))
+1328                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, 400, False))
 1330                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 350, e_AccionBarra.Runa))
                                   Else
-1332                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Runa, 50, False))
+1332                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, 50, False))
 1334                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 100, e_AccionBarra.Runa))
     
                                   End If
     
-1336                         .Accion.Particula = e_ParticulasIndex.Runa
+1336                         .Accion.Particula = e_GraphicEffects.Runa
 1338                         .Accion.AccionPendiente = True
 1340                         .Accion.TipoAccion = e_AccionBarra.Runa
 1342                         .Accion.RunaObj = ObjIndex
@@ -4159,19 +4166,19 @@ Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal Targe
     
     Select Case SourceObj.ElementalTags
         Case e_ElementalTags.Fire
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Incinerar, 10, False))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Incinerar, 10, False))
         Case e_ElementalTags.Water
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.CurarCrimi, 10, False))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.CurarCrimi, 10, False))
         Case e_ElementalTags.Earth
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Envenena, 10, False))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.PoisonGas, 10, False))
         Case e_ElementalTags.Wind
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Runa, 10, False))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_GraphicEffects.Runa, 10, False))
         Case Else
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Curar, 10, False))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Corazones, 10, False))
     End Select
     
     
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_FXSound.RUNE_SOUND, NO_3D_SOUND, NO_3D_SOUND))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.RUNE_SOUND, NO_3D_SOUND, NO_3D_SOUND))
     UserList(UserIndex).invent.Object(TargetSlot).ElementalTags = SourceObj.ElementalTags
     CanElementalTagBeApplied = True
     

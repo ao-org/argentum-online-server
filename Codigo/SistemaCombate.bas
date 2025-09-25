@@ -499,6 +499,18 @@ On Error GoTo UserDamageNpc_Err
             End If
 118         If Damage < 0 Then Damage = 0
 
+            If IsFeatureEnabled("healers_and_tanks") And .clase = e_Class.Warrior Then
+                Dim Calc As Integer
+                Calc = Damage * WarriorLifeStealOnHitMultiplier
+                .Stats.MinHp = .Stats.MinHp + Calc
+                If .Stats.MinHp > .Stats.MaxHp Then
+                    .Stats.MinHp = .Stats.MaxHp
+                End If
+                Call WriteUpdateHP(UserIndex)
+                'no wrapper senddata because of extra params
+                Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageTextOverTile(Calc, .pos.x, .pos.y, vbGreen, 1300, -10, True))
+            End If
+
             ' Golpe crítico
 124         If PuedeGolpeCritico(UserIndex) Then
                 ' Si acertó - Doble chance contra NPCs
@@ -690,6 +702,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
 112     NpcAtacaUser = True
 
 114     Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
+        UserList(UserIndex).Counters.EnCombate = IntervaloEnCombate
 
 116     If Not IsValidUserRef(NpcList(npcIndex).TargetUser) Then
             Call SetUserRef(NpcList(npcIndex).TargetUser, UserIndex)

@@ -1035,8 +1035,9 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
 100 With UserList(UserIndex)
 102     HambreOSed = .Stats.MinHam = 0 Or .Stats.MinAGU = 0
     
-104     If Not HambreOSed Then 'Si no tiene hambre ni sed
-106         If .Stats.MinHp < .Stats.MaxHp Then
+        'if hunger or thirst = 0 and not in combat
+104     If Not HambreOSed And .Counters.EnCombate = 0 Then
+106         If .Stats.MinHp < .Stats.MaxHp  Then
 108             Call Sanar(UserIndex, bEnviarStats_HP, IIf(.flags.Descansar, SanaIntervaloDescansar, SanaIntervaloSinDescansar))
             End If
         End If
@@ -1505,7 +1506,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
               'Msg47=Estás envenenado, si no te curas morirás.
 108           Call WriteLocaleMsg(UserIndex, "47", e_FontTypeNames.FONTTYPE_VENENO)
               UserList(userindex).Counters.timeFx = 3
-110           Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Envenena, 30, False, , UserList(userindex).Pos.X, UserList(userindex).Pos.y))
+110           Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticleEffects.PoisonGas, 30, False, , UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
 112           .Counters.Veneno = 0
               ' El veneno saca un porcentaje de vida random.
 114           damage = RandomNumber(3, 5)
@@ -1667,7 +1668,7 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
 108         If UserList(UserIndex).Counters.HPCounter < Intervalo Then
 110             UserList(UserIndex).Counters.HPCounter = UserList(UserIndex).Counters.HPCounter + 1
             Else
-112             mashit = RandomNumber(2, Porcentaje(UserList(UserIndex).Stats.MaxSta, 5)) * UserMod.GetSelfHealingBonus(UserList(UserIndex))
+112             mashit = RandomNumber(Porcentaje(UserList(UserIndex).Stats.MaxHp, 5), Porcentaje(UserList(UserIndex).Stats.MaxHp, 10)) * UserMod.GetSelfHealingBonus(UserList(UserIndex))
         
 114             UserList(UserIndex).Counters.HPCounter = 0
 116             Call UserMod.ModifyHealth(UserIndex, mashit)
@@ -1860,7 +1861,7 @@ Sub PasarSegundo()
 222                         Mapa = .flags.PortalM
 224                         X = .flags.PortalX
 226                         Y = .flags.PortalY
-228                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, e_ParticulasIndex.TpVerde, 0))
+228                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageParticleFXToFloor(x, y, e_GraphicEffects.TpVerde, 0))
 230                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageLightFXToFloor(X, Y, 0, 105))
         
 232                         If MapData(Mapa, X, Y).TileExit.Map > 0 Then

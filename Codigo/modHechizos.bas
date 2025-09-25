@@ -67,6 +67,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
           End If
           
 128     ElseIf IsSet(Hechizos(Spell).Effects, e_SpellEffects.eDoDamage) Then
+          .Counters.EnCombate = IntervaloEnCombate
 130       Damage = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
           Damage = Damage * (1 + NpcList(NpcIndex).Stats.MagicBonus)
           ' Si el hechizo no ignora la RM
@@ -85,12 +86,12 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 158       Call WriteLocaleMsg(UserIndex, 1627, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr) 'Msg1627=¬1 te ha quitado ¬2 puntos de vida.
 
 162       Call SubirSkill(UserIndex, Resistencia)
-          If NpcList(npcIndex).Char.CastAnimation > 0 Then Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageCharAtaca(NpcList(npcIndex).Char.charindex, UserList(UserIndex).Char.charindex, DamageStr, NpcList(npcIndex).Char.CastAnimation))
+          If NpcList(npcIndex).Char.CastAnimation > 0 Then Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageCharAtaca(NpcList(npcIndex).Char.charindex, .Char.charindex, DamageStr, NpcList(npcIndex).Char.CastAnimation))
         End If
         If IsAlive Then
             Dim Effect As IBaseEffectOverTime
             If Hechizos(Spell).EotId > 0 Then
-                Set Effect = FindEffectOnTarget(npcIndex, UserList(UserIndex).EffectOverTime, Hechizos(Spell).EotId)
+                Set Effect = FindEffectOnTarget(npcIndex, .EffectOverTime, Hechizos(Spell).EotId)
                 If Effect Is Nothing Then
                     Call CreateEffect(npcIndex, eNpc, UserIndex, eUser, Hechizos(Spell).EotId)
                 Else
@@ -135,7 +136,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         End If
         If IsSet(Hechizos(Spell).Effects, e_SpellEffects.RemoveDebuff) Then
             Dim NegativeEffect As IBaseEffectOverTime
-            Set NegativeEffect = EffectsOverTime.FindEffectOfTypeOnTarget(UserList(UserIndex).EffectOverTime, eDebuff)
+            Set NegativeEffect = EffectsOverTime.FindEffectOfTypeOnTarget(.EffectOverTime, eDebuff)
             If Not NegativeEffect Is Nothing Then
                 NegativeEffect.RemoveMe = True
                 Exit Sub
@@ -143,7 +144,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         End If
         If IsSet(Hechizos(Spell).Effects, e_SpellEffects.StealBuff) Then
             Dim TargetBuff As IBaseEffectOverTime
-            Set TargetBuff = EffectsOverTime.FindEffectOfTypeOnTarget(UserList(UserIndex).EffectOverTime, eBuff)
+            Set TargetBuff = EffectsOverTime.FindEffectOfTypeOnTarget(.EffectOverTime, eBuff)
             If Not TargetBuff Is Nothing Then
                 Call EffectsOverTime.ChangeOwner(UserIndex, eUser, NpcIndex, eNpc, TargetBuff)
             End If
@@ -621,12 +622,19 @@ Call WriteLocaleMsg(UserIndex, "778", e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
             End If
+            
             If Hechizos(HechizoIndex).RequireTransform > 0 Then
                 If .flags.ActiveTransform <> Hechizos(HechizoIndex).RequireTransform Then
                     Call WriteLocaleMsg(UserIndex, MsgSpellRequiresTransform, e_FontTypeNames.FONTTYPE_INFO, GetNpcName(Hechizos(HechizoIndex).RequireTransform))
                     Exit Function
                 End If
             End If
+            
+            If IsFeatureEnabled("healers_and_tanks") And .flags.DivineBlood > 0 And IsSet(Hechizos(HechizoIndex).Effects, e_SpellEffects.eDoDamage)  Then
+                Call WriteLocaleMsg(UserIndex, 2095, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Function
+            End If
+            
 112         If .flags.Privilegios And e_PlayerType.Consejero Then
                 Exit Function
             End If
@@ -729,7 +737,7 @@ Call WriteLocaleMsg(UserIndex, "780", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
             
-146         If .Stats.MinMAN < ManaHechizoPorClase(UserIndex, Hechizos(HechizoIndex), HechizoIndex) Then
+146         If .Stats.MinMAN < GetSpellManaCostModifierByClass(UserIndex, Hechizos(HechizoIndex), HechizoIndex) Then
 148             Call WriteLocaleMsg(UserIndex, "222", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
@@ -1172,7 +1180,7 @@ Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 116             If UserList(UserIndex).flags.Portal = 0 Then
 
-118                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, e_ParticulasIndex.Runa, -1, False))
+118                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_GraphicEffects.Runa, -1, False))
          
 120                 UserList(UserIndex).flags.PortalM = UserList(UserIndex).Pos.Map
 122                 UserList(UserIndex).flags.PortalX = UserList(UserIndex).flags.TargetX
@@ -1181,7 +1189,7 @@ Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
 126                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 600, e_AccionBarra.Intermundia))
 
 128                 UserList(UserIndex).Accion.AccionPendiente = True
-130                 UserList(UserIndex).Accion.Particula = e_ParticulasIndex.Runa
+130                 UserList(UserIndex).Accion.Particula = e_GraphicEffects.Runa
 132                 UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.Intermundia
 134                 UserList(UserIndex).Accion.HechizoPendiente = uh
             
@@ -1247,16 +1255,8 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
         
         On Error GoTo HandleHechizoTerreno_Err
         
-
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 01/10/07
-        'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
-        'Antes de procesar cualquier hechizo chequea de que este en modo de combate el
-        'usuario
-        '***************************************************
         Dim b As Boolean
-
+        With UserList(UserIndex)
 100     Select Case Hechizos(uh).Tipo
         
             Case e_TipoHechizo.uInvocacion 'Tipo 1
@@ -1276,9 +1276,9 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
 
             Case e_TipoHechizo.uMultiShoot
                 Dim targetPos As t_WorldPos
-                targetPos.map = UserList(UserIndex).pos.map
-                targetPos.x = UserList(UserIndex).flags.targetX
-                targetPos.y = UserList(UserIndex).flags.targetY
+                targetPos.map = .pos.map
+                targetPos.x = .flags.targetX
+                targetPos.y = .flags.targetY
                 b = MultiShot(UserIndex, targetPos)
         End Select
 
@@ -1286,18 +1286,19 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
             If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
 126             Call SubirSkill(UserIndex, Magia)
             End If
-128         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
+            
+            .Stats.MinMAN = .Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
+            
+130         If .Stats.MinMAN < 0 Then .Stats.MinMAN = 0
+132         .Stats.MinSta = .Stats.MinSta - Hechizos(uh).StaRequerido
 
-130         If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
-132         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
-
-134         If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
+134         If .Stats.MinSta < 0 Then .Stats.MinSta = 0
 136         Call WriteUpdateMana(UserIndex)
 138         Call WriteUpdateSta(UserIndex)
 
         End If
 
-        
+        End With
         Exit Sub
 
 HandleHechizoTerreno_Err:
@@ -1306,43 +1307,45 @@ End Sub
 
 Function HandlePetSpell(ByVal UserIndex As Integer, ByVal uh As Integer) As Boolean
     With UserList(UserIndex)
-        If .NroMascotas = 0 Then
-            Exit Function
-        End If
-        If Hechizos(uh).EotId = 0 Then
-            Exit Function
-        End If
-    
-    Dim j As Integer
-    For j = 1 To MAXMASCOTAS
-        If IsValidNpcRef(.MascotasIndex(j)) Then
-            Dim Effect As IBaseEffectOverTime
-            Set Effect = FindEffectOnTarget(UserIndex, NpcList(.MascotasIndex(j).ArrayIndex).EffectOverTime, Hechizos(uh).EotId)
-            If Not Effect Is Nothing Then
-                If Not EffectOverTime(Hechizos(uh).EotId).Override Then
-                    Exit For
+            If .NroMascotas = 0 Then
+                Exit Function
+            End If
+            If Hechizos(uh).EotId = 0 Then
+                Exit Function
+            End If
+        
+        Dim j As Integer
+        For j = 1 To MAXMASCOTAS
+            If IsValidNpcRef(.MascotasIndex(j)) Then
+                Dim Effect As IBaseEffectOverTime
+                Set Effect = FindEffectOnTarget(UserIndex, NpcList(.MascotasIndex(j).ArrayIndex).EffectOverTime, Hechizos(uh).EotId)
+                If Not Effect Is Nothing Then
+                    If Not EffectOverTime(Hechizos(uh).EotId).Override Then
+                        Exit For
+                    End If
+                End If
+                If Effect Is Nothing Then
+                    Call CreateEffect(UserIndex, eUser, .MascotasIndex(j).ArrayIndex, eNpc, Hechizos(uh).EotId)
+                Else
+                    If Not Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId) Then
+                        Exit For
+                    End If
                 End If
             End If
-            If Effect Is Nothing Then
-                Call CreateEffect(UserIndex, eUser, .MascotasIndex(j).ArrayIndex, eNpc, Hechizos(uh).EotId)
-            Else
-                If Not Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId) Then
-                    Exit For
-                End If
-            End If
+        Next j
+        If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
+            Call SubirSkill(UserIndex, Magia)
         End If
-    Next j
+        .Stats.MinMAN = .Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
+        If .Stats.MinMAN < 0 Then .Stats.MinMAN = 0
+        .Stats.MinSta = .Stats.MinSta - Hechizos(uh).StaRequerido
+        If .Stats.MinSta < 0 Then .Stats.MinSta = 0
+        Call WriteUpdateMana(UserIndex)
+        Call WriteUpdateSta(UserIndex)
+        HandlePetSpell = True
     End With
-    If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
-        Call SubirSkill(UserIndex, Magia)
-    End If
-    UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
-    If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
-    UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
-    If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
-    Call WriteUpdateMana(UserIndex)
-    Call WriteUpdateSta(UserIndex)
-    HandlePetSpell = True
+
+
 End Function
 
 Function HandlePhysicalSkill(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
@@ -1419,22 +1422,14 @@ Function HandlePhysicalSkill(ByVal SourceIndex As Integer, ByVal SourceType As e
 End Function
 
 Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 01/10/07
-        'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
-        'Antes de procesar cualquier hechizo chequea de que este en modo de combate el
-        'usuario
-        '***************************************************
-        
         On Error GoTo HandleHechizoUsuario_Err
-        
         Dim IsAlive As Boolean
         IsAlive = True
         Dim b As Boolean
         Dim Effect As IBaseEffectOverTime
-        If Hechizos(uh).EotId > 0 And IsValidUserRef(UserList(UserIndex).flags.targetUser) Then
-            Set Effect = FindEffectOnTarget(UserIndex, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).EffectOverTime, Hechizos(uh).EotId)
+        With UserList(UserIndex)
+        If Hechizos(uh).EotId > 0 And IsValidUserRef(.flags.targetUser) Then
+            Set Effect = FindEffectOnTarget(UserIndex, UserList(.flags.targetUser.ArrayIndex).EffectOverTime, Hechizos(uh).EotId)
             If Not Effect Is Nothing Then
                 If Not EffectOverTime(Hechizos(uh).EotId).Override Then
                     Call WriteLocaleMsg(UserIndex, MsgTargetAlreadyAffected, e_FontTypeNames.FONTTYPE_INFO)
@@ -1453,14 +1448,14 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 108         Case e_TipoHechizo.uCombinados
 110             Call HechizoCombinados(UserIndex, b, IsAlive)
             Case e_TipoHechizo.uPhysicalSkill
-                b = HandlePhysicalSkill(UserIndex, eUser, UserList(UserIndex).flags.targetUser.ArrayIndex, eUser, _
-                                        UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo), IsAlive)
+                b = HandlePhysicalSkill(UserIndex, eUser, .flags.targetUser.ArrayIndex, eUser, _
+                                        .Stats.UserHechizos(.flags.Hechizo), IsAlive)
         End Select
 
 112     If b Then
             If Hechizos(uh).EotId > 0 And IsAlive Then
                 If Effect Is Nothing Then
-                    Call CreateEffect(UserIndex, eUser, UserList(UserIndex).flags.targetUser.ArrayIndex, eUser, Hechizos(uh).EotId)
+                    Call CreateEffect(UserIndex, eUser, .flags.targetUser.ArrayIndex, eUser, Hechizos(uh).EotId)
                 Else
                     If Not Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId) Then
                         Exit Sub
@@ -1470,24 +1465,24 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
             If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
 114             Call SubirSkill(UserIndex, Magia)
             End If
-                    
-116         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - ManaHechizoPorClase(UserIndex, Hechizos(uh), uh)
+
+116         .Stats.MinMAN = .Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
            
-118         If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
+118         If .Stats.MinMAN < 0 Then .Stats.MinMAN = 0
 
 120         If Hechizos(uh).RequiredHP > 0 Then
                 Call UserMod.ModifyHealth(UserIndex, -Hechizos(uh).RequiredHP, 1)
             End If
 
-128         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
-130         If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
+128         .Stats.MinSta = .Stats.MinSta - Hechizos(uh).StaRequerido
+130         If .Stats.MinSta < 0 Then .Stats.MinSta = 0
 
             If IsSet(Hechizos(uh).Effects, e_SpellEffects.Resurrect) Then
             
-                If Not PeleaSegura(UserIndex, UserList(UserIndex).flags.targetUser.ArrayIndex) Then
-                    If MapInfo(UserList(UserIndex).Pos.map).Seguro = 0 Then
+                If Not PeleaSegura(UserIndex, .flags.targetUser.ArrayIndex) Then
+                    If MapInfo(.Pos.map).Seguro = 0 Then
                         Dim costoVidaResu As Long
-                        costoVidaResu = UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Stats.ELV * 1.5 + UserList(UserIndex).Stats.MinHp * 0.45
+                        costoVidaResu = UserList(.flags.targetUser.ArrayIndex).Stats.ELV * 1.5 + .Stats.MinHp * 0.45
                         Call UserMod.ModifyHealth(UserIndex, -costoVidaResu, 1)
                     End If
                 End If
@@ -1498,94 +1493,100 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
             Call WriteUpdateHP(UserIndex)
 134         Call WriteUpdateSta(UserIndex)
         End If
+        End With
         Exit Sub
 HandleHechizoUsuario_Err:
 138     Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoUsuario", Erl)
 End Sub
 
-Public Function ManaHechizoPorClase(ByVal userindex As Integer, Hechizo As t_Hechizo, Optional ByVal HechizoIndex As Long) As Integer
+Public Function GetSpellManaCostModifierByClass(ByVal UserIndex As Integer, Hechizo As t_Hechizo, Optional ByVal HechizoIndex As Long) As Integer
         
-    ManaHechizoPorClase = Hechizo.ManaRequerido
+    GetSpellManaCostModifierByClass = Hechizo.ManaRequerido
 
-    Select Case UserList(UserIndex).clase
+    With UserList(UserIndex)
     
-        Case e_Class.Bard
-            If Hechizos(HechizoIndex).nombre = MauveFlashIndex And UserList(UserIndex).invent.EquippedRingAccesoryObjIndex = MagicLuteIndex Then
-                ManaHechizoPorClase = 80
-                Exit Function
-            ElseIf Hechizos(HechizoIndex).nombre = FireEcoIndex And UserList(UserIndex).invent.EquippedRingAccesoryObjIndex = MagicLuteIndex Then
-                ManaHechizoPorClase = 70
-                Exit Function
-            End If
-           
-    End Select
+        Select Case .clase
+        
+            Case e_Class.Bard
+                If HechizoIndex = MauveFlashIndex And .invent.EquippedRingAccesoryObjIndex = MagicLuteIndex Then
+                    GetSpellManaCostModifierByClass = 80
+                    Exit Function
+                ElseIf HechizoIndex = FireEcoIndex And .invent.EquippedRingAccesoryObjIndex = MagicLuteIndex Then
+                    GetSpellManaCostModifierByClass = 70
+                    Exit Function
+                End If
+                
+            Case e_Class.Cleric
+                If IsFeatureEnabled("healers_and_tanks") And .flags.DivineBlood > 0 Then
+                    If IsSet(Hechizo.Effects, e_SpellEffects.eDoHeal) Then
+                        GetSpellManaCostModifierByClass = GetSpellManaCostModifierByClass * DivineBloodManaCostMultiplier
+                    End If
+                End If
+               
+        End Select
+    End With
+    
+    
 End Function
 
 Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
         
         On Error GoTo HandleHechizoNPC_Err
-        
-
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 01/10/07
-        'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
-        'Antes de procesar cualquier hechizo chequea de que este en modo de combate el
-        'usuario
-        '***************************************************
         Dim b As Boolean
         Dim Effect As IBaseEffectOverTime
         Dim IsAlive As Boolean
-        IsAlive = True
-        If Hechizos(uh).EotId > 0 And IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-            Set Effect = FindEffectOnTarget(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).EffectOverTime, Hechizos(uh).EotId)
-            If Not Effect Is Nothing Then
-                If Not EffectOverTime(Hechizos(uh).EotId).Override Then
-                    Call WriteLocaleMsg(UserIndex, MsgTargetAlreadyAffected, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-            End If
-        End If
-        Call AllMascotasAtacanNPC(UserList(UserIndex).flags.TargetNPC.ArrayIndex, UserIndex)
-100     Select Case Hechizos(uh).Tipo
-            Case e_TipoHechizo.uEstado ' Afectan estados (por ejem : Envenenamiento)
-102             Call HechizoEstadoNPC(UserList(UserIndex).flags.TargetNPC.ArrayIndex, uh, b, UserIndex)
+        With UserList(UserIndex)
 
-104         Case e_TipoHechizo.uPropiedades ' Afectan HP,MANA,STAMINA,ETC
-106             Call HechizoPropNPC(uh, UserList(UserIndex).flags.TargetNPC.ArrayIndex, UserIndex, b, IsAlive)
-            Case e_TipoHechizo.uPhysicalSkill
-                b = HandlePhysicalSkill(UserIndex, eUser, UserList(UserIndex).flags.TargetNPC.ArrayIndex, eNpc, _
-                                        UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo), IsAlive)
-        End Select
-
-108     If b Then
-            If Hechizos(uh).EotId > 0 And IsAlive Then
-                If Effect Is Nothing Then
-                    Call CreateEffect(UserIndex, eUser, UserList(UserIndex).flags.TargetNPC.ArrayIndex, eNpc, Hechizos(uh).EotId)
-                Else
-                    If Not Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId) Then
+            IsAlive = True
+            If Hechizos(uh).EotId > 0 And IsValidNpcRef(.flags.TargetNPC) Then
+                Set Effect = FindEffectOnTarget(UserIndex, NpcList(.flags.TargetNPC.ArrayIndex).EffectOverTime, Hechizos(uh).EotId)
+                If Not Effect Is Nothing Then
+                    If Not EffectOverTime(Hechizos(uh).EotId).Override Then
+                        Call WriteLocaleMsg(UserIndex, MsgTargetAlreadyAffected, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 End If
             End If
-            If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
-110             Call SubirSkill(UserIndex, Magia)
+            Call AllMascotasAtacanNPC(.flags.TargetNPC.ArrayIndex, UserIndex)
+    100     Select Case Hechizos(uh).Tipo
+                Case e_TipoHechizo.uEstado ' Afectan estados (por ejem : Envenenamiento)
+    102             Call HechizoEstadoNPC(.flags.TargetNPC.ArrayIndex, uh, b, UserIndex)
+
+    104         Case e_TipoHechizo.uPropiedades ' Afectan HP,MANA,STAMINA,ETC
+    106             Call HechizoPropNPC(uh, .flags.TargetNPC.ArrayIndex, UserIndex, b, IsAlive)
+                Case e_TipoHechizo.uPhysicalSkill
+                    b = HandlePhysicalSkill(UserIndex, eUser, .flags.TargetNPC.ArrayIndex, eNpc, _
+                                            .Stats.UserHechizos(.flags.Hechizo), IsAlive)
+            End Select
+
+    108     If b Then
+                If Hechizos(uh).EotId > 0 And IsAlive Then
+                    If Effect Is Nothing Then
+                        Call CreateEffect(UserIndex, eUser, .flags.TargetNPC.ArrayIndex, eNpc, Hechizos(uh).EotId)
+                    Else
+                        If Not Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId) Then
+                            Exit Sub
+                        End If
+                    End If
+                End If
+                If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
+    110             Call SubirSkill(UserIndex, Magia)
+                End If
+                .Stats.MinMAN = .Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
+            
+    116         If Hechizos(uh).RequiredHP > 0 Then
+    118             If .Stats.MinMAN < 0 Then .Stats.MinMAN = 0
+    120             Call UserMod.ModifyHealth(UserIndex, -Hechizos(uh).RequiredHP, 1)
+                End If
+
+    126         .Stats.MinSta = .Stats.MinSta - Hechizos(uh).StaRequerido
+
+    128         If .Stats.MinSta < 0 Then .Stats.MinSta = 0
+    130         Call WriteUpdateMana(UserIndex)
+    132         Call WriteUpdateSta(UserIndex)
+
             End If
-            UserList(userindex).Stats.MinMAN = UserList(userindex).Stats.MinMAN - ManaHechizoPorClase(userindex, Hechizos(uh), uh)
-        
-116         If Hechizos(uh).RequiredHP > 0 Then
-118             If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
-120             Call UserMod.ModifyHealth(UserIndex, -Hechizos(uh).RequiredHP, 1)
-            End If
-
-126         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
-
-128         If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
-130         Call WriteUpdateMana(UserIndex)
-132         Call WriteUpdateSta(UserIndex)
-
-        End If
-
+        End With
         
         Exit Sub
 
@@ -1712,180 +1713,238 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         '***************************************************
         
         On Error GoTo HechizoEstadoUsuario_Err
-        
 
-        Dim h As Integer, tU As Integer
+        Dim h As Integer, targetUserIndex As Integer
 
 100     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
-102     tU = UserList(UserIndex).flags.targetUser.ArrayIndex
+102     targetUserIndex = UserList(UserIndex).flags.TargetUser.ArrayIndex
 
 104     If IsSet(Hechizos(h).Effects, e_SpellEffects.Invisibility) Then
    
-106         If UserList(tU).flags.Muerto = 1 Then
+106         If UserList(targetUserIndex).flags.Muerto = 1 Then
                 'Msg77=¡¡Estás muerto!!.
 108             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 110             b = False
+
                 Exit Sub
+
             End If
             
 112         If UserList(UserIndex).flags.EnReto Then
-'Msg793= No podés lanzar invisibilidad durante un reto.
-Call WriteLocaleMsg(UserIndex, "793", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg793= No podés lanzar invisibilidad durante un reto.
+                Call WriteLocaleMsg(UserIndex, "793", e_FontTypeNames.FONTTYPE_INFO)
+
                 Exit Sub
+
             End If
             
 124         If UserList(UserIndex).flags.Montado Then
-'Msg794= No podés lanzar invisibilidad mientras usas una montura.
-Call WriteLocaleMsg(UserIndex, "794", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg794= No podés lanzar invisibilidad mientras usas una montura.
+                Call WriteLocaleMsg(UserIndex, "794", e_FontTypeNames.FONTTYPE_INFO)
+
                 Exit Sub
+
             End If
                         
-125         If UserList(tU).flags.Montado Then
-'Msg795= No podés lanzar invisibilidad a alguien montado.
-Call WriteLocaleMsg(UserIndex, "795", e_FontTypeNames.FONTTYPE_INFO)
+125         If UserList(targetUserIndex).flags.Montado Then
+                'Msg795= No podés lanzar invisibilidad a alguien montado.
+                Call WriteLocaleMsg(UserIndex, "795", e_FontTypeNames.FONTTYPE_INFO)
+
                 Exit Sub
+
             End If
     
-128         If UserList(tU).Counters.Saliendo Then
-130             If UserIndex <> tU Then
+128         If UserList(targetUserIndex).Counters.Saliendo Then
+130             If UserIndex <> targetUserIndex Then
 132                 ' Msg666=¡El hechizo no tiene efecto!
                     Call WriteLocaleMsg(UserIndex, "666", e_FontTypeNames.FONTTYPE_INFO)
 134                 b = False
+
                     Exit Sub
+
                 Else
 136                 ' Msg667=¡No podés ponerte invisible mientras te encuentres saliendo!
                     Call WriteLocaleMsg(UserIndex, "667", e_FontTypeNames.FONTTYPE_WARNING)
 138                 b = False
+
                     Exit Sub
+
                 End If
             End If
             
-            If Not PeleaSegura(UserIndex, tU) Then
-                    Select Case Status(UserIndex)
-                        Case 1, 3, 5 'Ciudadano o armada
-                            If Status(tU) <> e_Facciones.Ciudadano And Status(tU) <> e_Facciones.Armada And Status(tU) <> e_Facciones.consejo Then
-                                If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
-                                    ' Msg662=No puedes ayudar criminales.
-                                    Call WriteLocaleMsg(UserIndex, "662", e_FontTypeNames.FONTTYPE_INFO)
+            If Not PeleaSegura(UserIndex, targetUserIndex) Then
+
+                Select Case Status(UserIndex)
+
+                    Case 1, 3, 5 'Ciudadano o armada
+
+                        If Status(targetUserIndex) <> e_Facciones.Ciudadano And Status(targetUserIndex) <> e_Facciones.Armada And Status(targetUserIndex) <> e_Facciones.consejo Then
+
+                            If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
+                                ' Msg662=No puedes ayudar criminales.
+                                Call WriteLocaleMsg(UserIndex, "662", e_FontTypeNames.FONTTYPE_INFO)
+                                b = False
+
+                                Exit Sub
+
+                            ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
+
+                                If UserList(UserIndex).flags.Seguro = True Then
+                                    ' Msg663=Para ayudar criminales deberás desactivar el seguro.
+                                    Call WriteLocaleMsg(UserIndex, "663", e_FontTypeNames.FONTTYPE_INFO)
                                     b = False
+
                                     Exit Sub
-                                ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
-                                    If UserList(UserIndex).flags.Seguro = True Then
-                                        ' Msg663=Para ayudar criminales deberás desactivar el seguro.
-                                        Call WriteLocaleMsg(UserIndex, "663", e_FontTypeNames.FONTTYPE_INFO)
-                                        b = False
-                                        Exit Sub
-                                    Else
-                                        'Si tiene clan
-                                        If UserList(UserIndex).GuildIndex > 0 Then
-                                            'Si el clan es de alineación ciudadana.
-                                            If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
-                                                'No lo dejo resucitarlo
-                                                ' Msg664=No puedes ayudar a un usuario criminal perteneciendo a un clan ciudadano.
-                                                Call WriteLocaleMsg(UserIndex, "664", e_FontTypeNames.FONTTYPE_INFO)
-                                                b = False
-                                                Exit Sub
+
+                                Else
+
+                                    'Si tiene clan
+                                    If UserList(UserIndex).GuildIndex > 0 Then
+
+                                        'Si el clan es de alineación ciudadana.
+                                        If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
+                                            'No lo dejo resucitarlo
+                                            ' Msg664=No puedes ayudar a un usuario criminal perteneciendo a un clan ciudadano.
+                                            Call WriteLocaleMsg(UserIndex, "664", e_FontTypeNames.FONTTYPE_INFO)
+                                            b = False
+
+                                            Exit Sub
+
                                             'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
-                                            ElseIf GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
-                                                Call VolverCriminal(UserIndex)
-                                                Call RefreshCharStatus(UserIndex)
-                                            End If
-                                        Else
+                                        ElseIf GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
                                             Call VolverCriminal(UserIndex)
                                             Call RefreshCharStatus(UserIndex)
                                         End If
+
+                                    Else
+                                        Call VolverCriminal(UserIndex)
+                                        Call RefreshCharStatus(UserIndex)
                                     End If
                                 End If
                             End If
-                        Case 2, 4 'Caos
-                            If Status(tU) <> e_Facciones.Caos And Status(tU) <> e_Facciones.Criminal And Status(tU) <> e_Facciones.concilio Then
-'Msg796= No podés ayudar ciudadanos.
-Call WriteLocaleMsg(UserIndex, "796", e_FontTypeNames.FONTTYPE_INFO)
-                                b = False
-                                Exit Sub
-                            End If
-                    End Select
+                        End If
+
+                    Case 2, 4 'Caos
+
+                        If Status(targetUserIndex) <> e_Facciones.Caos And Status(targetUserIndex) <> e_Facciones.Criminal And Status(targetUserIndex) <> e_Facciones.concilio Then
+                            'Msg796= No podés ayudar ciudadanos.
+                            Call WriteLocaleMsg(UserIndex, "796", e_FontTypeNames.FONTTYPE_INFO)
+                            b = False
+
+                            Exit Sub
+
+                        End If
+
+                End Select
+
             End If
     
             'Si sos user, no uses este hechizo con GMS.
 158         If UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then
-160             If Not UserList(tU).flags.Privilegios And e_PlayerType.user Then
+160             If Not UserList(targetUserIndex).flags.Privilegios And e_PlayerType.User Then
+
                     Exit Sub
+
                 End If
             End If
             
-162         If MapInfo(UserList(tU).Pos.Map).SinInviOcul Then
-'Msg797= Una fuerza divina te impide usar invisibilidad en esta zona.
-Call WriteLocaleMsg(UserIndex, "797", e_FontTypeNames.FONTTYPE_INFO)
+162         If MapInfo(UserList(targetUserIndex).pos.Map).SinInviOcul Then
+                'Msg797= Una fuerza divina te impide usar invisibilidad en esta zona.
+                Call WriteLocaleMsg(UserIndex, "797", e_FontTypeNames.FONTTYPE_INFO)
+
                 Exit Sub
+
             End If
             
-166         If UserList(tU).flags.invisible = 1 Or UserList(tU).Counters.DisabledInvisibility > 0 Then
-168             If tU = UserIndex Then
-'Msg798= ¡Ya estás invisible!
-Call WriteLocaleMsg(UserIndex, "798", e_FontTypeNames.FONTTYPE_INFO)
+166         If UserList(targetUserIndex).flags.invisible = 1 Or UserList(targetUserIndex).Counters.DisabledInvisibility > 0 Then
+
+168             If targetUserIndex = UserIndex Then
+                    'Msg798= ¡Ya estás invisible!
+                    Call WriteLocaleMsg(UserIndex, "798", e_FontTypeNames.FONTTYPE_INFO)
                 Else
-'Msg799= ¡El objetivo ya se encuentra invisible!
-Call WriteLocaleMsg(UserIndex, "799", e_FontTypeNames.FONTTYPE_INFO)
+                    'Msg799= ¡El objetivo ya se encuentra invisible!
+                    Call WriteLocaleMsg(UserIndex, "799", e_FontTypeNames.FONTTYPE_INFO)
                 End If
+
 174             b = False
+
                 Exit Sub
+
             End If
-            If IsSet(UserList(tU).flags.StatusMask, eTaunting) Then
-                If tU = UserIndex Then
-'Msg800= ¡No podes ocultarte en este momento!
-Call WriteLocaleMsg(UserIndex, "800", e_FontTypeNames.FONTTYPE_INFO)
+
+            If IsSet(UserList(targetUserIndex).flags.StatusMask, eTaunting) Then
+                If targetUserIndex = UserIndex Then
+                    'Msg800= ¡No podes ocultarte en este momento!
+                    Call WriteLocaleMsg(UserIndex, "800", e_FontTypeNames.FONTTYPE_INFO)
                 Else
-'Msg801= ¡El objetivo no puede ocultarse!
-Call WriteLocaleMsg(UserIndex, "801", e_FontTypeNames.FONTTYPE_INFO)
+                    'Msg801= ¡El objetivo no puede ocultarse!
+                    Call WriteLocaleMsg(UserIndex, "801", e_FontTypeNames.FONTTYPE_INFO)
                 End If
+
                 b = False
+
                 Exit Sub
+
             End If
    
-176         UserList(tU).flags.invisible = 1
+176         UserList(targetUserIndex).flags.invisible = 1
+
             'Ladder
             'Reseteamos el contador de Invisibilidad
             'Le agrego un random al tiempo de invisibilidad de 16 a 21 segundos.
-            If UserList(tU).Counters.Invisibilidad <= 0 Then UserList(tU).Counters.Invisibilidad = RandomNumber(Hechizos(h).Duration - 4, Hechizos(h).Duration + 1)
-177         Call WriteContadores(tU)
-178         Call SendData(SendTarget.ToPCArea, tU, PrepareMessageSetInvisible(UserList(tU).Char.charindex, True, UserList(tU).pos.X, UserList(tU).pos.y))
+            If UserList(targetUserIndex).Counters.Invisibilidad <= 0 Then UserList(targetUserIndex).Counters.Invisibilidad = RandomNumber(Hechizos(h).Duration - 4, Hechizos(h).Duration + 1)
+177         Call WriteContadores(targetUserIndex)
+178         Call SendData(SendTarget.ToPCArea, targetUserIndex, PrepareMessageSetInvisible(UserList(targetUserIndex).Char.charindex, True, UserList(targetUserIndex).pos.x, UserList(targetUserIndex).pos.y))
 179         Call InfoHechizo(UserIndex)
 180         b = True
         End If
+
 181     If Hechizos(h).EotId > 0 Then
 182         b = True
 183         Call InfoHechizo(UserIndex)
+
 184         Exit Sub
+
 185     End If
         
 188     If Hechizos(h).Mimetiza = 1 Then
 
 190         If UserList(UserIndex).flags.EnReto Then
-'Msg802= No podés mimetizarte durante un reto.
-Call WriteLocaleMsg(UserIndex, "802", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg802= No podés mimetizarte durante un reto.
+                Call WriteLocaleMsg(UserIndex, "802", e_FontTypeNames.FONTTYPE_INFO)
+
                 Exit Sub
+
             End If
 
-194         If UserList(tU).flags.Muerto = 1 Then
+194         If UserList(targetUserIndex).flags.Muerto = 1 Then
+
                 Exit Sub
+
             End If
             
-196         If UserList(tU).flags.Navegando = 1 Then
+196         If UserList(targetUserIndex).flags.Navegando = 1 Then
+
                 Exit Sub
+
             End If
+
 198         If UserList(UserIndex).flags.Navegando = 1 Then
+
                 Exit Sub
+
             End If
             
             'Si sos user, no uses este hechizo con GMS.
-200         If Not EsGM(UserIndex) And EsGM(tU) Then Exit Sub
+200         If Not EsGM(UserIndex) And EsGM(targetUserIndex) Then Exit Sub
             
             ' Si te mimetizaste, no importa si como bicho o User...
 202         If UserList(UserIndex).flags.Mimetizado <> e_EstadoMimetismo.Desactivado Then
-'Msg803= Ya te encuentras transformado. El hechizo no tuvo efecto
-Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
+                'Msg803= Ya te encuentras transformado. El hechizo no tuvo efecto
+                Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
+
                 Exit Sub
+
             End If
             
 206         If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Sub
@@ -1902,38 +1961,38 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
 220             .flags.Mimetizado = e_EstadoMimetismo.FormaUsuario
                 
                 'ahora pongo local el del enemigo
-222             .Char.Body = UserList(tU).Char.Body
-224             .Char.Head = UserList(tU).Char.Head
-226             .Char.CascoAnim = UserList(tU).Char.CascoAnim
-228             .Char.ShieldAnim = UserList(tU).Char.ShieldAnim
-230             .Char.WeaponAnim = UserList(tU).Char.WeaponAnim
-231             .char.CartAnim = UserList(tU).char.CartAnim
-232             .NameMimetizado = UserList(tU).Name
+222             .Char.body = UserList(targetUserIndex).Char.body
+224             .Char.head = UserList(targetUserIndex).Char.head
+226             .Char.CascoAnim = UserList(targetUserIndex).Char.CascoAnim
+228             .Char.ShieldAnim = UserList(targetUserIndex).Char.ShieldAnim
+230             .Char.WeaponAnim = UserList(targetUserIndex).Char.WeaponAnim
+231             .Char.CartAnim = UserList(targetUserIndex).Char.CartAnim
+232             .NameMimetizado = UserList(targetUserIndex).name
 
-234             If UserList(tU).GuildIndex > 0 Then .NameMimetizado = .NameMimetizado & " <" & modGuilds.GuildName(UserList(tU).GuildIndex) & ">"
+234             If UserList(targetUserIndex).GuildIndex > 0 Then .NameMimetizado = .NameMimetizado & " <" & modGuilds.GuildName(UserList(targetUserIndex).GuildIndex) & ">"
             
 236             Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
 238             Call RefreshCharStatus(UserIndex)
             End With
            
-240        Call InfoHechizo(UserIndex)
-242        b = True
+240         Call InfoHechizo(UserIndex)
+242         b = True
         End If
 
 244     If Hechizos(h).Envenena > 0 Then
-246         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
+246         If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
 
-248         If UserList(tU).flags.Envenenado = 0 Then
-250             If UserIndex <> tU Then
-252                 Call UsuarioAtacadoPorUsuario(UserIndex, tU)
+248         If UserList(targetUserIndex).flags.Envenenado = 0 Then
+250             If UserIndex <> targetUserIndex Then
+252                 Call UsuarioAtacadoPorUsuario(UserIndex, targetUserIndex)
                 End If
 
-254             UserList(tU).flags.Envenenado = Hechizos(h).Envenena
-256             UserList(tU).Counters.Veneno = Hechizos(h).Duration
+254             UserList(targetUserIndex).flags.Envenenado = Hechizos(h).Envenena
+256             UserList(targetUserIndex).Counters.Veneno = Hechizos(h).Duration
 258             Call InfoHechizo(UserIndex)
 260             b = True
             Else
-262             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1870, UserList(tU).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1870=¬1 ya está envenenado. El hechizo no tuvo efecto.
+262             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1870, UserList(targetUserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1870=¬1 ya está envenenado. El hechizo no tuvo efecto.
 264             b = False
             End If
         End If
@@ -1949,9 +2008,11 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
 276         If UserList(UserIndex).flags.Inmovilizado > 0 Then
 278             UserList(UserIndex).Counters.Inmovilizado = 0
 280             UserList(UserIndex).flags.Inmovilizado = 0
-                 If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
-                     UserList(UserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+
+                If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
+                    UserList(UserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
                 End If
+
 282             Call WriteInmovilizaOK(UserIndex)
             End If
 
@@ -1959,9 +2020,10 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
 286             UserList(UserIndex).Counters.Paralisis = 0
 288             UserList(UserIndex).flags.Paralizado = 0
 
-                 If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
-                     UserList(UserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
+                    UserList(UserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
                 End If
+
 290             Call WriteParalizeOK(UserIndex)
             End If
         
@@ -1986,63 +2048,85 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
         End If
 
 316     If IsSet(Hechizos(h).Effects, e_SpellEffects.Incinerate) Then
-318         If UserIndex = tU Then
+318         If UserIndex = targetUserIndex Then
 320             Call WriteLocaleMsg(UserIndex, "380", e_FontTypeNames.FONTTYPE_FIGHT)
+
                 Exit Sub
+
             End If
     
-322         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
-324         If UserIndex <> tU Then
-326             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
+322         If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
+324         If UserIndex <> targetUserIndex Then
+326             Call UsuarioAtacadoPorUsuario(UserIndex, targetUserIndex)
             End If
 
-328         UserList(tU).flags.Incinerado = 1
+328         UserList(targetUserIndex).flags.Incinerado = 1
 330         Call InfoHechizo(UserIndex)
 332         b = True
         End If
+
         If IsSet(Hechizos(h).Effects, e_SpellEffects.RemoveDebuff) Then
+
             Dim NegativeEffect As IBaseEffectOverTime
-            Set NegativeEffect = EffectsOverTime.FindEffectOfTypeOnTarget(UserList(tU).EffectOverTime, eDebuff)
+
+            Set NegativeEffect = EffectsOverTime.FindEffectOfTypeOnTarget(UserList(targetUserIndex).EffectOverTime, eDebuff)
+
             If Not NegativeEffect Is Nothing Then
                 NegativeEffect.RemoveMe = True
                 Call InfoHechizo(UserIndex)
                 b = True
+
                 Exit Sub
+
             End If
         End If
+
         If IsSet(Hechizos(h).Effects, e_SpellEffects.StealBuff) Then
+
             Dim TargetBuff As IBaseEffectOverTime
-            Set TargetBuff = EffectsOverTime.FindEffectOfTypeOnTarget(UserList(tU).EffectOverTime, eBuff)
+
+            Set TargetBuff = EffectsOverTime.FindEffectOfTypeOnTarget(UserList(targetUserIndex).EffectOverTime, eBuff)
+
             If Not TargetBuff Is Nothing Then
-                Call EffectsOverTime.ChangeOwner(tU, eUser, UserIndex, eUser, TargetBuff)
+                Call EffectsOverTime.ChangeOwner(targetUserIndex, eUser, UserIndex, eUser, TargetBuff)
             End If
+
             Call InfoHechizo(UserIndex)
             b = True
+
             Exit Sub
+
         End If
+
 334     If IsSet(Hechizos(h).Effects, e_SpellEffects.CurePoison) Then
 
             'Verificamos que el usuario no este muerto
-336         If UserList(tU).flags.Muerto = 1 Then
+336         If UserList(targetUserIndex).flags.Muerto = 1 Then
                 'Msg77=¡¡Estás muerto!!.
 338             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 340             b = False
+
                 Exit Sub
+
             End If
             
             ' Si no esta envenenado, no hay nada mas que hacer
-342         If UserList(tU).flags.Envenenado = 0 Then
-344             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1871, UserList(tU).name, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1871=¬1 no está envenenado, el hechizo no tiene efecto.
+342         If UserList(targetUserIndex).flags.Envenenado = 0 Then
+344             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1871, UserList(targetUserIndex).name, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1871=¬1 no está envenenado, el hechizo no tiene efecto.
 346             b = False
+
                 Exit Sub
+
             End If
     
             'Para poder tirar curar veneno a un pk en el ring
-348         If Not PeleaSegura(UserIndex, tU) Then
-350             If Status(tU) = 0 And Status(UserIndex) = 1 Or Status(tU) = 2 And Status(UserIndex) = 1 Then
+348         If Not PeleaSegura(UserIndex, targetUserIndex) Then
+350             If Status(targetUserIndex) = 0 And Status(UserIndex) = 1 Or Status(targetUserIndex) = 2 And Status(UserIndex) = 1 Then
+
 352                 If esArmada(UserIndex) Then
 354                     Call WriteLocaleMsg(UserIndex, "379", e_FontTypeNames.FONTTYPE_INFO)
 356                     b = False
+
                         Exit Sub
 
                     End If
@@ -2050,6 +2134,7 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
 358                 If UserList(UserIndex).flags.Seguro Then
 360                     Call WriteLocaleMsg(UserIndex, "378", e_FontTypeNames.FONTTYPE_INFO)
 362                     b = False
+
                         Exit Sub
 
                     End If
@@ -2060,35 +2145,37 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
         
             'Si sos user, no uses este hechizo con GMS.
 364         If UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then
-366             If Not UserList(tU).flags.Privilegios And e_PlayerType.user Then
+366             If Not UserList(targetUserIndex).flags.Privilegios And e_PlayerType.User Then
+
                     Exit Sub
 
                 End If
 
             End If
         
-368         UserList(tU).flags.Envenenado = 0
-370         UserList(tU).Counters.Veneno = 0
+368         UserList(targetUserIndex).flags.Envenenado = 0
+370         UserList(targetUserIndex).Counters.Veneno = 0
 372         Call InfoHechizo(UserIndex)
 374         b = True
 
         End If
 
 376     If IsSet(Hechizos(h).Effects, e_SpellEffects.Curse) Then
-378         If UserIndex = tU Then
+378         If UserIndex = targetUserIndex Then
 380             Call WriteLocaleMsg(UserIndex, "380", e_FontTypeNames.FONTTYPE_FIGHT)
+
                 Exit Sub
 
             End If
     
-382         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
-384         If UserIndex <> tU Then
-386             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
+382         If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
+384         If UserIndex <> targetUserIndex Then
+386             Call UsuarioAtacadoPorUsuario(UserIndex, targetUserIndex)
 
             End If
 
-388         UserList(tU).flags.Maldicion = 1
-390         UserList(tU).Counters.Maldicion = 200
+388         UserList(targetUserIndex).flags.Maldicion = 1
+390         UserList(targetUserIndex).Counters.Maldicion = 200
     
 392         Call InfoHechizo(UserIndex)
 394         b = True
@@ -2096,88 +2183,106 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
         End If
 
 396     If IsSet(Hechizos(h).Effects, e_SpellEffects.RemoveCurse) Then
-398         UserList(tU).flags.Maldicion = 0
-400         UserList(tU).Counters.Maldicion = 0
+398         UserList(targetUserIndex).flags.Maldicion = 0
+400         UserList(targetUserIndex).Counters.Maldicion = 0
 402         Call InfoHechizo(UserIndex)
 404         b = True
         End If
 
 406     If IsSet(Hechizos(h).Effects, e_SpellEffects.PreciseHit) Then
-408         UserList(tU).flags.GolpeCertero = 1
+408         UserList(targetUserIndex).flags.GolpeCertero = 1
 410         Call InfoHechizo(UserIndex)
 412         b = True
 
         End If
 
 422     If IsSet(Hechizos(h).Effects, e_SpellEffects.Paralize) Then
-424         If UserIndex = tU Then
+424         If UserIndex = targetUserIndex Then
 426             Call WriteLocaleMsg(UserIndex, "380", e_FontTypeNames.FONTTYPE_FIGHT)
+
                 Exit Sub
+
             End If
             
-            If UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1872, UserList(tU).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1872=¬1 no puede volver a ser paralizado tan rápido.
+            If UserList(targetUserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1872, UserList(targetUserIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1872=¬1 no puede volver a ser paralizado tan rápido.
+
                 Exit Sub
+
             End If
-            If Not UserMod.CanMove(UserList(tU).flags, UserList(tU).Counters) Then
+
+            If Not UserMod.CanMove(UserList(targetUserIndex).flags, UserList(targetUserIndex).Counters) Then
 428             ' Msg661=No podes inmovilizar un objetivo que no puede moverse.
                 Call WriteLocaleMsg(UserIndex, "661", e_FontTypeNames.FONTTYPE_FIGHT)
+
                 Exit Sub
+
             End If
-            If IsSet(UserList(tU).flags.StatusMask, eCCInmunity) Then
+
+            If IsSet(UserList(targetUserIndex).flags.StatusMask, eCCInmunity) Then
                 Call WriteLocaleMsg(UserIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
+
                 Exit Sub
+
             End If
     
-432         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
+432         If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
             
-434         If UserIndex <> tU Then
-                Call checkHechizosEfectividad(UserIndex, tU)
-436             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
+434         If UserIndex <> targetUserIndex Then
+                Call checkHechizosEfectividad(UserIndex, targetUserIndex)
+436             Call UsuarioAtacadoPorUsuario(UserIndex, targetUserIndex)
 
             End If
             
 438         Call InfoHechizo(UserIndex)
 440         b = True
             
-            If UserList(tU).clase = Warrior Or UserList(tU).clase = hunter Then
-                UserList(tU).Counters.Paralisis = Hechizos(h).Duration * 0.7
+            If UserList(targetUserIndex).clase = Warrior Or UserList(targetUserIndex).clase = Hunter Then
+                UserList(targetUserIndex).Counters.Paralisis = Hechizos(h).Duration * 0.7
             Else
-                UserList(tU).Counters.Paralisis = Hechizos(h).Duration
+                UserList(targetUserIndex).Counters.Paralisis = Hechizos(h).Duration
             End If
 
-444         If UserList(tU).flags.Paralizado = 0 Then
-446             UserList(tU).flags.Paralizado = 1
-448             Call WriteParalizeOK(tU)
-450             Call WritePosUpdate(tU)
+444         If UserList(targetUserIndex).flags.Paralizado = 0 Then
+446             UserList(targetUserIndex).flags.Paralizado = 1
+448             Call WriteParalizeOK(targetUserIndex)
+450             Call WritePosUpdate(targetUserIndex)
             End If
 
         End If
 
-452      If Hechizos(h).velocidad <> 0 Then
+452     If Hechizos(h).velocidad <> 0 Then
+
             'Verificamos que el usuario no este muerto
-454         If UserList(tU).flags.Muerto = 1 Then
+454         If UserList(targetUserIndex).flags.Muerto = 1 Then
                 'Msg77=¡¡Estás muerto!!.
 456             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 458             b = False
+
                 Exit Sub
+
             End If
 
 460         If Hechizos(h).velocidad < 1 Then
-462             If UserIndex = tU Then
+462             If UserIndex = targetUserIndex Then
 464                 Call WriteLocaleMsg(UserIndex, "380", e_FontTypeNames.FONTTYPE_FIGHT)
+
                     Exit Sub
+
                 End If
     
-466             If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
+466             If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
 
             Else
+
                 'Para poder tirar curar veneno a un pk en el ring
-468             If Not PeleaSegura(UserIndex, tU) Then
-470                 If Status(tU) = 0 And Status(UserIndex) = 1 Or Status(tU) = 2 And Status(UserIndex) = 1 Then
+468             If Not PeleaSegura(UserIndex, targetUserIndex) Then
+470                 If Status(targetUserIndex) = 0 And Status(UserIndex) = 1 Or Status(targetUserIndex) = 2 And Status(UserIndex) = 1 Then
+
 472                     If esArmada(UserIndex) Then
 474                         Call WriteLocaleMsg(UserIndex, "379", e_FontTypeNames.FONTTYPE_INFO)
 476                         b = False
+
                             Exit Sub
     
                         End If
@@ -2185,6 +2290,7 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
 478                     If UserList(UserIndex).flags.Seguro Then
 480                         Call WriteLocaleMsg(UserIndex, "378", e_FontTypeNames.FONTTYPE_INFO)
 482                         b = False
+
                             Exit Sub
     
                         End If
@@ -2195,150 +2301,184 @@ Call WriteLocaleMsg(UserIndex, "803", e_FontTypeNames.FONTTYPE_INFO)
             
                 'Si sos user, no uses este hechizo con GMS.
 484             If UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then
-486                 If Not UserList(tU).flags.Privilegios And e_PlayerType.user Then
+486                 If Not UserList(targetUserIndex).flags.Privilegios And e_PlayerType.User Then
+
                         Exit Sub
+
                     End If
     
                 End If
             End If
 
-488         Call UsuarioAtacadoPorUsuario(UserIndex, tU)
+488         Call UsuarioAtacadoPorUsuario(UserIndex, targetUserIndex)
 
 490         Call InfoHechizo(UserIndex)
 492         b = True
                  
-494         If UserList(tU).Counters.velocidad = 0 Then
-496             UserList(tU).flags.VelocidadHechizada = Hechizos(h).velocidad
+494         If UserList(targetUserIndex).Counters.velocidad = 0 Then
+496             UserList(targetUserIndex).flags.VelocidadHechizada = Hechizos(h).velocidad
                 
-498             Call ActualizarVelocidadDeUsuario(tU)
+498             Call ActualizarVelocidadDeUsuario(targetUserIndex)
             End If
 
-500         UserList(tU).Counters.velocidad = Hechizos(h).Duration
+500         UserList(targetUserIndex).Counters.velocidad = Hechizos(h).Duration
 
         End If
 
 502     If IsSet(Hechizos(h).Effects, e_SpellEffects.Immobilize) Then
-504         If UserIndex = tU Then
+504         If UserIndex = targetUserIndex Then
 506             Call WriteLocaleMsg(UserIndex, "380", e_FontTypeNames.FONTTYPE_FIGHT)
+
                 Exit Sub
+
             End If
-            If Not UserMod.CanMove(UserList(tU).flags, UserList(tU).Counters) Then
+
+            If Not UserMod.CanMove(UserList(targetUserIndex).flags, UserList(targetUserIndex).Counters) Then
 510             ' Msg661=No podes inmovilizar un objetivo que no puede moverse.
                 Call WriteLocaleMsg(UserIndex, "661", e_FontTypeNames.FONTTYPE_FIGHT)
+
                 Exit Sub
+
             End If
             
-            If UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
-515             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1873, UserList(tU).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1873=¬1 no puede volver a ser inmovilizado tan rápido.
+            If UserList(targetUserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
+515             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1873, UserList(targetUserIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1873=¬1 no puede volver a ser inmovilizado tan rápido.
+
                 Exit Sub
+
             End If
             
-            If IsSet(UserList(tU).flags.StatusMask, eCCInmunity) Then
+            If IsSet(UserList(targetUserIndex).flags.StatusMask, eCCInmunity) Then
                 Call WriteLocaleMsg(UserIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
+
                 Exit Sub
+
             End If
     
-516         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
+516         If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
             
-518         If UserIndex <> tU Then
-                Call checkHechizosEfectividad(UserIndex, tU)
-520             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
+518         If UserIndex <> targetUserIndex Then
+                Call checkHechizosEfectividad(UserIndex, targetUserIndex)
+520             Call UsuarioAtacadoPorUsuario(UserIndex, targetUserIndex)
             End If
             
 522         Call InfoHechizo(UserIndex)
 524         b = True
             
-            If UserList(tU).clase = Warrior Or UserList(tU).clase = hunter Then
-                UserList(tU).Counters.Inmovilizado = Hechizos(h).Duration * 0.7
+            If UserList(targetUserIndex).clase = Warrior Or UserList(targetUserIndex).clase = Hunter Then
+                UserList(targetUserIndex).Counters.Inmovilizado = Hechizos(h).Duration * 0.7
             Else
-                UserList(tU).Counters.Inmovilizado = Hechizos(h).Duration
+                UserList(targetUserIndex).Counters.Inmovilizado = Hechizos(h).Duration
             End If
 
-528         UserList(tU).flags.Inmovilizado = 1
+528         UserList(targetUserIndex).flags.Inmovilizado = 1
             
-530         Call WriteInmovilizaOK(tU)
-532         Call WritePosUpdate(tU)
-            
+530         Call WriteInmovilizaOK(targetUserIndex)
+532         Call WritePosUpdate(targetUserIndex)
 
         End If
 
 534     If IsSet(Hechizos(h).Effects, e_SpellEffects.RemoveParalysis) Then
         
             'Para poder tirar remo a un pk en el ring
-536         If Not PeleaSegura(UserIndex, tU) Then
-                    Select Case Status(UserIndex)
-                        Case 1, 3, 5 'Ciudadano o armada
-                            If Status(tU) <> e_Facciones.Ciudadano And Status(tU) <> e_Facciones.Armada And Status(tU) <> e_Facciones.consejo Then
-                                If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
-                                    ' Msg662=No puedes ayudar criminales.
-                                    Call WriteLocaleMsg(UserIndex, "662", e_FontTypeNames.FONTTYPE_INFO)
+536         If Not PeleaSegura(UserIndex, targetUserIndex) Then
+
+                Select Case Status(UserIndex)
+
+                    Case 1, 3, 5 'Ciudadano o armada
+
+                        If Status(targetUserIndex) <> e_Facciones.Ciudadano And Status(targetUserIndex) <> e_Facciones.Armada And Status(targetUserIndex) <> e_Facciones.consejo Then
+
+                            If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
+                                ' Msg662=No puedes ayudar criminales.
+                                Call WriteLocaleMsg(UserIndex, "662", e_FontTypeNames.FONTTYPE_INFO)
+                                b = False
+
+                                Exit Sub
+
+                            ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
+
+                                If UserList(UserIndex).flags.Seguro = True Then
+                                    ' Msg663=Para ayudar criminales deberás desactivar el seguro.
+                                    Call WriteLocaleMsg(UserIndex, "663", e_FontTypeNames.FONTTYPE_INFO)
                                     b = False
+
                                     Exit Sub
-                                ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
-                                    If UserList(UserIndex).flags.Seguro = True Then
-                                        ' Msg663=Para ayudar criminales deberás desactivar el seguro.
-                                        Call WriteLocaleMsg(UserIndex, "663", e_FontTypeNames.FONTTYPE_INFO)
-                                        b = False
-                                        Exit Sub
-                                    Else
-                                        'Si tiene clan
-                                        If UserList(UserIndex).GuildIndex > 0 Then
-                                            'Si el clan es de alineación ciudadana.
-                                            If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
-                                                'No lo dejo resucitarlo
-                                                ' Msg664=No puedes ayudar a un usuario criminal perteneciendo a un clan ciudadano.
-                                                Call WriteLocaleMsg(UserIndex, "664", e_FontTypeNames.FONTTYPE_INFO)
-                                                b = False
-                                                Exit Sub
+
+                                Else
+
+                                    'Si tiene clan
+                                    If UserList(UserIndex).GuildIndex > 0 Then
+
+                                        'Si el clan es de alineación ciudadana.
+                                        If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
+                                            'No lo dejo resucitarlo
+                                            ' Msg664=No puedes ayudar a un usuario criminal perteneciendo a un clan ciudadano.
+                                            Call WriteLocaleMsg(UserIndex, "664", e_FontTypeNames.FONTTYPE_INFO)
+                                            b = False
+
+                                            Exit Sub
+
                                             'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
-                                            ElseIf GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
-                                                Call VolverCriminal(UserIndex)
-                                                Call RefreshCharStatus(UserIndex)
-                                            End If
-                                        Else
+                                        ElseIf GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
                                             Call VolverCriminal(UserIndex)
                                             Call RefreshCharStatus(UserIndex)
                                         End If
+
+                                    Else
+                                        Call VolverCriminal(UserIndex)
+                                        Call RefreshCharStatus(UserIndex)
                                     End If
                                 End If
                             End If
-                        Case 2, 4 'Caos
-                            If Status(tU) <> e_Facciones.Caos And Status(tU) <> e_Facciones.Criminal And Status(tU) <> e_Facciones.concilio Then
-'Msg805= No podés ayudar ciudadanos.
-Call WriteLocaleMsg(UserIndex, "805", e_FontTypeNames.FONTTYPE_INFO)
-                                b = False
-                                Exit Sub
-                            End If
-                    End Select
-            End If
-        
-554         If UserList(tU).flags.Inmovilizado = 0 And UserList(tU).flags.Paralizado = 0 Then
-'Msg806= El objetivo no esta paralizado.
-Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
-558             b = False
-                Exit Sub
-            End If
-            
-        
-560         If UserList(tU).flags.Inmovilizado = 1 Then
-562             UserList(tU).Counters.Inmovilizado = 0
-                If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Hunter Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
-                     UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
-                End If
-564             UserList(tU).flags.Inmovilizado = 0
-566             Call WriteInmovilizaOK(tU)
-568             Call WritePosUpdate(tU)
-            End If
-    
-            
-570         If UserList(tU).flags.Paralizado = 1 Then
-572             UserList(tU).flags.Paralizado = 0
-                 If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Hunter Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
-                     UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
-                End If
-574             UserList(tU).Counters.Paralisis = 0
+                        End If
 
-576             Call WriteParalizeOK(tU)
+                    Case 2, 4 'Caos
+
+                        If Status(targetUserIndex) <> e_Facciones.Caos And Status(targetUserIndex) <> e_Facciones.Criminal And Status(targetUserIndex) <> e_Facciones.concilio Then
+                            'Msg805= No podés ayudar ciudadanos.
+                            Call WriteLocaleMsg(UserIndex, "805", e_FontTypeNames.FONTTYPE_INFO)
+                            b = False
+
+                            Exit Sub
+
+                        End If
+
+                End Select
+
+            End If
+        
+554         If UserList(targetUserIndex).flags.Inmovilizado = 0 And UserList(targetUserIndex).flags.Paralizado = 0 Then
+                'Msg806= El objetivo no esta paralizado.
+                Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
+558             b = False
+
+                Exit Sub
+
+            End If
+        
+560         If UserList(targetUserIndex).flags.Inmovilizado = 1 Then
+562             UserList(targetUserIndex).Counters.Inmovilizado = 0
+
+                If UserList(targetUserIndex).clase = e_Class.Warrior Or UserList(targetUserIndex).clase = e_Class.Hunter Or UserList(targetUserIndex).clase = e_Class.Thief Or UserList(targetUserIndex).clase = e_Class.Pirat Then
+                    UserList(targetUserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
+
+564             UserList(targetUserIndex).flags.Inmovilizado = 0
+566             Call WriteInmovilizaOK(targetUserIndex)
+568             Call WritePosUpdate(targetUserIndex)
+            End If
+            
+570         If UserList(targetUserIndex).flags.Paralizado = 1 Then
+572             UserList(targetUserIndex).flags.Paralizado = 0
+
+                If UserList(targetUserIndex).clase = e_Class.Warrior Or UserList(targetUserIndex).clase = e_Class.Hunter Or UserList(targetUserIndex).clase = e_Class.Thief Or UserList(targetUserIndex).clase = e_Class.Pirat Then
+                    UserList(targetUserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
+
+574             UserList(targetUserIndex).Counters.Paralisis = 0
+
+576             Call WriteParalizeOK(targetUserIndex)
             End If
 
 578         b = True
@@ -2347,15 +2487,17 @@ Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
         End If
 
 582     If IsSet(Hechizos(h).Effects, e_SpellEffects.RemoveDumb) Then
-584         If UserList(tU).flags.Estupidez = 1 Then
+584         If UserList(targetUserIndex).flags.Estupidez = 1 Then
 
                 'Para poder tirar remo estu a un pk en el ring
-586             If Not PeleaSegura(UserIndex, tU) Then
-588                 If Status(tU) = 0 And Status(UserIndex) = 1 Or Status(tU) = 2 And Status(UserIndex) = 1 Then
+586             If Not PeleaSegura(UserIndex, targetUserIndex) Then
+588                 If Status(targetUserIndex) = 0 And Status(UserIndex) = 1 Or Status(targetUserIndex) = 2 And Status(UserIndex) = 1 Then
+
 590                     If esArmada(UserIndex) Then
                             'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
 592                         Call WriteLocaleMsg(UserIndex, "379", e_FontTypeNames.FONTTYPE_INFO)
 594                         b = False
+
                             Exit Sub
 
                         End If
@@ -2363,7 +2505,9 @@ Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
 596                     If UserList(UserIndex).flags.Seguro Then
 598                         Call WriteLocaleMsg(UserIndex, "378", e_FontTypeNames.FONTTYPE_INFO)
 600                         b = False
+
                             Exit Sub
+
                         Else
 
                             ' Call DisNobAuBan(UserIndex, UserList(UserIndex).Reputacion.NobleRep * 0.5, 10000)
@@ -2373,9 +2517,9 @@ Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
 
                 End If
     
-602             UserList(tU).flags.Estupidez = 0
-604             UserList(tU).Counters.Estupidez = 0
-606             Call WriteDumbNoMore(tU)
+602             UserList(targetUserIndex).flags.Estupidez = 0
+604             UserList(targetUserIndex).Counters.Estupidez = 0
+606             Call WriteDumbNoMore(targetUserIndex)
 
 608             Call InfoHechizo(UserIndex)
 610             b = True
@@ -2385,22 +2529,25 @@ Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
         End If
 
 612     If IsSet(Hechizos(h).Effects, e_SpellEffects.Resurrect) Then
-614         If UserList(tU).flags.Muerto = 1 Then
+614         If UserList(targetUserIndex).flags.Muerto = 1 Then
 
 616             If UserList(UserIndex).flags.EnReto Then
                     'Msg807= No podés revivir a nadie durante un reto.
                     Call WriteLocaleMsg(UserIndex, "807", e_FontTypeNames.FONTTYPE_INFO)
+
                     Exit Sub
+
                 End If
     
                 'No usar resu en mapas con ResuSinEfecto
-                'If MapInfo(UserList(tU).Pos.map).ResuSinEfecto > 0 Then
+                'If MapInfo(UserList(TargetUserIndex).Pos.map).ResuSinEfecto > 0 Then
                 '   Call WriteConsoleMsg(UserIndex, "¡Revivir no está permitido aqui! Retirate de la Zona si deseas utilizar el Hechizo.", e_FontTypeNames.FONTTYPE_INFO)
                 '   b = False
                 '   Exit Sub
                 ' End If
                 
 620             If UserList(UserIndex).clase <> Cleric Then
+
                     Dim PuedeRevivir As Boolean
                     
 622                 If UserList(UserIndex).invent.EquippedWeaponObjIndex <> 0 Then
@@ -2408,8 +2555,6 @@ Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
 626                         PuedeRevivir = True
                         End If
                     End If
-                    
-                    
                     
 628                 If UserList(UserIndex).invent.EquippedRingAccesoryObjIndex <> 0 Then
 630                     If ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).Revive Then
@@ -2427,7 +2572,9 @@ Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
                         'Msg809= Necesitás un objeto con mayor poder mágico para poder revivir.
                         Call WriteLocaleMsg(UserIndex, "809", e_FontTypeNames.FONTTYPE_INFO)
 638                     b = False
+
                         Exit Sub
+
                     End If
                 End If
                 
@@ -2435,49 +2582,66 @@ Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
                     'Msg810= Deberás tener la barra de energía llena para poder resucitar.
                     Call WriteLocaleMsg(UserIndex, "810", e_FontTypeNames.FONTTYPE_INFO)
                     b = False
+
                     Exit Sub
+
                 End If
 
                 'Para poder tirar revivir a un pk en el ring
-654             If Not PeleaSegura(UserIndex, tU) Then
+654             If Not PeleaSegura(UserIndex, targetUserIndex) Then
                     
-                    If UserList(tU).flags.SeguroResu Then
+                    If UserList(targetUserIndex).flags.SeguroResu Then
                         ' Msg693=El usuario tiene el seguro de resurrección activado.
                         Call WriteLocaleMsg(UserIndex, "693", e_FontTypeNames.FONTTYPE_INFO)
-                        Call WriteConsoleMsg(tU, PrepareMessageLocaleMsg(1874, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1874=¬1 está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.
+                        Call WriteConsoleMsg(targetUserIndex, PrepareMessageLocaleMsg(1874, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1874=¬1 está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.
                         b = False
+
                         Exit Sub
+
                     End If
                 
                     Select Case Status(UserIndex)
+
                         Case 1, 3, 5 'Ciudadano o armada
-                            If Status(tU) <> e_Facciones.Ciudadano And Status(tU) <> e_Facciones.Armada And Status(tU) <> e_Facciones.consejo Then
+
+                            If Status(targetUserIndex) <> e_Facciones.Ciudadano And Status(targetUserIndex) <> e_Facciones.Armada And Status(targetUserIndex) <> e_Facciones.consejo Then
+
                                 If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
                                     'Msg811= Los miembros de la armada real solo pueden revivir ciudadanos a miembros de su facción.
                                     Call WriteLocaleMsg(UserIndex, "811", e_FontTypeNames.FONTTYPE_INFO)
                                     b = False
+
                                     Exit Sub
+
                                 ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
+
                                     If UserList(UserIndex).flags.Seguro = True Then
                                         'Msg812= Deberás desactivar el seguro para revivir al usuario, ten en cuenta que te convertirás en criminal.
                                         Call WriteLocaleMsg(UserIndex, "812", e_FontTypeNames.FONTTYPE_INFO)
                                         b = False
+
                                         Exit Sub
+
                                     Else
+
                                         'Si tiene clan
                                         If UserList(UserIndex).GuildIndex > 0 Then
+
                                             'Si el clan es de alineación ciudadana.
                                             If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
                                                 'No lo dejo resucitarlo
                                                 'Msg813= No puedes resucitar al usuario siendo fundador de un clan ciudadano.
                                                 Call WriteLocaleMsg(UserIndex, "813", e_FontTypeNames.FONTTYPE_INFO)
                                                 b = False
+
                                                 Exit Sub
-                                            'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
+
+                                                'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
                                             ElseIf GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
                                                 Call VolverCriminal(UserIndex)
                                                 Call RefreshCharStatus(UserIndex)
                                             End If
+
                                         Else
                                             Call VolverCriminal(UserIndex)
                                             Call RefreshCharStatus(UserIndex)
@@ -2485,19 +2649,25 @@ Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
                                     End If
                                 End If
                             End If
+
                         Case 2, 4 'Caos
-                            If Status(tU) <> e_Facciones.Caos And Status(tU) <> e_Facciones.Criminal And Status(tU) <> e_Facciones.concilio Then
+
+                            If Status(targetUserIndex) <> e_Facciones.Caos And Status(targetUserIndex) <> e_Facciones.Criminal And Status(targetUserIndex) <> e_Facciones.concilio Then
                                 'Msg814= Los miembros del caos solo pueden revivir criminales o miembros de su facción.
                                 Call WriteLocaleMsg(UserIndex, "814", e_FontTypeNames.FONTTYPE_INFO)
                                 b = False
+
                                 Exit Sub
+
                             End If
+
                     End Select
+
                 End If
                 
-                Call SendData(SendTarget.ToPCArea, tU, PrepareMessageSetInvisible(UserList(tU).Char.charindex, False, UserList(tU).Pos.X, UserList(tU).Pos.Y))
+                Call SendData(SendTarget.ToPCArea, targetUserIndex, PrepareMessageSetInvisible(UserList(targetUserIndex).Char.charindex, False, UserList(targetUserIndex).pos.x, UserList(targetUserIndex).pos.y))
 
-684             Call ResurrectUser(tU)
+684             Call ResurrectUser(targetUserIndex, UserIndex)
 686             Call InfoHechizo(UserIndex)
 
 688             b = True
@@ -2509,58 +2679,95 @@ Call WriteLocaleMsg(UserIndex, "806", e_FontTypeNames.FONTTYPE_INFO)
         End If
 
 692     If IsSet(Hechizos(h).Effects, e_SpellEffects.Blindness) Then
-694         If UserIndex = tU Then
+694         If UserIndex = targetUserIndex Then
 696             Call WriteLocaleMsg(UserIndex, "380", e_FontTypeNames.FONTTYPE_FIGHT)
+
                 Exit Sub
+
             End If
     
-698         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
-700         If UserIndex <> tU Then
-702             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
+698         If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
+700         If UserIndex <> targetUserIndex Then
+702             Call UsuarioAtacadoPorUsuario(UserIndex, targetUserIndex)
             End If
 
-704         UserList(tU).flags.Ceguera = 1
-706         UserList(tU).Counters.Ceguera = Hechizos(h).Duration
-708         Call WriteBlind(tU)
+704         UserList(targetUserIndex).flags.Ceguera = 1
+706         UserList(targetUserIndex).Counters.Ceguera = Hechizos(h).Duration
+708         Call WriteBlind(targetUserIndex)
 710         Call InfoHechizo(UserIndex)
 712         b = True
         End If
 
 714     If IsSet(Hechizos(h).Effects, e_SpellEffects.Dumb) Then
-716         If UserIndex = tU Then
+716         If UserIndex = targetUserIndex Then
 718             Call WriteLocaleMsg(UserIndex, "380", e_FontTypeNames.FONTTYPE_FIGHT)
+
                 Exit Sub
+
             End If
 
-720         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
-722         If UserIndex <> tU Then
-724             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
+720         If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
+722         If UserIndex <> targetUserIndex Then
+724             Call UsuarioAtacadoPorUsuario(UserIndex, targetUserIndex)
             End If
 
-726         If UserList(tU).flags.Estupidez = 0 Then
-728             UserList(tU).flags.Estupidez = 1
-730             UserList(tU).Counters.Estupidez = Hechizos(h).Duration
+726         If UserList(targetUserIndex).flags.Estupidez = 0 Then
+728             UserList(targetUserIndex).flags.Estupidez = 1
+730             UserList(targetUserIndex).Counters.Estupidez = Hechizos(h).Duration
             End If
-732         Call WriteDumb(tU)
+
+732         Call WriteDumb(targetUserIndex)
 734         Call InfoHechizo(UserIndex)
 736         b = True
         End If
+
 738     If IsSet(Hechizos(h).Effects, e_SpellEffects.ToggleCleave) Then
             If UserList(UserIndex).flags.Cleave Then
 740             UserList(UserIndex).flags.Cleave = 0
+
                 If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, 0, 0, eBuff)
             Else
 742             UserList(UserIndex).flags.Cleave = 1
+
                 If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, -1, -1, eBuff)
             End If
+
 744         b = True
+        End If
+        
+        Dim Character As t_User
+
+        Character = UserList(UserIndex)
+        
+        If IsFeatureEnabled("healers_and_tanks") And IsSet(Hechizos(h).Effects, e_SpellEffects.ToggleDivineBlood)  Then
+            If UserList(UserIndex).flags.DivineBlood Then
+            
+                UserList(UserIndex).flags.DivineBlood = 0
+                If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, 0, 0, eBuff)
+                Character.Char.BackpackAnim = 0
+                Call ChangeUserChar(UserIndex, Character.Char.body, Character.Char.head, Character.Char.Heading, Character.Char.WeaponAnim, Character.Char.ShieldAnim, Character.Char.CascoAnim, Character.Char.CartAnim, Character.Char.BackpackAnim)
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(Character.Char.charindex, e_ParticleEffects.HaloGold, 45, False, 0, Character.pos.x, Character.pos.y))
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.BAOLegionHorn, Character.pos.x, Character.pos.y))
+            
+            Else
+            
+                UserList(UserIndex).flags.DivineBlood = 1
+                If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, -1, -1, eBuff)
+                Character.Char.BackpackAnim = 4997
+                Call ChangeUserChar(UserIndex, Character.Char.body, Character.Char.head, Character.Char.Heading, Character.Char.WeaponAnim, Character.Char.ShieldAnim, Character.Char.CascoAnim, Character.Char.CartAnim, Character.Char.BackpackAnim)
+                Character.Counters.timeFx = 3
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(Character.Char.charindex, e_GraphicEffects.CurarHeridasCriticasBAO, 0, Character.pos.x, Character.pos.y))
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.DivineBloodActivation, Character.pos.x, Character.pos.y))
+            
+            End If
+
+            b = True
         End If
         
         Exit Sub
 
 HechizoEstadoUsuario_Err:
-     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoEstadoUsuario", Erl)
-
+        Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoEstadoUsuario", Erl)
         
 End Sub
 
@@ -3382,6 +3589,12 @@ Call WriteLocaleMsg(UserIndex, "822", e_FontTypeNames.FONTTYPE_INFO)
 368         Damage = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
             Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
             Damage = Damage * UserMod.GetSelfHealingBonus(UserList(tempChr))
+            
+            If IsFeatureEnabled("healers_and_tanks") And UserList(UserIndex).flags.DivineBlood > 0  Then
+                Damage = Damage * DivineBloodHealingMultiplierBonus
+            End If
+            
+            
 370         Call InfoHechizo(UserIndex)
             Call UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, h)
 376         DamageStr = PonerPuntos(Damage)
@@ -3553,21 +3766,21 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 
         Dim Damage As Integer
 
-        Dim tempChr           As Integer
+        Dim TargetUserIndex           As Integer
 
         Dim enviarInfoHechizo As Boolean
 
 100     enviarInfoHechizo = False
     
 102     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
-104     tempChr = UserList(UserIndex).flags.targetUser.ArrayIndex
+104     TargetUserIndex = UserList(UserIndex).flags.TargetUser.ArrayIndex
       
         ' <-------- Agilidad ---------->
 106     If Hechizos(h).SubeAgilidad = 1 Then
     
             'Para poder tirar cl a un pk en el ring
-108         If Not PeleaSegura(UserIndex, tempChr) Then
-110             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
+108         If Not PeleaSegura(UserIndex, TargetUserIndex) Then
+110             If Status(TargetUserIndex) = 0 And Status(UserIndex) = 1 Or Status(TargetUserIndex) = 2 And Status(UserIndex) = 1 Then
 112                 If esArmada(UserIndex) Then
 114                     Call WriteLocaleMsg(UserIndex, "379", e_FontTypeNames.FONTTYPE_INFO)
 116                     b = False
@@ -3589,44 +3802,44 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 124         enviarInfoHechizo = True
 126         Damage = RandomNumber(Hechizos(h).MinAgilidad, Hechizos(h).MaxAgilidad)
     
-128         UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
+128         UserList(TargetUserIndex).flags.DuracionEfecto = Hechizos(h).Duration
 
-130         UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) + Damage, UserList(tempChr).Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
+130         UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) + Damage, UserList(TargetUserIndex).Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
         
-132         UserList(tempChr).flags.TomoPocion = True
+132         UserList(TargetUserIndex).flags.TomoPocion = True
 134         b = True
-136         Call WriteFYA(tempChr)
+136         Call WriteFYA(TargetUserIndex)
     
 138     ElseIf Hechizos(h).SubeAgilidad = 2 Then
     
-140         If Not PuedeAtacar(UserIndex, tempChr) Then Exit Sub
+140         If Not PuedeAtacar(UserIndex, TargetUserIndex) Then Exit Sub
     
-142         If UserIndex <> tempChr Then
-144             Call UsuarioAtacadoPorUsuario(UserIndex, tempChr)
+142         If UserIndex <> TargetUserIndex Then
+144             Call UsuarioAtacadoPorUsuario(UserIndex, TargetUserIndex)
 
             End If
     
 146         enviarInfoHechizo = True
     
-148         UserList(tempChr).flags.TomoPocion = True
+148         UserList(TargetUserIndex).flags.TomoPocion = True
 150         Damage = RandomNumber(Hechizos(h).MinAgilidad, Hechizos(h).MaxAgilidad)
-152         UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
+152         UserList(TargetUserIndex).flags.DuracionEfecto = Hechizos(h).Duration
 
-154         If UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) - Damage < 6 Then
-156             UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) = MINATRIBUTOS
+154         If UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) - Damage < 6 Then
+156             UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) = MINATRIBUTOS
             Else
-158             UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) = UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) - Damage
+158             UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) = UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) - Damage
             End If
 160         b = True
-162         Call WriteFYA(tempChr)
+162         Call WriteFYA(TargetUserIndex)
         End If
 
         ' <-------- Fuerza ---------->
 164     If Hechizos(h).SubeFuerza = 1 Then
 
             'Para poder tirar fuerza a un pk en el ring
-166         If Not PeleaSegura(UserIndex, tempChr) Then
-168             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
+166         If Not PeleaSegura(UserIndex, TargetUserIndex) Then
+168             If Status(TargetUserIndex) = 0 And Status(UserIndex) = 1 Or Status(TargetUserIndex) = 2 And Status(UserIndex) = 1 Then
 170                 If esArmada(UserIndex) Then
                         'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
 172                     Call WriteLocaleMsg(UserIndex, "379", e_FontTypeNames.FONTTYPE_INFO)
@@ -3644,42 +3857,42 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             End If
     
 182         Damage = RandomNumber(Hechizos(h).MinFuerza, Hechizos(h).MaxFuerza)
-184         UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
-186         UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) + Damage, UserList(tempChr).Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
-188         UserList(tempChr).flags.TomoPocion = True
+184         UserList(TargetUserIndex).flags.DuracionEfecto = Hechizos(h).Duration
+186         UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) + Damage, UserList(TargetUserIndex).Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
+188         UserList(TargetUserIndex).flags.TomoPocion = True
 190         b = True
 192         enviarInfoHechizo = True
-194         Call WriteFYA(tempChr)
+194         Call WriteFYA(TargetUserIndex)
 196     ElseIf Hechizos(h).SubeFuerza = 2 Then
-198         If Not PuedeAtacar(UserIndex, tempChr) Then Exit Sub
-200         If UserIndex <> tempChr Then
-202             Call UsuarioAtacadoPorUsuario(UserIndex, tempChr)
+198         If Not PuedeAtacar(UserIndex, TargetUserIndex) Then Exit Sub
+200         If UserIndex <> TargetUserIndex Then
+202             Call UsuarioAtacadoPorUsuario(UserIndex, TargetUserIndex)
             End If
-204         UserList(tempChr).flags.TomoPocion = True
+204         UserList(TargetUserIndex).flags.TomoPocion = True
 206         Damage = RandomNumber(Hechizos(h).MinFuerza, Hechizos(h).MaxFuerza)
-208         UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
-210         If UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) - Damage < 6 Then
-212             UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) = MINATRIBUTOS
+208         UserList(TargetUserIndex).flags.DuracionEfecto = Hechizos(h).Duration
+210         If UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) - Damage < 6 Then
+212             UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) = MINATRIBUTOS
             Else
-214             UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) = UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) - Damage
+214             UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) = UserList(TargetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) - Damage
             End If
 216         b = True
 218         enviarInfoHechizo = True
-220         Call WriteFYA(tempChr)
+220         Call WriteFYA(TargetUserIndex)
         End If
 
         'Salud
 222     If IsSet(Hechizos(h).Effects, e_SpellEffects.eDoHeal) Then
             'Verifica que el usuario no este muerto
-224         If UserList(tempChr).flags.Muerto = 1 Then
+224         If UserList(TargetUserIndex).flags.Muerto = 1 Then
                 'Msg77=¡¡Estás muerto!!.
 226             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 228             b = False
                 Exit Sub
             End If
             'Para poder tirar curar a un pk en el ring
-230         If Not PeleaSegura(UserIndex, tempChr) Then
-232             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
+230         If Not PeleaSegura(UserIndex, TargetUserIndex) Then
+232             If Status(TargetUserIndex) = 0 And Status(UserIndex) = 1 Or Status(TargetUserIndex) = 2 And Status(UserIndex) = 1 Then
 234                 If esArmada(UserIndex) Then
 236                     Call WriteLocaleMsg(UserIndex, 379, e_FontTypeNames.FONTTYPE_INFO)
 238                     b = False
@@ -3694,24 +3907,29 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             End If
 246         Damage = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
             Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
-            Damage = Damage * UserMod.GetSelfHealingBonus(UserList(tempChr))
+            Damage = Damage * UserMod.GetSelfHealingBonus(UserList(TargetUserIndex))
+            
+            If UserList(UserIndex).flags.DivineBlood > 0 And IsFeatureEnabled("healers_and_tanks") Then
+                Damage = Damage * DivineBloodHealingMultiplierBonus
+            End If
+            
 248         enviarInfoHechizo = True
-250         Call UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, h)
+250         Call UserMod.DoDamageOrHeal(TargetUserIndex, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, h)
     
-254         If UserIndex <> tempChr Then
-256             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1918, Damage & "¬" & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1918=Le has restaurado ¬1 puntos de vida a ¬2.
-258             Call WriteConsoleMsg(tempChr, PrepareMessageLocaleMsg(1919, UserList(UserIndex).name & "¬" & Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1919=¬1 te ha restaurado ¬2 puntos de vida.
+254         If UserIndex <> TargetUserIndex Then
+256             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1918, Damage & "¬" & UserList(targetUserIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1918=Le has restaurado ¬1 puntos de vida a ¬2.
+258             Call WriteConsoleMsg(targetUserIndex, PrepareMessageLocaleMsg(1919, UserList(UserIndex).name & "¬" & Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1919=¬1 te ha restaurado ¬2 puntos de vida.
             Else
 260             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1920, Damage, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1920=Te has restaurado ¬1 puntos de vida.
             End If
 264         b = True
 
 266     ElseIf IsSet(Hechizos(h).Effects, e_SpellEffects.eDoDamage) Then ' Damage
-268         If UserIndex = tempChr Then
+268         If UserIndex = TargetUserIndex Then
 270             Call WriteLocaleMsg(UserIndex, "380", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
-271         If Not PuedeAtacar(UserIndex, tempChr) Then Exit Sub
+271         If Not PuedeAtacar(UserIndex, TargetUserIndex) Then Exit Sub
 272         Damage = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
 274         Damage = Damage + Porcentaje(Damage, 3 * UserList(UserIndex).Stats.ELV)
             ' mage has 30% damage reduction
@@ -3740,30 +3958,30 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             ' Si el hechizo no ignora la RM
 288         If Hechizos(h).AntiRm = 0 Then
                 ' Resistencia mágica armadura
-                MR = max(0, MR + GetUserMR(tempChr))
+                MR = max(0, MR + GetUserMR(TargetUserIndex))
 290             If MR > 0 Then
 292                 Damage = Damage - Porcentaje(Damage, MR)
                 End If
             End If
-            Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
+            Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, TargetUserIndex, eUser, e_DamageSourceType.e_magic)
             Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
-            Damage = Damage * UserMod.GetMagicDamageReduction(UserList(tempChr))
+            Damage = Damage * UserMod.GetMagicDamageReduction(UserList(TargetUserIndex))
             ' Prevengo daño negativo
 308         If Damage < 0 Then Damage = 0
     
-312         If UserIndex <> tempChr Then
-314             Call UsuarioAtacadoPorUsuario(UserIndex, tempChr)
+312         If UserIndex <> TargetUserIndex Then
+314             Call UsuarioAtacadoPorUsuario(UserIndex, TargetUserIndex)
             End If
     
 316         enviarInfoHechizo = True
-318         IsAlive = UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h) = eStillAlive
-321         Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
-324         Call SubirSkill(tempChr, Resistencia)
+318         IsAlive = UserMod.DoDamageOrHeal(TargetUserIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h) = eStillAlive
+321         Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, TargetUserIndex, eUser, e_DamageSourceType.e_magic)
+324         Call SubirSkill(TargetUserIndex, Resistencia)
 336         b = True
         End If
 
         Dim tU As Integer
-338     tU = tempChr
+338     tU = TargetUserIndex
 340     If IsSet(Hechizos(h).Effects, e_SpellEffects.Invisibility) Then
 342         If UserList(tU).flags.Muerto = 1 Then
                 'Msg77=¡¡Estás muerto!!.
