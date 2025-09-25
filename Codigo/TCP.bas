@@ -645,7 +645,7 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
 154         .Char.Head = Head
         
 156         .genero = UserSexo
-158         .Hogar = Hogar
+158         .Hogar = cForgat
         
             '%%%%%%%%%%%%% PREVENIR HACKEO DE LOS SKILLS %%%%%%%%%%%%%
 160         .Stats.SkillPts = 10

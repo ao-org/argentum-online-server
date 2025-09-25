@@ -970,7 +970,7 @@ Private Sub HandleCreateAccount(ByVal ConnectionId As Long)
     Dim UserIndex As Integer
     UserIndex = MapConnectionToUser(ConnectionId)
     If UserIndex < 1 Then
-        Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("No hay slot disponibles para el usuario."))
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094)) ', "No hay slot disponibles para el usuario."))
         Call KickConnection(ConnectionId)
         Exit Sub
     End If
@@ -1016,8 +1016,7 @@ Private Sub HandleLoginAccount(ByVal ConnectionId As Long)
         UserIndex = MapConnectionToUser(ConnectionID)
 
         If UserIndex < 1 Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox( _
-                    "No hay slot disponibles para el usuario."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094)) ', "No hay slot disponibles para el usuario."))
             Call KickConnection(ConnectionID)
 
             Exit Sub
@@ -1102,7 +1101,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
         MD5 = Reader.ReadString8()
 
         If Len(encrypted_session_token) <> 88 Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092)) ', "Cliente inválido, por favor realice una actualización."))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
@@ -1115,7 +1114,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
         decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
                 
         If Not IsBase64(decrypted_session_token) Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización"))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092)) ', "Cliente inválido, por favor realice una actualización"))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
@@ -1125,7 +1124,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
         Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
                 
         If RS Is Nothing Or RS.RecordCount = 0 Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Sesión inválida, conéctese nuevamente."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2093)) ', "Sesión inválida, conéctese nuevamente."))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
@@ -1133,14 +1132,14 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
         CuentaEmail = CStr(RS!UserName)
                     
         If RS!encrypted_token <> encrypted_session_token Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092)) ', "Cliente inválido, por favor realice una actualización."))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
         Dim UserIndex As Integer
         UserIndex = MapConnectionToUser(ConnectionId)
         If UserIndex < 1 Then
-            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("No hay slot disponibles para el usuario."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094)) ', "No hay slot disponibles para el usuario."))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
@@ -1194,7 +1193,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
 118     Hogar = Reader.ReadInt8()
 
         If Len(encrypted_session_token) <> 88 Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092)) ', "Cliente inválido, por favor realice una actualización."))
             Exit Sub
         End If
 
@@ -1205,7 +1204,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
         decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
                 
         If Not IsBase64(decrypted_session_token) Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092)) ', "Cliente inválido, por favor realice una actualización."))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
@@ -1214,14 +1213,14 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
         Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
                 
         If RS Is Nothing Or RS.RecordCount = 0 Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Sesión inválida, conectese nuevamente."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2093)) ', "Sesión inválida, conectese nuevamente."))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
         
         CuentaEmail = CStr(RS!UserName)
         If RS!encrypted_token <> encrypted_session_token Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092)) ', "Cliente inválido, por favor realice una actualización."))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
@@ -1229,7 +1228,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
         Dim UserIndex As Integer
         UserIndex = MapConnectionToUser(ConnectionId)
         If UserIndex < 1 Then
-            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("No hay slot disponibles para el usuario."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094)) ', "No hay slot disponibles para el usuario."))
             Call KickConnection(ConnectionId)
             Exit Sub
         End If
