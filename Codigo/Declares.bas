@@ -30,7 +30,6 @@ Option Explicit
 ''
 ' Modulo de declaraciones. Aca hay de todo.
 '
-
 Public Enum e_PotionType
     ModifiesAgility = 1
     ModifiesStrength = 2
@@ -55,9 +54,7 @@ Public Enum e_PotionType
     SuicidePotion = 21
     'ResetCharacter = 22
     AppliesEffectOverTime = 23
-
 End Enum
-
 
 Public Enum e_AccionBarra
     Runa = 1
