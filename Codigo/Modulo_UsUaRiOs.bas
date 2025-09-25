@@ -1673,7 +1673,8 @@ Sub UserDie(ByVal UserIndex As Integer)
         .flags.Mimetizado = e_EstadoMimetismo.Desactivado
         Call RefreshCharStatus(UserIndex)
         'Sonido
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(IIf(.genero = e_Genero.Hombre, e_SoundIndex.MUERTE_HOMBRE, e_SoundIndex.MUERTE_MUJER), .pos.x, .pos.y))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(IIf(.genero = e_Genero.Hombre, e_SoundEffects.DieScreamMale, e_SoundEffects.DieScreamFemale), _
+                .pos.x, .pos.y))
         'Quitar el dialogo del user muerto
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.charindex))
         .Stats.MinHp = 0

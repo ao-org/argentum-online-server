@@ -122,7 +122,6 @@ Private Declare Function SetWindowPos _
                               ByVal cx As Long, _
                               ByVal cy As Long, _
                               ByVal wFlags As Long) As Long
-Private Const HWND_TOPMOST = -1
 Private Const HWND_NOTOPMOST = -2
 Private Const SWP_NOSIZE = &H1
 ' For the label that allows yo to move the form

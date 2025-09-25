@@ -617,11 +617,6 @@ Private SERVER_UPTIME As Long
     Implements DirectPlay8Event
     Private mfExit As Boolean
 
-    Private Enum MsgTypes
-        Msg_NoOtherPlayers
-        Msg_NumPlayers
-        Msg_SendWave
-    End Enum
 
 Private Sub Form_Load()
     Dim lCount As Long

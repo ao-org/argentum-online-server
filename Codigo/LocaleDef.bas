@@ -25,9 +25,6 @@ Attribute VB_Name = "LocaleDef"
 '
 '
 '
-Public Const MsgToFarToAttack = 8
-Public Const MsgYouAreDeathAndCantAttack = 77
-Public Const MsgToTired = 93
 Public Const MsgRemoveSafeToAttack = 126
 Public Const MsgYouAreInJail = 146
 Public Const MsgInventoryIsFull = 328
@@ -41,7 +38,6 @@ Public Const JoinSuccessMessage = 399
 Public Const AlreadyRegisteredMessage = 405
 Public Const MsgInvalidGroupCount = 406
 Public Const MsgCantChangeGroupSizeNow = 407
-Public Const MsgInvalidUserState = 408
 Public Const MsgTeamConfigSuccess = 409
 Public Const MsgCantJoinPrivateLobby = 410
 Public Const MsgDisconnectedPlayers = 411
@@ -73,8 +69,6 @@ Public Const MsgSkillAlreadyKnown = 443
 Public Const MsgLandRequiredToUseSpell = 444
 Public Const MsgWaterRequiredToUseSpell = 445
 Public Const MsgCastOnlyOnSelf = 446
-Public Const MsgExtraDamageDone = 447
-Public Const MsgExtraDamageReceive = 448
 Public Const MsgFacctionForbidAttack = 449
 Public Const MsgYourTrapDidDamangeTo = 450
 Public Const MsgTrapDidDamageToYou = 451
@@ -98,7 +92,6 @@ Public Const MsgHuntScenarioInstructions = 468
 Public Const MsgNavalConquestInstructions = 469
 Public Const MsgCantDropCargoAtPos = 470
 Public Const MsgSpellRequiresTransform = 471
-Public Const MsgRequiredSpell = 472
 Public Const MsgCCInunity = 475
 Public Const MsgRequiredSkill = 473
 Public Const MsgCantUseBowTransformed = 476

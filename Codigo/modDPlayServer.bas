@@ -28,7 +28,6 @@ Attribute VB_Name = "modDPlayServer"
 '
 Option Explicit
 Option Base 0
-Public Const AppGuid = "{5726CF1F-702B-4008-98BC-BF9C95F9E288}"
 Public dx           As New DirectX8
 Public dps          As DirectPlay8Server
 Public dpa          As DirectPlay8Address

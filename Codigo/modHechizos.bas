@@ -26,7 +26,6 @@ Attribute VB_Name = "modHechizos"
 '
 '
 Option Explicit
-Private Const FLAUTA_ELFICA As Long = 40
 
 Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Spell As Integer, Optional ByVal IgnoreVisibilityCheck As Boolean = False)
     On Error GoTo NpcLanzaSpellSobreUser_Err

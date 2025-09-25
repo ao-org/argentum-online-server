@@ -45,8 +45,6 @@ Private guilds(1 To MAX_GUILDS)   As clsClan
 Private Const CANTIDADMAXIMACODEX As Byte = 8
 'cantidad maxima de codecs que se pueden definir
 Public Const MAXASPIRANTES        As Byte = 10
-'cantidad maxima de aspirantes que puede tener un clan acumulados a la vez
-Private Const MAXANTIFACCION      As Byte = 5
 
 'puntos maximos de antifaccion que un clan tolera antes de ser cambiada su alineacion
 Public Enum e_ALINEACION_GUILD
@@ -55,13 +53,6 @@ Public Enum e_ALINEACION_GUILD
     ALINEACION_CAOTICA = 2
     ALINEACION_CIUDADANA = 3
     ALINEACION_CRIMINAL = 4
-End Enum
-
-'alineaciones permitidas
-Public Enum e_SONIDOS_GUILD
-    SND_CREACIONCLAN = 44
-    SND_ACEPTADOCLAN = 43
-    SND_DECLAREWAR = 45
 End Enum
 
 'numero de .wav del cliente

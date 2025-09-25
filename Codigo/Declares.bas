@@ -57,14 +57,6 @@ Public Enum e_ChaosArmyRanks
     FifthHierarchy = 5
 End Enum
 
-Public Enum e_elecciones
-    HayGanador = 1
-    HayGanadorPeroAbandono = 2
-    HuboEmpate = 3
-    NoVotos = 4
-    AbroElecciones = 5
-End Enum
-
 Public Enum tMacro
     dobleclick = 1
     Coordenadas = 2
@@ -155,31 +147,21 @@ Public Enum e_DeleteSource
     eClearHunt
 End Enum
 
-Public lstUsuariosDonadores()        As String
-Public Administradores               As clsIniManager
-Public Const TIEMPO_MINIMO_CENTINELA As Long = 300
-
-Public Enum e_SoundIndex
-    MUERTE_HOMBRE = 11
-    MUERTE_MUJER = 74
-    FLECHA_IMPACTO = 65
-    CONVERSION_BARCO = 55
-    SOUND_COMIDA = 7
-End Enum
-
-Public SvrConfig            As ServerConfig
-Public Md5Cliente           As String
-Public PrivateKey           As String
-Public HoraMundo            As Long
-Public HoraActual           As Integer
-Public UltimoChar           As String
-Public LastRecordUsuarios   As Integer
-Public GlobalFrameTime      As Long
-Public EventoExpMult        As Integer
-Public EventoOroMult        As Integer
-Public CuentaRegresivaTimer As Byte
-Public cuentaregresivaOrcos As Integer
-Public PENDIENTE            As Integer
+Public lstUsuariosDonadores() As String
+Public Administradores        As clsIniManager
+Public SvrConfig              As ServerConfig
+Public Md5Cliente             As String
+Public PrivateKey             As String
+Public HoraMundo              As Long
+Public HoraActual             As Integer
+Public UltimoChar             As String
+Public LastRecordUsuarios     As Integer
+Public GlobalFrameTime        As Long
+Public EventoExpMult          As Integer
+Public EventoOroMult          As Integer
+Public CuentaRegresivaTimer   As Byte
+Public cuentaregresivaOrcos   As Integer
+Public PENDIENTE              As Integer
 Type t_EstadisticasDiarias
     segundos As Double
     MaxUsuarios As Integer
@@ -192,13 +174,8 @@ Public TrashCollector As New Collection
 Public Const MAXSPAWNATTEMPS = 15
 Public Const INFINITE_LOOPS As Integer = -1
 Public Const FXSANGRE = 14
-''
 ' The color of chats over head of dead characters.
 Public Const CHAT_COLOR_DEAD_CHAR As Long = &HC0C0C0
-''
-' The color of yells made by any kind of game administrator.
-Public Const CHAT_COLOR_GM_YELL   As Long = &HF82FF
-''
 ' Coordinates for normal sounds (not 3D, like rain)
 Public Const NO_3D_SOUND          As Byte = 0
 Public Const iFragataFantasmal = 87 'ok
@@ -223,7 +200,6 @@ Public Const iGaleraArmada = 1271
 Public Const iGaleraCaos = 1272
 Public Const iGaleonArmada = 1264
 Public Const iGaleonCaos = 1263
-Public Const iRopaBuceoMuerto = 772
 Public MapasInterdimensionales() As Integer
 Public MapasEventos()            As Integer
 Public MapasNoDrop()             As Integer
@@ -312,20 +288,6 @@ Public RaceHeightOffset(1 To Orco) As Integer
 Enum e_Genero
     Hombre = 1
     Mujer
-End Enum
-
-Public Enum e_ClanType
-    ct_Neutral
-    ct_ArmadaReal
-    ct_LegionOscura
-    ct_GM
-End Enum
-
-Public Enum e_DamageType
-    eMeleeHit
-    eRangedHit
-    eMagicSpell
-    eDot
 End Enum
 
 Public Const LimiteNewbie As Byte = 12
@@ -1028,7 +990,6 @@ Public Const NONEXPERT_SKILL_CUTOFF As Integer = 10
 Public Const GOLD_SLOT              As Byte = 200
 Public Const VelocidadNormal        As Single = 1
 Public Const VelocidadMuerto        As Single = 1.4
-Public Const TIEMPO_CARCEL_PIQUETE  As Long = 5
 
 Public Enum e_ElementalTags
     Normal = 0
@@ -1152,12 +1113,8 @@ Public Enum e_Trigger6
 End Enum
 
 'TODO : Reemplazar por un enum
-Public Const Bosque = "BOSQUE"
 Public Const Nieve = "NIEVE"
-Public Const Desierto = "DESIERTO"
 Public Const Ciudad = "CIUDAD"
-Public Const Campo = "CAMPO"
-Public Const Dungeon = "DUNGEON"
 
 ' <<<<<< Targets >>>>>>
 Public Enum e_TargetType
@@ -1186,10 +1143,8 @@ Public Enum e_TipoHechizo
     uPhysicalSkill = 10
 End Enum
 
-Public Const MAX_MENSAJES_FORO   As Byte = 35
-Public Const MAXUSERHECHIZOS     As Byte = 40
-Public Const FX_TELEPORT_INDEX   As Integer = 1
-Public Const HiddenSpellTextTime As Integer = 500
+Public Const MAX_MENSAJES_FORO As Byte = 35
+Public Const MAXUSERHECHIZOS   As Byte = 40
 
 ' La utilidad de esto es casi nula, sólo se revisa si fue a la cabeza...
 Public Enum e_PartesCuerpo
@@ -1244,8 +1199,6 @@ Public Const FOGATA                           As Integer = 63 'OK
 Public Const ORO_MINA                         As Integer = 194 'OK
 Public Const PLATA_MINA                       As Integer = 193 'OK
 Public Const HIERRO_MINA                      As Integer = 192 'OK
-Public Const ObjArboles                       As Integer = 4 'OK
-Public Const FishSubType                      As Integer = 1
 Public Const PinoWood                         As Integer = 3788 'OK
 Public Const BLODIUM_MINA                     As Integer = 3787 'OK
 Public Const MAP_CAPTURE_THE_FLAG_1           As Integer = 275
@@ -1301,7 +1254,6 @@ Public Const MAXSKILLPOINTS As Byte = 100
 ''
 ' Cantidad maxima de mascotas
 Public Const MAXMASCOTAS    As Byte = 3
-Public Const MAXUSERTRAP    As Byte = 3
 
 ''
 'Direccion
@@ -1374,41 +1326,26 @@ Public Enum e_Atributos
     Carisma = 5
 End Enum
 
-Public Const AdicionalHPGuerrero As Byte = 2 'HP adicionales cuando sube de nivel
-Public Const AdicionalHPCazador  As Byte = 1 'HP adicionales cuando sube de nivel
-Public Const AumentoSTDef        As Byte = 15
-Public Const AumentoSTLadron     As Byte = AumentoSTDef + 3
-Public Const AumentoSTMago       As Byte = AumentoSTDef - 1
-Public Const AumentoStBandido    As Byte = AumentoSTDef + 3
 'Tamaño del mapa
-Public Const XMaxMapSize         As Byte = 100
-Public Const XMinMapSize         As Byte = 1
-Public Const YMaxMapSize         As Byte = 100
-Public Const YMinMapSize         As Byte = 1
-'Tamaño del tileset
-Public Const TileSizeX           As Byte = 32
-Public Const TileSizeY           As Byte = 32
+Public Const XMaxMapSize             As Byte = 100
+Public Const XMinMapSize             As Byte = 1
+Public Const YMaxMapSize             As Byte = 100
+Public Const YMinMapSize             As Byte = 1
 'Tamaño en Tiles de la pantalla de visualizacion
-Public Const XWindow             As Byte = 23
-Public Const YWindow             As Byte = 18
+Public Const XWindow                 As Byte = 23
+Public Const YWindow                 As Byte = 18
 'Sonidos
-Public Const SND_SWING           As Byte = 2
-Public Const SND_TALAR           As Byte = 13
-Public Const SND_TIJERAS         As Byte = 211
-Public Const SND_PESCAR          As Byte = 14
-Public Const SND_MINERO          As Byte = 15
-Public Const SND_WARP            As Byte = 3
-Public Const SND_PUERTA          As Integer = 5
-Public Const SND_PUERTA_DUCTO    As Integer = 380
-Public Const SND_NIVEL           As Integer = 554
-Public Const SND_USERMUERTE      As Byte = 11
-Public Const SND_IMPACTO         As Byte = 10
-Public Const SND_IMPACTO_APU     As Integer = 2187
-Public Const SND_IMPACTO_CRITICO As Integer = 2186
-Public Const SND_IMPACTO2        As Byte = 12
-Public Const SND_DOPA            As Byte = 77
-Public Const SND_LEÑADOR         As Byte = 13
-Public Const SND_FOGATA              As Byte = 116
+Public Const SND_TALAR               As Byte = 13
+Public Const SND_TIJERAS             As Byte = 211
+Public Const SND_PESCAR              As Byte = 14
+Public Const SND_WARP                As Byte = 3
+Public Const SND_PUERTA              As Integer = 5
+Public Const SND_PUERTA_DUCTO        As Integer = 380
+Public Const SND_NIVEL               As Integer = 554
+Public Const SND_IMPACTO             As Byte = 10
+Public Const SND_IMPACTO_APU         As Integer = 2187
+Public Const SND_IMPACTO_CRITICO     As Integer = 2186
+Public Const SND_IMPACTO2            As Byte = 12
 Public Const SND_SACARARMA           As Byte = 25
 Public Const SND_ESCUDO              As Byte = 37
 Public Const MARTILLOHERRERO         As Byte = 41
@@ -1426,9 +1363,6 @@ Public Const MAX_INVENTORY_OBJS      As Integer = 10000
 Public Const MAX_INVENTORY_SLOTS     As Byte = 42
 ' Cantidad de "slots" en el inventario básico
 Public Const MAX_USERINVENTORY_SLOTS As Byte = 24
-' Cantidad de "slots" en el inventario por fila
-Public Const SLOTS_PER_ROW_INVENTORY As Byte = 6
-''
 ' Constante para indicar que se esta usando ORO
 Public Const FLAGORO                 As Integer = 200
 Public Const FLAG_AGUA               As Byte = &H20
@@ -1541,29 +1475,6 @@ Public Enum e_MagicItemEffect
     eTalkToDead = 21
 End Enum
 
-Public Enum e_MagicEffect
-    eMagicresistance = 1
-    eAttributeModifier = 2 'Requires CuantoAumento y QueAtributo
-    eSkillModifier = 3 'Requires CuantoAumento y QueSkill
-    eHealthRecovery = 4
-    eMeditationBonus = 5
-    eNpcDamageBonus = 6 'Requires CuantoAumento
-    eNpcDamageReduction = 7 'Rquires CuantoAumento
-    eReserved = 8
-    eMagicInmuneFromNpc = 9
-    eIncinerate = 10
-    eParalize = 11
-    eProtectResources = 12
-    eWalkHidden = 13
-    eIncreaseMagicDamage = 14 'Requires CuantoAumento
-    eInventoryProtection = 15
-    eSilentCast = 16
-    ePreventDetection = 17
-    eIncreaseSkillLearningChance = 18
-    eAddPoisonEffect = 19
-    eResurrectionItem = 20
-End Enum
-
 Public Enum e_UssableOnTarget
     eRessurectionItem = 1
     eTrap
@@ -1576,9 +1487,7 @@ Public Const STAT_MAXELV As Byte = 47
 Public Const STAT_MAXHP  As Integer = 32000
 Public Const STAT_MAXMP  As Integer = 32000
 Public Const STAT_MAXSTA As Integer = 32000
-Public Const STAT_MAXMAN As Integer = 32000
 Public Const STAT_MAXHIT As Integer = 999
-Public Const STAT_MAXDEF As Byte = 99
 
 ' **************************************************************
 ' **************************************************************
@@ -3394,14 +3303,6 @@ Public Declare Function GetPrivateProfileString _
                                                  ByVal lpfilename As String) As Long
 Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal length As Long)
 
-' Los Objetos Criticos nunca desaparecen del inventario de los npcs vendedores, una vez que
-' se venden los 10.000 (max. cantidad de items x slot) vuelven a reabastecer.
-Public Enum e_ObjetosCriticos
-    Manzana = 1
-    Manzana2 = 64
-    ManzanaNewbie = 573
-End Enum
-
 Public Type t_Rectangle
     X1 As Integer
     Y1 As Integer
@@ -3410,32 +3311,13 @@ Public Type t_Rectangle
 End Type
 
 Public Const DIAMETRO_VISION_GUARDIAS_NPCS As Byte = 7
-
-Public Enum eNumber_Types
-    ent_Byte
-    ent_Integer
-    ent_Long
-    ent_Trigger
-End Enum
-
-Public Const DISTANCIA_ENVIO_DATOS As Byte = 3
-
-Public Enum TipoPaso
-    CONST_BOSQUE = 1
-    CONST_NIEVE = 2
-    CONST_CABALLO = 3
-    CONST_DUNGEON = 4
-    CONST_PISO = 5
-    CONST_DESIERTO = 6
-    CONST_PESADO = 7
-End Enum
+Public Const DISTANCIA_ENVIO_DATOS         As Byte = 3
 
 Public Type tPaso
     CantPasos As Byte
     wav() As Integer
 End Type
 
-Public Const NUM_PASOS     As Byte = 6
 Public pasos()             As tPaso
 Public DBError             As String
 Public EnEventoFaccionario As Boolean

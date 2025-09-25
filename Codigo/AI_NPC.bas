@@ -27,12 +27,9 @@ Attribute VB_Name = "AI"
 '
 Option Explicit
 '  Hardcodeada de la vida...
-Public Const FUEGOFATUO       As Integer = 964
-Public Const ELEMENTAL_VIENTO As Integer = 963
-Public Const ELEMENTAL_FUEGO  As Integer = 962
 'Damos a los NPCs el mismo rango de vison que un PJ
-Public Const RANGO_VISION_X   As Byte = DEFAULT_NPC_VISION_RANGE_X
-Public Const RANGO_VISION_Y   As Byte = DEFAULT_NPC_VISION_RANGE_Y
+Public Const RANGO_VISION_X As Byte = DEFAULT_NPC_VISION_RANGE_X
+Public Const RANGO_VISION_Y As Byte = DEFAULT_NPC_VISION_RANGE_Y
 
 Public Sub NpcDummyUpdate(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)

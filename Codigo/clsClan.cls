@@ -63,7 +63,6 @@ Private p_RequiredExp           As Integer
 Private p_GuildNews             As String
 Private Const NEWSLENGTH        As Integer = 1024
 Private Const DESCLENGTH        As Integer = 256
-Private Const CODEXLENGTH       As Integer = 256
 Private MemberList()            As Long
 Private memberCount             As Integer
 Private MemberListLoaded        As Boolean
