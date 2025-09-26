@@ -389,7 +389,6 @@ Sub DropObj(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal num As Integer
                     Call CustomScenarios.UserDropItem(UserIndex, Slot, Map, x, y)
                     Call QuitarUserInvItem(UserIndex, Slot, num)
                     Call UpdateUserInv(False, UserIndex, Slot)
-                    Call SaveUser(UserIndex)
                     If .flags.jugando_captura = 1 Then
                         If Not InstanciaCaptura Is Nothing Then
                             Call InstanciaCaptura.tiraBandera(UserIndex, obj.ObjIndex)
@@ -406,10 +405,10 @@ Sub DropObj(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal num As Integer
             Else
                 Call QuitarUserInvItem(UserIndex, Slot, num)
                 Call UpdateUserInv(False, UserIndex, Slot)
-                Call SaveUser(UserIndex)
             End If
         End With
     End If
+    Call SaveUser(UserIndex)
     Exit Sub
 DropObj_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.DropObj", Erl)
