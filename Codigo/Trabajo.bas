@@ -142,7 +142,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                     'Si no hace de a 1
                     cantidad_maxima = 1
                 End If
-                Call CarpinteroConstruirItem(UserIndex, UserList(UserIndex).Trabajo.Item, UserList(UserIndex).Trabajo.Cantidad, cantidad_maxima)
+                Call CarpinteroConstruirItem(UserIndex, UserList(UserIndex).Trabajo.Item, cantidad_maxima)
             Case e_Skill.Mineria
                 If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
                 If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
@@ -186,7 +186,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                                     Call WriteMacroTrabajoToggle(UserIndex, False)
                                     Exit Sub
                                 End If
-                                Call DoMineria(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.invent.EquippedWorkingToolObjIndex).Dorada = 1)
+                                Call DoMineria(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y)
                             Else
                                 ' Msg599=Ahí no hay ningún yacimiento.
                                 Call WriteLocaleMsg(UserIndex, "599", e_FontTypeNames.FONTTYPE_INFO)
@@ -240,7 +240,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                             End If
                             '¡Hay un arbol donde clickeo?
                             If ObjData(DummyInt).OBJType = e_OBJType.otTrees Then
-                                Call DoTalar(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.invent.EquippedWorkingToolObjIndex).Dorada = 1)
+                                Call DoTalar(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y)
                             End If
                         Else
                             ' Msg604=No hay ningún árbol ahí.
@@ -1165,7 +1165,7 @@ PuedeConstruirSastre_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.PuedeConstruirSastre", Erl)
 End Function
 
-Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal Cantidad As Long, ByVal cantidad_maxima As Integer)
+Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal cantidad_maxima As Integer)
     On Error GoTo CarpinteroConstruirItem_Err
     If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
     If UserList(UserIndex).flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios) Then
@@ -2088,7 +2088,7 @@ ErrHandler:
     Call LogError("Error en DoRaices")
 End Sub
 
-Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
+Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte)
     On Error GoTo ErrHandler
     Dim Suerte As Integer
     Dim res    As Integer
@@ -2178,7 +2178,7 @@ ErrHandler:
     Call LogError("Error en DoTalar")
 End Sub
 
-Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
+Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte)
     On Error GoTo ErrHandler
     Dim Suerte     As Integer
     Dim res        As Integer

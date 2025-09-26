@@ -723,7 +723,7 @@ Function ConnectUser(ByVal UserIndex As Integer, ByRef name As String, Optional 
         End If
         Call ConnectUser_Prepare(UserIndex, name)
         If LoadCharacterFromDB(UserIndex) Then
-            If ConnectUser_Complete(UserIndex, name, newUser) Then
+            If ConnectUser_Complete(UserIndex, newUser) Then
                 ConnectUser = True
                 Exit Function
             End If

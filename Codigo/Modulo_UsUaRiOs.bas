@@ -250,7 +250,7 @@ Prepare_ConnectUser_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ConnectUser_Prepare", Erl)
 End Sub
 
-Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As String, Optional ByVal newUser As Boolean = False)
+Public Function ConnectUser_Complete(ByVal UserIndex As Integer, Optional ByVal newUser As Boolean = False)
     On Error GoTo Complete_ConnectUser_Err
     ConnectUser_Complete = False
     Dim n    As Integer
@@ -1176,7 +1176,7 @@ TranslateUserPos_Err:
     Call LogError("Error en la subrutina TranslateUserPos - Error : " & Err.Number & " - Description : " & Err.Description)
 End Function
 
-Public Sub SwapNpcPos(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos, ByVal nHeading As e_Heading)
+Public Sub SwapNpcPos(ByRef TargetPos As t_WorldPos, ByVal nHeading As e_Heading)
     Dim NpcIndex         As Integer
     Dim Opposite_Heading As e_Heading
     NpcIndex = MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex
@@ -1220,7 +1220,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
             .Accion.ObjSlot = 0
             .Accion.AccionPendiente = False
         End If
-        Call SwapNpcPos(UserIndex, nPos, nHeading)
+        Call SwapNpcPos(nPos, nHeading)
         'Si no estoy solo en el mapa...
         If MapInfo(.pos.Map).NumUsers > 1 Or IsValidUserRef(.flags.GMMeSigue) Then
             ' Intercambia posición si hay un casper o gm invisible
@@ -2602,12 +2602,12 @@ Public Sub ClearClothes(ByRef Char As t_Char)
     Char.CartAnim = NoCart
 End Sub
 
-Public Function IsStun(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
+Public Function IsStun(ByRef Counters As t_UserCounters) As Boolean
     IsStun = Counters.StunEndTime > GetTickCount()
 End Function
 
 Public Function CanMove(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
-    CanMove = flags.Paralizado = 0 And flags.Inmovilizado = 0 And Not IsStun(flags, Counters) And Not flags.TranslationActive
+    CanMove = flags.Paralizado = 0 And flags.Inmovilizado = 0 And Not IsStun(Counters) And Not flags.TranslationActive
 End Function
 
 Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserCounters) As Boolean
@@ -2620,10 +2620,6 @@ Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserC
         Counters.StunEndTime = GetTickCount() + PlayerStunTime
         StunPlayer = True
     End If
-End Function
-
-Public Function CanUseItem(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
-    CanUseItem = True
 End Function
 
 Public Sub UpdateCd(ByVal UserIndex As Integer, ByVal cdType As e_CdTypes)

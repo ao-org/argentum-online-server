@@ -3963,7 +3963,7 @@ Public Sub UseSpellSlot(ByVal UserIndex As Integer, ByVal spellSlot As Integer)
             Exit Sub
         End If
         .flags.Hechizo = spellSlot
-        If UserMod.IsStun(.flags, .Counters) Then
+        If UserMod.IsStun(.Counters) Then
             Call WriteLocaleMsg(UserIndex, 394, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If

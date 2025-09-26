@@ -1518,7 +1518,7 @@ Private Sub GetExpForUser(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
                 DeltaLevel = .Stats.ELV - NpcList(NpcIndex).nivel
                 If DeltaLevel > CInt(SvrConfig.GetValue("DeltaLevelExpPenalty")) Then
                     Dim Penalty As Single
-                    Penalty = GetExpPenalty(UserIndex, NpcIndex, DeltaLevel)
+                    Penalty = GetExpPenalty(UserIndex, DeltaLevel)
                     ExpaDar = ExpaDar * Penalty
                     ' Si tiene el chat activado, enviamos el mensaje
                     If UserList(UserIndex).ChatCombate = 1 Then
@@ -1619,7 +1619,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                                     DeltaLevel = UserList(Index).Stats.ELV - NpcList(NpcIndex).nivel
                                     If DeltaLevel > CInt(SvrConfig.GetValue("DeltaLevelExpPenalty")) Then
                                         Dim Penalty As Single
-                                        Penalty = GetExpPenalty(Index, NpcIndex, DeltaLevel)
+                                        Penalty = GetExpPenalty(Index, DeltaLevel)
                                         ExpUser = ExpUser * Penalty
                                         ' Si tiene el chat activado, enviamos el mensaje
                                         If UserList(Index).ChatCombate = 1 Then
@@ -1664,7 +1664,7 @@ CalcularDarExpGrupal_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExpGrupal", Erl)
 End Sub
 
-Function GetExpPenalty(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, DeltaLevel As Integer) As Single
+Function GetExpPenalty(ByVal UserIndex As Integer, DeltaLevel As Integer) As Single
     On Error GoTo GetExpPenalty_Err
     '    This function computes an experience-gain multiplier (between 0.0 and 1.0) based on how far above the NPC’s level the player is.
     '    Why “DeltaLevel – 4”? No penalty for small over-leveling (up to 4 levels). Beyond that, each extra level reduces your XP by the configured percentage.

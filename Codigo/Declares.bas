@@ -997,9 +997,6 @@ Public Enum e_ElementalTags
     Water = 2
     Earth = 4
     Wind = 8
-    Light = 16
-    Dark = 32
-    Chaos = 64
     'cant have more than 32 elements, so the last one is 2^31
 End Enum
 
@@ -1220,12 +1217,12 @@ Public Enum e_NPCType
     GuardiasCaos = 8
     ResucitadorNewbie = 9
     Pirata = 10
-    Veterinaria = 11
+    'Veterinaria = 11
     Gobernador = 12
     GuardiaNpc = 13
     Subastador = 16
     Quest = 17
-    Pretoriano = 18
+    'Pretoriano = 18
     DummyTarget = 19
     EntregaPesca = 20
     AO20Shop = 21
@@ -1802,12 +1799,6 @@ Public Enum e_TrapEffect
     eInmovilize = 1
 End Enum
 
-Public Enum e_TripState
-    eForgatToNix
-    eNixToArghal
-    eArghalToForgat
-End Enum
-
 Public Type t_Transport
     Map As Integer
     startX As Integer
@@ -1820,7 +1811,6 @@ Public Type t_Transport
     DockY As Byte
     IsSailing As Boolean
     RequiredPassID As Integer
-    CurrenDest As e_TripState
 End Type
 
 Public Type t_CityWorldPos

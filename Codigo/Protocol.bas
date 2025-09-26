@@ -2271,7 +2271,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         .Trabajo.Target_Y = y
         .Trabajo.TargetSkill = Skill
         If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.pos.Map, x, y) Then Exit Sub
-        If UserMod.IsStun(.flags, .Counters) Then Exit Sub
+        If UserMod.IsStun(.Counters) Then Exit Sub
         If Not InRangoVision(UserIndex, x, y) Then
             Call WritePosUpdate(UserIndex)
             Exit Sub
@@ -7735,7 +7735,7 @@ Public Sub HandleActionOnGroupFrame(ByVal UserIndex As Integer)
         If UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros < TargetGroupMember Then Exit Sub
         If Not IsValidUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember)) Then Exit Sub
         If UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember).ArrayIndex = UserIndex Then Exit Sub
-        If UserMod.IsStun(.flags, .Counters) Then Exit Sub
+        If UserMod.IsStun(.Counters) Then Exit Sub
         If .flags.Muerto = 1 Or .flags.Descansar Then Exit Sub
         Dim targetUserIndex As Integer
         targetUserIndex = UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember).ArrayIndex

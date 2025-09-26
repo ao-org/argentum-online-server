@@ -1412,10 +1412,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     Dim MiObj    As t_Obj
     With UserList(UserIndex)
         If .invent.Object(Slot).amount = 0 Then Exit Sub
-        If Not CanUseItem(.flags, .Counters) Then
-            Call WriteLocaleMsg(UserIndex, 395, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
         If PuedeUsarObjeto(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
             Exit Sub
         End If
