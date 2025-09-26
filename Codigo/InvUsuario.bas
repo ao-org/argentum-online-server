@@ -408,7 +408,9 @@ Sub DropObj(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal num As Integer
             End If
         End With
     End If
-    Call SaveUser(UserIndex)
+    If IsFeatureEnabled("save_on_item_drop") Then
+        Call SaveUser(UserIndex)
+    End If
     Exit Sub
 DropObj_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.DropObj", Erl)
