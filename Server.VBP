@@ -131,6 +131,7 @@ Class=clsNetWriter; Codigo\clsNetWriter.cls
 Module=StringUtils; Codigo\StringUtils.bas
 Module=Consts; Codigo\Consts.bas
 Module=modUptime; Codigo\modUptime.bas
+Module=modElapsedTime; Codigo\modElapsedTime.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""

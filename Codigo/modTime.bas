@@ -27,7 +27,7 @@ Attribute VB_Name = "modTime"
 '
 '
 Option Explicit
-Private Declare Function timeGetTime Lib "winmm.dll" () As Long
+
 Private Declare Sub GetSystemTime Lib "kernel32.dll" (lpSystemTime As t_SYSTEMTIME)
 Private theTime As t_SYSTEMTIME
 
@@ -48,14 +48,6 @@ Public Type t_Timer
     Occurrences As Integer
 End Type
 
-Public Function GetTickCount() As Long
-    On Error GoTo GetTickCount_Err
-    'recovers time as MILISECONDS
-    GetTickCount = timeGetTime And &H7FFFFFFF
-    Exit Function
-GetTickCount_Err:
-    Call TraceError(Err.Number, Err.Description, "ModLadder.GetTickCount", Erl)
-End Function
 
 Function GetTimeFormated() As String
     On Error GoTo GetTimeFormated_Err

@@ -463,8 +463,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleGoNearby(UserIndex)
         Case ClientPacketID.ecomment
             Call HandleComment(UserIndex)
-        Case ClientPacketID.eserverTime
-            Call HandleServerTime(UserIndex)
         Case ClientPacketID.eWhere
             Call HandleWhere(UserIndex)
         Case ClientPacketID.eCreaturesInMap
@@ -677,8 +675,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleCleanSOS(UserIndex)
         Case ClientPacketID.eShowServerForm
             Call HandleShowServerForm(UserIndex)
-        Case ClientPacketID.enight
-            Call HandleNight(UserIndex)
         Case ClientPacketID.eKickAllChars
             Call HandleKickAllChars(UserIndex)
         Case ClientPacketID.eReloadNPCs
@@ -703,10 +699,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleGlobalOnOff(UserIndex)
         Case ClientPacketID.eUseKey
             Call HandleUseKey(UserIndex)
-        Case ClientPacketID.eDay
-            Call HandleDay(UserIndex)
-        Case ClientPacketID.eSetTime
-            Call HandleSetTime(UserIndex)
         Case ClientPacketID.eDonateGold
             Call HandleDonateGold(UserIndex)
         Case ClientPacketID.ePromedio
@@ -4847,22 +4839,6 @@ Private Sub HandleComment(ByVal UserIndex As Integer)
     Exit Sub
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleComment", Erl)
-End Sub
-
-''
-' Handles the "ServerTime" message.
-'
-' @param    UserIndex The index of the user sending the message.
-Private Sub HandleServerTime(ByVal UserIndex As Integer)
-    On Error GoTo HandleServerTime_Err
-    With UserList(UserIndex)
-        If .flags.Privilegios And e_PlayerType.User Then Exit Sub
-        Call LogGM(.name, "Hora.")
-    End With
-    Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1814, Time & "¬" & Date, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1814=Hora: ¬1 ¬2
-    Exit Sub
-HandleServerTime_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleServerTime", Erl)
 End Sub
 
 Private Sub HandleUseKey(ByVal UserIndex As Integer)
