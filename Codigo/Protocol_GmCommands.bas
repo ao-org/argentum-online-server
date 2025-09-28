@@ -89,7 +89,7 @@ Public Sub HandleUpTime(ByVal UserIndex As Integer)
     Dim Time      As Long
     Dim UpTimeStr As String
     'Get total time in seconds
-    Time = ((GetTickCount()) - tInicioServer) \ 1000
+    Time = TicksElapsed(tInicioServer, GetTickCountRaw()) \ 1000
     'Get times in dd:hh:mm:ss format
     UpTimeStr = (Time Mod 60) & " segundos."
     Time = Time \ 60
@@ -3263,23 +3263,7 @@ HandleShowServerForm_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleShowServerForm", Erl)
 End Sub
 
-Public Sub HandleNight(ByVal UserIndex As Integer)
-    On Error GoTo HandleNight_Err
-    'Author: Lucas Tavolaro Ortiz (Tavo)
-    'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
-    With UserList(UserIndex)
-        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster)) Then
-            'Msg528=Servidor » Comando deshabilitado para tu cargo.
-            Call WriteLocaleMsg(UserIndex, "528", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        HoraMundo = GetTickCount()
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
-    End With
-    Exit Sub
-HandleNight_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleNight", Erl)
-End Sub
+
 
 Public Sub HandleKickAllChars(ByVal UserIndex As Integer)
     On Error GoTo HandleKickAllChars_Err
@@ -3475,39 +3459,6 @@ HandleGlobalOnOff_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGlobalOnOff", Erl)
 End Sub
 
-Public Sub HandleDay(ByVal UserIndex As Integer)
-    On Error GoTo HandleDay_Err
-    With UserList(UserIndex)
-        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
-            'Msg528=Servidor » Comando deshabilitado para tu cargo.
-            Call WriteLocaleMsg(UserIndex, "528", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        HoraMundo = GetTickCount() - SvrConfig.GetValue("DayLength") \ 2
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
-    End With
-    Exit Sub
-HandleDay_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleDay", Erl)
-End Sub
-
-Public Sub HandleSetTime(ByVal UserIndex As Integer)
-    On Error GoTo HandleSetTime_Err
-    With UserList(UserIndex)
-        Dim HoraDia As Long
-        HoraDia = reader.ReadInt32
-        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
-            'Msg528=Servidor » Comando deshabilitado para tu cargo.
-            Call WriteLocaleMsg(UserIndex, "528", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        HoraMundo = GetTickCount() - HoraDia
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
-    End With
-    Exit Sub
-HandleSetTime_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleSetTime", Erl)
-End Sub
 
 Public Sub HandleGiveItem(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler

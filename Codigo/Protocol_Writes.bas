@@ -3729,16 +3729,35 @@ PrepareMessageRainToggle_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageRainToggle", Erl)
 End Function
 
+
 Public Function PrepareMessageHora()
     On Error GoTo PrepareMessageHora_Err
+
+    Dim dayLen As Long
+    dayLen = CLng(SvrConfig.GetValue("DayLength"))
+    If dayLen <= 0 Then dayLen = 1 ' guard
+
+    Dim nowTicks As Long
+    nowTicks = GetTickCount()
+
+    ' HoraMundo should be a GetTickCount() snapshot of when the in-game day started
+    Dim elapsed As Double
+    elapsed = TicksElapsed(HoraMundo, nowTicks)
+
+    Dim t As Long
+    t = PosMod(elapsed, dayLen)  ' always 0..dayLen-1
+
     Call Writer.WriteInt16(ServerPacketID.ehora)
-    Call Writer.WriteInt32(CLng((GetTickCount() - HoraMundo) Mod CLng(SvrConfig.GetValue("DayLength"))))
-    Call Writer.WriteInt32(CLng(SvrConfig.GetValue("DayLength")))
+    Call Writer.WriteInt32(t)
+    Call Writer.WriteInt32(dayLen)
     Exit Function
+
 PrepareMessageHora_Err:
     Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageHora", Erl)
+    Call TraceError(Err.Number, Err.Description, _
+        "Argentum20Server.Protocol_Writes.PrepareMessageHora", Erl)
 End Function
+
 
 ''
 ' Prepares the "ObjectDelete" message and returns it.
