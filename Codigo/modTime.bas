@@ -31,6 +31,8 @@ Private Declare Function timeGetTime Lib "winmm.dll" () As Long
 Private Declare Sub GetSystemTime Lib "kernel32.dll" (lpSystemTime As t_SYSTEMTIME)
 Private theTime As t_SYSTEMTIME
 
+Private Const MAX_TICKS As Double = 2147483648#
+
 Private Type t_SYSTEMTIME
     wYear As Integer
     wMonth As Integer
@@ -57,10 +59,22 @@ GetTickCount_Err:
     Call TraceError(Err.Number, Err.Description, "ModLadder.GetTickCount", Erl)
 End Function
 
+Public Function TicksElapsed(ByVal EarlierTick As Long, Optional ByVal LaterTick As Long = -1) As Long
+    If LaterTick = -1 Then
+        LaterTick = GetTickCount()
+    End If
+
+    If LaterTick >= EarlierTick Then
+        TicksElapsed = LaterTick - EarlierTick
+    Else
+        TicksElapsed = CLng((MAX_TICKS - EarlierTick) + LaterTick)
+    End If
+End Function
+
 Function GetTimeFormated() As String
     On Error GoTo GetTimeFormated_Err
     Dim Elapsed As Long
-    Elapsed = (GetTickCount() - HoraMundo) / SvrConfig.GetValue("DayLength")
+    Elapsed = (TicksElapsed(HoraMundo)) / SvrConfig.GetValue("DayLength")
     Dim Mins As Long
     Mins = (Elapsed - Fix(Elapsed)) * 1440
     Dim Horita    As Byte

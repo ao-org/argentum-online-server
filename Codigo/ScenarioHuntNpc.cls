@@ -263,7 +263,7 @@ End Sub
 
 Private Sub IBaseScenario_Update()
     Dim frametime As Long
-    frametime = GetTickCount() - LastFrameTime
+    frametime = TicksElapsed(LastFrameTime)
     LastFrameTime = GetTickCount()
     If LobbyList(LobbyIndex).State = e_LobbyState.InProgress Then
         If StartTimer.Occurrences < 10 Then

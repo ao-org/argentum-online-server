@@ -297,7 +297,7 @@ Public Sub EnviarInfoInvasion(ByVal Index As Integer)
     With Invasiones(Index)
         Dim PorcentajeVida As Byte, PorcentajeTiempo As Byte
         PorcentajeVida = (.VidaMuralla / .MaxVidaMuralla) * 100
-        PorcentajeTiempo = (GetTickCount - .TiempoDeInicio) / (.Duracion * 600)
+        PorcentajeTiempo = TicksElapsed(.TiempoDeInicio) / (.Duracion * 600)
         Dim i As Integer, Mapa As Integer, j As Integer
         For i = 1 To UBound(.SpawnBoxes)
             Mapa = .SpawnBoxes(i).TopLeft.Map

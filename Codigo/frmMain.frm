@@ -1116,12 +1116,12 @@ Private Sub TimerGuardarUsuarios_Timer()
         For UserIndex = 1 To LastUser
             With UserList(UserIndex)
                 If .flags.UserLogged Then
-                    If GetTickCount - .Counters.LastSave > IntervaloGuardarUsuarios Then
+                    If TicksElapsed(.Counters.LastSave) > IntervaloGuardarUsuarios Then
                         Call SaveUser(UserIndex)
                         UserGuardados = UserGuardados + 1
                         If UserGuardados > NumUsers Then Exit For
                         'limit the amount of time we block the only thread we have here, lets save some user on the next loop
-                        If (GetTickCount - PerformanceTimer) > 100 Then Exit For
+                        If (TicksElapsed(PerformanceTimer)) > 100 Then Exit For
                     End If
                 End If
             End With
@@ -1386,7 +1386,7 @@ Private Sub Automatic_Event_Timer()
     End If
     If AlreadyDidAutoEventToday Then
         '3600000 = 1 hora en milisegundos
-        If GetTickCount - LastAutoEventAttempt > 3600000 Then
+        If TicksElapsed(LastAutoEventAttempt) > 3600000 Then
             AlreadyDidAutoEventToday = False
         End If
         Exit Sub

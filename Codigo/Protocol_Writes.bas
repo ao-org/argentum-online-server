@@ -3732,7 +3732,7 @@ End Function
 Public Function PrepareMessageHora()
     On Error GoTo PrepareMessageHora_Err
     Call Writer.WriteInt16(ServerPacketID.ehora)
-    Call Writer.WriteInt32(CLng((GetTickCount() - HoraMundo) Mod CLng(SvrConfig.GetValue("DayLength"))))
+    Call Writer.WriteInt32(CLng((TicksElapsed(HoraMundo)) Mod CLng(SvrConfig.GetValue("DayLength"))))
     Call Writer.WriteInt32(CLng(SvrConfig.GetValue("DayLength")))
     Exit Function
 PrepareMessageHora_Err:
@@ -4378,7 +4378,7 @@ Public Sub WriteDebugLogResponse(ByVal UserIndex As Integer, ByVal debugType, By
             Call Writer.WriteString8("remote DEBUG: " & " user name: " & Args(0))
             With UserList(tIndex)
                 Dim timeSinceLastReset As Long
-                timeSinceLastReset = GetTickCount() - Mapping(.ConnectionDetails.ConnID).TimeLastReset
+                timeSinceLastReset = TicksElapsed(Mapping(.ConnectionDetails.ConnID).TimeLastReset)
                 Call Writer.WriteString8("validConnection: " & .ConnectionDetails.ConnIDValida & " connectionID: " & .ConnectionDetails.ConnID & " UserIndex: " & tIndex & _
                         " charNmae" & .name & " UserLogged state: " & .flags.UserLogged & ", time since last message: " & timeSinceLastReset & " timeout setting: " & _
                         DisconnectTimeout)

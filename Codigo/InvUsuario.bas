@@ -1420,7 +1420,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Exit Sub
         End If
         obj = ObjData(.invent.Object(Slot).ObjIndex)
-        Dim TimeSinceLastUse As Long: TimeSinceLastUse = GetTickCount() - .CdTimes(obj.cdType)
+        Dim TimeSinceLastUse As Long: TimeSinceLastUse = TicksElapsed(.CdTimes(obj.cdType))
         If TimeSinceLastUse < obj.Cooldown Then Exit Sub
         If IsSet(obj.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly) Then
             If MapInfo(.pos.Map).Seguro = 0 Then
@@ -2059,7 +2059,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Call UserMod.UserDie(UserIndex)
                         'Poción de reset (resetea el personaje)
                     Case 22
-                        If GetTickCount - .Counters.LastResetTick > 3000 Then
+                        If TicksElapsed(.Counters.LastResetTick) > 3000 Then
                             Call writeAnswerReset(UserIndex)
                             .Counters.LastResetTick = GetTickCount
                         Else
@@ -2733,7 +2733,7 @@ End Function
 
 Public Function IsItemInCooldown(ByRef User As t_User, ByRef obj As t_UserOBJ) As Boolean
     Dim ElapsedTime As Long
-    ElapsedTime = GetTickCount() - User.CdTimes(ObjData(obj.ObjIndex).cdType)
+    ElapsedTime = TicksElapsed(User.CdTimes(ObjData(obj.ObjIndex).cdType))
     IsItemInCooldown = ElapsedTime < ObjData(obj.ObjIndex).Cooldown
 End Function
 

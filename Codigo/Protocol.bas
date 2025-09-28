@@ -5916,7 +5916,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
         End If
         If Not EsGM(UserIndex) Then
             If Not IsValidUserRef(tUser) Then
-                If GetTickCount() - .Counters.LastTransferGold >= 10000 Then
+                If TicksElapsed(.Counters.LastTransferGold) >= 10000 Then
                     If PersonajeExiste(username) Then
                         If Not AddOroBancoDatabase(username, Cantidad) Then
                             Call WriteLocaleChatOverHead(UserIndex, 1409, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1409=Error al realizar la operación.
