@@ -3650,3 +3650,34 @@ Public Sub PerformTimeLimitCheck(ByRef timer As Long, ByRef TestText As String, 
     End If
     timer = GetTickCount()
 End Sub
+
+Public Function SkillRequerido(ByVal SkillType As Integer) As String
+    Select Case SkillType
+        Case 1: SkillRequerido = "Magia"
+        Case 2: SkillRequerido = "Robar"
+        Case 3: SkillRequerido = "Destreza en Combate"
+        Case 4: SkillRequerido = "Combate con Armas"
+        Case 5: SkillRequerido = "Meditar"
+        Case 6: SkillRequerido = "Apuñalar"
+        Case 7: SkillRequerido = "Ocultarse"
+        Case 8: SkillRequerido = "Supervivencia"
+        Case 9: SkillRequerido = "Comerciar"
+        Case 10: SkillRequerido = "Defensa con Escudos"
+        Case 11: SkillRequerido = "Liderazgo"
+        Case 12: SkillRequerido = "Armas a Distancia"
+        Case 13: SkillRequerido = "Combate sin Armas"
+        Case 14: SkillRequerido = "Navegación"
+        Case 15: SkillRequerido = "Equitación"
+        Case 16: SkillRequerido = "Resistencia Mágica"
+        Case 17: SkillRequerido = "Talar"
+        Case 18: SkillRequerido = "Pescar"
+        Case 19: SkillRequerido = "Minería"
+        Case 20: SkillRequerido = "Herrería"
+        Case 21: SkillRequerido = "Carpintería"
+        Case 22: SkillRequerido = "Alquimia"
+        Case 23: SkillRequerido = "Sastrería"
+        Case 24: SkillRequerido = "Domar"
+        Case Else
+            SkillRequerido = "Habilidad desconocida"
+    End Select
+End Function

@@ -614,12 +614,11 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
             Exit Function
         End If
     End If
-    If tmpQuest.RequiredSkill.SkillType > 0 Then
+   If tmpQuest.RequiredSkill.SkillType > 0 Then
         If UserList(UserIndex).Stats.UserSkills(tmpQuest.RequiredSkill.SkillType) < tmpQuest.RequiredSkill.RequiredValue Then
-            Call WriteLocaleMsg(UserIndex, 473, e_FontTypeNames.FONTTYPE_INFO)
+         Call WriteLocaleMsg(UserIndex, 473, e_FontTypeNames.FONTTYPE_INFO, SkillRequerido(tmpQuest.RequiredSkill.SkillType))
             Exit Function
         End If
-    End If
     If UserList(UserIndex).clase <> tmpQuest.RequiredClass And tmpQuest.RequiredClass > 0 Then
         Call WriteLocaleMsg(UserIndex, 1426, e_FontTypeNames.FONTTYPE_INFO)
         Exit Function
@@ -634,4 +633,5 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
     Exit Function
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "ModQuest.CanUserAcceptQuest", Erl)
+    End If
 End Function
