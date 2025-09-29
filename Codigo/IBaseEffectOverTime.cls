@@ -98,11 +98,11 @@ Public Sub TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_R
 End Sub
 
 'called when the owner of the effect is attacking some target it should handle a ditHit or FailedAttack after this call
-Public Sub TartgetWillAtack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+Public Sub TargetWillAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
 'called when the owner of the effect hit something
-Public Sub TartgetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+Public Sub TargetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
 'called when the owner of the effect fails and attacks
