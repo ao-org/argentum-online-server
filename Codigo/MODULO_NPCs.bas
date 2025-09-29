@@ -1434,16 +1434,27 @@ Public Sub KillRandomNpc()
     Call MuereNpc(NpcIndex, 0)
 End Sub
 
+
 Public Function CanMove(ByRef counter As t_NpcCounters, ByRef flags As t_NPCFlags) As Boolean
-    CanMove = flags.Inmovilizado + flags.Paralizado = 0 And counter.StunEndTime < GetTickCount() And Not flags.TranslationActive
+    Dim nowRaw As Long
+    nowRaw = GetTickCountRaw()
+
+    CanMove = _
+        (flags.Inmovilizado + flags.Paralizado = 0) _
+        And TickAfter(nowRaw, counter.StunEndTime) _
+        And Not flags.TranslationActive
 End Function
 
 Public Function CanAttack(ByRef counter As t_NpcCounters, ByRef flags As t_NPCFlags) As Boolean
-    CanAttack = flags.Paralizado = 0 And counter.StunEndTime < GetTickCount()
+    Dim nowRaw As Long
+    nowRaw = GetTickCountRaw()
+
+    CanAttack = (flags.Paralizado = 0) _
+                And TickAfter(nowRaw, counter.StunEndTime)
 End Function
 
 Public Sub StunNPc(ByRef Counters As t_NpcCounters)
-    Counters.StunEndTime = GetTickCount() + NpcStunTime
+    Counters.StunEndTime = AddMod32(GetTickCountRaw(), NpcStunTime)
 End Sub
 
 Public Function ModifyHealth(ByVal NpcIndex As Integer, ByVal amount As Long, Optional ByVal MinValue = 0) As Boolean
