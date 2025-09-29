@@ -556,7 +556,9 @@ Sub Main()
     '           Configuracion de los sockets
     ' ----------------------------------------------------
     Call GetHoraActual
-    HoraMundo = GetTickCountRaw() - SvrConfig.GetValue("DayLength") \ 2
+
+    WorldTime_Init CLng(SvrConfig.GetValue("DayLength")), 0
+
     frmCargando.Visible = False
     Unload frmCargando
     'Ocultar

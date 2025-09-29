@@ -3735,21 +3735,15 @@ Public Function PrepareMessageHora()
 
     Dim dayLen As Long
     dayLen = CLng(SvrConfig.GetValue("DayLength"))
-    If dayLen <= 0 Then dayLen = 1 ' guard
+    If dayLen <= 0 Then dayLen = 1
 
-    Dim nowTicks As Long
-    nowTicks = GetTickCount()
-
-    ' HoraMundo should be a GetTickCount() snapshot of when the in-game day started
-    Dim elapsed As Double
-    elapsed = TicksElapsed(HoraMundo, nowTicks)
-
-    Dim t As Long
-    t = PosMod(elapsed, dayLen)  ' always 0..dayLen-1
+    ' Ensure WorldTime is initialized at server start, e.g. WorldTime_Init dayLen, 0
+    Dim t As Long, d As Long
+    WorldTime_PrepareHora t, d
 
     Call Writer.WriteInt16(ServerPacketID.ehora)
-    Call Writer.WriteInt32(t)
-    Call Writer.WriteInt32(dayLen)
+    Call Writer.WriteInt32(t)   ' elapsed 0..dayLen-1
+    Call Writer.WriteInt32(d)   ' dayLen
     Exit Function
 
 PrepareMessageHora_Err:

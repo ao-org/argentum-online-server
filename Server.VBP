@@ -132,6 +132,7 @@ Module=StringUtils; Codigo\StringUtils.bas
 Module=Consts; Codigo\Consts.bas
 Module=modUptime; Codigo\modUptime.bas
 Module=modElapsedTime; Codigo\modElapsedTime.bas
+Module=WorldTime; Codigo\WorldTime.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
