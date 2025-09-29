@@ -2137,8 +2137,12 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
         Dim DesdeInventario As Boolean
         DesdeInventario = reader.ReadInt8
         If Not DesdeInventario Then
+            
             Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("El usuario " & .name & _
-                    " está tomando pociones con click estando en hechizos... raaaaaro, poleeeeemico. BAN?", e_FontTypeNames.FONTTYPE_INFOBOLD))
+                    " está tomando pociones con click estando en hechizos....Fue kickeado automaticamente", e_FontTypeNames.FONTTYPE_INFOBOLD))
+                    
+            Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID)
+            
         End If
         Dim PacketCounter As Long
         PacketCounter = reader.ReadInt32
