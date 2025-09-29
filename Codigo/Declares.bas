@@ -170,7 +170,6 @@ End Enum
 Public SvrConfig            As ServerConfig
 Public Md5Cliente           As String
 Public PrivateKey           As String
-Public HoraMundo            As Long
 Public HoraActual           As Integer
 Public UltimoChar           As String
 Public LastRecordUsuarios   As Integer
