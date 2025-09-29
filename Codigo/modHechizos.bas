@@ -2553,8 +2553,8 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
                     h).Particle, Hechizos(h).TimeParticula))
         End If
         If Hechizos(h).wav <> 0 Then
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))   'Esta linea faltaba. Pablo (ToxicWaste)
-        End If
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY)) 'Esta linea faltaba. Pablo (ToxicWaste)
+           End If
     End If
     If UserList(UserIndex).ChatCombate = 1 Then
         If Hechizos(h).Target = e_TargetType.uTerreno Then
@@ -2906,7 +2906,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
             ' Resto el porcentaje total
             Damage = Damage - Porcentaje(Damage, PorcentajeRM)
         End If
-        Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
+        Call EffectsOverTime.TargetWillAttack(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
         Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
         Damage = Damage * UserMod.GetMagicDamageReduction(UserList(tempChr))
         ' Prevengo daño negativo
@@ -2917,7 +2917,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
         End If
         Call InfoHechizo(UserIndex)
         IsAlive = UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h) = eStillAlive
-        Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
+        Call EffectsOverTime.TargetDidHit(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
         Call SubirSkill(tempChr, Resistencia)
         b = True
     End If
@@ -3163,7 +3163,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
                 Damage = Damage - Porcentaje(Damage, MR)
             End If
         End If
-        Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, targetUserIndex, eUser, e_DamageSourceType.e_magic)
+        Call EffectsOverTime.TargetWillAttack(UserList(UserIndex).EffectOverTime, targetUserIndex, eUser, e_DamageSourceType.e_magic)
         Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
         Damage = Damage * UserMod.GetMagicDamageReduction(UserList(targetUserIndex))
         ' Prevengo daño negativo
@@ -3173,7 +3173,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         End If
         enviarInfoHechizo = True
         IsAlive = UserMod.DoDamageOrHeal(targetUserIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h) = eStillAlive
-        Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, targetUserIndex, eUser, e_DamageSourceType.e_magic)
+        Call EffectsOverTime.TargetDidHit(UserList(UserIndex).EffectOverTime, targetUserIndex, eUser, e_DamageSourceType.e_magic)
         Call SubirSkill(targetUserIndex, Resistencia)
         b = True
     End If
