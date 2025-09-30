@@ -4498,3 +4498,24 @@ WriteUpdateLobbyList_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareActiveToggles", Erl)
 End Sub
+
+Public Sub WriteChangeSkinSlot(ByVal UserIndex As Integer, ByVal TypeSkin As e_OBJType, ByVal Slot As Byte)
+    With UserList(UserIndex)
+        Call Writer.WriteInt16(ServerPacketID.ChangeSkinSlot)
+        Call Writer.WriteInt8(Slot)
+        Call Writer.WriteInt16(.Invent_Skins.Object(Slot).ObjIndex)
+        'Enviamos si está equipada la skin o no
+        Call Writer.WriteBool(.Invent_Skins.Object(Slot).Equipped)
+        'Si hay algún error de dateo, no bugeamos el inventario.
+        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
+            Call Writer.WriteInt32(ObjData(.Invent_Skins.Object(Slot).ObjIndex).GrhIndex)
+            Call Writer.WriteInt8(ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType)
+            Call Writer.WriteString8(ObjData(.Invent_Skins.Object(Slot).ObjIndex).name)
+        Else
+            Call Writer.WriteInt32(0)
+            Call Writer.WriteInt16(0)
+            Call Writer.WriteString8(vbNullString)
+        End If
+        Call modSendData.SendData(SendTarget.ToIndex, UserIndex)
+    End With
+End Sub
