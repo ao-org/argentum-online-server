@@ -1449,6 +1449,8 @@ Public Const MAX_INVENTORY_OBJS      As Integer = 10000
 ''
 ' Cantidad de "slots" en el inventario con todos los slots desbloqueados
 Public Const MAX_INVENTORY_SLOTS     As Byte = 42
+Public Const MAX_SKINSINVENTORY_SLOTS As Byte = 50
+Public Const MAX_SKINSSPELLS_SLOTS    As Byte = 50
 ' Cantidad de "slots" en el inventario básico
 Public Const MAX_USERINVENTORY_SLOTS As Byte = 24
 ' Cantidad de "slots" en el inventario por fila
@@ -1911,7 +1913,7 @@ Public Type t_Inventario
 End Type
 
 '[/About] 30/09/2025
-Public Type tSkinInventario
+Public Type tSkinInventario 'MAX_SKINSINVENTORY_SLOTS
     'Type debe ir en el Storage Manager pero acá no hace falta, ya está en OBJECT.
     Object(1 To MAX_SKINSINVENTORY_SLOTS) As t_UserSkins
     ObjIndexArmourEquipped      As Integer
@@ -2389,8 +2391,6 @@ End Type
 
 '[/Pablo ToxicWaste]
 Public Const MAX_BANCOINVENTORY_SLOTS As Byte = 42
-Public Const MAX_SKINSINVENTORY_SLOTS As Byte = 50
-Public Const MAX_SKINSSPELLS_SLOTS    As Byte = 50
 
 Public Type t_BancoInventario
     Object(1 To MAX_BANCOINVENTORY_SLOTS) As t_UserOBJ
