@@ -3587,4 +3587,31 @@ CanEquipSkin_Error:
     Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.CanEquipSkin of Módulo", Erl())
 End Function
 
+'---------------------------------------------------------------------------------------
+' Procedure : UpdateSingleItemInv
+' Last Author : [/About] Brian Sabatier (brian.sabatier87@gmail.com - https://github.com/brianirvana/brianirvana)
+' Last Date : 15/9/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+Sub UpdateSingleItemInv(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal UpdateFullInfo As Boolean = True)
 
+Dim NullObj                     As t_UserOBJ
+    
+    On Error GoTo UpdateSingleItemInv_Error
+    
+    With UserList(UserIndex)
+        'Actualiza el inventario
+        If .invent.Object(Slot).ObjIndex > 0 Then
+            If Slot > 0 Then
+                Call ChangeUserInv(UserIndex, Slot, .invent.Object(Slot))    'Actualizamos sólo el slot!
+            End If
+        Else
+            Call ChangeUserInv(UserIndex, Slot, NullObj)
+        End If
+    End With
+    
+    On Error GoTo 0
+    Exit Sub
+UpdateSingleItemInv_Error:
+    Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.UpdateSingleItemInv of Módulo", Erl())
+End Sub
