@@ -1465,7 +1465,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal x As Integer, ByVal y As Int
     On Error GoTo TratarDeHacerFogata_Err
     Dim Suerte    As Byte
     Dim exito     As Byte
-    Dim obj       As t_Obj
+    Dim Obj       As t_Obj
     Dim posMadera As t_WorldPos
     If Not LegalPos(Map, x, y) Then Exit Sub
     With posMadera
@@ -1502,10 +1502,10 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal x As Integer, ByVal y As Int
     End If
     exito = RandomNumber(1, Suerte)
     If exito = 1 Then
-        obj.ObjIndex = FOGATA_APAG
-        obj.amount = MapData(Map, x, y).ObjInfo.amount \ 3
+        Obj.ObjIndex = FOGATA_APAG
+        Obj.amount = MapData(Map, x, y).ObjInfo.amount \ 3
         Call WriteLocaleMsg(UserIndex, "1456", e_FontTypeNames.FONTTYPE_INFO)  ' Msg1456=Has hecho ¬1 ramitas.
-        Call MakeObj(obj, Map, x, y)
+        Call MakeObj(Obj, Map, x, y)
         'Seteamos la fogata como el nuevo TargetObj del user
         UserList(UserIndex).flags.TargetObj = FOGATA_APAG
     End If
@@ -2571,17 +2571,17 @@ End Function
 Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If .flags.PescandoEspecial Then
-            Dim obj As t_Obj
-            obj.amount = 1
-            obj.ObjIndex = .Stats.NumObj_PezEspecial
-            If Not MeterItemEnInventario(UserIndex, obj) Then
+            Dim Obj As t_Obj
+            Obj.amount = 1
+            Obj.ObjIndex = .Stats.NumObj_PezEspecial
+            If Not MeterItemEnInventario(UserIndex, Obj) Then
                 .Stats.NumObj_PezEspecial = 0
                 .flags.PescandoEspecial = False
                 Exit Function
             End If
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(obj.ObjIndex).GrhIndex))
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(Obj.ObjIndex).GrhIndex))
             'Msg922=Felicitaciones has pescado un pez de gran porte ( " & ObjData(obj.ObjIndex).name & " )
-            Call WriteLocaleMsg(UserIndex, "922", e_FontTypeNames.FONTTYPE_FIGHT, ObjData(obj.ObjIndex).name)
+            Call WriteLocaleMsg(UserIndex, "922", e_FontTypeNames.FONTTYPE_FIGHT, ObjData(Obj.ObjIndex).name)
             .Stats.NumObj_PezEspecial = 0
             .flags.PescandoEspecial = False
         End If

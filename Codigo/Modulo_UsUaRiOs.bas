@@ -2038,7 +2038,7 @@ Private Function CalculateBaseFactionScore(ByVal Attacker As Integer, ByVal Targ
     End With
 End Function
 
-Sub Tilelibre(ByRef pos As t_WorldPos, ByRef nPos As t_WorldPos, ByRef obj As t_Obj, ByRef Agua As Boolean, ByRef Tierra As Boolean, Optional ByVal InitialPos As Boolean = True)
+Sub Tilelibre(ByRef pos As t_WorldPos, ByRef nPos As t_WorldPos, ByRef Obj As t_Obj, ByRef Agua As Boolean, ByRef Tierra As Boolean, Optional ByVal InitialPos As Boolean = True)
     On Error GoTo Tilelibre_Err
     '**************************************************************
     'Author: Unknown
@@ -2064,9 +2064,9 @@ Sub Tilelibre(ByRef pos As t_WorldPos, ByRef nPos As t_WorldPos, ByRef obj As t_
                     'there is already an item on the floor that differs from the item being dropped
                     'the item on the floor is the same but the elemental tags differ
                     'the amount of items exceeds the max quantity of items on the floor
-                    hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex <> obj.ObjIndex)
-                    If Not hayobj Then hayobj = MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags <> obj.ElementalTags
-                    If Not hayobj Then hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.amount + obj.amount > MAX_INVENTORY_OBJS)
+                    hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex <> Obj.ObjIndex)
+                    If Not hayobj Then hayobj = MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags <> Obj.ElementalTags
+                    If Not hayobj Then hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.amount + Obj.amount > MAX_INVENTORY_OBJS)
                     If Not hayobj And MapData(nPos.Map, tX, tY).TileExit.Map = 0 And (InitialPos Or (tX <> pos.x And tY <> pos.y)) Then
                         nPos.x = tX
                         nPos.y = tY
@@ -2659,7 +2659,7 @@ End Function
 
 
 Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserCounters) As Boolean
-    On Error GoTo EH
+    On Error GoTo eh
     StunPlayer = False
 
     ' (Optional) your CanMove signature might be (counters, flags) — adjust order if needed
@@ -2679,7 +2679,7 @@ Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserC
         StunPlayer = True
     End If
     Exit Function
-EH:
+eh:
 End Function
 
 
