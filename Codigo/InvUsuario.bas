@@ -238,6 +238,45 @@ LimpiarInventario_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.LimpiarInventario", Erl)
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : ResetUserSkinsInventory
+' Last Author : [/About] Brian Sabatier (brian.sabatier87@gmail.com - https://github.com/brianirvana/brianirvana)
+' Last Date : 18/9/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+Sub ResetUserSkinsInventory(ByVal UserIndex As Integer)
+Dim i                           As Byte
+    On Error GoTo ResetUserSkinsInventory_Error
+    With UserList(UserIndex)
+
+        For i = 1 To MAX_SKINSINVENTORY_SLOTS
+            .Invent_Skins.Object(i).ObjIndex = 0
+            .Invent_Skins.Object(i).Equipped = False
+            .Invent_Skins.Object(i).Type = 0
+        Next i
+
+        .Invent_Skins.ObjIndexArmourEquipped = 0
+        .Invent_Skins.ObjIndexHelmetEquipped = 0
+        .Invent_Skins.ObjIndexWeaponEquipped = 0
+        .Invent_Skins.ObjIndexShieldEquipped = 0
+        .Invent_Skins.ObjIndexWindsEquipped = 0
+        .Invent_Skins.ObjIndexBoatEquipped = 0
+        .Invent_Skins.ObjIndexBackpackEquipped = 0
+        .Invent_Skins.SlotArmourEquipped = 0
+        .Invent_Skins.SlotHelmetEquipped = 0
+        .Invent_Skins.SlotWeaponEquipped = 0
+        .Invent_Skins.SlotShieldEquipped = 0
+        .Invent_Skins.SlotWindsEquipped = 0
+        .Invent_Skins.SlotBoatEquipped = 0
+        .Invent_Skins.SlotBackpackEquipped = 0
+        .Invent_Skins.count = 0
+    End With
+    On Error GoTo 0
+    Exit Sub
+ResetUserSkinsInventory_Error:
+    Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.ResetUserSkinsInventory", Erl())
+End Sub
+
 Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
     '***************************************************
     'Autor: Unknown (orginal version)
