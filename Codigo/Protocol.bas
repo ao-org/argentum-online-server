@@ -2838,25 +2838,50 @@ End Sub
 '
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleEquipItem(ByVal UserIndex As Integer)
+
+Dim bSkins                      As Boolean
+Dim itemSlot                    As Byte
+Dim Packet_ID                   As Long
+Dim PacketCounter               As Long
+Dim eSkinType                   As e_OBJType
+
     On Error GoTo HandleEquipItem_Err
+
     With UserList(UserIndex)
-        Dim itemSlot As Byte
+
         itemSlot = reader.ReadInt8()
-        Dim PacketCounter As Long
+        bSkins = reader.ReadBool
+
+        If bSkins Then
+            eSkinType = reader.ReadInt8()
+        End If
+
         PacketCounter = reader.ReadInt32
-        Dim Packet_ID As Long
         Packet_ID = PacketNames.EquipItem
-        'If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), userindex, "EquipItem", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+
         'Dead users can't equip items
         If .flags.Muerto = 1 Then
             'Msg1136= ¡¡Estás muerto!! Sólo podés usar items cuando estás vivo.
             Call WriteLocaleMsg(UserIndex, "1136", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
+
         'Validate item slot
-        If itemSlot > UserList(UserIndex).CurrentInventorySlots Or itemSlot < 1 Then Exit Sub
-        If .invent.Object(itemSlot).ObjIndex = 0 Then Exit Sub
-        Call EquiparInvItem(UserIndex, itemSlot)
+        If Not bSkins Then
+            If itemSlot > .CurrentInventorySlots Or itemSlot < 1 Then Exit Sub
+            'Auto Fix errores de dateos en ï¿½tems.
+            If .invent.Object(itemSlot).amount = 0 Then
+                .invent.Object(itemSlot).ObjIndex = 0
+                Call UpdateSingleItemInv(UserIndex, itemSlot, False)
+                Exit Sub
+            End If
+            Call EquiparInvItem(UserIndex, itemSlot)
+        Else
+            If itemSlot > MAX_SKINSINVENTORY_SLOTS Or itemSlot < 1 Then Exit Sub
+            If .Invent_Skins.Object(itemSlot).ObjIndex = 0 Then Exit Sub
+            Call EquiparInvItem(UserIndex, itemSlot, bSkins, eSkinType)
+        End If
+
     End With
     Exit Sub
 HandleEquipItem_Err:
