@@ -1497,16 +1497,16 @@ Public Enum e_OBJType
     otFullBottle = 34
     otRingAccesory = 35
     otPassageTicket = 36
-    'otLibre = 37
+    otSkinsWings = 37           'Skins de Alas
     otMap = 38
-    'otLibre = 39
-    'otLibre = 40
-    'otLibre = 41
-    'otLibre = 42
-    'otLibre = 43
+    otSkinsArmours = 39         'Skins de Armaduras
+    otSkinsShields = 40         'Skins de Escudos
+    otSkinsHelmets = 41         'Skins de Cascos o Sombreros, o todo lo que vaya en la cabeza
+    otSkinsWeapons = 42         'Skins Armas
+    otSkinsBoats = 43           'Skins Botes, barcas, galeras, galeones,etc
     otSaddles = 44
     otRecallStones = 45
-    'otLibre = 46
+    otSkinsSpells = 46          'Skins de Hechizos
     otMail = 47
     otChest = 48
     otDonator = 50
@@ -1876,6 +1876,13 @@ Public Type t_UserOBJ
     ElementalTags As Long
 End Type
 
+'[/About] 30/09/2025
+Public Type t_UserSkins
+    Equipped                        As Boolean
+    ObjIndex                        As Integer
+    Type                            As Integer
+End Type
+
 Public Type t_Inventario
     Object(1 To MAX_INVENTORY_SLOTS) As t_UserOBJ
     EquippedWeaponObjIndex As Integer
@@ -1901,6 +1908,28 @@ Public Type t_Inventario
     EquippedBackpackObjIndex As Integer
     EquippedBackpackSlot As Byte
     NroItems As Integer
+End Type
+
+'[/About] 30/09/2025
+Public Type tSkinInventario
+    'Type debe ir en el Storage Manager pero acá no hace falta, ya está en OBJECT.
+    Object(1 To MAX_SKINSINVENTORY_SLOTS) As t_UserSkins
+    ObjIndexArmourEquipped      As Integer
+    ObjIndexHelmetEquipped      As Integer
+    ObjIndexWeaponEquipped      As Integer
+    ObjIndexShieldEquipped      As Integer
+    ObjIndexWindsEquipped       As Integer
+    ObjIndexBoatEquipped        As Integer
+    ObjIndexBackpackEquipped    As Integer 'Mochila
+    SlotArmourEquipped          As Byte
+    SlotHelmetEquipped          As Byte
+    SlotWeaponEquipped          As Byte
+    SlotShieldEquipped          As Byte
+    SlotWindsEquipped           As Byte
+    SlotBoatEquipped            As Byte
+    SlotBackpackEquipped        As Byte 'Mochila
+    'Spells puede haber varios equipados al mismo tiempo, no tiene sentido.
+    count                       As Byte
 End Type
 
 Public Type t_WorldPos
@@ -2323,6 +2352,7 @@ Public Type t_ObjData
     JineteLevel As Byte
     ElementalTags As Long
     Camouflage As Boolean
+    SkinOrigin                  As Integer
 End Type
 
 '[Pablo ToxicWaste]
@@ -2359,6 +2389,8 @@ End Type
 
 '[/Pablo ToxicWaste]
 Public Const MAX_BANCOINVENTORY_SLOTS As Byte = 42
+Public Const MAX_SKINSINVENTORY_SLOTS As Byte = 50
+Public Const MAX_SKINSSPELLS_SLOTS    As Byte = 50
 
 Public Type t_BancoInventario
     Object(1 To MAX_BANCOINVENTORY_SLOTS) As t_UserOBJ
@@ -2432,6 +2464,7 @@ Public Type t_UserStats
     UserAtributos(1 To NUMATRIBUTOS) As Byte
     UserAtributosBackUP(1 To NUMATRIBUTOS) As Byte
     UserHechizos(1 To MAXUSERHECHIZOS) As Integer
+    UserSkinsHechizos(1 To MAX_SKINSSPELLS_SLOTS) As Integer 'No puede ser MAXUSERHECHIZOS porque la cantidad máxima de skins podría escalar en el futuro, debe ser independiente.
     UsuariosMatados As Long
     PuntosPesca As Long
     CriminalesMatados As Long
@@ -2879,6 +2912,7 @@ Public Type t_User
     MENSAJEINFORMACION As String
     invent As t_Inventario
     Invent_bk As t_Inventario
+    Invent_Skins                As tSkinInventario
     pos As t_WorldPos
     ConnectionDetails As t_ConnectionInfo
     CurrentInventorySlots As Byte
