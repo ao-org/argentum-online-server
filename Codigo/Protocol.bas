@@ -2140,8 +2140,7 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
             
             Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("El usuario " & .name & _
                     " está tomando pociones con click estando en hechizos....Fue kickeado automaticamente", e_FontTypeNames.FONTTYPE_INFOBOLD))
-                    
-            Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID)
+            Call CloseSocket(UserIndex)
             
         End If
         Dim PacketCounter As Long
