@@ -1395,19 +1395,6 @@ ModAlquimia_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.ModAlquimia", Erl)
 End Function
 
-Function ModSastre(ByVal clase As e_Class) As Integer
-    On Error GoTo ModSastre_Err
-    Select Case clase
-        Case e_Class.Trabajador
-            ModSastre = 1
-        Case Else
-            ModSastre = 3
-    End Select
-    Exit Function
-ModSastre_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.ModSastre", Erl)
-End Function
-
 Function ModCarpinteria(ByVal clase As e_Class) As Integer
     On Error GoTo ModCarpinteria_Err
     Select Case clase
@@ -2517,33 +2504,6 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 ErrHandler:
     Call LogError("Error en DoDomar. Error " & Err.Number & " : " & Err.Description)
 End Sub
-
-''
-' Checks if the user can tames a pet.
-'
-' @param integer userIndex The user id from who wants tame the pet.
-' @param integer NPCindex The index of the npc to tome.
-' @return boolean True if can, false if not.
-Private Function PuedeDomarMascota(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Boolean
-    On Error GoTo PuedeDomarMascota_Err
-    '***************************************************
-    'Author: ZaMa
-    'This function checks how many NPCs of the same type have
-    'been tamed by the user.
-    'Returns True if that amount is less than two.
-    '***************************************************
-    Dim i           As Long
-    Dim numMascotas As Long
-    For i = 1 To MAXMASCOTAS
-        If UserList(UserIndex).MascotasType(i) = NpcList(NpcIndex).Numero Then
-            numMascotas = numMascotas + 1
-        End If
-    Next i
-    If numMascotas <= 1 Then PuedeDomarMascota = True
-    Exit Function
-PuedeDomarMascota_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.PuedeDomarMascota", Erl)
-End Function
 
 Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
     With UserList(UserIndex)

@@ -351,42 +351,6 @@ RellenarInventario_Err:
     Call TraceError(Err.Number, Err.Description, "TCP.RellenarInventario", Erl)
 End Sub
 
-Function AsciiValidos(ByVal cad As String) As Boolean
-    On Error GoTo AsciiValidos_Err
-    Dim car As Byte
-    Dim i   As Integer
-    cad = LCase$(cad)
-    For i = 1 To Len(cad)
-        car = Asc(mid$(cad, i, 1))
-        If (car < 97 Or car > 122) And (car <> 255) And (car <> 32) Then
-            AsciiValidos = False
-            Exit Function
-        End If
-    Next i
-    AsciiValidos = True
-    Exit Function
-AsciiValidos_Err:
-    Call TraceError(Err.Number, Err.Description, "TCP.AsciiValidos", Erl)
-End Function
-
-Function Numeric(ByVal cad As String) As Boolean
-    On Error GoTo Numeric_Err
-    Dim car As Byte
-    Dim i   As Integer
-    cad = LCase$(cad)
-    For i = 1 To Len(cad)
-        car = Asc(mid$(cad, i, 1))
-        If (car < 48 Or car > 57) Then
-            Numeric = False
-            Exit Function
-        End If
-    Next i
-    Numeric = True
-    Exit Function
-Numeric_Err:
-    Call TraceError(Err.Number, Err.Description, "TCP.Numeric", Erl)
-End Function
-
 Function NombrePermitido(ByVal nombre As String) As Boolean
     On Error GoTo NombrePermitido_Err
     Dim i As Integer
