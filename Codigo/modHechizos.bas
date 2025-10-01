@@ -2464,6 +2464,7 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 Dim h                           As Integer
 Dim SkinSpell                   As Integer
 Dim SkinSpellFx                 As Integer
+Dim TargetIndex                 As Integer
 
     On Error GoTo InfoHechizo_Err
 
@@ -2471,6 +2472,7 @@ Dim SkinSpellFx                 As Integer
 
         h = .Stats.UserHechizos(.flags.Hechizo)
         SkinSpell = .Stats.UserSkinsHechizos(h)
+        
         If SkinSpell > 0 Then
             h = 1
         End If
@@ -2478,85 +2480,87 @@ Dim SkinSpellFx                 As Integer
         If .flags.NoPalabrasMagicas = 0 Then
             Call DecirPalabrasMagicas(h, UserIndex)
         End If
+        
         If IsValidUserRef(.flags.TargetUser) Then    '¿El Hechizo fue tirado sobre un usuario?
-
+            TargetIndex = .flags.TargetUser.ArrayIndex
             If Hechizos(h).FXgrh > 0 Then    '¿Envio FX?
                 If Hechizos(h).ParticleViaje > 0 Then
-                    UserList(.flags.TargetUser.ArrayIndex).Counters.timeFx = 3
-                    Call SendData(SendTarget.ToPCAliveArea, .flags.TargetUser.ArrayIndex, PrepareMessageParticleFXWithDestino(.Char.charindex, UserList(.flags.TargetUser.ArrayIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1, UserList(.flags.TargetUser.ArrayIndex).pos.x, UserList(.flags.TargetUser.ArrayIndex).pos.y))
+                    UserList(TargetIndex).Counters.timeFx = 3
+                    Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageParticleFXWithDestino(.Char.charindex, UserList(TargetIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
                 Else
-                    UserList(.flags.TargetUser.ArrayIndex).Counters.timeFx = 3
+                    UserList(TargetIndex).Counters.timeFx = 3
 
                     If .Stats.UserSkinsHechizos(h) > 0 Then
-                        Call SendData(SendTarget.ToPCAliveArea, .flags.TargetUser.ArrayIndex, PrepareMessageCreateFX(UserList(.flags.TargetUser.ArrayIndex).Char.charindex, .Stats.UserSkinsHechizos(h), Hechizos(h).loops, UserList(.flags.TargetUser.ArrayIndex).pos.x, UserList(.flags.TargetUser.ArrayIndex).pos.y))
+                        Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, .Stats.UserSkinsHechizos(h), Hechizos(h).loops, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
                     Else
-                        Call SendData(SendTarget.ToPCAliveArea, .flags.TargetUser.ArrayIndex, PrepareMessageCreateFX(UserList(.flags.TargetUser.ArrayIndex).Char.charindex, Hechizos(h).FXgrh, Hechizos(h).loops, UserList(.flags.TargetUser.ArrayIndex).pos.x, UserList(.flags.TargetUser.ArrayIndex).pos.y))
+                        Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, Hechizos(h).FXgrh, Hechizos(h).loops, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
                     End If
                 End If
             End If
 
             If Hechizos(h).Particle > 0 Then    '¿Envio Particula?
                 If Hechizos(h).ParticleViaje > 0 Then
-                    UserList(.flags.TargetUser.ArrayIndex).Counters.timeFx = 3
-                    Call SendData(SendTarget.ToPCAliveArea, .flags.TargetUser.ArrayIndex, PrepareMessageParticleFXWithDestino(.Char.charindex, _
-                                                                                                                              UserList(.flags.TargetUser.ArrayIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, _
-                                                                                                                              Hechizos(h).wav, 0, UserList(.flags.TargetUser.ArrayIndex).pos.x, UserList(.flags.TargetUser.ArrayIndex).pos.y))
+                    UserList(TargetIndex).Counters.timeFx = 3
+                    Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageParticleFXWithDestino(.Char.charindex, UserList(TargetIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
                 Else
-                    UserList(.flags.TargetUser.ArrayIndex).Counters.timeFx = 3
-                    Call SendData(SendTarget.ToPCAliveArea, .flags.TargetUser.ArrayIndex, PrepareMessageParticleFX(UserList(UserList( _
-                                                                                                                            UserIndex).flags.TargetUser.ArrayIndex).Char.charindex, Hechizos(h).Particle, Hechizos(h).TimeParticula, False, , UserList(UserList( _
-                                                                                                                                                                                                                                                       UserIndex).flags.TargetUser.ArrayIndex).pos.x, UserList(.flags.TargetUser.ArrayIndex).pos.y))
+                    UserList(TargetIndex).Counters.timeFx = 3
+                    Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageParticleFX(.Char.charindex, Hechizos(h).Particle, Hechizos(h).TimeParticula, False, , UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
                 End If
             End If
+            
             If Hechizos(h).ParticleViaje = 0 Then
-                Call SendData(SendTarget.ToPCAliveArea, .flags.TargetUser.ArrayIndex, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserList( _
-                                                                                                                                       UserIndex).flags.TargetUser.ArrayIndex).pos.x, UserList(.flags.TargetUser.ArrayIndex).pos.y))
+                Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessagePlayWave(Hechizos(h).wav, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
             End If
+            
             If Hechizos(h).TimeEfect <> 0 Then    'Envio efecto de screen
                 Call WriteFlashScreen(UserIndex, Hechizos(h).ScreenColor, Hechizos(h).TimeEfect)
             End If
+        
         ElseIf IsValidNpcRef(.flags.TargetNPC) Then    '¿El Hechizo fue tirado sobre un npc?
-
+            TargetIndex = .flags.TargetNPC.ArrayIndex
             If Hechizos(h).FXgrh > 0 Then    '¿Envio FX?
-                If NpcList(.flags.TargetNPC.ArrayIndex).Stats.MinHp < 1 Then
+                If NpcList(TargetIndex).Stats.MinHp < 1 Then
                     'Call modSendData.SendToAreaByPos(.Pos.map, .flags.TargetX, .flags.TargetY, PrepareMessageFxPiso(Hechizos(H).FXgrh, .flags.TargetX, .flags.TargetY))
                     If Hechizos(h).ParticleViaje > 0 Then
-                        Call SendData(SendTarget.ToNPCAliveArea, .flags.TargetNPC.ArrayIndex, PrepareMessageParticleFXWithDestinoXY(.Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1, .flags.TargetX, .flags.TargetY))
+                        Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageParticleFXWithDestinoXY(.Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1, .flags.TargetX, .flags.TargetY))
                     Else
                         If .Stats.UserSkinsHechizos(h) > 0 Then
-                            Call SendData(SendTarget.ToNPCAliveArea, .flags.TargetNPC.ArrayIndex, PrepareMessageFxPiso(.Stats.UserSkinsHechizos(h), .flags.TargetX, .flags.TargetY))
+                            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageFxPiso(.Stats.UserSkinsHechizos(h), .flags.TargetX, .flags.TargetY))
                         Else
-                            Call SendData(SendTarget.ToNPCAliveArea, .flags.TargetNPC.ArrayIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, .flags.TargetX, .flags.TargetY))
+                            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, .flags.TargetX, .flags.TargetY))
                         End If
                     End If
                 Else
                     If Hechizos(h).ParticleViaje > 0 Then
-                        Call SendData(SendTarget.ToNPCAliveArea, .flags.TargetNPC.ArrayIndex, PrepareMessageParticleFXWithDestino(.Char.charindex, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1))
+                        If .Stats.UserSkinsHechizos(h) > 0 Then
+                            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageFxPiso(.Stats.UserSkinsHechizos(h), .flags.TargetX, .flags.TargetY))
+                        Else
+                            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageParticleFXWithDestino(.Char.charindex, NpcList(TargetIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1))
+                        End If
                     Else
-                        Call SendData(SendTarget.ToNPCAliveArea, .flags.TargetNPC.ArrayIndex, PrepareMessageCreateFX(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, Hechizos(h).FXgrh, Hechizos(h).loops))
+                        If .Stats.UserSkinsHechizos(h) > 0 Then
+                            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageFxPiso(.Stats.UserSkinsHechizos(h), .flags.TargetX, .flags.TargetY))
+                        Else
+                            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(NpcList(TargetIndex).Char.charindex, Hechizos(h).FXgrh, Hechizos(h).loops))
+                        End If
                     End If
                 End If
             End If
 
             If Hechizos(h).Particle > 0 Then    '¿Envio Particula?
-                If NpcList(.flags.TargetNPC.ArrayIndex).Stats.MinHp < 1 Then
-                    Call SendData(SendTarget.ToNPCAliveArea, .flags.TargetNPC.ArrayIndex, PrepareMessageParticleFXWithDestinoXY(UserList( _
-                                                                                                                                UserIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0, NpcList(UserList( _
-                                                                                                                                                                                                                                                                   UserIndex).flags.TargetNPC.ArrayIndex).pos.x, NpcList(.flags.TargetNPC.ArrayIndex).pos.y))
+                If NpcList(TargetIndex).Stats.MinHp < 1 Then
+                    Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageParticleFXWithDestinoXY(.Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
                 Else
                     If Hechizos(h).ParticleViaje > 0 Then
-                        Call SendData(SendTarget.ToNPCAliveArea, .flags.TargetNPC.ArrayIndex, PrepareMessageParticleFXWithDestino(UserList( _
-                                                                                                                                  UserIndex).Char.charindex, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, _
-                                                                                                                                  Hechizos(h).TimeParticula, Hechizos(h).wav, 0))
+                        Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageParticleFXWithDestino(.Char.charindex, NpcList(TargetIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0))
                     Else
-                        Call SendData(SendTarget.ToNPCAliveArea, .flags.TargetNPC.ArrayIndex, PrepareMessageParticleFX(NpcList(UserList( _
-                                                                                                                               UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, Hechizos(h).Particle, Hechizos(h).TimeParticula, False))
+                        Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageParticleFX(NpcList(TargetIndex).Char.charindex, Hechizos(h).Particle, Hechizos(h).TimeParticula, False))
                     End If
                 End If
             End If
+            
             If Hechizos(h).ParticleViaje = 0 Then
-                Call SendData(SendTarget.ToNPCAliveArea, .flags.TargetNPC.ArrayIndex, PrepareMessagePlayWave(Hechizos(h).wav, NpcList(UserList( _
-                                                                                                                                      UserIndex).flags.TargetNPC.ArrayIndex).pos.x, NpcList(.flags.TargetNPC.ArrayIndex).pos.y))
+                Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(Hechizos(h).wav, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
             End If
         Else                   ' Entonces debe ser sobre el terreno
             If Hechizos(h).FXgrh > 0 Then    'Envio Fx?
@@ -2569,13 +2573,13 @@ Dim SkinSpellFx                 As Integer
                 Call modSendData.SendToAreaByPos(.pos.Map, .flags.TargetX, .flags.TargetY, PrepareMessageFxPiso(Hechizos(h).FXgrh, .flags.TargetX, .flags.TargetY))
             End If
             If Hechizos(h).Particle > 0 Then    'Envio Particula?
-                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFXToFloor(.flags.TargetX, .flags.TargetY, Hechizos( _
-                                                                                                                                   h).Particle, Hechizos(h).TimeParticula))
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFXToFloor(.flags.TargetX, .flags.TargetY, Hechizos(h).Particle, Hechizos(h).TimeParticula))
             End If
             If Hechizos(h).wav <> 0 Then
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, .flags.TargetX, .flags.TargetY))    'Esta linea faltaba. Pablo (ToxicWaste)
             End If
         End If
+        
         If .ChatCombate = 1 Then
             If Hechizos(h).Target = e_TargetType.uTerreno Then
                 Call WriteConsoleMsg(UserIndex, "ProMSG*" & h, e_FontTypeNames.FONTTYPE_FIGHT)
