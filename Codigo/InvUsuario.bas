@@ -682,8 +682,7 @@ Dim obj             As t_ObjData
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, 0, True, 1))
                     .Char.WeaponAnim = NingunArma
                     If .flags.Montado = 0 Then
-                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
-                                            .Char.BackpackAnim)
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                     End If
                     If obj.MagicDamageBonus > 0 Then
                         Call WriteUpdateDM(UserIndex)
@@ -706,8 +705,7 @@ Dim obj             As t_ObjData
                         End If
                         .Char.WeaponAnim = NingunArma
                         If .flags.Montado = 0 Then
-                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
-                                                .Char.BackpackAnim)
+                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         End If
                     End If
                 Case e_OBJType.otAmulets
@@ -739,8 +737,7 @@ Dim obj             As t_ObjData
                         Case e_MagicItemEffect.eProtectedResources
                             If .flags.Muerto = 0 Then
                                 .Char.CartAnim = NoCart
-                                Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
-                                                    .Char.BackpackAnim)
+                                Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                             End If
                         Case e_MagicItemEffect.eProtectedInventory
                             .flags.PendienteDelSacrificio = 0
@@ -772,8 +769,7 @@ Dim obj             As t_ObjData
                     If .flags.Navegando = 0 Then
                         If .flags.Montado = 0 Then
                             Call SetNakedBody(UserList(UserIndex))
-                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
-                                                .Char.BackpackAnim)
+                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         End If
                     End If
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, 0, True, 2))
@@ -800,8 +796,7 @@ Dim obj             As t_ObjData
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, 0, True, 3))
                     .Char.ShieldAnim = NingunEscudo
                     If .flags.Montado = 0 Then
-                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
-                                            .Char.BackpackAnim)
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                     End If
                     If obj.ResistenciaMagica > 0 Then
                         Call WriteUpdateRM(UserIndex)
@@ -829,8 +824,7 @@ Dim obj             As t_ObjData
                     .Char.BackpackAnim = 0
                     If .flags.Navegando = 0 Then
                         If .flags.Montado = 0 Then
-                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
-                                                .Char.BackpackAnim)
+                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         End If
                     End If
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, 0, True, 2))
@@ -1013,8 +1007,7 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
         .Char.ShieldAnim = NingunEscudo
         .Char.WeaponAnim = NingunArma
         Call WriteNavigateToggle(UserIndex, .flags.Navegando)
-        Call WriteNadarToggle(UserIndex, (Barco.Ropaje = iTraje Or Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw), (Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = _
-                iTrajeBajoNw))
+        Call WriteNadarToggle(UserIndex, (Barco.Ropaje = iTraje Or Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw), (Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw))
         Call ActualizarVelocidadDeUsuario(UserIndex)
     End With
     Exit Sub
@@ -1062,8 +1055,7 @@ Dim Ropaje                      As Integer
                         'Animacion por defecto
                         .Char.WeaponAnim = NingunArma
                         If .flags.Montado = 0 Then
-                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList( _
-                                                                                                                                                       UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         End If
                         Exit Sub
                     End If
@@ -1100,8 +1092,7 @@ Dim Ropaje                      As Integer
                     If .flags.Montado = 0 Then
                         If .flags.Navegando = 0 Then
                             .Char.WeaponAnim = obj.WeaponAnim
-                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList( _
-                                                                                                                                                       UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         End If
                     End If
                 Case e_OBJType.otBackpack
@@ -1110,8 +1101,7 @@ Dim Ropaje                      As Integer
                         Call Desequipar(UserIndex, Slot)
                         .Char.BackpackAnim = NoBackPack
                         If .flags.Montado = 0 And .flags.Navegando = 0 Then
-                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
-                                                .Char.BackpackAnim)
+                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         End If
                         Exit Sub
                     End If
@@ -1134,8 +1124,7 @@ Dim Ropaje                      As Integer
                     .invent.EquippedBackpackSlot = Slot
                     If .flags.Montado = 0 And .flags.Navegando = 0 Then
                         .Char.BackpackAnim = Ropaje
-                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList( _
-                                                                                                                                                   UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                     End If
                 Case e_OBJType.otWorkingTools
                     If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eTool) Then
@@ -1161,8 +1150,7 @@ Dim Ropaje                      As Integer
                     If .flags.Montado = 0 Then
                         If .flags.Navegando = 0 Then
                             .Char.WeaponAnim = obj.WeaponAnim
-                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList( _
-                                                                                                                                                       UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         End If
                     End If
                 Case e_OBJType.otAmulets
@@ -1187,8 +1175,7 @@ Dim Ropaje                      As Integer
                     Select Case obj.EfectoMagico
                         Case e_MagicItemEffect.eModifyAttributes    'Modif la fuerza, agilidad, carisma, etc
                             .Stats.UserAtributosBackUP(obj.QueAtributo) = .Stats.UserAtributosBackUP(obj.QueAtributo) + obj.CuantoAumento
-                            .Stats.UserAtributos(obj.QueAtributo) = MinimoInt(.Stats.UserAtributos(obj.QueAtributo) + obj.CuantoAumento, .Stats.UserAtributosBackUP( _
-                                                                                                                                         obj.QueAtributo) * 2)
+                            .Stats.UserAtributos(obj.QueAtributo) = MinimoInt(.Stats.UserAtributos(obj.QueAtributo) + obj.CuantoAumento, .Stats.UserAtributosBackUP(obj.QueAtributo) * 2)
                             Call WriteFYA(UserIndex)
                         Case e_MagicItemEffect.eModifySkills
                             .Stats.UserSkills(obj.Que_Skill) = .Stats.UserSkills(obj.Que_Skill) + obj.CuantoAumento
@@ -1208,8 +1195,7 @@ Dim Ropaje                      As Integer
                         Case e_MagicItemEffect.eProtectedResources
                             If .flags.Navegando = 0 And .flags.Montado = 0 Then
                                 .Char.CartAnim = obj.Ropaje
-                                Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList( _
-                                                                                                                                                           UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                                Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                             End If
                         Case e_MagicItemEffect.eProtectedInventory
                             .flags.PendienteDelSacrificio = 1
@@ -1276,8 +1262,7 @@ Dim Ropaje                      As Integer
                         If .flags.Navegando = 0 And .flags.Montado = 0 Then
                             Call SetNakedBody(UserList(UserIndex))
                             If Not UserIsLoggingIn Then
-                                Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList( _
-                                                                                                                                                   UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                                Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
                             End If
                         Else
                             .flags.Desnudo = 1
@@ -1311,8 +1296,7 @@ Dim Ropaje                      As Integer
                     If .flags.Montado = 0 And .flags.Navegando = 0 Then
                         .Char.body = Ropaje
                         If Not UserIsLoggingIn Then
-                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList( _
-                                                                                                                                                   UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         End If
                     End If
                     .flags.Desnudo = 0
@@ -1331,8 +1315,7 @@ Dim Ropaje                      As Integer
                         If obj.Subtipo = 2 Then
                             .Char.head = .Char.originalhead
                         End If
-                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList( _
-                                                                                                                                                   UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         Exit Sub
                     End If
                     'Quita el anterior
@@ -1371,8 +1354,7 @@ Dim Ropaje                      As Integer
                         .Char.head = nuevoHead
                         .Char.CascoAnim = nuevoCasco
                         If Not UserIsLoggingIn Then
-                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
-                                            .Char.BackpackAnim)
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         End If
                     End If
                     If obj.ResistenciaMagica > 0 Then
@@ -1388,8 +1370,7 @@ Dim Ropaje                      As Integer
                         Call Desequipar(UserIndex, Slot)
                         .Char.ShieldAnim = NingunEscudo
                         If .flags.Montado = 0 And .flags.Navegando = 0 Then
-                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
-                                                .Char.BackpackAnim)
+                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         End If
                         Exit Sub
                     End If
@@ -1414,8 +1395,7 @@ Dim Ropaje                      As Integer
                     .invent.EquippedShieldSlot = Slot
                     If .flags.Navegando = 0 And .flags.Montado = 0 Then
                         .Char.ShieldAnim = obj.ShieldAnim
-                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
-                                            .Char.BackpackAnim)
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                     End If
                     If obj.ResistenciaMagica > 0 Then
                         Call WriteUpdateRM(UserIndex)
@@ -1453,8 +1433,7 @@ Dim Ropaje                      As Integer
             ObjIndex = .Invent_Skins.Object(Slot).ObjIndex
             obj = ObjData(ObjIndex)
             Select Case obj.OBJType
-                Case e_OBJType.otSkinsArmours, e_OBJType.otSkinsSpells, e_OBJType.otSkinsWeapons, e_OBJType.otSkinsShields, e_OBJType.otSkinsHelmets, e_OBJType.otSkinsBoats, _
-                     e_OBJType.otSkinsWings
+                Case e_OBJType.otSkinsArmours, e_OBJType.otSkinsSpells, e_OBJType.otSkinsWeapons, e_OBJType.otSkinsShields, e_OBJType.otSkinsHelmets, e_OBJType.otSkinsBoats, e_OBJType.otSkinsWings
                     'Si esta equipado lo quita
                     If .Invent_Skins.Object(Slot).Equipped And Not UserIsLoggingIn Then
                         'Sonido
@@ -1633,7 +1612,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 'Quitamos del inv el item
                 Call QuitarUserInvItem(UserIndex, Slot, 1)
                 Call UpdateUserInv(False, UserIndex, Slot)
-                UserList(UserIndex).flags.ModificoInventario = True
+                .flags.ModificoInventario = True
             Case e_OBJType.otGoldCoin
                 If .flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
@@ -1734,8 +1713,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Case 1 'Modif la agilidad
                         .flags.DuracionEfecto = obj.DuracionEfecto
                         'Usa el item
-                        .Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(.Stats.UserAtributos(e_Atributos.Agilidad) + RandomNumber(obj.MinModificador, obj.MaxModificador), _
-                                .Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
+                        .Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(.Stats.UserAtributos(e_Atributos.Agilidad) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
                         Call WriteFYA(UserIndex)
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
                         If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
@@ -1750,8 +1728,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Case 2 'Modif la fuerza
                         .flags.DuracionEfecto = obj.DuracionEfecto
                         'Usa el item
-                        .Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(.Stats.UserAtributos(e_Atributos.Fuerza) + RandomNumber(obj.MinModificador, obj.MaxModificador), _
-                                .Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
+                        .Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(.Stats.UserAtributos(e_Atributos.Fuerza) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
                         If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
                             ' Quitamos el ítem del inventario
@@ -1888,11 +1865,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         .Char.head = CabezaFinal
                         .OrigChar.head = CabezaFinal
                         .OrigChar.originalhead = CabezaFinal 'cabeza final
-                        Call ChangeUserChar(UserIndex, .Char.body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
-                                .Char.BackpackAnim)
+                        Call ChangeUserChar(UserIndex, .Char.body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         'Quitamos del inv el item
-                        UserList(UserIndex).Counters.timeFx = 3
-                        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+                        .Counters.timeFx = 3
+                        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0, .pos.x, .pos.y))
                         If CabezaActual <> CabezaFinal Then
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         Else
@@ -1941,11 +1917,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         End Select
                         .Char.head = CabezaFinal
                         .OrigChar.head = CabezaFinal
-                        Call ChangeUserChar(UserIndex, .Char.body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
-                                .Char.BackpackAnim)
+                        Call ChangeUserChar(UserIndex, .Char.body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         'Quitamos del inv el item
-                        UserList(UserIndex).Counters.timeFx = 3
-                        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+                        .Counters.timeFx = 3
+                        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0, .pos.x, .pos.y))
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
                         If obj.Snd1 <> 0 Then
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
@@ -2120,13 +2095,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         CabezaActual = .OrigChar.head
                         .Char.head = CabezaFinal
                         .OrigChar.head = CabezaFinal
-                        Call ChangeUserChar(UserIndex, .Char.body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
-                                .Char.BackpackAnim)
+                        Call ChangeUserChar(UserIndex, .Char.body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         'Quitamos del inv el item
                         If CabezaActual <> CabezaFinal Then
-                            UserList(UserIndex).Counters.timeFx = 3
-                            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0, UserList(UserIndex).pos.x, UserList( _
-                                    UserIndex).pos.y))
+                            .Counters.timeFx = 3
+                            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0, .pos.x, .pos.y))
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         Else
@@ -2150,9 +2123,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             If sobrechar = 1 Then
                                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFXToFloor(.pos.x, .pos.y, Particula, Tiempo))
                             Else
-                                UserList(UserIndex).Counters.timeFx = 3
-                                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, Particula, Tiempo, False, , UserList( _
-                                        UserIndex).pos.x, UserList(UserIndex).pos.y))
+                                .Counters.timeFx = 3
+                                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, Particula, Tiempo, False, , .pos.x, .pos.y))
                             End If
                         End If
                         If obj.CreaFX <> 0 Then
@@ -2250,8 +2222,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
                 End If
                 If obj.CreaFX <> 0 Then
-                    UserList(UserIndex).Counters.timeFx = 3
-                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, obj.CreaFX, 0, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+                    .Counters.timeFx = 3
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, obj.CreaFX, 0, .pos.x, .pos.y))
                 End If
                 Dim i As Byte
                 Select Case obj.Subtipo
@@ -2262,8 +2234,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                     Call TirarItemAlPiso(.pos, obj.Item(i))
                                 End If
                             End If
-                            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(ObjData(obj.Item(i).ObjIndex).name & " (" & obj.Item(i).amount & ")", _
-                                    e_FontTypeNames.FONTTYPE_INFOBOLD))
+                            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(ObjData(obj.Item(i).ObjIndex).name & " (" & obj.Item(i).amount & ")", e_FontTypeNames.FONTTYPE_INFOBOLD))
                         Next i
                     Case 2
                         For i = 1 To obj.CantEntrega
@@ -2277,8 +2248,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                     Call TirarItemAlPiso(.pos, Index)
                                 End If
                             End If
-                            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(ObjData(Index.ObjIndex).name & " (" & Index.amount & ")", _
-                                    e_FontTypeNames.FONTTYPE_INFOBOLD))
+                            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(ObjData(Index.ObjIndex).name & " (" & Index.amount & ")", e_FontTypeNames.FONTTYPE_INFOBOLD))
                         Next i
                     Case 3
                         For i = 1 To obj.CantItem
@@ -2288,19 +2258,18 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                         Call TirarItemAlPiso(.pos, obj.Item(i))
                                     End If
                                 End If
-                                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(ObjData(obj.Item(i).ObjIndex).name & " (" & obj.Item(i).amount & ")", _
-                                        e_FontTypeNames.FONTTYPE_INFOBOLD))
+                                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(ObjData(obj.Item(i).ObjIndex).name & " (" & obj.Item(i).amount & ")", e_FontTypeNames.FONTTYPE_INFOBOLD))
                             End If
                         Next i
                 End Select
             Case e_OBJType.otKeys
-                If UserList(UserIndex).flags.Muerto = 1 Then
+                If .flags.Muerto = 1 Then
                     'Msg895= ¡¡Estas muerto!! Solo podes usar items cuando estas vivo.
                     Call WriteLocaleMsg(UserIndex, "895", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
-                If UserList(UserIndex).flags.TargetObj = 0 Then Exit Sub
-                TargObj = ObjData(UserList(UserIndex).flags.TargetObj)
+                If .flags.TargetObj = 0 Then Exit Sub
+                TargObj = ObjData(.flags.TargetObj)
                 '¿El objeto clickeado es una puerta?
                 If TargObj.OBJType = e_OBJType.otDoors Then
                     If TargObj.clave < 1000 Then
@@ -2314,10 +2283,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         If TargObj.Llave > 0 Then
                             Dim ClaveLlave As Integer
                             If TargObj.clave = obj.clave Then
-                                MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex = _
-                                        ObjData(MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList( _
+                                MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, UserList( _
                                         UserIndex).flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
-                                UserList(UserIndex).flags.TargetObj = MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList( _
+                                .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, UserList( _
                                         UserIndex).flags.TargetObjY).ObjInfo.ObjIndex
                                 'Msg897= Has abierto la puerta.
                                 Call WriteLocaleMsg(UserIndex, "897", e_FontTypeNames.FONTTYPE_INFO)
@@ -2331,12 +2299,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             End If
                         Else
                             If TargObj.clave = obj.clave Then
-                                MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex = _
-                                        ObjData(MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList( _
+                                MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = _
+                                        ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, UserList( _
                                         UserIndex).flags.TargetObjY).ObjInfo.ObjIndex).IndexCerradaLlave
                                 'Msg899= Has cerrado con llave la puerta.
                                 Call WriteLocaleMsg(UserIndex, "899", e_FontTypeNames.FONTTYPE_INFO)
-                                UserList(UserIndex).flags.TargetObj = MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList( _
+                                .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, UserList( _
                                         UserIndex).flags.TargetObjY).ObjInfo.ObjIndex
                                 Exit Sub
                             Else
@@ -2364,7 +2332,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Call WriteLocaleMsg(UserIndex, "902", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
-                If Distance(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, .flags.TargetX, .flags.TargetY) > 2 Then
+                If Distance(.pos.x, .pos.y, .flags.TargetX, .flags.TargetY) > 2 Then
                     'Msg903= Debes acercarte más al agua.
                     Call WriteLocaleMsg(UserIndex, "903", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
