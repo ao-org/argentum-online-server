@@ -227,11 +227,6 @@ Public Enum e_JobsTypes
     Alchemist = 6
 End Enum
 
-Public Type t_LlamadaGM
-    Usuario As String * 255
-    Desc As String * 255
-End Type
-
 Public Type t_AttackInteractionResult
     Result As e_AttackInteractionResult
     TurnPK As Boolean

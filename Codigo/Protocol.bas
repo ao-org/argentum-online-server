@@ -1195,26 +1195,20 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         Dim head        As Integer
 
         name = reader.ReadString8
-110     race = reader.ReadInt()
-112     gender = reader.ReadInt()
-113     Class = reader.ReadInt()
-116     head = reader.ReadInt()
-118     Hogar = reader.ReadInt()
+     race = reader.ReadInt()
+     gender = reader.ReadInt()
+     Class = reader.ReadInt()
+     head = reader.ReadInt()
+     Hogar = reader.ReadInt()
 
-126     If PuedeCrearPersonajes = 0 Then
-128         Call WriteShowMessageBox(UserIndex, 1780, vbNullString) 'Msg1780=La creación de personajes en este servidor se ha deshabilitado.
-130         Call CloseSocket(UserIndex)
+     If PuedeCrearPersonajes = 0 Then
+         Call WriteShowMessageBox(UserIndex, 1780, vbNullString) 'Msg1780=La creación de personajes en este servidor se ha deshabilitado.
+         Call CloseSocket(UserIndex)
             Exit Sub
 
         End If
 
-132     If aClon.MaxPersonajes(UserList(UserIndex).ConnectionDetails.IP) Then
-134         Call WriteShowMessageBox(UserIndex, 1781, vbNullString) 'Msg1781=Has creado demasiados personajes.
 
-136         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
 
         'Check if we reached MAX_PERSONAJES for this account after updateing the UserList(userindex).AccountID in the if above
         If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then

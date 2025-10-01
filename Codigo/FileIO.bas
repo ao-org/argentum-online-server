@@ -117,7 +117,6 @@ Private Type t_MapDat
     base_light As Long
     letter_grh As Long
     level As Long
-    extra2 As Long
     Salida As String
     lluvia As Byte
     Nieve As Byte
