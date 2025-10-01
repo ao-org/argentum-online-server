@@ -57,7 +57,6 @@ Module=ModEventos; Codigo\ModEventos.bas
 Class=tBaneo; Codigo\tBaneo.cls
 Module=ModTorneos; Codigo\ModTorneos.bas
 Module=ModTesoros; Codigo\ModTesoros.bas
-Module=ModViajar; Codigo\ModViajar.bas
 Module=Database; Codigo\modDatabase.bas
 Module=ModLlaves; Codigo\ModLlaves.bas
 Class=cStringBuilder; Codigo\cStringBuilder.cls

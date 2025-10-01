@@ -93,32 +93,6 @@ BanPJ_Err:
     Call TraceError(Err.Number, Err.Description, "Mod_Baneo.BanPJ")
 End Sub
 
-Public Sub BanPJWithoutGM(ByVal username As String, ByRef Razon As String)
-    On Error GoTo BanPJWithoutGM_Err
-    ' Si no existe el personaje...
-    If Not PersonajeExiste(username) Then
-        Exit Sub
-    End If
-    If BANCheck(username) Then
-        Exit Sub
-    End If
-    ' Guardamos el estado de baneado en la base de datos.
-    Call SaveBanDatabase(username, Razon, "el sistema")
-    Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", username, "BannedBy", "Ban automático (Posible BOT).")
-    Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", username, "Reason", Razon)
-    ' Le buchoneamos al mundo.
-    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1700, username & "¬" & LCase$(Razon), e_FontTypeNames.FONTTYPE_SERVER))  'Msg1700=Servidor » Ha baneado a ¬1 debido a: ¬2.
-    ' Si estaba online, lo echamos.
-    Dim tUser As t_UserReference: tUser = NameIndex(username)
-    If IsValidUserRef(tUser) Then
-        Call WriteDisconnect(tUser.ArrayIndex)
-        Call CloseSocket(tUser.ArrayIndex)
-    End If
-    Exit Sub
-BanPJWithoutGM_Err:
-    Call TraceError(Err.Number, Err.Description, "Mod_Baneo.BanPJWithoutGM")
-End Sub
-
 Public Sub BanearCuenta(ByVal BannerIndex As Integer, ByVal username As String, ByVal Reason As String)
     On Error GoTo BanearCuenta_Err
     Dim CuentaID As Long

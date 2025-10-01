@@ -844,25 +844,6 @@ ReSpawnNpc_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.ReSpawnNpc", Erl)
 End Sub
 
-'Devuelve el nro de enemigos que hay en el Mapa Map
-Function NPCHostiles(ByVal Map As Integer) As Integer
-    On Error GoTo NPCHostiles_Err
-    Dim NpcIndex As Integer
-    Dim cont     As Integer
-    'Contador
-    cont = 0
-    For NpcIndex = 1 To LastNPC
-        '¿esta vivo?
-        If NpcList(NpcIndex).flags.NPCActive And NpcList(NpcIndex).pos.Map = Map And NpcList(NpcIndex).Hostile = 1 Then
-            cont = cont + 1
-        End If
-    Next NpcIndex
-    NPCHostiles = cont
-    Exit Function
-NPCHostiles_Err:
-    Call TraceError(Err.Number, Err.Description, "NPCs.NPCHostiles", Erl)
-End Function
-
 Sub NPCTirarOro(MiNPC As t_Npc, ByVal UserIndex As Integer)
     On Error GoTo NPCTirarOro_Err
     If UserIndex = 0 Then Exit Sub
@@ -1417,21 +1398,6 @@ Public Sub DummyTargetAttacked(ByVal NpcIndex As Integer)
             End If
         End If
     End With
-End Sub
-
-Public Sub KillRandomNpc()
-    Dim validNpc As Boolean: validNpc = False
-    Dim NpcIndex As Integer: NpcIndex = 0
-    If GetAvailableNpcIndex > 8000 Or GetAvailableNpcIndex = 0 Then
-        Exit Sub
-    End If
-    Do While Not validNpc
-        NpcIndex = RandomNumber(1, 10000)
-        If NpcList(NpcIndex).flags.NPCActive And NpcList(NpcIndex).Hostile > 0 Then
-            validNpc = True
-        End If
-    Loop
-    Call MuereNpc(NpcIndex, 0)
 End Sub
 
 Public Function CanMove(ByRef counter As t_NpcCounters, ByRef flags As t_NPCFlags) As Boolean

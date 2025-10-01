@@ -131,10 +131,6 @@ End Type
 #If DIRECT_PLAY = 0 Then
     Public reader As Network.reader
 
-Public Sub InitializePacketList()
-    Call Protocol_Writes.InitializeAuxiliaryBuffer
-End Sub
-
 Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As Network.reader, Optional ByVal optional_user_index As Variant) As Boolean
 #Else
     Public reader As New clsNetReader
@@ -7831,12 +7827,4 @@ Public Sub HandleAntiCheatMessage(ByVal UserIndex As Integer)
     Exit Sub
 AntiCheatMessage_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.AntiCheatMessage", Erl)
-End Sub
-
-Public Sub HendleRequestLobbyList(ByVal UserIndex As Integer)
-    On Error GoTo HendleRequestLobbyList_Err:
-    Call WriteUpdateLobbyList(UserIndex)
-    Exit Sub
-HendleRequestLobbyList_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HendleRequestLobbyList", Erl)
 End Sub
