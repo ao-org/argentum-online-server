@@ -475,13 +475,13 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, Optional ByVal 
                 For tX = .pos.x - 1 To .pos.x + 1
                     If esAgua Then
                         'reviso que sea pos legal en agua, que no haya User ni NPC para poder loguear.
-                        If LegalPos(.pos.Map, tX, tY, True, True, False, False, False) Then
+                        If LegalPos(.pos.Map, tX, tY, True, True, False, False) Then
                             FoundPlace = True
                             Exit For
                         End If
                     Else
                         'reviso que sea pos legal en tierra, que no haya User ni NPC para poder loguear.
-                        If LegalPos(.pos.Map, tX, tY, False, True, False, False, False) Then
+                        If LegalPos(.pos.Map, tX, tY, False, True, False, False) Then
                             FoundPlace = True
                             Exit For
                         End If
@@ -1531,24 +1531,6 @@ SendUserSkillsTxt_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserSkillsTxt", Erl)
 End Sub
 
-Function DameUserIndexConNombre(ByVal nombre As String) As Integer
-    On Error GoTo DameUserIndexConNombre_Err
-    Dim LoopC As Integer
-    LoopC = 1
-    nombre = UCase$(nombre)
-    Do Until UCase$(UserList(LoopC).name) = nombre
-        LoopC = LoopC + 1
-        If LoopC > MaxUsers Then
-            DameUserIndexConNombre = 0
-            Exit Function
-        End If
-    Loop
-    DameUserIndexConNombre = LoopC
-    Exit Function
-DameUserIndexConNombre_Err:
-    Call TraceError(Err.Number, Err.Description, "UsUaRiOs.DameUserIndexConNombre", Erl)
-End Function
-
 Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Optional ByVal AffectsOwner As Boolean = True)
     On Error GoTo NPCAtacado_Err
     '  El usuario pierde la protección
@@ -2059,7 +2041,7 @@ Sub WarpToLegalPos(ByVal UserIndex As Integer, _
         If LoopC > 20 Then Exit Sub
         For tY = y - LoopC To y + LoopC
             For tX = x - LoopC To x + LoopC
-                If LegalPos(Map, tX, tY, AguaValida, True, UserList(UserIndex).flags.Montado = 1, False, False) Then
+                If LegalPos(Map, tX, tY, AguaValida, True, False, False) Then
                     If MapData(Map, tX, tY).trigger < 50 Then
                         Call WarpUserChar(UserIndex, Map, tX, tY, FX)
                         Exit Sub
@@ -3017,7 +2999,7 @@ Public Function GetEvasionBonus(ByRef User As t_User) As Integer
 End Function
 
 Public Function GetHitBonus(ByRef User As t_User) As Integer
-    GetHitBonus = User.Modifiers.HitBonus + GetWeaponHitBonus(User.invent.EquippedWeaponObjIndex, User.clase)
+    GetHitBonus = User.Modifiers.HitBonus
 End Function
 
 'Defines the healing bonus when using a potion, a spell or any other healing source
@@ -3028,16 +3010,6 @@ End Function
 'Defines bonus when healing someone with magic
 Public Function GetMagicHealingBonus(ByRef User As t_User) As Single
     GetMagicHealingBonus = max(1 + User.Modifiers.MagicHealingBonus, 0)
-End Function
-
-Public Function GetWeaponHitBonus(ByVal WeaponIndex As Integer, ByVal UserClass As e_Class)
-    On Error GoTo GetWeaponHitBonus_Err
-    If WeaponIndex = 0 Then Exit Function
-    If Not IsFeatureEnabled("class_weapon_bonus") Or ObjData(WeaponIndex).WeaponType = 0 Then Exit Function
-    GetWeaponHitBonus = ModClase(UserClass).WeaponHitBonus(ObjData(WeaponIndex).WeaponType)
-    Exit Function
-GetWeaponHitBonus_Err:
-    Call TraceError(Err.Number, Err.Description, "UserMod.GetWeaponHitBonus WeaponIndex: " & WeaponIndex & " for class: " & UserClass, Erl)
 End Function
 
 Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)

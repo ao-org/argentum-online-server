@@ -2416,28 +2416,6 @@ ObtenerPezRandom_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.ObtenerPezRandom", Erl)
 End Function
 
-Function ModDomar(ByVal clase As e_Class) As Integer
-    On Error GoTo ModDomar_Err
-    '***************************************************
-    'Author: Unknown
-    'Last Modification: -
-    '
-    '***************************************************
-    Select Case clase
-        Case e_Class.Druid
-            ModDomar = 6
-        Case e_Class.Hunter
-            ModDomar = 6
-        Case e_Class.Cleric
-            ModDomar = 7
-        Case Else
-            ModDomar = 10
-    End Select
-    Exit Function
-ModDomar_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.ModDomar", Erl)
-End Function
-
 Function FreeMascotaIndex(ByVal UserIndex As Integer) As Integer
     On Error GoTo FreeMascotaIndex_Err
     '***************************************************

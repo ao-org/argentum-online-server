@@ -162,7 +162,7 @@ Public Sub RegisterRemoteUserIdCb(ByRef UserRef As t_UserReference, ByRef Id As 
     End If
 End Sub
 
-Public Sub ClientActionRequired(ByRef UserRef As t_UserReference, ByVal Action As Long, ByVal ReasonCode As Long, ByRef ReasonString As SINGLESTRINGPARAM)
+Public Sub ClientActionRequired(ByRef UserRef As t_UserReference, ByVal Action As Long, ByRef ReasonString As SINGLESTRINGPARAM)
     Dim ReasonStr As String
     If ReasonString.Len > 0 Then
         ReasonStr = GetStringFromPtr(ReasonString.Ptr, ReasonString.Len)

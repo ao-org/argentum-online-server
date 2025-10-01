@@ -28,44 +28,10 @@ Attribute VB_Name = "ES"
 Option Explicit
 Const MAX_RANDOM_TELEPORT_IN_MAP = 20
 
-Private Type t_Position
-    x As Integer
-    y As Integer
-End Type
-
-'Item type
-Private Type t_Item
-    ObjIndex As Integer
-    amount As Integer
-End Type
-
 Private Type t_WorldPos
     Map As Integer
     x As Byte
     y As Byte
-End Type
-
-Private Type t_Grh
-    GrhIndex As Long
-    FrameCounter As Single
-    Speed As Single
-    Started As Byte
-    alpha_blend As Boolean
-    angle As Single
-End Type
-
-Private Type t_GrhData
-    sX As Integer
-    sY As Integer
-    filenum As Integer
-    pixelWidth As Integer
-    pixelHeight As Integer
-    TileWidth As Single
-    TileHeight As Single
-    NumFrames As Integer
-    Frames() As Integer
-    Speed As Integer
-    mini_map_color As Long
 End Type
 
 Private Type t_MapHeader
@@ -2308,7 +2274,7 @@ End Sub
 Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
     On Error GoTo SaveUser_Err
     If Logout Then
-        Call UserDisconnected(UserList(UserIndex).pos.Map, UserIndex)
+        Call UserDisconnected(UserIndex)
     End If
     Call SaveCharacterDB(UserIndex)
     If Logout Then

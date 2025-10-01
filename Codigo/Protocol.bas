@@ -921,7 +921,7 @@ End Function
         Dim UserIndex As Integer
         UserIndex = MapConnectionToUser(ConnectionID)
         If UserIndex < 1 Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094)) ', "No hay slot disponibles para el usuario."))
+            Call modSendData.SendToConnection(ConnectionID) ', "No hay slot disponibles para el usuario."))
             Call KickConnection(ConnectionID)
             Exit Sub
         End If
@@ -955,7 +955,7 @@ Private Sub HandleLoginAccount(ByVal ConnectionID As Long)
     Dim UserIndex As Integer
     UserIndex = MapConnectionToUser(ConnectionID)
     If UserIndex < 1 Then
-        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094)) ', "No hay slot disponibles para el usuario."))
+        Call modSendData.SendToConnection(ConnectionID)
         Call KickConnection(ConnectionID)
         Exit Sub
     End If
