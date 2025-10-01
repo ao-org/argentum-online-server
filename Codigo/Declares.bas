@@ -284,15 +284,7 @@ Enum e_Genero
     Mujer
 End Enum
 
-Public Const LimiteNewbie As Byte = 12
-
-Public Type t_Cabecera 'Cabecera de los con
-    Desc As String * 255
-    crc As Long
-    MagicWord As Long
-End Type
-
-Public MiCabecera                    As t_Cabecera
+Public Const LimiteNewbie            As Byte = 12
 Public Const NingunEscudo            As Integer = 2
 Public Const NingunCasco             As Integer = 2
 Public Const NingunArma              As Integer = 2
@@ -1803,7 +1795,6 @@ Public Type t_Transport
     DestY As Byte
     DockX As Byte
     DockY As Byte
-    IsSailing As Boolean
     RequiredPassID As Integer
 End Type
 
@@ -1818,13 +1809,6 @@ Public Type t_CityWorldPos
     ResuX As Byte
     ResuY As Byte
     NecesitaNave As Byte
-    Mapas() As String
-End Type
-
-Public Type t_FXdata
-    nombre As String
-    GrhIndex As Long
-    Delay As Integer
 End Type
 
 Public Enum e_CharValue
@@ -1834,7 +1818,6 @@ End Enum
 'Datos de user o npc
 Public Type t_Char
     charindex As Integer
-    charindex_bk As Integer
     head As Integer
     body As Integer
     originalhead As Integer
@@ -1851,7 +1834,6 @@ Public Type t_Char
     Body_Aura As String
     Arma_Aura As String
     Escudo_Aura As String
-    Backpack_Aura As String
     DM_Aura As String
     RM_Aura As String
     Otra_Aura As String
@@ -1958,7 +1940,6 @@ Public Type t_SalaReto
     Ronda As Byte
     Puntaje As Integer
     Apuesta As Long
-    PocionesMaximas As Integer
     CaenItems As Boolean
     TiempoRestante As Long
     TiempoItems As Integer
@@ -2006,7 +1987,6 @@ Public Type t_ObjData
     GrhSecundario As Integer
     'Solo contenedores
     MaxItems As Integer
-    Conte As t_Inventario
     Apuñala As Byte
     Paraliza As Byte
     Estupidiza As Byte
@@ -2018,7 +1998,6 @@ Public Type t_ObjData
     MinHp As Integer ' Minimo puntos de vida
     MaxHp As Integer ' Maximo puntos de vida
     MineralIndex As Integer
-    LingoteInex As Integer
     Proyectil As Integer
     Municion As Integer
     Crucial As Byte
@@ -2099,7 +2078,6 @@ Public Type t_ObjData
     WeaponAnim As Integer ' Apunta a una anim de armas
     ShieldAnim As Integer ' Apunta a una anim de escudo
     CascoAnim As Integer
-    BackpackAnim As Integer
     Valor As Long     ' Precio
     Cerrada As Integer
     Llave As Byte
@@ -2302,7 +2280,6 @@ Public Type t_UserStats
     UserHechizos(1 To MAXUSERHECHIZOS) As Integer
     UsuariosMatados As Long
     PuntosPesca As Long
-    CriminalesMatados As Long
     NPCsMuertos As Integer
     SkillPts As Integer
     Advertencias As Byte
@@ -2406,8 +2383,6 @@ Public Type t_UserFlags
     DivineBlood As Boolean
     Descuento As String
     PuedeMoverse As Byte
-    TimerLanzarSpell As Long
-    PuedeTrabajar As Byte
     Envenenado As Byte
     Paralizado As Byte
     Estupidez As Byte
@@ -2435,8 +2410,6 @@ Public Type t_UserFlags
     TargetNpcTipo As e_NPCType ' Tipo del npc señalado
     NpcInv As Integer
     Ban As Byte
-    AdministrativeBan As Byte
-    BanMotivo As String
     TargetUser As t_UserReference ' Usuario señalado
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer
@@ -2546,7 +2519,6 @@ Public Type t_UserCounters
     LastAttackTime As Long
     PiqueteC As Long
     Pena As Long
-    SendMapCounter As t_WorldPos
     pasos As Integer
     '[Gonzalo]
     Saliendo As Boolean
@@ -2564,7 +2536,6 @@ Public Type t_UserCounters
     TimerMagiaGolpe As Long
     TimerGolpeMagia As Long
     TimerGolpeUsar As Long
-    TimerCaminar As Long
     TimerTirar As Long
     TimerMeditar As Long
     TiempoInicioMeditar As Long
@@ -2605,8 +2576,6 @@ End Type
 ' ------------- FACCIONES -------------
 Public Type t_Facciones
     Status As Byte ' Esto deberia ser e_Facciones
-    ArmadaReal As Byte
-    FuerzasCaos As Byte
     CriminalesMatados As Long
     ciudadanosMatados As Long
     RecompensasReal As Long ' a.k.a Rango armada real
@@ -2764,20 +2733,14 @@ Public Type t_User
     Faccion As t_Facciones
     ChatCombate As Byte
     ChatGlobal As Byte
-    'Macros
-    #If ConUpTime Then
-        LogOnTime As Date
-        UpTime As Long
-    #End If
-    '[Alejo]
+    LogOnTime As Date
+    UpTime As Long
     ComUsu As t_ComercioUsuario
-    '[/Alejo]
     EmpoCont As Byte
     NroMascotas As Integer
     MascotasType(1 To MAXMASCOTAS) As Integer
     MascotasIndex(1 To MAXMASCOTAS) As t_NpcReference
     GuildIndex As Integer   'puntero al array global de guilds
-    FundandoGuildAlineacion As e_ALINEACION_GUILD     'esto esta aca hasta que se parchee el cliente y se pongan cadenas de datos distintas para cada alineacion
     EscucheClan As Integer
     LastGuildRejection As String
     KeyCrypt As Integer
@@ -2820,7 +2783,6 @@ Public Type t_NPCStats
     MagicResistance As Integer 'magic skill required to do full damage to npc
     MagicDef As Integer 'magic reduction in percent
     MagicBonus As Single
-    UsuariosMatados As Integer
     CantidadInvocaciones As Byte
     NpcsInvocados()      As t_NpcReference
 End Type
@@ -2986,7 +2948,6 @@ Public Type t_Npc
     SubName As String
     Char As t_Char 'Define como se vera
     Desc As String
-    DescExtra As String
     showName As Byte
     GobernadorDe As Byte
     npcType As e_NPCType
@@ -3296,15 +3257,8 @@ End Type
 
 Public Const DIAMETRO_VISION_GUARDIAS_NPCS As Byte = 7
 Public Const DISTANCIA_ENVIO_DATOS         As Byte = 3
-
-Public Type tPaso
-    CantPasos As Byte
-    wav() As Integer
-End Type
-
-Public pasos()             As tPaso
-Public DBError             As String
-Public EnEventoFaccionario As Boolean
+Public DBError                             As String
+Public EnEventoFaccionario                 As Boolean
 
 Public Enum e_EffectOverTimeType
     eHealthModifier = 1

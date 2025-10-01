@@ -596,9 +596,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, Optional ByVal 
             End If
         End If
         ''[EL OSO]: TRAIGO ESTO ACA ARRIBA PARA DARLE EL IP!
-        #If ConUpTime Then
-            .LogOnTime = Now
-        #End If
+        .LogOnTime = Now
         'Crea  el personaje del usuario
         Call MakeUserChar(True, .pos.Map, UserIndex, .pos.Map, .pos.x, .pos.y, 1)
         Call WriteUserCharIndexInServer(UserIndex)
@@ -1436,18 +1434,16 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         End If
         'guildpts no tienen objeto
     End If
-    #If ConUpTime Then
-        Dim TempDate As Date
-        Dim TempSecs As Long
-        Dim TempStr  As String
-        TempDate = Now - UserList(UserIndex).LogOnTime
-        TempSecs = (UserList(UserIndex).UpTime + (Abs(Day(TempDate) - 30) * 24 * 3600) + (Hour(TempDate) * 3600) + (Minute(TempDate) * 60) + Second(TempDate))
-        TempStr = (TempSecs \ 86400) & " Dias, " & ((TempSecs Mod 86400) \ 3600) & " Horas, " & ((TempSecs Mod 86400) Mod 3600) \ 60 & " Minutos, " & (((TempSecs Mod 86400) Mod _
-                3600) Mod 60) & " Segundos."
-        Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1863, Hour(TempDate) & "¬" & Minute(TempDate) & "¬" & Second(TempDate), e_FontTypeNames.FONTTYPE_INFO)) ' Msg1863=Logeado hace: ¬1:¬2:¬3
-        'Msg1297= Total: ¬1
-        Call WriteLocaleMsg(sendIndex, "1297", e_FontTypeNames.FONTTYPE_INFO, TempStr)
-    #End If
+    Dim TempDate As Date
+    Dim TempSecs As Long
+    Dim TempStr  As String
+    TempDate = Now - UserList(UserIndex).LogOnTime
+    TempSecs = (UserList(UserIndex).UpTime + (Abs(Day(TempDate) - 30) * 24 * 3600) + (Hour(TempDate) * 3600) + (Minute(TempDate) * 60) + Second(TempDate))
+    TempStr = (TempSecs \ 86400) & " Dias, " & ((TempSecs Mod 86400) \ 3600) & " Horas, " & ((TempSecs Mod 86400) Mod 3600) \ 60 & " Minutos, " & (((TempSecs Mod 86400) Mod _
+            3600) Mod 60) & " Segundos."
+    Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1863, Hour(TempDate) & "¬" & Minute(TempDate) & "¬" & Second(TempDate), e_FontTypeNames.FONTTYPE_INFO)) ' Msg1863=Logeado hace: ¬1:¬2:¬3
+    'Msg1297= Total: ¬1
+    Call WriteLocaleMsg(sendIndex, "1297", e_FontTypeNames.FONTTYPE_INFO, TempStr)
     Call LoadPatronCreditsFromDB(UserIndex)
     'Msg1298= Oro: ¬1
     Call WriteLocaleMsg(sendIndex, "1298", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.GLD)

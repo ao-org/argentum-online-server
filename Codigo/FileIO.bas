@@ -1034,7 +1034,6 @@ Sub LoadOBJData()
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
                 Case e_OBJType.otBackpack
-                    '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
                 Case e_OBJType.otWeapon
                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
                     .Apuñala = val(Leer.GetValue(ObjKey, "Apuñala"))

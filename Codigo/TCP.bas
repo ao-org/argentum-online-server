@@ -472,10 +472,8 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
         .Stats.Exp = 0
         .Stats.ELV = 1
         Call RellenarInventario(UserIndex)
-        #If ConUpTime Then
-            .LogOnTime = Now
-            .UpTime = 0
-        #End If
+        .LogOnTime = Now
+        .UpTime = 0
         Call ResetCd(UserList(UserIndex))
         'Valores Default de facciones al Activar nuevo usuario
         Call ResetFacciones(UserIndex)
