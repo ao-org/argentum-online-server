@@ -1518,15 +1518,20 @@ ErrHandler:
 End Function
 
 Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As Byte)
+
+' Agrego el Cuerno de la Armada y la Legión.
+'Utilización nueva de Barco en lvl 20 por clase Pirata y Pescador.
+Dim ObjIndex                    As Integer
+Dim TimeSinceLastUse            As Long
+Dim TargObj                     As t_ObjData
+Dim obj                         As t_ObjData
+Dim MiObj                       As t_Obj
+
     On Error GoTo hErr
-    ' Agrego el Cuerno de la Armada y la Legión.
-    'Utilización nueva de Barco en lvl 20 por clase Pirata y Pescador.
-    Dim obj      As t_ObjData
-    Dim ObjIndex As Integer
-    Dim TargObj  As t_ObjData
-    Dim MiObj    As t_Obj
+
     With UserList(UserIndex)
         If .invent.Object(Slot).amount = 0 Then Exit Sub
+
         If Not CanUseItem(.flags, .Counters) Then
             Call WriteLocaleMsg(UserIndex, 395, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
@@ -1534,8 +1539,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
         If PuedeUsarObjeto(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
             Exit Sub
         End If
+
         obj = ObjData(.invent.Object(Slot).ObjIndex)
-        Dim TimeSinceLastUse As Long: TimeSinceLastUse = GetTickCount() - .CdTimes(obj.cdType)
+        TimeSinceLastUse = GetTickCount() - .CdTimes(obj.cdType)
+
         If TimeSinceLastUse < obj.Cooldown Then Exit Sub
         If IsSet(obj.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly) Then
             If MapInfo(.pos.Map).Seguro = 0 Then
@@ -1589,6 +1596,22 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
         .flags.TargetObjInvIndex = ObjIndex
         .flags.TargetObjInvSlot = Slot
         Select Case obj.OBJType
+            Case e_OBJType.otSkinsArmours, e_OBJType.otSkinsSpells, e_OBJType.otSkinsBoats, e_OBJType.otSkinsHelmets, e_OBJType.otSkinsShields, e_OBJType.otSkinsWeapons, e_OBJType.otSkinsWings
+
+                If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
+                If ClasePuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And SexoPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And FaccionPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And LevelCanUseItem(UserIndex, ObjData(.invent.Object(Slot).ObjIndex)) Then
+                    If Not HaveThisSkin(UserIndex, .invent.Object(Slot).ObjIndex) Then
+                        If AddSkin(UserIndex, .invent.Object(Slot).ObjIndex) Then
+                            Call QuitarUserInvItem(UserIndex, Slot, 1)
+                            Call UpdateSingleItemInv(UserIndex, Slot, False)
+                        End If
+                    Else
+                        Call WriteConsoleMsg(UserIndex, "Ya tienes este skin.", e_FontTypeNames.FONTTYPE_INFO)
+                    End If
+                Else
+                    Call WriteConsoleMsg(UserIndex, "Tu clase, raza o género no te permite usar este skin.", e_FontTypeNames.FONTTYPE_INFO)
+                End If
+
             Case e_OBJType.otUseOnce
                 If .flags.Muerto = 1 Then
                     Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
@@ -3337,10 +3360,14 @@ Dim obj                         As t_ObjData
                 'Buscamos otros skins de este mismo hechizo equipados y lo desequipamos.
                 For i = 1 To MAX_SKINSSPELLS_SLOTS
                     If .Invent_Skins.Object(i).ObjIndex > 0 Then
-                        If ObjData(.Invent_Skins.Object(i).ObjIndex).HechizoIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex And Slot <> i Then
-                            Call Desequipar(UserIndex, i, True, eSkinType)
-                            Exit For
+                        If ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType = e_OBJType.otSkinsSpells Then
+                            If ObjData(.Invent_Skins.Object(i).ObjIndex).HechizoIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex And Slot <> i Then
+                                Call Desequipar(UserIndex, i, True, eSkinType)
+                                Exit For
+                            End If
                         End If
+                    Else
+                        Exit For
                     End If
                 Next i
 

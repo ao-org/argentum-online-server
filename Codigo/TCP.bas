@@ -1139,7 +1139,7 @@ End Sub
 
 Sub ResetUserSkinsSpells(ByVal UserIndex As Integer)
 
-Dim LoopC                       As Byte
+Dim LoopC                       As Integer
 
     On Error GoTo ResetUserSkinsSpells_Err
 
