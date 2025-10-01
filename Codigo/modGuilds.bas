@@ -1043,30 +1043,6 @@ MiembrosPermite_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.MiembrosPermite", Erl)
 End Function
 
-Public Function GetUserGuildMember(ByVal username As String) As String
-    On Error GoTo GetUserGuildMember_Err
-    GetUserGuildMember = GetUserGuildMemberDatabase(username)
-    Exit Function
-GetUserGuildMember_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.GetUserGuildMember", Erl)
-End Function
-
-Public Function GetUserGuildAspirant(ByVal username As String) As Integer
-    On Error GoTo GetUserGuildAspirant_Err
-    GetUserGuildAspirant = GetUserGuildAspirantDatabase(username)
-    Exit Function
-GetUserGuildAspirant_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.GetUserGuildAspirant", Erl)
-End Function
-
-Public Function GetUserGuildPedidos(ByVal username As String) As String
-    On Error GoTo GetUserGuildPedidos_Err
-    GetUserGuildPedidos = GetUserGuildPedidosDatabase(username)
-    Exit Function
-GetUserGuildPedidos_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.GetUserGuildPedidos", Erl)
-End Function
-
 Public Sub SaveUserGuildRejectionReason(ByVal username As String, ByVal Reason As String)
     On Error GoTo SaveUserGuildRejectionReason_Err
     Call SaveUserGuildRejectionReasonDatabase(username, Reason)
