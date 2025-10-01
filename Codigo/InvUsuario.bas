@@ -121,7 +121,7 @@ manejador:
     LogError ("Error en ClasePuedeUsarItem")
 End Function
 
-Function RazaPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional Slot As Byte) As Boolean
+Function RazaPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Boolean
     On Error GoTo RazaPuedeUsarItem_Err
     Dim Objeto As t_ObjData, i As Long
     Objeto = ObjData(ObjIndex)
@@ -428,7 +428,7 @@ EraseObj_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.EraseObj", Erl)
 End Sub
 
-Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, Optional ByVal Limpiar As Boolean = True)
+Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo MakeObj_Err
     Dim Color As Long
     Dim Rango As Byte
@@ -2259,7 +2259,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Exit Sub
                 End If
                 'Call LogError(.Name & " intento aprender el hechizo " & ObjData(.Invent.Object(slot).ObjIndex).HechizoIndex)
-                If ClasePuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex, Slot) And RazaPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex, Slot) Then
+                If ClasePuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex, Slot) And RazaPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) Then
                     'If .Stats.MaxMAN > 0 Then
                     If .Stats.MinHam > 0 And .Stats.MinAGU > 0 Then
                         Call AgregarHechizo(UserIndex, Slot)
@@ -2621,7 +2621,7 @@ ItemSeCae_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.ItemSeCae", Erl)
 End Function
 
-Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
+Public Function PirataCaeItem(ByVal UserIndex As Integer)
     On Error GoTo PirataCaeItem_Err
     With UserList(UserIndex)
         If .clase = e_Class.Pirat And .Stats.ELV >= 37 And .flags.Navegando = 1 Then
@@ -2659,7 +2659,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
         For i = 1 To .CurrentInventorySlots
             ItemIndex = .invent.Object(i).ObjIndex
             If ItemIndex > 0 Then
-                If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex, i) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
+                If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
                     NuevaPos.x = 0
                     NuevaPos.y = 0
                     MiObj.amount = DropAmmount(.invent, i)

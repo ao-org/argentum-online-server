@@ -1200,7 +1200,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
     With UserList(UserIndex)
         nPos = .pos
         Call HeadtoPos(nHeading, nPos)
-        If Not LegalWalk(.pos.Map, nPos.x, nPos.y, nHeading, .flags.Navegando = 1, .flags.Navegando = 0, .flags.Montado, , UserIndex) Then
+        If Not LegalWalk(.pos.Map, nPos.x, nPos.y, nHeading, .flags.Navegando = 1, .flags.Navegando = 0, , UserIndex) Then
             Exit Function
         End If
         If .flags.Navegando And .invent.EquippedShipObjIndex = iObjTraje And Not (MapData(.pos.Map, nPos.x, nPos.y).trigger = e_Trigger.DETALLEAGUA Or MapData(.pos.Map, nPos.x, _

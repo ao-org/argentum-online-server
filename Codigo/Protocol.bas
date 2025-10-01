@@ -1928,8 +1928,7 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, _
                                 ByVal UserIndex As Integer, _
                                 ByVal PacketName As String, _
                                 Optional ByVal DeltaThreshold As Long = 100, _
-                                Optional ByVal MaxIterations As Long = 5, _
-                                Optional ByVal CloseClient As Boolean = False) As Boolean
+                                Optional ByVal MaxIterations As Long = 5) As Boolean
     Dim Ticks As Long, Delta As Long
     Ticks = GetTickCount
     Delta = (Ticks - LastTick)
@@ -3615,7 +3614,7 @@ Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
                 Call WriteConsoleMsg(tUser.ArrayIndex, errorStr & " : " & Reason, e_FontTypeNames.FONTTYPE_GUILD)
             Else
                 'hay que grabar en el char su rechazo
-                Call modGuilds.a_RechazarAspiranteChar(username, .GuildIndex, Reason)
+                Call modGuilds.a_RechazarAspiranteChar(username, Reason)
             End If
         End If
     End With

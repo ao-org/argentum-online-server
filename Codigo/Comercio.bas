@@ -154,7 +154,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
         UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + precio
         If UserList(UserIndex).Stats.GLD > MAXORO Then UserList(UserIndex).Stats.GLD = MAXORO
         Call WriteUpdateGold(UserIndex)
-        NpcSlot = SlotEnNPCInv(NpcIndex, Objeto.ObjIndex, Objeto.amount)
+        NpcSlot = SlotEnNPCInv(Objeto.ObjIndex, Objeto.amount)
         If NpcSlot > 0 And NpcSlot <= MAX_INVENTORY_SLOTS Then 'Slot valido
             ' Saque este incremento de SlotEnNPCInv porque me parece mejor manejarlo junto con el resto de las asignaciones
             If NpcList(NpcIndex).invent.Object(NpcSlot).ObjIndex = 0 Then
@@ -194,7 +194,7 @@ IniciarComercioNPC_Err:
     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.IniciarComercioNPC", Erl)
 End Sub
 
-Private Function SlotEnNPCInv(ByVal NpcIndex As Integer, ByVal Objeto As Integer, ByVal Cantidad As Integer) As Integer
+Private Function SlotEnNPCInv(ByVal NpcIndex As Integer, ByVal Objeto As Integer) As Integer
     '*************************************************
     'Devuelve el slot en el cual se debe agregar el nuevo objeto, o 0 si no se debe asignar en ningun lado
     '*************************************************

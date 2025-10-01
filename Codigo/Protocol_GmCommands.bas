@@ -3546,7 +3546,7 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
             End If
             ' Lo registro en los logs.
             Call LogGM(.name, "/DAR " & username & " - Item: " & ObjData(ObjIndex).name & "(" & ObjIndex & ") Cantidad : " & Cantidad)
-            Call LogPremios(.name, username, ObjIndex, Cantidad, Motivo)
+            Call LogPremios(ObjIndex, Cantidad, Motivo)
         Else
             ' Msg551=Servidor » Comando deshabilitado para tu cargo, debes pedir a un Admin que lo de.
             Call WriteLocaleMsg(UserIndex, "551", e_FontTypeNames.FONTTYPE_INFO)

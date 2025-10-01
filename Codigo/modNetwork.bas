@@ -221,7 +221,7 @@ OnServerClose_Err:
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerClose", Erl)
 End Sub
 
-Private Sub OnServerSend(ByVal Connection As Long, ByVal Message As Network.reader)
+Private Sub OnServerSend(ByVal Connection As Long)
     On Error GoTo OnServerSend_Err:
     Exit Sub
 OnServerSend_Err:
