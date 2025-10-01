@@ -160,32 +160,6 @@ Handler:
     Call TraceError(Err.Number, Err.Description, "Admin.ReSpawnOrigPosNpcs", Erl)
 End Sub
 
-Sub WorldSave()
-    On Error GoTo Handler
-    Dim LoopX As Integer
-    Dim Porc  As Long
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1732", vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1732=Servidor » Iniciando WorldSave
-    Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
-    Dim j As Integer, K As Integer
-    For j = 1 To NumMaps
-        If MapInfo(j).backup_mode = 1 Then K = K + 1
-    Next j
-    FrmStat.ProgressBar1.Min = 0
-    FrmStat.ProgressBar1.max = K
-    FrmStat.ProgressBar1.value = 0
-    For LoopX = 1 To NumMaps
-        'DoEvents
-        If MapInfo(LoopX).backup_mode = 1 Then
-            FrmStat.ProgressBar1.value = FrmStat.ProgressBar1.value + 1
-        End If
-    Next LoopX
-    FrmStat.Visible = False
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1733, vbNullString, e_FontTypeNames.FONTTYPE_SERVER))
-    Exit Sub
-Handler:
-    Call TraceError(Err.Number, Err.Description, "Admin.WorldSave", Erl)
-End Sub
-
 Public Sub PurgarPenas()
     On Error GoTo PurgarPenas_Err
     Dim i As Long

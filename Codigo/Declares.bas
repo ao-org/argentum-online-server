@@ -169,7 +169,6 @@ Type t_EstadisticasDiarias
 End Type
 
 Public DayStats       As t_EstadisticasDiarias
-Public aClon          As New clsAntiMassClon
 Public TrashCollector As New Collection
 Public Const MAXSPAWNATTEMPS = 15
 Public Const INFINITE_LOOPS As Integer = -1

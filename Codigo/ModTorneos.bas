@@ -93,20 +93,6 @@ IniciarTorneo_Err:
     Call TraceError(Err.Number, Err.Description, "ModTorneos.IniciarTorneo", Erl)
 End Sub
 
-Public Function BuscarIndexFreeTorneo() As Byte
-    On Error GoTo BuscarIndexFreeTorneo_Err
-    Dim i As Byte
-    For i = 1 To Torneo.cupos
-        If Torneo.IndexParticipantes(i) = 0 Then
-            BuscarIndexFreeTorneo = i
-            Exit For
-        End If
-    Next i
-    Exit Function
-BuscarIndexFreeTorneo_Err:
-    Call TraceError(Err.Number, Err.Description, "ModTorneos.BuscarIndexFreeTorneo", Erl)
-End Function
-
 Public Sub BorrarIndexInTorneo(ByVal Index As Integer)
     On Error GoTo BorrarIndexInTorneo_Err
     Dim i As Byte

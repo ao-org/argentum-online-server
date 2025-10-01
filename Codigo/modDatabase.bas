@@ -288,14 +288,6 @@ BANCheckDatabase_Err:
     Call TraceError(Err.Number, Err.Description, "modDatabase.BANCheckDatabase", Erl)
 End Function
 
-Public Function GetUserStatusDatabase(name As String) As Integer
-    On Error GoTo GetUserStatusDatabase_Err
-    GetUserStatusDatabase = GetUserValue(LCase$(name), "status")
-    Exit Function
-GetUserStatusDatabase_Err:
-    Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserStatusDatabase", Erl)
-End Function
-
 Public Function GetAccountIDDatabase(name As String) As Long
     On Error GoTo GetAccountIDDatabase_Err
     Dim Temp As Variant
@@ -553,14 +545,6 @@ ErrorHandler:
     Call LogDatabaseError("Error in GetUserGuildMemberDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 End Function
 
-Public Function GetUserGuildAspirantDatabase(username As String) As Integer
-    On Error GoTo ErrorHandler
-    GetUserGuildAspirantDatabase = SanitizeNullValue(GetUserValue(LCase$(username), "guild_aspirant_index"), 0)
-    Exit Function
-ErrorHandler:
-    Call LogDatabaseError("Error in GetUserGuildAspirantDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
-End Function
-
 Public Function GetUserGuildPedidosDatabase(username As String) As String
     On Error GoTo ErrorHandler
     Dim user_id As Long
@@ -682,16 +666,6 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
     Exit Function
 ErrorHandler:
     Call LogDatabaseError("Error in EnterAccountDatabase. UserCuenta: " & CuentaEmail & ". " & Err.Number & " - " & Err.Description)
-End Function
-
-Public Function PersonajePerteneceID(ByVal username As String, ByVal AccountID As Long) As Boolean
-    Dim RS As ADODB.Recordset
-    Set RS = Query("SELECT id FROM user WHERE name = ? AND account_id = ?;", username, AccountID)
-    If RS Is Nothing Then
-        PersonajePerteneceID = False
-        Exit Function
-    End If
-    PersonajePerteneceID = True
 End Function
 
 Public Function GetCharacterIdWithName(ByVal username As String) As Long

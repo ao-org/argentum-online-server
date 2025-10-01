@@ -90,15 +90,6 @@ Alineacion_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.Alineacion", Erl)
 End Property
 
-Public Function CambiarAlineacion(ByVal NuevaAlineacion As e_ALINEACION_GUILD) As Boolean
-    On Error GoTo CambiarAlineacion_Err
-    p_Alineacion = NuevaAlineacion
-    Call UpdateGuildValue("alignment", p_Alineacion)
-    Exit Function
-CambiarAlineacion_Err:
-    Call TraceError(Err.Number, Err.Description, "clsClan.CambiarAlineacion", Erl)
-End Function
-
 Private Sub Class_Initialize()
     Set p_OnlineMembers = New Collection
     Set p_GMsOnline = New Collection
@@ -424,17 +415,6 @@ Public Sub SetURL(ByRef URL As String)
 SetURL_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.SetURL", Erl)
 End Sub
-
-Public Function GetURL() As String
-    On Error GoTo GetURL_Err
-    Dim RS As ADODB.Recordset
-    Set RS = Query("SELECT url FROM guilds where id = ?", p_GuildId)
-    If RS Is Nothing Then Exit Function
-    GetURL = RS.Fields(0).value
-    Exit Function
-GetURL_Err:
-    Call TraceError(Err.Number, Err.Description, "clsClan.GetURL", Erl)
-End Function
 
 Public Sub SetNivelDeClan(ByRef nivel As Byte)
     On Error GoTo SetNivelDeClan_Err

@@ -1079,20 +1079,6 @@ NpcLanzaUnSpell_Err:
     Call TraceError(Err.Number, Err.Description, "AI.NpcLanzaUnSpell", Erl)
 End Sub
 
-Private Sub NpcLanzaUnSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer)
-    On Error GoTo NpcLanzaUnSpellSobreNpc_Err
-    With NpcList(NpcIndex)
-        If Not IntervaloPermiteLanzarHechizo(NpcIndex) Then Exit Sub
-        If .pos.Map <> NpcList(TargetNPC).pos.Map Then Exit Sub
-        Dim K As Integer
-        K = RandomNumber(1, .flags.LanzaSpells)
-        Call NpcLanzaSpellSobreNpc(NpcIndex, TargetNPC, .Spells(K).SpellIndex)
-    End With
-    Exit Sub
-NpcLanzaUnSpellSobreNpc_Err:
-    Call TraceError(Err.Number, Err.Description, "AI.NpcLanzaUnSpellSobreNpc", Erl)
-End Sub
-
 ' ---------------------------------------------------------------------------------------------------
 '                                       HELPERS
 ' ---------------------------------------------------------------------------------------------------
