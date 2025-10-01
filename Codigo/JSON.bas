@@ -72,19 +72,6 @@ Private m_parserrors                 As String
 Private m_str()                      As Integer
 Private m_length                     As Long
 
-Private Sub GenerateStringArray(ByRef str As String)
-    On Error GoTo GenerateStringArray_Err
-    Dim i As Long
-    m_length = Len(str)
-    ReDim m_str(1 To m_length)
-    For i = 1 To m_length
-        m_str(i) = AscW(mid$(str, i, 1))
-    Next i
-    Exit Sub
-GenerateStringArray_Err:
-    Call TraceError(Err.Number, Err.Description, "mod_JSON.GenerateStringArray", Erl)
-End Sub
-
 Private Function parseObject(ByRef str As String, ByRef Index As Long) As Dictionary
     On Error GoTo parseObject_Err
     Set parseObject = New Dictionary
@@ -399,68 +386,3 @@ Private Sub skipChar(ByRef Index As Long)
 skipChar_Err:
     Call TraceError(Err.Number, Err.Description, "mod_JSON.skipChar", Erl)
 End Sub
-
-Public Function GetRegionalSettings(ByVal regionalsetting As Long) As String
-    ' Devuelve la configuracion regional del sistema
-    On Error GoTo ErrorHandler
-    Dim Locale      As Long
-    Dim Symbol      As String
-    Dim iRet1       As Long
-    Dim iRet2       As Long
-    Dim lpLCDataVar As String
-    Dim pos         As Integer
-    Locale = GetUserDefaultLCID()
-    iRet1 = GetLocaleInfo(Locale, regionalsetting, lpLCDataVar, 0)
-    Symbol = String$(iRet1, 0)
-    iRet2 = GetLocaleInfo(Locale, regionalsetting, Symbol, iRet1)
-    pos = InStr(Symbol, Chr$(0))
-    If pos > 0 Then
-        Symbol = Left$(Symbol, pos - 1)
-    End If
-ErrorHandler:
-    GetRegionalSettings = Symbol
-    Select Case Err.Number
-        Case 0
-        Case Else
-            Call Err.raise(123, "GetRegionalSetting", "GetRegionalSetting: " & regionalsetting)
-    End Select
-End Function
-
-Public Function toUnicode(str As String) As String
-    On Error GoTo toUnicode_Err
-    Dim x        As Long
-    Dim uStr     As New cStringBuilder
-    Dim uChrCode As Integer
-    For x = 1 To LenB(str)
-        uChrCode = Asc(mid$(str, x, 1))
-        Select Case uChrCode
-            Case 8:   ' backspace
-                Call uStr.Append("\b")
-            Case 9: ' tab
-                Call uStr.Append("\t")
-            Case 10:  ' line feed
-                Call uStr.Append("\n")
-            Case 12:  ' formfeed
-                Call uStr.Append("\f")
-            Case 13: ' carriage return
-                Call uStr.Append("\r")
-            Case 34: ' quote
-                Call uStr.Append("\""")
-            Case 39:  ' apostrophe
-                Call uStr.Append("\'")
-            Case 92: ' backslash
-                Call uStr.Append("\\")
-            Case 123, 125:  ' "{" and "}"
-                Call uStr.Append("\u" & Right$("0000" & Hex$(uChrCode), 4))
-            Case Is < 32, Is > 127: ' non-ascii characters
-                Call uStr.Append("\u" & Right$("0000" & Hex$(uChrCode), 4))
-            Case Else
-                Call uStr.Append(Chr$(uChrCode))
-        End Select
-    Next
-    toUnicode = uStr.ToString
-    Exit Function
-    Exit Function
-toUnicode_Err:
-    Call TraceError(Err.Number, Err.Description, "mod_JSON.toUnicode", Erl)
-End Function

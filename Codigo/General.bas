@@ -242,25 +242,6 @@ BloquearPuerta_Err:
     Call TraceError(Err.Number, Err.Description, "General.BloquearPuerta", Erl)
 End Sub
 
-Function HayCosta(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
-    On Error GoTo HayCosta_Err
-    'Ladder 10 - 2 - 2010
-    'Chequea si hay costa en los tiles proximos al usuario
-    If Map > 0 And Map < NumMaps + 1 And x > 0 And x < 101 And y > 0 And y < 101 Then
-        If ((MapData(Map, x, y).Graphic(1) >= 22552 And MapData(Map, x, y).Graphic(1) <= 22599) Or (MapData(Map, x, y).Graphic(1) >= 7283 And MapData(Map, x, y).Graphic(1) <= _
-                7378) Or (MapData(Map, x, y).Graphic(1) >= 13387 And MapData(Map, x, y).Graphic(1) <= 13482)) And MapData(Map, x, y).Graphic(2) = 0 Then
-            HayCosta = True
-        Else
-            HayCosta = False
-        End If
-    Else
-        HayCosta = False
-    End If
-    Exit Function
-HayCosta_Err:
-    Call TraceError(Err.Number, Err.Description, "General.HayCosta", Erl)
-End Function
-
 Function HayAgua(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     On Error GoTo HayAgua_Err
     With MapData(Map, x, y)
@@ -1508,26 +1489,6 @@ FreeCharIndexes_Err:
     Call TraceError(Err.Number, Err.Description, "General.FreeCharIndexes", Erl)
 End Sub
 
-Function RandomString(cb As Integer, Optional ByVal OnlyUpper As Boolean = False) As String
-    On Error GoTo RandomString_Err
-    Randomize Time
-    Dim rgch As String
-    rgch = "abcdefghijklmnopqrstuvwxyz"
-    If OnlyUpper Then
-        rgch = UCase(rgch)
-    Else
-        rgch = rgch & UCase(rgch)
-    End If
-    rgch = rgch & "0123456789"  ' & "#@!~$()-_"
-    Dim i As Long
-    For i = 1 To cb
-        RandomString = RandomString & mid$(rgch, Int(Rnd() * Len(rgch) + 1), 1)
-    Next
-    Exit Function
-RandomString_Err:
-    Call TraceError(Err.Number, Err.Description, "General.RandomString", Erl)
-End Function
-
 Function RandomName(cb As Integer, Optional ByVal OnlyUpper As Boolean = False) As String
     On Error GoTo RandomString_Err
     Randomize Time
@@ -1716,20 +1677,6 @@ Public Function EsMapaInterdimensional(ByVal Map As Integer) As Boolean
             Exit Function
         End If
     Next
-End Function
-
-Public Function IsValidIPAddress(ByVal IP As String) As Boolean
-    On Error GoTo Handler
-    Dim varAddress As Variant, n As Long, lCount As Long
-    varAddress = Split(IP, ".", 4, vbTextCompare)
-    If IsArray(varAddress) Then
-        For n = LBound(varAddress) To UBound(varAddress)
-            lCount = lCount + 1
-            varAddress(n) = CByte(varAddress(n))
-        Next
-        IsValidIPAddress = (lCount = 4)
-    End If
-Handler:
 End Function
 
 Function Ceil(x As Variant) As Variant

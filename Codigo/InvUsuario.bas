@@ -1373,35 +1373,6 @@ Public Sub EquipAura(ByVal Slot As Integer, ByRef inventory As t_Inventario, ByV
     inventory.Object(Slot).Equipped = 1
 End Sub
 
-Public Function CheckClaseTipo(ByVal UserIndex As Integer, ItemIndex As Integer) As Boolean
-    On Error GoTo ErrHandler
-    If EsGM(UserIndex) Then
-        CheckClaseTipo = True
-        Exit Function
-    End If
-    Select Case ObjData(ItemIndex).ClaseTipo
-        Case 0
-            CheckClaseTipo = True
-            Exit Function
-        Case 2
-            If UserList(UserIndex).clase = e_Class.Mage Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Druid Then CheckClaseTipo = True
-            Exit Function
-        Case 1
-            If UserList(UserIndex).clase = e_Class.Warrior Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Assasin Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Bard Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Cleric Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Paladin Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Trabajador Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Hunter Then CheckClaseTipo = True
-            Exit Function
-    End Select
-    Exit Function
-ErrHandler:
-    Call LogError("Error CheckClaseTipo ItemIndex:" & ItemIndex)
-End Function
-
 Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As Byte)
     On Error GoTo hErr
     ' Agrego el Cuerno de la Armada y la Legión.

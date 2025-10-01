@@ -1945,13 +1945,9 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, _
     If Delta < DeltaThreshold Then
         Iterations = Iterations + 1
         If Iterations >= MaxIterations Then
-            'Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
             verifyTimeStamp = False
-            'Call LogMacroServidor("El usuario " & UserList(UserIndex).name & " iteró el paquete " & PacketName & " " & MaxIterations & " veces.")
             Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).name & "| Revisar --> " & _
                     PacketName & " (Envíos: " & Iterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
-            'Call WriteCerrarleCliente(UserIndex)
-            'Call CloseSocket(UserIndex)
             LastCount = ActualCount
             Iterations = 0
             Debug.Print "CIERRO CLIENTE"

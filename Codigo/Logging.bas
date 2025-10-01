@@ -110,22 +110,6 @@ Public Sub LogearEventoDeSubasta(s As String)
 ErrHandler:
 End Sub
 
-Sub LogBan(ByVal BannedIndex As Integer, ByVal UserIndex As Integer, ByVal Motivo As String)
-    On Error GoTo ErrHandler
-    Dim s As String
-    s = UserList(BannedIndex).name & " BannedBy " & UserList(UserIndex).name & " Reason " & Motivo
-    Call LogThis(type_log.e_LogBan, "[Bans] " & s, vbLogEventTypeInformation)
-    Exit Sub
-ErrHandler:
-End Sub
-
-Public Sub LogCreditosPatreon(Desc As String)
-    On Error GoTo ErrHandler
-    Call LogThis(type_log.e_LogCreditosPatreon, "[MonetizationCreditosPatreon.log] " & Desc, vbLogEventTypeInformation)
-    Exit Sub
-ErrHandler:
-End Sub
-
 Public Sub LogShopTransactions(Desc As String)
     On Error GoTo ErrHandler
     Call LogThis(type_log.e_LogShopTransactions, "[MonetizationShopTransactions.log] " & Desc, vbLogEventTypeInformation)
@@ -143,20 +127,6 @@ End Sub
 Public Sub LogEdicionPaquete(texto As String)
     On Error GoTo ErrHandler
     Call LogThis(type_log.e_LogEdicionPaquete, "[EdicionPaquete.log] " & texto, vbLogEventTypeWarning)
-    Exit Sub
-ErrHandler:
-End Sub
-
-Public Sub LogMacroServidor(texto As String)
-    On Error GoTo ErrHandler
-    Call LogThis(type_log.e_LogMacroServidor, "[MacroServidor] " & texto, vbLogEventTypeInformation)
-    Exit Sub
-ErrHandler:
-End Sub
-
-Public Sub LogMacroCliente(texto As String)
-    On Error GoTo ErrHandler
-    Call LogThis(type_log.e_LogMacroCliente, "[MacroCliente] " & texto, vbLogEventTypeInformation)
     Exit Sub
 ErrHandler:
 End Sub
