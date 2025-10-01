@@ -120,14 +120,6 @@ m_EsGuildLeader_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.m_EsGuildLeader", Erl)
 End Function
 
-Private Function m_EsGuildFounder(ByRef PJ As String, ByVal GuildIndex As Integer) As Boolean
-    On Error GoTo m_EsGuildFounder_Err
-    m_EsGuildFounder = (UCase$(PJ) = UCase$(Trim$(GetUserName(guilds(GuildIndex).Fundador))))
-    Exit Function
-m_EsGuildFounder_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.m_EsGuildFounder", Erl)
-End Function
-
 Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal ExpellUserId As Long) As Integer
     On Error GoTo m_EcharMiembroDeClan_Err
     'UI echa a Expulsado del clan de Expulsado
@@ -442,25 +434,6 @@ m_EstadoPermiteEntrar_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.m_EstadoPermiteEntrar", Erl)
 End Function
 
-Public Function String2Alineacion(ByRef s As String) As e_ALINEACION_GUILD
-    On Error GoTo String2Alineacion_Err
-    Select Case s
-        Case "Neutral"
-            String2Alineacion = e_ALINEACION_GUILD.ALINEACION_NEUTRAL
-        Case "Armada Real"
-            String2Alineacion = e_ALINEACION_GUILD.ALINEACION_ARMADA
-        Case "Legión Oscura"
-            String2Alineacion = e_ALINEACION_GUILD.ALINEACION_CAOTICA
-        Case "Ciudadano"
-            String2Alineacion = e_ALINEACION_GUILD.ALINEACION_CIUDADANA
-        Case "Criminal"
-            String2Alineacion = e_ALINEACION_GUILD.ALINEACION_CRIMINAL
-    End Select
-    Exit Function
-String2Alineacion_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.String2Alineacion", Erl)
-End Function
-
 Public Function Alineacion2String(ByVal Alineacion As e_ALINEACION_GUILD) As String
     On Error GoTo Alineacion2String_Err
     Select Case Alineacion
@@ -478,40 +451,6 @@ Public Function Alineacion2String(ByVal Alineacion As e_ALINEACION_GUILD) As Str
     Exit Function
 Alineacion2String_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.Alineacion2String", Erl)
-End Function
-
-Public Function Relacion2String(ByVal Relacion As e_RELACIONES_GUILD) As String
-    On Error GoTo Relacion2String_Err
-    Select Case Relacion
-        Case e_RELACIONES_GUILD.ALIADOS
-            Relacion2String = "A"
-        Case e_RELACIONES_GUILD.GUERRA
-            Relacion2String = "G"
-        Case e_RELACIONES_GUILD.PAZ
-            Relacion2String = "P"
-        Case Else
-            Relacion2String = "?"
-    End Select
-    Exit Function
-Relacion2String_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.Relacion2String", Erl)
-End Function
-
-Public Function String2Relacion(ByVal s As String) As e_RELACIONES_GUILD
-    On Error GoTo String2Relacion_Err
-    Select Case UCase$(Trim$(s))
-        Case vbNullString, "P"
-            String2Relacion = e_RELACIONES_GUILD.PAZ
-        Case "G"
-            String2Relacion = e_RELACIONES_GUILD.GUERRA
-        Case "A"
-            String2Relacion = e_RELACIONES_GUILD.ALIADOS
-        Case Else
-            String2Relacion = e_RELACIONES_GUILD.PAZ
-    End Select
-    Exit Function
-String2Relacion_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.String2Relacion", Erl)
 End Function
 
 Private Function GuildNameValido(ByVal cad As String) As Boolean

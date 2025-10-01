@@ -100,10 +100,6 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "NPCs.ReleaseNpc", Erl)
 End Function
 
-Public Function GetAvailableNpcIndex() As Integer
-    GetAvailableNpcIndex = IdNpcLibres.currentIndex
-End Function
-
 Public Function GetNextAvailableNpc() As Integer
     On Error GoTo ErrHandler
     If (IdNpcLibres.currentIndex = 0) Then

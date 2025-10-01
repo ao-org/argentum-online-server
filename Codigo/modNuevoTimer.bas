@@ -227,22 +227,6 @@ IntervaloPermiteUsarArcos_Err:
     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteUsarArcos", Erl)
 End Function
 
-Public Function IntervaloPermiteCaminar(ByVal UserIndex As Integer) As Boolean
-    On Error GoTo IntervaloPermiteCaminar_Err
-    Dim TActual As Long
-    TActual = GetTickCount()
-    If TActual - UserList(UserIndex).Counters.TimerCaminar >= UserList(UserIndex).Intervals.Caminar Then
-        '  Call AddtoRichTextBox(frmMain.RecTxt, "Usar OK.", 255, 0, 0, True, False, False)
-        UserList(UserIndex).Counters.TimerCaminar = TActual
-        IntervaloPermiteCaminar = True
-    Else
-        IntervaloPermiteCaminar = False
-    End If
-    Exit Function
-IntervaloPermiteCaminar_Err:
-    Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteCaminar", Erl)
-End Function
-
 Public Function IntervaloPermiteMoverse(ByVal NpcIndex As Integer) As Boolean
     On Error GoTo IntervaloPermiteMoverse_Err
     Dim TActual As Long

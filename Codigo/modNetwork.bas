@@ -123,10 +123,6 @@ Kick_ErrHandler:
     Call TraceError(Err.Number, Err.Description, "modNetwork.Kick", Erl)
 End Sub
 
-Public Function GetTimeOfNextFlush() As Single
-    GetTimeOfNextFlush = max(0, TIME_SEND_FREQUENCY - Time(1))
-End Function
-
 Public Sub close_not_logged_sockets_if_timeout()
     On Error GoTo close_not_logged_sockets_if_timeout_ErrHandler:
     Dim i     As Integer
