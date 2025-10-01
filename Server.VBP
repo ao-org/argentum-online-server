@@ -35,7 +35,6 @@ Module=ModFacciones; Codigo\ModFacciones.bas
 Form=Codigo\frmTrafic.frm
 Form=Codigo\frmDebugNpc.frm
 Class=CColaArray; Codigo\cColaArray.cls
-Class=clsAntiMassClon; Codigo\clsAntiMassClon.cls
 Module=PathFinding; Codigo\PathFinding.bas
 Module=mdlCOmercioConUsuario; Codigo\mdlCOmercioConUsuario.bas
 Module=modBanco; Codigo\modBanco.bas
