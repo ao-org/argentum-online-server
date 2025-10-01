@@ -1438,19 +1438,14 @@ End Sub
 Public Function CanMove(ByRef counter As t_NpcCounters, ByRef flags As t_NPCFlags) As Boolean
     Dim nowRaw As Long
     nowRaw = GetTickCountRaw()
-
-    CanMove = _
-        (flags.Inmovilizado + flags.Paralizado = 0) _
-        And TickAfter(nowRaw, counter.StunEndTime) _
-        And Not flags.TranslationActive
+    CanMove = (flags.Inmovilizado + flags.Paralizado = 0) And Not flags.TranslationActive
+    CanMove = CanMove And DeadlinePassed(nowRaw, counter.StunEndTime)
 End Function
 
 Public Function CanAttack(ByRef counter As t_NpcCounters, ByRef flags As t_NPCFlags) As Boolean
     Dim nowRaw As Long
     nowRaw = GetTickCountRaw()
-
-    CanAttack = (flags.Paralizado = 0) _
-                And TickAfter(nowRaw, counter.StunEndTime)
+    CanAttack = (flags.Paralizado = 0) And DeadlinePassed(nowRaw, counter.StunEndTime)
 End Function
 
 Public Sub StunNPc(ByRef Counters As t_NpcCounters)

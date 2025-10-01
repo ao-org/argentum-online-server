@@ -2606,7 +2606,7 @@ Public Function IsStun(ByRef flags As t_UserFlags, ByRef Counters As t_UserCount
     nowRaw = GetTickCountRaw()
 
     ' Player is stunned if current tick has NOT yet passed the stun end deadline
-    IsStun = Not TickAfter(nowRaw, Counters.StunEndTime)
+    IsStun = Not DeadlinePassed(nowRaw, Counters.StunEndTime)
 End Function
 
 
@@ -2616,7 +2616,7 @@ End Function
 
 
 Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserCounters) As Boolean
-    On Error GoTo EH
+    On Error GoTo eh
     StunPlayer = False
 
     ' (Optional) your CanMove signature might be (counters, flags) — adjust order if needed
@@ -2636,7 +2636,7 @@ Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserC
         StunPlayer = True
     End If
     Exit Function
-EH:
+eh:
 End Function
 
 

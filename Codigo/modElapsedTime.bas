@@ -146,6 +146,7 @@ End Function
 ' New raw version (preferred)
 Public Function GetTickCountRaw() As Long
     GetTickCountRaw = timeGetTime()
+    'to simulare neg stamps do: Or &H80000000
 End Function
 
 Public Function TicksElapsed(ByVal startTick As Long, ByVal currentTick As Long) As Double
@@ -177,4 +178,46 @@ Public Function AddMod32(ByVal a As Long, ByVal b As Long) As Long
     s = s - TICKS32 * Fix(s / TICKS32)
     AddMod32 = CLng(s)
 End Function
+
+' ==============================================================
+' DeadlinePassed
+' --------------------------------------------------------------
+' Wrap-safe check for whether "now" has passed a given deadline.
+'
+' Why not just use TickAfter(now, deadline)?
+' ------------------------------------------
+' The standard trick:
+'     TickAfter = (now - deadline) >= 0
+' works correctly on a modulo-2^32 tick ring as long as the
+' unsigned distance between "now" and "deadline" is < 2^31.
+'
+' But in our stun/cooldown code, we sometimes store StunEndTime=0
+' to mean "no stun / unset".
+'
+' Problem:
+'   If deadline=0 and now has the high bit set
+'   (e.g. nowRaw = &H86F0E019 = -2031327897 signed),
+'   then (now - 0) is negative in signed math.
+'   TickAfter() returns False ? interpreted as "deadline not passed"
+'   ? player/NPC is treated as still stunned.
+'
+' In reality, a deadline of 0 should always mean "already expired".
+'
+' Fix:
+'   Special-case deadline=0 as always passed.
+'   Otherwise fall back to the wrap-safe TickAfter compare.
+'
+' Usage:
+'   If DeadlinePassed(GetTickCountRaw(), counters.StunEndTime) Then ...
+'
+' ==============================================================
+Public Function DeadlinePassed(ByVal nowRaw As Long, ByVal deadline As Long) As Boolean
+    If deadline = 0 Then
+        DeadlinePassed = True        ' treat 0 as "no deadline"
+    Else
+        DeadlinePassed = (nowRaw - deadline) >= 0   ' wrap-safe TickAfter
+    End If
+End Function
+
+
 
