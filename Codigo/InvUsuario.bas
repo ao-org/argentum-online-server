@@ -1275,8 +1275,10 @@ Dim Ropaje                      As Integer
                         Call Desequipar(UserIndex, Slot)
                         If .flags.Navegando = 0 And .flags.Montado = 0 Then
                             Call SetNakedBody(UserList(UserIndex))
-                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList( _
-                                                                                                                                                       UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                            If Not UserIsLoggingIn Then
+                                Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList( _
+                                                                                                                                                   UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                            End If
                         Else
                             .flags.Desnudo = 1
                         End If
@@ -1308,8 +1310,10 @@ Dim Ropaje                      As Integer
                     .invent.EquippedArmorSlot = Slot
                     If .flags.Montado = 0 And .flags.Navegando = 0 Then
                         .Char.body = Ropaje
+                        If Not UserIsLoggingIn Then
                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList( _
                                                                                                                                                    UserIndex).Char.CartAnim, UserList(UserIndex).Char.BackpackAnim)
+                        End If
                     End If
                     .flags.Desnudo = 0
                     If obj.ResistenciaMagica > 0 Then
@@ -1366,8 +1370,10 @@ Dim Ropaje                      As Integer
                         ' Asignar cambios y aplicar actualización visual
                         .Char.head = nuevoHead
                         .Char.CascoAnim = nuevoCasco
+                        If Not UserIsLoggingIn Then
                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
                                             .Char.BackpackAnim)
+                        End If
                     End If
                     If obj.ResistenciaMagica > 0 Then
                         Call WriteUpdateRM(UserIndex)
@@ -3125,11 +3131,17 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
         Else
             .Char.WeaponAnim = 0
         End If
+        
         If .invent.EquippedArmorObjIndex > 0 Then
-            .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
+            If .Invent_Skins.ObjIndexArmourEquipped > 0 Then
+                .Char.body = ObtenerRopaje(UserIndex, ObjData(.Invent_Skins.ObjIndexArmourEquipped))
+            Else
+                .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
+            End If
         Else
             Call SetNakedBody(UserList(UserIndex))
         End If
+        
         If .invent.EquippedHelmetObjIndex > 0 Then
             .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
         Else
@@ -3330,7 +3342,7 @@ Dim obj                         As t_ObjData
             Case e_OBJType.otSkinsArmours
 
                 For i = 1 To MAX_SKINSINVENTORY_SLOTS
-                    If .Invent_Skins.Object(i).Equipped And .Invent_Skins.Object(i).ObjIndex <> .Invent_Skins.ObjIndexArmourEquipped Then
+                    If .Invent_Skins.Object(i).Equipped And .Invent_Skins.Object(i).ObjIndex = .Invent_Skins.ObjIndexArmourEquipped Then
                         Call Desequipar(UserIndex, i, True, eSkinType)
                         Exit For
                     End If
@@ -3472,16 +3484,15 @@ Function CanEquipSkin(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef eSki
     If Slot <= 0 Then Exit Function
     
     With UserList(UserIndex)
-        
-        If .invent.Object(Slot).ObjIndex = 0 Then Exit Function
     
         If bFromInvent Then
+            If .invent.Object(Slot).ObjIndex = 0 Then Exit Function
             bCanUser = ClasePuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And SexoPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And RazaPuedeUsarItem( _
                     UserIndex, .invent.Object(Slot).ObjIndex) And FaccionPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And LevelCanUseItem(UserIndex, ObjData( _
                     .invent.Object(Slot).ObjIndex))
         Else
             bCanUser = ClasePuedeUsarItem(UserIndex, .Invent_Skins.Object(Slot).ObjIndex) And SexoPuedeUsarItem(UserIndex, .Invent_Skins.Object(Slot).ObjIndex) And _
-                    FaccionPuedeUsarItem(UserIndex, .Invent_Skins.Object(Slot).ObjIndex) And LevelCanUseItem(UserIndex, ObjData(.invent.Object(Slot).ObjIndex))
+                    FaccionPuedeUsarItem(UserIndex, .Invent_Skins.Object(Slot).ObjIndex)
         End If
         If Not bCanUser Then
             'Añadir el cartel que haga falta

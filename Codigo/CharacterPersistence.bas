@@ -834,7 +834,7 @@ Dim RS                          As ADODB.Recordset
                             If CBool(RS.Fields("skin_equipped")) Then
                                 .Invent_Skins.Object(i).Equipped = True
                                 'Call EquiparInvItem(UserIndex, i, True, True, RS.Fields("type_skin"))
-                                If CanEquipSkin(UserIndex, i, e_OBJType.otSkinsArmours, True) Then
+                                If CanEquipSkin(UserIndex, i, e_OBJType.otSkinsArmours, False) Then
                                     Call SkinEquip(UserIndex, i, .Invent_Skins.Object(i).ObjIndex, ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType)
                                 End If
                             End If
