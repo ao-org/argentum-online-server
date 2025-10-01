@@ -49,7 +49,6 @@ Module=ModAreas; Codigo\ModAreas.bas
 Module=Protocol; Codigo\Protocol.bas
 Module=modSendData; Codigo\modSendData.bas
 Module=ModSubasta; Codigo\ModSubasta.bas
-Module=ModCuentas; Codigo\ModEmail.bas
 Module=ModRetos; Codigo\ModRetos.bas
 Module=ModClimas; Codigo\ModClimas.bas
 Module=ModGrupos; Codigo\ModGrupos.bas
