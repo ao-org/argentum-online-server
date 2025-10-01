@@ -99,7 +99,6 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
         Call DarRecompensas(UserIndex)
         Call RefreshCharStatus(UserIndex)
     End With
-    'Call LogEjercitoReal(.Name & " ingresó el " & Date & " cuando era nivel " & .Stats.ELV)
     Exit Sub
 EnlistarArmadaReal_Err:
     Call TraceError(Err.Number, Err.Description, "ModFacciones.EnlistarArmadaReal", Erl)
@@ -232,7 +231,6 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
         Call DarRecompensas(UserIndex)
         Call RefreshCharStatus(UserIndex)
     End With
-    'Call LogEjercitoCaos(UserList(UserIndex).Name & " ingresó el " & Date & " cuando era nivel " & UserList(UserIndex).Stats.ELV)
     Exit Sub
 EnlistarCaos_Err:
     Call TraceError(Err.Number, Err.Description, "ModFacciones.EnlistarCaos", Erl)

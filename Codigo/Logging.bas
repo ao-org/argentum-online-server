@@ -175,20 +175,6 @@ Public Sub LogCriticEvent(Desc As String)
 ErrHandler:
 End Sub
 
-Public Sub LogEjercitoReal(Desc As String)
-    On Error GoTo ErrHandler
-    Call LogThis(type_log.e_LogEjercitoReal, "[EjercitoReal.log] " & Desc, vbLogEventTypeInformation)
-    Exit Sub
-ErrHandler:
-End Sub
-
-Public Sub LogEjercitoCaos(Desc As String)
-    On Error GoTo ErrHandler
-    Call LogThis(type_log.e_LogEjercitoCaos, "[EjercitoCaos.log] " & Desc, vbLogEventTypeInformation)
-    Exit Sub
-ErrHandler:
-End Sub
-
 Public Sub LogError(Desc As String)
     On Error GoTo ErrHandler
     Call LogThis(type_log.e_LogError, "[Errores.log] " & Desc, vbLogEventTypeError)

@@ -90,34 +90,6 @@ InitAreas_Err:
     Call TraceError(Err.Number, Err.Description, "ModAreas.InitAreas", Erl)
 End Sub
  
-Public Sub AreasOptimizacion()
-    On Error GoTo AreasOptimizacion_Err
-    'Es la función de autooptimizacion.... la idea es no mandar redimensionando arrays grandes todo el tiempo
-    Dim LoopC            As Long
-    Dim tCurDay          As Byte
-    Dim tCurHour         As Byte
-    Dim EntryValue       As Long
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
-    If (CurDay <> IIf(Weekday(Date) > 6, 1, 2)) Or (CurHour <> Fix(Hour(Time) \ 3)) Then
-        tCurDay = IIf(Weekday(Date) > 6, 1, 2) 'A ke tipo de dia pertenece?
-        tCurHour = Fix(Hour(Time) \ 3) 'A ke parte de la hora pertenece
-        For LoopC = 1 To NumMaps
-            EntryValue = val(GetVar(DatPath & "AreasStats.ini", "Mapa" & LoopC, CurDay & "-" & CurHour))
-            Call WriteVar(DatPath & "AreasStats.ini", "Mapa" & LoopC, CurDay & "-" & CurHour, CInt((EntryValue + ConnGroups(LoopC).OptValue) \ 2))
-            ConnGroups(LoopC).OptValue = val(GetVar(DatPath & "AreasStats.ini", "Mapa" & LoopC, tCurDay & "-" & tCurHour))
-            If ConnGroups(LoopC).OptValue = 0 Then ConnGroups(LoopC).OptValue = 1
-            If ConnGroups(LoopC).OptValue >= MapInfo(LoopC).NumUsers Then ReDim Preserve ConnGroups(LoopC).UserEntrys(1 To ConnGroups(LoopC).OptValue) As Integer
-        Next LoopC
-        CurDay = tCurDay
-        CurHour = tCurHour
-    End If
-    Call PerformTimeLimitCheck(PerformanceTimer, "ModAreas.AreasOptimizacion")
-    Exit Sub
-AreasOptimizacion_Err:
-    Call TraceError(Err.Number, Err.Description, "ModAreas.AreasOptimizacion", Erl)
-End Sub
- 
 Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte, ByVal appear As Byte, Optional ByVal Muerto As Byte = 0)
     On Error GoTo CheckUpdateNeededUser_Err
     'Es la función clave del sistema de areas... Es llamada al mover un user
