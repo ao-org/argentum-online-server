@@ -727,35 +727,6 @@ setNOTIFYICONDATA_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.setNOTIFYICONDATA", Erl)
 End Function
 
-Sub CheckIdleUser()
-    On Error GoTo CheckIdleUser_Err
-    Dim iUserIndex As Long
-    For iUserIndex = 1 To MaxUsers
-        'Conexion activa? y es un usuario loggeado?
-        If UserList(iUserIndex).ConnectionDetails.ConnIDValida And UserList(iUserIndex).flags.UserLogged Then
-            'Actualiza el contador de inactividad
-            UserList(iUserIndex).Counters.IdleCount = UserList(iUserIndex).Counters.IdleCount + 1
-            If UserList(iUserIndex).Counters.IdleCount >= IdleLimit Then
-                Call WriteShowMessageBox(iUserIndex, 1775, vbNullString) 'Msg1775=Demasiado tiempo inactivo. Has sido desconectado...
-                'mato los comercios seguros
-                If IsValidUserRef(UserList(iUserIndex).ComUsu.DestUsu) Then
-                    If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
-                        If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = iUserIndex Then
-                            Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(1844, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1844=Comercio cancelado por el otro usuario.
-                            Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex)
-                        End If
-                    End If
-                    Call FinComerciarUsu(iUserIndex)
-                End If
-                Call Cerrar_Usuario(iUserIndex)
-            End If
-        End If
-    Next iUserIndex
-    Exit Sub
-CheckIdleUser_Err:
-    Call TraceError(Err.Number, Err.Description, "frmMain.CheckIdleUser", Erl)
-End Sub
-
 Private Sub cmdDbControl_Click()
     frmDbControl.Show
 End Sub
@@ -1156,9 +1127,6 @@ Private Sub Minuto_Timer()
         MinutosLatsClean = MinutosLatsClean + 1
     End If
     Call PurgarPenas
-    ' If IdleLimit > 0 Then
-    '     Call CheckIdleUser
-    ' End If
     If IsFeatureEnabled("automatic_events") Then
         Call Automatic_Event_Timer
     End If

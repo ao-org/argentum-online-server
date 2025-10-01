@@ -37,15 +37,11 @@ Public Sub Init()
     'We can mock the key value to test errors...
     private_key = PrivateKey
     character_name = "seneca"
-    character_name = RandomName(16)
     'Hardcoded token for unit testing...
 
     decrypted_token = "G7H5wKOKZvebZxHtnkRtJNvL/AHWEw3dHCyBTzXVvdTe3bQAJHePsFfV/Ecgm9Wk"
     encrypted_token = AO20CryptoSysWrapper.ENCRYPT(private_key, decrypted_token)
     public_key = mid$(decrypted_token, 1, 16)
-    
-    'Add a fake token to be using when exercising the protocol for LoginNewChar
-    Call AddTokenDatabase(encrypted_token, decrypted_token, "MORGOLOCK2002@YAHOO.COM.AR")
     
 End Sub
 

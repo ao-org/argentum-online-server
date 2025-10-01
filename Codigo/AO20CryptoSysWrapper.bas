@@ -76,15 +76,6 @@ Public Sub Str2ByteArr(ByVal str As String, ByRef arr() As Byte, Optional ByVal 
     End If
 End Sub
 
-Public Function ByteArr2String(ByRef arr() As Byte) As String
-    Dim str As String
-    Dim i   As Long
-    For i = 0 To UBound(arr)
-        str = str + Chr(arr(i))
-    Next i
-    ByteArr2String = str
-End Function
-
 Public Function hiByte(ByVal w As Integer) As Byte
     Dim hi As Integer
     If w And &H8000 Then hi = &H4000

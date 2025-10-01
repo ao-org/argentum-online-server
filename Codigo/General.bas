@@ -1489,25 +1489,6 @@ FreeCharIndexes_Err:
     Call TraceError(Err.Number, Err.Description, "General.FreeCharIndexes", Erl)
 End Sub
 
-Function RandomName(cb As Integer, Optional ByVal OnlyUpper As Boolean = False) As String
-    On Error GoTo RandomString_Err
-    Randomize Time
-    Dim rgch As String
-    rgch = "abcdefghijklmnopqrstuvwxyz"
-    If OnlyUpper Then
-        rgch = UCase$(rgch)
-    Else
-        rgch = rgch & UCase$(rgch)
-    End If
-    Dim i As Long
-    For i = 1 To cb
-        RandomName = RandomName & mid$(rgch, Int(Rnd() * Len(rgch) + 1), 1)
-    Next
-    Exit Function
-RandomString_Err:
-    Call TraceError(Err.Number, Err.Description, "General.RandomString", Erl)
-End Function
-
 '
 '  Función para chequear el email
 '

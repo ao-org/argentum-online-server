@@ -116,25 +116,6 @@ Command1_Click_Err:
     Call TraceError(Err.Number, Err.Description, "frmAdmin.Command1_Click", Erl)
 End Sub
 
-Public Sub ActualizaListaPjs()
-    On Error GoTo ActualizaListaPjs_Err
-    Dim LoopC As Long
-    With cboPjs
-        .Clear
-        For LoopC = 1 To LastUser
-            If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnectionDetails.ConnIDValida Then
-                If UserList(LoopC).flags.Privilegios And e_PlayerType.User Then
-                    .AddItem UserList(LoopC).name
-                    .ItemData(.NewIndex) = LoopC
-                End If
-            End If
-        Next LoopC
-    End With
-    Exit Sub
-ActualizaListaPjs_Err:
-    Call TraceError(Err.Number, Err.Description, "frmAdmin.ActualizaListaPjs", Erl)
-End Sub
-
 Private Sub Command3_Click()
     On Error GoTo Command3_Click_Err
     Call EcharPjsNoPrivilegiados
