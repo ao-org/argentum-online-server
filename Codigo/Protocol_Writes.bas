@@ -130,21 +130,6 @@ WriteRemoveAllDialogs_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRemoveAllDialogs", Erl)
 End Sub
 
-''
-' Writes the "RemoveCharDialog" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @param    CharIndex Character whose dialog will be removed.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteRemoveCharDialog(ByVal UserIndex As Integer, ByVal charindex As Integer)
-    On Error GoTo WriteRemoveCharDialog_Err
-    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageRemoveCharDialog(charindex))
-    Exit Sub
-WriteRemoveCharDialog_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRemoveCharDialog", Erl)
-End Sub
-
 ' Writes the "NavigateToggle" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
@@ -515,21 +500,6 @@ WriteLegionarySecure_Err:
 End Sub
 
 ''
-' Writes the "CantUseWhileMeditating" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteCantUseWhileMeditating(ByVal UserIndex As Integer)
-    On Error GoTo WriteCantUseWhileMeditating_Err
-    Call Writer.WriteInt16(ServerPacketID.eCantUseWhileMeditating)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteCantUseWhileMeditating_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCantUseWhileMeditating", Erl)
-End Sub
-
-''
 ' Writes the "UpdateSta" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
@@ -798,15 +768,6 @@ Public Function PrepareLocalizedChatOverHead(ByVal MsgID As Integer, ByVal chari
     PrepareLocalizedChatOverHead = PrepareMessageChatOverHead(finalText, charindex, Color)
 End Function
 
-Public Sub WriteTextOverChar(ByVal UserIndex As Integer, ByVal chat As String, ByVal charindex As Integer, ByVal Color As Long)
-    On Error GoTo WriteTextOverChar_Err
-    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageTextOverChar(chat, charindex, Color))
-    Exit Sub
-WriteTextOverChar_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTextOverChar", Erl)
-End Sub
-
 Public Sub WriteTextOverTile(ByVal UserIndex As Integer, ByVal chat As String, ByVal x As Integer, ByVal y As Integer, ByVal Color As Long)
     On Error GoTo WriteTextOverTile_Err
     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageTextOverTile(chat, x, y, Color))
@@ -851,21 +812,6 @@ WriteLocaleMsg_Err:
 End Sub
 
 ''
-' Writes the "GuildChat" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @param    Chat Text to be displayed over the char's head.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteGuildChat(ByVal UserIndex As Integer, ByVal chat As String, ByVal Status As Byte)
-    On Error GoTo WriteGuildChat_Err
-    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageGuildChat(chat, Status))
-    Exit Sub
-WriteGuildChat_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildChat", Erl)
-End Sub
-
-''
 ' Writes the "ShowMessageBox" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
@@ -893,16 +839,6 @@ WriteShowMessageBox_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowMessageBox", Erl)
 End Function
-
-Public Sub WriteMostrarCuenta(ByVal UserIndex As Integer)
-    On Error GoTo WriteMostrarCuenta_Err
-    Call Writer.WriteInt16(ServerPacketID.eMostrarCuenta)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteMostrarCuenta_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMostrarCuenta", Erl)
-End Sub
 
 ''
 ' Writes the "UserIndexInServer" message to the given user's outgoing data .incomingData.
@@ -991,15 +927,6 @@ WriteCharacterCreate_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterCreate", Erl)
 End Sub
 
-Public Sub WriteCharacterUpdateFlag(ByVal UserIndex As Integer, ByVal Flag As Byte, ByVal charindex As Integer)
-    On Error GoTo WriteCharacterUpdateFlag_Err
-    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageUpdateFlag(Flag, charindex))
-    Exit Sub
-WriteCharacterUpdateFlag_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterUpdateFlag", Erl)
-End Sub
-
 Public Sub WriteForceCharMove(ByVal UserIndex As Integer, ByVal Direccion As e_Heading)
     On Error GoTo WriteForceCharMove_Err
     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageForceCharMove(Direccion))
@@ -1018,43 +945,6 @@ Public Sub WriteForceCharMoveSiguiendo(ByVal UserIndex As Integer, ByVal Direcci
 WriteForceCharMoveSiguiendo_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteForceCharMoveSiguiendo", Erl)
-End Sub
-
-''
-' Writes the "CharacterChange" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @param    body Body index of the new character.
-' @param    head Head index of the new character.
-' @param    heading Heading in which the new character is looking.
-' @param    CharIndex The index of the new character.
-' @param    weapon Weapon index of the new character.
-' @param    shield Shield index of the new character.
-' @param    FX FX index to be displayed over the new character.
-' @param    FXLoops Number of times the FX should be rendered.
-' @param    helmet Helmet index of the new character.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteCharacterChange(ByVal UserIndex As Integer, _
-                                ByVal body As Integer, _
-                                ByVal head As Integer, _
-                                ByVal Heading As e_Heading, _
-                                ByVal charindex As Integer, _
-                                ByVal weapon As Integer, _
-                                ByVal shield As Integer, _
-                                ByVal Cart As Integer, _
-                                ByVal BackPack As Integer, _
-                                ByVal FX As Integer, _
-                                ByVal FXLoops As Integer, _
-                                ByVal helmet As Integer, _
-                                Optional ByVal Idle As Boolean = False, _
-                                Optional ByVal Navegando As Boolean = False)
-    On Error GoTo WriteCharacterChange_Err
-    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterChange(body, head, Heading, charindex, weapon, shield, Cart, BackPack, FX, FXLoops, helmet, Idle, _
-            Navegando))
-    Exit Sub
-WriteCharacterChange_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterChange", Erl)
 End Sub
 
 ''
@@ -1083,55 +973,6 @@ WriteUpdateTrapState_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateTrapState", Erl)
 End Sub
 
-Public Sub WriteParticleFloorCreate(ByVal UserIndex As Integer, ByVal Particula As Integer, ByVal ParticulaTime As Integer, ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte)
-    On Error GoTo WriteParticleFloorCreate_Err
-    If Particula = 0 Then
-        Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageParticleFXToFloor(x, y, Particula, ParticulaTime))
-    End If
-    Exit Sub
-WriteParticleFloorCreate_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteParticleFloorCreate", Erl)
-End Sub
-
-Public Sub WriteLightFloorCreate(ByVal UserIndex As Integer, ByVal LuzColor As Long, ByVal Rango As Byte, ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte)
-    On Error GoTo WriteLightFloorCreate_Err
-    MapData(Map, x, y).Luz.Color = LuzColor
-    MapData(Map, x, y).Luz.Rango = Rango
-    If Rango = 0 Then
-        Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageLightFXToFloor(x, y, LuzColor, Rango))
-    End If
-    Exit Sub
-WriteLightFloorCreate_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLightFloorCreate", Erl)
-End Sub
-
-Public Sub WriteFxPiso(ByVal UserIndex As Integer, ByVal GrhIndex As Integer, ByVal x As Byte, ByVal y As Byte)
-    On Error GoTo WriteFxPiso_Err
-    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageFxPiso(GrhIndex, x, y))
-    Exit Sub
-WriteFxPiso_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteFxPiso", Erl)
-End Sub
-
-''
-' Writes the "ObjectDelete" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @param    X X coord of the character's new position.
-' @param    Y Y coord of the character's new position.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteObjectDelete(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte)
-    On Error GoTo WriteObjectDelete_Err
-    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageObjectDelete(x, y))
-    Exit Sub
-WriteObjectDelete_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteObjectDelete", Erl)
-End Sub
-
 ''
 ' Writes the "BlockPosition" message to the given user's outgoing data .incomingData.
 '
@@ -1151,22 +992,6 @@ Public Sub Write_BlockPosition(ByVal UserIndex As Integer, ByVal x As Byte, ByVa
 Write_BlockPosition_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.Write_BlockPosition", Erl)
-End Sub
-
-''
-' Writes the "PlayMidi" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @param    midi The midi to be played.
-' @param    loops Number of repets for the midi.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WritePlayMidi(ByVal UserIndex As Integer, ByVal midi As Byte, Optional ByVal loops As Integer = -1)
-    On Error GoTo WritePlayMidi_Err
-    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessagePlayMidi(midi, loops))
-    Exit Sub
-WritePlayMidi_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePlayMidi", Erl)
 End Sub
 
 ''
@@ -1289,24 +1114,6 @@ Public Sub WriteNubesToggle(ByVal UserIndex As Integer)
 WriteNubesToggle_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNubesToggle", Erl)
-End Sub
-
-''
-' Writes the "CreateFX" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @param    CharIndex Character upon which the FX will be created.
-' @param    FX FX index to be displayed over the new character.
-' @param    FXLoops Number of times the FX should be rendered.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteCreateFX(ByVal UserIndex As Integer, ByVal charindex As Integer, ByVal FX As Integer, ByVal FXLoops As Integer)
-    'Writes the "CreateFX" message to the given user's outgoing data buffer
-    On Error GoTo WriteCreateFX_Err
-    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCreateFX(charindex, FX, FXLoops, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
-    Exit Sub
-WriteCreateFX_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCreateFX", Erl)
 End Sub
 
 ''
@@ -1888,17 +1695,6 @@ WriteUpdateHungerAndThirst_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateHungerAndThirst", Erl)
 End Sub
 
-Public Sub WriteLight(ByVal UserIndex As Integer, ByVal Map As Integer)
-    On Error GoTo WriteLight_Err
-    Call Writer.WriteInt16(ServerPacketID.eLight)
-    Call Writer.WriteString8(MapInfo(Map).base_light)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteLight_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLight", Erl)
-End Sub
-
 Public Sub WriteFlashScreen(ByVal UserIndex As Integer, ByVal Color As Long, ByVal Time As Long, Optional ByVal Ignorar As Boolean = False)
     On Error GoTo WriteFlashScreen_Err
     Call Writer.WriteInt16(ServerPacketID.eFlashScreen)
@@ -2006,18 +1802,6 @@ WriteNotificarClienteSeguido_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNotificarClienteSeguido", Erl)
 End Sub
 
-Public Sub WriteRecievePosSeguimiento(ByVal UserIndex As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
-    On Error GoTo WriteNotificarClienteSeguido_Err
-    Call Writer.WriteInt16(ServerPacketID.eRecievePosSeguimiento)
-    Call Writer.WriteInt16(PosX)
-    Call Writer.WriteInt16(PosY)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteNotificarClienteSeguido_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNotificarClienteSeguido", Erl)
-End Sub
-
 Public Sub WriteGetInventarioHechizos(ByVal UserIndex As Integer, ByVal value As Byte, ByVal hechiSel As Byte, ByVal scrollSel As Byte)
     On Error GoTo GetInventarioHechizos_Err
     Call Writer.WriteInt16(ServerPacketID.eGetInventarioHechizos)
@@ -2105,39 +1889,6 @@ WriteLevelUp_Err:
 End Sub
 
 ''
-' Writes the "AddForumMsg" message to the given user's outgoing data .incomingData.
-'
-' @param    title The title of the message to display.
-' @param    message The message to be displayed.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteAddForumMsg(ByVal UserIndex As Integer, ByVal title As String, ByVal Message As String)
-    On Error GoTo WriteAddForumMsg_Err
-    Call Writer.WriteInt16(ServerPacketID.eAddForumMsg)
-    Call Writer.WriteString8(title)
-    Call Writer.WriteString8(Message)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteAddForumMsg_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAddForumMsg", Erl)
-End Sub
-
-''
-' Writes the "ShowForumForm" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteShowForumForm(ByVal UserIndex As Integer)
-    On Error GoTo WriteShowForumForm_Err
-    Call Writer.WriteInt16(ServerPacketID.eShowForumForm)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteShowForumForm_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowForumForm", Erl)
-End Sub
-
-''
 ' Writes the "SetInvisible" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
@@ -2152,21 +1903,6 @@ Public Sub WriteSetInvisible(ByVal UserIndex As Integer, ByVal TargetIndex As In
 WriteSetInvisible_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSetInvisible", Erl)
-End Sub
-
-''
-' Writes the "MeditateToggle" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteMeditateToggle(ByVal UserIndex As Integer)
-    On Error GoTo WriteMeditateToggle_Err
-    Call Writer.WriteInt16(ServerPacketID.eMeditateToggle)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteMeditateToggle_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMeditateToggle", Erl)
 End Sub
 
 ''
@@ -2299,54 +2035,6 @@ Public Sub WriteOfferDetails(ByVal UserIndex As Integer, ByVal details As String
 WriteOfferDetails_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteOfferDetails", Erl)
-End Sub
-
-''
-' Writes the "AlianceProposalsList" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @param    guilds The list of guilds which propossed an alliance.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteAlianceProposalsList(ByVal UserIndex As Integer, ByRef guilds() As String)
-    On Error GoTo WriteAlianceProposalsList_Err
-    Dim i   As Long
-    Dim Tmp As String
-    Call Writer.WriteInt16(ServerPacketID.eAlianceProposalsList)
-    ' Prepare guild's list
-    For i = LBound(guilds()) To UBound(guilds())
-        Tmp = Tmp & guilds(i) & SEPARATOR
-    Next i
-    If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
-    Call Writer.WriteString8(Tmp)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteAlianceProposalsList_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAlianceProposalsList", Erl)
-End Sub
-
-''
-' Writes the "PeaceProposalsList" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @param    guilds The list of guilds which propossed peace.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WritePeaceProposalsList(ByVal UserIndex As Integer, ByRef guilds() As String)
-    On Error GoTo WritePeaceProposalsList_Err
-    Dim i   As Long
-    Dim Tmp As String
-    Call Writer.WriteInt16(ServerPacketID.ePeaceProposalsList)
-    ' Prepare guilds' list
-    For i = LBound(guilds()) To UBound(guilds())
-        Tmp = Tmp & guilds(i) & SEPARATOR
-    Next i
-    If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
-    Call Writer.WriteString8(Tmp)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WritePeaceProposalsList_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePeaceProposalsList", Erl)
 End Sub
 
 ''
@@ -2489,21 +2177,6 @@ Public Sub WriteGuildDetails(ByVal UserIndex As Integer, _
 WriteGuildDetails_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildDetails", Erl)
-End Sub
-
-''
-' Writes the "ShowGuildFundationForm" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteShowGuildFundationForm(ByVal UserIndex As Integer)
-    On Error GoTo WriteShowGuildFundationForm_Err
-    Call Writer.WriteInt16(ServerPacketID.eShowGuildFundationForm)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteShowGuildFundationForm_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowGuildFundationForm", Erl)
 End Sub
 
 ''
@@ -2747,16 +2420,6 @@ Public Sub WriteUpdateBankGld(ByVal UserIndex As Integer)
 WriteUpdateBankGld_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateBankGld", Erl)
-End Sub
-
-Public Sub WriteShowFrmLogear(ByVal UserIndex As Integer)
-    On Error GoTo WriteShowFrmLogear_Err
-    Call Writer.WriteInt16(ServerPacketID.eShowFrmLogear)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteShowFrmLogear_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowFrmLogear", Erl)
 End Sub
 
 Public Sub WriteShowFrmMapa(ByVal UserIndex As Integer)
@@ -3133,17 +2796,6 @@ WriteUpdateNPCSimbolo_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateNPCSimbolo", Erl)
 End Sub
 
-Public Sub WriteGuardNotice(ByVal UserIndex As Integer)
-    On Error GoTo WriteGuardNotice_Err
-    Call Writer.WriteInt16(ServerPacketID.eGuardNotice)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteGuardNotice_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuardNotice", Erl)
-End Sub
-
-' \Begin: [Prepares]
 Public Function PrepareMessageCharSwing(ByVal charindex As Integer, _
                                         Optional ByVal FX As Boolean = True, _
                                         Optional ByVal ShowText As Boolean = True, _
@@ -4100,16 +3752,6 @@ Public Function PrepareMessageForceCharMove(ByVal Direccion As e_Heading)
 PrepareMessageForceCharMove_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageForceCharMove", Erl)
-End Function
-
-Public Function PrepareMessageForceCharMoveSiguiendo(ByVal Direccion As e_Heading)
-    On Error GoTo PrepareMessageForceCharMoveSiguiendo_Err
-    Call Writer.WriteInt16(ServerPacketID.eForceCharMoveSiguiendo)
-    Call Writer.WriteInt8(Direccion)
-    Exit Function
-PrepareMessageForceCharMoveSiguiendo_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageForceCharMoveSiguiendo", Erl)
 End Function
 
 ''
