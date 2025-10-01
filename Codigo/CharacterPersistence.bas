@@ -830,9 +830,13 @@ Dim RS                          As ADODB.Recordset
 
                     Select Case ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType
                         Case e_OBJType.otSkinsArmours
-
+                            
                             If CBool(RS.Fields("skin_equipped")) Then
-                                Call EquiparInvItem(UserIndex, i, True, True, RS.Fields("type_skin"))
+                                .Invent_Skins.Object(i).Equipped = True
+                                'Call EquiparInvItem(UserIndex, i, True, True, RS.Fields("type_skin"))
+                                If CanEquipSkin(UserIndex, i, e_OBJType.otSkinsArmours, True) Then
+                                    Call SkinEquip(UserIndex, i, .Invent_Skins.Object(i).ObjIndex, ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType)
+                                End If
                             End If
 
                         Case e_OBJType.otSkinsSpells

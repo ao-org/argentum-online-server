@@ -1450,7 +1450,7 @@ Dim Ropaje                      As Integer
                 Case e_OBJType.otSkinsArmours, e_OBJType.otSkinsSpells, e_OBJType.otSkinsWeapons, e_OBJType.otSkinsShields, e_OBJType.otSkinsHelmets, e_OBJType.otSkinsBoats, _
                      e_OBJType.otSkinsWings
                     'Si esta equipado lo quita
-                    If .Invent_Skins.Object(Slot).Equipped Then
+                    If .Invent_Skins.Object(Slot).Equipped And Not UserIsLoggingIn Then
                         'Sonido
                         'Feat para implementar más adelante.
                         '                        tmpSoundItem = ObjData(.Invent_Skins.Object(Slot).ObjIndex).Snd2
@@ -3330,7 +3330,7 @@ Dim obj                         As t_ObjData
             Case e_OBJType.otSkinsArmours
 
                 For i = 1 To MAX_SKINSINVENTORY_SLOTS
-                    If .Invent_Skins.Object(i).Equipped And .Invent_Skins.Object(i).ObjIndex = .Invent_Skins.ObjIndexArmourEquipped Then
+                    If .Invent_Skins.Object(i).Equipped And .Invent_Skins.Object(i).ObjIndex <> .Invent_Skins.ObjIndexArmourEquipped Then
                         Call Desequipar(UserIndex, i, True, eSkinType)
                         Exit For
                     End If
@@ -3463,11 +3463,18 @@ End Function
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 Function CanEquipSkin(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef eSkinType As e_OBJType, ByVal bFromInvent As Boolean) As Boolean
+
     Dim bCanUser As Boolean
     Dim bDonante As Boolean
+    
     On Error GoTo CanEquipSkin_Error
+    
     If Slot <= 0 Then Exit Function
+    
     With UserList(UserIndex)
+        
+        If .invent.Object(Slot).ObjIndex = 0 Then Exit Function
+    
         If bFromInvent Then
             bCanUser = ClasePuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And SexoPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And RazaPuedeUsarItem( _
                     UserIndex, .invent.Object(Slot).ObjIndex) And FaccionPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And LevelCanUseItem(UserIndex, ObjData( _

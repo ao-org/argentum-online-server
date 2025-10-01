@@ -2879,7 +2879,7 @@ Dim eSkinType                   As e_OBJType
         Else
             If itemSlot > MAX_SKINSINVENTORY_SLOTS Or itemSlot < 1 Then Exit Sub
             If .Invent_Skins.Object(itemSlot).ObjIndex = 0 Then Exit Sub
-            Call EquiparInvItem(UserIndex, itemSlot, bSkins, eSkinType)
+            Call EquiparInvItem(UserIndex, itemSlot, False, bSkins, eSkinType)
         End If
 
     End With

@@ -601,7 +601,7 @@ Dim tStr                        As String
         Call WriteUserIndexInServer(UserIndex)    'Enviamos el User index
         Call WriteHora(UserIndex)
         Call WriteChangeMap(UserIndex, .pos.Map)    'Carga el mapa
-        Call UpdateCharWithEquipedItems(UserIndex)
+        'Call UpdateCharWithEquipedItems(UserIndex)
         Select Case .flags.Privilegios
             Case e_PlayerType.Admin
                 .flags.ChatColor = RGB(252, 195, 0)
