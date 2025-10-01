@@ -867,7 +867,7 @@ Sub EraseUserChar(ByVal UserIndex As Integer, ByVal Desvanecer As Boolean, Optio
     Error = "2"
     #If UNIT_TEST = 0 Then
         'Le mandamos el mensaje para que borre el personaje a los clientes que estén cerca
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterRemove(4, UserList(UserIndex).Char.charindex, Desvanecer, FueWarp))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterRemove(UserList(UserIndex).Char.charindex, Desvanecer, FueWarp))
         Error = "3"
         Call QuitarUser(UserIndex, UserList(UserIndex).pos.Map)
         Error = "4"

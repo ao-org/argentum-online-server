@@ -3859,7 +3859,7 @@ End Function
 ' @param    CharIndex Character to be removed.
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Function PrepareMessageCharacterRemove(ByVal dbgid As Integer, ByVal charindex As Integer, ByVal Desvanecido As Boolean, Optional ByVal FueWarp As Boolean = False)
+Public Function PrepareMessageCharacterRemove(ByVal charindex As Integer, ByVal Desvanecido As Boolean, Optional ByVal FueWarp As Boolean = False)
     On Error GoTo PrepareMessageCharacterRemove_Err
     Call Writer.WriteInt16(ServerPacketID.eCharacterRemove)
     Call Writer.WriteInt16(charindex)
@@ -4357,7 +4357,7 @@ WriteNpcQuestListSend_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcQuestListSend for quest: " & QuestIndex, Erl)
 End Sub
 
-Public Sub WriteDebugLogResponse(ByVal UserIndex As Integer, ByVal debugType, ByRef Args() As String, ByVal argc As Integer)
+Public Sub WriteDebugLogResponse(ByVal UserIndex As Integer, ByVal debugType, ByRef Args() As String)
     On Error GoTo WriteDebugLogResponse_Err:
     Call Writer.WriteInt16(ServerPacketID.eDebugDataResponse)
     If debugType = 0 Then

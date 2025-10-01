@@ -4310,7 +4310,7 @@ Public Sub HandleDebugRequest(ByVal UserIndex As Integer)
         Exit Sub
     End If
     If (UserList(UserIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero)) Then
-        Call WriteDebugLogResponse(UserIndex, debugType, Args, UBound(Args))
+        Call WriteDebugLogResponse(UserIndex, debugType, Args)
     End If
     Exit Sub
 HandleDebugRequest_Err:

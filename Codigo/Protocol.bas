@@ -883,8 +883,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                 Call HandleCreateAccount(ConnectionID)
             Case ClientPacketID.eLoginAccount
                 Call HandleLoginAccount(ConnectionID)
-            Case ClientPacketID.eDeleteCharacter
-                Call HandleDeleteCharacter(ConnectionID)
             #End If
         Case Else
             Call TraceError(&HDEAD0001, "Invalid or unhandled message ID: " & PacketId, "Protocol.HandleIncomingData", Erl)
@@ -981,12 +979,6 @@ Private Sub HandleLoginAccount(ByVal ConnectionID As Long)
     Exit Sub
 LoginAccount_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginAccount", Erl)
-End Sub
-
-Private Sub HandleDeleteCharacter(ByVal ConnectionID As Long)
-    On Error GoTo DeleteCharacter_Err:
-DeleteCharacter_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteCharacter", Erl)
 End Sub
 
 Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)

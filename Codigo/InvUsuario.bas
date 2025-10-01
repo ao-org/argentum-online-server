@@ -714,7 +714,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     Call UnsetMask(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTalkToDead)
                     ' Msg673=Dejas el mundo de los muertos, ya no podrás comunicarte con ellos.
                     Call WriteLocaleMsg(UserIndex, "673", e_FontTypeNames.FONTTYPE_WARNING)
-                    Call SendData(SendTarget.ToPCDeadAreaButIndex, UserIndex, PrepareMessageCharacterRemove(4, UserList(UserIndex).Char.charindex, False, True))
+                    Call SendData(SendTarget.ToPCDeadAreaButIndex, UserIndex, PrepareMessageCharacterRemove(UserList(UserIndex).Char.charindex, False, True))
             End Select
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.charindex, 0, True, 5))
             UserList(UserIndex).Char.Otra_Aura = 0
