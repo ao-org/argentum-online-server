@@ -840,7 +840,9 @@ Dim RS                          As ADODB.Recordset
                             End If
 
                         Case e_OBJType.otSkinsSpells
-                            If ObjData(.Invent_Skins.Object(i).ObjIndex).HechizoIndex > 0 And .Invent_Skins.Object(i).Equipped Then
+                            If ObjData(.Invent_Skins.Object(i).ObjIndex).HechizoIndex > 0 And CBool(RS.Fields("skin_equipped")) Then
+                                .Invent_Skins.Object(i).Equipped = True
+                                .Invent_Skins.Object(i).Type = e_OBJType.otSkinsSpells
                                 .Stats.UserSkinsHechizos(ObjData(.Invent_Skins.Object(i).ObjIndex).HechizoIndex) = ObjData(.Invent_Skins.Object(i).ObjIndex).CreaFX
                             End If
 

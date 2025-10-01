@@ -2489,7 +2489,6 @@ Dim TargetIndex                 As Integer
                     Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageParticleFXWithDestino(.Char.charindex, UserList(TargetIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
                 Else
                     UserList(TargetIndex).Counters.timeFx = 3
-
                     If .Stats.UserSkinsHechizos(h) > 0 Then
                         Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, .Stats.UserSkinsHechizos(h), Hechizos(h).loops, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
                     Else
@@ -2522,7 +2521,11 @@ Dim TargetIndex                 As Integer
                 If NpcList(TargetIndex).Stats.MinHp < 1 Then
                     'Call modSendData.SendToAreaByPos(.Pos.map, .flags.TargetX, .flags.TargetY, PrepareMessageFxPiso(Hechizos(H).FXgrh, .flags.TargetX, .flags.TargetY))
                     If Hechizos(h).ParticleViaje > 0 Then
-                        Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageParticleFXWithDestinoXY(.Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1, .flags.TargetX, .flags.TargetY))
+                        If .Stats.UserSkinsHechizos(h) > 0 Then
+                            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageFxPiso(.Stats.UserSkinsHechizos(h), .flags.TargetX, .flags.TargetY))
+                        Else
+                            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageParticleFXWithDestinoXY(.Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1, .flags.TargetX, .flags.TargetY))
+                        End If
                     Else
                         If .Stats.UserSkinsHechizos(h) > 0 Then
                             Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageFxPiso(.Stats.UserSkinsHechizos(h), .flags.TargetX, .flags.TargetY))
