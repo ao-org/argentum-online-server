@@ -888,6 +888,21 @@ Dim obj                         As t_ObjData
                 If .invent.EquippedArmorObjIndex > 0 Then
                     .Char.BackpackAnim = .OrigChar.BackpackAnim
                 End If
+                
+            Case e_OBJType.otSkinsBoats
+                If .invent.EquippedShipObjIndex > 0 Then
+                    .Char.body = .OrigChar.body
+                End If
+    
+            Case e_OBJType.otSkinsShields
+                If .invent.EquippedShieldObjIndex > 0 Then
+                    .Char.ShieldAnim = .OrigChar.ShieldAnim
+                End If
+
+            Case e_OBJType.otSkinsWeapons
+                If .invent.EquippedWeaponObjIndex > 0 Then
+                    .Char.WeaponAnim = .OrigChar.WeaponAnim
+                End If
         End Select
         
         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
@@ -1105,7 +1120,12 @@ Dim Ropaje                      As Integer
                     End If
                     If .flags.Montado = 0 Then
                         If .flags.Navegando = 0 Then
-                            .Char.WeaponAnim = obj.WeaponAnim
+                            If .Invent_Skins.ObjIndexWeaponEquipped > 0 Then
+                                .Char.WeaponAnim = ObjData(.Invent_Skins.ObjIndexWeaponEquipped).WeaponAnim
+                            Else
+                                .Char.WeaponAnim = obj.WeaponAnim
+                            End If
+                            
                             Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         End If
                     End If
@@ -1122,7 +1142,13 @@ Dim Ropaje                      As Integer
                     If .invent.EquippedBackpackObjIndex > 0 Then
                         Call Desequipar(UserIndex, .invent.EquippedBackpackSlot)
                     End If
-                    Ropaje = ObtenerRopaje(UserIndex, obj)
+                    
+                    If .Invent_Skins.ObjIndexBackpackEquipped > 0 Then
+                        Ropaje = ObtenerRopaje(UserIndex, ObjData(.Invent_Skins.ObjIndexBackpackEquipped))
+                    Else
+                        Ropaje = ObtenerRopaje(UserIndex, obj)
+                    End If
+                    
                     If Ropaje = 0 Then
                         ' Msg676=Hay un error con este objeto. Infórmale a un administrador.
                         Call WriteLocaleMsg(UserIndex, "676", e_FontTypeNames.FONTTYPE_INFO)
@@ -1136,6 +1162,7 @@ Dim Ropaje                      As Integer
                     .invent.Object(Slot).Equipped = 1
                     .invent.EquippedBackpackObjIndex = .invent.Object(Slot).ObjIndex
                     .invent.EquippedBackpackSlot = Slot
+                    
                     If .flags.Montado = 0 And .flags.Navegando = 0 Then
                         .Char.BackpackAnim = Ropaje
                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
@@ -1322,6 +1349,7 @@ Dim Ropaje                      As Integer
                         Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
+                    
                     'Si esta equipado lo quita
                     If .invent.Object(Slot).Equipped Then
                         Call Desequipar(UserIndex, Slot)
@@ -1345,6 +1373,7 @@ Dim Ropaje                      As Integer
                     .invent.Object(Slot).Equipped = 1
                     .invent.EquippedHelmetObjIndex = .invent.Object(Slot).ObjIndex
                     .invent.EquippedHelmetSlot = Slot
+                    
                     If .flags.Navegando = 0 Then
                         Dim nuevoHead As Integer
                         Dim nuevoCasco As Integer
@@ -1353,7 +1382,13 @@ Dim Ropaje                      As Integer
                             If .Char.head < PATREON_HEAD Then
                                 .Char.originalhead = .Char.head
                             End If
-                            nuevoHead = obj.CascoAnim
+                            
+                            If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
+                                nuevoCasco = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                            Else
+                                nuevoCasco = obj.CascoAnim
+                            End If
+                            
                             nuevoCasco = NingunCasco
                         Else
                             ' Si el casco se superpone (no reemplaza la cabeza)
@@ -1361,9 +1396,14 @@ Dim Ropaje                      As Integer
                             If .Char.head >= PATREON_HEAD Then
                                 nuevoCasco = NingunCasco
                             Else
-                                nuevoCasco = obj.CascoAnim
+                                If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
+                                    nuevoCasco = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                                Else
+                                    nuevoCasco = obj.CascoAnim
+                                End If
                             End If
                         End If
+                        
                         ' Asignar cambios y aplicar actualización visual
                         .Char.head = nuevoHead
                         .Char.CascoAnim = nuevoCasco
@@ -1408,7 +1448,13 @@ Dim Ropaje                      As Integer
                     .invent.EquippedShieldObjIndex = .invent.Object(Slot).ObjIndex
                     .invent.EquippedShieldSlot = Slot
                     If .flags.Navegando = 0 And .flags.Montado = 0 Then
-                        .Char.ShieldAnim = obj.ShieldAnim
+                        
+                        If .Invent_Skins.ObjIndexShieldEquipped > 0 Then
+                            .Char.ShieldAnim = ObjData(.Invent_Skins.ObjIndexShieldEquipped).ShieldAnim
+                        Else
+                            .Char.ShieldAnim = obj.ShieldAnim
+                        End If
+                        
                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                     End If
                     If obj.ResistenciaMagica > 0 Then
@@ -3113,7 +3159,9 @@ Public Sub AddOrResetEffect(ByVal UserIndex As Integer, ByVal EffectId As Intege
 End Sub
 
 Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
+
     With UserList(UserIndex)
+        
         If .flags.Navegando > 0 Then
             Call EquiparBarco(UserIndex)
             .Char.CascoAnim = 0
@@ -3121,10 +3169,11 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
             .Char.ShieldAnim = 0
             .Char.WeaponAnim = 0
             'TODO place ship body
-            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, _
+            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
                     .Char.BackpackAnim)
             Exit Sub
         End If
+        
         If .flags.Muerto = 1 Then
             .Char.body = iCuerpoMuerto
             .Char.head = 0
@@ -3132,19 +3181,27 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
             .Char.WeaponAnim = NingunArma
             .Char.CascoAnim = NingunCasco
             .Char.CartAnim = NoCart
-            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, _
+            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
                     .Char.BackpackAnim)
             Exit Sub
         End If
+        
         .Char.head = .OrigChar.head
+        
+        'Armas
         If .invent.EquippedWeaponObjIndex > 0 Then
-            .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
+            If .Invent_Skins.ObjIndexWeaponEquipped > 0 Then
+                .Char.WeaponAnim = ObjData(.Invent_Skins.ObjIndexWeaponEquipped).WeaponAnim
+            Else
+                .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
+            End If
         ElseIf .invent.EquippedWorkingToolObjIndex > 0 Then
             .Char.WeaponAnim = ObjData(.invent.EquippedWorkingToolObjIndex).WeaponAnim
         Else
             .Char.WeaponAnim = 0
         End If
         
+        'Armaduras/túnicas/vestimentas/etc
         If .invent.EquippedArmorObjIndex > 0 Then
             If .Invent_Skins.ObjIndexArmourEquipped > 0 Then
                 .Char.body = ObtenerRopaje(UserIndex, ObjData(.Invent_Skins.ObjIndexArmourEquipped))
@@ -3155,24 +3212,39 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
             Call SetNakedBody(UserList(UserIndex))
         End If
         
+        'Cascos
         If .invent.EquippedHelmetObjIndex > 0 Then
-            .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+            If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
+                .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+            Else
+                .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+            End If
         Else
             .Char.CascoAnim = 0
         End If
+        
+        'Amuletos/accesorios
         If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
             .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
         Else
             .Char.CartAnim = 0
         End If
+        
+        'Escudos
         If .invent.EquippedShieldObjIndex > 0 Then
-            .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
+            If .Invent_Skins.ObjIndexShieldEquipped > 0 Then
+                .Char.ShieldAnim = ObjData(.Invent_Skins.ObjIndexShieldEquipped).ShieldAnim
+            Else
+                .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
+            End If
         Else
             .Char.ShieldAnim = 0
         End If
-        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim, _
+        
+        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
                 .Char.BackpackAnim)
     End With
+    
 End Sub
 
 Function RemoveGold(ByVal UserIndex As Integer, ByVal amount As Long) As Boolean
@@ -3339,6 +3411,8 @@ End Function
 '---------------------------------------------------------------------------------------
 Sub SkinEquip(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ObjIndex As Integer, ByRef eSkinType As e_OBJType)
 
+Dim nuevoHead                   As Integer
+Dim nuevoCasco                  As Integer
 Dim i                           As Integer
 Dim obj                         As t_ObjData
 
@@ -3349,7 +3423,7 @@ Dim obj                         As t_ObjData
     Else
         Exit Sub
     End If
-    
+
     With UserList(UserIndex)
         Select Case eSkinType
             Case e_OBJType.otSkinsArmours
@@ -3363,7 +3437,8 @@ Dim obj                         As t_ObjData
 
                 .Invent_Skins.Object(Slot).Equipped = True
                 .Invent_Skins.ObjIndexArmourEquipped = ObjIndex
-                Call WriteChangeSkinSlot(UserIndex, ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType, Slot)
+                .Invent_Skins.SlotArmourEquipped = Slot
+
                 If .flags.Mimetizado = 1 Then
                     '.OrigChar.Body = .Char.Body
                     .CharMimetizado.body = obj.Ropaje
@@ -3371,13 +3446,12 @@ Dim obj                         As t_ObjData
                     If .flags.Navegando = 0 Then    'Fixed! :D [/About] 03/12/2017
                         .OrigChar.body = .Char.body
                         .Char.body = ObtenerRopaje(UserIndex, obj)
-                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
-                                            .Char.BackpackAnim)
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                     Else
                         .OrigChar.body = obj.Ropaje
                     End If
                 End If
-                
+
             Case e_OBJType.otSkinsSpells
                 'Buscamos otros skins de este mismo hechizo equipados y lo desequipamos.
                 For i = 1 To MAX_SKINSSPELLS_SLOTS
@@ -3398,11 +3472,9 @@ Dim obj                         As t_ObjData
                 If ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex > 0 Then
                     .Stats.UserSkinsHechizos(ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex) = ObjData(.Invent_Skins.Object(Slot).ObjIndex).CreaFX
                 End If
-                Call WriteChangeSkinSlot(UserIndex, ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType, Slot)
-                Exit Sub
-            
+
             Case e_OBJType.otSkinsHelmets
-            
+
                 For i = 1 To MAX_SKINSINVENTORY_SLOTS
                     If .Invent_Skins.Object(i).Equipped And .Invent_Skins.Object(i).ObjIndex = .Invent_Skins.ObjIndexHelmetEquipped Then
                         Call Desequipar(UserIndex, i, True, eSkinType)
@@ -3412,15 +3484,13 @@ Dim obj                         As t_ObjData
 
                 .Invent_Skins.Object(Slot).Equipped = True
                 .Invent_Skins.ObjIndexHelmetEquipped = ObjIndex
-                Call WriteChangeSkinSlot(UserIndex, ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType, Slot)
-                
+                .Invent_Skins.SlotHelmetEquipped = Slot
+
                 If .flags.Mimetizado = 1 Then
                     '.OrigChar.Body = .Char.Body
                     .CharMimetizado.body = obj.Ropaje
                 Else
                     If .flags.Navegando = 0 Then    'Fixed! :D [/About] 03/12/2017
-                        Dim nuevoHead As Integer
-                        Dim nuevoCasco As Integer
                         If obj.CascoAnim > 0 Then
                             If obj.Subtipo = 2 Then
                                 ' Si el casco cambia la cabeza entera
@@ -3441,25 +3511,129 @@ Dim obj                         As t_ObjData
                             ' Asignar cambios y aplicar actualización visual
                             .Char.head = nuevoHead
                             .Char.CascoAnim = nuevoCasco
-                            
+
                             Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         End If
                     Else
                         .OrigChar.CascoAnim = obj.CascoAnim
                     End If
                 End If
-                
+
             Case e_OBJType.otSkinsWings
+
+                If .Invent_Skins.Object(Slot).Equipped Then
+                    Call Desequipar(UserIndex, Slot)
+                    .Char.BackpackAnim = NoBackPack
+                    If .flags.Montado = 0 And .flags.Navegando = 0 Then
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+                    End If
+                    Exit Sub
+                End If
+
+                If .Invent_Skins.ObjIndexBackpackEquipped > 0 Then
+                    Call Desequipar(UserIndex, .Invent_Skins.ObjIndexBackpackEquipped, True, e_OBJType.otSkinsWings)
+                End If
+
+                'Lo equipa
+                If Len(obj.CreaGRH) <> 0 Then
+                    .Char.Body_Aura = obj.CreaGRH
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Body_Aura, False, 2))
+                End If
+
+                .Invent_Skins.Object(Slot).Equipped = True
+                .Invent_Skins.ObjIndexBackpackEquipped = .Invent_Skins.Object(Slot).ObjIndex
+                .Invent_Skins.SlotBackpackEquipped = Slot
+
+                If .flags.Montado = 0 And .flags.Navegando = 0 Then
+                    If ObtenerRopaje(UserIndex, obj) > 0 Then ' ;)
+                        .Char.BackpackAnim = ObtenerRopaje(UserIndex, obj)
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+                    End If
+                End If
             
             Case e_OBJType.otSkinsBoats
-            
+                For i = 1 To MAX_SKINSINVENTORY_SLOTS
+                    If .Invent_Skins.Object(i).Equipped And .Invent_Skins.Object(i).ObjIndex = .Invent_Skins.ObjIndexBoatEquipped Then
+                        Call Desequipar(UserIndex, i, True, eSkinType)
+                        Exit For
+                    End If
+                Next i
 
+                .Invent_Skins.Object(Slot).Equipped = True
+                .Invent_Skins.ObjIndexBoatEquipped = ObjIndex
+                
+                If .flags.Mimetizado = 1 Then
+                    '.OrigChar.Body = .Char.Body
+                    .CharMimetizado.body = obj.Ropaje
+                    If .flags.Navegando = 0 Then
+                        .OrigChar.body = .Char.body
+                        .CharMimetizado.body = obj.Ropaje
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+                    Else
+                        .OrigChar.body = obj.Ropaje
+                    End If
+                Else
+                    If .flags.Navegando = 0 Then    'Fixed! :D [/About] 03/12/2017
+                        .OrigChar.body = .Char.body
+                        .Char.body = ObtenerRopaje(UserIndex, obj)
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+                    Else
+                        .OrigChar.body = obj.Ropaje
+                    End If
+                End If
             
             Case e_OBJType.otSkinsShields
+                For i = 1 To MAX_SKINSINVENTORY_SLOTS
+                    If .Invent_Skins.Object(i).Equipped And .Invent_Skins.Object(i).ObjIndex = .Invent_Skins.ObjIndexShieldEquipped Then
+                        Call Desequipar(UserIndex, i, True, eSkinType)
+                        Exit For
+                    End If
+                Next i
+
+                .Invent_Skins.Object(Slot).Equipped = True
+                .Invent_Skins.ObjIndexShieldEquipped = ObjIndex
+                .Invent_Skins.SlotShieldEquipped = Slot
+                
+                If .flags.Mimetizado = 1 Then
+                    .CharMimetizado.ShieldAnim = obj.ShieldAnim
+                Else
+                    If .flags.Navegando = 0 Then    'Fixed! :D [/About] 03/12/2017
+                        .OrigChar.ShieldAnim = .Char.ShieldAnim
+                        .Char.ShieldAnim = obj.ShieldAnim
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+                    Else
+                        .OrigChar.ShieldAnim = obj.ShieldAnim
+                    End If
+                End If
             
             Case e_OBJType.otSkinsWeapons
+                For i = 1 To MAX_SKINSINVENTORY_SLOTS
+                    If .Invent_Skins.Object(i).Equipped And .Invent_Skins.Object(i).ObjIndex = .Invent_Skins.ObjIndexWeaponEquipped Then
+                        Call Desequipar(UserIndex, i, True, eSkinType)
+                        Exit For
+                    End If
+                Next i
+
+                .Invent_Skins.Object(Slot).Equipped = True
+                .Invent_Skins.ObjIndexWeaponEquipped = ObjIndex
+                .Invent_Skins.SlotWeaponEquipped = Slot
+                
+                If .flags.Mimetizado = 1 Then
+                    .CharMimetizado.WeaponAnim = obj.WeaponAnim
+                Else
+                    If .flags.Navegando = 0 Then    'Fixed! :D [/About] 03/12/2017
+                        .OrigChar.WeaponAnim = .Char.WeaponAnim
+                        .Char.WeaponAnim = obj.WeaponAnim
+                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+                    Else
+                        .OrigChar.WeaponAnim = obj.WeaponAnim
+                    End If
+                End If
             
         End Select
+        
+        Call WriteChangeSkinSlot(UserIndex, ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType, Slot)
+        
     End With
     
     On Error GoTo 0
@@ -3563,13 +3737,11 @@ Function CanEquipSkin(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef eSki
     
         If bFromInvent Then
             If .invent.Object(Slot).ObjIndex = 0 Then Exit Function
-            bCanUser = ClasePuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And SexoPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And RazaPuedeUsarItem( _
-                    UserIndex, .invent.Object(Slot).ObjIndex) And FaccionPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And LevelCanUseItem(UserIndex, ObjData( _
-                    .invent.Object(Slot).ObjIndex))
+            bCanUser = ClasePuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And SexoPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And RazaPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And FaccionPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And LevelCanUseItem(UserIndex, ObjData(.invent.Object(Slot).ObjIndex))
         Else
-            bCanUser = ClasePuedeUsarItem(UserIndex, .Invent_Skins.Object(Slot).ObjIndex) And SexoPuedeUsarItem(UserIndex, .Invent_Skins.Object(Slot).ObjIndex) And _
-                    FaccionPuedeUsarItem(UserIndex, .Invent_Skins.Object(Slot).ObjIndex)
+            bCanUser = ClasePuedeUsarItem(UserIndex, .Invent_Skins.Object(Slot).ObjIndex) And SexoPuedeUsarItem(UserIndex, .Invent_Skins.Object(Slot).ObjIndex) And FaccionPuedeUsarItem(UserIndex, .Invent_Skins.Object(Slot).ObjIndex)
         End If
+        
         If Not bCanUser Then
             'Añadir el cartel que haga falta
             'Call WriteConsoleMsg(UserIndex, "{315}", e_FontTypeNames.FONTTYPE_INFO)
@@ -3602,8 +3774,7 @@ Function CanEquipSkin(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef eSki
                                     CanEquipSkin = True
                                     Exit Function
                                 Else
-                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object( _
-                                            Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
+                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
                                     Exit Function
                                 End If
                             Else
@@ -3618,8 +3789,7 @@ Function CanEquipSkin(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef eSki
                                     CanEquipSkin = True
                                     Exit Function
                                 Else
-                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object( _
-                                            Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
+                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
                                     Exit Function
                                 End If
                             Else
@@ -3632,9 +3802,7 @@ Function CanEquipSkin(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef eSki
                     Call WriteConsoleMsg(UserIndex, "Para equipar este skin de vestimenta, debes tener equipada alguna.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
-                'Los hechizos aún no tienen mayores validaciones que éstas.
-                'Case e_OBJType.otSkinsSpells
-                'Falta
+
             Case e_OBJType.otSkinsWings
 
                     If bFromInvent Then
@@ -3706,13 +3874,136 @@ Function CanEquipSkin(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef eSki
                     Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipada algún sombrero o casco.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
+                
+                
+            Case e_OBJType.otSkinsSpells
+                CanEquipSkin = True
+                Exit Function
+                
+            Case e_OBJType.otSkinsBoats
+            
+                If .invent.EquippedShipObjIndex > 0 Then
+                    If bFromInvent Then
+                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
+                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin > 0 Then
+                                If .invent.EquippedShipObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin Then
+                                    CanEquipSkin = True
+                                    Exit Function
+                                Else
+                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
+                                    Exit Function
+                                End If
+                            Else
+                                CanEquipSkin = True
+                                Exit Function
+                            End If
+                        End If
+                    Else
+                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
+                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin > 0 Then
+                                If .invent.EquippedShipObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin Then
+                                    CanEquipSkin = True
+                                    Exit Function
+                                Else
+                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
+                                    Exit Function
+                                End If
+                            Else
+                                CanEquipSkin = True
+                                Exit Function
+                            End If
+                        End If
+                    End If
+                Else
+                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin de botes, debes tener equipado alguno.", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+                
+            Case e_OBJType.otSkinsShields
+                  If .invent.EquippedShieldObjIndex > 0 Then
+                    If bFromInvent Then
+                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
+                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin > 0 Then
+                                If .invent.EquippedShieldObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin Then
+                                    CanEquipSkin = True
+                                    Exit Function
+                                Else
+                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
+                                    Exit Function
+                                End If
+                            Else
+                                CanEquipSkin = True
+                                Exit Function
+                            End If
+                        End If
+                    Else
+                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
+                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin > 0 Then
+                                If .invent.EquippedShieldObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin Then
+                                    CanEquipSkin = True
+                                    Exit Function
+                                Else
+                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
+                                    Exit Function
+                                End If
+                            Else
+                                CanEquipSkin = True
+                                Exit Function
+                            End If
+                        End If
+                    End If
+                Else
+                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin de escudos, debes tener equipado alguno.", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+                
+            Case e_OBJType.otSkinsWeapons
+                  
+                  If .invent.EquippedShieldObjIndex > 0 Then
+                    If bFromInvent Then
+                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
+                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin > 0 Then
+                                If .invent.EquippedShieldObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin Then
+                                    CanEquipSkin = True
+                                    Exit Function
+                                Else
+                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
+                                    Exit Function
+                                End If
+                            Else
+                                CanEquipSkin = True
+                                Exit Function
+                            End If
+                        End If
+                    Else
+                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
+                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin > 0 Then
+                                If .invent.EquippedShieldObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin Then
+                                    CanEquipSkin = True
+                                    Exit Function
+                                Else
+                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
+                                    Exit Function
+                                End If
+                            Else
+                                CanEquipSkin = True
+                                Exit Function
+                            End If
+                        End If
+                    End If
+                Else
+                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin de escudos, debes tener equipado alguno.", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+                
         End Select
     End With
     On Error GoTo 0
     Exit Function
 CanEquipSkin_Error:
     CanEquipSkin = False
-    Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.CanEquipSkin of Módulo", Erl())
+    Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.CanEquipSkin of Módulo InvUsuario User: " & UserList(UserIndex).name & " UserIndex: " & UserIndex & " Skin Slot: " & Slot & " eSkinType: " & eSkinType, Erl())
+    
 End Function
 
 '---------------------------------------------------------------------------------------
