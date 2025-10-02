@@ -864,12 +864,12 @@ Dim obj                         As t_ObjData
 
         If .Invent_Skins.Object(Slot).Equipped Then
             .Invent_Skins.Object(Slot).Equipped = False
-            .Invent_Skins.ObjIndexArmourEquipped = 0
         End If
         
         Select Case eSkinType
             Case e_OBJType.otSkinsArmours
                 If .invent.EquippedArmorObjIndex > 0 Then
+                    .Invent_Skins.ObjIndexArmourEquipped = 0
                     .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
                 End If
                 
@@ -880,17 +880,20 @@ Dim obj                         As t_ObjData
                 End If
             
             Case e_OBJType.otSkinsHelmets
-                If .invent.EquippedArmorObjIndex > 0 Then
+                If .invent.EquippedHelmetObjIndex > 0 Then
+                    .Invent_Skins.ObjIndexHelmetEquipped = 0
                     .Char.CascoAnim = .OrigChar.CascoAnim
                 End If
                 
             Case e_OBJType.otSkinsWings
                 If .invent.EquippedArmorObjIndex > 0 Then
+                    .invent.EquippedArmorObjIndex = 0
                     .Char.BackpackAnim = .OrigChar.BackpackAnim
                 End If
                 
             Case e_OBJType.otSkinsBoats
                 If .invent.EquippedShipObjIndex > 0 Then
+                    .invent.EquippedShipObjIndex = 0
                     .Char.body = .OrigChar.body
                 End If
     
@@ -1405,6 +1408,7 @@ Dim Ropaje                      As Integer
                         End If
                         
                         ' Asignar cambios y aplicar actualización visual
+                        .OrigChar.CascoAnim = .Char.CascoAnim
                         .Char.head = nuevoHead
                         .Char.CascoAnim = nuevoCasco
                         If Not UserIsLoggingIn Then
@@ -3509,7 +3513,9 @@ Dim obj                         As t_ObjData
                                 End If
                             End If
                             ' Asignar cambios y aplicar actualización visual
+                            
                             .Char.head = nuevoHead
+                            .OrigChar.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
                             .Char.CascoAnim = nuevoCasco
 
                             Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
