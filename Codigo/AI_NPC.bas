@@ -945,7 +945,7 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
             ' Si no pudimos moverlo, hacemos como si hubiese llegado a destino... para evitar que se quede atascado
             If Not PudoMover Or Distancia(.pos, Destino) = 0 Then
                 ' Llegamos a destino, ahora esperamos el tiempo necesario para continuar
-                .Contadores.IntervaloMovimiento = GetTickCount + .Caminata(.CaminataActual).Espera - .IntervaloMovimiento
+                .Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), .Caminata(.CaminataActual).Espera)
                 ' Pasamos a la siguiente caminata
                 .CaminataActual = .CaminataActual + 1
                 ' Si pasamos el ultimo, volvemos al primero

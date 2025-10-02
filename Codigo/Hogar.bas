@@ -110,15 +110,15 @@ End Sub
 Public Function IntervaloGoHome(ByVal UserIndex As Integer, Optional ByVal TimeInterval As Long, Optional ByVal Actualizar As Boolean = False) As Boolean
     On Error GoTo IntervaloGoHome_Err
     'Add the Timer which determines wether the user can be teleported to its home or not
-    Dim TActual As Long
-    TActual = GetTickCount()
+    Dim nowRaw As Long
+    nowRaw = GetTickCountRaw()
     With UserList(UserIndex)
         ' Inicializa el timer
         If Actualizar Then
             .flags.Traveling = 1
-            .Counters.goHome = TActual + TimeInterval
+            .Counters.goHome = AddMod32(nowRaw, TimeInterval)
         Else
-            If TActual >= .Counters.goHome Then
+            If DeadlinePassed(nowRaw, .Counters.goHome) Then
                 IntervaloGoHome = True
             End If
         End If

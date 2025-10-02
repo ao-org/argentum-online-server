@@ -3404,21 +3404,21 @@ HandleGlobalOnOff_Err:
 End Sub
 
 Public Sub HandleGlobalMessage(ByVal UserIndex As Integer)
-    Dim TActual     As Long
-    Dim ElapsedTime As Long
-    TActual = GetTickCount()
-    ElapsedTime = TActual - UserList(UserIndex).Counters.MensajeGlobal
+    Dim nowRaw      As Long
+    Dim elapsedMs   As Double
+    nowRaw = GetTickCountRaw()
+    elapsedMs = TicksElapsed(UserList(UserIndex).Counters.MensajeGlobal, nowRaw)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
         Dim chat As String
         chat = reader.ReadString8()
         If .flags.Silenciado = 1 Then
             Call WriteLocaleMsg(UserIndex, "110", e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
-        ElseIf ElapsedTime < IntervaloMensajeGlobal Then
+        ElseIf elapsedMs < IntervaloMensajeGlobal Then
             ' Msg548=No puedes escribir mensajes globales tan rápido.
             Call WriteLocaleMsg(UserIndex, "548", e_FontTypeNames.FONTTYPE_WARNING)
         Else
-            UserList(UserIndex).Counters.MensajeGlobal = TActual
+            UserList(UserIndex).Counters.MensajeGlobal = nowRaw
             If SvrConfig.GetValue("ChatGlobal") = 1 Then
                 If LenB(chat) <> 0 Then
                     Dim i As Integer
@@ -3440,7 +3440,7 @@ Public Sub HandleGlobalMessage(ByVal UserIndex As Integer)
     End With
     Exit Sub
 ErrHandler:
-    Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGlobalMessage", Erl)
 End Sub
 
 Public Sub HandleGlobalOnOff(ByVal UserIndex As Integer)
@@ -3509,10 +3509,10 @@ ErrHandler:
 End Sub
 
 Public Sub HandleQuestionGM(ByVal UserIndex As Integer)
-    Dim TActual     As Long
-    Dim ElapsedTime As Long
-    TActual = GetTickCount()
-    ElapsedTime = TActual - UserList(UserIndex).Counters.LastGmMessage
+    Dim nowRaw      As Long
+    Dim elapsedMs   As Double
+    nowRaw = GetTickCountRaw()
+    elapsedMs = TicksElapsed(UserList(UserIndex).Counters.LastGmMessage, nowRaw)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
         Dim Consulta       As String
@@ -3540,12 +3540,12 @@ Public Sub HandleQuestionGM(ByVal UserIndex As Integer)
                 End If
             Next i
         End If
-        If ElapsedTime < IntervaloConsultaGM Then
+        If elapsedMs < IntervaloConsultaGM Then
             ' Msg552=Solo puedes enviar una consulta cada 5 minutos.
             Call WriteLocaleMsg(UserIndex, "552", e_FontTypeNames.FONTTYPE_WARNING)
             Exit Sub
         End If
-        UserList(UserIndex).Counters.LastGmMessage = TActual
+        UserList(UserIndex).Counters.LastGmMessage = nowRaw
         Call Ayuda.Push(.name, Consulta, TipoDeConsulta)
         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1836, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_SERVER)) ' Msg1836=Se ha recibido un nuevo mensaje de soporte de ¬1.
         .Counters.CounterGmMessages = 0
