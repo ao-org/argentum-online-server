@@ -861,39 +861,36 @@ Dim obj                         As t_ObjData
         End If
         
         obj = ObjData(.Invent_Skins.Object(Slot).ObjIndex)
+
+        If .Invent_Skins.Object(Slot).Equipped Then
+            .Invent_Skins.Object(Slot).Equipped = False
+            .Invent_Skins.ObjIndexArmourEquipped = 0
+        End If
         
         Select Case eSkinType
             Case e_OBJType.otSkinsArmours
-            
-                If .Invent_Skins.Object(Slot).Equipped Then
-                    .Invent_Skins.Object(Slot).Equipped = False
-                    .Invent_Skins.ObjIndexArmourEquipped = 0
-                End If
                 If .invent.EquippedArmorObjIndex > 0 Then
                     .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
                 End If
-                Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
-            
+                
             Case e_OBJType.otSkinsSpells
                 If .Invent_Skins.Object(Slot).Equipped Then
                     .Stats.UserSkinsHechizos(ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex) = 0
                     .Invent_Skins.Object(Slot).Equipped = False
                 End If
-                Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
             
             Case e_OBJType.otSkinsHelmets
-            
-                If .Invent_Skins.Object(Slot).Equipped Then
-                    .Invent_Skins.Object(Slot).Equipped = False
-                    .Invent_Skins.ObjIndexHelmetEquipped = 0
-                End If
                 If .invent.EquippedArmorObjIndex > 0 Then
                     .Char.CascoAnim = .OrigChar.CascoAnim
                 End If
-                Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                 
+            Case e_OBJType.otSkinsWings
+                If .invent.EquippedArmorObjIndex > 0 Then
+                    .Char.BackpackAnim = .OrigChar.BackpackAnim
+                End If
         End Select
         
+        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
         Call WriteChangeSkinSlot(UserIndex, eSkinType, Slot)
     End With
     
