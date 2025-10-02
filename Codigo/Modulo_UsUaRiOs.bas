@@ -1613,7 +1613,6 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
     Call WriteLocaleMsg(UserIndex, 1626, e_FontTypeNames.FONTTYPE_INFO, SkillsNames(Skill) & "¬" & UserList(UserIndex).Stats.UserSkills(Skill))
     Dim BonusExp As Long
     BonusExp = 5& * SvrConfig.GetValue("ExpMult")
-    Call WriteLocaleMsg(UserIndex, "1313", e_FontTypeNames.FONTTYPE_INFOIAO, BonusExp) 'Msg1313= ¡Has ganado ¬1 puntos de experiencia!
     If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
         UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + BonusExp
         If UserList(UserIndex).Stats.Exp > MAXEXP Then
@@ -1621,7 +1620,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
         End If
         UserList(UserIndex).flags.ModificoSkills = True
         If UserList(UserIndex).ChatCombate = 1 Then
-            Call WriteLocaleMsg(UserIndex, "140", e_FontTypeNames.FONTTYPE_EXP, BonusExp)
+            Call WriteLocaleMsg(UserIndex, "140", e_FontTypeNames.FONTTYPE_EXP, BonusExp) 'Msg140=Has ganado ¬1 puntos de experiencia.
         End If
         Call WriteUpdateExp(UserIndex)
         Call CheckUserLevel(UserIndex)
