@@ -873,7 +873,6 @@ Dim obj                         As t_ObjData
                     .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
                 End If
                 Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
-                Call WriteChangeSkinSlot(UserIndex, eSkinType, Slot)
             
             Case e_OBJType.otSkinsSpells
                 If .Invent_Skins.Object(Slot).Equipped Then
@@ -881,9 +880,21 @@ Dim obj                         As t_ObjData
                     .Invent_Skins.Object(Slot).Equipped = False
                 End If
                 Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
-                Call WriteChangeSkinSlot(UserIndex, eSkinType, Slot)
+            
+            Case e_OBJType.otSkinsHelmets
+            
+                If .Invent_Skins.Object(Slot).Equipped Then
+                    .Invent_Skins.Object(Slot).Equipped = False
+                    .Invent_Skins.ObjIndexHelmetEquipped = 0
+                End If
+                If .invent.EquippedArmorObjIndex > 0 Then
+                    .Char.CascoAnim = .OrigChar.CascoAnim
+                End If
+                Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                 
         End Select
+        
+        Call WriteChangeSkinSlot(UserIndex, eSkinType, Slot)
     End With
     
     On Error GoTo 0
@@ -3369,8 +3380,8 @@ Dim obj                         As t_ObjData
                         .OrigChar.body = obj.Ropaje
                     End If
                 End If
+                
             Case e_OBJType.otSkinsSpells
-
                 'Buscamos otros skins de este mismo hechizo equipados y lo desequipamos.
                 For i = 1 To MAX_SKINSSPELLS_SLOTS
                     If .Invent_Skins.Object(i).ObjIndex > 0 Then
@@ -3392,11 +3403,60 @@ Dim obj                         As t_ObjData
                 End If
                 Call WriteChangeSkinSlot(UserIndex, ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType, Slot)
                 Exit Sub
+            
+            Case e_OBJType.otSkinsHelmets
+            
+                For i = 1 To MAX_SKINSINVENTORY_SLOTS
+                    If .Invent_Skins.Object(i).Equipped And .Invent_Skins.Object(i).ObjIndex = .Invent_Skins.ObjIndexHelmetEquipped Then
+                        Call Desequipar(UserIndex, i, True, eSkinType)
+                        Exit For
+                    End If
+                Next i
+
+                .Invent_Skins.Object(Slot).Equipped = True
+                .Invent_Skins.ObjIndexHelmetEquipped = ObjIndex
+                Call WriteChangeSkinSlot(UserIndex, ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType, Slot)
+                
+                If .flags.Mimetizado = 1 Then
+                    '.OrigChar.Body = .Char.Body
+                    .CharMimetizado.body = obj.Ropaje
+                Else
+                    If .flags.Navegando = 0 Then    'Fixed! :D [/About] 03/12/2017
+                        Dim nuevoHead As Integer
+                        Dim nuevoCasco As Integer
+                        If obj.CascoAnim > 0 Then
+                            If obj.Subtipo = 2 Then
+                                ' Si el casco cambia la cabeza entera
+                                If .Char.head < PATREON_HEAD Then
+                                    .Char.originalhead = .Char.head
+                                End If
+                                nuevoHead = obj.CascoAnim
+                                nuevoCasco = NingunCasco
+                            Else
+                                ' Si el casco se superpone (no reemplaza la cabeza)
+                                nuevoHead = .Char.head
+                                If .Char.head >= PATREON_HEAD Then
+                                    nuevoCasco = NingunCasco
+                                Else
+                                    nuevoCasco = obj.CascoAnim
+                                End If
+                            End If
+                            ' Asignar cambios y aplicar actualización visual
+                            .Char.head = nuevoHead
+                            .Char.CascoAnim = nuevoCasco
+                            
+                            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+                        End If
+                    Else
+                        .OrigChar.CascoAnim = obj.CascoAnim
+                    End If
+                End If
+                
             Case e_OBJType.otSkinsWings
             
             Case e_OBJType.otSkinsBoats
             
-            Case e_OBJType.otSkinsHelmets
+
             
             Case e_OBJType.otSkinsShields
             
@@ -3587,7 +3647,7 @@ Function CanEquipSkin(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef eSki
                                     CanEquipSkin = True
                                     Exit Function
                                 Else
-                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name, FontTypeNames.FONTTYPE_INFO)
+                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
                                     Exit Function
                                 End If
                             Else
@@ -3602,7 +3662,7 @@ Function CanEquipSkin(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef eSki
                                     CanEquipSkin = True
                                     Exit Function
                                 Else
-                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name, FontTypeNames.FONTTYPE_INFO)
+                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
                                     Exit Function
                                 End If
                             Else
@@ -3621,8 +3681,7 @@ Function CanEquipSkin(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef eSki
                                     CanEquipSkin = True
                                     Exit Function
                                 Else
-                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object( _
-                                            Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
+                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
                                     Exit Function
                                 End If
                             Else
@@ -3637,8 +3696,7 @@ Function CanEquipSkin(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef eSki
                                     CanEquipSkin = True
                                     Exit Function
                                 Else
-                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object( _
-                                            Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
+                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
                                     Exit Function
                                 End If
                             Else

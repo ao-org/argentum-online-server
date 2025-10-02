@@ -1055,14 +1055,14 @@ Sub LoadOBJData()
                     Else
                         .velocidad = val(Leer.GetValue(ObjKey, "velocidad"))
                     End If
-                Case e_OBJType.otShield
+                Case e_OBJType.otShield, e_OBJType.otSkinsShields
                     .ShieldAnim = val(Leer.GetValue(ObjKey, "Anim"))
                     .Real = val(Leer.GetValue(ObjKey, "Real"))
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
                     .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
-                Case e_OBJType.otHelmet
+                Case e_OBJType.otHelmet, e_OBJType.otSkinsHelmets
                     .CascoAnim = val(Leer.GetValue(ObjKey, "Anim"))
                     .Real = val(Leer.GetValue(ObjKey, "Real"))
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
@@ -1070,7 +1070,7 @@ Sub LoadOBJData()
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
                 Case e_OBJType.otBackpack
                     '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
-                Case e_OBJType.otWeapon
+                Case e_OBJType.otWeapon, e_OBJType.otSkinsWeapons
                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
                     .Apuñala = val(Leer.GetValue(ObjKey, "Apuñala"))
                     .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
@@ -1130,7 +1130,7 @@ Sub LoadOBJData()
                     .Pimiento = val(Leer.GetValue(ObjKey, "Pimiento"))
                     .SkPociones = val(Leer.GetValue(ObjKey, "SkPociones"))
                     .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
-                Case e_OBJType.otShips
+                Case e_OBJType.otShips, e_OBJType.otSkinsBoats
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
                     .velocidad = val(Leer.GetValue(ObjKey, "Velocidad"))
