@@ -41,7 +41,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         If Not IgnoreVisibilityCheck Then
             If .flags.invisible = 1 Or .flags.Oculto = 1 Or .flags.Inmunidad = 1 Then Exit Sub
         End If
-        NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = GetTickCount()
+        NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = GetTickCountRaw()
         If Hechizos(Spell).Tipo = uPhysicalSkill Then
             If Not HandlePhysicalSkill(NpcIndex, eNpc, UserIndex, eUser, Spell, IsAlive) Then
                 Exit Sub
@@ -244,7 +244,7 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
         End If
     End If
     With NpcList(TargetNPC)
-        .Contadores.IntervaloLanzarHechizo = GetTickCount()
+        .Contadores.IntervaloLanzarHechizo = GetTickCountRaw()
         If IsSet(Hechizos(Spell).Effects, e_SpellEffects.eDoHeal) Then ' Cura
             Damage = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
             Damage = Damage * NPCs.GetMagicHealingBonus(NpcList(NpcIndex))
@@ -343,7 +343,7 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
     Dim x              As Long
     Dim y              As Long
     Dim mitadAreaRadio As Integer
-    NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = GetTickCount()
+    NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = GetTickCountRaw()
     With Hechizos(SpellIndex)
         afectaUsers = (.AreaAfecta = 1 Or .AreaAfecta = 3)
         afectaNPCs = (.AreaAfecta = 2 Or .AreaAfecta = 3)
