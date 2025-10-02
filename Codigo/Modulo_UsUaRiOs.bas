@@ -615,7 +615,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As S
         NumUsers = NumUsers + 1
         .flags.UserLogged = True
         Call Execute("Update user set is_logged = true where id = ?", UserList(UserIndex).Id)
-        .Counters.LastSave = GetTickCount
+        .Counters.LastSave = GetTickCountRaw()
         MapInfo(.pos.Map).NumUsers = MapInfo(.pos.Map).NumUsers + 1
         If .Stats.SkillPts > 0 Then
             Call WriteSendSkills(UserIndex)
@@ -2645,7 +2645,7 @@ Public Function CanUseItem(ByRef flags As t_UserFlags, ByRef Counters As t_UserC
 End Function
 
 Public Sub UpdateCd(ByVal UserIndex As Integer, ByVal cdType As e_CdTypes)
-    UserList(UserIndex).CdTimes(cdType) = GetTickCount()
+    UserList(UserIndex).CdTimes(cdType) = GetTickCountRaw()
     Call WriteUpdateCdType(UserIndex, cdType)
 End Sub
 
