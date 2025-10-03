@@ -612,7 +612,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, Optional ByVal 
         NumUsers = NumUsers + 1
         .flags.UserLogged = True
         Call Execute("Update user set is_logged = true where id = ?", UserList(UserIndex).Id)
-        .Counters.LastSave = GetTickCount
+        .Counters.LastSave = GetTickCountRaw()
         MapInfo(.pos.Map).NumUsers = MapInfo(.pos.Map).NumUsers + 1
         If .Stats.SkillPts > 0 Then
             Call WriteSendSkills(UserIndex)
@@ -1562,7 +1562,6 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
     Call WriteLocaleMsg(UserIndex, 1626, e_FontTypeNames.FONTTYPE_INFO, SkillsNames(Skill) & "¬" & UserList(UserIndex).Stats.UserSkills(Skill))
     Dim BonusExp As Long
     BonusExp = 5& * SvrConfig.GetValue("ExpMult")
-    Call WriteLocaleMsg(UserIndex, "1313", e_FontTypeNames.FONTTYPE_INFOIAO, BonusExp) 'Msg1313= ¡Has ganado ¬1 puntos de experiencia!
     If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
         UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + BonusExp
         If UserList(UserIndex).Stats.Exp > MAXEXP Then
@@ -1570,7 +1569,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
         End If
         UserList(UserIndex).flags.ModificoSkills = True
         If UserList(UserIndex).ChatCombate = 1 Then
-            Call WriteLocaleMsg(UserIndex, "140", e_FontTypeNames.FONTTYPE_EXP, BonusExp)
+            Call WriteLocaleMsg(UserIndex, "140", e_FontTypeNames.FONTTYPE_EXP, BonusExp) 'Msg140=Has ganado ¬1 puntos de experiencia.
         End If
         Call WriteUpdateExp(UserIndex)
         Call CheckUserLevel(UserIndex)
@@ -2545,28 +2544,46 @@ Public Sub ClearClothes(ByRef Char As t_Char)
     Char.CartAnim = NoCart
 End Sub
 
-Public Function IsStun(ByRef Counters As t_UserCounters) As Boolean
-    IsStun = Counters.StunEndTime > GetTickCount()
+Public Function IsStun(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
+    Dim nowRaw As Long
+    nowRaw = GetTickCountRaw()
+
+    ' Player is stunned if current tick has NOT yet passed the stun end deadline
+    IsStun = Not DeadlinePassed(nowRaw, Counters.StunEndTime)
 End Function
+
 
 Public Function CanMove(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
     CanMove = flags.Paralizado = 0 And flags.Inmovilizado = 0 And Not IsStun(Counters) And Not flags.TranslationActive
 End Function
 
+
 Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserCounters) As Boolean
-    Dim CurrTime As Long
+    On Error GoTo eh
     StunPlayer = False
+
+    ' (Optional) your CanMove signature might be (counters, flags) — adjust order if needed
     If Not CanMove(UserList(UserIndex).flags, Counters) Then Exit Function
     If IsSet(UserList(UserIndex).flags.StatusMask, eCCInmunity) Then Exit Function
-    CurrTime = GetTickCount()
-    If CurrTime > Counters.StunEndTime + PlayerInmuneTime Then
-        Counters.StunEndTime = GetTickCount() + PlayerStunTime
+
+    Dim nowRaw As Long
+    nowRaw = GetTickCountRaw()   ' <-- use raw tick
+
+    ' Respect anti-chain-stun window: allow new stun only after immune window passes
+    Dim immuneUntil As Long
+    immuneUntil = AddMod32(Counters.StunEndTime, PlayerInmuneTime) ' old end + immunity
+
+    If TickAfter(nowRaw, immuneUntil) Then
+        ' Apply (or re-apply) stun: set absolute deadline using modulo-2^32 add
+        Counters.StunEndTime = AddMod32(nowRaw, PlayerStunTime)
         StunPlayer = True
     End If
+    Exit Function
+eh:
 End Function
 
 Public Sub UpdateCd(ByVal UserIndex As Integer, ByVal cdType As e_CdTypes)
-    UserList(UserIndex).CdTimes(cdType) = GetTickCount()
+    UserList(UserIndex).CdTimes(cdType) = GetTickCountRaw()
     Call WriteUpdateCdType(UserIndex, cdType)
 End Sub
 

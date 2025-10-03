@@ -89,7 +89,7 @@ Public Sub HandleUpTime(ByVal UserIndex As Integer)
     Dim Time      As Long
     Dim UpTimeStr As String
     'Get total time in seconds
-    Time = ((GetTickCount()) - tInicioServer) \ 1000
+    Time = TicksElapsed(tInicioServer, GetTickCountRaw()) \ 1000
     'Get times in dd:hh:mm:ss format
     UpTimeStr = (Time Mod 60) & " segundos."
     Time = Time \ 60
@@ -3256,23 +3256,7 @@ HandleShowServerForm_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleShowServerForm", Erl)
 End Sub
 
-Public Sub HandleNight(ByVal UserIndex As Integer)
-    On Error GoTo HandleNight_Err
-    'Author: Lucas Tavolaro Ortiz (Tavo)
-    'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
-    With UserList(UserIndex)
-        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster)) Then
-            'Msg528=Servidor » Comando deshabilitado para tu cargo.
-            Call WriteLocaleMsg(UserIndex, "528", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        HoraMundo = GetTickCount()
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
-    End With
-    Exit Sub
-HandleNight_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleNight", Erl)
-End Sub
+
 
 Public Sub HandleKickAllChars(ByVal UserIndex As Integer)
     On Error GoTo HandleKickAllChars_Err
@@ -3413,21 +3397,21 @@ HandleGlobalOnOff_Err:
 End Sub
 
 Public Sub HandleGlobalMessage(ByVal UserIndex As Integer)
-    Dim TActual     As Long
-    Dim ElapsedTime As Long
-    TActual = GetTickCount()
-    ElapsedTime = TActual - UserList(UserIndex).Counters.MensajeGlobal
+    Dim nowRaw      As Long
+    Dim elapsedMs   As Double
+    nowRaw = GetTickCountRaw()
+    elapsedMs = TicksElapsed(UserList(UserIndex).Counters.MensajeGlobal, nowRaw)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
         Dim chat As String
         chat = reader.ReadString8()
         If .flags.Silenciado = 1 Then
             Call WriteLocaleMsg(UserIndex, "110", e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
-        ElseIf ElapsedTime < IntervaloMensajeGlobal Then
+        ElseIf elapsedMs < IntervaloMensajeGlobal Then
             ' Msg548=No puedes escribir mensajes globales tan rápido.
             Call WriteLocaleMsg(UserIndex, "548", e_FontTypeNames.FONTTYPE_WARNING)
         Else
-            UserList(UserIndex).Counters.MensajeGlobal = TActual
+            UserList(UserIndex).Counters.MensajeGlobal = nowRaw
             If SvrConfig.GetValue("ChatGlobal") = 1 Then
                 If LenB(chat) <> 0 Then
                     Dim i As Integer
@@ -3449,7 +3433,7 @@ Public Sub HandleGlobalMessage(ByVal UserIndex As Integer)
     End With
     Exit Sub
 ErrHandler:
-    Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGlobalMessage", Erl)
 End Sub
 
 Public Sub HandleGlobalOnOff(ByVal UserIndex As Integer)
@@ -3468,39 +3452,6 @@ HandleGlobalOnOff_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGlobalOnOff", Erl)
 End Sub
 
-Public Sub HandleDay(ByVal UserIndex As Integer)
-    On Error GoTo HandleDay_Err
-    With UserList(UserIndex)
-        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
-            'Msg528=Servidor » Comando deshabilitado para tu cargo.
-            Call WriteLocaleMsg(UserIndex, "528", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        HoraMundo = GetTickCount() - SvrConfig.GetValue("DayLength") \ 2
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
-    End With
-    Exit Sub
-HandleDay_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleDay", Erl)
-End Sub
-
-Public Sub HandleSetTime(ByVal UserIndex As Integer)
-    On Error GoTo HandleSetTime_Err
-    With UserList(UserIndex)
-        Dim HoraDia As Long
-        HoraDia = reader.ReadInt32
-        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
-            'Msg528=Servidor » Comando deshabilitado para tu cargo.
-            Call WriteLocaleMsg(UserIndex, "528", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        HoraMundo = GetTickCount() - HoraDia
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
-    End With
-    Exit Sub
-HandleSetTime_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleSetTime", Erl)
-End Sub
 
 Public Sub HandleGiveItem(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
@@ -3551,10 +3502,10 @@ ErrHandler:
 End Sub
 
 Public Sub HandleQuestionGM(ByVal UserIndex As Integer)
-    Dim TActual     As Long
-    Dim ElapsedTime As Long
-    TActual = GetTickCount()
-    ElapsedTime = TActual - UserList(UserIndex).Counters.LastGmMessage
+    Dim nowRaw      As Long
+    Dim elapsedMs   As Double
+    nowRaw = GetTickCountRaw()
+    elapsedMs = TicksElapsed(UserList(UserIndex).Counters.LastGmMessage, nowRaw)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
         Dim Consulta       As String
@@ -3582,12 +3533,12 @@ Public Sub HandleQuestionGM(ByVal UserIndex As Integer)
                 End If
             Next i
         End If
-        If ElapsedTime < IntervaloConsultaGM Then
+        If elapsedMs < IntervaloConsultaGM Then
             ' Msg552=Solo puedes enviar una consulta cada 5 minutos.
             Call WriteLocaleMsg(UserIndex, "552", e_FontTypeNames.FONTTYPE_WARNING)
             Exit Sub
         End If
-        UserList(UserIndex).Counters.LastGmMessage = TActual
+        UserList(UserIndex).Counters.LastGmMessage = nowRaw
         Call Ayuda.Push(.name, Consulta, TipoDeConsulta)
         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1836, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_SERVER)) ' Msg1836=Se ha recibido un nuevo mensaje de soporte de ¬1.
         .Counters.CounterGmMessages = 0

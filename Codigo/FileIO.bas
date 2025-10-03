@@ -2253,7 +2253,7 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
     If Logout Then
         Call RemoveTokenDatabase(UserIndex)
     End If
-    UserList(UserIndex).Counters.LastSave = GetTickCount
+    UserList(UserIndex).Counters.LastSave = GetTickCountRaw()
     Exit Sub
 SaveUser_Err:
     Call TraceError(Err.Number, Err.Description, "ES.SaveUser", Erl)

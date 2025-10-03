@@ -1036,8 +1036,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             If Len(NpcList(TempCharIndex).Desc) > 1 Then
                 '  Hacemos que se detenga a hablar un momento :P
                 If NpcList(TempCharIndex).Movement = Caminata Then
-                    NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 + Len(NpcList(TempCharIndex).Desc) * 50 - NpcList( _
-                            TempCharIndex).IntervaloMovimiento ' 5 segundos + 1 segundo cada 20 caracteres
+                    NpcList(TempCharIndex).Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), 5000 + Len(NpcList(TempCharIndex).Desc) * 50) ' 5 segundos + 1 segundo cada 20 caracteres
                 End If
                 If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).flags.Muerto = 1 And NpcList(TempCharIndex).npcType = e_NPCType.Revividor) Then
                     If NpcList(TempCharIndex).npcType = e_NPCType.Quest Or NpcList(TempCharIndex).npcType = e_NPCType.Banquero Or NpcList(TempCharIndex).npcType = _
@@ -1045,7 +1044,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                             TempCharIndex).npcType = e_NPCType.Gobernador Then
                         If Distance(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, NpcList(TempCharIndex).pos.x, NpcList(TempCharIndex).pos.y) < 3 Then
                             If NpcList(TempCharIndex).Movement = Caminata Then
-                                NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(TempCharIndex).IntervaloMovimiento ' 15 segundos
+                                NpcList(TempCharIndex).Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), 15000) ' 15 segundos
                             End If
                             If NpcList(TempCharIndex).SoundOpen <> 0 Then
                                 Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NpcList(TempCharIndex).pos.x, NpcList(TempCharIndex).pos.y, 1, 1)

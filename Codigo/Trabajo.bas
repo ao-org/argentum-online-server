@@ -1262,9 +1262,6 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         Call SubirSkill(UserIndex, e_Skill.Alquimia)
         Call UpdateUserInv(True, UserIndex, 0)
         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
-    Else
-        ' Msg644=Lamentablemente no aprendiste la receta para crear esta poción.
-        Call WriteLocaleMsg(UserIndex, "644", e_FontTypeNames.FONTTYPE_INFOBOLD)
     End If
     Exit Sub
 AlquimistaConstruirItem_Err:
@@ -2055,7 +2052,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte)
         If res < 6 Then
             Dim MiObj As t_Obj
             Call ActualizarRecurso(.pos.Map, x, y)
-            MapData(.pos.Map, x, y).ObjInfo.data = GetTickCount() ' Ultimo uso
+            MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
             If .clase = Trabajador Then
                 MiObj.amount = GetExtractResourceForLevel(.Stats.ELV)
             Else
@@ -2146,7 +2143,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
         If res <= 5 Then
             Dim MiObj As t_Obj
             Call ActualizarRecurso(.pos.Map, x, y)
-            MapData(.pos.Map, x, y).ObjInfo.data = GetTickCount() ' Ultimo uso
+            MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
             Yacimiento = ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex)
             MiObj.ObjIndex = Yacimiento.MineralIndex
             If .clase = Trabajador Then
@@ -2326,11 +2323,17 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal x As Integer, ByVal y A
     Dim ObjIndex As Integer
     ObjIndex = MapData(Map, x, y).ObjInfo.ObjIndex
     Dim TiempoActual As Long
-    TiempoActual = GetTickCount()
+    TiempoActual = GetTickCountRaw()
     ' Data = Ultimo uso
-    If (TiempoActual - MapData(Map, x, y).ObjInfo.data) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then
-        MapData(Map, x, y).ObjInfo.amount = ObjData(ObjIndex).VidaUtil
-        MapData(Map, x, y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
+    Dim lastUse As Long
+    lastUse = MapData(Map, x, y).ObjInfo.data
+    If lastUse <> &H7FFFFFFF Then
+        Dim elapsedMs As Double
+        elapsedMs = TicksElapsed(lastUse, TiempoActual)
+        If elapsedMs / 1000# > ObjData(ObjIndex).TiempoRegenerar Then
+            MapData(Map, x, y).ObjInfo.amount = ObjData(ObjIndex).VidaUtil
+            MapData(Map, x, y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
+        End If
     End If
     Exit Sub
 ActualizarRecurso_Err:
@@ -2611,7 +2614,7 @@ Public Function KnowsCraftingRecipe(ByVal UserIndex As Integer, ByVal ItemIndex 
         Exit Function
     End If
     If Not TieneHechizo(hIndex, UserIndex) Then
-        'no conoces la receta para fabricar este item
+        'Msg644=Lamentablemente no aprendiste la receta para crear este item.
         Call WriteLocaleMsg(UserIndex, 644, e_FontTypeNames.FONTTYPE_INFOBOLD)
         KnowsCraftingRecipe = False
         Exit Function

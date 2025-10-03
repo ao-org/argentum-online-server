@@ -27,7 +27,7 @@ Attribute VB_Name = "modTime"
 '
 '
 Option Explicit
-Private Declare Function timeGetTime Lib "winmm.dll" () As Long
+
 Private Declare Sub GetSystemTime Lib "kernel32.dll" (lpSystemTime As t_SYSTEMTIME)
 Private theTime As t_SYSTEMTIME
 
@@ -48,30 +48,31 @@ Public Type t_Timer
     Occurrences As Integer
 End Type
 
-Public Function GetTickCount() As Long
-    On Error GoTo GetTickCount_Err
-    'recovers time as MILISECONDS
-    GetTickCount = timeGetTime And &H7FFFFFFF
-    Exit Function
-GetTickCount_Err:
-    Call TraceError(Err.Number, Err.Description, "ModLadder.GetTickCount", Erl)
-End Function
+
 
 Function GetTimeFormated() As String
     On Error GoTo GetTimeFormated_Err
-    Dim Elapsed As Long
-    Elapsed = (GetTickCount() - HoraMundo) / SvrConfig.GetValue("DayLength")
-    Dim Mins As Long
-    Mins = (Elapsed - Fix(Elapsed)) * 1440
-    Dim Horita    As Byte
-    Dim Minutitos As Byte
-    Horita = Fix(Mins / 60)
-    Minutitos = Mins Mod 60
-    GetTimeFormated = Right$("00" & Horita, 2) & ":" & Right$("00" & Minutitos, 2)
+    Dim dayLen As Long: dayLen = WorldTime_DayLenMs()
+    If dayLen <= 0 Then dayLen = 1
+
+    ' ms within the in-game day, already wrap-safe: 0..dayLen-1
+    Dim ms As Long
+    ms = WorldTime_Ms()
+
+    ' map proportionally to a 24h clock
+    Dim mins As Long
+    mins = CLng(Fix((ms * 1440#) / dayLen))   ' 1440 = 24*60
+
+    Dim hh As Long, mm As Long
+    hh = (mins \ 60) Mod 24
+    mm = mins Mod 60
+
+    GetTimeFormated = Right$("00" & CStr(hh), 2) & ":" & Right$("00" & CStr(mm), 2)
     Exit Function
 GetTimeFormated_Err:
-    Call TraceError(Err.Number, Err.Description, "ModLadder.GetTimeFormated - " + Erl, Erl)
+    Call TraceError(Err.Number, Err.Description, "ModLadder.GetTimeFormated", Erl)
 End Function
+
 
 Public Sub GetHoraActual()
     On Error GoTo GetHoraActual_Err

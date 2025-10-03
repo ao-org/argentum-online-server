@@ -30,6 +30,32 @@ Option Explicit
 ''
 ' Modulo de declaraciones. Aca hay de todo.
 '
+Public Enum e_PotionType
+    ModifiesAgility = 1
+    ModifiesStrength = 2
+    ModifiesHp = 3
+    ModifiesMp = 4
+    HealsPoison = 5
+    HealsParalysis = 6
+    ModifiesStamina = 7
+    ModifiesHeadRandom = 8
+    ModifiesSex = 9
+    TurnsYouInvisible = 10
+    'ScrollExperience = 11
+    'ScrollGold = 12
+    HealsAllStatusEffects = 13
+    'libre = 14
+    'ModifiesOxygen = 15
+    ModifiesMarriage = 16
+    ModifiesHeadRandomLegendary = 17
+    ModifiesParticlesTemporary = 18
+    'ResetSkills = 19
+    'ExpandsInventory = 20
+    SuicidePotion = 21
+    'ResetCharacter = 22
+    AppliesEffectOverTime = 23
+End Enum
+
 Public Enum e_AccionBarra
     Runa = 1
     Resucitar = 2
@@ -3401,16 +3427,18 @@ Public Sub IncreaseLong(ByRef dest As Long, ByVal amount As Long)
 End Sub
 
 Public Sub PerformanceTestStart(ByRef timer As Long)
-    timer = GetTickCount()
+    timer = GetTickCountRaw()
 End Sub
 
 ' Test the time since last call and update the time
 ' log if there time betwen calls exced the limit
 Public Sub PerformTimeLimitCheck(ByRef timer As Long, ByRef TestText As String, Optional ByVal TimeLimit As Long = 1000)
-    Dim CurrTime As Long
-    CurrTime = GetTickCount() - timer
+    Dim nowRaw   As Long
+    Dim CurrTime As Double
+    nowRaw = GetTickCountRaw()
+    CurrTime = TicksElapsed(timer, nowRaw)
     If CurrTime > TimeLimit Then
-        Call LogPerformance("Performance warning at: " & TestText & " elapsed time: " & CurrTime)
+        Call LogPerformance("Performance warning at: " & TestText & " elapsed time: " & CLng(CurrTime))
     End If
-    timer = GetTickCount()
+    timer = nowRaw
 End Sub

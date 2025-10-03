@@ -223,7 +223,7 @@ Private Sub StartGame()
             SpawnNpc (MatchNpc(key).NpcId)
         Next i
     Next key
-    LastFrameTime = GetTickCount()
+    LastFrameTime = GetTickCountRaw()
     BroadCastInterval = 60000
     Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(1730, "", e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1730=Â¡Que inicie la cacerÃ­a!
 End Sub
@@ -259,9 +259,11 @@ Private Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal d
 End Sub
 
 Private Sub IBaseScenario_Update()
+    Dim nowRaw As Long
     Dim frametime As Long
-    frametime = GetTickCount() - LastFrameTime
-    LastFrameTime = GetTickCount()
+    nowRaw = GetTickCountRaw()
+    frametime = CLng(TicksElapsed(LastFrameTime, nowRaw))
+    LastFrameTime = nowRaw
     If LobbyList(LobbyIndex).State = e_LobbyState.InProgress Then
         If StartTimer.Occurrences < 10 Then
             If UpdateTime(StartTimer, frametime) Then
@@ -382,7 +384,7 @@ End Sub
 Public Sub IBaseScenario_UserDie(ByVal UserIndex)
     Dim RespawnInfo As clsRespawnInfo
     Set RespawnInfo = New clsRespawnInfo
-    RespawnInfo.RespawnTime = GetTickCount()
+    RespawnInfo.RespawnTime = GetTickCountRaw()
     With UserList(UserIndex)
         Dim i As Integer
         For i = LBound(.invent.Object) To UBound(.invent.Object)
@@ -419,11 +421,11 @@ Private Sub RespawnPlayers()
     Dim currentTime As Long
     Dim RespawnInfo As clsRespawnInfo
     Dim i           As Integer
-    currentTime = GetTickCount()
+    currentTime = GetTickCountRaw()
     Keys = PlayerRespawn.Keys
     For Each key In Keys
         Set RespawnInfo = PlayerRespawn.Item(key)
-        If currentTime - RespawnInfo.RespawnTime > PlayerRespawnTime Then
+        If TicksElapsed(RespawnInfo.RespawnTime, currentTime) > PlayerRespawnTime Then
             Call Respawn(key)
             For i = 0 To RespawnInfo.EquipedElementCount - 1
                 Call EquiparInvItem(key, RespawnInfo.GetActiveSlot(i))

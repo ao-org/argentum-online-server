@@ -720,8 +720,8 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
     End If
     Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
     If UserList(UserIndex).flags.invisible = 0 Then Call NPCAtacado(NpcIndex, UserIndex)
-    Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
-    If UserImpactoNpc(UserIndex, NpcIndex) Then
+    Call EffectsOverTime.TargetWillAttack(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
+    If UserImpactoNpc(UserIndex, NpcIndex, aType) Then
         ' Suena el Golpe en el cliente.
         If NpcList(NpcIndex).flags.Snd2 > 0 Then
             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd2, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y))
@@ -780,7 +780,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
                 End If
             End If
         End If
-        Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
+        Call EffectsOverTime.TargetDidHit(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
     Else
         Call EffectsOverTime.TargetFailedAttack(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, , , IIf(UserList(UserIndex).flags.invisible + UserList( _
@@ -985,7 +985,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
         Exit Sub
     End If
     Call UsuarioAtacadoPorUsuario(AtacanteIndex, VictimaIndex)
-    Call EffectsOverTime.TartgetWillAtack(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
+    Call EffectsOverTime.TargetWillAttack(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
     If UsuarioImpacto(AtacanteIndex, VictimaIndex, aType) Then
         If UserList(VictimaIndex).flags.Navegando = 0 Or UserList(VictimaIndex).flags.Montado = 0 Then
             UserList(VictimaIndex).Counters.timeFx = 3
@@ -1007,7 +1007,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
                 Call RemoveUserInvisibility(AtacanteIndex)
         End Select
         Call UserDamageToUser(AtacanteIndex, VictimaIndex, aType)
-        Call EffectsOverTime.TartgetDidHit(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
+        'Call EffectsOverTime.TargetDidHit(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
         Call RegisterNewAttack(VictimaIndex, AtacanteIndex)
     Else
         Select Case UserList(AtacanteIndex).clase

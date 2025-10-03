@@ -40,7 +40,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         If Not IgnoreVisibilityCheck Then
             If .flags.invisible = 1 Or .flags.Oculto = 1 Or .flags.Inmunidad = 1 Then Exit Sub
         End If
-        NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = GetTickCount()
+        NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = GetTickCountRaw()
         If Hechizos(Spell).Tipo = uPhysicalSkill Then
             If Not HandlePhysicalSkill(NpcIndex, eNpc, UserIndex, eUser, Spell, IsAlive) Then
                 Exit Sub
@@ -243,7 +243,7 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
         End If
     End If
     With NpcList(TargetNPC)
-        .Contadores.IntervaloLanzarHechizo = GetTickCount()
+        .Contadores.IntervaloLanzarHechizo = GetTickCountRaw()
         If IsSet(Hechizos(Spell).Effects, e_SpellEffects.eDoHeal) Then ' Cura
             Damage = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
             Damage = Damage * NPCs.GetMagicHealingBonus(NpcList(NpcIndex))
@@ -342,7 +342,7 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
     Dim x              As Long
     Dim y              As Long
     Dim mitadAreaRadio As Integer
-    NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = GetTickCount()
+    NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = GetTickCountRaw()
     With Hechizos(SpellIndex)
         afectaUsers = (.AreaAfecta = 1 Or .AreaAfecta = 3)
         afectaNPCs = (.AreaAfecta = 2 Or .AreaAfecta = 3)
@@ -577,9 +577,9 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             End If
         End If
         If Hechizos(HechizoIndex).Cooldown > 0 And .Counters.UserHechizosInterval(Slot) > 0 Then
-            Dim Actual            As Long
+            Dim nowRaw             As Long
             Dim SegundosFaltantes As Long
-            Actual = GetTickCount()
+            nowRaw = GetTickCountRaw()
             Dim Cooldown As Long
             Cooldown = Hechizos(HechizoIndex).Cooldown
             'cooldown reduction for Elven Wood items
@@ -594,8 +594,10 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 End If
             End If
             Cooldown = Cooldown * 1000
-            If .Counters.UserHechizosInterval(Slot) + Cooldown > Actual Then
-                SegundosFaltantes = Int((.Counters.UserHechizosInterval(Slot) + Cooldown - Actual) / 1000)
+            Dim elapsedMs As Double
+            elapsedMs = TicksElapsed(.Counters.UserHechizosInterval(Slot), nowRaw)
+            If elapsedMs < Cooldown Then
+                SegundosFaltantes = Int((Cooldown - elapsedMs) / 1000)
                 Call WriteLocaleMsg(UserIndex, 1635, e_FontTypeNames.FONTTYPE_WARNING, SegundosFaltantes) 'Msg1635=Debes esperar ¬1 segundos para volver a tirar este hechizo.
                 Exit Function
             End If
@@ -1363,7 +1365,7 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
     End If
     If SpellCastSuccess Then
         If Hechizos(uh).Cooldown > 0 Then
-            UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
+            UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCountRaw()
             If Hechizos(uh).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(uh).CdEffectId, -uh, CLng(Hechizos(uh).Cooldown) * 1000, CLng(Hechizos( _
                     uh).Cooldown) * 1000, eCD)
         End If
@@ -2549,8 +2551,8 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
                     h).Particle, Hechizos(h).TimeParticula))
         End If
         If Hechizos(h).wav <> 0 Then
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))   'Esta linea faltaba. Pablo (ToxicWaste)
-        End If
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY)) 'Esta linea faltaba. Pablo (ToxicWaste)
+           End If
     End If
     If UserList(UserIndex).ChatCombate = 1 Then
         If Hechizos(h).Target = e_TargetType.uTerreno Then
@@ -2902,7 +2904,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
             ' Resto el porcentaje total
             Damage = Damage - Porcentaje(Damage, PorcentajeRM)
         End If
-        Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
+        Call EffectsOverTime.TargetWillAttack(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
         Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
         Damage = Damage * UserMod.GetMagicDamageReduction(UserList(tempChr))
         ' Prevengo daño negativo
@@ -2913,7 +2915,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
         End If
         Call InfoHechizo(UserIndex)
         IsAlive = UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h) = eStillAlive
-        Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
+        Call EffectsOverTime.TargetDidHit(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
         Call SubirSkill(tempChr, Resistencia)
         b = True
     End If
@@ -3159,7 +3161,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
                 Damage = Damage - Porcentaje(Damage, MR)
             End If
         End If
-        Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, targetUserIndex, eUser, e_DamageSourceType.e_magic)
+        Call EffectsOverTime.TargetWillAttack(UserList(UserIndex).EffectOverTime, targetUserIndex, eUser, e_DamageSourceType.e_magic)
         Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
         Damage = Damage * UserMod.GetMagicDamageReduction(UserList(targetUserIndex))
         ' Prevengo daño negativo
@@ -3169,7 +3171,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         End If
         enviarInfoHechizo = True
         IsAlive = UserMod.DoDamageOrHeal(targetUserIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h) = eStillAlive
-        Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, targetUserIndex, eUser, e_DamageSourceType.e_magic)
+        Call EffectsOverTime.TargetDidHit(UserList(UserIndex).EffectOverTime, targetUserIndex, eUser, e_DamageSourceType.e_magic)
         Call SubirSkill(targetUserIndex, Resistencia)
         b = True
     End If
