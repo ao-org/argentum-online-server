@@ -1,0 +1,1 @@
+c:\tools\procdump\procdump.exe -mm -e -x C:\Ao20\server-dumps C:\ao20\re20-server\server.exe
