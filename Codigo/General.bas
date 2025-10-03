@@ -314,7 +314,6 @@ End Sub
 
 Private Sub InicializarConstantes()
     On Error GoTo InicializarConstantes_Err
-    minutos = Format$(Now, "Short Time")
     IniPath = App.Path & "\"
     ListaRazas(e_Raza.Humano) = "Humano"
     ListaRazas(e_Raza.Elfo) = "Elfo"
@@ -358,23 +357,12 @@ Private Sub InicializarConstantes()
     SkillsNames(e_Skill.Alquimia) = "Alquimia"
     SkillsNames(e_Skill.Sastreria) = "Sastrería"
     SkillsNames(e_Skill.Domar) = "Domar"
-    ListaAtributos(e_Atributos.Fuerza) = "Fuerza"
-    ListaAtributos(e_Atributos.Agilidad) = "Agilidad"
-    ListaAtributos(e_Atributos.Inteligencia) = "Inteligencia"
-    ListaAtributos(e_Atributos.Constitucion) = "Constitución"
-    ListaAtributos(e_Atributos.Carisma) = "Carisma"
     IniPath = App.Path & "\"
     'Bordes del mapa
     MinXBorder = XMinMapSize + (XWindow \ 2)
     MaxXBorder = XMaxMapSize - (XWindow \ 2)
     MinYBorder = YMinMapSize + (YWindow \ 2)
     MaxYBorder = YMaxMapSize - (YWindow \ 2)
-    RaceHeightOffset(Humano) = -35
-    RaceHeightOffset(Elfo) = -35
-    RaceHeightOffset(Drow) = -35
-    RaceHeightOffset(Gnomo) = -27
-    RaceHeightOffset(Enano) = -27
-    RaceHeightOffset(Orco) = -35
     WeaponTypeNames(eSword) = "Sword"
     WeaponTypeNames(eDagger) = "Dagger"
     WeaponTypeNames(eBow) = "Bow"

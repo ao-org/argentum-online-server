@@ -517,7 +517,6 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
                 .pos.x = 40
                 .pos.y = 69
         End Select
-        UltimoChar = UCase$(name)
         Call SaveNewUser(UserIndex)
         ConnectNewUser = True
         #If PYMMO = 1 Then

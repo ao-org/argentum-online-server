@@ -1683,7 +1683,6 @@ Private Sub TimerMeteorologia_Timer()
             IntensidadDeNubes = RandomNumber(10, 45)
             ServidorNublado = True
             'Enviar Nubes a todos
-            Nieblando = True
             ServidorNublado = True
             Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
             ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Empezaron las nubes con intensidad: " & IntensidadDeNubes & "%.", e_FontTypeNames.FONTTYPE_SERVER))
@@ -1718,7 +1717,6 @@ Private Sub TimerMeteorologia_Timer()
             Call AgregarAConsola("Servidor » Lloviendo.")
             TimerMeteorologico = TimerMeteorologico - 1
         Else
-            Nieblando = False
             Lloviendo = False
             ServidorNublado = False
             Truenos.Enabled = False
@@ -1734,7 +1732,6 @@ Private Sub TimerMeteorologia_Timer()
     End If
     If TimerMeteorologico = 0 Then
         'dejar de llover y sacar nubes
-        Nieblando = False
         Lloviendo = False
         Truenos.Enabled = False
         Nebando = False

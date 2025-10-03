@@ -109,7 +109,6 @@ Public NpcStunTime                       As Long
 Public PlayerInmuneTime                  As Long
 Public MultiShotReduction                As Single
 Public HomeTimer                         As Integer
-Public MagicSkillBonusDamageModifier     As Single
 Public MRSkillProtectionModifier         As Single
 Public MRSkillNpcProtectionModifier      As Single
 Public AssistDamageValidTime             As Long 'valid time for damage to count as assit
@@ -126,7 +125,6 @@ Public ListenIp                          As String
 Public BootDelBackUp                     As Byte
 Public Lloviendo                         As Boolean
 Public Nebando                           As Boolean
-Public Nieblando                         As Boolean
 Public IpList                            As New Collection
 Public Baneos                            As New Collection
 

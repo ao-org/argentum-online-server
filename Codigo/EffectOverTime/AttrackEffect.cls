@@ -200,10 +200,8 @@ End Function
 Public Function IsValidPos(ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer) As Boolean
     IsValidPos = False
     Dim CanGoWater As Boolean
-    Dim Mounted    As Boolean
     If DotInfo.TargetRef.RefType = eUser Then
         CanGoWater = UserList(DotInfo.TargetRef.ArrayIndex).flags.Navegando
-        Mounted = UserList(DotInfo.TargetRef.ArrayIndex).flags.Montado
     Else
         CanGoWater = NpcList(DotInfo.TargetRef.ArrayIndex).flags.AguaValida
     End If

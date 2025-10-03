@@ -154,7 +154,6 @@ Public Md5Cliente             As String
 Public PrivateKey             As String
 Public HoraMundo              As Long
 Public HoraActual             As Integer
-Public UltimoChar             As String
 Public GlobalFrameTime        As Long
 Public CuentaRegresivaTimer   As Byte
 Public PENDIENTE              As Integer
@@ -274,7 +273,6 @@ Public Enum e_Raza
     Orco
 End Enum
 
-Public RaceHeightOffset(1 To Orco) As Integer
 Enum e_Genero
     Hombre = 1
     Mujer
@@ -3098,17 +3096,13 @@ Public ListaRazas(1 To NUMRAZAS)              As String
 Public SkillsNames(1 To NUMSKILLS)            As String
 Public ListaClases(1 To NUMCLASES)            As String
 Public WeaponTypeNames(1 To eWeaponTypeCount) As String
-Public ListaAtributos(1 To NUMATRIBUTOS)      As String
 Public RecordUsuarios                         As Long
 'Directorios
 'Ruta base del server, en donde esta el "server.ini"
 Public IniPath                                As String
-Public CuentasPath                            As String
-Public DeleteCuentasPath                      As String
 'Ruta base para guardar los chars
 Public CharPath                               As String
 'Ruta base para guardar los users borrados
-Public DeletePath                             As String
 'Ruta base para los archivos de mapas
 Public MapPath                                As String
 'Ruta base para los DATs
@@ -3131,11 +3125,9 @@ Public NumMaps                                As Long
 Public NumObjDatas                            As Integer
 Public NumeroHechizos                         As Integer
 Public MaxUsersPorCuenta                      As Byte
-Public IdleLimit                              As Integer
 Public MaxUsers                               As Integer
 Public HideMe                                 As Byte
 Public MaxRangoFaccion                        As Byte ' El rango maximo que se puede alcanzar
-Public minutos                                As String
 Public haciendoBK                             As Boolean
 Public PuedeCrearPersonajes                   As Integer
 Public MinimumPriceMao                        As Long
