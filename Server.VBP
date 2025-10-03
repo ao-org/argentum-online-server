@@ -153,9 +153,9 @@ VersionCompanyName="Argentum20 Staff"
 VersionProductName="Argentum20 Server"
 CondComp="DEBUGGING = 1 : AntiExternos = 0 : ConUpTime = 1 : UNLOCK_CPU = 1 : UNIT_TEST = 0 : STRESSER = 0 : MAPAS_COMPLETOS = 1 : PYMMO = 0"
 CompilationType=0
-OptimizationType=0
+OptimizationType=2
 FavorPentiumPro(tm)=0
-CodeViewDebugInfo=0
+CodeViewDebugInfo=-1
 NoAliasing=-1
 BoundsCheck=0
 OverflowCheck=0
