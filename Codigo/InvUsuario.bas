@@ -893,7 +893,7 @@ Dim obj                         As t_ObjData
                 
             Case e_OBJType.otSkinsBoats
                 If .invent.EquippedShipObjIndex > 0 Then
-                    .invent.EquippedShipObjIndex = 0
+                    .Invent_Skins.ObjIndexBoatEquipped = 0
                     .Char.body = .OrigChar.body
                 End If
     
@@ -1038,6 +1038,11 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
         End If
         .Char.ShieldAnim = NingunEscudo
         .Char.WeaponAnim = NingunArma
+        
+        If .Invent_Skins.ObjIndexBoatEquipped > 0 Then
+            Call SkinEquip(UserIndex, .Invent_Skins.SlotBoatEquipped, .Invent_Skins.ObjIndexBoatEquipped, e_OBJType.otSkinsBoats)
+        End If
+        
         Call WriteNavigateToggle(UserIndex, .flags.Navegando)
         Call WriteNadarToggle(UserIndex, (Barco.Ropaje = iTraje Or Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw), (Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw))
         Call ActualizarVelocidadDeUsuario(UserIndex)
@@ -3567,6 +3572,7 @@ Dim obj                         As t_ObjData
 
                 .Invent_Skins.Object(Slot).Equipped = True
                 .Invent_Skins.ObjIndexBoatEquipped = ObjIndex
+                .Invent_Skins.SlotBoatEquipped = Slot
                 
                 If .flags.Mimetizado = 1 Then
                     '.OrigChar.Body = .Char.Body
@@ -3579,13 +3585,9 @@ Dim obj                         As t_ObjData
                         .OrigChar.body = obj.Ropaje
                     End If
                 Else
-                    If .flags.Navegando = 0 Then    'Fixed! :D [/About] 03/12/2017
-                        .OrigChar.body = .Char.body
-                        .Char.body = ObtenerRopaje(UserIndex, obj)
-                        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
-                    Else
-                        .OrigChar.body = obj.Ropaje
-                    End If
+                    .OrigChar.body = .Char.body
+                    .Char.body = ObtenerRopaje(UserIndex, obj)
+                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                 End If
             
             Case e_OBJType.otSkinsShields
