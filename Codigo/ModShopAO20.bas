@@ -35,14 +35,14 @@ Public Sub init_transaction(ByVal obj_num As Long, ByVal UserIndex As Integer)
         'Me fijo si es un item de shop
         If Not is_purchaseable_item(obj) Then
             'Msg1087= Error al realizar la transacción
-            Call WriteLocaleMsg(UserIndex, "1087", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 1087, e_FontTypeNames.FONTTYPE_INFO)
             Call LogShopErrors("El usuario " & .name & " intentó comprar un objeto que no es de shop (REVISAR) | " & obj.name)
             Exit Sub
         End If
         Call LoadPatronCreditsFromDB(UserIndex)
         If obj.Valor > .Stats.Creditos Then
             'Msg1088= Error al realizar la transacción.
-            Call WriteLocaleMsg(UserIndex, "1088", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 1088, e_FontTypeNames.FONTTYPE_INFO)
             Call LogShopErrors("El usuario " & .name & " intentó editar el valor del objeto (REVISAR) | " & obj.name)
             Exit Sub
         End If
@@ -52,7 +52,7 @@ Public Sub init_transaction(ByVal obj_num As Long, ByVal UserIndex As Integer)
         objInventario.ObjIndex = obj.ObjNum
         If GetSlotForItemInInventory(UserIndex, objInventario) <= 0 Then
             'Msg1089= Asegurate de tener espacio suficiente en tu inventario.
-            Call WriteLocaleMsg(UserIndex, "1089", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 1089, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Descuento los créditos

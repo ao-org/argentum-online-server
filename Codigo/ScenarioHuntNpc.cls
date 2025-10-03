@@ -262,7 +262,7 @@ Private Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal d
 End Sub
 
 Private Sub IBaseScenario_Update()
-    Dim nowRaw As Long
+    Dim nowRaw    As Long
     Dim frametime As Long
     nowRaw = GetTickCountRaw()
     frametime = CLng(TicksElapsed(LastFrameTime, nowRaw))

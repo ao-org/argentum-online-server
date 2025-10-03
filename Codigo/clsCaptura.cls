@@ -484,17 +484,17 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If Estado <> Inscripcion Then
             'Msg925= Ya se ha cerrado la inscripción para el evento.
-            Call WriteLocaleMsg(UserIndex, "925", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 925, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .Stats.GLD < precio Then
             'Msg926= No tienes oro suficiente para ingresar al evento.
-            Call WriteLocaleMsg(UserIndex, "926", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 926, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .flags.jugando_captura = 1 Then
             'Msg927= Ya estás anotado en el evento.
-            Call WriteLocaleMsg(UserIndex, "927", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 927, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Nivel
@@ -509,41 +509,41 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
         'Zona segura
         If MapInfo(.pos.Map).Seguro = 0 Then
             'Msg928= Solamente podrás ingresar al evento en zona segura.
-            Call WriteLocaleMsg(UserIndex, "928", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 928, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'cupos completos
         If participantes.count >= max_participantes Then
             'Msg929= Los cupos ya están completos.
-            Call WriteLocaleMsg(UserIndex, "929", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 929, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'que no esté en carcel
         If .Counters.Pena > 0 Then
             'Msg930= No puedes anotarte al evento mientras estás encarcelado.
-            Call WriteLocaleMsg(UserIndex, "930", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 930, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'que no esté muerto
         If .flags.Muerto = 1 Then
             'Msg931= No puedes anotarte a un evento estando muerto.
-            Call WriteLocaleMsg(UserIndex, "931", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 931, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'que no esté comerciando
         If .flags.Comerciando Then
             'Msg932= No puedes ingresar al evento mientras estás comerciando.
-            Call WriteLocaleMsg(UserIndex, "932", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 932, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .flags.Montado = 1 Then
             'Msg933= No puedes ingresar al evento estando montado.
-            Call WriteLocaleMsg(UserIndex, "933", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 933, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .flags.Navegando = 1 Then
             'Msg934= No puedes ingresar al evento mientras estás navegando.
-            Call WriteLocaleMsg(UserIndex, "934", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 934, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         Dim participante As clsCapturaParticipante

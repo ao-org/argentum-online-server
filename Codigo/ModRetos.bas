@@ -86,12 +86,12 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
         If Not PuedeRetoConMensaje(UserIndex) Then Exit Sub
         If .Stats.GLD < Apuesta Then
             ' Msg588=No tienes el oro suficiente.
-            Call WriteLocaleMsg(UserIndex, "588", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 588, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If PocionesMaximas >= 0 Then
             If TieneObjetos(38, PocionesMaximas + 1, UserIndex) Then
-                Call WriteLocaleMsg(UserIndex, "1443", e_FontTypeNames.FONTTYPE_INFO, PocionesMaximas) ' Msg1443=Tienes demasiadas pociones rojas (Cantidad máxima: ¬1).
+                Call WriteLocaleMsg(UserIndex, 1443, e_FontTypeNames.FONTTYPE_INFO, PocionesMaximas) ' Msg1443=Tienes demasiadas pociones rojas (Cantidad máxima: ¬1).
                 Exit Sub
             End If
         End If
@@ -106,16 +106,16 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
             For i = 0 To UBound(.Jugadores)
                 With .Jugadores(i)
                     If EsGmChar(Jugadores(i)) Then
-                        Call WriteLocaleMsg(UserIndex, "1444", e_FontTypeNames.FONTTYPE_INFO) ' Msg1444=¡No puedes jugar retos con administradores!
+                        Call WriteLocaleMsg(UserIndex, 1444, e_FontTypeNames.FONTTYPE_INFO) ' Msg1444=¡No puedes jugar retos con administradores!
                         Exit Sub
                     End If
                     tIndex = NameIndex(Jugadores(i))
                     If Not IsValidUserRef(tIndex) Then
-                        Call WriteLocaleMsg(UserIndex, "1445", e_FontTypeNames.FONTTYPE_INFO, Jugadores(i)) ' Msg1445=El usuario ¬1 no puede jugar un reto en este momento.
+                        Call WriteLocaleMsg(UserIndex, 1445, e_FontTypeNames.FONTTYPE_INFO, Jugadores(i)) ' Msg1445=El usuario ¬1 no puede jugar un reto en este momento.
                         Exit Sub
                     End If
                     If Not PuedeReto(tIndex.ArrayIndex) Then
-                        Call WriteLocaleMsg(UserIndex, "1445", e_FontTypeNames.FONTTYPE_INFO, UserList(tIndex.ArrayIndex).name) ' Msg1445=El usuario ¬1 no puede jugar un reto en este momento.
+                        Call WriteLocaleMsg(UserIndex, 1445, e_FontTypeNames.FONTTYPE_INFO, UserList(tIndex.ArrayIndex).name) ' Msg1445=El usuario ¬1 no puede jugar un reto en este momento.
                         Exit Sub
                     End If
                     .CurIndex = tIndex
@@ -148,9 +148,9 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
             Next
             .Estado = e_SolicitudRetoEstado.Enviada
         End With
-        Call WriteLocaleMsg(UserIndex, "1446", e_FontTypeNames.FONTTYPE_INFO) ' Msg1446=Has enviado una solicitud para el siguiente reto:
+        Call WriteLocaleMsg(UserIndex, 1446, e_FontTypeNames.FONTTYPE_INFO) ' Msg1446=Has enviado una solicitud para el siguiente reto:
         Call WriteConsoleMsg(UserIndex, Texto2, e_FontTypeNames.FONTTYPE_New_Naranja)
-        Call WriteLocaleMsg(UserIndex, "1447", e_FontTypeNames.FONTTYPE_New_Gris) ' Msg1447=Escribe /CANCELAR para anular la solicitud.
+        Call WriteLocaleMsg(UserIndex, 1447, e_FontTypeNames.FONTTYPE_New_Gris) ' Msg1447=Escribe /CANCELAR para anular la solicitud.
     End With
     Exit Sub
 ErrHandler:
