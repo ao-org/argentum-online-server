@@ -643,7 +643,7 @@ NpcDamageNpc_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamageNpc")
 End Function
 
-Public Function NpcPerformAttackNpc(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer) As Boolean
+Public Sub NpcPerformAttackNpc(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer)
     If NpcList(attackerIndex).flags.Snd1 > 0 Then
         Call SendData(SendTarget.ToNPCAliveArea, attackerIndex, PrepareMessagePlayWave(NpcList(attackerIndex).flags.Snd1, NpcList(attackerIndex).pos.x, NpcList( _
                 attackerIndex).pos.y))
@@ -662,7 +662,7 @@ Public Function NpcPerformAttackNpc(ByVal attackerIndex As Integer, ByVal Target
     Else
         Call SendData(SendTarget.ToNPCAliveArea, attackerIndex, PrepareMessageCharSwing(NpcList(attackerIndex).Char.charindex, False, True))
     End If
-End Function
+End Sub
 
 Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Optional ByVal cambiarMovimiento As Boolean = True)
     On Error GoTo NpcAtacaNpc_Err

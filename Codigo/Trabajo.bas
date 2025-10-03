@@ -2439,7 +2439,7 @@ ErrHandler:
     Call LogError("Error en DoDomar. Error " & Err.Number & " : " & Err.Description)
 End Sub
 
-Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
+Public Sub EntregarPezEspecial(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If .flags.PescandoEspecial Then
             Dim obj As t_Obj
@@ -2448,7 +2448,7 @@ Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
             If Not MeterItemEnInventario(UserIndex, obj) Then
                 .Stats.NumObj_PezEspecial = 0
                 .flags.PescandoEspecial = False
-                Exit Function
+                Exit Sub
             End If
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(obj.ObjIndex).GrhIndex))
             'Msg922=Felicitaciones has pescado un pez de gran porte ( " & ObjData(obj.ObjIndex).name & " )
@@ -2457,7 +2457,7 @@ Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
             .flags.PescandoEspecial = False
         End If
     End With
-End Function
+End Sub
 
 Public Sub FishOrThrowNet(ByVal UserIndex As Integer)
     On Error GoTo FishOrThrowNet_Err:
@@ -2573,7 +2573,7 @@ Public Function GetExtractResourceForLevel(ByVal level As Integer) As Integer
     GetExtractResourceForLevel = RandomNumber(lower, upper)
 End Function
 
-Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal JobType As Byte)
+Public Sub GiveExpWhileWorking(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal JobType As Byte)
     On Error GoTo GiveExpWhileWorking_Err:
     Dim tmpExp As Byte
     Select Case JobType
@@ -2597,10 +2597,10 @@ Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByVal ItemIndex 
             tmpExp = SvrConfig.GetValue("ElseExp")
     End Select
     UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + tmpExp
-    Exit Function
+    Exit Sub
 GiveExpWhileWorking_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.GiveExpWhileWorking", Erl)
-End Function
+End Sub
 
 Public Function KnowsCraftingRecipe(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
     KnowsCraftingRecipe = True

@@ -1110,7 +1110,7 @@ Public Sub SwapTargetUserPos(ByVal TargetUser As Integer, ByRef NewTargetPos As 
     Call ModAreas.CheckUpdateNeededUser(TargetUser, Heading, 0)
 End Sub
 
-Function TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos, ByVal Speed As Long)
+Sub TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos, ByVal Speed As Long)
     On Error GoTo TranslateUserPos_Err
     With UserList(UserIndex)
         If MapInfo(.pos.Map).NumUsers > 1 Or IsValidUserRef(.flags.GMMeSigue) Then
@@ -1142,10 +1142,10 @@ Function TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos
             Call WriteMacroTrabajoToggle(UserIndex, False)
         End If
     End With
-    Exit Function
+    Exit Sub
 TranslateUserPos_Err:
     Call LogError("Error en la subrutina TranslateUserPos - Error : " & Err.Number & " - Description : " & Err.Description)
-End Function
+End Sub
 
 Public Sub SwapNpcPos(ByRef TargetPos As t_WorldPos, ByVal nHeading As e_Heading)
     Dim NpcIndex         As Integer
@@ -2477,7 +2477,7 @@ Public Sub DevolverPosAnterior(ByVal UserIndex As Integer)
     End With
 End Sub
 
-Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Single
+Public Sub ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer)
     On Error GoTo ActualizarVelocidadDeUsuario_Err
     Dim velocidad As Single, modificadorItem As Single, modificadorHechizo As Single, JineteLevelSpeed As Single
     velocidad = VelocidadNormal
@@ -2533,10 +2533,10 @@ UpdateSpeed:
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.charindex, .Char.speeding))
         Call WriteVelocidadToggle(UserIndex)
     End With
-    Exit Function
+    Exit Sub
 ActualizarVelocidadDeUsuario_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CalcularVelocidad_Err", Erl)
-End Function
+End Sub
 
 Public Sub ClearClothes(ByRef Char As t_Char)
     Char.ShieldAnim = NingunEscudo
