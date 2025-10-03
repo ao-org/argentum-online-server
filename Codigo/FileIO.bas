@@ -1764,11 +1764,9 @@ Sub LoadSini()
     ListenIp = Lector.GetValue("INIT", "ListenIp")
     If ListenIp = "" Then ListenIp = "0.0.0.0"
     HideMe = val(Lector.GetValue("INIT", "Hide"))
-    MaxConexionesIP = val(Lector.GetValue("INIT", "MaxConexionesIP"))
     MaxUsersPorCuenta = val(Lector.GetValue("INIT", "MaxUsersPorCuenta"))
     IdleLimit = val(Lector.GetValue("INIT", "IdleLimit"))
     'Lee la version correcta del cliente
-    ULTIMAVERSION = Lector.GetValue("INIT", "Version")
     PuedeCrearPersonajes = val(Lector.GetValue("INIT", "PuedeCrearPersonajes"))
     MinimumPriceMao = val(Lector.GetValue("INIT", "MinimumPriceMao"))
     GoldPriceMao = val(Lector.GetValue("INIT", "GoldPriceMao"))
@@ -1776,15 +1774,10 @@ Sub LoadSini()
     ServerSoloGMs = val(Lector.GetValue("init", "ServerSoloGMs"))
     DisconnectTimeout = val(Lector.GetValue("INIT", "DisconnectTimeout"))
     InstanceMapCount = val(Lector.GetValue("INIT", "InstanceMaps"))
-    EnTesting = val(Lector.GetValue("INIT", "Testing"))
     PendingConnectionTimeout = val(Lector.GetValue("INIT", "PendingConnectionTimeout"))
     If PendingConnectionTimeout = 0 Then
         PendingConnectionTimeout = 1000
     End If
-    'Ressurect pos
-    ResPos.Map = val(ReadField(1, Lector.GetValue("INIT", "ResPos"), 45))
-    ResPos.x = val(ReadField(2, Lector.GetValue("INIT", "ResPos"), 45))
-    ResPos.y = val(ReadField(3, Lector.GetValue("INIT", "ResPos"), 45))
     'Max users
     Temporal = val(Lector.GetValue("INIT", "MaxUsers"))
     If MaxUsers = 0 Then

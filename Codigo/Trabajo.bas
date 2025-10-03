@@ -296,17 +296,10 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 End Sub
 
 Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
-    '********************************************************
-    'Autor: Nacho (Integer)
-    'Last Modif: 28/01/2007
-    'Chequea si ya debe mostrarse
-    'Pablo (ToxicWaste): Cambie los ordenes de prioridades porque sino no andaba.
-    '********************************************************
     On Error GoTo DoPermanecerOculto_Err
     With UserList(UserIndex)
         Dim velocidadOcultarse As Integer
         velocidadOcultarse = 1
-        'HarThaoS: Si tiene armadura de cazador, dependiendo skills vemos cuanto tiempo se oculta
         If .clase = e_Class.Hunter Then
             If TieneArmaduraCazador(UserIndex) Then
                 Select Case .Stats.UserSkills(e_Skill.Ocultarse)
@@ -1333,10 +1326,9 @@ End Function
 
 Public Sub DoLingotes(ByVal UserIndex As Integer)
     On Error GoTo DoLingotes_Err
-    Dim Slot       As Integer
-    Dim obji       As Integer
-    Dim cant       As Byte
-    Dim necesarios As Integer
+    Dim Slot As Integer
+    Dim obji As Integer
+    Dim cant As Byte
     If UserList(UserIndex).Stats.MinSta > 2 Then
         Call QuitarSta(UserIndex, 2)
     Else
@@ -1348,7 +1340,6 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
     Slot = UserList(UserIndex).flags.TargetObjInvSlot
     obji = UserList(UserIndex).invent.Object(Slot).ObjIndex
     cant = RandomNumber(10, 20)
-    necesarios = MineralesParaLingote(obji, cant)
     If UserList(UserIndex).invent.Object(Slot).amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> e_OBJType.otMinerals Then
         ' Msg645=No tienes suficientes minerales para hacer un lingote.
         Call WriteLocaleMsg(UserIndex, "645", e_FontTypeNames.FONTTYPE_INFO)
@@ -1510,10 +1501,6 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
     Dim Reward            As Double
     Dim esEspecial        As Boolean
     Dim i                 As Integer
-    Dim NpcIndex          As Integer
-    ' Shugar - 13/8/2024
-    ' Paso los poderes de las cañas al dateo de pesca.dat
-    ' Paso la reducción de pesca en zona segura a balance.dat
     With UserList(UserIndex)
         RestaStamina = IIf(RedDePesca, 12, RandomNumber(2, 3))
         If .flags.Privilegios And (e_PlayerType.Consejero) Then
@@ -1588,9 +1575,6 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
         If MapInfo(.pos.Map).Seguro Then
             bonificacionTotal = bonificacionTotal * PorcentajePescaSegura / 100
         End If
-        'Shugar: La reward ya estaba hardcodeada así...
-        'no la voy a tocar, pero ahora por lo menos puede ajustarse desde dateo con la bonificación de las cañas!
-        'Calculo el botin esperado por iteracción. 'La base del calculo son 8000 por hora + 20% de chances de no pescar + un +/- 10%
         Reward = (IntervaloTrabajarExtraer / 3600000) * 8000 * bonificacionTotal * 1.2 * (1 + (RandomNumber(0, 20) - 10) / 100)
         'Calculo la suerte de pescar o no pescar y aplico eso sobre el reward para promediar.
         Dim Suerte As Integer
@@ -1623,7 +1607,9 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
             If MiObj.ObjIndex = (SvrConfig.GetValue("FISHING_SPECIALFISH1_ID") Or MiObj.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH2_ID")) And (UserList( _
                     UserIndex).pos.Map) <> SvrConfig.GetValue("FISHING_MAP_SPECIAL_FISH1_ID") Then
                 MiObj.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH1_REMPLAZO_ID")
-                If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Then NpcIndex = SpawnNpc(SvrConfig.GetValue("NPC_WATCHMAN_ID"), .pos, True, False)
+                If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Then
+                    Call SpawnNpc(SvrConfig.GetValue("NPC_WATCHMAN_ID"), .pos, True, False)
+                End If
                 Call WriteMacroTrabajoToggle(UserIndex, False)
             End If
             MiObj.amount = Round(Reward / objValue)
@@ -1710,24 +1696,7 @@ ErrHandler:
     Call LogError("Error en DoPescar. Error " & Err.Number & " - " & Err.Description & " Line number: " & Erl)
 End Sub
 
-''
-' Try to steal an item / gold to another character
-'
-' @param LadronIndex Specifies reference to user that stoles
-' @param VictimaIndex Specifies reference to user that is being stolen
 Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
-    '*************************************************
-    'Author: Unknown
-    'Last modified: 05/04/2010
-    'Last Modification By: ZaMa
-    '24/07/08: Marco - Now it calls to WriteUpdateGold(VictimaIndex and LadronIndex) when the thief stoles gold. (MarKoxX)
-    '27/11/2009: ZaMa - Optimizacion de codigo.
-    '18/12/2009: ZaMa - Los ladrones ciudas pueden robar a pks.
-    '01/04/2010: ZaMa - Los ladrones pasan a robar oro acorde a su nivel.
-    '05/04/2010: ZaMa - Los armadas no pueden robarle a ciudadanos jamas.
-    '23/04/2010: ZaMa - No se puede robar mas sin energia.
-    '23/04/2010: ZaMa - El alcance de robo pasa a ser de 1 tile.
-    '*************************************************
     On Error GoTo ErrHandler
     Dim OtroUserIndex As Integer
     If UserList(LadronIndex).flags.Privilegios And (e_PlayerType.Consejero) Then Exit Sub
@@ -1910,9 +1879,6 @@ ErrHandler:
 End Sub
 
 Public Function ObjEsRobable(ByVal VictimaIndex As Integer, ByVal Slot As Integer) As Boolean
-    ' Agregué los barcos
-    ' Agrego poción negra
-    ' Esta funcion determina qué objetos son robables.
     On Error GoTo ObjEsRobable_Err
     Dim OI As Integer
     OI = UserList(VictimaIndex).invent.Object(Slot).ObjIndex
@@ -1924,17 +1890,7 @@ ObjEsRobable_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.ObjEsRobable", Erl)
 End Function
 
-''
-' Try to steal an item to another character
-'
-' @param LadrOnIndex Specifies reference to user that stoles
-' @param VictimaIndex Specifies reference to user that is being stolen
 Private Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
-    '***************************************************
-    'Author: Unknown
-    'Last Modification: 02/04/2010
-    '02/04/2010: ZaMa - Modifico la cantidad de items robables por el ladron.
-    '***************************************************
     On Error GoTo RobarObjeto_Err
     Dim Flag As Boolean
     Dim i    As Integer
@@ -2383,7 +2339,7 @@ End Sub
 
 Public Function ObtenerPezRandom(ByVal PoderCania As Integer) As Long
     On Error GoTo ObtenerPezRandom_Err
-    Dim SumaPesos As Long
+    Dim SumaPesos     As Long
     Dim ValorGenerado As Long
     If PoderCania > UBound(PesoPeces) Then PoderCania = UBound(PesoPeces)
     SumaPesos = PesoPeces(PoderCania)
@@ -2396,11 +2352,6 @@ End Function
 
 Function FreeMascotaIndex(ByVal UserIndex As Integer) As Integer
     On Error GoTo FreeMascotaIndex_Err
-    '***************************************************
-    'Author: Unknown
-    'Last Modification: 02/03/09
-    '02/03/09: ZaMa - Busca un indice libre de mascotas, revisando los types y no los indices de los npcs
-    '***************************************************
     Dim j As Integer
     For j = 1 To MAXMASCOTAS
         If UserList(UserIndex).MascotasType(j) = 0 Then
@@ -2419,13 +2370,6 @@ Private Function HayEspacioMascotas(ByVal UserIndex As Integer) As Boolean
 End Function
 
 Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
-    '***************************************************
-    'Author: Nacho (Integer)
-    'Last Modification: 01/05/2010
-    '12/15/2008: ZaMa - Limits the number of the same type of pet to 2.
-    '02/03/2009: ZaMa - Las criaturas domadas en zona segura, esperan afuera (desaparecen).
-    '01/05/2010: ZaMa - Agrego bonificacion 11% para domar con flauta magica.
-    '***************************************************
     On Error GoTo ErrHandler
     Dim puntosDomar As Integer
     Dim petType     As Integer

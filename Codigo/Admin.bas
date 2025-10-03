@@ -55,15 +55,12 @@ Public IntervaloPerderStamina        As Integer
 Public IntervaloSed                  As Integer
 Public IntervaloHambre               As Integer
 Public IntervaloVeneno               As Integer
-'Ladder
 Public IntervaloIncineracion         As Integer
 Public IntervaloInmovilizado         As Integer
-'Ladder
 Public IntervaloParalizado           As Integer
 Public IntervaloInvisible            As Integer
 Public IntervaloFrio                 As Integer
 Public IntervaloWavFx                As Integer
-Public IntervaloNPCPuedeAtacar       As Integer
 Public IntervaloInvocacion           As Integer
 Public IntervaloOculto               As Integer '[Nacho]
 Public IntervaloUserPuedeAtacar      As Long

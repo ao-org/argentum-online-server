@@ -502,9 +502,7 @@ End Sub
 
 Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte) As Boolean
     On Error GoTo FinishQuestCheck_Err
-    Dim i        As Integer
-    Dim NpcIndex As Integer
-    NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
+    Dim i As Integer
     With QuestList(QuestIndex)
         'Comprobamos que tenga los objetos.
         If .RequiredOBJs > 0 Then

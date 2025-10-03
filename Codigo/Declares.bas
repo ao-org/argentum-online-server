@@ -3094,7 +3094,6 @@ Public Type t_GlobalDrop
 End Type
 
 '********** V A R I A B L E S     P U B L I C A S ***********
-Public ULTIMAVERSION                          As String
 Public ListaRazas(1 To NUMRAZAS)              As String
 Public SkillsNames(1 To NUMSKILLS)            As String
 Public ListaClases(1 To NUMCLASES)            As String
@@ -3120,7 +3119,6 @@ Public MinXBorder                             As Byte
 Public MaxXBorder                             As Byte
 Public MinYBorder                             As Byte
 Public MaxYBorder                             As Byte
-Public ResPos                                 As t_WorldPos ' TODO: Se usa esta variable ?
 ''
 'Numero de usuarios actual
 Public NumUsers                               As Integer
@@ -3132,13 +3130,11 @@ Public NumNPCs                                As Integer
 Public NumMaps                                As Long
 Public NumObjDatas                            As Integer
 Public NumeroHechizos                         As Integer
-Public MaxConexionesIP                        As Integer
 Public MaxUsersPorCuenta                      As Byte
 Public IdleLimit                              As Integer
 Public MaxUsers                               As Integer
 Public HideMe                                 As Byte
 Public MaxRangoFaccion                        As Byte ' El rango maximo que se puede alcanzar
-Public LastBackup                             As String
 Public minutos                                As String
 Public haciendoBK                             As Boolean
 Public PuedeCrearPersonajes                   As Integer
@@ -3147,7 +3143,6 @@ Public GoldPriceMao                           As Long
 Public MinimumLevelMao                        As Integer
 Public ServerSoloGMs                          As Integer
 Public EnPausa                                As Boolean
-Public EnTesting                              As Boolean
 Public PendingConnectionTimeout               As Long
 Public InstanceMapCount                       As Integer
 '*****************ARRAYS PUBLICOS*************************

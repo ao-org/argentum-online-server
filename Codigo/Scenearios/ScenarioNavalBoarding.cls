@@ -538,8 +538,7 @@ End Sub
 Public Sub IBaseScenario_OnUserDisconnected(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If UserLoot.Exists(UserIndex) Then
-            Dim i, ItemTeam As Integer
-            ItemTeam = UserLoot.Item(UserIndex) \ 1000
+            Dim i
             For i = LBound(.invent.Object) To UBound(.invent.Object)
                 If .invent.Object(i).ObjIndex = TeamCargo(1).CargoItemId Or .invent.Object(i).ObjIndex = TeamCargo(2).CargoItemId Then
                     Call DropObj(UserIndex, i, .invent.Object(i).amount, .pos.Map, .pos.x, .pos.y)
@@ -804,8 +803,6 @@ Public Sub IBaseScenario_UserDie(ByVal UserIndex)
             RespawnInfo.Agility = .Stats.UserAtributos(2)
         End If
         If UserLoot.Exists(UserIndex) Then
-            Dim ItemTeam As Integer
-            ItemTeam = UserLoot.Item(UserIndex) \ 1000
             For i = LBound(.invent.Object) To UBound(.invent.Object)
                 If .invent.Object(i).ObjIndex = TeamCargo(1).CargoItemId Or .invent.Object(i).ObjIndex = TeamCargo(2).CargoItemId Then
                     Call DropObj(UserIndex, i, .invent.Object(i).amount, .pos.Map, .pos.x, .pos.y)

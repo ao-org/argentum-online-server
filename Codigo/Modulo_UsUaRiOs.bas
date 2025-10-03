@@ -851,8 +851,6 @@ End Sub
 
 Sub EraseUserChar(ByVal UserIndex As Integer, ByVal Desvanecer As Boolean, Optional ByVal FueWarp As Boolean = False)
     On Error GoTo ErrorHandler
-    Dim Error As String
-    Error = "1"
     If UserList(UserIndex).Char.charindex = 0 Then Exit Sub
     CharList(UserList(UserIndex).Char.charindex) = 0
     If UserList(UserIndex).Char.charindex = LastChar Then
@@ -861,19 +859,14 @@ Sub EraseUserChar(ByVal UserIndex As Integer, ByVal Desvanecer As Boolean, Optio
             If LastChar <= 1 Then Exit Do
         Loop
     End If
-    Error = "2"
     #If UNIT_TEST = 0 Then
         'Le mandamos el mensaje para que borre el personaje a los clientes que estén cerca
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterRemove(UserList(UserIndex).Char.charindex, Desvanecer, FueWarp))
-        Error = "3"
         Call QuitarUser(UserIndex, UserList(UserIndex).pos.Map)
-        Error = "4"
     #End If
     MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).UserIndex = 0
-    Error = "5"
     UserList(UserIndex).Char.charindex = 0
     NumChars = NumChars - 1
-    Error = "6"
     Exit Sub
 ErrorHandler:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.EraseUserChar", Erl)
@@ -968,8 +961,6 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
     End If
     Exit Sub
 HayError:
-    Dim Desc As String
-    Desc = Err.Description & vbNewLine & " Usuario: " & UserList(UserIndex).name & vbNewLine & "Pos: " & Map & "-" & x & "-" & y
     Call TraceError(Err.Number, Err.Description, "Usuarios.MakeUserChar", Erl())
     Call CloseSocket(UserIndex)
 End Sub
@@ -1121,9 +1112,7 @@ End Sub
 
 Function TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos, ByVal Speed As Long)
     On Error GoTo TranslateUserPos_Err
-    Dim OriginalPos As t_WorldPos
     With UserList(UserIndex)
-        OriginalPos = .pos
         If MapInfo(.pos.Map).NumUsers > 1 Or IsValidUserRef(.flags.GMMeSigue) Then
             If MapData(NewPos.Map, NewPos.x, NewPos.y).UserIndex > 0 Then
                 Call SwapTargetUserPos(MapData(NewPos.Map, NewPos.x, NewPos.y).UserIndex, .pos)
@@ -2036,8 +2025,6 @@ End Sub
 Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, Optional ByVal FX As Boolean = False)
     On Error GoTo WarpUserChar_Err
     Dim OldMap As Integer
-    Dim OldX   As Integer
-    Dim OldY   As Integer
     With UserList(UserIndex)
         If Map <= 0 Then Exit Sub
         If IsValidUserRef(.ComUsu.DestUsu) Then
@@ -2053,8 +2040,6 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.charindex))
         Call WriteRemoveAllDialogs(UserIndex)
         OldMap = .pos.Map
-        OldX = .pos.x
-        OldY = .pos.y
         Call EraseUserChar(UserIndex, True, FX)
         If OldMap <> Map Then
             Call WriteChangeMap(UserIndex, Map)

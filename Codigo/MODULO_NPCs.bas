@@ -134,7 +134,6 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     '********************************************************
     On Error GoTo ErrHandler
     Dim MiNPC       As t_Npc
-    Dim EraCriminal As Byte
     Dim TiempoRespw As Long
     Dim i           As Long, j As Long
     Dim Indice      As Integer
@@ -199,7 +198,6 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             End If
             MiNPC.flags.ExpCount = 0
         End If
-        EraCriminal = Status(UserIndex)
         If MiNPC.GiveEXPClan > 0 Then
             If UserList(UserIndex).GuildIndex > 0 Then
                 Call modGuilds.CheckClanExp(UserIndex, MiNPC.GiveEXPClan * SvrConfig.GetValue("ExpMult"))
@@ -482,8 +480,6 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
     On Error GoTo CrearNPC_Err
     Dim NpcIndex    As Integer
     Dim Iteraciones As Long
-    Dim PuedeAgua   As Boolean
-    Dim PuedeTierra As Boolean
     Dim Map         As Integer
     Dim x           As Integer
     Dim y           As Integer
@@ -492,8 +488,6 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
     With NpcList(NpcIndex)
         ' Cabeza customizada
         If CustomHead <> 0 Then .Char.head = CustomHead
-        PuedeAgua = .flags.AguaValida = 1
-        PuedeTierra = .flags.TierraInvalida = 0
         'Necesita ser respawned en un lugar especifico
         If .flags.RespawnOrigPos And InMapBounds(OrigPos.Map, OrigPos.x, OrigPos.y) Then
             Map = OrigPos.Map
@@ -1772,23 +1766,17 @@ Public Function CanAttackNpc(ByVal NpcIndex As Integer, ByVal TargetIndex As Int
             CanAttackNpc = eNotEnougthPrivileges
             Exit Function
         End If
-        Dim TargetFaction         As e_Facciones
-        Dim AttackerFaction       As e_Facciones
-        Dim AttackerIsFreeCrature As Boolean
-        Dim TargetIsFreeCrature   As Boolean
+        Dim TargetFaction   As e_Facciones
+        Dim AttackerFaction As e_Facciones
         If IsValidUserRef(NpcList(TargetIndex).MaestroUser) Then
             TargetFaction = UserList(NpcList(TargetIndex).MaestroUser.ArrayIndex).Faccion.Status
-            TargetIsFreeCrature = False
         Else
             TargetFaction = NpcList(TargetIndex).flags.Faccion
-            TargetIsFreeCrature = True
         End If
         If IsValidUserRef(.MaestroUser) Then
             AttackerFaction = UserList(.MaestroUser.ArrayIndex).Faccion.Status
-            AttackerIsFreeCrature = False
         Else
             AttackerFaction = .flags.Faccion
-            AttackerIsFreeCrature = True
         End If
         If Not FactionCanAttackFaction(AttackerFaction, TargetFaction) Then
             CanAttackNpc = eSameFaction

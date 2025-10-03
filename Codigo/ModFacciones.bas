@@ -238,10 +238,9 @@ End Sub
 
 Public Sub RecompensaCaos(ByVal UserIndex As Integer)
     On Error GoTo RecompensaCaos_Err
-    Dim ciudadanosMatados As Long, npcCharIndex As String
-    Dim proxRango         As t_RangoFaccion
+    Dim npcCharIndex As String
+    Dim proxRango    As t_RangoFaccion
     With UserList(UserIndex)
-        ciudadanosMatados = .Faccion.ciudadanosMatados
         npcCharIndex = str(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
         If .Faccion.RecompensasCaos >= MaxRangoFaccion Then
             Call WriteLocaleChatOverHead(UserIndex, 1375, vbNullString, npcCharIndex, vbWhite)  ' Msg1375=¡Has alcanzado uno de los mejores lugares en mis filas. Mantén firme tu liderazgo y crueldad para algún día formar parte del Concilio de las Sombras.

@@ -537,7 +537,6 @@ Sub PickObj(ByVal UserIndex As Integer)
     On Error GoTo PickObj_Err
     Dim x     As Integer
     Dim y     As Integer
-    Dim obj   As t_ObjData
     Dim MiObj As t_Obj
     '¿Hay algun obj?
     If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex > 0 Then
@@ -560,7 +559,6 @@ Sub PickObj(ByVal UserIndex As Integer)
                     End If
                 End If
             End If
-            obj = ObjData(MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex)
             MiObj.amount = MapData(UserList(UserIndex).pos.Map, x, y).ObjInfo.amount
             MiObj.ObjIndex = MapData(UserList(UserIndex).pos.Map, x, y).ObjInfo.ObjIndex
             MiObj.ElementalTags = MapData(UserList(UserIndex).pos.Map, x, y).ObjInfo.ElementalTags

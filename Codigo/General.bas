@@ -314,7 +314,6 @@ End Sub
 
 Private Sub InicializarConstantes()
     On Error GoTo InicializarConstantes_Err
-    LastBackup = Format$(Now, "Short Time")
     minutos = Format$(Now, "Short Time")
     IniPath = App.Path & "\"
     ListaRazas(e_Raza.Humano) = "Humano"
@@ -1733,7 +1732,7 @@ Public Sub LoadDBMigrations()
                 If RunScriptInFile(App.Path & "/ScriptsDB/" & sFilename) Then
                     Call Query("insert into migrations (date, description) values (?,?);", date_, Description)
                 Else
-                    Call Err.raise(5, , "invalid - " & Description)
+                    Call Err.Raise(5, , "invalid - " & Description)
                 End If
             End If
         End If

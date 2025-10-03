@@ -241,8 +241,6 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal head As Byte)
     If NpcList(NpcIndex).AreasInfo.AreaID = AreasInfo(NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y) Then Exit Sub
     Dim MinX    As Long, MaxX As Long, MinY As Long, MaxY As Long, x As Long, y As Long
     Dim TempInt As Long
-    Dim appear  As Byte
-    appear = 0
     With NpcList(NpcIndex)
         MinX = .AreasInfo.MinX
         MinY = .AreasInfo.MinY
@@ -278,7 +276,6 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal head As Byte)
             MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
             .AreasInfo.MinX = CInt(MinX)
             .AreasInfo.MinY = CInt(MinY)
-            appear = 0
         End If
         If MinY < 1 Then MinY = 1
         If MinX < 1 Then MinX = 1

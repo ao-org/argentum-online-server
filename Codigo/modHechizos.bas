@@ -944,12 +944,11 @@ Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
     Dim uh           As Integer
     PosCasteadaX = UserList(UserIndex).flags.TargetX
     PosCasteadaY = UserList(UserIndex).flags.TargetY
-    PosCasteadaM = UserList(UserIndex).flags.TargetMap
     uh = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
     'Envio Palabras magicas, wavs y fxs.
-    If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).ObjInfo.amount > 0 Or (MapData(UserList(UserIndex).pos.Map, _
-            UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Or MapData(UserList(UserIndex).pos.Map, _
-            UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).TileExit.Map > 0 Or UserList(UserIndex).flags.TargetUser.ArrayIndex <> 0 Then
+    If MapData(UserList(UserIndex).pos.Map, PosCasteadaX, PosCasteadaY).ObjInfo.amount > 0 Or (MapData(UserList(UserIndex).pos.Map, PosCasteadaX, PosCasteadaY).Blocked And _
+            e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Or MapData(UserList(UserIndex).pos.Map, PosCasteadaX, PosCasteadaY).TileExit.Map > 0 Or UserList( _
+            UserIndex).flags.TargetUser.ArrayIndex <> 0 Then
         b = False
         'Call WriteConsoleMsg(UserIndex, "Area invalida para lanzar este Hechizo!", e_FontTypeNames.FONTTYPE_INFO)
         Call WriteLocaleMsg(UserIndex, "262", e_FontTypeNames.FONTTYPE_INFO)
@@ -958,8 +957,8 @@ Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
             If UserList(UserIndex).flags.Portal = 0 Then
                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_GraphicEffects.Runa, -1, False))
                 UserList(UserIndex).flags.PortalM = UserList(UserIndex).pos.Map
-                UserList(UserIndex).flags.PortalX = UserList(UserIndex).flags.TargetX
-                UserList(UserIndex).flags.PortalY = UserList(UserIndex).flags.TargetY
+                UserList(UserIndex).flags.PortalX = PosCasteadaX
+                UserList(UserIndex).flags.PortalY = PosCasteadaY
                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.charindex, 600, e_AccionBarra.Intermundia))
                 UserList(UserIndex).Accion.AccionPendiente = True
                 UserList(UserIndex).Accion.Particula = e_GraphicEffects.Runa

@@ -40,7 +40,6 @@ Public Function PuedeUsarObjeto(ByVal UserIndex As Integer, ByVal ObjIndex As In
     Dim Objeto As t_ObjData
     Dim Msg    As String
     Dim Extra  As String
-    Dim i      As Long
     Extra = vbNullString
     Objeto = ObjData(ObjIndex)
     With UserList(UserIndex)
@@ -345,9 +344,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer,
     If UserIndex <= 0 Then Exit Sub
     '¿Posicion valida?
     If InMapBounds(Map, x, y) Then
-        Dim FoundChar      As Byte
-        Dim FoundSomething As Byte
-        Dim TempCharIndex  As Integer
+        Dim TempCharIndex As Integer
         If MapData(Map, x, y).NpcIndex > 0 Then     'Acciones NPCs
             TempCharIndex = MapData(Map, x, y).NpcIndex
             'Set the target NPC
@@ -752,7 +749,6 @@ End Sub
 
 Sub AccionParaCartel(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal UserIndex As Integer)
     On Error GoTo Handler
-    Dim MiObj As t_Obj
     'If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = 8 Then
     If Len(ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).texto) > 0 Then
         Call WriteShowSignal(UserIndex, MapData(Map, x, y).ObjInfo.ObjIndex)
@@ -769,7 +765,6 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal x As Integer, ByVal y As Intege
     On Error GoTo Handler
     Dim Suerte As Byte
     Dim exito  As Byte
-    Dim raise  As Integer
     Dim pos    As t_WorldPos
     pos.Map = Map
     pos.x = x

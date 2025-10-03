@@ -201,7 +201,7 @@ Public Sub Insert(ByVal iIndex As Long, ByRef sThis As String)
     Dim lSize As Long
     ' is iIndex within bounds?
     If (iIndex * 2 > m_iPos) Then
-        Err.raise 9
+        Err.Raise 9
     Else
         lLen = LenB(sThis)
         If (m_iPos + lLen) > m_iLen Then
@@ -237,11 +237,11 @@ Public Sub Remove(ByVal iIndex As Long, ByVal lLen As Long)
     Dim lSize As Long
     ' is iIndex within bounds?
     If (iIndex * 2 > m_iPos) Then
-        Err.raise 9
+        Err.Raise 9
     Else
         ' is there sufficient length?
         If ((iIndex + lLen) * 2 > m_iPos) Then
-            Err.raise 9
+            Err.Raise 9
         Else
             ' Need to copy characters from iIndex*2 to m_iPos back by lLen chars:
             lSrc = UnsignedAdd(StrPtr(m_sString), (iIndex + lLen) * 2)
