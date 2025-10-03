@@ -222,7 +222,8 @@ Private Sub LoadTeamCargo(ByRef TeamCargo As t_Cargo, ByVal team As Integer, Sce
     TeamCargo.DropArea.BottomRight.PosX = val(ScenearioIni.GetValue("Team" & team & "Storage", "BottomLeftX"))
     TeamCargo.DropArea.BottomRight.PosY = val(ScenearioIni.GetValue("Team" & team & "Storage", "BottomLeftY"))
     Dim CargoCount As Integer
-    Dim Width, Height As Integer
+    Dim Width      As Integer
+    Dim Height     As Integer
     Width = TeamCargo.OriginalCargoArea.BottomRight.PosX - TeamCargo.OriginalCargoArea.TopLeft.PosX + 1
     Height = TeamCargo.OriginalCargoArea.BottomRight.PosY - TeamCargo.OriginalCargoArea.TopLeft.PosY + 1
     CargoCount = Width * Height
@@ -243,7 +244,11 @@ End Sub
 
 Private Sub LoadNpcSpawnInfo(ByRef NpcSpawnList() As t_NpcSpawnInfo, ScenarioIni As clsIniManager)
     On Error GoTo LoadNpcSpawnInfo_Err:
-    Dim StartIndex, TankCount, SupportCount, RandgedCount, CaptainCount As Integer
+    Dim StartIndex   As Integer
+    Dim TankCount    As Integer
+    Dim SupportCount As Integer
+    Dim RandgedCount As Integer
+    Dim CaptainCount As Integer
     TankCount = val(ScenarioIni.GetValue("TankNpc", "Count"))
     SupportCount = val(ScenarioIni.GetValue("SupportNpc", "Count"))
     RandgedCount = val(ScenarioIni.GetValue("RangedNpc", "Count"))
@@ -263,7 +268,8 @@ Private Function LoadNpcData(ByRef NpcSpawnList() As t_NpcSpawnInfo, _
                              ByVal SectionName As String, _
                              ByVal StartIndex As Integer, _
                              ByVal NpcCount As Integer) As Long
-    Dim NpcId, i As Integer
+    Dim NpcId As Integer
+    Dim i     As Integer
     NpcId = val(ScenearioIni.GetValue(SectionName, "NpcId"))
     For i = 1 To NpcCount
         NpcSpawnList(StartIndex + i).NpcId = NpcId
@@ -774,7 +780,7 @@ Public Function GetOposingFaction(ByVal team As Integer) As Integer
     GetOposingFaction = IIf(team = 1, 2, 1)
 End Function
 
-Public Sub IBaseScenario_NpcDie(ByVal NpcIndex)
+Public Sub IBaseScenario_NpcDie(ByVal NpcIndex As Integer)
     If NpcList(NpcIndex).Numero = CaptianNpcId Then
         Winner = GetOposingFaction(NpcList(NpcIndex).flags.team)
         Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MsgCaptainIsDeath, NpcList(NpcIndex).flags.team, e_FontTypeNames.FONTTYPE_GUILD))
@@ -785,7 +791,7 @@ Public Sub IBaseScenario_NpcDie(ByVal NpcIndex)
     End If
 End Sub
 
-Public Sub IBaseScenario_UserDie(ByVal UserIndex)
+Public Sub IBaseScenario_UserDie(ByVal UserIndex As Integer)
     Dim RespawnInfo As clsRespawnInfo
     Set RespawnInfo = New clsRespawnInfo
     RespawnInfo.RespawnTime = GetTickCount()
@@ -975,7 +981,8 @@ Private Sub ValidateCargoAreasForTeam(ByVal team As Integer)
 End Sub
 
 Private Function GetTeamCargoCount(ByVal team As Integer) As Integer
-    Dim i, j As Integer
+    Dim i          As Integer
+    Dim j          As Integer
     Dim CargoCount As Integer
     For i = TeamCargo(team).OriginalCargoArea.TopLeft.PosX To TeamCargo(team).OriginalCargoArea.BottomRight.PosX
         For j = TeamCargo(team).OriginalCargoArea.TopLeft.PosY To TeamCargo(team).OriginalCargoArea.BottomRight.PosY

@@ -858,7 +858,7 @@ NPCTirarOro_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.NPCTirarOro", Erl)
 End Sub
 
-Function UpdateNpcSpeed(ByVal NpcIndex As Integer)
+Sub UpdateNpcSpeed(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)
         If .IntervaloMovimiento = 0 Then
             .IntervaloMovimiento = 380
@@ -869,7 +869,7 @@ Function UpdateNpcSpeed(ByVal NpcIndex As Integer)
         .Char.speeding = .Char.speeding * max(0, (1 + .Modifiers.MovementSpeed))
         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageSpeedingACT(.Char.charindex, .Char.speeding))
     End With
-End Function
+End Sub
 
 Function GetNpcSpeedModifiers(ByVal NpcIndex As Integer) As Single
     GetNpcSpeedModifiers = max(0, (1 + NpcList(NpcIndex).Modifiers.MovementSpeed))

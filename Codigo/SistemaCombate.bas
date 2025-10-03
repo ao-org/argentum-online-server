@@ -173,7 +173,7 @@ PoderEvasion_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderEvasion", Erl)
 End Function
 
-Private Function AttackPower(ByVal UserIndex, ByVal Skill As Integer, ByVal skillModifier As Single) As Long
+Private Function AttackPower(ByVal UserIndex As Integer, ByVal Skill As Integer, ByVal skillModifier As Single) As Long
     On Error GoTo AttackPower_Err
     Dim TempAttackPower As Long
     With UserList(UserIndex)
@@ -433,7 +433,8 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
         ' Restamos el daño al NPC
         If NPCs.DoDamageOrHeal(NpcIndex, UserIndex, eUser, -Damage, e_phisical, .invent.EquippedWeaponObjIndex, Color) = eStillAlive Then
             'efectos
-            Dim ArmaObjInd, ObjInd As Integer
+            Dim ArmaObjInd As Integer
+            Dim ObjInd     As Integer
             ObjInd = 0
             ArmaObjInd = .invent.EquippedWeaponObjIndex
             If ArmaObjInd > 0 Then
@@ -1725,8 +1726,12 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
     Else
         ObjInd = UserList(AtacanteIndex).invent.EquippedMunitionObjIndex
     End If
-    Dim puedeEnvenenar, puedeEstupidizar, puedeIncinierar, puedeParalizar, rangeStun As Boolean
-    Dim stunChance As Byte
+    Dim puedeEnvenenar   As Boolean
+    Dim puedeEstupidizar As Boolean
+    Dim puedeIncinierar  As Boolean
+    Dim puedeParalizar   As Boolean
+    Dim rangeStun        As Boolean
+    Dim stunChance       As Byte
     puedeEnvenenar = (UserList(AtacanteIndex).flags.Envenena > 0) Or (ObjInd > 0 And ObjData(ObjInd).Envenena)
     puedeEstupidizar = (UserList(AtacanteIndex).flags.Estupidiza > 0) Or (ObjInd > 0 And ObjData(ObjInd).Estupidiza)
     puedeIncinierar = (UserList(AtacanteIndex).flags.incinera > 0) Or (ObjInd > 0 And ObjData(ObjInd).incinera)

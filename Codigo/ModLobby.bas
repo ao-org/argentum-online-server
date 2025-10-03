@@ -941,14 +941,14 @@ SortTeams_Err:
     Call TraceError(Err.Number, Err.Description, "ModLobby.SortTeams", Erl)
 End Sub
 
-Public Function KickPlayer(ByRef instance As t_Lobby, ByVal Index As Integer) As t_response
+Public Sub KickPlayer(ByRef instance As t_Lobby, ByVal Index As Integer)
     On Error GoTo KickPlayer_Err
     Call ReturnPlayer(instance, Index)
     Call ClearUserSocket(instance, Index)
-    Exit Function
+    Exit Sub
 KickPlayer_Err:
     Call TraceError(Err.Number, Err.Description, "ModLobby.KickPlayer", Erl)
-End Function
+End Sub
 
 Public Function AllPlayersReady(ByRef instance As t_Lobby) As t_response
     On Error GoTo AllPlayersReady_Err

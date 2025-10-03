@@ -2777,7 +2777,7 @@ Public Function ModifyHealth(ByVal UserIndex As Integer, ByVal amount As Long, O
     End With
 End Function
 
-Public Function ModifyStamina(ByVal UserIndex As Integer, ByVal amount As Integer, ByVal CancelIfNotEnought As Boolean, Optional ByVal MinValue = 0) As Boolean
+Public Function ModifyStamina(ByVal UserIndex As Integer, ByVal amount As Integer, ByVal CancelIfNotEnought As Boolean, Optional ByVal MinValue As Integer = 0) As Boolean
     ModifyStamina = False
     With UserList(UserIndex)
         If CancelIfNotEnought And amount < 0 And .Stats.MinSta < Abs(amount) Then
@@ -2796,7 +2796,7 @@ Public Function ModifyStamina(ByVal UserIndex As Integer, ByVal amount As Intege
     End With
 End Function
 
-Public Function ModifyMana(ByVal UserIndex As Integer, ByVal amount As Integer, ByVal CancelIfNotEnought As Boolean, Optional ByVal MinValue = 0) As Boolean
+Public Function ModifyMana(ByVal UserIndex As Integer, ByVal amount As Integer, ByVal CancelIfNotEnought As Boolean, Optional ByVal MinValue As Integer = 0) As Boolean
     ModifyMana = False
     With UserList(UserIndex)
         If CancelIfNotEnought And amount < 0 And .Stats.MinMAN < Abs(amount) Then
