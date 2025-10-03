@@ -25,6 +25,7 @@ Attribute VB_Name = "ModGrupos"
 '
 '
 '
+Option Explicit
 Public Grupo            As Tgrupo
 Private UniqueIdCounter As Long
 

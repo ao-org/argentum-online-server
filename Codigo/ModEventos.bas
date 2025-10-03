@@ -26,6 +26,7 @@ Attribute VB_Name = "ModEventos"
 '
 '
 '
+Option Explicit
 Public HoraEvento           As Byte
 Public TiempoRestanteEvento As Byte
 Public EventoActivo         As Boolean
@@ -55,40 +56,12 @@ Public Sub CheckEvento(ByVal Hora As Byte)
     PublicidadEvento = "Evento en curso>"
     Select Case Evento(Hora).Tipo
         Case 1
-            OroMult = OroMult * Evento(Hora).multiplicacion
-            aviso = aviso & " Oro multiplicado por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).Duracion & " minutos."
-            PublicidadEvento = PublicidadEvento & " Oro multiplicado por " & Evento(Hora).multiplicacion
         Case 2
-            ExpMult = ExpMult * Evento(Hora).multiplicacion
-            aviso = aviso & " Experiencia multiplicada por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).Duracion & " minutos."
-            PublicidadEvento = PublicidadEvento & " Experiencia multiplicada por " & Evento(Hora).multiplicacion
         Case 3
-            RecoleccionMult = RecoleccionMult * Evento(Hora).multiplicacion
-            aviso = aviso & " Recoleccion multiplicada por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).Duracion & " minutos."
-            PublicidadEvento = PublicidadEvento & " Recoleccion multiplicada por " & Evento(Hora).multiplicacion
         Case 4
-            DropMult = DropMult / Evento(Hora).multiplicacion
-            aviso = aviso & " Dropeo multiplicado por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).Duracion & " minutos."
-            PublicidadEvento = PublicidadEvento & " Dropeo multiplicado por " & Evento(Hora).multiplicacion
         Case 5
-            ExpMult = ExpMult * Evento(Hora).multiplicacion
-            OroMult = OroMult * Evento(Hora).multiplicacion
-            aviso = aviso & " Oro y experiencia multiplicados por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).Duracion & " minutos."
-            PublicidadEvento = PublicidadEvento & " Oro y experiencia multiplicados por " & Evento(Hora).multiplicacion
         Case 6
-            ExpMult = ExpMult * Evento(Hora).multiplicacion
-            OroMult = OroMult * Evento(Hora).multiplicacion
-            RecoleccionMult = RecoleccionMult * Evento(Hora).multiplicacion
-            aviso = aviso & " Oro, experiencia y recoleccion multiplicados por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).Duracion & " minutos."
-            PublicidadEvento = PublicidadEvento & " Oro, experiencia y recoleccion multiplicados por " & Evento(Hora).multiplicacion
         Case 7
-            ExpMult = ExpMult * Evento(Hora).multiplicacion
-            OroMult = OroMult * Evento(Hora).multiplicacion
-            DropMult = DropMult / Evento(Hora).multiplicacion
-            RecoleccionMult = RecoleccionMult * Evento(Hora).multiplicacion
-            aviso = aviso & " Oro, experiencia, recoleccion y dropeo multiplicados por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).Duracion & _
-                    " minutos."
-            PublicidadEvento = PublicidadEvento & " Oro, experiencia, recoleccion y dropeo multiplicados por " & Evento(Hora).multiplicacion
         Case Else
             EventoActivo = False
             Exit Sub
@@ -113,25 +86,12 @@ Public Sub FinalizarEvento()
     EventoActivo = False
     Select Case EventoAcutal.Tipo
         Case 1
-            OroMult = OroMultOld
         Case 2
-            ExpMult = ExpMultOld
         Case 3
-            RecoleccionMult = RecoleccionMultOld
         Case 4
-            DropMult = DropMultOld
         Case 5
-            ExpMult = ExpMultOld
-            OroMult = OroMultOld
         Case 6
-            ExpMult = ExpMultOld
-            OroMult = OroMultOld
-            RecoleccionMult = RecoleccionMultOld
         Case 7
-            ExpMult = ExpMultOld
-            OroMult = OroMultOld
-            DropMult = DropMultOld
-            RecoleccionMult = RecoleccionMultOld
         Case Else
             Exit Sub
     End Select
@@ -182,10 +142,6 @@ Public Sub CargarEventos()
         Evento(i).Duracion = val(ReadField(2, EventoStrg, Asc("-")))
         Evento(i).multiplicacion = val(ReadField(3, EventoStrg, Asc("-")))
     Next i
-    ExpMultOld = ExpMult
-    OroMultOld = OroMult
-    DropMultOld = DropMult
-    RecoleccionMultOld = RecoleccionMult
     Exit Sub
 CargarEventos_Err:
     Call TraceError(Err.Number, Err.Description, "ModEventos.CargarEventos", Erl)
@@ -224,39 +180,12 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi 
     PublicidadEvento = "Evento en curso>"
     Select Case Tipo
         Case 1
-            OroMult = OroMult * multi
-            aviso = aviso & " Oro multiplicado por " & multi & " - Duración del evento: " & Duracion & " minutos."
-            PublicidadEvento = PublicidadEvento & " Oro multiplicado por " & multi
         Case 2
-            ExpMult = ExpMult * multi
-            aviso = aviso & " Experiencia multiplicada por " & multi & " - Duración del evento: " & Duracion & " minutos."
-            PublicidadEvento = PublicidadEvento & " Experiencia multiplicada por " & multi
         Case 3
-            RecoleccionMult = RecoleccionMult * multi
-            aviso = aviso & " Recoleccion multiplicada por " & multi & " - Duración del evento: " & Duracion & " minutos."
-            PublicidadEvento = PublicidadEvento & " Recoleccion multiplicada por " & multi
         Case 4
-            DropMult = DropMult / multi
-            aviso = aviso & " Dropeo multiplicado por " & multi & " - Duración del evento: " & Duracion & " minutos."
-            PublicidadEvento = PublicidadEvento & " Dropeo multiplicado por " & multi
         Case 5
-            ExpMult = ExpMult * multi
-            OroMult = OroMult * multi
-            aviso = aviso & " Oro y experiencia multiplicados por " & multi & " - Duración del evento: " & Duracion & " minutos."
-            PublicidadEvento = PublicidadEvento & " Oro y experiencia multiplicados por " & multi
         Case 6
-            ExpMult = ExpMult * multi
-            OroMult = OroMult * multi
-            RecoleccionMult = RecoleccionMult * multi
-            aviso = aviso & " Oro, experiencia y recoleccion multiplicados por " & multi & " - Duración del evento: " & Duracion & " minutos."
-            PublicidadEvento = PublicidadEvento & " Oro, experiencia y recoleccion multiplicados por " & multi
         Case 7
-            ExpMult = ExpMult * multi
-            OroMult = OroMult * multi
-            DropMult = DropMult / multi
-            RecoleccionMult = RecoleccionMult * multi
-            aviso = aviso & " Oro, experiencia, recoleccion y dropeo multiplicados por " & multi & " - Duración del evento: " & Duracion & " minutos."
-            PublicidadEvento = PublicidadEvento & " Oro, experiencia, recoleccion y dropeo multiplicados por " & multi
         Case Else
             EventoActivo = False
             Exit Sub

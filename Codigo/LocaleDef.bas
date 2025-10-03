@@ -25,6 +25,7 @@ Attribute VB_Name = "LocaleDef"
 '
 '
 '
+Option Explicit
 Public Const MsgRemoveSafeToAttack = 126
 Public Const MsgYouAreInJail = 146
 Public Const MsgInventoryIsFull = 328

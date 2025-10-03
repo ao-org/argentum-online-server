@@ -26,6 +26,7 @@ Attribute VB_Name = "ModClimas"
 '
 '
 '
+Option Explicit
 Public IntensidadDeNubes  As Byte
 Public TimerMeteorologico As Byte
 Public ServidorNublado    As Boolean

@@ -1,5 +1,4 @@
 Attribute VB_Name = "ModSubasta"
-
 ' Argentum 20 Game Server
 '
 '    Copyright (C) 2023 Noland Studios LTD
@@ -26,6 +25,8 @@ Attribute VB_Name = "ModSubasta"
 '
 '
 '
+Option Explicit
+
 Public Type t_Subastas
     HaySubastaActiva As Boolean
     SubastaHabilitada As Boolean
@@ -175,9 +176,6 @@ Public Sub ResetearSubasta()
     Subasta.TiempoRestanteSubasta = 0
     Subasta.MinutosDeSubasta = 0
     Subasta.PosibleCancelo = False
-    Call LogearEventoDeSubasta("Subasta finalizada." & data & " a las " & Time)
-    Call LogearEventoDeSubasta( _
-            "#################################################################################################################################################################################################")
     Exit Sub
 ResetearSubasta_Err:
     Call TraceError(Err.Number, Err.Description, "ModSubasta.ResetearSubasta", Erl)

@@ -114,6 +114,7 @@ Attribute VB_Exposed = False
 '
 '
 '
+Option Explicit
 Private Declare Function SetWindowPos _
                 Lib "user32" (ByVal hwnd As Long, _
                               ByVal hWndInsertAfter As Long, _

@@ -1,5 +1,4 @@
 Attribute VB_Name = "ModTorneos"
-
 ' Argentum 20 Game Server
 '
 '    Copyright (C) 2023 Noland Studios LTD
@@ -27,6 +26,8 @@ Attribute VB_Name = "ModTorneos"
 '
 '
 '
+Option Explicit
+
 Public Type t_Torneo
     HayTorneoaActivo As Boolean
     NivelMinimo As Byte
@@ -112,6 +113,7 @@ Public Sub ComenzarTorneoOk()
     Dim nombres As String
     Dim x       As Byte
     Dim y       As Byte
+    Dim i       As Integer
     For i = 1 To Torneo.participantes
         nombres = nombres & UserList(Torneo.IndexParticipantes(i)).name & ", "
         x = Torneo.x

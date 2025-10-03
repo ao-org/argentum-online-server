@@ -24,6 +24,7 @@ Attribute VB_Name = "ModLobby"
 '    for more information about ORE please visit http://www.baronsoft.com/
 '
 '
+Option Explicit
 Const WaitingForPlayersTime = 300000 '5 minutes
 
 Public Type PlayerInLobby
@@ -144,6 +145,7 @@ Private ActiveLobby               As t_IndexHeap
 Public Sub InitializeLobbyList()
     ReDim AvailableLobby.IndexInfo(0 To LobbyCount) As Integer
     ReDim ActiveLobby.IndexInfo(0 To LobbyCount) As Integer
+    Dim i As Integer
     For i = 0 To LobbyCount
         AvailableLobby.IndexInfo(i) = LobbyCount - i
     Next i
@@ -656,10 +658,10 @@ Public Sub ForceReset(ByRef instance As t_Lobby)
     instance.State = UnInitilized
     instance.SummonCoordinates.Map = -1
     instance.ClassFilter = -1
-    If Not Scenario Is Nothing Then
-        Call Scenario.Reset
+    If Not instance.Scenario Is Nothing Then
+        Call instance.Scenario.Reset
     End If
-    Set Scenario = Nothing
+    Set instance.Scenario = Nothing
     Erase instance.Players
     Exit Sub
 ForceReset_Err:
@@ -742,7 +744,7 @@ Public Function SetTeamSize(ByRef instance As t_Lobby, ByVal TeamSize As Integer
         Exit Function
     End If
     If instance.State <> Initialized Then
-        reponse.Success = False
+        response.Success = False
         response.Message = MsgCantChangeGroupSizeNow
         SetTeamSize = response
         Exit Function
@@ -768,7 +770,7 @@ Public Function SetTeamCount(ByRef instance As t_Lobby, ByVal TeamCount As Integ
         Exit Function
     End If
     If instance.State <> Initialized Then
-        reponse.Success = False
+        response.Success = False
         response.Message = MsgCantChangeGroupSizeNow
         SetTeamCount = response
         Exit Function
