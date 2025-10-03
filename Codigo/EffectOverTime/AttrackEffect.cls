@@ -211,10 +211,9 @@ Public Function IsValidPos(ByVal Map As Integer, ByVal TileX As Integer, ByVal T
 End Function
 
 Public Sub PerformAction()
-    Dim Direction   As t_Vector
-    Dim TargetPos   As t_WorldPos
-    Dim CurrPos     As t_WorldPos
-    Dim TargetPoint As t_WorldPos
+    Dim Direction As t_Vector
+    Dim TargetPos As t_WorldPos
+    Dim CurrPos   As t_WorldPos
     TargetPos = GetPosition(Source)
     CurrPos = GetPosition(DotInfo.TargetRef)
     Direction.x = TargetPos.x - CurrPos.x

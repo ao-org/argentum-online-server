@@ -588,7 +588,6 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-Public ESCUCHADAS As Long
 
 Private Type NOTIFYICONDATA
     cbSize As Long
@@ -927,15 +926,8 @@ End Sub
 
 Private Sub UpdateBarcoForgatNix()
     Dim TileX, TileY As Integer
-    Dim User      As Integer
-    Dim PassFound As Boolean
-    Dim PassSlot  As Integer
-    ' Modificado por Shugar 5/6/24
-    ' Viaje de Forgat a Nix
-    ' Verificar si el barco está en un muelle:
-    ' Para ver si está en el muelle o no, miramos hay un NpcIndex en Map DockX DockY del mapa BarcoNavegando.
-    ' Ese Npc solía ser un muelle, y se usa de referencia para saber si el barco partió o sigue quieto.
-    ' Si no hay NPC ahí es que el barco está navegando, por lo tanto no hay movimiento de pasajeros.
+    Dim User     As Integer
+    Dim PassSlot As Integer
     If MapData(BarcoNavegandoForgatNix.Map, BarcoNavegandoForgatNix.DockX, BarcoNavegandoForgatNix.DockY).NpcIndex = 0 Then
         Exit Sub
     End If
@@ -976,15 +968,8 @@ End Sub
 
 Private Sub UpdateBarcoNixArghal()
     Dim TileX, TileY As Integer
-    Dim User      As Integer
-    Dim PassFound As Boolean
-    Dim PassSlot  As Integer
-    ' Modificado por Shugar 5/6/24
-    ' Viaje de Nix a Arghal
-    ' Verificar si el barco está en un muelle:
-    ' Para ver si está en el muelle o no, miramos hay un NpcIndex en Map DockX DockY del mapa BarcoNavegando.
-    ' Ese Npc solía ser un muelle, y se usa de referencia para saber si el barco partió o sigue quieto.
-    ' Si no hay NPC ahí es que el barco está navegando, por lo tanto no hay movimiento de pasajeros.
+    Dim User     As Integer
+    Dim PassSlot As Integer
     If MapData(BarcoNavegandoNixArghal.Map, BarcoNavegandoNixArghal.DockX, BarcoNavegandoNixArghal.DockY).NpcIndex = 0 Then
         Exit Sub
     End If
@@ -1025,15 +1010,8 @@ End Sub
 
 Private Sub UpdateBarcoArghalForgat()
     Dim TileX, TileY As Integer
-    Dim User      As Integer
-    Dim PassFound As Boolean
-    Dim PassSlot  As Integer
-    ' Modificado por Shugar 5/6/24
-    ' Viaje de Arghal a Forgat
-    ' Verificar si el barco está en un muelle:
-    ' Para ver si está en el muelle o no, miramos hay un NpcIndex en Map DockX DockY del mapa BarcoNavegando.
-    ' Ese Npc solía ser un muelle, y se usa de referencia para saber si el barco partió o sigue quieto.
-    ' Si no hay NPC ahí es que el barco está navegando, por lo tanto no hay movimiento de pasajeros.
+    Dim User     As Integer
+    Dim PassSlot As Integer
     If MapData(BarcoNavegandoArghalForgat.Map, BarcoNavegandoArghalForgat.DockX, BarcoNavegandoArghalForgat.DockY).NpcIndex = 0 Then
         Exit Sub
     End If
@@ -1104,8 +1082,6 @@ Private Sub Minuto_Timer()
     'fired every minute
     Static minutos          As Long
     Static MinutosLatsClean As Long
-    Dim i                   As Integer
-    Dim num                 As Long
     Dim PerformanceTimer    As Long
     Call PerformanceTestStart(PerformanceTimer)
     MinsRunning = MinsRunning + 1
@@ -1806,9 +1782,6 @@ End Sub
 Private Sub tPiqueteC_Timer()
     On Error GoTo ErrHandler
     Static segundos      As Integer
-    Dim NuevaA           As Boolean
-    Dim NuevoL           As Boolean
-    Dim GI               As Integer
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
     segundos = segundos + 6

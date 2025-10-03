@@ -153,7 +153,6 @@ End Function
 Public Function Invoke(ByVal Procedure As String, ParamArray Arguments() As Variant) As ADODB.Recordset
     Dim Command  As New ADODB.Command
     Dim Argument As Variant
-    Dim Affected As Long
     Command.ActiveConnection = Connection
     Command.CommandText = Procedure
     Command.CommandType = adCmdStoredProc
@@ -621,7 +620,6 @@ Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal username 
     Set RS = Query("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_index, status, ciudadanos_matados, criminales_matados FROM user WHERE UPPER(name) = ?;", _
             UCase$(username))
     Dim GuildRequestHistory As String
-    Dim GuildHistory        As String
     If RS Is Nothing Then
         Call WriteConsoleMsg(UserIndex, "Pj Inexistente", e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub

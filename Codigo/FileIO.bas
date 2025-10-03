@@ -706,7 +706,6 @@ End Sub
 Public Sub DoBackUp()
     On Error GoTo DoBackUp_Err
     haciendoBK = True
-    Dim i As Integer
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
     haciendoBK = False
@@ -1392,9 +1391,7 @@ End Function
 Sub CargarBackUp()
     On Error GoTo CargarBackUp_Err
     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando backup."
-    Dim Map     As Integer
-    Dim TempInt As Integer
-    Dim npcfile As String
+    Dim Map As Integer
     If RunningInVB() Then
         NumMaps = 869
     Else
@@ -1424,9 +1421,7 @@ End Sub
 Sub LoadMapData()
     On Error GoTo man
     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando mapas..."
-    Dim Map     As Integer
-    Dim TempInt As Integer
-    Dim npcfile As String
+    Dim Map As Integer
     #If UNIT_TEST = 1 Then
         'We only need 50 maps for unit testing
         NumMaps = 50
@@ -1480,13 +1475,9 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
     Dim TEs()                                       As t_DatosTE
     Dim RandomTeleports(MAX_RANDOM_TELEPORT_IN_MAP) As Integer
     Dim randomTeleportCount                         As Integer
-    Dim body                                        As Integer
-    Dim head                                        As Integer
-    Dim Heading                                     As Byte
     Dim SailingTiles                                As Long
     Dim TotalTiles                                  As Long
     Dim i                                           As Long
-    Dim j                                           As Long
     Dim x                                           As Integer, y As Integer
     randomTeleportCount = 0
     If Not FileExist(MAPFl, vbNormal) Then
@@ -1736,7 +1727,6 @@ Public Sub CreateFishingPool(ByVal Map As Integer)
 End Sub
 
 Sub LoadPrivateKey()
-    Dim MyLine As String
     Open App.Path & "\..\ao20-ComputePK\crypto-hex.txt" For Input As #1
     Line Input #1, PrivateKey
     Close #1
@@ -1813,8 +1803,7 @@ LoadSini_Err:
 End Sub
 
 Sub LoadGlobalDropTable()
-    Dim Lector   As clsIniManager
-    Dim Temporal As Long
+    Dim Lector As clsIniManager
     If Not FileExist(DatPath & "GlobalDropTable.dat") Then
         Exit Sub
     End If
@@ -1845,8 +1834,7 @@ End Sub
 
 Sub LoadFeatureToggles()
     On Error GoTo LoadFeatureToggles_Err
-    Dim Lector   As clsIniManager
-    Dim Temporal As Long
+    Dim Lector As clsIniManager
     Set FeatureToggles = New Dictionary
     If Not FileExist("feature_toggle.ini") Then
         Exit Sub
@@ -1896,7 +1884,6 @@ End Sub
 
 Sub CargarCiudades()
     On Error GoTo CargarCiudades_Err
-    Dim i      As Long
     Dim Lector As clsIniManager
     Set Lector = New clsIniManager
     Call Lector.Initialize(DatPath & "Ciudades.dat")

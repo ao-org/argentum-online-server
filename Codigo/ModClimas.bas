@@ -26,14 +26,11 @@ Attribute VB_Name = "ModClimas"
 '
 '
 '
-Public IntensidadDeNubes   As Byte
-Public IntensidadDeLluvias As Byte
-Public CapasLlueveEn       As Integer
-Public TimerMeteorologico  As Byte
-Public DuracionDeLLuvia    As Integer
-Public ServidorNublado     As Boolean
-Public ProbabilidadNublar  As Byte
-Public ProbabilidadLLuvia  As Byte
+Public IntensidadDeNubes  As Byte
+Public TimerMeteorologico As Byte
+Public ServidorNublado    As Boolean
+Public ProbabilidadNublar As Byte
+Public ProbabilidadLLuvia As Byte
 
 Public Sub ResetMeteo()
     On Error GoTo ResetMeteo_Err

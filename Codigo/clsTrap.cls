@@ -40,8 +40,6 @@ Attribute VB_Exposed = False
 Option Explicit
 Implements IBaseEffectOverTime
 Private mWorldPosition As t_WorldPos
-Private mEffect        As e_TrapEffect
-Private mid            As Long
 Private mDotInfo       As t_BaseDotInfo
 Private mElapsedTime   As Long
 Private mTimeLimit     As Long

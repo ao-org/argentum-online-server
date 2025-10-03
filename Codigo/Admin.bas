@@ -43,12 +43,8 @@ Public Type tAPuestas
 End Type
 
 Public Apuestas                      As tAPuestas
-Public NPCs                          As Long
-Public DebugSocket                   As Boolean
 Public horas                         As Long
-Public dias                          As Long
 Public MinsRunning                   As Long
-Public ReiniciarServer               As Long
 Public tInicioServer                 As Long
 'INTERVALOS
 Public SanaIntervaloSinDescansar     As Integer
@@ -62,14 +58,12 @@ Public IntervaloVeneno               As Integer
 'Ladder
 Public IntervaloIncineracion         As Integer
 Public IntervaloInmovilizado         As Integer
-Public IntervaloMaldicion            As Integer
 'Ladder
 Public IntervaloParalizado           As Integer
 Public IntervaloInvisible            As Integer
 Public IntervaloFrio                 As Integer
 Public IntervaloWavFx                As Integer
 Public IntervaloNPCPuedeAtacar       As Integer
-Public IntervaloNPCAI                As Integer
 Public IntervaloInvocacion           As Integer
 Public IntervaloOculto               As Integer '[Nacho]
 Public IntervaloUserPuedeAtacar      As Long
@@ -92,7 +86,6 @@ Public IntervaloCaminar              As Long
 Public IntervaloEnCombate            As Long
 Public IntervaloPuedeSerAtacado      As Long
 Public IntervaloGuardarUsuarios      As Long
-Public LimiteGuardarUsuarios         As Integer
 Public IntervaloTimerGuardarUsuarios As Integer
 Public IntervaloMensajeGlobal        As Long
 Public Const IntervaloConsultaGM     As Long = 300000
@@ -133,7 +126,6 @@ Public DivineBloodManaCostMultiplier     As Single
 Public WarriorLifeStealOnHitMultiplier   As Single
 Public Puerto                            As Long
 Public ListenIp                          As String
-Public MAXPASOS                          As Long
 Public BootDelBackUp                     As Byte
 Public Lloviendo                         As Boolean
 Public Nebando                           As Boolean

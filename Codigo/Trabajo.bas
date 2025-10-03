@@ -2383,7 +2383,8 @@ End Sub
 
 Public Function ObtenerPezRandom(ByVal PoderCania As Integer) As Long
     On Error GoTo ObtenerPezRandom_Err
-    SumaPesos As Long, ValorGenerado As Long
+    Dim SumaPesos As Long
+    Dim ValorGenerado As Long
     If PoderCania > UBound(PesoPeces) Then PoderCania = UBound(PesoPeces)
     SumaPesos = PesoPeces(PoderCania)
     ValorGenerado = RandomNumber(0, SumaPesos - 1)

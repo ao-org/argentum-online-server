@@ -155,12 +155,8 @@ Public PrivateKey             As String
 Public HoraMundo              As Long
 Public HoraActual             As Integer
 Public UltimoChar             As String
-Public LastRecordUsuarios     As Integer
 Public GlobalFrameTime        As Long
-Public EventoExpMult          As Integer
-Public EventoOroMult          As Integer
 Public CuentaRegresivaTimer   As Byte
-Public cuentaregresivaOrcos   As Integer
 Public PENDIENTE              As Integer
 Type t_EstadisticasDiarias
     segundos As Double
@@ -3098,9 +3094,7 @@ Public Type t_GlobalDrop
 End Type
 
 '********** V A R I A B L E S     P U B L I C A S ***********
-Public SERVERONLINE                           As Boolean
 Public ULTIMAVERSION                          As String
-Public backup                                 As Boolean ' TODO: Se usa esta variable ?
 Public ListaRazas(1 To NUMRAZAS)              As String
 Public SkillsNames(1 To NUMSKILLS)            As String
 Public ListaClases(1 To NUMCLASES)            As String
@@ -3129,7 +3123,6 @@ Public MaxYBorder                             As Byte
 Public ResPos                                 As t_WorldPos ' TODO: Se usa esta variable ?
 ''
 'Numero de usuarios actual
-Public NumCuentas                             As Long
 Public NumUsers                               As Integer
 Public LastUser                               As Integer
 Public LastChar                               As Integer
@@ -3167,7 +3160,6 @@ Public EffectOverTime()                       As t_EffectOverTime
 Public CharList(1 To MAXCHARS)                As Integer
 Public ObjData()                              As t_ObjData
 Public ObjShop()                              As t_ObjData
-Public FX()                                   As t_FXdata
 Public SpawnList()                            As t_CriaturasEntrenador
 Public ForbidenNames()                        As String
 Public BlockedWordsDescription()              As String
@@ -3221,7 +3213,6 @@ Public BarcoNavegandoArghalForgat             As t_Transport
 Public TotalMapasCiudades()                   As String
 Public Ayuda                                  As New cCola
 Public TiempoPesca                            As Long
-Public BotinInicial                           As Double
 Public segundos                               As Long
 Public Declare Function writeprivateprofilestring _
                Lib "Kernel32" _

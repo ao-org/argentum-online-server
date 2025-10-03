@@ -53,13 +53,11 @@ Private p_GMsOnline             As Collection
 Private p_Leader                As Long
 Private p_Founder               As Long
 Private p_IteradorOnlineMembers As Integer
-Private p_IteradorPropuesta     As Integer
 Private p_IteradorOnlineGMs     As Integer
 Private p_GuildNumber           As Integer      'Numero de guild en el mundo
 Private p_GuildId               As Long
 Private p_GuildLevel            As Integer
 Private p_CurrentExp            As Integer
-Private p_RequiredExp           As Integer
 Private p_GuildNews             As String
 Private Const NEWSLENGTH        As Integer = 1024
 Private Const DESCLENGTH        As Integer = 256
@@ -329,8 +327,7 @@ End Function
 
 Public Function HasGuildRequest(ByVal UserId As Long) As Boolean
     On Error GoTo HasGuildRequest_Err
-    Dim RS     As ADODB.Recordset
-    Dim list() As String
+    Dim RS As ADODB.Recordset
     Set RS = Query("SELECT user_id from guild_request where guild_id = ? and user_id = ?", p_GuildId, UserId)
     HasGuildRequest = RS.RecordCount > 0
     Exit Function

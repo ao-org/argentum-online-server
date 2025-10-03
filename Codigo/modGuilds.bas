@@ -55,11 +55,8 @@ End Enum
 
 Public Sub LoadGuildsDB()
     On Error GoTo LoadGuildsDB_Err
-    Dim CantClanes As String
-    Dim i          As Integer
-    Dim TempStr    As String
-    Dim Alin       As e_ALINEACION_GUILD
-    Dim RS         As Recordset
+    Dim i  As Integer
+    Dim RS As Recordset
     Set RS = Query("SELECT id, founder_id, guild_name, creation_date, alignment, last_elections, description, news, leader_id, level, current_exp, flag_file FROM guilds")
     If RS Is Nothing Then Exit Sub
     CANTIDADDECLANES = RS.RecordCount
@@ -257,7 +254,6 @@ End Function
 Public Sub SendGuildNews(ByVal UserIndex As Integer, ByRef guildList() As String)
     On Error GoTo SendGuildNews_Err
     Dim GuildIndex As Integer
-    Dim i          As Integer
     Dim ClanNivel  As Byte
     Dim ExpAcu     As Integer
     Dim ExpNe      As Integer
@@ -366,8 +362,6 @@ End Function
 
 Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal GuildIndex As Integer) As Boolean
     On Error GoTo m_EstadoPermiteEntrarChar_Err
-    Dim Promedio As Long
-    Dim f        As Byte
     m_EstadoPermiteEntrarChar = False
     If InStrB(Personaje, "\") <> 0 Then
         Personaje = Replace(Personaje, "\", vbNullString)
@@ -528,9 +522,7 @@ End Function
 
 Public Sub SendGuildDetails(ByVal UserIndex As Integer, ByRef GuildName As String)
     On Error GoTo SendGuildDetails_Err
-    Dim codex(CANTIDADMAXIMACODEX - 1) As String
-    Dim GI                             As Integer
-    Dim i                              As Long
+    Dim GI As Integer
     GI = GuildIndex(GuildName)
     If GI = 0 Then Exit Sub
     With guilds(GI)
@@ -672,8 +664,7 @@ End Sub
 
 Public Function a_RechazarAspirante(ByVal UserIndex As Integer, ByRef nombre As String, ByRef refError As String) As Boolean
     On Error GoTo a_RechazarAspirante_Err
-    Dim GI           As Integer
-    Dim NroAspirante As Integer
+    Dim GI As Integer
     a_RechazarAspirante = False
     GI = UserList(UserIndex).GuildIndex
     If GI <= 0 Or GI > CANTIDADDECLANES Then
@@ -690,8 +681,7 @@ End Function
 
 Public Function a_DetallesAspirante(ByVal UserIndex As Integer, ByRef name As String) As String
     On Error GoTo a_DetallesAspirante_Err
-    Dim GI           As Integer
-    Dim NroAspirante As Integer
+    Dim GI As Integer
     GI = UserList(UserIndex).GuildIndex
     If GI <= 0 Or GI > CANTIDADDECLANES Then
         Exit Function
@@ -761,10 +751,9 @@ End Sub
 
 Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As String, ByRef Solicitud As String, ByRef refError As String) As Boolean
     On Error GoTo a_NuevoAspirante_Err
-    Dim ViejoSolicitado   As String
-    Dim ViejoGuildINdex   As Integer
-    Dim ViejoNroAspirante As Integer
-    Dim NuevoGuildIndex   As Integer
+    Dim ViejoSolicitado As String
+    Dim ViejoGuildINdex As Integer
+    Dim NuevoGuildIndex As Integer
     a_NuevoAspirante = False
     If UserList(UserIndex).GuildIndex > 0 Then
         refError = 2010 'Ya perteneces a un clan, debes salir del mismo antes de solicitar ingresar a otro.

@@ -51,7 +51,6 @@ Public Sub Contruir_Querys()
 End Sub
 
 Private Sub ConstruirQuery_CargarPersonaje()
-    Dim LoopC As Long
     Set QueryBuilder = New cStringBuilder
     ' ************************** Basic user data ********************************
     QueryBuilder.Append "SELECT "

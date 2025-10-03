@@ -309,8 +309,6 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
     On Error GoTo ErrHandler
     Dim nPos       As t_WorldPos
     Dim EsTeleport As Boolean
-    Dim TelepRadio As Byte
-    Dim aN         As Integer
     Dim destPos    As t_WorldPos
     With UserList(UserIndex)
         'Controla las salidas

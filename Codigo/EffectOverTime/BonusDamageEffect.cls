@@ -42,7 +42,6 @@ Implements IBaseEffectOverTime
 Dim TickTime          As Long
 Dim TimeSinceLastTick As Long
 Dim TickCount         As Integer
-Dim ApplyEffectId     As Integer
 Private EffectInfo    As t_BaseDotInfo
 Private Source        As t_AnyReference
 

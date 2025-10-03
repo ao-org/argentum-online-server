@@ -884,7 +884,6 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
             .Banco = 0
             .ELV = 0
             .Exp = 0
-            .def = 0
             '.CriminalesMatados = 0
             .NPCsMuertos = 0
             .UsuariosMatados = 0

@@ -408,7 +408,6 @@ Sub Main()
             End
         End If
     End If
-    Dim f As Date
     Call ChDir(App.Path)
     Call ChDrive(App.Path)
     Call InicializarConstantes
@@ -825,7 +824,6 @@ End Sub
 '
 Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
     On Error GoTo EfectoMimetismo_Err
-    Dim Barco As t_ObjData
     With UserList(UserIndex)
         If .Counters.Mimetismo < IntervaloInvisible Then
             .Counters.Mimetismo = .Counters.Mimetismo + 1
@@ -1259,7 +1257,6 @@ End Sub
 Sub PasarSegundo()
     On Error GoTo ErrHandler
     Dim i    As Long
-    Dim h    As Byte
     Dim Mapa As Integer
     Dim x    As Byte
     Dim y    As Byte
@@ -1731,8 +1728,6 @@ Public Sub LoadDBMigrations()
             Dim date_ As String
             date_ = Left(sFilename, 11)
             If LastScript < date_ Then
-                'Leemos el archivo
-                Dim script      As String
                 Dim Description As String
                 Description = mid(sFilename, 13, Len(sFilename) - 16)
                 If RunScriptInFile(App.Path & "/ScriptsDB/" & sFilename) Then

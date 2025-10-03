@@ -97,7 +97,6 @@ End Function
 
 Function ClasePuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional Slot As Byte) As Boolean
     On Error GoTo manejador
-    Dim Flag As Boolean
     If Slot <> 0 Then
         If UserList(UserIndex).invent.Object(Slot).Equipped Then
             ClasePuedeUsarItem = True
@@ -255,7 +254,6 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
         End If
         ' Si el usuario tiene ORO, entonces lo tiramos
         If (Cantidad > 0) And (Cantidad <= .Stats.GLD) Then
-            Dim i     As Byte
             Dim MiObj As t_Obj
             'info debug
             Dim loops As Long
@@ -415,7 +413,6 @@ End Sub
 
 Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo EraseObj_Err
-    Dim Rango As Byte
     MapData(Map, x, y).ObjInfo.amount = MapData(Map, x, y).ObjInfo.amount - num
     If MapData(Map, x, y).ObjInfo.amount <= 0 Then
         MapData(Map, x, y).ObjInfo.ObjIndex = 0
@@ -430,8 +427,6 @@ End Sub
 
 Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo MakeObj_Err
-    Dim Color As Long
-    Dim Rango As Byte
     If obj.ObjIndex > 0 And obj.ObjIndex <= UBound(ObjData) Then
         If MapData(Map, x, y).ObjInfo.ObjIndex = obj.ObjIndex And MapData(Map, x, y).ObjInfo.ElementalTags = obj.ElementalTags Then
             MapData(Map, x, y).ObjInfo.amount = MapData(Map, x, y).ObjInfo.amount + obj.amount
@@ -486,8 +481,6 @@ End Function
 
 Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj) As Boolean
     On Error GoTo MeterItemEnInventario_Err
-    Dim x    As Integer
-    Dim y    As Integer
     Dim Slot As Integer
     If MiObj.ObjIndex = 12 Then
         UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + MiObj.amount
@@ -524,8 +517,6 @@ End Function
 
 Function HayLugarEnInventario(ByVal UserIndex As Integer, ByVal TargetItemIndex As Integer, ByVal ItemCount) As Boolean
     On Error GoTo HayLugarEnInventario_err
-    Dim x    As Integer
-    Dim y    As Integer
     Dim Slot As Byte
     Slot = 1
     Do Until UserList(UserIndex).invent.Object(Slot).ObjIndex = 0 Or (UserList(UserIndex).invent.Object(Slot).ObjIndex = TargetItemIndex And UserList(UserIndex).invent.Object( _
@@ -546,7 +537,6 @@ Sub PickObj(ByVal UserIndex As Integer)
     On Error GoTo PickObj_Err
     Dim x     As Integer
     Dim y     As Integer
-    Dim Slot  As Byte
     Dim obj   As t_ObjData
     Dim MiObj As t_Obj
     '¿Hay algun obj?
@@ -1601,7 +1591,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Exit Sub
                         End If
                         Dim HealingAmount As Long
-                        Dim Source        As Integer
                         ' Calcula la cantidad de curación
                         HealingAmount = RandomNumber(obj.MinModificador, obj.MaxModificador) * UserMod.GetSelfHealingBonus(UserList(UserIndex))
                         ' Modifica la salud del jugador
@@ -3066,7 +3055,6 @@ Sub EliminarLlaves(ByVal ClaveLlave As Integer, ByVal UserIndex As Integer)
     Open "Eliminarllaves.dat" For Input As #1
     ' Variables para el almacenamiento temporal de datos
     Dim Linea           As String
-    Dim clave           As Integer
     Dim Objeto          As Integer
     Dim LlaveEncontrada As Boolean
     LlaveEncontrada = False

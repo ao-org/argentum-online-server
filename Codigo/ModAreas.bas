@@ -57,7 +57,6 @@ Private Const AREA_DIM                As Byte = 12
 Private CurDay                        As Byte
 Private CurHour                       As Byte
 Private AreasInfo(1 To 100, 1 To 100) As Byte
-Private PosToArea(1 To 100)           As Byte
 Private AreasRecive(10)               As Integer
 Public ConnGroups()                   As t_ConnGroup
  
