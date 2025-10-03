@@ -438,7 +438,6 @@ End Function
 
 Public Sub SummonPlayer(ByRef instance As t_Lobby, ByVal User As Integer)
     On Error GoTo SummonPlayer_Err
-    Dim UserIndex As Integer
     With instance.Players(User)
         If Not IsValidUserRef(.User) Then
             Call LogUserRefError(.User, "SummonPlayer")

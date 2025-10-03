@@ -390,7 +390,6 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
                         ByVal Hogar As e_Ciudad) As Boolean
     On Error GoTo ConnectNewUser_Err
     With UserList(UserIndex)
-        Dim LoopC As Long
         If .flags.UserLogged Then
             Call LogSecurity("El usuario " & .name & " ha intentado crear a " & name & " desde la IP " & .ConnectionDetails.IP)
             Call CloseSocketSL(UserIndex)
@@ -864,7 +863,6 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
     '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
     'Agregue que se resetee el maná
     '*************************************************
-    Dim LoopC As Integer
     With UserList(UserIndex)
         .name = vbNullString
         .Cuenta = vbNullString
@@ -1210,9 +1208,6 @@ End Sub
 Sub ClearAndSaveUser(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     Dim errordesc As String
-    Dim Map       As Integer
-    Dim aN        As Integer
-    Dim i         As Integer
     With UserList(UserIndex)
         errordesc = "ERROR AL SETEAR NPC"
         Call ClearAttackerNpc(UserIndex)
@@ -1301,7 +1296,6 @@ Sub CloseUser(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     Dim errordesc As String
     Dim Map       As Integer
-    Dim aN        As Integer
     Dim i         As Integer
     With UserList(UserIndex)
         Map = .pos.Map

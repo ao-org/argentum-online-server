@@ -2139,7 +2139,6 @@ Public Type t_ObjData
     ClaseProhibida(1 To NUMCLASES) As e_Class
     'Razas que no tienen permitido usar este obj
     RazaProhibida(1 To NUMRAZAS) As e_Raza
-    ClasePermitida As String
     Snd1 As Integer
     Snd2 As Integer
     Snd3 As Integer
@@ -2270,7 +2269,6 @@ Public Type t_UserStats
     MinHam As Integer
     MaxAGU As Integer
     MinAGU As Integer
-    def As Integer
     Exp As Long
     ELV As Byte
     ELO As Long
@@ -2743,7 +2741,6 @@ Public Type t_User
     GuildIndex As Integer   'puntero al array global de guilds
     EscucheClan As Integer
     LastGuildRejection As String
-    KeyCrypt As Integer
     AreasInfo As t_AreaInfo
     QuestStats As t_QuestStats
     Keys(1 To MAXKEYS) As Integer
@@ -2843,8 +2840,6 @@ Public Type t_NPCFlags
     OldHostil As Byte
     AguaValida As Byte
     TierraInvalida As Byte
-    ' UseAINow As Boolean No se usa, borrar de la DB!!!!
-    Sound As Integer
     AttackedBy As String
     AttackedTime As Long
     AttackedFirstBy As String
@@ -2868,7 +2863,6 @@ End Type
 Public Type t_CriaturasEntrenador
     NpcIndex As Integer
     NpcName As String
-    tmpIndex As Integer
     PuedeInvocar As Boolean
 End Type
 
@@ -2983,7 +2977,6 @@ Public Type t_Npc
     IntervaloMovimiento As Long
     IntervaloAtaque As Long
     IntervaloLanzarHechizo As Long
-    IntervaloRespawn As Long
     Modifiers As t_ActiveModifiers
     EffectOverTime As t_EffectOverTimeList
     invent As t_Inventario
@@ -3010,8 +3003,6 @@ Public Type t_Npc
     NumDestinos As Byte
     dest() As String
     Interface As Byte
-    'Para diferenciar entre clanes
-    ClanIndex As Integer
     Caminata() As t_Caminata
     CaminataActual As Byte
     PuedeInvocar As Byte

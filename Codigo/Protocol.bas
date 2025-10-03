@@ -2338,8 +2338,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     End If
                     'Attack!
                     If Not PuedeAtacar(UserIndex, tU) Then Exit Sub 'TODO: Por ahora pongo esto para solucionar lo anterior.
-                    Dim backup    As Byte
-                    Dim envie     As Boolean
                     Dim Particula As Integer
                     Dim Tiempo    As Long
                     If .flags.invisible > 0 Then
@@ -3379,7 +3377,6 @@ Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim guild    As String
         Dim proposal As String
-        Dim errorStr As String
         guild = reader.ReadString8()
         proposal = reader.ReadString8()
         Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1801, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
@@ -3399,7 +3396,6 @@ Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim guild    As String
         Dim proposal As String
-        Dim errorStr As String
         guild = reader.ReadString8()
         proposal = reader.ReadString8()
         'Msg1145= Relaciones de clan desactivadas por el momento.
@@ -3443,9 +3439,7 @@ End Sub
 Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
-        Dim guild    As String
-        Dim errorStr As String
-        Dim details  As String
+        Dim guild As String
         guild = reader.ReadString8()
         'Msg1147= Relaciones de clan desactivadas por el momento.
         Call WriteLocaleMsg(UserIndex, "1147", e_FontTypeNames.FONTTYPE_INFO)
@@ -3673,7 +3667,6 @@ End Sub
 Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
     On Error GoTo HandleGuildOpenElections_Err
     With UserList(UserIndex)
-        Dim Error As String
         'Msg1154= Elecciones de clan desactivadas por el momento.
         Call WriteLocaleMsg(UserIndex, "1154", e_FontTypeNames.FONTTYPE_INFO)
     End With
@@ -4517,8 +4510,7 @@ End Sub
 Private Sub HandleGuildVote(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
-        Dim vote     As String
-        Dim errorStr As String
+        Dim vote As String
         vote = reader.ReadString8()
         'Msg1172= Elecciones de clan desactivadas por el momento.
         Call WriteLocaleMsg(UserIndex, "1172", e_FontTypeNames.FONTTYPE_INFO)
@@ -4702,10 +4694,8 @@ End Sub
 Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
-        Dim guild       As String
-        Dim memberCount As Integer
-        Dim i           As Long
-        Dim username    As String
+        Dim guild As String
+        Dim i     As Long
         guild = reader.ReadString8()
         If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
             If (InStrB(guild, "\") <> 0) Then
@@ -4917,7 +4907,6 @@ Private Sub HandlePerdonFaccion(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim username As String
         Dim tUser    As t_UserReference
-        Dim LoopC    As Byte
         username = reader.ReadString8()
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
             If UCase$(username) <> "YO" Then
@@ -5104,7 +5093,6 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim username As String
         Dim tUser    As t_UserReference
-        Dim LoopC    As Byte
         username = reader.ReadString8()
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
             tUser = NameIndex(username)
@@ -5141,7 +5129,6 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim username As String
         Dim tUser    As t_UserReference
-        Dim LoopC    As Byte
         username = reader.ReadString8()
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
             tUser = NameIndex(username)
@@ -5230,7 +5217,6 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
         Dim cantMembers As Integer
         Dim LoopC       As Long
         Dim member      As String
-        Dim count       As Byte
         Dim tUser       As t_UserReference
         Dim tFile       As String
         GuildName = reader.ReadString8()
@@ -5579,7 +5565,6 @@ End Sub
 
 Public Sub HandleParticipar(ByVal UserIndex As Integer)
     On Error GoTo HandleParticipar_Err
-    Dim handle   As Integer
     Dim RoomId   As Integer
     Dim Password As String
     RoomId = reader.ReadInt16
@@ -5925,7 +5910,6 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
         Dim tmpElementalTags     As Long
         Dim Equipado             As Boolean
         Dim Equipado2            As Boolean
-        Dim Equipado3            As Boolean
         Dim ObjCania             As t_Obj
         'HarThaoS: Si es un hilo de pesca y lo estoy arrastrando en una caña rota borro del slot viejo y en el nuevo pongo la caña correspondiente
         If SlotViejo > getMaxInventorySlots(UserIndex) Or SlotNuevo > getMaxInventorySlots(UserIndex) Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
@@ -6144,10 +6128,7 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
         Dim SlotNuevo As Byte
         SlotViejo = reader.ReadInt8()
         SlotNuevo = reader.ReadInt8()
-        Dim Objeto    As t_Obj
-        Dim Equipado  As Boolean
-        Dim Equipado2 As Boolean
-        Dim Equipado3 As Boolean
+        Dim Objeto As t_Obj
         If SlotViejo > MAX_BANCOINVENTORY_SLOTS Or SlotNuevo > MAX_BANCOINVENTORY_SLOTS Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
         Objeto.ObjIndex = UserList(UserIndex).BancoInvent.Object(SlotViejo).ObjIndex
         Objeto.amount = UserList(UserIndex).BancoInvent.Object(SlotViejo).amount
@@ -6202,7 +6183,6 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
     On Error GoTo ErrHandler
     With UserList(UserIndex)
-        Dim refError   As String
         Dim clan_nivel As Byte
         If .GuildIndex <> 0 Then
             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
@@ -6895,7 +6875,6 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
     On Error GoTo HandleQuest_Err
     If Not IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then Exit Sub
     Dim NpcIndex As Integer
-    Dim tmpByte  As Byte
     NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
     'Esta el personaje en la distancia correcta?
     If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) > 5 Then

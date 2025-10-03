@@ -942,8 +942,6 @@ Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
     Dim PosCasteadaY As Byte
     Dim PosCasteadaM As Integer
     Dim uh           As Integer
-    Dim TempX        As Integer
-    Dim TempY        As Integer
     PosCasteadaX = UserList(UserIndex).flags.TargetX
     PosCasteadaY = UserList(UserIndex).flags.TargetY
     PosCasteadaM = UserList(UserIndex).flags.TargetMap
@@ -3616,7 +3614,6 @@ End Sub
 
 Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y As Byte, Npc As Boolean)
     On Error GoTo AreaHechizo_Err
-    Dim calculo        As Integer
     Dim TilesDifUser   As Integer
     Dim TilesDifNpc    As Integer
     Dim tilDif         As Integer

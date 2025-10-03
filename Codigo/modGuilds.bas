@@ -26,15 +26,6 @@ Attribute VB_Name = "modGuilds"
 '
 '
 Option Explicit
-'guilds nueva version. Hecho por el oso, eliminando los problemas
-'de sincronizacion con los datos en el HD... entre varios otros
-'º¬
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'DECLARACIOENS PUBLICAS CONCERNIENTES AL JUEGO
-'Y CONFIGURACION DEL SISTEMA DE CLANES
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Private GUILDINFOFILE             As String
 'archivo .\guilds\guildinfo.ini o similar
 Private Const MAX_GUILDS          As Integer = 1000
 'cantidad maxima de guilds en el servidor
@@ -62,10 +53,6 @@ Public Enum e_RELACIONES_GUILD
     ALIADOS = 1
 End Enum
 
-'estado entre clanes
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Sub LoadGuildsDB()
     On Error GoTo LoadGuildsDB_Err
     Dim CantClanes As String
@@ -193,7 +180,6 @@ End Sub
 
 Public Sub ChangeCodexAndDesc(ByRef Desc As String, ByVal GuildIndex As Integer)
     On Error GoTo ChangeCodexAndDesc_Err
-    Dim i As Long
     If GuildIndex < 1 Or GuildIndex > CANTIDADDECLANES Then Exit Sub
     With guilds(GuildIndex)
         Call .SetDesc(Desc)
@@ -272,7 +258,6 @@ Public Sub SendGuildNews(ByVal UserIndex As Integer, ByRef guildList() As String
     On Error GoTo SendGuildNews_Err
     Dim GuildIndex As Integer
     Dim i          As Integer
-    Dim go         As Integer
     Dim ClanNivel  As Byte
     Dim ExpAcu     As Integer
     Dim ExpNe      As Integer
@@ -382,7 +367,6 @@ End Function
 Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal GuildIndex As Integer) As Boolean
     On Error GoTo m_EstadoPermiteEntrarChar_Err
     Dim Promedio As Long
-    Dim ELV      As Integer
     Dim f        As Byte
     m_EstadoPermiteEntrarChar = False
     If InStrB(Personaje, "\") <> 0 Then
@@ -723,7 +707,6 @@ End Function
 
 Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As String)
     Dim GI     As Integer
-    Dim NroAsp As Integer
     Dim list() As Long
     Dim i      As Long
     On Error GoTo Error

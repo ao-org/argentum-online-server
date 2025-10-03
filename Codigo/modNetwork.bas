@@ -125,7 +125,6 @@ End Sub
 
 Public Sub close_not_logged_sockets_if_timeout()
     On Error GoTo close_not_logged_sockets_if_timeout_ErrHandler:
-    Dim i     As Integer
     Dim key   As Variant
     Dim Ticks As Long, Delta As Long
     Ticks = GetTickCount

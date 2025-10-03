@@ -784,7 +784,6 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
     '23/01/2007 -> Pablo (ToxicWaste): Creates an NPC of the type Npcindex
     '***************************************************
     Dim NewPos      As t_WorldPos
-    Dim altpos      As t_WorldPos
     Dim nIndex      As Integer
     Dim PuedeAgua   As Boolean
     Dim PuedeTierra As Boolean
@@ -1217,7 +1216,6 @@ Function NpcSellsItem(ByVal NpcNumber As Integer, ByVal NroObjeto As Integer) As
     End If
     Dim LoopC    As Long
     Dim ln       As String
-    Dim Field()  As String
     Dim NroItems As Long
     NroItems = val(Leer.GetValue("NPC" & NpcNumber, "NROITEMS"))
     For LoopC = 1 To NroItems

@@ -352,7 +352,7 @@ End Function
 Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal aType As AttackType)
     On Error GoTo UserDamageNpc_Err
     With UserList(UserIndex)
-        Dim Damage As Long, DamageBase As Long, DamageExtra As Long, Color As Long, DamageStr As String
+        Dim Damage As Long, DamageBase As Long, DamageExtra As Long, Color As Long
         If .invent.EquippedWeaponObjIndex = EspadaMataDragonesIndex And NpcList(NpcIndex).npcType = DRAGON Then
             ' Espada MataDragones
             DamageBase = NpcList(NpcIndex).Stats.MinHp + NpcList(NpcIndex).Stats.def
@@ -887,7 +887,6 @@ End Sub
 Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType) As Boolean
     On Error GoTo UsuarioImpacto_Err
     Dim ProbRechazo            As Long
-    Dim Rechazo                As Boolean
     Dim ProbExito              As Long
     Dim PoderAtaque            As Long
     Dim UserPoderEvasion       As Long
@@ -1547,7 +1546,6 @@ End Sub
 Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
     On Error GoTo CalcularDarExpGrupal_Err
     Dim ExpaDar                 As Long
-    Dim BonificacionGrupo       As Single
     Dim CantidadMiembrosValidos As Integer
     Dim i                       As Long
     Dim Index                   As Integer
@@ -2046,7 +2044,6 @@ Public Sub ThrowArrowToTargetDir(ByVal UserIndex As Integer, ByRef Direction As 
     Dim TargetTranslation As t_Vector
     Dim TargetPos         As t_WorldPos
     Dim TranslationDiff   As Double
-    Dim Tanslation        As Integer
     currentPos = UserList(UserIndex).pos
     TargetPos.Map = currentPos.Map
     Dim step As Integer
@@ -2141,8 +2138,6 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
             Exit Sub
         End If
         If TargetType = eUser Then
-            Dim backup    As Byte
-            Dim envie     As Boolean
             Dim Particula As Integer
             Dim Tiempo    As Long
             ' Porque no es HandleAttack ???
@@ -2193,8 +2188,7 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
 End Sub
 
 Public Function GetProjectileView(ByRef User As t_User) As Integer
-    Dim WeaponData     As t_ObjData
-    Dim ProjectileType As Byte
+    Dim WeaponData As t_ObjData
     With User.invent
         If .EquippedWeaponObjIndex < 1 Then Exit Function
         WeaponData = ObjData(.EquippedWeaponObjIndex)

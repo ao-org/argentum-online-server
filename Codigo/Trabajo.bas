@@ -1360,7 +1360,6 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
         UserList(UserIndex).invent.Object(Slot).amount = 0
         UserList(UserIndex).invent.Object(Slot).ObjIndex = 0
     End If
-    Dim nPos  As t_WorldPos
     Dim MiObj As t_Obj
     MiObj.amount = cant
     MiObj.ObjIndex = ObjData(UserList(UserIndex).flags.TargetObjInvIndex).LingoteIndex
@@ -1505,9 +1504,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
     On Error GoTo ErrHandler
     Dim bonificacionPescaLvl(1 To 47) As Single
     Dim bonificacionCaña As Double
-    Dim bonificacionZona  As Double
     Dim bonificacionLvl   As Double
-    Dim bonificacionClase As Double
     Dim bonificacionTotal As Double
     Dim RestaStamina      As Integer
     Dim Reward            As Double
@@ -1611,7 +1608,6 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
         End If
         Pesco = RandomNumber(1, 100) <= Suerte '80% de posibilidad de pescar
         If Pesco Then
-            Dim nPos     As t_WorldPos
             Dim MiObj    As t_Obj
             Dim objValue As Integer
             If IsFeatureEnabled("gain_exp_while_working") Then
@@ -1746,7 +1742,6 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
         Call WriteLocaleMsg(LadronIndex, "1029", e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
-    Dim Penable As Boolean
     With UserList(LadronIndex)
         If esCiudadano(LadronIndex) Then
             If (.flags.Seguro) Then
@@ -1803,7 +1798,6 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
         Call QuitarSta(LadronIndex, 15)
         If UserList(VictimaIndex).flags.Privilegios And e_PlayerType.User Then
             Dim Probabilidad As Byte
-            Dim res          As Integer
             Dim RobarSkill   As Byte
             RobarSkill = .Stats.UserSkills(e_Skill.Robar)
             If (RobarSkill > 0 And RobarSkill < 10) Then
@@ -2040,7 +2034,6 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte
         '118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
         Rem Ladder 06/08/14 Subo un poco la probabilidad de sacar raices... porque era muy lento
         If res < 7 Then
-            Dim nPos  As t_WorldPos
             Dim MiObj As t_Obj
             Call ActualizarRecurso(.pos.Map, x, y)
             'If .clase = e_Class.Druid Then
@@ -2104,7 +2097,6 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte)
         End If
         '118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
         If res < 6 Then
-            Dim nPos  As t_WorldPos
             Dim MiObj As t_Obj
             Call ActualizarRecurso(.pos.Map, x, y)
             MapData(.pos.Map, x, y).ObjInfo.data = GetTickCount() ' Ultimo uso
@@ -2169,7 +2161,6 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
     On Error GoTo ErrHandler
     Dim Suerte     As Integer
     Dim res        As Integer
-    Dim Metal      As Integer
     Dim Yacimiento As t_ObjData
     With UserList(UserIndex)
         If .flags.Privilegios And (e_PlayerType.Consejero) Then
@@ -2198,7 +2189,6 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
         End If
         If res <= 5 Then
             Dim MiObj As t_Obj
-            Dim nPos  As t_WorldPos
             Call ActualizarRecurso(.pos.Map, x, y)
             MapData(.pos.Map, x, y).ObjInfo.data = GetTickCount() ' Ultimo uso
             Yacimiento = ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex)
@@ -2393,7 +2383,7 @@ End Sub
 
 Public Function ObtenerPezRandom(ByVal PoderCania As Integer) As Long
     On Error GoTo ObtenerPezRandom_Err
-    Dim i As Long, SumaPesos As Long, ValorGenerado As Long
+    SumaPesos As Long, ValorGenerado As Long
     If PoderCania > UBound(PesoPeces) Then PoderCania = UBound(PesoPeces)
     SumaPesos = PesoPeces(PoderCania)
     ValorGenerado = RandomNumber(0, SumaPesos - 1)
@@ -2437,7 +2427,6 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     '***************************************************
     On Error GoTo ErrHandler
     Dim puntosDomar As Integer
-    Dim CanStay     As Boolean
     Dim petType     As Integer
     Dim NroPets     As Integer
     If IsValidUserRef(NpcList(NpcIndex).MaestroUser) And NpcList(NpcIndex).MaestroUser.ArrayIndex = UserIndex Then

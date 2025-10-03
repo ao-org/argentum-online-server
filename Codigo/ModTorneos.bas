@@ -55,8 +55,7 @@ Public Type t_Torneo
     reglas As String
 End Type
 
-Public Torneo        As t_Torneo
-Public MensajeTorneo As String
+Public Torneo As t_Torneo
 
 Public Sub IniciarTorneo()
     On Error GoTo IniciarTorneo_Err

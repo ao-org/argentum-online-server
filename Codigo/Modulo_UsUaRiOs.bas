@@ -253,8 +253,7 @@ End Sub
 Public Function ConnectUser_Complete(ByVal UserIndex As Integer, Optional ByVal newUser As Boolean = False)
     On Error GoTo Complete_ConnectUser_Err
     ConnectUser_Complete = False
-    Dim n    As Integer
-    Dim tStr As String
+    Dim n As Integer
     Call SendData(SendTarget.ToIndex, UserIndex, PrepareActiveToggles)
     With UserList(UserIndex)
         If .flags.Paralizado = 1 Then
@@ -976,20 +975,6 @@ HayError:
 End Sub
 
 Sub CheckUserLevel(ByVal UserIndex As Integer)
-    '*************************************************
-    'Author: Unknown
-    'Last modified: 01/10/2007
-    'Chequea que el usuario no halla alcanzado el siguiente nivel,
-    'de lo contrario le da la vida, mana, etc, correspodiente.
-    '07/08/2006 Integer - Modificacion de los valores
-    '01/10/2007 Tavo - Corregido el BUG de STAT_MAXELV
-    '24/01/2007 Pablo (ToxicWaste) - Agrego modificaciones en ELU al subir de nivel.
-    '24/01/2007 Pablo (ToxicWaste) - Agrego modificaciones de la subida de mana de los magos por lvl.
-    '13/03/2007 Pablo (ToxicWaste) - Agrego diferencias entre el 18 y el 19 en Constitución.
-    '09/01/2008 Pablo (ToxicWaste) - Ahora el incremento de vida por Consitución se controla desde Balance.dat
-    '17/12/2020 WyroX - Distribución normal de las vidas
-    '15/07/2024 Shugar - Vuelvo a implementar vidas variables y les agrego un capeo min/max
-    '*************************************************
     On Error GoTo ErrHandler
     Dim Pts                 As Integer
     Dim AumentoHIT          As Integer
@@ -1000,7 +985,6 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
     Dim PromBias            As Double
     Dim PromClaseRaza       As Double
     Dim PromPersonaje       As Double
-    Dim aux                 As Integer
     Dim PasoDeNivel         As Boolean
     Dim experienceToLevelUp As Long
     ' Randomizo las vidas
@@ -1191,8 +1175,6 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
     ' Lo convierto a función y saco los WritePosUpdate, ahora están en el paquete
     On Error GoTo MoveUserChar_Err
     Dim nPos             As t_WorldPos
-    Dim nPosOriginal     As t_WorldPos
-    Dim nPosMuerto       As t_WorldPos
     Dim IndexMover       As Integer
     Dim Opposite_Heading As e_Heading
     With UserList(UserIndex)
@@ -1644,8 +1626,7 @@ Sub UserDie(ByVal UserIndex As Integer)
     'Ahora se resetea el counter del invi
     '************************************************
     On Error GoTo ErrorHandler
-    Dim i  As Long
-    Dim aN As Integer
+    Dim i As Long
     With UserList(UserIndex)
         .Counters.Mimetismo = 0
         .flags.Mimetizado = e_EstadoMimetismo.Desactivado
@@ -1772,7 +1753,6 @@ Sub UserDie(ByVal UserIndex As Integer)
         Call CheckUpdateNeededUser(UserIndex, 5, 0, .flags.Muerto)
         Dim LoopC     As Long
         Dim tempIndex As Integer
-        Dim Map       As Integer
         Dim AreaX     As Integer
         Dim AreaY     As Integer
         AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX

@@ -276,7 +276,6 @@ Private Sub LoadTeamWeapoints(ByVal team As Integer, ByRef WpArray() As t_Waypoi
     On Error GoTo LoadTeamWeapoints_Err:
     Dim i, j As Integer
     ReDim WpArray(1 To WpCount) As t_Waypoint
-    Dim NextWpCount As Byte
     For i = 1 To WpCount
         WpArray(i).PosX = val(ScenearioIni.GetValue("T" & team & "WP" & i, "X"))
         WpArray(i).PosY = val(ScenearioIni.GetValue("T" & team & "WP" & i, "Y"))

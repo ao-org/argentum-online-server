@@ -44,11 +44,9 @@ Const RequireItemMessage = 403
 Const MillisecondInSecond = 1000
 Implements IBaseScenario
 Dim MatchNpc           As New Dictionary
-Dim SpawnCreatureCount As Integer
 Dim ElapsedTime        As Long
 Dim LastFrameTime      As Long
 Dim LastScoreUpdate    As Long
-Dim ActiveNpc          As Integer
 Dim SpawnedCreaturesId As New Dictionary
 Dim MapNumber          As Integer
 Dim UpdateIndex        As Integer
@@ -309,7 +307,6 @@ End Sub
 
 Private Sub MatchComplete()
     On Error GoTo MatchComplete_Err:
-    Dim i As Integer
     If Not LobbyList(LobbyIndex).Canceled Then
         Call Board.PublishScoreboard(SendTarget.toMap, MapNumber, LobbyList(LobbyIndex), True)
         Call GiveRewards

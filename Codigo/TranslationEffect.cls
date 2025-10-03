@@ -231,7 +231,6 @@ Private Sub PerformAction()
     Dim TargetTranslation As t_Vector
     Dim TargetPos         As t_WorldPos
     Dim TranslationDiff   As Double
-    Dim Tanslation        As Integer
     CurrentStep = CurrentStep + 1
     currentPos = GetPosition(DotInfo.TargetRef)
     TargetPoint.x = Direction.x * (CurrentStep) + StartPos.x

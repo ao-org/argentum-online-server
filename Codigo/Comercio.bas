@@ -33,27 +33,10 @@ End Enum
 
 Public Const REDUCTOR_PRECIOVENTA As Byte = 3
 
-''
-' Makes a trade. (Buy or Sell)
-'
-' @param Modo The trade type (sell or buy)
-' @param UserIndex Specifies the index of the user
-' @param NpcIndex specifies the index of the npc
-' @param Slot Specifies which slot are you trying to sell / buy
-' @param Cantidad Specifies how many items in that slot are you trying to sell / buy
 Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal Slot As Integer, ByVal Cantidad As Integer)
     On Error GoTo Comercio_Err
-    '*************************************************
-    'Author: Nacho (Integer)
-    'Last modified: 27/07/08 (MarKoxX) |
-    '27/07/08 (MarKoxX) - New changes in the way of trading (now when you buy it rounds to ceil and when you sell it rounds to floor)
-    '06/13/08 (NicoNZ)
-    '24/01/2020: WyroX = Reduzco la cantidad de paquetes que se envian, actualizo solo los slots necesarios y solo el oro, no todos los stats.
-    '*************************************************
     Dim precio           As Long
     Dim Objeto           As t_Obj
-    Dim objquedo         As t_Obj
-    Dim precioenvio      As Single
     Dim NpcSlot          As Integer
     Dim Objeto_A_Comprar As t_UserOBJ
     If Cantidad < 1 Or Slot < 1 Then Exit Sub

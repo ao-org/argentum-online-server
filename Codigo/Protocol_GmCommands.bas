@@ -867,7 +867,6 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
         Dim username As String
         Dim Reason   As String
         Dim jailTime As Integer
-        Dim count    As Byte
         Dim tUser    As t_UserReference
         username = reader.ReadString8()
         Reason = reader.ReadString8()
@@ -1014,10 +1013,8 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
         Dim opcion        As Byte
         Dim Arg1          As String
         Dim Arg2          As String
-        Dim valido        As Boolean
         Dim LoopC         As Byte
         Dim commandString As String
-        Dim n             As Byte
         Dim tmpLong       As Long
         username = Replace(reader.ReadString8(), "+", " ")
         If UCase$(username) = "YO" Then
@@ -1511,8 +1508,6 @@ Public Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim username As String
         Dim tUser    As t_UserReference
-        Dim LoopC    As Long
-        Dim Message  As String
         username = reader.ReadString8()
         tUser = NameIndex(username)
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
@@ -1543,7 +1538,6 @@ Public Sub HandleReviveChar(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim username As String
         Dim tUser    As t_UserReference
-        Dim LoopC    As Byte
         username = reader.ReadString8()
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
             If UCase$(username) <> "YO" Then
@@ -2381,10 +2375,9 @@ Public Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, "528", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        Dim tObj  As Integer
-        Dim lista As String
-        Dim x     As Long
-        Dim y     As Long
+        Dim tObj As Integer
+        Dim x    As Long
+        Dim y    As Long
         For x = 5 To 95
             For y = 5 To 95
                 tObj = MapData(.pos.Map, x, y).ObjInfo.ObjIndex
@@ -4156,7 +4149,6 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim username As String
         Dim tUser    As t_UserReference
-        Dim LoopC    As Byte
         Dim tempArea As Long
         username = reader.ReadString8()
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
@@ -4319,9 +4311,8 @@ End Sub
 
 Public Sub HandleLobbyCommand(ByVal UserIndex As Integer)
     On Error GoTo HandleLobbyCommand_err
-    Dim Command       As Byte
-    Dim hasPermission As Integer
-    Dim Params        As String
+    Dim Command As Byte
+    Dim Params  As String
     Command = reader.ReadInt8()
     Params = reader.ReadString8()
     With UserList(UserIndex)
