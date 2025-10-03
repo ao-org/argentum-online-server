@@ -886,9 +886,9 @@ Dim obj                         As t_ObjData
                 End If
                 
             Case e_OBJType.otSkinsWings
-                If .invent.EquippedArmorObjIndex > 0 Then
-                    .invent.EquippedArmorObjIndex = 0
-                    .Char.BackpackAnim = .OrigChar.BackpackAnim
+                If .Invent_Skins.ObjIndexBackpackEquipped > 0 Then
+                    .Invent_Skins.ObjIndexBackpackEquipped = 0
+                    .Char.BackpackAnim = NoBackPack
                 End If
                 
             Case e_OBJType.otSkinsBoats
@@ -3537,7 +3537,7 @@ Dim obj                         As t_ObjData
                 End If
 
                 If .Invent_Skins.ObjIndexBackpackEquipped > 0 Then
-                    Call Desequipar(UserIndex, .Invent_Skins.ObjIndexBackpackEquipped, True, e_OBJType.otSkinsWings)
+                    Call Desequipar(UserIndex, Slot, True, e_OBJType.otSkinsWings)
                 End If
 
                 'Lo equipa

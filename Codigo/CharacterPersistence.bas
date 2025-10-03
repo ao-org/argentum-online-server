@@ -829,15 +829,6 @@ Dim RS                          As ADODB.Recordset
                     .Invent_Skins.Object(i).ObjIndex = CInt(RS.Fields("skin_id"))
 
                     Select Case ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType
-                        Case e_OBJType.otSkinsArmours
-                            
-                            If CBool(RS.Fields("skin_equipped")) Then
-                                .Invent_Skins.Object(i).Equipped = True
-                                'Call EquiparInvItem(UserIndex, i, True, True, RS.Fields("type_skin"))
-                                If CanEquipSkin(UserIndex, i, e_OBJType.otSkinsArmours, False) Then
-                                    Call SkinEquip(UserIndex, i, .Invent_Skins.Object(i).ObjIndex, ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType)
-                                End If
-                            End If
 
                         Case e_OBJType.otSkinsSpells
                             If ObjData(.Invent_Skins.Object(i).ObjIndex).HechizoIndex > 0 And CBool(RS.Fields("skin_equipped")) Then
@@ -846,6 +837,15 @@ Dim RS                          As ADODB.Recordset
                                 .Stats.UserSkinsHechizos(ObjData(.Invent_Skins.Object(i).ObjIndex).HechizoIndex) = ObjData(.Invent_Skins.Object(i).ObjIndex).CreaFX
                             End If
 
+                        Case Else
+                            
+                            If CBool(RS.Fields("skin_equipped")) Then
+                                .Invent_Skins.Object(i).Type = ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType
+                                If CanEquipSkin(UserIndex, i, ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType, False) Then
+                                    Call SkinEquip(UserIndex, i, .Invent_Skins.Object(i).ObjIndex, ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType)
+                                End If
+                            End If
+                        
                     End Select
 
                     Call WriteChangeSkinSlot(UserIndex, ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType, i)
