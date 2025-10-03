@@ -159,10 +159,10 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
     #End If
     Dim actual_time       As Long
     Dim performance_timer As Long
-    actual_time = GetTickCount()
+    actual_time = GetTickCountRaw()
     performance_timer = actual_time
     #If DIRECT_PLAY = 0 Then
-        If actual_time - Mapping(ConnectionID).TimeLastReset >= 5000 Then
+        If TicksElapsed(Mapping(ConnectionID).TimeLastReset, actual_time) >= 5000 Then
             Mapping(ConnectionID).TimeLastReset = actual_time
             Mapping(ConnectionID).PacketCount = 0
         End If
@@ -1447,11 +1447,11 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.charindex, 0))
             End If
             Dim CurrentTick As Long
-            CurrentTick = GetTickCount
+            CurrentTick = GetTickCountRaw()
             'Prevent SpeedHack (refactored by WyroX)
             If Not EsGM(UserIndex) And .Char.speeding > 0 Then
-                Dim ElapsedTimeStep As Long, MinTimeStep As Long, DeltaStep As Single
-                ElapsedTimeStep = CurrentTick - .Counters.LastStep
+                Dim ElapsedTimeStep As Double, MinTimeStep As Long, DeltaStep As Single
+                ElapsedTimeStep = TicksElapsed(.Counters.LastStep, CurrentTick)
                 MinTimeStep = .Intervals.Caminar / .Char.speeding
                 DeltaStep = (MinTimeStep - ElapsedTimeStep) / MinTimeStep
                 If DeltaStep > 0 Then
@@ -1939,9 +1939,9 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, _
                                 Optional ByVal DeltaThreshold As Long = 100, _
                                 Optional ByVal MaxIterations As Long = 5, _
                                 Optional ByVal CloseClient As Boolean = False) As Boolean
-    Dim Ticks As Long, Delta As Long
-    Ticks = GetTickCount
-    Delta = (Ticks - LastTick)
+    Dim Ticks As Long, Delta As Double
+    Ticks = GetTickCountRaw()
+    Delta = TicksElapsed(LastTick, Ticks)
     LastTick = Ticks
     'Controlamos secuencia para ver que no haya paquetes duplicados.
     If ActualCount <= LastCount Then
@@ -5057,7 +5057,7 @@ End Sub
 Private Sub HandleFactionMessage(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     Dim currentTime  As Long
-    Dim ElapsedTime  As Long
+    Dim elapsedMs    As Double
     Dim Message      As String
     Dim factionLabel As String
     Dim fontType     As e_FontTypeNames
@@ -5065,15 +5065,15 @@ Private Sub HandleFactionMessage(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Message = reader.ReadString8()
         If LenB(Message) = 0 Then Exit Sub
-        currentTime = GetTickCount()
-        ElapsedTime = currentTime - .Counters.MensajeGlobal
+        currentTime = GetTickCountRaw()
+        elapsedMs = TicksElapsed(.Counters.MensajeGlobal, currentTime)
         'Si esta silenciado no le deja enviar mensaje
         If .flags.Silenciado = 1 Then
             Call WriteLocaleMsg(UserIndex, "110", e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
             Exit Sub
         End If
         'Previene spam de mensajes globales
-        If ElapsedTime < IntervaloMensajeGlobal Then
+        If elapsedMs < IntervaloMensajeGlobal Then
             ' Msg548=No puedes escribir mensajes globales tan rápido.
             Call WriteLocaleMsg(UserIndex, "548", e_FontTypeNames.FONTTYPE_WARNING)
             Exit Sub
@@ -5896,7 +5896,9 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
         End If
         If Not EsGM(UserIndex) Then
             If Not IsValidUserRef(tUser) Then
-                If GetTickCount() - .Counters.LastTransferGold >= 10000 Then
+                Dim nowRaw As Long
+                nowRaw = GetTickCountRaw()
+                If TicksElapsed(.Counters.LastTransferGold, nowRaw) >= 10000 Then
                     If PersonajeExiste(username) Then
                         If Not AddOroBancoDatabase(username, Cantidad) Then
                             Call WriteLocaleChatOverHead(UserIndex, 1409, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1409=Error al realizar la operación.
@@ -5904,7 +5906,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                         Else
                             UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
                         End If
-                        .Counters.LastTransferGold = GetTickCount()
+                        .Counters.LastTransferGold = nowRaw
                     Else
                         Call WriteLocaleChatOverHead(UserIndex, 1410, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1410=El usuario no existe.
                         Exit Sub

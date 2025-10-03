@@ -2117,7 +2117,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte,
             Dim nPos  As t_WorldPos
             Dim MiObj As t_Obj
             Call ActualizarRecurso(.pos.Map, x, y)
-            MapData(.pos.Map, x, y).ObjInfo.data = GetTickCount() ' Ultimo uso
+            MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
             If .clase = Trabajador Then
                 MiObj.amount = GetExtractResourceForLevel(.Stats.ELV)
             Else
@@ -2210,7 +2210,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
             Dim MiObj As t_Obj
             Dim nPos  As t_WorldPos
             Call ActualizarRecurso(.pos.Map, x, y)
-            MapData(.pos.Map, x, y).ObjInfo.data = GetTickCount() ' Ultimo uso
+            MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
             Yacimiento = ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex)
             MiObj.ObjIndex = Yacimiento.MineralIndex
             If .clase = Trabajador Then
@@ -2390,11 +2390,17 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal x As Integer, ByVal y A
     Dim ObjIndex As Integer
     ObjIndex = MapData(Map, x, y).ObjInfo.ObjIndex
     Dim TiempoActual As Long
-    TiempoActual = GetTickCount()
+    TiempoActual = GetTickCountRaw()
     ' Data = Ultimo uso
-    If (TiempoActual - MapData(Map, x, y).ObjInfo.data) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then
-        MapData(Map, x, y).ObjInfo.amount = ObjData(ObjIndex).VidaUtil
-        MapData(Map, x, y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
+    Dim lastUse As Long
+    lastUse = MapData(Map, x, y).ObjInfo.data
+    If lastUse <> &H7FFFFFFF Then
+        Dim elapsedMs As Double
+        elapsedMs = TicksElapsed(lastUse, TiempoActual)
+        If elapsedMs / 1000# > ObjData(ObjIndex).TiempoRegenerar Then
+            MapData(Map, x, y).ObjInfo.amount = ObjData(ObjIndex).VidaUtil
+            MapData(Map, x, y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
+        End If
     End If
     Exit Sub
 ActualizarRecurso_Err:

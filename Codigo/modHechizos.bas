@@ -578,9 +578,9 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             End If
         End If
         If Hechizos(HechizoIndex).Cooldown > 0 And .Counters.UserHechizosInterval(Slot) > 0 Then
-            Dim Actual            As Long
+            Dim nowRaw             As Long
             Dim SegundosFaltantes As Long
-            Actual = GetTickCount()
+            nowRaw = GetTickCountRaw()
             Dim Cooldown As Long
             Cooldown = Hechizos(HechizoIndex).Cooldown
             'cooldown reduction for Elven Wood items
@@ -595,8 +595,10 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 End If
             End If
             Cooldown = Cooldown * 1000
-            If .Counters.UserHechizosInterval(Slot) + Cooldown > Actual Then
-                SegundosFaltantes = Int((.Counters.UserHechizosInterval(Slot) + Cooldown - Actual) / 1000)
+            Dim elapsedMs As Double
+            elapsedMs = TicksElapsed(.Counters.UserHechizosInterval(Slot), nowRaw)
+            If elapsedMs < Cooldown Then
+                SegundosFaltantes = Int((Cooldown - elapsedMs) / 1000)
                 Call WriteLocaleMsg(UserIndex, 1635, e_FontTypeNames.FONTTYPE_WARNING, SegundosFaltantes) 'Msg1635=Debes esperar ¬1 segundos para volver a tirar este hechizo.
                 Exit Function
             End If
@@ -1367,7 +1369,7 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
     End If
     If SpellCastSuccess Then
         If Hechizos(uh).Cooldown > 0 Then
-            UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
+            UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCountRaw()
             If Hechizos(uh).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(uh).CdEffectId, -uh, CLng(Hechizos(uh).Cooldown) * 1000, CLng(Hechizos( _
                     uh).Cooldown) * 1000, eCD)
         End If

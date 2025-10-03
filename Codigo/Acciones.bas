@@ -369,7 +369,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer,
                     Exit Sub
                 End If
                 If NpcList(TempCharIndex).Movement = e_TipoAI.Caminata Then
-                    NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(TempCharIndex).IntervaloMovimiento
+                    NpcList(TempCharIndex).Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), 15000)
                 End If
                 'Iniciamos la rutina pa' comerciar.
                 Call IniciarComercioNPC(UserIndex)
@@ -421,7 +421,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer,
                 End If
                 '  Hacemos que se detenga a hablar un momento :P
                 If NpcList(TempCharIndex).Movement = Caminata Then
-                    NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - NpcList(TempCharIndex).IntervaloMovimiento ' 5 segundos
+                    NpcList(TempCharIndex).Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), 5000) ' 5 segundos
                 End If
                 UserList(UserIndex).flags.Envenenado = 0
                 UserList(UserIndex).flags.Incinerado = 0
@@ -458,7 +458,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer,
                     Exit Sub
                 End If
                 If NpcList(TempCharIndex).Movement = Caminata Then
-                    NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 20000 - NpcList(TempCharIndex).IntervaloMovimiento
+                    NpcList(TempCharIndex).Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), 20000)
                 End If
                 Call IniciarSubasta(UserIndex)
             ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Quest Then

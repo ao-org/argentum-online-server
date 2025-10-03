@@ -1410,6 +1410,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     Dim ObjIndex As Integer
     Dim TargObj  As t_ObjData
     Dim MiObj    As t_Obj
+    Dim nowRaw   As Long
     With UserList(UserIndex)
         If .invent.Object(Slot).amount = 0 Then Exit Sub
         If Not CanUseItem(.flags, .Counters) Then
@@ -1420,7 +1421,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Exit Sub
         End If
         obj = ObjData(.invent.Object(Slot).ObjIndex)
-        Dim TimeSinceLastUse As Long: TimeSinceLastUse = GetTickCount() - .CdTimes(obj.cdType)
+        nowRaw = GetTickCountRaw()
+        Dim TimeSinceLastUse As Double: TimeSinceLastUse = TicksElapsed(.CdTimes(obj.cdType), nowRaw)
         If TimeSinceLastUse < obj.Cooldown Then Exit Sub
         If IsSet(obj.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly) Then
             If MapInfo(.pos.Map).Seguro = 0 Then
@@ -2059,9 +2061,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Call UserMod.UserDie(UserIndex)
                         'Poción de reset (resetea el personaje)
                     Case 22
-                        If GetTickCount - .Counters.LastResetTick > 3000 Then
+                        nowRaw = GetTickCountRaw()
+                        If TicksElapsed(.Counters.LastResetTick, nowRaw) > 3000 Then
                             Call writeAnswerReset(UserIndex)
-                            .Counters.LastResetTick = GetTickCount
+                            .Counters.LastResetTick = nowRaw
                         Else
                             'Msg894= Debes esperar unos momentos para tomar esta poción.
                             Call WriteLocaleMsg(UserIndex, "894", e_FontTypeNames.FONTTYPE_INFO)
@@ -2732,8 +2735,8 @@ ItemNewbie_Err:
 End Function
 
 Public Function IsItemInCooldown(ByRef User As t_User, ByRef obj As t_UserOBJ) As Boolean
-    Dim ElapsedTime As Long
-    ElapsedTime = GetTickCount() - User.CdTimes(ObjData(obj.ObjIndex).cdType)
+    Dim ElapsedTime As Double
+    ElapsedTime = TicksElapsed(User.CdTimes(ObjData(obj.ObjIndex).cdType), GetTickCountRaw())
     IsItemInCooldown = ElapsedTime < ObjData(obj.ObjIndex).Cooldown
 End Function
 
