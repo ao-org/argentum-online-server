@@ -188,7 +188,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             Next
         End If
         If UserList(UserIndex).ChatCombate = 1 Then
-            Call WriteLocaleMsg(UserIndex, "184", e_FontTypeNames.FONTTYPE_DIOS)
+            Call WriteLocaleMsg(UserIndex, 184, e_FontTypeNames.FONTTYPE_DIOS)
         End If
         If UserList(UserIndex).Stats.NPCsMuertos < 32000 Then UserList(UserIndex).Stats.NPCsMuertos = UserList(UserIndex).Stats.NPCsMuertos + 1
         If IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
@@ -767,7 +767,7 @@ Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
         UserList(UserIndex).flags.Envenenado = VenenoNivel
         'Msg182=¡¡La criatura te ha envenenado!!
         If UserList(UserIndex).ChatCombate = 1 Then
-            Call WriteLocaleMsg(UserIndex, "182", e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, 182, e_FontTypeNames.FONTTYPE_FIGHT)
         End If
     End If
     Exit Sub
@@ -1073,7 +1073,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         For LoopC = 1 To .flags.LanzaSpells
             .Spells(LoopC).SpellIndex = val(Leer.GetValue("NPC" & NpcNumber, "Sp" & LoopC))
             .Spells(LoopC).Cd = val(Leer.GetValue("NPC" & NpcNumber, "Cd" & LoopC))
-            .Spells(LoopC).LastUse = 0
+            .Spells(LoopC).lastUse = 0
         Next LoopC
         If .npcType = e_NPCType.Entrenador Then
             .NroCriaturas = val(Leer.GetValue("NPC" & NpcNumber, "NroCriaturas"))
@@ -1433,7 +1433,6 @@ Public Sub KillRandomNpc()
     Loop
     Call MuereNpc(NpcIndex, 0)
 End Sub
-
 
 Public Function CanMove(ByRef counter As t_NpcCounters, ByRef flags As t_NPCFlags) As Boolean
     Dim nowRaw As Long
