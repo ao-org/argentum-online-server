@@ -577,7 +577,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             End If
         End If
         If Hechizos(HechizoIndex).Cooldown > 0 And .Counters.UserHechizosInterval(Slot) > 0 Then
-            Dim nowRaw             As Long
+            Dim nowRaw            As Long
             Dim SegundosFaltantes As Long
             nowRaw = GetTickCountRaw()
             Dim Cooldown As Long
@@ -2552,7 +2552,7 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
         End If
         If Hechizos(h).wav <> 0 Then
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY)) 'Esta linea faltaba. Pablo (ToxicWaste)
-           End If
+        End If
     End If
     If UserList(UserIndex).ChatCombate = 1 Then
         If Hechizos(h).Target = e_TargetType.uTerreno Then

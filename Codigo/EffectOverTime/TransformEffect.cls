@@ -39,6 +39,8 @@ Attribute VB_Exposed = False
 '
 Option Explicit
 Implements IBaseEffectOverTime
+Dim DotHpMin               As Integer
+Dim DotHpMax               As Integer
 Dim TargetTicks            As Integer
 Dim TickCount              As Integer
 Dim TickManaConsumption    As Integer
@@ -46,6 +48,8 @@ Dim TickStaminaConsumption As Integer
 Dim TickTime               As Long
 Dim TimeSinceLastTick      As Long
 Dim TickEffect             As Integer
+Dim Modifiers              As Integer
+Dim EffectBonus            As Single
 Dim NpcId                  As Integer
 Dim StatusMask             As Long
 Private DotInfo            As t_BaseDotInfo

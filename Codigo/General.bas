@@ -523,17 +523,13 @@ Sub Main()
     '           Configuracion de los sockets
     ' ----------------------------------------------------
     Call GetHoraActual
-
     WorldTime_Init CLng(SvrConfig.GetValue("DayLength")), 0
-
     frmCargando.Visible = False
     Unload frmCargando
     'Ocultar
     Call frmMain.InitMain(HideMe)
     Call InitializeAntiCheat
     tInicioServer = GetTickCountRaw()
-
-
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Init
         Debug.Print "AO20 Unit Testing"

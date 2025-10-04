@@ -721,7 +721,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
     Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
     If UserList(UserIndex).flags.invisible = 0 Then Call NPCAtacado(NpcIndex, UserIndex)
     Call EffectsOverTime.TargetWillAttack(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
-    If UserImpactoNpc(UserIndex, NpcIndex, aType) Then
+    If UserImpactoNpc(UserIndex, NpcIndex) Then
         ' Suena el Golpe en el cliente.
         If NpcList(NpcIndex).flags.Snd2 > 0 Then
             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd2, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y))

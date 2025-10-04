@@ -60,7 +60,8 @@ Public Sub Setup(ByVal SourceIndex As Integer, _
     TargetX = TileX
     TargetY = TileY
     TargetMap = Map
-    Dim CurrPos As t_WorldPos
+    Dim Distance As t_Vector
+    Dim CurrPos  As t_WorldPos
     CurrPos = GetPosition(DotInfo.TargetRef)
     SourceObjIndex = SourceObj
     With EffectOverTime(EffectId)
@@ -194,7 +195,7 @@ Private Sub DoBlast()
             TargetX, TargetY))
     If EffectOverTime(DotInfo.EotId).OnHitWav > 0 Then Call modSendData.SendToAreaByPos(TargetMap, TargetX, TargetY, PrepareMessagePlayWave(EffectOverTime( _
             DotInfo.EotId).OnHitWav, TargetX, TargetY, False))
-    Dim x, y, w, h As Integer
+    Dim x, y, w, h, Map As Integer
     x = TargetX - Area \ 2
     y = TargetY - Area \ 2
     w = x + (Area - 1)
@@ -204,6 +205,7 @@ Private Sub DoBlast()
     w = Min(w, 99)
     h = Min(h, 99)
     Dim i, j As Integer
+    Dim Effect As IBaseEffectOverTime
     For i = y To h
         For j = x To w
             'we can't taunt someone already taunted

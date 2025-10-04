@@ -125,7 +125,7 @@ End Sub
 
 Public Sub close_not_logged_sockets_if_timeout()
     On Error GoTo close_not_logged_sockets_if_timeout_ErrHandler:
-    Dim key   As Variant
+    Dim key    As Variant
     Dim nowRaw As Long, Delta As Double
     nowRaw = GetTickCountRaw()
     For Each key In PendingConnections.Keys

@@ -2544,35 +2544,28 @@ Public Sub ClearClothes(ByRef Char As t_Char)
     Char.CartAnim = NoCart
 End Sub
 
-Public Function IsStun(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
+Public Function IsStun(ByRef Counters As t_UserCounters) As Boolean
     Dim nowRaw As Long
     nowRaw = GetTickCountRaw()
-
     ' Player is stunned if current tick has NOT yet passed the stun end deadline
     IsStun = Not DeadlinePassed(nowRaw, Counters.StunEndTime)
 End Function
-
 
 Public Function CanMove(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
     CanMove = flags.Paralizado = 0 And flags.Inmovilizado = 0 And Not IsStun(Counters) And Not flags.TranslationActive
 End Function
 
-
 Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserCounters) As Boolean
     On Error GoTo eh
     StunPlayer = False
-
     ' (Optional) your CanMove signature might be (counters, flags) — adjust order if needed
     If Not CanMove(UserList(UserIndex).flags, Counters) Then Exit Function
     If IsSet(UserList(UserIndex).flags.StatusMask, eCCInmunity) Then Exit Function
-
     Dim nowRaw As Long
     nowRaw = GetTickCountRaw()   ' <-- use raw tick
-
     ' Respect anti-chain-stun window: allow new stun only after immune window passes
     Dim immuneUntil As Long
     immuneUntil = AddMod32(Counters.StunEndTime, PlayerInmuneTime) ' old end + immunity
-
     If TickAfter(nowRaw, immuneUntil) Then
         ' Apply (or re-apply) stun: set absolute deadline using modulo-2^32 add
         Counters.StunEndTime = AddMod32(nowRaw, PlayerStunTime)

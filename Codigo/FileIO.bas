@@ -28,10 +28,44 @@ Attribute VB_Name = "ES"
 Option Explicit
 Const MAX_RANDOM_TELEPORT_IN_MAP = 20
 
+Private Type t_Position
+    x As Integer
+    y As Integer
+End Type
+
+'Item type
+Private Type t_Item
+    ObjIndex As Integer
+    amount As Integer
+End Type
+
 Private Type t_WorldPos
     Map As Integer
     x As Byte
     y As Byte
+End Type
+
+Private Type t_Grh
+    GrhIndex As Long
+    FrameCounter As Single
+    Speed As Single
+    Started As Byte
+    alpha_blend As Boolean
+    angle As Single
+End Type
+
+Private Type t_GrhData
+    sX As Integer
+    sY As Integer
+    filenum As Integer
+    pixelWidth As Integer
+    pixelHeight As Integer
+    TileWidth As Single
+    TileHeight As Single
+    NumFrames As Integer
+    Frames() As Integer
+    Speed As Integer
+    mini_map_color As Long
 End Type
 
 Private Type t_MapHeader
@@ -117,6 +151,7 @@ Private Type t_MapDat
     base_light As Long
     letter_grh As Long
     level As Long
+    extra2 As Long
     Salida As String
     lluvia As Byte
     Nieve As Byte
@@ -706,6 +741,7 @@ End Sub
 Public Sub DoBackUp()
     On Error GoTo DoBackUp_Err
     haciendoBK = True
+    Dim i As Integer
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
     haciendoBK = False
@@ -1032,6 +1068,7 @@ Sub LoadOBJData()
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
                 Case e_OBJType.otBackpack
+                    '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
                 Case e_OBJType.otWeapon
                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
                     .Apuñala = val(Leer.GetValue(ObjKey, "Apuñala"))
@@ -1390,7 +1427,9 @@ End Function
 Sub CargarBackUp()
     On Error GoTo CargarBackUp_Err
     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando backup."
-    Dim Map As Integer
+    Dim Map     As Integer
+    Dim TempInt As Integer
+    Dim npcfile As String
     If RunningInVB() Then
         NumMaps = 869
     Else
@@ -1420,7 +1459,9 @@ End Sub
 Sub LoadMapData()
     On Error GoTo man
     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando mapas..."
-    Dim Map As Integer
+    Dim Map     As Integer
+    Dim TempInt As Integer
+    Dim npcfile As String
     #If UNIT_TEST = 1 Then
         'We only need 50 maps for unit testing
         NumMaps = 50
@@ -1474,9 +1515,13 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
     Dim TEs()                                       As t_DatosTE
     Dim RandomTeleports(MAX_RANDOM_TELEPORT_IN_MAP) As Integer
     Dim randomTeleportCount                         As Integer
+    Dim body                                        As Integer
+    Dim head                                        As Integer
+    Dim Heading                                     As Byte
     Dim SailingTiles                                As Long
     Dim TotalTiles                                  As Long
     Dim i                                           As Long
+    Dim j                                           As Long
     Dim x                                           As Integer, y As Integer
     randomTeleportCount = 0
     If Not FileExist(MAPFl, vbNormal) Then
@@ -1726,6 +1771,7 @@ Public Sub CreateFishingPool(ByVal Map As Integer)
 End Sub
 
 Sub LoadPrivateKey()
+    Dim MyLine As String
     Open App.Path & "\..\ao20-ComputePK\crypto-hex.txt" For Input As #1
     Line Input #1, PrivateKey
     Close #1
@@ -1791,7 +1837,8 @@ LoadSini_Err:
 End Sub
 
 Sub LoadGlobalDropTable()
-    Dim Lector As clsIniManager
+    Dim Lector   As clsIniManager
+    Dim Temporal As Long
     If Not FileExist(DatPath & "GlobalDropTable.dat") Then
         Exit Sub
     End If
@@ -1822,7 +1869,8 @@ End Sub
 
 Sub LoadFeatureToggles()
     On Error GoTo LoadFeatureToggles_Err
-    Dim Lector As clsIniManager
+    Dim Lector   As clsIniManager
+    Dim Temporal As Long
     Set FeatureToggles = New Dictionary
     If Not FileExist("feature_toggle.ini") Then
         Exit Sub
@@ -1872,6 +1920,7 @@ End Sub
 
 Sub CargarCiudades()
     On Error GoTo CargarCiudades_Err
+    Dim i      As Long
     Dim Lector As clsIniManager
     Set Lector = New clsIniManager
     Call Lector.Initialize(DatPath & "Ciudades.dat")
@@ -2263,6 +2312,15 @@ Public Sub RemoveTokenDatabase(ByVal UserIndex As Integer)
     Call Execute("delete from tokens where id =  ?;", UserList(UserIndex).encrypted_session_token_db_id)
 End Sub
 
+Public Sub AddTokenDatabase(ByVal encrypted_token As String, ByVal decrypted_token As String, ByVal username As String)
+    #If UNIT_TEST = 1 Then
+        'Only used in automated unit testing to create a valid session so that we can then try LoginNewChar and
+        'LoginExistingChar
+        Call Execute("insert into tokens (encrypted_token, decrypted_token, username, remote_host, timestamp) values(?,?,?,""127.0.0.1"",""123456"") ;", encrypted_token, _
+                decrypted_token, username)
+    #End If
+End Sub
+
 Sub SaveNewUser(ByVal UserIndex As Integer)
     On Error GoTo SaveNewUser_Err
     Call SaveNewCharacterDB(UserIndex)
@@ -2278,6 +2336,115 @@ Function Status(ByVal UserIndex As Integer) As e_Facciones
 Status_Err:
     Call TraceError(Err.Number, Err.Description, "ES.Status", Erl)
 End Function
+
+Sub BackUPnPc(NpcIndex As Integer)
+    On Error GoTo BackUPnPc_Err
+    Dim NpcNumero As Integer
+    Dim npcfile   As String
+    Dim LoopC     As Integer
+    NpcNumero = NpcList(NpcIndex).Numero
+    'If NpcNumero > 499 Then
+    '    npcfile = DatPath & "bkNPCs-HOSTILES.dat"
+    'Else
+    npcfile = DatPath & "bkNPCs.dat"
+    'End If
+    'General
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "Name", NpcList(NpcIndex).name)
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "Desc", NpcList(NpcIndex).Desc)
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "Head", val(NpcList(NpcIndex).Char.head))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "Body", val(NpcList(NpcIndex).Char.body))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "Heading", val(NpcList(NpcIndex).Char.Heading))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "Movement", val(NpcList(NpcIndex).Movement))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "Attackable", val(NpcList(NpcIndex).Attackable))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "Comercia", val(NpcList(NpcIndex).Comercia))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "Craftea", val(NpcList(NpcIndex).Craftea))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "TipoItems", val(NpcList(NpcIndex).TipoItems))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "Hostil", val(NpcList(NpcIndex).Hostile))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "GiveEXP", val(NpcList(NpcIndex).GiveEXP))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "GiveGLD", val(NpcList(NpcIndex).GiveGLD))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "Hostil", val(NpcList(NpcIndex).Hostile))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "InvReSpawn", val(NpcList(NpcIndex).InvReSpawn))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "NpcType", val(NpcList(NpcIndex).npcType))
+    'Stats
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "Alineacion", val(NpcList(NpcIndex).flags.AIAlineacion))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "DEF", val(NpcList(NpcIndex).Stats.def))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "MaxHit", val(NpcList(NpcIndex).Stats.MaxHit))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "MaxHp", val(NpcList(NpcIndex).Stats.MaxHp))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "MinHit", val(NpcList(NpcIndex).Stats.MinHIT))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "MinHp", val(NpcList(NpcIndex).Stats.MinHp))
+    'Flags
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "ReSpawn", val(NpcList(NpcIndex).flags.Respawn))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "BackUp", val(NpcList(NpcIndex).flags.backup))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "Domable", val(NpcList(NpcIndex).flags.Domable))
+    'Inventario
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "NroItems", val(NpcList(NpcIndex).invent.NroItems))
+    If NpcList(NpcIndex).invent.NroItems > 0 Then
+        For LoopC = 1 To MAX_INVENTORY_SLOTS
+            Call WriteVar(npcfile, "NPC" & NpcNumero, "Obj" & LoopC, NpcList(NpcIndex).invent.Object(LoopC).ObjIndex & "-" & NpcList(NpcIndex).invent.Object(LoopC).amount)
+        Next
+    End If
+    Exit Sub
+BackUPnPc_Err:
+    Call TraceError(Err.Number, Err.Description, "ES.BackUPnPc", Erl)
+End Sub
+
+Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
+    On Error GoTo CargarNpcBackUp_Err
+    'Status
+    If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando backup Npc"
+    Dim npcfile As String
+    'If NpcNumber > 499 Then
+    '    npcfile = DatPath & "bkNPCs-HOSTILES.dat"
+    'Else
+    npcfile = DatPath & "bkNPCs.dat"
+    'End If
+    NpcList(NpcIndex).Numero = NpcNumber
+    NpcList(NpcIndex).name = GetVar(npcfile, "NPC" & NpcNumber, "Name")
+    NpcList(NpcIndex).Desc = GetVar(npcfile, "NPC" & NpcNumber, "Desc")
+    Call SetMovement(NpcIndex, val(GetVar(npcfile, "NPC" & NpcNumber, "Movement")))
+    NpcList(NpcIndex).npcType = val(GetVar(npcfile, "NPC" & NpcNumber, "NpcType"))
+    NpcList(NpcIndex).Char.body = val(GetVar(npcfile, "NPC" & NpcNumber, "Body"))
+    NpcList(NpcIndex).Char.head = val(GetVar(npcfile, "NPC" & NpcNumber, "Head"))
+    NpcList(NpcIndex).Char.Heading = val(GetVar(npcfile, "NPC" & NpcNumber, "Heading"))
+    NpcList(NpcIndex).Attackable = val(GetVar(npcfile, "NPC" & NpcNumber, "Attackable"))
+    NpcList(NpcIndex).Comercia = val(GetVar(npcfile, "NPC" & NpcNumber, "Comercia"))
+    NpcList(NpcIndex).Craftea = val(GetVar(npcfile, "NPC" & NpcNumber, "Craftea"))
+    NpcList(NpcIndex).Hostile = val(GetVar(npcfile, "NPC" & NpcNumber, "Hostile"))
+    NpcList(NpcIndex).GiveEXP = val(GetVar(npcfile, "NPC" & NpcNumber, "GiveEXP"))
+    NpcList(NpcIndex).GiveGLD = val(GetVar(npcfile, "NPC" & NpcNumber, "GiveGLD"))
+    NpcList(NpcIndex).InvReSpawn = val(GetVar(npcfile, "NPC" & NpcNumber, "InvReSpawn"))
+    NpcList(NpcIndex).Stats.MaxHp = val(GetVar(npcfile, "NPC" & NpcNumber, "MaxHP"))
+    NpcList(NpcIndex).Stats.MinHp = val(GetVar(npcfile, "NPC" & NpcNumber, "MinHP"))
+    NpcList(NpcIndex).Stats.MaxHit = val(GetVar(npcfile, "NPC" & NpcNumber, "MaxHIT"))
+    NpcList(NpcIndex).Stats.MinHIT = val(GetVar(npcfile, "NPC" & NpcNumber, "MinHIT"))
+    NpcList(NpcIndex).Stats.def = val(GetVar(npcfile, "NPC" & NpcNumber, "DEF"))
+    NpcList(NpcIndex).flags.AIAlineacion = val(GetVar(npcfile, "NPC" & NpcNumber, "Alineacion"))
+    Dim LoopC As Integer
+    Dim ln    As String
+    NpcList(NpcIndex).invent.NroItems = val(GetVar(npcfile, "NPC" & NpcNumber, "NROITEMS"))
+    If NpcList(NpcIndex).invent.NroItems > 0 Then
+        For LoopC = 1 To MAX_INVENTORY_SLOTS
+            ln = GetVar(npcfile, "NPC" & NpcNumber, "Obj" & LoopC)
+            NpcList(NpcIndex).invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))
+            NpcList(NpcIndex).invent.Object(LoopC).amount = val(ReadField(2, ln, 45))
+        Next LoopC
+    Else
+        For LoopC = 1 To MAX_INVENTORY_SLOTS
+            NpcList(NpcIndex).invent.Object(LoopC).ObjIndex = 0
+            NpcList(NpcIndex).invent.Object(LoopC).amount = 0
+        Next LoopC
+    End If
+    NpcList(NpcIndex).flags.NPCActive = True
+    NpcList(NpcIndex).flags.Respawn = val(GetVar(npcfile, "NPC" & NpcNumber, "ReSpawn"))
+    NpcList(NpcIndex).flags.backup = val(GetVar(npcfile, "NPC" & NpcNumber, "BackUp"))
+    NpcList(NpcIndex).flags.Domable = val(GetVar(npcfile, "NPC" & NpcNumber, "Domable"))
+    NpcList(NpcIndex).flags.RespawnOrigPos = val(GetVar(npcfile, "NPC" & NpcNumber, "OrigPos"))
+    'Tipo de items con los que comercia
+    NpcList(NpcIndex).TipoItems = val(GetVar(npcfile, "NPC" & NpcNumber, "TipoItems"))
+    Exit Sub
+CargarNpcBackUp_Err:
+    Call TraceError(Err.Number, Err.Description, "ES.CargarNpcBackUp", Erl)
+End Sub
 
 Sub LogBanFromName(ByVal BannedName As String, ByVal UserIndex As Integer, ByVal Motivo As String)
     On Error GoTo LogBanFromName_Err

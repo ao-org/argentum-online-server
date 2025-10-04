@@ -3381,29 +3381,22 @@ PrepareMessageRainToggle_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageRainToggle", Erl)
 End Function
 
-
 Public Function PrepareMessageHora()
     On Error GoTo PrepareMessageHora_Err
-
     Dim dayLen As Long
     dayLen = CLng(SvrConfig.GetValue("DayLength"))
     If dayLen <= 0 Then dayLen = 1
-
     ' Ensure WorldTime is initialized at server start, e.g. WorldTime_Init dayLen, 0
     Dim t As Long, d As Long
     WorldTime_PrepareHora t, d
-
     Call Writer.WriteInt16(ServerPacketID.ehora)
     Call Writer.WriteInt32(t)   ' elapsed 0..dayLen-1
     Call Writer.WriteInt32(d)   ' dayLen
     Exit Function
-
 PrepareMessageHora_Err:
     Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, _
-        "Argentum20Server.Protocol_Writes.PrepareMessageHora", Erl)
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageHora", Erl)
 End Function
-
 
 ''
 ' Prepares the "ObjectDelete" message and returns it.

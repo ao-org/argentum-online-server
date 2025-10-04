@@ -200,8 +200,10 @@ End Function
 Public Function IsValidPos(ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer) As Boolean
     IsValidPos = False
     Dim CanGoWater As Boolean
+    Dim Mounted    As Boolean
     If DotInfo.TargetRef.RefType = eUser Then
         CanGoWater = UserList(DotInfo.TargetRef.ArrayIndex).flags.Navegando
+        Mounted = UserList(DotInfo.TargetRef.ArrayIndex).flags.Montado
     Else
         CanGoWater = NpcList(DotInfo.TargetRef.ArrayIndex).flags.AguaValida
     End If
@@ -209,9 +211,10 @@ Public Function IsValidPos(ByVal Map As Integer, ByVal TileX As Integer, ByVal T
 End Function
 
 Public Sub PerformAction()
-    Dim Direction As t_Vector
-    Dim TargetPos As t_WorldPos
-    Dim CurrPos   As t_WorldPos
+    Dim Direction   As t_Vector
+    Dim TargetPos   As t_WorldPos
+    Dim CurrPos     As t_WorldPos
+    Dim TargetPoint As t_WorldPos
     TargetPos = GetPosition(Source)
     CurrPos = GetPosition(DotInfo.TargetRef)
     Direction.x = TargetPos.x - CurrPos.x

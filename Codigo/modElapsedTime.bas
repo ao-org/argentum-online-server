@@ -24,8 +24,6 @@ Attribute VB_Name = "modElapsedTime"
 '    for more information about ORE please visit http://www.baronsoft.com/
 '
 Option Explicit
-
-
 ' ============================================
 ' Why NOT to use masked GetTickCount() for timing
 ' ============================================
@@ -126,7 +124,6 @@ Option Explicit
 '
 ' ==============================================================
 Private Declare Function timeGetTime Lib "winmm.dll" () As Long
-
 Private Const TICKS32 As Double = 4294967296#
 
 ' Legacy (keep for now, used by old code paths)
@@ -218,6 +215,3 @@ Public Function DeadlinePassed(ByVal nowRaw As Long, ByVal deadline As Long) As 
         DeadlinePassed = (nowRaw - deadline) >= 0   ' wrap-safe TickAfter
     End If
 End Function
-
-
-

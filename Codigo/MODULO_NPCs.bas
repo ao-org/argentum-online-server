@@ -1043,7 +1043,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         For LoopC = 1 To .flags.LanzaSpells
             .Spells(LoopC).SpellIndex = val(Leer.GetValue("NPC" & NpcNumber, "Sp" & LoopC))
             .Spells(LoopC).Cd = val(Leer.GetValue("NPC" & NpcNumber, "Cd" & LoopC))
-            .Spells(LoopC).LastUse = 0
+            .Spells(LoopC).lastUse = 0
         Next LoopC
         If .npcType = e_NPCType.Entrenador Then
             .NroCriaturas = val(Leer.GetValue("NPC" & NpcNumber, "NroCriaturas"))

@@ -1056,7 +1056,7 @@ Private Sub TimerGuardarUsuarios_Timer()
         ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
         Dim UserIndex        As Integer, UserGuardados As Integer
         Dim PerformanceTimer As Long
-        Dim nowRaw          As Long
+        Dim nowRaw           As Long
         Call PerformanceTestStart(PerformanceTimer)
         For UserIndex = 1 To LastUser
             With UserList(UserIndex)

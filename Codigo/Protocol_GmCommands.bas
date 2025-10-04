@@ -3256,8 +3256,6 @@ HandleShowServerForm_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleShowServerForm", Erl)
 End Sub
 
-
-
 Public Sub HandleKickAllChars(ByVal UserIndex As Integer)
     On Error GoTo HandleKickAllChars_Err
     'Author: Lucas Tavolaro Ortiz (Tavo)
@@ -3397,8 +3395,8 @@ HandleGlobalOnOff_Err:
 End Sub
 
 Public Sub HandleGlobalMessage(ByVal UserIndex As Integer)
-    Dim nowRaw      As Long
-    Dim elapsedMs   As Double
+    Dim nowRaw    As Long
+    Dim elapsedMs As Double
     nowRaw = GetTickCountRaw()
     elapsedMs = TicksElapsed(UserList(UserIndex).Counters.MensajeGlobal, nowRaw)
     On Error GoTo ErrHandler
@@ -3452,7 +3450,6 @@ HandleGlobalOnOff_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGlobalOnOff", Erl)
 End Sub
 
-
 Public Sub HandleGiveItem(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
@@ -3502,8 +3499,8 @@ ErrHandler:
 End Sub
 
 Public Sub HandleQuestionGM(ByVal UserIndex As Integer)
-    Dim nowRaw      As Long
-    Dim elapsedMs   As Double
+    Dim nowRaw    As Long
+    Dim elapsedMs As Double
     nowRaw = GetTickCountRaw()
     elapsedMs = TicksElapsed(UserList(UserIndex).Counters.LastGmMessage, nowRaw)
     On Error GoTo ErrHandler

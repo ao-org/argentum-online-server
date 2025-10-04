@@ -39,6 +39,7 @@ Attribute VB_Exposed = False
 '
 Option Explicit
 Implements IBaseEffectOverTime
+Private mid                 As Long
 Private mDotInfo            As t_BaseDotInfo
 Private mElapsedTime        As Long
 Private mTimeLimit          As Long
@@ -191,6 +192,7 @@ Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, By
             Exit Sub
         End If
     End If
+    Dim i As Integer
     mPendingBlowPos.Map = Map
     mPendingBlowPos.x = PosX
     mPendingBlowPos.y = PosY

@@ -1164,7 +1164,7 @@ UsuarioAtacableConMelee_Err:
 End Function
 
 Private Function CanCastSpell(ByRef Npc As t_Npc, ByVal Slot As Integer) As Boolean
-    CanCastSpell = GlobalFrameTime - Npc.Spells(Slot).LastUse > (Npc.Spells(Slot).Cd * 1000)
+    CanCastSpell = GlobalFrameTime - Npc.Spells(Slot).lastUse > (Npc.Spells(Slot).Cd * 1000)
 End Function
 
 Public Function GetAvailableSpellEffects(ByVal NpcIndex As Integer) As Long
@@ -1373,7 +1373,7 @@ Public Function TryCastHelpSpell(ByVal NpcIndex As Integer, ByVal AvailableSpell
         Else
             Call NpcLanzaSpellSobreNpc(NpcIndex, CurrentTarget.ArrayIndex, NpcList(NpcIndex).Spells(SpellIndex).SpellIndex)
         End If
-        NpcList(NpcIndex).Spells(SpellIndex).LastUse = GlobalFrameTime
+        NpcList(NpcIndex).Spells(SpellIndex).lastUse = GlobalFrameTime
         TryCastHelpSpell = True
     End If
 End Function
@@ -1389,7 +1389,7 @@ Public Function TryCastAttackSpell(ByVal NpcIndex As Integer, ByVal AvailableSpe
         Else
             Call NpcLanzaSpellSobreNpc(NpcIndex, CurrentTarget.ArrayIndex, NpcList(NpcIndex).Spells(SpellIndex).SpellIndex)
         End If
-        NpcList(NpcIndex).Spells(SpellIndex).LastUse = GlobalFrameTime
+        NpcList(NpcIndex).Spells(SpellIndex).lastUse = GlobalFrameTime
         TryCastAttackSpell = True
     End If
 End Function

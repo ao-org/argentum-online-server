@@ -1419,12 +1419,12 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 UserList(UserIndex).Char.FX = 0
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.charindex, 0))
             End If
-            Dim CurrentTick As Long
-            CurrentTick = GetTickCountRaw()
+            Dim currentTick As Long
+            currentTick = GetTickCountRaw()
             'Prevent SpeedHack (refactored by WyroX)
             If Not EsGM(UserIndex) And .Char.speeding > 0 Then
                 Dim ElapsedTimeStep As Double, MinTimeStep As Long, DeltaStep As Single
-                ElapsedTimeStep = TicksElapsed(.Counters.LastStep, CurrentTick)
+                ElapsedTimeStep = TicksElapsed(.Counters.LastStep, currentTick)
                 MinTimeStep = .Intervals.Caminar / .Char.speeding
                 DeltaStep = (MinTimeStep - ElapsedTimeStep) / MinTimeStep
                 If DeltaStep > 0 Then
@@ -1441,7 +1441,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
             'Move user
             If MoveUserChar(UserIndex, Heading) Then
                 ' Save current step for anti-sh
-                .Counters.LastStep = CurrentTick
+                .Counters.LastStep = currentTick
                 If UserList(UserIndex).Grupo.EnGrupo Then
                     Call CompartirUbicacion(UserIndex)
                 End If
@@ -2106,12 +2106,9 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
         Dim DesdeInventario As Boolean
         DesdeInventario = reader.ReadInt8
         If Not DesdeInventario Then
-            
             Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("El usuario " & .name & _
                     " está tomando pociones con click estando en hechizos....Fue kickeado automaticamente", e_FontTypeNames.FONTTYPE_INFOBOLD))
-                    
             Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID)
-            
         End If
         Dim PacketCounter As Long
         PacketCounter = reader.ReadInt32
