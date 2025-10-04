@@ -689,11 +689,7 @@ Private Sub Command23_Click()
     If MsgBox("Esta seguro que desea hacer WorldSave, guardar pjs y cerrar ?", vbYesNo, "Apagar Magicamente") = vbYes Then
         Me.MousePointer = 11
         FrmStat.Show
-        'WorldSave
-        '   Call DoBackUp
-        'Guardar Pjs
         Call GuardarUsuarios
-        'Chauuu
         Unload frmMain
     End If
     Exit Sub

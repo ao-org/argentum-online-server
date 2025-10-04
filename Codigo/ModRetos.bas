@@ -631,7 +631,7 @@ Public Sub TirarItemsEnPos(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y 
         For i = 1 To .CurrentInventorySlots
             ItemIndex = .invent.Object(i).ObjIndex
             If ItemIndex > 0 Then
-                If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex, i) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
+                If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
                     NuevaPos.x = 0
                     NuevaPos.y = 0
                     MiObj.amount = .invent.Object(i).amount

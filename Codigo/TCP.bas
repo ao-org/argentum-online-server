@@ -351,42 +351,6 @@ RellenarInventario_Err:
     Call TraceError(Err.Number, Err.Description, "TCP.RellenarInventario", Erl)
 End Sub
 
-Function AsciiValidos(ByVal cad As String) As Boolean
-    On Error GoTo AsciiValidos_Err
-    Dim car As Byte
-    Dim i   As Integer
-    cad = LCase$(cad)
-    For i = 1 To Len(cad)
-        car = Asc(mid$(cad, i, 1))
-        If (car < 97 Or car > 122) And (car <> 255) And (car <> 32) Then
-            AsciiValidos = False
-            Exit Function
-        End If
-    Next i
-    AsciiValidos = True
-    Exit Function
-AsciiValidos_Err:
-    Call TraceError(Err.Number, Err.Description, "TCP.AsciiValidos", Erl)
-End Function
-
-Function Numeric(ByVal cad As String) As Boolean
-    On Error GoTo Numeric_Err
-    Dim car As Byte
-    Dim i   As Integer
-    cad = LCase$(cad)
-    For i = 1 To Len(cad)
-        car = Asc(mid$(cad, i, 1))
-        If (car < 48 Or car > 57) Then
-            Numeric = False
-            Exit Function
-        End If
-    Next i
-    Numeric = True
-    Exit Function
-Numeric_Err:
-    Call TraceError(Err.Number, Err.Description, "TCP.Numeric", Erl)
-End Function
-
 Function NombrePermitido(ByVal nombre As String) As Boolean
     On Error GoTo NombrePermitido_Err
     Dim i As Integer
@@ -426,7 +390,6 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
                         ByVal Hogar As e_Ciudad) As Boolean
     On Error GoTo ConnectNewUser_Err
     With UserList(UserIndex)
-        Dim LoopC As Long
         If .flags.UserLogged Then
             Call LogSecurity("El usuario " & .name & " ha intentado crear a " & name & " desde la IP " & .ConnectionDetails.IP)
             Call CloseSocketSL(UserIndex)
@@ -508,10 +471,8 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
         .Stats.Exp = 0
         .Stats.ELV = 1
         Call RellenarInventario(UserIndex)
-        #If ConUpTime Then
-            .LogOnTime = Now
-            .UpTime = 0
-        #End If
+        .LogOnTime = Now
+        .UpTime = 0
         Call ResetCd(UserList(UserIndex))
         'Valores Default de facciones al Activar nuevo usuario
         Call ResetFacciones(UserIndex)
@@ -556,7 +517,6 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
                 .pos.x = 40
                 .pos.y = 69
         End Select
-        UltimoChar = UCase$(name)
         Call SaveNewUser(UserIndex)
         ConnectNewUser = True
         #If PYMMO = 1 Then
@@ -723,7 +683,7 @@ Function ConnectUser(ByVal UserIndex As Integer, ByRef name As String, Optional 
         End If
         Call ConnectUser_Prepare(UserIndex, name)
         If LoadCharacterFromDB(UserIndex) Then
-            If ConnectUser_Complete(UserIndex, name, newUser) Then
+            If ConnectUser_Complete(UserIndex, newUser) Then
                 ConnectUser = True
                 Exit Function
             End If
@@ -902,7 +862,6 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
     '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
     'Agregue que se resetee el maná
     '*************************************************
-    Dim LoopC As Integer
     With UserList(UserIndex)
         .name = vbNullString
         .Cuenta = vbNullString
@@ -924,7 +883,6 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
             .Banco = 0
             .ELV = 0
             .Exp = 0
-            .def = 0
             '.CriminalesMatados = 0
             .NPCsMuertos = 0
             .UsuariosMatados = 0
@@ -1248,9 +1206,6 @@ End Sub
 Sub ClearAndSaveUser(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     Dim errordesc As String
-    Dim Map       As Integer
-    Dim aN        As Integer
-    Dim i         As Integer
     With UserList(UserIndex)
         errordesc = "ERROR AL SETEAR NPC"
         Call ClearAttackerNpc(UserIndex)
@@ -1339,7 +1294,6 @@ Sub CloseUser(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     Dim errordesc As String
     Dim Map       As Integer
-    Dim aN        As Integer
     Dim i         As Integer
     With UserList(UserIndex)
         Map = .pos.Map

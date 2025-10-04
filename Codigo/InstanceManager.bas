@@ -33,10 +33,6 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "InstanceManager.ReleaseInstance", Erl)
 End Function
 
-Public Function GetAvailableInstanceCount() As Integer
-    GetAvailableInstanceCount = AvailableInstanceMap.currentIndex
-End Function
-
 Public Function GetNextAvailableInstance() As Integer
     On Error GoTo ErrHandler
     If (AvailableInstanceMap.currentIndex = 0) Then

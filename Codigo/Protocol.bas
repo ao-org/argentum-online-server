@@ -131,10 +131,6 @@ End Type
 #If DIRECT_PLAY = 0 Then
     Public reader As Network.reader
 
-Public Sub InitializePacketList()
-    Call Protocol_Writes.InitializeAuxiliaryBuffer
-End Sub
-
 Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As Network.reader, Optional ByVal optional_user_index As Variant) As Boolean
 #Else
     Public reader As New clsNetReader
@@ -165,9 +161,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         If TicksElapsed(Mapping(ConnectionID).TimeLastReset, actual_time) >= 5000 Then
             Mapping(ConnectionID).TimeLastReset = actual_time
             Mapping(ConnectionID).PacketCount = 0
-        End If
-        If PacketId <> ClientPacketID.eSendPosSeguimiento Then
-            Mapping(ConnectionID).PacketCount = Mapping(ConnectionID).PacketCount + 1
         End If
         If Mapping(ConnectionID).PacketCount > 100 Then
             'Lo kickeo
@@ -513,8 +506,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleReviveChar(UserIndex)
         Case ClientPacketID.eSeguirMouse
             Call HandleSeguirMouse(UserIndex)
-        Case ClientPacketID.eSendPosSeguimiento
-            Call HandleSendPosMovimiento(UserIndex)
         Case ClientPacketID.eNotifyInventarioHechizos
             Call HandleNotifyInventariohechizos(UserIndex)
         Case ClientPacketID.eOnlineGM
@@ -847,16 +838,12 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandlePetLeaveAll(UserIndex)
         Case ClientPacketID.eResetChar
             Call HandleResetChar(UserIndex)
-        Case ClientPacketID.eResetearPersonaje
-            Call HandleResetearPersonaje(UserIndex)
         Case ClientPacketID.eDeleteItem
             Call HandleDeleteItem(UserIndex)
         Case ClientPacketID.eFinalizarPescaEspecial
             Call HandleFinalizarPescaEspecial(UserIndex)
         Case ClientPacketID.eRomperCania
             Call HandleRomperCania(UserIndex)
-        Case ClientPacketID.eRepeatMacro
-            Call HandleRepeatMacro(UserIndex)
         Case ClientPacketID.eBuyShopItem
             Call HandleBuyShopItem(UserIndex)
         Case ClientPacketID.ePublicarPersonajeMAO
@@ -884,8 +871,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                 Call HandleCreateAccount(ConnectionID)
             Case ClientPacketID.eLoginAccount
                 Call HandleLoginAccount(ConnectionID)
-            Case ClientPacketID.eDeleteCharacter
-                Call HandleDeleteCharacter(ConnectionID)
             #End If
         Case Else
             Call TraceError(&HDEAD0001, "Invalid or unhandled message ID: " & PacketId, "Protocol.HandleIncomingData", Erl)
@@ -924,7 +909,7 @@ End Function
         Dim UserIndex As Integer
         UserIndex = MapConnectionToUser(ConnectionID)
         If UserIndex < 1 Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094)) ', "No hay slot disponibles para el usuario."))
+            Call modSendData.SendToConnection(ConnectionID) ', "No hay slot disponibles para el usuario."))
             Call KickConnection(ConnectionID)
             Exit Sub
         End If
@@ -958,7 +943,7 @@ Private Sub HandleLoginAccount(ByVal ConnectionID As Long)
     Dim UserIndex As Integer
     UserIndex = MapConnectionToUser(ConnectionID)
     If UserIndex < 1 Then
-        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094)) ', "No hay slot disponibles para el usuario."))
+        Call modSendData.SendToConnection(ConnectionID)
         Call KickConnection(ConnectionID)
         Exit Sub
     End If
@@ -982,12 +967,6 @@ Private Sub HandleLoginAccount(ByVal ConnectionID As Long)
     Exit Sub
 LoginAccount_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginAccount", Erl)
-End Sub
-
-Private Sub HandleDeleteCharacter(ByVal ConnectionID As Long)
-    On Error GoTo DeleteCharacter_Err:
-DeleteCharacter_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteCharacter", Erl)
 End Sub
 
 Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
@@ -1208,26 +1187,20 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         Dim head        As Integer
 
         name = reader.ReadString8
-110     race = reader.ReadInt()
-112     gender = reader.ReadInt()
-113     Class = reader.ReadInt()
-116     head = reader.ReadInt()
-118     Hogar = reader.ReadInt()
+     race = reader.ReadInt()
+     gender = reader.ReadInt()
+     Class = reader.ReadInt()
+     head = reader.ReadInt()
+     Hogar = reader.ReadInt()
 
-126     If PuedeCrearPersonajes = 0 Then
-128         Call WriteShowMessageBox(UserIndex, 1780, vbNullString) 'Msg1780=La creación de personajes en este servidor se ha deshabilitado.
-130         Call CloseSocket(UserIndex)
+     If PuedeCrearPersonajes = 0 Then
+         Call WriteShowMessageBox(UserIndex, 1780, vbNullString) 'Msg1780=La creación de personajes en este servidor se ha deshabilitado.
+         Call CloseSocket(UserIndex)
             Exit Sub
 
         End If
 
-132     If aClon.MaxPersonajes(UserList(UserIndex).ConnectionDetails.IP) Then
-134         Call WriteShowMessageBox(UserIndex, 1781, vbNullString) 'Msg1781=Has creado demasiados personajes.
 
-136         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
 
         'Check if we reached MAX_PERSONAJES for this account after updateing the UserList(userindex).AccountID in the if above
         If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then
@@ -1446,12 +1419,12 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 UserList(UserIndex).Char.FX = 0
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.charindex, 0))
             End If
-            Dim CurrentTick As Long
-            CurrentTick = GetTickCountRaw()
+            Dim currentTick As Long
+            currentTick = GetTickCountRaw()
             'Prevent SpeedHack (refactored by WyroX)
             If Not EsGM(UserIndex) And .Char.speeding > 0 Then
                 Dim ElapsedTimeStep As Double, MinTimeStep As Long, DeltaStep As Single
-                ElapsedTimeStep = TicksElapsed(.Counters.LastStep, CurrentTick)
+                ElapsedTimeStep = TicksElapsed(.Counters.LastStep, currentTick)
                 MinTimeStep = .Intervals.Caminar / .Char.speeding
                 DeltaStep = (MinTimeStep - ElapsedTimeStep) / MinTimeStep
                 If DeltaStep > 0 Then
@@ -1468,7 +1441,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
             'Move user
             If MoveUserChar(UserIndex, Heading) Then
                 ' Save current step for anti-sh
-                .Counters.LastStep = CurrentTick
+                .Counters.LastStep = currentTick
                 If UserList(UserIndex).Grupo.EnGrupo Then
                     Call CompartirUbicacion(UserIndex)
                 End If
@@ -1959,13 +1932,9 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, _
     If Delta < DeltaThreshold Then
         Iterations = Iterations + 1
         If Iterations >= MaxIterations Then
-            'Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
             verifyTimeStamp = False
-            'Call LogMacroServidor("El usuario " & UserList(UserIndex).name & " iteró el paquete " & PacketName & " " & MaxIterations & " veces.")
             Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).name & "| Revisar --> " & _
                     PacketName & " (Envíos: " & Iterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
-            'Call WriteCerrarleCliente(UserIndex)
-            'Call CloseSocket(UserIndex)
             LastCount = ActualCount
             Iterations = 0
             Debug.Print "CIERRO CLIENTE"
@@ -2137,12 +2106,9 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
         Dim DesdeInventario As Boolean
         DesdeInventario = reader.ReadInt8
         If Not DesdeInventario Then
-            
             Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("El usuario " & .name & _
                     " está tomando pociones con click estando en hechizos....Fue kickeado automaticamente", e_FontTypeNames.FONTTYPE_INFOBOLD))
-                    
             Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID)
-            
         End If
         Dim PacketCounter As Long
         PacketCounter = reader.ReadInt32
@@ -2276,7 +2242,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         .Trabajo.Target_Y = y
         .Trabajo.TargetSkill = Skill
         If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.pos.Map, x, y) Then Exit Sub
-        If UserMod.IsStun(.flags, .Counters) Then Exit Sub
+        If UserMod.IsStun(.Counters) Then Exit Sub
         If Not InRangoVision(UserIndex, x, y) Then
             Call WritePosUpdate(UserIndex)
             Exit Sub
@@ -2366,8 +2332,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     End If
                     'Attack!
                     If Not PuedeAtacar(UserIndex, tU) Then Exit Sub 'TODO: Por ahora pongo esto para solucionar lo anterior.
-                    Dim backup    As Byte
-                    Dim envie     As Boolean
                     Dim Particula As Integer
                     Dim Tiempo    As Long
                     If .flags.invisible > 0 Then
@@ -3407,7 +3371,6 @@ Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim guild    As String
         Dim proposal As String
-        Dim errorStr As String
         guild = reader.ReadString8()
         proposal = reader.ReadString8()
         Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1801, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
@@ -3427,7 +3390,6 @@ Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim guild    As String
         Dim proposal As String
-        Dim errorStr As String
         guild = reader.ReadString8()
         proposal = reader.ReadString8()
         'Msg1145= Relaciones de clan desactivadas por el momento.
@@ -3471,9 +3433,7 @@ End Sub
 Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
-        Dim guild    As String
-        Dim errorStr As String
-        Dim details  As String
+        Dim guild As String
         guild = reader.ReadString8()
         'Msg1147= Relaciones de clan desactivadas por el momento.
         Call WriteLocaleMsg(UserIndex, "1147", e_FontTypeNames.FONTTYPE_INFO)
@@ -3628,7 +3588,7 @@ Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
                 Call WriteConsoleMsg(tUser.ArrayIndex, errorStr & " : " & Reason, e_FontTypeNames.FONTTYPE_GUILD)
             Else
                 'hay que grabar en el char su rechazo
-                Call modGuilds.a_RechazarAspiranteChar(username, .GuildIndex, Reason)
+                Call modGuilds.a_RechazarAspiranteChar(username, Reason)
             End If
         End If
     End With
@@ -3701,7 +3661,6 @@ End Sub
 Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
     On Error GoTo HandleGuildOpenElections_Err
     With UserList(UserIndex)
-        Dim Error As String
         'Msg1154= Elecciones de clan desactivadas por el momento.
         Call WriteLocaleMsg(UserIndex, "1154", e_FontTypeNames.FONTTYPE_INFO)
     End With
@@ -4545,8 +4504,7 @@ End Sub
 Private Sub HandleGuildVote(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
-        Dim vote     As String
-        Dim errorStr As String
+        Dim vote As String
         vote = reader.ReadString8()
         'Msg1172= Elecciones de clan desactivadas por el momento.
         Call WriteLocaleMsg(UserIndex, "1172", e_FontTypeNames.FONTTYPE_INFO)
@@ -4730,10 +4688,8 @@ End Sub
 Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
-        Dim guild       As String
-        Dim memberCount As Integer
-        Dim i           As Long
-        Dim username    As String
+        Dim guild As String
+        Dim i     As Long
         guild = reader.ReadString8()
         If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
             If (InStrB(guild, "\") <> 0) Then
@@ -4902,10 +4858,6 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTraerBoveda", Erl)
 End Sub
 
-Private Sub HandleSendPosMovimiento(ByVal UserIndex As Integer)
-    'TODO: delete
-End Sub
-
 ' Handles the "SendPosMovimiento" message.
 Private Sub HandleNotifyInventariohechizos(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
@@ -4933,7 +4885,6 @@ Private Sub HandlePerdonFaccion(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim username As String
         Dim tUser    As t_UserReference
-        Dim LoopC    As Byte
         username = reader.ReadString8()
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
             If UCase$(username) <> "YO" Then
@@ -5120,7 +5071,6 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim username As String
         Dim tUser    As t_UserReference
-        Dim LoopC    As Byte
         username = reader.ReadString8()
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
             tUser = NameIndex(username)
@@ -5157,7 +5107,6 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim username As String
         Dim tUser    As t_UserReference
-        Dim LoopC    As Byte
         username = reader.ReadString8()
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
             tUser = NameIndex(username)
@@ -5246,7 +5195,6 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
         Dim cantMembers As Integer
         Dim LoopC       As Long
         Dim member      As String
-        Dim count       As Byte
         Dim tUser       As t_UserReference
         Dim tFile       As String
         GuildName = reader.ReadString8()
@@ -5595,7 +5543,6 @@ End Sub
 
 Public Sub HandleParticipar(ByVal UserIndex As Integer)
     On Error GoTo HandleParticipar_Err
-    Dim handle   As Integer
     Dim RoomId   As Integer
     Dim Password As String
     RoomId = reader.ReadInt16
@@ -5943,7 +5890,6 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
         Dim tmpElementalTags     As Long
         Dim Equipado             As Boolean
         Dim Equipado2            As Boolean
-        Dim Equipado3            As Boolean
         Dim ObjCania             As t_Obj
         'HarThaoS: Si es un hilo de pesca y lo estoy arrastrando en una caña rota borro del slot viejo y en el nuevo pongo la caña correspondiente
         If SlotViejo > getMaxInventorySlots(UserIndex) Or SlotNuevo > getMaxInventorySlots(UserIndex) Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
@@ -6162,10 +6108,7 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
         Dim SlotNuevo As Byte
         SlotViejo = reader.ReadInt8()
         SlotNuevo = reader.ReadInt8()
-        Dim Objeto    As t_Obj
-        Dim Equipado  As Boolean
-        Dim Equipado2 As Boolean
-        Dim Equipado3 As Boolean
+        Dim Objeto As t_Obj
         If SlotViejo > MAX_BANCOINVENTORY_SLOTS Or SlotNuevo > MAX_BANCOINVENTORY_SLOTS Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
         Objeto.ObjIndex = UserList(UserIndex).BancoInvent.Object(SlotViejo).ObjIndex
         Objeto.amount = UserList(UserIndex).BancoInvent.Object(SlotViejo).amount
@@ -6220,7 +6163,6 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
     On Error GoTo ErrHandler
     With UserList(UserIndex)
-        Dim refError   As String
         Dim clan_nivel As Byte
         If .GuildIndex <> 0 Then
             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
@@ -6913,7 +6855,6 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
     On Error GoTo HandleQuest_Err
     If Not IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then Exit Sub
     Dim NpcIndex As Integer
-    Dim tmpByte  As Byte
     NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
     'Esta el personaje en la distancia correcta?
     If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) > 5 Then
@@ -7589,14 +7530,6 @@ HandleResetChar_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetChar", Erl)
 End Sub
 
-Private Sub HandleResetearPersonaje(ByVal UserIndex As Integer)
-    On Error GoTo HandleResetearPersonaje_Err:
-    ' Call resetPj(UserIndex)
-    Exit Sub
-HandleResetearPersonaje_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetearPersonaje", Erl)
-End Sub
-
 Private Sub HandleRomperCania(ByVal UserIndex As Integer)
     On Error GoTo HandleRomperCania_Err:
     Dim LoopC    As Integer
@@ -7638,14 +7571,6 @@ Private Sub HandleFinalizarPescaEspecial(ByVal UserIndex As Integer)
     Exit Sub
 HandleFinalizarPescaEspecial_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleFinalizarPescaEspecial", Erl)
-End Sub
-
-Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
-    On Error GoTo HandleRepeatMacro_Err:
-    'Call LogMacroCliente("El usuario " & UserList(UserIndex).name & " iteró el paquete click o u." & GetTickCount)
-    Exit Sub
-HandleRepeatMacro_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRepeatMacro", Erl)
 End Sub
 
 Private Sub HandleBuyShopItem(ByVal UserIndex As Integer)
@@ -7746,7 +7671,7 @@ Public Sub HandleActionOnGroupFrame(ByVal UserIndex As Integer)
         If UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros < TargetGroupMember Then Exit Sub
         If Not IsValidUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember)) Then Exit Sub
         If UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember).ArrayIndex = UserIndex Then Exit Sub
-        If UserMod.IsStun(.flags, .Counters) Then Exit Sub
+        If UserMod.IsStun(.Counters) Then Exit Sub
         If .flags.Muerto = 1 Or .flags.Descansar Then Exit Sub
         Dim targetUserIndex As Integer
         targetUserIndex = UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember).ArrayIndex
@@ -7851,12 +7776,4 @@ Public Sub HandleAntiCheatMessage(ByVal UserIndex As Integer)
     Exit Sub
 AntiCheatMessage_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.AntiCheatMessage", Erl)
-End Sub
-
-Public Sub HendleRequestLobbyList(ByVal UserIndex As Integer)
-    On Error GoTo HendleRequestLobbyList_Err:
-    Call WriteUpdateLobbyList(UserIndex)
-    Exit Sub
-HendleRequestLobbyList_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HendleRequestLobbyList", Erl)
 End Sub

@@ -94,7 +94,6 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Opt
         Set Buffer = Protocol_Writes.Writer
     #End If
     Dim LoopC As Long
-    Dim Map   As Integer
     Select Case sndRoute
         Case SendTarget.ToIndex
             Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)

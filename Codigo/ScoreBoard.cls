@@ -132,7 +132,7 @@ Private Sub ShiftElement(ByVal Position As Integer, ByRef rank() As e_Rank)
     Next i
 End Sub
 
-Friend Sub PublishScoreboard(ByVal Audience As Integer, ByVal AudienceIndex, ByRef Lobby As t_Lobby, ByVal IsFinal As Boolean)
+Friend Sub PublishScoreboard(ByVal Audience As Integer, ByVal AudienceIndex As Integer, ByRef Lobby As t_Lobby, ByVal IsFinal As Boolean)
     Dim i      As Integer
     Dim rank() As e_Rank
     If IsFinal And Lobby.TeamSize > 1 Then
@@ -160,7 +160,7 @@ Friend Sub PublishScoreboard(ByVal Audience As Integer, ByVal AudienceIndex, ByR
     End If
 End Sub
 
-Friend Sub PublishTeamScore(ByVal Audience As Integer, ByVal AudienceIndex, ByRef Lobby As t_Lobby)
+Friend Sub PublishTeamScore(ByVal Audience As Integer, ByVal AudienceIndex As Integer, ByRef Lobby As t_Lobby)
     Dim rank() As e_Rank
     rank = GetTeamRanking(Lobby)
     Dim Winner As Integer

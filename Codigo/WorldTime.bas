@@ -6,16 +6,14 @@ Attribute VB_Name = "WorldTime"
 '  - Always returns non-negative [0 .. DayLen-1]
 ' ============================
 Option Explicit
-
 ' ---- Module state ----
-Private WT_DayLenMs  As Long     ' ms per in-game day (>=1)
-Private WT_BaseTick  As Long     ' synthetic base tick (raw tick) so elapsed = TicksElapsed(Base, NowRaw)
-Private WT_Inited    As Boolean
+Private WT_DayLenMs As Long     ' ms per in-game day (>=1)
+Private WT_BaseTick As Long     ' synthetic base tick (raw tick) so elapsed = TicksElapsed(Base, NowRaw)
+Private WT_Inited   As Boolean
 
 ' ============================
 ' Public API
 ' ============================
-
 ' Init / reset.
 ' Server: pass startElapsedMs:=0 at day start (or a saved offset if resuming).
 ' Client: usually not needed; clients call WorldTime_HandleHora from the packet.
@@ -32,10 +30,8 @@ End Sub
 Public Sub WorldTime_HandleHora(ByVal elapsedFromServerMs As Long, ByVal dayLenMs As Long)
     If dayLenMs <= 0 Then dayLenMs = 1
     WT_DayLenMs = dayLenMs
-
     Dim elapsedNorm As Long
     elapsedNorm = PosMod(CDbl(elapsedFromServerMs), WT_DayLenMs)
-
     WT_BaseTick = WorldTime_NowRaw() - elapsedNorm   ' base is raw; only compare via TicksElapsed()
     WT_Inited = True
 End Sub
@@ -82,9 +78,7 @@ End Sub
 ' ============================
 ' Internal
 ' ============================
-
 ' Always use RAW ticks for this module (pairs with TicksElapsed 2^32)
 Private Function WorldTime_NowRaw() As Long
     WorldTime_NowRaw = GetTickCountRaw()
 End Function
-

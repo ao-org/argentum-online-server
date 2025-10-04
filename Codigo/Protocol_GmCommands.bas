@@ -867,7 +867,6 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
         Dim username As String
         Dim Reason   As String
         Dim jailTime As Integer
-        Dim count    As Byte
         Dim tUser    As t_UserReference
         username = reader.ReadString8()
         Reason = reader.ReadString8()
@@ -1014,10 +1013,8 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
         Dim opcion        As Byte
         Dim Arg1          As String
         Dim Arg2          As String
-        Dim valido        As Boolean
         Dim LoopC         As Byte
         Dim commandString As String
-        Dim n             As Byte
         Dim tmpLong       As Long
         username = Replace(reader.ReadString8(), "+", " ")
         If UCase$(username) = "YO" Then
@@ -1511,8 +1508,6 @@ Public Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim username As String
         Dim tUser    As t_UserReference
-        Dim LoopC    As Long
-        Dim Message  As String
         username = reader.ReadString8()
         tUser = NameIndex(username)
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
@@ -1543,7 +1538,6 @@ Public Sub HandleReviveChar(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim username As String
         Dim tUser    As t_UserReference
-        Dim LoopC    As Byte
         username = reader.ReadString8()
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
             If UCase$(username) <> "YO" Then
@@ -2381,10 +2375,9 @@ Public Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, "528", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        Dim tObj  As Integer
-        Dim lista As String
-        Dim x     As Long
-        Dim y     As Long
+        Dim tObj As Integer
+        Dim x    As Long
+        Dim y    As Long
         For x = 5 To 95
             For y = 5 To 95
                 tObj = MapData(.pos.Map, x, y).ObjInfo.ObjIndex
@@ -3263,8 +3256,6 @@ HandleShowServerForm_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleShowServerForm", Erl)
 End Sub
 
-
-
 Public Sub HandleKickAllChars(ByVal UserIndex As Integer)
     On Error GoTo HandleKickAllChars_Err
     'Author: Lucas Tavolaro Ortiz (Tavo)
@@ -3404,8 +3395,8 @@ HandleGlobalOnOff_Err:
 End Sub
 
 Public Sub HandleGlobalMessage(ByVal UserIndex As Integer)
-    Dim nowRaw      As Long
-    Dim elapsedMs   As Double
+    Dim nowRaw    As Long
+    Dim elapsedMs As Double
     nowRaw = GetTickCountRaw()
     elapsedMs = TicksElapsed(UserList(UserIndex).Counters.MensajeGlobal, nowRaw)
     On Error GoTo ErrHandler
@@ -3459,7 +3450,6 @@ HandleGlobalOnOff_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGlobalOnOff", Erl)
 End Sub
 
-
 Public Sub HandleGiveItem(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
@@ -3497,7 +3487,7 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
             End If
             ' Lo registro en los logs.
             Call LogGM(.name, "/DAR " & username & " - Item: " & ObjData(ObjIndex).name & "(" & ObjIndex & ") Cantidad : " & Cantidad)
-            Call LogPremios(.name, username, ObjIndex, Cantidad, Motivo)
+            Call LogPremios(ObjIndex, Cantidad, Motivo)
         Else
             ' Msg551=Servidor » Comando deshabilitado para tu cargo, debes pedir a un Admin que lo de.
             Call WriteLocaleMsg(UserIndex, "551", e_FontTypeNames.FONTTYPE_INFO)
@@ -3509,8 +3499,8 @@ ErrHandler:
 End Sub
 
 Public Sub HandleQuestionGM(ByVal UserIndex As Integer)
-    Dim nowRaw      As Long
-    Dim elapsedMs   As Double
+    Dim nowRaw    As Long
+    Dim elapsedMs As Double
     nowRaw = GetTickCountRaw()
     elapsedMs = TicksElapsed(UserList(UserIndex).Counters.LastGmMessage, nowRaw)
     On Error GoTo ErrHandler
@@ -3689,7 +3679,7 @@ Public Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
         Dim UserNameOEmail As String
         UserNameOEmail = reader.ReadString8()
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
-            If DesbanearCuenta(UserIndex, UserNameOEmail) Then
+            If DesbanearCuenta(UserNameOEmail) Then
                 Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1703, .name & "¬" & UserNameOEmail, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1703=Servidor » ¬1 ha desbaneado la cuenta de ¬2.
             Else
                 ' Msg556=No se ha podido desbanear la cuenta.
@@ -4107,7 +4097,6 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim username As String
         Dim tUser    As t_UserReference
-        Dim LoopC    As Byte
         Dim tempArea As Long
         username = reader.ReadString8()
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
@@ -4261,7 +4250,7 @@ Public Sub HandleDebugRequest(ByVal UserIndex As Integer)
         Exit Sub
     End If
     If (UserList(UserIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero)) Then
-        Call WriteDebugLogResponse(UserIndex, debugType, Args, UBound(Args))
+        Call WriteDebugLogResponse(UserIndex, debugType, Args)
     End If
     Exit Sub
 HandleDebugRequest_Err:
@@ -4270,9 +4259,8 @@ End Sub
 
 Public Sub HandleLobbyCommand(ByVal UserIndex As Integer)
     On Error GoTo HandleLobbyCommand_err
-    Dim Command       As Byte
-    Dim hasPermission As Integer
-    Dim Params        As String
+    Dim Command As Byte
+    Dim Params  As String
     Command = reader.ReadInt8()
     Params = reader.ReadString8()
     With UserList(UserIndex)

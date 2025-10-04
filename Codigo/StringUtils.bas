@@ -1,4 +1,5 @@
 Attribute VB_Name = "StringUtils"
+Option Explicit
 Function ValidWordsDescription(ByVal cad As String) As Boolean
     On Error GoTo ValidWordsDescription_Err
     Dim i As Integer

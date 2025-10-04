@@ -177,17 +177,17 @@ End Function
 
 Sub QuitarBancoInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Cantidad As Integer)
     On Error GoTo QuitarBancoInvItem_Err
-    Dim ObjIndex As Integer
-    ObjIndex = UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex
-    'Quita un Obj
-    UserList(UserIndex).BancoInvent.Object(Slot).amount = UserList(UserIndex).BancoInvent.Object(Slot).amount - Cantidad
-    If UserList(UserIndex).BancoInvent.Object(Slot).amount <= 0 Then
-        UserList(UserIndex).BancoInvent.NroItems = UserList(UserIndex).BancoInvent.NroItems - 1
-        UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex = 0
-        UserList(UserIndex).BancoInvent.Object(Slot).amount = 0
-        UserList(UserIndex).BancoInvent.Object(Slot).ElementalTags = 0
-    End If
-    UserList(UserIndex).flags.ModificoInventarioBanco = True
+    With UserList(UserIndex).BancoInvent
+        'Quita un Obj
+        .Object(Slot).amount = .Object(Slot).amount - Cantidad
+        If .Object(Slot).amount <= 0 Then
+            .NroItems = .NroItems - 1
+            .Object(Slot).ObjIndex = 0
+            .Object(Slot).amount = 0
+            .Object(Slot).ElementalTags = 0
+        End If
+        UserList(UserIndex).flags.ModificoInventarioBanco = True
+    End With
     Exit Sub
 QuitarBancoInvItem_Err:
     Call TraceError(Err.Number, Err.Description, "modBanco.QuitarBancoInvItem", Erl)

@@ -250,11 +250,10 @@ Prepare_ConnectUser_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ConnectUser_Prepare", Erl)
 End Sub
 
-Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As String, Optional ByVal newUser As Boolean = False)
+Public Function ConnectUser_Complete(ByVal UserIndex As Integer, Optional ByVal newUser As Boolean = False)
     On Error GoTo Complete_ConnectUser_Err
     ConnectUser_Complete = False
-    Dim n    As Integer
-    Dim tStr As String
+    Dim n As Integer
     Call SendData(SendTarget.ToIndex, UserIndex, PrepareActiveToggles)
     With UserList(UserIndex)
         If .flags.Paralizado = 1 Then
@@ -475,13 +474,13 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As S
                 For tX = .pos.x - 1 To .pos.x + 1
                     If esAgua Then
                         'reviso que sea pos legal en agua, que no haya User ni NPC para poder loguear.
-                        If LegalPos(.pos.Map, tX, tY, True, True, False, False, False) Then
+                        If LegalPos(.pos.Map, tX, tY, True, True, False, False) Then
                             FoundPlace = True
                             Exit For
                         End If
                     Else
                         'reviso que sea pos legal en tierra, que no haya User ni NPC para poder loguear.
-                        If LegalPos(.pos.Map, tX, tY, False, True, False, False, False) Then
+                        If LegalPos(.pos.Map, tX, tY, False, True, False, False) Then
                             FoundPlace = True
                             Exit For
                         End If
@@ -596,9 +595,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As S
             End If
         End If
         ''[EL OSO]: TRAIGO ESTO ACA ARRIBA PARA DARLE EL IP!
-        #If ConUpTime Then
-            .LogOnTime = Now
-        #End If
+        .LogOnTime = Now
         'Crea  el personaje del usuario
         Call MakeUserChar(True, .pos.Map, UserIndex, .pos.Map, .pos.x, .pos.y, 1)
         Call WriteUserCharIndexInServer(UserIndex)
@@ -854,8 +851,6 @@ End Sub
 
 Sub EraseUserChar(ByVal UserIndex As Integer, ByVal Desvanecer As Boolean, Optional ByVal FueWarp As Boolean = False)
     On Error GoTo ErrorHandler
-    Dim Error As String
-    Error = "1"
     If UserList(UserIndex).Char.charindex = 0 Then Exit Sub
     CharList(UserList(UserIndex).Char.charindex) = 0
     If UserList(UserIndex).Char.charindex = LastChar Then
@@ -864,19 +859,14 @@ Sub EraseUserChar(ByVal UserIndex As Integer, ByVal Desvanecer As Boolean, Optio
             If LastChar <= 1 Then Exit Do
         Loop
     End If
-    Error = "2"
     #If UNIT_TEST = 0 Then
         'Le mandamos el mensaje para que borre el personaje a los clientes que estén cerca
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterRemove(4, UserList(UserIndex).Char.charindex, Desvanecer, FueWarp))
-        Error = "3"
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterRemove(UserList(UserIndex).Char.charindex, Desvanecer, FueWarp))
         Call QuitarUser(UserIndex, UserList(UserIndex).pos.Map)
-        Error = "4"
     #End If
     MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).UserIndex = 0
-    Error = "5"
     UserList(UserIndex).Char.charindex = 0
     NumChars = NumChars - 1
-    Error = "6"
     Exit Sub
 ErrorHandler:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.EraseUserChar", Erl)
@@ -971,27 +961,11 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
     End If
     Exit Sub
 HayError:
-    Dim Desc As String
-    Desc = Err.Description & vbNewLine & " Usuario: " & UserList(UserIndex).name & vbNewLine & "Pos: " & Map & "-" & x & "-" & y
     Call TraceError(Err.Number, Err.Description, "Usuarios.MakeUserChar", Erl())
     Call CloseSocket(UserIndex)
 End Sub
 
 Sub CheckUserLevel(ByVal UserIndex As Integer)
-    '*************************************************
-    'Author: Unknown
-    'Last modified: 01/10/2007
-    'Chequea que el usuario no halla alcanzado el siguiente nivel,
-    'de lo contrario le da la vida, mana, etc, correspodiente.
-    '07/08/2006 Integer - Modificacion de los valores
-    '01/10/2007 Tavo - Corregido el BUG de STAT_MAXELV
-    '24/01/2007 Pablo (ToxicWaste) - Agrego modificaciones en ELU al subir de nivel.
-    '24/01/2007 Pablo (ToxicWaste) - Agrego modificaciones de la subida de mana de los magos por lvl.
-    '13/03/2007 Pablo (ToxicWaste) - Agrego diferencias entre el 18 y el 19 en Constitución.
-    '09/01/2008 Pablo (ToxicWaste) - Ahora el incremento de vida por Consitución se controla desde Balance.dat
-    '17/12/2020 WyroX - Distribución normal de las vidas
-    '15/07/2024 Shugar - Vuelvo a implementar vidas variables y les agrego un capeo min/max
-    '*************************************************
     On Error GoTo ErrHandler
     Dim Pts                 As Integer
     Dim AumentoHIT          As Integer
@@ -1002,7 +976,6 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
     Dim PromBias            As Double
     Dim PromClaseRaza       As Double
     Dim PromPersonaje       As Double
-    Dim aux                 As Integer
     Dim PasoDeNivel         As Boolean
     Dim experienceToLevelUp As Long
     ' Randomizo las vidas
@@ -1137,11 +1110,9 @@ Public Sub SwapTargetUserPos(ByVal TargetUser As Integer, ByRef NewTargetPos As 
     Call ModAreas.CheckUpdateNeededUser(TargetUser, Heading, 0)
 End Sub
 
-Function TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos, ByVal Speed As Long)
+Sub TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos, ByVal Speed As Long)
     On Error GoTo TranslateUserPos_Err
-    Dim OriginalPos As t_WorldPos
     With UserList(UserIndex)
-        OriginalPos = .pos
         If MapInfo(.pos.Map).NumUsers > 1 Or IsValidUserRef(.flags.GMMeSigue) Then
             If MapData(NewPos.Map, NewPos.x, NewPos.y).UserIndex > 0 Then
                 Call SwapTargetUserPos(MapData(NewPos.Map, NewPos.x, NewPos.y).UserIndex, .pos)
@@ -1171,12 +1142,12 @@ Function TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos
             Call WriteMacroTrabajoToggle(UserIndex, False)
         End If
     End With
-    Exit Function
+    Exit Sub
 TranslateUserPos_Err:
     Call LogError("Error en la subrutina TranslateUserPos - Error : " & Err.Number & " - Description : " & Err.Description)
-End Function
+End Sub
 
-Public Sub SwapNpcPos(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos, ByVal nHeading As e_Heading)
+Public Sub SwapNpcPos(ByRef TargetPos As t_WorldPos, ByVal nHeading As e_Heading)
     Dim NpcIndex         As Integer
     Dim Opposite_Heading As e_Heading
     NpcIndex = MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex
@@ -1193,14 +1164,12 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
     ' Lo convierto a función y saco los WritePosUpdate, ahora están en el paquete
     On Error GoTo MoveUserChar_Err
     Dim nPos             As t_WorldPos
-    Dim nPosOriginal     As t_WorldPos
-    Dim nPosMuerto       As t_WorldPos
     Dim IndexMover       As Integer
     Dim Opposite_Heading As e_Heading
     With UserList(UserIndex)
         nPos = .pos
         Call HeadtoPos(nHeading, nPos)
-        If Not LegalWalk(.pos.Map, nPos.x, nPos.y, nHeading, .flags.Navegando = 1, .flags.Navegando = 0, .flags.Montado, , UserIndex) Then
+        If Not LegalWalk(.pos.Map, nPos.x, nPos.y, nHeading, .flags.Navegando = 1, .flags.Navegando = 0, , UserIndex) Then
             Exit Function
         End If
         If .flags.Navegando And .invent.EquippedShipObjIndex = iObjTraje And Not (MapData(.pos.Map, nPos.x, nPos.y).trigger = e_Trigger.DETALLEAGUA Or MapData(.pos.Map, nPos.x, _
@@ -1220,7 +1189,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
             .Accion.ObjSlot = 0
             .Accion.AccionPendiente = False
         End If
-        Call SwapNpcPos(UserIndex, nPos, nHeading)
+        Call SwapNpcPos(nPos, nHeading)
         'Si no estoy solo en el mapa...
         If MapInfo(.pos.Map).NumUsers > 1 Or IsValidUserRef(.flags.GMMeSigue) Then
             ' Intercambia posición si hay un casper o gm invisible
@@ -1436,18 +1405,16 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         End If
         'guildpts no tienen objeto
     End If
-    #If ConUpTime Then
-        Dim TempDate As Date
-        Dim TempSecs As Long
-        Dim TempStr  As String
-        TempDate = Now - UserList(UserIndex).LogOnTime
-        TempSecs = (UserList(UserIndex).UpTime + (Abs(Day(TempDate) - 30) * 24 * 3600) + (Hour(TempDate) * 3600) + (Minute(TempDate) * 60) + Second(TempDate))
-        TempStr = (TempSecs \ 86400) & " Dias, " & ((TempSecs Mod 86400) \ 3600) & " Horas, " & ((TempSecs Mod 86400) Mod 3600) \ 60 & " Minutos, " & (((TempSecs Mod 86400) Mod _
-                3600) Mod 60) & " Segundos."
-        Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1863, Hour(TempDate) & "¬" & Minute(TempDate) & "¬" & Second(TempDate), e_FontTypeNames.FONTTYPE_INFO)) ' Msg1863=Logeado hace: ¬1:¬2:¬3
-        'Msg1297= Total: ¬1
-        Call WriteLocaleMsg(sendIndex, "1297", e_FontTypeNames.FONTTYPE_INFO, TempStr)
-    #End If
+    Dim TempDate As Date
+    Dim TempSecs As Long
+    Dim TempStr  As String
+    TempDate = Now - UserList(UserIndex).LogOnTime
+    TempSecs = (UserList(UserIndex).UpTime + (Abs(Day(TempDate) - 30) * 24 * 3600) + (Hour(TempDate) * 3600) + (Minute(TempDate) * 60) + Second(TempDate))
+    TempStr = (TempSecs \ 86400) & " Dias, " & ((TempSecs Mod 86400) \ 3600) & " Horas, " & ((TempSecs Mod 86400) Mod 3600) \ 60 & " Minutos, " & (((TempSecs Mod 86400) Mod _
+            3600) Mod 60) & " Segundos."
+    Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1863, Hour(TempDate) & "¬" & Minute(TempDate) & "¬" & Second(TempDate), e_FontTypeNames.FONTTYPE_INFO)) ' Msg1863=Logeado hace: ¬1:¬2:¬3
+    'Msg1297= Total: ¬1
+    Call WriteLocaleMsg(sendIndex, "1297", e_FontTypeNames.FONTTYPE_INFO, TempStr)
     Call LoadPatronCreditsFromDB(UserIndex)
     'Msg1298= Oro: ¬1
     Call WriteLocaleMsg(sendIndex, "1298", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.GLD)
@@ -1530,24 +1497,6 @@ Sub SendUserSkillsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 SendUserSkillsTxt_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserSkillsTxt", Erl)
 End Sub
-
-Function DameUserIndexConNombre(ByVal nombre As String) As Integer
-    On Error GoTo DameUserIndexConNombre_Err
-    Dim LoopC As Integer
-    LoopC = 1
-    nombre = UCase$(nombre)
-    Do Until UCase$(UserList(LoopC).name) = nombre
-        LoopC = LoopC + 1
-        If LoopC > MaxUsers Then
-            DameUserIndexConNombre = 0
-            Exit Function
-        End If
-    Loop
-    DameUserIndexConNombre = LoopC
-    Exit Function
-DameUserIndexConNombre_Err:
-    Call TraceError(Err.Number, Err.Description, "UsUaRiOs.DameUserIndexConNombre", Erl)
-End Function
 
 Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Optional ByVal AffectsOwner As Boolean = True)
     On Error GoTo NPCAtacado_Err
@@ -1665,14 +1614,14 @@ Sub UserDie(ByVal UserIndex As Integer)
     'Ahora se resetea el counter del invi
     '************************************************
     On Error GoTo ErrorHandler
-    Dim i  As Long
-    Dim aN As Integer
+    Dim i As Long
     With UserList(UserIndex)
         .Counters.Mimetismo = 0
         .flags.Mimetizado = e_EstadoMimetismo.Desactivado
         Call RefreshCharStatus(UserIndex)
         'Sonido
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(IIf(.genero = e_Genero.Hombre, e_SoundIndex.MUERTE_HOMBRE, e_SoundIndex.MUERTE_MUJER), .pos.x, .pos.y))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(IIf(.genero = e_Genero.Hombre, e_SoundEffects.DieScreamMale, e_SoundEffects.DieScreamFemale), _
+                .pos.x, .pos.y))
         'Quitar el dialogo del user muerto
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.charindex))
         .Stats.MinHp = 0
@@ -1792,7 +1741,6 @@ Sub UserDie(ByVal UserIndex As Integer)
         Call CheckUpdateNeededUser(UserIndex, 5, 0, .flags.Muerto)
         Dim LoopC     As Long
         Dim tempIndex As Integer
-        Dim Map       As Integer
         Dim AreaX     As Integer
         Dim AreaY     As Integer
         AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
@@ -2057,7 +2005,7 @@ Sub WarpToLegalPos(ByVal UserIndex As Integer, _
         If LoopC > 20 Then Exit Sub
         For tY = y - LoopC To y + LoopC
             For tX = x - LoopC To x + LoopC
-                If LegalPos(Map, tX, tY, AguaValida, True, UserList(UserIndex).flags.Montado = 1, False, False) Then
+                If LegalPos(Map, tX, tY, AguaValida, True, False, False) Then
                     If MapData(Map, tX, tY).trigger < 50 Then
                         Call WarpUserChar(UserIndex, Map, tX, tY, FX)
                         Exit Sub
@@ -2076,8 +2024,6 @@ End Sub
 Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, Optional ByVal FX As Boolean = False)
     On Error GoTo WarpUserChar_Err
     Dim OldMap As Integer
-    Dim OldX   As Integer
-    Dim OldY   As Integer
     With UserList(UserIndex)
         If Map <= 0 Then Exit Sub
         If IsValidUserRef(.ComUsu.DestUsu) Then
@@ -2093,8 +2039,6 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.charindex))
         Call WriteRemoveAllDialogs(UserIndex)
         OldMap = .pos.Map
-        OldX = .pos.x
-        OldY = .pos.y
         Call EraseUserChar(UserIndex, True, FX)
         If OldMap <> Map Then
             Call WriteChangeMap(UserIndex, Map)
@@ -2532,7 +2476,7 @@ Public Sub DevolverPosAnterior(ByVal UserIndex As Integer)
     End With
 End Sub
 
-Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Single
+Public Sub ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer)
     On Error GoTo ActualizarVelocidadDeUsuario_Err
     Dim velocidad As Single, modificadorItem As Single, modificadorHechizo As Single, JineteLevelSpeed As Single
     velocidad = VelocidadNormal
@@ -2588,10 +2532,10 @@ UpdateSpeed:
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.charindex, .Char.speeding))
         Call WriteVelocidadToggle(UserIndex)
     End With
-    Exit Function
+    Exit Sub
 ActualizarVelocidadDeUsuario_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CalcularVelocidad_Err", Erl)
-End Function
+End Sub
 
 Public Sub ClearClothes(ByRef Char As t_Char)
     Char.ShieldAnim = NingunEscudo
@@ -2600,35 +2544,28 @@ Public Sub ClearClothes(ByRef Char As t_Char)
     Char.CartAnim = NoCart
 End Sub
 
-Public Function IsStun(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
+Public Function IsStun(ByRef Counters As t_UserCounters) As Boolean
     Dim nowRaw As Long
     nowRaw = GetTickCountRaw()
-
     ' Player is stunned if current tick has NOT yet passed the stun end deadline
     IsStun = Not DeadlinePassed(nowRaw, Counters.StunEndTime)
 End Function
 
-
 Public Function CanMove(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
-    CanMove = flags.Paralizado = 0 And flags.Inmovilizado = 0 And Not IsStun(flags, Counters) And Not flags.TranslationActive
+    CanMove = flags.Paralizado = 0 And flags.Inmovilizado = 0 And Not IsStun(Counters) And Not flags.TranslationActive
 End Function
-
 
 Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserCounters) As Boolean
     On Error GoTo eh
     StunPlayer = False
-
     ' (Optional) your CanMove signature might be (counters, flags) — adjust order if needed
     If Not CanMove(UserList(UserIndex).flags, Counters) Then Exit Function
     If IsSet(UserList(UserIndex).flags.StatusMask, eCCInmunity) Then Exit Function
-
     Dim nowRaw As Long
     nowRaw = GetTickCountRaw()   ' <-- use raw tick
-
     ' Respect anti-chain-stun window: allow new stun only after immune window passes
     Dim immuneUntil As Long
     immuneUntil = AddMod32(Counters.StunEndTime, PlayerInmuneTime) ' old end + immunity
-
     If TickAfter(nowRaw, immuneUntil) Then
         ' Apply (or re-apply) stun: set absolute deadline using modulo-2^32 add
         Counters.StunEndTime = AddMod32(nowRaw, PlayerStunTime)
@@ -2636,11 +2573,6 @@ Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserC
     End If
     Exit Function
 eh:
-End Function
-
-
-Public Function CanUseItem(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
-    CanUseItem = True
 End Function
 
 Public Sub UpdateCd(ByVal UserIndex As Integer, ByVal cdType As e_CdTypes)
@@ -2855,7 +2787,7 @@ Public Function ModifyHealth(ByVal UserIndex As Integer, ByVal amount As Long, O
     End With
 End Function
 
-Public Function ModifyStamina(ByVal UserIndex As Integer, ByVal amount As Integer, ByVal CancelIfNotEnought As Boolean, Optional ByVal MinValue = 0) As Boolean
+Public Function ModifyStamina(ByVal UserIndex As Integer, ByVal amount As Integer, ByVal CancelIfNotEnought As Boolean, Optional ByVal MinValue As Integer = 0) As Boolean
     ModifyStamina = False
     With UserList(UserIndex)
         If CancelIfNotEnought And amount < 0 And .Stats.MinSta < Abs(amount) Then
@@ -2874,7 +2806,7 @@ Public Function ModifyStamina(ByVal UserIndex As Integer, ByVal amount As Intege
     End With
 End Function
 
-Public Function ModifyMana(ByVal UserIndex As Integer, ByVal amount As Integer, ByVal CancelIfNotEnought As Boolean, Optional ByVal MinValue = 0) As Boolean
+Public Function ModifyMana(ByVal UserIndex As Integer, ByVal amount As Integer, ByVal CancelIfNotEnought As Boolean, Optional ByVal MinValue As Integer = 0) As Boolean
     ModifyMana = False
     With UserList(UserIndex)
         If CancelIfNotEnought And amount < 0 And .Stats.MinMAN < Abs(amount) Then
@@ -3038,7 +2970,7 @@ Public Function GetEvasionBonus(ByRef User As t_User) As Integer
 End Function
 
 Public Function GetHitBonus(ByRef User As t_User) As Integer
-    GetHitBonus = User.Modifiers.HitBonus + GetWeaponHitBonus(User.invent.EquippedWeaponObjIndex, User.clase)
+    GetHitBonus = User.Modifiers.HitBonus
 End Function
 
 'Defines the healing bonus when using a potion, a spell or any other healing source
@@ -3049,16 +2981,6 @@ End Function
 'Defines bonus when healing someone with magic
 Public Function GetMagicHealingBonus(ByRef User As t_User) As Single
     GetMagicHealingBonus = max(1 + User.Modifiers.MagicHealingBonus, 0)
-End Function
-
-Public Function GetWeaponHitBonus(ByVal WeaponIndex As Integer, ByVal UserClass As e_Class)
-    On Error GoTo GetWeaponHitBonus_Err
-    If WeaponIndex = 0 Then Exit Function
-    If Not IsFeatureEnabled("class_weapon_bonus") Or ObjData(WeaponIndex).WeaponType = 0 Then Exit Function
-    GetWeaponHitBonus = ModClase(UserClass).WeaponHitBonus(ObjData(WeaponIndex).WeaponType)
-    Exit Function
-GetWeaponHitBonus_Err:
-    Call TraceError(Err.Number, Err.Description, "UserMod.GetWeaponHitBonus WeaponIndex: " & WeaponIndex & " for class: " & UserClass, Erl)
 End Function
 
 Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)

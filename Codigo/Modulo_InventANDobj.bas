@@ -196,8 +196,6 @@ Public Sub NpcDropeo(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
     Dim Dropeo       As t_Obj
     Dim Probabilidad As Long
     Dim objRandom    As Byte
-    Dim ProbTiro     As Byte
-    Dim nfile        As Integer
     If Npc.QuizaProb = 0 Then
         Probabilidad = RandomNumber(1, SvrConfig.GetValue("DropMult"))
     Else

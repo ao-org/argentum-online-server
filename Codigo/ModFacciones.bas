@@ -99,7 +99,6 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
         Call DarRecompensas(UserIndex)
         Call RefreshCharStatus(UserIndex)
     End With
-    'Call LogEjercitoReal(.Name & " ingresó el " & Date & " cuando era nivel " & .Stats.ELV)
     Exit Sub
 EnlistarArmadaReal_Err:
     Call TraceError(Err.Number, Err.Description, "ModFacciones.EnlistarArmadaReal", Erl)
@@ -232,7 +231,6 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
         Call DarRecompensas(UserIndex)
         Call RefreshCharStatus(UserIndex)
     End With
-    'Call LogEjercitoCaos(UserList(UserIndex).Name & " ingresó el " & Date & " cuando era nivel " & UserList(UserIndex).Stats.ELV)
     Exit Sub
 EnlistarCaos_Err:
     Call TraceError(Err.Number, Err.Description, "ModFacciones.EnlistarCaos", Erl)
@@ -240,10 +238,9 @@ End Sub
 
 Public Sub RecompensaCaos(ByVal UserIndex As Integer)
     On Error GoTo RecompensaCaos_Err
-    Dim ciudadanosMatados As Long, npcCharIndex As String
-    Dim proxRango         As t_RangoFaccion
+    Dim npcCharIndex As String
+    Dim proxRango    As t_RangoFaccion
     With UserList(UserIndex)
-        ciudadanosMatados = .Faccion.ciudadanosMatados
         npcCharIndex = str(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
         If .Faccion.RecompensasCaos >= MaxRangoFaccion Then
             Call WriteLocaleChatOverHead(UserIndex, 1375, vbNullString, npcCharIndex, vbWhite)  ' Msg1375=¡Has alcanzado uno de los mejores lugares en mis filas. Mantén firme tu liderazgo y crueldad para algún día formar parte del Concilio de las Sombras.

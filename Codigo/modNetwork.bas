@@ -123,14 +123,9 @@ Kick_ErrHandler:
     Call TraceError(Err.Number, Err.Description, "modNetwork.Kick", Erl)
 End Sub
 
-Public Function GetTimeOfNextFlush() As Single
-    GetTimeOfNextFlush = max(0, TIME_SEND_FREQUENCY - Time(1))
-End Function
-
 Public Sub close_not_logged_sockets_if_timeout()
     On Error GoTo close_not_logged_sockets_if_timeout_ErrHandler:
-    Dim i     As Integer
-    Dim key   As Variant
+    Dim key    As Variant
     Dim nowRaw As Long, Delta As Double
     nowRaw = GetTickCountRaw()
     For Each key In PendingConnections.Keys
@@ -221,7 +216,7 @@ OnServerClose_Err:
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerClose", Erl)
 End Sub
 
-Private Sub OnServerSend(ByVal Connection As Long, ByVal Message As Network.reader)
+Private Sub OnServerSend(ByVal Connection As Long)
     On Error GoTo OnServerSend_Err:
     Exit Sub
 OnServerSend_Err:
