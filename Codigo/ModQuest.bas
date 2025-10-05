@@ -616,7 +616,7 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
     End If
     If tmpQuest.RequiredSkill.SkillType > 0 Then
         If UserList(UserIndex).Stats.UserSkills(tmpQuest.RequiredSkill.SkillType) < tmpQuest.RequiredSkill.RequiredValue Then
-            Call WriteLocaleMsg(UserIndex, 473, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 473, e_FontTypeNames.FONTTYPE_INFO, tmpQuest.RequiredSkill.SkillType)
             Exit Function
         End If
     End If
