@@ -200,7 +200,6 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-
 ' Argentum 20 Game Server
 '
 '    Copyright (C) 2023 Noland Studios LTD
@@ -227,6 +226,8 @@ Attribute VB_Exposed = False
 '
 '
 '
+Option Explicit
+
 Private Sub cmdActualizarObjetos_Click()
     On Error Resume Next
     If MsgBox("La siguiente acción es demasiado costosa para el servidor, ¿Desea continuar?", vbYesNo) = vbYes Then
@@ -236,8 +237,6 @@ Private Sub cmdActualizarObjetos_Click()
         Dim Leer   As clsIniManager
         Set Leer = New clsIniManager
         Call Leer.Initialize(DatPath & "Obj.dat")
-        Command3.Enabled = False
-        Command3.Caption = "Actualizando..."
         'obtiene el numero de obj
         NumObjDatas = val(Leer.GetValue("INIT", "NumObjs"))
         Dim ObjKey As String
@@ -251,8 +250,6 @@ Private Sub cmdActualizarObjetos_Click()
             pbarDb.value = Object
         Next Object
         Set Leer = Nothing
-        Command3.Enabled = True
-        Command3.Caption = "Actualizar objetos DB"
         pbarDb.Visible = False
     End If
 End Sub

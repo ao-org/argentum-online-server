@@ -26,8 +26,7 @@ Attribute VB_Name = "SistemaCombate"
 '
 '
 Option Explicit
-Public Const MAXDISTANCIAARCO  As Byte = 18
-Public Const MAXDISTANCIAMAGIA As Byte = 18
+Public Const MAXDISTANCIAARCO As Byte = 18
 
 Public Enum AttackType
     Ranged
@@ -174,7 +173,7 @@ PoderEvasion_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderEvasion", Erl)
 End Function
 
-Private Function AttackPower(ByVal UserIndex, ByVal Skill As Integer, ByVal skillModifier As Single) As Long
+Private Function AttackPower(ByVal UserIndex As Integer, ByVal Skill As Integer, ByVal skillModifier As Single) As Long
     On Error GoTo AttackPower_Err
     Dim TempAttackPower As Long
     With UserList(UserIndex)
@@ -211,7 +210,7 @@ PoderAtaqueWrestling_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueWrestling", Erl)
 End Function
 
-Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal aType As AttackType) As Boolean
+Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Boolean
     On Error GoTo UserImpactoNpc_Err
     Dim PoderAtaque As Long
     Dim Arma        As Integer
@@ -353,7 +352,7 @@ End Function
 Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal aType As AttackType)
     On Error GoTo UserDamageNpc_Err
     With UserList(UserIndex)
-        Dim Damage As Long, DamageBase As Long, DamageExtra As Long, Color As Long, DamageStr As String
+        Dim Damage As Long, DamageBase As Long, DamageExtra As Long, Color As Long
         If .invent.EquippedWeaponObjIndex = EspadaMataDragonesIndex And NpcList(NpcIndex).npcType = DRAGON Then
             ' Espada MataDragones
             DamageBase = NpcList(NpcIndex).Stats.MinHp + NpcList(NpcIndex).Stats.def
@@ -434,7 +433,8 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
         ' Restamos el daño al NPC
         If NPCs.DoDamageOrHeal(NpcIndex, UserIndex, eUser, -Damage, e_phisical, .invent.EquippedWeaponObjIndex, Color) = eStillAlive Then
             'efectos
-            Dim ArmaObjInd, ObjInd As Integer
+            Dim ArmaObjInd As Integer
+            Dim ObjInd     As Integer
             ObjInd = 0
             ArmaObjInd = .invent.EquippedWeaponObjIndex
             If ArmaObjInd > 0 Then
@@ -644,7 +644,7 @@ NpcDamageNpc_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamageNpc")
 End Function
 
-Public Function NpcPerformAttackNpc(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer) As Boolean
+Public Sub NpcPerformAttackNpc(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer)
     If NpcList(attackerIndex).flags.Snd1 > 0 Then
         Call SendData(SendTarget.ToNPCAliveArea, attackerIndex, PrepareMessagePlayWave(NpcList(attackerIndex).flags.Snd1, NpcList(attackerIndex).pos.x, NpcList( _
                 attackerIndex).pos.y))
@@ -663,7 +663,7 @@ Public Function NpcPerformAttackNpc(ByVal attackerIndex As Integer, ByVal Target
     Else
         Call SendData(SendTarget.ToNPCAliveArea, attackerIndex, PrepareMessageCharSwing(NpcList(attackerIndex).Char.charindex, False, True))
     End If
-End Function
+End Sub
 
 Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Optional ByVal cambiarMovimiento As Boolean = True)
     On Error GoTo NpcAtacaNpc_Err
@@ -721,7 +721,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
     Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
     If UserList(UserIndex).flags.invisible = 0 Then Call NPCAtacado(NpcIndex, UserIndex)
     Call EffectsOverTime.TargetWillAttack(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
-    If UserImpactoNpc(UserIndex, NpcIndex, aType) Then
+    If UserImpactoNpc(UserIndex, NpcIndex) Then
         ' Suena el Golpe en el cliente.
         If NpcList(NpcIndex).flags.Snd2 > 0 Then
             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd2, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y))
@@ -888,7 +888,6 @@ End Sub
 Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType) As Boolean
     On Error GoTo UsuarioImpacto_Err
     Dim ProbRechazo            As Long
-    Dim Rechazo                As Boolean
     Dim ProbExito              As Long
     Dim PoderAtaque            As Long
     Dim UserPoderEvasion       As Long
@@ -1519,7 +1518,7 @@ Private Sub GetExpForUser(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
                 DeltaLevel = .Stats.ELV - NpcList(NpcIndex).nivel
                 If DeltaLevel > CInt(SvrConfig.GetValue("DeltaLevelExpPenalty")) Then
                     Dim Penalty As Single
-                    Penalty = GetExpPenalty(UserIndex, NpcIndex, DeltaLevel)
+                    Penalty = GetExpPenalty(DeltaLevel)
                     ExpaDar = ExpaDar * Penalty
                     ' Si tiene el chat activado, enviamos el mensaje
                     If UserList(UserIndex).ChatCombate = 1 Then
@@ -1548,7 +1547,6 @@ End Sub
 Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
     On Error GoTo CalcularDarExpGrupal_Err
     Dim ExpaDar                 As Long
-    Dim BonificacionGrupo       As Single
     Dim CantidadMiembrosValidos As Integer
     Dim i                       As Long
     Dim Index                   As Integer
@@ -1620,7 +1618,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                                     DeltaLevel = UserList(Index).Stats.ELV - NpcList(NpcIndex).nivel
                                     If DeltaLevel > CInt(SvrConfig.GetValue("DeltaLevelExpPenalty")) Then
                                         Dim Penalty As Single
-                                        Penalty = GetExpPenalty(Index, NpcIndex, DeltaLevel)
+                                        Penalty = GetExpPenalty(DeltaLevel)
                                         ExpUser = ExpUser * Penalty
                                         ' Si tiene el chat activado, enviamos el mensaje
                                         If UserList(Index).ChatCombate = 1 Then
@@ -1665,7 +1663,7 @@ CalcularDarExpGrupal_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExpGrupal", Erl)
 End Sub
 
-Function GetExpPenalty(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, DeltaLevel As Integer) As Single
+Function GetExpPenalty(DeltaLevel As Integer) As Single
     On Error GoTo GetExpPenalty_Err
     '    This function computes an experience-gain multiplier (between 0.0 and 1.0) based on how far above the NPC’s level the player is.
     '    Why “DeltaLevel – 4”? No penalty for small over-leveling (up to 4 levels). Beyond that, each extra level reduces your XP by the configured percentage.
@@ -1684,44 +1682,6 @@ Function GetExpPenalty(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, De
 GetExpPenalty_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetExpPenalty", Erl)
 End Function
-
-Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As Long)
-    On Error GoTo CalcularDarOroGrupal_Err
-    '***************************************************
-    'Autor: Nacho (Integer)
-    'Last Modification: 03/09/06 Nacho
-    'Reescribi gran parte del Sub
-    'Ahora, da toda la experiencia del npc mientras este vivo.
-    '***************************************************
-    Dim OroDar As Long
-    OroDar = GiveGold * SvrConfig.GetValue("GoldMult")
-    Dim orobackup As Long
-    orobackup = OroDar
-    Dim i     As Byte
-    Dim Index As Byte
-    Dim Lider As Integer
-    Lider = UserList(UserIndex).Grupo.Lider.ArrayIndex
-    OroDar = OroDar / UserList(UserList(UserIndex).Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros
-    For i = 1 To UserList(Lider).Grupo.CantidadMiembros
-        If IsValidUserRef(UserList(Lider).Grupo.Miembros(i)) Then
-            Index = UserList(Lider).Grupo.Miembros(i).ArrayIndex
-            If UserList(Index).flags.Muerto = 0 Then
-                If UserList(UserIndex).pos.Map = UserList(Index).pos.Map Then
-                    If OroDar > 0 Then
-                        UserList(Index).Stats.GLD = UserList(Index).Stats.GLD + OroDar
-                        If UserList(Index).ChatCombate = 1 Then
-                            Call WriteConsoleMsg(Index, PrepareMessageLocaleMsg(1980, PonerPuntos(OroDar), e_FontTypeNames.FONTTYPE_New_GRUPO)) ' Msg1780=¡El grupo ha ganado ¬1 monedas de oro!
-                        End If
-                        Call WriteUpdateGold(Index)
-                    End If
-                End If
-            End If
-        End If
-    Next i
-    Exit Sub
-CalcularDarOroGrupal_Err:
-    Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarOroGrupal", Erl)
-End Sub
 
 Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integer) As e_Trigger6
     On Error GoTo ErrHandler
@@ -1766,8 +1726,12 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
     Else
         ObjInd = UserList(AtacanteIndex).invent.EquippedMunitionObjIndex
     End If
-    Dim puedeEnvenenar, puedeEstupidizar, puedeIncinierar, puedeParalizar, rangeStun As Boolean
-    Dim stunChance As Byte
+    Dim puedeEnvenenar   As Boolean
+    Dim puedeEstupidizar As Boolean
+    Dim puedeIncinierar  As Boolean
+    Dim puedeParalizar   As Boolean
+    Dim rangeStun        As Boolean
+    Dim stunChance       As Byte
     puedeEnvenenar = (UserList(AtacanteIndex).flags.Envenena > 0) Or (ObjInd > 0 And ObjData(ObjInd).Envenena)
     puedeEstupidizar = (UserList(AtacanteIndex).flags.Estupidiza > 0) Or (ObjInd > 0 And ObjData(ObjInd).Estupidiza)
     puedeIncinierar = (UserList(AtacanteIndex).flags.incinera > 0) Or (ObjInd > 0 And ObjData(ObjInd).incinera)
@@ -2085,7 +2049,6 @@ Public Sub ThrowArrowToTargetDir(ByVal UserIndex As Integer, ByRef Direction As 
     Dim TargetTranslation As t_Vector
     Dim TargetPos         As t_WorldPos
     Dim TranslationDiff   As Double
-    Dim Tanslation        As Integer
     currentPos = UserList(UserIndex).pos
     TargetPos.Map = currentPos.Map
     Dim step As Integer
@@ -2180,8 +2143,6 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
             Exit Sub
         End If
         If TargetType = eUser Then
-            Dim backup    As Byte
-            Dim envie     As Boolean
             Dim Particula As Integer
             Dim Tiempo    As Long
             ' Porque no es HandleAttack ???
@@ -2232,8 +2193,7 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
 End Sub
 
 Public Function GetProjectileView(ByRef User As t_User) As Integer
-    Dim WeaponData     As t_ObjData
-    Dim ProjectileType As Byte
+    Dim WeaponData As t_ObjData
     With User.invent
         If .EquippedWeaponObjIndex < 1 Then Exit Function
         WeaponData = ObjData(.EquippedWeaponObjIndex)

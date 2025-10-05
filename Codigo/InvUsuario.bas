@@ -97,7 +97,6 @@ End Function
 
 Function ClasePuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional Slot As Byte) As Boolean
     On Error GoTo manejador
-    Dim Flag As Boolean
     If Slot <> 0 Then
         If UserList(UserIndex).invent.Object(Slot).Equipped Then
             ClasePuedeUsarItem = True
@@ -121,7 +120,7 @@ manejador:
     LogError ("Error en ClasePuedeUsarItem")
 End Function
 
-Function RazaPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional Slot As Byte) As Boolean
+Function RazaPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Boolean
     On Error GoTo RazaPuedeUsarItem_Err
     Dim Objeto As t_ObjData, i As Long
     Objeto = ObjData(ObjIndex)
@@ -255,7 +254,6 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
         End If
         ' Si el usuario tiene ORO, entonces lo tiramos
         If (Cantidad > 0) And (Cantidad <= .Stats.GLD) Then
-            Dim i     As Byte
             Dim MiObj As t_Obj
             'info debug
             Dim loops As Long
@@ -415,7 +413,6 @@ End Sub
 
 Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo EraseObj_Err
-    Dim Rango As Byte
     MapData(Map, x, y).ObjInfo.amount = MapData(Map, x, y).ObjInfo.amount - num
     If MapData(Map, x, y).ObjInfo.amount <= 0 Then
         MapData(Map, x, y).ObjInfo.ObjIndex = 0
@@ -428,10 +425,8 @@ EraseObj_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.EraseObj", Erl)
 End Sub
 
-Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, Optional ByVal Limpiar As Boolean = True)
+Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo MakeObj_Err
-    Dim Color As Long
-    Dim Rango As Byte
     If obj.ObjIndex > 0 And obj.ObjIndex <= UBound(ObjData) Then
         If MapData(Map, x, y).ObjInfo.ObjIndex = obj.ObjIndex And MapData(Map, x, y).ObjInfo.ElementalTags = obj.ElementalTags Then
             MapData(Map, x, y).ObjInfo.amount = MapData(Map, x, y).ObjInfo.amount + obj.amount
@@ -486,8 +481,6 @@ End Function
 
 Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj) As Boolean
     On Error GoTo MeterItemEnInventario_Err
-    Dim x    As Integer
-    Dim y    As Integer
     Dim Slot As Integer
     If MiObj.ObjIndex = 12 Then
         UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + MiObj.amount
@@ -524,8 +517,6 @@ End Function
 
 Function HayLugarEnInventario(ByVal UserIndex As Integer, ByVal TargetItemIndex As Integer, ByVal ItemCount) As Boolean
     On Error GoTo HayLugarEnInventario_err
-    Dim x    As Integer
-    Dim y    As Integer
     Dim Slot As Byte
     Slot = 1
     Do Until UserList(UserIndex).invent.Object(Slot).ObjIndex = 0 Or (UserList(UserIndex).invent.Object(Slot).ObjIndex = TargetItemIndex And UserList(UserIndex).invent.Object( _
@@ -546,8 +537,6 @@ Sub PickObj(ByVal UserIndex As Integer)
     On Error GoTo PickObj_Err
     Dim x     As Integer
     Dim y     As Integer
-    Dim Slot  As Byte
-    Dim obj   As t_ObjData
     Dim MiObj As t_Obj
     '¿Hay algun obj?
     If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex > 0 Then
@@ -570,7 +559,6 @@ Sub PickObj(ByVal UserIndex As Integer)
                     End If
                 End If
             End If
-            obj = ObjData(MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex)
             MiObj.amount = MapData(UserList(UserIndex).pos.Map, x, y).ObjInfo.amount
             MiObj.ObjIndex = MapData(UserList(UserIndex).pos.Map, x, y).ObjInfo.ObjIndex
             MiObj.ElementalTags = MapData(UserList(UserIndex).pos.Map, x, y).ObjInfo.ElementalTags
@@ -714,7 +702,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     Call UnsetMask(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTalkToDead)
                     ' Msg673=Dejas el mundo de los muertos, ya no podrás comunicarte con ellos.
                     Call WriteLocaleMsg(UserIndex, "673", e_FontTypeNames.FONTTYPE_WARNING)
-                    Call SendData(SendTarget.ToPCDeadAreaButIndex, UserIndex, PrepareMessageCharacterRemove(4, UserList(UserIndex).Char.charindex, False, True))
+                    Call SendData(SendTarget.ToPCDeadAreaButIndex, UserIndex, PrepareMessageCharacterRemove(UserList(UserIndex).Char.charindex, False, True))
             End Select
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.charindex, 0, True, 5))
             UserList(UserIndex).Char.Otra_Aura = 0
@@ -1373,35 +1361,6 @@ Public Sub EquipAura(ByVal Slot As Integer, ByRef inventory As t_Inventario, ByV
     inventory.Object(Slot).Equipped = 1
 End Sub
 
-Public Function CheckClaseTipo(ByVal UserIndex As Integer, ItemIndex As Integer) As Boolean
-    On Error GoTo ErrHandler
-    If EsGM(UserIndex) Then
-        CheckClaseTipo = True
-        Exit Function
-    End If
-    Select Case ObjData(ItemIndex).ClaseTipo
-        Case 0
-            CheckClaseTipo = True
-            Exit Function
-        Case 2
-            If UserList(UserIndex).clase = e_Class.Mage Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Druid Then CheckClaseTipo = True
-            Exit Function
-        Case 1
-            If UserList(UserIndex).clase = e_Class.Warrior Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Assasin Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Bard Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Cleric Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Paladin Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Trabajador Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Hunter Then CheckClaseTipo = True
-            Exit Function
-    End Select
-    Exit Function
-ErrHandler:
-    Call LogError("Error CheckClaseTipo ItemIndex:" & ItemIndex)
-End Function
-
 Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As Byte)
     On Error GoTo hErr
     ' Agrego el Cuerno de la Armada y la Legión.
@@ -1413,10 +1372,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     Dim nowRaw   As Long
     With UserList(UserIndex)
         If .invent.Object(Slot).amount = 0 Then Exit Sub
-        If Not CanUseItem(.flags, .Counters) Then
-            Call WriteLocaleMsg(UserIndex, 395, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
         If PuedeUsarObjeto(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
             Exit Sub
         End If
@@ -1495,7 +1450,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     End If
                 End If
                 'Sonido
-                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, .pos.x, .pos.y))
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.FoodCrunch, .pos.x, .pos.y))
                 'Quitamos del inv el item
                 Call QuitarUserInvItem(UserIndex, Slot, 1)
                 Call UpdateUserInv(False, UserIndex, Slot)
@@ -1636,7 +1591,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Exit Sub
                         End If
                         Dim HealingAmount As Long
-                        Dim Source        As Integer
                         ' Calcula la cantidad de curación
                         HealingAmount = RandomNumber(obj.MinModificador, obj.MaxModificador) * UserMod.GetSelfHealingBonus(UserList(UserIndex))
                         ' Modifica la salud del jugador
@@ -2266,7 +2220,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Exit Sub
                 End If
                 'Call LogError(.Name & " intento aprender el hechizo " & ObjData(.Invent.Object(slot).ObjIndex).HechizoIndex)
-                If ClasePuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex, Slot) And RazaPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex, Slot) Then
+                If ClasePuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex, Slot) And RazaPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) Then
                     'If .Stats.MaxMAN > 0 Then
                     If .Stats.MinHam > 0 And .Stats.MinAGU > 0 Then
                         Call AgregarHechizo(UserIndex, Slot)
@@ -2628,7 +2582,7 @@ ItemSeCae_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.ItemSeCae", Erl)
 End Function
 
-Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
+Public Function PirataCaeItem(ByVal UserIndex As Integer)
     On Error GoTo PirataCaeItem_Err
     With UserList(UserIndex)
         If .clase = e_Class.Pirat And .Stats.ELV >= 37 And .flags.Navegando = 1 Then
@@ -2666,7 +2620,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
         For i = 1 To .CurrentInventorySlots
             ItemIndex = .invent.Object(i).ObjIndex
             If ItemIndex > 0 Then
-                If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex, i) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
+                If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
                     NuevaPos.x = 0
                     NuevaPos.y = 0
                     MiObj.amount = DropAmmount(.invent, i)
@@ -3102,7 +3056,6 @@ Sub EliminarLlaves(ByVal ClaveLlave As Integer, ByVal UserIndex As Integer)
     Open "Eliminarllaves.dat" For Input As #1
     ' Variables para el almacenamiento temporal de datos
     Dim Linea           As String
-    Dim clave           As Integer
     Dim Objeto          As Integer
     Dim LlaveEncontrada As Boolean
     LlaveEncontrada = False

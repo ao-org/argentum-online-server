@@ -154,8 +154,7 @@ End Function
 
 Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
     On Error GoTo ErrorHandler
-    Dim RS      As ADODB.Recordset
-    Dim counter As Long
+    Dim RS As ADODB.Recordset
     LoadCharacterFromDB = False
     With UserList(UserIndex)
         ' Load main character data using the user name.

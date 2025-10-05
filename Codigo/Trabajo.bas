@@ -142,7 +142,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                     'Si no hace de a 1
                     cantidad_maxima = 1
                 End If
-                Call CarpinteroConstruirItem(UserIndex, UserList(UserIndex).Trabajo.Item, UserList(UserIndex).Trabajo.Cantidad, cantidad_maxima)
+                Call CarpinteroConstruirItem(UserIndex, UserList(UserIndex).Trabajo.Item, cantidad_maxima)
             Case e_Skill.Mineria
                 If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
                 If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
@@ -186,7 +186,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                                     Call WriteMacroTrabajoToggle(UserIndex, False)
                                     Exit Sub
                                 End If
-                                Call DoMineria(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.invent.EquippedWorkingToolObjIndex).Dorada = 1)
+                                Call DoMineria(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y)
                             Else
                                 ' Msg599=Ahí no hay ningún yacimiento.
                                 Call WriteLocaleMsg(UserIndex, "599", e_FontTypeNames.FONTTYPE_INFO)
@@ -240,7 +240,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                             End If
                             '¡Hay un arbol donde clickeo?
                             If ObjData(DummyInt).OBJType = e_OBJType.otTrees Then
-                                Call DoTalar(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.invent.EquippedWorkingToolObjIndex).Dorada = 1)
+                                Call DoTalar(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y)
                             End If
                         Else
                             ' Msg604=No hay ningún árbol ahí.
@@ -296,17 +296,10 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 End Sub
 
 Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
-    '********************************************************
-    'Autor: Nacho (Integer)
-    'Last Modif: 28/01/2007
-    'Chequea si ya debe mostrarse
-    'Pablo (ToxicWaste): Cambie los ordenes de prioridades porque sino no andaba.
-    '********************************************************
     On Error GoTo DoPermanecerOculto_Err
     With UserList(UserIndex)
         Dim velocidadOcultarse As Integer
         velocidadOcultarse = 1
-        'HarThaoS: Si tiene armadura de cazador, dependiendo skills vemos cuanto tiempo se oculta
         If .clase = e_Class.Hunter Then
             If TieneArmaduraCazador(UserIndex) Then
                 Select Case .Stats.UserSkills(e_Skill.Ocultarse)
@@ -1165,7 +1158,7 @@ PuedeConstruirSastre_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.PuedeConstruirSastre", Erl)
 End Function
 
-Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal Cantidad As Long, ByVal cantidad_maxima As Integer)
+Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal cantidad_maxima As Integer)
     On Error GoTo CarpinteroConstruirItem_Err
     If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
     If UserList(UserIndex).flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios) Then
@@ -1330,10 +1323,9 @@ End Function
 
 Public Sub DoLingotes(ByVal UserIndex As Integer)
     On Error GoTo DoLingotes_Err
-    Dim Slot       As Integer
-    Dim obji       As Integer
-    Dim cant       As Byte
-    Dim necesarios As Integer
+    Dim Slot As Integer
+    Dim obji As Integer
+    Dim cant As Byte
     If UserList(UserIndex).Stats.MinSta > 2 Then
         Call QuitarSta(UserIndex, 2)
     Else
@@ -1345,7 +1337,6 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
     Slot = UserList(UserIndex).flags.TargetObjInvSlot
     obji = UserList(UserIndex).invent.Object(Slot).ObjIndex
     cant = RandomNumber(10, 20)
-    necesarios = MineralesParaLingote(obji, cant)
     If UserList(UserIndex).invent.Object(Slot).amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> e_OBJType.otMinerals Then
         ' Msg645=No tienes suficientes minerales para hacer un lingote.
         Call WriteLocaleMsg(UserIndex, "645", e_FontTypeNames.FONTTYPE_INFO)
@@ -1357,7 +1348,6 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
         UserList(UserIndex).invent.Object(Slot).amount = 0
         UserList(UserIndex).invent.Object(Slot).ObjIndex = 0
     End If
-    Dim nPos  As t_WorldPos
     Dim MiObj As t_Obj
     MiObj.amount = cant
     MiObj.ObjIndex = ObjData(UserList(UserIndex).flags.TargetObjInvIndex).LingoteIndex
@@ -1390,19 +1380,6 @@ Function ModAlquimia(ByVal clase As e_Class) As Integer
     Exit Function
 ModAlquimia_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.ModAlquimia", Erl)
-End Function
-
-Function ModSastre(ByVal clase As e_Class) As Integer
-    On Error GoTo ModSastre_Err
-    Select Case clase
-        Case e_Class.Trabajador
-            ModSastre = 1
-        Case Else
-            ModSastre = 3
-    End Select
-    Exit Function
-ModSastre_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.ModSastre", Erl)
 End Function
 
 Function ModCarpinteria(ByVal clase As e_Class) As Integer
@@ -1515,18 +1492,12 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
     On Error GoTo ErrHandler
     Dim bonificacionPescaLvl(1 To 47) As Single
     Dim bonificacionCaña As Double
-    Dim bonificacionZona  As Double
     Dim bonificacionLvl   As Double
-    Dim bonificacionClase As Double
     Dim bonificacionTotal As Double
     Dim RestaStamina      As Integer
     Dim Reward            As Double
     Dim esEspecial        As Boolean
     Dim i                 As Integer
-    Dim NpcIndex          As Integer
-    ' Shugar - 13/8/2024
-    ' Paso los poderes de las cañas al dateo de pesca.dat
-    ' Paso la reducción de pesca en zona segura a balance.dat
     With UserList(UserIndex)
         RestaStamina = IIf(RedDePesca, 12, RandomNumber(2, 3))
         If .flags.Privilegios And (e_PlayerType.Consejero) Then
@@ -1601,9 +1572,6 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
         If MapInfo(.pos.Map).Seguro Then
             bonificacionTotal = bonificacionTotal * PorcentajePescaSegura / 100
         End If
-        'Shugar: La reward ya estaba hardcodeada así...
-        'no la voy a tocar, pero ahora por lo menos puede ajustarse desde dateo con la bonificación de las cañas!
-        'Calculo el botin esperado por iteracción. 'La base del calculo son 8000 por hora + 20% de chances de no pescar + un +/- 10%
         Reward = (IntervaloTrabajarExtraer / 3600000) * 8000 * bonificacionTotal * 1.2 * (1 + (RandomNumber(0, 20) - 10) / 100)
         'Calculo la suerte de pescar o no pescar y aplico eso sobre el reward para promediar.
         Dim Suerte As Integer
@@ -1621,7 +1589,6 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
         End If
         Pesco = RandomNumber(1, 100) <= Suerte '80% de posibilidad de pescar
         If Pesco Then
-            Dim nPos     As t_WorldPos
             Dim MiObj    As t_Obj
             Dim objValue As Integer
             If IsFeatureEnabled("gain_exp_while_working") Then
@@ -1637,7 +1604,9 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
             If MiObj.ObjIndex = (SvrConfig.GetValue("FISHING_SPECIALFISH1_ID") Or MiObj.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH2_ID")) And (UserList( _
                     UserIndex).pos.Map) <> SvrConfig.GetValue("FISHING_MAP_SPECIAL_FISH1_ID") Then
                 MiObj.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH1_REMPLAZO_ID")
-                If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Then NpcIndex = SpawnNpc(SvrConfig.GetValue("NPC_WATCHMAN_ID"), .pos, True, False)
+                If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Then
+                    Call SpawnNpc(SvrConfig.GetValue("NPC_WATCHMAN_ID"), .pos, True, False)
+                End If
                 Call WriteMacroTrabajoToggle(UserIndex, False)
             End If
             MiObj.amount = Round(Reward / objValue)
@@ -1724,24 +1693,7 @@ ErrHandler:
     Call LogError("Error en DoPescar. Error " & Err.Number & " - " & Err.Description & " Line number: " & Erl)
 End Sub
 
-''
-' Try to steal an item / gold to another character
-'
-' @param LadronIndex Specifies reference to user that stoles
-' @param VictimaIndex Specifies reference to user that is being stolen
 Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
-    '*************************************************
-    'Author: Unknown
-    'Last modified: 05/04/2010
-    'Last Modification By: ZaMa
-    '24/07/08: Marco - Now it calls to WriteUpdateGold(VictimaIndex and LadronIndex) when the thief stoles gold. (MarKoxX)
-    '27/11/2009: ZaMa - Optimizacion de codigo.
-    '18/12/2009: ZaMa - Los ladrones ciudas pueden robar a pks.
-    '01/04/2010: ZaMa - Los ladrones pasan a robar oro acorde a su nivel.
-    '05/04/2010: ZaMa - Los armadas no pueden robarle a ciudadanos jamas.
-    '23/04/2010: ZaMa - No se puede robar mas sin energia.
-    '23/04/2010: ZaMa - El alcance de robo pasa a ser de 1 tile.
-    '*************************************************
     On Error GoTo ErrHandler
     Dim OtroUserIndex As Integer
     If UserList(LadronIndex).flags.Privilegios And (e_PlayerType.Consejero) Then Exit Sub
@@ -1756,7 +1708,6 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
         Call WriteLocaleMsg(LadronIndex, "1029", e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
-    Dim Penable As Boolean
     With UserList(LadronIndex)
         If esCiudadano(LadronIndex) Then
             If (.flags.Seguro) Then
@@ -1813,7 +1764,6 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
         Call QuitarSta(LadronIndex, 15)
         If UserList(VictimaIndex).flags.Privilegios And e_PlayerType.User Then
             Dim Probabilidad As Byte
-            Dim res          As Integer
             Dim RobarSkill   As Byte
             RobarSkill = .Stats.UserSkills(e_Skill.Robar)
             If (RobarSkill > 0 And RobarSkill < 10) Then
@@ -1926,9 +1876,6 @@ ErrHandler:
 End Sub
 
 Public Function ObjEsRobable(ByVal VictimaIndex As Integer, ByVal Slot As Integer) As Boolean
-    ' Agregué los barcos
-    ' Agrego poción negra
-    ' Esta funcion determina qué objetos son robables.
     On Error GoTo ObjEsRobable_Err
     Dim OI As Integer
     OI = UserList(VictimaIndex).invent.Object(Slot).ObjIndex
@@ -1940,17 +1887,7 @@ ObjEsRobable_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.ObjEsRobable", Erl)
 End Function
 
-''
-' Try to steal an item to another character
-'
-' @param LadrOnIndex Specifies reference to user that stoles
-' @param VictimaIndex Specifies reference to user that is being stolen
 Private Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
-    '***************************************************
-    'Author: Unknown
-    'Last Modification: 02/04/2010
-    '02/04/2010: ZaMa - Modifico la cantidad de items robables por el ladron.
-    '***************************************************
     On Error GoTo RobarObjeto_Err
     Dim Flag As Boolean
     Dim i    As Integer
@@ -2050,7 +1987,6 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte
         '118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
         Rem Ladder 06/08/14 Subo un poco la probabilidad de sacar raices... porque era muy lento
         If res < 7 Then
-            Dim nPos  As t_WorldPos
             Dim MiObj As t_Obj
             Call ActualizarRecurso(.pos.Map, x, y)
             'If .clase = e_Class.Druid Then
@@ -2085,7 +2021,7 @@ ErrHandler:
     Call LogError("Error en DoRaices")
 End Sub
 
-Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
+Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte)
     On Error GoTo ErrHandler
     Dim Suerte As Integer
     Dim res    As Integer
@@ -2114,7 +2050,6 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte,
         End If
         '118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
         If res < 6 Then
-            Dim nPos  As t_WorldPos
             Dim MiObj As t_Obj
             Call ActualizarRecurso(.pos.Map, x, y)
             MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
@@ -2175,11 +2110,10 @@ ErrHandler:
     Call LogError("Error en DoTalar")
 End Sub
 
-Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
+Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte)
     On Error GoTo ErrHandler
     Dim Suerte     As Integer
     Dim res        As Integer
-    Dim Metal      As Integer
     Dim Yacimiento As t_ObjData
     With UserList(UserIndex)
         If .flags.Privilegios And (e_PlayerType.Consejero) Then
@@ -2208,7 +2142,6 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
         End If
         If res <= 5 Then
             Dim MiObj As t_Obj
-            Dim nPos  As t_WorldPos
             Call ActualizarRecurso(.pos.Map, x, y)
             MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
             Yacimiento = ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex)
@@ -2409,7 +2342,8 @@ End Sub
 
 Public Function ObtenerPezRandom(ByVal PoderCania As Integer) As Long
     On Error GoTo ObtenerPezRandom_Err
-    Dim i As Long, SumaPesos As Long, ValorGenerado As Long
+    Dim SumaPesos     As Long
+    Dim ValorGenerado As Long
     If PoderCania > UBound(PesoPeces) Then PoderCania = UBound(PesoPeces)
     SumaPesos = PesoPeces(PoderCania)
     ValorGenerado = RandomNumber(0, SumaPesos - 1)
@@ -2419,35 +2353,8 @@ ObtenerPezRandom_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.ObtenerPezRandom", Erl)
 End Function
 
-Function ModDomar(ByVal clase As e_Class) As Integer
-    On Error GoTo ModDomar_Err
-    '***************************************************
-    'Author: Unknown
-    'Last Modification: -
-    '
-    '***************************************************
-    Select Case clase
-        Case e_Class.Druid
-            ModDomar = 6
-        Case e_Class.Hunter
-            ModDomar = 6
-        Case e_Class.Cleric
-            ModDomar = 7
-        Case Else
-            ModDomar = 10
-    End Select
-    Exit Function
-ModDomar_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.ModDomar", Erl)
-End Function
-
 Function FreeMascotaIndex(ByVal UserIndex As Integer) As Integer
     On Error GoTo FreeMascotaIndex_Err
-    '***************************************************
-    'Author: Unknown
-    'Last Modification: 02/03/09
-    '02/03/09: ZaMa - Busca un indice libre de mascotas, revisando los types y no los indices de los npcs
-    '***************************************************
     Dim j As Integer
     For j = 1 To MAXMASCOTAS
         If UserList(UserIndex).MascotasType(j) = 0 Then
@@ -2466,16 +2373,8 @@ Private Function HayEspacioMascotas(ByVal UserIndex As Integer) As Boolean
 End Function
 
 Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
-    '***************************************************
-    'Author: Nacho (Integer)
-    'Last Modification: 01/05/2010
-    '12/15/2008: ZaMa - Limits the number of the same type of pet to 2.
-    '02/03/2009: ZaMa - Las criaturas domadas en zona segura, esperan afuera (desaparecen).
-    '01/05/2010: ZaMa - Agrego bonificacion 11% para domar con flauta magica.
-    '***************************************************
     On Error GoTo ErrHandler
     Dim puntosDomar As Integer
-    Dim CanStay     As Boolean
     Dim petType     As Integer
     Dim NroPets     As Integer
     If IsValidUserRef(NpcList(NpcIndex).MaestroUser) And NpcList(NpcIndex).MaestroUser.ArrayIndex = UserIndex Then
@@ -2543,34 +2442,7 @@ ErrHandler:
     Call LogError("Error en DoDomar. Error " & Err.Number & " : " & Err.Description)
 End Sub
 
-''
-' Checks if the user can tames a pet.
-'
-' @param integer userIndex The user id from who wants tame the pet.
-' @param integer NPCindex The index of the npc to tome.
-' @return boolean True if can, false if not.
-Private Function PuedeDomarMascota(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Boolean
-    On Error GoTo PuedeDomarMascota_Err
-    '***************************************************
-    'Author: ZaMa
-    'This function checks how many NPCs of the same type have
-    'been tamed by the user.
-    'Returns True if that amount is less than two.
-    '***************************************************
-    Dim i           As Long
-    Dim numMascotas As Long
-    For i = 1 To MAXMASCOTAS
-        If UserList(UserIndex).MascotasType(i) = NpcList(NpcIndex).Numero Then
-            numMascotas = numMascotas + 1
-        End If
-    Next i
-    If numMascotas <= 1 Then PuedeDomarMascota = True
-    Exit Function
-PuedeDomarMascota_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.PuedeDomarMascota", Erl)
-End Function
-
-Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
+Public Sub EntregarPezEspecial(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If .flags.PescandoEspecial Then
             Dim obj As t_Obj
@@ -2579,7 +2451,7 @@ Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
             If Not MeterItemEnInventario(UserIndex, obj) Then
                 .Stats.NumObj_PezEspecial = 0
                 .flags.PescandoEspecial = False
-                Exit Function
+                Exit Sub
             End If
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(obj.ObjIndex).GrhIndex))
             'Msg922=Felicitaciones has pescado un pez de gran porte ( " & ObjData(obj.ObjIndex).name & " )
@@ -2588,7 +2460,7 @@ Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
             .flags.PescandoEspecial = False
         End If
     End With
-End Function
+End Sub
 
 Public Sub FishOrThrowNet(ByVal UserIndex As Integer)
     On Error GoTo FishOrThrowNet_Err:
@@ -2704,7 +2576,7 @@ Public Function GetExtractResourceForLevel(ByVal level As Integer) As Integer
     GetExtractResourceForLevel = RandomNumber(lower, upper)
 End Function
 
-Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal JobType As Byte)
+Public Sub GiveExpWhileWorking(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal JobType As Byte)
     On Error GoTo GiveExpWhileWorking_Err:
     Dim tmpExp As Byte
     Select Case JobType
@@ -2728,10 +2600,10 @@ Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByVal ItemIndex 
             tmpExp = SvrConfig.GetValue("ElseExp")
     End Select
     UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + tmpExp
-    Exit Function
+    Exit Sub
 GiveExpWhileWorking_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.GiveExpWhileWorking", Erl)
-End Function
+End Sub
 
 Public Function KnowsCraftingRecipe(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
     KnowsCraftingRecipe = True

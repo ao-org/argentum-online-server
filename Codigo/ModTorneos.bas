@@ -1,5 +1,4 @@
 Attribute VB_Name = "ModTorneos"
-
 ' Argentum 20 Game Server
 '
 '    Copyright (C) 2023 Noland Studios LTD
@@ -27,6 +26,8 @@ Attribute VB_Name = "ModTorneos"
 '
 '
 '
+Option Explicit
+
 Public Type t_Torneo
     HayTorneoaActivo As Boolean
     NivelMinimo As Byte
@@ -55,8 +56,7 @@ Public Type t_Torneo
     reglas As String
 End Type
 
-Public Torneo        As t_Torneo
-Public MensajeTorneo As String
+Public Torneo As t_Torneo
 
 Public Sub IniciarTorneo()
     On Error GoTo IniciarTorneo_Err
@@ -93,33 +93,6 @@ IniciarTorneo_Err:
     Call TraceError(Err.Number, Err.Description, "ModTorneos.IniciarTorneo", Erl)
 End Sub
 
-Public Sub ParticiparTorneo(ByVal UserIndex As Integer)
-    On Error GoTo ParticiparTorneo_Err
-    Dim IndexVacio As Byte
-    IndexVacio = BuscarIndexFreeTorneo
-    Torneo.IndexParticipantes(IndexVacio) = UserIndex
-    Torneo.participantes = Torneo.participantes + 1
-    UserList(UserIndex).flags.EnTorneo = True
-    Call WriteLocaleMsg(UserIndex, 2067, e_FontTypeNames.FONTTYPE_INFOIAO) ' Msg2067="¡Ya estas anotado! Solo debes aguardar hasta que seas enviado a la sala de espera."
-    Exit Sub
-ParticiparTorneo_Err:
-    Call TraceError(Err.Number, Err.Description, "ModTorneos.ParticiparTorneo", Erl)
-End Sub
-
-Public Function BuscarIndexFreeTorneo() As Byte
-    On Error GoTo BuscarIndexFreeTorneo_Err
-    Dim i As Byte
-    For i = 1 To Torneo.cupos
-        If Torneo.IndexParticipantes(i) = 0 Then
-            BuscarIndexFreeTorneo = i
-            Exit For
-        End If
-    Next i
-    Exit Function
-BuscarIndexFreeTorneo_Err:
-    Call TraceError(Err.Number, Err.Description, "ModTorneos.BuscarIndexFreeTorneo", Erl)
-End Function
-
 Public Sub BorrarIndexInTorneo(ByVal Index As Integer)
     On Error GoTo BorrarIndexInTorneo_Err
     Dim i As Byte
@@ -140,6 +113,7 @@ Public Sub ComenzarTorneoOk()
     Dim nombres As String
     Dim x       As Byte
     Dim y       As Byte
+    Dim i       As Integer
     For i = 1 To Torneo.participantes
         nombres = nombres & UserList(Torneo.IndexParticipantes(i)).name & ", "
         x = Torneo.x

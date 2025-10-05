@@ -29,23 +29,6 @@ Option Explicit
 ' Cantidad máxima de llaves
 Public Const MAXKEYS As Byte = 10
 
-Public Sub SacarLlaveDeLLavero(ByVal UserIndex As Integer, ByVal Llave As Integer)
-    On Error GoTo ErrHandler
-    With UserList(UserIndex)
-        Dim i As Integer
-        For i = 1 To MAXKEYS
-            If .Keys(i) = Llave Then
-                .Keys(i) = 0
-                Call WriteUpdateUserKey(UserIndex, i, 0)
-                Exit Sub
-            End If
-        Next
-    End With
-    Exit Sub
-ErrHandler:
-    Call TraceError(Err.Number, Err.Description, "ModLlaves.SacarLlaveDeLLavero", Erl)
-End Sub
-
 Public Sub EnviarLlaves(ByVal UserIndex As Integer)
     On Error GoTo EnviarLlaves_Err
     With UserList(UserIndex)

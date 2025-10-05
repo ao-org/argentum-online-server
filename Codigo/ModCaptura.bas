@@ -36,7 +36,6 @@ Public Const CAPTURA_TIEMPO_BANDERA = 7 'Tiempo que tiene que estar el user con 
 Public Const CAPTURA_TIEMPO_MUERTE = 5 'Tiempo que tarda para poder revivir cuando muere
 Public Const CAPTURA_TIEMPO_POR_MUERTE = 2 'Multiplicador de tiempo x veces que murio
 Public Const MAP_SALA_ESPERA       As Integer = 278
-Public Const MAP_NEUTRAL           As Integer = 276
 Public Const MAP_TEAM_1            As Integer = 275
 Public Const X_TEAM_1              As Integer = 43
 Public Const Y_TEAM_1              As Integer = 51

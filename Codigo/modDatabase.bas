@@ -153,7 +153,6 @@ End Function
 Public Function Invoke(ByVal Procedure As String, ParamArray Arguments() As Variant) As ADODB.Recordset
     Dim Command  As New ADODB.Command
     Dim Argument As Variant
-    Dim Affected As Long
     Command.ActiveConnection = Connection
     Command.CommandText = Procedure
     Command.CommandType = adCmdStoredProc
@@ -286,14 +285,6 @@ Public Function BANCheckDatabase(name As String) As Boolean
     Exit Function
 BANCheckDatabase_Err:
     Call TraceError(Err.Number, Err.Description, "modDatabase.BANCheckDatabase", Erl)
-End Function
-
-Public Function GetUserStatusDatabase(name As String) As Integer
-    On Error GoTo GetUserStatusDatabase_Err
-    GetUserStatusDatabase = GetUserValue(LCase$(name), "status")
-    Exit Function
-GetUserStatusDatabase_Err:
-    Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserStatusDatabase", Erl)
 End Function
 
 Public Function GetAccountIDDatabase(name As String) As Long
@@ -553,14 +544,6 @@ ErrorHandler:
     Call LogDatabaseError("Error in GetUserGuildMemberDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 End Function
 
-Public Function GetUserGuildAspirantDatabase(username As String) As Integer
-    On Error GoTo ErrorHandler
-    GetUserGuildAspirantDatabase = SanitizeNullValue(GetUserValue(LCase$(username), "guild_aspirant_index"), 0)
-    Exit Function
-ErrorHandler:
-    Call LogDatabaseError("Error in GetUserGuildAspirantDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
-End Function
-
 Public Function GetUserGuildPedidosDatabase(username As String) As String
     On Error GoTo ErrorHandler
     Dim user_id As Long
@@ -637,7 +620,6 @@ Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal username 
     Set RS = Query("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_index, status, ciudadanos_matados, criminales_matados FROM user WHERE UPPER(name) = ?;", _
             UCase$(username))
     Dim GuildRequestHistory As String
-    Dim GuildHistory        As String
     If RS Is Nothing Then
         Call WriteConsoleMsg(UserIndex, "Pj Inexistente", e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
@@ -682,16 +664,6 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
     Exit Function
 ErrorHandler:
     Call LogDatabaseError("Error in EnterAccountDatabase. UserCuenta: " & CuentaEmail & ". " & Err.Number & " - " & Err.Description)
-End Function
-
-Public Function PersonajePerteneceID(ByVal username As String, ByVal AccountID As Long) As Boolean
-    Dim RS As ADODB.Recordset
-    Set RS = Query("SELECT id FROM user WHERE name = ? AND account_id = ?;", username, AccountID)
-    If RS Is Nothing Then
-        PersonajePerteneceID = False
-        Exit Function
-    End If
-    PersonajePerteneceID = True
 End Function
 
 Public Function GetCharacterIdWithName(ByVal username As String) As Long

@@ -25,6 +25,7 @@ Attribute VB_Name = "ModGrupos"
 '
 '
 '
+Option Explicit
 Public Grupo            As Tgrupo
 Private UniqueIdCounter As Long
 
@@ -253,7 +254,6 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
     Dim i          As Long
     Dim LoopC      As Long
     Dim indexviejo As Byte
-    Dim GroupLider As Integer
     With UserList(UserIndex)
         .Grupo.EnGrupo = False
         .Grupo.Id = -1

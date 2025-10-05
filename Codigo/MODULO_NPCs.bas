@@ -100,10 +100,6 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "NPCs.ReleaseNpc", Erl)
 End Function
 
-Public Function GetAvailableNpcIndex() As Integer
-    GetAvailableNpcIndex = IdNpcLibres.currentIndex
-End Function
-
 Public Function GetNextAvailableNpc() As Integer
     On Error GoTo ErrHandler
     If (IdNpcLibres.currentIndex = 0) Then
@@ -138,7 +134,6 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     '********************************************************
     On Error GoTo ErrHandler
     Dim MiNPC       As t_Npc
-    Dim EraCriminal As Byte
     Dim TiempoRespw As Long
     Dim i           As Long, j As Long
     Dim Indice      As Integer
@@ -203,7 +198,6 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             End If
             MiNPC.flags.ExpCount = 0
         End If
-        EraCriminal = Status(UserIndex)
         If MiNPC.GiveEXPClan > 0 Then
             If UserList(UserIndex).GuildIndex > 0 Then
                 Call modGuilds.CheckClanExp(UserIndex, MiNPC.GiveEXPClan * SvrConfig.GetValue("ExpMult"))
@@ -486,8 +480,6 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
     On Error GoTo CrearNPC_Err
     Dim NpcIndex    As Integer
     Dim Iteraciones As Long
-    Dim PuedeAgua   As Boolean
-    Dim PuedeTierra As Boolean
     Dim Map         As Integer
     Dim x           As Integer
     Dim y           As Integer
@@ -496,8 +488,6 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
     With NpcList(NpcIndex)
         ' Cabeza customizada
         If CustomHead <> 0 Then .Char.head = CustomHead
-        PuedeAgua = .flags.AguaValida = 1
-        PuedeTierra = .flags.TierraInvalida = 0
         'Necesita ser respawned en un lugar especifico
         If .flags.RespawnOrigPos And InMapBounds(OrigPos.Map, OrigPos.x, OrigPos.y) Then
             Map = OrigPos.Map
@@ -788,7 +778,6 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
     '23/01/2007 -> Pablo (ToxicWaste): Creates an NPC of the type Npcindex
     '***************************************************
     Dim NewPos      As t_WorldPos
-    Dim altpos      As t_WorldPos
     Dim nIndex      As Integer
     Dim PuedeAgua   As Boolean
     Dim PuedeTierra As Boolean
@@ -844,25 +833,6 @@ ReSpawnNpc_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.ReSpawnNpc", Erl)
 End Sub
 
-'Devuelve el nro de enemigos que hay en el Mapa Map
-Function NPCHostiles(ByVal Map As Integer) As Integer
-    On Error GoTo NPCHostiles_Err
-    Dim NpcIndex As Integer
-    Dim cont     As Integer
-    'Contador
-    cont = 0
-    For NpcIndex = 1 To LastNPC
-        '¿esta vivo?
-        If NpcList(NpcIndex).flags.NPCActive And NpcList(NpcIndex).pos.Map = Map And NpcList(NpcIndex).Hostile = 1 Then
-            cont = cont + 1
-        End If
-    Next NpcIndex
-    NPCHostiles = cont
-    Exit Function
-NPCHostiles_Err:
-    Call TraceError(Err.Number, Err.Description, "NPCs.NPCHostiles", Erl)
-End Function
-
 Sub NPCTirarOro(MiNPC As t_Npc, ByVal UserIndex As Integer)
     On Error GoTo NPCTirarOro_Err
     If UserIndex = 0 Then Exit Sub
@@ -888,7 +858,7 @@ NPCTirarOro_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.NPCTirarOro", Erl)
 End Sub
 
-Function UpdateNpcSpeed(ByVal NpcIndex As Integer)
+Sub UpdateNpcSpeed(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)
         If .IntervaloMovimiento = 0 Then
             .IntervaloMovimiento = 380
@@ -899,7 +869,7 @@ Function UpdateNpcSpeed(ByVal NpcIndex As Integer)
         .Char.speeding = .Char.speeding * max(0, (1 + .Modifiers.MovementSpeed))
         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageSpeedingACT(.Char.charindex, .Char.speeding))
     End With
-End Function
+End Sub
 
 Function GetNpcSpeedModifiers(ByVal NpcIndex As Integer) As Single
     GetNpcSpeedModifiers = max(0, (1 + NpcList(NpcIndex).Modifiers.MovementSpeed))
@@ -1073,7 +1043,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         For LoopC = 1 To .flags.LanzaSpells
             .Spells(LoopC).SpellIndex = val(Leer.GetValue("NPC" & NpcNumber, "Sp" & LoopC))
             .Spells(LoopC).Cd = val(Leer.GetValue("NPC" & NpcNumber, "Cd" & LoopC))
-            .Spells(LoopC).LastUse = 0
+            .Spells(LoopC).lastUse = 0
         Next LoopC
         If .npcType = e_NPCType.Entrenador Then
             .NroCriaturas = val(Leer.GetValue("NPC" & NpcNumber, "NroCriaturas"))
@@ -1240,7 +1210,6 @@ Function NpcSellsItem(ByVal NpcNumber As Integer, ByVal NroObjeto As Integer) As
     End If
     Dim LoopC    As Long
     Dim ln       As String
-    Dim Field()  As String
     Dim NroItems As Long
     NroItems = val(Leer.GetValue("NPC" & NpcNumber, "NROITEMS"))
     For LoopC = 1 To NroItems
@@ -1418,22 +1387,6 @@ Public Sub DummyTargetAttacked(ByVal NpcIndex As Integer)
         End If
     End With
 End Sub
-
-Public Sub KillRandomNpc()
-    Dim validNpc As Boolean: validNpc = False
-    Dim NpcIndex As Integer: NpcIndex = 0
-    If GetAvailableNpcIndex > 8000 Or GetAvailableNpcIndex = 0 Then
-        Exit Sub
-    End If
-    Do While Not validNpc
-        NpcIndex = RandomNumber(1, 10000)
-        If NpcList(NpcIndex).flags.NPCActive And NpcList(NpcIndex).Hostile > 0 Then
-            validNpc = True
-        End If
-    Loop
-    Call MuereNpc(NpcIndex, 0)
-End Sub
-
 
 Public Function CanMove(ByRef counter As t_NpcCounters, ByRef flags As t_NPCFlags) As Boolean
     Dim nowRaw As Long
@@ -1818,23 +1771,17 @@ Public Function CanAttackNpc(ByVal NpcIndex As Integer, ByVal TargetIndex As Int
             CanAttackNpc = eNotEnougthPrivileges
             Exit Function
         End If
-        Dim TargetFaction         As e_Facciones
-        Dim AttackerFaction       As e_Facciones
-        Dim AttackerIsFreeCrature As Boolean
-        Dim TargetIsFreeCrature   As Boolean
+        Dim TargetFaction   As e_Facciones
+        Dim AttackerFaction As e_Facciones
         If IsValidUserRef(NpcList(TargetIndex).MaestroUser) Then
             TargetFaction = UserList(NpcList(TargetIndex).MaestroUser.ArrayIndex).Faccion.Status
-            TargetIsFreeCrature = False
         Else
             TargetFaction = NpcList(TargetIndex).flags.Faccion
-            TargetIsFreeCrature = True
         End If
         If IsValidUserRef(.MaestroUser) Then
             AttackerFaction = UserList(.MaestroUser.ArrayIndex).Faccion.Status
-            AttackerIsFreeCrature = False
         Else
             AttackerFaction = .flags.Faccion
-            AttackerIsFreeCrature = True
         End If
         If Not FactionCanAttackFaction(AttackerFaction, TargetFaction) Then
             CanAttackNpc = eSameFaction
@@ -1866,7 +1813,7 @@ Public Function GetMagicHealingBonus(ByRef Npc As t_Npc) As Single
     GetMagicHealingBonus = max(1 + Npc.Modifiers.MagicHealingBonus, 0)
 End Function
 
-Public Function CanSeeUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
+Public Function CanSeeUser(ByVal UserIndex As Integer)
     CanSeeUser = UserMod.IsVisible(UserList(UserIndex))
 End Function
 

@@ -166,7 +166,7 @@ Public Function RefDoDamageToTarget(ByRef SourceRef As t_AnyReference, _
     End If
 End Function
 
-Public Function AddShieldToReference(ByRef SourceRef As t_AnyReference, ByVal ShieldSize As Long)
+Public Sub AddShieldToReference(ByRef SourceRef As t_AnyReference, ByVal ShieldSize As Long)
     If SourceRef.RefType = eUser Then
         Call IncreaseLong(UserList(SourceRef.ArrayIndex).Stats.shield, ShieldSize)
         WriteUpdateHP (SourceRef.ArrayIndex)
@@ -174,7 +174,7 @@ Public Function AddShieldToReference(ByRef SourceRef As t_AnyReference, ByVal Sh
         Call IncreaseLong(NpcList(SourceRef.ArrayIndex).Stats.shield, ShieldSize)
         Call SendData(SendTarget.ToNPCAliveArea, SourceRef.ArrayIndex, PrepareMessageNpcUpdateHP(SourceRef.ArrayIndex))
     End If
-End Function
+End Sub
 
 Public Function GetName(ByRef SourceRef As t_AnyReference) As String
     If SourceRef.RefType = eUser Then

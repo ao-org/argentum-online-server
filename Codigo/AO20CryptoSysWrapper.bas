@@ -59,10 +59,8 @@ Public Function DECRYPT(ByVal hex_key As String, ByVal encrypted_text_b64 As Str
     DECRYPT = cnvStringFromHexStr(cnvToHex(cipherDecryptBytes2(encrypted_text_byte, key, iv, algstr)))
 End Function
 
-'HarThaoS: Convierto el str en arr() bytes
 Public Sub Str2ByteArr(ByVal str As String, ByRef arr() As Byte, Optional ByVal length As Long = 0)
-    Dim i   As Long
-    Dim asd As String
+    Dim i As Long
     If length = 0 Then
         ReDim arr(0 To (Len(str) - 1))
         For i = 0 To (Len(str) - 1)
@@ -75,15 +73,6 @@ Public Sub Str2ByteArr(ByVal str As String, ByRef arr() As Byte, Optional ByVal 
         Next i
     End If
 End Sub
-
-Public Function ByteArr2String(ByRef arr() As Byte) As String
-    Dim str As String
-    Dim i   As Long
-    For i = 0 To UBound(arr)
-        str = str + Chr(arr(i))
-    Next i
-    ByteArr2String = str
-End Function
 
 Public Function hiByte(ByVal w As Integer) As Byte
     Dim hi As Integer

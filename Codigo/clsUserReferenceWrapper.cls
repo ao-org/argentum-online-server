@@ -37,6 +37,7 @@ Attribute VB_Exposed = False
 '
 '
 '
+Option Explicit
 Dim UserRef As t_UserReference
 
 Public Sub SetFromIndex(ByVal UserIndex As Integer)

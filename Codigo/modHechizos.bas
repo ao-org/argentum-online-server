@@ -26,7 +26,6 @@ Attribute VB_Name = "modHechizos"
 '
 '
 Option Explicit
-Private Const FLAUTA_ELFICA As Long = 40
 
 Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Spell As Integer, Optional ByVal IgnoreVisibilityCheck As Boolean = False)
     On Error GoTo NpcLanzaSpellSobreUser_Err
@@ -578,7 +577,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             End If
         End If
         If Hechizos(HechizoIndex).Cooldown > 0 And .Counters.UserHechizosInterval(Slot) > 0 Then
-            Dim nowRaw             As Long
+            Dim nowRaw            As Long
             Dim SegundosFaltantes As Long
             nowRaw = GetTickCountRaw()
             Dim Cooldown As Long
@@ -945,16 +944,13 @@ Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
     Dim PosCasteadaY As Byte
     Dim PosCasteadaM As Integer
     Dim uh           As Integer
-    Dim TempX        As Integer
-    Dim TempY        As Integer
     PosCasteadaX = UserList(UserIndex).flags.TargetX
     PosCasteadaY = UserList(UserIndex).flags.TargetY
-    PosCasteadaM = UserList(UserIndex).flags.TargetMap
     uh = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
     'Envio Palabras magicas, wavs y fxs.
-    If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).ObjInfo.amount > 0 Or (MapData(UserList(UserIndex).pos.Map, _
-            UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Or MapData(UserList(UserIndex).pos.Map, _
-            UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).TileExit.Map > 0 Or UserList(UserIndex).flags.TargetUser.ArrayIndex <> 0 Then
+    If MapData(UserList(UserIndex).pos.Map, PosCasteadaX, PosCasteadaY).ObjInfo.amount > 0 Or (MapData(UserList(UserIndex).pos.Map, PosCasteadaX, PosCasteadaY).Blocked And _
+            e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Or MapData(UserList(UserIndex).pos.Map, PosCasteadaX, PosCasteadaY).TileExit.Map > 0 Or UserList( _
+            UserIndex).flags.TargetUser.ArrayIndex <> 0 Then
         b = False
         'Call WriteConsoleMsg(UserIndex, "Area invalida para lanzar este Hechizo!", e_FontTypeNames.FONTTYPE_INFO)
         Call WriteLocaleMsg(UserIndex, "262", e_FontTypeNames.FONTTYPE_INFO)
@@ -963,8 +959,8 @@ Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
             If UserList(UserIndex).flags.Portal = 0 Then
                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_GraphicEffects.Runa, -1, False))
                 UserList(UserIndex).flags.PortalM = UserList(UserIndex).pos.Map
-                UserList(UserIndex).flags.PortalX = UserList(UserIndex).flags.TargetX
-                UserList(UserIndex).flags.PortalY = UserList(UserIndex).flags.TargetY
+                UserList(UserIndex).flags.PortalX = PosCasteadaX
+                UserList(UserIndex).flags.PortalY = PosCasteadaY
                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.charindex, 600, e_AccionBarra.Intermundia))
                 UserList(UserIndex).Accion.AccionPendiente = True
                 UserList(UserIndex).Accion.Particula = e_GraphicEffects.Runa
@@ -2556,7 +2552,7 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
         End If
         If Hechizos(h).wav <> 0 Then
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY)) 'Esta linea faltaba. Pablo (ToxicWaste)
-           End If
+        End If
     End If
     If UserList(UserIndex).ChatCombate = 1 Then
         If Hechizos(h).Target = e_TargetType.uTerreno Then
@@ -3619,7 +3615,6 @@ End Sub
 
 Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y As Byte, Npc As Boolean)
     On Error GoTo AreaHechizo_Err
-    Dim calculo        As Integer
     Dim TilesDifUser   As Integer
     Dim TilesDifNpc    As Integer
     Dim tilDif         As Integer
@@ -3966,7 +3961,7 @@ Public Sub UseSpellSlot(ByVal UserIndex As Integer, ByVal spellSlot As Integer)
             Exit Sub
         End If
         .flags.Hechizo = spellSlot
-        If UserMod.IsStun(.flags, .Counters) Then
+        If UserMod.IsStun(.Counters) Then
             Call WriteLocaleMsg(UserIndex, 394, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If

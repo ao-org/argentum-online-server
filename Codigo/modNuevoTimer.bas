@@ -34,7 +34,6 @@ Option Explicit
 '       If Actualizar Then lastTick = nowRaw
 '       result = True
 '   End If
-
 Public Function IntervaloPermiteLanzarSpell(ByVal UserIndex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
     On Error GoTo IntervaloPermiteLanzarSpell_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
@@ -199,29 +198,15 @@ IntervaloPermiteUsarArcos_Err:
     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteUsarArcos", Erl)
 End Function
 
-Public Function IntervaloPermiteCaminar(ByVal UserIndex As Integer) As Boolean
-    On Error GoTo IntervaloPermiteCaminar_Err
-    Dim nowRaw As Long: nowRaw = GetTickCountRaw()
-    With UserList(UserIndex)
-        If TicksElapsed(.Counters.TimerCaminar, nowRaw) >= .Intervals.Caminar Then
-            .Counters.TimerCaminar = nowRaw
-            IntervaloPermiteCaminar = True
-        End If
-    End With
-    Exit Function
-IntervaloPermiteCaminar_Err:
-    Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteCaminar", Erl)
-End Function
-
 Public Function IntervaloPermiteMoverse(ByVal NpcIndex As Integer) As Boolean
     On Error GoTo IntervaloPermiteMoverse_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
     With NpcList(NpcIndex)
-        Dim interval As Long
-        interval = CLng(.IntervaloMovimiento / GetNpcSpeedModifiers(NpcIndex))
-        If interval < 0 Then interval = 0
+        Dim Interval As Long
+        Interval = CLng(.IntervaloMovimiento / GetNpcSpeedModifiers(NpcIndex))
+        If Interval < 0 Then Interval = 0
         If DeadlinePassed(nowRaw, .Contadores.IntervaloMovimiento) Then
-            .Contadores.IntervaloMovimiento = AddMod32(nowRaw, interval)
+            .Contadores.IntervaloMovimiento = AddMod32(nowRaw, Interval)
             IntervaloPermiteMoverse = True
         End If
     End With

@@ -865,7 +865,6 @@ Sub LoadBalance()
     MaxInvisibleSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "MaxInvisibleSpellDisplayTime"))
     MultiShotReduction = val(BalanceIni.GetValue("EXTRA", "MultiShotReduction"))
     HomeTimer = val(BalanceIni.GetValue("EXTRA", "HomeTimer"))
-    MagicSkillBonusDamageModifier = val(BalanceIni.GetValue("EXTRA", "MagicSkillBonusDamageModifier"))
     MRSkillProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifier"))
     MRSkillNpcProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifierNpc"))
     AssistDamageValidTime = val(BalanceIni.GetValue("EXTRA", "AssistDamageValidTime"))
@@ -1802,19 +1801,13 @@ Sub LoadSini()
     DatPath = Lector.GetValue("DIRECTORIOS", "DatPath")
     MapPath = Lector.GetValue("DIRECTORIOS", "MapPath")
     CharPath = Lector.GetValue("DIRECTORIOS", "CharPath")
-    DeletePath = Lector.GetValue("DIRECTORIOS", "DeletePath")
-    CuentasPath = Lector.GetValue("DIRECTORIOS", "CuentasPath")
-    DeleteCuentasPath = Lector.GetValue("DIRECTORIOS", "DeleteCuentasPath")
     'Directorios
     Puerto = val(Lector.GetValue("INIT", "StartPort"))
     ListenIp = Lector.GetValue("INIT", "ListenIp")
     If ListenIp = "" Then ListenIp = "0.0.0.0"
     HideMe = val(Lector.GetValue("INIT", "Hide"))
-    MaxConexionesIP = val(Lector.GetValue("INIT", "MaxConexionesIP"))
     MaxUsersPorCuenta = val(Lector.GetValue("INIT", "MaxUsersPorCuenta"))
-    IdleLimit = val(Lector.GetValue("INIT", "IdleLimit"))
     'Lee la version correcta del cliente
-    ULTIMAVERSION = Lector.GetValue("INIT", "Version")
     PuedeCrearPersonajes = val(Lector.GetValue("INIT", "PuedeCrearPersonajes"))
     MinimumPriceMao = val(Lector.GetValue("INIT", "MinimumPriceMao"))
     GoldPriceMao = val(Lector.GetValue("INIT", "GoldPriceMao"))
@@ -1822,15 +1815,10 @@ Sub LoadSini()
     ServerSoloGMs = val(Lector.GetValue("init", "ServerSoloGMs"))
     DisconnectTimeout = val(Lector.GetValue("INIT", "DisconnectTimeout"))
     InstanceMapCount = val(Lector.GetValue("INIT", "InstanceMaps"))
-    EnTesting = val(Lector.GetValue("INIT", "Testing"))
     PendingConnectionTimeout = val(Lector.GetValue("INIT", "PendingConnectionTimeout"))
     If PendingConnectionTimeout = 0 Then
         PendingConnectionTimeout = 1000
     End If
-    'Ressurect pos
-    ResPos.Map = val(ReadField(1, Lector.GetValue("INIT", "ResPos"), 45))
-    ResPos.x = val(ReadField(2, Lector.GetValue("INIT", "ResPos"), 45))
-    ResPos.y = val(ReadField(3, Lector.GetValue("INIT", "ResPos"), 45))
     'Max users
     Temporal = val(Lector.GetValue("INIT", "MaxUsers"))
     If MaxUsers = 0 Then
@@ -2308,7 +2296,7 @@ End Sub
 Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
     On Error GoTo SaveUser_Err
     If Logout Then
-        Call UserDisconnected(UserList(UserIndex).pos.Map, UserIndex)
+        Call UserDisconnected(UserIndex)
     End If
     Call SaveCharacterDB(UserIndex)
     If Logout Then
@@ -2384,7 +2372,6 @@ Sub BackUPnPc(NpcIndex As Integer)
     Call WriteVar(npcfile, "NPC" & NpcNumero, "MaxHp", val(NpcList(NpcIndex).Stats.MaxHp))
     Call WriteVar(npcfile, "NPC" & NpcNumero, "MinHit", val(NpcList(NpcIndex).Stats.MinHIT))
     Call WriteVar(npcfile, "NPC" & NpcNumero, "MinHp", val(NpcList(NpcIndex).Stats.MinHp))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "DEF", val(NpcList(NpcIndex).Stats.UsuariosMatados)) 'Que es ESTO?!!
     'Flags
     Call WriteVar(npcfile, "NPC" & NpcNumero, "ReSpawn", val(NpcList(NpcIndex).flags.Respawn))
     Call WriteVar(npcfile, "NPC" & NpcNumero, "BackUp", val(NpcList(NpcIndex).flags.backup))

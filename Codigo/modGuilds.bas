@@ -26,15 +26,6 @@ Attribute VB_Name = "modGuilds"
 '
 '
 Option Explicit
-'guilds nueva version. Hecho por el oso, eliminando los problemas
-'de sincronizacion con los datos en el HD... entre varios otros
-'º¬
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'DECLARACIOENS PUBLICAS CONCERNIENTES AL JUEGO
-'Y CONFIGURACION DEL SISTEMA DE CLANES
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Private GUILDINFOFILE             As String
 'archivo .\guilds\guildinfo.ini o similar
 Private Const MAX_GUILDS          As Integer = 1000
 'cantidad maxima de guilds en el servidor
@@ -45,8 +36,6 @@ Private guilds(1 To MAX_GUILDS)   As clsClan
 Private Const CANTIDADMAXIMACODEX As Byte = 8
 'cantidad maxima de codecs que se pueden definir
 Public Const MAXASPIRANTES        As Byte = 10
-'cantidad maxima de aspirantes que puede tener un clan acumulados a la vez
-Private Const MAXANTIFACCION      As Byte = 5
 
 'puntos maximos de antifaccion que un clan tolera antes de ser cambiada su alineacion
 Public Enum e_ALINEACION_GUILD
@@ -57,13 +46,6 @@ Public Enum e_ALINEACION_GUILD
     ALINEACION_CRIMINAL = 4
 End Enum
 
-'alineaciones permitidas
-Public Enum e_SONIDOS_GUILD
-    SND_CREACIONCLAN = 44
-    SND_ACEPTADOCLAN = 43
-    SND_DECLAREWAR = 45
-End Enum
-
 'numero de .wav del cliente
 Public Enum e_RELACIONES_GUILD
     GUERRA = -1
@@ -71,17 +53,10 @@ Public Enum e_RELACIONES_GUILD
     ALIADOS = 1
 End Enum
 
-'estado entre clanes
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Sub LoadGuildsDB()
     On Error GoTo LoadGuildsDB_Err
-    Dim CantClanes As String
-    Dim i          As Integer
-    Dim TempStr    As String
-    Dim Alin       As e_ALINEACION_GUILD
-    Dim RS         As Recordset
+    Dim i  As Integer
+    Dim RS As Recordset
     Set RS = Query("SELECT id, founder_id, guild_name, creation_date, alignment, last_elections, description, news, leader_id, level, current_exp, flag_file FROM guilds")
     If RS Is Nothing Then Exit Sub
     CANTIDADDECLANES = RS.RecordCount
@@ -127,14 +102,6 @@ Private Function m_EsGuildLeader(ByRef UserId As Long, ByVal GuildIndex As Integ
     Exit Function
 m_EsGuildLeader_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.m_EsGuildLeader", Erl)
-End Function
-
-Private Function m_EsGuildFounder(ByRef PJ As String, ByVal GuildIndex As Integer) As Boolean
-    On Error GoTo m_EsGuildFounder_Err
-    m_EsGuildFounder = (UCase$(PJ) = UCase$(Trim$(GetUserName(guilds(GuildIndex).Fundador))))
-    Exit Function
-m_EsGuildFounder_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.m_EsGuildFounder", Erl)
 End Function
 
 Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal ExpellUserId As Long) As Integer
@@ -210,7 +177,6 @@ End Sub
 
 Public Sub ChangeCodexAndDesc(ByRef Desc As String, ByVal GuildIndex As Integer)
     On Error GoTo ChangeCodexAndDesc_Err
-    Dim i As Long
     If GuildIndex < 1 Or GuildIndex > CANTIDADDECLANES Then Exit Sub
     With guilds(GuildIndex)
         Call .SetDesc(Desc)
@@ -288,8 +254,6 @@ End Function
 Public Sub SendGuildNews(ByVal UserIndex As Integer, ByRef guildList() As String)
     On Error GoTo SendGuildNews_Err
     Dim GuildIndex As Integer
-    Dim i          As Integer
-    Dim go         As Integer
     Dim ClanNivel  As Byte
     Dim ExpAcu     As Integer
     Dim ExpNe      As Integer
@@ -398,9 +362,6 @@ End Function
 
 Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal GuildIndex As Integer) As Boolean
     On Error GoTo m_EstadoPermiteEntrarChar_Err
-    Dim Promedio As Long
-    Dim ELV      As Integer
-    Dim f        As Byte
     m_EstadoPermiteEntrarChar = False
     If InStrB(Personaje, "\") <> 0 Then
         Personaje = Replace(Personaje, "\", vbNullString)
@@ -451,25 +412,6 @@ m_EstadoPermiteEntrar_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.m_EstadoPermiteEntrar", Erl)
 End Function
 
-Public Function String2Alineacion(ByRef s As String) As e_ALINEACION_GUILD
-    On Error GoTo String2Alineacion_Err
-    Select Case s
-        Case "Neutral"
-            String2Alineacion = e_ALINEACION_GUILD.ALINEACION_NEUTRAL
-        Case "Armada Real"
-            String2Alineacion = e_ALINEACION_GUILD.ALINEACION_ARMADA
-        Case "Legión Oscura"
-            String2Alineacion = e_ALINEACION_GUILD.ALINEACION_CAOTICA
-        Case "Ciudadano"
-            String2Alineacion = e_ALINEACION_GUILD.ALINEACION_CIUDADANA
-        Case "Criminal"
-            String2Alineacion = e_ALINEACION_GUILD.ALINEACION_CRIMINAL
-    End Select
-    Exit Function
-String2Alineacion_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.String2Alineacion", Erl)
-End Function
-
 Public Function Alineacion2String(ByVal Alineacion As e_ALINEACION_GUILD) As String
     On Error GoTo Alineacion2String_Err
     Select Case Alineacion
@@ -487,40 +429,6 @@ Public Function Alineacion2String(ByVal Alineacion As e_ALINEACION_GUILD) As Str
     Exit Function
 Alineacion2String_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.Alineacion2String", Erl)
-End Function
-
-Public Function Relacion2String(ByVal Relacion As e_RELACIONES_GUILD) As String
-    On Error GoTo Relacion2String_Err
-    Select Case Relacion
-        Case e_RELACIONES_GUILD.ALIADOS
-            Relacion2String = "A"
-        Case e_RELACIONES_GUILD.GUERRA
-            Relacion2String = "G"
-        Case e_RELACIONES_GUILD.PAZ
-            Relacion2String = "P"
-        Case Else
-            Relacion2String = "?"
-    End Select
-    Exit Function
-Relacion2String_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.Relacion2String", Erl)
-End Function
-
-Public Function String2Relacion(ByVal s As String) As e_RELACIONES_GUILD
-    On Error GoTo String2Relacion_Err
-    Select Case UCase$(Trim$(s))
-        Case vbNullString, "P"
-            String2Relacion = e_RELACIONES_GUILD.PAZ
-        Case "G"
-            String2Relacion = e_RELACIONES_GUILD.GUERRA
-        Case "A"
-            String2Relacion = e_RELACIONES_GUILD.ALIADOS
-        Case Else
-            String2Relacion = e_RELACIONES_GUILD.PAZ
-    End Select
-    Exit Function
-String2Relacion_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.String2Relacion", Erl)
 End Function
 
 Private Function GuildNameValido(ByVal cad As String) As Boolean
@@ -614,9 +522,7 @@ End Function
 
 Public Sub SendGuildDetails(ByVal UserIndex As Integer, ByRef GuildName As String)
     On Error GoTo SendGuildDetails_Err
-    Dim codex(CANTIDADMAXIMACODEX - 1) As String
-    Dim GI                             As Integer
-    Dim i                              As Long
+    Dim GI As Integer
     GI = GuildIndex(GuildName)
     If GI = 0 Then Exit Sub
     With guilds(GI)
@@ -739,7 +645,7 @@ Public Function PersonajeEsLeader(ByVal CharId As Long) As Boolean
     End If
 End Function
 
-Public Sub a_RechazarAspiranteChar(ByRef Aspirante As String, ByVal guild As Integer, ByRef Detalles As String)
+Public Sub a_RechazarAspiranteChar(ByRef Aspirante As String, ByRef Detalles As String)
     On Error GoTo a_RechazarAspiranteChar_Err
     If InStrB(Aspirante, "\") <> 0 Then
         Aspirante = Replace(Aspirante, "\", "")
@@ -758,8 +664,7 @@ End Sub
 
 Public Function a_RechazarAspirante(ByVal UserIndex As Integer, ByRef nombre As String, ByRef refError As String) As Boolean
     On Error GoTo a_RechazarAspirante_Err
-    Dim GI           As Integer
-    Dim NroAspirante As Integer
+    Dim GI As Integer
     a_RechazarAspirante = False
     GI = UserList(UserIndex).GuildIndex
     If GI <= 0 Or GI > CANTIDADDECLANES Then
@@ -776,8 +681,7 @@ End Function
 
 Public Function a_DetallesAspirante(ByVal UserIndex As Integer, ByRef name As String) As String
     On Error GoTo a_DetallesAspirante_Err
-    Dim GI           As Integer
-    Dim NroAspirante As Integer
+    Dim GI As Integer
     GI = UserList(UserIndex).GuildIndex
     If GI <= 0 Or GI > CANTIDADDECLANES Then
         Exit Function
@@ -793,7 +697,6 @@ End Function
 
 Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As String)
     Dim GI     As Integer
-    Dim NroAsp As Integer
     Dim list() As Long
     Dim i      As Long
     On Error GoTo Error
@@ -848,10 +751,9 @@ End Sub
 
 Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As String, ByRef Solicitud As String, ByRef refError As String) As Boolean
     On Error GoTo a_NuevoAspirante_Err
-    Dim ViejoSolicitado   As String
-    Dim ViejoGuildINdex   As Integer
-    Dim ViejoNroAspirante As Integer
-    Dim NuevoGuildIndex   As Integer
+    Dim ViejoSolicitado As String
+    Dim ViejoGuildINdex As Integer
+    Dim NuevoGuildIndex As Integer
     a_NuevoAspirante = False
     If UserList(UserIndex).GuildIndex > 0 Then
         refError = 2010 'Ya perteneces a un clan, debes salir del mismo antes de solicitar ingresar a otro.
@@ -1111,30 +1013,6 @@ Public Function MiembrosPermite(ByVal GI As Integer) As Byte
     Exit Function
 MiembrosPermite_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.MiembrosPermite", Erl)
-End Function
-
-Public Function GetUserGuildMember(ByVal username As String) As String
-    On Error GoTo GetUserGuildMember_Err
-    GetUserGuildMember = GetUserGuildMemberDatabase(username)
-    Exit Function
-GetUserGuildMember_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.GetUserGuildMember", Erl)
-End Function
-
-Public Function GetUserGuildAspirant(ByVal username As String) As Integer
-    On Error GoTo GetUserGuildAspirant_Err
-    GetUserGuildAspirant = GetUserGuildAspirantDatabase(username)
-    Exit Function
-GetUserGuildAspirant_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.GetUserGuildAspirant", Erl)
-End Function
-
-Public Function GetUserGuildPedidos(ByVal username As String) As String
-    On Error GoTo GetUserGuildPedidos_Err
-    GetUserGuildPedidos = GetUserGuildPedidosDatabase(username)
-    Exit Function
-GetUserGuildPedidos_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.GetUserGuildPedidos", Erl)
 End Function
 
 Public Sub SaveUserGuildRejectionReason(ByVal username As String, ByVal Reason As String)

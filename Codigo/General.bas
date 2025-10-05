@@ -242,25 +242,6 @@ BloquearPuerta_Err:
     Call TraceError(Err.Number, Err.Description, "General.BloquearPuerta", Erl)
 End Sub
 
-Function HayCosta(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
-    On Error GoTo HayCosta_Err
-    'Ladder 10 - 2 - 2010
-    'Chequea si hay costa en los tiles proximos al usuario
-    If Map > 0 And Map < NumMaps + 1 And x > 0 And x < 101 And y > 0 And y < 101 Then
-        If ((MapData(Map, x, y).Graphic(1) >= 22552 And MapData(Map, x, y).Graphic(1) <= 22599) Or (MapData(Map, x, y).Graphic(1) >= 7283 And MapData(Map, x, y).Graphic(1) <= _
-                7378) Or (MapData(Map, x, y).Graphic(1) >= 13387 And MapData(Map, x, y).Graphic(1) <= 13482)) And MapData(Map, x, y).Graphic(2) = 0 Then
-            HayCosta = True
-        Else
-            HayCosta = False
-        End If
-    Else
-        HayCosta = False
-    End If
-    Exit Function
-HayCosta_Err:
-    Call TraceError(Err.Number, Err.Description, "General.HayCosta", Erl)
-End Function
-
 Function HayAgua(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     On Error GoTo HayAgua_Err
     With MapData(Map, x, y)
@@ -333,8 +314,6 @@ End Sub
 
 Private Sub InicializarConstantes()
     On Error GoTo InicializarConstantes_Err
-    LastBackup = Format$(Now, "Short Time")
-    minutos = Format$(Now, "Short Time")
     IniPath = App.Path & "\"
     ListaRazas(e_Raza.Humano) = "Humano"
     ListaRazas(e_Raza.Elfo) = "Elfo"
@@ -378,23 +357,12 @@ Private Sub InicializarConstantes()
     SkillsNames(e_Skill.Alquimia) = "Alquimia"
     SkillsNames(e_Skill.Sastreria) = "Sastrería"
     SkillsNames(e_Skill.Domar) = "Domar"
-    ListaAtributos(e_Atributos.Fuerza) = "Fuerza"
-    ListaAtributos(e_Atributos.Agilidad) = "Agilidad"
-    ListaAtributos(e_Atributos.Inteligencia) = "Inteligencia"
-    ListaAtributos(e_Atributos.Constitucion) = "Constitución"
-    ListaAtributos(e_Atributos.Carisma) = "Carisma"
     IniPath = App.Path & "\"
     'Bordes del mapa
     MinXBorder = XMinMapSize + (XWindow \ 2)
     MaxXBorder = XMaxMapSize - (XWindow \ 2)
     MinYBorder = YMinMapSize + (YWindow \ 2)
     MaxYBorder = YMaxMapSize - (YWindow \ 2)
-    RaceHeightOffset(Humano) = -35
-    RaceHeightOffset(Elfo) = -35
-    RaceHeightOffset(Drow) = -35
-    RaceHeightOffset(Gnomo) = -27
-    RaceHeightOffset(Enano) = -27
-    RaceHeightOffset(Orco) = -35
     WeaponTypeNames(eSword) = "Sword"
     WeaponTypeNames(eDagger) = "Dagger"
     WeaponTypeNames(eBow) = "Bow"
@@ -427,7 +395,6 @@ Sub Main()
             End
         End If
     End If
-    Dim f As Date
     Call ChDir(App.Path)
     Call ChDrive(App.Path)
     Call InicializarConstantes
@@ -556,17 +523,13 @@ Sub Main()
     '           Configuracion de los sockets
     ' ----------------------------------------------------
     Call GetHoraActual
-
     WorldTime_Init CLng(SvrConfig.GetValue("DayLength")), 0
-
     frmCargando.Visible = False
     Unload frmCargando
     'Ocultar
     Call frmMain.InitMain(HideMe)
     Call InitializeAntiCheat
     tInicioServer = GetTickCountRaw()
-
-
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Init
         Debug.Print "AO20 Unit Testing"
@@ -848,7 +811,6 @@ End Sub
 '
 Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
     On Error GoTo EfectoMimetismo_Err
-    Dim Barco As t_ObjData
     With UserList(UserIndex)
         If .Counters.Mimetismo < IntervaloInvisible Then
             .Counters.Mimetismo = .Counters.Mimetismo + 1
@@ -1282,7 +1244,6 @@ End Sub
 Sub PasarSegundo()
     On Error GoTo ErrHandler
     Dim i    As Long
-    Dim h    As Byte
     Dim Mapa As Integer
     Dim x    As Byte
     Dim y    As Byte
@@ -1512,45 +1473,6 @@ FreeCharIndexes_Err:
     Call TraceError(Err.Number, Err.Description, "General.FreeCharIndexes", Erl)
 End Sub
 
-Function RandomString(cb As Integer, Optional ByVal OnlyUpper As Boolean = False) As String
-    On Error GoTo RandomString_Err
-    Randomize Time
-    Dim rgch As String
-    rgch = "abcdefghijklmnopqrstuvwxyz"
-    If OnlyUpper Then
-        rgch = UCase(rgch)
-    Else
-        rgch = rgch & UCase(rgch)
-    End If
-    rgch = rgch & "0123456789"  ' & "#@!~$()-_"
-    Dim i As Long
-    For i = 1 To cb
-        RandomString = RandomString & mid$(rgch, Int(Rnd() * Len(rgch) + 1), 1)
-    Next
-    Exit Function
-RandomString_Err:
-    Call TraceError(Err.Number, Err.Description, "General.RandomString", Erl)
-End Function
-
-Function RandomName(cb As Integer, Optional ByVal OnlyUpper As Boolean = False) As String
-    On Error GoTo RandomString_Err
-    Randomize Time
-    Dim rgch As String
-    rgch = "abcdefghijklmnopqrstuvwxyz"
-    If OnlyUpper Then
-        rgch = UCase$(rgch)
-    Else
-        rgch = rgch & UCase$(rgch)
-    End If
-    Dim i As Long
-    For i = 1 To cb
-        RandomName = RandomName & mid$(rgch, Int(Rnd() * Len(rgch) + 1), 1)
-    Next
-    Exit Function
-RandomString_Err:
-    Call TraceError(Err.Number, Err.Description, "General.RandomString", Erl)
-End Function
-
 '
 '  Función para chequear el email
 '
@@ -1722,20 +1644,6 @@ Public Function EsMapaInterdimensional(ByVal Map As Integer) As Boolean
     Next
 End Function
 
-Public Function IsValidIPAddress(ByVal IP As String) As Boolean
-    On Error GoTo Handler
-    Dim varAddress As Variant, n As Long, lCount As Long
-    varAddress = Split(IP, ".", 4, vbTextCompare)
-    If IsArray(varAddress) Then
-        For n = LBound(varAddress) To UBound(varAddress)
-            lCount = lCount + 1
-            varAddress(n) = CByte(varAddress(n))
-        Next
-        IsValidIPAddress = (lCount = 4)
-    End If
-Handler:
-End Function
-
 Function Ceil(x As Variant) As Variant
     On Error GoTo Ceil_Err
     Ceil = IIf(Fix(x) = x, x, Fix(x) + 1)
@@ -1807,14 +1715,12 @@ Public Sub LoadDBMigrations()
             Dim date_ As String
             date_ = Left(sFilename, 11)
             If LastScript < date_ Then
-                'Leemos el archivo
-                Dim script      As String
                 Dim Description As String
                 Description = mid(sFilename, 13, Len(sFilename) - 16)
                 If RunScriptInFile(App.Path & "/ScriptsDB/" & sFilename) Then
                     Call Query("insert into migrations (date, description) values (?,?);", date_, Description)
                 Else
-                    Call Err.raise(5, , "invalid - " & Description)
+                    Call Err.Raise(5, , "invalid - " & Description)
                 End If
             End If
         End If

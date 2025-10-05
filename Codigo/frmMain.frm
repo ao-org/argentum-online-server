@@ -588,7 +588,6 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-Public ESCUCHADAS As Long
 
 Private Type NOTIFYICONDATA
     cbSize As Long
@@ -617,11 +616,6 @@ Private SERVER_UPTIME As Long
     Implements DirectPlay8Event
     Private mfExit As Boolean
 
-    Private Enum MsgTypes
-        Msg_NoOtherPlayers
-        Msg_NumPlayers
-        Msg_SendWave
-    End Enum
 
 Private Sub Form_Load()
     Dim lCount As Long
@@ -731,35 +725,6 @@ Private Function setNOTIFYICONDATA(hwnd As Long, Id As Long, flags As Long, Call
 setNOTIFYICONDATA_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.setNOTIFYICONDATA", Erl)
 End Function
-
-Sub CheckIdleUser()
-    On Error GoTo CheckIdleUser_Err
-    Dim iUserIndex As Long
-    For iUserIndex = 1 To MaxUsers
-        'Conexion activa? y es un usuario loggeado?
-        If UserList(iUserIndex).ConnectionDetails.ConnIDValida And UserList(iUserIndex).flags.UserLogged Then
-            'Actualiza el contador de inactividad
-            UserList(iUserIndex).Counters.IdleCount = UserList(iUserIndex).Counters.IdleCount + 1
-            If UserList(iUserIndex).Counters.IdleCount >= IdleLimit Then
-                Call WriteShowMessageBox(iUserIndex, 1775, vbNullString) 'Msg1775=Demasiado tiempo inactivo. Has sido desconectado...
-                'mato los comercios seguros
-                If IsValidUserRef(UserList(iUserIndex).ComUsu.DestUsu) Then
-                    If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
-                        If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = iUserIndex Then
-                            Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(1844, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1844=Comercio cancelado por el otro usuario.
-                            Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex)
-                        End If
-                    End If
-                    Call FinComerciarUsu(iUserIndex)
-                End If
-                Call Cerrar_Usuario(iUserIndex)
-            End If
-        End If
-    Next iUserIndex
-    Exit Sub
-CheckIdleUser_Err:
-    Call TraceError(Err.Number, Err.Description, "frmMain.CheckIdleUser", Erl)
-End Sub
 
 Private Sub cmdDbControl_Click()
     frmDbControl.Show
@@ -961,15 +926,8 @@ End Sub
 
 Private Sub UpdateBarcoForgatNix()
     Dim TileX, TileY As Integer
-    Dim User      As Integer
-    Dim PassFound As Boolean
-    Dim PassSlot  As Integer
-    ' Modificado por Shugar 5/6/24
-    ' Viaje de Forgat a Nix
-    ' Verificar si el barco está en un muelle:
-    ' Para ver si está en el muelle o no, miramos hay un NpcIndex en Map DockX DockY del mapa BarcoNavegando.
-    ' Ese Npc solía ser un muelle, y se usa de referencia para saber si el barco partió o sigue quieto.
-    ' Si no hay NPC ahí es que el barco está navegando, por lo tanto no hay movimiento de pasajeros.
+    Dim User     As Integer
+    Dim PassSlot As Integer
     If MapData(BarcoNavegandoForgatNix.Map, BarcoNavegandoForgatNix.DockX, BarcoNavegandoForgatNix.DockY).NpcIndex = 0 Then
         Exit Sub
     End If
@@ -1010,15 +968,8 @@ End Sub
 
 Private Sub UpdateBarcoNixArghal()
     Dim TileX, TileY As Integer
-    Dim User      As Integer
-    Dim PassFound As Boolean
-    Dim PassSlot  As Integer
-    ' Modificado por Shugar 5/6/24
-    ' Viaje de Nix a Arghal
-    ' Verificar si el barco está en un muelle:
-    ' Para ver si está en el muelle o no, miramos hay un NpcIndex en Map DockX DockY del mapa BarcoNavegando.
-    ' Ese Npc solía ser un muelle, y se usa de referencia para saber si el barco partió o sigue quieto.
-    ' Si no hay NPC ahí es que el barco está navegando, por lo tanto no hay movimiento de pasajeros.
+    Dim User     As Integer
+    Dim PassSlot As Integer
     If MapData(BarcoNavegandoNixArghal.Map, BarcoNavegandoNixArghal.DockX, BarcoNavegandoNixArghal.DockY).NpcIndex = 0 Then
         Exit Sub
     End If
@@ -1059,15 +1010,8 @@ End Sub
 
 Private Sub UpdateBarcoArghalForgat()
     Dim TileX, TileY As Integer
-    Dim User      As Integer
-    Dim PassFound As Boolean
-    Dim PassSlot  As Integer
-    ' Modificado por Shugar 5/6/24
-    ' Viaje de Arghal a Forgat
-    ' Verificar si el barco está en un muelle:
-    ' Para ver si está en el muelle o no, miramos hay un NpcIndex en Map DockX DockY del mapa BarcoNavegando.
-    ' Ese Npc solía ser un muelle, y se usa de referencia para saber si el barco partió o sigue quieto.
-    ' Si no hay NPC ahí es que el barco está navegando, por lo tanto no hay movimiento de pasajeros.
+    Dim User     As Integer
+    Dim PassSlot As Integer
     If MapData(BarcoNavegandoArghalForgat.Map, BarcoNavegandoArghalForgat.DockX, BarcoNavegandoArghalForgat.DockY).NpcIndex = 0 Then
         Exit Sub
     End If
@@ -1112,7 +1056,7 @@ Private Sub TimerGuardarUsuarios_Timer()
         ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
         Dim UserIndex        As Integer, UserGuardados As Integer
         Dim PerformanceTimer As Long
-        Dim nowRaw          As Long
+        Dim nowRaw           As Long
         Call PerformanceTestStart(PerformanceTimer)
         For UserIndex = 1 To LastUser
             With UserList(UserIndex)
@@ -1140,8 +1084,6 @@ Private Sub Minuto_Timer()
     'fired every minute
     Static minutos          As Long
     Static MinutosLatsClean As Long
-    Dim i                   As Integer
-    Dim num                 As Long
     Dim PerformanceTimer    As Long
     Call PerformanceTestStart(PerformanceTimer)
     MinsRunning = MinsRunning + 1
@@ -1163,9 +1105,6 @@ Private Sub Minuto_Timer()
         MinutosLatsClean = MinutosLatsClean + 1
     End If
     Call PurgarPenas
-    ' If IdleLimit > 0 Then
-    '     Call CheckIdleUser
-    ' End If
     If IsFeatureEnabled("automatic_events") Then
         Call Automatic_Event_Timer
     End If
@@ -1748,7 +1687,6 @@ Private Sub TimerMeteorologia_Timer()
             IntensidadDeNubes = RandomNumber(10, 45)
             ServidorNublado = True
             'Enviar Nubes a todos
-            Nieblando = True
             ServidorNublado = True
             Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
             ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Empezaron las nubes con intensidad: " & IntensidadDeNubes & "%.", e_FontTypeNames.FONTTYPE_SERVER))
@@ -1783,7 +1721,6 @@ Private Sub TimerMeteorologia_Timer()
             Call AgregarAConsola("Servidor » Lloviendo.")
             TimerMeteorologico = TimerMeteorologico - 1
         Else
-            Nieblando = False
             Lloviendo = False
             ServidorNublado = False
             Truenos.Enabled = False
@@ -1799,7 +1736,6 @@ Private Sub TimerMeteorologia_Timer()
     End If
     If TimerMeteorologico = 0 Then
         'dejar de llover y sacar nubes
-        Nieblando = False
         Lloviendo = False
         Truenos.Enabled = False
         Nebando = False
@@ -1847,9 +1783,6 @@ End Sub
 Private Sub tPiqueteC_Timer()
     On Error GoTo ErrHandler
     Static segundos      As Integer
-    Dim NuevaA           As Boolean
-    Dim NuevoL           As Boolean
-    Dim GI               As Integer
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
     segundos = segundos + 6
