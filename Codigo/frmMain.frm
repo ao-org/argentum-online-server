@@ -1112,16 +1112,18 @@ Private Sub TimerGuardarUsuarios_Timer()
         ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
         Dim UserIndex        As Integer, UserGuardados As Integer
         Dim PerformanceTimer As Long
+        Dim nowRaw          As Long
         Call PerformanceTestStart(PerformanceTimer)
         For UserIndex = 1 To LastUser
             With UserList(UserIndex)
                 If .flags.UserLogged Then
-                    If GetTickCount - .Counters.LastSave > IntervaloGuardarUsuarios Then
+                    nowRaw = GetTickCountRaw()
+                    If TicksElapsed(.Counters.LastSave, nowRaw) > IntervaloGuardarUsuarios Then
                         Call SaveUser(UserIndex)
                         UserGuardados = UserGuardados + 1
                         If UserGuardados > NumUsers Then Exit For
                         'limit the amount of time we block the only thread we have here, lets save some user on the next loop
-                        If (GetTickCount - PerformanceTimer) > 100 Then Exit For
+                        If TicksElapsed(PerformanceTimer, GetTickCountRaw()) > 100 Then Exit For
                     End If
                 End If
             End With
@@ -1378,6 +1380,7 @@ Private Sub Automatic_Event_Timer()
     Dim CurrentDay    As Byte
     Dim CurrentHour   As Byte
     Dim EventOfTheDay As Integer
+    Dim nowRaw        As Long
     CurrentDay = Weekday(Date) 'domingo=1 , lunes=2, martes=3, miercoles=4, jueves=5, viernes=6, sabado=7
     CurrentHour = Hour(Time) 'number between 0 and 23
     'si no es la hora de activar el evento salimos
@@ -1386,7 +1389,8 @@ Private Sub Automatic_Event_Timer()
     End If
     If AlreadyDidAutoEventToday Then
         '3600000 = 1 hora en milisegundos
-        If GetTickCount - LastAutoEventAttempt > 3600000 Then
+        nowRaw = GetTickCountRaw()
+        If TicksElapsed(LastAutoEventAttempt, nowRaw) > 3600000 Then
             AlreadyDidAutoEventToday = False
         End If
         Exit Sub
@@ -1466,7 +1470,7 @@ Private Sub Automatic_Event_Timer()
         Call CreatePublicEvent(LobbySettings)
     End If
     AlreadyDidAutoEventToday = True
-    LastAutoEventAttempt = GetTickCount
+    LastAutoEventAttempt = GetTickCountRaw()
     Exit Sub
 Evento_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Evento_Timer", Erl)

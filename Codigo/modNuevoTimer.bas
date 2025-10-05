@@ -217,8 +217,11 @@ Public Function IntervaloPermiteMoverse(ByVal NpcIndex As Integer) As Boolean
     On Error GoTo IntervaloPermiteMoverse_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
     With NpcList(NpcIndex)
-        If TicksElapsed(.Contadores.IntervaloMovimiento, nowRaw) >= (.IntervaloMovimiento / GetNpcSpeedModifiers(NpcIndex)) Then
-            .Contadores.IntervaloMovimiento = nowRaw
+        Dim interval As Long
+        interval = CLng(.IntervaloMovimiento / GetNpcSpeedModifiers(NpcIndex))
+        If interval < 0 Then interval = 0
+        If DeadlinePassed(nowRaw, .Contadores.IntervaloMovimiento) Then
+            .Contadores.IntervaloMovimiento = AddMod32(nowRaw, interval)
             IntervaloPermiteMoverse = True
         End If
     End With

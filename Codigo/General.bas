@@ -583,7 +583,7 @@ Sub Main()
         Call UnitClient.Connect("127.0.0.1", "7667")
     #End If
     While (True)
-        GlobalFrameTime = GetTickCount()
+        GlobalFrameTime = GetTickCountRaw()
         Dim PerformanceTimer As Long
         Call PerformanceTestStart(PerformanceTimer)
         #If PYMMO = 1 Then
