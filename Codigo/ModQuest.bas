@@ -167,10 +167,10 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + (.RewardEXP * SvrConfig.GetValue("ExpMult"))
                 Call WriteUpdateExp(UserIndex)
                 Call CheckUserLevel(UserIndex)
-                Call WriteLocaleMsg(UserIndex, "140", e_FontTypeNames.FONTTYPE_EXP, (.RewardEXP * SvrConfig.GetValue("ExpMult")))
+                Call WriteLocaleMsg(UserIndex, 140, e_FontTypeNames.FONTTYPE_EXP, (.RewardEXP * SvrConfig.GetValue("ExpMult")))
             Else
                 'Msg1314= No se te ha dado experiencia porque eres nivel máximo.
-                Call WriteLocaleMsg(UserIndex, "1314", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, 1314, e_FontTypeNames.FONTTYPE_INFO)
             End If
         End If
         'Se entrega el oro.
@@ -180,12 +180,12 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             If GiveGLD < 100000 Then
                 UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + GiveGLD
                 'Msg1315= Has ganado ¬1 monedas de oro como recompensa.
-                Call WriteLocaleMsg(UserIndex, "1315", e_FontTypeNames.FONTTYPE_INFOIAO, PonerPuntos(GiveGLD))
+                Call WriteLocaleMsg(UserIndex, 1315, e_FontTypeNames.FONTTYPE_INFOIAO, PonerPuntos(GiveGLD))
                 Call WriteUpdateGold(UserIndex)
             Else
                 UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco + GiveGLD
                 'Msg1316= Has ganado ¬1 monedas de oro como recompensa. La recompensa ha sido depositada en su cuenta del Banco Goliath.
-                Call WriteLocaleMsg(UserIndex, "1316", e_FontTypeNames.FONTTYPE_INFOIAO, PonerPuntos(GiveGLD))
+                Call WriteLocaleMsg(UserIndex, 1316, e_FontTypeNames.FONTTYPE_INFOIAO, PonerPuntos(GiveGLD))
             End If
         End If
         'Si hay recompensa de objetos, se entregan.
@@ -194,7 +194,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                 If .RewardOBJ(i).amount Then
                     Call MeterItemEnInventario(UserIndex, .RewardOBJ(i))
                     'Msg1318=Has recibido ¬1 como recompensa.
-                    Call WriteLocaleMsg(UserIndex, "1318", e_FontTypeNames.FONTTYPE_FIGHT, QuestList(QuestIndex).RewardOBJ(i).amount & " " & ObjData(QuestList( _
+                    Call WriteLocaleMsg(UserIndex, 1318, e_FontTypeNames.FONTTYPE_FIGHT, QuestList(QuestIndex).RewardOBJ(i).amount & " " & ObjData(QuestList( _
                             QuestIndex).RewardOBJ(i).ObjIndex).name)
                 End If
             Next i
@@ -208,7 +208,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                     Next j
                     If UserList(UserIndex).Stats.UserHechizos(j) <> 0 Then
                         'Msg1317= No tenes espacio para mas hechizos.
-                        Call WriteLocaleMsg(UserIndex, "1317", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, 1317, e_FontTypeNames.FONTTYPE_INFO)
                     Else
                         UserList(UserIndex).Stats.UserHechizos(j) = .RewardSpellList(i)
                         Call UpdateUserHechizos(False, UserIndex, CByte(j))
@@ -460,7 +460,7 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
     'Esta el personaje en la distancia correcta?
     If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) > 5 Then
         ' Msg8=Estas demasiado lejos.
-        Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
     'El NPC hace quests?

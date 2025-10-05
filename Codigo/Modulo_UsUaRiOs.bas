@@ -165,7 +165,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
     If EnPausa Then
         Call WritePauseToggle(UserIndex)
         ' Msg520=Servidor » Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.
-        Call WriteLocaleMsg(UserIndex, "520", e_FontTypeNames.FONTTYPE_SERVER)
+        Call WriteLocaleMsg(UserIndex, 520, e_FontTypeNames.FONTTYPE_SERVER)
         Call CloseSocket(UserIndex)
         Exit Function
     End If
@@ -649,7 +649,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As S
             'welcome to the show baby...
             If Not modGuilds.m_ConectarMiembroAClan(UserIndex, .GuildIndex) Then
                 ' Msg521=Tu estado no te permite entrar al clan.
-                Call WriteLocaleMsg(UserIndex, "521", e_FontTypeNames.FONTTYPE_GUILD)
+                Call WriteLocaleMsg(UserIndex, 521, e_FontTypeNames.FONTTYPE_GUILD)
             End If
         End If
         If LenB(.LastGuildRejection) <> 0 Then
@@ -661,9 +661,9 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As S
         If ServidorNublado Then Call WriteNubesToggle(UserIndex)
         Call WriteLoggedMessage(UserIndex, newUser)
         If .Stats.ELV = 1 Then
-            Call WriteLocaleMsg(UserIndex, "522", e_FontTypeNames.FONTTYPE_GUILD, .name) ' Msg522=¡Bienvenido a las tierras de Argentum Online! ¡<nombre> que tengas buen viaje y mucha suerte!
+            Call WriteLocaleMsg(UserIndex, 522, e_FontTypeNames.FONTTYPE_GUILD, .name) ' Msg522=¡Bienvenido a las tierras de Argentum Online! ¡<nombre> que tengas buen viaje y mucha suerte!
         Else
-            Call WriteLocaleMsg(UserIndex, "1439", e_FontTypeNames.FONTTYPE_GUILD, .name & "¬" & .Stats.ELV & "¬" & get_map_name(.pos.Map)) ' Msg1439=¡Bienvenido de nuevo ¬1! Actualmente estas en el nivel ¬2 en ¬3, ¡buen viaje y mucha suerte!
+            Call WriteLocaleMsg(UserIndex, 1439, e_FontTypeNames.FONTTYPE_GUILD, .name & "¬" & .Stats.ELV & "¬" & get_map_name(.pos.Map)) ' Msg1439=¡Bienvenido de nuevo ¬1! Actualmente estas en el nivel ¬2 en ¬3, ¡buen viaje y mucha suerte!
         End If
         If Status(UserIndex) = e_Facciones.Criminal Or Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio Then
             Call WriteSafeModeOff(UserIndex)
@@ -1057,22 +1057,22 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
             .Stats.MaxHp = .Stats.MaxHp + AumentoHP
             'Notificamos al user
             'Msg186=¡Has subido al nivel ¬1!
-            Call WriteLocaleMsg(UserIndex, "186", e_FontTypeNames.FONTTYPE_INFO, .Stats.ELV)
+            Call WriteLocaleMsg(UserIndex, 186, e_FontTypeNames.FONTTYPE_INFO, .Stats.ELV)
             If AumentoHP > 0 Then
                 'Msg197=Has ganado ¬1 puntos de vida. Tu vida actual es: ¬2
-                Call WriteLocaleMsg(UserIndex, "197", e_FontTypeNames.FONTTYPE_INFO, AumentoHP & "¬" & .Stats.MaxHp)
+                Call WriteLocaleMsg(UserIndex, 197, e_FontTypeNames.FONTTYPE_INFO, AumentoHP & "¬" & .Stats.MaxHp)
             End If
             If AumentoSta > 0 Then
                 'Msg198=Has ganado ¬1 puntos de energía. Tu energía actual es: ¬2
-                Call WriteLocaleMsg(UserIndex, "198", e_FontTypeNames.FONTTYPE_INFO, AumentoSta & "¬" & .Stats.MaxSta)
+                Call WriteLocaleMsg(UserIndex, 198, e_FontTypeNames.FONTTYPE_INFO, AumentoSta & "¬" & .Stats.MaxSta)
             End If
             If AumentoMANA > 0 Then
                 'Msg199=Has ganado ¬1 puntos de maná. Tu maná actual es: ¬2
-                Call WriteLocaleMsg(UserIndex, "199", e_FontTypeNames.FONTTYPE_INFO, AumentoMANA & "¬" & .Stats.MaxMAN)
+                Call WriteLocaleMsg(UserIndex, 199, e_FontTypeNames.FONTTYPE_INFO, AumentoMANA & "¬" & .Stats.MaxMAN)
             End If
             If AumentoHIT > 0 Then
                 'Msg200=Tu golpe mínimo y máximo aumentaron en ¬1 puntos. Tus daños actuales son ¬2 / ¬3
-                Call WriteLocaleMsg(UserIndex, "200", e_FontTypeNames.FONTTYPE_INFO, AumentoHIT & "¬" & .Stats.MinHIT & "¬" & .Stats.MaxHit)
+                Call WriteLocaleMsg(UserIndex, 200, e_FontTypeNames.FONTTYPE_INFO, AumentoHIT & "¬" & .Stats.MinHIT & "¬" & .Stats.MaxHit)
             End If
             PasoDeNivel = True
             .Stats.MinHp = .Stats.MaxHp
@@ -1083,7 +1083,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
                     OroRecompenza = SvrConfig.GetValue("OroPorNivel") * .Stats.ELV * SvrConfig.GetValue("GoldMult")
                     .Stats.GLD = .Stats.GLD + OroRecompenza
                     'Msg1293= Has ganado ¬1 monedas de oro.
-                    Call WriteLocaleMsg(UserIndex, "1293", e_FontTypeNames.FONTTYPE_INFO, OroRecompenza)
+                    Call WriteLocaleMsg(UserIndex, 1293, e_FontTypeNames.FONTTYPE_INFO, OroRecompenza)
                 End If
             End If
         Loop
@@ -1096,14 +1096,14 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
                 .Stats.SkillPts = .Stats.SkillPts + Pts
                 Call WriteLevelUp(UserIndex, .Stats.SkillPts)
                 'Msg187=¡Has ganado ¬1 skillpoints! Dispones de ¬2 puntos libres, se cuidadoso al momento de usarlos.
-                Call WriteLocaleMsg(UserIndex, "187", e_FontTypeNames.FONTTYPE_INFO, Pts & "¬" & .Stats.SkillPts)
+                Call WriteLocaleMsg(UserIndex, 187, e_FontTypeNames.FONTTYPE_INFO, Pts & "¬" & .Stats.SkillPts)
             End If
             If Not EsNewbie(UserIndex) And WasNewbie Then
                 Call QuitarNewbieObj(UserIndex)
             ElseIf .Stats.ELV >= MapInfo(.pos.Map).MaxLevel And Not EsGM(UserIndex) Then
                 If MapInfo(.pos.Map).Salida.Map <> 0 Then
                     ' Msg523=Tu nivel no te permite seguir en el mapa.
-                    Call WriteLocaleMsg(UserIndex, "523", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, 523, e_FontTypeNames.FONTTYPE_INFO)
                     Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
                 End If
             End If
@@ -1620,7 +1620,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
         End If
         UserList(UserIndex).flags.ModificoSkills = True
         If UserList(UserIndex).ChatCombate = 1 Then
-            Call WriteLocaleMsg(UserIndex, "140", e_FontTypeNames.FONTTYPE_EXP, BonusExp) 'Msg140=Has ganado ¬1 puntos de experiencia.
+            Call WriteLocaleMsg(UserIndex, 140, e_FontTypeNames.FONTTYPE_EXP, BonusExp) 'Msg140=Has ganado ¬1 puntos de experiencia.
         End If
         Call WriteUpdateExp(UserIndex)
         Call CheckUserLevel(UserIndex)
@@ -1777,7 +1777,7 @@ Sub UserDie(ByVal UserIndex As Integer)
         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
         If MapInfo(.pos.Map).Seguro = 0 Then
             ' Msg524=Escribe /HOGAR si deseas regresar rápido a tu hogar.
-            Call WriteLocaleMsg(UserIndex, "524", e_FontTypeNames.FONTTYPE_New_Naranja)
+            Call WriteLocaleMsg(UserIndex, 524, e_FontTypeNames.FONTTYPE_New_Naranja)
         End If
         If .flags.EnReto Then
             Call MuereEnReto(UserIndex)
@@ -2100,7 +2100,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
             Call WriteChangeMap(UserIndex, Map)
             If MapInfo(OldMap).Seguro = 1 And MapInfo(Map).Seguro = 0 And .Stats.ELV < 42 Then
                 ' Msg573=Estás saliendo de una zona segura, recuerda que aquí corres riesgo de ser atacado.
-                Call WriteLocaleMsg(UserIndex, "573", e_FontTypeNames.FONTTYPE_WARNING)
+                Call WriteLocaleMsg(UserIndex, 573, e_FontTypeNames.FONTTYPE_WARNING)
             End If
             'Update new Map Users
             MapInfo(Map).NumUsers = MapInfo(Map).NumUsers + 1
@@ -2113,7 +2113,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
                 .flags.Traveling = 0
                 .Counters.goHome = 0
                 ' Msg574=El viaje ha terminado.
-                Call WriteLocaleMsg(UserIndex, "574", e_FontTypeNames.FONTTYPE_INFOBOLD)
+                Call WriteLocaleMsg(UserIndex, 574, e_FontTypeNames.FONTTYPE_INFOBOLD)
             End If
         End If
         .pos.x = x
@@ -2142,7 +2142,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
                 .Counters.DisabledInvisibility = 0
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.charindex, False))
                 ' Msg575=Una fuerza divina que vigila esta zona te ha vuelto visible.
-                Call WriteLocaleMsg(UserIndex, "575", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, 575, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True))
             End If
@@ -2180,7 +2180,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Bool
             .Counters.Salir = IntervaloCerrarConexion
             If .flags.Traveling = 1 Then
                 ' Msg576=Se ha cancelado el viaje a casa
-                Call WriteLocaleMsg(UserIndex, "576", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, 576, e_FontTypeNames.FONTTYPE_INFO)
                 .flags.Traveling = 0
                 .Counters.goHome = 0
             End If
@@ -2190,7 +2190,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Bool
                 .Counters.DisabledInvisibility = 0
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
                 ' Msg577=Has vuelto a ser visible
-                Call WriteLocaleMsg(UserIndex, "577", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, 577, e_FontTypeNames.FONTTYPE_INFO)
             End If
             'HarThaoS: Captura de bandera
             If .flags.jugando_captura = 1 Then
@@ -2198,7 +2198,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Bool
                     Call InstanciaCaptura.eliminarParticipante(InstanciaCaptura.GetPlayer(UserIndex))
                 End If
             End If
-            Call WriteLocaleMsg(UserIndex, "203", e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
+            Call WriteLocaleMsg(UserIndex, 203, e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
             If EsGM(UserIndex) Or MapInfo(.pos.Map).Seguro = 1 Or forceClose Then
                 Call WriteDisconnect(UserIndex)
                 Call CloseSocket(UserIndex)
@@ -2227,14 +2227,14 @@ Public Sub CancelExit(ByVal UserIndex As Integer)
             UserList(UserIndex).Counters.Saliendo = False
             UserList(UserIndex).Counters.Salir = 0
             ' Msg578=/salir cancelado.
-            Call WriteLocaleMsg(UserIndex, "578", e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, 578, e_FontTypeNames.FONTTYPE_WARNING)
         Else
             'Simply reset
             If UserList(UserIndex).flags.Privilegios = e_PlayerType.User And MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Then
                 UserList(UserIndex).Counters.Salir = IntervaloCerrarConexion
             Else
                 ' Msg579=Gracias por jugar Argentum Online.
-                Call WriteLocaleMsg(UserIndex, "579", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, 579, e_FontTypeNames.FONTTYPE_INFO)
                 Call WriteDisconnect(UserIndex)
                 Call CloseSocket(UserIndex)
             End If
@@ -2269,7 +2269,7 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
         .Faccion.Status = 0
         If MapInfo(.pos.Map).NoPKs And Not EsGM(UserIndex) And MapInfo(.pos.Map).Salida.Map <> 0 Then
             ' Msg580=En este mapa no se admiten criminales.
-            Call WriteLocaleMsg(UserIndex, "580", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 580, e_FontTypeNames.FONTTYPE_INFO)
             Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
         Else
             Call RefreshCharStatus(UserIndex)
@@ -2295,7 +2295,7 @@ Sub VolverCiudadano(ByVal UserIndex As Integer)
         .Faccion.Status = e_Facciones.Ciudadano
         If MapInfo(.pos.Map).NoCiudadanos And Not EsGM(UserIndex) And MapInfo(.pos.Map).Salida.Map <> 0 Then
             ' Msg581=En este mapa no se admiten ciudadanos.
-            Call WriteLocaleMsg(UserIndex, "581", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 581, e_FontTypeNames.FONTTYPE_INFO)
             Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
         Else
             Call RefreshCharStatus(UserIndex)
@@ -2373,14 +2373,14 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
     If MascotaQuitada Then
         If Not PermiteMascotas Then
             ' Msg582=Una fuerza superior impide que tus mascotas entren en este mapa. Estas te esperarán afuera.
-            Call WriteLocaleMsg(UserIndex, "582", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 582, e_FontTypeNames.FONTTYPE_INFO)
         End If
     ElseIf SpawnInvalido Then
         ' Msg583=Tus mascotas no pueden transitar este mapa.
-        Call WriteLocaleMsg(UserIndex, "583", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, 583, e_FontTypeNames.FONTTYPE_INFO)
     ElseIf ElementalQuitado Then
         ' Msg584=Pierdes el control de tus mascotas invocadas.
-        Call WriteLocaleMsg(UserIndex, "584", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, 584, e_FontTypeNames.FONTTYPE_INFO)
     End If
     Exit Sub
 WarpMascotas_Err:
@@ -2603,32 +2603,25 @@ End Sub
 Public Function IsStun(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
     Dim nowRaw As Long
     nowRaw = GetTickCountRaw()
-
     ' Player is stunned if current tick has NOT yet passed the stun end deadline
     IsStun = Not DeadlinePassed(nowRaw, Counters.StunEndTime)
 End Function
-
 
 Public Function CanMove(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
     CanMove = flags.Paralizado = 0 And flags.Inmovilizado = 0 And Not IsStun(flags, Counters) And Not flags.TranslationActive
 End Function
 
-
 Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserCounters) As Boolean
     On Error GoTo eh
     StunPlayer = False
-
     ' (Optional) your CanMove signature might be (counters, flags) — adjust order if needed
     If Not CanMove(UserList(UserIndex).flags, Counters) Then Exit Function
     If IsSet(UserList(UserIndex).flags.StatusMask, eCCInmunity) Then Exit Function
-
     Dim nowRaw As Long
     nowRaw = GetTickCountRaw()   ' <-- use raw tick
-
     ' Respect anti-chain-stun window: allow new stun only after immune window passes
     Dim immuneUntil As Long
     immuneUntil = AddMod32(Counters.StunEndTime, PlayerInmuneTime) ' old end + immunity
-
     If TickAfter(nowRaw, immuneUntil) Then
         ' Apply (or re-apply) stun: set absolute deadline using modulo-2^32 add
         Counters.StunEndTime = AddMod32(nowRaw, PlayerStunTime)
@@ -2637,7 +2630,6 @@ Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserC
     Exit Function
 eh:
 End Function
-
 
 Public Function CanUseItem(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
     CanUseItem = True
@@ -2996,7 +2988,7 @@ Public Sub RemoveInvisibility(ByVal UserIndex As Integer)
             .Counters.Ocultando = 0
             .Counters.DisabledInvisibility = 0
             ' Msg591=Tu invisibilidad ya no tiene efecto.
-            Call WriteLocaleMsg(UserIndex, "591", e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteLocaleMsg(UserIndex, 591, e_FontTypeNames.FONTTYPE_INFOIAO)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         End If
     End With
@@ -3069,7 +3061,7 @@ Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
             .flags.Oculto = 0
             .Counters.TiempoOculto = 0
             'Msg307=Has vuelto a ser visible.
-            Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 307, e_FontTypeNames.FONTTYPE_INFO)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         End If
         If IsFeatureEnabled("remove-inv-on-attack") And Not MapInfo(.pos.Map).KeepInviOnAttack Then
@@ -3087,13 +3079,13 @@ Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
                     ' Pierde la apariencia de fragata fantasmal
                     Call EquiparBarco(UserIndex)
                     ' Msg592=¡Has recuperado tu apariencia normal!
-                    Call WriteLocaleMsg(UserIndex, "592", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, 592, e_FontTypeNames.FONTTYPE_INFO)
                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
                     Call RefreshCharStatus(UserIndex)
                 End If
             Else
                 If .flags.invisible = 0 Then
-                    Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, 307, e_FontTypeNames.FONTTYPE_INFO)
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
                 End If
             End If

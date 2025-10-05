@@ -556,17 +556,13 @@ Sub Main()
     '           Configuracion de los sockets
     ' ----------------------------------------------------
     Call GetHoraActual
-
     WorldTime_Init CLng(SvrConfig.GetValue("DayLength")), 0
-
     frmCargando.Visible = False
     Unload frmCargando
     'Ocultar
     Call frmMain.InitMain(HideMe)
     Call InitializeAntiCheat
     tInicioServer = GetTickCountRaw()
-
-
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Init
         Debug.Print "AO20 Unit Testing"
@@ -749,7 +745,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
         Else
             If MapInfo(.pos.Map).terrain = Nieve Then
                 ' Msg512=¡Estás muriendo de frío, abrígate o morirás!
-                Call WriteLocaleMsg(UserIndex, "512", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, 512, e_FontTypeNames.FONTTYPE_INFO)
                 '  Sin ropa perdés vida más rápido que con una ropa no-invernal
                 Dim MinDamage As Integer, MaxDamage As Integer
                 If .flags.Desnudo = 0 Then
@@ -764,7 +760,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
                 Damage = Porcentaje(.Stats.MaxHp, RandomNumber(MinDamage, MaxDamage))
                 If UserMod.ModifyHealth(UserIndex, -Damage, 0) Then
                     ' Msg513=¡Has muerto de frío!
-                    Call WriteLocaleMsg(UserIndex, "513", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, 513, e_FontTypeNames.FONTTYPE_INFO)
                     Call UserMod.UserDie(UserIndex)
                 End If
             End If
@@ -804,7 +800,7 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
             If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
                 Call WriteRestOK(UserIndex)
                 ' Msg514=Has terminado de descansar.
-                Call WriteLocaleMsg(UserIndex, "514", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, 514, e_FontTypeNames.FONTTYPE_INFO)
                 .flags.Descansar = False
             End If
         End If
@@ -825,10 +821,10 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
         Else
             If HayLava(.pos.Map, .pos.x, .pos.y) Then
                 ' Msg515=¡Quítate de la lava, te estás quemando!
-                Call WriteLocaleMsg(UserIndex, "515", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, 515, e_FontTypeNames.FONTTYPE_INFO)
                 If UserMod.ModifyHealth(UserIndex, -Porcentaje(.Stats.MaxHp, 5)) Then
                     ' Msg516=¡Has muerto quemado!
-                    Call WriteLocaleMsg(UserIndex, "516", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, 516, e_FontTypeNames.FONTTYPE_INFO)
                     Call CustomScenarios.UserDie(UserIndex)
                     Call UserMod.UserDie(UserIndex)
                 End If
@@ -855,7 +851,7 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
         Else
             'restore old char
             ' Msg517=Recuperas tu apariencia normal.
-            Call WriteLocaleMsg(UserIndex, "517", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 517, e_FontTypeNames.FONTTYPE_INFO)
             If .flags.Navegando Then
                 Call EquiparBarco(UserIndex)
             Else
@@ -897,7 +893,7 @@ Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
             .Counters.DisabledInvisibility = 0
             If .flags.Oculto = 0 Then
                 ' Msg307=Has vuelto a ser visible
-                Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, 307, e_FontTypeNames.FONTTYPE_INFO)
                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, .pos.x, .pos.y))
                 Call WriteContadores(UserIndex)
             End If
@@ -1001,7 +997,7 @@ Public Sub EfectoMaldicionUser(ByVal UserIndex As Integer)
     Else
         UserList(UserIndex).flags.Maldicion = 0
         ' Msg518=¡La magia perdió su efecto! Ya puedes atacar.
-        Call WriteLocaleMsg(UserIndex, "518", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+        Call WriteLocaleMsg(UserIndex, 518, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
     End If
     Exit Sub
 EfectoMaldicionUser_Err:
@@ -1120,7 +1116,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
         Call CancelExit(UserIndex)
         With UserList(UserIndex)
             'Msg47=Estás envenenado, si no te curas morirás.
-            Call WriteLocaleMsg(UserIndex, "47", e_FontTypeNames.FONTTYPE_VENENO)
+            Call WriteLocaleMsg(UserIndex, 47, e_FontTypeNames.FONTTYPE_VENENO)
             UserList(UserIndex).Counters.timeFx = 3
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticleEffects.PoisonGas, 30, False, , UserList(UserIndex).pos.x, _
                     UserList(UserIndex).pos.y))
@@ -1130,7 +1126,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
             Damage = (1 + Damage * .Stats.MaxHp \ 100) ' Redondea para arriba
             If .ChatCombate = 1 Then
                 ' "El veneno te ha causado ¬1 puntos de daño."
-                Call WriteLocaleMsg(UserIndex, "390", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
+                Call WriteLocaleMsg(UserIndex, 390, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
             End If
             If UserMod.ModifyHealth(UserIndex, -Damage) Then
                 Call CustomScenarios.UserDie(UserIndex)
@@ -1151,12 +1147,12 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
         ' 4 Mini intervalitos, dentro del intervalo total de incineracion
         If .Counters.Incineracion Mod (IntervaloIncineracion \ 4) = 0 Then
             ' "Te estás incinerando, si no te curas morirás.
-            Call WriteLocaleMsg(UserIndex, "392", e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, 392, e_FontTypeNames.FONTTYPE_FIGHT)
             UserList(UserIndex).Counters.timeFx = 3
             Damage = RandomNumber(20, 30)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 73, 0, .pos.x, .pos.y))
             If .ChatCombate = 1 Then
-                Call WriteLocaleMsg(UserIndex, "391", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
+                Call WriteLocaleMsg(UserIndex, 391, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
             End If
             If UserMod.ModifyHealth(UserIndex, -Damage) Then
                 Call CustomScenarios.UserDie(UserIndex)
@@ -1249,7 +1245,7 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         UserList(UserIndex).Counters.HPCounter = 0
         Call UserMod.ModifyHealth(UserIndex, mashit)
         ' Msg519=Has sanado.
-        Call WriteLocaleMsg(UserIndex, "519", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, 519, e_FontTypeNames.FONTTYPE_INFO)
         EnviarStats = True
     End If
     Exit Sub

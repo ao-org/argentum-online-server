@@ -3100,7 +3100,7 @@ End Enum
 Public Type t_NpcSpellEntry
     SpellIndex As Integer
     Cd As Byte
-    LastUse As Long
+    lastUse As Long
 End Type
 
 Public Type t_Npc
