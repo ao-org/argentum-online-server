@@ -874,11 +874,9 @@ Dim obj                         As t_ObjData
                 End If
                 
             Case e_OBJType.otSkinsSpells
-                If .Invent_Skins.Object(Slot).Equipped Then
-                    .Stats.UserSkinsHechizos(ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex) = 0
-                    .Invent_Skins.Object(Slot).Equipped = False
-                End If
-            
+               .Stats.UserSkinsHechizos(ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex) = 0
+               .Invent_Skins.Object(Slot).Equipped = False
+
             Case e_OBJType.otSkinsHelmets
                 If .invent.EquippedHelmetObjIndex > 0 Then
                     .Invent_Skins.ObjIndexHelmetEquipped = 0
@@ -3478,6 +3476,8 @@ Dim obj                         As t_ObjData
 
                 'Equipamos ahora nuestro nuevo skin
                 .Invent_Skins.Object(Slot).Equipped = True
+                .Invent_Skins.Object(Slot).Type = e_OBJType.otSkinsSpells
+
                 If ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex > 0 Then
                     .Stats.UserSkinsHechizos(ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex) = ObjData(.Invent_Skins.Object(Slot).ObjIndex).CreaFX
                 End If
