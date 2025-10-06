@@ -27,10 +27,11 @@ Attribute VB_Name = "modMessageIDs"
 '
 Option Explicit
     
-Const MSG_CLIENT_UPDATE_REQUIRED                        As Integer = 2092
-Const MSG_INVALID_SESSION_TOKEN                         As Integer = 2093
-Const MSG_CONNECTION_SLOT_ERROR                         As Integer = 2094
-Const MSG_DISABLED_NEW_CHARACTERS                       As Integer = 1776
-Const MSG_YOU_HAVE_TOO_MANY_CHARS                       As Integer = 1777
-Const MSG_USERNAME_ALREADY_TAKEN                        As Integer = 1778
-Const MSG_UPGRADE_ACCOUNT_TO_CREATE_MORE_CHARS          As Integer = 1779
+    
+Public Const MSG_CLIENT_UPDATE_REQUIRED                        As Integer = 2092
+Public Const MSG_INVALID_SESSION_TOKEN                         As Integer = 2093
+Public Const MSG_CONNECTION_SLOT_ERROR                         As Integer = 2094
+Public Const MSG_DISABLED_NEW_CHARACTERS                       As Integer = 1776
+Public Const MSG_YOU_HAVE_TOO_MANY_CHARS                       As Integer = 1777
+Public Const MSG_USERNAME_ALREADY_TAKEN                        As Integer = 1778
+Public Const MSG_UPGRADE_ACCOUNT_TO_CREATE_MORE_CHARS          As Integer = 1779
