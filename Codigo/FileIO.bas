@@ -995,13 +995,6 @@ Sub LoadOBJData()
         With ObjData(Object)
             ObjKey = "OBJ" & Object
             .name = Leer.GetValue(ObjKey, "Name")
-            ' If .Name = "" Then
-            '   Call LogError("Objeto libre:" & Object)
-            ' End If
-            ' If .name = "" Then
-            ' Debug.Print Object
-            ' End If
-            'Pablo (ToxicWaste) Log de Objetos.
             .Log = val(Leer.GetValue(ObjKey, "Log"))
             .NoLog = val(Leer.GetValue(ObjKey, "NoLog"))
             '07/09/07
@@ -1070,6 +1063,8 @@ Sub LoadOBJData()
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
                 Case e_OBJType.otBackpack
                     '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
+                Case e_OBJType.otMagicalInstrument
+                    .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
                 Case e_OBJType.otWeapon
                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
                     .Apuñala = val(Leer.GetValue(ObjKey, "Apuñala"))
@@ -1224,8 +1219,6 @@ Sub LoadOBJData()
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
-                Case e_OBJType.otAmulets
-                    .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
                 Case e_OBJType.otRingAccesory
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
                 Case e_OBJType.otMinerals
