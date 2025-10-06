@@ -128,8 +128,29 @@ Public Type t_PersonajeCuenta
     BackPack As Integer
 End Type
 
+
 #If DIRECT_PLAY = 0 Then
-    Public reader As Network.reader
+Public reader As Network.reader
+
+#If LOGIN_STRESS_TEST = 1 And PYMMO = 1 Then
+Private mStressSeq As Long
+
+Private Function Stress_Enabled() As Boolean
+    ' If you want a runtime toggle, read from INI/env here.
+    Stress_Enabled = True
+End Function
+
+Private Function Stress_NextName() As String
+    mStressSeq = mStressSeq + 1
+    Stress_NextName = "STRESS_" & Format$(mStressSeq, "000000")
+End Function
+
+Private Function Stress_IsToken(ByVal s As String) As Boolean
+    ' Minimal detector: anything starting with "STRESS." is treated as a stress login
+    Stress_IsToken = (Len(s) >= 7 And Left$(s, 7) = "STRESS.")
+End Function
+#End If
+
 
 Public Sub InitializePacketList()
     Call Protocol_Writes.InitializeAuxiliaryBuffer
@@ -154,9 +175,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
     #End If
     Dim PacketId As Long
     PacketId = reader.ReadInt16
-    #If STRESSER = 1 Then
-        Debug.Print "Paquete: " & PacketId
-    #End If
     Dim actual_time       As Long
     Dim performance_timer As Long
     actual_time = GetTickCountRaw()
@@ -1095,8 +1113,10 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
     Dim race                    As e_Raza
     Dim gender                  As e_Genero
     Dim Hogar                   As e_Ciudad
-    Dim Class As e_Class
-    Dim head As Integer
+    Dim Class                   As e_Class
+    Dim head                    As Integer
+
+    ' --- read payload exactly as today ---
     encrypted_session_token = reader.ReadString8
     encrypted_username = reader.ReadString8
     Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
@@ -1106,37 +1126,81 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
     Class = reader.ReadInt8()
     head = reader.ReadInt16()
     Hogar = reader.ReadInt8()
+
+#If LOGIN_STRESS_TEST = 1 Then
+    ' ====== STRESS PATH ======
+    If Stress_Enabled() And Stress_IsToken(encrypted_session_token) Then
+        Dim UI As Integer
+        UI = MapConnectionToUser(ConnectionID)
+        If UI < 1 Then
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_CONNECTION_SLOT_ERROR))
+            Call KickConnection(ConnectionID)
+            Exit Sub
+        End If
+
+        ' Optional IP gate (lock to localhost while testing)
+        'If Not Stress_IpOk(UserList(ui).ConnectionDetails.IP) Then
+        '    Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_CONNECTION_SLOT_ERROR))
+        '    Call KickConnection(ConnectionID)
+        '    Exit Sub
+        'End If
+
+        ' Build an ephemeral name and mark as stress (no DB, no account checks)
+        Dim sName As String
+        sName = Stress_NextName()
+
+        UserList(UI).AccountID = -9999               ' sentinel for ephemerals
+        UserList(UI).encrypted_session_token = encrypted_session_token
+        UserList(UI).decrypted_session_token = "STRESS"
+        UserList(UI).public_key = String$(16, "S")   ' harmless filler
+
+        ' Go straight to character creation/spawn using the provided appearance
+        If Not ConnectNewUser(UI, sName, race, gender, Class, head, Hogar) Then
+            Call CloseSocket(UI)
+            Exit Sub
+        End If
+
+        Exit Sub  ' IMPORTANT: do not fall through to normal auth
+    End If
+#End If
+
+    ' ====== NORMAL PATH (unchanged) ======
     If Len(encrypted_session_token) <> 88 Then
-        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092)) ', "Cliente inválido, por favor realice una actualización."))
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_CLIENT_UPDATE_REQUIRED))
         Exit Sub
     End If
+        
     Dim encrypted_session_token_byte() As Byte
     Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_session_token, encrypted_session_token_byte)
+
     Dim decrypted_session_token As String
     decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
     If Not IsBase64(decrypted_session_token) Then
-        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092)) ', "Cliente inválido, por favor realice una actualización."))
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_CLIENT_UPDATE_REQUIRED))
         Call KickConnection(ConnectionID)
         Exit Sub
     End If
+
     ' Para recibir el ID del user
     Dim RS As ADODB.Recordset
     Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
     If RS Is Nothing Or RS.RecordCount = 0 Then
-        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2093)) ', "Sesión inválida, conectese nuevamente."))
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_INVALID_SESSION_TOKEN))
         Call KickConnection(ConnectionID)
         Exit Sub
     End If
+
     CuentaEmail = CStr(RS!username)
     If RS!encrypted_token <> encrypted_session_token Then
-        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092)) ', "Cliente inválido, por favor realice una actualización."))
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_CLIENT_UPDATE_REQUIRED))
         Call KickConnection(ConnectionID)
         Exit Sub
     End If
+
     Dim UserIndex As Integer
     UserIndex = MapConnectionToUser(ConnectionID)
     If UserIndex < 1 Then
-        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094)) ', "No hay slot disponibles para el usuario."))
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_CONNECTION_SLOT_ERROR))
         Call KickConnection(ConnectionID)
         Exit Sub
     End If
@@ -1144,20 +1208,24 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
     UserList(UserIndex).encrypted_session_token = encrypted_session_token
     UserList(UserIndex).decrypted_session_token = decrypted_session_token
     UserList(UserIndex).public_key = mid$(decrypted_session_token, 1, 16)
+
     username = AO20CryptoSysWrapper.DECRYPT(cnvHexStrFromString(UserList(UserIndex).public_key), encrypted_username)
+
     If PuedeCrearPersonajes = 0 Then
-        Call WriteShowMessageBox(UserIndex, 1776, vbNullString) 'Msg1776=La creación de personajes en este servidor se ha deshabilitado.
+        Call WriteShowMessageBox(UserIndex, MSG_DISABLED_NEW_CHARACTERS, vbNullString)
         Call CloseSocket(UserIndex)
         Exit Sub
     End If
+
     If aClon.MaxPersonajes(UserList(UserIndex).ConnectionDetails.IP) Then
-        Call WriteShowMessageBox(UserIndex, 1777, vbNullString) 'Msg1777=Has creado demasiados personajes.
+        Call WriteShowMessageBox(UserIndex, MSG_YOU_HAVE_TOO_MANY_CHARS, vbNullString)
         Call CloseSocket(UserIndex)
         Exit Sub
     End If
+
     If EsGmChar(username) Then
         If AdministratorAccounts(UCase$(username)) <> UCase$(CuentaEmail) Then
-            Call WriteShowMessageBox(UserIndex, 1778, vbNullString) 'Msg1778=El nombre de usuario ingresado está siendo ocupado por un miembro del Staff.
+            Call WriteShowMessageBox(UserIndex, MSG_USERNAME_ALREADY_TAKEN, vbNullString)
             Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -1176,8 +1244,9 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
     Dim max_pc_for_tier As Byte
     max_pc_for_tier = MaxCharacterForTier(user_tier)
     Debug.Assert max_pc_for_tier > 0
+
     If num_pc >= Min(max_pc_for_tier, MAX_PERSONAJES) Then
-        Call WriteShowMessageBox(UserIndex, 1779, vbNullString) 'Msg1779=You need to upgrade your account to create more characters, please visit https://www.patreon.com/nolandstudios
+        Call WriteShowMessageBox(UserIndex, MSG_UPGRADE_ACCOUNT_TO_CREATE_MORE_CHARS, vbNullString)
         Call CloseSocket(UserIndex)
         Exit Sub
     End If
@@ -2113,9 +2182,6 @@ End Sub
 Private Sub HandleUseSpellMacro(ByVal UserIndex As Integer)
     On Error GoTo HandleUseSpellMacro_Err
     With UserList(UserIndex)
-        #If STRESSER = 1 Then
-            Exit Sub
-        #End If
         Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg(.name & " fue expulsado por Anti-macro de hechizos", e_FontTypeNames.FONTTYPE_VENENO))
         Call WriteShowMessageBox(UserIndex, 1782, vbNullString) 'Msg1782=Has sido expulsado por usar macro de hechizos. Recomendamos leer el reglamento sobre el tema macros.
         Call CloseSocket(UserIndex)
