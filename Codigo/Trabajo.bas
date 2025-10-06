@@ -104,9 +104,17 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                     Case e_ToolsSubtype.eFishingRod
                         If (MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 And Not MapData(.pos.Map, .pos.x, .pos.y).trigger = _
                                 e_Trigger.PESCAINVALIDA Then
-                            If (MapData(.pos.Map, .pos.x, .pos.y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.pos.Map, .pos.x + 1, .pos.y).Blocked And FLAG_AGUA) <> 0 Or (MapData( _
-                                    .pos.Map, .pos.x, .pos.y + 1).Blocked And FLAG_AGUA) <> 0 Or (MapData(.pos.Map, .pos.x - 1, .pos.y).Blocked And FLAG_AGUA) <> 0 Or (MapData( _
-                                    .pos.Map, .pos.x, .pos.y - 1).Blocked And FLAG_AGUA) <> 0 Then
+                            Dim isStandingOnWater As Boolean
+                            Dim isAdjacentToWater As Boolean
+
+                            isStandingOnWater = (MapData(.pos.Map, .pos.x, .pos.y).Blocked And FLAG_AGUA) <> 0
+                            isAdjacentToWater = (MapData(.pos.Map, .pos.x + 1, .pos.y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.pos.Map, .pos.x, .pos.y + 1).Blocked And FLAG_AGUA) <> 0 Or (MapData( _
+                                    .pos.Map, .pos.x - 1, .pos.y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.pos.Map, .pos.x, .pos.y - 1).Blocked And FLAG_AGUA) <> 0
+
+                            If isStandingOnWater Then
+                                Call WriteLocaleMsg(UserIndex, "1436", e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteMacroTrabajoToggle(UserIndex, False)
+                            ElseIf isAdjacentToWater Then
                                 .flags.PescandoEspecial = False
                                 If UserList(UserIndex).flags.Navegando = 0 Then
                                     If MapInfo(.pos.Map).zone = "DUNGEON" Then
