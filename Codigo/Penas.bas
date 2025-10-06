@@ -62,9 +62,6 @@ End Function
 
 Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal username As String, ByRef Razon As String)
     On Error GoTo BanPJ_Err
-    #If STRESSER = 1 Then
-        Exit Sub
-    #End If
     If Not GlobalChecks(BannerIndex, username) Then Exit Sub
     ' Si no existe el personaje...
     If Not PersonajeExiste(username) Then
