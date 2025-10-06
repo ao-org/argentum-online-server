@@ -469,7 +469,7 @@ Dim tStr                        As String
         '   FIN - INFORMACION INICIAL DEL PERSONAJE
         ' -----------------------------------------------------------------------
         If Not ValidateChr(UserIndex) Then
-            Call WriteShowMessageBox(UserIndex, 1766, vbNullString)    'Msg1766=Error en el personaje. Comuniquese con el staff.
+            Call WriteShowMessageBox(UserIndex, 1766, vbNullString) 'Msg1766=Error en el personaje. Comuniquese con el staff.
             Call CloseSocket(UserIndex)
             Exit Function
         End If
@@ -508,10 +508,10 @@ Dim tStr                        As String
         'Tratamos de evitar en lo posible el "Telefrag". Solo 1 intento de loguear en pos adjacentes.
         'Codigo por Pablo (ToxicWaste) y revisado por Nacho (Integer), corregido para que realmetne ande y no tire el server por Juan Martin Sotuyo Dodero (Maraxus)
         If MapData(.pos.Map, .pos.x, .pos.y).UserIndex <> 0 Or MapData(.pos.Map, .pos.x, .pos.y).NpcIndex <> 0 Then
-            Dim FoundPlace      As Boolean
-            Dim esAgua          As Boolean
-            Dim tX              As Long
-            Dim tY              As Long
+            Dim FoundPlace As Boolean
+            Dim esAgua     As Boolean
+            Dim tX         As Long
+            Dim tY         As Long
             FoundPlace = False
             esAgua = (MapData(.pos.Map, .pos.x, .pos.y).Blocked And FLAG_AGUA) <> 0
             For tY = .pos.y - 1 To .pos.y + 1
@@ -532,7 +532,7 @@ Dim tStr                        As String
                 Next tX
                 If FoundPlace Then Exit For
             Next tY
-            If FoundPlace Then    'Si encontramos un lugar, listo, nos quedamos ahi
+            If FoundPlace Then 'Si encontramos un lugar, listo, nos quedamos ahi
                 .pos.x = tX
                 .pos.y = tY
             Else
@@ -557,11 +557,11 @@ Dim tStr                        As String
             End If
         End If
         'If in the water, and has a boat, equip it!
-        Dim trigger             As Integer
-        Dim slotBarco           As Integer
-        Dim itemBuscado         As Integer
+        Dim trigger     As Integer
+        Dim slotBarco   As Integer
+        Dim itemBuscado As Integer
         trigger = MapData(.pos.Map, .pos.x, .pos.y).trigger
-        If trigger = e_Trigger.DETALLEAGUA Then    'Esta en zona de caucho obj 199, 200
+        If trigger = e_Trigger.DETALLEAGUA Then 'Esta en zona de caucho obj 199, 200
             If .raza = e_Raza.Enano Or .raza = e_Raza.Gnomo Then
                 itemBuscado = iObjTrajeBajoNw
             Else
@@ -572,7 +572,7 @@ Dim tStr                        As String
                 .invent.EquippedShipObjIndex = itemBuscado
                 .invent.EquippedShipSlot = slotBarco
             End If
-        ElseIf trigger = e_Trigger.VALIDONADO Or trigger = e_Trigger.NADOCOMBINADO Then    'Esta en zona de nado comun obj 197
+        ElseIf trigger = e_Trigger.VALIDONADO Or trigger = e_Trigger.NADOCOMBINADO Then  'Esta en zona de nado comun obj 197
             itemBuscado = iObjTraje
             slotBarco = GetSlotInInventory(UserIndex, itemBuscado)
             If slotBarco > -1 Then
@@ -584,7 +584,7 @@ Dim tStr                        As String
             .flags.Navegando = 1
             Call EquiparBarco(UserIndex)
         ElseIf .flags.Navegando = 1 And (MapData(.pos.Map, .pos.x, .pos.y).Blocked And FLAG_AGUA) <> 0 Then
-            Dim iSlot           As Integer
+            Dim iSlot As Integer
             For iSlot = 1 To UBound(.invent.Object)
                 If .invent.Object(iSlot).ObjIndex > 0 Then
                     If ObjData(.invent.Object(iSlot).ObjIndex).OBJType = otShips And ObjData(.invent.Object(iSlot).ObjIndex).Subtipo > 0 Then
@@ -598,9 +598,9 @@ Dim tStr                        As String
         If .invent.EquippedAmuletAccesoryObjIndex <> 0 Then
             If ObjData(.invent.EquippedAmuletAccesoryObjIndex).EfectoMagico = 11 Then .flags.Paraliza = 1
         End If
-        Call WriteUserIndexInServer(UserIndex)    'Enviamos el User index
+        Call WriteUserIndexInServer(UserIndex) 'Enviamos el User index
         Call WriteHora(UserIndex)
-        Call WriteChangeMap(UserIndex, .pos.Map)    'Carga el mapa
+        Call WriteChangeMap(UserIndex, .pos.Map) 'Carga el mapa
         Call UpdateCharWithEquipedItems(UserIndex)
         Select Case .flags.Privilegios
             Case e_PlayerType.Admin
@@ -632,9 +632,9 @@ Dim tStr                        As String
         If Not EsGM(UserIndex) And (.pos.Map = 324 Or .pos.Map = 372 Or .pos.Map = 389 Or .pos.Map = 390) Then
             ' Si tiene una posicion a la que volver, lo mando ahi
             If MapaValido(.flags.ReturnPos.Map) And .flags.ReturnPos.x > 0 And .flags.ReturnPos.x <= XMaxMapSize And .flags.ReturnPos.y > 0 And .flags.ReturnPos.y <= YMaxMapSize _
-               Then
+                    Then
                 Call WarpToLegalPos(UserIndex, .flags.ReturnPos.Map, .flags.ReturnPos.x, .flags.ReturnPos.y, True)
-            Else               ' Lo mando a su hogar
+            Else ' Lo mando a su hogar
                 Call WarpToLegalPos(UserIndex, Ciudades(.Hogar).Map, Ciudades(.Hogar).x, Ciudades(.Hogar).y, True)
             End If
         End If
@@ -666,14 +666,14 @@ Dim tStr                        As String
         End If
         If NumUsers > DayStats.MaxUsuarios Then DayStats.MaxUsuarios = NumUsers
         If NumUsers > RecordUsuarios Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1550", NumUsers, e_FontTypeNames.FONTTYPE_INFO))    ' Msg1550=Record de usuarios conectados simultáneamente: ¬1 usuarios.
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1550", NumUsers, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1550=Record de usuarios conectados simultáneamente: ¬1 usuarios.
             RecordUsuarios = NumUsers
         End If
         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageOnlineUser(NumUsers))
         Call WriteFYA(UserIndex)
         Call WriteBindKeys(UserIndex)
         If .NroMascotas > 0 And MapInfo(.pos.Map).NoMascotas = 0 And .flags.MascotasGuardadas = 0 Then
-            Dim i               As Integer
+            Dim i As Integer
             For i = 1 To MAXMASCOTAS
                 If .MascotasType(i) > 0 Then
                     Call SetNpcRef(.MascotasIndex(i), SpawnNpc(.MascotasType(i), .pos, False, False, False, UserIndex))
@@ -696,7 +696,7 @@ Dim tStr                        As String
             End If
         End If
         If LenB(.LastGuildRejection) <> 0 Then
-            Call WriteShowMessageBox(UserIndex, 1767, .LastGuildRejection)    'Msg1767=Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: ¬1
+            Call WriteShowMessageBox(UserIndex, 1767, .LastGuildRejection) 'Msg1767=Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: ¬1
             .LastGuildRejection = vbNullString
             Call SaveUserGuildRejectionReason(.name, vbNullString)
         End If
@@ -704,9 +704,9 @@ Dim tStr                        As String
         If ServidorNublado Then Call WriteNubesToggle(UserIndex)
         Call WriteLoggedMessage(UserIndex, newUser)
         If .Stats.ELV = 1 Then
-            Call WriteLocaleMsg(UserIndex, "522", e_FontTypeNames.FONTTYPE_GUILD, .name)    ' Msg522=¡Bienvenido a las tierras de Argentum Online! ¡<nombre> que tengas buen viaje y mucha suerte!
+            Call WriteLocaleMsg(UserIndex, "522", e_FontTypeNames.FONTTYPE_GUILD, .name) ' Msg522=¡Bienvenido a las tierras de Argentum Online! ¡<nombre> que tengas buen viaje y mucha suerte!
         Else
-            Call WriteLocaleMsg(UserIndex, "1439", e_FontTypeNames.FONTTYPE_GUILD, .name & "¬" & .Stats.ELV & "¬" & get_map_name(.pos.Map))    ' Msg1439=¡Bienvenido de nuevo ¬1! Actualmente estas en el nivel ¬2 en ¬3, ¡buen viaje y mucha suerte!
+            Call WriteLocaleMsg(UserIndex, "1439", e_FontTypeNames.FONTTYPE_GUILD, .name & "¬" & .Stats.ELV & "¬" & get_map_name(.pos.Map)) ' Msg1439=¡Bienvenido de nuevo ¬1! Actualmente estas en el nivel ¬2 en ¬3, ¡buen viaje y mucha suerte!
         End If
         If Status(UserIndex) = e_Facciones.Criminal Or Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio Then
             Call WriteSafeModeOff(UserIndex)
@@ -718,7 +718,7 @@ Dim tStr                        As String
             Call WriteSafeModeOn(UserIndex)
         End If
         If LenB(.MENSAJEINFORMACION) > 0 Then
-            Dim Lines()         As String
+            Dim Lines() As String
             Lines = Split(.MENSAJEINFORMACION, vbNewLine)
             For i = 0 To UBound(Lines)
                 If LenB(Lines(i)) > 0 Then
@@ -728,7 +728,7 @@ Dim tStr                        As String
             .MENSAJEINFORMACION = vbNullString
         End If
         If EventoActivo Then
-            Call WriteLocaleMsg(UserIndex, 1625, e_FontTypeNames.FONTTYPE_New_Eventos, PublicidadEvento & "¬" & TiempoRestanteEvento)    'Msg1625=¬1. Tiempo restante: ¬2 minuto(s).
+            Call WriteLocaleMsg(UserIndex, 1625, e_FontTypeNames.FONTTYPE_New_Eventos, PublicidadEvento & "¬" & TiempoRestanteEvento) 'Msg1625=¬1. Tiempo restante: ¬2 minuto(s).
         End If
         Call WriteContadores(UserIndex)
         Call WritePrivilegios(UserIndex)
@@ -2038,7 +2038,7 @@ Private Function CalculateBaseFactionScore(ByVal Attacker As Integer, ByVal Targ
     End With
 End Function
 
-Sub Tilelibre(ByRef pos As t_WorldPos, ByRef nPos As t_WorldPos, ByRef Obj As t_Obj, ByRef Agua As Boolean, ByRef Tierra As Boolean, Optional ByVal InitialPos As Boolean = True)
+Sub Tilelibre(ByRef pos As t_WorldPos, ByRef nPos As t_WorldPos, ByRef obj As t_Obj, ByRef Agua As Boolean, ByRef Tierra As Boolean, Optional ByVal InitialPos As Boolean = True)
     On Error GoTo Tilelibre_Err
     '**************************************************************
     'Author: Unknown
@@ -2064,9 +2064,9 @@ Sub Tilelibre(ByRef pos As t_WorldPos, ByRef nPos As t_WorldPos, ByRef Obj As t_
                     'there is already an item on the floor that differs from the item being dropped
                     'the item on the floor is the same but the elemental tags differ
                     'the amount of items exceeds the max quantity of items on the floor
-                    hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex <> Obj.ObjIndex)
-                    If Not hayobj Then hayobj = MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags <> Obj.ElementalTags
-                    If Not hayobj Then hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.amount + Obj.amount > MAX_INVENTORY_OBJS)
+                    hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex <> obj.ObjIndex)
+                    If Not hayobj Then hayobj = MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags <> obj.ElementalTags
+                    If Not hayobj Then hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.amount + obj.amount > MAX_INVENTORY_OBJS)
                     If Not hayobj And MapData(nPos.Map, tX, tY).TileExit.Map = 0 And (InitialPos Or (tX <> pos.x And tY <> pos.y)) Then
                         nPos.x = tX
                         nPos.y = tY
@@ -3321,13 +3321,13 @@ Public Function GetUserMR(ByVal UserIndex As Integer) As Integer
     End With
 End Function
 
-Function LevelCanUseItem(ByVal UserIndex As Integer, ByRef Obj As t_ObjData) As Boolean
+Function LevelCanUseItem(ByVal UserIndex As Integer, ByRef obj As t_ObjData) As Boolean
 
     With UserList(UserIndex)
-        If Obj.MaxLEV <> 0 Then
-            LevelCanUseItem = .Stats.ELV >= Obj.MinELV And .Stats.ELV <= Obj.MaxLEV
+        If obj.MaxLEV <> 0 Then
+            LevelCanUseItem = .Stats.ELV >= obj.MinELV And .Stats.ELV <= obj.MaxLEV
         Else
-            LevelCanUseItem = .Stats.ELV >= Obj.MinELV
+            LevelCanUseItem = .Stats.ELV >= obj.MinELV
         End If
     End With
     
