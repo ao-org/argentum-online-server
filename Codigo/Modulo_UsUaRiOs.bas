@@ -201,6 +201,8 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
                 Exit Function
             End If
         End If
+        
+#If LOGIN_STRESS_TEST = 0 Then
         '¿Supera el máximo de usuarios por cuenta?
         If MaxUsersPorCuenta > 0 Then
             If ContarUsuariosMismaCuenta(.AccountID) >= MaxUsersPorCuenta Then
@@ -213,6 +215,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
                 Exit Function
             End If
         End If
+#End If
         .flags.Privilegios = UserDarPrivilegioLevel(name)
         If EsRolesMaster(name) Then
             .flags.Privilegios = .flags.Privilegios Or e_PlayerType.RoleMaster
@@ -257,6 +260,9 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As S
     Dim tStr As String
     Call SendData(SendTarget.ToIndex, UserIndex, PrepareActiveToggles)
     With UserList(UserIndex)
+#If LOGIN_STRESS_TEST = 1 Then
+        .pos.Map = 1 'Ullathorpe
+#End If
         If .flags.Paralizado = 1 Then
             .Counters.Paralisis = IntervaloParalizado
         End If
@@ -443,14 +449,10 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As S
         Call EnviarLlaves(UserIndex)
         If .flags.Paralizado Then Call WriteParalizeOK(UserIndex)
         If .flags.Inmovilizado Then Call WriteInmovilizaOK(UserIndex)
-        ''
-        'TODO : Feo, esto tiene que ser parche cliente
-        If .flags.Estupidez = 0 Then
-            Call WriteDumbNoMore(UserIndex)
-        End If
         .flags.Inmunidad = 1
         .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
         .Counters.TiempoDeInmunidadParalisisNoMagicas = 0
+  
         If MapInfo(.pos.Map).MapResource = 0 Then
             .pos.Map = Ciudades(.Hogar).Map
             .pos.x = Ciudades(.Hogar).x
@@ -458,61 +460,58 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As S
         End If
         'Mapa válido
         If Not MapaValido(.pos.Map) Then
-            Call WriteErrorMsg(UserIndex, "EL PJ se encuenta en un mapa invalido.")
+            Call WriteErrorMsg(UserIndex, "The character is in an invalid postion/map. Please ask for support on Discord.")
             Call CloseSocket(UserIndex)
             Exit Function
         End If
-        'Tratamos de evitar en lo posible el "Telefrag". Solo 1 intento de loguear en pos adjacentes.
-        'Codigo por Pablo (ToxicWaste) y revisado por Nacho (Integer), corregido para que realmetne ande y no tire el server por Juan Martin Sotuyo Dodero (Maraxus)
+        
+        
         If MapData(.pos.Map, .pos.x, .pos.y).UserIndex <> 0 Or MapData(.pos.Map, .pos.x, .pos.y).NpcIndex <> 0 Then
             Dim FoundPlace As Boolean
             Dim esAgua     As Boolean
-            Dim tX         As Long
-            Dim tY         As Long
-            FoundPlace = False
+            Dim nX         As Long
+            Dim nY         As Long
+        
             esAgua = (MapData(.pos.Map, .pos.x, .pos.y).Blocked And FLAG_AGUA) <> 0
-            For tY = .pos.y - 1 To .pos.y + 1
-                For tX = .pos.x - 1 To .pos.x + 1
-                    If esAgua Then
-                        'reviso que sea pos legal en agua, que no haya User ni NPC para poder loguear.
-                        If LegalPos(.pos.Map, tX, tY, True, True, False, False, False) Then
-                            FoundPlace = True
-                            Exit For
-                        End If
-                    Else
-                        'reviso que sea pos legal en tierra, que no haya User ni NPC para poder loguear.
-                        If LegalPos(.pos.Map, tX, tY, False, True, False, False, False) Then
-                            FoundPlace = True
-                            Exit For
-                        End If
-                    End If
-                Next tX
-                If FoundPlace Then Exit For
-            Next tY
-            If FoundPlace Then 'Si encontramos un lugar, listo, nos quedamos ahi
-                .pos.x = tX
-                .pos.y = tY
+        
+            ' Busca el tile libre más cercano (espiral/radial) respetando agua/tierra
+            FoundPlace = FindNearestFreeTile(.pos.Map, .pos.x, .pos.y, esAgua, SPAWN_SEARCH_MAX_RADIUS, nX, nY)
+        
+            If FoundPlace Then
+                .pos.x = nX
+                .pos.y = nY
             Else
-                'Si no encontramos un lugar, sacamos al usuario que tenemos abajo, y si es un NPC, lo pisamos.
-                If MapData(.pos.Map, .pos.x, .pos.y).UserIndex <> 0 Then
-                    'Si no encontramos lugar, y abajo teniamos a un usuario, lo pisamos y cerramos su comercio seguro
-                    If IsValidUserRef(UserList(MapData(.pos.Map, .pos.x, .pos.y).UserIndex).ComUsu.DestUsu) Then
-                        'Le avisamos al que estaba comerciando que se tuvo que ir.
-                        If UserList(UserList(MapData(.pos.Map, .pos.x, .pos.y).UserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
-                            Call FinComerciarUsu(UserList(MapData(.pos.Map, .pos.x, .pos.y).UserIndex).ComUsu.DestUsu.ArrayIndex)
-                            Call WriteConsoleMsg(UserList(MapData(.pos.Map, .pos.x, .pos.y).UserIndex).ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(1925, vbNullString, _
-                                    e_FontTypeNames.FONTTYPE_WARNING)) ' Msg1925=Comercio cancelado. El otro usuario se ha desconectado.
-                        End If
-                        'Lo sacamos.
-                        If UserList(MapData(.pos.Map, .pos.x, .pos.y).UserIndex).flags.UserLogged Then
-                            Call FinComerciarUsu(MapData(.pos.Map, .pos.x, .pos.y).UserIndex)
-                            Call WriteErrorMsg(MapData(.pos.Map, .pos.x, .pos.y).UserIndex, "Alguien se ha conectado donde te encontrabas, por favor reconectate...")
+                ' Sin lugar libre: si hay un usuario debajo, avisamos/cerramos comercio y lo desconectamos.
+                Dim uidBelow As Integer
+                uidBelow = MapData(.pos.Map, .pos.x, .pos.y).UserIndex
+        
+                If uidBelow <> 0 Then
+                    ' Notificar al compañero de comercio (si corresponde)
+                    If IsValidUserRef(UserList(uidBelow).ComUsu.DestUsu) Then
+                        Dim destIdx As Integer
+                        destIdx = UserList(uidBelow).ComUsu.DestUsu.ArrayIndex
+                        If destIdx > 0 And UserList(destIdx).flags.UserLogged Then
+                            Call FinComerciarUsu(destIdx)
+                            Call WriteConsoleMsg(destIdx, _
+                                PrepareMessageLocaleMsg(1925, vbNullString, e_FontTypeNames.FONTTYPE_WARNING)) ' "Comercio cancelado..."
                         End If
                     End If
-                    Call CloseSocket(MapData(.pos.Map, .pos.x, .pos.y).UserIndex)
+        
+                    ' Cerrar comercio del usuario pisado y avisarle
+                    If UserList(uidBelow).flags.UserLogged Then
+                        Call FinComerciarUsu(uidBelow)
+                        Call WriteErrorMsg(uidBelow, "Somebody has connected to the game in the same position you were, please reconnect...")
+                    End If
+        
+                    ' Desconectar al usuario debajo
+                    Call CloseSocket(uidBelow)
                 End If
+                ' Si hay un NPC debajo, se pisa (comportamiento original).
             End If
         End If
+
+
+
         'If in the water, and has a boat, equip it!
         Dim trigger     As Integer
         Dim slotBarco   As Integer

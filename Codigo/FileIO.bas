@@ -1460,6 +1460,8 @@ Sub LoadMapData()
         'We only need 50 maps for unit testing
         NumMaps = 50
         Debug.Print "UNIT_TEST Enabled Loading just " & NumMaps & " maps"
+    #ElseIf LOGIN_STRESS_TEST = 1 Then
+        NumMaps = 100
     #Else
         If RunningInVB() Then
             'VB runs out of memory when debugging
