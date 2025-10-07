@@ -2879,8 +2879,12 @@ Dim eSkinType                   As e_OBJType
         Else
             If itemSlot > MAX_SKINSINVENTORY_SLOTS Or itemSlot < 1 Then Exit Sub
             If .Invent_Skins.Object(itemSlot).ObjIndex = 0 Then Exit Sub
+            If .Invent_Skins.Object(itemSlot).Equipped Then
+                Call DesequiparSkin(UserIndex, itemSlot)
+                Exit Sub
+            End If
             If CanEquipSkin(UserIndex, itemSlot, ObjData(.Invent_Skins.Object(itemSlot).ObjIndex).OBJType, False) Then
-                Call SkinEquip(UserIndex, itemSlot, .Invent_Skins.Object(itemSlot).ObjIndex, ObjData(.Invent_Skins.Object(itemSlot).ObjIndex).OBJType)
+                Call SkinEquip(UserIndex, itemSlot, .Invent_Skins.Object(itemSlot).ObjIndex)
             End If
         End If
 
@@ -7782,7 +7786,7 @@ Dim Slot As Byte
             End If
             
             If .Invent_Skins.Object(Slot).Equipped = 0 Then
-                Call DesequiparSkin(UserIndex, Slot, ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType)
+                Call DesequiparSkin(UserIndex, Slot)
                 'Msg1287= Objeto eliminado correctamente.
                 .Invent_Skins.Object(Slot).Deleted = True
                 Call SaveUser(UserIndex, False)

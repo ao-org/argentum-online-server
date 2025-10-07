@@ -833,7 +833,7 @@ Dim RS                          As ADODB.Recordset
                             If CBool(RS.Fields("skin_equipped")) Then
                                 .Invent_Skins.Object(i).Type = ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType
                                 If CanEquipSkin(UserIndex, i, ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType, False) Then
-                                    Call SkinEquip(UserIndex, i, .Invent_Skins.Object(i).ObjIndex, ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType)
+                                    Call SkinEquip(UserIndex, i, .Invent_Skins.Object(i).ObjIndex, True)
                                 End If
                             End If
                         

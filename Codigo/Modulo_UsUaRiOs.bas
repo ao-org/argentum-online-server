@@ -308,7 +308,7 @@ Dim tStr                        As String
                 If .Invent_Skins.SlotWeaponEquipped > 0 Then
                     If .Invent_Skins.Object(.Invent_Skins.SlotWeaponEquipped).ObjIndex = .Invent_Skins.ObjIndexWeaponEquipped And .Invent_Skins.ObjIndexWeaponEquipped > 0 Then
                         If CanEquipSkin(UserIndex, .Invent_Skins.SlotWeaponEquipped, e_OBJType.otSkinsWeapons, False) Then
-                            Call SkinEquip(UserIndex, .Invent_Skins.SlotWeaponEquipped, .Invent_Skins.Object(.Invent_Skins.SlotWeaponEquipped).ObjIndex, e_OBJType.otSkinsWeapons)
+                            Call SkinEquip(UserIndex, .Invent_Skins.SlotWeaponEquipped, .Invent_Skins.Object(.Invent_Skins.SlotWeaponEquipped).ObjIndex)
                         End If
                     End If
                 End If
@@ -333,7 +333,7 @@ Dim tStr                        As String
                 If .Invent_Skins.SlotArmourEquipped > 0 Then
                     If .Invent_Skins.Object(.Invent_Skins.SlotArmourEquipped).ObjIndex = .Invent_Skins.ObjIndexArmourEquipped And .Invent_Skins.ObjIndexArmourEquipped > 0 Then
                         If CanEquipSkin(UserIndex, .Invent_Skins.SlotArmourEquipped, e_OBJType.otSkinsArmours, False) Then
-                            Call SkinEquip(UserIndex, .Invent_Skins.SlotArmourEquipped, .Invent_Skins.Object(.Invent_Skins.SlotArmourEquipped).ObjIndex, e_OBJType.otSkinsArmours)
+                            Call SkinEquip(UserIndex, .Invent_Skins.SlotArmourEquipped, .Invent_Skins.Object(.Invent_Skins.SlotArmourEquipped).ObjIndex)
                         End If
                     End If
                 End If
@@ -355,7 +355,7 @@ Dim tStr                        As String
                 If .Invent_Skins.SlotShieldEquipped > 0 Then
                     If .Invent_Skins.Object(.Invent_Skins.SlotShieldEquipped).ObjIndex = .Invent_Skins.ObjIndexShieldEquipped And .Invent_Skins.ObjIndexShieldEquipped > 0 Then
                         If CanEquipSkin(UserIndex, .Invent_Skins.SlotShieldEquipped, e_OBJType.otSkinsShields, False) Then
-                            Call SkinEquip(UserIndex, .Invent_Skins.SlotShieldEquipped, .Invent_Skins.Object(.Invent_Skins.SlotShieldEquipped).ObjIndex, e_OBJType.otSkinsShields)
+                            Call SkinEquip(UserIndex, .Invent_Skins.SlotShieldEquipped, .Invent_Skins.Object(.Invent_Skins.SlotShieldEquipped).ObjIndex)
                         End If
                     End If
                 End If
@@ -374,7 +374,7 @@ Dim tStr                        As String
                 If .Invent_Skins.SlotHelmetEquipped > 0 Then
                     If .Invent_Skins.Object(.Invent_Skins.SlotHelmetEquipped).ObjIndex = .Invent_Skins.ObjIndexHelmetEquipped And .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
                         If CanEquipSkin(UserIndex, .Invent_Skins.SlotHelmetEquipped, e_OBJType.otSkinsHelmets, False) Then
-                            Call SkinEquip(UserIndex, .Invent_Skins.SlotHelmetEquipped, .Invent_Skins.Object(.Invent_Skins.SlotHelmetEquipped).ObjIndex, e_OBJType.otSkinsHelmets)
+                            Call SkinEquip(UserIndex, .Invent_Skins.SlotHelmetEquipped, .Invent_Skins.Object(.Invent_Skins.SlotHelmetEquipped).ObjIndex)
                         End If
                     End If
                 End If
@@ -389,7 +389,7 @@ Dim tStr                        As String
                 If .Invent_Skins.ObjIndexBoatEquipped > 0 Then
                     If .Invent_Skins.Object(.Invent_Skins.SlotBoatEquipped).ObjIndex = .Invent_Skins.ObjIndexBoatEquipped And .Invent_Skins.ObjIndexBoatEquipped > 0 Then
                         If CanEquipSkin(UserIndex, .Invent_Skins.SlotBoatEquipped, e_OBJType.otSkinsBoats, False) Then
-                            Call SkinEquip(UserIndex, .Invent_Skins.SlotBoatEquipped, .Invent_Skins.Object(.Invent_Skins.SlotBoatEquipped).ObjIndex, e_OBJType.otSkinsBoats)
+                            Call SkinEquip(UserIndex, .Invent_Skins.SlotBoatEquipped, .Invent_Skins.Object(.Invent_Skins.SlotBoatEquipped).ObjIndex)
                         End If
                     End If
                 End If
@@ -875,6 +875,9 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, _
                    ByVal Cart As Integer, _
                    ByVal BackPack As Integer)
     On Error GoTo ChangeUserChar_Err
+    
+    Debug.Print "Change body: " & body & " Time: " & DateTime.Now
+    
     If IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTransformed) Then Exit Sub
     With UserList(UserIndex).Char
         .body = body
