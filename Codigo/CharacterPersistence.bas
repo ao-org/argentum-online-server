@@ -809,8 +809,6 @@ Dim RS                          As ADODB.Recordset
         '@ Existe el Skins?
         If RS.EOF Or RS.BOF Then
             LoadSkinsInventory = False
-            Debug.Print "No existen skins del personaje " & .name & " ID: " & .Id
-            'Set RS = Query("INSERT INTO inventory_item_skins (USER_ID) Values (" & .Id & ")")
             Set RS = Nothing
             Exit Function
         End If
