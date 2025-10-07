@@ -1509,6 +1509,35 @@ TratarDeHacerFogata_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.TratarDeHacerFogata", Erl)
 End Sub
 
+Private Function ShouldReplaceFishForMap(ByVal CurrentMap As Integer, ByVal FishObjIndex As Integer, ByRef ReplacementObjIndex As Integer) As Boolean
+    Dim i As Long
+    Dim fishKey As String
+    Dim mapKey As String
+    ReplacementObjIndex = 0
+    On Error GoTo ShouldReplaceFishForMap_Err
+    If (Not Not FishingMapRestrictions) = 0 Then Exit Function
+    If UBound(FishingMapRestrictions) < 1 Then Exit Function
+    fishKey = "|" & CStr(FishObjIndex) & "|"
+    For i = 1 To UBound(FishingMapRestrictions)
+        If LenB(FishingMapRestrictions(i).FishList) > 0 Then
+            If InStr(1, FishingMapRestrictions(i).FishList, fishKey, vbBinaryCompare) > 0 Then
+                If LenB(FishingMapRestrictions(i).AllowedMaps) = 0 Then Exit Function
+                mapKey = "|" & CStr(CurrentMap) & "|"
+                If InStr(1, FishingMapRestrictions(i).AllowedMaps, mapKey, vbBinaryCompare) = 0 Then
+                    ReplacementObjIndex = FishingMapRestrictions(i).ReplacementObjIndex
+                    ShouldReplaceFishForMap = True
+                    Exit Function
+                Else
+                    Exit Function
+                End If
+            End If
+        End If
+    Next i
+    Exit Function
+ShouldReplaceFishForMap_Err:
+    Call TraceError(Err.Number, Err.Description, "Trabajo.ShouldReplaceFishForMap", Erl)
+End Function
+
 Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boolean = False)
     On Error GoTo ErrHandler
     Dim bonificacionPescaLvl(1 To 47) As Single
@@ -1622,6 +1651,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
             Dim nPos     As t_WorldPos
             Dim MiObj    As t_Obj
             Dim objValue As Integer
+            Dim replacementFish As Integer
             If IsFeatureEnabled("gain_exp_while_working") Then
                 Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Fisherman)
                 Call WriteUpdateExp(UserIndex)
@@ -1632,12 +1662,16 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
             MiObj.ObjIndex = ObtenerPezRandom(ObjData(.invent.EquippedWorkingToolObjIndex).Power)
             objValue = max(ObjData(MiObj.ObjIndex).Valor / 3, 1)
             'si esta macreando y para que esten mas atentos les mando un NPC y saco el macro de trabajar
-            If MiObj.ObjIndex = (SvrConfig.GetValue("FISHING_SPECIALFISH1_ID") Or MiObj.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH2_ID")) And (UserList( _
-                    UserIndex).pos.Map) <> SvrConfig.GetValue("FISHING_MAP_SPECIAL_FISH1_ID") Then
-                MiObj.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH1_REMPLAZO_ID")
-                If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Then NpcIndex = SpawnNpc(SvrConfig.GetValue("NPC_WATCHMAN_ID"), .pos, True, False)
+            If ShouldReplaceFishForMap(.pos.Map, MiObj.ObjIndex, replacementFish) Then
+                If replacementFish > 0 Then
+                    MiObj.ObjIndex = replacementFish
+                End If
+                If MapInfo(.pos.Map).Seguro = 0 Then
+                    NpcIndex = SpawnNpc(SvrConfig.GetValue("NPC_WATCHMAN_ID"), .pos, True, False)
+                End If
                 Call WriteMacroTrabajoToggle(UserIndex, False)
             End If
+
             MiObj.amount = Round(Reward / objValue)
             If MiObj.amount <= 0 Then
                 MiObj.amount = 1

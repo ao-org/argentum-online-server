@@ -3359,6 +3359,13 @@ Public ObjAlquimista()                        As Integer
 Public ObjSastre()                            As Integer
 Public EspecialesTala()                       As t_Obj
 Public EspecialesPesca()                      As t_Obj
+Public Type t_FishingMapRestriction
+    AllowedMaps           As String
+    FishList              As String
+    ReplacementObjIndex   As Integer
+End Type
+
+Public FishingMapRestrictions()               As t_FishingMapRestriction
 Public Peces()                                As t_Obj
 Public PecesEspeciales()                      As t_Obj
 Public PesoPeces()                            As Long

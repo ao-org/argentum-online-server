@@ -2537,8 +2537,118 @@ LoadRecursosEspeciales_Err:
     Call TraceError(Err.Number, Err.Description, "ES.LoadRecursosEspeciales", Erl)
 End Sub
 
+Private Function NormalizeDelimitedNumberList(ByVal rawValues As String) As String
+    Dim cleaned As String
+    Dim tokens() As String
+    Dim i As Long
+    Dim tokenValue As String
+    Dim numericValue As Long
+    rawValues = Replace$(rawValues, ";", ",")
+    rawValues = Replace$(rawValues, "|", ",")
+    rawValues = Replace$(rawValues, vbCr, "")
+    rawValues = Replace$(rawValues, vbLf, "")
+    rawValues = Trim$(rawValues)
+    If LenB(rawValues) = 0 Then Exit Function
+    tokens = Split(rawValues, ",")
+    For i = LBound(tokens) To UBound(tokens)
+        tokenValue = Trim$(tokens(i))
+        If LenB(tokenValue) > 0 Then
+            numericValue = val(tokenValue)
+            If numericValue <> 0 Or tokenValue = "0" Then
+                If LenB(cleaned) > 0 Then cleaned = cleaned & "|"
+                cleaned = cleaned & CStr(numericValue)
+            End If
+        End If
+    Next i
+    If LenB(cleaned) > 0 Then NormalizeDelimitedNumberList = "|" & cleaned & "|"
+End Function
+
+Private Sub LoadDefaultFishingMapRestriction()
+    Dim fishEntries As String
+    Dim mapValue As Long
+    Dim replacementValue As Long
+    Dim fish1 As Long
+    Dim fish2 As Long
+    ReDim FishingMapRestrictions(0) As t_FishingMapRestriction
+    If SvrConfig Is Nothing Then Exit Sub
+    fish1 = SvrConfig.GetValue("FISHING_SPECIALFISH1_ID")
+    fish2 = SvrConfig.GetValue("FISHING_SPECIALFISH2_ID")
+    mapValue = SvrConfig.GetValue("FISHING_MAP_SPECIAL_FISH1_ID")
+    replacementValue = SvrConfig.GetValue("FISHING_SPECIALFISH1_REMPLAZO_ID")
+    If fish1 = 0 And fish2 = 0 Then Exit Sub
+    ReDim FishingMapRestrictions(1 To 1) As t_FishingMapRestriction
+    With FishingMapRestrictions(1)
+        If mapValue > 0 Then
+            .AllowedMaps = "|" & CStr(mapValue) & "|"
+        Else
+            .AllowedMaps = ""
+        End If
+        If fish1 > 0 Then
+            fishEntries = CStr(fish1)
+        End If
+        If fish2 > 0 Then
+            If LenB(fishEntries) > 0 Then
+                fishEntries = fishEntries & "|" & CStr(fish2)
+            Else
+                fishEntries = CStr(fish2)
+            End If
+        End If
+        If LenB(fishEntries) > 0 Then
+            .FishList = "|" & fishEntries & "|"
+        Else
+            .FishList = ""
+        End If
+        .ReplacementObjIndex = replacementValue
+    End With
+End Sub
+
+Public Sub LoadFishingMapRestrictions()
+    On Error GoTo LoadFishingMapRestrictions_Err
+    Dim ini As clsIniManager
+    Dim count As Long
+    Dim i As Long
+    Dim section As String
+    Dim mapsValue As String
+    Dim fishValue As String
+    Dim replacementValue As Long
+    ReDim FishingMapRestrictions(0) As t_FishingMapRestriction
+    If Not FileExist(DatPath & "pescaGold.ini", vbArchive) Then
+        Call LoadDefaultFishingMapRestriction
+        Exit Sub
+    End If
+    Set ini = New clsIniManager
+    Call ini.Initialize(DatPath & "pescaGold.ini")
+    count = val(ini.GetValue("General", "Count"))
+    If count <= 0 Then
+        Call LoadDefaultFishingMapRestriction
+        GoTo LoadFishingMapRestrictions_Cleanup
+    End If
+    ReDim FishingMapRestrictions(1 To count) As t_FishingMapRestriction
+    For i = 1 To count
+        section = "Restriction" & i
+        With FishingMapRestrictions(i)
+            mapsValue = ini.GetValue(section, "Maps")
+            fishValue = ini.GetValue(section, "Fish")
+            .AllowedMaps = NormalizeDelimitedNumberList(mapsValue)
+            .FishList = NormalizeDelimitedNumberList(fishValue)
+            replacementValue = val(ini.GetValue(section, "Replacement"))
+            If replacementValue = 0 Then
+                If Not SvrConfig Is Nothing Then replacementValue = SvrConfig.GetValue("FISHING_SPECIALFISH1_REMPLAZO_ID")
+            End If
+            .ReplacementObjIndex = replacementValue
+        End With
+    Next i
+LoadFishingMapRestrictions_Cleanup:
+    Set ini = Nothing
+    Exit Sub
+LoadFishingMapRestrictions_Err:
+    Call TraceError(Err.Number, Err.Description, "ES.LoadFishingMapRestrictions", Erl)
+    Call LoadDefaultFishingMapRestriction
+End Sub
+
 Public Sub LoadPesca()
     On Error GoTo LoadPesca_Err
+    Call LoadFishingMapRestrictions
     If Not FileExist(DatPath & "pesca.dat", vbArchive) Then
         ReDim Peces(0) As t_Obj
         ReDim PecesEspeciales(0) As t_Obj
