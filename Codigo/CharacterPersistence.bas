@@ -898,7 +898,7 @@ Dim RS                          As ADODB.Recordset
             For i = 1 To .Invent_Skins.count
                 If .Invent_Skins.Object(i).ObjIndex > 0 Then
                     If Not Database_Queries.Exists("inventory_item_skins", "user_id", CStr(.Id), "skin_id", .Invent_Skins.Object(i).ObjIndex) Then
-                        sQuery.Append "INSERT INTO inventory_item_skins (user_id, skin_id, type_skin, skin_equipped) Values (" & .Id & "," & .Invent_Skins.Object(i).ObjIndex & "," & ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType & "," & .Invent_Skins.Object(i).Equipped & ")"
+                        sQuery.Append "INSERT INTO inventory_item_skins (user_id, skin_id, type_skin, skin_equipped) Values (" & .Id & "," & .Invent_Skins.Object(i).ObjIndex & "," & ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType & "," & IIf(.Invent_Skins.Object(i).Equipped, "1", "0") & ")"
                         Database.Execute sQuery.ToString
                         sQuery.Clear
                     Else
