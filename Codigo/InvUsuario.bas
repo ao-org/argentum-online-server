@@ -3646,10 +3646,14 @@ Dim i                           As Byte
     
     With UserList(UserIndex)
         For i = 1 To MAX_SKINSINVENTORY_SLOTS
-            If .Invent_Skins.Object(i).ObjIndex = 0 Then
+            If .Invent_Skins.Object(i).ObjIndex = 0 Or .Invent_Skins.Object(i).Deleted Then
                 .Invent_Skins.Object(i).ObjIndex = SkinIndex
                 .Invent_Skins.Object(i).Equipped = False
-                .Invent_Skins.count = .Invent_Skins.count + 1
+                If Not .Invent_Skins.Object(i).Deleted Then
+                    .Invent_Skins.count = .Invent_Skins.count + 1
+                Else
+                    .Invent_Skins.Object(i).Deleted = False
+                End If
                 If SkinIndex > 0 Then
                     Call WriteChangeSkinSlot(UserIndex, ObjData(SkinIndex).OBJType, i)
                 End If

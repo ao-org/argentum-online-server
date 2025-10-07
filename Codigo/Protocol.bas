@@ -7785,6 +7785,7 @@ Dim Slot As Byte
                 Call DesequiparSkin(UserIndex, Slot, ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType)
                 'Msg1287= Objeto eliminado correctamente.
                 .Invent_Skins.Object(Slot).Deleted = True
+                Call SaveUser(UserIndex, False)
                 Call WriteChangeSkinSlot(UserIndex, 0, Slot)
                 Call WriteLocaleMsg(UserIndex, "1287", e_FontTypeNames.FONTTYPE_INFO)
             Else
