@@ -7728,34 +7728,73 @@ HandlePublicarPersonajeMAO_Err:
 End Sub
 
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
+    
+Dim isSkin As Boolean
+Dim Slot As Byte
+
     On Error GoTo HandleDeleteItem_Err:
-    Dim Slot As Byte
+    
+    isSkin = reader.ReadBool
     Slot = reader.ReadInt8()
+    
     With UserList(UserIndex)
-        If Slot > getMaxInventorySlots(UserIndex) Or Slot <= 0 Then Exit Sub
-        If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
-            'Msg1285= Solo puedes eliminar items en zona segura.
-            Call WriteLocaleMsg(UserIndex, "1285", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        If UserList(UserIndex).flags.Muerto = 1 Then
-            'Msg1286= No puede eliminar items cuando estas muerto.
-            Call WriteLocaleMsg(UserIndex, "1286", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        If .invent.Object(Slot).Equipped = 0 Then
-            UserList(UserIndex).invent.Object(Slot).amount = 0
-            UserList(UserIndex).invent.Object(Slot).Equipped = 0
-            UserList(UserIndex).invent.Object(Slot).ObjIndex = 0
-            Call UpdateUserInv(False, UserIndex, Slot)
-            'Msg1287= Objeto eliminado correctamente.
-            Call WriteLocaleMsg(UserIndex, "1287", e_FontTypeNames.FONTTYPE_INFO)
+        
+        If Not isSkin Then
+            If Slot > getMaxInventorySlots(UserIndex) Or Slot <= 0 Then Exit Sub
+            
+            If MapInfo(.pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
+                'Msg1285= Solo puedes eliminar items en zona segura.
+                Call WriteLocaleMsg(UserIndex, "1285", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If .flags.Muerto = 1 Then
+                'Msg1286= No puede eliminar items cuando estas muerto.
+                Call WriteLocaleMsg(UserIndex, "1286", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If .invent.Object(Slot).Equipped = 0 Then
+                .invent.Object(Slot).amount = 0
+                .invent.Object(Slot).Equipped = 0
+                .invent.Object(Slot).ObjIndex = 0
+                Call UpdateUserInv(False, UserIndex, Slot)
+                'Msg1287= Objeto eliminado correctamente.
+                Call WriteLocaleMsg(UserIndex, "1287", e_FontTypeNames.FONTTYPE_INFO)
+            Else
+                'Msg1288= No puedes eliminar un objeto estando equipado.
+                Call WriteLocaleMsg(UserIndex, "1288", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
         Else
-            'Msg1288= No puedes eliminar un objeto estando equipado.
-            Call WriteLocaleMsg(UserIndex, "1288", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
+            If Slot > MAX_SKINSINVENTORY_SLOTS Or Slot <= 0 Then Exit Sub
+            
+            If MapInfo(.pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
+                'Msg1285= Solo puedes eliminar items en zona segura.
+                Call WriteLocaleMsg(UserIndex, "1285", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If .flags.Muerto = 1 Then
+                'Msg1286= No puede eliminar items cuando estas muerto.
+                Call WriteLocaleMsg(UserIndex, "1286", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If .Invent_Skins.Object(Slot).Equipped = 0 Then
+                Call DesequiparSkin(UserIndex, Slot, ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType)
+                'Msg1287= Objeto eliminado correctamente.
+                .Invent_Skins.Object(Slot).Deleted = True
+                Call WriteChangeSkinSlot(UserIndex, 0, Slot)
+                Call WriteLocaleMsg(UserIndex, "1287", e_FontTypeNames.FONTTYPE_INFO)
+            Else
+                'Msg1288= No puedes eliminar un objeto estando equipado.
+                Call WriteLocaleMsg(UserIndex, "1288", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
         End If
     End With
+    
     Exit Sub
 HandleDeleteItem_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteItem", Erl)

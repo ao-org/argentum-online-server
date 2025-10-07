@@ -1880,6 +1880,7 @@ End Type
 
 '[/About] 30/09/2025
 Public Type t_UserSkins
+    Deleted                         As Boolean
     Equipped                        As Boolean
     ObjIndex                        As Integer
     Type                            As Integer

@@ -4507,7 +4507,7 @@ Public Sub WriteChangeSkinSlot(ByVal UserIndex As Integer, ByVal TypeSkin As e_O
         'Enviamos si está equipada la skin o no
         Call Writer.WriteBool(.Invent_Skins.Object(Slot).Equipped)
         'Si hay algún error de dateo, no bugeamos el inventario.
-        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
+        If .Invent_Skins.Object(Slot).ObjIndex > 0 And Not .Invent_Skins.Object(Slot).Deleted Then
             Call Writer.WriteInt32(ObjData(.Invent_Skins.Object(Slot).ObjIndex).GrhIndex)
             Call Writer.WriteInt8(ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType)
             Call Writer.WriteString8(ObjData(.Invent_Skins.Object(Slot).ObjIndex).name)

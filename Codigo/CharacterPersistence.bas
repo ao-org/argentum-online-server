@@ -880,13 +880,19 @@ Dim RS                          As ADODB.Recordset
             Set sQuery = New cStringBuilder
 
             For i = 1 To .Invent_Skins.count
-                If .Invent_Skins.Object(i).ObjIndex > 0 Then
+                If .Invent_Skins.Object(i).ObjIndex > 0 And Not .Invent_Skins.Object(i).Deleted Then
                     If Not Database_Queries.Exists("inventory_item_skins", "user_id", CStr(.Id), "skin_id", .Invent_Skins.Object(i).ObjIndex) Then
                         sQuery.Append "INSERT INTO inventory_item_skins (user_id, skin_id, type_skin, skin_equipped) Values (" & .Id & "," & .Invent_Skins.Object(i).ObjIndex & "," & ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType & "," & IIf(.Invent_Skins.Object(i).Equipped, "1", "0") & ")"
                         Database.Execute sQuery.ToString
                         sQuery.Clear
                     Else
                         sQuery.Append "UPDATE inventory_item_skins SET SKIN_EQUIPPED=" & IIf(.Invent_Skins.Object(i).Equipped, "1", "0") & " WHERE USER_ID=" & .Id & " AND SKIN_ID=" & .Invent_Skins.Object(i).ObjIndex
+                        Database.Execute sQuery.ToString
+                        sQuery.Clear
+                    End If
+                Else
+                    If .Invent_Skins.Object(i).Deleted Then
+                        sQuery.Append "DELETE FROM inventory_item_skins WHERE USER_ID=" & .Id & " AND SKIN_ID=" & .Invent_Skins.Object(i).ObjIndex
                         Database.Execute sQuery.ToString
                         sQuery.Clear
                     End If

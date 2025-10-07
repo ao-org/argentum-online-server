@@ -247,6 +247,7 @@ Dim i                           As Byte
             .Invent_Skins.Object(i).ObjIndex = 0
             .Invent_Skins.Object(i).Equipped = False
             .Invent_Skins.Object(i).Type = 0
+            .Invent_Skins.Object(i).Deleted = False
         Next i
 
         .Invent_Skins.ObjIndexArmourEquipped = 0
