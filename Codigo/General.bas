@@ -773,7 +773,6 @@ On Error GoTo Handler
             Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.Tick")
             Call UpdateEffectOverTime
             Call PerformTimeLimitCheck(PerformanceTimer, "General Update Effects over time")
-            Sleep 1
             DoEvents
             Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
             Call AntiCheatUpdate
