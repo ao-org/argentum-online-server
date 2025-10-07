@@ -1130,13 +1130,6 @@ ResetUserSpells_Err:
     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSpells", Erl)
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : ResetUserSkinsSpells
-' Last Author : [/About] Brian Sabatier (brian.sabatier87@gmail.com - https://github.com/brianirvana/brianirvana)
-' Last Date : 18/9/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
-
 Sub ResetUserSkinsSpells(ByVal UserIndex As Integer)
 
 Dim LoopC                       As Integer

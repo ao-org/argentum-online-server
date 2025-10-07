@@ -791,13 +791,6 @@ ErrorHandler:
     Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : LoadSkinsInventory
-' Last Author : [/About] Brian Sabatier (brian.sabatier87@gmail.com - https://github.com/brianirvana/brianirvana)
-' Last Date : 18/9/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
-
 Function LoadSkinsInventory(ByVal UserIndex As Integer) As Boolean
 
 Dim bFixed                      As Boolean
@@ -875,13 +868,6 @@ ErrHandler:
     Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.LoadSkinsInventory of Módulo", Erl())
 
 End Function
-
-'---------------------------------------------------------------------------------------
-' Procedure : SaveInventorySkins
-' Last Author : [/About] Brian Sabatier (brian.sabatier87@gmail.com - https://github.com/brianirvana/brianirvana)
-' Last Date : 18/9/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
 
 Function SaveInventorySkins(ByVal UserIndex As Integer) As Boolean
 

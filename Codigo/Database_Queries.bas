@@ -375,13 +375,6 @@ Private Sub ConstruirQuery_GuardarPersonaje()
     Call QueryBuilder.Clear
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : Exists
-' Last Author : [/About] Brian Sabatier (brian.sabatier87@gmail.com - https://github.com/brianirvana/brianirvana)
-' Last Date : 18/9/2025
-' Purpose   : Verificar si existe un registro de manera genérica.
-'---------------------------------------------------------------------------------------
-
 Function Exists(ByRef sTable As String, ByRef sField As String, ByRef sValue As String, _
                 Optional ByRef sExtraField = vbNullString, Optional ByRef sExtraValue = vbNullString) As Boolean
 

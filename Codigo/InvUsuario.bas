@@ -238,12 +238,6 @@ LimpiarInventario_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.LimpiarInventario", Erl)
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : ResetUserSkinsInventory
-' Last Author : [/About] Brian Sabatier (brian.sabatier87@gmail.com - https://github.com/brianirvana/brianirvana)
-' Last Date : 18/9/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
 Sub ResetUserSkinsInventory(ByVal UserIndex As Integer)
 Dim i                           As Byte
     On Error GoTo ResetUserSkinsInventory_Error
@@ -840,12 +834,6 @@ Desequipar_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.Desequipar", Erl)
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : DesequiparSkin
-' Last Author : [/About] Brian Sabatier (brian.sabatier87@gmail.com - https://github.com/brianirvana/brianirvana)
-' Last Date : 15/9/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
 Sub DesequiparSkin(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal eSkinType As e_OBJType)
 
 Dim obj                         As t_ObjData
@@ -3410,12 +3398,6 @@ Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal Targe
     CanElementalTagBeApplied = True
 End Function
 
-'---------------------------------------------------------------------------------------
-' Procedure : SkinEquip
-' Last Author : [/About] Brian Sabatier (brian.sabatier87@gmail.com - https://github.com/brianirvana/brianirvana)
-' Last Date : 15/9/2022
-' Purpose   :
-'---------------------------------------------------------------------------------------
 Sub SkinEquip(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ObjIndex As Integer, ByRef eSkinType As e_OBJType)
 
 Dim nuevoHead                   As Integer
@@ -3652,12 +3634,6 @@ SkinEquip_Error:
     
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : AddSkin
-' Last Author : [/About] Brian Sabatier (brian.sabatier87@gmail.com - https://github.com/brianirvana/brianirvana)
-' Last Date : 15/9/2022
-' Purpose   :
-'---------------------------------------------------------------------------------------
 Public Function AddSkin(ByVal UserIndex As Integer, ByVal SkinIndex As Integer) As Boolean
 
 Dim bAdded                      As Boolean
@@ -3695,12 +3671,6 @@ AddSkin_Error:
     
 End Function
 
-'---------------------------------------------------------------------------------------
-' Procedure : HaveThisSkin
-' Last Author : [/About] Brian Sabatier (brian.sabatier87@gmail.com - https://github.com/brianirvana/brianirvana)
-' Last Date : 15/9/2022
-' Purpose   :
-'---------------------------------------------------------------------------------------
 Function HaveThisSkin(ByVal UserIndex As Integer, ByVal SkinIndex As Integer) As Boolean
 
 Dim i                           As Byte
@@ -3727,12 +3697,6 @@ HaveThisSkin_Error:
     Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.HaveThisSkin of Módulo", Erl())
 End Function
 
-'---------------------------------------------------------------------------------------
-' Procedure : CanEquipSkin
-' Last Author : [/About] Brian Sabatier (brian.sabatier87@gmail.com - https://github.com/brianirvana/brianirvana)
-' Last Date : 15/9/2022
-' Purpose   :
-'---------------------------------------------------------------------------------------
 Function CanEquipSkin(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef eSkinType As e_OBJType, ByVal bFromInvent As Boolean) As Boolean
 
     Dim bCanUser As Boolean
@@ -4047,12 +4011,6 @@ CanEquipSkin_Error:
     
 End Function
 
-'---------------------------------------------------------------------------------------
-' Procedure : UpdateSingleItemInv
-' Last Author : [/About] Brian Sabatier (brian.sabatier87@gmail.com - https://github.com/brianirvana/brianirvana)
-' Last Date : 15/9/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
 Sub UpdateSingleItemInv(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal UpdateFullInfo As Boolean = True)
 
 Dim NullObj                     As t_UserOBJ
