@@ -707,7 +707,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
     'Si el npc es solo atacable para clanes y el usuario no tiene clan, le avisa y sale de la funcion
     If NpcList(NpcIndex).OnlyForGuilds = 1 And UserList(UserIndex).GuildIndex <= 0 Then
         'Msg2001=Debes pertenecer a un clan para atacar a este NPC
-        Call WriteLocaleMsg(UserIndex, "2001", e_FontTypeNames.FONTTYPE_WARNING)
+        Call WriteLocaleMsg(UserIndex, 2001, e_FontTypeNames.FONTTYPE_WARNING)
         Exit Sub
     End If
     Dim UserAttackInteractionResult As t_AttackInteractionResult
@@ -735,16 +735,14 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
                     NpcList(NpcIndex).flags.Paralizado = 1
                     NpcList(NpcIndex).Contadores.Paralisis = (IntervaloParalizado / 3) * 7
                     If UserList(UserIndex).ChatCombate = 1 Then
-                        'Call WriteConsoleMsg(UserIndex, "Tu golpe a paralizado a la criatura.", e_FontTypeNames.FONTTYPE_FIGHT)
-                        Call WriteLocaleMsg(UserIndex, "136", e_FontTypeNames.FONTTYPE_FIGHT)
+                        Call WriteLocaleMsg(UserIndex, 136, e_FontTypeNames.FONTTYPE_FIGHT)
                     End If
                     UserList(UserIndex).Counters.timeFx = 3
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.charindex, 8, 0, UserList(UserIndex).pos.x, UserList( _
                             UserIndex).pos.y))
                 Else
                     If UserList(UserIndex).ChatCombate = 1 Then
-                        'Call WriteConsoleMsg(UserIndex, "El NPC es inmune al hechizo.", e_FontTypeNames.FONTTYPE_INFO)
-                        Call WriteLocaleMsg(UserIndex, "381", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, 381, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
             End If
@@ -809,13 +807,13 @@ Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_W
             If NpcList(Index).Attackable Then
                 If IsValidUserRef(NpcList(Index).MaestroUser) And MapInfo(NpcList(Index).pos.Map).Seguro = 1 Then
                     'Msg1041= No podés atacar mascotas en zonas seguras
-                    Call WriteLocaleMsg(UserIndex, "1041", e_FontTypeNames.FONTTYPE_FIGHT)
+                    Call WriteLocaleMsg(UserIndex, 1041, e_FontTypeNames.FONTTYPE_FIGHT)
                     Exit Sub
                 End If
                 Call UsuarioAtacaNpc(UserIndex, Index, Melee)
             Else
                 'Msg1042= No podés atacar a este NPC
-                Call WriteLocaleMsg(UserIndex, "1042", e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteLocaleMsg(UserIndex, 1042, e_FontTypeNames.FONTTYPE_FIGHT)
             End If
             Exit Sub
         Else
@@ -843,7 +841,7 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         'Quitamos stamina
         If .Stats.MinSta < 10 Then
-            Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         Call QuitarSta(UserIndex, RandomNumber(1, 10))
@@ -1527,7 +1525,7 @@ Private Sub GetExpForUser(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
                         Dim PorcentajeFinal As Integer
                         PorcentajeFinal = Penalty * 100
                         'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
-                        Call WriteLocaleMsg(UserIndex, "1467", e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
+                        Call WriteLocaleMsg(UserIndex, 1467, e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
                     End If
                 End If
             End If
@@ -2173,7 +2171,7 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
         If AmunitionState <> 0 Then
             If AmunitionState = 1 Then
                 ' Msg709=No tenés municiones.
-                Call WriteLocaleMsg(UserIndex, "709", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, 709, e_FontTypeNames.FONTTYPE_INFO)
             End If
             Call Desequipar(UserIndex, .EquippedMunitionSlot)
             Call WriteWorkRequestTarget(UserIndex, 0)

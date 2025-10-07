@@ -167,7 +167,7 @@ Sub IniciarInvasion(ByVal Index As Integer)
     With Invasiones(Index)
         .Activa = True
         .VidaMuralla = .MaxVidaMuralla
-        .TiempoDeInicio = GetTickCount
+        .TiempoDeInicio = GetTickCountRaw()
         ' Enviamos info sobre la invasión a los usuarios en estos mapas
         Call EnviarInfoInvasion(Index)
         Call MensajeGlobal(.Desc, e_FontTypeNames.FONTTYPE_New_Eventos)
@@ -297,7 +297,9 @@ Public Sub EnviarInfoInvasion(ByVal Index As Integer)
     With Invasiones(Index)
         Dim PorcentajeVida As Byte, PorcentajeTiempo As Byte
         PorcentajeVida = (.VidaMuralla / .MaxVidaMuralla) * 100
-        PorcentajeTiempo = (GetTickCount - .TiempoDeInicio) / (.Duracion * 600)
+        Dim elapsedMs As Double
+        elapsedMs = TicksElapsed(.TiempoDeInicio, GetTickCountRaw())
+        PorcentajeTiempo = CByte(elapsedMs / (.Duracion * 600))
         Dim i As Integer, Mapa As Integer, j As Integer
         For i = 1 To UBound(.SpawnBoxes)
             Mapa = .SpawnBoxes(i).TopLeft.Map

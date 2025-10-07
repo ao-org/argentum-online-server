@@ -3100,7 +3100,7 @@ End Enum
 Public Type t_NpcSpellEntry
     SpellIndex As Integer
     Cd As Byte
-    LastUse As Long
+    lastUse As Long
 End Type
 
 Public Type t_Npc
@@ -3637,16 +3637,18 @@ Public Sub IncreaseLong(ByRef dest As Long, ByVal amount As Long)
 End Sub
 
 Public Sub PerformanceTestStart(ByRef timer As Long)
-    timer = GetTickCount()
+    timer = GetTickCountRaw()
 End Sub
 
 ' Test the time since last call and update the time
 ' log if there time betwen calls exced the limit
 Public Sub PerformTimeLimitCheck(ByRef timer As Long, ByRef TestText As String, Optional ByVal TimeLimit As Long = 1000)
-    Dim CurrTime As Long
-    CurrTime = GetTickCount() - timer
+    Dim nowRaw   As Long
+    Dim CurrTime As Double
+    nowRaw = GetTickCountRaw()
+    CurrTime = TicksElapsed(timer, nowRaw)
     If CurrTime > TimeLimit Then
-        Call LogPerformance("Performance warning at: " & TestText & " elapsed time: " & CurrTime)
+        Call LogPerformance("Performance warning at: " & TestText & " elapsed time: " & CLng(CurrTime))
     End If
-    timer = GetTickCount()
+    timer = nowRaw
 End Sub

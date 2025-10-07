@@ -30,3 +30,4 @@ Database.db
 AoServerTools.dll
 AOACServer.pdb
 .aider*
+*.pdb

@@ -486,9 +486,11 @@ Public Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal de
 End Sub
 
 Public Sub IBaseScenario_Update()
+    Dim nowRaw    As Long
     Dim frametime As Long
-    frametime = GetTickCount() - LastFrameTime
-    LastFrameTime = GetTickCount()
+    nowRaw = GetTickCountRaw()
+    frametime = CLng(TicksElapsed(LastFrameTime, nowRaw))
+    LastFrameTime = nowRaw
     If LobbyList(LobbyIndex).State = e_LobbyState.InProgress Then
         If CountdownTimer.Occurrences < 10 Then
             If UpdateTime(CountdownTimer, frametime) Then
@@ -558,7 +560,7 @@ End Sub
 Private Sub StartGame()
     Call SetTimer(BroadCastTimer, 60000)
     Call SetTimer(ScoreBroadcastTimer, 20000)
-    LastFrameTime = GetTickCount()
+    LastFrameTime = GetTickCountRaw()
     Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(1883, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1883=¡Marineros al abordaje!
     ElapsedTime = 0
     Call ConfigMapEvent
@@ -643,7 +645,7 @@ Private Sub RespawnPlayers()
     Dim currentTime As Long
     Dim RespawnInfo As clsRespawnInfo
     Dim i           As Integer
-    currentTime = GetTickCount()
+    currentTime = GetTickCountRaw()
     Keys = PlayerRespawn.Keys
     For Each key In Keys
         Set RespawnInfo = PlayerRespawn.Item(key)
@@ -790,7 +792,7 @@ End Sub
 Public Sub IBaseScenario_UserDie(ByVal UserIndex)
     Dim RespawnInfo As clsRespawnInfo
     Set RespawnInfo = New clsRespawnInfo
-    RespawnInfo.RespawnTime = GetTickCount()
+    RespawnInfo.RespawnTime = GetTickCountRaw()
     With UserList(UserIndex)
         Dim i As Integer
         For i = LBound(.invent.Object) To UBound(.invent.Object)

@@ -522,7 +522,7 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
     With NpcList(AtackerNpcIndex)
         If Not IsValidUserRef(.TargetUser) Then Exit Sub
         EstaPegadoAlUsuario = (Distancia(.pos, UserList(.TargetUser.ArrayIndex).pos) <= 1)
-        AtacaConMagia = .flags.LanzaSpells And IntervaloPermiteLanzarHechizo(AtackerNpcIndex) And (RandomNumber(1, 100) <= 50)
+        AtacaConMagia = .flags.LanzaSpells And IntervaloPermiteLanzarHechizo(AtackerNpcIndex)
         AtacaMelee = EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .TargetUser.ArrayIndex)
         AtacaMelee = AtacaMelee And (.flags.LanzaSpells > 0 And ((UserList(.TargetUser.ArrayIndex).flags.invisible > 0 Or UserList(.TargetUser.ArrayIndex).flags.Oculto > 0)) Or ( _
                 IsFeatureEnabled("Magic_and_Punch") And Not IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eDontHitVisiblePlayers)))
@@ -945,7 +945,7 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
             ' Si no pudimos moverlo, hacemos como si hubiese llegado a destino... para evitar que se quede atascado
             If Not PudoMover Or Distancia(.pos, Destino) = 0 Then
                 ' Llegamos a destino, ahora esperamos el tiempo necesario para continuar
-                .Contadores.IntervaloMovimiento = GetTickCount + .Caminata(.CaminataActual).Espera - .IntervaloMovimiento
+                .Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), .Caminata(.CaminataActual).Espera)
                 ' Pasamos a la siguiente caminata
                 .CaminataActual = .CaminataActual + 1
                 ' Si pasamos el ultimo, volvemos al primero
@@ -1035,7 +1035,6 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
     Dim SpellIndex          As Integer
     Dim Target              As Integer
     Dim PuedeDanarAlUsuario As Boolean
-    If Not IntervaloPermiteLanzarHechizo(NpcIndex) Then Exit Sub
     If Not IsValidUserRef(NpcList(NpcIndex).TargetUser) Then Exit Sub
     Target = NpcList(NpcIndex).TargetUser.ArrayIndex
     ' Compute how far the user is from the npcs
@@ -1182,7 +1181,7 @@ UsuarioAtacableConMelee_Err:
 End Function
 
 Private Function CanCastSpell(ByRef Npc As t_Npc, ByVal Slot As Integer) As Boolean
-    CanCastSpell = GlobalFrameTime - Npc.Spells(Slot).LastUse > (Npc.Spells(Slot).Cd * 1000)
+    CanCastSpell = GlobalFrameTime - Npc.Spells(Slot).lastUse > (Npc.Spells(Slot).Cd * 1000)
 End Function
 
 Public Function GetAvailableSpellEffects(ByVal NpcIndex As Integer) As Long
@@ -1391,7 +1390,7 @@ Public Function TryCastHelpSpell(ByVal NpcIndex As Integer, ByVal AvailableSpell
         Else
             Call NpcLanzaSpellSobreNpc(NpcIndex, CurrentTarget.ArrayIndex, NpcList(NpcIndex).Spells(SpellIndex).SpellIndex)
         End If
-        NpcList(NpcIndex).Spells(SpellIndex).LastUse = GlobalFrameTime
+        NpcList(NpcIndex).Spells(SpellIndex).lastUse = GlobalFrameTime
         TryCastHelpSpell = True
     End If
 End Function
@@ -1407,7 +1406,7 @@ Public Function TryCastAttackSpell(ByVal NpcIndex As Integer, ByVal AvailableSpe
         Else
             Call NpcLanzaSpellSobreNpc(NpcIndex, CurrentTarget.ArrayIndex, NpcList(NpcIndex).Spells(SpellIndex).SpellIndex)
         End If
-        NpcList(NpcIndex).Spells(SpellIndex).LastUse = GlobalFrameTime
+        NpcList(NpcIndex).Spells(SpellIndex).lastUse = GlobalFrameTime
         TryCastAttackSpell = True
     End If
 End Function

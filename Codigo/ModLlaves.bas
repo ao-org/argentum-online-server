@@ -86,24 +86,24 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
                             MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, _
                                     .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
                             .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
-                            Call WriteLocaleMsg(UserIndex, "897", e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, 897, e_FontTypeNames.FONTTYPE_INFO)
                         Else
-                            Call WriteLocaleMsg(UserIndex, "898", e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, 898, e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     Else
-                        If TargObj.clave = LlaveObj.clave Then 'Or LlaveObj.clave = "3450" Then
+                        If TargObj.clave = LlaveObj.clave Then
                             MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, _
                                     .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerradaLlave
                             .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
                             'Msg899= Has cerrado con llave la puerta.
-                            Call WriteLocaleMsg(UserIndex, "899", e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, 899, e_FontTypeNames.FONTTYPE_INFO)
                         Else
-                            Call WriteLocaleMsg(UserIndex, "898", e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, 898, e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     End If
                 Else
                     'Msg901= No esta cerrada.
-                    Call WriteLocaleMsg(UserIndex, "901", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, 901, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             End If
         End If
