@@ -1446,12 +1446,12 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 UserList(UserIndex).Char.FX = 0
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.charindex, 0))
             End If
-            Dim CurrentTick As Long
-            CurrentTick = GetTickCount
+            Dim currentTick As Long
+            currentTick = GetTickCount
             'Prevent SpeedHack (refactored by WyroX)
             If Not EsGM(UserIndex) And .Char.speeding > 0 Then
                 Dim ElapsedTimeStep As Long, MinTimeStep As Long, DeltaStep As Single
-                ElapsedTimeStep = CurrentTick - .Counters.LastStep
+                ElapsedTimeStep = currentTick - .Counters.LastStep
                 MinTimeStep = .Intervals.Caminar / .Char.speeding
                 DeltaStep = (MinTimeStep - ElapsedTimeStep) / MinTimeStep
                 If DeltaStep > 0 Then
@@ -1468,7 +1468,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
             'Move user
             If MoveUserChar(UserIndex, Heading) Then
                 ' Save current step for anti-sh
-                .Counters.LastStep = CurrentTick
+                .Counters.LastStep = currentTick
                 If UserList(UserIndex).Grupo.EnGrupo Then
                     Call CompartirUbicacion(UserIndex)
                 End If
@@ -2879,7 +2879,9 @@ Dim eSkinType                   As e_OBJType
         Else
             If itemSlot > MAX_SKINSINVENTORY_SLOTS Or itemSlot < 1 Then Exit Sub
             If .Invent_Skins.Object(itemSlot).ObjIndex = 0 Then Exit Sub
-            Call EquiparInvItem(UserIndex, itemSlot, False, bSkins, eSkinType)
+            If CanEquipSkin(UserIndex, itemSlot, ObjData(.Invent_Skins.Object(itemSlot).ObjIndex).OBJType, False) Then
+                Call SkinEquip(UserIndex, itemSlot, .Invent_Skins.Object(itemSlot).ObjIndex, ObjData(.Invent_Skins.Object(itemSlot).ObjIndex).OBJType)
+            End If
         End If
 
     End With
