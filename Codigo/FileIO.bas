@@ -409,6 +409,7 @@ Public Function TxtDimension(ByVal name As String) As Long
     On Error GoTo TxtDimension_Err
     Dim n As Integer, cad As String, Tam As Long
     n = FreeFile(1)
+    If FileExist(name, vbArchive) Then
     Open name For Input As #n
     Tam = 0
     Do While Not EOF(n)
@@ -416,6 +417,10 @@ Public Function TxtDimension(ByVal name As String) As Long
         Line Input #n, cad
     Loop
     Close n
+    Else
+        Debug.print "No existe el archivo " & name
+    End If
+
     TxtDimension = Tam
     Exit Function
 TxtDimension_Err:
@@ -995,13 +1000,6 @@ Sub LoadOBJData()
         With ObjData(Object)
             ObjKey = "OBJ" & Object
             .name = Leer.GetValue(ObjKey, "Name")
-            ' If .Name = "" Then
-            '   Call LogError("Objeto libre:" & Object)
-            ' End If
-            ' If .name = "" Then
-            ' Debug.Print Object
-            ' End If
-            'Pablo (ToxicWaste) Log de Objetos.
             .Log = val(Leer.GetValue(ObjKey, "Log"))
             .NoLog = val(Leer.GetValue(ObjKey, "NoLog"))
             '07/09/07
@@ -1076,6 +1074,8 @@ Sub LoadOBJData()
                     .SkinOrigin = val(Leer.GetValue(ObjKey, "SkinOrigin"))
                     '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
                     
+                Case e_OBJType.otMagicalInstrument
+                    .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
                 Case e_OBJType.otWeapon, e_OBJType.otSkinsWeapons
                     .SkinOrigin = val(Leer.GetValue(ObjKey, "SkinOrigin"))
                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
@@ -1232,8 +1232,6 @@ Sub LoadOBJData()
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
-                Case e_OBJType.otAmulets
-                    .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
                 Case e_OBJType.otRingAccesory
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
                 Case e_OBJType.otMinerals
@@ -1477,6 +1475,8 @@ Sub LoadMapData()
         'We only need 50 maps for unit testing
         NumMaps = 50
         Debug.Print "UNIT_TEST Enabled Loading just " & NumMaps & " maps"
+    #ElseIf LOGIN_STRESS_TEST = 1 Then
+        NumMaps = 100
     #Else
         If RunningInVB() Then
             'VB runs out of memory when debugging
@@ -2324,7 +2324,7 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
     If Logout Then
         Call RemoveTokenDatabase(UserIndex)
     End If
-    UserList(UserIndex).Counters.LastSave = GetTickCount
+    UserList(UserIndex).Counters.LastSave = GetTickCountRaw()
     Exit Sub
 SaveUser_Err:
     Call TraceError(Err.Number, Err.Description, "ES.SaveUser", Erl)

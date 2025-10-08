@@ -71,12 +71,8 @@ Public Sub UpdateEffectOverTime()
     On Error GoTo Update_Err
     Dim CurrTime    As Long
     Dim ElapsedTime As Long
-    CurrTime = GetTickCount()
-    If CurrTime < LastUpdateTime Then ' GetTickCount can overflow se we take care of that
-        ElapsedTime = 0
-    Else
-        ElapsedTime = CurrTime - LastUpdateTime
-    End If
+    CurrTime = GetTickCountRaw()
+    ElapsedTime = CLng(TicksElapsed(LastUpdateTime, CurrTime))
     LastUpdateTime = CurrTime
     Dim i As Integer
     Do While i < ActiveEffects.EffectCount

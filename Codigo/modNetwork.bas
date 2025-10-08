@@ -129,15 +129,15 @@ End Function
 
 Public Sub close_not_logged_sockets_if_timeout()
     On Error GoTo close_not_logged_sockets_if_timeout_ErrHandler:
-    Dim i     As Integer
-    Dim key   As Variant
-    Dim Ticks As Long, Delta As Long
-    Ticks = GetTickCount
+    Dim i      As Integer
+    Dim key    As Variant
+    Dim nowRaw As Long, Delta As Double
+    nowRaw = GetTickCountRaw()
     For Each key In PendingConnections.Keys
         With Mapping(key)
             Dim ConnectionID As Long
             ConnectionID = key
-            Delta = Ticks - Mapping(ConnectionID).ConnectionDetails.OnConnectTimestamp
+            Delta = TicksElapsed(Mapping(ConnectionID).ConnectionDetails.OnConnectTimestamp, nowRaw)
             If Delta > PendingConnectionTimeout Then
                 If IsValidUserRef(.UserRef) Then
                     LogError ("trying to kick an assigned connection: " & ConnectionID & " assigned to: " & .UserRef.ArrayIndex)
@@ -175,7 +175,7 @@ Private Sub OnServerConnect(ByVal Connection As Long, ByVal Address As String)
             .ConnectionDetails.ConnIDValida = True
             .ConnectionDetails.IP = Address
             .ConnectionDetails.ConnID = Connection
-            .ConnectionDetails.OnConnectTimestamp = GetTickCount()
+            .ConnectionDetails.OnConnectTimestamp = GetTickCountRaw()
             .PacketCount = 0
             .TimeLastReset = 0
         End With
@@ -282,13 +282,13 @@ Public Sub CheckDisconnectedUsers()
     End If
     Dim currentTime As Long
     Dim iUserIndex  As Integer
-    currentTime = GetTickCount()
+    currentTime = GetTickCountRaw()
     For iUserIndex = 1 To MaxUsers
         With UserList(iUserIndex)
             'Conexion activa? y es un usuario loggeado?
             If .ConnectionDetails.ConnIDValida = 0 And .flags.UserLogged Then
                 If .ConnectionDetails.ConnID > 0 Then
-                    If currentTime - Mapping(.ConnectionDetails.ConnID).TimeLastReset > DisconnectTimeout Then
+                    If TicksElapsed(Mapping(.ConnectionDetails.ConnID).TimeLastReset, currentTime) > DisconnectTimeout Then
                         'mato los comercios seguros
                         If .ComUsu.DestUsu.ArrayIndex > 0 Then
                             If IsValidUserRef(.ComUsu.DestUsu) And UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
@@ -388,7 +388,7 @@ On Error GoTo CheckDisconnectedUsers_Err:
              .ConnIDValida = True
              .IP = "127.0.0.1"
              .ConnID = ConnectionID
-             .OnConnectTimestamp = GetTickCount()
+             .OnConnectTimestamp = GetTickCountRaw()
         End With
         UserList(FreeUser).ConnectionDetails = cdetail
  

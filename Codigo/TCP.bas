@@ -433,6 +433,8 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
             Call Cerrar_Usuario(UserIndex)
             Exit Function
         End If
+        
+#If LOGIN_STRESS_TEST = 0 Then
         ' Nombre válido
         If Not ValidarNombre(name) Then
             Call LogSecurity("ValidarNombre failed in ConnectNewUser for " & name & " desde la IP " & .ConnectionDetails.IP)
@@ -443,6 +445,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
             Call WriteShowMessageBox(UserIndex, 1768, vbNullString) 'Msg1768=El nombre no está permitido.
             Exit Function
         End If
+#End If
         '¿Existe el personaje?
         If PersonajeExiste(name) Then
             Call WriteShowMessageBox(UserIndex, 1769, vbNullString) 'Msg1769=Ya existe el personaje.
@@ -455,7 +458,11 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
         ' Ciudad válida
         If Hogar <= 0 Or Hogar > NUMCIUDADES Then Exit Function
         ' Cabeza válida
+#If LOGIN_STRESS_TEST = 0 Then
         If Not ValidarCabeza(UserRaza, UserSexo, head) Then Exit Function
+#Else
+        head = GetRandomHead(UserRaza, UserSexo)
+#End If
         'Prevenimos algun bug con dados inválidos
         'If .Stats.UserAtributos(e_Atributos.Fuerza) = 0 Then Exit Function
         .Stats.UserAtributos(e_Atributos.Fuerza) = 18 + ModRaza(UserRaza).Fuerza

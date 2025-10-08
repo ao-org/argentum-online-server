@@ -73,22 +73,22 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
         ' Si el lider tiene liderazgo asignado segun su raza, se permite una diferencia de 1 nivel mas
         If Abs(CInt(Invitado.Stats.ELV) - CInt(Remitente.Stats.ELV)) > (SvrConfig.GetValue("PartyELVwLeadership")) Then
             'Msg1438=No podes crear un grupo con personajes con diferencia de más de ¬1 niveles.
-            Call WriteLocaleMsg(UserIndex, "1438", e_FontTypeNames.FONTTYPE_New_GRUPO, SvrConfig.GetValue("PartyELVwLeadership"))
+            Call WriteLocaleMsg(UserIndex, 1438, e_FontTypeNames.FONTTYPE_New_GRUPO, SvrConfig.GetValue("PartyELVwLeadership"))
             Exit Sub
         End If
     Else
         If Abs(CInt(Invitado.Stats.ELV) - CInt(Remitente.Stats.ELV)) > SvrConfig.GetValue("PartyELV") Then
             'Msg1438=No podes crear un grupo con personajes con diferencia de más de ¬1 niveles.
-            Call WriteLocaleMsg(UserIndex, "1438", e_FontTypeNames.FONTTYPE_New_GRUPO, SvrConfig.GetValue("PartyELV"))
+            Call WriteLocaleMsg(UserIndex, 1438, e_FontTypeNames.FONTTYPE_New_GRUPO, SvrConfig.GetValue("PartyELV"))
             Exit Sub
         End If
     End If
     If Invitado.Grupo.EnGrupo Then
-        Call WriteLocaleMsg(UserIndex, "41", e_FontTypeNames.FONTTYPE_New_GRUPO)
+        Call WriteLocaleMsg(UserIndex, 41, e_FontTypeNames.FONTTYPE_New_GRUPO)
         Exit Sub
     End If
     If UserList(InvitadoIndex).flags.RespondiendoPregunta = False Then
-        Call WriteLocaleMsg(UserIndex, "42", e_FontTypeNames.FONTTYPE_New_GRUPO)
+        Call WriteLocaleMsg(UserIndex, 42, e_FontTypeNames.FONTTYPE_New_GRUPO)
         Call WriteLocaleMsg(InvitadoIndex, 2049, e_FontTypeNames.FONTTYPE_New_GRUPO, Remitente.name) ' Msg2049="¬1 te invitó a unirse a su grupo."
         With UserList(InvitadoIndex)
             Call SetUserRef(.Grupo.PropuestaDe, UserIndex)
@@ -162,7 +162,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
     End With
     With UserList(UserIndex).Grupo
         If .CantidadMiembros = 1 Then
-            Call WriteLocaleMsg(UserIndex, "35", e_FontTypeNames.FONTTYPE_New_GRUPO)
+            Call WriteLocaleMsg(UserIndex, 35, e_FontTypeNames.FONTTYPE_New_GRUPO)
             .EnGrupo = False
             Call SetUserRef(.Lider, 0)
             Call SetUserRef(.PropuestaDe, 0)
@@ -214,10 +214,10 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
         For a = 1 To UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros
             Call WriteUbicacion(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(a).ArrayIndex, indexviejo, 0)
         Next a
-        Call WriteLocaleMsg(UserIndex, "37", e_FontTypeNames.FONTTYPE_New_GRUPO) 'quit group message
-        Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, "202", e_FontTypeNames.FONTTYPE_New_GRUPO, .name)
+        Call WriteLocaleMsg(UserIndex, 37, e_FontTypeNames.FONTTYPE_New_GRUPO) 'quit group message
+        Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, 202, e_FontTypeNames.FONTTYPE_New_GRUPO, .name)
         If UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = 1 Then
-            Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, "35", e_FontTypeNames.FONTTYPE_New_GRUPO)
+            Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, 35, e_FontTypeNames.FONTTYPE_New_GRUPO)
             Call WriteUbicacion(.Grupo.Lider.ArrayIndex, 1, 0)
             UserList(.Grupo.Lider.ArrayIndex).Grupo.Id = -1
             UserList(.Grupo.Lider.ArrayIndex).Grupo.EnGrupo = False

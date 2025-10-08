@@ -154,6 +154,11 @@ End Function
 
 Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
     On Error GoTo ErrorHandler
+#If LOGIN_STRESS_TEST = 1 Then
+    LoadCharacterFromDB = True
+    Exit Function
+#End If
+    
     Dim RS      As ADODB.Recordset
     Dim counter As Long
     LoadCharacterFromDB = False
@@ -689,6 +694,10 @@ End Sub
 
 Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
+    
+#If LOGIN_STRESS_TEST = 1 Then
+    If UserList(UserIndex).AccountID = -9999 Then Exit Sub
+#End If
     Dim LoopC    As Long
     Dim ParamC   As Integer
     Dim Params() As Variant
