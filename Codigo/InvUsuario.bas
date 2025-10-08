@@ -873,7 +873,7 @@ Dim eSkinType                    As e_OBJType
             Case e_OBJType.otSkinsHelmets
                 If .invent.EquippedHelmetObjIndex > 0 Then
                     .Invent_Skins.ObjIndexHelmetEquipped = 0
-                    .Char.CascoAnim = .OrigChar.CascoAnim
+                    .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
                 End If
                 
             Case e_OBJType.otSkinsWings
@@ -888,12 +888,12 @@ Dim eSkinType                    As e_OBJType
     
             Case e_OBJType.otSkinsShields
                 If .invent.EquippedShieldObjIndex > 0 Then
-                    .Char.ShieldAnim = .OrigChar.ShieldAnim
+                    .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
                 End If
 
             Case e_OBJType.otSkinsWeapons
                 If .invent.EquippedWeaponObjIndex > 0 Then
-                    .Char.WeaponAnim = .OrigChar.WeaponAnim
+                    .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
                 End If
         End Select
         
