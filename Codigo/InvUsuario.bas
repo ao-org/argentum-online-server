@@ -1496,18 +1496,19 @@ Dim Ropaje                      As Integer
                     If .Invent_Skins.Object(Slot).Equipped And Not UserIsLoggingIn Then
                         'Sonido
                         'Feat para implementar más adelante.
-                        '                        tmpSoundItem = ObjData(.Invent_Skins.Object(Slot).ObjIndex).Snd2
-                        '                        If tmpSoundItem > 0 Then
-                        '                            Call SendData(SendTarget.ToPCAreaWithSound, UserIndex, PrepareMessagePlayWave(tmpSoundItem, .pos.x, .pos.y))
-                        '                        End If
+                        'tmpSoundItem = ObjData(.Invent_Skins.Object(Slot).ObjIndex).Snd2
+                        'If tmpSoundItem > 0 Then
+                        '    Call SendData(SendTarget.ToPCAreaWithSound, UserIndex, PrepareMessagePlayWave(tmpSoundItem, .pos.x, .pos.y))
+                        'End If
                         Call Desequipar(UserIndex, Slot, True, ObjData(ObjIndex).OBJType)
                         Exit Sub    'Revisar este EXIT SUB
                     End If
+                    
                     'Feat para implementar más adelante.
-                    '                    tmpSoundItem = ObjData(.Invent_Skins.Object(Slot).ObjIndex).Snd1
-                    '                    If tmpSoundItem > 0 Then
-                    '                        Call SendData(SendTarget.ToPCAreaWithSound, UserIndex, PrepareMessagePlayWave(tmpSoundItem, .pos.x, .pos.y))
-                    '                    End If
+                    'tmpSoundItem = ObjData(.Invent_Skins.Object(Slot).ObjIndex).Snd1
+                    'If tmpSoundItem > 0 Then
+                    '    Call SendData(SendTarget.ToPCAreaWithSound, UserIndex, PrepareMessagePlayWave(tmpSoundItem, .pos.x, .pos.y))
+                    'End If
                     If CanEquipSkin(UserIndex, Slot, True) Then
                         Call SkinEquip(UserIndex, Slot, ObjIndex)
                     End If
@@ -3965,11 +3966,11 @@ Dim eSkinType                   As e_OBJType
 
             Case e_OBJType.otSkinsWeapons
 
-                If .invent.EquippedShieldObjIndex > 0 Then
+                If .invent.EquippedWeaponObjIndex > 0 Then
                     If bFromInvent Then
                         If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
                             If ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin > 0 Then
-                                If .invent.EquippedShieldObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin Then
+                                If .invent.EquippedWeaponObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin Then
                                     CanEquipSkin = True
                                     Exit Function
                                 Else
@@ -3984,7 +3985,7 @@ Dim eSkinType                   As e_OBJType
                     Else
                         If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
                             If ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin > 0 Then
-                                If .invent.EquippedShieldObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin Then
+                                If .invent.EquippedWeaponObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin Then
                                     CanEquipSkin = True
                                     Exit Function
                                 Else
@@ -3998,7 +3999,7 @@ Dim eSkinType                   As e_OBJType
                         End If
                     End If
                 Else
-                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin de escudos, debes tener equipado alguno.", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin de armas, debes tener equipado alguna.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
 
