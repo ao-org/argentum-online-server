@@ -463,7 +463,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
             If .flags.Muerto = 0 Then
                 .Char.head = .OrigChar.head
                 If .invent.EquippedArmorObjIndex > 0 Then
-                    If .invent.EquippedArmorObjIndex > 0 And .Invent_Skins.ObjIndexArmourEquipped > 0 Then
+                    If .invent.EquippedArmorObjIndex > 0 And .Invent_Skins.ObjIndexArmourEquipped > 0 And .Invent_Skins.SlotBoatEquipped > 0 Then
                         If .Invent_Skins.Object(.Invent_Skins.SlotBoatEquipped).Equipped Then
                             .Char.body = ObtenerRopaje(UserIndex, ObjData(.Invent_Skins.ObjIndexArmourEquipped))
                         Else
