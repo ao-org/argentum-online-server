@@ -1043,7 +1043,8 @@ Sub LoadOBJData()
                 Case e_OBJType.otWorkingTools
                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
                     .Power = val(Leer.GetValue(ObjKey, "Power"))
-                Case e_OBJType.otArmor
+                Case e_OBJType.otArmor, e_OBJType.otSkinsArmours
+                    .SkinOrigin = val(Leer.GetValue(ObjKey, "SkinOrigin"))
                     .Real = val(Leer.GetValue(ObjKey, "Real"))
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
@@ -1056,6 +1057,7 @@ Sub LoadOBJData()
                         .velocidad = val(Leer.GetValue(ObjKey, "velocidad"))
                     End If
                 Case e_OBJType.otShield, e_OBJType.otSkinsShields
+                    .SkinOrigin = val(Leer.GetValue(ObjKey, "SkinOrigin"))
                     .ShieldAnim = val(Leer.GetValue(ObjKey, "Anim"))
                     .Real = val(Leer.GetValue(ObjKey, "Real"))
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
@@ -1063,14 +1065,19 @@ Sub LoadOBJData()
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
                     .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
                 Case e_OBJType.otHelmet, e_OBJType.otSkinsHelmets
+                    .SkinOrigin = val(Leer.GetValue(ObjKey, "SkinOrigin"))
                     .CascoAnim = val(Leer.GetValue(ObjKey, "Anim"))
                     .Real = val(Leer.GetValue(ObjKey, "Real"))
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
-                Case e_OBJType.otBackpack
+                    
+                Case e_OBJType.otBackpack, e_OBJType.otSkinsWings
+                    .SkinOrigin = val(Leer.GetValue(ObjKey, "SkinOrigin"))
                     '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
+                    
                 Case e_OBJType.otWeapon, e_OBJType.otSkinsWeapons
+                    .SkinOrigin = val(Leer.GetValue(ObjKey, "SkinOrigin"))
                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
                     .Apuñala = val(Leer.GetValue(ObjKey, "Apuñala"))
                     .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
@@ -1131,6 +1138,7 @@ Sub LoadOBJData()
                     .SkPociones = val(Leer.GetValue(ObjKey, "SkPociones"))
                     .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
                 Case e_OBJType.otShips, e_OBJType.otSkinsBoats
+                    .SkinOrigin = val(Leer.GetValue(ObjKey, "SkinOrigin"))
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
                     .velocidad = val(Leer.GetValue(ObjKey, "Velocidad"))
@@ -1234,6 +1242,8 @@ Sub LoadOBJData()
                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
                 Case e_OBJType.otElementalRune
                     .Hechizo = val(Leer.GetValue(ObjKey, "Hechizo"))
+                Case e_OBJType.otParchment, e_OBJType.otSkinsSpells
+                   .SkinOrigin = val(Leer.GetValue(ObjKey, "SkinOrigin"))
             End Select
             .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
             .MagicAbsoluteBonus = val(Leer.GetValue(ObjKey, "MagicAbsoluteBonus"))
