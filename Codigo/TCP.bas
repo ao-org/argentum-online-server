@@ -887,6 +887,8 @@ Sub ResetCharInfo(ByVal UserIndex As Integer)
         .Escudo_Aura = ""
         .ParticulaFx = 0
         .speeding = 0
+        .Backpack_Aura = vbNullString
+        .BackpackAnim = 0
     End With
     Exit Sub
 ResetCharInfo_Err:

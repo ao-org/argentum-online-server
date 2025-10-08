@@ -985,6 +985,8 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, _
     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterCreate(body, head, Heading, charindex, x, y, weapon, shield, Cart, BackPack, FX, FXLoops, helmet, name, _
             Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, appear, group_index, clan_index, _
             clan_nivel, UserMinHp, UserMaxHp, UserMinMAN, UserMaxMAN, Simbolo, Idle, Navegando, tipoUsuario, TeamCaptura, TieneBandera, AnimAtaque1))
+    
+    Debug.Print "WriteCharacterCreate BackPack: " & BackPack & " " & DateTime.Now
     Exit Sub
 WriteCharacterCreate_Err:
     Call Writer.Clear

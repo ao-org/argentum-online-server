@@ -304,14 +304,6 @@ Dim tStr                        As String
                 If .flags.Muerto = 0 Then
                     .Char.Arma_Aura = ObjData(.invent.EquippedWeaponObjIndex).CreaGRH
                 End If
-
-                If .Invent_Skins.SlotWeaponEquipped > 0 Then
-                    If .Invent_Skins.Object(.Invent_Skins.SlotWeaponEquipped).ObjIndex = .Invent_Skins.ObjIndexWeaponEquipped And .Invent_Skins.ObjIndexWeaponEquipped > 0 Then
-                        If CanEquipSkin(UserIndex, .Invent_Skins.SlotWeaponEquipped, e_OBJType.otSkinsWeapons, False) Then
-                            Call SkinEquip(UserIndex, .Invent_Skins.SlotWeaponEquipped, .Invent_Skins.Object(.Invent_Skins.SlotWeaponEquipped).ObjIndex)
-                        End If
-                    End If
-                End If
             Else
                 .invent.EquippedWeaponSlot = 0
             End If
@@ -329,14 +321,6 @@ Dim tStr                        As String
                 If .flags.Muerto = 0 Then
                     .Char.Body_Aura = ObjData(.invent.EquippedArmorObjIndex).CreaGRH
                 End If
-
-                If .Invent_Skins.SlotArmourEquipped > 0 Then
-                    If .Invent_Skins.Object(.Invent_Skins.SlotArmourEquipped).ObjIndex = .Invent_Skins.ObjIndexArmourEquipped And .Invent_Skins.ObjIndexArmourEquipped > 0 Then
-                        If CanEquipSkin(UserIndex, .Invent_Skins.SlotArmourEquipped, e_OBJType.otSkinsArmours, False) Then
-                            Call SkinEquip(UserIndex, .Invent_Skins.SlotArmourEquipped, .Invent_Skins.Object(.Invent_Skins.SlotArmourEquipped).ObjIndex)
-                        End If
-                    End If
-                End If
             Else
                 .invent.EquippedArmorSlot = 0
             End If
@@ -344,20 +328,21 @@ Dim tStr                        As String
         Else
             .flags.Desnudo = 1
         End If
+        
+        If .Invent_Skins.SlotBackpackEquipped > 0 Then
+            If .Invent_Skins.Object(.Invent_Skins.SlotBackpackEquipped).ObjIndex = .Invent_Skins.ObjIndexBackpackEquipped And .Invent_Skins.ObjIndexBackpackEquipped > 0 Then
+                If CanEquipSkin(UserIndex, .Invent_Skins.SlotBackpackEquipped, False) Then
+                    Call SkinEquip(UserIndex, .Invent_Skins.SlotBackpackEquipped, .Invent_Skins.Object(.Invent_Skins.SlotBackpackEquipped).ObjIndex)
+                End If
+            End If
+        End If
+        
         'Obtiene el indice-objeto del escudo
         If .invent.EquippedShieldSlot > 0 Then
             If .invent.Object(.invent.EquippedShieldSlot).ObjIndex > 0 Then
                 .invent.EquippedShieldObjIndex = .invent.Object(.invent.EquippedShieldSlot).ObjIndex
                 If .flags.Muerto = 0 Then
                     .Char.Escudo_Aura = ObjData(.invent.EquippedShieldObjIndex).CreaGRH
-                End If
-
-                If .Invent_Skins.SlotShieldEquipped > 0 Then
-                    If .Invent_Skins.Object(.Invent_Skins.SlotShieldEquipped).ObjIndex = .Invent_Skins.ObjIndexShieldEquipped And .Invent_Skins.ObjIndexShieldEquipped > 0 Then
-                        If CanEquipSkin(UserIndex, .Invent_Skins.SlotShieldEquipped, e_OBJType.otSkinsShields, False) Then
-                            Call SkinEquip(UserIndex, .Invent_Skins.SlotShieldEquipped, .Invent_Skins.Object(.Invent_Skins.SlotShieldEquipped).ObjIndex)
-                        End If
-                    End If
                 End If
             Else
                 .invent.EquippedShieldSlot = 0
@@ -370,14 +355,6 @@ Dim tStr                        As String
                 If .flags.Muerto = 0 Then
                     .Char.Head_Aura = ObjData(.invent.EquippedHelmetObjIndex).CreaGRH
                 End If
-
-                If .Invent_Skins.SlotHelmetEquipped > 0 Then
-                    If .Invent_Skins.Object(.Invent_Skins.SlotHelmetEquipped).ObjIndex = .Invent_Skins.ObjIndexHelmetEquipped And .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
-                        If CanEquipSkin(UserIndex, .Invent_Skins.SlotHelmetEquipped, e_OBJType.otSkinsHelmets, False) Then
-                            Call SkinEquip(UserIndex, .Invent_Skins.SlotHelmetEquipped, .Invent_Skins.Object(.Invent_Skins.SlotHelmetEquipped).ObjIndex)
-                        End If
-                    End If
-                End If
             Else
                 .invent.EquippedHelmetSlot = 0
             End If
@@ -386,13 +363,6 @@ Dim tStr                        As String
         If .invent.EquippedShipSlot > 0 Then
             If .invent.Object(.invent.EquippedShipSlot).ObjIndex > 0 Then
                 .invent.EquippedShipObjIndex = .invent.Object(.invent.EquippedShipSlot).ObjIndex
-                If .Invent_Skins.ObjIndexBoatEquipped > 0 Then
-                    If .Invent_Skins.Object(.Invent_Skins.SlotBoatEquipped).ObjIndex = .Invent_Skins.ObjIndexBoatEquipped And .Invent_Skins.ObjIndexBoatEquipped > 0 Then
-                        If CanEquipSkin(UserIndex, .Invent_Skins.SlotBoatEquipped, e_OBJType.otSkinsBoats, False) Then
-                            Call SkinEquip(UserIndex, .Invent_Skins.SlotBoatEquipped, .Invent_Skins.Object(.Invent_Skins.SlotBoatEquipped).ObjIndex)
-                        End If
-                    End If
-                End If
             Else
                 .invent.EquippedShipSlot = 0
             End If
@@ -888,11 +858,14 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, _
         .CascoAnim = Casco
         .CartAnim = Cart
         .BackpackAnim = BackPack
+    
+        If .charindex > 0 Then
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, .charindex, Arma, Escudo, Cart, BackPack, .FX, .loops, Casco, False, UserList(UserIndex).flags.Navegando))
+        End If
+    
     End With
-    If UserList(UserIndex).Char.charindex > 0 Then
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, UserList(UserIndex).Char.charindex, Arma, Escudo, Cart, BackPack, _
-                UserList(UserIndex).Char.FX, UserList(UserIndex).Char.loops, Casco, False, UserList(UserIndex).flags.Navegando))
-    End If
+    
+
     Exit Sub
 ChangeUserChar_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ChangeUserChar", Erl)

@@ -2883,7 +2883,7 @@ Dim eSkinType                   As e_OBJType
                 Call DesequiparSkin(UserIndex, itemSlot)
                 Exit Sub
             End If
-            If CanEquipSkin(UserIndex, itemSlot, ObjData(.Invent_Skins.Object(itemSlot).ObjIndex).OBJType, False) Then
+            If CanEquipSkin(UserIndex, itemSlot, False) Then
                 Call SkinEquip(UserIndex, itemSlot, .Invent_Skins.Object(itemSlot).ObjIndex)
             End If
         End If
