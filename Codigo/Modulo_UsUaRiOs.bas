@@ -846,8 +846,6 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, _
                    ByVal BackPack As Integer)
     On Error GoTo ChangeUserChar_Err
     
-    Debug.Print "Change body: " & body & " Time: " & DateTime.Now
-    
     If IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTransformed) Then Exit Sub
     With UserList(UserIndex).Char
         .body = body
@@ -862,7 +860,6 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, _
         If .charindex > 0 Then
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, .charindex, Arma, Escudo, Cart, BackPack, .FX, .loops, Casco, False, UserList(UserIndex).flags.Navegando))
         End If
-    
     End With
     
 
