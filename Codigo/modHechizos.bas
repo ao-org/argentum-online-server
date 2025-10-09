@@ -2466,10 +2466,6 @@ Dim TargetIndex                 As Integer
         h = .Stats.UserHechizos(.flags.Hechizo)
         SkinSpell = .Stats.UserSkinsHechizos(h)
 
-        '        If SkinSpell > 0 Then
-        '            h = SkinSpell
-        '        End If
-
         If .flags.NoPalabrasMagicas = 0 Then
             Call DecirPalabrasMagicas(h, UserIndex)
         End If
