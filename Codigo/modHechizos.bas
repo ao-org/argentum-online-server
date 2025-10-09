@@ -2525,13 +2525,13 @@ Dim TargetIndex                 As Integer
                 Else
                     If Hechizos(h).ParticleViaje > 0 Then
                         If .Stats.UserSkinsHechizos(h) > 0 Then
-                            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageFxPiso(.Stats.UserSkinsHechizos(h), .flags.TargetX, .flags.TargetY))
+                            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(NpcList(TargetIndex).Char.charindex, .Stats.UserSkinsHechizos(h), Hechizos(h).loops))
                         Else
                             Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageParticleFXWithDestino(.Char.charindex, NpcList(TargetIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1))
                         End If
                     Else
                         If .Stats.UserSkinsHechizos(h) > 0 Then
-                            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageFxPiso(.Stats.UserSkinsHechizos(h), .flags.TargetX, .flags.TargetY))
+                            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(NpcList(TargetIndex).Char.charindex, .Stats.UserSkinsHechizos(h), Hechizos(h).loops))
                         Else
                             Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(NpcList(TargetIndex).Char.charindex, Hechizos(h).FXgrh, Hechizos(h).loops))
                         End If
