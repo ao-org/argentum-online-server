@@ -2465,15 +2465,15 @@ Dim TargetIndex                 As Integer
 
         h = .Stats.UserHechizos(.flags.Hechizo)
         SkinSpell = .Stats.UserSkinsHechizos(h)
-        
-        If SkinSpell > 0 Then
-            h = 1
-        End If
+
+        '        If SkinSpell > 0 Then
+        '            h = SkinSpell
+        '        End If
 
         If .flags.NoPalabrasMagicas = 0 Then
             Call DecirPalabrasMagicas(h, UserIndex)
         End If
-        
+
         If IsValidUserRef(.flags.TargetUser) Then    '¿El Hechizo fue tirado sobre un usuario?
             TargetIndex = .flags.TargetUser.ArrayIndex
             If Hechizos(h).FXgrh > 0 Then    '¿Envio FX?
@@ -2499,15 +2499,15 @@ Dim TargetIndex                 As Integer
                     Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageParticleFX(.Char.charindex, Hechizos(h).Particle, Hechizos(h).TimeParticula, False, , UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
                 End If
             End If
-            
+
             If Hechizos(h).ParticleViaje = 0 Then
                 Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessagePlayWave(Hechizos(h).wav, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
             End If
-            
+
             If Hechizos(h).TimeEfect <> 0 Then    'Envio efecto de screen
                 Call WriteFlashScreen(UserIndex, Hechizos(h).ScreenColor, Hechizos(h).TimeEfect)
             End If
-        
+
         ElseIf IsValidNpcRef(.flags.TargetNPC) Then    '¿El Hechizo fue tirado sobre un npc?
             TargetIndex = .flags.TargetNPC.ArrayIndex
             If Hechizos(h).FXgrh > 0 Then    '¿Envio FX?
@@ -2554,7 +2554,7 @@ Dim TargetIndex                 As Integer
                     End If
                 End If
             End If
-            
+
             If Hechizos(h).ParticleViaje = 0 Then
                 Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(Hechizos(h).wav, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
             End If
@@ -2577,31 +2577,19 @@ Dim TargetIndex                 As Integer
         End If
         If Hechizos(h).ParticleViaje = 0 Then
             Call SendData(SendTarget.ToNPCAliveArea, UserList(UserIndex).flags.TargetNPC.ArrayIndex, PrepareMessagePlayWave(Hechizos(h).wav, NpcList(UserList( _
-                    UserIndex).flags.TargetNPC.ArrayIndex).pos.x, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).pos.y))
+                                                                                                                                                     UserIndex).flags.TargetNPC.ArrayIndex).pos.x, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).pos.y))
         End If
-    Else ' Entonces debe ser sobre el terreno
-        If Hechizos(h).FXgrh > 0 Then 'Envio Fx?
-            Call modSendData.SendToAreaByPos(UserList(UserIndex).pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, PrepareMessageFxPiso(Hechizos( _
-                    h).FXgrh, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
-        End If
-        If Hechizos(h).Particle > 0 Then 'Envio Particula?
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFXToFloor(UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, Hechizos( _
-                    h).Particle, Hechizos(h).TimeParticula))
-        End If
-        If Hechizos(h).wav <> 0 Then
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY)) 'Esta linea faltaba. Pablo (ToxicWaste)
-        End If
-    End If
-    If UserList(UserIndex).ChatCombate = 1 Then
-        If Hechizos(h).Target = e_TargetType.uTerreno Then
-            Call WriteConsoleMsg(UserIndex, "ProMSG*" & h, e_FontTypeNames.FONTTYPE_FIGHT)
-        ElseIf IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then
-            'Optimizacion de protocolo por Ladder
-            If UserIndex <> UserList(UserIndex).flags.TargetUser.ArrayIndex Then
-                Call WriteConsoleMsg(UserIndex, "HecMSGU*" & h & "*" & UserList(UserList(UserIndex).flags.TargetUser.ArrayIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)
-                Call WriteConsoleMsg(UserList(UserIndex).flags.TargetUser.ArrayIndex, "HecMSGA*" & h & "*" & UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)
-            Else
+        If UserList(UserIndex).ChatCombate = 1 Then
+            If Hechizos(h).Target = e_TargetType.uTerreno Then
                 Call WriteConsoleMsg(UserIndex, "ProMSG*" & h, e_FontTypeNames.FONTTYPE_FIGHT)
+            ElseIf IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then
+                'Optimizacion de protocolo por Ladder
+                If UserIndex <> UserList(UserIndex).flags.TargetUser.ArrayIndex Then
+                    Call WriteConsoleMsg(UserIndex, "HecMSGU*" & h & "*" & UserList(UserList(UserIndex).flags.TargetUser.ArrayIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)
+                    Call WriteConsoleMsg(UserList(UserIndex).flags.TargetUser.ArrayIndex, "HecMSGA*" & h & "*" & UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)
+                Else
+                    Call WriteConsoleMsg(UserIndex, "ProMSG*" & h, e_FontTypeNames.FONTTYPE_FIGHT)
+                End If
             End If
         End If
     End With
