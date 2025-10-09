@@ -883,7 +883,6 @@ Dim eSkinType                   As e_OBJType
         
         Select Case eSkinType
             Case e_OBJType.otSkinsArmours
-            
                 .Invent_Skins.ObjIndexArmourEquipped = 0
                 .Invent_Skins.SlotArmourEquipped = 0
                 If .invent.EquippedArmorObjIndex > 0 Then
@@ -911,12 +910,12 @@ Dim eSkinType                   As e_OBJType
                 End If
                 
             Case e_OBJType.otSkinsWings
-            
-                .Invent_Skins.ObjIndexBackpackEquipped = 0
-                .Invent_Skins.SlotWindsEquipped = 0
                 If .Invent_Skins.ObjIndexBackpackEquipped > 0 Then
                     .Char.BackpackAnim = NoBackPack
                 End If
+                'Ojo acá!
+                .Invent_Skins.ObjIndexBackpackEquipped = 0
+                .Invent_Skins.SlotWindsEquipped = 0
                 
             Case e_OBJType.otSkinsBoats
                     .Invent_Skins.ObjIndexBoatEquipped = 0
@@ -924,7 +923,6 @@ Dim eSkinType                   As e_OBJType
                     Call EquiparBarco(UserIndex)
     
             Case e_OBJType.otSkinsShields
-
                 .Invent_Skins.ObjIndexShieldEquipped = 0
                 .Invent_Skins.SlotShieldEquipped = 0
                 If .invent.EquippedShieldObjIndex > 0 Then
@@ -936,7 +934,6 @@ Dim eSkinType                   As e_OBJType
                 End If
 
             Case e_OBJType.otSkinsWeapons
-            
                 .Invent_Skins.ObjIndexWeaponEquipped = 0
                 .Invent_Skins.SlotWeaponEquipped = 0
                 If .invent.EquippedWeaponObjIndex > 0 Then
@@ -3529,8 +3526,6 @@ Dim eSkinType                   As e_OBJType
                                 Exit For
                             End If
                         End If
-                    Else
-                        Exit For
                     End If
                 Next i
 
