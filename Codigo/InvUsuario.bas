@@ -3446,7 +3446,7 @@ Dim eSkinType                   As e_OBJType
 
             Case e_OBJType.otSkinsSpells
                 'Buscamos otros skins de este mismo hechizo equipados y lo desequipamos.
-                For i = 1 To MAX_SKINSSPELLS_SLOTS
+                For i = 1 To MAX_SKINSINVENTORY_SLOTS
                     If .Invent_Skins.Object(i).ObjIndex > 0 Then
                         If ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType = e_OBJType.otSkinsSpells Then
                             If ObjData(.Invent_Skins.Object(i).ObjIndex).HechizoIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex And Slot <> i Then
