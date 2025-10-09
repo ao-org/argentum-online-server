@@ -855,10 +855,6 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, _
         .CascoAnim = Casco
         .CartAnim = Cart
         .BackpackAnim = BackPack
-    
-        If .charindex > 0 Then
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, .charindex, Arma, Escudo, Cart, BackPack, .FX, .loops, Casco, False, UserList(UserIndex).flags.Navegando))
-        End If
     End With
     
 
