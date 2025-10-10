@@ -206,7 +206,9 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
         ' Load additional inventories.
         If Not LoadCharacterInventory(UserIndex) Then Exit Function
         If Not LoadCharacterBank(UserIndex) Then Exit Function
-        Call LoadSkinsInventory(UserIndex)
+        If IsFeatureEnabled("SkinsOnlyPatreon") And IsPatreon(UserIndex) Then
+            Call LoadSkinsInventory(UserIndex)
+        End If
         Call RegisterUserName(.Id, .name)
         Call Execute("update account set last_ip = ? where id = ?", .ConnectionDetails.IP, .AccountID)
         .Stats.Creditos = 0
@@ -684,7 +686,9 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
             Call Execute(Builder.ToString(), Params)
             Call Builder.Clear
         End If
-        Call SaveInventorySkins(UserIndex)
+        If IsFeatureEnabled("SkinsOnlyPatreon") And IsPatreon(UserIndex) Then
+            Call SaveInventorySkins(UserIndex)
+        End If
         Call PerformTimeLimitCheck(PerformanceTimer, "save character id:" & .Id, 50)
     End With
     Exit Sub
@@ -838,14 +842,14 @@ Dim RS                          As ADODB.Recordset
                             End If
 
                         Case Else
-                            
+
                             If CBool(RS.Fields("skin_equipped")) Then
                                 .Invent_Skins.Object(i).Type = ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType
                                 If CanEquipSkin(UserIndex, i, False) Then
                                     Call SkinEquip(UserIndex, i, .Invent_Skins.Object(i).ObjIndex, True)
                                 End If
                             End If
-                        
+
                     End Select
 
                     Call WriteChangeSkinSlot(UserIndex, ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType, i)

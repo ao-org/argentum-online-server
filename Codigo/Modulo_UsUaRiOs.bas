@@ -67,6 +67,23 @@ Public Function GetAvailableUserSlot() As Integer
     GetAvailableUserSlot = AvailableUserSlot.currentIndex
 End Function
 
+Public Function IsPatreon(ByVal UserIndex As Integer) As Boolean
+    
+   On Error GoTo IsPatreon_Error
+
+    With UserList(UserIndex).Stats
+        IsPatreon = .tipoUsuario = e_TipoUsuario.tAventurero Or .tipoUsuario = e_TipoUsuario.tHeroe Or .tipoUsuario = e_TipoUsuario.tLeyenda
+    End With
+
+   On Error GoTo 0
+   Exit Function
+
+IsPatreon_Error:
+    Call Logging.TraceError(Err.Number, Err.Description, "UserMod.IsPatreon nick: " & UserList(UserIndex).name, Erl())
+    
+End Function
+
+
 Public Function GetNextAvailableUserSlot() As Integer
     On Error GoTo ErrHandler
     If (AvailableUserSlot.currentIndex = 0) Then
