@@ -1878,7 +1878,6 @@ Public Type t_UserOBJ
     ElementalTags As Long
 End Type
 
-'[/About] 30/09/2025
 Public Type t_UserSkins
     Deleted                         As Boolean
     Equipped                        As Boolean
@@ -1913,7 +1912,6 @@ Public Type t_Inventario
     NroItems As Integer
 End Type
 
-'[/About] 30/09/2025
 Public Type tSkinInventario 'MAX_SKINSINVENTORY_SLOTS
     'Type debe ir en el Storage Manager pero acá no hace falta, ya está en OBJECT.
     Object(1 To MAX_SKINSINVENTORY_SLOTS) As t_UserSkins

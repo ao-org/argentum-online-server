@@ -3507,7 +3507,7 @@ Dim eSkinType                   As e_OBJType
                 If .flags.Mimetizado = 1 Then
                     .CharMimetizado.body = obj.Ropaje
                 Else
-                    If .flags.Navegando = 0 Then    'Fixed! :D [/About] 03/12/2017
+                    If .flags.Navegando = 0 Then
                         .OrigChar.body = .Char.body
                         .Char.body = ObtenerRopaje(UserIndex, obj)
                         bNeedChangeUserChar = True
