@@ -894,6 +894,8 @@ Sub ResetCharInfo(ByVal UserIndex As Integer)
         .Escudo_Aura = ""
         .ParticulaFx = 0
         .speeding = 0
+        .Backpack_Aura = vbNullString
+        .BackpackAnim = 0
     End With
     Exit Sub
 ResetCharInfo_Err:
@@ -1137,6 +1139,24 @@ ResetUserSpells_Err:
     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSpells", Erl)
 End Sub
 
+Sub ResetUserSkinsSpells(ByVal UserIndex As Integer)
+
+Dim LoopC                       As Integer
+
+    On Error GoTo ResetUserSkinsSpells_Err
+
+    With UserList(UserIndex)
+        For LoopC = 1 To MAX_SKINSSPELLS_SLOTS
+            .Stats.UserSkinsHechizos(LoopC) = 0
+        Next LoopC
+        Exit Sub
+    End With
+
+ResetUserSkinsSpells_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSkinsSpells", Erl)
+
+End Sub
+
 Sub ResetUserSkills(ByVal UserIndex As Integer)
     On Error GoTo ResetUserSkills_Err
     Dim LoopC As Long
@@ -1233,6 +1253,8 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
     Call ResetAccionesPendientes(UserIndex)
     Call LimpiarInventario(UserIndex)
     Call ResetUserSpells(UserIndex)
+    Call ResetUserSkinsSpells(UserIndex)
+    Call ResetUserSkinsInventory(UserIndex)
     Call ResetUserBanco(UserIndex)
     Call ResetUserSkills(UserIndex)
     Call ResetUserKeys(UserIndex)

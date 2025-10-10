@@ -374,3 +374,38 @@ Private Sub ConstruirQuery_GuardarPersonaje()
     ' Limpio el constructor de querys
     Call QueryBuilder.Clear
 End Sub
+
+Function Exists(ByRef sTable As String, ByRef sField As String, ByRef sValue As String, _
+                Optional ByRef sExtraField = vbNullString, Optional ByRef sExtraValue = vbNullString) As Boolean
+
+Dim RS                          As ADODB.Recordset
+Dim SQL                         As String
+
+   On Error GoTo Exists_Error
+
+    If sExtraField <> vbNullString And sExtraValue <> vbNullString Then
+        SQL = "SELECT " & sField & " FROM " & sTable & " WHERE " & sField & " = ? AND " & sExtraField & " = ?"
+        Set RS = Query(SQL, sValue, sExtraValue)
+    Else
+        SQL = "SELECT " & sField & " FROM " & sTable & " WHERE " & sField & " = ?"
+        Set RS = Query(SQL, sValue)
+    End If
+
+    If RS Is Nothing Then
+        Exists = False
+    Else
+        Exists = Not RS.EOF
+        RS.Close
+    End If
+
+    Set RS = Nothing
+
+   On Error GoTo 0
+   Exit Function
+
+Exists_Error:
+    Exists = False
+    Set RS = Nothing
+    Call Logging.TraceError(Err.Number, Err.Description, "Database_Queries.Exists", Erl())
+
+End Function
