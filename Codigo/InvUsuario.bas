@@ -888,7 +888,7 @@ Dim eSkinType                   As e_OBJType
                 If .invent.EquippedArmorObjIndex > 0 Then
                     .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
                 Else
-                    If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
+                    If SkinRequireObject(UserIndex, Slot) Then
                         Call SetNakedBody(UserList(UserIndex))
                     End If
                 End If
@@ -904,7 +904,7 @@ Dim eSkinType                   As e_OBJType
                 If .invent.EquippedHelmetObjIndex > 0 Then
                     .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
                 Else
-                    If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
+                    If SkinRequireObject(UserIndex, Slot) Then
                         .Char.CascoAnim = NingunCasco
                     End If
                 End If
@@ -928,7 +928,7 @@ Dim eSkinType                   As e_OBJType
                 If .invent.EquippedShieldObjIndex > 0 Then
                     .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
                 Else
-                    If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
+                    If SkinRequireObject(UserIndex, Slot) Then
                         .Char.ShieldAnim = NingunEscudo
                     End If
                 End If
@@ -939,7 +939,7 @@ Dim eSkinType                   As e_OBJType
                 If .invent.EquippedWeaponObjIndex > 0 Then
                     .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
                 Else
-                    If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
+                    If SkinRequireObject(UserIndex, Slot) Then
                         .Char.WeaponAnim = NingunArma
                     End If
                 End If
@@ -3822,47 +3822,21 @@ Dim eSkinType                   As e_OBJType
             Case e_OBJType.otSkinsArmours
                 If .invent.EquippedArmorSlot > 0 Then
                     If bFromInvent Then
-                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
-                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
-                                If .invent.EquippedArmorObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
-                                    CanEquipSkin = True
-                                    Exit Function
-                                Else
-                                    Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
-                                    Exit Function
-                                End If
-                            Else
+                        If SkinRequireObject(UserIndex, Slot) Then
+                            If .invent.EquippedArmorObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
                                 CanEquipSkin = True
                                 Exit Function
+                            Else
+                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Exit Function
                             End If
+                        Else
+                            CanEquipSkin = True
+                            Exit Function
                         End If
                     Else
-                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
-                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
-                                If .invent.EquippedArmorObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
-                                    CanEquipSkin = True
-                                    Exit Function
-                                Else
-                                    Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
-                                    Exit Function
-                                End If
-                            Else
-                                CanEquipSkin = True
-                                Exit Function
-                            End If
-                        End If
-                    End If
-                Else
-                    Call WriteLocaleMsg(UserIndex, 2100, e_FontTypeNames.FONTTYPE_INFO) 'Msg2100=Para equipar este skin, debes tener equipado un objeto de ese tipo.
-                    Exit Function
-                End If
-
-            Case e_OBJType.otSkinsWings
-
-                If bFromInvent Then
-                    If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
-                        If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
-                            If .invent.EquippedBackpackObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
+                        If SkinRequireObject(UserIndex, Slot) Then
+                            If .invent.EquippedArmorObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
                                 CanEquipSkin = True
                                 Exit Function
                             Else
@@ -3875,19 +3849,37 @@ Dim eSkinType                   As e_OBJType
                         End If
                     End If
                 Else
-                    If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
-                        If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
-                            If .invent.EquippedBackpackObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
-                                CanEquipSkin = True
-                                Exit Function
-                            Else
-                               Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
-                                Exit Function
-                            End If
-                        Else
+                    Call WriteLocaleMsg(UserIndex, 2100, e_FontTypeNames.FONTTYPE_INFO) 'Msg2100=Para equipar este skin, debes tener equipado un objeto de ese tipo.
+                    Exit Function
+                End If
+
+            Case e_OBJType.otSkinsWings
+
+                If bFromInvent Then
+                    If SkinRequireObject(UserIndex, Slot) Then
+                        If .invent.EquippedBackpackObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
                             CanEquipSkin = True
                             Exit Function
+                        Else
+                            Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                            Exit Function
                         End If
+                    Else
+                        CanEquipSkin = True
+                        Exit Function
+                    End If
+                Else
+                    If SkinRequireObject(UserIndex, Slot) Then
+                        If .invent.EquippedBackpackObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
+                            CanEquipSkin = True
+                            Exit Function
+                        Else
+                           Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                            Exit Function
+                        End If
+                    Else
+                        CanEquipSkin = True
+                        Exit Function
                     End If
                 End If
 
@@ -3895,41 +3887,36 @@ Dim eSkinType                   As e_OBJType
 
                 If .invent.EquippedHelmetSlot > 0 Then
                     If bFromInvent Then
-                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
-                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
-                                If .invent.EquippedHelmetObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
-                                    CanEquipSkin = True
-                                    Exit Function
-                                Else
-                                    Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
-                                    Exit Function
-                                End If
-                            Else
+                        If SkinRequireObject(UserIndex, Slot) Then
+                            If .invent.EquippedHelmetObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
                                 CanEquipSkin = True
                                 Exit Function
+                            Else
+                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Exit Function
                             End If
+                        Else
+                            CanEquipSkin = True
+                            Exit Function
                         End If
                     Else
-                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
-                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
-                                If .invent.EquippedHelmetObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
-                                    CanEquipSkin = True
-                                    Exit Function
-                                Else
-                                    Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
-                                    Exit Function
-                                End If
-                            Else
+                        If SkinRequireObject(UserIndex, Slot) Then
+                            If .invent.EquippedHelmetObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
                                 CanEquipSkin = True
                                 Exit Function
+                            Else
+                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Exit Function
                             End If
+                        Else
+                            CanEquipSkin = True
+                            Exit Function
                         End If
                     End If
                 Else
                     Call WriteLocaleMsg(UserIndex, 2100, e_FontTypeNames.FONTTYPE_INFO) 'Msg2100=Para equipar este skin, debes tener equipado un objeto de ese tipo.
                     Exit Function
                 End If
-                
                 
             Case e_OBJType.otSkinsSpells
                 CanEquipSkin = True
@@ -3939,34 +3926,30 @@ Dim eSkinType                   As e_OBJType
                 
                 If .invent.EquippedShipObjIndex > 0 Or .flags.Navegando = 1 Then
                     If bFromInvent Then
-                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
-                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
-                                If .invent.EquippedShipObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
-                                    CanEquipSkin = True
-                                    Exit Function
-                                Else
-                                    Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
-                                    Exit Function
-                                End If
-                            Else
+                        If SkinRequireObject(UserIndex, Slot) Then
+                            If .invent.EquippedShipObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
                                 CanEquipSkin = True
                                 Exit Function
+                            Else
+                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Exit Function
                             End If
+                        Else
+                            CanEquipSkin = True
+                            Exit Function
                         End If
                     Else
-                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
-                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
-                                If .invent.EquippedShipObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
-                                    CanEquipSkin = True
-                                    Exit Function
-                                Else
-                                    Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
-                                    Exit Function
-                                End If
-                            Else
+                        If SkinRequireObject(UserIndex, Slot) Then
+                            If .invent.EquippedShipObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
                                 CanEquipSkin = True
                                 Exit Function
+                            Else
+                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Exit Function
                             End If
+                        Else
+                            CanEquipSkin = True
+                            Exit Function
                         End If
                     End If
                 Else
@@ -3977,34 +3960,30 @@ Dim eSkinType                   As e_OBJType
             Case e_OBJType.otSkinsShields
                 If .invent.EquippedShieldObjIndex > 0 Then
                     If bFromInvent Then
-                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
-                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
-                                If .invent.EquippedShieldObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
-                                    CanEquipSkin = True
-                                    Exit Function
-                                Else
-                                    Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
-                                    Exit Function
-                                End If
-                            Else
+                        If SkinRequireObject(UserIndex, Slot) Then
+                            If .invent.EquippedShieldObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
                                 CanEquipSkin = True
                                 Exit Function
+                            Else
+                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Exit Function
                             End If
+                        Else
+                            CanEquipSkin = True
+                            Exit Function
                         End If
                     Else
-                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
-                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
-                                If .invent.EquippedShieldObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
-                                    CanEquipSkin = True
-                                    Exit Function
-                                Else
-                                    Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
-                                    Exit Function
-                                End If
-                            Else
+                        If SkinRequireObject(UserIndex, Slot) Then
+                            If .invent.EquippedShieldObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
                                 CanEquipSkin = True
                                 Exit Function
+                            Else
+                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Exit Function
                             End If
+                        Else
+                            CanEquipSkin = True
+                            Exit Function
                         End If
                     End If
                 Else
@@ -4016,41 +3995,36 @@ Dim eSkinType                   As e_OBJType
 
                 If .invent.EquippedWeaponObjIndex > 0 Then
                     If bFromInvent Then
-                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
-                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
-                                If .invent.EquippedWeaponObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
-                                    CanEquipSkin = True
-                                    Exit Function
-                                Else
-                                    Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
-                                    Exit Function
-                                End If
-                            Else
+                        If SkinRequireObject(UserIndex, Slot) Then
+                            If .invent.EquippedWeaponObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
                                 CanEquipSkin = True
                                 Exit Function
+                            Else
+                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Exit Function
                             End If
+                        Else
+                            CanEquipSkin = True
+                            Exit Function
                         End If
                     Else
-                        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
-                            If ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0 Then
-                                If .invent.EquippedWeaponObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
-                                    CanEquipSkin = True
-                                    Exit Function
-                                Else
-                                    Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
-                                    Exit Function
-                                End If
-                            Else
+                        If SkinRequireObject(UserIndex, Slot) Then
+                            If .invent.EquippedWeaponObjIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto Then
                                 CanEquipSkin = True
                                 Exit Function
+                            Else
+                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Exit Function
                             End If
+                        Else
+                            CanEquipSkin = True
+                            Exit Function
                         End If
                     End If
                 Else
                     Call WriteLocaleMsg(UserIndex, 2100, e_FontTypeNames.FONTTYPE_INFO) 'Msg2100=Para equipar este skin, debes tener equipado un objeto de ese tipo.
                     Exit Function
                 End If
-
         End Select
     End With
     On Error GoTo 0
@@ -4083,3 +4057,22 @@ Dim NullObj                     As t_UserOBJ
 UpdateSingleItemInv_Error:
     Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.UpdateSingleItemInv of Módulo", Erl())
 End Sub
+
+Public Function SkinRequireObject(ByVal UserIndex As Integer, ByVal Slot As Byte) As Boolean
+
+   On Error GoTo SkinRequireObject_Error
+
+    With UserList(UserIndex)
+        If .Invent_Skins.Object(Slot).ObjIndex > 0 Then
+            SkinRequireObject = CBool(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto > 0)
+        End If
+    End With
+
+   On Error GoTo 0
+   Exit Function
+
+SkinRequireObject_Error:
+
+    Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.SkinRequireObject", Erl())
+    
+End Function
