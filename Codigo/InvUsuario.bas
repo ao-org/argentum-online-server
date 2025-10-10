@@ -3731,7 +3731,7 @@ Dim i                           As Byte
                 If SkinIndex > 0 Then
                     Call WriteChangeSkinSlot(UserIndex, ObjData(SkinIndex).OBJType, i)
                 End If
-                Call WriteLocaleMsg(UserIndex, 2097, e_FontTypeNames.FONTTYPE_INFO) 'Msg2097=Has agregado con éxito tu nueva skin (" & ObjData(SkinIndex).name & "). Equipala desde el inventario de skins.
+                Call WriteLocaleMsg(UserIndex, 2097, e_FontTypeNames.FONTTYPE_INFO, ObjData(SkinIndex).name) 'Msg2097=Has agregado con éxito tu nueva skin (" & ObjData(SkinIndex).name & "). Equipala desde el inventario de skins.
                 AddSkin = True
                 Exit Function
             End If
@@ -3828,7 +3828,7 @@ Dim eSkinType                   As e_OBJType
                                     CanEquipSkin = True
                                     Exit Function
                                 Else
-                                    Call WriteConsoleMsg(UserIndex, "Para equipar este skin, debes tener equipado " & ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name, e_FontTypeNames.FONTTYPE_INFO)
+                                    Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).SkinOrigin).name) 'Msg2099=Has agregado con éxito tu nueva skin (" & ObjData(SkinIndex).name & "). Equipala desde el inventario de skins.
                                     Exit Function
                                 End If
                             Else
