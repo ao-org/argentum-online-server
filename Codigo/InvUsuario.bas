@@ -3731,15 +3731,14 @@ Dim i                           As Byte
                 If SkinIndex > 0 Then
                     Call WriteChangeSkinSlot(UserIndex, ObjData(SkinIndex).OBJType, i)
                 End If
-                Call WriteConsoleMsg(UserIndex, "Has agregado con éxito tu nueva skin (" & ObjData(SkinIndex).name & "). Equipala desde el inventario de skins.", _
-                                     e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, 2097, e_FontTypeNames.FONTTYPE_INFO) 'Msg2097=Has agregado con éxito tu nueva skin (" & ObjData(SkinIndex).name & "). Equipala desde el inventario de skins.
                 AddSkin = True
                 Exit Function
             End If
         Next i
 
         AddSkin = False
-        Call WriteConsoleMsg(UserIndex, "Ya no tienes lugar en el inventario de Skins.", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, 2098, e_FontTypeNames.FONTTYPE_INFO) 'Msg2098=Ya no tienes lugar en el inventario de Skins.
     End With
     AddSkin = False
     On Error GoTo 0
