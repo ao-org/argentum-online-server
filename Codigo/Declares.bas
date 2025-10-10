@@ -2353,7 +2353,7 @@ Public Type t_ObjData
     JineteLevel As Byte
     ElementalTags As Long
     Camouflage As Boolean
-    SkinOrigin                  As Integer
+    RequiereObjeto                  As Integer
 End Type
 
 '[Pablo ToxicWaste]
