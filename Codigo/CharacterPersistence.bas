@@ -206,9 +206,7 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
         ' Load additional inventories.
         If Not LoadCharacterInventory(UserIndex) Then Exit Function
         If Not LoadCharacterBank(UserIndex) Then Exit Function
-        If IsFeatureEnabled("SkinsOnlyPatreon") And IsPatreon(UserIndex) Then
-            Call LoadSkinsInventory(UserIndex)
-        End If
+        Call LoadSkinsInventory(UserIndex)
         Call RegisterUserName(.Id, .name)
         Call Execute("update account set last_ip = ? where id = ?", .ConnectionDetails.IP, .AccountID)
         .Stats.Creditos = 0
@@ -686,9 +684,7 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
             Call Execute(Builder.ToString(), Params)
             Call Builder.Clear
         End If
-        If IsFeatureEnabled("SkinsOnlyPatreon") And IsPatreon(UserIndex) Then
-            Call SaveInventorySkins(UserIndex)
-        End If
+        Call SaveInventorySkins(UserIndex)
         Call PerformTimeLimitCheck(PerformanceTimer, "save character id:" & .Id, 50)
     End With
     Exit Sub
