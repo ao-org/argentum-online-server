@@ -872,7 +872,7 @@ ErrHandler:
 
     Set RS = Nothing
     LoadSkinsInventory = False
-    Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.LoadSkinsInventory of Módulo", Erl())
+    Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.LoadSkinsInventory of Módulo Nick: " & UserList(UserIndex).name, Erl())
 
 End Function
 
@@ -920,6 +920,6 @@ Dim RS                          As ADODB.Recordset
 
 SaveInventorySkins_Error:
     SaveInventorySkins = False
-    Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.SaveInventorySkins", Erl())
+    Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.SaveInventorySkins Nick: " & UserList(UserIndex).name, Erl())
 
 End Function

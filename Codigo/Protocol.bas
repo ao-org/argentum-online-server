@@ -7809,20 +7809,20 @@ Dim Slot As Byte
         
         If Not isSkin Then
             If Slot > getMaxInventorySlots(UserIndex) Or Slot <= 0 Then Exit Sub
-            If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
+            If MapInfo(.pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
                 'Msg1285= Solo puedes eliminar items en zona segura.
                 Call WriteLocaleMsg(UserIndex, 1285, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-            If UserList(UserIndex).flags.Muerto = 1 Then
+            If .flags.Muerto = 1 Then
                 'Msg1286= No puede eliminar items cuando estas muerto.
                 Call WriteLocaleMsg(UserIndex, 1286, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             If .invent.Object(Slot).Equipped = 0 Then
-                UserList(UserIndex).invent.Object(Slot).amount = 0
-                UserList(UserIndex).invent.Object(Slot).Equipped = 0
-                UserList(UserIndex).invent.Object(Slot).ObjIndex = 0
+                .invent.Object(Slot).amount = 0
+                .invent.Object(Slot).Equipped = 0
+                .invent.Object(Slot).ObjIndex = 0
                 Call UpdateUserInv(False, UserIndex, Slot)
                 'Msg1287= Objeto eliminado correctamente.
                 Call WriteLocaleMsg(UserIndex, 1287, e_FontTypeNames.FONTTYPE_INFO)
@@ -7847,6 +7847,7 @@ Dim Slot As Byte
             End If
             
             If .Invent_Skins.Object(Slot).Equipped = 0 Then
+                Call LogShopTransactions("PJ ID: " & .Id & " Nick: " & .name & " -> Borró el Skin: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).name & " Tipo: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType & " Valor: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Valor)
                 Call DesequiparSkin(UserIndex, Slot)
                 'Msg1287= Objeto eliminado correctamente.
                 .Invent_Skins.Object(Slot).Deleted = True

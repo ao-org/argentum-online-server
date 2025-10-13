@@ -3735,6 +3735,10 @@ Dim i                           As Byte
                 AddSkin = True
                 Exit Function
             End If
+            
+            If i = MAX_SKINSINVENTORY_SLOTS And .Invent_Skins.Object(i).ObjIndex > 0 Then
+                Call LogShopTransactions("PJ ID: " & .Id & " Nick: " & .name & " -> Llegó al máximo de skins en su inventario de skins.")
+            End If
         Next i
 
         AddSkin = False
