@@ -885,7 +885,7 @@ Dim RS                          As ADODB.Recordset
     On Error GoTo SaveInventorySkins_Error
 
     With UserList(UserIndex)
-        If .Id > 0 Then
+        If .Id > 0 And .Invent_Skins.count > 0 Then
             Set sQuery = New cStringBuilder
 
             For i = 1 To .Invent_Skins.count
