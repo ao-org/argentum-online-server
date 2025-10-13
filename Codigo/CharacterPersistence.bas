@@ -809,6 +809,7 @@ Dim sQuery                      As String
 Dim RS                          As ADODB.Recordset
 
     On Error GoTo ErrHandler
+    If Not IsPatreon(UserIndex) Then Exit Function
 
     With UserList(UserIndex)
 
