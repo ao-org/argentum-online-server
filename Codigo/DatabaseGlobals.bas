@@ -38,7 +38,7 @@ Public Const MAX_ASYNC                  As Byte = 20
 Public Current_async                    As Byte
 Public Connection                       As ADODB.Connection
 Public Connection_async(1 To MAX_ASYNC) As ADODB.Connection
-Public Builder                          As cStringBuilder
+Public Builder                          As clsFastString
 
 Public Function post_increment(ByRef value As Integer) As Integer
     post_increment = value
