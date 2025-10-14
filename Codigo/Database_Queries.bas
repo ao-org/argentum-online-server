@@ -28,7 +28,7 @@ Attribute VB_Name = "Database_Queries"
 Option Explicit
 'Constructor de queries.
 'Me permite concatenar strings MUCHO MAS rapido
-Private QueryBuilder          As cStringBuilder
+Private QueryBuilder          As clsFastString
 Public QUERY_LOAD_MAINPJ      As String
 ' DYNAMIC QUERIES
 Public QUERY_SAVE_MAINPJ      As String
@@ -52,7 +52,7 @@ End Sub
 
 Private Sub ConstruirQuery_CargarPersonaje()
     Dim LoopC As Long
-    Set QueryBuilder = New cStringBuilder
+    Set QueryBuilder = New clsFastString
     ' ************************** Basic user data ********************************
     QueryBuilder.Append "SELECT "
     QueryBuilder.Append "account_id,"
@@ -138,7 +138,7 @@ End Sub
 
 Private Sub ConstruirQuery_CrearPersonaje()
     Dim LoopC As Long
-    Set QueryBuilder = New cStringBuilder
+    Set QueryBuilder = New clsFastString
     ' ************************** Basic user data ********************************
     QueryBuilder.Append "INSERT INTO user ("
     QueryBuilder.Append "name, "

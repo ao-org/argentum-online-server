@@ -463,7 +463,7 @@ End Function
 '********************************************************************************************************
 Private Function Encode(str) As String
     On Error GoTo Encode_Err
-    Dim SB  As New cStringBuilder
+    Dim SB  As New clsFastString
     Dim i   As Long
     Dim j   As Long
     Dim aL1 As Variant
@@ -504,7 +504,7 @@ Public Function StringToJSON(st As String) As String
     Const FIELD_SEP = "~"
     Const RECORD_SEP = "|"
     Dim sFlds     As String
-    Dim sRecs     As New cStringBuilder
+    Dim sRecs     As New clsFastString
     Dim lRecCnt   As Long
     Dim lFld      As Long
     Dim fld       As Variant
@@ -533,7 +533,7 @@ End Function
 Public Function RStoJSON(RS As ADODB.Recordset) As String
     On Error GoTo ErrHandler
     Dim sFlds   As String
-    Dim sRecs   As New cStringBuilder
+    Dim sRecs   As New clsFastString
     Dim lRecCnt As Long
     Dim fld     As ADODB.Field
     lRecCnt = 0
@@ -562,7 +562,7 @@ End Function
 Public Function toUnicode(str As String) As String
     On Error GoTo toUnicode_Err
     Dim x        As Long
-    Dim uStr     As New cStringBuilder
+    Dim uStr     As New clsFastString
     Dim uChrCode As Integer
     For x = 1 To LenB(str)
         uChrCode = Asc(mid$(str, x, 1))

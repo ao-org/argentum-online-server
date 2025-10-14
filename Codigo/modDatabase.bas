@@ -43,7 +43,7 @@ Public Sub Database_Connect_Async()
         Call Connection_async(i).Open(, , , adAsyncConnect)
     Next i
     Current_async = 1
-    Set Builder = New cStringBuilder
+    Set Builder = New clsFastString
     Exit Sub
 Database_Connect_AsyncErr:
     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - Database_Connect_Async")
@@ -60,7 +60,7 @@ Public Sub Database_Connect()
     Set Connection = New ADODB.Connection
     Connection.CursorLocation = adUseClient
     Connection.ConnectionString = ConnectionID
-    Set Builder = New cStringBuilder
+    Set Builder = New clsFastString
     Call Connection.Open
     Exit Sub
 Database_Connect_Err:
