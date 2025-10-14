@@ -12,10 +12,6 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '---------------------------------------------------------------------------------------
-' Class      : clsFastString
-' Author     : [/About]
-' Date       : 23/07/2019
-' Updated by : Brian Sabatier
 ' Description:
 '   Clase optimizada para operaciones de concatenación masiva de cadenas (strings) en Visual Basic 6.0.
 '
@@ -67,7 +63,8 @@ Attribute VB_Exposed = False
 '   • No es thread-safe (no usar desde múltiples hilos simultáneamente).
 '   • No libera memoria automáticamente al limpiar el buffer; si se desea liberar, destruir el objeto.
 '   • El tamaño del bloque de expansión (50.000) puede ajustarse según el caso de uso.
-'
+' Author     : [/About]
+' Updated by : Brian Sabatier
 '---------------------------------------------------------------------------------------
 Option Explicit
 
