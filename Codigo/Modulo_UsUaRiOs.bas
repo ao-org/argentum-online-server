@@ -67,6 +67,23 @@ Public Function GetAvailableUserSlot() As Integer
     GetAvailableUserSlot = AvailableUserSlot.currentIndex
 End Function
 
+Public Function IsPatreon(ByVal UserIndex As Integer) As Boolean
+    
+   On Error GoTo IsPatreon_Error
+
+    With UserList(UserIndex).Stats
+        IsPatreon = .tipoUsuario = e_TipoUsuario.tAventurero Or .tipoUsuario = e_TipoUsuario.tHeroe Or .tipoUsuario = e_TipoUsuario.tLeyenda
+    End With
+
+   On Error GoTo 0
+   Exit Function
+
+IsPatreon_Error:
+    Call Logging.TraceError(Err.Number, Err.Description, "UserMod.IsPatreon nick: " & UserList(UserIndex).name, Erl())
+    
+End Function
+
+
 Public Function GetNextAvailableUserSlot() As Integer
     On Error GoTo ErrHandler
     If (AvailableUserSlot.currentIndex = 0) Then
@@ -254,11 +271,15 @@ Prepare_ConnectUser_Err:
 End Sub
 
 Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As String, Optional ByVal newUser As Boolean = False)
+
+Dim n                           As Integer
+Dim tStr                        As String
+
     On Error GoTo Complete_ConnectUser_Err
+    
     ConnectUser_Complete = False
-    Dim n    As Integer
-    Dim tStr As String
     Call SendData(SendTarget.ToIndex, UserIndex, PrepareActiveToggles)
+    
     With UserList(UserIndex)
 #If LOGIN_STRESS_TEST = 1 Then
         .pos.Map = 1 'Ullathorpe
@@ -330,6 +351,15 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As S
         Else
             .flags.Desnudo = 1
         End If
+        
+        If .Invent_Skins.SlotBackpackEquipped > 0 Then
+            If .Invent_Skins.Object(.Invent_Skins.SlotBackpackEquipped).ObjIndex = .Invent_Skins.ObjIndexBackpackEquipped And .Invent_Skins.ObjIndexBackpackEquipped > 0 Then
+                If CanEquipSkin(UserIndex, .Invent_Skins.SlotBackpackEquipped, False) Then
+                    Call SkinEquip(UserIndex, .Invent_Skins.SlotBackpackEquipped, .Invent_Skins.Object(.Invent_Skins.SlotBackpackEquipped).ObjIndex)
+                End If
+            End If
+        End If
+        
         'Obtiene el indice-objeto del escudo
         If .invent.EquippedShieldSlot > 0 Then
             If .invent.Object(.invent.EquippedShieldSlot).ObjIndex > 0 Then
@@ -831,6 +861,7 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, _
                    ByVal Cart As Integer, _
                    ByVal BackPack As Integer)
     On Error GoTo ChangeUserChar_Err
+    
     If IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTransformed) Then Exit Sub
     With UserList(UserIndex).Char
         .body = body
@@ -841,11 +872,13 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, _
         .CascoAnim = Casco
         .CartAnim = Cart
         .BackpackAnim = BackPack
+    
+        If .charindex > 0 Then
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, .charindex, Arma, Escudo, Cart, BackPack, .FX, .loops, Casco, False, UserList(UserIndex).flags.Navegando))
+        End If
     End With
-    If UserList(UserIndex).Char.charindex > 0 Then
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, UserList(UserIndex).Char.charindex, Arma, Escudo, Cart, BackPack, _
-                UserList(UserIndex).Char.FX, UserList(UserIndex).Char.loops, Casco, False, UserList(UserIndex).flags.Navegando))
-    End If
+    
+
     Exit Sub
 ChangeUserChar_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ChangeUserChar", Erl)
@@ -3288,4 +3321,16 @@ Public Function GetUserMR(ByVal UserIndex As Integer) As Integer
         End If
         GetUserMR = MR + 100 * ModClase(.clase).ResistenciaMagica
     End With
+End Function
+
+Function LevelCanUseItem(ByVal UserIndex As Integer, ByRef obj As t_ObjData) As Boolean
+
+    With UserList(UserIndex)
+        If obj.MaxLEV <> 0 Then
+            LevelCanUseItem = .Stats.ELV >= obj.MinELV And .Stats.ELV <= obj.MaxLEV
+        Else
+            LevelCanUseItem = .Stats.ELV >= obj.MinELV
+        End If
+    End With
+    
 End Function

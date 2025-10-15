@@ -5,7 +5,6 @@
 # 🛡️ Argentum Online Server
 ![image](https://github.com/ao-org/argentum-online-server/assets/5874806/d0f29237-6bd3-4a90-a2d6-fc67b34f1c85)
 
-
 Important: Do not download the code using the "Download as ZIP" button on GitHub, as this can cause issues with file encoding and may corrupt some files. 
 
 To download the code correctly, use a Git client. The command to clone the repository from the command line is:
