@@ -206,6 +206,7 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
         ' Load additional inventories.
         If Not LoadCharacterInventory(UserIndex) Then Exit Function
         If Not LoadCharacterBank(UserIndex) Then Exit Function
+        Call LoadSkinsInventory(UserIndex)
         Call RegisterUserName(.Id, .name)
         Call Execute("update account set last_ip = ? where id = ?", .ConnectionDetails.IP, .AccountID)
         .Stats.Creditos = 0
@@ -683,6 +684,7 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
             Call Execute(Builder.ToString(), Params)
             Call Builder.Clear
         End If
+        Call SaveInventorySkins(UserIndex)
         Call PerformTimeLimitCheck(PerformanceTimer, "save character id:" & .Id, 50)
     End With
     Exit Sub
@@ -797,3 +799,128 @@ Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)
 ErrorHandler:
     Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 End Sub
+
+Function LoadSkinsInventory(ByVal UserIndex As Integer) As Boolean
+
+Dim bFixed                      As Boolean
+Dim i                           As Integer
+Dim tID                         As Long
+Dim sQuery                      As String
+Dim RS                          As ADODB.Recordset
+
+    On Error GoTo ErrHandler
+    If Not IsPatreon(UserIndex) Then Exit Function
+
+    With UserList(UserIndex)
+
+        sQuery = "SELECT type_skin, skin_id, skin_equipped FROM inventory_item_skins WHERE user_id=" & .Id
+        Set RS = Query(sQuery, .Id)
+
+        '@ Existe el Skins?
+        If RS.EOF Or RS.BOF Then
+            LoadSkinsInventory = False
+            Set RS = Nothing
+            Exit Function
+        End If
+
+        If RS.RecordCount > 0 Then
+            i = 1
+            Do While Not RS.EOF
+                If CInt(RS.Fields("skin_id")) > 0 Then
+                    .Invent_Skins.Object(i).ObjIndex = CInt(RS.Fields("skin_id"))
+
+                    Select Case ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType
+
+                        Case e_OBJType.otSkinsSpells
+                            If ObjData(.Invent_Skins.Object(i).ObjIndex).HechizoIndex > 0 And CBool(RS.Fields("skin_equipped")) Then
+                                .Invent_Skins.Object(i).Equipped = True
+                                .Invent_Skins.Object(i).Type = e_OBJType.otSkinsSpells
+                                .Stats.UserSkinsHechizos(ObjData(.Invent_Skins.Object(i).ObjIndex).HechizoIndex) = ObjData(.Invent_Skins.Object(i).ObjIndex).CreaFX
+                            End If
+
+                        Case Else
+
+                            If CBool(RS.Fields("skin_equipped")) Then
+                                .Invent_Skins.Object(i).Type = ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType
+                                If CanEquipSkin(UserIndex, i, False) Then
+                                    Call SkinEquip(UserIndex, i, .Invent_Skins.Object(i).ObjIndex, True)
+                                End If
+                            End If
+
+                    End Select
+
+                    Call WriteChangeSkinSlot(UserIndex, ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType, i)
+
+                Else
+                    .Invent_Skins.Object(i).ObjIndex = 0
+                    .Invent_Skins.Object(i).Equipped = False
+                End If
+                i = i + 1
+                RS.MoveNext
+            Loop
+            .Invent_Skins.count = RS.RecordCount
+        Else
+            .Invent_Skins.count = 0
+        End If
+    End With
+
+    Set RS = Nothing
+    LoadSkinsInventory = True
+
+    Exit Function
+
+ErrHandler:
+
+    Set RS = Nothing
+    LoadSkinsInventory = False
+    Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.LoadSkinsInventory of Módulo Nick: " & UserList(UserIndex).name, Erl())
+
+End Function
+
+Function SaveInventorySkins(ByVal UserIndex As Integer) As Boolean
+
+Dim i                           As Integer
+Dim sQuery                      As cStringBuilder    'About
+Dim RS                          As ADODB.Recordset
+
+    On Error GoTo SaveInventorySkins_Error
+
+    With UserList(UserIndex)
+        If .Id > 0 And .Invent_Skins.count > 0 Then
+            Set sQuery = New cStringBuilder
+
+            For i = 1 To .Invent_Skins.count
+                If .Invent_Skins.Object(i).ObjIndex > 0 And Not .Invent_Skins.Object(i).Deleted Then
+                    If Not Database_Queries.Exists("inventory_item_skins", "user_id", CStr(.Id), "skin_id", .Invent_Skins.Object(i).ObjIndex) Then
+                        sQuery.Append "INSERT INTO inventory_item_skins (user_id, skin_id, type_skin, skin_equipped) Values (" & .Id & "," & .Invent_Skins.Object(i).ObjIndex & "," & ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType & "," & IIf(.Invent_Skins.Object(i).Equipped, "1", "0") & ")"
+                        Database.Execute sQuery.ToString
+                        sQuery.Clear
+                    Else
+                        sQuery.Append "UPDATE inventory_item_skins SET SKIN_EQUIPPED=" & IIf(.Invent_Skins.Object(i).Equipped, "1", "0") & " WHERE USER_ID=" & .Id & " AND SKIN_ID=" & .Invent_Skins.Object(i).ObjIndex
+                        Database.Execute sQuery.ToString
+                        sQuery.Clear
+                    End If
+                Else
+                    If .Invent_Skins.Object(i).Deleted Then
+                        sQuery.Append "DELETE FROM inventory_item_skins WHERE USER_ID=" & .Id & " AND SKIN_ID=" & .Invent_Skins.Object(i).ObjIndex
+                        Database.Execute sQuery.ToString
+                        sQuery.Clear
+                    End If
+                End If
+            Next i
+
+            Set sQuery = Nothing
+            SaveInventorySkins = True
+        Else
+            SaveInventorySkins = False
+        End If
+    End With
+
+    On Error GoTo 0
+    Exit Function
+
+SaveInventorySkins_Error:
+    SaveInventorySkins = False
+    Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.SaveInventorySkins Nick: " & UserList(UserIndex).name, Erl())
+
+End Function
