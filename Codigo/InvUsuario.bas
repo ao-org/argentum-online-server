@@ -3717,6 +3717,7 @@ Dim i                           As Byte
     On Error GoTo AddSkin_Error
     
     If SkinIndex = 0 Then Exit Function
+    If Not IsPatreon(UserIndex) Then Exit Function
     
     With UserList(UserIndex)
         For i = 1 To MAX_SKINSINVENTORY_SLOTS
