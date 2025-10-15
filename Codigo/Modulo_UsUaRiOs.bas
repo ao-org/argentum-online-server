@@ -29,15 +29,15 @@ Option Explicit
 Private UserNameCache     As New Dictionary
 Private AvailableUserSlot As t_IndexHeap
 
-Public Sub InitializeUserIndexHeap(Optional ByVal size As Integer = NpcIndexHeapSize)
+Public Sub InitializeUserIndexHeap(Optional ByVal Size As Integer = NpcIndexHeapSize)
     On Error GoTo ErrHandler_InitializeUserIndexHeap
-    ReDim AvailableUserSlot.IndexInfo(size)
+    ReDim AvailableUserSlot.IndexInfo(Size)
     Dim i As Integer
-    For i = 1 To size
-        AvailableUserSlot.IndexInfo(i) = size - (i - 1)
+    For i = 1 To Size
+        AvailableUserSlot.IndexInfo(i) = Size - (i - 1)
         UserList(AvailableUserSlot.IndexInfo(i)).flags.IsSlotFree = True
     Next i
-    AvailableUserSlot.currentIndex = size
+    AvailableUserSlot.currentIndex = Size
     Exit Sub
 ErrHandler_InitializeUserIndexHeap:
     Call TraceError(Err.Number, Err.Description, "UserMod.InitializeUserIndexHeap", Erl)
@@ -1475,7 +1475,7 @@ Select Case UserList(UserIndex).Hogar
     Case Else: DeDonde = CIUDAD_ULLATHORPE
 End Select
 
-Call WriteLocaleMsg(sendIndex, "2104", e_FontTypeNames.FONTTYPE_INFO, DeDonde)
+Call WriteLocaleMsg(sendIndex, "2103", e_FontTypeNames.FONTTYPE_INFO, DeDonde)
 
 
 
