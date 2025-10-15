@@ -3718,6 +3718,11 @@ Dim i                           As Byte
     
     If SkinIndex = 0 Then Exit Function
     
+    If Not IsPatreon(UserIndex) Then
+        Call WriteLocaleMsg(UserIndex, 2103, e_FontTypeNames.FONTTYPE_INFO) 'Msg2103=Necesitas mejorar tu cuenta para poder agregar Skins. Para más información visita: https://www.patreon.com/nolandstudios
+        Exit Function
+    End If
+    
     With UserList(UserIndex)
         For i = 1 To MAX_SKINSINVENTORY_SLOTS
             If .Invent_Skins.Object(i).ObjIndex = 0 Or .Invent_Skins.Object(i).Deleted Then
