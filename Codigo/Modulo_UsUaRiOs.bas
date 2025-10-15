@@ -1475,7 +1475,7 @@ Select Case UserList(UserIndex).Hogar
     Case Else: DeDonde = CIUDAD_ULLATHORPE
 End Select
 
-Call WriteLocaleMsg(sendIndex, "2103", e_FontTypeNames.FONTTYPE_INFO, DeDonde)
+Call WriteLocaleMsg(sendIndex, "2104", e_FontTypeNames.FONTTYPE_INFO, DeDonde)
 
 
 
