@@ -39,6 +39,15 @@ Public Current_async                    As Byte
 Public Connection                       As ADODB.Connection
 Public Connection_async(1 To MAX_ASYNC) As ADODB.Connection
 Public Builder                          As cStringBuilder
+Public Const CIUDAD_ULLATHORPE As String = "Ullathorpe"
+Public Const CIUDAD_NIX As String = "Nix"
+Public Const CIUDAD_BANDERBILL As String = "Banderbill"
+Public Const CIUDAD_LINDOS As String = "Lindos"
+Public Const CIUDAD_ARGHAL As String = "Arghal"
+Public Const CIUDAD_FORGAT As String = "Forgat"
+Public Const CIUDAD_ARKHEIN As String = "Arkhein"
+Public Const CIUDAD_ELDORIA As String = "Eldoria"
+Public Const CIUDAD_PENTHAR As String = "Penthar"
 
 Public Function post_increment(ByRef value As Integer) As Integer
     post_increment = value

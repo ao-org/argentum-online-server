@@ -1463,29 +1463,21 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 ' ========================
 Dim DeDonde As String
 Select Case UserList(UserIndex).Hogar
-    Case e_Ciudad.cUllathorpe
-        DeDonde = "Ullathorpe"
-    Case e_Ciudad.cNix
-        DeDonde = "Nix"
-    Case e_Ciudad.cBanderbill
-        DeDonde = "Banderbill"
-    Case e_Ciudad.cLindos
-        DeDonde = "Lindos"
-    Case e_Ciudad.cArghal
-        DeDonde = "Arghal"
-    Case e_Ciudad.cForgat
-        DeDonde = "Forgat"
-    Case e_Ciudad.cArkhein
-        DeDonde = "Arkhein"
-    Case e_Ciudad.cEldoria
-        DeDonde = "Eldoria"
-    Case e_Ciudad.cPenthar
-        DeDonde = "Penthar"
-    Case Else
-        DeDonde = "Ullathorpe"
+    Case e_Ciudad.cUllathorpe: DeDonde = CIUDAD_ULLATHORPE
+    Case e_Ciudad.cNix: DeDonde = CIUDAD_NIX
+    Case e_Ciudad.cBanderbill: DeDonde = CIUDAD_BANDERBILL
+    Case e_Ciudad.cLindos: DeDonde = CIUDAD_LINDOS
+    Case e_Ciudad.cArghal: DeDonde = CIUDAD_ARGHAL
+    Case e_Ciudad.cForgat: DeDonde = CIUDAD_FORGAT
+    Case e_Ciudad.cArkhein: DeDonde = CIUDAD_ARKHEIN
+    Case e_Ciudad.cEldoria: DeDonde = CIUDAD_ELDORIA
+    Case e_Ciudad.cPenthar: DeDonde = CIUDAD_PENTHAR
+    Case Else: DeDonde = CIUDAD_ULLATHORPE
 End Select
 
-Call WriteConsoleMsg(sendIndex, "Hogar: " & DeDonde, e_FontTypeNames.FONTTYPE_INFO)
+Call WriteLocaleMsg(sendIndex, "2103", e_FontTypeNames.FONTTYPE_INFO, DeDonde)
+
+
 
 Exit Sub
 SendUserStatsTxt_Err:
