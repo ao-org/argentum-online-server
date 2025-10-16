@@ -104,9 +104,17 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                     Case e_ToolsSubtype.eFishingRod
                         If (MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 And Not MapData(.pos.Map, .pos.x, .pos.y).trigger = _
                                 e_Trigger.PESCAINVALIDA Then
-                            If (MapData(.pos.Map, .pos.x, .pos.y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.pos.Map, .pos.x + 1, .pos.y).Blocked And FLAG_AGUA) <> 0 Or (MapData( _
-                                    .pos.Map, .pos.x, .pos.y + 1).Blocked And FLAG_AGUA) <> 0 Or (MapData(.pos.Map, .pos.x - 1, .pos.y).Blocked And FLAG_AGUA) <> 0 Or (MapData( _
-                                    .pos.Map, .pos.x, .pos.y - 1).Blocked And FLAG_AGUA) <> 0 Then
+                            Dim isStandingOnWater As Boolean
+                            Dim isAdjacentToWater As Boolean
+
+                            isStandingOnWater = (MapData(.pos.Map, .pos.x, .pos.y).Blocked And FLAG_AGUA) <> 0
+                            isAdjacentToWater = (MapData(.pos.Map, .pos.x + 1, .pos.y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.pos.Map, .pos.x, .pos.y + 1).Blocked And FLAG_AGUA) <> 0 Or (MapData( _
+                                    .pos.Map, .pos.x - 1, .pos.y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.pos.Map, .pos.x, .pos.y - 1).Blocked And FLAG_AGUA) <> 0
+
+                            If isStandingOnWater Then
+                                Call WriteLocaleMsg(UserIndex, "1436", e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteMacroTrabajoToggle(UserIndex, False)
+                            ElseIf isAdjacentToWater Then
                                 .flags.PescandoEspecial = False
                                 If UserList(UserIndex).flags.Navegando = 0 Then
                                     If MapInfo(.pos.Map).zone = "DUNGEON" Then
@@ -463,7 +471,15 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
             If .flags.Muerto = 0 Then
                 .Char.head = .OrigChar.head
                 If .invent.EquippedArmorObjIndex > 0 Then
-                    .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
+                    If .invent.EquippedArmorObjIndex > 0 And .Invent_Skins.ObjIndexArmourEquipped > 0 And .Invent_Skins.SlotBoatEquipped > 0 Then
+                        If .Invent_Skins.Object(.Invent_Skins.SlotBoatEquipped).Equipped Then
+                            .Char.body = ObtenerRopaje(UserIndex, ObjData(.Invent_Skins.ObjIndexArmourEquipped))
+                        Else
+                            .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
+                        End If
+                    Else
+                        .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
+                    End If
                 Else
                     Call SetNakedBody(UserList(UserIndex))
                 End If
@@ -2296,7 +2312,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
             Exit Sub
         End If
         If .flags.Montado = 0 And .Counters.EnCombate > 0 Then
-            Call WriteLocaleMsg(UserIndex, 1466, e_FontTypeNames.FONTTYPE_INFOBOLD)  ' Msg1466=Estás en combate, debes aguardar ¬1 segundo(s) para montar...
+            Call WriteLocaleMsg(UserIndex, 1466, e_FontTypeNames.FONTTYPE_INFOBOLD, .Counters.EnCombate)  ' Msg1466=Estás en combate, debes aguardar ¬1 segundo(s) para montar...
             Exit Sub
         End If
         If .flags.EnReto Then
