@@ -27,12 +27,9 @@ Attribute VB_Name = "AI"
 '
 Option Explicit
 '  Hardcodeada de la vida...
-Public Const FUEGOFATUO       As Integer = 964
-Public Const ELEMENTAL_VIENTO As Integer = 963
-Public Const ELEMENTAL_FUEGO  As Integer = 962
 'Damos a los NPCs el mismo rango de vison que un PJ
-Public Const RANGO_VISION_X   As Byte = DEFAULT_NPC_VISION_RANGE_X
-Public Const RANGO_VISION_Y   As Byte = DEFAULT_NPC_VISION_RANGE_Y
+Public Const RANGO_VISION_X As Byte = DEFAULT_NPC_VISION_RANGE_X
+Public Const RANGO_VISION_Y As Byte = DEFAULT_NPC_VISION_RANGE_Y
 
 Public Sub NpcDummyUpdate(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)
@@ -1081,20 +1078,6 @@ NpcLanzaUnSpell_Err:
     Call TraceError(Err.Number, Err.Description, "AI.NpcLanzaUnSpell", Erl)
 End Sub
 
-Private Sub NpcLanzaUnSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer)
-    On Error GoTo NpcLanzaUnSpellSobreNpc_Err
-    With NpcList(NpcIndex)
-        If Not IntervaloPermiteLanzarHechizo(NpcIndex) Then Exit Sub
-        If .pos.Map <> NpcList(TargetNPC).pos.Map Then Exit Sub
-        Dim K As Integer
-        K = RandomNumber(1, .flags.LanzaSpells)
-        Call NpcLanzaSpellSobreNpc(NpcIndex, TargetNPC, .Spells(K).SpellIndex)
-    End With
-    Exit Sub
-NpcLanzaUnSpellSobreNpc_Err:
-    Call TraceError(Err.Number, Err.Description, "AI.NpcLanzaUnSpellSobreNpc", Erl)
-End Sub
-
 ' ---------------------------------------------------------------------------------------------------
 '                                       HELPERS
 ' ---------------------------------------------------------------------------------------------------
@@ -1211,7 +1194,7 @@ Private Function SelectSupportSpellAndTarget(ByVal NpcIndex As Integer, ByRef Ta
                 For i = 1 To ModAreas.ConnGroups(.pos.Map).CountEntrys
                     TargetIndex = ModAreas.ConnGroups(.pos.Map).UserEntrys(i)
                     ' Find nearest user
-                    If CanSeeUser(NpcIndex, TargetIndex) And NPCs.CanHelpUser(NpcIndex, TargetIndex) = eInteractionOk And (UserList(TargetIndex).flags.Inmovilizado Or UserList( _
+                    If CanSeeUser(TargetIndex) And NPCs.CanHelpUser(NpcIndex, TargetIndex) = eInteractionOk And (UserList(TargetIndex).flags.Inmovilizado Or UserList( _
                             TargetIndex).flags.Paralizado) Then
                         UserDistance = Distance(UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y, .pos.x, .pos.y)
                         If UserDistance < .SpellRange Then
@@ -1250,7 +1233,7 @@ Private Function SelectSupportSpellAndTarget(ByVal NpcIndex As Integer, ByRef Ta
                 For i = 1 To ModAreas.ConnGroups(.pos.Map).CountEntrys
                     TargetIndex = ModAreas.ConnGroups(.pos.Map).UserEntrys(i)
                     ' Find nearest user
-                    If CanSeeUser(NpcIndex, TargetIndex) And UserList(TargetIndex).Stats.MinHp < UserList(TargetIndex).Stats.MaxHp And NPCs.CanHelpUser(NpcIndex, TargetIndex) = _
+                    If CanSeeUser(TargetIndex) And UserList(TargetIndex).Stats.MinHp < UserList(TargetIndex).Stats.MaxHp And NPCs.CanHelpUser(NpcIndex, TargetIndex) = _
                             eInteractionOk Then
                         UserDistance = Distance(UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y, .pos.x, .pos.y)
                         If UserDistance < .SpellRange Then
@@ -1302,7 +1285,7 @@ Private Function SelectAttackSpellAndTarget(ByVal NpcIndex As Integer, ByRef Tar
                     For i = 1 To ModAreas.ConnGroups(.pos.Map).CountEntrys
                         TargetIndex = ModAreas.ConnGroups(.pos.Map).UserEntrys(i)
                         ' Find nearest user
-                        If CanSeeUser(NpcIndex, TargetIndex) And NPCs.CanAttackUser(NpcIndex, TargetIndex) = eInteractionOk Then
+                        If CanSeeUser(TargetIndex) And NPCs.CanAttackUser(NpcIndex, TargetIndex) = eInteractionOk Then
                             UserDistance = Distance(UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y, .pos.x, .pos.y)
                             If UserDistance < .SpellRange Then
                                 Call SetRef(Target, TargetIndex, eUser)
@@ -1343,7 +1326,7 @@ Private Function SelectAttackSpellAndTarget(ByVal NpcIndex As Integer, ByRef Tar
                     For i = 1 To ModAreas.ConnGroups(.pos.Map).CountEntrys
                         TargetIndex = ModAreas.ConnGroups(.pos.Map).UserEntrys(i)
                         ' Find nearest user
-                        If CanSeeUser(NpcIndex, TargetIndex) And NPCs.CanAttackUser(NpcIndex, TargetIndex) = eInteractionOk Then
+                        If CanSeeUser(TargetIndex) And NPCs.CanAttackUser(NpcIndex, TargetIndex) = eInteractionOk Then
                             UserDistance = Distance(UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y, .pos.x, .pos.y)
                             If UserDistance < .SpellRange Then
                                 Call SetRef(Target, TargetIndex, eUser)
