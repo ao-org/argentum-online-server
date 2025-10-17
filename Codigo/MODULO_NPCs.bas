@@ -906,124 +906,413 @@ Function GetNpcSpeedModifiers(ByVal NpcIndex As Integer) As Single
 End Function
 
 Function GetNpcName(ByVal NpcNumber As Integer) As String
-    GetNpcName = LeerNPCs.GetValue("NPC" & NpcNumber, "Name")
+    On Error GoTo ErrHandler
+    If NpcInfoCacheInitialized Then
+        If NpcNumber >= LBound(NpcInfoCache) And NpcNumber <= UBound(NpcInfoCache) Then
+            If NpcInfoCache(NpcNumber).Exists Then
+                GetNpcName = NpcInfoCache(NpcNumber).name
+                Exit Function
+            End If
+        End If
+    End If
+    If Not LeerNPCs Is Nothing Then
+        GetNpcName = LeerNPCs.GetValue("NPC" & NpcNumber, "Name")
+    End If
+    Exit Function
+ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "NPCs.GetNpcName", Erl)
 End Function
+
+Public Sub BuildNpcInfoCache()
+    On Error GoTo ErrHandler
+    If LeerNPCs Is Nothing Then Exit Sub
+    NpcInfoCacheInitialized = False
+    ReDim NpcInfoCache(1 To MaxNPCs)
+    Dim i As Long
+    For i = 1 To MaxNPCs
+        NpcInfoCache(i).Exists = False
+    Next i
+    Dim nodeCount As Long
+    nodeCount = LeerNPCs.NodesCount
+    For i = 0 To nodeCount - 1
+        Dim nodeName As String
+        nodeName = LeerNPCs.GetNode(i)
+        If Left$(nodeName, 3) = "NPC" Then
+            Dim npcNumber As Long
+            npcNumber = Val(Mid$(nodeName, 4))
+            If npcNumber >= LBound(NpcInfoCache) And npcNumber <= UBound(NpcInfoCache) Then
+                Call LoadNpcInfoIntoCache(CInt(npcNumber))
+            End If
+        End If
+    Next i
+    NpcInfoCacheInitialized = True
+    Exit Sub
+ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "NPCs.BuildNpcInfoCache", Erl)
+End Sub
+
+Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
+    On Error GoTo ErrHandler
+    Dim SectionName As String
+    SectionName = "NPC" & NpcNumber
+    If LeerNPCs Is Nothing Then Exit Sub
+    If Not LeerNPCs.KeyExists(SectionName) Then Exit Sub
+    Dim LoopC As Long
+    Dim ln As String
+    Dim aux As String
+    Dim Field() As String
+    Dim AnimacionesCount As Integer
+    Dim MaxInventory As Long
+    Dim cant As Long
+    With NpcInfoCache(NpcNumber)
+        .Exists = True
+        .TestOnly = Val(LeerNPCs.GetValue(SectionName, "TESTONLY"))
+        .RequireToggle = LeerNPCs.GetValue(SectionName, "REQUIRETOGGLE")
+        .name = LeerNPCs.GetValue(SectionName, "Name")
+        .SubName = LeerNPCs.GetValue(SectionName, "SubName")
+        .Desc = LeerNPCs.GetValue(SectionName, "Desc")
+        .nivel = Val(LeerNPCs.GetValue(SectionName, "Nivel"))
+        .Movement = Val(LeerNPCs.GetValue(SectionName, "Movement"))
+        .AguaValida = Val(LeerNPCs.GetValue(SectionName, "AguaValida"))
+        .TierraInvalida = Val(LeerNPCs.GetValue(SectionName, "TierraInValida"))
+        .Faccion = Val(LeerNPCs.GetValue(SectionName, "Faccion"))
+        .ElementalTags = Val(LeerNPCs.GetValue(SectionName, "ElementalTags"))
+        .npcType = Val(LeerNPCs.GetValue(SectionName, "NpcType"))
+        .Body = Val(LeerNPCs.GetValue(SectionName, "Body"))
+        .Head = Val(LeerNPCs.GetValue(SectionName, "Head"))
+        .Heading = Val(LeerNPCs.GetValue(SectionName, "Heading"))
+        .BodyIdle = Val(LeerNPCs.GetValue(SectionName, "BodyIdle"))
+        .Ataque1 = Val(LeerNPCs.GetValue(SectionName, "Ataque1"))
+        .CastAnimation = Val(LeerNPCs.GetValue(SectionName, "CastAnimation"))
+        AnimacionesCount = Val(LeerNPCs.GetValue(SectionName, "Animaciones"))
+        .AnimacionesCount = AnimacionesCount
+        If AnimacionesCount > 0 Then
+            ReDim .Animaciones(1 To AnimacionesCount)
+            For LoopC = 1 To AnimacionesCount
+                .Animaciones(LoopC) = Val(LeerNPCs.GetValue(SectionName, "Anim" & LoopC))
+            Next LoopC
+        Else
+            Erase .Animaciones
+        End If
+        .WeaponAnim = Val(LeerNPCs.GetValue(SectionName, "Arma"))
+        .ShieldAnim = Val(LeerNPCs.GetValue(SectionName, "Escudo"))
+        .CascoAnim = Val(LeerNPCs.GetValue(SectionName, "Casco"))
+        .CartAnim = Val(LeerNPCs.GetValue(SectionName, "Cart"))
+        .Attackable = Val(LeerNPCs.GetValue(SectionName, "Attackable"))
+        .Comercia = Val(LeerNPCs.GetValue(SectionName, "Comercia"))
+        .Craftea = Val(LeerNPCs.GetValue(SectionName, "Craftea"))
+        .Hostile = Val(LeerNPCs.GetValue(SectionName, "Hostile"))
+        .AttackRange = Val(LeerNPCs.GetValue(SectionName, "AttackRange"))
+        .ProjectileType = Val(LeerNPCs.GetValue(SectionName, "ProjectileType"))
+        .PreferedRange = Val(LeerNPCs.GetValue(SectionName, "PreferedRange"))
+        .GiveEXP = Val(LeerNPCs.GetValue(SectionName, "GiveEXP"))
+        .Distancia = Val(LeerNPCs.GetValue(SectionName, "Distancia"))
+        .GiveEXPClan = Val(LeerNPCs.GetValue(SectionName, "GiveEXPClan"))
+        .Veneno = Val(LeerNPCs.GetValue(SectionName, "Veneno"))
+        .Domable = Val(LeerNPCs.GetValue(SectionName, "Domable"))
+        .AttackableByEveryone = Val(LeerNPCs.GetValue(SectionName, "AttackableByEveryone", 0))
+        .MapEntryPrice = Val(LeerNPCs.GetValue(SectionName, "MapEntryPrice", 0))
+        .MapTargetEntry = Val(LeerNPCs.GetValue(SectionName, "MapTargetEntry", 1))
+        .MapTargetEntryX = Val(LeerNPCs.GetValue(SectionName, "MapTargetEntryX", 50))
+        .MapTargetEntryY = Val(LeerNPCs.GetValue(SectionName, "MapTargetEntryY", 50))
+        .ArenaEnabled = Val(LeerNPCs.GetValue(SectionName, "ArenaEnabled", 0))
+        .GiveGLD = Val(LeerNPCs.GetValue(SectionName, "GiveGLD"))
+        .PoderAtaque = Val(LeerNPCs.GetValue(SectionName, "PoderAtaque"))
+        .PoderEvasion = Val(LeerNPCs.GetValue(SectionName, "PoderEvasion"))
+        .InvReSpawn = Val(LeerNPCs.GetValue(SectionName, "InvReSpawn"))
+        .ShowName = Val(LeerNPCs.GetValue(SectionName, "ShowName"))
+        .GobernadorDe = Val(LeerNPCs.GetValue(SectionName, "GobernadorDe"))
+        .SoundOpen = Val(LeerNPCs.GetValue(SectionName, "SoundOpen"))
+        .SoundClose = Val(LeerNPCs.GetValue(SectionName, "SoundClose"))
+        .IntervaloAtaque = Val(LeerNPCs.GetValue(SectionName, "IntervaloAtaque"))
+        .IntervaloMovimiento = Val(LeerNPCs.GetValue(SectionName, "IntervaloMovimiento"))
+        .IntervaloLanzarHechizo = Val(LeerNPCs.GetValue(SectionName, "IntervaloLanzarHechizo"))
+        .IntervaloRespawnMin = Val(LeerNPCs.GetValue(SectionName, "IntervaloRespawnMin"))
+        .IntervaloRespawnMax = Val(LeerNPCs.GetValue(SectionName, "IntervaloRespawn"))
+        .InformarRespawn = Val(LeerNPCs.GetValue(SectionName, "InformarRespawn"))
+        .QuizaProb = Val(LeerNPCs.GetValue(SectionName, "QuizaProb"))
+        .MinTameLevel = Val(LeerNPCs.GetValue(SectionName, "MinTameLevel", 1))
+        .OnlyForGuilds = Val(LeerNPCs.GetValue(SectionName, "OnlyForGuilds", 0))
+        .ShowKillerConsole = Val(LeerNPCs.GetValue(SectionName, "ShowKillerConsole", 0))
+        .StatsMaxHp = Val(LeerNPCs.GetValue(SectionName, "MaxHP"))
+        .StatsMinHp = Val(LeerNPCs.GetValue(SectionName, "MinHP"))
+        .StatsMaxHit = Val(LeerNPCs.GetValue(SectionName, "MaxHIT"))
+        .StatsMinHit = Val(LeerNPCs.GetValue(SectionName, "MinHIT"))
+        .StatsDef = Val(LeerNPCs.GetValue(SectionName, "DEF"))
+        .StatsDefM = Val(LeerNPCs.GetValue(SectionName, "DEFm"))
+        .MagicResistance = Val(LeerNPCs.GetValue(SectionName, "MagicResistance"))
+        .MagicDef = Val(LeerNPCs.GetValue(SectionName, "MagicDef"))
+        .CantidadInvocaciones = Val(LeerNPCs.GetValue(SectionName, "CantidadInvocaciones"))
+        .MagicBonus = Val(LeerNPCs.GetValue(SectionName, "MagicBonus"))
+        .AIAlineacion = Val(LeerNPCs.GetValue(SectionName, "Alineacion"))
+        MaxInventory = MAX_INVENTORY_SLOTS
+        .InventoryCount = Val(LeerNPCs.GetValue(SectionName, "NROITEMS"))
+        If .InventoryCount > MaxInventory Then .InventoryCount = MaxInventory
+        If .InventoryCount > 0 Then
+            ReDim .InventoryItems(1 To .InventoryCount)
+            For LoopC = 1 To .InventoryCount
+                ln = LeerNPCs.GetValue(SectionName, "Obj" & LoopC)
+                .InventoryItems(LoopC).ObjIndex = Val(ReadField(1, ln, 45))
+                .InventoryItems(LoopC).amount = Val(ReadField(2, ln, 45))
+            Next LoopC
+        Else
+            Erase .InventoryItems
+        End If
+        .Humanoide = Val(LeerNPCs.GetValue(SectionName, "Humanoide"))
+        .LanzaSpells = Val(LeerNPCs.GetValue(SectionName, "LanzaSpells"))
+        If .LanzaSpells > 0 Then
+            ReDim .Spells(1 To .LanzaSpells)
+            .SpellRange = Val(LeerNPCs.GetValue(SectionName, "RangoSpell"))
+            For LoopC = 1 To .LanzaSpells
+                .Spells(LoopC).SpellIndex = Val(LeerNPCs.GetValue(SectionName, "Sp" & LoopC))
+                .Spells(LoopC).Cd = Val(LeerNPCs.GetValue(SectionName, "Cd" & LoopC))
+            Next LoopC
+        Else
+            .SpellRange = 0
+            Erase .Spells
+        End If
+        If .npcType = e_NPCType.Entrenador Then
+            .NroCriaturas = Val(LeerNPCs.GetValue(SectionName, "NroCriaturas"))
+            If .NroCriaturas > 0 Then
+                ReDim .Criaturas(1 To .NroCriaturas)
+                For LoopC = 1 To .NroCriaturas
+                    .Criaturas(LoopC).NpcIndex = Val(LeerNPCs.GetValue(SectionName, "CI" & LoopC))
+                    .Criaturas(LoopC).NpcName = LeerNPCs.GetValue(SectionName, "CN" & LoopC)
+                    .Criaturas(LoopC).tmpIndex = 0
+                    .Criaturas(LoopC).PuedeInvocar = False
+                Next LoopC
+            Else
+                Erase .Criaturas
+            End If
+        Else
+            .NroCriaturas = 0
+            Erase .Criaturas
+        End If
+        .RestriccionAtaque = Val(LeerNPCs.GetValue(SectionName, "RestriccionDeAtaque"))
+        .RestriccionAyuda = Val(LeerNPCs.GetValue(SectionName, "RestriccionDeAyuda"))
+        .RespawnValue = Val(LeerNPCs.GetValue(SectionName, "ReSpawn"))
+        .DontHitVisiblePlayers = Val(LeerNPCs.GetValue(SectionName, "DontHitVisiblePlayers"))
+        .AddToMapAiList = Val(LeerNPCs.GetValue(SectionName, "AddToMapAiList"))
+        .DisplayCastMessage = Val(LeerNPCs.GetValue(SectionName, "DisplayCastMessage"))
+        .Team = Val(LeerNPCs.GetValue(SectionName, "Team"))
+        .Backup = Val(LeerNPCs.GetValue(SectionName, "BackUp"))
+        .RespawnOrigPos = Val(LeerNPCs.GetValue(SectionName, "OrigPos"))
+        .AfectaParalisis = Val(LeerNPCs.GetValue(SectionName, "AfectaParalisis"))
+        .GolpeExacto = Val(LeerNPCs.GetValue(SectionName, "GolpeExacto"))
+        .TranslationInmune = Val(LeerNPCs.GetValue(SectionName, "TranslationInmune"))
+        .Snd1 = Val(LeerNPCs.GetValue(SectionName, "Snd1"))
+        .Snd2 = Val(LeerNPCs.GetValue(SectionName, "Snd2"))
+        .Snd3 = Val(LeerNPCs.GetValue(SectionName, "Snd3"))
+        aux = LeerNPCs.GetValue(SectionName, "NROEXP")
+        If LenB(aux) = 0 Then
+            .NroExp = 0
+            Erase .Expresiones
+        Else
+            .NroExp = Val(aux)
+            If .NroExp > 0 Then
+                ReDim .Expresiones(1 To .NroExp)
+                For LoopC = 1 To .NroExp
+                    .Expresiones(LoopC) = LeerNPCs.GetValue(SectionName, "Exp" & LoopC)
+                Next LoopC
+            Else
+                Erase .Expresiones
+            End If
+        End If
+        .NumQuiza = Val(LeerNPCs.GetValue(SectionName, "NumQuiza"))
+        If .NumQuiza > 0 Then
+            ReDim .QuizaDropea(1 To .NumQuiza)
+            For LoopC = 1 To .NumQuiza
+                .QuizaDropea(LoopC) = LeerNPCs.GetValue(SectionName, "QuizaDropea" & LoopC)
+            Next LoopC
+        Else
+            Erase .QuizaDropea
+        End If
+        aux = LeerNPCs.GetValue(SectionName, "NumQuest")
+        If LenB(aux) = 0 Then
+            .NumQuest = 0
+            Erase .QuestNumber
+        Else
+            .NumQuest = Val(aux)
+            If .NumQuest > 0 Then
+                ReDim .QuestNumber(1 To .NumQuest)
+                For LoopC = 1 To .NumQuest
+                    .QuestNumber(LoopC) = Val(LeerNPCs.GetValue(SectionName, "QuestNumber" & LoopC))
+                Next LoopC
+            Else
+                Erase .QuestNumber
+            End If
+        End If
+        .NumDropQuest = Val(LeerNPCs.GetValue(SectionName, "NumDropQuest"))
+        If .NumDropQuest > 0 Then
+            ReDim .DropQuest(1 To .NumDropQuest)
+            For LoopC = 1 To .NumDropQuest
+                ln = LeerNPCs.GetValue(SectionName, "DropQuest" & LoopC)
+                .DropQuest(LoopC).QuestIndex = Val(ReadField(1, ln, Asc("-")))
+                .DropQuest(LoopC).ObjIndex = Val(ReadField(2, ln, Asc("-")))
+                .DropQuest(LoopC).amount = Val(ReadField(3, ln, Asc("-")))
+                .DropQuest(LoopC).Probabilidad = Val(ReadField(4, ln, Asc("-")))
+            Next LoopC
+        Else
+            Erase .DropQuest
+        End If
+        .PathFindingVision = Val(LeerNPCs.GetValue(SectionName, "Distancia", RANGO_VISION_X))
+        aux = LeerNPCs.GetValue(SectionName, "NumDestinos")
+        If LenB(aux) = 0 Then
+            .NumDestinos = 0
+            Erase .Dest
+        Else
+            .NumDestinos = Val(aux)
+            If .NumDestinos > 0 Then
+                ReDim .Dest(1 To .NumDestinos)
+                For LoopC = 1 To .NumDestinos
+                    .Dest(LoopC) = LeerNPCs.GetValue(SectionName, "Dest" & LoopC)
+                Next LoopC
+            Else
+                Erase .Dest
+            End If
+        End If
+        .Interface = Val(LeerNPCs.GetValue(SectionName, "Interface"))
+        .TipoItems = Val(LeerNPCs.GetValue(SectionName, "TipoItems"))
+        .PuedeInvocar = Val(LeerNPCs.GetValue(SectionName, "PuedeInvocar"))
+        cant = Val(LeerNPCs.GetValue(SectionName, "CaminataLen"))
+        .CaminataLen = cant
+        If cant > 0 Then
+            ReDim .Caminata(1 To cant)
+            For LoopC = 1 To cant
+                Field = Split(LeerNPCs.GetValue(SectionName, "Caminata" & LoopC), ":")
+                If UBound(Field) >= 2 Then
+                    .Caminata(LoopC).OffsetX = Val(Field(0))
+                    .Caminata(LoopC).OffsetY = Val(Field(1))
+                    .Caminata(LoopC).Espera = Val(Field(2))
+                Else
+                    .Caminata(LoopC).OffsetX = 0
+                    .Caminata(LoopC).OffsetY = 0
+                    .Caminata(LoopC).Espera = 0
+                End If
+            Next LoopC
+        Else
+            Erase .Caminata
+        End If
+    End With
+    Exit Sub
+ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "NPCs.LoadNpcInfoIntoCache", Erl)
+End Sub
 
 Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean = True, Optional ByVal Reload As Boolean = False) As Integer
     On Error GoTo OpenNPC_Err
-    '###################################################
-    '#               ATENCION PELIGRO                  #
-    '###################################################
-    '
-    '    ¡¡¡¡ NO USAR GetVar PARA LEER LOS NPCS !!!!
-    '
-    'El que ose desafiar esta LEY, se las tendrá que ver
-    'conmigo. Para leer los NPCS se deberá usar la
-    'nueva clase clsIniManager.
-    '
-    'Alejo
-    '
-    '###################################################
     Dim NpcIndex As Integer
-    Dim Leer     As clsIniManager
-    Set Leer = LeerNPCs
-    'If requested index is invalid, abort
-    If Not Leer.KeyExists("NPC" & NpcNumber) Then
+    Dim Info As t_NpcInfoCache
+    Dim LoopC As Long
+    Dim cant As Long
+
+    If Not NpcInfoCacheInitialized Then
+        If LeerNPCs Is Nothing Then
+            OpenNPC = 0
+            Exit Function
+        End If
+        Call BuildNpcInfoCache
+        If Not NpcInfoCacheInitialized Then
+            OpenNPC = 0
+            Exit Function
+        End If
+    End If
+
+    If NpcNumber < LBound(NpcInfoCache) Or NpcNumber > UBound(NpcInfoCache) Then
         OpenNPC = 0
         Exit Function
     End If
-    #If DEBUGGING = 0 Then
-        If val(Leer.GetValue("NPC" & NpcNumber, "TESTONLY")) > 0 Then Exit Function
-    #End If
-    Dim RequireToggle As String
-    RequireToggle = Leer.GetValue("NPC" & NpcNumber, "REQUIRETOGGLE")
-    If RequireToggle <> "" Then
-        If Not IsFeatureEnabled(RequireToggle) Then Exit Function
+
+    Info = NpcInfoCache(NpcNumber)
+
+    If Not Info.Exists Then
+        OpenNPC = 0
+        Exit Function
     End If
+#If DEBUGGING = 0 Then
+    If Info.TestOnly > 0 Then Exit Function
+#End If
+    If Info.RequireToggle <> "" Then
+        If Not IsFeatureEnabled(Info.RequireToggle) Then Exit Function
+    End If
+
     NpcIndex = GetNextAvailableNpc
-    If NpcIndex > MaxNPCs Then 'Limite de npcs
+    If NpcIndex > MaxNPCs Then
         OpenNPC = 0
         Exit Function
     End If
-    Dim LoopC   As Long
-    Dim ln      As String
-    Dim aux     As String
-    Dim Field() As String
+
     With NpcList(NpcIndex)
         .Numero = NpcNumber
-        .name = Leer.GetValue("NPC" & NpcNumber, "Name")
-        .SubName = Leer.GetValue("NPC" & NpcNumber, "SubName")
-        .Desc = Leer.GetValue("NPC" & NpcNumber, "Desc")
-        .nivel = val(Leer.GetValue("NPC" & NpcNumber, "Nivel"))
-        Call SetMovement(NpcIndex, val(Leer.GetValue("NPC" & NpcNumber, "Movement")))
+        .name = Info.name
+        .SubName = Info.SubName
+        .Desc = Info.Desc
+        .nivel = Info.nivel
+        Call SetMovement(NpcIndex, Info.Movement)
         .flags.OldMovement = .Movement
-        .flags.AguaValida = val(Leer.GetValue("NPC" & NpcNumber, "AguaValida"))
-        .flags.TierraInvalida = val(Leer.GetValue("NPC" & NpcNumber, "TierraInValida"))
-        .flags.Faccion = val(Leer.GetValue("NPC" & NpcNumber, "Faccion"))
-        .flags.ElementalTags = val(Leer.GetValue("NPC" & NpcNumber, "ElementalTags"))
-        .npcType = val(Leer.GetValue("NPC" & NpcNumber, "NpcType"))
-        .Char.body = val(Leer.GetValue("NPC" & NpcNumber, "Body"))
-        .Char.head = val(Leer.GetValue("NPC" & NpcNumber, "Head"))
-        .Char.Heading = val(Leer.GetValue("NPC" & NpcNumber, "Heading"))
-        .Char.BodyIdle = val(Leer.GetValue("NPC" & NpcNumber, "BodyIdle"))
-        .Char.Ataque1 = val(Leer.GetValue("NPC" & NpcNumber, "Ataque1"))
-        .Char.CastAnimation = val(Leer.GetValue("NPC" & NpcNumber, "CastAnimation"))
+        .flags.AguaValida = Info.AguaValida
+        .flags.TierraInvalida = Info.TierraInvalida
+        .flags.Faccion = Info.Faccion
+        .flags.ElementalTags = Info.ElementalTags
+        .npcType = Info.npcType
+        .Char.body = Info.Body
+        .Char.head = Info.Head
+        .Char.Heading = Info.Heading
+        .Char.BodyIdle = Info.BodyIdle
+        .Char.Ataque1 = Info.Ataque1
+        .Char.CastAnimation = Info.CastAnimation
         If .Char.BodyIdle > 0 Then
             .flags.NPCIdle = True
         End If
-        Dim CantidadAnimaciones As Integer
-        CantidadAnimaciones = val(Leer.GetValue("NPC" & NpcNumber, "Animaciones"))
-        If CantidadAnimaciones > 0 Then
-            ReDim .Char.Animation(1 To CantidadAnimaciones)
-            For LoopC = 1 To CantidadAnimaciones
-                .Char.Animation(LoopC) = val(Leer.GetValue("NPC" & NpcNumber, "Anim" & LoopC))
-            Next
+        If Info.AnimacionesCount > 0 Then
+            ReDim .Char.Animation(1 To Info.AnimacionesCount)
+            For LoopC = 1 To Info.AnimacionesCount
+                .Char.Animation(LoopC) = Info.Animaciones(LoopC)
+            Next LoopC
         Else
             ReDim .Char.Animation(0)
         End If
-        .Char.WeaponAnim = val(Leer.GetValue("NPC" & NpcNumber, "Arma"))
-        .Char.ShieldAnim = val(Leer.GetValue("NPC" & NpcNumber, "Escudo"))
-        .Char.CascoAnim = val(Leer.GetValue("NPC" & NpcNumber, "Casco"))
-        .Char.CartAnim = val(Leer.GetValue("NPC" & NpcNumber, "Cart"))
-        .Attackable = val(Leer.GetValue("NPC" & NpcNumber, "Attackable"))
-        .Comercia = val(Leer.GetValue("NPC" & NpcNumber, "Comercia"))
-        .Craftea = val(Leer.GetValue("NPC" & NpcNumber, "Craftea"))
-        .Hostile = val(Leer.GetValue("NPC" & NpcNumber, "Hostile"))
+        .Char.WeaponAnim = Info.WeaponAnim
+        .Char.ShieldAnim = Info.ShieldAnim
+        .Char.CascoAnim = Info.CascoAnim
+        .Char.CartAnim = Info.CartAnim
+        .Attackable = Info.Attackable
+        .Comercia = Info.Comercia
+        .Craftea = Info.Craftea
+        .Hostile = Info.Hostile
         .flags.OldHostil = .Hostile
-        .AttackRange = val(Leer.GetValue("NPC" & NpcNumber, "AttackRange"))
-        .ProjectileType = val(Leer.GetValue("NPC" & NpcNumber, "ProjectileType"))
-        .PreferedRange = val(Leer.GetValue("NPC" & NpcNumber, "PreferedRange"))
-        .GiveEXP = val(Leer.GetValue("NPC" & NpcNumber, "GiveEXP"))
-        .Distancia = val(Leer.GetValue("NPC" & NpcNumber, "Distancia"))
-        .GiveEXPClan = val(Leer.GetValue("NPC" & NpcNumber, "GiveEXPClan"))
-        '.flags.ExpDada = .GiveEXP
+        .AttackRange = Info.AttackRange
+        .ProjectileType = Info.ProjectileType
+        .PreferedRange = Info.PreferedRange
+        .GiveEXP = Info.GiveEXP
+        .Distancia = Info.Distancia
+        .GiveEXPClan = Info.GiveEXPClan
         .flags.ExpCount = .GiveEXP
-        .Veneno = val(Leer.GetValue("NPC" & NpcNumber, "Veneno"))
-        .flags.Domable = val(Leer.GetValue("NPC" & NpcNumber, "Domable"))
-        .flags.AttackableByEveryone = val(Leer.GetValue("NPC" & NpcNumber, "AttackableByEveryone", 0)) 'makes the NPC attackable by ciudadanos and crimis -ako
-        .flags.MapEntryPrice = val(Leer.GetValue("NPC" & NpcNumber, "MapEntryPrice", 0)) 'makes the NPC be able to charge a X amount of gold for the entry
-        .flags.MapTargetEntry = val(Leer.GetValue("NPC" & NpcNumber, "MapTargetEntry", 1))
-        .flags.MapTargetEntryX = val(Leer.GetValue("NPC" & NpcNumber, "MapTargetEntryX", 50))
-        .flags.MapTargetEntryY = val(Leer.GetValue("NPC" & NpcNumber, "MapTargetEntryY", 50))
-        .flags.ArenaEnabled = val(Leer.GetValue("NPC" & NpcNumber, "ArenaEnabled", 0))
-        .GiveGLD = val(Leer.GetValue("NPC" & NpcNumber, "GiveGLD"))
-        '166        .QuestNumber = val(Leer.GetValue("NPC" & NpcNumber, "QuestNumber"))
-        .PoderAtaque = val(Leer.GetValue("NPC" & NpcNumber, "PoderAtaque"))
-        .PoderEvasion = val(Leer.GetValue("NPC" & NpcNumber, "PoderEvasion"))
-        .InvReSpawn = val(Leer.GetValue("NPC" & NpcNumber, "InvReSpawn"))
-        .showName = val(Leer.GetValue("NPC" & NpcNumber, "ShowName"))
-        .GobernadorDe = val(Leer.GetValue("NPC" & NpcNumber, "GobernadorDe"))
-        .SoundOpen = val(Leer.GetValue("NPC" & NpcNumber, "SoundOpen"))
-        .SoundClose = val(Leer.GetValue("NPC" & NpcNumber, "SoundClose"))
-        .IntervaloAtaque = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloAtaque"))
-        .IntervaloMovimiento = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloMovimiento"))
-        .IntervaloLanzarHechizo = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloLanzarHechizo"))
-        .Contadores.IntervaloRespawn = RandomNumber(val(Leer.GetValue("NPC" & NpcNumber, "IntervaloRespawnMin")), val(Leer.GetValue("NPC" & NpcNumber, "IntervaloRespawn")))
-        .InformarRespawn = val(Leer.GetValue("NPC" & NpcNumber, "InformarRespawn"))
-        .QuizaProb = val(Leer.GetValue("NPC" & NpcNumber, "QuizaProb"))
-        .MinTameLevel = val(Leer.GetValue("NPC" & NpcNumber, "MinTameLevel", 1))
-        .OnlyForGuilds = val(Leer.GetValue("NPC" & NpcNumber, "OnlyForGuilds", 0))
-        .ShowKillerConsole = val(Leer.GetValue("NPC" & NpcNumber, "ShowKillerConsole", 0))
+        .Veneno = Info.Veneno
+        .flags.Domable = Info.Domable
+        .flags.AttackableByEveryone = Info.AttackableByEveryone
+        .flags.MapEntryPrice = Info.MapEntryPrice
+        .flags.MapTargetEntry = Info.MapTargetEntry
+        .flags.MapTargetEntryX = Info.MapTargetEntryX
+        .flags.MapTargetEntryY = Info.MapTargetEntryY
+        .flags.ArenaEnabled = Info.ArenaEnabled
+        .GiveGLD = Info.GiveGLD
+        .PoderAtaque = Info.PoderAtaque
+        .PoderEvasion = Info.PoderEvasion
+        .InvReSpawn = Info.InvReSpawn
+        .showName = Info.ShowName
+        .GobernadorDe = Info.GobernadorDe
+        .SoundOpen = Info.SoundOpen
+        .SoundClose = Info.SoundClose
+        .IntervaloAtaque = Info.IntervaloAtaque
+        .IntervaloMovimiento = Info.IntervaloMovimiento
+        .IntervaloLanzarHechizo = Info.IntervaloLanzarHechizo
+        .Contadores.IntervaloRespawn = RandomNumber(Info.IntervaloRespawnMin, Info.IntervaloRespawnMax)
+        .InformarRespawn = Info.InformarRespawn
+        .QuizaProb = Info.QuizaProb
+        .MinTameLevel = Info.MinTameLevel
+        .OnlyForGuilds = Info.OnlyForGuilds
+        .ShowKillerConsole = Info.ShowKillerConsole
         If .IntervaloMovimiento = 0 Then
             .IntervaloMovimiento = 380
             .Char.speeding = frmMain.TIMER_AI.Interval / 330
@@ -1036,68 +1325,77 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         If .IntervaloAtaque = 0 Then
             .IntervaloAtaque = 2000
         End If
-        .Stats.MaxHp = val(Leer.GetValue("NPC" & NpcNumber, "MaxHP"))
-        .Stats.MinHp = val(Leer.GetValue("NPC" & NpcNumber, "MinHP"))
-        .Stats.MaxHit = val(Leer.GetValue("NPC" & NpcNumber, "MaxHIT"))
-        .Stats.MinHIT = val(Leer.GetValue("NPC" & NpcNumber, "MinHIT"))
-        .Stats.def = val(Leer.GetValue("NPC" & NpcNumber, "DEF"))
-        .Stats.defM = val(Leer.GetValue("NPC" & NpcNumber, "DEFm"))
-        .Stats.MagicResistance = val(Leer.GetValue("NPC" & NpcNumber, "MagicResistance"))
-        .Stats.MagicDef = val(Leer.GetValue("NPC" & NpcNumber, "MagicDef"))
-        .Stats.CantidadInvocaciones = val(Leer.GetValue("NPC" & NpcNumber, "CantidadInvocaciones"))
-        .Stats.MagicBonus = val(Leer.GetValue("NPC" & NpcNumber, "MagicBonus"))
+        .Stats.MaxHp = Info.StatsMaxHp
+        .Stats.MinHp = Info.StatsMinHp
+        .Stats.MaxHit = Info.StatsMaxHit
+        .Stats.MinHIT = Info.StatsMinHit
+        .Stats.def = Info.StatsDef
+        .Stats.defM = Info.StatsDefM
+        .Stats.MagicResistance = Info.MagicResistance
+        .Stats.MagicDef = Info.MagicDef
+        .Stats.CantidadInvocaciones = Info.CantidadInvocaciones
+        .Stats.MagicBonus = Info.MagicBonus
         If .Stats.CantidadInvocaciones > 0 Then
             ReDim .Stats.NpcsInvocados(1 To .Stats.CantidadInvocaciones)
             For LoopC = 1 To .Stats.CantidadInvocaciones
                 Call ClearNpcRef(.Stats.NpcsInvocados(LoopC))
             Next LoopC
         End If
-        .flags.AIAlineacion = val(Leer.GetValue("NPC" & NpcNumber, "Alineacion"))
-        .invent.NroItems = val(Leer.GetValue("NPC" & NpcNumber, "NROITEMS"))
+        .flags.AIAlineacion = Info.AIAlineacion
+        .invent.NroItems = Info.InventoryCount
         If .invent.NroItems > UBound(.invent.Object) Then
             Debug.Print "Error in NPC " & .name & " configuration, too many items in inventory! Max possible is " & UBound(.invent.Object)
         End If
-        Debug.Assert .invent.NroItems <= UBound(.invent.Object) ' NPC not properly configured, it cannot have more so many items in the inventory
-        .invent.NroItems = Min(UBound(.invent.Object), .invent.NroItems) 'Clamp the number of items to make sure it's not too big
-        .Humanoide = CBool(val(Leer.GetValue("NPC" & NpcNumber, "Humanoide")))
+        Debug.Assert .invent.NroItems <= UBound(.invent.Object)
+        .invent.NroItems = Min(UBound(.invent.Object), .invent.NroItems)
+        .Humanoide = CBool(Info.Humanoide)
         For LoopC = 1 To .invent.NroItems
-            ln = Leer.GetValue("NPC" & NpcNumber, "Obj" & LoopC)
-            .invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))
-            .invent.Object(LoopC).amount = val(ReadField(2, ln, 45))
+            .invent.Object(LoopC).ObjIndex = Info.InventoryItems(LoopC).ObjIndex
+            .invent.Object(LoopC).amount = Info.InventoryItems(LoopC).amount
         Next LoopC
-        .flags.LanzaSpells = val(Leer.GetValue("NPC" & NpcNumber, "LanzaSpells"))
+        .flags.LanzaSpells = Info.LanzaSpells
         If .flags.LanzaSpells > 0 Then
             ReDim .Spells(1 To .flags.LanzaSpells)
-            .SpellRange = val(Leer.GetValue("NPC" & NpcNumber, "RangoSpell"))
+            .SpellRange = Info.SpellRange
+        Else
+            Erase .Spells
+            .SpellRange = 0
         End If
         For LoopC = 1 To .flags.LanzaSpells
-            .Spells(LoopC).SpellIndex = val(Leer.GetValue("NPC" & NpcNumber, "Sp" & LoopC))
-            .Spells(LoopC).Cd = val(Leer.GetValue("NPC" & NpcNumber, "Cd" & LoopC))
+            .Spells(LoopC).SpellIndex = Info.Spells(LoopC).SpellIndex
+            .Spells(LoopC).Cd = Info.Spells(LoopC).Cd
             .Spells(LoopC).lastUse = 0
         Next LoopC
         If .npcType = e_NPCType.Entrenador Then
-            .NroCriaturas = val(Leer.GetValue("NPC" & NpcNumber, "NroCriaturas"))
+            .NroCriaturas = Info.NroCriaturas
             If .NroCriaturas > 0 Then
-                ReDim .Criaturas(1 To .NroCriaturas) As t_CriaturasEntrenador
+                ReDim .Criaturas(1 To .NroCriaturas)
                 For LoopC = 1 To .NroCriaturas
-                    .Criaturas(LoopC).NpcIndex = Leer.GetValue("NPC" & NpcNumber, "CI" & LoopC)
-                    .Criaturas(LoopC).NpcName = Leer.GetValue("NPC" & NpcNumber, "CN" & LoopC)
+                    .Criaturas(LoopC).NpcIndex = Info.Criaturas(LoopC).NpcIndex
+                    .Criaturas(LoopC).NpcName = Info.Criaturas(LoopC).NpcName
+                    .Criaturas(LoopC).tmpIndex = 0
+                    .Criaturas(LoopC).PuedeInvocar = False
                 Next LoopC
+            Else
+                Erase .Criaturas
             End If
+        Else
+            .NroCriaturas = 0
+            Erase .Criaturas
         End If
         Call ResetMask(.flags.StatusMask)
         .flags.NPCActive = True
         Call ResetMask(.flags.BehaviorFlags)
-        Select Case val(Leer.GetValue("NPC" & NpcNumber, "RestriccionDeAtaque"))
-            Case 0 ' Todos
+        Select Case Info.RestriccionAtaque
+            Case 0
                 Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eAttackNpc)
                 Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eAttackUsers)
-            Case 1 ' Usuarios solamente
+            Case 1
                 Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eAttackUsers)
-            Case 2 ' NPCs solamente
+            Case 2
                 Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eAttackNpc)
         End Select
-        Select Case val(Leer.GetValue("NPC" & NpcNumber, "RestriccionDeAyuda"))
+        Select Case Info.RestriccionAyuda
             Case 1
                 Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eHelpNpc)
             Case 2
@@ -1107,122 +1405,101 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
                 Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eHelpUsers)
         End Select
         If Respawn Then
-            .flags.Respawn = val(Leer.GetValue("NPC" & NpcNumber, "ReSpawn"))
+            .flags.Respawn = Info.RespawnValue
         Else
             .flags.Respawn = 1
         End If
-        If val(Leer.GetValue("NPC" & NpcNumber, "DontHitVisiblePlayers")) > 0 Then Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eDontHitVisiblePlayers)
-        If val(Leer.GetValue("NPC" & NpcNumber, "AddToMapAiList")) > 0 Then Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eConsideredByMapAi)
-        If val(Leer.GetValue("NPC" & NpcNumber, "DisplayCastMessage")) > 0 Then Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eDisplayCastMessage)
-        .flags.team = val(Leer.GetValue("NPC" & NpcNumber, "Team"))
-        .flags.backup = val(Leer.GetValue("NPC" & NpcNumber, "BackUp"))
-        .flags.RespawnOrigPos = val(Leer.GetValue("NPC" & NpcNumber, "OrigPos"))
-        .flags.AfectaParalisis = val(Leer.GetValue("NPC" & NpcNumber, "AfectaParalisis"))
-        .flags.GolpeExacto = val(Leer.GetValue("NPC" & NpcNumber, "GolpeExacto"))
-        If val(Leer.GetValue("NPC" & NpcNumber, "TranslationInmune")) > 0 Then Call SetMask(.flags.EffectInmunity, e_Inmunities.eTranslation)
-        .flags.Snd1 = val(Leer.GetValue("NPC" & NpcNumber, "Snd1"))
-        .flags.Snd2 = val(Leer.GetValue("NPC" & NpcNumber, "Snd2"))
-        .flags.Snd3 = val(Leer.GetValue("NPC" & NpcNumber, "Snd3"))
-        '<<<<<<<<<<<<<< Expresiones >>>>>>>>>>>>>>>>
-        aux = Leer.GetValue("NPC" & NpcNumber, "NROEXP")
-        If LenB(aux) = 0 Then
-            .NroExpresiones = 0
-        Else
-            .NroExpresiones = val(aux)
-            ReDim .Expresiones(1 To .NroExpresiones) As String
+        If Info.DontHitVisiblePlayers > 0 Then Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eDontHitVisiblePlayers)
+        If Info.AddToMapAiList > 0 Then Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eConsideredByMapAi)
+        If Info.DisplayCastMessage > 0 Then Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eDisplayCastMessage)
+        .flags.team = Info.Team
+        .flags.backup = Info.Backup
+        .flags.RespawnOrigPos = Info.RespawnOrigPos
+        .flags.AfectaParalisis = Info.AfectaParalisis
+        .flags.GolpeExacto = Info.GolpeExacto
+        If Info.TranslationInmune > 0 Then Call SetMask(.flags.EffectInmunity, e_Inmunities.eTranslation)
+        .flags.Snd1 = Info.Snd1
+        .flags.Snd2 = Info.Snd2
+        .flags.Snd3 = Info.Snd3
+        .NroExpresiones = Info.NroExp
+        If .NroExpresiones > 0 Then
+            ReDim .Expresiones(1 To .NroExpresiones)
             For LoopC = 1 To .NroExpresiones
-                .Expresiones(LoopC) = Leer.GetValue("NPC" & NpcNumber, "Exp" & LoopC)
+                .Expresiones(LoopC) = Info.Expresiones(LoopC)
             Next LoopC
-        End If
-        '<<<<<<<<<<<<<< Sistema de Dropeo NUEVO >>>>>>>>>>>>>>>>
-        .NumQuiza = val(Leer.GetValue("NPC" & NpcNumber, "NumQuiza"))
-        If .NumQuiza > 0 Then
-            ReDim .QuizaDropea(1 To .NumQuiza) As String
-            For LoopC = 1 To .NumQuiza
-                .QuizaDropea(LoopC) = Leer.GetValue("NPC" & NpcNumber, "QuizaDropea" & LoopC)
-            Next LoopC
-        End If
-        'Ladder
-        'Nuevo sistema de Quest
-        aux = Leer.GetValue("NPC" & NpcNumber, "NumQuest")
-        If LenB(aux) = 0 Then
-            .NumQuest = 0
         Else
-            .NumQuest = val(aux)
-            ReDim .QuestNumber(1 To .NumQuest) As Integer
+            Erase .Expresiones
+        End If
+        .NumQuiza = Info.NumQuiza
+        If .NumQuiza > 0 Then
+            ReDim .QuizaDropea(1 To .NumQuiza)
+            For LoopC = 1 To .NumQuiza
+                .QuizaDropea(LoopC) = Info.QuizaDropea(LoopC)
+            Next LoopC
+        Else
+            Erase .QuizaDropea
+        End If
+        .NumQuest = Info.NumQuest
+        If .NumQuest > 0 Then
+            ReDim .QuestNumber(1 To .NumQuest)
             For LoopC = 1 To .NumQuest
-                .QuestNumber(LoopC) = val(Leer.GetValue("NPC" & NpcNumber, "QuestNumber" & LoopC))
+                .QuestNumber(LoopC) = Info.QuestNumber(LoopC)
             Next LoopC
+        Else
+            Erase .QuestNumber
         End If
-        'Nuevo sistema de Quest
-        'Nuevo sistema de Drop Quest
-        .NumDropQuest = val(Leer.GetValue("NPC" & NpcNumber, "NumDropQuest"))
-        If .NumDropQuest Then
-            ReDim .DropQuest(1 To .NumDropQuest) As t_QuestObj
+        .NumDropQuest = Info.NumDropQuest
+        If .NumDropQuest > 0 Then
+            ReDim .DropQuest(1 To .NumDropQuest)
             For LoopC = 1 To .NumDropQuest
-                .DropQuest(LoopC).QuestIndex = val(ReadField(1, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
-                .DropQuest(LoopC).ObjIndex = val(ReadField(2, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
-                .DropQuest(LoopC).amount = val(ReadField(3, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
-                .DropQuest(LoopC).Probabilidad = val(ReadField(4, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
+                .DropQuest(LoopC) = Info.DropQuest(LoopC)
             Next LoopC
+        Else
+            Erase .DropQuest
         End If
-        '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< PATHFINDING >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        .pathFindingInfo.RangoVision = val(Leer.GetValue("NPC" & NpcNumber, "Distancia", RANGO_VISION_X))
+        .pathFindingInfo.RangoVision = Info.PathFindingVision
         .pathFindingInfo.OriginalVision = .pathFindingInfo.RangoVision
         .pathFindingInfo.TargetUnreachable = False
         .pathFindingInfo.PreviousAttackable = .Attackable
         ReDim .pathFindingInfo.Path(1 To MAX_PATH_LENGTH)
-        '<<<<<<<<<<<<<< Sistema de Viajes NUEVO >>>>>>>>>>>>>>>>
-        aux = Leer.GetValue("NPC" & NpcNumber, "NumDestinos")
-        If LenB(aux) = 0 Then
-            .NumDestinos = 0
-        Else
-            .NumDestinos = val(aux)
-            ReDim .dest(1 To .NumDestinos) As String
+        .NumDestinos = Info.NumDestinos
+        If .NumDestinos > 0 Then
+            ReDim .dest(1 To .NumDestinos)
             For LoopC = 1 To .NumDestinos
-                .dest(LoopC) = Leer.GetValue("NPC" & NpcNumber, "Dest" & LoopC)
+                .dest(LoopC) = Info.Dest(LoopC)
             Next LoopC
+        Else
+            Erase .dest
         End If
-        '<<<<<<<<<<<<<< Expresiones >>>>>>>>>>>>>>>>
-        .Interface = val(Leer.GetValue("NPC" & NpcNumber, "Interface"))
-        'Tipo de items con los que comercia
-        .TipoItems = val(Leer.GetValue("NPC" & NpcNumber, "TipoItems"))
-        'PuedeInvocar -> NPCs que solo ven los SemiDioses
-        .PuedeInvocar = val(Leer.GetValue("NPC" & NpcNumber, "PuedeInvocar"))
-        '<<<<<<<<<<<<<< Animaciones >>>>>>>>>>>>>>>>
-        ' Por defecto la animación es idle
+        .Interface = Info.Interface
+        .TipoItems = Info.TipoItems
+        .PuedeInvocar = Info.PuedeInvocar
         If NumUsers > 0 Then
             Call AnimacionIdle(NpcIndex, True)
         End If
-        ' Si el tipo de movimiento es Caminata
         If .Movement = Caminata Then
-            ' Leemos la cantidad de indicaciones
-            Dim cant As Byte
-            cant = val(Leer.GetValue("NPC" & NpcNumber, "CaminataLen"))
-            ' Prevengo NPCs rotos
+            cant = Info.CaminataLen
             If cant = 0 Then
                 Call SetMovement(NpcIndex, Estatico)
             Else
-                ' Redimenciono el array
                 ReDim .Caminata(1 To cant)
-                ' Leo todas las indicaciones
                 For LoopC = 1 To cant
-                    Field = Split(Leer.GetValue("NPC" & NpcNumber, "Caminata" & LoopC), ":")
-                    .Caminata(LoopC).offset.x = val(Field(0))
-                    .Caminata(LoopC).offset.y = val(Field(1))
-                    .Caminata(LoopC).Espera = val(Field(2))
-                Next
+                    .Caminata(LoopC).offset.x = Info.Caminata(LoopC).OffsetX
+                    .Caminata(LoopC).offset.y = Info.Caminata(LoopC).OffsetY
+                    .Caminata(LoopC).Espera = Info.Caminata(LoopC).Espera
+                Next LoopC
                 .CaminataActual = 1
             End If
+        Else
+            Erase .Caminata
         End If
-        '<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>
     End With
-    'Si NO estamos actualizando los NPC's activos, actualizamos el contador.
+
     If Reload = False Then
         If NpcIndex > LastNPC Then LastNPC = NpcIndex
         NumNPCs = NumNPCs + 1
     End If
-    'Devuelve el nuevo Indice
+
     OpenNPC = NpcIndex
     Exit Function
 OpenNPC_Err:
@@ -1231,25 +1508,26 @@ End Function
 
 Function NpcSellsItem(ByVal NpcNumber As Integer, ByVal NroObjeto As Integer) As Boolean
     On Error GoTo NpcSellsItem_Err
-    Dim Leer As clsIniManager
-    Set Leer = LeerNPCs
-    'If requested index is invalid, abort
-    If Not Leer.KeyExists("NPC" & NpcNumber) Then
-        NpcSellsItem = False
-        Exit Function
+    Dim LoopC As Long
+
+    If Not NpcInfoCacheInitialized Then
+        If LeerNPCs Is Nothing Then Exit Function
+        Call BuildNpcInfoCache
+        If Not NpcInfoCacheInitialized Then Exit Function
     End If
-    Dim LoopC    As Long
-    Dim ln       As String
-    Dim Field()  As String
-    Dim NroItems As Long
-    NroItems = val(Leer.GetValue("NPC" & NpcNumber, "NROITEMS"))
-    For LoopC = 1 To NroItems
-        ln = Leer.GetValue("NPC" & NpcNumber, "Obj" & LoopC)
-        If NroObjeto = val(ReadField(1, ln, 45)) Then
-            NpcSellsItem = True
-            Exit Function
-        End If
-    Next LoopC
+
+    If NpcNumber < LBound(NpcInfoCache) Or NpcNumber > UBound(NpcInfoCache) Then Exit Function
+    If Not NpcInfoCache(NpcNumber).Exists Then Exit Function
+
+    With NpcInfoCache(NpcNumber)
+        For LoopC = 1 To .InventoryCount
+            If NroObjeto = .InventoryItems(LoopC).ObjIndex Then
+                NpcSellsItem = True
+                Exit Function
+            End If
+        Next LoopC
+    End With
+
     NpcSellsItem = False
     Exit Function
 NpcSellsItem_Err:
