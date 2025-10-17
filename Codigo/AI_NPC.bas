@@ -34,6 +34,11 @@ Public Const ELEMENTAL_FUEGO  As Integer = 962
 Public Const RANGO_VISION_X   As Byte = DEFAULT_NPC_VISION_RANGE_X
 Public Const RANGO_VISION_Y   As Byte = DEFAULT_NPC_VISION_RANGE_Y
 
+Private Const NPC_ORBIT_STEP_DEGREES      As Double = 55#
+Private Const NPC_ORBIT_REEVALUATE_MS    As Long = 1800
+Private Const NPC_ORBIT_TANGENT_WEIGHT   As Double = 0.35
+Private Const NPC_RETREAT_DISTANCE_BUFFER As Double = 0.75
+
 Public Sub NpcDummyUpdate(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)
         Debug.Assert .npcType = DummyTarget
@@ -318,11 +323,19 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
         'perform movement
         If NPCs.CanMove(.Contadores, .flags) Then
             If NearestUser > 0 And NearestTargetDistance < .PreferedRange Then
-                Dim Direction    As t_Vector
-                Dim TargetMapPos As t_WorldPos
-                Direction = GetDirection(UserList(NearestUser).pos, .pos)
-                TargetMapPos = PreferedTileForDirection(Direction, .pos)
-                Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
+                Dim retreatTargetPos    As t_WorldPos
+                Dim retreatDestination As t_WorldPos
+                retreatTargetPos = UserList(NearestUser).pos
+                retreatDestination = ComputeNpcRangedRetreatDestination(NpcIndex, retreatTargetPos, .PreferedRange)
+                If retreatDestination.x <> .pos.x Or retreatDestination.y <> .pos.y Then
+                    Call AI_CaminarConRumbo(NpcIndex, retreatDestination)
+                Else
+                    Dim fallbackDirection As t_Vector
+                    Dim fallbackTarget    As t_WorldPos
+                    fallbackDirection = GetDirection(retreatTargetPos, .pos)
+                    fallbackTarget = PreferedTileForDirection(fallbackDirection, .pos)
+                    Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, fallbackTarget))
+                End If
             ElseIf Math.Round(NearestTargetDistance) = .PreferedRange Then
                 'do nothing, look at pos?
             ElseIf IsValidRef(CurrentTarget) And Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) > .PreferedRange Then
@@ -426,6 +439,99 @@ AI_CaminarConRumbo_Err:
     errorDescription = Err.Description & vbNewLine & " NpcIndex: " & NpcIndex & " NPCList.size= " & UBound(NpcList)
     Call TraceError(Err.Number, errorDescription, "AI.AI_CaminarConRumbo", Erl)
 End Sub
+
+Private Function EnsureNpcOrbitDirection(ByVal NpcIndex As Integer) As Integer
+    With NpcList(NpcIndex).pathFindingInfo
+        If .OrbitDirection = 0 Or GlobalFrameTime >= .OrbitReevaluateAt Then
+            If Rnd >= 0.5 Then
+                .OrbitDirection = 1
+            Else
+                .OrbitDirection = -1
+            End If
+            .OrbitReevaluateAt = GlobalFrameTime + NPC_ORBIT_REEVALUATE_MS
+        End If
+        EnsureNpcOrbitDirection = .OrbitDirection
+    End With
+End Function
+
+Private Sub FlipNpcOrbitDirection(ByVal NpcIndex As Integer)
+    With NpcList(NpcIndex).pathFindingInfo
+        Dim currentDirection As Integer
+        currentDirection = EnsureNpcOrbitDirection(NpcIndex)
+        .OrbitDirection = -currentDirection
+        .OrbitReevaluateAt = GlobalFrameTime + NPC_ORBIT_REEVALUATE_MS
+    End With
+End Sub
+
+Private Function ComputeNpcRangedRetreatDestination(ByVal NpcIndex As Integer, ByRef targetPos As t_WorldPos, ByVal preferedRange As Single) As t_WorldPos
+    Dim npcPos As t_WorldPos
+    npcPos = NpcList(NpcIndex).pos
+    ComputeNpcRangedRetreatDestination = npcPos
+    If preferedRange <= 0 Then Exit Function
+
+    Dim baseVector As t_Vector
+    baseVector = GetDirection(targetPos, npcPos)
+    If baseVector.x = 0 And baseVector.y = 0 Then
+        baseVector.x = 1
+    End If
+
+    Dim normalized As t_Vector
+    normalized = GetNormal(baseVector)
+    Dim distanceToTarget As Double
+    distanceToTarget = Distance(npcPos.x, npcPos.y, targetPos.x, targetPos.y)
+
+    Dim attempt As Integer
+    For attempt = 1 To 2
+        Dim orbitDirection As Integer
+        orbitDirection = EnsureNpcOrbitDirection(NpcIndex)
+
+        Dim offset As t_Vector
+        If distanceToTarget <= preferedRange - NPC_RETREAT_DISTANCE_BUFFER Then
+            Dim tangent As t_Vector
+            tangent.x = -normalized.y
+            tangent.y = normalized.x
+            offset.x = normalized.x * (1# - NPC_ORBIT_TANGENT_WEIGHT) + tangent.x * orbitDirection * NPC_ORBIT_TANGENT_WEIGHT
+            offset.y = normalized.y * (1# - NPC_ORBIT_TANGENT_WEIGHT) + tangent.y * orbitDirection * NPC_ORBIT_TANGENT_WEIGHT
+        Else
+            offset = RotateVector(normalized, orbitDirection * ToRadians(NPC_ORBIT_STEP_DEGREES))
+        End If
+
+        Dim offsetLength As Double
+        offsetLength = Distance(0, 0, offset.x, offset.y)
+        If offsetLength > 0 Then
+            offset.x = offset.x / offsetLength
+            offset.y = offset.y / offsetLength
+        End If
+
+        Dim candidate As t_WorldPos
+        candidate.Map = npcPos.Map
+        candidate.x = targetPos.x + CInt(offset.x * preferedRange)
+        candidate.y = targetPos.y + CInt(offset.y * preferedRange)
+
+        If Not LegalPos(candidate.Map, candidate.x, candidate.y, False, True) Then
+            Dim stabilized As t_WorldPos
+            stabilized = candidate
+            Call ClosestStablePos(candidate, stabilized)
+            If stabilized.x <> 0 Or stabilized.y <> 0 Then
+                candidate = stabilized
+            Else
+                Call FlipNpcOrbitDirection(NpcIndex)
+                GoTo ContinueOrbitSearch
+            End If
+        End If
+
+        If candidate.x = npcPos.x And candidate.y = npcPos.y Then
+            Call FlipNpcOrbitDirection(NpcIndex)
+            GoTo ContinueOrbitSearch
+        End If
+
+        ComputeNpcRangedRetreatDestination = candidate
+        Exit Function
+
+ContinueOrbitSearch:
+    Next attempt
+    ComputeNpcRangedRetreatDestination = npcPos
+End Function
 
 Private Sub NpcMarkTargetUnreachable(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)
@@ -669,11 +775,17 @@ Public Sub AI_BGSupportBehavior(ByVal NpcIndex As Integer)
         TargetPos = ModReferenceUtils.GetPosition(CurrentTarget)
         If NPCs.CanMove(.Contadores, .flags) Then
             If CurrentTarget.ArrayIndex > 0 And NearestTargetDistance < .PreferedRange Then
-                Dim Direction    As t_Vector
-                Dim TargetMapPos As t_WorldPos
-                Direction = GetDirection(TargetPos, .pos)
-                TargetMapPos = PreferedTileForDirection(Direction, .pos)
-                Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
+                Dim retreatDestination As t_WorldPos
+                retreatDestination = ComputeNpcRangedRetreatDestination(NpcIndex, TargetPos, .PreferedRange)
+                If retreatDestination.x <> .pos.x Or retreatDestination.y <> .pos.y Then
+                    Call AI_CaminarConRumbo(NpcIndex, retreatDestination)
+                Else
+                    Dim fallbackDirection As t_Vector
+                    Dim fallbackTarget    As t_WorldPos
+                    fallbackDirection = GetDirection(TargetPos, .pos)
+                    fallbackTarget = PreferedTileForDirection(fallbackDirection, .pos)
+                    Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, fallbackTarget))
+                End If
             Else
                 If IsValidRef(CurrentTarget) And InRangoVisionNPC(NpcIndex, TargetPos.x, TargetPos.y) Then
                 Else
@@ -724,11 +836,17 @@ Public Sub AI_BGRangedBehavior(ByVal NpcIndex As Integer)
         'perform movement
         If NPCs.CanMove(.Contadores, .flags) Then
             If CurrentTarget.ArrayIndex > 0 And NearestTargetDistance < .PreferedRange Then
-                Dim Direction    As t_Vector
-                Dim TargetMapPos As t_WorldPos
-                Direction = GetDirection(TargetPos, .pos)
-                TargetMapPos = PreferedTileForDirection(Direction, .pos)
-                Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
+                Dim retreatDestination As t_WorldPos
+                retreatDestination = ComputeNpcRangedRetreatDestination(NpcIndex, TargetPos, .PreferedRange)
+                If retreatDestination.x <> .pos.x Or retreatDestination.y <> .pos.y Then
+                    Call AI_CaminarConRumbo(NpcIndex, retreatDestination)
+                Else
+                    Dim fallbackDirection As t_Vector
+                    Dim fallbackTarget    As t_WorldPos
+                    fallbackDirection = GetDirection(TargetPos, .pos)
+                    fallbackTarget = PreferedTileForDirection(fallbackDirection, .pos)
+                    Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, fallbackTarget))
+                End If
             ElseIf Not IsValidRef(CurrentTarget) Then
                 Call AI_CaminarConRumbo(NpcIndex, GoToNextWp(NpcIndex))
             End If
