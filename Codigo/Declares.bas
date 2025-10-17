@@ -1409,16 +1409,16 @@ Public Enum e_OBJType
     otFullBottle = 34
     otRingAccesory = 35
     otPassageTicket = 36
-    'otLibre = 37
+    otSkinsWings = 37           'Skins de Alas
     otMap = 38
-    'otLibre = 39
-    'otLibre = 40
-    'otLibre = 41
-    'otLibre = 42
-    'otLibre = 43
+    otSkinsArmours = 39         'Skins de Armaduras
+    otSkinsShields = 40         'Skins de Escudos
+    otSkinsHelmets = 41         'Skins de Cascos o Sombreros, o todo lo que vaya en la cabeza
+    otSkinsWeapons = 42         'Skins Armas
+    otSkinsBoats = 43           'Skins Botes, barcas, galeras, galeones,etc
     otSaddles = 44
     otRecallStones = 45
-    'otLibre = 46
+    otSkinsSpells = 46          'Skins de Hechizos
     otMail = 47
     otChest = 48
     otDonator = 50
@@ -1763,6 +1763,13 @@ Public Type t_UserOBJ
     ElementalTags As Long
 End Type
 
+Public Type t_UserSkins
+    Deleted                         As Boolean
+    Equipped                        As Boolean
+    ObjIndex                        As Integer
+    Type                            As Integer
+End Type
+
 Public Type t_Inventario
     Object(1 To MAX_INVENTORY_SLOTS) As t_UserOBJ
     EquippedWeaponObjIndex As Integer
@@ -1788,6 +1795,27 @@ Public Type t_Inventario
     EquippedBackpackObjIndex As Integer
     EquippedBackpackSlot As Byte
     NroItems As Integer
+End Type
+
+Public Type tSkinInventario 'MAX_SKINSINVENTORY_SLOTS
+    'Type debe ir en el Storage Manager pero acá no hace falta, ya está en OBJECT.
+    Object(1 To MAX_SKINSINVENTORY_SLOTS) As t_UserSkins
+    ObjIndexArmourEquipped      As Integer
+    ObjIndexHelmetEquipped      As Integer
+    ObjIndexWeaponEquipped      As Integer
+    ObjIndexShieldEquipped      As Integer
+    ObjIndexWindsEquipped       As Integer
+    ObjIndexBoatEquipped        As Integer
+    ObjIndexBackpackEquipped    As Integer 'Mochila
+    SlotArmourEquipped          As Byte
+    SlotHelmetEquipped          As Byte
+    SlotWeaponEquipped          As Byte
+    SlotShieldEquipped          As Byte
+    SlotWindsEquipped           As Byte
+    SlotBoatEquipped            As Byte
+    SlotBackpackEquipped        As Byte 'Mochila
+    'Spells puede haber varios equipados al mismo tiempo, no tiene sentido.
+    count                       As Byte
 End Type
 
 Public Type t_WorldPos
@@ -2296,6 +2324,7 @@ Public Type t_UserStats
     UserAtributos(1 To NUMATRIBUTOS) As Byte
     UserAtributosBackUP(1 To NUMATRIBUTOS) As Byte
     UserHechizos(1 To MAXUSERHECHIZOS) As Integer
+    UserSkinsHechizos(1 To MAX_SKINSSPELLS_SLOTS) As Integer 'No puede ser MAXUSERHECHIZOS porque la cantidad máxima de skins podría escalar en el futuro, debe ser independiente.
     UsuariosMatados As Long
     PuntosPesca As Long
     NPCsMuertos As Integer
@@ -2912,6 +2941,136 @@ End Type
 Public Type t_Caminata
     offset As t_Position
     Espera As Long
+End Type
+
+Public Type t_NpcInventoryItem
+    ObjIndex As Integer
+    amount As Integer
+End Type
+
+Public Type t_NpcSpellCache
+    SpellIndex As Integer
+    Cd As Integer
+End Type
+
+Public Type t_NpcCaminataCache
+    OffsetX As Integer
+    OffsetY As Integer
+    Espera As Long
+End Type
+
+Public Type t_NpcInfoCache
+    Exists As Boolean
+    TestOnly As Integer
+    RequireToggle As String
+    name As String
+    SubName As String
+    Desc As String
+    nivel As Integer
+    Movement As Integer
+    AguaValida As Integer
+    TierraInvalida As Integer
+    Faccion As Integer
+    ElementalTags As Long
+    npcType As Integer
+    Body As Integer
+    Head As Integer
+    Heading As Integer
+    BodyIdle As Integer
+    Ataque1 As Integer
+    CastAnimation As Integer
+    AnimacionesCount As Integer
+    Animaciones() As Integer
+    WeaponAnim As Integer
+    ShieldAnim As Integer
+    CascoAnim As Integer
+    CartAnim As Integer
+    Attackable As Integer
+    Comercia As Integer
+    Craftea As Integer
+    Hostile As Integer
+    AttackRange As Integer
+    ProjectileType As Integer
+    PreferedRange As Integer
+    GiveEXP As Long
+    Distancia As Integer
+    GiveEXPClan As Long
+    Veneno As Integer
+    Domable As Integer
+    AttackableByEveryone As Integer
+    MapEntryPrice As Long
+    MapTargetEntry As Integer
+    MapTargetEntryX As Integer
+    MapTargetEntryY As Integer
+    ArenaEnabled As Integer
+    GiveGLD As Long
+    PoderAtaque As Long
+    PoderEvasion As Long
+    InvReSpawn As Integer
+    ShowName As Integer
+    GobernadorDe As Integer
+    SoundOpen As Integer
+    SoundClose As Integer
+    IntervaloAtaque As Long
+    IntervaloMovimiento As Long
+    IntervaloLanzarHechizo As Long
+    IntervaloRespawnMin As Long
+    IntervaloRespawnMax As Long
+    InformarRespawn As Integer
+    QuizaProb As Integer
+    MinTameLevel As Integer
+    OnlyForGuilds As Integer
+    ShowKillerConsole As Integer
+    StatsMaxHp As Long
+    StatsMinHp As Long
+    StatsMaxHit As Long
+    StatsMinHit As Long
+    StatsDef As Long
+    StatsDefM As Long
+    MagicResistance As Long
+    MagicDef As Long
+    CantidadInvocaciones As Long
+    MagicBonus As Long
+    AIAlineacion As Integer
+    Humanoide As Integer
+    InventoryCount As Integer
+    InventoryItems() As t_NpcInventoryItem
+    LanzaSpells As Integer
+    SpellRange As Integer
+    Spells() As t_NpcSpellCache
+    NroCriaturas As Integer
+    Criaturas() As t_CriaturasEntrenador
+    RestriccionAtaque As Integer
+    RestriccionAyuda As Integer
+    RespawnValue As Integer
+    DontHitVisiblePlayers As Integer
+    AddToMapAiList As Integer
+    DisplayCastMessage As Integer
+    Team As Integer
+    Backup As Integer
+    RespawnOrigPos As Integer
+    AfectaParalisis As Integer
+    GolpeExacto As Integer
+    TranslationInmune As Integer
+    Snd1 As Integer
+    Snd2 As Integer
+    Snd3 As Integer
+    NroExp As Integer
+    Expresiones() As String
+    NumQuiza As Integer
+    QuizaDropea() As String
+    NumQuest As Integer
+    QuestNumber() As Integer
+    NumDropQuest As Integer
+    DropQuest() As t_QuestObj
+    PathFindingVision As Integer
+    NumDestinos As Integer
+    Dest() As String
+    Interface As Integer
+    TipoItems As Integer
+    PuedeInvocar As Integer
+    CaminataLen As Integer
+    Caminata() As t_NpcCaminataCache
 End Type
 
 Public Enum e_TipoAI
