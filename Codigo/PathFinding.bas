@@ -525,13 +525,13 @@ Public Sub ApplyNpcStrafeToDestination(ByVal NpcIndex As Integer, ByRef destinat
     If NpcIndex <= 0 Or NpcIndex > UBound(NpcList) Then Exit Sub
     With NpcList(NpcIndex)
         If destination.Map <> .pos.Map Then
-            Call ResetNpcStrafeInfo(.pathFindingInfo)
+            Call ResetNpcStrafeInfo(NpcList(NpcIndex).pathFindingInfo)
             Exit Sub
         End If
         With .pathFindingInfo
             If .StrafeExpiresAt <= 0 Then Exit Sub
             If GlobalFrameTime >= .StrafeExpiresAt Then
-                Call ResetNpcStrafeInfo(.pathFindingInfo)
+                Call ResetNpcStrafeInfo(NpcList(NpcIndex).pathFindingInfo)
                 Exit Sub
             End If
         End With
@@ -540,13 +540,13 @@ Public Sub ApplyNpcStrafeToDestination(ByVal NpcIndex As Integer, ByRef destinat
         candidateY = destination.y + .pathFindingInfo.StrafeOffset.y
         If InsideLimits(candidateX, candidateY) Then
             If candidateX = .pos.x And candidateY = .pos.y Then
-                Call ResetNpcStrafeInfo(.pathFindingInfo)
+                Call ResetNpcStrafeInfo(NpcList(NpcIndex).pathFindingInfo)
             Else
                 destination.x = candidateX
                 destination.y = candidateY
             End If
         Else
-            Call ResetNpcStrafeInfo(.pathFindingInfo)
+            Call ResetNpcStrafeInfo(NpcList(NpcIndex).pathFindingInfo)
         End If
     End With
     Exit Sub
