@@ -431,40 +431,39 @@ End Sub
 
 Private Sub SetNpcStrafeOffsetFromAttacker(ByVal NpcIndex As Integer, ByVal targetX As Integer, ByVal targetY As Integer)
     On Error GoTo SetNpcStrafeOffsetFromAttacker_Err
-    Dim npcPos As t_Position, targetPos As t_Position
+    Dim npcPos As t_Position
     npcPos.x = NpcList(NpcIndex).pos.x
     npcPos.y = NpcList(NpcIndex).pos.y
-    targetPos.x = targetX
-    targetPos.y = targetY
-    If TileDistance(npcPos, targetPos) <= 1 Then
-        Call ResetNpcStrafeInfo(NpcList(NpcIndex).pathFindingInfo)
-        Exit Sub
-    End If
     Dim deltaX As Integer, deltaY As Integer
     deltaX = targetX - npcPos.x
     deltaY = targetY - npcPos.y
-    Dim prioritizeX As Boolean
-    prioritizeX = Abs(deltaX) >= Abs(deltaY)
-    If prioritizeX And deltaX = 0 Then prioritizeX = False
-    If Not prioritizeX And deltaY = 0 Then
-        prioritizeX = (deltaX <> 0)
+    If deltaX = 0 And deltaY = 0 Then
+        Call ResetNpcStrafeInfo(NpcList(NpcIndex).pathFindingInfo)
+        Exit Sub
+    End If
+    Dim prioritizeHorizontal As Boolean
+    prioritizeHorizontal = Abs(deltaX) >= Abs(deltaY)
+    If prioritizeHorizontal And deltaX = 0 Then prioritizeHorizontal = False
+    If Not prioritizeHorizontal And deltaY = 0 Then
+        prioritizeHorizontal = (deltaX <> 0)
     End If
     Dim offsetCandidates(1 To 4) As t_Position
     Dim idx As Integer
+    ' Prioritize strafing along the perpendicular axis so the NPC breaks straight lines
     For idx = 1 To 4
         offsetCandidates(idx).x = 0
         offsetCandidates(idx).y = 0
     Next idx
-    If prioritizeX Then
-        offsetCandidates(1).x = 1
-        offsetCandidates(2).x = -1
-        offsetCandidates(3).y = 1
-        offsetCandidates(4).y = -1
-    Else
+    If prioritizeHorizontal Then
         offsetCandidates(1).y = 1
         offsetCandidates(2).y = -1
         offsetCandidates(3).x = 1
         offsetCandidates(4).x = -1
+    Else
+        offsetCandidates(1).x = 1
+        offsetCandidates(2).x = -1
+        offsetCandidates(3).y = 1
+        offsetCandidates(4).y = -1
     End If
     Dim primaryValid(1 To 2) As t_Position
     Dim primaryCount As Integer
@@ -536,22 +535,16 @@ Public Sub ApplyNpcStrafeToDestination(ByVal NpcIndex As Integer, ByRef destinat
                 Exit Sub
             End If
         End With
-        Dim destPos As t_Position
-        destPos.x = destination.x
-        destPos.y = destination.y
-        Dim npcPos2 As t_Position
-        npcPos2.x = .pos.x
-        npcPos2.y = .pos.y
-        If TileDistance(npcPos2, destPos) <= 1 Then
-            Call ResetNpcStrafeInfo(.pathFindingInfo)
-            Exit Sub
-        End If
         Dim candidateX As Integer, candidateY As Integer
         candidateX = destination.x + .pathFindingInfo.StrafeOffset.x
         candidateY = destination.y + .pathFindingInfo.StrafeOffset.y
         If InsideLimits(candidateX, candidateY) Then
-            destination.x = candidateX
-            destination.y = candidateY
+            If candidateX = .pos.x And candidateY = .pos.y Then
+                Call ResetNpcStrafeInfo(.pathFindingInfo)
+            Else
+                destination.x = candidateX
+                destination.y = candidateY
+            End If
         Else
             Call ResetNpcStrafeInfo(.pathFindingInfo)
         End If
