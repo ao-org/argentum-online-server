@@ -1364,6 +1364,8 @@ Public Const MAX_INVENTORY_OBJS      As Integer = 10000
 ''
 ' Cantidad de "slots" en el inventario con todos los slots desbloqueados
 Public Const MAX_INVENTORY_SLOTS     As Byte = 42
+Public Const MAX_SKINSINVENTORY_SLOTS As Byte = 66
+Public Const MAX_SKINSSPELLS_SLOTS    As Integer = 350
 ' Cantidad de "slots" en el inventario básico
 Public Const MAX_USERINVENTORY_SLOTS As Byte = 24
 ' Constante para indicar que se esta usando ORO
