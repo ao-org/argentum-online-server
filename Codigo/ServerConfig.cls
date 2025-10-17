@@ -121,6 +121,7 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "NPC_VISION_RANGE_X", CInt(val(reader.GetValue("AI", "NPCVisionRangeX", DEFAULT_NPC_VISION_RANGE_X)))
     mSettings.Add "NPC_VISION_RANGE_Y", CInt(val(reader.GetValue("AI", "NPCVisionRangeY", DEFAULT_NPC_VISION_RANGE_Y)))
     mSettings.Add "NPC_PATHFINDING_MAX_STEPS", Min(MAX_PATH_LENGTH, CInt(val(reader.GetValue("AI", "NPCMaxStepsPathFinding", MAX_PATH_LENGTH))))
+    mSettings.Add "NPC_PATHFINDING_NOISE", CSng(val(reader.GetValue("AI", "NPCPathfindingNoise", 0.75)))
     mSettings.Add "NPC_MAX_VISION_RANGE", Min(DEFAULT_NPC_MAX_VISION_RANGE, CInt(val(reader.GetValue("AI", "NPCMaxVisionRange", DEFAULT_NPC_MAX_VISION_RANGE))))
     mSettings.Add "AUTOEVENTDAYCALENDAR_Domingo", CInt(val(reader.GetValue("AUTOEVENTDAYCALENDAR", "Domingo")))
     mSettings.Add "AUTOEVENTDAYCALENDAR_Lunes", CInt(val(reader.GetValue("AUTOEVENTDAYCALENDAR", "Lunes")))

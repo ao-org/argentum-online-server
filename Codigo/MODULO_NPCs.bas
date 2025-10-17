@@ -375,6 +375,9 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
         .pathFindingInfo.TargetUnreachable = False
         .pathFindingInfo.PreviousAttackable = 0
         .pathFindingInfo.PathLength = 0
+        .pathFindingInfo.StrafeOffset.x = 0
+        .pathFindingInfo.StrafeOffset.y = 0
+        .pathFindingInfo.StrafeExpiresAt = 0
         .Comercia = 0
         .GiveEXP = 0
         .GiveEXPClan = 0
@@ -1461,6 +1464,9 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         .pathFindingInfo.OriginalVision = .pathFindingInfo.RangoVision
         .pathFindingInfo.TargetUnreachable = False
         .pathFindingInfo.PreviousAttackable = .Attackable
+        .pathFindingInfo.StrafeOffset.x = 0
+        .pathFindingInfo.StrafeOffset.y = 0
+        .pathFindingInfo.StrafeExpiresAt = 0
         ReDim .pathFindingInfo.Path(1 To MAX_PATH_LENGTH)
         .NumDestinos = Info.NumDestinos
         If .NumDestinos > 0 Then
@@ -1768,6 +1774,7 @@ Public Function DoDamageOrHeal(ByVal NpcIndex As Integer, _
         End If
         amount = EffectsOverTime.TargetApplyDamageReduction(NpcList(NpcIndex).EffectOverTime, amount, SourceIndex, SourceType, DamageSourceType)
         Call EffectsOverTime.TargetWasDamaged(NpcList(NpcIndex).EffectOverTime, SourceIndex, SourceType, DamageSourceType)
+        Call RegisterNpcDamageStrafe(NpcIndex, SourceIndex, SourceType)
     End If
     DamageStr = PonerPuntos(Math.Abs(amount))
     With NpcList(NpcIndex)
