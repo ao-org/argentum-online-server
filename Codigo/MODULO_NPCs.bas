@@ -108,7 +108,7 @@ Public Function GetNextAvailableNpc() As Integer
     On Error GoTo ErrHandler
     If (IdNpcLibres.currentIndex = 0) Then
         GetNextAvailableNpc = 0
-        Return
+        Exit Function
     End If
     GetNextAvailableNpc = IdNpcLibres.IndexInfo(IdNpcLibres.currentIndex)
     IdNpcLibres.currentIndex = IdNpcLibres.currentIndex - 1
