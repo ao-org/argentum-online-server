@@ -349,7 +349,7 @@ Public Function IsEventActive() As Boolean
     End If
 End Function
 
-Public Sub UserDisconnected(ByVal MapNumber As Integer, ByVal UserIndex As Integer)
+Public Sub UserDisconnected(ByVal UserIndex As Integer)
     Call RegisterDisconnectedUser(UserIndex)
 End Sub
 
