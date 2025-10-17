@@ -41,6 +41,7 @@ Private DirOffset(e_Heading.NORTH To e_Heading.WEST)                  As t_Posit
 Private PathNoiseStrength                                             As Single
 Private ClosestVertex                                                 As t_Position
 Private ClosestDistance                                               As Single
+Private Const NPC_STRAFE_DURATION_MS                              As Long = 900
 '  Usada para mover memoria... VB6 es un desastre en cuanto a contenedores dinámicos
 Private Declare Sub MoveMemory Lib "Kernel32" Alias "RtlMoveMemory" (pDest As Any, pSource As Any, ByVal length As Long)
 
@@ -390,6 +391,174 @@ Private Sub ShuffleHeadings(ByRef headingOrder() As e_Heading)
     Exit Sub
 ShuffleHeadings_Err:
     Call TraceError(Err.Number, Err.Description, "PathFinding.ShuffleHeadings", Erl)
+End Sub
+
+Private Sub ResetNpcStrafeInfo(ByRef Info As t_NpcPathFindingInfo)
+    On Error GoTo ResetNpcStrafeInfo_Err
+    Info.StrafeOffset.x = 0
+    Info.StrafeOffset.y = 0
+    Info.StrafeExpiresAt = 0
+    Exit Sub
+ResetNpcStrafeInfo_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.ResetNpcStrafeInfo", Erl)
+End Sub
+
+Public Sub RegisterNpcDamageStrafe(ByVal NpcIndex As Integer, ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType)
+    On Error GoTo RegisterNpcDamageStrafe_Err
+    If NpcIndex <= 0 Or NpcIndex > UBound(NpcList) Then Exit Sub
+    If SourceIndex <= 0 Then Exit Sub
+    Dim attackerPos As t_WorldPos
+    Select Case SourceType
+        Case e_ReferenceType.eUser
+            If SourceIndex > UBound(UserList) Then Exit Sub
+            If UserList(SourceIndex).flags.Muerto <> 0 Then Exit Sub
+            If NpcList(NpcIndex).TargetUser.ArrayIndex <> SourceIndex Then Exit Sub
+            attackerPos = UserList(SourceIndex).pos
+        Case e_ReferenceType.eNpc
+            If SourceIndex > UBound(NpcList) Then Exit Sub
+            If Not IsValidNpcRef(NpcList(NpcIndex).TargetNPC) Then Exit Sub
+            If NpcList(NpcIndex).TargetNPC.ArrayIndex <> SourceIndex Then Exit Sub
+            attackerPos = NpcList(SourceIndex).pos
+        Case Else
+            Exit Sub
+    End Select
+    If attackerPos.Map <> NpcList(NpcIndex).pos.Map Then Exit Sub
+    Call SetNpcStrafeOffsetFromAttacker(NpcIndex, attackerPos.x, attackerPos.y)
+    Exit Sub
+RegisterNpcDamageStrafe_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.RegisterNpcDamageStrafe", Erl)
+End Sub
+
+Private Sub SetNpcStrafeOffsetFromAttacker(ByVal NpcIndex As Integer, ByVal targetX As Integer, ByVal targetY As Integer)
+    On Error GoTo SetNpcStrafeOffsetFromAttacker_Err
+    Dim npcPos As t_Position, targetPos As t_Position
+    npcPos.x = NpcList(NpcIndex).pos.x
+    npcPos.y = NpcList(NpcIndex).pos.y
+    targetPos.x = targetX
+    targetPos.y = targetY
+    If TileDistance(npcPos, targetPos) <= 1 Then
+        Call ResetNpcStrafeInfo(NpcList(NpcIndex).pathFindingInfo)
+        Exit Sub
+    End If
+    Dim deltaX As Integer, deltaY As Integer
+    deltaX = targetX - npcPos.x
+    deltaY = targetY - npcPos.y
+    Dim prioritizeX As Boolean
+    prioritizeX = Abs(deltaX) >= Abs(deltaY)
+    If prioritizeX And deltaX = 0 Then prioritizeX = False
+    If Not prioritizeX And deltaY = 0 Then
+        prioritizeX = (deltaX <> 0)
+    End If
+    Dim offsetCandidates(1 To 4) As t_Position
+    Dim idx As Integer
+    For idx = 1 To 4
+        offsetCandidates(idx).x = 0
+        offsetCandidates(idx).y = 0
+    Next idx
+    If prioritizeX Then
+        offsetCandidates(1).x = 1
+        offsetCandidates(2).x = -1
+        offsetCandidates(3).y = 1
+        offsetCandidates(4).y = -1
+    Else
+        offsetCandidates(1).y = 1
+        offsetCandidates(2).y = -1
+        offsetCandidates(3).x = 1
+        offsetCandidates(4).x = -1
+    End If
+    Dim primaryValid(1 To 2) As t_Position
+    Dim primaryCount As Integer
+    For idx = 1 To 2
+        Dim candidateX As Integer, candidateY As Integer
+        candidateX = targetX + offsetCandidates(idx).x
+        candidateY = targetY + offsetCandidates(idx).y
+        If InsideLimits(candidateX, candidateY) Then
+            primaryCount = primaryCount + 1
+            primaryValid(primaryCount) = offsetCandidates(idx)
+        End If
+    Next idx
+    Dim selected As t_Position
+    If primaryCount > 0 Then
+        Dim choice As Integer
+        If primaryCount = 1 Then
+            choice = 1
+        Else
+            choice = RandomNumber(1, primaryCount)
+        End If
+        selected = primaryValid(choice)
+    Else
+        Dim fallbackValid(1 To 2) As t_Position
+        Dim fallbackCount As Integer
+        For idx = 3 To 4
+            Dim fallbackX As Integer, fallbackY As Integer
+            fallbackX = targetX + offsetCandidates(idx).x
+            fallbackY = targetY + offsetCandidates(idx).y
+            If InsideLimits(fallbackX, fallbackY) Then
+                fallbackCount = fallbackCount + 1
+                fallbackValid(fallbackCount) = offsetCandidates(idx)
+            End If
+        Next idx
+        If fallbackCount = 0 Then
+            Call ResetNpcStrafeInfo(NpcList(NpcIndex).pathFindingInfo)
+            Exit Sub
+        End If
+        Dim fallbackChoice As Integer
+        If fallbackCount = 1 Then
+            fallbackChoice = 1
+        Else
+            fallbackChoice = RandomNumber(1, fallbackCount)
+        End If
+        selected = fallbackValid(fallbackChoice)
+    End If
+    With NpcList(NpcIndex).pathFindingInfo
+        .StrafeOffset.x = selected.x
+        .StrafeOffset.y = selected.y
+        .StrafeExpiresAt = GlobalFrameTime + NPC_STRAFE_DURATION_MS
+        If .PathLength <> 0 Then .PathLength = 0
+    End With
+    Exit Sub
+SetNpcStrafeOffsetFromAttacker_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.SetNpcStrafeOffsetFromAttacker", Erl)
+End Sub
+
+Public Sub ApplyNpcStrafeToDestination(ByVal NpcIndex As Integer, ByRef destination As t_WorldPos)
+    On Error GoTo ApplyNpcStrafeToDestination_Err
+    If NpcIndex <= 0 Or NpcIndex > UBound(NpcList) Then Exit Sub
+    With NpcList(NpcIndex)
+        If destination.Map <> .pos.Map Then
+            Call ResetNpcStrafeInfo(.pathFindingInfo)
+            Exit Sub
+        End If
+        With .pathFindingInfo
+            If .StrafeExpiresAt <= 0 Then Exit Sub
+            If GlobalFrameTime >= .StrafeExpiresAt Then
+                Call ResetNpcStrafeInfo(.pathFindingInfo)
+                Exit Sub
+            End If
+        End With
+        Dim destPos As t_Position
+        destPos.x = destination.x
+        destPos.y = destination.y
+        Dim npcPos2 As t_Position
+        npcPos2.x = .pos.x
+        npcPos2.y = .pos.y
+        If TileDistance(npcPos2, destPos) <= 1 Then
+            Call ResetNpcStrafeInfo(.pathFindingInfo)
+            Exit Sub
+        End If
+        Dim candidateX As Integer, candidateY As Integer
+        candidateX = destination.x + .pathFindingInfo.StrafeOffset.x
+        candidateY = destination.y + .pathFindingInfo.StrafeOffset.y
+        If InsideLimits(candidateX, candidateY) Then
+            destination.x = candidateX
+            destination.y = candidateY
+        Else
+            Call ResetNpcStrafeInfo(.pathFindingInfo)
+        End If
+    End With
+    Exit Sub
+ApplyNpcStrafeToDestination_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.ApplyNpcStrafeToDestination", Erl)
 End Sub
 
 Private Sub OpenVertex(ByVal x As Integer, ByVal y As Integer)

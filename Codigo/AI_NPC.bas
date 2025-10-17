@@ -377,6 +377,7 @@ End Sub
 
 Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_WorldPos)
     On Error GoTo AI_CaminarConRumbo_Err
+    Dim adjustedRumbo As t_WorldPos
     If NpcList(NpcIndex).TargetUser.ArrayIndex = 0 Then
         Call NpcClearTargetUnreachable(NpcIndex)
     End If
@@ -384,7 +385,9 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
         Call AnimacionIdle(NpcIndex, True)
         Exit Sub
     End If
-    If NpcList(NpcIndex).pos.x = rumbo.x And NpcList(NpcIndex).pos.y = rumbo.y Then
+    adjustedRumbo = rumbo
+    Call ApplyNpcStrafeToDestination(NpcIndex, adjustedRumbo)
+    If NpcList(NpcIndex).pos.x = adjustedRumbo.x And NpcList(NpcIndex).pos.y = adjustedRumbo.y Then
         Call NpcClearTargetUnreachable(NpcIndex)
         NpcList(NpcIndex).pathFindingInfo.PathLength = 0
         Call AnimacionIdle(NpcIndex, True)
@@ -392,9 +395,9 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
     End If
     With NpcList(NpcIndex).pathFindingInfo
         ' Si no tiene un camino calculado o si el destino cambio
-        If .PathLength = 0 Or .destination.x <> rumbo.x Or .destination.y <> rumbo.y Then
-            .destination.x = rumbo.x
-            .destination.y = rumbo.y
+        If .PathLength = 0 Or .destination.x <> adjustedRumbo.x Or .destination.y <> adjustedRumbo.y Then
+            .destination.x = adjustedRumbo.x
+            .destination.y = adjustedRumbo.y
             ' Recalculamos el camino
             If SeekPath(NpcIndex, True) Then
                 ' Si consiguo un camino
