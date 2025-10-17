@@ -136,14 +136,6 @@ esCiudadano_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.esCiudadano", Erl)
 End Function
 
-Public Function esCriminal(ByVal UserIndex As Integer) As Boolean
-    On Error GoTo esCriminal_Err
-    If UserIndex > 0 Then esCriminal = Status(UserIndex) = e_Facciones.Criminal
-    Exit Function
-esCriminal_Err:
-    Call TraceError(Err.Number, Err.Description, "Extra.esCriminal", Erl)
-End Function
-
 Public Function esArmada(ByVal UserIndex As Integer) As Boolean
     On Error GoTo esArmada_Err
     If UserIndex > 0 Then esArmada = (UserList(UserIndex).Faccion.Status = e_Facciones.Armada Or UserList(UserIndex).Faccion.Status = e_Facciones.consejo)
@@ -317,8 +309,6 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
     On Error GoTo ErrHandler
     Dim nPos       As t_WorldPos
     Dim EsTeleport As Boolean
-    Dim TelepRadio As Byte
-    Dim aN         As Integer
     Dim destPos    As t_WorldPos
     With UserList(UserIndex)
         'Controla las salidas
@@ -614,29 +604,6 @@ ClosestStablePos_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.ClosestStablePos", Erl)
 End Sub
 
-Function IP_Index(ByVal inIP As String) As Integer
-    On Error GoTo IP_Index_Err
-    Dim UserIndex As Integer
-    '¿Nombre valido?
-    If LenB(inIP) = 0 Then
-        IP_Index = 0
-        Exit Function
-    End If
-    UserIndex = 1
-    Do Until UserList(UserIndex).ConnectionDetails.IP = inIP
-        UserIndex = UserIndex + 1
-        If UserIndex > MaxUsers Then
-            IP_Index = 0
-            Exit Function
-        End If
-    Loop
-    IP_Index = UserIndex
-    Exit Function
-    Exit Function
-IP_Index_Err:
-    Call TraceError(Err.Number, Err.Description, "Extra.IP_Index", Erl)
-End Function
-
 Sub HeadtoPos(ByVal head As e_Heading, ByRef pos As t_WorldPos)
     On Error GoTo HeadtoPos_Err
     '*****************************************************************
@@ -736,7 +703,6 @@ Function LegalPos(ByVal Map As Integer, _
                   ByVal y As Integer, _
                   Optional ByVal PuedeAgua As Boolean = False, _
                   Optional ByVal PuedeTierra As Boolean = True, _
-                  Optional ByVal Montado As Boolean = False, _
                   Optional ByVal PuedeTraslado As Boolean = True, _
                   Optional ByVal PuedeBloqueoParcial As Boolean = True) As Boolean
     '***************************************************
@@ -778,7 +744,6 @@ Function LegalPosDestrabar(ByVal Map As Integer, _
                            ByVal y As Integer, _
                            Optional ByVal PuedeAgua As Boolean = False, _
                            Optional ByVal PuedeTierra As Boolean = True, _
-                           Optional ByVal Montado As Boolean = False, _
                            Optional ByVal PuedeTraslado As Boolean = True, _
                            Optional ByVal PuedeBloqueoParcial As Boolean = True) As Boolean
     On Error GoTo LegalPosDestrabar_Err
@@ -814,7 +779,6 @@ Function LegalWalk(ByVal Map As Integer, _
                    ByVal Heading As e_Heading, _
                    Optional ByVal PuedeAgua As Boolean = False, _
                    Optional ByVal PuedeTierra As Boolean = True, _
-                   Optional ByVal Montado As Boolean = False, _
                    Optional ByVal PuedeTraslado As Boolean = True, _
                    Optional ByVal WalkerIndex As Integer) As Boolean
     On Error GoTo LegalWalk_Err
@@ -848,26 +812,6 @@ Function LegalWalk(ByVal Map As Integer, _
     Exit Function
 LegalWalk_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.LegalWalk", Erl)
-End Function
-
-Function LegalPosNPC(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal AguaValida As Byte, Optional ByVal IsPet As Boolean = False) As Boolean
-    On Error GoTo LegalPosNPC_Err
-    If (Map <= 0 Or Map > NumMaps) Or (x < MinXBorder Or x > MaxXBorder Or y < MinYBorder Or y > MaxYBorder) Then
-        LegalPosNPC = False
-    ElseIf MapData(Map, x, y).TileExit.Map > 0 Then
-        LegalPosNPC = False
-    Else
-        If AguaValida = 0 Then
-            LegalPosNPC = (MapData(Map, x, y).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) _
-                    And (MapData(Map, x, y).trigger <> e_Trigger.POSINVALIDA Or IsPet) And (MapData(Map, x, y).Blocked And FLAG_AGUA) = 0
-        Else
-            LegalPosNPC = (MapData(Map, x, y).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) _
-                    And (MapData(Map, x, y).trigger <> e_Trigger.POSINVALIDA Or IsPet)
-        End If
-    End If
-    Exit Function
-LegalPosNPC_Err:
-    Call TraceError(Err.Number, Err.Description, "Extra.LegalPosNPC", Erl)
 End Function
 
 Function LegalWalkNPC(ByVal Map As Integer, _
@@ -1194,66 +1138,6 @@ LookatTile_Err:
     End If
 End Sub
 
-Function FindDirection(pos As t_WorldPos, Target As t_WorldPos) As e_Heading
-    On Error GoTo FindDirection_Err
-    '*****************************************************************
-    'Devuelve la direccion en la cual el target se encuentra
-    'desde pos, 0 si la direc es igual
-    '*****************************************************************
-    Dim x As Integer
-    Dim y As Integer
-    x = pos.x - Target.x
-    y = pos.y - Target.y
-    'NE
-    If Sgn(x) = -1 And Sgn(y) = 1 Then
-        FindDirection = IIf(RandomNumber(0, 1), e_Heading.NORTH, e_Heading.EAST)
-        Exit Function
-    End If
-    'NW
-    If Sgn(x) = 1 And Sgn(y) = 1 Then
-        FindDirection = IIf(RandomNumber(0, 1), e_Heading.WEST, e_Heading.NORTH)
-        Exit Function
-    End If
-    'SW
-    If Sgn(x) = 1 And Sgn(y) = -1 Then
-        FindDirection = IIf(RandomNumber(0, 1), e_Heading.WEST, e_Heading.SOUTH)
-        Exit Function
-    End If
-    'SE
-    If Sgn(x) = -1 And Sgn(y) = -1 Then
-        FindDirection = IIf(RandomNumber(0, 1), e_Heading.SOUTH, e_Heading.EAST)
-        Exit Function
-    End If
-    'Sur
-    If Sgn(x) = 0 And Sgn(y) = -1 Then
-        FindDirection = e_Heading.SOUTH
-        Exit Function
-    End If
-    'norte
-    If Sgn(x) = 0 And Sgn(y) = 1 Then
-        FindDirection = e_Heading.NORTH
-        Exit Function
-    End If
-    'oeste
-    If Sgn(x) = 1 And Sgn(y) = 0 Then
-        FindDirection = e_Heading.WEST
-        Exit Function
-    End If
-    'este
-    If Sgn(x) = -1 And Sgn(y) = 0 Then
-        FindDirection = e_Heading.EAST
-        Exit Function
-    End If
-    'misma
-    If Sgn(x) = 0 And Sgn(y) = 0 Then
-        FindDirection = 0
-        Exit Function
-    End If
-    Exit Function
-FindDirection_Err:
-    Call TraceError(Err.Number, Err.Description, "Extra.FindDirection", Erl)
-End Function
-
 '[Barrin 30-11-03]
 Public Function ItemNoEsDeMapa(ByVal Index As Integer) As Boolean
     On Error GoTo ItemNoEsDeMapa_Err
@@ -1348,94 +1232,6 @@ Public Function EsMapaNoDrop(ByVal destMap As Long) As Boolean
     EsMapaNoDrop = False
 End Function
 
-Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As Boolean = False)
-    With UserList(UserIndex)
-        .flags.Muerto = False
-        .flags.Escondido = 0
-        .flags.Casado = 0
-        .flags.SpouseId = 0
-        '%%%%%%%%%%%%% PREVENIR HACKEO DE LOS SKILLS %%%%%%%%%%%%%
-        .Stats.SkillPts = 10
-        Call WriteLevelUp(UserIndex, 10)
-        Call DarCuerpo(UserIndex) 'Ladder REVISAR
-        .OrigChar = .Char
-        Dim i As Long
-        For i = 1 To NUMSKILLS
-            .Stats.UserSkills(i) = 100
-        Next i
-        .Char.WeaponAnim = NingunArma
-        .Char.ShieldAnim = NingunEscudo
-        .Char.CascoAnim = NingunCasco
-        .Char.CartAnim = NoCart
-        '  Vida inicial
-        .Stats.MaxHp = .Stats.UserAtributos(e_Atributos.Constitucion)
-        .Stats.MinHp = .Stats.MaxHp
-        '  Maná inicial
-        .Stats.MaxMAN = .Stats.UserAtributos(e_Atributos.Inteligencia) * ModClase(.clase).ManaInicial
-        .Stats.MinMAN = .Stats.MaxMAN
-        Dim MiInt As Integer
-        MiInt = RandomNumber(1, .Stats.UserAtributos(e_Atributos.Agilidad) \ 6)
-        If MiInt = 1 Then MiInt = 2
-        .Stats.MaxSta = 20 * MiInt
-        .Stats.MinSta = 20 * MiInt
-        .Stats.MaxAGU = 100
-        .Stats.MinAGU = 100
-        .Stats.MaxHam = 100
-        .Stats.MinHam = 100
-        .flags.VecesQueMoriste = 0
-        .flags.Montado = 0
-        .Stats.MaxHit = 2
-        .Stats.MinHIT = 1
-        .Stats.Exp = 0
-        .Stats.ELV = 1
-        .Stats.GLD = 0
-        .Stats.Banco = 0
-        If .flags.TomoPocion Then
-            For i = 1 To 4
-                .Stats.UserAtributos(i) = .Stats.UserAtributosBackUP(i)
-            Next i
-            Call WriteFYA(UserIndex)
-        End If
-        .flags.DuracionEfecto = 0
-        Call VaciarInventario(UserIndex)
-        Call ResetCd(UserList(UserIndex))
-        Call RellenarInventario(UserIndex)
-        'Agrego la poción
-        Dim slot_libre As Byte
-        For i = 1 To MAX_INVENTORY_SLOTS
-            If .invent.Object(i).amount = 0 Then
-                slot_libre = i
-                Exit For
-            End If
-        Next i
-        For i = 1 To MAX_BANCOINVENTORY_SLOTS
-            .BancoInvent.Object(i).amount = 0
-            .BancoInvent.Object(i).Equipped = 0
-            .BancoInvent.Object(i).ObjIndex = 0
-            .BancoInvent.Object(i).ElementalTags = 0
-        Next i
-        .invent.Object(slot_libre).ObjIndex = POCION_RESET
-        .invent.Object(slot_libre).amount = 1
-        'Valores Default de facciones al Activar nuevo usuario
-        Call ResetFacciones(UserIndex)
-        .Faccion.Status = 1
-        If borrarHechizos Then
-            Call ResetUserSpells(UserIndex)
-            '    Call UpdateUserHechizos(True, UserIndex, 0)
-        End If
-        Call UpdateUserHechizos(True, UserIndex, 0)
-        Call WriteUpdateUserStats(UserIndex)
-        Call WriteUpdateHungerAndThirst(UserIndex)
-        Call UpdateUserInv(True, UserIndex, 0)
-        Call Execute("update user set is_reset = 1 where id = ?;", .Id)
-        Call Execute("update quest set quest_id = 0, npcs = 0, npcstarget = 0 where user_id = ?;", .Id)
-        Call Execute("delete from quest_done where user_id = ?;", .Id)
-        Call ResetQuestStats(UserIndex)
-        Call WarpUserChar(UserIndex, .pos.Map, .pos.x, .pos.y, True)
-    End With
-    'Call WarpUserChar(UserIndex, 1, 55, 45, True)
-End Sub
-
 Public Sub ResucitarOCurar(ByVal UserIndex As Integer)
     If UserList(UserIndex).flags.Muerto = 1 Then
         Call RevivirUsuario(UserIndex)
@@ -1458,15 +1254,6 @@ Public Sub ResucitarOCurar(ByVal UserIndex As Integer)
         Call WriteLocaleMsg(UserIndex, 496, e_FontTypeNames.FONTTYPE_INFO)
     End If
 End Sub
-
-Public Function ByteArr2String(ByRef arr() As Byte) As String
-    Dim str As String
-    Dim i   As Long
-    For i = 0 To UBound(arr)
-        str = str + Chr$(arr(i))
-    Next i
-    ByteArr2String = str
-End Function
 
 Public Function PacketIdToString(ByVal PacketId As Long) As String
     Select Case PacketId
@@ -1520,28 +1307,6 @@ Public Function PacketIdToString(ByVal PacketId As Long) As String
             Exit Function
     End Select
 End Function
-
-Public Sub TimerQuestOrco()
-    Dim UserIndex As Integer
-    For UserIndex = 1 To LastUser
-        If UserIndex > 0 Then
-            With UserList(UserIndex)
-                If .flags.UserLogged Then
-                    Dim Prob As Long, estimatedProb As Long
-                    Prob = RandomNumber(1, LastUser)
-                    estimatedProb = LastUser / 3
-                    If Prob < estimatedProb And Not EsGM(UserIndex) Then
-                        UserList(UserIndex).Stats.MinHam = 0
-                        UserList(UserIndex).Stats.MinAGU = 0
-                        Call WriteUpdateHungerAndThirst(UserIndex)
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, 20, 50, False))
-                    End If
-                End If
-            End With
-        End If
-    Next UserIndex
-    Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(156, NO_3D_SOUND, NO_3D_SOUND))
-End Sub
 
 Public Function TestRequiredEquipedItem(ByRef inventory As t_Inventario, ByVal RequiredItemsFlag As Long, ByVal RequiredWeaponMask As Integer) As e_SpellRequirementMask
     If IsSet(RequiredItemsFlag, e_SpellRequirementMask.eArmor) And inventory.EquippedArmorObjIndex = 0 Then
