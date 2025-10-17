@@ -4494,7 +4494,7 @@ End Sub
 
 Public Sub WriteChangeSkinSlot(ByVal UserIndex As Integer, ByVal TypeSkin As e_OBJType, ByVal Slot As Byte)
     With UserList(UserIndex)
-        Call Writer.WriteInt16(ServerPacketID.ChangeSkinSlot)
+        Call Writer.WriteInt16(ServerPacketID.eChangeSkinSlot)
         Call Writer.WriteInt8(Slot)
         Call Writer.WriteInt16(.Invent_Skins.Object(Slot).ObjIndex)
         'Enviamos si está equipada la skin o no

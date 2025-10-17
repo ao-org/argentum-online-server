@@ -3103,6 +3103,136 @@ Public Type t_Caminata
     Espera As Long
 End Type
 
+Public Type t_NpcInventoryItem
+    ObjIndex As Integer
+    amount As Integer
+End Type
+
+Public Type t_NpcSpellCache
+    SpellIndex As Integer
+    Cd As Integer
+End Type
+
+Public Type t_NpcCaminataCache
+    OffsetX As Integer
+    OffsetY As Integer
+    Espera As Long
+End Type
+
+Public Type t_NpcInfoCache
+    Exists As Boolean
+    TestOnly As Integer
+    RequireToggle As String
+    name As String
+    SubName As String
+    Desc As String
+    nivel As Integer
+    Movement As Integer
+    AguaValida As Integer
+    TierraInvalida As Integer
+    Faccion As Integer
+    ElementalTags As Long
+    npcType As Integer
+    Body As Integer
+    Head As Integer
+    Heading As Integer
+    BodyIdle As Integer
+    Ataque1 As Integer
+    CastAnimation As Integer
+    AnimacionesCount As Integer
+    Animaciones() As Integer
+    WeaponAnim As Integer
+    ShieldAnim As Integer
+    CascoAnim As Integer
+    CartAnim As Integer
+    Attackable As Integer
+    Comercia As Integer
+    Craftea As Integer
+    Hostile As Integer
+    AttackRange As Integer
+    ProjectileType As Integer
+    PreferedRange As Integer
+    GiveEXP As Long
+    Distancia As Integer
+    GiveEXPClan As Long
+    Veneno As Integer
+    Domable As Integer
+    AttackableByEveryone As Integer
+    MapEntryPrice As Long
+    MapTargetEntry As Integer
+    MapTargetEntryX As Integer
+    MapTargetEntryY As Integer
+    ArenaEnabled As Integer
+    GiveGLD As Long
+    PoderAtaque As Long
+    PoderEvasion As Long
+    InvReSpawn As Integer
+    ShowName As Integer
+    GobernadorDe As Integer
+    SoundOpen As Integer
+    SoundClose As Integer
+    IntervaloAtaque As Long
+    IntervaloMovimiento As Long
+    IntervaloLanzarHechizo As Long
+    IntervaloRespawnMin As Long
+    IntervaloRespawnMax As Long
+    InformarRespawn As Integer
+    QuizaProb As Integer
+    MinTameLevel As Integer
+    OnlyForGuilds As Integer
+    ShowKillerConsole As Integer
+    StatsMaxHp As Long
+    StatsMinHp As Long
+    StatsMaxHit As Long
+    StatsMinHit As Long
+    StatsDef As Long
+    StatsDefM As Long
+    MagicResistance As Long
+    MagicDef As Long
+    CantidadInvocaciones As Long
+    MagicBonus As Long
+    AIAlineacion As Integer
+    Humanoide As Integer
+    InventoryCount As Integer
+    InventoryItems() As t_NpcInventoryItem
+    LanzaSpells As Integer
+    SpellRange As Integer
+    Spells() As t_NpcSpellCache
+    NroCriaturas As Integer
+    Criaturas() As t_CriaturasEntrenador
+    RestriccionAtaque As Integer
+    RestriccionAyuda As Integer
+    RespawnValue As Integer
+    DontHitVisiblePlayers As Integer
+    AddToMapAiList As Integer
+    DisplayCastMessage As Integer
+    Team As Integer
+    Backup As Integer
+    RespawnOrigPos As Integer
+    AfectaParalisis As Integer
+    GolpeExacto As Integer
+    TranslationInmune As Integer
+    Snd1 As Integer
+    Snd2 As Integer
+    Snd3 As Integer
+    NroExp As Integer
+    Expresiones() As String
+    NumQuiza As Integer
+    QuizaDropea() As String
+    NumQuest As Integer
+    QuestNumber() As Integer
+    NumDropQuest As Integer
+    DropQuest() As t_QuestObj
+    PathFindingVision As Integer
+    NumDestinos As Integer
+    Dest() As String
+    Interface As Integer
+    TipoItems As Integer
+    PuedeInvocar As Integer
+    CaminataLen As Integer
+    Caminata() As t_NpcCaminataCache
+End Type
+
 Public Enum e_TipoAI
     Estatico = 1
     MueveAlAzar = 2
@@ -3373,6 +3503,8 @@ Public InstanceMapCount                       As Integer
 '*****************ARRAYS PUBLICOS*************************
 Public UserList()                             As t_User 'USUARIOS
 Public NpcList(1 To MaxNPCs)                  As t_Npc 'NPCS
+Public NpcInfoCache()                          As t_NpcInfoCache
+Public NpcInfoCacheInitialized                As Boolean
 Public MapData()                              As t_MapBlock
 Public MapInfo()                              As t_MapInfo
 Public Hechizos()                             As t_Hechizo
