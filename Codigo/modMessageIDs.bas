@@ -35,3 +35,4 @@ Public Const MSG_DISABLED_NEW_CHARACTERS                       As Integer = 1776
 Public Const MSG_YOU_HAVE_TOO_MANY_CHARS                       As Integer = 1777
 Public Const MSG_USERNAME_ALREADY_TAKEN                        As Integer = 1778
 Public Const MSG_UPGRADE_ACCOUNT_TO_CREATE_MORE_CHARS          As Integer = 1779
+Public Const MSG_RIDER_LEVEL_REQUIREMENT                       As Integer = 2078
