@@ -38,6 +38,7 @@ Private OpenVertices(1000)                                            As t_Posit
 Private VertexCount                                                   As Integer
 Private Table(XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As t_IntermidiateWork
 Private DirOffset(e_Heading.NORTH To e_Heading.WEST)                  As t_Position
+Private PathNoiseStrength                                             As Single
 Private ClosestVertex                                                 As t_Position
 Private ClosestDistance                                               As Single
 '  Usada para mover memoria... VB6 es un desastre en cuanto a contenedores dinámicos
@@ -51,6 +52,8 @@ Public Sub InitPathFinding()
         DirOffset(Heading).y = (DirH - 1) * (1 - (DirH Mod 2))
         DirH = DirH + 1
     Next
+    PathNoiseStrength = -1
+    Call EnsurePathNoiseStrength
     Exit Sub
 InitPathFinding_Err:
     Call TraceError(Err.Number, Err.Description, "PathFinding.InitPathFinding", Erl)
@@ -72,6 +75,20 @@ Public Sub FollowPath(ByVal NpcIndex As Integer)
     Exit Sub
 FollowPath_Err:
     Call TraceError(Err.Number, Err.Description, "PathFinding.FollowPath", Erl)
+End Sub
+
+Private Sub EnsurePathNoiseStrength()
+    On Error GoTo EnsurePathNoiseStrength_Err
+    If PathNoiseStrength < 0 Then
+        If SvrConfig Is Nothing Then
+            PathNoiseStrength = 0
+        Else
+            PathNoiseStrength = CSng(SvrConfig.GetValue("NPC_PATHFINDING_NOISE"))
+        End If
+    End If
+    Exit Sub
+EnsurePathNoiseStrength_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.EnsurePathNoiseStrength", Erl)
 End Sub
 
 Private Function InsideLimits(ByVal x As Integer, ByVal y As Integer)
@@ -123,7 +140,9 @@ End Function
 
 Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, ByVal CurY As Integer, ByVal Heading As e_Heading, ByRef EndPos As t_Position)
     On Error GoTo ErrHandler
-    Dim x As Integer, y As Integer, DistanceFromStart As Integer, EstimatedDistance As Single
+    Dim x As Integer, y As Integer, DistanceFromStart As Integer
+    Dim HeuristicDistance As Single, EstimatedDistance As Single
+    Dim Noise As Single
     With DirOffset(Heading)
         x = CurX + .x
         y = CurY + .y
@@ -149,15 +168,20 @@ Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, By
                 ' Guardamos la distancia desde el inicio
                 .Distance = DistanceFromStart
                 ' La distancia estimada al objetivo
-                EstimatedDistance = EuclideanDistance(x, y, EndPos)
+                HeuristicDistance = EuclideanDistance(x, y, EndPos)
+                Noise = 0
+                If PathNoiseStrength > 0 Then
+                    Noise = Rnd * PathNoiseStrength
+                End If
+                EstimatedDistance = HeuristicDistance + Noise
                 ' La distancia total estimada
                 .EstimatedTotalDistance = DistanceFromStart + EstimatedDistance
                 ' Y la posición de la que viene
                 .Previous.x = CurX
                 .Previous.y = CurY
                 ' Si la distancia total estimada es la menor hasta ahora
-                If EstimatedDistance < ClosestDistance Then
-                    ClosestDistance = EstimatedDistance
+                If HeuristicDistance < ClosestDistance Then
+                    ClosestDistance = HeuristicDistance
                     ClosestVertex.x = x
                     ClosestVertex.y = y
                 End If
@@ -184,6 +208,7 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
     Dim UserIndex        As Integer 'no es necesario
     Dim pasos            As Long
     pasos = 0
+    Call EnsurePathNoiseStrength
     'Ya estamos en la posición.
     If UserIndex > 0 Then
         If NPCHasAUserInFront(NpcIndex, UserIndex) Then
