@@ -53,17 +53,14 @@ Private p_GMsOnline             As Collection
 Private p_Leader                As Long
 Private p_Founder               As Long
 Private p_IteradorOnlineMembers As Integer
-Private p_IteradorPropuesta     As Integer
 Private p_IteradorOnlineGMs     As Integer
 Private p_GuildNumber           As Integer      'Numero de guild en el mundo
 Private p_GuildId               As Long
 Private p_GuildLevel            As Integer
 Private p_CurrentExp            As Integer
-Private p_RequiredExp           As Integer
 Private p_GuildNews             As String
 Private Const NEWSLENGTH        As Integer = 1024
 Private Const DESCLENGTH        As Integer = 256
-Private Const CODEXLENGTH       As Integer = 256
 Private MemberList()            As Long
 Private memberCount             As Integer
 Private MemberListLoaded        As Boolean
@@ -90,15 +87,6 @@ Public Property Get Alineacion() As e_ALINEACION_GUILD
 Alineacion_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.Alineacion", Erl)
 End Property
-
-Public Function CambiarAlineacion(ByVal NuevaAlineacion As e_ALINEACION_GUILD) As Boolean
-    On Error GoTo CambiarAlineacion_Err
-    p_Alineacion = NuevaAlineacion
-    Call UpdateGuildValue("alignment", p_Alineacion)
-    Exit Function
-CambiarAlineacion_Err:
-    Call TraceError(Err.Number, Err.Description, "clsClan.CambiarAlineacion", Erl)
-End Function
 
 Private Sub Class_Initialize()
     Set p_OnlineMembers = New Collection
@@ -339,8 +327,7 @@ End Function
 
 Public Function HasGuildRequest(ByVal UserId As Long) As Boolean
     On Error GoTo HasGuildRequest_Err
-    Dim RS     As ADODB.Recordset
-    Dim list() As String
+    Dim RS As ADODB.Recordset
     Set RS = Query("SELECT user_id from guild_request where guild_id = ? and user_id = ?", p_GuildId, UserId)
     HasGuildRequest = RS.RecordCount > 0
     Exit Function
@@ -425,17 +412,6 @@ Public Sub SetURL(ByRef URL As String)
 SetURL_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.SetURL", Erl)
 End Sub
-
-Public Function GetURL() As String
-    On Error GoTo GetURL_Err
-    Dim RS As ADODB.Recordset
-    Set RS = Query("SELECT url FROM guilds where id = ?", p_GuildId)
-    If RS Is Nothing Then Exit Function
-    GetURL = RS.Fields(0).value
-    Exit Function
-GetURL_Err:
-    Call TraceError(Err.Number, Err.Description, "clsClan.GetURL", Erl)
-End Function
 
 Public Sub SetNivelDeClan(ByRef nivel As Byte)
     On Error GoTo SetNivelDeClan_Err

@@ -37,6 +37,7 @@ Attribute VB_Exposed = False
 '
 '
 '
+Option Explicit
 Dim UserRef       As t_UserReference
 Public LastPosMap As Integer
 Public LastPosX   As Byte
