@@ -178,6 +178,7 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
     Dim PosNPC           As t_Position
     Dim PosTarget        As t_Position
     Dim Heading          As e_Heading, Vertex As t_Position
+    Dim headingOrder(e_Heading.NORTH To e_Heading.WEST) As e_Heading
     Dim MaxDistance      As Integer, Index As Integer
     Dim MinTotalDistance As Integer, BestVertexIndex As Integer
     Dim UserIndex        As Integer 'no es necesario
@@ -216,6 +217,9 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
         ClosestDistance = Table(PosNPC.x, PosNPC.y).EstimatedTotalDistance
         ClosestVertex.x = PosNPC.x
         ClosestVertex.y = PosNPC.y
+        For Heading = e_Heading.NORTH To e_Heading.WEST
+            headingOrder(Heading) = Heading
+        Next
     End With
     ' Loop principal del algoritmo
     Dim max_steps As Integer
@@ -249,9 +253,10 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
             Table(.x, .y).Closed = True
             ' Si aún podemos seguir procesando más lejos
             If Table(.x, .y).Distance < MaxDistance Then
+                Call ShuffleHeadings(headingOrder)
                 ' Procesamos adyacentes
                 For Heading = e_Heading.NORTH To e_Heading.WEST
-                    Call ProcessAdjacent(NpcIndex, .x, .y, Heading, PosTarget)
+                    Call ProcessAdjacent(NpcIndex, .x, .y, headingOrder(Heading), PosTarget)
                 Next
             End If
         End With
@@ -346,6 +351,21 @@ Private Function EuclideanDistanceV(ByRef Vertex1 As t_Position, ByRef Vertex2 A
 EuclideanDistanceV_Err:
     Call TraceError(Err.Number, Err.Description, "PathFinding.EuclideanDistanceV", Erl)
 End Function
+
+Private Sub ShuffleHeadings(ByRef headingOrder() As e_Heading)
+    On Error GoTo ShuffleHeadings_Err
+    Dim index As Integer, swapIndex As Integer
+    Dim temp As e_Heading
+    For index = UBound(headingOrder) To LBound(headingOrder) + 1 Step -1
+        swapIndex = Int((index - LBound(headingOrder) + 1) * Rnd) + LBound(headingOrder)
+        temp = headingOrder(index)
+        headingOrder(index) = headingOrder(swapIndex)
+        headingOrder(swapIndex) = temp
+    Next
+    Exit Sub
+ShuffleHeadings_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.ShuffleHeadings", Erl)
+End Sub
 
 Private Sub OpenVertex(ByVal x As Integer, ByVal y As Integer)
     On Error GoTo OpenVertex_Err
