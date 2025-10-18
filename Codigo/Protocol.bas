@@ -5395,17 +5395,14 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
             Call LogGM(.name, "ECHO DEL CAOS A: " & username)
             If IsValidUserRef(tUser) Then
                 If UserList(tUser.ArrayIndex).GuildIndex > 0 Then
-                    If GuildAlignmentIndex(UserList(tUser.ArrayIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
-                        'Msg1207= El usuario ¬1
-                        Call WriteLocaleMsg(UserIndex, 1207, e_FontTypeNames.FONTTYPE_INFO, username)
-                        Exit Sub
+                    'Me fijo de que alineación es el clan, si es Legion, lo echo
+                    If GuildAlignmentIndex(UserList(tUser.ArrayIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
+                        Call m_EcharMiembroDeClan(UserIndex, UserList(tUser.ArrayIndex).Id)
                     End If
-                Else
                     UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 2
                     UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Criminal
                     Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1992, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1992=¬1 expulsado de las fuerzas del caos y prohibida la reenlistada.
                     Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1991, .name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1991=¬1 te ha expulsado en forma definitiva de las fuerzas del caos.
-                End If
             Else
                 If PersonajeExiste(username) Then
                     'Msg1208= Usuario offline, echando de la facción
@@ -5442,8 +5439,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
         Dim username As String
         Dim tUser    As t_UserReference
         username = reader.ReadString8()
-        'HarThaoS: Comando roto / revisar.
-        'Exit Sub
+
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
             If (InStrB(username, "\") <> 0) Then
                 username = Replace(username, "\", "")
@@ -5455,17 +5451,15 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
             Call LogGM(.name, "ECHO DE LA REAL A: " & username)
             If IsValidUserRef(tUser) Then
                 If UserList(tUser.ArrayIndex).GuildIndex > 0 Then
+                    'Me fijo de que alineación es el clan, si es ARMADA, lo echo
                     If GuildAlignmentIndex(UserList(tUser.ArrayIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
-                        'Msg1212= El usuario ¬1
-                        Call WriteLocaleMsg(UserIndex, 1212, e_FontTypeNames.FONTTYPE_INFO, username)
-                        Exit Sub
+                        Call m_EcharMiembroDeClan(UserIndex, UserList(tUser.ArrayIndex).Id)
                     End If
-                Else
-                    UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 2
-                    UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Ciudadano
-                    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1990, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1990=¬1 expulsado de las fuerzas reales y prohibida la reenlistada.
-                    Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1989, .name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1989=¬1 te ha expulsado en forma definitiva de las fuerzas reales.
                 End If
+                UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 2
+                UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Ciudadano
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1990, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1990=¬1 expulsado de las fuerzas reales y prohibida la reenlistada.
+                Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1989, .name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1989=¬1 te ha expulsado en forma definitiva de las fuerzas reales.
             Else
                 If PersonajeExiste(username) Then
                     'Msg1213= Usuario offline, echando de la facción
