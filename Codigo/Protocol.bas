@@ -5574,7 +5574,7 @@ End Sub
 Public Sub HandlePromedio(ByVal UserIndex As Integer)
     On Error GoTo handle
     With UserList(UserIndex)
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1988, ListaClases(.clase) & "¬" & ListaRazas(.raza) & "¬" & .Stats.ELV, FONTTYPE_INFOBOLD)) ' Msg1988=¬1 ¬2 nivel ¬3.
+        Call WriteLocaleMsg(UserIndex, 1988, e_FontTypeNames.FONTTYPE_INFOBOLD, ListaClases(.clase) & "¬" & ListaRazas(.raza) & "¬" & .Stats.ELV)
         Dim Promedio As Double, Vida As Long
         Promedio = ModClase(.clase).Vida - (21 - .Stats.UserAtributos(e_Atributos.Constitucion)) * 0.5
         Vida = 18 + ModRaza(.raza).Constitucion + Promedio * (.Stats.ELV - 1)
@@ -5594,7 +5594,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
             Signo = "+"
         End If
         'Msg1221= Vida actual: ¬1
-        Call WriteLocaleMsg(UserIndex, 1221, e_FontTypeNames.FONTTYPE_INFOBOLD, .Stats.MaxHp & " (" & Signo & Abs(Diff) & ")" & "¬" & Round(Promedio, 2) & Color)
+        Call WriteLocaleMsg(UserIndex, 1221, Color, .Stats.MaxHp & " (" & Signo & Abs(Diff) & ")" & "¬" & Round(Promedio, 2))
     End With
     Exit Sub
 handle:
