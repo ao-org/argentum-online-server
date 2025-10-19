@@ -43,12 +43,8 @@ Public Type tAPuestas
 End Type
 
 Public Apuestas                      As tAPuestas
-Public NPCs                          As Long
-Public DebugSocket                   As Boolean
 Public horas                         As Long
-Public dias                          As Long
 Public MinsRunning                   As Long
-Public ReiniciarServer               As Long
 Public tInicioServer                 As Long
 'INTERVALOS
 Public SanaIntervaloSinDescansar     As Integer
@@ -59,17 +55,12 @@ Public IntervaloPerderStamina        As Integer
 Public IntervaloSed                  As Integer
 Public IntervaloHambre               As Integer
 Public IntervaloVeneno               As Integer
-'Ladder
 Public IntervaloIncineracion         As Integer
 Public IntervaloInmovilizado         As Integer
-Public IntervaloMaldicion            As Integer
-'Ladder
 Public IntervaloParalizado           As Integer
 Public IntervaloInvisible            As Integer
 Public IntervaloFrio                 As Integer
 Public IntervaloWavFx                As Integer
-Public IntervaloNPCPuedeAtacar       As Integer
-Public IntervaloNPCAI                As Integer
 Public IntervaloInvocacion           As Integer
 Public IntervaloOculto               As Integer '[Nacho]
 Public IntervaloUserPuedeAtacar      As Long
@@ -92,7 +83,6 @@ Public IntervaloCaminar              As Long
 Public IntervaloEnCombate            As Long
 Public IntervaloPuedeSerAtacado      As Long
 Public IntervaloGuardarUsuarios      As Long
-Public LimiteGuardarUsuarios         As Integer
 Public IntervaloTimerGuardarUsuarios As Integer
 Public IntervaloMensajeGlobal        As Long
 Public Const IntervaloConsultaGM     As Long = 300000
@@ -119,7 +109,6 @@ Public NpcStunTime                       As Long
 Public PlayerInmuneTime                  As Long
 Public MultiShotReduction                As Single
 Public HomeTimer                         As Integer
-Public MagicSkillBonusDamageModifier     As Single
 Public MRSkillProtectionModifier         As Single
 Public MRSkillNpcProtectionModifier      As Single
 Public AssistDamageValidTime             As Long 'valid time for damage to count as assit
@@ -133,11 +122,9 @@ Public DivineBloodManaCostMultiplier     As Single
 Public WarriorLifeStealOnHitMultiplier   As Single
 Public Puerto                            As Long
 Public ListenIp                          As String
-Public MAXPASOS                          As Long
 Public BootDelBackUp                     As Byte
 Public Lloviendo                         As Boolean
 Public Nebando                           As Boolean
-Public Nieblando                         As Boolean
 Public IpList                            As New Collection
 Public Baneos                            As New Collection
 
@@ -158,32 +145,6 @@ Sub ReSpawnOrigPosNpcs()
     Exit Sub
 Handler:
     Call TraceError(Err.Number, Err.Description, "Admin.ReSpawnOrigPosNpcs", Erl)
-End Sub
-
-Sub WorldSave()
-    On Error GoTo Handler
-    Dim LoopX As Integer
-    Dim Porc  As Long
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1732", vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1732=Servidor » Iniciando WorldSave
-    Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
-    Dim j As Integer, K As Integer
-    For j = 1 To NumMaps
-        If MapInfo(j).backup_mode = 1 Then K = K + 1
-    Next j
-    FrmStat.ProgressBar1.Min = 0
-    FrmStat.ProgressBar1.max = K
-    FrmStat.ProgressBar1.value = 0
-    For LoopX = 1 To NumMaps
-        'DoEvents
-        If MapInfo(LoopX).backup_mode = 1 Then
-            FrmStat.ProgressBar1.value = FrmStat.ProgressBar1.value + 1
-        End If
-    Next LoopX
-    FrmStat.Visible = False
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1733, vbNullString, e_FontTypeNames.FONTTYPE_SERVER))
-    Exit Sub
-Handler:
-    Call TraceError(Err.Number, Err.Description, "Admin.WorldSave", Erl)
 End Sub
 
 Public Sub PurgarPenas()
