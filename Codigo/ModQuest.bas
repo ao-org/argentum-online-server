@@ -622,7 +622,7 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
     End If
     If UserList(UserIndex).clase <> tmpQuest.RequiredClass And tmpQuest.RequiredClass > 0 Then
         'Msg1426=Debes ser ¬1 para emprender esta misión.
-        Call WriteLocaleMsg(UserIndex, 1426, e_FontTypeNames.FONTTYPE_INFO, ListaClases(tmpQuest.RequiredClass))
+        Call WriteLocaleMsg(UserIndex, MSG_QUEST_LEVEL_REQUIREMENT, e_FontTypeNames.FONTTYPE_INFO, ListaClases(tmpQuest.RequiredClass))
         Exit Function
     End If
     If tmpQuest.Repetible = 0 Then
