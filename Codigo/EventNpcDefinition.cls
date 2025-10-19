@@ -37,7 +37,6 @@ Attribute VB_Exposed = False
 '
 '
 '
-Option Explicit
 Public NpcId      As Integer
 Public SpawnCount As Integer
 Public Score      As Integer

@@ -39,12 +39,14 @@ Attribute VB_Exposed = False
 '
 Option Explicit
 Implements IBaseEffectOverTime
-Dim TickTime            As Long
-Dim TimeSinceLastTick   As Long
-Private DotInfo         As t_BaseDotInfo
-Private Source          As t_AnyReference
-Private ReductionActive As Boolean
-Const TaunteffectId     As Integer = 4
+Dim TickTime                  As Long
+Dim TimeSinceLastTick         As Long
+Private DotInfo               As t_BaseDotInfo
+Private Source                As t_AnyReference
+Private PhysicalDamageModfier As Single
+Private MagicDamageModifier   As Single
+Private ReductionActive       As Boolean
+Const TaunteffectId           As Integer = 4
 
 Public Sub Setup(ByVal SourceIndex As Integer, _
                  ByVal SourceType As e_ReferenceType, _

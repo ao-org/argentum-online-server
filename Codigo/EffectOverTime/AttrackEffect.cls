@@ -207,7 +207,7 @@ Public Function IsValidPos(ByVal Map As Integer, ByVal TileX As Integer, ByVal T
     Else
         CanGoWater = NpcList(DotInfo.TargetRef.ArrayIndex).flags.AguaValida
     End If
-    IsValidPos = LegalPos(Map, TileX, TileY, CanGoWater, Not CanGoWater, False, False)
+    IsValidPos = LegalPos(Map, TileX, TileY, CanGoWater, Not CanGoWater, Mounted, False, False)
 End Function
 
 Public Sub PerformAction()

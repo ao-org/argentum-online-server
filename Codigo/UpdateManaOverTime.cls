@@ -226,8 +226,7 @@ Public Sub PerformAction()
     TickMana = RandomRange(DotManaMin, DotManaMax)
     If DotInfo.TargetRef.RefType = e_ReferenceType.eUser Then
         With UserList(DotInfo.TargetRef.ArrayIndex)
-            Dim CurrentMana As Long
-            Dim MaxMana     As Long
+            Dim CurrentMana, MaxMana As Long
             CurrentMana = .Stats.MinMAN
             MaxMana = .Stats.MaxMAN
             TickMana = CurrentMana + MaxMana * TickMana / 100

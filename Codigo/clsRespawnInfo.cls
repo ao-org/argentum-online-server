@@ -45,6 +45,7 @@ Public Strength            As Byte
 Public Agility             As Byte
 Public PowerUpTime         As Integer
 Public HasPowerUp          As Boolean
+Public UserSlotIteration   As Long
 
 Public Sub Reset()
     EquipedElementCount = 0

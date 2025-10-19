@@ -222,7 +222,7 @@ Public Function IsValidPos(ByVal Map As Integer, ByVal TileX As Integer, ByVal T
     Else
         CanGoWater = NpcList(DotInfo.TargetRef.ArrayIndex).flags.AguaValida
     End If
-    IsValidPos = LegalPos(Map, TileX, TileY, CanGoWater, Not CanGoWater, False, False)
+    IsValidPos = LegalPos(Map, TileX, TileY, CanGoWater, Not CanGoWater, Mounted, False, False)
 End Function
 
 Private Sub PerformAction()
@@ -231,6 +231,7 @@ Private Sub PerformAction()
     Dim TargetTranslation As t_Vector
     Dim TargetPos         As t_WorldPos
     Dim TranslationDiff   As Double
+    Dim Tanslation        As Integer
     CurrentStep = CurrentStep + 1
     currentPos = GetPosition(DotInfo.TargetRef)
     TargetPoint.x = Direction.x * (CurrentStep) + StartPos.x
