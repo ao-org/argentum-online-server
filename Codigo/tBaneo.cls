@@ -37,6 +37,7 @@ Attribute VB_Exposed = False
 '
 '
 '
+Option Explicit
 Public name            As String
 Public Causa           As String
 Public FechaLiberacion As Date
