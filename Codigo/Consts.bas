@@ -1,5 +1,4 @@
 Attribute VB_Name = "Consts"
-Option Explicit
 Public Const DEFAULT_NPC_VISION_RANGE_X   As Integer = 15
 Public Const DEFAULT_NPC_VISION_RANGE_Y   As Integer = 13
 Public Const DEFAULT_NPC_SPELL_RANGE_X    As Integer = 11
