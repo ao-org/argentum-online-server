@@ -2161,7 +2161,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
                 .Counters.DisabledInvisibility = 0
                 Call MakeUserChar(True, 0, UserIndex, Map, x, y, 1)
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
-                Call WriteConsoleMsg(UserIndex, "Saliste del mapa de evento, tu invisibilidad se desactivó automáticamente.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, 2106, e_FontTypeNames.FONTTYPE_INFO)
             End If
         End If
         ' ============================================================
