@@ -1949,7 +1949,7 @@ Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer, Optional ByVa
     On Error GoTo ProbabilidadApuñalar_Err
     With UserList(UserIndex)
         Dim Skill As Integer
-        Skill = .Stats.UserSkills(e_Skill.Apuñalar)
+        Skill = GetEffectiveSkill(UserIndex, e_Skill.Apuñalar, NpcIndex)
         Select Case .clase
             Case e_Class.Assasin
                 If NpcIndex <> 0 Then
@@ -1971,6 +1971,28 @@ Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer, Optional ByVa
 ProbabilidadApuñalar_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadApuñalar", Erl)
 End Function
+
+' Helper function to retrieve the effective skill value
+Private Function GetEffectiveSkill(ByVal UserIndex As Integer, ByVal SkillType As e_Skill, Optional ByVal NpcIndex As Integer = 0) As Integer
+    On Error GoTo GetEffectiveSkill_Err
+
+    Const MAX_SKILL As Integer = 100
+    Dim BaseSkill As Integer
+
+    BaseSkill = UserList(UserIndex).Stats.UserSkills(SkillType)
+
+    If NpcIndex <> 0 Then
+        GetEffectiveSkill = MAX_SKILL
+    Else
+        GetEffectiveSkill = BaseSkill
+    End If
+
+    Exit Function
+
+GetEffectiveSkill_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetEffectiveSkill", Erl)
+End Function
+
 
 Private Function GetSkillRequiredForWeapon(ByVal ObjId As Integer) As e_Skill
     If ObjId = 0 Then
