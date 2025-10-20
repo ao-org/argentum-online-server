@@ -2110,18 +2110,19 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
     Dim OldMap As Integer
     Dim OldX   As Integer
     Dim OldY   As Integer
+
     With UserList(UserIndex)
         If Map <= 0 Then Exit Sub
+        
+        ' --- [CÓDIGO ORIGINAL DE COMERCIO, DIALOGOS, ETC.] ---
         If IsValidUserRef(.ComUsu.DestUsu) Then
             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = UserIndex Then
-                    'Msg1101= Comercio cancelado por el otro usuario
                     Call WriteLocaleMsg(.ComUsu.DestUsu.ArrayIndex, "1101", e_FontTypeNames.FONTTYPE_TALK)
                     Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
                 End If
             End If
         End If
-        'Quitar el dialogo
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.charindex))
         Call WriteRemoveAllDialogs(UserIndex)
         OldMap = .pos.Map
@@ -2131,41 +2132,55 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
         If OldMap <> Map Then
             Call WriteChangeMap(UserIndex, Map)
             If MapInfo(OldMap).Seguro = 1 And MapInfo(Map).Seguro = 0 And .Stats.ELV < 42 Then
-                ' Msg573=Estás saliendo de una zona segura, recuerda que aquí corres riesgo de ser atacado.
                 Call WriteLocaleMsg(UserIndex, 573, e_FontTypeNames.FONTTYPE_WARNING)
             End If
-            'Update new Map Users
             MapInfo(Map).NumUsers = MapInfo(Map).NumUsers + 1
-            'Update old Map Users
             MapInfo(OldMap).NumUsers = MapInfo(OldMap).NumUsers - 1
-            If MapInfo(OldMap).NumUsers < 0 Then
-                MapInfo(OldMap).NumUsers = 0
-            End If
+            If MapInfo(OldMap).NumUsers < 0 Then MapInfo(OldMap).NumUsers = 0
             If .flags.Traveling = 1 Then
                 .flags.Traveling = 0
                 .Counters.goHome = 0
-                ' Msg574=El viaje ha terminado.
                 Call WriteLocaleMsg(UserIndex, 574, e_FontTypeNames.FONTTYPE_INFOBOLD)
             End If
         End If
+
         .pos.x = x
         .pos.y = y
         .pos.Map = Map
-        If .Grupo.EnGrupo = True Then
-            Call CompartirUbicacion(UserIndex)
+
+        ' ============================================================
+        ' >>> NUEVO BLOQUE: Consejero pierde invisibilidad fuera de eventos
+        ' ============================================================
+        If (.flags.Privilegios And e_PlayerType.Consejero) <> 0 Then
+            If Not EsMapaEvento(Map) And .flags.AdminInvisible = 1 Then
+                .flags.AdminInvisible = 0
+                .flags.invisible = 0
+                .flags.Oculto = 0
+                .Counters.TiempoOculto = 0
+                .Counters.Invisibilidad = 0
+                .Counters.DisabledInvisibility = 0
+                Call MakeUserChar(True, 0, UserIndex, Map, x, y, 1)
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
+                Call WriteConsoleMsg(UserIndex, "Saliste del mapa de evento, tu invisibilidad se desactivó automáticamente.", e_FontTypeNames.FONTTYPE_INFO)
+            End If
         End If
+        ' ============================================================
+
+        If .Grupo.EnGrupo = True Then Call CompartirUbicacion(UserIndex)
+
         If FX Then
             Call MakeUserChar(True, Map, UserIndex, Map, x, y, 1)
         Else
             Call MakeUserChar(True, Map, UserIndex, Map, x, y, 0)
         End If
+
         Call WriteUserCharIndexInServer(UserIndex)
         If IsValidUserRef(.flags.GMMeSigue) Then
             Call WriteSendFollowingCharindex(.flags.GMMeSigue.ArrayIndex, .Char.charindex)
         End If
-        'Seguis invisible al pasar de mapa
+
+        ' --- [CÓDIGO ORIGINAL DE INVISIBILIDAD, EFECTOS, ETC.] ---
         If (.flags.invisible = 1 Or .flags.Oculto = 1) And (Not .flags.AdminInvisible = 1) Then
-            ' Si el mapa lo permite
             If MapInfo(Map).SinInviOcul Then
                 .flags.invisible = 0
                 .flags.Oculto = 0
@@ -2173,17 +2188,16 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
                 .Counters.Invisibilidad = 0
                 .Counters.DisabledInvisibility = 0
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.charindex, False))
-                ' Msg575=Una fuerza divina que vigila esta zona te ha vuelto visible.
                 Call WriteLocaleMsg(UserIndex, 575, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True))
             End If
         End If
-        'Reparacion temporal del bug de particulas. 08/07/09 LADDER
+
         If .flags.AdminInvisible = 0 Then
-            If FX Then 'FX
+            If FX Then
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_WARP, x, y))
-                UserList(UserIndex).Counters.timeFx = 3
+                .Counters.timeFx = 3
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, e_GraphicEffects.ModernGmWarp, 0, .pos.x, .pos.y))
             End If
         Else

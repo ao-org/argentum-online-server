@@ -751,15 +751,26 @@ End Sub
 
 Public Sub HandleInvisible(ByVal UserIndex As Integer)
     On Error GoTo HandleInvisible_Err
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
     With UserList(UserIndex)
-        If .flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero) Then Exit Sub
+        ' Si es usuario normal, no puede usarlo nunca
+        If .flags.Privilegios And e_PlayerType.User Then Exit Sub
+        
+        ' Si es Consejero, solo puede hacerlo en mapas de evento
+        If .flags.Privilegios And e_PlayerType.Consejero Then
+            If Not EsMapaEvento(.pos.Map) Then
+                Call WriteConsoleMsg(UserIndex, "Solo podés usar /INVISIBLE dentro de los mapas de evento.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+        End If
+        
+        ' Si pasa las condiciones, ejecuta el invisible
         Call DoAdminInvisible(UserIndex)
     End With
     Exit Sub
 HandleInvisible_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleInvisible", Erl)
 End Sub
+
 
 Public Sub HandleGMPanel(ByVal UserIndex As Integer)
     On Error GoTo HandleGMPanel_Err
