@@ -378,6 +378,8 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
         .pathFindingInfo.StrafeOffset.x = 0
         .pathFindingInfo.StrafeOffset.y = 0
         .pathFindingInfo.StrafeExpiresAt = 0
+        .pathFindingInfo.OrbitDirection = 0
+        .pathFindingInfo.OrbitReevaluateAt = 0
         .Comercia = 0
         .GiveEXP = 0
         .GiveEXPClan = 0
@@ -1467,6 +1469,8 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         .pathFindingInfo.StrafeOffset.x = 0
         .pathFindingInfo.StrafeOffset.y = 0
         .pathFindingInfo.StrafeExpiresAt = 0
+        .pathFindingInfo.OrbitDirection = 0
+        .pathFindingInfo.OrbitReevaluateAt = 0
         ReDim .pathFindingInfo.Path(1 To MAX_PATH_LENGTH)
         .NumDestinos = Info.NumDestinos
         If .NumDestinos > 0 Then

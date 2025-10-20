@@ -80,12 +80,10 @@ End Sub
 
 Private Sub EnsurePathNoiseStrength()
     On Error GoTo EnsurePathNoiseStrength_Err
-    If PathNoiseStrength < 0 Then
-        If SvrConfig Is Nothing Then
-            PathNoiseStrength = 0
-        Else
-            PathNoiseStrength = CSng(SvrConfig.GetValue("NPC_PATHFINDING_NOISE"))
-        End If
+    If SvrConfig Is Nothing Then
+        PathNoiseStrength = 0
+    Else
+        PathNoiseStrength = CSng(SvrConfig.GetValue("NPC_PATHFINDING_NOISE"))
     End If
     Exit Sub
 EnsurePathNoiseStrength_Err:
@@ -172,7 +170,7 @@ Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, By
                 HeuristicDistance = EuclideanDistance(x, y, EndPos)
                 Noise = 0
                 If PathNoiseStrength > 0 Then
-                    Noise = Rnd * PathNoiseStrength
+                    Noise = RandomRange(0, PathNoiseStrength)
                 End If
                 EstimatedDistance = HeuristicDistance + Noise
                 ' La distancia total estimada
@@ -383,7 +381,7 @@ Private Sub ShuffleHeadings(ByRef headingOrder() As e_Heading)
     Dim index As Integer, swapIndex As Integer
     Dim temp As e_Heading
     For index = UBound(headingOrder) To LBound(headingOrder) + 1 Step -1
-        swapIndex = Int((index - LBound(headingOrder) + 1) * Rnd) + LBound(headingOrder)
+        swapIndex = RandomNumber(LBound(headingOrder), index)
         temp = headingOrder(index)
         headingOrder(index) = headingOrder(swapIndex)
         headingOrder(swapIndex) = temp
@@ -434,6 +432,12 @@ Private Sub SetNpcStrafeOffsetFromAttacker(ByVal NpcIndex As Integer, ByVal targ
     Dim npcPos As t_Position
     npcPos.x = NpcList(NpcIndex).pos.x
     npcPos.y = NpcList(NpcIndex).pos.y
+    Dim npcMap As Integer
+    npcMap = NpcList(NpcIndex).pos.Map
+    Dim canWalkWater As Boolean
+    canWalkWater = (NpcList(NpcIndex).flags.AguaValida <> 0)
+    Dim canWalkGround As Boolean
+    canWalkGround = (NpcList(NpcIndex).flags.TierraInvalida = 0)
     Dim deltaX As Integer, deltaY As Integer
     deltaX = targetX - npcPos.x
     deltaY = targetY - npcPos.y
@@ -471,7 +475,7 @@ Private Sub SetNpcStrafeOffsetFromAttacker(ByVal NpcIndex As Integer, ByVal targ
         Dim candidateX As Integer, candidateY As Integer
         candidateX = targetX + offsetCandidates(idx).x
         candidateY = targetY + offsetCandidates(idx).y
-        If InsideLimits(candidateX, candidateY) Then
+        If LegalPos(npcMap, candidateX, candidateY, canWalkWater, canWalkGround) Then
             primaryCount = primaryCount + 1
             primaryValid(primaryCount) = offsetCandidates(idx)
         End If
@@ -492,7 +496,7 @@ Private Sub SetNpcStrafeOffsetFromAttacker(ByVal NpcIndex As Integer, ByVal targ
             Dim fallbackX As Integer, fallbackY As Integer
             fallbackX = targetX + offsetCandidates(idx).x
             fallbackY = targetY + offsetCandidates(idx).y
-            If InsideLimits(fallbackX, fallbackY) Then
+            If LegalPos(npcMap, fallbackX, fallbackY, canWalkWater, canWalkGround) Then
                 fallbackCount = fallbackCount + 1
                 fallbackValid(fallbackCount) = offsetCandidates(idx)
             End If
@@ -536,9 +540,13 @@ Public Sub ApplyNpcStrafeToDestination(ByVal NpcIndex As Integer, ByRef destinat
             End If
         End With
         Dim candidateX As Integer, candidateY As Integer
+        Dim canWalkWater As Boolean
+        Dim canWalkGround As Boolean
+        canWalkWater = (.flags.AguaValida <> 0)
+        canWalkGround = (.flags.TierraInvalida = 0)
         candidateX = destination.x + .pathFindingInfo.StrafeOffset.x
         candidateY = destination.y + .pathFindingInfo.StrafeOffset.y
-        If InsideLimits(candidateX, candidateY) Then
+        If LegalPos(.pos.Map, candidateX, candidateY, canWalkWater, canWalkGround) Then
             If candidateX = .pos.x And candidateY = .pos.y Then
                 Call ResetNpcStrafeInfo(NpcList(NpcIndex).pathFindingInfo)
             Else

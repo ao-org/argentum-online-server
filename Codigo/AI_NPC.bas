@@ -443,10 +443,10 @@ End Sub
 Private Function EnsureNpcOrbitDirection(ByVal NpcIndex As Integer) As Integer
     With NpcList(NpcIndex).pathFindingInfo
         If .OrbitDirection = 0 Or GlobalFrameTime >= .OrbitReevaluateAt Then
-            If Rnd >= 0.5 Then
-                .OrbitDirection = 1
-            Else
+            If RandomNumber(0, 1) = 0 Then
                 .OrbitDirection = -1
+            Else
+                .OrbitDirection = 1
             End If
             .OrbitReevaluateAt = GlobalFrameTime + NPC_ORBIT_REEVALUATE_MS
         End If
