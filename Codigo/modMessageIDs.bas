@@ -37,3 +37,4 @@ Public Const MSG_USERNAME_ALREADY_TAKEN                        As Integer = 1778
 Public Const MSG_UPGRADE_ACCOUNT_TO_CREATE_MORE_CHARS          As Integer = 1779
 Public Const MSG_RIDER_LEVEL_REQUIREMENT                       As Integer = 2078
 Public Const MSG_CHARACTER_HOME                                As Integer = 2104
+Public Const MSG_QUEST_LEVEL_REQUIREMENT                       As Integer = 1426
