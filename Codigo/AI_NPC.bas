@@ -442,13 +442,29 @@ End Sub
 
 Private Function EnsureNpcOrbitDirection(ByVal NpcIndex As Integer) As Integer
     With NpcList(NpcIndex).pathFindingInfo
-        If .OrbitDirection = 0 Or GlobalFrameTime >= .OrbitReevaluateAt Then
+        Dim needsUpdate As Boolean
+        needsUpdate = (.OrbitDirection = 0)
+        If Not needsUpdate Then
+            If .OrbitReevaluateAt = 0 Then
+                needsUpdate = True
+            ElseIf TickAfter(GlobalFrameTime, .OrbitReevaluateAt) Then
+                needsUpdate = True
+            End If
+        End If
+        If needsUpdate Then
             If RandomNumber(0, 1) = 0 Then
                 .OrbitDirection = -1
             Else
                 .OrbitDirection = 1
             End If
-            .OrbitReevaluateAt = GlobalFrameTime + NPC_ORBIT_REEVALUATE_MS
+            Dim baseTick As Long
+            If .OrbitReevaluateAt = 0 Then
+                baseTick = GlobalFrameTime
+            Else
+                baseTick = .OrbitReevaluateAt
+            End If
+            .OrbitReevaluateAt = AddMod32(baseTick, NPC_ORBIT_REEVALUATE_MS)
+            If .OrbitReevaluateAt = 0 Then .OrbitReevaluateAt = 1
         End If
         EnsureNpcOrbitDirection = .OrbitDirection
     End With
@@ -459,7 +475,8 @@ Private Sub FlipNpcOrbitDirection(ByVal NpcIndex As Integer)
         Dim currentDirection As Integer
         currentDirection = EnsureNpcOrbitDirection(NpcIndex)
         .OrbitDirection = -currentDirection
-        .OrbitReevaluateAt = GlobalFrameTime + NPC_ORBIT_REEVALUATE_MS
+        .OrbitReevaluateAt = AddMod32(GlobalFrameTime, NPC_ORBIT_REEVALUATE_MS)
+        If .OrbitReevaluateAt = 0 Then .OrbitReevaluateAt = 1
     End With
 End Sub
 

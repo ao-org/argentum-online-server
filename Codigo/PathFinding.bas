@@ -516,7 +516,8 @@ Private Sub SetNpcStrafeOffsetFromAttacker(ByVal NpcIndex As Integer, ByVal targ
     With NpcList(NpcIndex).pathFindingInfo
         .StrafeOffset.x = selected.x
         .StrafeOffset.y = selected.y
-        .StrafeExpiresAt = GlobalFrameTime + NPC_STRAFE_DURATION_MS
+        .StrafeExpiresAt = AddMod32(GlobalFrameTime, NPC_STRAFE_DURATION_MS)
+        If .StrafeExpiresAt = 0 Then .StrafeExpiresAt = 1
         If .PathLength <> 0 Then .PathLength = 0
     End With
     Exit Sub
@@ -533,8 +534,8 @@ Public Sub ApplyNpcStrafeToDestination(ByVal NpcIndex As Integer, ByRef destinat
             Exit Sub
         End If
         With .pathFindingInfo
-            If .StrafeExpiresAt <= 0 Then Exit Sub
-            If GlobalFrameTime >= .StrafeExpiresAt Then
+            If .StrafeExpiresAt = 0 Then Exit Sub
+            If TickAfter(GlobalFrameTime, .StrafeExpiresAt) Then
                 Call ResetNpcStrafeInfo(NpcList(NpcIndex).pathFindingInfo)
                 Exit Sub
             End If
