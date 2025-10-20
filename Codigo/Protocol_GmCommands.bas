@@ -758,8 +758,8 @@ Public Sub HandleInvisible(ByVal UserIndex As Integer)
         ' Si es Consejero, solo puede hacerlo en mapas de evento
         If .flags.Privilegios And e_PlayerType.Consejero Then
             If Not EsMapaEvento(.pos.Map) Then
-                Call WriteConsoleMsg(UserIndex, "Solo podés usar /INVISIBLE dentro de los mapas de evento.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
+                Call WriteLocaleMsg(UserIndex, 2105, e_FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
             End If
         End If
         
