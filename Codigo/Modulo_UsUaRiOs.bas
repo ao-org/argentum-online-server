@@ -1494,21 +1494,20 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 ' ========================
 ' Show current home
 ' ========================
-Dim DeDonde As String
+Dim char_home As String
 Select Case UserList(UserIndex).Hogar
-    Case e_Ciudad.cUllathorpe: DeDonde = CIUDAD_ULLATHORPE
-    Case e_Ciudad.cNix: DeDonde = CIUDAD_NIX
-    Case e_Ciudad.cBanderbill: DeDonde = CIUDAD_BANDERBILL
-    Case e_Ciudad.cLindos: DeDonde = CIUDAD_LINDOS
-    Case e_Ciudad.cArghal: DeDonde = CIUDAD_ARGHAL
-    Case e_Ciudad.cForgat: DeDonde = CIUDAD_FORGAT
-    Case e_Ciudad.cArkhein: DeDonde = CIUDAD_ARKHEIN
-    Case e_Ciudad.cEldoria: DeDonde = CIUDAD_ELDORIA
-    Case e_Ciudad.cPenthar: DeDonde = CIUDAD_PENTHAR
-    Case Else: DeDonde = CIUDAD_ULLATHORPE
+    Case e_Ciudad.cUllathorpe: char_home = CIUDAD_ULLATHORPE
+    Case e_Ciudad.cNix: char_home = CIUDAD_NIX
+    Case e_Ciudad.cBanderbill: char_home = CIUDAD_BANDERBILL
+    Case e_Ciudad.cLindos: char_home = CIUDAD_LINDOS
+    Case e_Ciudad.cArghal: char_home = CIUDAD_ARGHAL
+    Case e_Ciudad.cForgat: char_home = CIUDAD_FORGAT
+    Case e_Ciudad.cArkhein: char_home = CIUDAD_ARKHEIN
+    Case e_Ciudad.cEldoria: char_home = CIUDAD_ELDORIA
+    Case e_Ciudad.cPenthar: char_home = CIUDAD_PENTHAR
+    Case Else: char_home = CIUDAD_ULLATHORPE
 End Select
-
-Call WriteLocaleMsg(sendIndex, "2104", e_FontTypeNames.FONTTYPE_INFO, DeDonde)
+    Call WriteLocaleMsg(sendIndex, MSG_CHARACTER_HOME, e_FontTypeNames.FONTTYPE_INFO, char_home)
 
 
 
