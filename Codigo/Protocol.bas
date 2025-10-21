@@ -1004,6 +1004,61 @@ End Sub
 
 Private Sub HandleDeleteCharacter(ByVal ConnectionID As Long)
     On Error GoTo DeleteCharacter_Err:
+    Dim UserIndex As Integer
+    UserIndex = Mapping(ConnectionID).UserRef.ArrayIndex
+    If UserIndex < 1 Then
+        Call KickConnection(ConnectionID)
+        Exit Sub
+    End If
+
+    Dim characterName As String
+    characterName = Trim$(reader.ReadString8)
+    If (LenB(characterName) = 0) Then
+        Call WriteErrorMsg(UserIndex, "Parametros incorrectos")
+        Exit Sub
+    End If
+
+    Dim accountId As Long
+    accountId = UserList(UserIndex).AccountID
+    If accountId <= 0 Then
+        Call WriteErrorMsg(UserIndex, "Cuenta invalida")
+        Exit Sub
+    End If
+
+    Dim RS As ADODB.Recordset
+    Set RS = Query("SELECT id, is_banned FROM user WHERE name = ? AND account_id = ?;", characterName, accountId)
+    If RS Is Nothing Then
+        Call WriteErrorMsg(UserIndex, "No se pudo obtener el personaje")
+        Set RS = Nothing
+        Exit Sub
+    End If
+
+    If RS.EOF Then
+        Call WriteErrorMsg(UserIndex, "El personaje no existe en esta cuenta")
+        Set RS = Nothing
+        Exit Sub
+    End If
+
+    If val(RS!is_banned) <> 0 Then
+        Call WriteErrorMsg(UserIndex, "No podras borrar un personaje baneado")
+        Set RS = Nothing
+        Exit Sub
+    End If
+
+    Dim characterId As Long
+    characterId = RS!id
+    Set RS = Nothing
+
+    If Not Execute("DELETE FROM user WHERE id = ?;", characterId) Then
+        Call WriteErrorMsg(UserIndex, "No se pudo borrar el personaje")
+        Exit Sub
+    End If
+
+    Dim Personajes(1 To 10) As t_PersonajeCuenta
+    Dim count As Long
+    count = GetPersonajesCuentaDatabase(accountId, Personajes)
+    Call WriteAccountCharacterList(UserIndex, Personajes, count)
+    Exit Sub
 DeleteCharacter_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteCharacter", Erl)
 End Sub
