@@ -5399,6 +5399,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                     If GuildAlignmentIndex(UserList(tUser.ArrayIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
                         Call m_EcharMiembroDeClan(UserIndex, UserList(tUser.ArrayIndex).Id)
                     End If
+                End If
                     UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 2
                     UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Criminal
                     Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1992, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1992=¬1 expulsado de las fuerzas del caos y prohibida la reenlistada.
