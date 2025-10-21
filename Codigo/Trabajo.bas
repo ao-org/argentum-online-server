@@ -436,7 +436,13 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
                         End If
                 End Select
             End If
+            Dim NivelRequerido As Integer
             Dim SkillNecesario As Byte
+            NivelRequerido = IIf(.clase = e_Class.Trabajador, 23, 25)
+            If .Stats.ELV < NivelRequerido Then
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1926, NivelRequerido, e_FontTypeNames.FONTTYPE_INFO))
+                Exit Sub
+            End If
             SkillNecesario = IIf(.clase = e_Class.Trabajador Or .clase = e_Class.Pirat, Barco.MinSkill \ 2, Barco.MinSkill)
             ' Tiene el skill necesario?
             If .Stats.UserSkills(e_Skill.Navegacion) < SkillNecesario Then
