@@ -136,6 +136,7 @@ Module=WorldTime; Codigo\WorldTime.bas
 Module=modAppearance; Codigo\modAppearance.bas
 Module=modSpawn; Codigo\modSpawn.bas
 Module=modMessageIDs; Codigo\modMessageIDs.bas
+Class=clsFastString; Codigo\clsFastString.cls
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
