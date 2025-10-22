@@ -1489,8 +1489,29 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     'Msg1300= Creditos Patreon: ¬1
     Call WriteLocaleMsg(sendIndex, "1300", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.Creditos)
     'Msg2078 = Nivel de Jinete:¬1
-    Call WriteLocaleMsg(sendIndex, "2078", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.JineteLevel)
-    Exit Sub
+    Call WriteLocaleMsg(sendIndex, MSG_RIDER_LEVEL_REQUIREMENT, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.JineteLevel)
+
+' ========================
+' Show current home
+' ========================
+Dim char_home As String
+Select Case UserList(UserIndex).Hogar
+    Case e_Ciudad.cUllathorpe: char_home = CIUDAD_ULLATHORPE
+    Case e_Ciudad.cNix: char_home = CIUDAD_NIX
+    Case e_Ciudad.cBanderbill: char_home = CIUDAD_BANDERBILL
+    Case e_Ciudad.cLindos: char_home = CIUDAD_LINDOS
+    Case e_Ciudad.cArghal: char_home = CIUDAD_ARGHAL
+    Case e_Ciudad.cForgat: char_home = CIUDAD_FORGAT
+    Case e_Ciudad.cArkhein: char_home = CIUDAD_ARKHEIN
+    Case e_Ciudad.cEldoria: char_home = CIUDAD_ELDORIA
+    Case e_Ciudad.cPenthar: char_home = CIUDAD_PENTHAR
+    Case Else: char_home = CIUDAD_ULLATHORPE
+End Select
+    Call WriteLocaleMsg(sendIndex, MSG_CHARACTER_HOME, e_FontTypeNames.FONTTYPE_INFO, char_home)
+
+
+
+Exit Sub
 SendUserStatsTxt_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxt", Erl)
 End Sub
