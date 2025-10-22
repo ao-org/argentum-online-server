@@ -1258,6 +1258,7 @@ Public Sub CargaNpcsDat(Optional ByVal ActualizarNPCsExistentes As Boolean = Fal
     ' Leemos el NPCs.dat y lo almacenamos en la memoria.
     Set LeerNPCs = New clsIniManager
     Call LeerNPCs.Initialize(DatPath & "NPCs.dat")
+    Call BuildNpcInfoCache
     ' Cargamos la lista de NPC's hostiles disponibles para spawnear.
     Call CargarSpawnList
     ' Actualizamos la informacion de los NPC's ya spawneados.

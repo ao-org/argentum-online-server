@@ -67,6 +67,23 @@ Public Function GetAvailableUserSlot() As Integer
     GetAvailableUserSlot = AvailableUserSlot.currentIndex
 End Function
 
+Public Function IsPatreon(ByVal UserIndex As Integer) As Boolean
+    
+   On Error GoTo IsPatreon_Error
+
+    With UserList(UserIndex).Stats
+        IsPatreon = .tipoUsuario = e_TipoUsuario.tAventurero Or .tipoUsuario = e_TipoUsuario.tHeroe Or .tipoUsuario = e_TipoUsuario.tLeyenda
+    End With
+
+   On Error GoTo 0
+   Exit Function
+
+IsPatreon_Error:
+    Call Logging.TraceError(Err.Number, Err.Description, "UserMod.IsPatreon nick: " & UserList(UserIndex).name, Erl())
+    
+End Function
+
+
 Public Function GetNextAvailableUserSlot() As Integer
     On Error GoTo ErrHandler
     If (AvailableUserSlot.currentIndex = 0) Then
@@ -254,11 +271,15 @@ Prepare_ConnectUser_Err:
 End Sub
 
 Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As String, Optional ByVal newUser As Boolean = False)
+
+Dim n                           As Integer
+Dim tStr                        As String
+
     On Error GoTo Complete_ConnectUser_Err
+    
     ConnectUser_Complete = False
-    Dim n    As Integer
-    Dim tStr As String
     Call SendData(SendTarget.ToIndex, UserIndex, PrepareActiveToggles)
+    
     With UserList(UserIndex)
 #If LOGIN_STRESS_TEST = 1 Then
         .pos.Map = 1 'Ullathorpe
@@ -330,6 +351,15 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As S
         Else
             .flags.Desnudo = 1
         End If
+        
+        If .Invent_Skins.SlotBackpackEquipped > 0 Then
+            If .Invent_Skins.Object(.Invent_Skins.SlotBackpackEquipped).ObjIndex = .Invent_Skins.ObjIndexBackpackEquipped And .Invent_Skins.ObjIndexBackpackEquipped > 0 Then
+                If CanEquipSkin(UserIndex, .Invent_Skins.SlotBackpackEquipped, False) Then
+                    Call SkinEquip(UserIndex, .Invent_Skins.SlotBackpackEquipped, .Invent_Skins.Object(.Invent_Skins.SlotBackpackEquipped).ObjIndex)
+                End If
+            End If
+        End If
+        
         'Obtiene el indice-objeto del escudo
         If .invent.EquippedShieldSlot > 0 Then
             If .invent.Object(.invent.EquippedShieldSlot).ObjIndex > 0 Then
@@ -737,8 +767,8 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
         .flags.Muerto = 0
         .Stats.MinHp = .Stats.MaxHp
         ' El comportamiento cambia si usamos el hechizo Resucitar
-        If MedianteHechizo Then
-            If IsFeatureEnabled("healers_and_tanks") And CasterUserIndex > 0 And UserList(CasterUserIndex).flags.DivineBlood > 0 Then
+        If MedianteHechizo And CasterUserIndex > 0 Then
+            If IsFeatureEnabled("healers_and_tanks") And UserList(CasterUserIndex).flags.DivineBlood > 0 Then
                 .Stats.MinHp = .Stats.MaxHp
             Else
                 .Stats.MinHp = 1
@@ -831,6 +861,7 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, _
                    ByVal Cart As Integer, _
                    ByVal BackPack As Integer)
     On Error GoTo ChangeUserChar_Err
+    
     If IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTransformed) Then Exit Sub
     With UserList(UserIndex).Char
         .body = body
@@ -841,11 +872,13 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, _
         .CascoAnim = Casco
         .CartAnim = Cart
         .BackpackAnim = BackPack
+    
+        If .charindex > 0 Then
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, .charindex, Arma, Escudo, Cart, BackPack, .FX, .loops, Casco, False, UserList(UserIndex).flags.Navegando))
+        End If
     End With
-    If UserList(UserIndex).Char.charindex > 0 Then
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, UserList(UserIndex).Char.charindex, Arma, Escudo, Cart, BackPack, _
-                UserList(UserIndex).Char.FX, UserList(UserIndex).Char.loops, Casco, False, UserList(UserIndex).flags.Navegando))
-    End If
+    
+
     Exit Sub
 ChangeUserChar_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ChangeUserChar", Erl)
@@ -1456,8 +1489,29 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     'Msg1300= Creditos Patreon: ¬1
     Call WriteLocaleMsg(sendIndex, "1300", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.Creditos)
     'Msg2078 = Nivel de Jinete:¬1
-    Call WriteLocaleMsg(sendIndex, "2078", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.JineteLevel)
-    Exit Sub
+    Call WriteLocaleMsg(sendIndex, MSG_RIDER_LEVEL_REQUIREMENT, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.JineteLevel)
+
+' ========================
+' Show current home
+' ========================
+Dim char_home As String
+Select Case UserList(UserIndex).Hogar
+    Case e_Ciudad.cUllathorpe: char_home = CIUDAD_ULLATHORPE
+    Case e_Ciudad.cNix: char_home = CIUDAD_NIX
+    Case e_Ciudad.cBanderbill: char_home = CIUDAD_BANDERBILL
+    Case e_Ciudad.cLindos: char_home = CIUDAD_LINDOS
+    Case e_Ciudad.cArghal: char_home = CIUDAD_ARGHAL
+    Case e_Ciudad.cForgat: char_home = CIUDAD_FORGAT
+    Case e_Ciudad.cArkhein: char_home = CIUDAD_ARKHEIN
+    Case e_Ciudad.cEldoria: char_home = CIUDAD_ELDORIA
+    Case e_Ciudad.cPenthar: char_home = CIUDAD_PENTHAR
+    Case Else: char_home = CIUDAD_ULLATHORPE
+End Select
+    Call WriteLocaleMsg(sendIndex, MSG_CHARACTER_HOME, e_FontTypeNames.FONTTYPE_INFO, char_home)
+
+
+
+Exit Sub
 SendUserStatsTxt_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxt", Erl)
 End Sub
@@ -3266,4 +3320,16 @@ Public Function GetUserMR(ByVal UserIndex As Integer) As Integer
         End If
         GetUserMR = MR + 100 * ModClase(.clase).ResistenciaMagica
     End With
+End Function
+
+Function LevelCanUseItem(ByVal UserIndex As Integer, ByRef obj As t_ObjData) As Boolean
+
+    With UserList(UserIndex)
+        If obj.MaxLEV <> 0 Then
+            LevelCanUseItem = .Stats.ELV >= obj.MinELV And .Stats.ELV <= obj.MaxLEV
+        Else
+            LevelCanUseItem = .Stats.ELV >= obj.MinELV
+        End If
+    End With
+    
 End Function

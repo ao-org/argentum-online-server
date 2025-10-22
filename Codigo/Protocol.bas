@@ -2901,25 +2901,56 @@ End Sub
 '
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleEquipItem(ByVal UserIndex As Integer)
+
+Dim bSkins                      As Boolean
+Dim itemSlot                    As Byte
+Dim Packet_ID                   As Long
+Dim PacketCounter               As Long
+Dim eSkinType                   As e_OBJType
+
     On Error GoTo HandleEquipItem_Err
+
     With UserList(UserIndex)
-        Dim itemSlot As Byte
+
         itemSlot = reader.ReadInt8()
-        Dim PacketCounter As Long
+        bSkins = reader.ReadBool
+
+        If bSkins Then
+            eSkinType = reader.ReadInt8()
+        End If
+
         PacketCounter = reader.ReadInt32
-        Dim Packet_ID As Long
         Packet_ID = PacketNames.EquipItem
-        'If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), userindex, "EquipItem", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+
         'Dead users can't equip items
         If .flags.Muerto = 1 Then
             'Msg1136= ¡¡Estás muerto!! Sólo podés usar items cuando estás vivo.
             Call WriteLocaleMsg(UserIndex, 1136, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
+
         'Validate item slot
-        If itemSlot > UserList(UserIndex).CurrentInventorySlots Or itemSlot < 1 Then Exit Sub
-        If .invent.Object(itemSlot).ObjIndex = 0 Then Exit Sub
-        Call EquiparInvItem(UserIndex, itemSlot)
+        If Not bSkins Then
+            If itemSlot > .CurrentInventorySlots Or itemSlot < 1 Then Exit Sub
+            'Auto Fix errores de dateos en ï¿½tems.
+            If .invent.Object(itemSlot).amount = 0 Then
+                .invent.Object(itemSlot).ObjIndex = 0
+                Call UpdateSingleItemInv(UserIndex, itemSlot, False)
+                Exit Sub
+            End If
+            Call EquiparInvItem(UserIndex, itemSlot)
+        Else
+            If itemSlot > MAX_SKINSINVENTORY_SLOTS Or itemSlot < 1 Then Exit Sub
+            If .Invent_Skins.Object(itemSlot).ObjIndex = 0 Then Exit Sub
+            If .Invent_Skins.Object(itemSlot).Equipped Then
+                Call DesequiparSkin(UserIndex, itemSlot)
+                Exit Sub
+            End If
+            If CanEquipSkin(UserIndex, itemSlot, False) Then
+                Call SkinEquip(UserIndex, itemSlot, .Invent_Skins.Object(itemSlot).ObjIndex)
+            End If
+        End If
+
     End With
     Exit Sub
 HandleEquipItem_Err:
@@ -5364,17 +5395,15 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
             Call LogGM(.name, "ECHO DEL CAOS A: " & username)
             If IsValidUserRef(tUser) Then
                 If UserList(tUser.ArrayIndex).GuildIndex > 0 Then
-                    If GuildAlignmentIndex(UserList(tUser.ArrayIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
-                        'Msg1207= El usuario ¬1
-                        Call WriteLocaleMsg(UserIndex, 1207, e_FontTypeNames.FONTTYPE_INFO, username)
-                        Exit Sub
+                    'Me fijo de que alineación es el clan, si es Legion, lo echo
+                    If GuildAlignmentIndex(UserList(tUser.ArrayIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
+                        Call m_EcharMiembroDeClan(UserIndex, UserList(tUser.ArrayIndex).Id)
                     End If
-                Else
+                End If
                     UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 2
                     UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Criminal
                     Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1992, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1992=¬1 expulsado de las fuerzas del caos y prohibida la reenlistada.
                     Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1991, .name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1991=¬1 te ha expulsado en forma definitiva de las fuerzas del caos.
-                End If
             Else
                 If PersonajeExiste(username) Then
                     'Msg1208= Usuario offline, echando de la facción
@@ -5411,8 +5440,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
         Dim username As String
         Dim tUser    As t_UserReference
         username = reader.ReadString8()
-        'HarThaoS: Comando roto / revisar.
-        'Exit Sub
+
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
             If (InStrB(username, "\") <> 0) Then
                 username = Replace(username, "\", "")
@@ -5424,17 +5452,15 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
             Call LogGM(.name, "ECHO DE LA REAL A: " & username)
             If IsValidUserRef(tUser) Then
                 If UserList(tUser.ArrayIndex).GuildIndex > 0 Then
+                    'Me fijo de que alineación es el clan, si es ARMADA, lo echo
                     If GuildAlignmentIndex(UserList(tUser.ArrayIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
-                        'Msg1212= El usuario ¬1
-                        Call WriteLocaleMsg(UserIndex, 1212, e_FontTypeNames.FONTTYPE_INFO, username)
-                        Exit Sub
+                        Call m_EcharMiembroDeClan(UserIndex, UserList(tUser.ArrayIndex).Id)
                     End If
-                Else
-                    UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 2
-                    UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Ciudadano
-                    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1990, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1990=¬1 expulsado de las fuerzas reales y prohibida la reenlistada.
-                    Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1989, .name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1989=¬1 te ha expulsado en forma definitiva de las fuerzas reales.
                 End If
+                UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 2
+                UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Ciudadano
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1990, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1990=¬1 expulsado de las fuerzas reales y prohibida la reenlistada.
+                Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1989, .name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1989=¬1 te ha expulsado en forma definitiva de las fuerzas reales.
             Else
                 If PersonajeExiste(username) Then
                     'Msg1213= Usuario offline, echando de la facción
@@ -5543,7 +5569,7 @@ End Sub
 Public Sub HandlePromedio(ByVal UserIndex As Integer)
     On Error GoTo handle
     With UserList(UserIndex)
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1988, ListaClases(.clase) & "¬" & ListaRazas(.raza) & "¬" & .Stats.ELV, FONTTYPE_INFOBOLD)) ' Msg1988=¬1 ¬2 nivel ¬3.
+        Call WriteLocaleMsg(UserIndex, 1988, e_FontTypeNames.FONTTYPE_INFOBOLD, ListaClases(.clase) & "¬" & ListaRazas(.raza) & "¬" & .Stats.ELV)
         Dim Promedio As Double, Vida As Long
         Promedio = ModClase(.clase).Vida - (21 - .Stats.UserAtributos(e_Atributos.Constitucion)) * 0.5
         Vida = 18 + ModRaza(.raza).Constitucion + Promedio * (.Stats.ELV - 1)
@@ -5563,7 +5589,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
             Signo = "+"
         End If
         'Msg1221= Vida actual: ¬1
-        Call WriteLocaleMsg(UserIndex, 1221, e_FontTypeNames.FONTTYPE_INFOBOLD, .Stats.MaxHp & " (" & Signo & Abs(Diff) & ")" & "¬" & Round(Promedio, 2) & Color)
+        Call WriteLocaleMsg(UserIndex, 1221, Color, .Stats.MaxHp & " (" & Signo & Abs(Diff) & ")" & "¬" & Round(Promedio, 2))
     End With
     Exit Sub
 handle:
@@ -7765,34 +7791,72 @@ HandlePublicarPersonajeMAO_Err:
 End Sub
 
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
+    
+Dim isSkin As Boolean
+Dim Slot As Byte
+
     On Error GoTo HandleDeleteItem_Err:
-    Dim Slot As Byte
+    
+    isSkin = reader.ReadBool
     Slot = reader.ReadInt8()
+    
     With UserList(UserIndex)
-        If Slot > getMaxInventorySlots(UserIndex) Or Slot <= 0 Then Exit Sub
-        If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
-            'Msg1285= Solo puedes eliminar items en zona segura.
-            Call WriteLocaleMsg(UserIndex, 1285, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        If UserList(UserIndex).flags.Muerto = 1 Then
-            'Msg1286= No puede eliminar items cuando estas muerto.
-            Call WriteLocaleMsg(UserIndex, 1286, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        If .invent.Object(Slot).Equipped = 0 Then
-            UserList(UserIndex).invent.Object(Slot).amount = 0
-            UserList(UserIndex).invent.Object(Slot).Equipped = 0
-            UserList(UserIndex).invent.Object(Slot).ObjIndex = 0
-            Call UpdateUserInv(False, UserIndex, Slot)
-            'Msg1287= Objeto eliminado correctamente.
-            Call WriteLocaleMsg(UserIndex, 1287, e_FontTypeNames.FONTTYPE_INFO)
+        
+        If Not isSkin Then
+            If Slot > getMaxInventorySlots(UserIndex) Or Slot <= 0 Then Exit Sub
+            If MapInfo(.pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
+                'Msg1285= Solo puedes eliminar items en zona segura.
+                Call WriteLocaleMsg(UserIndex, 1285, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            If .flags.Muerto = 1 Then
+                'Msg1286= No puede eliminar items cuando estas muerto.
+                Call WriteLocaleMsg(UserIndex, 1286, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            If .invent.Object(Slot).Equipped = 0 Then
+                .invent.Object(Slot).amount = 0
+                .invent.Object(Slot).Equipped = 0
+                .invent.Object(Slot).ObjIndex = 0
+                Call UpdateUserInv(False, UserIndex, Slot)
+                'Msg1287= Objeto eliminado correctamente.
+                Call WriteLocaleMsg(UserIndex, 1287, e_FontTypeNames.FONTTYPE_INFO)
+            Else
+                'Msg1288= No puedes eliminar un objeto estando equipado.
+                Call WriteLocaleMsg(UserIndex, 1288, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            end if
         Else
-            'Msg1288= No puedes eliminar un objeto estando equipado.
-            Call WriteLocaleMsg(UserIndex, 1288, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
+            If Slot > MAX_SKINSINVENTORY_SLOTS Or Slot <= 0 Then Exit Sub
+            
+            If MapInfo(.pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
+                'Msg1285= Solo puedes eliminar items en zona segura.
+                Call WriteLocaleMsg(UserIndex, "1285", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If .flags.Muerto = 1 Then
+                'Msg1286= No puede eliminar items cuando estas muerto.
+                Call WriteLocaleMsg(UserIndex, "1286", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If .Invent_Skins.Object(Slot).Equipped = 0 Then
+                Call LogShopTransactions("PJ ID: " & .Id & " Nick: " & .name & " -> Borró el Skin: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).name & " Tipo: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType & " Valor: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Valor)
+                Call DesequiparSkin(UserIndex, Slot)
+                'Msg1287= Objeto eliminado correctamente.
+                .Invent_Skins.Object(Slot).Deleted = True
+                Call SaveUser(UserIndex, False)
+                Call WriteChangeSkinSlot(UserIndex, 0, Slot)
+                Call WriteLocaleMsg(UserIndex, "1287", e_FontTypeNames.FONTTYPE_INFO)
+            Else
+                'Msg1288= No puedes eliminar un objeto estando equipado.
+                Call WriteLocaleMsg(UserIndex, "1288", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
         End If
     End With
+    
     Exit Sub
 HandleDeleteItem_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteItem", Erl)
