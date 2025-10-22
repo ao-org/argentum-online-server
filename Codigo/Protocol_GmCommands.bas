@@ -864,16 +864,24 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
-        Dim username As String
-        Dim Reason   As String
-        Dim jailTime As Integer
-        Dim count    As Byte
-        Dim tUser    As t_UserReference
+        Dim username          As String
+        Dim Reason            As String
+        Dim jailTime          As Integer
+        Dim tUser             As t_UserReference
+        Dim normalizedName    As String
+        Dim targetPrivileges  As e_PlayerType
         username = reader.ReadString8()
         Reason = reader.ReadString8()
         jailTime = reader.ReadInt16()
         If InStr(1, username, "+") Then
             username = Replace(username, "+", " ")
+        End If
+        normalizedName = username
+        If (InStrB(normalizedName, "\") <> 0) Then
+            normalizedName = Replace(normalizedName, "\", "")
+        End If
+        If (InStrB(normalizedName, "/") <> 0) Then
+            normalizedName = Replace(normalizedName, "/", "")
         End If
         '/carcel nick@motivo@<tiempo>
         If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
@@ -882,10 +890,7 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
                 Call WriteLocaleMsg(UserIndex, 955, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 tUser = NameIndex(username)
-                If Not IsValidUserRef(tUser) Then
-                    'Msg956= El usuario no está online.
-                    Call WriteLocaleMsg(UserIndex, 956, e_FontTypeNames.FONTTYPE_INFO)
-                Else
+                If IsValidUserRef(tUser) Then
                     If EsGM(tUser.ArrayIndex) Then
                         'Msg957= No podés encarcelar a administradores.
                         Call WriteLocaleMsg(UserIndex, 957, e_FontTypeNames.FONTTYPE_INFO)
@@ -893,18 +898,28 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
                         'Msg958= No podés encarcelar por más de ¬1 minutos.
                         Call WriteLocaleMsg(UserIndex, 958, e_FontTypeNames.FONTTYPE_INFO, SvrConfig.GetValue("MaxJailTime"))
                     Else
-                        If (InStrB(username, "\") <> 0) Then
-                            username = Replace(username, "\", "")
-                        End If
-                        If (InStrB(username, "/") <> 0) Then
-                            username = Replace(username, "/", "")
-                        End If
-                        If PersonajeExiste(username) Then
-                            Call SavePenaDatabase(username, .name & ": CARCEL " & jailTime & "m, MOTIVO: " & Reason & " " & Date & " " & Time)
+                        If PersonajeExiste(normalizedName) Then
+                            Call SavePenaDatabase(normalizedName, .name & ": CARCEL " & jailTime & "m, MOTIVO: " & Reason & " " & Date & " " & Time)
                         End If
                         Call Encarcelar(tUser.ArrayIndex, jailTime, .name)
-                        Call LogGM(.name, " encarceló a " & username)
+                        Call LogGM(.name, " encarceló a " & normalizedName)
                     End If
+                ElseIf PersonajeExiste(normalizedName) Then
+                    targetPrivileges = UserDarPrivilegioLevel(normalizedName)
+                    If (targetPrivileges And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster)) <> 0 Then
+                        'Msg957= No podés encarcelar a administradores.
+                        Call WriteLocaleMsg(UserIndex, 957, e_FontTypeNames.FONTTYPE_INFO)
+                    ElseIf jailTime > SvrConfig.GetValue("MaxJailTime") Then
+                        'Msg958= No podés encarcelar por más de ¬1 minutos.
+                        Call WriteLocaleMsg(UserIndex, 958, e_FontTypeNames.FONTTYPE_INFO, SvrConfig.GetValue("MaxJailTime"))
+                    Else
+                        Call SavePenaDatabase(normalizedName, .name & ": CARCEL " & jailTime & "m, MOTIVO: " & Reason & " " & Date & " " & Time)
+                        Call EncarcelarUserDatabase(normalizedName, jailTime)
+                        Call LogGM(.name, " encarceló a " & normalizedName & " (offline)")
+                    End If
+                Else
+                    ' Msg560=El personaje no existe.
+                    Call WriteLocaleMsg(UserIndex, 560, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             End If
         Else

@@ -428,6 +428,14 @@ ErrorHandler:
     Call LogDatabaseError("Error in SavePenaDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 End Sub
 
+Public Sub EncarcelarUserDatabase(username As String, ByVal minutos As Long)
+    On Error GoTo ErrorHandler
+    Call Execute("UPDATE user SET counter_pena = ?, pos_map = ?, pos_x = ?, pos_y = ? WHERE UPPER(name) = ?;", minutos, Prision.Map, Prision.x, Prision.y, UCase$(username))
+    Exit Sub
+ErrorHandler:
+    Call LogDatabaseError("Error in EncarcelarUserDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+End Sub
+
 Public Sub SilenciarUserDatabase(username As String, ByVal Tiempo As Integer)
     On Error GoTo ErrorHandler
     Call Execute("UPDATE user SET is_silenced = 1, silence_minutes_left = ?, silence_elapsed_seconds = 0 WHERE UPPER(name) = ?;", Tiempo, UCase$(username))
