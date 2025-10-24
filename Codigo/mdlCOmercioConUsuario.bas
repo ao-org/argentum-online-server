@@ -64,6 +64,43 @@ ErrHandler:
     Call LogError("Error en IniciarComercioConUsuario: " & Err.Description)
 End Function
 
+Public Sub CancelarComercioUsuario(ByVal UserIndex As Integer, Optional ByVal ReasonMsgId As Integer = 0)
+    On Error GoTo CancelarComercioUsuario_Err
+    Dim OtherUserIndex As Integer
+    If UserIndex <= 0 Or UserIndex > MaxUsers Then Exit Sub
+    With UserList(UserIndex)
+        If Not .flags.Comerciando Then Exit Sub
+        If Not IsValidUserRef(.ComUsu.DestUsu) Then
+            Call FinComerciarUsu(UserIndex)
+            Exit Sub
+        End If
+        OtherUserIndex = .ComUsu.DestUsu.ArrayIndex
+    End With
+    If OtherUserIndex <= 0 Or OtherUserIndex > MaxUsers Then
+        Call FinComerciarUsu(UserIndex)
+        Exit Sub
+    End If
+    If Not UserList(OtherUserIndex).flags.Comerciando Then
+        Call FinComerciarUsu(UserIndex)
+        Exit Sub
+    End If
+    If UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex <> UserIndex Then
+        Call FinComerciarUsu(UserIndex)
+        Exit Sub
+    End If
+    If ReasonMsgId <> 0 Then
+        If UserList(OtherUserIndex).flags.UserLogged Then
+            Call WriteConsoleMsg(OtherUserIndex, PrepareMessageLocaleMsg(ReasonMsgId, vbNullString, e_FontTypeNames.FONTTYPE_TALK))
+        End If
+    End If
+    Call FinComerciarUsu(OtherUserIndex)
+    Call FinComerciarUsu(UserIndex)
+    Exit Sub
+CancelarComercioUsuario_Err:
+    Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.CancelarComercioUsuario", Erl)
+End Sub
+
+
 Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As Integer, ByRef ObjAEnviar As t_Obj)
     On Error GoTo EnviarObjetoTransaccion_Err
     Dim FirstEmptyPos     As Byte
