@@ -1197,6 +1197,7 @@ Function TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos
         .pos = NewPos
         MapData(.pos.Map, .pos.x, .pos.y).UserIndex = UserIndex
         Call WritePosUpdate(UserIndex)
+        Call CancelarInvitacionComercioPorMovimiento(UserIndex)
         'Actualizamos las áreas de ser necesario
         Call ModAreas.CheckUpdateNeededUser(UserIndex, .Char.Heading, 0)
         If .Counters.Trabajando Then
@@ -1345,6 +1346,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
         .pos = nPos
         .Char.Heading = nHeading
         MapData(.pos.Map, .pos.x, .pos.y).UserIndex = UserIndex
+        Call CancelarInvitacionComercioPorMovimiento(UserIndex)
         'Actualizamos las áreas de ser necesario
         Call ModAreas.CheckUpdateNeededUser(UserIndex, nHeading, 0)
         If .Counters.Trabajando Then
@@ -2133,6 +2135,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
     Dim OldY   As Integer
     With UserList(UserIndex)
         If Map <= 0 Then Exit Sub
+        Call CancelarInvitacionComercioPorMovimiento(UserIndex)
         If IsValidUserRef(.ComUsu.DestUsu) Then
             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = UserIndex Then

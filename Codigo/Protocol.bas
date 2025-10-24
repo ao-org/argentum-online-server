@@ -6553,6 +6553,8 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
         UserList(UserIndex).flags.RespondiendoPregunta = False
         If respuesta Then
             Select Case UserList(UserIndex).flags.pregunta
+                Case 0
+                    Exit Sub
                 Case 1
                     Log = "Repuesta Afirmativa 1"
                     If UserList(UserIndex).Grupo.EnGrupo Then
@@ -6678,6 +6680,8 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
         Else
             Log = "Repuesta negativa"
             Select Case UserList(UserIndex).flags.pregunta
+                Case 0
+                    Exit Sub
                 Case 1
                     Log = "Repuesta negativa 1"
                     If IsValidUserRef(UserList(UserIndex).Grupo.PropuestaDe) Then
