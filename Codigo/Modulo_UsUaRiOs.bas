@@ -1167,6 +1167,7 @@ Public Sub SwapTargetUserPos(ByVal TargetUser As Integer, ByRef NewTargetPos As 
     MapData(UserList(TargetUser).pos.Map, UserList(TargetUser).pos.x, UserList(TargetUser).pos.y).UserIndex = TargetUser
     'Actualizamos las areas de ser necesario
     Call ModAreas.CheckUpdateNeededUser(TargetUser, Heading, 0)
+    Call VerificarDistanciaComercio(TargetUser)
 End Sub
 
 Function TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos, ByVal Speed As Long)
@@ -1203,6 +1204,7 @@ Function TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos
             Call WriteMacroTrabajoToggle(UserIndex, False)
         End If
     End With
+    Call VerificarDistanciaComercio(UserIndex)
     Exit Function
 TranslateUserPos_Err:
     Call LogError("Error en la subrutina TranslateUserPos - Error : " & Err.Number & " - Description : " & Err.Description)
@@ -1352,6 +1354,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
         End If
         If .Counters.Ocultando Then .Counters.Ocultando = .Counters.Ocultando - 1
     End With
+    Call VerificarDistanciaComercio(UserIndex)
     MoveUserChar = True
     Exit Function
 MoveUserChar_Err:
@@ -2133,15 +2136,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
     Dim OldY   As Integer
     With UserList(UserIndex)
         If Map <= 0 Then Exit Sub
-        If IsValidUserRef(.ComUsu.DestUsu) Then
-            If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
-                If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = UserIndex Then
-                    'Msg1101= Comercio cancelado por el otro usuario
-                    Call WriteLocaleMsg(.ComUsu.DestUsu.ArrayIndex, "1101", e_FontTypeNames.FONTTYPE_TALK)
-                    Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
-                End If
-            End If
-        End If
+        Call CancelarComercioUsuario(UserIndex, 1844)
         'Quitar el dialogo
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.charindex))
         Call WriteRemoveAllDialogs(UserIndex)
@@ -2216,6 +2211,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
                 Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
             End If
         End If
+        Call VerificarDistanciaComercio(UserIndex)
     End With
     Exit Sub
 WarpUserChar_Err:
