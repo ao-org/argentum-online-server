@@ -64,6 +64,79 @@ ErrHandler:
     Call LogError("Error en IniciarComercioConUsuario: " & Err.Description)
 End Function
 
+Public Sub CancelarInvitacionComercioPorMovimiento(ByVal UserIndex As Integer)
+    On Error GoTo CancelarInvitacionComercioPorMovimiento_Err
+    Dim OtroIndex As Integer
+
+    If UserIndex <= 0 Then Exit Sub
+
+    With UserList(UserIndex)
+        If .flags.Comerciando Then Exit Sub
+
+        OtroIndex = ObtenerUsuarioComercioPendiente(UserIndex)
+
+        If OtroIndex <= 0 Or OtroIndex > MaxUsers Then Exit Sub
+        If Not UserList(OtroIndex).flags.UserLogged Then Exit Sub
+
+        If .flags.pregunta = 4 Then
+            Call CancelarInvitacionComercioEntre(UserIndex, OtroIndex)
+        ElseIf UserList(OtroIndex).flags.pregunta = 4 Then
+            If IsValidUserRef(UserList(OtroIndex).flags.TargetUser) Then
+                If UserList(OtroIndex).flags.TargetUser.ArrayIndex = UserIndex Then
+                    Call CancelarInvitacionComercioEntre(UserIndex, OtroIndex)
+                End If
+            End If
+        End If
+    End With
+    Exit Sub
+CancelarInvitacionComercioPorMovimiento_Err:
+    Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.CancelarInvitacionComercioPorMovimiento", Erl)
+End Sub
+
+Private Sub CancelarInvitacionComercioEntre(ByVal PrimerUsuario As Integer, ByVal SegundoUsuario As Integer)
+    If PrimerUsuario <= 0 Or PrimerUsuario > MaxUsers Then Exit Sub
+    If SegundoUsuario <= 0 Or SegundoUsuario > MaxUsers Then Exit Sub
+
+    Call CancelarInvitacionComercioIndividual(PrimerUsuario, SegundoUsuario)
+    Call CancelarInvitacionComercioIndividual(SegundoUsuario, PrimerUsuario)
+End Sub
+
+Private Sub CancelarInvitacionComercioIndividual(ByVal UserIndex As Integer, ByVal OtroIndex As Integer)
+    With UserList(UserIndex)
+        If .flags.pregunta = 4 Then
+            .flags.pregunta = 0
+            Call WritePreguntaBox(UserIndex, 2107, vbNullString)
+            Call WriteConsoleMsg(UserIndex, "Trade cancelled.", e_FontTypeNames.FONTTYPE_INFO)
+        End If
+
+        If IsValidUserRef(.flags.TargetUser) Then
+            If .flags.TargetUser.ArrayIndex = OtroIndex Then
+                Call SetUserRef(.flags.TargetUser, 0)
+            End If
+        End If
+
+        If IsValidUserRef(.ComUsu.DestUsu) Then
+            If .ComUsu.DestUsu.ArrayIndex = OtroIndex Then
+                Call SetUserRef(.ComUsu.DestUsu, 0)
+                .ComUsu.DestNick = vbNullString
+                .ComUsu.cant = 0
+                .ComUsu.Objeto = 0
+                .ComUsu.Acepto = False
+            End If
+        End If
+    End With
+End Sub
+
+Private Function ObtenerUsuarioComercioPendiente(ByVal UserIndex As Integer) As Integer
+    With UserList(UserIndex)
+        If IsValidUserRef(.flags.TargetUser) Then
+            ObtenerUsuarioComercioPendiente = .flags.TargetUser.ArrayIndex
+        ElseIf IsValidUserRef(.ComUsu.DestUsu) Then
+            ObtenerUsuarioComercioPendiente = .ComUsu.DestUsu.ArrayIndex
+        End If
+    End With
+End Function
+
 Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As Integer, ByRef ObjAEnviar As t_Obj)
     On Error GoTo EnviarObjetoTransaccion_Err
     Dim FirstEmptyPos     As Byte
