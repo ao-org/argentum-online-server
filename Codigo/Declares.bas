@@ -3025,6 +3025,7 @@ Public Type t_NPCFlags
     MapTargetEntryX As Byte
     MapTargetEntryY As Byte
     ArenaEnabled As Boolean
+    ImmuneToSpells As Byte
     AfectaParalisis As Byte
     GolpeExacto As Byte
     Domable As Integer
@@ -3212,6 +3213,7 @@ Public Type t_NpcInfoCache
     AfectaParalisis As Integer
     GolpeExacto As Integer
     TranslationInmune As Integer
+    ImmuneToSpells As Integer
     Snd1 As Integer
     Snd2 As Integer
     Snd3 As Integer

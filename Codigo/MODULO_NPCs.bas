@@ -267,6 +267,7 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
     On Error GoTo ResetNpcFlags_Err
     With NpcList(NpcIndex).flags
         .AfectaParalisis = 0
+        .ImmuneToSpells = 0
         .AguaValida = 0
         .AttackedBy = vbNullString
         .AttackedTime = 0
@@ -1098,6 +1099,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Backup = Val(LeerNPCs.GetValue(SectionName, "BackUp"))
         .RespawnOrigPos = Val(LeerNPCs.GetValue(SectionName, "OrigPos"))
         .AfectaParalisis = Val(LeerNPCs.GetValue(SectionName, "AfectaParalisis"))
+        .ImmuneToSpells = Val(LeerNPCs.GetValue(SectionName, "ImmuneToSpells", 0))
         .GolpeExacto = Val(LeerNPCs.GetValue(SectionName, "GolpeExacto"))
         .TranslationInmune = Val(LeerNPCs.GetValue(SectionName, "TranslationInmune"))
         .Snd1 = Val(LeerNPCs.GetValue(SectionName, "Snd1"))
@@ -1416,6 +1418,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         .flags.backup = Info.Backup
         .flags.RespawnOrigPos = Info.RespawnOrigPos
         .flags.AfectaParalisis = Info.AfectaParalisis
+        .flags.ImmuneToSpells = Info.ImmuneToSpells
         .flags.GolpeExacto = Info.GolpeExacto
         If Info.TranslationInmune > 0 Then Call SetMask(.flags.EffectInmunity, e_Inmunities.eTranslation)
         .flags.Snd1 = Info.Snd1

@@ -486,6 +486,10 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 Call WriteLocaleMsg(UserIndex, 2001, e_FontTypeNames.FONTTYPE_WARNING)
                 Exit Function
             End If
+            If NpcList(.flags.TargetNPC.ArrayIndex).flags.ImmuneToSpells <> 0 Then
+                Call WriteLocaleMsg(UserIndex, 666, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Function
+            End If
         End If
         If .flags.EnConsulta Then
             'Msg778= No puedes lanzar hechizos si estas en consulta.
@@ -2157,6 +2161,13 @@ End Sub
 
 Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b As Boolean, ByVal UserIndex As Integer)
     On Error GoTo HechizoEstadoNPC_Err
+    If NpcList(NpcIndex).flags.ImmuneToSpells <> 0 Then
+        If UserIndex > 0 Then
+            Call WriteLocaleMsg(UserIndex, 666, e_FontTypeNames.FONTTYPE_INFO)
+        End If
+        b = False
+        Exit Sub
+    End If
     Dim UserAttackInteractionResult As t_AttackInteractionResult
     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.Invisibility) Then
         Call InfoHechizo(UserIndex)
@@ -2326,6 +2337,13 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
     '14/08/2007 Pablo (ToxicWaste) - Orden general.
     '***************************************************
     On Error GoTo HechizoPropNPC_Err
+    If NpcList(NpcIndex).flags.ImmuneToSpells <> 0 Then
+        If UserIndex > 0 Then
+            Call WriteLocaleMsg(UserIndex, 666, e_FontTypeNames.FONTTYPE_INFO)
+        End If
+        b = False
+        Exit Sub
+    End If
     Dim UserAttackInteractionResult As t_AttackInteractionResult
     Dim Damage                      As Long
     Dim DamageStr                   As String
