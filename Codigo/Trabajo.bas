@@ -30,6 +30,9 @@ Public Const GOLD_OBJ_INDEX As Long = 12
 Public Const FISHING_NET_FX As Long = 12
 Public Const NET_INMO_DURATION = 10
 
+Private Const JOB_SUCCESS_MIN As Double = 0.2   ' 20%
+Private Const JOB_SUCCESS_MAX As Double = 0.83  ' 83%
+
 Function ExpectObjectTypeAt(ByVal objectType As Integer, ByVal Map As Integer, ByVal MapX As Byte, ByVal MapY As Byte) As Boolean
     Dim ObjIndex As Integer
     ObjIndex = MapData(Map, MapX, MapY).ObjInfo.ObjIndex
@@ -2183,14 +2186,18 @@ End Sub
 
 Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
     On Error GoTo ErrHandler
-    Dim Suerte     As Integer
+
     Dim res        As Integer
-    Dim Metal      As Integer
     Dim Yacimiento As t_ObjData
+
     With UserList(UserIndex)
+
+        ' Counselors cannot perform mining
         If .flags.Privilegios And (e_PlayerType.Consejero) Then
             Exit Sub
         End If
+
+        ' Stamina cost
         If .Stats.MinSta > 5 Then
             Call QuitarSta(UserIndex, 5)
         Else
@@ -2198,64 +2205,79 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Sub
         End If
-        Dim Skill As Integer
+
+        'Unified success chance (linear 20% → 83%)
+        Dim skill As Integer
+        Dim forceSuccess As Boolean
+        Dim succeeded As Boolean
+
         Skill = .Stats.UserSkills(e_Skill.Mineria)
-        Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
-        'HarThaoS: Le agrego más dificultad al talar en zona segura.  37% probabilidad de fallo en segura vs 16% en insegura
-        res = RandomNumber(1, IIf(MapInfo(UserList(UserIndex).pos.Map).Seguro = 1, Suerte + 2, Suerte))
-        '118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
-        'ReyarB: aumento chances solamente si es mineria de blodium.
-        If ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex).MineralIndex = 3787 Then
-            res = 1
-            Suerte = 100
-        End If
-        If res <= 5 Then
+
+        ' Guaranteed success for special vein (blodium)
+        forceSuccess = (ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex).MineralIndex = 3787)
+
+        succeeded = ExtractionSuccessRoll(skill, JOB_SUCCESS_MIN, JOB_SUCCESS_MAX, forceSuccess)
+
+        If succeeded Then
             Dim MiObj As t_Obj
-            Dim nPos  As t_WorldPos
+
+            ' Update the resource node and last use timestamp
             Call ActualizarRecurso(.pos.Map, x, y)
-            MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
+            MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw()
+
+            ' Determine vein and resulting item index
             Yacimiento = ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex)
             MiObj.ObjIndex = Yacimiento.MineralIndex
+
+            ' Amount based on class/level
             If .clase = Trabajador Then
                 MiObj.amount = GetExtractResourceForLevel(.Stats.ELV)
             Else
                 MiObj.amount = RandomNumber(1, 2)
             End If
+
+            ' Global gathering multiplier
             MiObj.amount = MiObj.amount * SvrConfig.GetValue("RecoleccionMult")
+
+            ' Cap by remaining resource in the node
             If MiObj.amount > MapData(.pos.Map, x, y).ObjInfo.amount Then
                 MiObj.amount = MapData(.pos.Map, x, y).ObjInfo.amount
             End If
+
+            ' Deduct from node
             MapData(.pos.Map, x, y).ObjInfo.amount = MapData(.pos.Map, x, y).ObjInfo.amount - MiObj.amount
+
+            ' Deliver item (inventory or drop to ground if full)
             If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
-            ' AGREGAR FX
+
+            ' Visual/SFX feedback
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)
-            ' Msg651=¡Has extraído algunos minerales!
             Call WriteLocaleMsg(UserIndex, 651, e_FontTypeNames.FONTTYPE_INFO)
+
             If MapInfo(.pos.Map).Seguro = 1 Then
                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(15, .pos.x, .pos.y))
             Else
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(15, .pos.x, .pos.y))
             End If
-            ' Al minar también puede dropear una gema
+
+            ' Optional gem drops configured on the vein
             Dim i As Integer
-            ' Por cada drop posible
             For i = 1 To Yacimiento.CantItem
-                ' Tiramos al azar entre 1 y la probabilidad
                 res = RandomNumber(1, Yacimiento.Item(i).amount)
-                ' Si tiene suerte y le pega
                 If res = 1 Then
                     ' Se lo metemos al inventario (o lo tiramos al piso)
                     MiObj.ObjIndex = Yacimiento.Item(i).ObjIndex
                     MiObj.amount = 1 ' Solo una gema por vez
                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
-                    ' Le mandamos un mensaje
-                    Call WriteLocaleMsg(UserIndex, 1465, e_FontTypeNames.FONTTYPE_INFO)  ' Msg1465=¡Has conseguido ¬1!
+                    Call WriteLocaleMsg(UserIndex, 1465, e_FontTypeNames.FONTTYPE_INFO) 
                 End If
             Next
         Else
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(2185, .pos.x, .pos.y))
         End If
+
+        ' Skill progression and macro handling
         Call SubirSkill(UserIndex, e_Skill.Mineria)
         .Counters.Trabajando = .Counters.Trabajando + 1
         .Counters.LastTrabajo = Int(IntervaloTrabajarExtraer / 1000)
@@ -2265,8 +2287,36 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
     End With
     Exit Sub
 ErrHandler:
-    Call LogError("Error en Sub DoMineria")
+    Call LogError("Error in Sub DoMineria")
 End Sub
+
+' ExtractionSuccessRoll
+' Determines whether an extraction action **succeeds** based on a **linear, skill-based chance**.
+' - MinPct / MaxPct: probabilities in [0..1] (e.g., 0.20 = 20%, 0.83 = 83%).
+' - ForceSuccess (optional): when True, bypasses the roll and returns success (for guaranteed nodes,
+'   tutorials, GM events, special cases like pine, etc.).
+' Returns:
+'   Boolean — True if the success roll passes, False otherwise.
+Private Function ExtractionSuccessRoll( _
+    ByVal Skill As Integer, _
+    ByVal MinPct As Double, _
+    ByVal MaxPct As Double, _
+    Optional ByVal ForceSuccess As Boolean = False _
+) As Boolean
+
+    Dim p As Double
+
+    If ForceSuccess Then
+        ExtractionSuccessRoll = True
+        Exit Function
+    End If
+
+    ' Linear chance from MinPct (at 0) to MaxPct (at 100)
+    p = MinPct + (MaxPct - MinPct) * (Skill / 100#)
+
+    ' 1% resolution roll (rounded to nearest percent)
+    ExtractionSuccessRoll = (RandomNumber(1, 100) <= Int(p * 100# + 0.5))
+End Function
 
 Public Sub DoMeditar(ByVal UserIndex As Integer)
     On Error GoTo DoMeditar_Err
