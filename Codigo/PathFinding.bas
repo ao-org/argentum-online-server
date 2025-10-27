@@ -41,7 +41,7 @@ Private DirOffset(e_Heading.NORTH To e_Heading.WEST)                  As t_Posit
 Private PathNoiseStrength                                             As Single
 Private ClosestVertex                                                 As t_Position
 Private ClosestDistance                                               As Single
-Private Const NPC_STRAFE_DURATION_MS                              As Long = 900
+
 '  Usada para mover memoria... VB6 es un desastre en cuanto a contenedores dinámicos
 Private Declare Sub MoveMemory Lib "Kernel32" Alias "RtlMoveMemory" (pDest As Any, pSource As Any, ByVal length As Long)
 
@@ -516,7 +516,7 @@ Private Sub SetNpcStrafeOffsetFromAttacker(ByVal NpcIndex As Integer, ByVal targ
     With NpcList(NpcIndex).pathFindingInfo
         .StrafeOffset.x = selected.x
         .StrafeOffset.y = selected.y
-        .StrafeExpiresAt = AddMod32(GlobalFrameTime, NPC_STRAFE_DURATION_MS)
+        .StrafeExpiresAt = AddMod32(GlobalFrameTime, CLng(SvrConfig.GetValue("NPC_STRAFE_DURATION_MS")))
         If .StrafeExpiresAt = 0 Then .StrafeExpiresAt = 1
         If .PathLength <> 0 Then .PathLength = 0
     End With
