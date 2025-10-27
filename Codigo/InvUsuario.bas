@@ -792,6 +792,7 @@ Dim obj                         As t_ObjData
                     .Char.Head_Aura = 0
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, 0, True, 4))
                     .Char.CascoAnim = NingunCasco
+                    .Char.head = .Char.originalhead
                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, _
                                         .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                     If obj.ResistenciaMagica > 0 Then
@@ -1429,11 +1430,9 @@ Dim Ropaje                      As Integer
                 .invent.EquippedHelmetObjIndex = .invent.Object(Slot).ObjIndex
                 .invent.EquippedHelmetSlot = Slot
                 If .flags.Navegando = 0 Then
-                    Dim nuevoHead As Integer
-                    Dim nuevoCasco As Integer
                     If obj.Subtipo = 2 Then
                         ' Si el casco cambia la cabeza entera
-                        If .Char.head < PATREON_HEAD Then
+                        If Not UserIsLoggingIn Then
                             .Char.originalhead = .Char.head
                         End If
 
@@ -1447,29 +1446,22 @@ Dim Ropaje                      As Integer
                             End If
                         Else
                             .Char.CascoAnim = obj.CascoAnim
+                            .Char.head = obj.CascoAnim
                         End If
-
-                        nuevoCasco = NingunCasco
+                        
                     Else
                         ' Si el casco se superpone (no reemplaza la cabeza)
-                        nuevoHead = .Char.head
                         If .Char.head >= PATREON_HEAD Then
-                            nuevoCasco = NingunCasco
+                        'lñkñkñlk
                         Else
                             If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
-                                nuevoCasco = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                               .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
                             Else
-                                nuevoCasco = obj.CascoAnim
+                                .Char.CascoAnim = obj.CascoAnim
                             End If
                         End If
                     End If
-                    ' Asignar cambios y aplicar actualización visual
-                    .OrigChar.CascoAnim = .Char.CascoAnim
-                    .Char.head = nuevoHead
-                    .Char.CascoAnim = nuevoCasco
-                    If Not UserIsLoggingIn Then
                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
-                    End If
                 End If
                 If obj.ResistenciaMagica > 0 Then
                     Call WriteUpdateRM(UserIndex)
