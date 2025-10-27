@@ -406,22 +406,31 @@ Public Sub RegisterNpcDamageStrafe(ByVal NpcIndex As Integer, ByVal SourceIndex 
     If NpcIndex <= 0 Or NpcIndex > UBound(NpcList) Then Exit Sub
     If SourceIndex <= 0 Then Exit Sub
     Dim attackerPos As t_WorldPos
+    Dim shouldStrafe As Boolean
+    Dim hasAttacker As Boolean
     Select Case SourceType
         Case e_ReferenceType.eUser
             If SourceIndex > UBound(UserList) Then Exit Sub
             If UserList(SourceIndex).flags.Muerto <> 0 Then Exit Sub
-            If NpcList(NpcIndex).TargetUser.ArrayIndex <> SourceIndex Then Exit Sub
             attackerPos = UserList(SourceIndex).pos
+            hasAttacker = True
+            shouldStrafe = (NpcList(NpcIndex).TargetUser.ArrayIndex = SourceIndex)
         Case e_ReferenceType.eNpc
             If SourceIndex > UBound(NpcList) Then Exit Sub
-            If Not IsValidNpcRef(NpcList(NpcIndex).TargetNPC) Then Exit Sub
-            If NpcList(NpcIndex).TargetNPC.ArrayIndex <> SourceIndex Then Exit Sub
             attackerPos = NpcList(SourceIndex).pos
+            hasAttacker = True
+            If IsValidNpcRef(NpcList(NpcIndex).TargetNPC) Then
+                shouldStrafe = (NpcList(NpcIndex).TargetNPC.ArrayIndex = SourceIndex)
+            End If
         Case Else
             Exit Sub
     End Select
+    If Not hasAttacker Then Exit Sub
     If attackerPos.Map <> NpcList(NpcIndex).pos.Map Then Exit Sub
-    Call SetNpcStrafeOffsetFromAttacker(NpcIndex, attackerPos.x, attackerPos.y)
+    If shouldStrafe Then
+        Call SetNpcStrafeOffsetFromAttacker(NpcIndex, attackerPos.x, attackerPos.y)
+    End If
+    Call TryNpcImmediateDisplacement(NpcIndex, attackerPos)
     Exit Sub
 RegisterNpcDamageStrafe_Err:
     Call TraceError(Err.Number, Err.Description, "PathFinding.RegisterNpcDamageStrafe", Erl)
@@ -523,6 +532,63 @@ Private Sub SetNpcStrafeOffsetFromAttacker(ByVal NpcIndex As Integer, ByVal targ
     Exit Sub
 SetNpcStrafeOffsetFromAttacker_Err:
     Call TraceError(Err.Number, Err.Description, "PathFinding.SetNpcStrafeOffsetFromAttacker", Erl)
+End Sub
+
+Private Sub TryNpcImmediateDisplacement(ByVal NpcIndex As Integer, ByRef attackerPos As t_WorldPos)
+    On Error GoTo TryNpcImmediateDisplacement_Err
+    If NpcIndex <= 0 Or NpcIndex > UBound(NpcList) Then Exit Sub
+    If attackerPos.Map = 0 Then Exit Sub
+    With NpcList(NpcIndex)
+        If attackerPos.Map <> .pos.Map Then Exit Sub
+        Select Case .Movement
+            Case e_TipoAI.Estatico, e_TipoAI.FixedInPos
+                Exit Sub
+        End Select
+        If Not NPCs.CanMove(.Contadores, .flags) Then Exit Sub
+        Dim headings(0 To 3) As e_Heading
+        Dim headingCount As Integer
+        Dim dx As Integer
+        Dim dy As Integer
+        dx = .pos.x - attackerPos.x
+        dy = .pos.y - attackerPos.y
+        If dx = 0 And dy = 0 Then
+            headings(0) = e_Heading.NORTH
+            headings(1) = e_Heading.SOUTH
+            headings(2) = e_Heading.EAST
+            headings(3) = e_Heading.WEST
+            headingCount = 4
+        Else
+            Dim primaryHeading As e_Heading
+            If Abs(dx) >= Abs(dy) Then
+                If dx >= 0 Then
+                    primaryHeading = e_Heading.EAST
+                Else
+                    primaryHeading = e_Heading.WEST
+                End If
+            Else
+                If dy >= 0 Then
+                    primaryHeading = e_Heading.SOUTH
+                Else
+                    primaryHeading = e_Heading.NORTH
+                End If
+            End If
+            headings(headingCount) = primaryHeading
+            headingCount = headingCount + 1
+            headings(headingCount) = Rotate_Heading(primaryHeading, 1)
+            headingCount = headingCount + 1
+            headings(headingCount) = Rotate_Heading(primaryHeading, -1)
+            headingCount = headingCount + 1
+            headings(headingCount) = InvertHeading(primaryHeading)
+            headingCount = headingCount + 1
+        End If
+    End With
+    Dim idx As Integer
+    For idx = 0 To headingCount - 1
+        If MoveNPCChar(NpcIndex, headings(idx)) Then Exit Sub
+    Next idx
+    Exit Sub
+TryNpcImmediateDisplacement_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.TryNpcImmediateDisplacement", Erl)
 End Sub
 
 Public Sub ApplyNpcStrafeToDestination(ByVal NpcIndex As Integer, ByRef destination As t_WorldPos)
