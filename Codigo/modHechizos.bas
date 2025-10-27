@@ -487,7 +487,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 Exit Function
             End If
             If NpcList(.flags.TargetNPC.ArrayIndex).flags.ImmuneToSpells <> 0 Then
-                Call WriteLocaleMsg(UserIndex, 666, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NPC_INMUNE_TO_SPELLS, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
         End If
@@ -1445,7 +1445,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         If UserList(targetUserIndex).Counters.Saliendo Then
             If UserIndex <> targetUserIndex Then
                 ' Msg666=¡El hechizo no tiene efecto!
-                Call WriteLocaleMsg(UserIndex, 666, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NPC_INMUNE_TO_SPELLS, e_FontTypeNames.FONTTYPE_INFO)
                 b = False
                 Exit Sub
             Else
@@ -2163,7 +2163,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
     On Error GoTo HechizoEstadoNPC_Err
     If NpcList(NpcIndex).flags.ImmuneToSpells <> 0 Then
         If UserIndex > 0 Then
-            Call WriteLocaleMsg(UserIndex, 666, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NPC_INMUNE_TO_SPELLS, e_FontTypeNames.FONTTYPE_INFO)
         End If
         b = False
         Exit Sub
@@ -2339,7 +2339,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
     On Error GoTo HechizoPropNPC_Err
     If NpcList(NpcIndex).flags.ImmuneToSpells <> 0 Then
         If UserIndex > 0 Then
-            Call WriteLocaleMsg(UserIndex, 666, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NPC_INMUNE_TO_SPELLS, e_FontTypeNames.FONTTYPE_INFO)
         End If
         b = False
         Exit Sub
@@ -3208,7 +3208,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         If UserList(tU).Counters.Saliendo Then
             If UserIndex <> tU Then
                 ' Msg666=¡El hechizo no tiene efecto!
-                Call WriteLocaleMsg(UserIndex, 666, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NPC_INMUNE_TO_SPELLS, e_FontTypeNames.FONTTYPE_INFO)
                 b = False
                 Exit Sub
             Else
@@ -3220,7 +3220,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         End If
         If IsSet(UserList(tU).flags.StatusMask, eTaunting) Then
             ' Msg666=¡El hechizo no tiene efecto!
-            Call WriteLocaleMsg(UserIndex, 666, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NPC_INMUNE_TO_SPELLS, e_FontTypeNames.FONTTYPE_INFO)
             b = False
             Exit Sub
         End If
