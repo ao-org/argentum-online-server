@@ -8,6 +8,7 @@ Public Const DEFAULT_ORBIT_REEVALUATE_MS            As Long = 1800
 Public Const DEFAULT_PATH_RECOMPUTE_COOLDOWN_MS     As Long = 250
 Public Const DEFAULT_NPC_ORBIT_TANGENT_WEIGHT       As Double = 0.35
 Public Const DEFAULT_NPC_RETREAT_DISTANCE_BUFFER    As Double = 0.75
+Public Const DEFAULT_NPC_ORBIT_STEP_DEGREES         As Double = 55
 Public Const MAX_INTEGER                            As Integer = 32767
 Public Const MAX_LONG                               As Long = 2147483647
 Public Const FX_STABBING                            As Byte = 89

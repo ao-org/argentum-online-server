@@ -127,6 +127,8 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "PATH_RECOMPUTE_COOLDOWN_MS", CLng(val(reader.GetValue("AI", "PATH_RECOMPUTE_COOLDOWN_MS", DEFAULT_PATH_RECOMPUTE_COOLDOWN_MS)))
     mSettings.Add "NPC_ORBIT_TANGENT_WEIGHT", CDbl(val(reader.GetValue("AI", "NPC_ORBIT_TANGENT_WEIGHT", DEFAULT_NPC_ORBIT_TANGENT_WEIGHT)))
     mSettings.Add "NPC_RETREAT_DISTANCE_BUFFER", CDbl(val(reader.GetValue("AI", "NPC_RETREAT_DISTANCE_BUFFER", DEFAULT_NPC_RETREAT_DISTANCE_BUFFER)))
+    mSettings.Add "NPC_ORBIT_STEP_DEGREES", CDbl(val(reader.GetValue("AI", "NPC_ORBIT_STEP_DEGREES", DEFAULT_NPC_ORBIT_STEP_DEGREES)))
+
     mSettings.Add "AUTOEVENTDAYCALENDAR_Domingo", CInt(val(reader.GetValue("AUTOEVENTDAYCALENDAR", "Domingo")))
     mSettings.Add "AUTOEVENTDAYCALENDAR_Lunes", CInt(val(reader.GetValue("AUTOEVENTDAYCALENDAR", "Lunes")))
     mSettings.Add "AUTOEVENTDAYCALENDAR_Martes", CInt(val(reader.GetValue("AUTOEVENTDAYCALENDAR", "Martes")))

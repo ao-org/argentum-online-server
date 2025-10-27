@@ -436,7 +436,7 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
                     End If
                     Call AnimacionIdle(NpcIndex, True)
                 End If
-                .NextPathRecomputeAt = AddMod32(baseTick, CLng(SvrConfig.GetValue("PATH_RECOMPUTE_COOLDOWN_MS ")))
+                .NextPathRecomputeAt = AddMod32(baseTick, CLng(SvrConfig.GetValue("PATH_RECOMPUTE_COOLDOWN_MS")))
                 If .NextPathRecomputeAt = 0 Then .NextPathRecomputeAt = 1
             Else
                 Call NpcClearTargetUnreachable(NpcIndex)
@@ -477,7 +477,7 @@ Private Function EnsureNpcOrbitDirection(ByVal NpcIndex As Integer) As Integer
             Else
                 baseTick = .OrbitReevaluateAt
             End If
-            .OrbitReevaluateAt = AddMod32(baseTick, CDbl(SvrConfig.GetValue("NPC_ORBIT_REEVALUATE_MS")))
+            .OrbitReevaluateAt = AddMod32(baseTick, CLng(SvrConfig.GetValue("NPC_ORBIT_REEVALUATE_MS")))
             If .OrbitReevaluateAt = 0 Then .OrbitReevaluateAt = 1
         End If
         EnsureNpcOrbitDirection = .OrbitDirection
@@ -489,7 +489,7 @@ Private Sub FlipNpcOrbitDirection(ByVal NpcIndex As Integer)
         Dim currentDirection As Integer
         currentDirection = EnsureNpcOrbitDirection(NpcIndex)
         .OrbitDirection = -currentDirection
-        .OrbitReevaluateAt = AddMod32(GlobalFrameTime, CDbl(SvrConfig.GetValue("NPC_ORBIT_REEVALUATE_MS")))
+        .OrbitReevaluateAt = AddMod32(GlobalFrameTime, CLng(SvrConfig.GetValue("NPC_ORBIT_REEVALUATE_MS")))
         If .OrbitReevaluateAt = 0 Then .OrbitReevaluateAt = 1
     End With
 End Sub
@@ -517,7 +517,7 @@ Private Function ComputeNpcRangedRetreatDestination(ByVal NpcIndex As Integer, B
         orbitDirection = EnsureNpcOrbitDirection(NpcIndex)
 
         Dim offset As t_Vector
-        If distanceToTarget <= preferedRange - CDbl(SvrConfig.GetValue("NPC_RETREAT_DISTANCE_BUFFER ")) Then
+        If distanceToTarget <= preferedRange - CDbl(SvrConfig.GetValue("NPC_RETREAT_DISTANCE_BUFFER")) Then
             Dim tangent As t_Vector
             tangent.x = -normalized.y
             tangent.y = normalized.x
