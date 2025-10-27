@@ -34,11 +34,6 @@ Public Const ELEMENTAL_FUEGO  As Integer = 962
 Public Const RANGO_VISION_X   As Byte = DEFAULT_NPC_VISION_RANGE_X
 Public Const RANGO_VISION_Y   As Byte = DEFAULT_NPC_VISION_RANGE_Y
 
-Private Const NPC_ORBIT_STEP_DEGREES      As Double = 55#
-Private Const NPC_ORBIT_REEVALUATE_MS    As Long = 1800
-Private Const NPC_ORBIT_TANGENT_WEIGHT   As Double = 0.35
-Private Const NPC_RETREAT_DISTANCE_BUFFER As Double = 0.75
-Private Const PATH_RECOMPUTE_COOLDOWN_MS As Long = 250
 
 Public Sub NpcDummyUpdate(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)
@@ -441,7 +436,7 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
                     End If
                     Call AnimacionIdle(NpcIndex, True)
                 End If
-                .NextPathRecomputeAt = AddMod32(baseTick, PATH_RECOMPUTE_COOLDOWN_MS)
+                .NextPathRecomputeAt = AddMod32(baseTick, CLng(SvrConfig.GetValue("PATH_RECOMPUTE_COOLDOWN_MS ")))
                 If .NextPathRecomputeAt = 0 Then .NextPathRecomputeAt = 1
             Else
                 Call NpcClearTargetUnreachable(NpcIndex)
@@ -482,7 +477,7 @@ Private Function EnsureNpcOrbitDirection(ByVal NpcIndex As Integer) As Integer
             Else
                 baseTick = .OrbitReevaluateAt
             End If
-            .OrbitReevaluateAt = AddMod32(baseTick, NPC_ORBIT_REEVALUATE_MS)
+            .OrbitReevaluateAt = AddMod32(baseTick, CDbl(SvrConfig.GetValue("NPC_ORBIT_REEVALUATE_MS")))
             If .OrbitReevaluateAt = 0 Then .OrbitReevaluateAt = 1
         End If
         EnsureNpcOrbitDirection = .OrbitDirection
@@ -494,7 +489,7 @@ Private Sub FlipNpcOrbitDirection(ByVal NpcIndex As Integer)
         Dim currentDirection As Integer
         currentDirection = EnsureNpcOrbitDirection(NpcIndex)
         .OrbitDirection = -currentDirection
-        .OrbitReevaluateAt = AddMod32(GlobalFrameTime, NPC_ORBIT_REEVALUATE_MS)
+        .OrbitReevaluateAt = AddMod32(GlobalFrameTime, CDbl(SvrConfig.GetValue("NPC_ORBIT_REEVALUATE_MS")))
         If .OrbitReevaluateAt = 0 Then .OrbitReevaluateAt = 1
     End With
 End Sub
@@ -522,14 +517,15 @@ Private Function ComputeNpcRangedRetreatDestination(ByVal NpcIndex As Integer, B
         orbitDirection = EnsureNpcOrbitDirection(NpcIndex)
 
         Dim offset As t_Vector
-        If distanceToTarget <= preferedRange - NPC_RETREAT_DISTANCE_BUFFER Then
+        If distanceToTarget <= preferedRange - CDbl(SvrConfig.GetValue("NPC_RETREAT_DISTANCE_BUFFER ")) Then
             Dim tangent As t_Vector
             tangent.x = -normalized.y
             tangent.y = normalized.x
-            offset.x = normalized.x * (1# - NPC_ORBIT_TANGENT_WEIGHT) + tangent.x * orbitDirection * NPC_ORBIT_TANGENT_WEIGHT
-            offset.y = normalized.y * (1# - NPC_ORBIT_TANGENT_WEIGHT) + tangent.y * orbitDirection * NPC_ORBIT_TANGENT_WEIGHT
+            offset.x = normalized.x * (1# - CDbl(SvrConfig.GetValue("NPC_ORBIT_TANGENT_WEIGHT"))) + tangent.x * orbitDirection * CDbl(SvrConfig.GetValue("NPC_ORBIT_TANGENT_WEIGHT"))
+            offset.y = normalized.y * (1# - CDbl(SvrConfig.GetValue("NPC_ORBIT_TANGENT_WEIGHT"))) + tangent.y * orbitDirection * CDbl(SvrConfig.GetValue("NPC_ORBIT_TANGENT_WEIGHT"))
         Else
-            offset = RotateVector(normalized, orbitDirection * ToRadians(NPC_ORBIT_STEP_DEGREES))
+            offset = RotateVector(normalized, orbitDirection * ToRadians(CDbl(SvrConfig.GetValue("NPC_ORBIT_STEP_DEGREES"))))
+            
         End If
 
         Dim offsetLength As Double
