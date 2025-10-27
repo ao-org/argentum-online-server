@@ -3092,6 +3092,11 @@ Public Type t_NpcPathFindingInfo
     OriginalVision As Single
     TargetUnreachable As Boolean
     PreviousAttackable As Byte
+    StrafeOffset As t_Position
+    StrafeExpiresAt As Long
+    OrbitDirection As Integer
+    OrbitReevaluateAt As Long
+    NextPathRecomputeAt As Long
     '* By setting PathLenght to 0 we force the recalculation
     '  of the path, this is very useful. For example,
     '  if a NPC or a User moves over the npc's path, blocking
