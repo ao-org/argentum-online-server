@@ -35,6 +35,14 @@ Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino
     On Error GoTo ErrHandler
     'Si ambos pusieron /comerciar entonces
     If UserList(Origen).ComUsu.DestUsu.ArrayIndex = Destino And UserList(Destino).ComUsu.DestUsu.ArrayIndex = Origen Then
+        If UserList(Origen).pos.Map <> UserList(Destino).pos.Map Then
+            Call WriteConsoleMsg(Origen, "El comercio se cancel porque ya no estn en el mismo mapa.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(Destino, "El comercio se cancel porque ya no estn en el mismo mapa.", e_FontTypeNames.FONTTYPE_INFO)
+            Call FinComerciarUsu(Origen, True)
+            Call FinComerciarUsu(Destino, True)
+            IniciarComercioConUsuario = False
+            Exit Function
+        End If
         'Actualiza el inventario del usuario
         Call UpdateUserInv(True, Origen, 0)
         'Decirle al origen que abra la ventanita.
