@@ -545,51 +545,74 @@ Private Sub TryNpcImmediateDisplacement(ByVal NpcIndex As Integer, ByRef attacke
                 Exit Sub
         End Select
         If Not NPCs.CanMove(.Contadores, .flags) Then Exit Sub
-        Dim headings(0 To 3) As e_Heading
-        Dim headingCount As Integer
-        Dim dx As Integer
-        Dim dy As Integer
-        dx = .pos.x - attackerPos.x
-        dy = .pos.y - attackerPos.y
-        If dx = 0 And dy = 0 Then
-            headings(0) = e_Heading.NORTH
-            headings(1) = e_Heading.SOUTH
-            headings(2) = e_Heading.EAST
-            headings(3) = e_Heading.WEST
-            headingCount = 4
-        Else
-            Dim primaryHeading As e_Heading
-            If Abs(dx) >= Abs(dy) Then
-                If dx >= 0 Then
-                    primaryHeading = e_Heading.EAST
-                Else
-                    primaryHeading = e_Heading.WEST
-                End If
-            Else
-                If dy >= 0 Then
-                    primaryHeading = e_Heading.SOUTH
-                Else
-                    primaryHeading = e_Heading.NORTH
+        Dim canWalkWater As Boolean
+        Dim canWalkGround As Boolean
+        canWalkWater = (.flags.AguaValida <> 0)
+        canWalkGround = (.flags.TierraInvalida = 0)
+        Dim dx As Long
+        Dim dy As Long
+        dx = CLng(.pos.x) - attackerPos.x
+        dy = CLng(.pos.y) - attackerPos.y
+        Dim currentDistSq As Long
+        currentDistSq = dx * dx + dy * dy
+        Dim betterHeadings(0 To 3) As e_Heading
+        Dim betterCount As Integer
+        Dim neutralHeadings(0 To 3) As e_Heading
+        Dim neutralCount As Integer
+        Dim legalHeadings(0 To 3) As e_Heading
+        Dim legalCount As Integer
+        Dim heading As e_Heading
+        For heading = e_Heading.NORTH To e_Heading.WEST
+            Dim newX As Integer
+            Dim newY As Integer
+            newX = .pos.x + DirOffset(heading).x
+            newY = .pos.y + DirOffset(heading).y
+            If LegalPos(.pos.Map, newX, newY, canWalkWater, canWalkGround) Then
+                Dim newDx As Long
+                Dim newDy As Long
+                newDx = CLng(newX) - attackerPos.x
+                newDy = CLng(newY) - attackerPos.y
+                Dim newDistSq As Long
+                newDistSq = newDx * newDx + newDy * newDy
+                legalHeadings(legalCount) = heading
+                legalCount = legalCount + 1
+                If newDistSq > currentDistSq Then
+                    betterHeadings(betterCount) = heading
+                    betterCount = betterCount + 1
+                ElseIf newDistSq = currentDistSq Then
+                    neutralHeadings(neutralCount) = heading
+                    neutralCount = neutralCount + 1
                 End If
             End If
-            headings(headingCount) = primaryHeading
-            headingCount = headingCount + 1
-            headings(headingCount) = Rotate_Heading(primaryHeading, 1)
-            headingCount = headingCount + 1
-            headings(headingCount) = Rotate_Heading(primaryHeading, -1)
-            headingCount = headingCount + 1
-            headings(headingCount) = InvertHeading(primaryHeading)
-            headingCount = headingCount + 1
-        End If
+        Next heading
+        If TryMoveNpcAlongRandomHeading(NpcIndex, betterHeadings, betterCount) Then Exit Sub
+        If TryMoveNpcAlongRandomHeading(NpcIndex, neutralHeadings, neutralCount) Then Exit Sub
+        If TryMoveNpcAlongRandomHeading(NpcIndex, legalHeadings, legalCount) Then Exit Sub
     End With
-    Dim idx As Integer
-    For idx = 0 To headingCount - 1
-        If MoveNPCChar(NpcIndex, headings(idx)) Then Exit Sub
-    Next idx
     Exit Sub
 TryNpcImmediateDisplacement_Err:
     Call TraceError(Err.Number, Err.Description, "PathFinding.TryNpcImmediateDisplacement", Erl)
 End Sub
+
+Private Function TryMoveNpcAlongRandomHeading(ByVal NpcIndex As Integer, headings() As e_Heading, ByVal headingCount As Integer) As Boolean
+    On Error GoTo TryMoveNpcAlongRandomHeading_Err
+    If headingCount <= 0 Then Exit Function
+    Dim remaining As Integer
+    For remaining = headingCount To 1 Step -1
+        Dim choice As Integer
+        choice = RandomNumber(0, remaining - 1)
+        Dim selected As e_Heading
+        selected = headings(choice)
+        If MoveNPCChar(NpcIndex, selected) Then
+            TryMoveNpcAlongRandomHeading = True
+            Exit Function
+        End If
+        headings(choice) = headings(remaining - 1)
+    Next remaining
+    Exit Function
+TryMoveNpcAlongRandomHeading_Err:
+    Call TraceError(Err.Number, Err.Description, "PathFinding.TryMoveNpcAlongRandomHeading", Erl)
+End Function
 
 Public Sub ApplyNpcStrafeToDestination(ByVal NpcIndex As Integer, ByRef destination As t_WorldPos)
     On Error GoTo ApplyNpcStrafeToDestination_Err
