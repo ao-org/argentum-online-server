@@ -36,8 +36,8 @@ Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino
     'Si ambos pusieron /comerciar entonces
     If UserList(Origen).ComUsu.DestUsu.ArrayIndex = Destino And UserList(Destino).ComUsu.DestUsu.ArrayIndex = Origen Then
         If UserList(Origen).pos.Map <> UserList(Destino).pos.Map Then
-            Call WriteConsoleMsg(Origen, "El comercio se cancel porque ya no estn en el mismo mapa.", e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(Destino, "El comercio se cancel porque ya no estn en el mismo mapa.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(Origen, 2108, e_FontTypeNames.FONTTYPE_INFO) 'Msg2108= El comercio se cancel porque ya no estn en el mismo mapa.
+            Call WriteLocaleMsg(Destino, 2108, e_FontTypeNames.FONTTYPE_INFO) 'Msg2108= El comercio se cancel porque ya no estn en el mismo mapa.
             Call FinComerciarUsu(Origen, True)
             Call FinComerciarUsu(Destino, True)
             IniciarComercioConUsuario = False
@@ -193,12 +193,7 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
         End If
         Exit Sub
     End If
-    If UserList(UserIndex).pos.Map <> UserList(OtroUserIndex).pos.Map Then
-        Call WriteConsoleMsg(UserIndex, "El comercio se canceló porque ya no están en el mismo mapa.", e_FontTypeNames.FONTTYPE_INFO)
-        Call WriteConsoleMsg(OtroUserIndex, "El comercio se canceló porque ya no están en el mismo mapa.", e_FontTypeNames.FONTTYPE_INFO)
-        TerminarAhora = True
-        GoTo FinalizarComercio
-    End If
+
     UserList(UserIndex).ComUsu.Acepto = True
     If UserList(OtroUserIndex).ComUsu.Acepto = False Then
         'Call WriteConsoleMsg(UserIndex, "El otro usuario aun no ha aceptado tu oferta.", e_FontTypeNames.FONTTYPE_TALK)
