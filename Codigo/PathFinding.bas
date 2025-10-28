@@ -555,13 +555,23 @@ Private Sub TryNpcImmediateDisplacement(ByVal NpcIndex As Integer, ByRef attacke
         dy = CLng(.pos.y) - attackerPos.y
         Dim currentDistSq As Long
         currentDistSq = dx * dx + dy * dy
+        Dim betterCrossHeadings(0 To 3) As e_Heading
+        Dim betterCrossCount As Integer
+        Dim betterPerpHeadings(0 To 3) As e_Heading
+        Dim betterPerpCount As Integer
         Dim betterHeadings(0 To 3) As e_Heading
         Dim betterCount As Integer
+        Dim neutralCrossHeadings(0 To 3) As e_Heading
+        Dim neutralCrossCount As Integer
+        Dim neutralPerpHeadings(0 To 3) As e_Heading
+        Dim neutralPerpCount As Integer
         Dim neutralHeadings(0 To 3) As e_Heading
         Dim neutralCount As Integer
-        Dim legalHeadings(0 To 3) As e_Heading
-        Dim legalCount As Integer
+        Dim fallbackHeadings(0 To 3) As e_Heading
+        Dim fallbackCount As Integer
         Dim heading As e_Heading
+        Dim preferHorizontalEscape As Boolean
+        preferHorizontalEscape = (Abs(dx) >= Abs(dy))
         For heading = e_Heading.NORTH To e_Heading.WEST
             Dim newX As Integer
             Dim newY As Integer
@@ -574,20 +584,55 @@ Private Sub TryNpcImmediateDisplacement(ByVal NpcIndex As Integer, ByRef attacke
                 newDy = CLng(newY) - attackerPos.y
                 Dim newDistSq As Long
                 newDistSq = newDx * newDx + newDy * newDy
-                legalHeadings(legalCount) = heading
-                legalCount = legalCount + 1
+                Dim crossesAxis As Boolean
+                crossesAxis = False
+                If dx <> 0 Then
+                    If (dx > 0 And newDx <= 0) Or (dx < 0 And newDx >= 0) Then crossesAxis = True
+                End If
+                If dy <> 0 Then
+                    If (dy > 0 And newDy <= 0) Or (dy < 0 And newDy >= 0) Then crossesAxis = True
+                End If
+                Dim isPerpendicularEscape As Boolean
+                If preferHorizontalEscape Then
+                    isPerpendicularEscape = (DirOffset(heading).x = 0)
+                Else
+                    isPerpendicularEscape = (DirOffset(heading).y = 0)
+                End If
                 If newDistSq > currentDistSq Then
-                    betterHeadings(betterCount) = heading
-                    betterCount = betterCount + 1
+                    If crossesAxis Then
+                        betterCrossHeadings(betterCrossCount) = heading
+                        betterCrossCount = betterCrossCount + 1
+                    ElseIf isPerpendicularEscape Then
+                        betterPerpHeadings(betterPerpCount) = heading
+                        betterPerpCount = betterPerpCount + 1
+                    Else
+                        betterHeadings(betterCount) = heading
+                        betterCount = betterCount + 1
+                    End If
                 ElseIf newDistSq = currentDistSq Then
-                    neutralHeadings(neutralCount) = heading
-                    neutralCount = neutralCount + 1
+                    If crossesAxis Then
+                        neutralCrossHeadings(neutralCrossCount) = heading
+                        neutralCrossCount = neutralCrossCount + 1
+                    ElseIf isPerpendicularEscape Then
+                        neutralPerpHeadings(neutralPerpCount) = heading
+                        neutralPerpCount = neutralPerpCount + 1
+                    Else
+                        neutralHeadings(neutralCount) = heading
+                        neutralCount = neutralCount + 1
+                    End If
+                Else
+                    fallbackHeadings(fallbackCount) = heading
+                    fallbackCount = fallbackCount + 1
                 End If
             End If
         Next heading
+        If TryMoveNpcAlongRandomHeading(NpcIndex, betterCrossHeadings, betterCrossCount) Then Exit Sub
+        If TryMoveNpcAlongRandomHeading(NpcIndex, betterPerpHeadings, betterPerpCount) Then Exit Sub
         If TryMoveNpcAlongRandomHeading(NpcIndex, betterHeadings, betterCount) Then Exit Sub
+        If TryMoveNpcAlongRandomHeading(NpcIndex, neutralCrossHeadings, neutralCrossCount) Then Exit Sub
+        If TryMoveNpcAlongRandomHeading(NpcIndex, neutralPerpHeadings, neutralPerpCount) Then Exit Sub
         If TryMoveNpcAlongRandomHeading(NpcIndex, neutralHeadings, neutralCount) Then Exit Sub
-        If TryMoveNpcAlongRandomHeading(NpcIndex, legalHeadings, legalCount) Then Exit Sub
+        If TryMoveNpcAlongRandomHeading(NpcIndex, fallbackHeadings, fallbackCount) Then Exit Sub
     End With
     Exit Sub
 TryNpcImmediateDisplacement_Err:
