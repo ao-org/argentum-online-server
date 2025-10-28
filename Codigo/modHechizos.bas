@@ -486,6 +486,10 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 Call WriteLocaleMsg(UserIndex, 2001, e_FontTypeNames.FONTTYPE_WARNING)
                 Exit Function
             End If
+            If NpcList(.flags.TargetNPC.ArrayIndex).flags.ImmuneToSpells <> 0 Then
+                Call WriteLocaleMsg(UserIndex, MSG_NPC_INMUNE_TO_SPELLS, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Function
+            End If
         End If
         If .flags.EnConsulta Then
             'Msg778= No puedes lanzar hechizos si estas en consulta.
@@ -1441,7 +1445,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         If UserList(targetUserIndex).Counters.Saliendo Then
             If UserIndex <> targetUserIndex Then
                 ' Msg666=¡El hechizo no tiene efecto!
-                Call WriteLocaleMsg(UserIndex, 666, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NPC_INMUNE_TO_SPELLS, e_FontTypeNames.FONTTYPE_INFO)
                 b = False
                 Exit Sub
             Else
@@ -2157,6 +2161,13 @@ End Sub
 
 Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b As Boolean, ByVal UserIndex As Integer)
     On Error GoTo HechizoEstadoNPC_Err
+    If NpcList(NpcIndex).flags.ImmuneToSpells <> 0 Then
+        If UserIndex > 0 Then
+            Call WriteLocaleMsg(UserIndex, MSG_NPC_INMUNE_TO_SPELLS, e_FontTypeNames.FONTTYPE_INFO)
+        End If
+        b = False
+        Exit Sub
+    End If
     Dim UserAttackInteractionResult As t_AttackInteractionResult
     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.Invisibility) Then
         Call InfoHechizo(UserIndex)
@@ -2326,6 +2337,13 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
     '14/08/2007 Pablo (ToxicWaste) - Orden general.
     '***************************************************
     On Error GoTo HechizoPropNPC_Err
+    If NpcList(NpcIndex).flags.ImmuneToSpells <> 0 Then
+        If UserIndex > 0 Then
+            Call WriteLocaleMsg(UserIndex, MSG_NPC_INMUNE_TO_SPELLS, e_FontTypeNames.FONTTYPE_INFO)
+        End If
+        b = False
+        Exit Sub
+    End If
     Dim UserAttackInteractionResult As t_AttackInteractionResult
     Dim Damage                      As Long
     Dim DamageStr                   As String
@@ -3190,7 +3208,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         If UserList(tU).Counters.Saliendo Then
             If UserIndex <> tU Then
                 ' Msg666=¡El hechizo no tiene efecto!
-                Call WriteLocaleMsg(UserIndex, 666, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NPC_INMUNE_TO_SPELLS, e_FontTypeNames.FONTTYPE_INFO)
                 b = False
                 Exit Sub
             Else
@@ -3202,7 +3220,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         End If
         If IsSet(UserList(tU).flags.StatusMask, eTaunting) Then
             ' Msg666=¡El hechizo no tiene efecto!
-            Call WriteLocaleMsg(UserIndex, 666, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NPC_INMUNE_TO_SPELLS, e_FontTypeNames.FONTTYPE_INFO)
             b = False
             Exit Sub
         End If
