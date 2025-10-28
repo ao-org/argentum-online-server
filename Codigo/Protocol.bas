@@ -10424,7 +10424,7 @@ Private Sub HandlePublishItemMAO(ByVal UserIndex As Integer)
             
         Call UpdateUserInv(False, UserIndex, Slot)
         
-        Call Execute("INSERT INTO mao_items_on_sale (user_id, account_id, item_id, item_qty, price_in_pesos) VALUES (?, ?, ?, ?, ?);", _
+        Call Execute("INSERT INTO mao_items_on_sale (user_id, account_id, item_id, item_qty, price_in_fiat) VALUES (?, ?, ?, ?, ?);", _
     .Id, .AccountID, .invent.Object(Slot).ObjIndex, quantity, value)
 
         'Msg2078="Tu item fue publicado online correctamente."
