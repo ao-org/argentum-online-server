@@ -185,6 +185,12 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
         End If
         Exit Sub
     End If
+    If UserList(UserIndex).pos.Map <> UserList(OtroUserIndex).pos.Map Then
+        Call WriteConsoleMsg(UserIndex, "El comercio se canceló porque ya no están en el mismo mapa.", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(OtroUserIndex, "El comercio se canceló porque ya no están en el mismo mapa.", e_FontTypeNames.FONTTYPE_INFO)
+        TerminarAhora = True
+        GoTo FinalizarComercio
+    End If
     UserList(UserIndex).ComUsu.Acepto = True
     If UserList(OtroUserIndex).ComUsu.Acepto = False Then
         'Call WriteConsoleMsg(UserIndex, "El otro usuario aun no ha aceptado tu oferta.", e_FontTypeNames.FONTTYPE_TALK)
