@@ -39,3 +39,7 @@ Public Const MSG_RIDER_LEVEL_REQUIREMENT                       As Integer = 2078
 Public Const MSG_CHARACTER_HOME                                As Integer = 2104
 Public Const MSG_QUEST_LEVEL_REQUIREMENT                       As Integer = 1426
 Public Const MSG_NPC_INMUNE_TO_SPELLS                          As Integer = 666
+Public Const MSG_CANNOT_PICK_UP_ITEMS_IN_JAIL                  As Integer = 2109
+Public Const MSG_CANNOT_DROP_ITEMS_IN_JAIL                     As Integer = 2110
+Public Const MSG_CANNOT_TRADE_IN_JAIL                          As Integer = 2111
+Public Const MSG_CANNOT_USE_HOME_IN_JAIL                       As Integer = 2112

@@ -1932,7 +1932,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
         If .pos.Map = 66 Then
             With .pos
                 If .x >= 33 And .x <= 62 And .y >= 32 And .y <= 62 Then
-                    Call WriteConsoleMsg(UserIndex, "No puedes tirar objetos en esta zona.", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_PICK_UP_ITEMS_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
                     Exit Sub
                 End If
             End With
@@ -4289,7 +4289,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
         If .pos.Map = 66 Then
             With .pos
                 If .x >= 33 And .x <= 62 And .y >= 32 And .y <= 62 Then
-                    Call WriteConsoleMsg(UserIndex, "No puedes comerciar en esta zona.", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_TRADE_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
                     Exit Sub
                 End If
             End With
@@ -7407,7 +7407,7 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
         If .pos.Map = 66 Then
             With .pos
                 If .x >= 33 And .x <= 62 And .y >= 32 And .y <= 62 Then
-                    Call WriteConsoleMsg(UserIndex, "No puedes usar /HOGAR en esta zona.", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_USE_HOME_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
                     Exit Sub
                 End If
             End With
@@ -7849,7 +7849,7 @@ Dim Slot As Byte
                 'Msg1288= No puedes eliminar un objeto estando equipado.
                 Call WriteLocaleMsg(UserIndex, 1288, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-            end if
+            End If
         Else
             If Slot > MAX_SKINSINVENTORY_SLOTS Or Slot <= 0 Then Exit Sub
             

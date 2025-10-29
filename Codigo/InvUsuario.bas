@@ -589,7 +589,7 @@ Sub PickObj(ByVal UserIndex As Integer)
     If UserList(UserIndex).pos.Map = 66 Then
         With UserList(UserIndex).pos
             If .x >= 33 And .x <= 62 And .y >= 32 And .y <= 62 Then
-                Call WriteConsoleMsg(UserIndex, "No puedes agarrar objetos en esta zona.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_DROP_ITEMS_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
                 Exit Sub
             End If
         End With
