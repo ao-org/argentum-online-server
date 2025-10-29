@@ -1929,6 +1929,14 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
                 Exit Sub
             End If
         End If
+        If .pos.Map = 66 Then
+            With .pos
+                If .x >= 33 And .x <= 62 And .y >= 32 And .y <= 62 Then
+                    Call WriteConsoleMsg(UserIndex, "No puedes tirar objetos en esta zona.", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+            End With
+        End If
         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
         If .flags.PescandoEspecial = True Then Exit Sub
         If amount <= 0 Then Exit Sub
