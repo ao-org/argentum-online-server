@@ -126,20 +126,6 @@ Option Explicit
 Private Declare Function timeGetTime Lib "winmm.dll" () As Long
 Private Const TICKS32 As Double = 4294967296#
 
-' Legacy (keep for now, used by old code paths)
-' --------------------------------------------
-' NOTE: Do not rely on masked GetTickCount().
-' Masking (&H7FFFFFFF) halves the range (2^31),
-' wraps every ~24.9 days, and breaks naive math:
-'   (now - start > delay) fails across wrap.
-'
-' Use GetTickCountRaw() + TicksElapsed() /
-' TickAfter() for wrap-safe timing instead.
-' --------------------------------------------
-Public Function GetTickCount() As Long
-    GetTickCount = timeGetTime() And &H7FFFFFFF
-End Function
-
 ' New raw version (preferred)
 Public Function GetTickCountRaw() As Long
     GetTickCountRaw = timeGetTime()
