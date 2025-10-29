@@ -1924,14 +1924,6 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
         amount = reader.ReadInt32()
         PacketCounter = reader.ReadInt32
         Packet_ID = PacketNames.Drop
-        If .pos.Map = 66 Then
-            With .pos
-                If .x >= 33 And .x <= 62 And .y >= 32 And .y <= 62 Then
-                    Call WriteConsoleMsg(UserIndex, "No puedes tirar objetos en esta zona.", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-            End With
-        End If
         If Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots Then
             If Slot <> GOLD_SLOT Then
                 Exit Sub

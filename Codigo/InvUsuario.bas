@@ -585,14 +585,6 @@ Sub PickObj(ByVal UserIndex As Integer)
     Dim Slot  As Byte
     Dim obj   As t_ObjData
     Dim MiObj As t_Obj
-    If UserList(UserIndex).pos.Map = 66 Then
-        With UserList(UserIndex).pos
-            If .x >= 33 And .x <= 62 And .y >= 32 And .y <= 62 Then
-                Call WriteConsoleMsg(UserIndex, "No puedes recoger objetos en esta zona.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-        End With
-    End If
     '¿Hay algun obj?
     If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex > 0 Then
         '¿Esta permitido agarrar este obj?
