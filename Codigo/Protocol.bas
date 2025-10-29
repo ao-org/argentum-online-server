@@ -1918,6 +1918,14 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
     Dim Slot   As Byte
     Dim amount As Long
     With UserList(UserIndex)
+        If .pos.Map = 66 Then
+            With .pos
+                If .x >= 33 And .x <= 62 And .y >= 32 And .y <= 62 Then
+                    Call WriteConsoleMsg(UserIndex, "No puedes tirar objetos en esta zona.", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+            End With
+        End If
         Slot = reader.ReadInt8()
         amount = reader.ReadInt32()
         Dim PacketCounter As Long
@@ -4278,6 +4286,14 @@ End Sub
 Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
     On Error GoTo HandleCommerceStart_Err
     With UserList(UserIndex)
+        If .pos.Map = 66 Then
+            With .pos
+                If .x >= 33 And .x <= 62 And .y >= 32 And .y <= 62 Then
+                    Call WriteConsoleMsg(UserIndex, "No puedes comerciar en esta zona.", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+            End With
+        End If
         'Dead people can't commerce
         If .flags.Muerto = 1 Then
             ''Msg77=¡¡Estás muerto!!.)
@@ -7388,6 +7404,14 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
     On Error GoTo HandleHome_Err
     'Add the UCase$ to prevent problems.
     With UserList(UserIndex)
+        If .pos.Map = 66 Then
+            With .pos
+                If .x >= 33 And .x <= 62 And .y >= 32 And .y <= 62 Then
+                    Call WriteConsoleMsg(UserIndex, "No puedes usar /HOGAR en esta zona.", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+            End With
+        End If
         If .flags.Muerto = 0 Then
             'Msg1272= Debes estar muerto para utilizar este comando.
             Call WriteLocaleMsg(UserIndex, 1272, e_FontTypeNames.FONTTYPE_INFO)
