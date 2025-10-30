@@ -2148,6 +2148,12 @@ Public Enum e_ObjFlags
     e_UseOnSafeAreaOnly = 2
 End Enum
 
+
+Public Enum e_AnvilType
+    IronAnvil = 1
+    BlodiumAnvil = 2
+End Enum
+
 'Tipos de objetos
 Public Type t_ObjData
     Pino As Byte

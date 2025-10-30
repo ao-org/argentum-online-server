@@ -1010,6 +1010,15 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
         End If
+        Dim target As t_WorldPos
+        target.Map = UserList(UserIndex).flags.TargetMap
+        target.x = UserList(UserIndex).flags.TargetX
+        target.y = UserList(UserIndex).flags.TargetY
+        If ObjData(MapData(target.Map, target.x, target.y).ObjInfo.ObjIndex).Subtipo <> e_AnvilType.BlodiumAnvil Then
+            Call WriteLocaleMsg(UserIndex, 2113, e_FontTypeNames.FONTTYPE_INFO)
+            HerreroTieneMateriales = False
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+        End If
     End If
     If ObjData(ItemIndex).FireEssence > 0 Then
         If Not TieneObjetos(e_Minerales.FireEssence, ObjData(ItemIndex).FireEssence, UserIndex) Then
