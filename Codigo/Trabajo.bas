@@ -1018,6 +1018,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
             Call WriteLocaleMsg(UserIndex, 2113, e_FontTypeNames.FONTTYPE_INFO)
             HerreroTieneMateriales = False
             Call WriteMacroTrabajoToggle(UserIndex, False)
+            Exit Function
         End If
     End If
     If ObjData(ItemIndex).FireEssence > 0 Then
