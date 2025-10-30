@@ -43,3 +43,4 @@ Public Const MSG_CANNOT_PICK_UP_ITEMS_IN_JAIL                  As Integer = 2109
 Public Const MSG_CANNOT_DROP_ITEMS_IN_JAIL                     As Integer = 2110
 Public Const MSG_CANNOT_TRADE_IN_JAIL                          As Integer = 2111
 Public Const MSG_CANNOT_USE_HOME_IN_JAIL                       As Integer = 2112
+Public Const MAP_HOME_IN_JAIL                                  As Integer = 66

@@ -1929,13 +1929,9 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
                 Exit Sub
             End If
         End If
-        If .pos.Map = 66 Then
-            With .pos
-                If .x >= 33 And .x <= 62 And .y >= 32 And .y <= 62 Then
-                    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_PICK_UP_ITEMS_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
-                    Exit Sub
-                End If
-            End With
+        If IsInMapCarcelRestrictedArea(.pos) Then
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_PICK_UP_ITEMS_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
+            Exit Sub
         End If
         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
         If .flags.PescandoEspecial = True Then Exit Sub
@@ -4286,13 +4282,9 @@ End Sub
 Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
     On Error GoTo HandleCommerceStart_Err
     With UserList(UserIndex)
-        If .pos.Map = 66 Then
-            With .pos
-                If .x >= 33 And .x <= 62 And .y >= 32 And .y <= 62 Then
-                    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_TRADE_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
-                    Exit Sub
-                End If
-            End With
+        If IsInMapCarcelRestrictedArea(.pos) Then
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_TRADE_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
+            Exit Sub
         End If
         'Dead people can't commerce
         If .flags.Muerto = 1 Then
@@ -7404,13 +7396,9 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
     On Error GoTo HandleHome_Err
     'Add the UCase$ to prevent problems.
     With UserList(UserIndex)
-        If .pos.Map = 66 Then
-            With .pos
-                If .x >= 33 And .x <= 62 And .y >= 32 And .y <= 62 Then
-                    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_USE_HOME_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
-                    Exit Sub
-                End If
-            End With
+        If IsInMapCarcelRestrictedArea(UserList(UserIndex).pos) Then
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_USE_HOME_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
+            Exit Sub
         End If
         If .flags.Muerto = 0 Then
             'Msg1272= Debes estar muerto para utilizar este comando.
@@ -8010,3 +7998,10 @@ Public Sub HendleRequestLobbyList(ByVal UserIndex As Integer)
 HendleRequestLobbyList_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HendleRequestLobbyList", Erl)
 End Sub
+Public Function IsInMapCarcelRestrictedArea(ByRef position As t_WorldPos) As Boolean
+    If position.Map <> MAP_HOME_IN_JAIL Then Exit Function
+
+    If position.x >= 33 And position.x <= 62 And position.y >= 32 And position.y <= 62 Then
+        IsInMapCarcelRestrictedArea = True
+    End If
+End Function

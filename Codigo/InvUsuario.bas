@@ -586,13 +586,9 @@ Sub PickObj(ByVal UserIndex As Integer)
     Dim obj   As t_ObjData
     Dim MiObj As t_Obj
     '¿Hay algun obj?
-    If UserList(UserIndex).pos.Map = 66 Then
-        With UserList(UserIndex).pos
-            If .x >= 33 And .x <= 62 And .y >= 32 And .y <= 62 Then
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_DROP_ITEMS_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
-                Exit Sub
-            End If
-        End With
+    If IsInMapCarcelRestrictedArea(UserList(UserIndex).pos) Then
+        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_DROP_ITEMS_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
+        Exit Sub
     End If
     If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex > 0 Then
         '¿Esta permitido agarrar este obj?
