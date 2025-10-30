@@ -62,18 +62,37 @@ Public Sub InitializePools()
             Call AddEffect(EffectPools(i), InstantiateEOT(i))
         Next j
     Next i
+    LastUpdateTime = GetTickCountRaw()
     Exit Sub
 InitializePools_Err:
     Call TraceError(Err.Number, Err.Description, "EffectsOverTime.InitializePools", Erl)
 End Sub
 
+
 Public Sub UpdateEffectOverTime()
     On Error GoTo Update_Err
-    Dim CurrTime    As Long
+
+    Dim CurrTime As Long
     Dim ElapsedTime As Long
+
     CurrTime = GetTickCountRaw()
+
+    ' First frame (or after reset): prime and bail to avoid huge delta
+    If LastUpdateTime = 0 Then
+        LastUpdateTime = CurrTime
+        Exit Sub
+    End If
+
+    ' Wrap-safe delta; guard against negative/insane values
     ElapsedTime = CLng(TicksElapsed(LastUpdateTime, CurrTime))
+    If ElapsedTime < 0 Then ElapsedTime = 0
+
+    ' Clamp to avoid massive catch-up after a hitch (e.g., 2s+ pause)
+    ' 200 ms is a good default for server-side EOT; tune if needed.
+    If ElapsedTime > 200 Then ElapsedTime = 200
+
     LastUpdateTime = CurrTime
+
     Dim i As Integer
     Do While i < ActiveEffects.EffectCount
         If UpdateEffect(i, ElapsedTime) Then
@@ -127,6 +146,12 @@ Public Sub CreateEffect(ByVal SourceIndex As Integer, _
                         ByVal TargetType As e_ReferenceType, _
                         ByVal EffectIndex As Integer)
     On Error GoTo CreateEffect_Err
+    
+    If EffectIndex < LBound(EffectOverTime) Or EffectIndex > UBound(EffectOverTime) Then
+        Call TraceError(9, "Invalid EffectIndex=" & EffectIndex, "EffectsOverTime.CreateEffect", Erl)
+        Exit Sub
+    End If
+
     Dim EffectType As e_EffectOverTimeType
     EffectType = EffectOverTime(EffectIndex).Type
     Select Case EffectType
@@ -430,7 +455,10 @@ Public Sub AddEffect(ByRef EffectList As t_EffectOverTimeList, ByRef Effect As I
     If Not IsArrayInitialized(EffectList.EffectList) Then
         ReDim EffectList.EffectList(ACTIVE_EFFECT_LIST_SIZE) As IBaseEffectOverTime
     ElseIf EffectList.EffectCount >= UBound(EffectList.EffectList) Then
-        ReDim Preserve EffectList.EffectList(EffectList.EffectCount * 1.2) As IBaseEffectOverTime
+        Dim newCap As Integer
+        newCap = EffectList.EffectCount + (EffectList.EffectCount \ 5) + 8  ' +20% + 8
+        If newCap < EffectList.EffectCount + 1 Then newCap = EffectList.EffectCount + 1
+        ReDim Preserve EffectList.EffectList(newCap) As IBaseEffectOverTime
     End If
     Set EffectList.EffectList(EffectList.EffectCount) = Effect
     Call SetMask(EffectList.CallbaclMask, Effect.CallBacksMask)

@@ -34,6 +34,7 @@ Public Const ELEMENTAL_FUEGO  As Integer = 962
 Public Const RANGO_VISION_X   As Byte = DEFAULT_NPC_VISION_RANGE_X
 Public Const RANGO_VISION_Y   As Byte = DEFAULT_NPC_VISION_RANGE_Y
 
+
 Public Sub NpcDummyUpdate(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)
         Debug.Assert .npcType = DummyTarget
@@ -318,11 +319,19 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
         'perform movement
         If NPCs.CanMove(.Contadores, .flags) Then
             If NearestUser > 0 And NearestTargetDistance < .PreferedRange Then
-                Dim Direction    As t_Vector
-                Dim TargetMapPos As t_WorldPos
-                Direction = GetDirection(UserList(NearestUser).pos, .pos)
-                TargetMapPos = PreferedTileForDirection(Direction, .pos)
-                Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
+                Dim retreatTargetPos    As t_WorldPos
+                Dim retreatDestination As t_WorldPos
+                retreatTargetPos = UserList(NearestUser).pos
+                retreatDestination = ComputeNpcRangedRetreatDestination(NpcIndex, retreatTargetPos, .PreferedRange)
+                If retreatDestination.x <> .pos.x Or retreatDestination.y <> .pos.y Then
+                    Call AI_CaminarConRumbo(NpcIndex, retreatDestination)
+                Else
+                    Dim fallbackDirection As t_Vector
+                    Dim fallbackTarget    As t_WorldPos
+                    fallbackDirection = GetDirection(retreatTargetPos, .pos)
+                    fallbackTarget = PreferedTileForDirection(fallbackDirection, .pos)
+                    Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, fallbackTarget))
+                End If
             ElseIf Math.Round(NearestTargetDistance) = .PreferedRange Then
                 'do nothing, look at pos?
             ElseIf IsValidRef(CurrentTarget) And Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) > .PreferedRange Then
@@ -375,8 +384,12 @@ AI_CaminarSinRumbo_Err:
     Call TraceError(Err.Number, Err.Description, "AI.AI_CaminarSinRumbo", Erl)
 End Sub
 
+' Guides the NPC toward the supplied waypoint while layering the temporary strafe offset and recompute cooldowns.
+' It is the integration point that merges the reactive orbit destination, checks whether the cached path is still valid,
+' and only fires a new A* search when the wrap-safe timer signals the cooldown has elapsed.
 Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_WorldPos)
     On Error GoTo AI_CaminarConRumbo_Err
+    Dim adjustedRumbo As t_WorldPos
     If NpcList(NpcIndex).TargetUser.ArrayIndex = 0 Then
         Call NpcClearTargetUnreachable(NpcIndex)
     End If
@@ -384,35 +397,55 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
         Call AnimacionIdle(NpcIndex, True)
         Exit Sub
     End If
-    If NpcList(NpcIndex).pos.x = rumbo.x And NpcList(NpcIndex).pos.y = rumbo.y Then
+    adjustedRumbo = rumbo
+    Call ApplyNpcStrafeToDestination(NpcIndex, adjustedRumbo)
+    If NpcList(NpcIndex).pos.x = adjustedRumbo.x And NpcList(NpcIndex).pos.y = adjustedRumbo.y Then
         Call NpcClearTargetUnreachable(NpcIndex)
         NpcList(NpcIndex).pathFindingInfo.PathLength = 0
         Call AnimacionIdle(NpcIndex, True)
         Exit Sub
     End If
     With NpcList(NpcIndex).pathFindingInfo
-        ' Si no tiene un camino calculado o si el destino cambio
-        If .PathLength = 0 Or .destination.x <> rumbo.x Or .destination.y <> rumbo.y Then
-            .destination.x = rumbo.x
-            .destination.y = rumbo.y
-            ' Recalculamos el camino
-            If SeekPath(NpcIndex, True) Then
-                ' Si consiguo un camino
+        Dim needsNewPath As Boolean
+        needsNewPath = (.PathLength = 0 Or .destination.x <> adjustedRumbo.x Or .destination.y <> adjustedRumbo.y)
+        If needsNewPath Then
+            Dim shouldRecompute As Boolean
+            .destination.x = adjustedRumbo.x
+            .destination.y = adjustedRumbo.y
+            If .PathLength = 0 Then
+                shouldRecompute = True
+            ElseIf .NextPathRecomputeAt = 0 Then
+                shouldRecompute = True
+            Else
+                shouldRecompute = TickAfter(GlobalFrameTime, .NextPathRecomputeAt)
+            End If
+            If shouldRecompute Then
+                Dim baseTick As Long
+                If .NextPathRecomputeAt = 0 Then
+                    baseTick = GlobalFrameTime
+                Else
+                    baseTick = .NextPathRecomputeAt
+                End If
+                If SeekPath(NpcIndex, True) Then
+                    Call NpcClearTargetUnreachable(NpcIndex)
+                    Call FollowPath(NpcIndex)
+                Else
+                    If NpcList(NpcIndex).Hostile = 1 And NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 Then
+                        NpcList(NpcIndex).pathFindingInfo.RangoVision = Min(SvrConfig.GetValue("NPC_MAX_VISION_RANGE"), NpcList(NpcIndex).pathFindingInfo.RangoVision + _
+                                PATH_VISION_DELTA)
+                    End If
+                    If NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 And NpcList(NpcIndex).flags.LanzaSpells = 0 Then
+                        Call NpcMarkTargetUnreachable(NpcIndex)
+                    End If
+                    Call AnimacionIdle(NpcIndex, True)
+                End If
+                .NextPathRecomputeAt = AddMod32(baseTick, CLng(SvrConfig.GetValue("PATH_RECOMPUTE_COOLDOWN_MS")))
+                If .NextPathRecomputeAt = 0 Then .NextPathRecomputeAt = 1
+            Else
                 Call NpcClearTargetUnreachable(NpcIndex)
                 Call FollowPath(NpcIndex)
-            Else
-                ' Cannot find path
-                If NpcList(NpcIndex).Hostile = 1 And NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 Then
-                    NpcList(NpcIndex).pathFindingInfo.RangoVision = Min(SvrConfig.GetValue("NPC_MAX_VISION_RANGE"), NpcList(NpcIndex).pathFindingInfo.RangoVision + _
-                            PATH_VISION_DELTA)
-                End If
-                If NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 And NpcList(NpcIndex).flags.LanzaSpells = 0 Then
-                    Call NpcMarkTargetUnreachable(NpcIndex)
-                End If
-                ' Si no hay camino, pasar a estado idle
-                Call AnimacionIdle(NpcIndex, True)
             End If
-        Else ' Avanzamos en el camino
+        Else
             Call NpcClearTargetUnreachable(NpcIndex)
             Call FollowPath(NpcIndex)
         End If
@@ -423,6 +456,125 @@ AI_CaminarConRumbo_Err:
     errorDescription = Err.Description & vbNewLine & " NpcIndex: " & NpcIndex & " NPCList.size= " & UBound(NpcList)
     Call TraceError(Err.Number, errorDescription, "AI.AI_CaminarConRumbo", Erl)
 End Sub
+
+' Ensures ranged NPCs continue orbiting on a consistent side until the reevaluation window expires.
+' It lazily seeds an orbit direction, tracks the wrap-safe deadline stored in `OrbitReevaluateAt`, and renews the window so
+' extended encounters cannot desynchronise once the server tick counter wraps.
+Private Function EnsureNpcOrbitDirection(ByVal NpcIndex As Integer) As Integer
+    With NpcList(NpcIndex).pathFindingInfo
+        Dim needsUpdate As Boolean
+        needsUpdate = (.OrbitDirection = 0)
+        If Not needsUpdate Then
+            If .OrbitReevaluateAt = 0 Then
+                needsUpdate = True
+            ElseIf TickAfter(GlobalFrameTime, .OrbitReevaluateAt) Then
+                needsUpdate = True
+            End If
+        End If
+        If needsUpdate Then
+            If RandomNumber(0, 1) = 0 Then
+                .OrbitDirection = -1
+            Else
+                .OrbitDirection = 1
+            End If
+            Dim baseTick As Long
+            If .OrbitReevaluateAt = 0 Then
+                baseTick = GlobalFrameTime
+            Else
+                baseTick = .OrbitReevaluateAt
+            End If
+            .OrbitReevaluateAt = AddMod32(baseTick, CLng(SvrConfig.GetValue("NPC_ORBIT_REEVALUATE_MS")))
+            If .OrbitReevaluateAt = 0 Then .OrbitReevaluateAt = 1
+        End If
+        EnsureNpcOrbitDirection = .OrbitDirection
+    End With
+End Function
+
+' Inverts the active orbit side and immediately schedules a fresh reevaluation deadline using the wrap-safe counters.
+' Called when the preferred strafing lane is obstructed so the ranged NPC can swap tangents without freezing in place.
+Private Sub FlipNpcOrbitDirection(ByVal NpcIndex As Integer)
+    With NpcList(NpcIndex).pathFindingInfo
+        Dim currentDirection As Integer
+        currentDirection = EnsureNpcOrbitDirection(NpcIndex)
+        .OrbitDirection = -currentDirection
+        .OrbitReevaluateAt = AddMod32(GlobalFrameTime, CLng(SvrConfig.GetValue("NPC_ORBIT_REEVALUATE_MS")))
+        If .OrbitReevaluateAt = 0 Then .OrbitReevaluateAt = 1
+    End With
+End Sub
+
+' Produces the ranged waypoint that balances backing off with orbiting around the threat.
+' The helper blends the backward vector with the configurable tangent weight, honours the cached orbit direction, and retries
+' with a flipped lane whenever the preferred tile is blocked so the caller can react before the reevaluation timer expires.
+Private Function ComputeNpcRangedRetreatDestination(ByVal NpcIndex As Integer, ByRef targetPos As t_WorldPos, ByVal preferedRange As Single) As t_WorldPos
+    Dim npcPos As t_WorldPos
+    npcPos = NpcList(NpcIndex).pos
+    ComputeNpcRangedRetreatDestination = npcPos
+    If preferedRange <= 0 Then Exit Function
+
+    Dim baseVector As t_Vector
+    baseVector = GetDirection(targetPos, npcPos)
+    If baseVector.x = 0 And baseVector.y = 0 Then
+        baseVector.x = 1
+    End If
+
+    Dim normalized As t_Vector
+    normalized = GetNormal(baseVector)
+    Dim distanceToTarget As Double
+    distanceToTarget = Distance(npcPos.x, npcPos.y, targetPos.x, targetPos.y)
+
+    Dim attempt As Integer
+    For attempt = 1 To 2
+        Dim orbitDirection As Integer
+        orbitDirection = EnsureNpcOrbitDirection(NpcIndex)
+
+        Dim offset As t_Vector
+        If distanceToTarget <= preferedRange - CDbl(SvrConfig.GetValue("NPC_RETREAT_DISTANCE_BUFFER")) Then
+            Dim tangent As t_Vector
+            tangent.x = -normalized.y
+            tangent.y = normalized.x
+            offset.x = normalized.x * (1# - CDbl(SvrConfig.GetValue("NPC_ORBIT_TANGENT_WEIGHT"))) + tangent.x * orbitDirection * CDbl(SvrConfig.GetValue("NPC_ORBIT_TANGENT_WEIGHT"))
+            offset.y = normalized.y * (1# - CDbl(SvrConfig.GetValue("NPC_ORBIT_TANGENT_WEIGHT"))) + tangent.y * orbitDirection * CDbl(SvrConfig.GetValue("NPC_ORBIT_TANGENT_WEIGHT"))
+        Else
+            offset = RotateVector(normalized, orbitDirection * ToRadians(CDbl(SvrConfig.GetValue("NPC_ORBIT_STEP_DEGREES"))))
+            
+        End If
+
+        Dim offsetLength As Double
+        offsetLength = Distance(0, 0, offset.x, offset.y)
+        If offsetLength > 0 Then
+            offset.x = offset.x / offsetLength
+            offset.y = offset.y / offsetLength
+        End If
+
+        Dim candidate As t_WorldPos
+        candidate.Map = npcPos.Map
+        candidate.x = targetPos.x + CInt(offset.x * preferedRange)
+        candidate.y = targetPos.y + CInt(offset.y * preferedRange)
+
+        If Not LegalPos(candidate.Map, candidate.x, candidate.y, False, True) Then
+            Dim stabilized As t_WorldPos
+            stabilized = candidate
+            Call ClosestStablePos(candidate, stabilized)
+            If stabilized.x <> 0 Or stabilized.y <> 0 Then
+                candidate = stabilized
+            Else
+                Call FlipNpcOrbitDirection(NpcIndex)
+                GoTo ContinueOrbitSearch
+            End If
+        End If
+
+        If candidate.x = npcPos.x And candidate.y = npcPos.y Then
+            Call FlipNpcOrbitDirection(NpcIndex)
+            GoTo ContinueOrbitSearch
+        End If
+
+        ComputeNpcRangedRetreatDestination = candidate
+        Exit Function
+
+ContinueOrbitSearch:
+    Next attempt
+    ComputeNpcRangedRetreatDestination = npcPos
+End Function
 
 Private Sub NpcMarkTargetUnreachable(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)
@@ -666,11 +818,17 @@ Public Sub AI_BGSupportBehavior(ByVal NpcIndex As Integer)
         TargetPos = ModReferenceUtils.GetPosition(CurrentTarget)
         If NPCs.CanMove(.Contadores, .flags) Then
             If CurrentTarget.ArrayIndex > 0 And NearestTargetDistance < .PreferedRange Then
-                Dim Direction    As t_Vector
-                Dim TargetMapPos As t_WorldPos
-                Direction = GetDirection(TargetPos, .pos)
-                TargetMapPos = PreferedTileForDirection(Direction, .pos)
-                Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
+                Dim retreatDestination As t_WorldPos
+                retreatDestination = ComputeNpcRangedRetreatDestination(NpcIndex, TargetPos, .PreferedRange)
+                If retreatDestination.x <> .pos.x Or retreatDestination.y <> .pos.y Then
+                    Call AI_CaminarConRumbo(NpcIndex, retreatDestination)
+                Else
+                    Dim fallbackDirection As t_Vector
+                    Dim fallbackTarget    As t_WorldPos
+                    fallbackDirection = GetDirection(TargetPos, .pos)
+                    fallbackTarget = PreferedTileForDirection(fallbackDirection, .pos)
+                    Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, fallbackTarget))
+                End If
             Else
                 If IsValidRef(CurrentTarget) And InRangoVisionNPC(NpcIndex, TargetPos.x, TargetPos.y) Then
                 Else
@@ -721,11 +879,17 @@ Public Sub AI_BGRangedBehavior(ByVal NpcIndex As Integer)
         'perform movement
         If NPCs.CanMove(.Contadores, .flags) Then
             If CurrentTarget.ArrayIndex > 0 And NearestTargetDistance < .PreferedRange Then
-                Dim Direction    As t_Vector
-                Dim TargetMapPos As t_WorldPos
-                Direction = GetDirection(TargetPos, .pos)
-                TargetMapPos = PreferedTileForDirection(Direction, .pos)
-                Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
+                Dim retreatDestination As t_WorldPos
+                retreatDestination = ComputeNpcRangedRetreatDestination(NpcIndex, TargetPos, .PreferedRange)
+                If retreatDestination.x <> .pos.x Or retreatDestination.y <> .pos.y Then
+                    Call AI_CaminarConRumbo(NpcIndex, retreatDestination)
+                Else
+                    Dim fallbackDirection As t_Vector
+                    Dim fallbackTarget    As t_WorldPos
+                    fallbackDirection = GetDirection(TargetPos, .pos)
+                    fallbackTarget = PreferedTileForDirection(fallbackDirection, .pos)
+                    Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, fallbackTarget))
+                End If
             ElseIf Not IsValidRef(CurrentTarget) Then
                 Call AI_CaminarConRumbo(NpcIndex, GoToNextWp(NpcIndex))
             End If
