@@ -3325,6 +3325,21 @@ Function ObtenerRopaje(ByVal UserIndex As Integer, ByRef obj As t_ObjData) As In
     race = UserList(UserIndex).raza
     Dim EsMujer As Boolean
     EsMujer = UserList(UserIndex).genero = e_Genero.Mujer
+    Dim EsRazaBaja As Boolean
+    EsRazaBaja = (race = e_Raza.Gnomo Or race = e_Raza.Enano)
+    If obj.OBJType = e_OBJType.otSaddles Then
+        If EsRazaBaja Then
+            If obj.RazaBajos > 0 Then
+                ObtenerRopaje = obj.RazaBajos
+                Exit Function
+            End If
+        Else
+            If obj.RazaAltos > 0 Then
+                ObtenerRopaje = obj.RazaAltos
+                Exit Function
+            End If
+        End If
+    End If
     Select Case race
         Case e_Raza.Humano
             If EsMujer And obj.RopajeHumana > 0 Then
