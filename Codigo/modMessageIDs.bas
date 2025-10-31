@@ -39,3 +39,4 @@ Public Const MSG_RIDER_LEVEL_REQUIREMENT                       As Integer = 2078
 Public Const MSG_CHARACTER_HOME                                As Integer = 2104
 Public Const MSG_QUEST_LEVEL_REQUIREMENT                       As Integer = 1426
 Public Const MSG_NPC_INMUNE_TO_SPELLS                          As Integer = 666
+Public Const MSG_BLODIUM_ANVIL_REQUIRED                        As Integer = 2113

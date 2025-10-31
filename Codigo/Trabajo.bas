@@ -1015,7 +1015,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
         target.x = UserList(UserIndex).flags.TargetX
         target.y = UserList(UserIndex).flags.TargetY
         If ObjData(MapData(target.Map, target.x, target.y).ObjInfo.ObjIndex).Subtipo <> e_AnvilType.BlodiumAnvil Then
-            Call WriteLocaleMsg(UserIndex, 2113, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_BLODIUM_ANVIL_REQUIRED, e_FontTypeNames.FONTTYPE_INFO)
             HerreroTieneMateriales = False
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
