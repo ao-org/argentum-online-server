@@ -2412,12 +2412,34 @@ End Sub
 
 Public Function ObtenerPezRandom(ByVal PoderCania As Integer) As Long
     On Error GoTo ObtenerPezRandom_Err
-    Dim i As Long, SumaPesos As Long, ValorGenerado As Long
+
+    Dim PesoMinimo As Long
+    Dim PesoMaximo As Long
+    Dim ValorGenerado As Long
+    Dim PezIndex As Long
+
+    ' Si la caña tiene un Power mayor al tamaño del array PesoPeces, lo ajustamos al máximo válido
     If PoderCania > UBound(PesoPeces) Then PoderCania = UBound(PesoPeces)
-    SumaPesos = PesoPeces(PoderCania)
-    ValorGenerado = RandomNumber(0, SumaPesos - 1)
-    ObtenerPezRandom = Peces(BinarySearchPeces(ValorGenerado)).ObjIndex
+    
+    ' PesoMaximo: suma de pesos acumulados de todos los peces que puede pescar esta caña
+    PesoMaximo = PesoPeces(PoderCania)
+    
+    ' Esto asegura que el aleatorio solo considere los peces que pertenecen al Power actual
+    If PoderCania > 1 Then
+        PesoMinimo = PesoPeces(PoderCania - 1)
+    Else
+        PesoMinimo = 0
+    End If
+
+    ' Generamos un valor aleatorio solo dentro del rango correspondiente
+    ValorGenerado = RandomNumber(PesoMinimo, PesoMaximo - 1)
+
+    ' Obtenemos el pez correspondiente
+    PezIndex = BinarySearchPeces(ValorGenerado)
+    ObtenerPezRandom = Peces(PezIndex).ObjIndex
+
     Exit Function
+
 ObtenerPezRandom_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.ObtenerPezRandom", Erl)
 End Function
