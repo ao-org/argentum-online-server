@@ -1697,7 +1697,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         End If
         ' Si no esta envenenado, no hay nada mas que hacer
         If UserList(targetUserIndex).flags.Envenenado = 0 Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1871, UserList(targetUserIndex).name, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1871=¬1 no está envenenado, el hechizo no tiene efecto.
+            Call WriteLocaleMsg(UserIndex, 1871, e_FontTypeNames.FONTTYPE_INFOIAO, UserList(targetUserIndex).name) ' Msg1871=¬1 no está envenenado, el hechizo no tiene efecto.
             b = False
             Exit Sub
         End If
@@ -3021,7 +3021,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
             Exit Sub
         End If
         If UserList(tempChr).Stats.MinHp = UserList(tempChr).Stats.MaxHp Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1906, UserList(tempChr).name, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1906=¬1 no tiene heridas para curar.
+            Call WriteLocaleMsg(UserIndex, 1906, e_FontTypeNames.FONTTYPE_INFOIAO, UserList(tempChr).name) ' Msg1906=¬1 no tiene heridas para curar.
             b = False
             Exit Sub
         End If
