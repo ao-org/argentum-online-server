@@ -1010,6 +1010,19 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
         End If
+        Dim target As t_WorldPos
+        target.Map = UserList(UserIndex).flags.TargetMap
+        target.x = UserList(UserIndex).flags.TargetX
+        target.y = UserList(UserIndex).flags.TargetY
+        If LegalPos Not (target.Map,target.x,target,y) Then
+            Exit Function
+        End If
+        If ObjData(MapData(target.Map, target.x, target.y).ObjInfo.ObjIndex).Subtipo <> e_AnvilType.BlodiumAnvil Then
+            Call WriteLocaleMsg(UserIndex, MSG_BLODIUM_ANVIL_REQUIRED, e_FontTypeNames.FONTTYPE_INFO)
+            HerreroTieneMateriales = False
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Exit Function
+        End If
     End If
     If ObjData(ItemIndex).FireEssence > 0 Then
         If Not TieneObjetos(e_Minerales.FireEssence, ObjData(ItemIndex).FireEssence, UserIndex) Then
@@ -2329,7 +2342,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
         .invent.EquippedSaddleObjIndex = .invent.Object(Slot).ObjIndex
         .invent.EquippedSaddleSlot = Slot
         If .flags.Montado = 0 Then
-            .Char.body = Montura.Ropaje
+            .Char.body = ObtenerRopaje(UserIndex, Montura)
             .Char.head = .OrigChar.head
             .Char.ShieldAnim = NingunEscudo
             .Char.WeaponAnim = NingunArma

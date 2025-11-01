@@ -679,6 +679,9 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal x As Integer, ByVal y As Intege
         Call WriteLocaleMsg(UserIndex, 1072, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
+    UserList(UserIndex).flags.TargetMap = Map
+    UserList(UserIndex).flags.TargetX = x
+    UserList(UserIndex).flags.TargetY = y
     Call EnivarArmasConstruibles(UserIndex)
     Call EnivarArmadurasConstruibles(UserIndex)
     Call SendCraftableElementRunes(UserIndex)
