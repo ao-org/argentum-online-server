@@ -2284,6 +2284,11 @@ Sub LoadIntervalos()
     IntervaloGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloGuardarUsuarios"))
     IntervaloTimerGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloTimerGuardarUsuarios"))
     IntervaloMensajeGlobal = val(Lector.GetValue("INTERVALOS", "IntervaloMensajeGlobal"))
+    SuccessExtractMin    = val(Lector.GetValue("INTERVALOS", "SuccessExtractMin"))
+    SuccessExtractMax    = val(Lector.GetValue("INTERVALOS", "SuccessExtractMax"))
+    SafeZoneExtractMult  = val(Lector.GetValue("INTERVALOS", "SafeZoneExtractMult"))
+    BlodiumIndex         = val(Lector.GetValue("INTERVALOS", "BlodiumIndex"))
+
     '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     Set Lector = Nothing
     Exit Sub
