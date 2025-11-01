@@ -2367,7 +2367,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
         .invent.EquippedSaddleObjIndex = .invent.Object(Slot).ObjIndex
         .invent.EquippedSaddleSlot = Slot
         If .flags.Montado = 0 Then
-            .Char.body = Montura.Ropaje
+            .Char.body = ObtenerRopaje(UserIndex, Montura)
             .Char.head = .OrigChar.head
             .Char.ShieldAnim = NingunEscudo
             .Char.WeaponAnim = NingunArma
