@@ -2678,26 +2678,26 @@ End Function
 Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal JobType As Byte)
     On Error GoTo GiveExpWhileWorking_Err:
     Dim tmpExp As Byte
-    If ObjData(ItemIndex).Power >= 2 Then
-        Select Case JobType
-            Case e_JobsTypes.Miner
-                tmpExp = SvrConfig.GetValue("MiningExp")
-            Case e_JobsTypes.Woodcutter
-                tmpExp = SvrConfig.GetValue("FellingExp")
-            Case e_JobsTypes.Blacksmith
-                tmpExp = SvrConfig.GetValue("ForgingExp")
-            Case e_JobsTypes.Carpenter
-                tmpExp = SvrConfig.GetValue("CarpentryExp")
-            Case e_JobsTypes.Woodcutter
-                tmpExp = SvrConfig.GetValue("FellingExp")
-            Case e_JobsTypes.Fisherman
-                    tmpExp = SvrConfig.GetValue("FishingExp")
-            Case e_JobsTypes.Alchemist
-                tmpExp = SvrConfig.GetValue("MixingExp")
-            Case Else
-                tmpExp = SvrConfig.GetValue("ElseExp")
-        End Select
-    End If
+    Select Case JobType
+        Case e_JobsTypes.Miner
+            tmpExp = SvrConfig.GetValue("MiningExp")
+        Case e_JobsTypes.Woodcutter
+            tmpExp = SvrConfig.GetValue("FellingExp")
+        Case e_JobsTypes.Blacksmith
+            tmpExp = SvrConfig.GetValue("ForgingExp")
+        Case e_JobsTypes.Carpenter
+            tmpExp = SvrConfig.GetValue("CarpentryExp")
+        Case e_JobsTypes.Woodcutter
+            tmpExp = SvrConfig.GetValue("FellingExp")
+        Case e_JobsTypes.Fisherman
+            If ObjData(ItemIndex).Power >= 2 Then
+                tmpExp = SvrConfig.GetValue("FishingExp")
+            End If
+        Case e_JobsTypes.Alchemist
+            tmpExp = SvrConfig.GetValue("MixingExp")
+        Case Else
+            tmpExp = SvrConfig.GetValue("ElseExp")
+    End Select
     UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + tmpExp
     Exit Function
 GiveExpWhileWorking_Err:
