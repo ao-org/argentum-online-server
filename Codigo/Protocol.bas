@@ -1915,19 +1915,23 @@ End Sub
 Private Sub HandleDrop(ByVal UserIndex As Integer)
     On Error GoTo HandleDrop_Err
     'Agregue un checkeo para patear a los usuarios que tiran items mientras comercian.
-    Dim Slot   As Byte
-    Dim amount As Long
+    Dim Slot          As Byte
+    Dim amount        As Long
+    Dim PacketCounter As Long
+    Dim Packet_ID     As Long
     With UserList(UserIndex)
         Slot = reader.ReadInt8()
         amount = reader.ReadInt32()
-        Dim PacketCounter As Long
         PacketCounter = reader.ReadInt32
-        Dim Packet_ID As Long
         Packet_ID = PacketNames.Drop
         If Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots Then
             If Slot <> GOLD_SLOT Then
                 Exit Sub
             End If
+        End If
+        If IsInMapCarcelRestrictedArea(.pos) Then
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_PICK_UP_ITEMS_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
+            Exit Sub
         End If
         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
         If .flags.PescandoEspecial = True Then Exit Sub
@@ -4278,6 +4282,10 @@ End Sub
 Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
     On Error GoTo HandleCommerceStart_Err
     With UserList(UserIndex)
+        If IsInMapCarcelRestrictedArea(.pos) Then
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_TRADE_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
+            Exit Sub
+        End If
         'Dead people can't commerce
         If .flags.Muerto = 1 Then
             ''Msg77=¡¡Estás muerto!!.)
@@ -7388,6 +7396,10 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
     On Error GoTo HandleHome_Err
     'Add the UCase$ to prevent problems.
     With UserList(UserIndex)
+        If IsInMapCarcelRestrictedArea(UserList(UserIndex).pos) Then
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_USE_HOME_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
+            Exit Sub
+        End If
         If .flags.Muerto = 0 Then
             'Msg1272= Debes estar muerto para utilizar este comando.
             Call WriteLocaleMsg(UserIndex, 1272, e_FontTypeNames.FONTTYPE_INFO)
@@ -7825,7 +7837,7 @@ Dim Slot As Byte
                 'Msg1288= No puedes eliminar un objeto estando equipado.
                 Call WriteLocaleMsg(UserIndex, 1288, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-            end if
+            End If
         Else
             If Slot > MAX_SKINSINVENTORY_SLOTS Or Slot <= 0 Then Exit Sub
             
@@ -7986,3 +7998,10 @@ Public Sub HendleRequestLobbyList(ByVal UserIndex As Integer)
 HendleRequestLobbyList_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HendleRequestLobbyList", Erl)
 End Sub
+Public Function IsInMapCarcelRestrictedArea(ByRef position As t_WorldPos) As Boolean
+    If position.Map <> MAP_HOME_IN_JAIL Then Exit Function
+
+    If position.x >= 33 And position.x <= 62 And position.y >= 32 And position.y <= 62 Then
+        IsInMapCarcelRestrictedArea = True
+    End If
+End Function
