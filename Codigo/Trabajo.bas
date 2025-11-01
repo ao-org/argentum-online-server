@@ -30,9 +30,6 @@ Public Const GOLD_OBJ_INDEX As Long = 12
 Public Const FISHING_NET_FX As Long = 12
 Public Const NET_INMO_DURATION = 10
 
-Private Const JOB_SUCCESS_MIN As Double = 0.2   ' 20%
-Private Const JOB_SUCCESS_MAX As Double = 0.83  ' 83%
-
 Function ExpectObjectTypeAt(ByVal objectType As Integer, ByVal Map As Integer, ByVal MapX As Byte, ByVal MapY As Byte) As Boolean
     Dim ObjIndex As Integer
     ObjIndex = MapData(Map, MapX, MapY).ObjInfo.ObjIndex
@@ -2189,6 +2186,11 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
 
     Dim res        As Integer
     Dim Yacimiento As t_ObjData
+    Dim successMin As Double
+    Dim successMax As Double
+
+    successMin = SuccessExtractMin
+    successMax = SuccessExtractMax
 
     With UserList(UserIndex)
 
@@ -2206,7 +2208,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
             Exit Sub
         End If
 
-        'Unified success chance (linear 20% → 83%)
+        'Unified success chance (linear minExtract → maxExtract)
         Dim skill As Integer
         Dim forceSuccess As Boolean
         Dim succeeded As Boolean
@@ -2214,9 +2216,18 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
         Skill = .Stats.UserSkills(e_Skill.Mineria)
 
         ' Guaranteed success for special vein (blodium)
-        forceSuccess = (ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex).MineralIndex = 3787)
+        forceSuccess = (ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex).MineralIndex = BlodiumIndex)
 
-        succeeded = ExtractionSuccessRoll(skill, JOB_SUCCESS_MIN, JOB_SUCCESS_MAX, forceSuccess)
+      ' Safe zone multiplier
+        successMin = SuccessExtractMin
+        successMax = SuccessExtractMax
+    
+        If MapInfo(.pos.Map).Seguro = 1 Then
+            successMin = successMin * SafeZoneExtractMult
+            successMax = successMax * SafeZoneExtractMult
+        End If
+
+        succeeded = ExtractionSuccessRoll(skill, successMin, successMax, forceSuccess)
 
         If succeeded Then
             Dim MiObj As t_Obj
