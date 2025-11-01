@@ -2599,11 +2599,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                 Exit Sub
                             End If
-                            '¡Hay un arbol donde clickeo?
-                            If ObjData(DummyInt).OBJType = e_OBJType.otPlants Then
-                                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TIJERAS, .pos.x, .pos.y))
-                                Call DoRaices(UserIndex, x, y)
-                            End If
                         Else
                             ' Msg604=No podés quitar raices allí.
                             Call WriteLocaleMsg(UserIndex, 604, e_FontTypeNames.FONTTYPE_INFO)
