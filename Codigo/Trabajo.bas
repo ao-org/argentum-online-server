@@ -1143,6 +1143,11 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
         Call UpdateUserInv(True, UserIndex, 0)
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
+        If IsFeatureEnabled("gain_exp_while_working") Then
+            Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Blacksmith)
+            Call WriteUpdateExp(UserIndex)
+            Call CheckUserLevel(UserIndex)
+        End If
     End If
     Exit Sub
 HerreroConstruirItem_Err:
@@ -1244,7 +1249,11 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             Call TirarItemAlPiso(UserList(UserIndex).pos, MiObj)
         End If
         Call SubirSkill(UserIndex, e_Skill.Carpinteria)
-        'Call UpdateUserInv(True, UserIndex, 0)
+        If IsFeatureEnabled("gain_exp_while_working") Then
+            Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Carpenter)
+            Call WriteUpdateExp(UserIndex)
+            Call CheckUserLevel(UserIndex)
+        End If
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
     End If
@@ -1295,6 +1304,11 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         End If
         Call SubirSkill(UserIndex, e_Skill.Alquimia)
         Call UpdateUserInv(True, UserIndex, 0)
+        If IsFeatureEnabled("gain_exp_while_working") Then
+            Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Alchemist)
+            Call WriteUpdateExp(UserIndex)
+            Call CheckUserLevel(UserIndex)
+        End If
         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
     End If
     Exit Sub
@@ -2053,57 +2067,6 @@ QuitarSta_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.QuitarSta", Erl)
 End Sub
 
-Public Sub DoRaices(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte)
-    On Error GoTo ErrHandler
-    Dim Suerte As Integer
-    Dim res    As Integer
-    With UserList(UserIndex)
-        If .flags.Privilegios And (e_PlayerType.Consejero) Then
-            Exit Sub
-        End If
-        If .Stats.MinSta > 2 Then
-            Call QuitarSta(UserIndex, 2)
-        Else
-            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
-            ' Msg650=Estás muy cansado para obtener raices.
-            Call WriteLocaleMsg(UserIndex, 650, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Sub
-        End If
-        Dim Skill As Integer
-        Skill = .Stats.UserSkills(e_Skill.Alquimia)
-        Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
-        res = RandomNumber(1, Suerte)
-        If res < 7 Then
-            Dim nPos  As t_WorldPos
-            Dim MiObj As t_Obj
-            Call ActualizarRecurso(.pos.Map, x, y)
-            MiObj.amount = RandomNumber(5, 7)
-            MiObj.amount = Round(MiObj.amount * 2.5 * SvrConfig.GetValue("RecoleccionMult"))
-            MiObj.ObjIndex = Raices
-            MapData(.pos.Map, x, y).ObjInfo.amount = MapData(.pos.Map, x, y).ObjInfo.amount - MiObj.amount
-            If MapData(.pos.Map, x, y).ObjInfo.amount < 0 Then
-                MapData(.pos.Map, x, y).ObjInfo.amount = 0
-            End If
-            If Not MeterItemEnInventario(UserIndex, MiObj) Then
-                Call TirarItemAlPiso(.pos, MiObj)
-            End If
-            Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .pos.x, .pos.y))
-        Else
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .pos.x, .pos.y))
-        End If
-        Call SubirSkill(UserIndex, e_Skill.Alquimia)
-        .Counters.Trabajando = .Counters.Trabajando + 1
-        .Counters.LastTrabajo = Int(IntervaloTrabajarExtraer / 1000)
-        If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
-            Call WriteMacroTrabajoToggle(UserIndex, True)
-        End If
-    End With
-    Exit Sub
-ErrHandler:
-    Call LogError("Error en DoRaices")
-End Sub
 
 Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
     On Error GoTo ErrHandler
@@ -2179,6 +2142,11 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte,
                     Call TirarItemAlPiso(.pos, MiObj)
                 End If
             Next i
+            If IsFeatureEnabled("gain_exp_while_working") Then
+                Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Woodcutter)
+                Call WriteUpdateExp(UserIndex)
+                Call CheckUserLevel(UserIndex)
+            End If
         Else
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(64, .pos.x, .pos.y))
         End If
@@ -2266,6 +2234,13 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
                     Call WriteLocaleMsg(UserIndex, 1465, e_FontTypeNames.FONTTYPE_INFO)  ' Msg1465=¡Has conseguido ¬1!
                 End If
             Next
+            
+            If IsFeatureEnabled("gain_exp_while_working") Then
+                Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Miner)
+                Call WriteUpdateExp(UserIndex)
+                Call CheckUserLevel(UserIndex)
+            End If
+            
         Else
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(2185, .pos.x, .pos.y))
         End If
