@@ -96,6 +96,11 @@ Public LimiteGuardarUsuarios         As Integer
 Public IntervaloTimerGuardarUsuarios As Integer
 Public IntervaloMensajeGlobal        As Long
 Public Const IntervaloConsultaGM     As Long = 300000
+Public SuccessExtractMin             As Double ' 0..1 
+Public SuccessExtractMax             As Double ' 0..1 
+Public SafeZoneExtractMult           As Double ' 0..1 
+Public BlodiumIndex                  As Long ' mineral index with guaranteed success
+
 'BALANCE
 Public PorcentajeRecuperoMana        As Integer
 Public RecoveryMana                  As Integer
