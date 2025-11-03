@@ -137,6 +137,7 @@ Module=WorldTime; Codigo\WorldTime.bas
 Module=modAppearance; Codigo\modAppearance.bas
 Module=modSpawn; Codigo\modSpawn.bas
 Module=modMessageIDs; Codigo\modMessageIDs.bas
+Module=modPartition; Codigo\modPartition.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
