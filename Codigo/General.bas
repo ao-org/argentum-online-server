@@ -525,8 +525,6 @@ Sub Main()
     Next LoopC
     With frmMain
         .Minuto.Enabled = True
-        .TimerGuardarUsuarios.Enabled = True
-        .TimerGuardarUsuarios.Interval = IntervaloTimerGuardarUsuarios
         .tPiqueteC.Enabled = True
         .GameTimer.Enabled = True
         .Segundo.Enabled = True
@@ -544,6 +542,7 @@ Sub Main()
             MapInfo(BarcoNavegandoArghalForgat.Map).ForceUpdate = True
         End If
     End With
+    Call ResetUserAutoSaveTimer
     Subasta.SubastaHabilitada = True
     Subasta.HaySubastaActiva = False
     Call ResetMeteo
@@ -592,6 +591,8 @@ Sub Main()
         Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.Tick")
         Call UpdateEffectOverTime
         Call PerformTimeLimitCheck(PerformanceTimer, "General Update Effects over time")
+        Call MaybeRunUserAutoSave
+        Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeRunUserAutoSave")
         DoEvents
         Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
         Call AntiCheatUpdate
@@ -682,6 +683,7 @@ Sub Restart()
     Call LoadMD5
     Call LoadPrivateKey
     Call LoadIntervalos
+    Call ResetUserAutoSaveTimer
     Call LoadOBJData
     Call LoadPesca
     Call LoadRecursosEspeciales
