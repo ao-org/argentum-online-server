@@ -2148,6 +2148,12 @@ Public Enum e_ObjFlags
     e_UseOnSafeAreaOnly = 2
 End Enum
 
+
+Public Enum e_AnvilType
+    IronAnvil = 1
+    BlodiumAnvil = 2
+End Enum
+
 'Tipos de objetos
 Public Type t_ObjData
     Pino As Byte
@@ -2258,6 +2264,8 @@ Public Type t_ObjData
     RopajeEnana As Integer
     RopajeOrca As Integer
     RopajeGnoma As Integer
+    RazaAltos As Integer
+    RazaBajos As Integer
     WeaponAnim As Integer ' Apunta a una anim de armas
     ShieldAnim As Integer ' Apunta a una anim de escudo
     CascoAnim As Integer

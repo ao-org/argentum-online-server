@@ -499,60 +499,85 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
 EnviarQuest_Err:
     Call TraceError(Err.Number, Err.Description, "ModQuest.EnviarQuest", Erl)
 End Sub
-
 Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte) As Boolean
     On Error GoTo FinishQuestCheck_Err
-    Dim i              As Integer
-    Dim InvSlotsLibres As Byte
-    Dim NpcIndex       As Integer
-    NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
+
+    Dim i As Integer
+
+    ' Sanity: quest index & slot must be valid
+    If QuestIndex < LBound(QuestList) Or QuestIndex > UBound(QuestList) Then Exit Function
+    If QuestSlot < LBound(UserList(UserIndex).QuestStats.Quests) Or _
+       QuestSlot > UBound(UserList(UserIndex).QuestStats.Quests) Then Exit Function
+
     With QuestList(QuestIndex)
-        'Comprobamos que tenga los objetos.
+
+        ' --- Required objects ---
         If .RequiredOBJs > 0 Then
+            Dim lastObj As Long: lastObj = -1
+            On Error Resume Next: lastObj = UBound(.RequiredOBJ): On Error GoTo FinishQuestCheck_Err
+            If lastObj < 1 Then Exit Function
             For i = 1 To .RequiredOBJs
-                If TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex) = False Then
-                    FinishQuestCheck = False
-                    Exit Function
-                End If
+                If i > lastObj Then Exit For
+                If Not TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex) Then Exit Function
             Next i
         End If
-        'Comprobamos que haya matado todas las criaturas.
+
+        ' --- Required NPC kills ---
         If .RequiredNPCs > 0 Then
+            Dim lastReqNPC As Long, lastKilled As Long
+            lastReqNPC = -1: lastKilled = -1
+            On Error Resume Next
+                lastReqNPC = UBound(.RequiredNPC)
+                lastKilled = UBound(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled)
+            On Error GoTo FinishQuestCheck_Err
+            If lastReqNPC < 1 Or lastKilled < 1 Then Exit Function
             For i = 1 To .RequiredNPCs
-                If .RequiredNPC(i).amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i) Then
-                    FinishQuestCheck = False
-                    Exit Function
-                End If
+                If i > lastReqNPC Or i > lastKilled Then Exit For
+                If .RequiredNPC(i).amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i) Then Exit Function
             Next i
         End If
-        'Check required spells
+
+        ' --- Required spells ---
         If .RequiredSpellCount > 0 Then
+            Dim lastSpell As Long: lastSpell = -1
+            On Error Resume Next: lastSpell = UBound(.RequiredSpellList): On Error GoTo FinishQuestCheck_Err
+            If lastSpell < 1 Then Exit Function
             For i = 1 To .RequiredSpellCount
-                If Not UserHasSpell(UserIndex, .RequiredSpellList(i)) Then
-                    FinishQuestCheck = False
-                    Exit Function
-                End If
+                If i > lastSpell Then Exit For
+                If Not UserHasSpell(UserIndex, .RequiredSpellList(i)) Then Exit Function
             Next i
         End If
-        'Check required skill
+
+        ' --- Required skill ---
         If .RequiredSkill.SkillType > 0 Then
-            If UserList(UserIndex).Stats.UserSkills(.RequiredSkill.SkillType) < .RequiredSkill.RequiredValue Then
-                FinishQuestCheck = False
-                Exit Function
-            End If
+            Dim skillType As Integer, lastSkill As Long, firstSkill As Long
+            skillType = .RequiredSkill.skillType
+            firstSkill = LBound(UserList(UserIndex).Stats.UserSkills)
+            lastSkill = UBound(UserList(UserIndex).Stats.UserSkills)
+            If skillType < firstSkill Or skillType > lastSkill Then Exit Function
+            If UserList(UserIndex).Stats.UserSkills(skillType) < .RequiredSkill.RequiredValue Then Exit Function
         End If
-        'Comprobamos que haya targeteado todas las criaturas.
+
+        ' --- Required target NPCs ---
         If .RequiredTargetNPCs > 0 Then
+            Dim lastTargetReq As Long, lastTargetHave As Long
+            lastTargetReq = -1: lastTargetHave = -1
+            On Error Resume Next
+                lastTargetReq = UBound(.RequiredTargetNPC)
+                lastTargetHave = UBound(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsTarget)
+            On Error GoTo FinishQuestCheck_Err
+            If lastTargetReq < 1 Or lastTargetHave < 1 Then Exit Function
             For i = 1 To .RequiredTargetNPCs
-                If .RequiredTargetNPC(i).amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsTarget(i) Then
-                    FinishQuestCheck = False
-                    Exit Function
-                End If
+                If i > lastTargetReq Or i > lastTargetHave Then Exit For
+                If .RequiredTargetNPC(i).amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsTarget(i) Then Exit Function
             Next i
         End If
+
     End With
+
     FinishQuestCheck = True
     Exit Function
+
 FinishQuestCheck_Err:
     Call TraceError(Err.Number, Err.Description, "ModQuest.FinishQuestCheck", Erl)
 End Function

@@ -384,6 +384,9 @@ AI_CaminarSinRumbo_Err:
     Call TraceError(Err.Number, Err.Description, "AI.AI_CaminarSinRumbo", Erl)
 End Sub
 
+' Guides the NPC toward the supplied waypoint while layering the temporary strafe offset and recompute cooldowns.
+' It is the integration point that merges the reactive orbit destination, checks whether the cached path is still valid,
+' and only fires a new A* search when the wrap-safe timer signals the cooldown has elapsed.
 Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_WorldPos)
     On Error GoTo AI_CaminarConRumbo_Err
     Dim adjustedRumbo As t_WorldPos
@@ -454,6 +457,9 @@ AI_CaminarConRumbo_Err:
     Call TraceError(Err.Number, errorDescription, "AI.AI_CaminarConRumbo", Erl)
 End Sub
 
+' Ensures ranged NPCs continue orbiting on a consistent side until the reevaluation window expires.
+' It lazily seeds an orbit direction, tracks the wrap-safe deadline stored in `OrbitReevaluateAt`, and renews the window so
+' extended encounters cannot desynchronise once the server tick counter wraps.
 Private Function EnsureNpcOrbitDirection(ByVal NpcIndex As Integer) As Integer
     With NpcList(NpcIndex).pathFindingInfo
         Dim needsUpdate As Boolean
@@ -484,6 +490,8 @@ Private Function EnsureNpcOrbitDirection(ByVal NpcIndex As Integer) As Integer
     End With
 End Function
 
+' Inverts the active orbit side and immediately schedules a fresh reevaluation deadline using the wrap-safe counters.
+' Called when the preferred strafing lane is obstructed so the ranged NPC can swap tangents without freezing in place.
 Private Sub FlipNpcOrbitDirection(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex).pathFindingInfo
         Dim currentDirection As Integer
@@ -494,6 +502,9 @@ Private Sub FlipNpcOrbitDirection(ByVal NpcIndex As Integer)
     End With
 End Sub
 
+' Produces the ranged waypoint that balances backing off with orbiting around the threat.
+' The helper blends the backward vector with the configurable tangent weight, honours the cached orbit direction, and retries
+' with a flipped lane whenever the preferred tile is blocked so the caller can react before the reevaluation timer expires.
 Private Function ComputeNpcRangedRetreatDestination(ByVal NpcIndex As Integer, ByRef targetPos As t_WorldPos, ByVal preferedRange As Single) As t_WorldPos
     Dim npcPos As t_WorldPos
     npcPos = NpcList(NpcIndex).pos

@@ -391,6 +391,8 @@ ShuffleHeadings_Err:
     Call TraceError(Err.Number, Err.Description, "PathFinding.ShuffleHeadings", Erl)
 End Sub
 
+' Clears the temporary strafe state so the NPC can resume its path without forced detours.
+' Used when the reaction window expires or the selected offset is no longer valid.
 Private Sub ResetNpcStrafeInfo(ByRef Info As t_NpcPathFindingInfo)
     On Error GoTo ResetNpcStrafeInfo_Err
     Info.StrafeOffset.x = 0
@@ -401,6 +403,9 @@ ResetNpcStrafeInfo_Err:
     Call TraceError(Err.Number, Err.Description, "PathFinding.ResetNpcStrafeInfo", Erl)
 End Sub
 
+' Registers a reactive strafe offset after taking damage from the tracked aggressor.
+' Aligns the response with the attacker being followed, schedules the strafe window, and primes the next path segment.
+' That makes the NPC look as if it dodges instinctively before resuming its orbit or retreat.
 Public Sub RegisterNpcDamageStrafe(ByVal NpcIndex As Integer, ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType)
     On Error GoTo RegisterNpcDamageStrafe_Err
     If NpcIndex <= 0 Or NpcIndex > UBound(NpcList) Then Exit Sub
@@ -427,6 +432,8 @@ RegisterNpcDamageStrafe_Err:
     Call TraceError(Err.Number, Err.Description, "PathFinding.RegisterNpcDamageStrafe", Erl)
 End Sub
 
+' Chooses the most believable perpendicular tile around the attacker to create the temporary strafe.
+' It checks which ground the NPC can traverse, favours the perpendicular lanes, and schedules expiry with the same wrap-safe counters.
 Private Sub SetNpcStrafeOffsetFromAttacker(ByVal NpcIndex As Integer, ByVal targetX As Integer, ByVal targetY As Integer)
     On Error GoTo SetNpcStrafeOffsetFromAttacker_Err
     Dim npcPos As t_Position
@@ -525,6 +532,8 @@ SetNpcStrafeOffsetFromAttacker_Err:
     Call TraceError(Err.Number, Err.Description, "PathFinding.SetNpcStrafeOffsetFromAttacker", Erl)
 End Sub
 
+' Applies the active strafe offset to the current destination and discards it once it expires or becomes illegal.
+' The deviation stays in play only while the timer is alive and a safe tile exists, avoiding loops on the original square.
 Public Sub ApplyNpcStrafeToDestination(ByVal NpcIndex As Integer, ByRef destination As t_WorldPos)
     On Error GoTo ApplyNpcStrafeToDestination_Err
     If NpcIndex <= 0 Or NpcIndex > UBound(NpcList) Then Exit Sub

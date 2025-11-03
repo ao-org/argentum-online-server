@@ -35,6 +35,14 @@ Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino
     On Error GoTo ErrHandler
     'Si ambos pusieron /comerciar entonces
     If UserList(Origen).ComUsu.DestUsu.ArrayIndex = Destino And UserList(Destino).ComUsu.DestUsu.ArrayIndex = Origen Then
+        If UserList(Origen).pos.Map <> UserList(Destino).pos.Map Then
+            Call WriteLocaleMsg(Origen, 2108, e_FontTypeNames.FONTTYPE_INFO) 'Msg2108= El comercio se cancel porque ya no estn en el mismo mapa.
+            Call WriteLocaleMsg(Destino, 2108, e_FontTypeNames.FONTTYPE_INFO) 'Msg2108= El comercio se cancel porque ya no estn en el mismo mapa.
+            Call FinComerciarUsu(Origen, True)
+            Call FinComerciarUsu(Destino, True)
+            IniciarComercioConUsuario = False
+            Exit Function
+        End If
         'Actualiza el inventario del usuario
         Call UpdateUserInv(True, Origen, 0)
         'Decirle al origen que abra la ventanita.
@@ -185,6 +193,7 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
         End If
         Exit Sub
     End If
+
     UserList(UserIndex).ComUsu.Acepto = True
     If UserList(OtroUserIndex).ComUsu.Acepto = False Then
         'Call WriteConsoleMsg(UserIndex, "El otro usuario aun no ha aceptado tu oferta.", e_FontTypeNames.FONTTYPE_TALK)
