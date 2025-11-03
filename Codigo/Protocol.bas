@@ -695,14 +695,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleShowServerForm(UserIndex)
         Case ClientPacketID.eKickAllChars
             Call HandleKickAllChars(UserIndex)
-        Case ClientPacketID.eReloadNPCs
-            Call HandleReloadNPCs(UserIndex)
-        Case ClientPacketID.eReloadServerIni
-            Call HandleReloadServerIni(UserIndex)
-        Case ClientPacketID.eReloadSpells
-            Call HandleReloadSpells(UserIndex)
-        Case ClientPacketID.eReloadObjects
-            Call HandleReloadObjects(UserIndex)
         Case ClientPacketID.eChatColor
             Call HandleChatColor(UserIndex)
         Case ClientPacketID.eIgnored
