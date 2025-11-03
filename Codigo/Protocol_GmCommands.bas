@@ -3275,68 +3275,6 @@ HandleKickAllChars_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleKickAllChars", Erl)
 End Sub
 
-Public Sub HandleReloadNPCs(ByVal UserIndex As Integer)
-    On Error GoTo HandleReloadNPCs_Err
-    'Author: Lucas Tavolaro Ortiz (Tavo)
-    'Reload the Server`s NPC
-    With UserList(UserIndex)
-        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
-        Call LogGM(.name, .name & " ha recargado los NPCs.")
-        Call CargaNpcsDat
-        'Msg998= Npcs.dat recargado exitosamente.
-        Call WriteLocaleMsg(UserIndex, 998, e_FontTypeNames.FONTTYPE_SERVER)
-    End With
-    Exit Sub
-HandleReloadNPCs_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleReloadNPCs", Erl)
-End Sub
-
-Public Sub HandleReloadServerIni(ByVal UserIndex As Integer)
-    On Error GoTo HandleReloadServerIni_Err
-    'Author: Lucas Tavolaro Ortiz (Tavo)
-    'Reload the Server`s INI
-    With UserList(UserIndex)
-        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
-        Call LogGM(.name, .name & " ha recargado los INITs.")
-        Call LoadSini
-        Call LoadMD5
-        Call LoadPrivateKey
-    End With
-    Exit Sub
-HandleReloadServerIni_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleReloadServerIni", Erl)
-End Sub
-
-Public Sub HandleReloadSpells(ByVal UserIndex As Integer)
-    On Error GoTo HandleReloadSpells_Err
-    'Author: Lucas Tavolaro Ortiz (Tavo)
-    With UserList(UserIndex)
-        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
-        Call LogGM(.name, .name & " ha recargado los hechizos.")
-        Call CargarHechizos
-    End With
-    Exit Sub
-HandleReloadSpells_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleReloadSpells", Erl)
-End Sub
-
-Public Sub HandleReloadObjects(ByVal UserIndex As Integer)
-    On Error GoTo HandleReloadObjects_Err
-    'Author: Lucas Tavolaro Ortiz (Tavo)
-    With UserList(UserIndex)
-        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
-        Call LogGM(.name, .name & " ha recargado a los objetos.")
-        Call LoadOBJData
-        Call LoadPesca
-        Call LoadRecursosEspeciales
-        'Msg999= Obj.dat recargado exitosamente.
-        Call WriteLocaleMsg(UserIndex, 999, e_FontTypeNames.FONTTYPE_SERVER)
-    End With
-    Exit Sub
-HandleReloadObjects_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleReloadObjects", Erl)
-End Sub
-
 Public Sub HandleIgnored(ByVal UserIndex As Integer)
     'Author: Lucas Tavolaro Ortiz (Tavo)
     With UserList(UserIndex)
