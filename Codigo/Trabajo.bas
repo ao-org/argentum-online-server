@@ -2170,9 +2170,6 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
     Dim successMin As Double
     Dim successMax As Double
 
-    successMin = SuccessExtractMin
-    successMax = SuccessExtractMax
-
     With UserList(UserIndex)
 
         ' Counselors cannot perform mining
@@ -2180,7 +2177,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
             Exit Sub
         End If
 
-        ' Stamina cost
+        ' Costo de energia
         If .Stats.MinSta > 5 Then
             Call QuitarSta(UserIndex, 5)
         Else
@@ -2189,17 +2186,17 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
             Exit Sub
         End If
 
-        'Unified success chance (linear minExtract → maxExtract)
+        'Probabilidad de éxito unificada (extracción mínima lineal → extracción máxima)
         Dim skill As Integer
         Dim forceSuccess As Boolean
         Dim succeeded As Boolean
 
         Skill = .Stats.UserSkills(e_Skill.Mineria)
 
-        ' Guaranteed success for special vein (blodium)
+        ' Éxito garantizado para menas especiales (blodium)
         forceSuccess = (ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex).MineralIndex = BlodiumIndex)
 
-      ' Safe zone multiplier
+        ' Multiplicador de zona segura
         successMin = SuccessExtractMin
         successMax = SuccessExtractMax
     
@@ -2213,7 +2210,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
         If succeeded Then
             Dim MiObj As t_Obj
 
-            ' Update the resource node and last use timestamp
+            ' Actualizar el nodo de recursos y la marca de tiempo del último uso
             Call ActualizarRecurso(.pos.Map, x, y)
             MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw()
 
@@ -2221,30 +2218,31 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
             Yacimiento = ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex)
             MiObj.ObjIndex = Yacimiento.MineralIndex
 
-            ' Amount based on class/level
+            ' Cantidad basada en clase/nivel
             If .clase = Trabajador Then
                 MiObj.amount = GetExtractResourceForLevel(.Stats.ELV)
             Else
                 MiObj.amount = RandomNumber(1, 2)
             End If
 
-            ' Global gathering multiplier
+            ' Multiplicador de recolección global
             MiObj.amount = MiObj.amount * SvrConfig.GetValue("RecoleccionMult")
 
-            ' Cap by remaining resource in the node
+            ' Límite por recurso restante en el nodo
             If MiObj.amount > MapData(.pos.Map, x, y).ObjInfo.amount Then
                 MiObj.amount = MapData(.pos.Map, x, y).ObjInfo.amount
             End If
 
-            ' Deduct from node
+            ' Deducir del nodo
             MapData(.pos.Map, x, y).ObjInfo.amount = MapData(.pos.Map, x, y).ObjInfo.amount - MiObj.amount
 
-            ' Deliver item (inventory or drop to ground if full)
+            ' Entregar el artículo (inventario o dejarlo en el suelo si está lleno)
             If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
 
-            ' Visual/SFX feedback
+            ' Agregar FX
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)
+            ' Msg651=¡Has extraído algunos minerales!
             Call WriteLocaleMsg(UserIndex, 651, e_FontTypeNames.FONTTYPE_INFO)
 
             If MapInfo(.pos.Map).Seguro = 1 Then
@@ -2252,17 +2250,20 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
             Else
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(15, .pos.x, .pos.y))
             End If
-
-            ' Optional gem drops configured on the vein
+            ' Al minar también puede dropear una gema
             Dim i As Integer
+            ' Por cada drop posible
             For i = 1 To Yacimiento.CantItem
+                ' Tiramos al azar entre 1 y la probabilidad
                 res = RandomNumber(1, Yacimiento.Item(i).amount)
+                ' Si tiene suerte y le pega
                 If res = 1 Then
                     ' Se lo metemos al inventario (o lo tiramos al piso)
                     MiObj.ObjIndex = Yacimiento.Item(i).ObjIndex
                     MiObj.amount = 1 ' Solo una gema por vez
                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
-                    Call WriteLocaleMsg(UserIndex, 1465, e_FontTypeNames.FONTTYPE_INFO) 
+                    ' Le mandamos un mensaje
+                    Call WriteLocaleMsg(UserIndex, 1465, e_FontTypeNames.FONTTYPE_INFO) ' Msg1465=¡Has conseguido ¬1!
                 End If
             Next
             
@@ -2276,7 +2277,6 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(2185, .pos.x, .pos.y))
         End If
 
-        ' Skill progression and macro handling
         Call SubirSkill(UserIndex, e_Skill.Mineria)
         .Counters.Trabajando = .Counters.Trabajando + 1
         .Counters.LastTrabajo = Int(IntervaloTrabajarExtraer / 1000)
@@ -2286,7 +2286,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
     End With
     Exit Sub
 ErrHandler:
-    Call LogError("Error in Sub DoMineria")
+    Call LogError("Error en Sub DoMineria")
 End Sub
 
 ' ExtractionSuccessRoll
