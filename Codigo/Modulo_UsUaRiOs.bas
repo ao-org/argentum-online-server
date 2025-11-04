@@ -213,7 +213,6 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
                     Call WriteShowMessageBox(UserIndex, 1763, vbNullString) 'Msg1763=El personaje ya está conectado. Espere mientras es desconectado.
                     ' Le avisamos al usuario que está jugando, en caso de que haya uno
                     Call WriteShowMessageBox(tIndex.ArrayIndex, 1761, vbNullString) 'Msg1761=Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.
-                End If
                 Call CloseSocket(UserIndex)
                 Exit Function
             End If
@@ -1158,9 +1157,6 @@ Public Sub SwapTargetUserPos(ByVal TargetUser As Integer, ByRef NewTargetPos As 
         Call SendData(SendTarget.ToAdminAreaButIndex, TargetUser, PrepareMessageCharacterMove(UserList(TargetUser).Char.charindex, UserList(TargetUser).pos.x, UserList( _
                 TargetUser).pos.y))
     End If
-    If IsValidUserRef(UserList(TargetUser).flags.GMMeSigue) Then
-        Call WriteForceCharMoveSiguiendo(UserList(TargetUser).flags.GMMeSigue.ArrayIndex, Heading)
-    End If
     Call WriteForceCharMove(TargetUser, Heading)
     'Update map and char
     UserList(TargetUser).Char.Heading = Heading
@@ -1174,19 +1170,14 @@ Function TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos
     Dim OriginalPos As t_WorldPos
     With UserList(UserIndex)
         OriginalPos = .pos
-        If MapInfo(.pos.Map).NumUsers > 1 Or IsValidUserRef(.flags.GMMeSigue) Then
+        If MapInfo(.pos.Map).NumUsers > 1 Then
             If MapData(NewPos.Map, NewPos.x, NewPos.y).UserIndex > 0 Then
                 Call SwapTargetUserPos(MapData(NewPos.Map, NewPos.x, NewPos.y).UserIndex, .pos)
             End If
         End If
         If .flags.AdminInvisible = 0 Then
-            If IsValidUserRef(.flags.GMMeSigue) Then
-                Call SendData(SendTarget.ToPCAreaButFollowerAndIndex, UserIndex, PrepareCharacterTranslate(.Char.charindex, NewPos.x, NewPos.y, Speed))
-                Call WriteForceCharMoveSiguiendo(.flags.GMMeSigue.ArrayIndex, .Char.Heading)
-            Else
-                'Mando a todos menos a mi donde estoy
-                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCharacterTranslate(.Char.charindex, NewPos.x, NewPos.y, Speed), True)
-            End If
+            'Mando a todos menos a mi donde estoy
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCharacterTranslate(.Char.charindex, NewPos.x, NewPos.y, Speed), True)
         Else
             Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareCharacterTranslate(.Char.charindex, NewPos.x, NewPos.y, Speed))
         End If
@@ -1254,7 +1245,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
         End If
         Call SwapNpcPos(UserIndex, nPos, nHeading)
         'Si no estoy solo en el mapa...
-        If MapInfo(.pos.Map).NumUsers > 1 Or IsValidUserRef(.flags.GMMeSigue) Then
+        If MapInfo(.pos.Map).NumUsers > 1 Then
             ' Intercambia posición si hay un casper o gm invisible
             IndexMover = MapData(nPos.Map, nPos.x, nPos.y).UserIndex
             If IndexMover <> 0 Then
@@ -1271,9 +1262,6 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                     Call SendData(SendTarget.ToAdminAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.charindex, UserList(IndexMover).pos.x, _
                             UserList(IndexMover).pos.y))
                 End If
-                If IsValidUserRef(UserList(IndexMover).flags.GMMeSigue) Then
-                    Call WriteForceCharMoveSiguiendo(UserList(IndexMover).flags.GMMeSigue.ArrayIndex, Opposite_Heading)
-                End If
                 Call WriteForceCharMove(IndexMover, Opposite_Heading)
                 'Update map and char
                 UserList(IndexMover).Char.Heading = Opposite_Heading
@@ -1282,34 +1270,30 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                 Call ModAreas.CheckUpdateNeededUser(IndexMover, Opposite_Heading, 0)
             End If
             If .flags.AdminInvisible = 0 Then
-                If IsValidUserRef(.flags.GMMeSigue) Then
-                    Call SendData(SendTarget.ToPCAreaButFollowerAndIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y))
-                    Call WriteForceCharMoveSiguiendo(.flags.GMMeSigue.ArrayIndex, nHeading)
-                Else
-                    'Mando a todos menos a mi donde estoy
-                    Call SendData(SendTarget.ToPCAliveAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y), True)
-                    Dim LoopC     As Integer
-                    Dim tempIndex As Integer
-                    'Togle para alternar el paso para los invis
-                    .flags.stepToggle = Not .flags.stepToggle
-                    If Not EsGM(UserIndex) Then
-                        If .flags.invisible + .flags.Oculto > 0 And .flags.Navegando = 0 Then
-                            For LoopC = 1 To ConnGroups(UserList(UserIndex).pos.Map).CountEntrys
-                                tempIndex = ConnGroups(UserList(UserIndex).pos.Map).UserEntrys(LoopC)
-                                If tempIndex <> UserIndex And Not EsGM(tempIndex) Then
-                                    If Abs(nPos.x - UserList(tempIndex).pos.x) <= RANGO_VISION_X And Abs(nPos.y - UserList(tempIndex).pos.y) <= RANGO_VISION_Y Then
-                                        If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
-                                            If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).pos.Map).Seguro = 1 Then
-                                                If Not CheckGuildSend(UserList(UserIndex), UserList(tempIndex)) Then
-                                                    If .Counters.timeFx + .Counters.timeChat = 0 Then
-                                                        If Distancia(nPos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS Then
-                                                            'Mandamos los pasos para los pjs q estan lejos para que simule que caminen.
-                                                            'Mando tambien el char para q lo borre
-                                                            Call WritePlayWaveStep(tempIndex, .Char.charindex, MapData(nPos.Map, nPos.x, nPos.y).Graphic(1), MapData(nPos.Map, _
-                                                                    nPos.x, nPos.y).Graphic(2), Distance(nPos.x, nPos.y, UserList(tempIndex).pos.x, UserList(tempIndex).pos.y), _
-                                                                    Sgn(nPos.x - UserList(tempIndex).pos.x), .flags.stepToggle)
-                                                        Else
-                                                            Call WritePosUpdateChar(tempIndex, nPos.x, nPos.y, .Char.charindex)
+                'Mando a todos menos a mi donde estoy
+                Call SendData(SendTarget.ToPCAliveAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y), True)
+                Dim LoopC     As Integer
+                Dim tempIndex As Integer
+                'Togle para alternar el paso para los invis
+                .flags.stepToggle = Not .flags.stepToggle
+                If Not EsGM(UserIndex) Then
+                    If .flags.invisible + .flags.Oculto > 0 And .flags.Navegando = 0 Then
+                        For LoopC = 1 To ConnGroups(UserList(UserIndex).pos.Map).CountEntrys
+                            tempIndex = ConnGroups(UserList(UserIndex).pos.Map).UserEntrys(LoopC)
+                            If tempIndex <> UserIndex And Not EsGM(tempIndex) Then
+                                If Abs(nPos.x - UserList(tempIndex).pos.x) <= RANGO_VISION_X And Abs(nPos.y - UserList(tempIndex).pos.y) <= RANGO_VISION_Y Then
+                                    If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
+                                        If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).pos.Map).Seguro = 1 Then
+                                            If Not CheckGuildSend(UserList(UserIndex), UserList(tempIndex)) Then
+                                                If .Counters.timeFx + .Counters.timeChat = 0 Then
+                                                    If Distancia(nPos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS Then
+                                                        'Mandamos los pasos para los pjs q estan lejos para que simule que caminen.
+                                                        'Mando tambien el char para q lo borre
+                                                        Call WritePlayWaveStep(tempIndex, .Char.charindex, MapData(nPos.Map, nPos.x, nPos.y).Graphic(1), MapData(nPos.Map, _
+                                                                nPos.x, nPos.y).Graphic(2), Distance(nPos.x, nPos.y, UserList(tempIndex).pos.x, UserList(tempIndex).pos.y), _
+                                                                Sgn(nPos.x - UserList(tempIndex).pos.x), .flags.stepToggle)
+                                                    Else
+                                                        Call WritePosUpdateChar(tempIndex, nPos.x, nPos.y, .Char.charindex)
                                                         End If
                                                     End If
                                                 End If
@@ -2181,9 +2165,6 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
             Call MakeUserChar(True, Map, UserIndex, Map, x, y, 0)
         End If
         Call WriteUserCharIndexInServer(UserIndex)
-        If IsValidUserRef(.flags.GMMeSigue) Then
-            Call WriteSendFollowingCharindex(.flags.GMMeSigue.ArrayIndex, .Char.charindex)
-        End If
         'Seguis invisible al pasar de mapa
         If (.flags.invisible = 1 Or .flags.Oculto = 1) And (Not .flags.AdminInvisible = 1) Then
             ' Si el mapa lo permite

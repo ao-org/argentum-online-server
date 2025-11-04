@@ -2520,7 +2520,6 @@ Public Type t_UserFlags
     PescandoEspecial As Boolean
     QuestOpenByObj As Boolean
     SigueUsuario As t_UserReference
-    GMMeSigue As t_UserReference
     EnTorneo As Boolean
     stepToggle As Boolean
     SpouseId As Long

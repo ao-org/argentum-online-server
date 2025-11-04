@@ -4172,9 +4172,6 @@ Public Sub UseSpellSlot(ByVal UserIndex As Integer, ByVal spellSlot As Integer)
                         Call SetUserRef(UserList(UserIndex).flags.TargetUser, UserIndex)
                         Call LanzarHechizo(.flags.Hechizo, UserIndex)
                     Else
-                        If IsValidUserRef(.flags.GMMeSigue) Then
-                            Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 1)
-                        End If
                         If Hechizos(.Stats.UserHechizos(spellSlot)).AreaAfecta > 0 Then
                             Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia, True, Hechizos(.Stats.UserHechizos(spellSlot)).AreaRadio)
                         Else
