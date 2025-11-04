@@ -1297,7 +1297,6 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
         End If
         'Se desconecta un usuario seguido
         If IsValidUserRef(.flags.GMMeSigue) Then
-            Call WriteCancelarSeguimiento(.flags.GMMeSigue.ArrayIndex)
             Call SetUserRef(UserList(.flags.GMMeSigue.ArrayIndex).flags.SigueUsuario, 0)
             UserList(.flags.GMMeSigue.ArrayIndex).invent = UserList(.flags.GMMeSigue.ArrayIndex).Invent_bk
             UserList(.flags.GMMeSigue.ArrayIndex).Stats = UserList(.flags.GMMeSigue.ArrayIndex).Stats_bk

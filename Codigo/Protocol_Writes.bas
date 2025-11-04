@@ -2031,16 +2031,6 @@ NofiticarClienteCasteo_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.NofiticarClienteCasteo", Erl)
 End Sub
 
-Public Sub WriteCancelarSeguimiento(ByVal UserIndex As Integer)
-    On Error GoTo WriteCancelarSeguimiento_Err
-    Call Writer.WriteInt16(ServerPacketID.eCancelarSeguimiento)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteCancelarSeguimiento_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCancelarSeguimiento", Erl)
-End Sub
-
 Public Sub WriteSendFollowingCharindex(ByVal UserIndex As Integer, ByVal charindex As Integer)
     On Error GoTo WriteSendFollowingCharindex_Err
     Call Writer.WriteInt16(ServerPacketID.eSendFollowingCharindex)

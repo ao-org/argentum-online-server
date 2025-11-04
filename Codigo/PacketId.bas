@@ -187,7 +187,6 @@ Public Enum ServerPacketID
     eUpdateFlag
     eCharAtaca
     eNotificarClienteSeguido
-        eCancelarSeguimiento
     eGetInventarioHechizos
     eNotificarClienteCasteo
     eSendFollowingCharindex
