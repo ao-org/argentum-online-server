@@ -213,6 +213,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
                     Call WriteShowMessageBox(UserIndex, 1763, vbNullString) 'Msg1763=El personaje ya está conectado. Espere mientras es desconectado.
                     ' Le avisamos al usuario que está jugando, en caso de que haya uno
                     Call WriteShowMessageBox(tIndex.ArrayIndex, 1761, vbNullString) 'Msg1761=Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.
+                End If
                 Call CloseSocket(UserIndex)
                 Exit Function
             End If
@@ -1213,7 +1214,6 @@ Public Sub SwapNpcPos(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos,
 End Sub
 
 Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) As Boolean
-    ' Lo convierto a función y saco los WritePosUpdate, ahora están en el paquete
     On Error GoTo MoveUserChar_Err
     Dim nPos             As t_WorldPos
     Dim nPosOriginal     As t_WorldPos
@@ -1269,6 +1269,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                 'Actualizamos las areas de ser necesario
                 Call ModAreas.CheckUpdateNeededUser(IndexMover, Opposite_Heading, 0)
             End If
+            
             If .flags.AdminInvisible = 0 Then
                 'Mando a todos menos a mi donde estoy
                 Call SendData(SendTarget.ToPCAliveAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y), True)
@@ -1278,6 +1279,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                 .flags.stepToggle = Not .flags.stepToggle
                 If Not EsGM(UserIndex) Then
                     If .flags.invisible + .flags.Oculto > 0 And .flags.Navegando = 0 Then
+                    
                         For LoopC = 1 To ConnGroups(UserList(UserIndex).pos.Map).CountEntrys
                             tempIndex = ConnGroups(UserList(UserIndex).pos.Map).UserEntrys(LoopC)
                             If tempIndex <> UserIndex And Not EsGM(tempIndex) Then
@@ -1294,33 +1296,32 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                                                                 Sgn(nPos.x - UserList(tempIndex).pos.x), .flags.stepToggle)
                                                     Else
                                                         Call WritePosUpdateChar(tempIndex, nPos.x, nPos.y, .Char.charindex)
-                                                        End If
                                                     End If
                                                 End If
                                             End If
                                         End If
                                     End If
                                 End If
-                            Next LoopC
-                        End If
-                        Dim x As Byte, y As Byte
-                        'Esto es para q si me acerco a un usuario que esta invisible y no se mueve me notifique su posicion
-                        For x = nPos.x - DISTANCIA_ENVIO_DATOS To nPos.x + DISTANCIA_ENVIO_DATOS
-                            For y = nPos.y - DISTANCIA_ENVIO_DATOS To nPos.y + DISTANCIA_ENVIO_DATOS
-                                tempIndex = MapData(.pos.Map, x, y).UserIndex
-                                If tempIndex > 0 And tempIndex <> UserIndex And Not EsGM(tempIndex) Then
-                                    If UserList(tempIndex).flags.invisible + UserList(tempIndex).flags.Oculto > 0 And UserList(tempIndex).flags.Navegando = 0 And (.GuildIndex = _
-                                            0 Or .GuildIndex <> UserList(tempIndex).GuildIndex Or modGuilds.NivelDeClan(.GuildIndex) < 6) Then
-                                        Call WritePosUpdateChar(UserIndex, x, y, UserList(tempIndex).Char.charindex)
-                                    End If
-                                End If
-                            Next y
-                        Next x
+                            End If
+                        Next LoopC
                     End If
+                    Dim x As Byte, y As Byte
+                    'Esto es para q si me acerco a un usuario que esta invisible y no se mueve me notifique su posicion
+                    For x = nPos.x - DISTANCIA_ENVIO_DATOS To nPos.x + DISTANCIA_ENVIO_DATOS
+                        For y = nPos.y - DISTANCIA_ENVIO_DATOS To nPos.y + DISTANCIA_ENVIO_DATOS
+                            tempIndex = MapData(.pos.Map, x, y).UserIndex
+                            If tempIndex > 0 And tempIndex <> UserIndex And Not EsGM(tempIndex) Then
+                                If UserList(tempIndex).flags.invisible + UserList(tempIndex).flags.Oculto > 0 And UserList(tempIndex).flags.Navegando = 0 And (.GuildIndex = _
+                                        0 Or .GuildIndex <> UserList(tempIndex).GuildIndex Or modGuilds.NivelDeClan(.GuildIndex) < 6) Then
+                                    Call WritePosUpdateChar(UserIndex, x, y, UserList(tempIndex).Char.charindex)
+                                End If
+                            End If
+                        Next y
+                    Next x
                 End If
-            Else
-                Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y))
             End If
+        Else
+            Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y))
         End If
         'Update map and user pos
         If MapData(.pos.Map, .pos.x, .pos.y).UserIndex = UserIndex Then
