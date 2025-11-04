@@ -184,9 +184,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Mapping(ConnectionID).TimeLastReset = actual_time
             Mapping(ConnectionID).PacketCount = 0
         End If
-        If PacketId <> ClientPacketID.eSendPosSeguimiento Then
-            Mapping(ConnectionID).PacketCount = Mapping(ConnectionID).PacketCount + 1
-        End If
+        Mapping(ConnectionID).PacketCount = Mapping(ConnectionID).PacketCount + 1
         If Mapping(ConnectionID).PacketCount > 100 Then
             'Lo kickeo
             If UserIndex > 0 Then
@@ -529,10 +527,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleRequestCharSkills(UserIndex)
         Case ClientPacketID.eReviveChar
             Call HandleReviveChar(UserIndex)
-        Case ClientPacketID.eSeguirMouse
-            Call HandleSeguirMouse(UserIndex)
-        Case ClientPacketID.eSendPosSeguimiento
-            Call HandleSendPosMovimiento(UserIndex)
         Case ClientPacketID.eNotifyInventarioHechizos
             Call HandleNotifyInventariohechizos(UserIndex)
         Case ClientPacketID.eOnlineGM
@@ -4990,11 +4984,7 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTraerBoveda", Erl)
 End Sub
 
-Private Sub HandleSendPosMovimiento(ByVal UserIndex As Integer)
-    'TODO: delete
-End Sub
 
-' Handles the "SendPosMovimiento" message.
 Private Sub HandleNotifyInventariohechizos(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
@@ -5013,9 +5003,7 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReviveChar", Erl)
 End Sub
 
-'HarThaoS: Agrego perdón faccionario.
-'Lee abajo
-'Lee arriba
+
 Private Sub HandlePerdonFaccion(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)

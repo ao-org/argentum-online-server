@@ -2006,17 +2006,6 @@ WriteNotificarClienteSeguido_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNotificarClienteSeguido", Erl)
 End Sub
 
-Public Sub WriteRecievePosSeguimiento(ByVal UserIndex As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
-    On Error GoTo WriteNotificarClienteSeguido_Err
-    Call Writer.WriteInt16(ServerPacketID.eRecievePosSeguimiento)
-    Call Writer.WriteInt16(PosX)
-    Call Writer.WriteInt16(PosY)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteNotificarClienteSeguido_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNotificarClienteSeguido", Erl)
-End Sub
 
 Public Sub WriteGetInventarioHechizos(ByVal UserIndex As Integer, ByVal value As Byte, ByVal hechiSel As Byte, ByVal scrollSel As Byte)
     On Error GoTo GetInventarioHechizos_Err

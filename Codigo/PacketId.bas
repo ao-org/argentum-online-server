@@ -187,8 +187,7 @@ Public Enum ServerPacketID
     eUpdateFlag
     eCharAtaca
     eNotificarClienteSeguido
-    eRecievePosSeguimiento
-    eCancelarSeguimiento
+        eCancelarSeguimiento
     eGetInventarioHechizos
     eNotificarClienteCasteo
     eSendFollowingCharindex
@@ -518,8 +517,6 @@ Public Enum ClientPacketID
     ePerdonFaccion              '/PERDONFACCION NAME
     eStartEvent           '/EVENTO CAPTURA/LOBBY
     eCancelarEvento          '/CANCELAREVENTO
-    eSeguirMouse
-    eSendPosSeguimiento
     eNotifyInventarioHechizos
     ePublicarPersonajeMAO
     eEventoFaccionario
