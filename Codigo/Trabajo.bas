@@ -2172,7 +2172,6 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
 
     With UserList(UserIndex)
 
-        ' Counselors cannot perform mining
         If .flags.Privilegios And (e_PlayerType.Consejero) Then
             Exit Sub
         End If
@@ -2214,7 +2213,6 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
             Call ActualizarRecurso(.pos.Map, x, y)
             MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw()
 
-            ' Determine vein and resulting item index
             Yacimiento = ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex)
             MiObj.ObjIndex = Yacimiento.MineralIndex
 
@@ -2289,13 +2287,14 @@ ErrHandler:
     Call LogError("Error en Sub DoMineria")
 End Sub
 
-' ExtractionSuccessRoll
-' Determines whether an extraction action **succeeds** based on a **linear, skill-based chance**.
-' - MinPct / MaxPct: probabilities in [0..1] (e.g., 0.20 = 20%, 0.83 = 83%).
-' - ForceSuccess (optional): when True, bypasses the roll and returns success (for guaranteed nodes,
-'   tutorials, GM events, special cases like pine, etc.).
-' Returns:
-'   Boolean — True if the success roll passes, False otherwise.
+'Tirada de Éxito de Extracción
+' Determina si una acción de extracción **tiene éxito** según una **probabilidad lineal basada en la habilidad**.
+' - Porcentaje Mínimo / Porcentaje Máximo: probabilidades en el intervalo [0..1] (p. ej., 0.10 = 10 %, 0.83 = 83 %).
+' - Forzar Éxito (opcional): si es Verdadero, omite la tirada y devuelve éxito (para nodos garantizados,
+' tutoriales, eventos del Director de Juego, casos especiales como pinos, etc.).
+' Devuelve:
+' Booleano: Verdadero si la tirada de éxito es exitosa, Falso en caso contrario.
+
 Private Function ExtractionSuccessRoll( _
     ByVal Skill As Integer, _
     ByVal MinPct As Double, _
@@ -2310,10 +2309,8 @@ Private Function ExtractionSuccessRoll( _
         Exit Function
     End If
 
-    ' Linear chance from MinPct (at 0) to MaxPct (at 100)
     p = MinPct + (MaxPct - MinPct) * (Skill / 100#)
 
-    ' 1% resolution roll (rounded to nearest percent)
     ExtractionSuccessRoll = (RandomNumber(1, 100) <= Int(p * 100# + 0.5))
 End Function
 
