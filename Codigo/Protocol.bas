@@ -2531,9 +2531,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 If .flags.Hechizo > 0 Then
                     .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales + 1
                     Call LanzarHechizo(.flags.Hechizo, UserIndex)
-                    If IsValidUserRef(.flags.GMMeSigue) Then
-                        Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 0)
-                    End If
                     .flags.Hechizo = 0
                 Else
                     ' Msg587=¡Primero selecciona el hechizo que quieres lanzar!
@@ -4994,9 +4991,6 @@ Private Sub HandleNotifyInventariohechizos(ByVal UserIndex As Integer)
         value = reader.ReadInt8()
         hechiSel = reader.ReadInt8()
         scrollSel = reader.ReadInt8()
-        If IsValidUserRef(.flags.GMMeSigue) Then
-            Call WriteGetInventarioHechizos(.flags.GMMeSigue.ArrayIndex, value, hechiSel, scrollSel)
-        End If
     End With
     Exit Sub
 ErrHandler:
@@ -6214,10 +6208,6 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
             End If
             Call UpdateUserInv(False, UserIndex, SlotViejo)
             Call UpdateUserInv(False, UserIndex, SlotNuevo)
-        End If
-        If IsValidUserRef(.flags.GMMeSigue) Then
-            UserList(.flags.GMMeSigue.ArrayIndex).invent = UserList(UserIndex).invent
-            Call UpdateUserInv(True, UserIndex, 1)
         End If
     End With
     Exit Sub
@@ -7883,9 +7873,6 @@ Public Sub HandleActionOnGroupFrame(ByVal UserIndex As Integer)
             .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales + 1
             Call LanzarHechizo(.flags.Hechizo, UserIndex)
             Call WriteWorkRequestTarget(UserIndex, 0)
-            If IsValidUserRef(.flags.GMMeSigue) Then
-                Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 0)
-            End If
             .flags.Hechizo = 0
         Else
             ' Msg587=¡Primero selecciona el hechizo que quieres lanzar!

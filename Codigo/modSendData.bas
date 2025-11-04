@@ -62,7 +62,6 @@ Public Enum SendTarget
     ToPCDeadAreaButIndex
     ToAdminsYDioses
     ToJugadoresCaptura
-    ToPCAreaButFollowerAndIndex
     ToGroup
     ToGroupButIndex
 End Enum
@@ -109,9 +108,6 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Opt
         Case SendTarget.ToPCAliveArea
             Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
             Call SendToUserAliveArea(sndIndex, Buffer, ValidateInvi)
-        Case SendTarget.ToPCAreaButFollowerAndIndex
-            Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
-            Call SendToUserAreaButFollowerAndIndex(sndIndex, Buffer)
         Case SendTarget.ToPCAreaButGMs
             Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
             Call SendToUserAreaButGMs(sndIndex, Buffer)
@@ -297,9 +293,6 @@ End Sub
                                     End If
                                 End If
                             End If
-                            If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
-                                Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
-                            End If
                             If enviaDatos Then
                                 Call modNetwork.Send(tempIndex, Buffer)
                             End If
@@ -344,9 +337,6 @@ SendToUserArea_Err:
                                 End If
                             End If
                         End If
-                        If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
-                            Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
-                        End If
                         If enviaDatos Then
                             Call modNetwork.Send(tempIndex, Buffer)
                         End If
@@ -359,38 +349,6 @@ SendToUserArea_Err:
         Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserArea", Erl)
     End Sub
 
-#If DIRECT_PLAY = 0 Then
-    Private Sub SendToUserAreaButFollowerAndIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
-    #Else
-        Private Sub SendToUserAreaButFollowerAndIndex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
-        #End If
-        On Error GoTo SendToUserAreaButFollower_Err
-        Dim LoopC     As Long
-        Dim tempIndex As Integer
-        Dim Map       As Integer
-        Dim AreaX     As Integer
-        Dim AreaY     As Integer
-        If UserIndex = 0 Then Exit Sub
-        Map = UserList(UserIndex).pos.Map
-        AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
-        AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
-        If Not MapaValido(Map) Then Exit Sub
-        For LoopC = 1 To ConnGroups(Map).CountEntrys
-            tempIndex = ConnGroups(Map).UserEntrys(LoopC)
-            If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
-                If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
-                    If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
-                        If UserList(tempIndex).flags.SigueUsuario.ArrayIndex = 0 And tempIndex <> UserIndex Then
-                            Call modNetwork.Send(tempIndex, Buffer)
-                        End If
-                    End If
-                End If
-            End If
-        Next LoopC
-        Exit Sub
-SendToUserAreaButFollower_Err:
-        Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAreaButFollower", Erl)
-    End Sub
 
 #If DIRECT_PLAY = 0 Then
     Private Sub SendToPCDeadArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
@@ -533,9 +491,6 @@ SendToSuperioresArea_Err:
                                     End If
                                 End If
                             End If
-                            If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
-                                Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
-                            End If
                             If enviaDatos Then
                                 Call modNetwork.Send(tempIndex, Buffer)
                             End If
@@ -564,9 +519,6 @@ SendToUserAreaButindex_Err:
         If Not TargetUser.ConnectionDetails.ConnIDValida Then Exit Function
         If Not (TargetUser.flags.Muerto = 0 Or MapInfo(TargetUser.pos.Map).Seguro = 1 Or (SourceUser.GuildIndex > 0 And SourceUser.GuildIndex = TargetUser.GuildIndex) Or IsSet( _
                 TargetUser.flags.StatusMask, e_StatusMask.eTalkToDead) Or IsSet(SourceUser.flags.StatusMask, e_StatusMask.eTalkToDead)) Then Exit Function
-        If IsValidUserRef(TargetUser.flags.GMMeSigue) Then
-            Call modNetwork.Send(TargetUser.flags.GMMeSigue.ArrayIndex, Buffer)
-        End If
         If Not EsGM(TargetIndex) Then
             If SourceUser.flags.invisible + SourceUser.flags.Oculto > 0 And ValidateInvi And Not CheckGuildSend(SourceUser, TargetUser) And SourceUser.flags.Navegando = 0 Then
                 If Distancia(SourceUser.pos, TargetUser.pos) > DISTANCIA_ENVIO_DATOS And SourceUser.Counters.timeFx + SourceUser.Counters.timeChat = 0 Then
@@ -747,9 +699,6 @@ SendToUserGuildArea_Err:
                 TempInt = UserList(tempIndex).AreasInfo.AreaReciveY And AreaY
                 If TempInt Then
                     If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
-                        If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
-                            Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
-                        End If
                         Call modNetwork.Send(tempIndex, Buffer)
                     End If
                 End If
@@ -785,9 +734,6 @@ SendToNpcArea_Err:
                 If TempInt Then
                     If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
                         If UserList(tempIndex).flags.Muerto = 0 Then
-                            If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
-                                Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
-                            End If
                             Call modNetwork.Send(tempIndex, Buffer)
                         End If
                     End If
@@ -822,9 +768,6 @@ Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal A
             If TempInt Then
                 If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
                     Call modNetwork.Send(tempIndex, Buffer)
-                    If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
-                        Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
-                    End If
                 End If
             End If
         End If
@@ -849,9 +792,6 @@ End Sub
             tempIndex = ConnGroups(Map).UserEntrys(LoopC)
             If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
                 Call modNetwork.Send(tempIndex, Buffer)
-                If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
-                    Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
-                End If
             End If
         Next LoopC
         Exit Sub
@@ -874,9 +814,6 @@ SendToMap_Err:
         For LoopC = 1 To ConnGroups(Map).CountEntrys
             tempIndex = ConnGroups(Map).UserEntrys(LoopC)
             If tempIndex <> UserIndex And UserList(tempIndex).ConnectionDetails.ConnIDValida Then
-                If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
-                    Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
-                End If
                 Call modNetwork.Send(tempIndex, Buffer)
             End If
         Next LoopC
