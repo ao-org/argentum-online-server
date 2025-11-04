@@ -2290,7 +2290,24 @@ Sub LoadIntervalos()
     SuccessExtractMax    = val(Lector.GetValue("INTERVALOS", "SuccessExtractMax"))
     SafeZoneExtractMult  = val(Lector.GetValue("INTERVALOS", "SafeZoneExtractMult"))
     BlodiumIndex         = val(Lector.GetValue("INTERVALOS", "BlodiumIndex"))
-
+    '==============================
+    ' VALIDACIÓN DE PARÁMETROS DE MINERÍA
+    ' Asegura que los valores estén dentro de [0,1] y que Min ≤ Max
+    '==============================
+    If SuccessExtractMin < 0# Then SuccessExtractMin = 0#
+    If SuccessExtractMin > 1# Then SuccessExtractMin = 1#
+    
+    If SuccessExtractMax < 0# Then SuccessExtractMax = 0#
+    If SuccessExtractMax > 1# Then SuccessExtractMax = 1#
+    
+    If SuccessExtractMin > SuccessExtractMax Then
+        SuccessExtractMin = SuccessExtractMax
+    End If
+    
+    If SafeZoneExtractMult < 0# Then SafeZoneExtractMult = 0#
+    If SafeZoneExtractMult > 1# Then SafeZoneExtractMult = 1#
+    '==============================
+    
     '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     Set Lector = Nothing
     Exit Sub
