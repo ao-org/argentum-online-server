@@ -647,9 +647,6 @@ Public Sub WritePosUpdate(ByVal UserIndex As Integer)
     Call Writer.WriteInt8(UserList(UserIndex).pos.x)
     Call Writer.WriteInt8(UserList(UserIndex).pos.y)
     Call modSendData.SendData(ToIndex, UserIndex)
-    If IsValidUserRef(UserList(UserIndex).flags.GMMeSigue) Then
-        Call WritePosUpdateCharIndex(UserList(UserIndex).flags.GMMeSigue.ArrayIndex, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(UserIndex).Char.charindex)
-    End If
     Exit Sub
 WritePosUpdate_Err:
     Call Writer.Clear
@@ -2006,17 +2003,6 @@ WriteNotificarClienteSeguido_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNotificarClienteSeguido", Erl)
 End Sub
 
-Public Sub WriteRecievePosSeguimiento(ByVal UserIndex As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
-    On Error GoTo WriteNotificarClienteSeguido_Err
-    Call Writer.WriteInt16(ServerPacketID.eRecievePosSeguimiento)
-    Call Writer.WriteInt16(PosX)
-    Call Writer.WriteInt16(PosY)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteNotificarClienteSeguido_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNotificarClienteSeguido", Erl)
-End Sub
 
 Public Sub WriteGetInventarioHechizos(ByVal UserIndex As Integer, ByVal value As Byte, ByVal hechiSel As Byte, ByVal scrollSel As Byte)
     On Error GoTo GetInventarioHechizos_Err
@@ -2040,27 +2026,6 @@ Public Sub WriteNofiticarClienteCasteo(ByVal UserIndex As Integer, ByVal value A
 NofiticarClienteCasteo_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.NofiticarClienteCasteo", Erl)
-End Sub
-
-Public Sub WriteCancelarSeguimiento(ByVal UserIndex As Integer)
-    On Error GoTo WriteCancelarSeguimiento_Err
-    Call Writer.WriteInt16(ServerPacketID.eCancelarSeguimiento)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteCancelarSeguimiento_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCancelarSeguimiento", Erl)
-End Sub
-
-Public Sub WriteSendFollowingCharindex(ByVal UserIndex As Integer, ByVal charindex As Integer)
-    On Error GoTo WriteSendFollowingCharindex_Err
-    Call Writer.WriteInt16(ServerPacketID.eSendFollowingCharindex)
-    Call Writer.WriteInt16(charindex)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteSendFollowingCharindex_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSendFollowingCharindex", Erl)
 End Sub
 
 ''

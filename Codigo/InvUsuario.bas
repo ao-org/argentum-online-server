@@ -353,9 +353,6 @@ Public Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByV
         End If
         UserList(UserIndex).flags.ModificoInventario = True
     End With
-    If IsValidUserRef(UserList(UserIndex).flags.GMMeSigue) And UserIndex <> UserList(UserIndex).flags.GMMeSigue.ArrayIndex Then
-        Call QuitarUserInvItem(UserList(UserIndex).flags.GMMeSigue.ArrayIndex, Slot, Cantidad)
-    End If
     Exit Sub
 QuitarUserInvItem_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.QuitarUserInvItem", Erl)

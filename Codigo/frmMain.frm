@@ -98,12 +98,6 @@ Begin VB.Form frmMain
       Left            =   3120
       Top             =   4200
    End
-   Begin VB.Timer TimerGuardarUsuarios 
-      Enabled         =   0   'False
-      Interval        =   30000
-      Left            =   2640
-      Top             =   3120
-   End
    Begin VB.CommandButton Command4 
       BackColor       =   &H00C0FFC0&
       Caption         =   "Guardar y cerrar"
@@ -1106,34 +1100,7 @@ Private Sub UpdateBarcoArghalForgat()
     Next TileX
 End Sub
 
-Private Sub TimerGuardarUsuarios_Timer()
-    On Error GoTo Handler
-    If IsFeatureEnabled("auto_save_chars") Then
-        ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
-        Dim UserIndex        As Integer, UserGuardados As Integer
-        Dim PerformanceTimer As Long
-        Dim nowRaw           As Long
-        Call PerformanceTestStart(PerformanceTimer)
-        For UserIndex = 1 To LastUser
-            With UserList(UserIndex)
-                If .flags.UserLogged Then
-                    nowRaw = GetTickCountRaw()
-                    If TicksElapsed(.Counters.LastSave, nowRaw) > IntervaloGuardarUsuarios Then
-                        Call SaveUser(UserIndex)
-                        UserGuardados = UserGuardados + 1
-                        If UserGuardados > NumUsers Then Exit For
-                        'limit the amount of time we block the only thread we have here, lets save some user on the next loop
-                        If TicksElapsed(PerformanceTimer, GetTickCountRaw()) > 100 Then Exit For
-                    End If
-                End If
-            End With
-        Next
-        Call PerformTimeLimitCheck(PerformanceTimer, "TimerGuardarUsuarios_Timer", 100)
-    End If
-    Exit Sub
-Handler:
-    Call TraceError(Err.Number, Err.Description, "frmMain.TimreGuardarUsuarios_Timer")
-End Sub
+
 
 Private Sub Minuto_Timer()
     On Error GoTo ErrHandler

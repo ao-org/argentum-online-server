@@ -93,7 +93,7 @@ Public IntervaloEnCombate            As Long
 Public IntervaloPuedeSerAtacado      As Long
 Public IntervaloGuardarUsuarios      As Long
 Public LimiteGuardarUsuarios         As Integer
-Public IntervaloTimerGuardarUsuarios As Integer
+Public IntervaloTimerGuardarUsuarios As Long
 Public IntervaloMensajeGlobal        As Long
 Public Const IntervaloConsultaGM     As Long = 300000
 Public SuccessExtractMin             As Double ' 0..1 

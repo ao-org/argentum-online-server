@@ -184,9 +184,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Mapping(ConnectionID).TimeLastReset = actual_time
             Mapping(ConnectionID).PacketCount = 0
         End If
-        If PacketId <> ClientPacketID.eSendPosSeguimiento Then
-            Mapping(ConnectionID).PacketCount = Mapping(ConnectionID).PacketCount + 1
-        End If
+        Mapping(ConnectionID).PacketCount = Mapping(ConnectionID).PacketCount + 1
         If Mapping(ConnectionID).PacketCount > 100 Then
             'Lo kickeo
             If UserIndex > 0 Then
@@ -529,10 +527,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleRequestCharSkills(UserIndex)
         Case ClientPacketID.eReviveChar
             Call HandleReviveChar(UserIndex)
-        Case ClientPacketID.eSeguirMouse
-            Call HandleSeguirMouse(UserIndex)
-        Case ClientPacketID.eSendPosSeguimiento
-            Call HandleSendPosMovimiento(UserIndex)
         Case ClientPacketID.eNotifyInventarioHechizos
             Call HandleNotifyInventariohechizos(UserIndex)
         Case ClientPacketID.eOnlineGM
@@ -695,14 +689,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleShowServerForm(UserIndex)
         Case ClientPacketID.eKickAllChars
             Call HandleKickAllChars(UserIndex)
-        Case ClientPacketID.eReloadNPCs
-            Call HandleReloadNPCs(UserIndex)
-        Case ClientPacketID.eReloadServerIni
-            Call HandleReloadServerIni(UserIndex)
-        Case ClientPacketID.eReloadSpells
-            Call HandleReloadSpells(UserIndex)
-        Case ClientPacketID.eReloadObjects
-            Call HandleReloadObjects(UserIndex)
         Case ClientPacketID.eChatColor
             Call HandleChatColor(UserIndex)
         Case ClientPacketID.eIgnored
@@ -2545,9 +2531,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 If .flags.Hechizo > 0 Then
                     .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales + 1
                     Call LanzarHechizo(.flags.Hechizo, UserIndex)
-                    If IsValidUserRef(.flags.GMMeSigue) Then
-                        Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 0)
-                    End If
                     .flags.Hechizo = 0
                 Else
                     ' Msg587=¡Primero selecciona el hechizo que quieres lanzar!
@@ -4998,11 +4981,7 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTraerBoveda", Erl)
 End Sub
 
-Private Sub HandleSendPosMovimiento(ByVal UserIndex As Integer)
-    'TODO: delete
-End Sub
 
-' Handles the "SendPosMovimiento" message.
 Private Sub HandleNotifyInventariohechizos(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
@@ -5012,18 +4991,13 @@ Private Sub HandleNotifyInventariohechizos(ByVal UserIndex As Integer)
         value = reader.ReadInt8()
         hechiSel = reader.ReadInt8()
         scrollSel = reader.ReadInt8()
-        If IsValidUserRef(.flags.GMMeSigue) Then
-            Call WriteGetInventarioHechizos(.flags.GMMeSigue.ArrayIndex, value, hechiSel, scrollSel)
-        End If
     End With
     Exit Sub
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReviveChar", Erl)
 End Sub
 
-'HarThaoS: Agrego perdón faccionario.
-'Lee abajo
-'Lee arriba
+
 Private Sub HandlePerdonFaccion(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
@@ -6234,10 +6208,6 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
             End If
             Call UpdateUserInv(False, UserIndex, SlotViejo)
             Call UpdateUserInv(False, UserIndex, SlotNuevo)
-        End If
-        If IsValidUserRef(.flags.GMMeSigue) Then
-            UserList(.flags.GMMeSigue.ArrayIndex).invent = UserList(UserIndex).invent
-            Call UpdateUserInv(True, UserIndex, 1)
         End If
     End With
     Exit Sub
@@ -7903,9 +7873,6 @@ Public Sub HandleActionOnGroupFrame(ByVal UserIndex As Integer)
             .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales + 1
             Call LanzarHechizo(.flags.Hechizo, UserIndex)
             Call WriteWorkRequestTarget(UserIndex, 0)
-            If IsValidUserRef(.flags.GMMeSigue) Then
-                Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 0)
-            End If
             .flags.Hechizo = 0
         Else
             ' Msg587=¡Primero selecciona el hechizo que quieres lanzar!
