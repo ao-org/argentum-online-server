@@ -1675,7 +1675,7 @@ Private Sub TIMER_AI_Timer()
     Dim NpcIndex         As Long
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
-    If Not haciendoBK And Not EnPausa Then
+    If Not haciendoBK Then
         For NpcIndex = 1 To LastNPC
             With NpcList(NpcIndex)
                 If .pos.Map > 0 Then

@@ -181,14 +181,6 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
         Call CloseSocket(UserIndex)
         Exit Function
     End If
-    If EnPausa Then
-        failureReason = "Server is currently paused."
-        Call WritePauseToggle(UserIndex)
-        ' Msg520=Servidor » Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.
-        Call WriteLocaleMsg(UserIndex, 520, e_FontTypeNames.FONTTYPE_SERVER)
-        Call CloseSocket(UserIndex)
-        Exit Function
-    End If
     If Not EsGM(UserIndex) And ServerSoloGMs > 0 Then
         failureReason = "Server restricted to administrators."
         Call WriteShowMessageBox(UserIndex, 1760, vbNullString) 'Msg1760=Servidor restringido a administradores. Por favor reintente en unos momentos.

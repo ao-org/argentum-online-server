@@ -659,22 +659,6 @@ Command20_Click_Err:
 End Sub
 
 'Barrin 29/9/03
-Private Sub Command21_Click()
-    On Error GoTo Command21_Click_Err
-    If EnPausa = False Then
-        EnPausa = True
-        Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-        Command21.Caption = "Reanudar el servidor"
-    Else
-        EnPausa = False
-        Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-        Command21.Caption = "Pausar el servidor"
-    End If
-    Exit Sub
-Command21_Click_Err:
-    Call TraceError(Err.Number, Err.Description, "frmServidor.Command21_Click", Erl)
-End Sub
-
 Private Sub Command22_Click()
     On Error GoTo Command22_Click_Err
     Me.Visible = False
