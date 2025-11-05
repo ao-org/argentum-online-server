@@ -170,16 +170,19 @@ Public Sub LogUserRefError(ByRef UserRef As t_UserReference, ByRef Text As Strin
             " At: " & Text)
 End Sub
 
-Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As String) As Boolean
+Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As String, ByRef failureReason As String) As Boolean
     On Error GoTo Check_ConnectUser_Err
     ConnectUser_Check = False
+    failureReason = vbNullString
     'Controlamos no pasar el maximo de usuarios
     If NumUsers >= MaxUsers Then
+        failureReason = "Maximum number of users reached."
         Call WriteShowMessageBox(UserIndex, 1759, vbNullString) 'Msg1759=El servidor ha alcanzado el máximo de usuarios soportado, por favor vuelva a intentarlo más tarde.
         Call CloseSocket(UserIndex)
         Exit Function
     End If
     If EnPausa Then
+        failureReason = "Server is currently paused."
         Call WritePauseToggle(UserIndex)
         ' Msg520=Servidor » Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.
         Call WriteLocaleMsg(UserIndex, 520, e_FontTypeNames.FONTTYPE_SERVER)
@@ -187,12 +190,14 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
         Exit Function
     End If
     If Not EsGM(UserIndex) And ServerSoloGMs > 0 Then
+        failureReason = "Server restricted to administrators."
         Call WriteShowMessageBox(UserIndex, 1760, vbNullString) 'Msg1760=Servidor restringido a administradores. Por favor reintente en unos momentos.
         Call CloseSocket(UserIndex)
         Exit Function
     End If
     With UserList(UserIndex)
         If .flags.UserLogged Then
+            failureReason = "User is already logged in."
             Call LogSecurity("User " & .name & " trying to log and already an already logged character from IP: " & .ConnectionDetails.IP)
             Call CloseSocketSL(UserIndex)
             Call Cerrar_Usuario(UserIndex)
@@ -208,8 +213,10 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
                 Call CloseSocket(tIndex.ArrayIndex)
             Else
                 If UserList(tIndex.ArrayIndex).Counters.Saliendo Then
+                    failureReason = "Character is logging out."
                     Call WriteShowMessageBox(UserIndex, 1762, vbNullString) 'Msg1762=El personaje está saliendo.
                 Else
+                    failureReason = "Character is already connected."
                     Call WriteShowMessageBox(UserIndex, 1763, vbNullString) 'Msg1763=El personaje ya está conectado. Espere mientras es desconectado.
                     ' Le avisamos al usuario que está jugando, en caso de que haya uno
                     Call WriteShowMessageBox(tIndex.ArrayIndex, 1761, vbNullString) 'Msg1761=Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.
@@ -223,6 +230,11 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
         '¿Supera el máximo de usuarios por cuenta?
         If MaxUsersPorCuenta > 0 Then
             If ContarUsuariosMismaCuenta(.AccountID) >= MaxUsersPorCuenta Then
+                If MaxUsersPorCuenta = 1 Then
+                    failureReason = "Another user is already connected with this account."
+                Else
+                    failureReason = "Account has reached the maximum number of simultaneous users (" & MaxUsersPorCuenta & ")."
+                End If
                 If MaxUsersPorCuenta = 1 Then
                     Call WriteShowMessageBox(UserIndex, 1764, vbNullString) 'Msg1764=Ya hay un usuario conectado con esta cuenta.
                 Else
@@ -245,6 +257,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
     ConnectUser_Check = True
     Exit Function
 Check_ConnectUser_Err:
+    failureReason = "Unexpected error (" & Err.Number & "): " & Err.Description
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ConnectUser_Check", Erl)
 End Function
 

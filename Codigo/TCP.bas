@@ -723,9 +723,15 @@ End Function
 Function ConnectUser(ByVal UserIndex As Integer, ByRef name As String, Optional ByVal newUser As Boolean = False) As Boolean
     On Error GoTo ErrHandler
     ConnectUser = False
+    Dim failureReason As String
+    Dim logMessage As String
     With UserList(UserIndex)
-        If Not ConnectUser_Check(UserIndex, name) Then
-            Call LogSecurity("ConnectUser_Check " & name & " failed.")
+        If Not ConnectUser_Check(UserIndex, name, failureReason) Then
+            logMessage = "ConnectUser_Check " & name & " failed."
+            If LenB(failureReason) > 0 Then
+                logMessage = logMessage & " Reason: " & failureReason
+            End If
+            Call LogSecurity(logMessage)
             Exit Function
         End If
         Call ConnectUser_Prepare(UserIndex, name)
