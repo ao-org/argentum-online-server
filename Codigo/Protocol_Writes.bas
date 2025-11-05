@@ -1256,15 +1256,6 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WritePauseToggle(ByVal UserIndex As Integer)
-    On Error GoTo WritePauseToggle_Err
-    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessagePauseToggle())
-    Exit Sub
-WritePauseToggle_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePauseToggle", Erl)
-End Sub
-
 ''
 ' Writes the "RainToggle" message to the given user's outgoing data .incomingData.
 '

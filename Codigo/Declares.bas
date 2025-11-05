@@ -3510,7 +3510,6 @@ Public MinimumPriceMao                        As Long
 Public GoldPriceMao                           As Long
 Public MinimumLevelMao                        As Integer
 Public ServerSoloGMs                          As Integer
-Public EnPausa                                As Boolean
 Public EnTesting                              As Boolean
 Public PendingConnectionTimeout               As Long
 Public InstanceMapCount                       As Integer

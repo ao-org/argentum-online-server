@@ -722,9 +722,12 @@ End Function
 
 Function ConnectUser(ByVal UserIndex As Integer, ByRef name As String, Optional ByVal newUser As Boolean = False) As Boolean
     On Error GoTo ErrHandler
+    Dim PerformanceTimer As Long
     ConnectUser = False
     Dim failureReason As String
     Dim logMessage As String
+    Call PerformanceTestStart(PerformanceTimer)
+
     With UserList(UserIndex)
         If Not ConnectUser_Check(UserIndex, name, failureReason) Then
             logMessage = "ConnectUser_Check " & name & " failed."
@@ -732,24 +735,28 @@ Function ConnectUser(ByVal UserIndex As Integer, ByRef name As String, Optional 
                 logMessage = logMessage & " Reason: " & failureReason
             End If
             Call LogSecurity(logMessage)
-            Exit Function
-        End If
-        Call ConnectUser_Prepare(UserIndex, name)
-        If LoadCharacterFromDB(UserIndex) Then
-            If ConnectUser_Complete(UserIndex, name, newUser) Then
-                ConnectUser = True
-                Exit Function
-            End If
         Else
-            Call WriteShowMessageBox(UserIndex, 1773, vbNullString) 'Msg1773=No se puede cargar el personaje.
-            Call CloseSocket(UserIndex)
+            Call ConnectUser_Prepare(UserIndex, name)
+
+            If LoadCharacterFromDB(UserIndex) Then
+                If ConnectUser_Complete(UserIndex, name, newUser) Then
+                    ConnectUser = True
+                End If
+            Else
+                Call WriteShowMessageBox(UserIndex, 1773, vbNullString) 'Msg1773=No se puede cargar el personaje.
+                Call CloseSocket(UserIndex)
+            End If
         End If
     End With
+
+    Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUser")
     Exit Function
+
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
     Call CloseSocket(UserIndex)
+    Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUser")
 End Function
 
 Private Sub SendWelcomeUptime(ByVal UserIndex As Integer)
