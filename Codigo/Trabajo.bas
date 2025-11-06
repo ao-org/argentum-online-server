@@ -483,10 +483,17 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
             If .invent.EquippedHelmetObjIndex > 0 Then
                 .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
                 If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
+                If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
+                    .Char.head = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                    .Char.CascoAnim = NingunCasco
+                End If
+                
+                If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 1 Then
                     .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                    End If
                 End If
                 Else
-                    .Char.CascoAnim = NingunCasco
+                .Char.CascoAnim = NingunCasco
             End If
             
             If .invent.EquippedShieldObjIndex > 0 Then
@@ -2152,9 +2159,28 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
         If .flags.Montado = 0 Then
             .Char.body = ObtenerRopaje(UserIndex, Montura)
             .Char.head = .OrigChar.head
+            
+            If .invent.EquippedHelmetObjIndex > 0 Then
+                .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+                If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
+                
+                If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
+                    .Char.head = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                    .Char.CascoAnim = NingunCasco
+                End If
+                
+                If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 1 Then
+                    .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                    End If
+                End If
+                
+                Else
+                .Char.CascoAnim = NingunCasco
+            End If
+            
             .Char.ShieldAnim = NingunEscudo
             .Char.WeaponAnim = NingunArma
-            .Char.CascoAnim = .Char.CascoAnim
+            
             .Char.CartAnim = NoCart
             .flags.Montado = 1
             Call TargetUpdateTerrain(.EffectOverTime)
@@ -2176,10 +2202,19 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
             If .invent.EquippedHelmetObjIndex > 0 Then
                 .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
                 If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
-                    .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
-                End If
-                Else
+                
+                If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
+                    .Char.head = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
                     .Char.CascoAnim = NingunCasco
+                End If
+                
+                If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 1 Then
+                    .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                    End If
+                End If
+                
+                Else
+                .Char.CascoAnim = NingunCasco
             End If
 
             
