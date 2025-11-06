@@ -253,8 +253,10 @@ Public Sub PerformAction()
             TickHP = TickHP * UserMod.GetSelfHealingBonus(UserList(DotInfo.TargetRef.ArrayIndex))
         End If
         If IsValidRef(Source) Then
-            If IsFeatureEnabled("healers_and_tanks") And UserList(Source.ArrayIndex).flags.DivineBlood > 0 Then
-                TickHP = TickHP * DivineBloodHealingMultiplierBonus
+            If IsFeatureEnabled("healers_and_tanks") And Source.RefType = eUser Then
+                If UserList(Source.ArrayIndex).flags.DivineBlood > 0 Then
+                    TickHP = TickHP * DivineBloodHealingMultiplierBonus
+                End If
             End If
             Call UserMod.DoDamageOrHeal(DotInfo.TargetRef.ArrayIndex, Source.ArrayIndex, Source.RefType, TickHP, e_dot, DotInfo.EotId)
         Else
@@ -263,10 +265,10 @@ Public Sub PerformAction()
         If TickEffect > 0 Then
             If IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) Then
                 Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, _
-                        0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+                   0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
             Else
                 Call SendData(SendTarget.ToIndex, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, _
-                        UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+                   UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
             End If
         End If
     ElseIf DotInfo.TargetRef.RefType = e_ReferenceType.eNpc Then
@@ -286,6 +288,6 @@ Public Sub PerformAction()
             Call NPCs.DoDamageOrHeal(DotInfo.TargetRef.ArrayIndex, 0, e_ReferenceType.eNone, TickHP, e_dot, DotInfo.EotId)
         End If
         If TickEffect > 0 Then Call SendData(SendTarget.ToNPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(NpcList( _
-                DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, NpcList(DotInfo.TargetRef.ArrayIndex).pos.x, NpcList(DotInfo.TargetRef.ArrayIndex).pos.y))
+           DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, NpcList(DotInfo.TargetRef.ArrayIndex).pos.x, NpcList(DotInfo.TargetRef.ArrayIndex).pos.y))
     End If
 End Sub
