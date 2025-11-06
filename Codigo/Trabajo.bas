@@ -468,48 +468,49 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
             Call TargetUpdateTerrain(.EffectOverTime)
             .invent.EquippedShipObjIndex = 0
             .invent.EquippedShipSlot = 0
-            
             If .flags.Muerto = 0 Then
                 .Char.head = .OrigChar.head
-            If .invent.EquippedArmorObjIndex > 0 Then
-                .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
-                If .Invent_Skins.ObjIndexArmourEquipped > 0 Then
-                    .Char.body = ObtenerRopaje(UserIndex, ObjData(.Invent_Skins.ObjIndexArmourEquipped))
+                If .invent.EquippedArmorObjIndex > 0 Then
+                    .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
+                    If .Invent_Skins.ObjIndexArmourEquipped > 0 Then
+                        .Char.body = ObtenerRopaje(UserIndex, ObjData(.Invent_Skins.ObjIndexArmourEquipped))
+                    End If
+                Else
+                    Call SetNakedBody(UserList(UserIndex))
                 End If
-            Else
-                Call SetNakedBody(UserList(UserIndex))
-            End If
-            
-            If .invent.EquippedHelmetObjIndex > 0 Then
-                .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
-                If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
-                    .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
-                End If
+                If .invent.EquippedHelmetObjIndex > 0 Then
+                    .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+                    If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
+                        If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
+                            .Char.head = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                            .Char.CascoAnim = NingunCasco
+                        End If
+                        If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 1 Then
+                            .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                        End If
+                    End If
                 Else
                     .Char.CascoAnim = NingunCasco
-            End If
-            
-            If .invent.EquippedShieldObjIndex > 0 Then
-                .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
-                If .Invent_Skins.ObjIndexShieldEquipped > 0 Then
-                    .Char.ShieldAnim = ObjData(.Invent_Skins.ObjIndexShieldEquipped).ShieldAnim
                 End If
+                If .invent.EquippedShieldObjIndex > 0 Then
+                    .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
+                    If .Invent_Skins.ObjIndexShieldEquipped > 0 Then
+                        .Char.ShieldAnim = ObjData(.Invent_Skins.ObjIndexShieldEquipped).ShieldAnim
+                    End If
                 Else
-                .Char.ShieldAnim = NingunEscudo
-            End If
-            If .invent.EquippedWeaponObjIndex > 0 Then
-                .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
-                If .Invent_Skins.ObjIndexWeaponEquipped > 0 Then
-                    .Char.WeaponAnim = ObjData(.Invent_Skins.ObjIndexWeaponEquipped).WeaponAnim
+                    .Char.ShieldAnim = NingunEscudo
                 End If
+                If .invent.EquippedWeaponObjIndex > 0 Then
+                    .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
+                    If .Invent_Skins.ObjIndexWeaponEquipped > 0 Then
+                        .Char.WeaponAnim = ObjData(.Invent_Skins.ObjIndexWeaponEquipped).WeaponAnim
+                    End If
                 Else
-                .Char.WeaponAnim = NingunArma
-            End If
-            
-            If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
-                If ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
-            End If
-            
+                    .Char.WeaponAnim = NingunArma
+                End If
+                If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
+                    If ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
+                End If
             Else
                 .Char.body = iCuerpoMuerto
                 .Char.head = 0
@@ -2152,9 +2153,22 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
         If .flags.Montado = 0 Then
             .Char.body = ObtenerRopaje(UserIndex, Montura)
             .Char.head = .OrigChar.head
+            If .invent.EquippedHelmetObjIndex > 0 Then
+                .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+                If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
+                    If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
+                        .Char.head = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                        .Char.CascoAnim = NingunCasco
+                    End If
+                    If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 1 Then
+                        .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                    End If
+                End If
+            Else
+                .Char.CascoAnim = NingunCasco
+            End If
             .Char.ShieldAnim = NingunEscudo
             .Char.WeaponAnim = NingunArma
-            .Char.CascoAnim = .Char.CascoAnim
             .Char.CartAnim = NoCart
             .flags.Montado = 1
             Call TargetUpdateTerrain(.EffectOverTime)
@@ -2162,8 +2176,6 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
             .flags.Montado = 0
             .Char.head = .OrigChar.head
             Call TargetUpdateTerrain(.EffectOverTime)
-            
-            
             If .invent.EquippedArmorObjIndex > 0 Then
                 .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
                 If .Invent_Skins.ObjIndexArmourEquipped > 0 Then
@@ -2172,37 +2184,36 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
             Else
                 Call SetNakedBody(UserList(UserIndex))
             End If
-            
             If .invent.EquippedHelmetObjIndex > 0 Then
                 .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
                 If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
-                    .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                    If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
+                        .Char.head = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                        .Char.CascoAnim = NingunCasco
+                    End If
+                    If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 1 Then
+                        .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                    End If
                 End If
-                Else
-                    .Char.CascoAnim = NingunCasco
+            Else
+                .Char.CascoAnim = NingunCasco
             End If
-
-            
             If .invent.EquippedShieldObjIndex > 0 Then
                 .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
                 If .Invent_Skins.ObjIndexShieldEquipped > 0 Then
                     .Char.ShieldAnim = ObjData(.Invent_Skins.ObjIndexShieldEquipped).ShieldAnim
                 End If
-                Else
+            Else
                 .Char.ShieldAnim = NingunEscudo
             End If
-            
-            
             If .invent.EquippedWeaponObjIndex > 0 Then
                 .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
                 If .Invent_Skins.ObjIndexWeaponEquipped > 0 Then
                     .Char.WeaponAnim = ObjData(.Invent_Skins.ObjIndexWeaponEquipped).WeaponAnim
                 End If
-                Else
+            Else
                 .Char.WeaponAnim = NingunArma
             End If
-            
-            
             If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
                 If ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
             End If
