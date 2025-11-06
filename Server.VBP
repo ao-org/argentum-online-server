@@ -22,6 +22,7 @@ Module=SysTray; Codigo\Modulo_SysTray.bas
 Module=UserMod; Codigo\Modulo_UsUaRiOs.bas
 Module=TCP; Codigo\TCP.bas
 Module=Trabajo; Codigo\Trabajo.bas
+Module=modFishing; Codigo\modFishing.bas
 Form=Codigo\frmCargando.frm
 Form=Codigo\frmMain.frm
 Form=Codigo\frmServidor.frm

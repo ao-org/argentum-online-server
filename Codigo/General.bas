@@ -497,6 +497,7 @@ Sub Main()
     Call LoadObjSastre
     frmCargando.Label1(2).Caption = "Cargando Pesca"
     Call LoadPesca
+    Call InitializeFishingBonuses()
     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
     Call LoadRecursosEspeciales
     frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
@@ -694,6 +695,7 @@ Sub Restart()
     Call ResetUserAutoSaveTimer
     Call LoadOBJData
     Call LoadPesca
+    Call InitializeFishingBonuses()
     Call LoadRecursosEspeciales
     Call LoadMapData
     Call CargarHechizos
