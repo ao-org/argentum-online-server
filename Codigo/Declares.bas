@@ -1723,9 +1723,6 @@ Public Type t_Hechizo
     nombre As String
     Desc As String
     PalabrasMagicas As String
-    HechizeroMsg As String
-    TargetMsg As String
-    PropioMsg As String
     Tipo As e_TipoHechizo
     SkillType As e_SkillType
     wav As Integer
