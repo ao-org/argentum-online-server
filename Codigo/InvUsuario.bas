@@ -1828,7 +1828,7 @@ Dim MiObj                       As t_Obj
                 Select Case obj.Subtipo
                     Case 1, 2  ' Herramientas del Pescador - Caña y Red
                         Call WriteWorkRequestTarget(UserIndex, e_Skill.Pescar)
-                    Case 3     ' Herramientas de Alquimia - Tijeras
+                    Case 3, e_ToolsSubtype.eHerbalismShears     ' Herramientas de Alquimia - Tijeras
                         Call WriteWorkRequestTarget(UserIndex, e_Skill.Alquimia)
                     Case 4     ' Herramientas de Alquimia - Olla
                         Call EnivarObjConstruiblesAlquimia(UserIndex)

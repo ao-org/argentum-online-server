@@ -2548,47 +2548,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     Call Trabajar(UserIndex, e_Skill.Talar)
                 End If
             Case e_Skill.Alquimia
-                If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
-                If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
-                'Check interval
-                If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
-                Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
-                    Case 3  ' Herramientas de Alquimia - Tijeras
-                        If MapInfo(UserList(UserIndex).pos.Map).Seguro = 1 Then
-                            Call WriteWorkRequestTarget(UserIndex, 0)
-                            ' Msg711=Esta prohibido cortar raices en las ciudades.
-                            Call WriteLocaleMsg(UserIndex, 711, e_FontTypeNames.FONTTYPE_INFO)
-                            Exit Sub
-                        End If
-                        If MapData(.pos.Map, x, y).ObjInfo.amount <= 0 Then
-                            ' Msg712=El árbol ya no te puede entregar mas raices.
-                            Call WriteLocaleMsg(UserIndex, 712, e_FontTypeNames.FONTTYPE_INFO)
-                            Call WriteWorkRequestTarget(UserIndex, 0)
-                            Call WriteMacroTrabajoToggle(UserIndex, False)
-                            Exit Sub
-                        End If
-                        DummyInt = MapData(.pos.Map, x, y).ObjInfo.ObjIndex
-                        If DummyInt > 0 Then
-                            If Abs(.pos.x - x) + Abs(.pos.y - y) > 2 Then
-                                Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
-                                'Msg1129= Estas demasiado lejos.
-                                Call WriteLocaleMsg(UserIndex, 1129, e_FontTypeNames.FONTTYPE_INFO)
-                                Call WriteWorkRequestTarget(UserIndex, 0)
-                                Exit Sub
-                            End If
-                            If .pos.x = x And .pos.y = y Then
-                                ' Msg713=No podés quitar raices allí.
-                                Call WriteLocaleMsg(UserIndex, 713, e_FontTypeNames.FONTTYPE_INFO)
-                                Call WriteWorkRequestTarget(UserIndex, 0)
-                                Exit Sub
-                            End If
-                        Else
-                            ' Msg604=No podés quitar raices allí.
-                            Call WriteLocaleMsg(UserIndex, 604, e_FontTypeNames.FONTTYPE_INFO)
-                            Call WriteWorkRequestTarget(UserIndex, 0)
-                            Call WriteMacroTrabajoToggle(UserIndex, False)
-                        End If
-                End Select
+                If .Counters.Trabajando = 0 And .Counters.LastTrabajo = 0 Then
+                    Call Trabajar(UserIndex, e_Skill.Alquimia)
+                End If
             Case e_Skill.Mineria
                 If .Counters.Trabajando = 0 And .Counters.LastTrabajo = 0 Then
                     Call Trabajar(UserIndex, e_Skill.Mineria)

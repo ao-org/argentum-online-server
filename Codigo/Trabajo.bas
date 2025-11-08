@@ -151,6 +151,46 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                     cantidad_maxima = 1
                 End If
                 Call CarpinteroConstruirItem(UserIndex, UserList(UserIndex).Trabajo.Item, UserList(UserIndex).Trabajo.Cantidad, cantidad_maxima)
+            Case e_Skill.Alquimia
+                If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
+                If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
+                If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
+                Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
+                    Case e_ToolsSubtype.eHerbalismShears, 3
+                        Call LookatTile(UserIndex, .pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y)
+                        DummyInt = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex
+                        If DummyInt > 0 Then
+                            If ObjData(DummyInt).OBJType <> e_OBJType.otPlants Then
+                                Call WriteConsoleMsg(UserIndex, "No hay ninguna planta en ese lugar.", e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteWorkRequestTarget(UserIndex, 0)
+                                Exit Sub
+                            End If
+                            If Abs(.pos.x - .Trabajo.Target_X) + Abs(.pos.y - .Trabajo.Target_Y) > 1 Then
+                                Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteLocaleMsg(UserIndex, 1129, e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteWorkRequestTarget(UserIndex, 0)
+                                Exit Sub
+                            End If
+                            If .pos.x = .Trabajo.Target_X And .pos.y = .Trabajo.Target_Y Then
+                                Call WriteLocaleMsg(UserIndex, 713, e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteWorkRequestTarget(UserIndex, 0)
+                                Exit Sub
+                            End If
+                            If MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount <= 0 Then
+                                Call WriteLocaleMsg(UserIndex, 712, e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteWorkRequestTarget(UserIndex, 0)
+                                Call WriteMacroTrabajoToggle(UserIndex, False)
+                                Exit Sub
+                            End If
+                            Call DoRecolectarPlantas(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y)
+                        Else
+                            Call WriteConsoleMsg(UserIndex, "No hay ninguna planta en ese lugar.", e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteWorkRequestTarget(UserIndex, 0)
+                            If UserList(UserIndex).Counters.Trabajando > 1 Then
+                                Call WriteMacroTrabajoToggle(UserIndex, False)
+                            End If
+                        End If
+                End Select
             Case e_Skill.Mineria
                 If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
                 If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
@@ -1971,6 +2011,112 @@ ErrHandler:
     Call LogError("Error en DoTalar")
 End Sub
 
+Public Sub DoRecolectarPlantas(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte)
+    On Error GoTo ErrHandler
+    Dim Suerte As Integer
+    Dim res    As Integer
+    With UserList(UserIndex)
+        If .flags.Privilegios And (e_PlayerType.Consejero) Then
+            Exit Sub
+        End If
+        If .Stats.MinSta > 5 Then
+            Call QuitarSta(UserIndex, 5)
+        Else
+            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Exit Sub
+        End If
+        Dim Skill As Integer
+        Skill = .Stats.UserSkills(e_Skill.Alquimia)
+        Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
+        If Suerte < 1 Then Suerte = 1
+        res = RandomNumber(1, Suerte)
+        If res <= 5 Then
+            Dim MiObj        As t_Obj
+            Dim plantIndex   As Integer
+            Dim plantData    As t_ObjData
+            Dim amountToGive As Integer
+            Dim minAmount    As Integer
+            Dim maxAmount    As Integer
+            Dim i            As Integer
+            Dim totalWeight  As Long
+            Dim roll         As Long
+            Dim weight       As Long
+            plantIndex = MapData(.pos.Map, x, y).ObjInfo.ObjIndex
+            plantData = ObjData(plantIndex)
+            Call ActualizarRecurso(.pos.Map, x, y)
+            MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw()
+            minAmount = plantData.HarvestMinAmount
+            If minAmount <= 0 Then minAmount = 1
+            maxAmount = plantData.HarvestMaxAmount
+            If maxAmount < minAmount Then maxAmount = minAmount
+            amountToGive = RandomNumber(minAmount, maxAmount)
+            If plantData.CantItem > 0 Then
+                totalWeight = 0
+                For i = 1 To plantData.CantItem
+                    weight = plantData.Item(i).data
+                    If weight <= 0 Then weight = 1
+                    totalWeight = totalWeight + weight
+                Next i
+                If totalWeight > 0 Then
+                    roll = RandomNumber(1, totalWeight)
+                    totalWeight = 0
+                    For i = 1 To plantData.CantItem
+                        weight = plantData.Item(i).data
+                        If weight <= 0 Then weight = 1
+                        totalWeight = totalWeight + weight
+                        If roll <= totalWeight Then
+                            MiObj.ObjIndex = plantData.Item(i).ObjIndex
+                            If plantData.Item(i).amount > 0 Then
+                                amountToGive = plantData.Item(i).amount
+                            End If
+                            Exit For
+                        End If
+                    Next i
+                End If
+            Else
+                MiObj.ObjIndex = plantData.HarvestItemIndex
+            End If
+            If MiObj.ObjIndex = 0 Then Exit Sub
+            amountToGive = amountToGive * SvrConfig.GetValue("RecoleccionMult")
+            If amountToGive > MapData(.pos.Map, x, y).ObjInfo.amount Then
+                amountToGive = MapData(.pos.Map, x, y).ObjInfo.amount
+            End If
+            If amountToGive <= 0 Then Exit Sub
+            MapData(.pos.Map, x, y).ObjInfo.amount = MapData(.pos.Map, x, y).ObjInfo.amount - amountToGive
+            MiObj.amount = amountToGive
+            MiObj.ElementalTags = plantData.ElementalTags
+            If Not MeterItemEnInventario(UserIndex, MiObj) Then
+                Call TirarItemAlPiso(.pos, MiObj)
+            End If
+            Call WriteConsoleMsg(UserIndex, "Has recolectado " & amountToGive & " " & ObjData(MiObj.ObjIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
+            If MapInfo(.pos.Map).Seguro = 1 Then
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(SND_TIJERAS, .pos.x, .pos.y))
+            Else
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TIJERAS, .pos.x, .pos.y))
+            End If
+            If IsFeatureEnabled("gain_exp_while_working") Then
+                Call GiveExpWhileWorking(UserIndex, .invent.EquippedWorkingToolObjIndex, e_JobsTypes.Herbalist)
+                Call WriteUpdateExp(UserIndex)
+                Call CheckUserLevel(UserIndex)
+            End If
+        Else
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(64, .pos.x, .pos.y))
+        End If
+        Call SubirSkill(UserIndex, e_Skill.Alquimia)
+        .Counters.Trabajando = .Counters.Trabajando + 1
+        .Counters.LastTrabajo = Int(IntervaloTrabajarExtraer / 1000)
+        If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
+            Call WriteMacroTrabajoToggle(UserIndex, True)
+        End If
+    End With
+    Exit Sub
+ErrHandler:
+    Call LogError("Error en DoRecolectarPlantas")
+End Sub
+
 Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
     On Error GoTo ErrHandler
     Dim Suerte     As Integer
@@ -2559,6 +2705,8 @@ Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByVal ItemIndex 
                 tmpExp = SvrConfig.GetValue("FishingExp")
             End If
         Case e_JobsTypes.Alchemist
+            tmpExp = SvrConfig.GetValue("MixingExp")
+        Case e_JobsTypes.Herbalist
             tmpExp = SvrConfig.GetValue("MixingExp")
         Case Else
             tmpExp = SvrConfig.GetValue("ElseExp")
