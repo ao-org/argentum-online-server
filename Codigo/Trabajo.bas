@@ -26,6 +26,8 @@ Attribute VB_Name = "Trabajo"
 '
 '
 Option Explicit
+
+Private ResourceRespawnTable As Object
 Public Const GOLD_OBJ_INDEX As Long = 12
 Public Const FISHING_NET_FX As Long = 12
 Public Const NET_INMO_DURATION = 10
@@ -1881,6 +1883,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte,
     On Error GoTo ErrHandler
     Dim Suerte As Integer
     Dim res    As Integer
+    Dim resourceObjIndex As Integer
     With UserList(UserIndex)
         If .flags.Privilegios And (e_PlayerType.Consejero) Then
             Exit Sub
@@ -1908,6 +1911,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte,
             Dim nPos  As t_WorldPos
             Dim MiObj As t_Obj
             Call ActualizarRecurso(.pos.Map, x, y)
+            resourceObjIndex = MapData(.pos.Map, x, y).ObjInfo.ObjIndex
             MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
             If .clase = Trabajador Then
                 MiObj.amount = GetExtractResourceForLevel(.Stats.ELV)
@@ -1951,6 +1955,15 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte,
                     Call TirarItemAlPiso(.pos, MiObj)
                 End If
             Next i
+            If MapData(.pos.Map, x, y).ObjInfo.amount <= 0 Then
+                If resourceObjIndex > 0 Then
+                    If ObjData(resourceObjIndex).VidaUtil > 0 And ObjData(resourceObjIndex).TiempoRegenerar > 0 Then
+                        Call HandleResourceDepleted(.pos.Map, x, y, resourceObjIndex)
+                    Else
+                        MapData(.pos.Map, x, y).ObjInfo.amount = 0
+                    End If
+                End If
+            End If
             If IsFeatureEnabled("gain_exp_while_working") Then
                 Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Woodcutter)
                 Call WriteUpdateExp(UserIndex)
@@ -1977,6 +1990,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
     Dim res        As Integer
     Dim Metal      As Integer
     Dim Yacimiento As t_ObjData
+    Dim resourceObjIndex As Integer
     With UserList(UserIndex)
         If .flags.Privilegios And (e_PlayerType.Consejero) Then
             Exit Sub
@@ -2003,6 +2017,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
             Dim MiObj As t_Obj
             Dim nPos  As t_WorldPos
             Call ActualizarRecurso(.pos.Map, x, y)
+            resourceObjIndex = MapData(.pos.Map, x, y).ObjInfo.ObjIndex
             MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
             Yacimiento = ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex)
             MiObj.ObjIndex = Yacimiento.MineralIndex
@@ -2043,6 +2058,15 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
                     Call WriteLocaleMsg(UserIndex, 1465, e_FontTypeNames.FONTTYPE_INFO)  ' Msg1465=¡Has conseguido ¬1!
                 End If
             Next
+            If MapData(.pos.Map, x, y).ObjInfo.amount <= 0 Then
+                If resourceObjIndex > 0 Then
+                    If ObjData(resourceObjIndex).VidaUtil > 0 And ObjData(resourceObjIndex).TiempoRegenerar > 0 Then
+                        Call HandleResourceDepleted(.pos.Map, x, y, resourceObjIndex)
+                    Else
+                        MapData(.pos.Map, x, y).ObjInfo.amount = 0
+                    End If
+                End If
+            End If
             
             If IsFeatureEnabled("gain_exp_while_working") Then
                 Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Miner)
@@ -2228,22 +2252,182 @@ DoMontar_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.DoMontar", Erl)
 End Sub
 
+Private Sub EnsureResourceRespawnTable()
+    If ResourceRespawnTable Is Nothing Then
+        Set ResourceRespawnTable = CreateObject("Scripting.Dictionary")
+    End If
+End Sub
+
+Private Function GetResourceRespawnKey(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As String
+    GetResourceRespawnKey = Map & ":" & x & ":" & y
+End Function
+
+Private Sub HandleResourceDepleted(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal ObjIndex As Integer)
+    If ObjIndex <= 0 Then Exit Sub
+    If ObjData(ObjIndex).VidaUtil <= 0 Then Exit Sub
+    If ObjData(ObjIndex).TiempoRegenerar <= 0 Then Exit Sub
+
+    Call EnsureResourceRespawnTable()
+
+    Dim key As String
+    key = GetResourceRespawnKey(Map, x, y)
+
+    If ResourceRespawnTable.Exists(key) Then
+        ResourceRespawnTable.Remove key
+    End If
+
+    Dim state As Object
+    Set state = CreateObject("Scripting.Dictionary")
+    Call state.Add("ObjIndex", ObjIndex)
+    Call state.Add("ElementalTags", MapData(Map, x, y).ObjInfo.ElementalTags)
+    Call state.Add("OriginalBlocked", MapData(Map, x, y).Blocked)
+    Call state.Add("OriginalGraphic4", MapData(Map, x, y).Graphic(4))
+    Dim removalTime As Long
+    removalTime = MapData(Map, x, y).ObjInfo.data
+    If removalTime = 0 Or removalTime = &H7FFFFFFF Then
+        removalTime = GetTickCountRaw()
+        MapData(Map, x, y).ObjInfo.data = removalTime
+    End If
+    Dim respawnDelayMs As Long
+    Dim respawnDelayValue As Double
+    respawnDelayValue = CDbl(ObjData(ObjIndex).TiempoRegenerar) * 1000#
+    If respawnDelayValue > 2147483647# Then
+        respawnDelayMs = &H7FFFFFFF
+    Else
+        respawnDelayMs = CLng(respawnDelayValue)
+    End If
+    Call state.Add("RespawnDeadline", AddMod32(removalTime, respawnDelayMs))
+    Call state.Add("RespawnAmount", ObjData(ObjIndex).VidaUtil)
+
+    ResourceRespawnTable.Add key, state
+
+    MapData(Map, x, y).ObjInfo.ObjIndex = 0
+    MapData(Map, x, y).ObjInfo.amount = 0
+    MapData(Map, x, y).ObjInfo.ElementalTags = 0
+    MapData(Map, x, y).ObjInfo.data = removalTime
+
+    Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectDelete(x, y))
+
+    Dim originalBlocked As Byte
+    originalBlocked = CByte(state.Item("OriginalBlocked"))
+    Dim removalMask As Byte
+    removalMask = FLAG_ARBOL Or e_Block.ALL_SIDES
+    Dim newBlocked As Byte
+    newBlocked = CByte(originalBlocked And (&HFF Xor removalMask))
+    Dim originalDirectional As Byte
+    originalDirectional = originalBlocked And e_Block.ALL_SIDES
+    Dim newDirectional As Byte
+    newDirectional = newBlocked And e_Block.ALL_SIDES
+    MapData(Map, x, y).Blocked = newBlocked
+    If originalDirectional <> newDirectional Then
+        Call Bloquear(True, Map, x, y, MapData(Map, x, y).Blocked)
+    End If
+
+    Dim originalGraphic4 As Long
+    originalGraphic4 = CLng(state.Item("OriginalGraphic4"))
+    If originalGraphic4 <> 0 Then
+        MapData(Map, x, y).Graphic(4) = 0
+        Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageFxPiso(0, x, y))
+    End If
+End Sub
+
+Private Sub TryRespawnResource(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal TiempoActual As Long)
+    If ResourceRespawnTable Is Nothing Then Exit Sub
+
+    Dim key As String
+    key = GetResourceRespawnKey(Map, x, y)
+
+    If Not ResourceRespawnTable.Exists(key) Then Exit Sub
+
+    Dim state As Object
+    Set state = ResourceRespawnTable.Item(key)
+
+    Dim ObjIndex As Integer
+    ObjIndex = state.Item("ObjIndex")
+
+    Dim respawnDeadline As Long
+    respawnDeadline = CLng(state.Item("RespawnDeadline"))
+
+    If Not TickAfter(TiempoActual, respawnDeadline) Then Exit Sub
+
+    If MapData(Map, x, y).ObjInfo.ObjIndex <> 0 Then
+        If MapData(Map, x, y).ObjInfo.ObjIndex = ObjIndex Then
+            ResourceRespawnTable.Remove key
+        End If
+        Exit Sub
+    End If
+
+    MapData(Map, x, y).ObjInfo.ObjIndex = ObjIndex
+    MapData(Map, x, y).ObjInfo.ElementalTags = CLng(state.Item("ElementalTags"))
+    MapData(Map, x, y).ObjInfo.amount = CLng(state.Item("RespawnAmount"))
+    MapData(Map, x, y).ObjInfo.data = &H7FFFFFFF
+
+    Dim originalBlocked As Byte
+    originalBlocked = CByte(state.Item("OriginalBlocked"))
+    Dim currentDirectional As Byte
+    currentDirectional = MapData(Map, x, y).Blocked And e_Block.ALL_SIDES
+    Dim restoredDirectional As Byte
+    restoredDirectional = originalBlocked And e_Block.ALL_SIDES
+    MapData(Map, x, y).Blocked = originalBlocked
+    If currentDirectional <> restoredDirectional Then
+        Call Bloquear(True, Map, x, y, MapData(Map, x, y).Blocked)
+    End If
+
+    Dim originalGraphic4 As Long
+    originalGraphic4 = CLng(state.Item("OriginalGraphic4"))
+    If MapData(Map, x, y).Graphic(4) <> originalGraphic4 Then
+        MapData(Map, x, y).Graphic(4) = originalGraphic4
+        Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageFxPiso(originalGraphic4, x, y))
+    End If
+
+    Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y, MapData(Map, x, y).ObjInfo.ElementalTags))
+
+    ResourceRespawnTable.Remove key
+End Sub
+
+Public Sub ProcessResourceRespawns()
+    If ResourceRespawnTable Is Nothing Then Exit Sub
+    If ResourceRespawnTable.Count = 0 Then Exit Sub
+
+    Dim keys As Variant
+    keys = ResourceRespawnTable.Keys
+    Dim currentTime As Long
+    currentTime = GetTickCountRaw()
+    Dim i As Long
+    For i = LBound(keys) To UBound(keys)
+        Dim key As String
+        key = CStr(keys(i))
+        Dim parts() As String
+        parts = Split(key, ":")
+        If UBound(parts) = 2 Then
+            Call TryRespawnResource(CInt(parts(0)), CInt(parts(1)), CInt(parts(2)), currentTime)
+        End If
+    Next i
+End Sub
+
+
+
 Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo ActualizarRecurso_Err
     Dim ObjIndex As Integer
     ObjIndex = MapData(Map, x, y).ObjInfo.ObjIndex
     Dim TiempoActual As Long
     TiempoActual = GetTickCountRaw()
+    If ObjIndex <= 0 Then
+        Call TryRespawnResource(Map, x, y, TiempoActual)
+        Exit Sub
+    End If
     ' Data = Ultimo uso
     Dim lastUse As Long
     lastUse = MapData(Map, x, y).ObjInfo.data
-    If lastUse <> &H7FFFFFFF Then
-        Dim elapsedMs As Double
-        elapsedMs = TicksElapsed(lastUse, TiempoActual)
-        If elapsedMs / 1000# > ObjData(ObjIndex).TiempoRegenerar Then
-            MapData(Map, x, y).ObjInfo.amount = ObjData(ObjIndex).VidaUtil
-            MapData(Map, x, y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
-        End If
+    If lastUse = &H7FFFFFFF Then
+        Exit Sub
+    End If
+    Dim elapsedMs As Double
+    elapsedMs = TicksElapsed(lastUse, TiempoActual)
+    If elapsedMs / 1000# > ObjData(ObjIndex).TiempoRegenerar Then
+        MapData(Map, x, y).ObjInfo.amount = ObjData(ObjIndex).VidaUtil
+        MapData(Map, x, y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
     End If
     Exit Sub
 ActualizarRecurso_Err:
