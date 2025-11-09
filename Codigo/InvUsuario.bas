@@ -2903,10 +2903,13 @@ End Function
 
 Sub TirarTodosLosItems(ByVal UserIndex As Integer)
     On Error GoTo TirarTodosLosItems_Err
-    Dim i         As Byte
-    Dim NuevaPos  As t_WorldPos
-    Dim MiObj     As t_Obj
-    Dim ItemIndex As Integer
+    Dim i           As Byte
+    Dim NuevaPos    As t_WorldPos
+    Dim MiObj       As t_Obj
+    Dim ItemIndex   As Integer
+    Dim BreakChance As Integer
+    Dim TrashObj    As t_Obj
+    TrashObj.ObjIndex = 7337
     With UserList(UserIndex)
         If ((.pos.Map = 58 Or .pos.Map = 59 Or .pos.Map = 60 Or .pos.Map = 61) And EnEventoFaccionario) Then Exit Sub
         ' Tambien se cae el oro de la billetera
@@ -2919,6 +2922,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
             ItemIndex = .invent.Object(i).ObjIndex
             If ItemIndex > 0 Then
                 If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex, i) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
+                    BreakChance = RandomNumber(1, 100)
                     NuevaPos.x = 0
                     NuevaPos.y = 0
                     MiObj.amount = DropAmmount(.invent, i)
@@ -2931,7 +2935,14 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
                         Call ClosestLegalPos(.pos, NuevaPos, .flags.Navegando, Not .flags.Navegando)
                     End If
                     If NuevaPos.x <> 0 And NuevaPos.y <> 0 Then
-                        Call DropObj(UserIndex, i, MiObj.amount, NuevaPos.Map, NuevaPos.x, NuevaPos.y)
+                        If BreakChance <= 50 Then
+                            Call DropObj(UserIndex, i, MiObj.amount, NuevaPos.Map, NuevaPos.x, NuevaPos.y)
+                        Else
+                            Call QuitarUserInvItem(UserIndex, i, MiObj.amount)
+                            Call UpdateUserInv(False, UserIndex, i)
+                            TrashObj.amount = MiObj.amount
+                            Call MakeObj(TrashObj, NuevaPos.Map, NuevaPos.x, NuevaPos.y)
+                        End If
                         '  Si no hay lugar, quemamos el item del inventario (nada de mochilas gratis)
                     Else
                         Call QuitarUserInvItem(UserIndex, i, MiObj.amount)
