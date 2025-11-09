@@ -480,6 +480,15 @@ InMapBounds_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.InMapBounds", Erl)
 End Function
 
+Public Function TileRequiresPatreon(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    On Error GoTo TileRequiresPatreon_Err
+    If Not InMapBounds(Map, x, y) Then Exit Function
+    TileRequiresPatreon = MapData(Map, x, y).trigger = e_Trigger.ONLY_PATREON_TILE
+    Exit Function
+TileRequiresPatreon_Err:
+    Call TraceError(Err.Number, Err.Description, "Extra.TileRequiresPatreon", Erl)
+End Function
+
 Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, ByVal MaxRange As Integer, Optional ByVal IgnoreUsers As Boolean, Optional ByVal IgnoreDeadUsers As Boolean) As t_WorldPos
     On Error GoTo ErrHandler
     Dim LoopC As Integer
@@ -841,6 +850,17 @@ Function LegalWalk(ByVal Map As Integer, _
         End If
         If .trigger = WORKERONLY Then
             If Not UserList(WalkerIndex).clase = Trabajador Then Exit Function
+        End If
+        If WalkerIndex <> 0 Then
+            If TileRequiresPatreon(Map, x, y) Then
+                If Not EsGM(WalkerIndex) And Not IsPatreon(WalkerIndex) Then
+                    If UserList(WalkerIndex).flags.UltimoMensaje <> 108 Then
+                        Call WriteLocaleMsg(WalkerIndex, 776, e_FontTypeNames.FONTTYPE_INFO)
+                        UserList(WalkerIndex).flags.UltimoMensaje = 108
+                    End If
+                    Exit Function
+                End If
+            End If
         End If
         If (.Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
     End With
