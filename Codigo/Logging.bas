@@ -59,6 +59,7 @@ Private Enum eType_Log
     Premios = 17
     DatabaseError = 18
     Security = 19
+    BankTransfer = 20
 End Enum
 
 Private Type t_CircularBuffer
@@ -246,6 +247,20 @@ Public Sub LogSecurity(str As String)
     Exit Sub
 ErrHandler:
 End Sub
+Public Sub LogBankTransfer(ByVal originUser As String, ByVal targetUser As String, ByVal amount As Long, Optional ByVal receiverOnline As Boolean = False)
+    On Error GoTo ErrHandler
+    Dim transferContext As String
+    If receiverOnline Then
+        transferContext = "destinatario en línea"
+    Else
+        transferContext = "destinatario fuera de línea"
+    End If
+    Call LogThis(eType_Log.BankTransfer, "[BankTransfers.log] " & originUser & " transfirió " & amount & " monedas a " & targetUser & " (" & transferContext & ")", vbLogEventTypeInformation)
+    Exit Sub
+ErrHandler:
+End Sub
+
+
 
 Public Sub TraceError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
     #If DEBUGGING = 1 Then
