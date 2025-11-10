@@ -304,25 +304,13 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 End Sub
 
 Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
-    '********************************************************
-    'Autor: Nacho (Integer)
-    'Last Modif: 28/01/2007
-    'Chequea si ya debe mostrarse
-    'Pablo (ToxicWaste): Cambie los ordenes de prioridades porque sino no andaba.
-    '********************************************************
     On Error GoTo DoPermanecerOculto_Err
     With UserList(UserIndex)
         Dim velocidadOcultarse As Integer
         velocidadOcultarse = 1
-        'HarThaoS: Si tiene armadura de cazador, dependiendo skills vemos cuanto tiempo se oculta
         If .clase = e_Class.Hunter Then
-            If TieneArmaduraCazador(UserIndex) Then
-                Select Case .Stats.UserSkills(e_Skill.Ocultarse)
-                    Case Is = 100
-                        Exit Sub
-                    Case Is < 100
-                        velocidadOcultarse = RandomNumber(0, 1)
-                End Select
+            If ObjData(.invent.EquippedArmorObjIndex).Camouflage And .Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+                Exit Sub
             End If
         End If
         .Counters.TiempoOculto = .Counters.TiempoOculto - velocidadOcultarse
