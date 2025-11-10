@@ -5986,7 +5986,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                 UserList(tUser.ArrayIndex).Stats.Banco = UserList(tUser.ArrayIndex).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
                 Call LogBankTransfer(.name, username, Cantidad, True)
             End If
-            Call WriteLocaleChatOverHead(UserIndex, 1435, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1435=¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath
+            Call WriteLocaleChatOverHead(UserIndex, 1435, "¬1", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1435=¡El envío se ha realizado con éxito! Has transferido oro a ¬1. Gracias por utilizar los servicios de Finanzas Goliath.
         Else
             Call WriteLocaleChatOverHead(UserIndex, 1413, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1413=Los administradores no pueden transferir oro.
             Call LogGM(.name, "Quizo transferirle oro a: " & username)
