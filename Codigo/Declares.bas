@@ -2516,7 +2516,6 @@ Public Type t_UserFlags
     Nadando As Byte
     PescandoEspecial As Boolean
     QuestOpenByObj As Boolean
-    SigueUsuario As t_UserReference
     EnTorneo As Boolean
     stepToggle As Boolean
     SpouseId As Long
@@ -2605,7 +2604,7 @@ Public Type t_UserFlags
     Ban As Byte
     AdministrativeBan As Byte
     BanMotivo As String
-    TargetUser As t_UserReference ' Usuario señalado
+    targetUser As t_UserReference ' Usuario señalado
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer
     TargetObjX As Integer
