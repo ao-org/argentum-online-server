@@ -1185,7 +1185,6 @@ Dim Ropaje                      As Integer
                             Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         End If
                     End If
-                    Exit Sub
 
             Case e_OBJType.otBackpack
                 errordesc = "Backpack"
