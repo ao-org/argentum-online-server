@@ -1594,12 +1594,8 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleRequestPositionUpdate(ByVal UserIndex As Integer)
     On Error GoTo HandleRequestPositionUpdate_Err
-    If UserList(UserIndex).flags.SigueUsuario.ArrayIndex > 0 Then
-        Call WritePosUpdateCharIndex(UserIndex, UserList(UserList(UserIndex).flags.SigueUsuario.ArrayIndex).pos.x, UserList(UserList( _
-                UserIndex).flags.SigueUsuario.ArrayIndex).pos.y, UserList(UserList(UserIndex).flags.SigueUsuario.ArrayIndex).Char.charindex)
-    Else
-        Call WritePosUpdate(UserIndex)
-    End If
+    Call WritePosUpdate(UserIndex)
+
     Exit Sub
 HandleRequestPositionUpdate_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandlRequestPositionUpdate", Erl)
@@ -1931,11 +1927,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, 699, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        If UserList(UserIndex).flags.SigueUsuario.ArrayIndex > 0 Then
-            ' Msg700=No podes tirar items cuando estas siguiendo a alguien.
-            Call WriteLocaleMsg(UserIndex, 700, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
+       
         'Are we dropping gold or other items??
         If Slot = FLAGORO Then
             If amount > 100000 Then amount = 100000
