@@ -1594,12 +1594,8 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleRequestPositionUpdate(ByVal UserIndex As Integer)
     On Error GoTo HandleRequestPositionUpdate_Err
-    If UserList(UserIndex).flags.SigueUsuario.ArrayIndex > 0 Then
-        Call WritePosUpdateCharIndex(UserIndex, UserList(UserList(UserIndex).flags.SigueUsuario.ArrayIndex).pos.x, UserList(UserList( _
-                UserIndex).flags.SigueUsuario.ArrayIndex).pos.y, UserList(UserList(UserIndex).flags.SigueUsuario.ArrayIndex).Char.charindex)
-    Else
-        Call WritePosUpdate(UserIndex)
-    End If
+    Call WritePosUpdate(UserIndex)
+
     Exit Sub
 HandleRequestPositionUpdate_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandlRequestPositionUpdate", Erl)
@@ -1931,11 +1927,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, 699, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        If UserList(UserIndex).flags.SigueUsuario.ArrayIndex > 0 Then
-            ' Msg700=No podes tirar items cuando estas siguiendo a alguien.
-            Call WriteLocaleMsg(UserIndex, 700, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
+       
         'Are we dropping gold or other items??
         If Slot = FLAGORO Then
             If amount > 100000 Then amount = 100000
@@ -5971,6 +5963,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                         Else
                             UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
                         End If
+                        Call LogBankTransfer(.name, username, Cantidad, False)
                         .Counters.LastTransferGold = nowRaw
                     Else
                         Call WriteLocaleChatOverHead(UserIndex, 1410, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1410=El usuario no existe.
@@ -5983,6 +5976,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
             Else
                 UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
                 UserList(tUser.ArrayIndex).Stats.Banco = UserList(tUser.ArrayIndex).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
+                Call LogBankTransfer(.name, username, Cantidad, True)
             End If
             Call WriteLocaleChatOverHead(UserIndex, 1435, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1435=¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath
         Else

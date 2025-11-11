@@ -1006,16 +1006,6 @@ WriteForceCharMove_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteForceCharMove", Erl)
 End Sub
 
-Public Sub WriteForceCharMoveSiguiendo(ByVal UserIndex As Integer, ByVal Direccion As e_Heading)
-    On Error GoTo WriteForceCharMoveSiguiendo_Err
-    Call Writer.WriteInt16(ServerPacketID.eForceCharMoveSiguiendo)
-    Call Writer.WriteInt8(Direccion)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteForceCharMoveSiguiendo_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteForceCharMoveSiguiendo", Erl)
-End Sub
 
 ''
 ' Writes the "CharacterChange" message to the given user's outgoing data .incomingData.
@@ -1981,17 +1971,6 @@ Public Sub WriteBindKeys(ByVal UserIndex As Integer)
 WriteBindKeys_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBindKeys", Erl)
-End Sub
-
-Public Sub WriteNotificarClienteSeguido(ByVal UserIndex As Integer, ByVal siguiendo As Byte)
-    On Error GoTo WriteNotificarClienteSeguido_Err
-    Call Writer.WriteInt16(ServerPacketID.eNotificarClienteSeguido)
-    Call Writer.WriteInt8(siguiendo)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-WriteNotificarClienteSeguido_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNotificarClienteSeguido", Erl)
 End Sub
 
 
@@ -4064,15 +4043,6 @@ PrepareMessageForceCharMove_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageForceCharMove", Erl)
 End Function
 
-Public Function PrepareMessageForceCharMoveSiguiendo(ByVal Direccion As e_Heading)
-    On Error GoTo PrepareMessageForceCharMoveSiguiendo_Err
-    Call Writer.WriteInt16(ServerPacketID.eForceCharMoveSiguiendo)
-    Call Writer.WriteInt8(Direccion)
-    Exit Function
-PrepareMessageForceCharMoveSiguiendo_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageForceCharMoveSiguiendo", Erl)
-End Function
 
 ''
 ' Prepares the "UpdateTagAndStatus" message and returns it.

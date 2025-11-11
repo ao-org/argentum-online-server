@@ -1115,7 +1115,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
         .CurrentTeam = 0
         .jugando_captura_timer = 0
         .jugando_captura_muertes = 0
-        Call SetUserRef(.SigueUsuario, 0)
     End With
     Exit Sub
 ResetUserFlags_Err:
@@ -1306,13 +1305,6 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
             Call CancelarSolicitudReto(UserIndex, .name & " se ha desconectado.")
         ElseIf IsValidUserRef(.flags.AceptoReto) Then
             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .name & " se ha desconectado.")
-        End If
-        If IsValidUserRef(.flags.SigueUsuario) Then
-            'Para que el usuario deje de mandar el floodeo de paquetes
-            Call WriteNotificarClienteSeguido(.flags.SigueUsuario.ArrayIndex, 0)
-            UserList(UserIndex).invent = UserList(UserIndex).Invent_bk
-            UserList(UserIndex).Stats = UserList(UserIndex).Stats_bk
-            Call SetUserRef(.flags.SigueUsuario, 0)
         End If
         errordesc = "ERROR AL SACAR MIMETISMO"
         If .flags.Mimetizado > 0 Then
