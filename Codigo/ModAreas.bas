@@ -216,15 +216,6 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
         .AreasInfo.AreaReciveY = AreasRecive(TempInt)
         .AreasInfo.AreaPerteneceY = 2 ^ TempInt
         .AreasInfo.AreaID = AreasInfo(.pos.x, .pos.y)
-        'Es un gm que está siguiendo a un usuario
-        If .flags.SigueUsuario.ArrayIndex > 0 Then
-            .AreasInfo.AreaReciveX = UserList(.flags.SigueUsuario.ArrayIndex).AreasInfo.AreaReciveX
-            .AreasInfo.AreaPerteneceX = UserList(.flags.SigueUsuario.ArrayIndex).AreasInfo.AreaPerteneceX
-            .AreasInfo.AreaReciveY = UserList(.flags.SigueUsuario.ArrayIndex).AreasInfo.AreaReciveY
-            .AreasInfo.AreaPerteneceY = UserList(.flags.SigueUsuario.ArrayIndex).AreasInfo.AreaPerteneceY
-            .AreasInfo.AreaID = UserList(.flags.SigueUsuario.ArrayIndex).AreasInfo.AreaID
-        End If
-        'Es un usuario que está siendo seguido
     End With
     Exit Sub
 CheckUpdateNeededUser_Err:

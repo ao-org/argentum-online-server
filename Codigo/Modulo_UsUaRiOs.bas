@@ -2438,18 +2438,6 @@ WarpMascotas_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.WarpMascotas", Erl)
 End Sub
 
-Function TieneArmaduraCazador(ByVal UserIndex As Integer) As Boolean
-    On Error GoTo TieneArmaduraCazador_Err
-    If UserList(UserIndex).invent.EquippedArmorObjIndex > 0 Then
-        If ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).Subtipo = 3 Then ' Aguante hardcodear números :D
-            TieneArmaduraCazador = True
-        End If
-    End If
-    Exit Function
-TieneArmaduraCazador_Err:
-    Call TraceError(Err.Number, Err.Description, "UsUaRiOs.TieneArmaduraCazador", Erl)
-End Function
-
 Public Sub SetModoConsulta(ByVal UserIndex As Integer)
     '***************************************************
     'Author: Torres Patricio (Pato)
