@@ -639,10 +639,16 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
         End If
         If .clase = e_Class.Druid Then
             If Hechizos(HechizoIndex).RequiereInstrumento > 0 Then
-                If .invent.EquippedRingAccesoryObjIndex = 0 Or ObjData(.invent.EquippedRingAccesoryObjIndex).InstrumentoRequerido <> 1 Then
+                If .invent.EquippedRingAccesoryObjIndex = 0 Then
                     'Msg783= Necesitás una flauta para invocar o desinvocar a tus mascotas.
                     Call WriteLocaleMsg(UserIndex, 783, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
+                Else
+                    If ObjData(.invent.EquippedRingAccesoryObjIndex).InstrumentoRequerido <> 1 Then
+                    'Msg783= Necesitás una flauta para invocar o desinvocar a tus mascotas.
+                        Call WriteLocaleMsg(UserIndex, 783, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                    End If
                 End If
             End If
         End If
@@ -1697,7 +1703,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         End If
         ' Si no esta envenenado, no hay nada mas que hacer
         If UserList(targetUserIndex).flags.Envenenado = 0 Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1871, UserList(targetUserIndex).name, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1871=¬1 no está envenenado, el hechizo no tiene efecto.
+            Call WriteLocaleMsg(UserIndex, 1871, e_FontTypeNames.FONTTYPE_INFOIAO, UserList(targetUserIndex).name) ' Msg1871=¬1 no está envenenado, el hechizo no tiene efecto.
             b = False
             Exit Sub
         End If
@@ -2501,7 +2507,9 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 
     If IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then
         Call CastOnUser(UserIndex, h, skin, UserList(UserIndex).flags.TargetUser.ArrayIndex)
+        
     ElseIf IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
+    
         Call CastOnNpc(UserIndex, h, skin, UserList(UserIndex).flags.TargetNPC.ArrayIndex)
     Else
         Call CastOnTerrain(UserIndex, h, skin)
@@ -2532,21 +2540,19 @@ End Function
 ' --- Helper 1: Target USER ---
 Private Sub CastOnUser(ByVal UserIndex As Integer, ByVal h As Integer, ByVal skin As Integer, ByVal TargetIndex As Integer)
     On Error GoTo CastOnUser_Err
-
     Dim fxId As Integer
-
     ' FX
     If Hechizos(h).FXgrh > 0 Then
         UserList(TargetIndex).Counters.timeFx = 3
         If Hechizos(h).ParticleViaje > 0 Then
             Call SendData( _
-                SendTarget.ToPCAliveArea, TargetIndex, _
-                PrepareMessageParticleFXWithDestino( _
-                    UserList(UserIndex).Char.charindex, _
-                    UserList(TargetIndex).Char.charindex, _
-                    Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, _
-                    Hechizos(h).TimeParticula, Hechizos(h).wav, 1, _
-                    UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
+               SendTarget.ToPCAliveArea, TargetIndex, _
+               PrepareMessageParticleFXWithDestino( _
+               UserList(UserIndex).Char.charindex, _
+               UserList(TargetIndex).Char.charindex, _
+               Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, _
+               Hechizos(h).TimeParticula, Hechizos(h).wav, 1, _
+               UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
         Else
             If skin > 0 Then
                 fxId = skin
@@ -2554,43 +2560,46 @@ Private Sub CastOnUser(ByVal UserIndex As Integer, ByVal h As Integer, ByVal ski
                 fxId = Hechizos(h).FXgrh
             End If
             Call SendData( _
-                SendTarget.ToPCAliveArea, TargetIndex, _
-                PrepareMessageCreateFX( _
-                    UserList(TargetIndex).Char.charindex, fxId, Hechizos(h).loops, _
-                    UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
+               SendTarget.ToPCAliveArea, TargetIndex, _
+               PrepareMessageCreateFX( _
+               UserList(TargetIndex).Char.charindex, fxId, Hechizos(h).loops, _
+               UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
         End If
     End If
-
     ' Partículas
     If Hechizos(h).Particle > 0 Then
         UserList(TargetIndex).Counters.timeFx = 3
         If Hechizos(h).ParticleViaje > 0 Then
             Call SendData( _
-                SendTarget.ToPCAliveArea, TargetIndex, _
-                PrepareMessageParticleFXWithDestino( _
-                    UserList(TargetIndex).Char.charindex, _
-                    UserList(TargetIndex).Char.charindex, _
-                    Hechizos(h).ParticleViaje, Hechizos(h).Particle, _
-                    Hechizos(h).TimeParticula, Hechizos(h).wav, 0, _
-                    UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
+               SendTarget.ToPCAliveArea, TargetIndex, _
+               PrepareMessageParticleFXWithDestino( _
+               UserList(TargetIndex).Char.charindex, _
+               UserList(TargetIndex).Char.charindex, _
+               Hechizos(h).ParticleViaje, Hechizos(h).Particle, _
+               Hechizos(h).TimeParticula, Hechizos(h).wav, 0, _
+               UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
         Else
             Call SendData( _
-                SendTarget.ToPCAliveArea, TargetIndex, _
-                PrepareMessageParticleFX( _
-                    UserList(TargetIndex).Char.charindex, _
-                    Hechizos(h).Particle, Hechizos(h).TimeParticula, False, , _
-                    UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
+               SendTarget.ToPCAliveArea, TargetIndex, _
+               PrepareMessageParticleFX( _
+               UserList(TargetIndex).Char.charindex, _
+               Hechizos(h).Particle, Hechizos(h).TimeParticula, False, , _
+               UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
         End If
     End If
-
     ' Sonido (sin viaje)
     If Hechizos(h).ParticleViaje = 0 Then
         Call SendData( _
-            SendTarget.ToPCAliveArea, TargetIndex, _
-            PrepareMessagePlayWave(Hechizos(h).wav, _
-                UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
+           SendTarget.ToPCAliveArea, TargetIndex, _
+           PrepareMessagePlayWave(Hechizos(h).wav, _
+           UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
     End If
-
+    If UserIndex = TargetIndex Then
+        Call WriteConsoleMsg(UserIndex, "ProMSG*" & h, e_FontTypeNames.FONTTYPE_FIGHT)
+    Else
+        Call WriteConsoleMsg(UserIndex, "HecMSGU*" & h & "*" & UserList(TargetIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteConsoleMsg(TargetIndex, "HecMSGA*" & h & "*" & UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)
+    End If
     ' Efecto de pantalla
     If Hechizos(h).TimeEfect <> 0 Then
         Call WriteFlashScreen(UserIndex, Hechizos(h).ScreenColor, Hechizos(h).TimeEfect)
@@ -3021,7 +3030,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
             Exit Sub
         End If
         If UserList(tempChr).Stats.MinHp = UserList(tempChr).Stats.MaxHp Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1906, UserList(tempChr).name, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1906=¬1 no tiene heridas para curar.
+            Call WriteLocaleMsg(UserIndex, 1906, e_FontTypeNames.FONTTYPE_INFOIAO, UserList(tempChr).name) ' Msg1906=¬1 no tiene heridas para curar.
             b = False
             Exit Sub
         End If
@@ -4172,9 +4181,6 @@ Public Sub UseSpellSlot(ByVal UserIndex As Integer, ByVal spellSlot As Integer)
                         Call SetUserRef(UserList(UserIndex).flags.TargetUser, UserIndex)
                         Call LanzarHechizo(.flags.Hechizo, UserIndex)
                     Else
-                        If IsValidUserRef(.flags.GMMeSigue) Then
-                            Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 1)
-                        End If
                         If Hechizos(.Stats.UserHechizos(spellSlot)).AreaAfecta > 0 Then
                             Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia, True, Hechizos(.Stats.UserHechizos(spellSlot)).AreaRadio)
                         Else

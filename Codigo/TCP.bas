@@ -722,28 +722,41 @@ End Function
 
 Function ConnectUser(ByVal UserIndex As Integer, ByRef name As String, Optional ByVal newUser As Boolean = False) As Boolean
     On Error GoTo ErrHandler
+    Dim PerformanceTimer As Long
     ConnectUser = False
+    Dim failureReason As String
+    Dim logMessage As String
+    Call PerformanceTestStart(PerformanceTimer)
+
     With UserList(UserIndex)
-        If Not ConnectUser_Check(UserIndex, name) Then
-            Call LogSecurity("ConnectUser_Check " & name & " failed.")
-            Exit Function
-        End If
-        Call ConnectUser_Prepare(UserIndex, name)
-        If LoadCharacterFromDB(UserIndex) Then
-            If ConnectUser_Complete(UserIndex, name, newUser) Then
-                ConnectUser = True
-                Exit Function
+        If Not ConnectUser_Check(UserIndex, name, failureReason) Then
+            logMessage = "ConnectUser_Check " & name & " failed."
+            If LenB(failureReason) > 0 Then
+                logMessage = logMessage & " Reason: " & failureReason
             End If
+            Call LogSecurity(logMessage)
         Else
-            Call WriteShowMessageBox(UserIndex, 1773, vbNullString) 'Msg1773=No se puede cargar el personaje.
-            Call CloseSocket(UserIndex)
+            Call ConnectUser_Prepare(UserIndex, name)
+
+            If LoadCharacterFromDB(UserIndex) Then
+                If ConnectUser_Complete(UserIndex, name, newUser) Then
+                    ConnectUser = True
+                End If
+            Else
+                Call WriteShowMessageBox(UserIndex, 1773, vbNullString) 'Msg1773=No se puede cargar el personaje.
+                Call CloseSocket(UserIndex)
+            End If
         End If
     End With
+
+    Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUser")
     Exit Function
+
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
     Call CloseSocket(UserIndex)
+    Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUser")
 End Function
 
 Private Sub SendWelcomeUptime(ByVal UserIndex As Integer)
@@ -1102,8 +1115,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
         .CurrentTeam = 0
         .jugando_captura_timer = 0
         .jugando_captura_muertes = 0
-        Call SetUserRef(.SigueUsuario, 0)
-        Call SetUserRef(.GMMeSigue, 0)
     End With
     Exit Sub
 ResetUserFlags_Err:
@@ -1294,28 +1305,6 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
             Call CancelarSolicitudReto(UserIndex, .name & " se ha desconectado.")
         ElseIf IsValidUserRef(.flags.AceptoReto) Then
             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .name & " se ha desconectado.")
-        End If
-        'Se desconecta un usuario seguido
-        If IsValidUserRef(.flags.GMMeSigue) Then
-            Call WriteCancelarSeguimiento(.flags.GMMeSigue.ArrayIndex)
-            Call SetUserRef(UserList(.flags.GMMeSigue.ArrayIndex).flags.SigueUsuario, 0)
-            UserList(.flags.GMMeSigue.ArrayIndex).invent = UserList(.flags.GMMeSigue.ArrayIndex).Invent_bk
-            UserList(.flags.GMMeSigue.ArrayIndex).Stats = UserList(.flags.GMMeSigue.ArrayIndex).Stats_bk
-            'UserList(.flags.GMMeSigue).Char.charindex = UserList(.flags.GMMeSigue).Char.charindex_bk
-            Call WriteUserCharIndexInServer(.flags.GMMeSigue.ArrayIndex)
-            Call UpdateUserInv(True, .flags.GMMeSigue.ArrayIndex, 1)
-            Call WriteUpdateUserStats(.flags.GMMeSigue.ArrayIndex)
-            Call WriteConsoleMsg(.flags.GMMeSigue.ArrayIndex, PrepareMessageLocaleMsg(1866, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1866=El usuario ¬1 que estabas siguiendo se desconectó.
-            Call SetUserRef(.flags.GMMeSigue, 0)
-            'Falta revertir inventario del GM
-        End If
-        If IsValidUserRef(.flags.SigueUsuario) Then
-            'Para que el usuario deje de mandar el floodeo de paquetes
-            Call WriteNotificarClienteSeguido(.flags.SigueUsuario.ArrayIndex, 0)
-            Call SetUserRef(UserList(.flags.SigueUsuario.ArrayIndex).flags.GMMeSigue, 0)
-            UserList(UserIndex).invent = UserList(UserIndex).Invent_bk
-            UserList(UserIndex).Stats = UserList(UserIndex).Stats_bk
-            Call SetUserRef(.flags.SigueUsuario, 0)
         End If
         errordesc = "ERROR AL SACAR MIMETISMO"
         If .flags.Mimetizado > 0 Then

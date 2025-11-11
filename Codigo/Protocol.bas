@@ -184,9 +184,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Mapping(ConnectionID).TimeLastReset = actual_time
             Mapping(ConnectionID).PacketCount = 0
         End If
-        If PacketId <> ClientPacketID.eSendPosSeguimiento Then
-            Mapping(ConnectionID).PacketCount = Mapping(ConnectionID).PacketCount + 1
-        End If
+        Mapping(ConnectionID).PacketCount = Mapping(ConnectionID).PacketCount + 1
         If Mapping(ConnectionID).PacketCount > 100 Then
             'Lo kickeo
             If UserIndex > 0 Then
@@ -529,10 +527,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleRequestCharSkills(UserIndex)
         Case ClientPacketID.eReviveChar
             Call HandleReviveChar(UserIndex)
-        Case ClientPacketID.eSeguirMouse
-            Call HandleSeguirMouse(UserIndex)
-        Case ClientPacketID.eSendPosSeguimiento
-            Call HandleSendPosMovimiento(UserIndex)
         Case ClientPacketID.eNotifyInventarioHechizos
             Call HandleNotifyInventariohechizos(UserIndex)
         Case ClientPacketID.eOnlineGM
@@ -695,14 +689,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleShowServerForm(UserIndex)
         Case ClientPacketID.eKickAllChars
             Call HandleKickAllChars(UserIndex)
-        Case ClientPacketID.eReloadNPCs
-            Call HandleReloadNPCs(UserIndex)
-        Case ClientPacketID.eReloadServerIni
-            Call HandleReloadServerIni(UserIndex)
-        Case ClientPacketID.eReloadSpells
-            Call HandleReloadSpells(UserIndex)
-        Case ClientPacketID.eReloadObjects
-            Call HandleReloadObjects(UserIndex)
         Case ClientPacketID.eChatColor
             Call HandleChatColor(UserIndex)
         Case ClientPacketID.eIgnored
@@ -1608,12 +1594,8 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleRequestPositionUpdate(ByVal UserIndex As Integer)
     On Error GoTo HandleRequestPositionUpdate_Err
-    If UserList(UserIndex).flags.SigueUsuario.ArrayIndex > 0 Then
-        Call WritePosUpdateCharIndex(UserIndex, UserList(UserList(UserIndex).flags.SigueUsuario.ArrayIndex).pos.x, UserList(UserList( _
-                UserIndex).flags.SigueUsuario.ArrayIndex).pos.y, UserList(UserList(UserIndex).flags.SigueUsuario.ArrayIndex).Char.charindex)
-    Else
-        Call WritePosUpdate(UserIndex)
-    End If
+    Call WritePosUpdate(UserIndex)
+
     Exit Sub
 HandleRequestPositionUpdate_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandlRequestPositionUpdate", Erl)
@@ -1915,19 +1897,23 @@ End Sub
 Private Sub HandleDrop(ByVal UserIndex As Integer)
     On Error GoTo HandleDrop_Err
     'Agregue un checkeo para patear a los usuarios que tiran items mientras comercian.
-    Dim Slot   As Byte
-    Dim amount As Long
+    Dim Slot          As Byte
+    Dim amount        As Long
+    Dim PacketCounter As Long
+    Dim Packet_ID     As Long
     With UserList(UserIndex)
         Slot = reader.ReadInt8()
         amount = reader.ReadInt32()
-        Dim PacketCounter As Long
         PacketCounter = reader.ReadInt32
-        Dim Packet_ID As Long
         Packet_ID = PacketNames.Drop
         If Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots Then
             If Slot <> GOLD_SLOT Then
                 Exit Sub
             End If
+        End If
+        If IsInMapCarcelRestrictedArea(.pos) Then
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_PICK_UP_ITEMS_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
+            Exit Sub
         End If
         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
         If .flags.PescandoEspecial = True Then Exit Sub
@@ -1941,11 +1927,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, 699, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        If UserList(UserIndex).flags.SigueUsuario.ArrayIndex > 0 Then
-            ' Msg700=No podes tirar items cuando estas siguiendo a alguien.
-            Call WriteLocaleMsg(UserIndex, 700, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
+       
         'Are we dropping gold or other items??
         If Slot = FLAGORO Then
             If amount > 100000 Then amount = 100000
@@ -2541,9 +2523,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 If .flags.Hechizo > 0 Then
                     .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales + 1
                     Call LanzarHechizo(.flags.Hechizo, UserIndex)
-                    If IsValidUserRef(.flags.GMMeSigue) Then
-                        Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 0)
-                    End If
                     .flags.Hechizo = 0
                 Else
                     ' Msg587=¡Primero selecciona el hechizo que quieres lanzar!
@@ -2594,11 +2573,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 Call WriteLocaleMsg(UserIndex, 713, e_FontTypeNames.FONTTYPE_INFO)
                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                 Exit Sub
-                            End If
-                            '¡Hay un arbol donde clickeo?
-                            If ObjData(DummyInt).OBJType = e_OBJType.otPlants Then
-                                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TIJERAS, .pos.x, .pos.y))
-                                Call DoRaices(UserIndex, x, y)
                             End If
                         Else
                             ' Msg604=No podés quitar raices allí.
@@ -4278,6 +4252,10 @@ End Sub
 Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
     On Error GoTo HandleCommerceStart_Err
     With UserList(UserIndex)
+        If IsInMapCarcelRestrictedArea(.pos) Then
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_TRADE_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
+            Exit Sub
+        End If
         'Dead people can't commerce
         If .flags.Muerto = 1 Then
             ''Msg77=¡¡Estás muerto!!.)
@@ -4995,11 +4973,7 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTraerBoveda", Erl)
 End Sub
 
-Private Sub HandleSendPosMovimiento(ByVal UserIndex As Integer)
-    'TODO: delete
-End Sub
 
-' Handles the "SendPosMovimiento" message.
 Private Sub HandleNotifyInventariohechizos(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
@@ -5009,18 +4983,13 @@ Private Sub HandleNotifyInventariohechizos(ByVal UserIndex As Integer)
         value = reader.ReadInt8()
         hechiSel = reader.ReadInt8()
         scrollSel = reader.ReadInt8()
-        If IsValidUserRef(.flags.GMMeSigue) Then
-            Call WriteGetInventarioHechizos(.flags.GMMeSigue.ArrayIndex, value, hechiSel, scrollSel)
-        End If
     End With
     Exit Sub
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReviveChar", Erl)
 End Sub
 
-'HarThaoS: Agrego perdón faccionario.
-'Lee abajo
-'Lee arriba
+
 Private Sub HandlePerdonFaccion(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
@@ -5994,6 +5963,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                         Else
                             UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
                         End If
+                        Call LogBankTransfer(.name, username, Cantidad, False)
                         .Counters.LastTransferGold = nowRaw
                     Else
                         Call WriteLocaleChatOverHead(UserIndex, 1410, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1410=El usuario no existe.
@@ -6006,6 +5976,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
             Else
                 UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
                 UserList(tUser.ArrayIndex).Stats.Banco = UserList(tUser.ArrayIndex).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
+                Call LogBankTransfer(.name, username, Cantidad, True)
             End If
             Call WriteLocaleChatOverHead(UserIndex, 1435, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1435=¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath
         Else
@@ -6231,10 +6202,6 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
             End If
             Call UpdateUserInv(False, UserIndex, SlotViejo)
             Call UpdateUserInv(False, UserIndex, SlotNuevo)
-        End If
-        If IsValidUserRef(.flags.GMMeSigue) Then
-            UserList(.flags.GMMeSigue.ArrayIndex).invent = UserList(UserIndex).invent
-            Call UpdateUserInv(True, UserIndex, 1)
         End If
     End With
     Exit Sub
@@ -7388,6 +7355,10 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
     On Error GoTo HandleHome_Err
     'Add the UCase$ to prevent problems.
     With UserList(UserIndex)
+        If IsInMapCarcelRestrictedArea(UserList(UserIndex).pos) Then
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_USE_HOME_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
+            Exit Sub
+        End If
         If .flags.Muerto = 0 Then
             'Msg1272= Debes estar muerto para utilizar este comando.
             Call WriteLocaleMsg(UserIndex, 1272, e_FontTypeNames.FONTTYPE_INFO)
@@ -7825,7 +7796,7 @@ Dim Slot As Byte
                 'Msg1288= No puedes eliminar un objeto estando equipado.
                 Call WriteLocaleMsg(UserIndex, 1288, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-            end if
+            End If
         Else
             If Slot > MAX_SKINSINVENTORY_SLOTS Or Slot <= 0 Then Exit Sub
             
@@ -7896,9 +7867,6 @@ Public Sub HandleActionOnGroupFrame(ByVal UserIndex As Integer)
             .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales + 1
             Call LanzarHechizo(.flags.Hechizo, UserIndex)
             Call WriteWorkRequestTarget(UserIndex, 0)
-            If IsValidUserRef(.flags.GMMeSigue) Then
-                Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 0)
-            End If
             .flags.Hechizo = 0
         Else
             ' Msg587=¡Primero selecciona el hechizo que quieres lanzar!
@@ -7986,3 +7954,10 @@ Public Sub HendleRequestLobbyList(ByVal UserIndex As Integer)
 HendleRequestLobbyList_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HendleRequestLobbyList", Erl)
 End Sub
+Public Function IsInMapCarcelRestrictedArea(ByRef position As t_WorldPos) As Boolean
+    If position.Map <> MAP_HOME_IN_JAIL Then Exit Function
+
+    If position.x >= 33 And position.x <= 62 And position.y >= 32 And position.y <= 62 Then
+        IsInMapCarcelRestrictedArea = True
+    End If
+End Function

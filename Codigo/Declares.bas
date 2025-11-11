@@ -1723,9 +1723,6 @@ Public Type t_Hechizo
     nombre As String
     Desc As String
     PalabrasMagicas As String
-    HechizeroMsg As String
-    TargetMsg As String
-    PropioMsg As String
     Tipo As e_TipoHechizo
     SkillType As e_SkillType
     wav As Integer
@@ -2148,6 +2145,12 @@ Public Enum e_ObjFlags
     e_UseOnSafeAreaOnly = 2
 End Enum
 
+
+Public Enum e_AnvilType
+    IronAnvil = 1
+    BlodiumAnvil = 2
+End Enum
+
 'Tipos de objetos
 Public Type t_ObjData
     Pino As Byte
@@ -2258,6 +2261,8 @@ Public Type t_ObjData
     RopajeEnana As Integer
     RopajeOrca As Integer
     RopajeGnoma As Integer
+    RazaAltos As Integer
+    RazaBajos As Integer
     WeaponAnim As Integer ' Apunta a una anim de armas
     ShieldAnim As Integer ' Apunta a una anim de escudo
     CascoAnim As Integer
@@ -2511,8 +2516,6 @@ Public Type t_UserFlags
     Nadando As Byte
     PescandoEspecial As Boolean
     QuestOpenByObj As Boolean
-    SigueUsuario As t_UserReference
-    GMMeSigue As t_UserReference
     EnTorneo As Boolean
     stepToggle As Boolean
     SpouseId As Long
@@ -2601,7 +2604,7 @@ Public Type t_UserFlags
     Ban As Byte
     AdministrativeBan As Byte
     BanMotivo As String
-    TargetUser As t_UserReference ' Usuario señalado
+    targetUser As t_UserReference ' Usuario señalado
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer
     TargetObjX As Integer
@@ -3503,7 +3506,6 @@ Public MinimumPriceMao                        As Long
 Public GoldPriceMao                           As Long
 Public MinimumLevelMao                        As Integer
 Public ServerSoloGMs                          As Integer
-Public EnPausa                                As Boolean
 Public EnTesting                              As Boolean
 Public PendingConnectionTimeout               As Long
 Public InstanceMapCount                       As Integer

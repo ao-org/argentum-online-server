@@ -81,7 +81,7 @@ Sub HandleFishingNet(ByVal UserIndex As Integer)
                 Call WriteWorkRequestTarget(UserIndex, 0)
                 Exit Sub
             End If
-            Call DoPescar(UserIndex, True)
+            Call PerformFishing(UserIndex, True)
         Else
             ' Msg596=Zona de pesca no Autorizada. Busca otro lugar para hacerlo.
             Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
@@ -121,7 +121,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                                         Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
                                         Call WriteMacroTrabajoToggle(UserIndex, False)
                                     Else
-                                        Call DoPescar(UserIndex, False)
+                                        Call PerformFishing(UserIndex, False)
                                     End If
                                 Else
                                     Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
@@ -304,25 +304,13 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 End Sub
 
 Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
-    '********************************************************
-    'Autor: Nacho (Integer)
-    'Last Modif: 28/01/2007
-    'Chequea si ya debe mostrarse
-    'Pablo (ToxicWaste): Cambie los ordenes de prioridades porque sino no andaba.
-    '********************************************************
     On Error GoTo DoPermanecerOculto_Err
     With UserList(UserIndex)
         Dim velocidadOcultarse As Integer
         velocidadOcultarse = 1
-        'HarThaoS: Si tiene armadura de cazador, dependiendo skills vemos cuanto tiempo se oculta
         If .clase = e_Class.Hunter Then
-            If TieneArmaduraCazador(UserIndex) Then
-                Select Case .Stats.UserSkills(e_Skill.Ocultarse)
-                    Case Is = 100
-                        Exit Sub
-                    Case Is < 100
-                        velocidadOcultarse = RandomNumber(0, 1)
-                End Select
+            If ObjData(.invent.EquippedArmorObjIndex).Camouflage And .Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+                Exit Sub
             End If
         End If
         .Counters.TiempoOculto = .Counters.TiempoOculto - velocidadOcultarse
@@ -471,22 +459,43 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
             If .flags.Muerto = 0 Then
                 .Char.head = .OrigChar.head
                 If .invent.EquippedArmorObjIndex > 0 Then
-                    If .invent.EquippedArmorObjIndex > 0 And .Invent_Skins.ObjIndexArmourEquipped > 0 And .Invent_Skins.SlotBoatEquipped > 0 Then
-                        If .Invent_Skins.Object(.Invent_Skins.SlotBoatEquipped).Equipped Then
-                            .Char.body = ObtenerRopaje(UserIndex, ObjData(.Invent_Skins.ObjIndexArmourEquipped))
-                        Else
-                            .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
-                        End If
-                    Else
-                        .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
+                    .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
+                    If .Invent_Skins.ObjIndexArmourEquipped > 0 Then
+                        .Char.body = ObtenerRopaje(UserIndex, ObjData(.Invent_Skins.ObjIndexArmourEquipped))
                     End If
                 Else
                     Call SetNakedBody(UserList(UserIndex))
                 End If
-                If .invent.EquippedShieldObjIndex > 0 Then .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
-                If .invent.EquippedWeaponObjIndex > 0 Then .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
-                If .invent.EquippedWorkingToolObjIndex > 0 Then .Char.WeaponAnim = ObjData(.invent.EquippedWorkingToolObjIndex).WeaponAnim
-                If .invent.EquippedHelmetObjIndex > 0 Then .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+                If .invent.EquippedHelmetObjIndex > 0 Then
+                    .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+                    If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
+                        If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
+                            .Char.head = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                            .Char.CascoAnim = NingunCasco
+                        End If
+                        If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 1 Then
+                            .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                        End If
+                    End If
+                Else
+                    .Char.CascoAnim = NingunCasco
+                End If
+                If .invent.EquippedShieldObjIndex > 0 Then
+                    .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
+                    If .Invent_Skins.ObjIndexShieldEquipped > 0 Then
+                        .Char.ShieldAnim = ObjData(.Invent_Skins.ObjIndexShieldEquipped).ShieldAnim
+                    End If
+                Else
+                    .Char.ShieldAnim = NingunEscudo
+                End If
+                If .invent.EquippedWeaponObjIndex > 0 Then
+                    .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
+                    If .Invent_Skins.ObjIndexWeaponEquipped > 0 Then
+                        .Char.WeaponAnim = ObjData(.Invent_Skins.ObjIndexWeaponEquipped).WeaponAnim
+                    End If
+                Else
+                    .Char.WeaponAnim = NingunArma
+                End If
                 If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
                     If ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
                 End If
@@ -1010,6 +1019,19 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
         End If
+        Dim target As t_WorldPos
+        target.Map = UserList(UserIndex).flags.TargetMap
+        target.x = UserList(UserIndex).flags.TargetX
+        target.y = UserList(UserIndex).flags.TargetY
+        If Not LegalPos(Target.Map, Target.x, Target.y) Then
+            Exit Function
+        End If
+        If ObjData(MapData(target.Map, target.x, target.y).ObjInfo.ObjIndex).Subtipo <> e_AnvilType.BlodiumAnvil Then
+            Call WriteLocaleMsg(UserIndex, MSG_BLODIUM_ANVIL_REQUIRED, e_FontTypeNames.FONTTYPE_INFO)
+            HerreroTieneMateriales = False
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Exit Function
+        End If
     End If
     If ObjData(ItemIndex).FireEssence > 0 Then
         If Not TieneObjetos(e_Minerales.FireEssence, ObjData(ItemIndex).FireEssence, UserIndex) Then
@@ -1130,6 +1152,11 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
         Call UpdateUserInv(True, UserIndex, 0)
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
+        If IsFeatureEnabled("gain_exp_while_working") Then
+            Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Blacksmith)
+            Call WriteUpdateExp(UserIndex)
+            Call CheckUserLevel(UserIndex)
+        End If
     End If
     Exit Sub
 HerreroConstruirItem_Err:
@@ -1231,7 +1258,11 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             Call TirarItemAlPiso(UserList(UserIndex).pos, MiObj)
         End If
         Call SubirSkill(UserIndex, e_Skill.Carpinteria)
-        'Call UpdateUserInv(True, UserIndex, 0)
+        If IsFeatureEnabled("gain_exp_while_working") Then
+            Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Carpenter)
+            Call WriteUpdateExp(UserIndex)
+            Call CheckUserLevel(UserIndex)
+        End If
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
     End If
@@ -1282,6 +1313,11 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         End If
         Call SubirSkill(UserIndex, e_Skill.Alquimia)
         Call UpdateUserInv(True, UserIndex, 0)
+        If IsFeatureEnabled("gain_exp_while_working") Then
+            Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Alchemist)
+            Call WriteUpdateExp(UserIndex)
+            Call CheckUserLevel(UserIndex)
+        End If
         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
     End If
     Exit Sub
@@ -1525,218 +1561,6 @@ TratarDeHacerFogata_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.TratarDeHacerFogata", Erl)
 End Sub
 
-Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boolean = False)
-    On Error GoTo ErrHandler
-    Dim bonificacionPescaLvl(1 To 47) As Single
-    Dim bonificacionCaña As Double
-    Dim bonificacionZona  As Double
-    Dim bonificacionLvl   As Double
-    Dim bonificacionClase As Double
-    Dim bonificacionTotal As Double
-    Dim RestaStamina      As Integer
-    Dim Reward            As Double
-    Dim esEspecial        As Boolean
-    Dim i                 As Integer
-    Dim NpcIndex          As Integer
-    ' Shugar - 13/8/2024
-    ' Paso los poderes de las cañas al dateo de pesca.dat
-    ' Paso la reducción de pesca en zona segura a balance.dat
-    With UserList(UserIndex)
-        RestaStamina = IIf(RedDePesca, 12, RandomNumber(2, 3))
-        If .flags.Privilegios And (e_PlayerType.Consejero) Then
-            Exit Sub
-        End If
-        If .Stats.MinSta > RestaStamina Then
-            Call QuitarSta(UserIndex, RestaStamina)
-        Else
-            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Sub
-        End If
-        If MapInfo(.pos.Map).Seguro = 1 Then
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageArmaMov(.Char.charindex, 0))
-        Else
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(.Char.charindex, 0))
-        End If
-        bonificacionPescaLvl(1) = 0
-        bonificacionPescaLvl(2) = 0.009
-        bonificacionPescaLvl(3) = 0.015
-        bonificacionPescaLvl(4) = 0.019
-        bonificacionPescaLvl(5) = 0.025
-        bonificacionPescaLvl(6) = 0.03
-        bonificacionPescaLvl(7) = 0.035
-        bonificacionPescaLvl(8) = 0.04
-        bonificacionPescaLvl(9) = 0.045
-        bonificacionPescaLvl(10) = 0.05
-        bonificacionPescaLvl(11) = 0.06
-        bonificacionPescaLvl(12) = 0.07
-        bonificacionPescaLvl(13) = 0.08
-        bonificacionPescaLvl(14) = 0.09
-        bonificacionPescaLvl(15) = 0.1
-        bonificacionPescaLvl(16) = 0.11
-        bonificacionPescaLvl(17) = 0.13
-        bonificacionPescaLvl(18) = 0.14
-        bonificacionPescaLvl(19) = 0.16
-        bonificacionPescaLvl(20) = 0.18
-        bonificacionPescaLvl(21) = 0.2
-        bonificacionPescaLvl(22) = 0.22
-        bonificacionPescaLvl(23) = 0.24
-        bonificacionPescaLvl(24) = 0.27
-        bonificacionPescaLvl(25) = 0.3
-        bonificacionPescaLvl(26) = 0.32
-        bonificacionPescaLvl(27) = 0.35
-        bonificacionPescaLvl(28) = 0.37
-        bonificacionPescaLvl(29) = 0.4
-        bonificacionPescaLvl(30) = 0.43
-        bonificacionPescaLvl(31) = 0.47
-        bonificacionPescaLvl(32) = 0.51
-        bonificacionPescaLvl(33) = 0.55
-        bonificacionPescaLvl(34) = 0.58
-        bonificacionPescaLvl(35) = 0.62
-        bonificacionPescaLvl(36) = 0.7
-        bonificacionPescaLvl(37) = 0.77
-        bonificacionPescaLvl(38) = 0.84
-        bonificacionPescaLvl(39) = 0.92
-        bonificacionPescaLvl(40) = 1#
-        bonificacionPescaLvl(41) = 1.1
-        bonificacionPescaLvl(42) = 1.15
-        bonificacionPescaLvl(43) = 1.3
-        bonificacionPescaLvl(44) = 1.5
-        bonificacionPescaLvl(45) = 1.8
-        bonificacionPescaLvl(46) = 2#
-        bonificacionPescaLvl(47) = 2.5
-        'Bonificación según el nivel
-        bonificacionLvl = 1 + bonificacionPescaLvl(.Stats.ELV)
-        'Bonificacion de la caña dependiendo de su poder:
-        bonificacionCaña = PoderCanas(ObjData(.invent.EquippedWorkingToolObjIndex).Power) / 10
-        'Bonificación total
-        bonificacionTotal = bonificacionCaña * bonificacionLvl * SvrConfig.GetValue("RecoleccionMult")
-        'Si es zona segura se aplica una penalización
-        If MapInfo(.pos.Map).Seguro Then
-            bonificacionTotal = bonificacionTotal * PorcentajePescaSegura / 100
-        End If
-        'Shugar: La reward ya estaba hardcodeada así...
-        'no la voy a tocar, pero ahora por lo menos puede ajustarse desde dateo con la bonificación de las cañas!
-        'Calculo el botin esperado por iteracción. 'La base del calculo son 8000 por hora + 20% de chances de no pescar + un +/- 10%
-        Reward = (IntervaloTrabajarExtraer / 3600000) * 8000 * bonificacionTotal * 1.2 * (1 + (RandomNumber(0, 20) - 10) / 100)
-        'Calculo la suerte de pescar o no pescar y aplico eso sobre el reward para promediar.
-        Dim Suerte As Integer
-        Dim Pesco  As Boolean
-        If .Stats.UserSkills(e_Skill.Pescar) < 20 Then
-            Suerte = 20
-        ElseIf .Stats.UserSkills(e_Skill.Pescar) < 40 Then
-            Suerte = 35
-        ElseIf .Stats.UserSkills(e_Skill.Pescar) < 70 Then
-            Suerte = 55
-        ElseIf .Stats.UserSkills(e_Skill.Pescar) < 100 Then
-            Suerte = 68
-        Else
-            Suerte = 80
-        End If
-        Pesco = RandomNumber(1, 100) <= Suerte '80% de posibilidad de pescar
-        If Pesco Then
-            Dim nPos     As t_WorldPos
-            Dim MiObj    As t_Obj
-            Dim objValue As Integer
-            If IsFeatureEnabled("gain_exp_while_working") Then
-                Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Fisherman)
-                Call WriteUpdateExp(UserIndex)
-                Call CheckUserLevel(UserIndex)
-            End If
-            ' Shugar: al final no importa el valor del pez ya que se ajusta la cantidad...
-            ' Genero el obj pez que pesqué y su cantidad
-            MiObj.ObjIndex = ObtenerPezRandom(ObjData(.invent.EquippedWorkingToolObjIndex).Power)
-            objValue = max(ObjData(MiObj.ObjIndex).Valor / 3, 1)
-            'si esta macreando y para que esten mas atentos les mando un NPC y saco el macro de trabajar
-            If MiObj.ObjIndex = (SvrConfig.GetValue("FISHING_SPECIALFISH1_ID") Or MiObj.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH2_ID")) And (UserList( _
-                    UserIndex).pos.Map) <> SvrConfig.GetValue("FISHING_MAP_SPECIAL_FISH1_ID") Then
-                MiObj.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH1_REMPLAZO_ID")
-                If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Then NpcIndex = SpawnNpc(SvrConfig.GetValue("NPC_WATCHMAN_ID"), .pos, True, False)
-                Call WriteMacroTrabajoToggle(UserIndex, False)
-            End If
-            MiObj.amount = Round(Reward / objValue)
-            If MiObj.amount <= 0 Then
-                MiObj.amount = 1
-            End If
-            Dim StopWorking As Boolean
-            StopWorking = False
-            ' Si es insegura y es un fishing pool:
-            If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 And SvrConfig.GetValue("FISHING_POOL_ID") = MapData(.pos.Map, .Trabajo.Target_X, _
-                    .Trabajo.Target_Y).ObjInfo.ObjIndex Then
-                ' Si se está por vaciar el fishing pool:
-                If MiObj.amount > MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount Then
-                    MiObj.amount = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount
-                    Call CreateFishingPool(.pos.Map)
-                    Call EraseObj(MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount, .pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y)
-                    ' Msg649=No hay mas peces aqui.
-                    Call WriteLocaleMsg(UserIndex, 649, e_FontTypeNames.FONTTYPE_INFO)
-                    StopWorking = True
-                End If
-                ' Resto los recursos que saqué
-                MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount - MiObj.amount
-            End If
-            ' Verifico si el pescado es especial o no
-            For i = 1 To UBound(PecesEspeciales)
-                If PecesEspeciales(i).ObjIndex = MiObj.ObjIndex Then
-                    esEspecial = True
-                End If
-            Next i
-            ' Si no es especial, actualizo el UserIndex
-            If Not esEspecial Then
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
-                ' Si es especial, corto el macro y activo el minijuego
-                ' Solo aplica a cañas, no a red de pesca
-            Else
-                .flags.PescandoEspecial = True
-                Call WriteMacroTrabajoToggle(UserIndex, False)
-                .Stats.NumObj_PezEspecial = MiObj.ObjIndex
-                Call WritePelearConPezEspecial(UserIndex)
-                Exit Sub
-            End If
-            If MiObj.ObjIndex = 0 Then Exit Sub
-            ' Si no entra en el inventario dejo de pescar
-            If Not MeterItemEnInventario(UserIndex, MiObj) Then
-                StopWorking = True
-            End If
-            Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .pos.x, .pos.y))
-            ' Al pescar también podés sacar cosas raras (se setean desde RecursosEspeciales.dat)
-            ' Por cada drop posible
-            Dim res As Long
-            For i = 1 To UBound(EspecialesPesca)
-                ' Tiramos al azar entre 1 y la probabilidad
-                res = RandomNumber(1, IIf(RedDePesca, EspecialesPesca(i).data * 2, EspecialesPesca(i).data)) ' Red de pesca chance x2 (revisar)
-                ' Si tiene suerte y le pega
-                If res = 1 Then
-                    MiObj.ObjIndex = EspecialesPesca(i).ObjIndex
-                    MiObj.amount = 1 ' Solo un item por vez
-                    If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
-                    ' Le mandamos un mensaje
-                    Call WriteLocaleMsg(UserIndex, 1457, e_FontTypeNames.FONTTYPE_INFO)  ' Msg1457=¡Has conseguido ¬1!
-                End If
-            Next
-        Else
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, GRH_FALLO_PESCA))
-        End If
-        If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Then
-            Call SubirSkill(UserIndex, e_Skill.Pescar)
-        End If
-        If StopWorking Then
-            Call WriteWorkRequestTarget(UserIndex, 0)
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Sub
-        End If
-        .Counters.Trabajando = .Counters.Trabajando + 1
-        .Counters.LastTrabajo = Int(IntervaloTrabajarExtraer / 1000)
-        'Ladder 06/07/14 Activamos el macro de trabajo
-        If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
-            Call WriteMacroTrabajoToggle(UserIndex, True)
-        End If
-    End With
-    Exit Sub
-ErrHandler:
-    Call LogError("Error en DoPescar. Error " & Err.Number & " - " & Err.Description & " Line number: " & Erl)
-End Sub
 
 ''
 ' Try to steal an item / gold to another character
@@ -2040,57 +1864,6 @@ QuitarSta_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.QuitarSta", Erl)
 End Sub
 
-Public Sub DoRaices(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte)
-    On Error GoTo ErrHandler
-    Dim Suerte As Integer
-    Dim res    As Integer
-    With UserList(UserIndex)
-        If .flags.Privilegios And (e_PlayerType.Consejero) Then
-            Exit Sub
-        End If
-        If .Stats.MinSta > 2 Then
-            Call QuitarSta(UserIndex, 2)
-        Else
-            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
-            ' Msg650=Estás muy cansado para obtener raices.
-            Call WriteLocaleMsg(UserIndex, 650, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Sub
-        End If
-        Dim Skill As Integer
-        Skill = .Stats.UserSkills(e_Skill.Alquimia)
-        Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
-        res = RandomNumber(1, Suerte)
-        If res < 7 Then
-            Dim nPos  As t_WorldPos
-            Dim MiObj As t_Obj
-            Call ActualizarRecurso(.pos.Map, x, y)
-            MiObj.amount = RandomNumber(5, 7)
-            MiObj.amount = Round(MiObj.amount * 2.5 * SvrConfig.GetValue("RecoleccionMult"))
-            MiObj.ObjIndex = Raices
-            MapData(.pos.Map, x, y).ObjInfo.amount = MapData(.pos.Map, x, y).ObjInfo.amount - MiObj.amount
-            If MapData(.pos.Map, x, y).ObjInfo.amount < 0 Then
-                MapData(.pos.Map, x, y).ObjInfo.amount = 0
-            End If
-            If Not MeterItemEnInventario(UserIndex, MiObj) Then
-                Call TirarItemAlPiso(.pos, MiObj)
-            End If
-            Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .pos.x, .pos.y))
-        Else
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .pos.x, .pos.y))
-        End If
-        Call SubirSkill(UserIndex, e_Skill.Alquimia)
-        .Counters.Trabajando = .Counters.Trabajando + 1
-        .Counters.LastTrabajo = Int(IntervaloTrabajarExtraer / 1000)
-        If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
-            Call WriteMacroTrabajoToggle(UserIndex, True)
-        End If
-    End With
-    Exit Sub
-ErrHandler:
-    Call LogError("Error en DoRaices")
-End Sub
 
 Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
     On Error GoTo ErrHandler
@@ -2166,6 +1939,11 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte,
                     Call TirarItemAlPiso(.pos, MiObj)
                 End If
             Next i
+            If IsFeatureEnabled("gain_exp_while_working") Then
+                Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Woodcutter)
+                Call WriteUpdateExp(UserIndex)
+                Call CheckUserLevel(UserIndex)
+            End If
         Else
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(64, .pos.x, .pos.y))
         End If
@@ -2253,6 +2031,13 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
                     Call WriteLocaleMsg(UserIndex, 1465, e_FontTypeNames.FONTTYPE_INFO)  ' Msg1465=¡Has conseguido ¬1!
                 End If
             Next
+            
+            If IsFeatureEnabled("gain_exp_while_working") Then
+                Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Miner)
+                Call WriteUpdateExp(UserIndex)
+                Call CheckUserLevel(UserIndex)
+            End If
+            
         Else
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(2185, .pos.x, .pos.y))
         End If
@@ -2354,11 +2139,24 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
         .invent.EquippedSaddleObjIndex = .invent.Object(Slot).ObjIndex
         .invent.EquippedSaddleSlot = Slot
         If .flags.Montado = 0 Then
-            .Char.body = Montura.Ropaje
+            .Char.body = ObtenerRopaje(UserIndex, Montura)
             .Char.head = .OrigChar.head
+            If .invent.EquippedHelmetObjIndex > 0 Then
+                .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+                If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
+                    If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
+                        .Char.head = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                        .Char.CascoAnim = NingunCasco
+                    End If
+                    If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 1 Then
+                        .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                    End If
+                End If
+            Else
+                .Char.CascoAnim = NingunCasco
+            End If
             .Char.ShieldAnim = NingunEscudo
             .Char.WeaponAnim = NingunArma
-            .Char.CascoAnim = .Char.CascoAnim
             .Char.CartAnim = NoCart
             .flags.Montado = 1
             Call TargetUpdateTerrain(.EffectOverTime)
@@ -2368,12 +2166,42 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
             Call TargetUpdateTerrain(.EffectOverTime)
             If .invent.EquippedArmorObjIndex > 0 Then
                 .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
+                If .Invent_Skins.ObjIndexArmourEquipped > 0 Then
+                    .Char.body = ObtenerRopaje(UserIndex, ObjData(.Invent_Skins.ObjIndexArmourEquipped))
+                End If
             Else
                 Call SetNakedBody(UserList(UserIndex))
             End If
-            If .invent.EquippedShieldObjIndex > 0 Then .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
-            If .invent.EquippedWeaponObjIndex > 0 Then .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
-            If .invent.EquippedHelmetObjIndex > 0 Then .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+            If .invent.EquippedHelmetObjIndex > 0 Then
+                .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+                If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
+                    If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
+                        .Char.head = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                        .Char.CascoAnim = NingunCasco
+                    End If
+                    If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 1 Then
+                        .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                    End If
+                End If
+            Else
+                .Char.CascoAnim = NingunCasco
+            End If
+            If .invent.EquippedShieldObjIndex > 0 Then
+                .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
+                If .Invent_Skins.ObjIndexShieldEquipped > 0 Then
+                    .Char.ShieldAnim = ObjData(.Invent_Skins.ObjIndexShieldEquipped).ShieldAnim
+                End If
+            Else
+                .Char.ShieldAnim = NingunEscudo
+            End If
+            If .invent.EquippedWeaponObjIndex > 0 Then
+                .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
+                If .Invent_Skins.ObjIndexWeaponEquipped > 0 Then
+                    .Char.WeaponAnim = ObjData(.Invent_Skins.ObjIndexWeaponEquipped).WeaponAnim
+                End If
+            Else
+                .Char.WeaponAnim = NingunArma
+            End If
             If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
                 If ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
             End If

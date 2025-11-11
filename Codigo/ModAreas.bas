@@ -170,10 +170,6 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
         Map = UserList(UserIndex).pos.Map
         'Esto es para ke el cliente elimine lo "fuera de area..."
         Call WriteAreaChanged(UserIndex, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y)
-        If IsValidUserRef(UserList(UserIndex).flags.GMMeSigue) Then
-            Call WriteAreaChanged(UserList(UserIndex).flags.GMMeSigue.ArrayIndex, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y)
-            Call WriteSendFollowingCharindex(UserList(UserIndex).flags.GMMeSigue.ArrayIndex, UserList(UserIndex).Char.charindex)
-        End If
         'Actualizamos!!!
         For x = MinX To MaxX
             For y = MinY To MaxY
@@ -220,22 +216,6 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
         .AreasInfo.AreaReciveY = AreasRecive(TempInt)
         .AreasInfo.AreaPerteneceY = 2 ^ TempInt
         .AreasInfo.AreaID = AreasInfo(.pos.x, .pos.y)
-        'Es un gm que está siguiendo a un usuario
-        If .flags.SigueUsuario.ArrayIndex > 0 Then
-            .AreasInfo.AreaReciveX = UserList(.flags.SigueUsuario.ArrayIndex).AreasInfo.AreaReciveX
-            .AreasInfo.AreaPerteneceX = UserList(.flags.SigueUsuario.ArrayIndex).AreasInfo.AreaPerteneceX
-            .AreasInfo.AreaReciveY = UserList(.flags.SigueUsuario.ArrayIndex).AreasInfo.AreaReciveY
-            .AreasInfo.AreaPerteneceY = UserList(.flags.SigueUsuario.ArrayIndex).AreasInfo.AreaPerteneceY
-            .AreasInfo.AreaID = UserList(.flags.SigueUsuario.ArrayIndex).AreasInfo.AreaID
-        End If
-        'Es un usuario que está siendo seguido
-        If IsValidUserRef(.flags.GMMeSigue) Then
-            UserList(.flags.GMMeSigue.ArrayIndex).AreasInfo.AreaReciveX = .AreasInfo.AreaReciveX
-            UserList(.flags.GMMeSigue.ArrayIndex).AreasInfo.AreaPerteneceX = .AreasInfo.AreaPerteneceX
-            UserList(.flags.GMMeSigue.ArrayIndex).AreasInfo.AreaReciveY = .AreasInfo.AreaReciveY
-            UserList(.flags.GMMeSigue.ArrayIndex).AreasInfo.AreaPerteneceY = .AreasInfo.AreaPerteneceY
-            UserList(.flags.GMMeSigue.ArrayIndex).AreasInfo.AreaID = .AreasInfo.AreaID
-        End If
     End With
     Exit Sub
 CheckUpdateNeededUser_Err:

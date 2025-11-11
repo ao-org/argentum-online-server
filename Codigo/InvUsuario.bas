@@ -353,9 +353,6 @@ Public Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByV
         End If
         UserList(UserIndex).flags.ModificoInventario = True
     End With
-    If IsValidUserRef(UserList(UserIndex).flags.GMMeSigue) And UserIndex <> UserList(UserIndex).flags.GMMeSigue.ArrayIndex Then
-        Call QuitarUserInvItem(UserList(UserIndex).flags.GMMeSigue.ArrayIndex, Slot, Cantidad)
-    End If
     Exit Sub
 QuitarUserInvItem_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.QuitarUserInvItem", Erl)
@@ -586,6 +583,10 @@ Sub PickObj(ByVal UserIndex As Integer)
     Dim obj   As t_ObjData
     Dim MiObj As t_Obj
     '¿Hay algun obj?
+    If IsInMapCarcelRestrictedArea(UserList(UserIndex).pos) Then
+        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_DROP_ITEMS_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
+        Exit Sub
+    End If
     If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex > 0 Then
         '¿Esta permitido agarrar este obj?
         If ObjData(MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex).Agarrable <> 1 Then
@@ -899,6 +900,9 @@ Dim eSkinType                   As e_OBJType
                .Invent_Skins.Object(Slot).Equipped = False
 
             Case e_OBJType.otSkinsHelmets
+                If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
+                    .Char.head = .OrigChar.head
+                End If
                 .Invent_Skins.ObjIndexHelmetEquipped = 0
                 .Invent_Skins.SlotHelmetEquipped = 0
                 
@@ -1181,7 +1185,6 @@ Dim Ropaje                      As Integer
                             Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
                         End If
                     End If
-                    Exit Sub
 
             Case e_OBJType.otBackpack
                 errordesc = "Backpack"
@@ -3325,6 +3328,21 @@ Function ObtenerRopaje(ByVal UserIndex As Integer, ByRef obj As t_ObjData) As In
     race = UserList(UserIndex).raza
     Dim EsMujer As Boolean
     EsMujer = UserList(UserIndex).genero = e_Genero.Mujer
+    Dim EsRazaBaja As Boolean
+    EsRazaBaja = (race = e_Raza.Gnomo Or race = e_Raza.Enano)
+    If obj.OBJType = e_OBJType.otSaddles Then
+        If EsRazaBaja Then
+            If obj.RazaBajos > 0 Then
+                ObtenerRopaje = obj.RazaBajos
+                Exit Function
+            End If
+        Else
+            If obj.RazaAltos > 0 Then
+                ObtenerRopaje = obj.RazaAltos
+                Exit Function
+            End If
+        End If
+    End If
     Select Case race
         Case e_Raza.Humano
             If EsMujer And obj.RopajeHumana > 0 Then
