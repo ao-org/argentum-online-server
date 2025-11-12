@@ -68,6 +68,8 @@ Private Type t_GrhData
     mini_map_color As Long
 End Type
 
+Private FeatureToggles As Dictionary
+
 Private Type t_MapHeader
     NumeroBloqueados As Long
     NumeroLayers(1 To 4) As Long
@@ -132,10 +134,10 @@ Private Type t_DatosTE
 End Type
 
 Private Type t_MapSize
-    XMax As Integer
-    XMin As Integer
-    YMax As Integer
-    YMin As Integer
+    xmax As Integer
+    xmin As Integer
+    ymax As Integer
+    ymin As Integer
 End Type
 
 Private Type t_MapDat
@@ -160,13 +162,87 @@ End Type
 
 Private MapSize        As t_MapSize
 Private MapDat         As t_MapDat
-Private FeatureToggles As Dictionary
+
+Private Function ParsePlantVariantEntry(ByVal entry As String, ByRef Target As t_Obj) As Boolean
+    Dim Fields() As String
+    Dim idx        As Long
+
+    entry = Trim$(entry)
+    If LenB(entry) = 0 Then Exit Function
+
+    Fields = Split(entry, "-")
+    If UBound(Fields) < 0 Then Exit Function
+
+    For idx = LBound(Fields) To UBound(Fields)
+        Fields(idx) = Trim$(Fields(idx))
+    Next idx
+
+    Target.ObjIndex = val(Fields(0))
+    If Target.ObjIndex <= 0 Then Exit Function
+
+    If UBound(Fields) >= 1 Then
+        If LenB(Fields(1)) <> 0 Then
+            If InStr(Fields(1), "%") > 0 And UBound(Fields) = 1 Then
+                Target.data = val(Fields(1))
+            Else
+                Target.amount = val(Fields(1))
+            End If
+        End If
+    End If
+
+    If UBound(Fields) >= 2 Then
+        Target.data = val(Fields(2))
+    End If
+
+    If Target.data <= 0 Then Target.data = 1
+
+    ParsePlantVariantEntry = True
+End Function
+
+Private Function ParsePlantVariantList(ByVal rawList As String, ByRef Items() As t_Obj) As Integer
+    Dim normalized As String
+    Dim parts()     As String
+    Dim Temp()      As t_Obj
+    Dim entry       As String
+    Dim parsed      As t_Obj
+    Dim i           As Long
+    Dim count       As Long
+
+    normalized = Replace$(rawList, vbCrLf, "|")
+    normalized = Replace$(normalized, vbCr, "|")
+    normalized = Replace$(normalized, vbLf, "|")
+    normalized = Replace$(normalized, ";", "|")
+    normalized = Replace$(normalized, ",", "|")
+
+    If InStr(normalized, "|") = 0 Then Exit Function
+
+    parts = Split(normalized, "|")
+    ReDim Temp(1 To UBound(parts) + 1)
+
+    For i = LBound(parts) To UBound(parts)
+        entry = Trim$(parts(i))
+        If LenB(entry) <> 0 Then
+            If ParsePlantVariantEntry(entry, parsed) Then
+                count = count + 1
+                Temp(count) = parsed
+            End If
+        End If
+    Next i
+
+    If count > 0 Then
+        ReDim Preserve Temp(1 To count)
+        Items = Temp
+        ParsePlantVariantList = CInt(count)
+    Else
+        Erase Items
+    End If
+End Function
 
 Public Sub load_stats()
     On Error GoTo error_load_stats
     Dim n       As Integer
     Dim strFile As String
-    strFile = App.Path & "\logs\recordusers.log"
+    strFile = App.path & "\logs\recordusers.log"
     Dim str As String
     If Not FileExist(strFile) Then
         n = FreeFile()
@@ -193,11 +269,11 @@ Public Sub dump_stats()
     On Error GoTo error_dump_stats
     Dim n As Integer
     n = FreeFile()
-    Open App.Path & "\logs\numusers.log" For Output Shared As n
+    Open App.path & "\logs\numusers.log" For Output Shared As n
     Print #n, NumUsers
     Close #n
     n = FreeFile()
-    Open App.Path & "\logs\recordusers.log" For Output Shared As n
+    Open App.path & "\logs\recordusers.log" For Output Shared As n
     Print #n, str(RecordUsuarios)
     Close #n
     Exit Sub
@@ -331,8 +407,8 @@ Public Sub loadAdministrativeUsers()
     ' Server ini info file
     Dim ServerIni As clsIniManager
     Set ServerIni = New clsIniManager
-    Debug.Assert FileExist(IniPath & "Server.ini")
-    Call ServerIni.Initialize(IniPath & "Server.ini")
+    Debug.Assert FileExist(iniPath & "Server.ini")
+    Call ServerIni.Initialize(iniPath & "Server.ini")
     ' Admines
     buf = val(ServerIni.GetValue("INIT", "Admines"))
     For i = 1 To buf
@@ -418,7 +494,7 @@ Public Function TxtDimension(ByVal name As String) As Long
     Loop
     Close n
     Else
-        Debug.print "No existe el archivo " & name
+        Debug.Print "No existe el archivo " & name
     End If
 
     TxtDimension = Tam
@@ -429,13 +505,13 @@ End Function
 
 Public Sub CargarForbidenWords()
     On Error GoTo CargarForbidenWords_Err
-    Dim Size As Integer
-    Size = TxtDimension(DatPath & "NombresInvalidos.txt")
-    If Size = 0 Then
+    Dim size As Integer
+    size = TxtDimension(DatPath & "NombresInvalidos.txt")
+    If size = 0 Then
         ReDim ForbidenNames(0)
         Exit Sub
     End If
-    ReDim ForbidenNames(1 To Size)
+    ReDim ForbidenNames(1 To size)
     Dim n As Integer, i As Integer
     n = FreeFile(1)
     Open DatPath & "NombresInvalidos.txt" For Input As #n
@@ -451,13 +527,13 @@ End Sub
 
 Public Sub LoadBlockedWordsDescription()
     On Error GoTo LoadBlockedWordsDescription_Err
-    Dim Size As Integer
-    Size = TxtDimension(DatPath & "BlockedWordsDescription.txt")
-    If Size = 0 Then
+    Dim size As Integer
+    size = TxtDimension(DatPath & "BlockedWordsDescription.txt")
+    If size = 0 Then
         ReDim BlockedWordsDescription(0)
         Exit Sub
     End If
-    ReDim BlockedWordsDescription(1 To Size)
+    ReDim BlockedWordsDescription(1 To size)
     Dim n As Integer, i As Integer
     n = FreeFile(1)
     Open DatPath & "BlockedWordsDescription.txt" For Input As #n
@@ -1225,6 +1301,45 @@ Sub LoadOBJData()
                             .Item(i).amount = val(Field(1))      ' Probabilidad de drop (1 en X)
                         Next i
                     End If
+                Case e_OBJType.otPlants
+                    Dim inlineItems() As t_Obj
+                    Dim inlineCount  As Integer
+
+                    str = Leer.GetValue(ObjKey, "HarvestItemIndex")
+                    .HarvestItemIndex = val(str)
+                    inlineCount = ParsePlantVariantList(str, inlineItems)
+                    .HarvestMinAmount = val(Leer.GetValue(ObjKey, "HarvestMinAmount"))
+                    .HarvestMaxAmount = val(Leer.GetValue(ObjKey, "HarvestMaxAmount"))
+
+                    If inlineCount > 255 Then inlineCount = 255
+                    If inlineCount > 0 Then
+                        .CantItem = CByte(inlineCount)
+                        ReDim .Item(1 To .CantItem)
+                        For i = 1 To .CantItem
+                            .Item(i) = inlineItems(i)
+                            If .Item(i).data = 0 Then .Item(i).data = 1
+                        Next i
+                        If .HarvestItemIndex = 0 Then .HarvestItemIndex = .Item(1).ObjIndex
+                    Else
+                        .CantItem = val(Leer.GetValue(ObjKey, "HarvestVariants"))
+                        If .CantItem > 0 Then
+                            ReDim .Item(1 To .CantItem)
+                            For i = 1 To .CantItem
+                                str = Leer.GetValue(ObjKey, "Variant" & i)
+                                If LenB(str) <> 0 Then
+                                    Field = Split(str, "-")
+                                    If UBound(Field) >= 0 Then .Item(i).ObjIndex = val(Field(0))
+                                    If UBound(Field) >= 1 Then .Item(i).amount = val(Field(1))
+                                    If UBound(Field) >= 2 Then
+                                        .Item(i).data = val(Field(2))
+                                    Else
+                                        .Item(i).data = 1
+                                    End If
+                                    If .Item(i).data = 0 Then .Item(i).data = 1
+                                End If
+                            Next i
+                        End If
+                    End If
                 Case e_OBJType.otUsableOntarget
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
@@ -1453,7 +1568,7 @@ Sub CargarBackUp()
     ReDim MapInfo(1 To (NumMaps + InstanceMapCount)) As t_MapInfo
     For Map = 1 To NumMaps
         frmCargando.ToMapLbl = Map & "/" & NumMaps
-        Call CargarMapaFormatoCSM(Map, App.Path & "\WorldBackUp\Mapa" & Map & ".csm")
+        Call CargarMapaFormatoCSM(Map, App.path & "\WorldBackUp\Mapa" & Map & ".csm")
         frmCargando.cargar.value = frmCargando.cargar.value + 1
         DoEvents
     Next Map
@@ -1479,7 +1594,7 @@ Sub LoadMapData()
     #Else
         If RunningInVB() Then
             'VB runs out of memory when debugging
-            NumMaps = 300
+            NumMaps = 600
         Else
             NumMaps = CountFiles(MapPath, "*.csm") - 1
         End If
@@ -1645,7 +1760,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                 MapData(Map, Objetos(i).x, Objetos(i).y).ObjInfo.ObjIndex = Objetos(i).ObjIndex
                 With ObjData(Objetos(i).ObjIndex)
                     Select Case .OBJType
-                        Case e_OBJType.otOreDeposit, e_OBJType.otTrees
+                        Case e_OBJType.otOreDeposit, e_OBJType.otTrees, e_OBJType.otPlants
                             MapData(Map, Objetos(i).x, Objetos(i).y).ObjInfo.amount = ObjData(Objetos(i).ObjIndex).VidaUtil
                             MapData(Map, Objetos(i).x, Objetos(i).y).ObjInfo.data = &H7FFFFFFF ' Ultimo uso = Max Long
                         Case Else
@@ -1782,13 +1897,13 @@ End Sub
 
 Sub LoadPrivateKey()
     Dim MyLine As String
-    Open App.Path & "\..\ao20-ComputePK\crypto-hex.txt" For Input As #1
+    Open App.path & "\..\ao20-ComputePK\crypto-hex.txt" For Input As #1
     Line Input #1, PrivateKey
     Close #1
 End Sub
 
 Sub LoadMD5()
-    Open IniPath & "ClienteMD5.txt" For Input As #1
+    Open iniPath & "ClienteMD5.txt" For Input As #1
     Line Input #1, Md5Cliente
     Close #1
     Md5Cliente = Replace(Md5Cliente, " ", "")
@@ -1799,12 +1914,12 @@ Sub LoadSini()
     Dim Lector   As clsIniManager
     Dim Temporal As Long
     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando info de inicio del server."
-    If Not FileExist(IniPath & "Server.ini", vbArchive) Then
+    If Not FileExist(iniPath & "Server.ini", vbArchive) Then
         MsgBox "Se requiere de la configuración en Server.ini", vbCritical + vbOKOnly
         End
     End If
     Set Lector = New clsIniManager
-    Call Lector.Initialize(IniPath & "Server.ini")
+    Call Lector.Initialize(iniPath & "Server.ini")
     'Misc
     BootDelBackUp = val(Lector.GetValue("INIT", "IniciarDesdeBackUp"))
     'Directorios
@@ -1888,17 +2003,26 @@ Sub LoadGlobalDropTable()
     Set Lector = Nothing
 End Sub
 
+Private Sub EnsureFeatureToggleCache()
+    If FeatureToggles Is Nothing Then
+        Set FeatureToggles = New Dictionary
+    End If
+End Sub
+
 Sub LoadFeatureToggles()
     On Error GoTo LoadFeatureToggles_Err
     Dim Lector   As clsIniManager
     Dim Temporal As Long
-    Set FeatureToggles = New Dictionary
-    If Not FileExist("feature_toggle.ini") Then
+    Call EnsureFeatureToggleCache
+    If FeatureToggles.count > 0 Then
+        Call FeatureToggles.RemoveAll
+    End If
+    If Not FileExist(iniPath & "feature_toggle.ini") Then
         Exit Sub
     End If
     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando info de feature toggles."
     Set Lector = New clsIniManager
-    Call Lector.Initialize(IniPath & "feature_toggle.ini")
+    Call Lector.Initialize(iniPath & "feature_toggle.ini")
     If Lector.NodesCount = 0 Then
         Exit Sub
     End If
@@ -1925,7 +2049,7 @@ Sub LoadPacketRatePolicy()
     Dim i      As Long
     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando PacketRatePolicy."
     Set Lector = New clsIniManager
-    Call Lector.Initialize(IniPath & "PacketRatePolicy.ini")
+    Call Lector.Initialize(iniPath & "PacketRatePolicy.ini")
     For i = 1 To MAX_PACKET_COUNTERS
         Dim PacketName As String
         PacketName = PacketIdToString(i)
@@ -2211,60 +2335,60 @@ Sub LoadIntervalos()
     On Error GoTo LoadIntervalos_Err
     Dim Lector As clsIniManager
     Set Lector = New clsIniManager
-    Call Lector.Initialize(IniPath & "intervalos.ini")
+    Call Lector.Initialize(iniPath & "intervalos.ini")
     'Intervalos
     SanaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloSinDescansar"))
-    FrmInterv.txtSanaIntervaloSinDescansar.Text = SanaIntervaloSinDescansar
+    FrmInterv.txtSanaIntervaloSinDescansar.text = SanaIntervaloSinDescansar
     StaminaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloSinDescansar"))
-    FrmInterv.txtStaminaIntervaloSinDescansar.Text = StaminaIntervaloSinDescansar
+    FrmInterv.txtStaminaIntervaloSinDescansar.text = StaminaIntervaloSinDescansar
     SanaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloDescansar"))
-    FrmInterv.txtSanaIntervaloDescansar.Text = SanaIntervaloDescansar
+    FrmInterv.txtSanaIntervaloDescansar.text = SanaIntervaloDescansar
     StaminaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloDescansar"))
-    FrmInterv.txtStaminaIntervaloDescansar.Text = StaminaIntervaloDescansar
+    FrmInterv.txtStaminaIntervaloDescansar.text = StaminaIntervaloDescansar
     IntervaloPerderStamina = val(Lector.GetValue("INTERVALOS", "IntervaloPerderStamina"))
-    FrmInterv.txtIntervaloPerderStamina.Text = IntervaloPerderStamina
+    FrmInterv.txtIntervaloPerderStamina.text = IntervaloPerderStamina
     IntervaloSed = val(Lector.GetValue("INTERVALOS", "IntervaloSed")) / 25
-    FrmInterv.txtIntervaloSed.Text = IntervaloSed
+    FrmInterv.txtIntervaloSed.text = IntervaloSed
     IntervaloHambre = val(Lector.GetValue("INTERVALOS", "IntervaloHambre")) / 25
-    FrmInterv.txtIntervaloHambre.Text = IntervaloHambre
+    FrmInterv.txtIntervaloHambre.text = IntervaloHambre
     IntervaloVeneno = val(Lector.GetValue("INTERVALOS", "IntervaloVeneno"))
-    FrmInterv.txtIntervaloVeneno.Text = IntervaloVeneno
+    FrmInterv.txtIntervaloVeneno.text = IntervaloVeneno
     IntervaloParalizado = val(Lector.GetValue("INTERVALOS", "IntervaloParalizado"))
-    FrmInterv.txtIntervaloParalizado.Text = IntervaloParalizado
+    FrmInterv.txtIntervaloParalizado.text = IntervaloParalizado
     IntervaloInmovilizado = val(Lector.GetValue("INTERVALOS", "IntervaloInmovilizado"))
-    FrmInterv.txtIntervaloInmovilizado.Text = IntervaloInmovilizado
+    FrmInterv.txtIntervaloInmovilizado.text = IntervaloInmovilizado
     IntervaloInvisible = val(Lector.GetValue("INTERVALOS", "IntervaloInvisible"))
-    FrmInterv.txtIntervaloInvisible.Text = IntervaloInvisible
+    FrmInterv.txtIntervaloInvisible.text = IntervaloInvisible
     IntervaloFrio = val(Lector.GetValue("INTERVALOS", "IntervaloFrio"))
-    FrmInterv.txtIntervaloFrio.Text = IntervaloFrio
+    FrmInterv.txtIntervaloFrio.text = IntervaloFrio
     IntervaloWavFx = val(Lector.GetValue("INTERVALOS", "IntervaloWAVFX"))
-    FrmInterv.txtIntervaloWAVFX.Text = IntervaloWavFx
+    FrmInterv.txtIntervaloWAVFX.text = IntervaloWavFx
     IntervaloInvocacion = val(Lector.GetValue("INTERVALOS", "IntervaloInvocacion"))
-    FrmInterv.txtInvocacion.Text = IntervaloInvocacion
+    FrmInterv.txtInvocacion.text = IntervaloInvocacion
     TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete"))
-    FrmInterv.txtTimeoutPrimerPaquete.Text = TimeoutPrimerPaquete / 25
+    FrmInterv.txtTimeoutPrimerPaquete.text = TimeoutPrimerPaquete / 25
     TimeoutEsperandoLoggear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLoggear"))
-    FrmInterv.txtTimeoutEsperandoLoggear.Text = TimeoutEsperandoLoggear / 25
+    FrmInterv.txtTimeoutEsperandoLoggear.text = TimeoutEsperandoLoggear / 25
     IntervaloIncineracion = val(Lector.GetValue("INTERVALOS", "IntervaloFuego"))
-    FrmInterv.txtintervalofuego.Text = IntervaloIncineracion
+    FrmInterv.txtintervalofuego.text = IntervaloIncineracion
     IntervaloTirar = val(Lector.GetValue("INTERVALOS", "IntervaloTirar"))
-    FrmInterv.txtintervalotirar.Text = IntervaloTirar
+    FrmInterv.txtintervalotirar.text = IntervaloTirar
     IntervaloMeditar = val(Lector.GetValue("INTERVALOS", "IntervaloMeditar"))
-    FrmInterv.txtIntervaloMeditar.Text = IntervaloMeditar
+    FrmInterv.txtIntervaloMeditar.text = IntervaloMeditar
     IntervaloCaminar = val(Lector.GetValue("INTERVALOS", "IntervaloCaminar"))
-    FrmInterv.txtintervalocaminar.Text = IntervaloCaminar
+    FrmInterv.txtintervalocaminar.text = IntervaloCaminar
     IntervaloEnCombate = val(Lector.GetValue("INTERVALOS", "IntervaloEnCombate"))
     '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     IntervaloUserPuedeCastear = val(Lector.GetValue("INTERVALOS", "IntervaloLanzaHechizo"))
-    FrmInterv.txtIntervaloLanzaHechizo.Text = IntervaloUserPuedeCastear
+    FrmInterv.txtIntervaloLanzaHechizo.text = IntervaloUserPuedeCastear
     frmMain.TIMER_AI.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloNpcAI"))
-    FrmInterv.txtAI.Text = frmMain.TIMER_AI.Interval
+    FrmInterv.txtAI.text = frmMain.TIMER_AI.Interval
     IntervaloTrabajarExtraer = val(Lector.GetValue("INTERVALOS", "IntervaloTrabajarExtraer"))
-    FrmInterv.txtTrabajoExtraer.Text = IntervaloTrabajarExtraer
+    FrmInterv.txtTrabajoExtraer.text = IntervaloTrabajarExtraer
     IntervaloTrabajarConstruir = val(Lector.GetValue("INTERVALOS", "IntervaloTrabajarConstruir"))
-    FrmInterv.txtTrabajoConstruir.Text = IntervaloTrabajarConstruir
+    FrmInterv.txtTrabajoConstruir.text = IntervaloTrabajarConstruir
     IntervaloUserPuedeAtacar = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeAtacar"))
-    FrmInterv.txtPuedeAtacar.Text = IntervaloUserPuedeAtacar
+    FrmInterv.txtPuedeAtacar.text = IntervaloUserPuedeAtacar
     'TODO : Agregar estos intervalos al form!!!
     IntervaloMagiaGolpe = val(Lector.GetValue("INTERVALOS", "IntervaloMagiaGolpe"))
     IntervaloGolpeMagia = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeMagia"))
@@ -2293,7 +2417,7 @@ End Sub
 Sub LoadMainConfigFile()
     On Error GoTo LoadMainConfigFile_Err
     Set SvrConfig = New ServerConfig
-    Call SvrConfig.LoadSettings(IniPath & "Configuracion.ini")
+    Call SvrConfig.LoadSettings(iniPath & "Configuracion.ini")
     Call CargarEventos
     Call CargarInfoRetos
     Call CargarInfoEventos
@@ -2470,12 +2594,12 @@ End Sub
 
 Sub LogBanFromName(ByVal BannedName As String, ByVal UserIndex As Integer, ByVal Motivo As String)
     On Error GoTo LogBanFromName_Err
-    Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", UserList(UserIndex).name)
-    Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "Reason", Motivo)
+    Call WriteVar(App.path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", UserList(UserIndex).name)
+    Call WriteVar(App.path & "\logs\" & "BanDetail.dat", BannedName, "Reason", Motivo)
     'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
     Dim mifile As Integer
     mifile = FreeFile
-    Open App.Path & "\logs\GenteBanned.log" For Append Shared As #mifile
+    Open App.path & "\logs\GenteBanned.log" For Append Shared As #mifile
     Print #mifile, BannedName
     Close #mifile
     Exit Sub
@@ -2485,12 +2609,12 @@ End Sub
 
 Sub Ban(ByVal BannedName As String, ByVal Baneador As String, ByVal Motivo As String)
     On Error GoTo Ban_Err
-    Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", Baneador)
-    Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "Reason", Motivo)
+    Call WriteVar(App.path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", Baneador)
+    Call WriteVar(App.path & "\logs\" & "BanDetail.dat", BannedName, "Reason", Motivo)
     'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
     Dim mifile As Integer
     mifile = FreeFile
-    Open App.Path & "\logs\GenteBanned.log" For Append Shared As #mifile
+    Open App.path & "\logs\GenteBanned.log" For Append Shared As #mifile
     Print #mifile, BannedName
     Close #mifile
     Exit Sub
@@ -2819,6 +2943,7 @@ Public Sub CargarDonadores()
 End Sub
 
 Public Function IsFeatureEnabled(ByVal featureName As String)
+    Call EnsureFeatureToggleCache
     If FeatureToggles.Exists(featureName) Then
         IsFeatureEnabled = FeatureToggles.Item(featureName)
     Else
@@ -2827,6 +2952,7 @@ Public Function IsFeatureEnabled(ByVal featureName As String)
 End Function
 
 Public Sub SetFeatureToggle(ByVal name As String, ByVal State As Boolean)
+    Call EnsureFeatureToggleCache
     If FeatureToggles.Exists(name) Then
         FeatureToggles.Remove name
     End If
@@ -2834,9 +2960,16 @@ Public Sub SetFeatureToggle(ByVal name As String, ByVal State As Boolean)
 End Sub
 
 Public Function GetActiveToggles(ByRef ActiveCount As Integer) As String()
+    Call EnsureFeatureToggleCache
     Dim key          As Variant
     Dim ActiveKeys() As String
-    ReDim ActiveKeys(FeatureToggles.count) As String
+    Dim total        As Long
+    total = FeatureToggles.count
+    If total = 0 Then
+        ReDim ActiveKeys(0 To 0) As String
+    Else
+        ReDim ActiveKeys(0 To total - 1) As String
+    End If
     ActiveCount = 0
     For Each key In FeatureToggles.Keys
         If FeatureToggles.Item(key) Then
@@ -2844,5 +2977,10 @@ Public Function GetActiveToggles(ByRef ActiveCount As Integer) As String()
             ActiveCount = ActiveCount + 1
         End If
     Next key
+    If ActiveCount = 0 Then
+        ReDim ActiveKeys(0 To 0) As String
+    Else
+        ReDim Preserve ActiveKeys(0 To ActiveCount - 1) As String
+    End If
     GetActiveToggles = ActiveKeys
 End Function

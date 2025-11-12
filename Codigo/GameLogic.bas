@@ -1016,6 +1016,10 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                     Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
                     Call WriteLocaleMsg(UserIndex, 1619, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(Map, UserList( _
                             UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount)) 'Msg1619=¬1 - (Recursos disponibles: ¬2)
+                ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otPlants Then
+                    Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
+                    Call WriteLocaleMsg(UserIndex, 1619, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(Map, UserList( _
+                            UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount))
                 ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otTeleport Then
                     If MapData(Map, x, y).TileExit.Map > 0 Then
                         If LenB(MapInfo(MapData(Map, x, y).TileExit.Map).map_name) <> 0 Then
@@ -1257,7 +1261,7 @@ End Function
 '[Barrin 30-11-03]
 Public Function ItemNoEsDeMapa(ByVal Index As Integer) As Boolean
     On Error GoTo ItemNoEsDeMapa_Err
-    ItemNoEsDeMapa = ObjData(Index).OBJType <> e_OBJType.otDoors And ObjData(Index).OBJType <> e_OBJType.otSignBoards And ObjData(Index).OBJType <> e_OBJType.otTrees And ObjData( _
+    ItemNoEsDeMapa = ObjData(Index).OBJType <> e_OBJType.otDoors And ObjData(Index).OBJType <> e_OBJType.otSignBoards And ObjData(Index).OBJType <> e_OBJType.otTrees And ObjData(Index).OBJType <> e_OBJType.otPlants And ObjData( _
             Index).OBJType <> e_OBJType.otOreDeposit And ObjData(Index).OBJType <> e_OBJType.otTeleport And ObjData(Index).OBJType <> e_OBJType.otMail And ObjData(Index).OBJType _
             <> e_OBJType.otDecorations
     Exit Function
@@ -1269,7 +1273,7 @@ End Function
 Public Function MostrarCantidad(ByVal Index As Integer) As Boolean
     On Error GoTo MostrarCantidad_Err
     MostrarCantidad = ObjData(Index).OBJType <> e_OBJType.otDoors And ObjData(Index).OBJType <> e_OBJType.otSignBoards And ObjData(Index).OBJType <> e_OBJType.otOreDeposit And _
-            ObjData(Index).OBJType <> e_OBJType.otTrees And ObjData(Index).OBJType <> e_OBJType.otMail And ObjData(Index).OBJType <> e_OBJType.otTeleport
+            ObjData(Index).OBJType <> e_OBJType.otTrees And ObjData(Index).OBJType <> e_OBJType.otPlants And ObjData(Index).OBJType <> e_OBJType.otMail And ObjData(Index).OBJType <> e_OBJType.otTeleport
     Exit Function
 MostrarCantidad_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.MostrarCantidad", Erl)
@@ -1277,7 +1281,7 @@ End Function
 
 Public Function EsObjetoFijo(ByVal OBJType As e_OBJType) As Boolean
     On Error GoTo EsObjetoFijo_Err
-    EsObjetoFijo = OBJType = OBJType = e_OBJType.otSignBoards Or OBJType = e_OBJType.otTrees Or OBJType = e_OBJType.otOreDeposit Or OBJType = e_OBJType.otDecorations
+    EsObjetoFijo = OBJType = OBJType = e_OBJType.otSignBoards Or OBJType = e_OBJType.otTrees Or OBJType = e_OBJType.otPlants Or OBJType = e_OBJType.otOreDeposit Or OBJType = e_OBJType.otDecorations
     Exit Function
 EsObjetoFijo_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.EsObjetoFijo", Erl)
