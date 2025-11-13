@@ -652,7 +652,7 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
     End If
     If tmpQuest.Repetible = 0 Then
         If UserDoneQuest(UserIndex, QuestIndex) Then
-            Call WriteLocaleMsg(UserIndex, "QUESTNEXT*", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_QUEST_ALREADY_COMPLETED, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
     End If
