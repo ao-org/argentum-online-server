@@ -2863,7 +2863,7 @@ Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
         For i = 1 To MAXUSERQUESTS
             If .QuestStats.Quests(i).QuestIndex Then
                 tmpByte = tmpByte + 1
-                tmpStr = tmpStr & QuestList(.QuestStats.Quests(i).QuestIndex).nombre & ";"
+                tmpStr = tmpStr & .QuestStats.Quests(i).QuestIndex & ";"
             End If
         Next i
         'Escribimos la cantidad de quests

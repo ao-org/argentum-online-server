@@ -7023,7 +7023,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
         UserList(UserIndex).flags.ModificoQuests = True
         'Msg1264= Has aceptado la misión ¬1
-        Call WriteLocaleMsg(UserIndex, 1264, e_FontTypeNames.FONTTYPE_INFOIAO, Chr(34) & tmpIndex & Chr(34) & ".")
+        Call WriteLocaleMsg(UserIndex, 1264, e_FontTypeNames.FONTTYPE_INFOIAO, tmpIndex)
         If NpcIndex > 0 Then
             If (FinishQuestCheck(UserIndex, .QuestIndex, QuestSlot)) Then
                 Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 3)
