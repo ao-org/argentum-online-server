@@ -2959,12 +2959,16 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
                         PuedeHacerla = False
                     End If
                 End If
-                If UserList(UserIndex).Stats.ELV < QuestList(QuestIndex).RequiredLevel Then
-                    PuedeHacerla = False
+                If QuestList(QuestIndex).RequiredLevel > 0 Then
+                    If UserList(UserIndex).Stats.ELV < QuestList(QuestIndex).RequiredLevel Then
+                        PuedeHacerla = False
+                    End If
                 End If
                 'Si el personaje es nivel mayor al limite no puede hacerla
-                If UserList(UserIndex).Stats.ELV > QuestList(QuestIndex).LimitLevel Then
-                    PuedeHacerla = False
+                If QuestList(QuestIndex).LimitLevel > 0 Then
+                    If UserList(UserIndex).Stats.ELV > QuestList(QuestIndex).LimitLevel Then
+                        PuedeHacerla = False
+                    End If
                 End If
                 If PuedeHacerla Then
                     Call Writer.WriteInt8(0)
