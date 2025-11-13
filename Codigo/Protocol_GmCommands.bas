@@ -3498,13 +3498,13 @@ Public Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
         Dim Seconds As Byte
         Seconds = reader.ReadInt8()
         Dim StartX
-        StartX = .pos.x - 9
+        StartX = .pos.x - 12
         Dim StartY
-        StartY = .pos.y - 7
+        StartY = .pos.y - 10
         Dim EndX
-        EndX = .pos.x + 9
+        EndX = .pos.x + 12
         Dim EndY
-        EndY = .pos.y + 7
+        EndY = .pos.y + 10
         Dim i As Integer
         Dim j As Integer
         If Not .flags.Privilegios And e_PlayerType.User Then
