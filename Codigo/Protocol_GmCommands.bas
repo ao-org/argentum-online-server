@@ -3497,9 +3497,26 @@ Public Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim Seconds As Byte
         Seconds = reader.ReadInt8()
+        Dim StartX
+        StartX = .pos.x - 9
+        Dim StartY
+        StartY = .pos.y - 7
+        Dim EndX
+        EndX = .pos.x + 9
+        Dim EndY
+        EndY = .pos.y + 7
+        Dim i As Integer
+        Dim j As Integer
         If Not .flags.Privilegios And e_PlayerType.User Then
             CuentaRegresivaTimer = Seconds
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1689, Seconds, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1689=¡Empezando cuenta regresiva desde: ¬1 segundos...!
+            For i = StartX To EndX
+                For j = StartY To EndY
+                    If MapData(.pos.Map, i, j).UserIndex > 0 Then
+                        Call UserMod.Inmovilize(UserIndex, MapData(.pos.Map, i, j).UserIndex, CuentaRegresivaTimer, 0)
+                    End If
+                Next j
+            Next i
         End If
     End With
     Exit Sub
