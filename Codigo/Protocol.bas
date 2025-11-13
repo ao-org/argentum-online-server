@@ -5538,7 +5538,7 @@ End Sub
 Public Sub HandlePromedio(ByVal UserIndex As Integer)
     On Error GoTo handle
     With UserList(UserIndex)
-        Call WriteLocaleMsg(UserIndex, 1988, e_FontTypeNames.FONTTYPE_INFOBOLD, ListaClases(.clase) & "¬" & ListaRazas(.raza) & "¬" & .Stats.ELV)
+        Call WriteLocaleMsg(UserIndex, 1988, e_FontTypeNames.FONTTYPE_INFOBOLD, .clase & "¬" & .raza & "¬" & .Stats.ELV)
         Dim Promedio As Double, Vida As Long
         Promedio = ModClase(.clase).Vida - (21 - .Stats.UserAtributos(e_Atributos.Constitucion)) * 0.5
         Vida = 18 + ModRaza(.raza).Constitucion + Promedio * (.Stats.ELV - 1)
