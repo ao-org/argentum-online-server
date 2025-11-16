@@ -4123,23 +4123,7 @@ PrepareMessageDoAnimation_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageDoAnimation", Erl)
 End Function
 
-'Public Function WritePescarEspecial(ByVal ObjIndex As Integer)
-'        On Error GoTo PescarEspecial_Err
-'100     Call Writer.WriteInt16(ServerPacketID.PescarEspecial)
-'        Call Writer.WriteInt16(ObjIndex)
-'PescarEspecial_Err:
-'        Call Writer.Clear
-'        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PescarEspecial", Erl)
-'End Function
-Public Sub writeAnswerReset(ByVal UserIndex As Integer)
-    On Error GoTo writeAnswerReset_Err
-    Call Writer.WriteInt16(ServerPacketID.eAnswerReset)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-writeAnswerReset_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.writeAnswerReset", Erl)
-End Sub
+
 
 Public Sub WriteShopInit(ByVal UserIndex As Integer)
     On Error GoTo WriteShopInit_Err
