@@ -2240,18 +2240,6 @@ ActualizarRecurso_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.ActualizarRecurso", Erl)
 End Sub
 
-Public Function ObtenerPezRandom(ByVal PoderCania As Integer) As Long
-    On Error GoTo ObtenerPezRandom_Err
-    Dim i As Long, SumaPesos As Long, ValorGenerado As Long
-    If PoderCania > UBound(PesoPeces) Then PoderCania = UBound(PesoPeces)
-    SumaPesos = PesoPeces(PoderCania)
-    ValorGenerado = RandomNumber(0, SumaPesos - 1)
-    ObtenerPezRandom = Peces(BinarySearchPeces(ValorGenerado)).ObjIndex
-    Exit Function
-ObtenerPezRandom_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.ObtenerPezRandom", Erl)
-End Function
-
 Function ModDomar(ByVal clase As e_Class) As Integer
     On Error GoTo ModDomar_Err
     '***************************************************
