@@ -702,8 +702,8 @@ Dim tStr                        As String
         If Status(UserIndex) = e_Facciones.Criminal Or Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio Then
             Call WriteSafeModeOff(UserIndex)
             .flags.Seguro = False
-            Call WriteLegionarySecure(UserIndex, False)
-            .flags.LegionarySecure = False
+            Call WriteLegionarySecure(UserIndex, True)
+            .flags.LegionarySecure = True
         Else
             .flags.Seguro = True
             Call WriteSafeModeOn(UserIndex)
