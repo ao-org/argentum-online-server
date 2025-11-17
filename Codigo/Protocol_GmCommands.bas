@@ -3505,18 +3505,6 @@ Public Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
         EndX = .pos.x + 12
         Dim EndY
         EndY = .pos.y + 10
-        If Not InMapBounds(.pos.Map, StartX, StartY) Then
-            Exit Sub
-        End If
-        If Not InMapBounds(.pos.Map, EndX, EndY) Then
-            Exit Sub
-        End If
-        If Not InMapBounds(.pos.Map, StartX, EndY) Then
-            Exit Sub
-        End If
-        If Not InMapBounds(.pos.Map, EndX, StartY) Then
-            Exit Sub
-        End If
         Dim i As Integer
         Dim j As Integer
         If Not .flags.Privilegios And e_PlayerType.User Then
@@ -3524,8 +3512,10 @@ Public Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1689, Seconds, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1689=¡Empezando cuenta regresiva desde: ¬1 segundos...!
             For i = StartX To EndX
                 For j = StartY To EndY
-                    If MapData(.pos.Map, i, j).UserIndex > 0 Then
-                        Call UserMod.Inmovilize(UserIndex, MapData(.pos.Map, i, j).UserIndex, CuentaRegresivaTimer, 0)
+                    If InMapBounds(.pos.Map, i, j) Then
+                        If MapData(.pos.Map, i, j).UserIndex > 0 Then
+                            Call UserMod.Inmovilize(UserIndex, MapData(.pos.Map, i, j).UserIndex, CuentaRegresivaTimer, 0)
+                        End If
                     End If
                 Next j
             Next i
