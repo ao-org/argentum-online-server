@@ -2932,14 +2932,7 @@ Public Type t_User
     Faccion As t_Facciones
     ChatCombate As Byte
     ChatGlobal As Byte
-    'Macros
-    #If ConUpTime Then
-        LogOnTime As Date
-        UpTime As Long
-    #End If
-    '[Alejo]
     ComUsu As t_ComercioUsuario
-    '[/Alejo]
     EmpoCont As Byte
     NroMascotas As Integer
     MascotasType(1 To MAXMASCOTAS) As Integer
