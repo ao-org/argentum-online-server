@@ -7001,10 +7001,13 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
     If Not IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) And UserList(UserIndex).flags.QuestOpenByObj = False Then Exit Sub
     NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
     Dim tmpQuest As t_Quest
+    'npc or item quest
     If NpcIndex > 0 Then
+        'npc handled quest
         tmpQuest = QuestList(NpcList(NpcIndex).QuestNumber(Indice))
         tmpIndex = NpcList(NpcIndex).QuestNumber(Indice)
     Else
+        'item handled quest
         tmpIndex = UserList(UserIndex).flags.QuestNumber
         tmpQuest = QuestList(tmpIndex)
     End If
@@ -7023,7 +7026,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
         UserList(UserIndex).flags.ModificoQuests = True
         'Msg1264= Has aceptado la misión ¬1
-        Call WriteLocaleMsg(UserIndex, 1264, e_FontTypeNames.FONTTYPE_INFOIAO, tmpIndex)
+        Call WriteLocaleMsg(UserIndex, 1264, e_FontTypeNames.FONTTYPE_INFOIAO, .QuestIndex)
         If NpcIndex > 0 Then
             If (FinishQuestCheck(UserIndex, .QuestIndex, QuestSlot)) Then
                 Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 3)
