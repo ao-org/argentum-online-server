@@ -3505,6 +3505,18 @@ Public Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
         EndX = .pos.x + 12
         Dim EndY
         EndY = .pos.y + 10
+        If Not InMapBounds(.pos.Map, StartX, StartY) Then
+            Exit Sub
+        End If
+        If Not InMapBounds(.pos.Map, EndX, EndY) Then
+            Exit Sub
+        End If
+        If Not InMapBounds(.pos.Map, StartX, EndY) Then
+            Exit Sub
+        End If
+        If Not InMapBounds(.pos.Map, EndX, StartY) Then
+            Exit Sub
+        End If
         Dim i As Integer
         Dim j As Integer
         If Not .flags.Privilegios And e_PlayerType.User Then
