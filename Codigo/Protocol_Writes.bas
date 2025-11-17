@@ -2863,7 +2863,7 @@ Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
         For i = 1 To MAXUSERQUESTS
             If .QuestStats.Quests(i).QuestIndex Then
                 tmpByte = tmpByte + 1
-                tmpStr = tmpStr & QuestList(.QuestStats.Quests(i).QuestIndex).nombre & ";"
+                tmpStr = tmpStr & .QuestStats.Quests(i).QuestIndex & ";"
             End If
         Next i
         'Escribimos la cantidad de quests
@@ -2959,12 +2959,16 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
                         PuedeHacerla = False
                     End If
                 End If
-                If UserList(UserIndex).Stats.ELV < QuestList(QuestIndex).RequiredLevel Then
-                    PuedeHacerla = False
+                If QuestList(QuestIndex).RequiredLevel > 0 Then
+                    If UserList(UserIndex).Stats.ELV < QuestList(QuestIndex).RequiredLevel Then
+                        PuedeHacerla = False
+                    End If
                 End If
                 'Si el personaje es nivel mayor al limite no puede hacerla
-                If UserList(UserIndex).Stats.ELV > QuestList(QuestIndex).LimitLevel Then
-                    PuedeHacerla = False
+                If QuestList(QuestIndex).LimitLevel > 0 Then
+                    If UserList(UserIndex).Stats.ELV > QuestList(QuestIndex).LimitLevel Then
+                        PuedeHacerla = False
+                    End If
                 End If
                 If PuedeHacerla Then
                     Call Writer.WriteInt8(0)
@@ -4123,23 +4127,7 @@ PrepareMessageDoAnimation_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageDoAnimation", Erl)
 End Function
 
-'Public Function WritePescarEspecial(ByVal ObjIndex As Integer)
-'        On Error GoTo PescarEspecial_Err
-'100     Call Writer.WriteInt16(ServerPacketID.PescarEspecial)
-'        Call Writer.WriteInt16(ObjIndex)
-'PescarEspecial_Err:
-'        Call Writer.Clear
-'        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PescarEspecial", Erl)
-'End Function
-Public Sub writeAnswerReset(ByVal UserIndex As Integer)
-    On Error GoTo writeAnswerReset_Err
-    Call Writer.WriteInt16(ServerPacketID.eAnswerReset)
-    Call modSendData.SendData(ToIndex, UserIndex)
-    Exit Sub
-writeAnswerReset_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.writeAnswerReset", Erl)
-End Sub
+
 
 Public Sub WriteShopInit(ByVal UserIndex As Integer)
     On Error GoTo WriteShopInit_Err

@@ -1642,19 +1642,14 @@ ErrHandler:
 End Function
 
 Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As Byte)
-
-' Agrego el Cuerno de la Armada y la Legión.
-'Utilización nueva de Barco en lvl 20 por clase Pirata y Pescador.
-Dim ObjIndex                    As Integer
-Dim nowRaw                      As Long
-Dim TargObj                     As t_ObjData
-Dim obj                         As t_ObjData
-Dim MiObj                       As t_Obj
-
+    Dim ObjIndex As Integer
+    Dim nowRaw   As Long
+    Dim TargObj  As t_ObjData
+    Dim obj      As t_ObjData
+    Dim MiObj    As t_Obj
     On Error GoTo hErr
     ' Agrego el Cuerno de la Armada y la Legión.
     'Utilización nueva de Barco en lvl 20 por clase Pirata y Pescador.
-    
     With UserList(UserIndex)
         If .invent.Object(Slot).amount = 0 Then Exit Sub
         If Not CanUseItem(.flags, .Counters) Then
@@ -1713,17 +1708,14 @@ Dim MiObj                       As t_Obj
             Call WriteLocaleMsg(UserIndex, 679, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-
         If .Stats.ELV < obj.MinELV Then
             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1926, obj.MinELV, e_FontTypeNames.FONTTYPE_INFO))    ' Msg1926=Necesitas ser nivel ¬1 para usar este item.
             Exit Sub
         End If
-
         If .Stats.ELV > obj.MaxLEV And obj.MaxLEV > 0 Then
             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1982, obj.MaxLEV, e_FontTypeNames.FONTTYPE_INFO))    ' Msg1982=Este objeto no puede ser utilizado por personajes de nivel ¬1 o superior.
             Exit Sub
         End If
-
         ObjIndex = .invent.Object(Slot).ObjIndex
         .flags.TargetObjInvIndex = ObjIndex
         .flags.TargetObjInvSlot = Slot
@@ -1859,13 +1851,13 @@ Dim MiObj                       As t_Obj
                 End If
                 .flags.TomoPocion = True
                 .flags.TipoPocion = obj.TipoPocion
-                Dim CabezaFinal As Integer
-                Dim CabezaActual As Integer
+                Dim CabezaFinal   As Integer
+                Dim CabezaActual  As Integer
                 ' Esta en Zona de Pelea?
                 Dim triggerStatus As e_Trigger6
                 triggerStatus = TriggerZonaPelea(UserIndex, UserIndex)
                 Select Case .flags.TipoPocion
-                    Case 1     'Modif la agilidad
+                    Case e_PotionType.ModifiesAgility    'Modif la agilidad
                         .flags.DuracionEfecto = obj.DuracionEfecto
                         'Usa el item
                         .Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(.Stats.UserAtributos(e_Atributos.Agilidad) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
@@ -1880,7 +1872,7 @@ Dim MiObj                       As t_Obj
                         Else
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .pos.x, .pos.y))
                         End If
-                    Case 2     'Modif la fuerza
+                    Case e_PotionType.ModifiesStrength    'Modif la fuerza
                         .flags.DuracionEfecto = obj.DuracionEfecto
                         'Usa el item
                         .Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(.Stats.UserAtributos(e_Atributos.Fuerza) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
@@ -1895,14 +1887,14 @@ Dim MiObj                       As t_Obj
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .pos.x, .pos.y))
                         End If
                         Call WriteFYA(UserIndex)
-                    Case 3     'Poción roja, restaura HP
+                    Case e_PotionType.ModifiesHp     'Poción roja, restaura HP
                         ' Usa el ítem
                         If .flags.DivineBlood > 0 Then
                             Call WriteLocaleMsg(UserIndex, 2096, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         Dim HealingAmount As Long
-                        Dim Source As Integer
+                        Dim Source        As Integer
                         ' Calcula la cantidad de curación
                         HealingAmount = RandomNumber(obj.MinModificador, obj.MaxModificador) * UserMod.GetSelfHealingBonus(UserList(UserIndex))
                         ' Modifica la salud del jugador
@@ -1918,7 +1910,7 @@ Dim MiObj                       As t_Obj
                         Else
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .pos.x, .pos.y))
                         End If
-                    Case 4     'Poción azul, restaura MANA
+                    Case e_PotionType.ModifiesMp   'Poción azul, restaura MANA
                         Dim porcentajeRec As Byte
                         porcentajeRec = obj.Porcentaje
                         ' Usa el ítem: restaura el MANA
@@ -1935,7 +1927,7 @@ Dim MiObj                       As t_Obj
                         Else
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .pos.x, .pos.y))
                         End If
-                    Case 5     ' Pocion violeta
+                    Case e_PotionType.HealsPoison     ' Pocion violeta
                         If .flags.Envenenado > 0 Then
                             .flags.Envenenado = 0
                             ' Msg682=Te has curado del envenenamiento.
@@ -1951,7 +1943,7 @@ Dim MiObj                       As t_Obj
                             ' Msg683=¡No te encuentras envenenado!
                             Call WriteLocaleMsg(UserIndex, 683, e_FontTypeNames.FONTTYPE_INFO)
                         End If
-                    Case 6     ' Remueve Parálisis
+                    Case e_PotionType.HealsParalysis     ' Remueve Parálisis
                         If .flags.Paralizado = 1 Or .flags.Inmovilizado = 1 Then
                             If .flags.Paralizado = 1 Then
                                 .flags.Paralizado = 0
@@ -1974,17 +1966,20 @@ Dim MiObj                       As t_Obj
                             ' Msg685=No estas paralizado.
                             Call WriteLocaleMsg(UserIndex, 685, e_FontTypeNames.FONTTYPE_INFOIAO)
                         End If
-                    Case 7     ' Pocion Naranja
+                    Case e_PotionType.ModifiesStamina     ' Pocion Naranja
                         .Stats.MinSta = .Stats.MinSta + RandomNumber(obj.MinModificador, obj.MaxModificador)
                         If .Stats.MinSta > .Stats.MaxSta Then .Stats.MinSta = .Stats.MaxSta
                         'Quitamos del inv el item
-                        Call QuitarUserInvItem(UserIndex, Slot, 1)
+                        If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+                            ' Quitamos el ítem del inventario
+                            Call QuitarUserInvItem(UserIndex, Slot, 1)
+                        End If
                         If obj.Snd1 <> 0 Then
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
                         Else
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .pos.x, .pos.y))
                         End If
-                    Case 8     ' Pocion cambio cara
+                    Case e_PotionType.ModifiesHeadRandom    ' Pocion cambio cara
                         Select Case .genero
                             Case e_Genero.Hombre
                                 Select Case .raza
@@ -2031,7 +2026,7 @@ Dim MiObj                       As t_Obj
                             Call WriteLocaleMsg(UserIndex, 686, e_FontTypeNames.FONTTYPE_INFOIAO)
                         End If
                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
-                    Case 9     ' Pocion sexo
+                    Case e_PotionType.ModifiesSex     ' Pocion sexo
                         Select Case .genero
                             Case e_Genero.Hombre
                                 .genero = e_Genero.Mujer
@@ -2082,7 +2077,7 @@ Dim MiObj                       As t_Obj
                         Else
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .pos.x, .pos.y))
                         End If
-                    Case 10    ' Invisibilidad
+                    Case e_PotionType.TurnsYouInvisible    ' Invisibilidad
                         If .flags.invisible = 0 And .Counters.DisabledInvisibility = 0 Then
                             If IsSet(.flags.StatusMask, eTaunting) Then
                                 ' Msg687=No tiene efecto.
@@ -2107,7 +2102,7 @@ Dim MiObj                       As t_Obj
                             Exit Sub
                         End If
                         ' Poción que limpia todo
-                    Case 13
+                    Case e_PotionType.HealsAllStatusEffects
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
                         .flags.Envenenado = 0
                         .flags.Incinerado = 0
@@ -2148,9 +2143,9 @@ Dim MiObj                       As t_Obj
                             Call WriteLocaleMsg(UserIndex, 691, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
-                        Dim Map As Integer
-                        Dim x   As Byte
-                        Dim y   As Byte
+                        Dim Map     As Integer
+                        Dim x       As Byte
+                        Dim y       As Byte
                         Dim DeDonde As t_WorldPos
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
                         Select Case .Hogar
@@ -2187,7 +2182,7 @@ Dim MiObj                       As t_Obj
                         Else
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .pos.x, .pos.y))
                         End If
-                    Case 16    ' Divorcio
+                    Case e_PotionType.ModifiesMarriage    ' Divorcio
                         If .flags.Casado = 1 Then
                             Dim tUser As t_UserReference
                             '.flags.Pareja
@@ -2214,7 +2209,7 @@ Dim MiObj                       As t_Obj
                             'Msg887= No estas casado.
                             Call WriteLocaleMsg(UserIndex, 887, e_FontTypeNames.FONTTYPE_INFOIAO)
                         End If
-                    Case 17    'Cara legendaria
+                    Case e_PotionType.ModifiesHeadRandomLegendary    'Cara legendaria
                         Select Case .genero
                             Case e_Genero.Hombre
                                 Select Case .raza
@@ -2261,11 +2256,11 @@ Dim MiObj                       As t_Obj
                             'Msg888= ¡Rayos! No pude asignarte una cabeza nueva, item no consumido. ¡Proba de nuevo!
                             Call WriteLocaleMsg(UserIndex, 888, e_FontTypeNames.FONTTYPE_INFOIAO)
                         End If
-                    Case 18    ' tan solo crea una particula por determinado tiempo
-                        Dim Particula As Integer
-                        Dim Tiempo As Long
+                    Case e_PotionType.ModifiesParticlesTemporary   ' tan solo crea una particula por determinado tiempo
+                        Dim Particula           As Integer
+                        Dim Tiempo              As Long
                         Dim ParticulaPermanente As Byte
-                        Dim sobrechar As Byte
+                        Dim sobrechar           As Byte
                         If obj.CreaParticula <> "" Then
                             Particula = val(ReadField(1, obj.CreaParticula, Asc(":")))
                             Tiempo = val(ReadField(2, obj.CreaParticula, Asc(":")))
@@ -2289,27 +2284,7 @@ Dim MiObj                       As t_Obj
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
                         End If
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
-                    Case 19    ' Reseteo de skill
-                        Dim s   As Byte
-                        If .Stats.UserSkills(e_Skill.liderazgo) >= 80 Then
-                            'Msg889= Has fundado un clan, no podes resetar tus skills.
-                            Call WriteLocaleMsg(UserIndex, 889, e_FontTypeNames.FONTTYPE_INFOIAO)
-                            Exit Sub
-                        End If
-                        For s = 1 To NUMSKILLS
-                            .Stats.UserSkills(s) = 0
-                        Next s
-                        Dim SkillLibres As Integer
-                        SkillLibres = 5
-                        SkillLibres = SkillLibres + (5 * .Stats.ELV)
-                        .Stats.SkillPts = SkillLibres
-                        Call WriteLevelUp(UserIndex, .Stats.SkillPts)
-                        'Msg890= Tus skills han sido reseteados.
-                        Call WriteLocaleMsg(UserIndex, 890, e_FontTypeNames.FONTTYPE_INFOIAO)
-                        Call QuitarUserInvItem(UserIndex, Slot, 1)
-                        ' Poción negra (suicidio)
-                    Case 21
-                        'Quitamos del inv el item
+                    Case 21 'pocion negra
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
                         If obj.Snd1 <> 0 Then
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
@@ -2320,16 +2295,6 @@ Dim MiObj                       As t_Obj
                         Call WriteLocaleMsg(UserIndex, 893, e_FontTypeNames.FONTTYPE_EJECUCION)
                         Call CustomScenarios.UserDie(UserIndex)
                         Call UserMod.UserDie(UserIndex)
-                        'Poción de reset (resetea el personaje)
-                    Case 22
-                        nowRaw = GetTickCountRaw()
-                        If TicksElapsed(.Counters.LastResetTick, nowRaw) > 3000 Then
-                            Call writeAnswerReset(UserIndex)
-                            .Counters.LastResetTick = nowRaw
-                        Else
-                            'Msg894= Debes esperar unos momentos para tomar esta poción.
-                            Call WriteLocaleMsg(UserIndex, 894, e_FontTypeNames.FONTTYPE_INFO)
-                        End If
                     Case 23
                         If obj.ApplyEffectId > 0 Then
                             Call AddOrResetEffect(UserIndex, obj.ApplyEffectId)
@@ -2381,7 +2346,7 @@ Dim MiObj                       As t_Obj
                     .Counters.timeFx = 3
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, obj.CreaFX, 0, .pos.x, .pos.y))
                 End If
-                Dim i           As Byte
+                Dim i As Byte
                 Select Case obj.Subtipo
                     Case 1
                         For i = 1 To obj.CantItem
@@ -2440,9 +2405,9 @@ Dim MiObj                       As t_Obj
                             Dim ClaveLlave As Integer
                             If TargObj.clave = obj.clave Then
                                 MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, UserList( _
-                                                                                                                                                                              UserIndex).flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
+                                   UserIndex).flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
                                 .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, UserList( _
-                                                                                                   UserIndex).flags.TargetObjY).ObjInfo.ObjIndex
+                                   UserIndex).flags.TargetObjY).ObjInfo.ObjIndex
                                 'Msg897= Has abierto la puerta.
                                 Call WriteLocaleMsg(UserIndex, 897, e_FontTypeNames.FONTTYPE_INFO)
                                 ClaveLlave = obj.clave
@@ -2456,8 +2421,8 @@ Dim MiObj                       As t_Obj
                         Else
                             If TargObj.clave = obj.clave Then
                                 MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = _
-                                ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, UserList( _
-                                                                                        UserIndex).flags.TargetObjY).ObjInfo.ObjIndex).IndexCerradaLlave
+                                   ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, UserList( _
+                                   UserIndex).flags.TargetObjY).ObjInfo.ObjIndex).IndexCerradaLlave
                                 'Msg899= Has cerrado con llave la puerta.
                                 Call WriteLocaleMsg(UserIndex, 899, e_FontTypeNames.FONTTYPE_INFO)
                                 .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
@@ -2595,8 +2560,8 @@ Dim MiObj                       As t_Obj
                     End If
                 ElseIf .invent.Object(Slot).ObjIndex = iObjTrajeAltoNw Or .invent.Object(Slot).ObjIndex = iObjTrajeBajoNw Then
                     If (.flags.Navegando = 0 Or (.invent.EquippedShipObjIndex <> iObjTrajeAltoNw And .invent.EquippedShipObjIndex <> iObjTrajeBajoNw)) And MapData(.pos.Map, _
-                                                                                                                                                                   .pos.x + 1, .pos.y).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.x - 1, .pos.y).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, _
-                                                                                                                                                                                                                                                                                                               .pos.x, .pos.y + 1).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.x, .pos.y - 1).trigger <> e_Trigger.DETALLEAGUA Then
+                       .pos.x + 1, .pos.y).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.x - 1, .pos.y).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, _
+                       .pos.x, .pos.y + 1).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.x, .pos.y - 1).trigger <> e_Trigger.DETALLEAGUA Then
                         'Msg913= Este traje es para aguas contaminadas.
                         Call WriteLocaleMsg(UserIndex, 913, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -2608,7 +2573,7 @@ Dim MiObj                       As t_Obj
                        e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.x - 1, .pos.y).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.x, .pos.y + 1).trigger <> _
                        e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.x, .pos.y - 1).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.x + 1, .pos.y).trigger <> _
                        e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.x - 1, .pos.y).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.x, .pos.y + _
-                                                                                                                                                          1).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.x, .pos.y - 1).trigger <> e_Trigger.NADOBAJOTECHO Then
+                       1).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.x, .pos.y - 1).trigger <> e_Trigger.NADOBAJOTECHO Then
                         'Msg914= Este traje es para zonas poco profundas.
                         Call WriteLocaleMsg(UserIndex, 914, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
