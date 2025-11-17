@@ -1019,14 +1019,16 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
         End If
-        Dim target As t_WorldPos
-        target.Map = UserList(UserIndex).flags.TargetMap
-        target.x = UserList(UserIndex).flags.TargetX
-        target.y = UserList(UserIndex).flags.TargetY
-        If Not LegalPos(Target.Map, Target.x, Target.y) Then
+        Dim Target As t_WorldPos
+        Target.Map = UserList(UserIndex).flags.TargetMap
+        Target.x = UserList(UserIndex).flags.TargetX
+        Target.y = UserList(UserIndex).flags.TargetY
+
+        If Not InMapBounds(Target.Map, Target.x, Target.y) Then
             Exit Function
         End If
-        If ObjData(MapData(target.Map, target.x, target.y).ObjInfo.ObjIndex).Subtipo <> e_AnvilType.BlodiumAnvil Then
+
+        If ObjData(MapData(Target.Map, Target.x, Target.y).ObjInfo.ObjIndex).Subtipo <> e_AnvilType.BlodiumAnvil Then
             Call WriteLocaleMsg(UserIndex, MSG_BLODIUM_ANVIL_REQUIRED, e_FontTypeNames.FONTTYPE_INFO)
             HerreroTieneMateriales = False
             Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -2238,18 +2240,6 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal x As Integer, ByVal y A
 ActualizarRecurso_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.ActualizarRecurso", Erl)
 End Sub
-
-Public Function ObtenerPezRandom(ByVal PoderCania As Integer) As Long
-    On Error GoTo ObtenerPezRandom_Err
-    Dim i As Long, SumaPesos As Long, ValorGenerado As Long
-    If PoderCania > UBound(PesoPeces) Then PoderCania = UBound(PesoPeces)
-    SumaPesos = PesoPeces(PoderCania)
-    ValorGenerado = RandomNumber(0, SumaPesos - 1)
-    ObtenerPezRandom = Peces(BinarySearchPeces(ValorGenerado)).ObjIndex
-    Exit Function
-ObtenerPezRandom_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.ObtenerPezRandom", Erl)
-End Function
 
 Function ModDomar(ByVal clase As e_Class) As Integer
     On Error GoTo ModDomar_Err
