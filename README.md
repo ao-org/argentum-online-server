@@ -26,7 +26,7 @@ Create a new folder named `C:\AO20` and navigate to it. Follow these steps:
 
 5. Clone `Recursos` (https://github.com/ao-org/Recursos)
 
-6. Copy `Example.EsArbol.ini` to `Recursos\Dat\EsArbol.ini` and customize it if you need different tree graphics.
+6. Copy `Example.EsArbol.ini` to `Recursos\init\EsArbol.ini` and customize it if you need different tree graphics.
 
 7. Open Visual Basic 6 as an administrator
 

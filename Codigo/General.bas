@@ -283,18 +283,38 @@ End Function
 
 Public Sub LoadTreeGraphics()
     On Error GoTo LoadTreeGraphics_Err
-    Dim treeFile As String
+    Dim initTreeFile   As String
+    Dim legacyTreeFile As String
 
-    treeFile = DatPath & TREE_GRAPHICS_FILE
+    initTreeFile = GetTreeGraphicsInitPath()
+    legacyTreeFile = GetTreeGraphicsLegacyPath()
 
-    If Not LoadTreeGraphicsFromFile(treeFile) Then
-        Call LoadDefaultTreeGraphics
-        Call SaveTreeGraphicsFile(treeFile)
+    If LoadTreeGraphicsFromFile(initTreeFile) Then Exit Sub
+
+    If LoadTreeGraphicsFromFile(legacyTreeFile) Then Exit Sub
+
+    Call LoadDefaultTreeGraphics
+
+    If EnsureDirectoryExists(GetDirectoryName(initTreeFile)) Then
+        Call SaveTreeGraphicsFile(initTreeFile)
+    ElseIf EnsureDirectoryExists(GetDirectoryName(legacyTreeFile)) Then
+        Call SaveTreeGraphicsFile(legacyTreeFile)
+    Else
+        Call SaveTreeGraphicsFile(initTreeFile)
     End If
     Exit Sub
 LoadTreeGraphics_Err:
     Call TraceError(Err.Number, Err.Description, "General.LoadTreeGraphics", Erl)
 End Sub
+
+Private Function GetTreeGraphicsInitPath() As String
+    GetTreeGraphicsInitPath = App.Path & "\Recursos\init\" & TREE_GRAPHICS_FILE
+End Function
+
+Private Function GetTreeGraphicsLegacyPath() As String
+    GetTreeGraphicsLegacyPath = DatPath & TREE_GRAPHICS_FILE
+End Function
+
 
 Private Function LoadTreeGraphicsFromFile(ByVal FilePath As String) As Boolean
     On Error GoTo LoadTreeGraphicsFromFile_Err
@@ -388,6 +408,62 @@ Function EsArbol(ByVal GrhIndex As Long) As Boolean
     Exit Function
 EsArbol_Err:
     Call TraceError(Err.Number, Err.Description, "General.EsArbol", Erl)
+End Function
+
+Private Function EnsureDirectoryExists(ByVal DirectoryPath As String) As Boolean
+    On Error GoTo EnsureDirectoryExists_Err
+
+    Dim normalizedPath As String
+    Dim parentDirectory As String
+
+    normalizedPath = NormalizePath(DirectoryPath)
+
+    If LenB(normalizedPath) = 0 Then Exit Function
+
+    If Len(normalizedPath) = 2 And Mid$(normalizedPath, 2, 1) = ":" Then
+        EnsureDirectoryExists = True
+        Exit Function
+    End If
+
+    If FileExist(normalizedPath, vbDirectory) Then
+        EnsureDirectoryExists = True
+        Exit Function
+    End If
+
+    parentDirectory = GetDirectoryName(normalizedPath)
+    If LenB(parentDirectory) <> 0 Then
+        If Not EnsureDirectoryExists(parentDirectory) Then Exit Function
+    End If
+
+    MkDir normalizedPath
+    EnsureDirectoryExists = True
+    Exit Function
+EnsureDirectoryExists_Err:
+    EnsureDirectoryExists = False
+End Function
+
+Private Function GetDirectoryName(ByVal PathValue As String) As String
+    Dim normalizedPath As String
+    Dim separatorPos   As Long
+
+    normalizedPath = NormalizePath(PathValue)
+    separatorPos = InStrRev(normalizedPath, "\")
+
+    If separatorPos > 0 Then
+        GetDirectoryName = Left$(normalizedPath, separatorPos - 1)
+    End If
+End Function
+
+Private Function NormalizePath(ByVal PathValue As String) As String
+    Dim normalizedPath As String
+
+    normalizedPath = Replace$(PathValue, "/", "\")
+
+    Do While Len(normalizedPath) > 0 And Right$(normalizedPath, 1) = "\"
+        normalizedPath = Left$(normalizedPath, Len(normalizedPath) - 1)
+    Loop
+
+    NormalizePath = normalizedPath
 End Function
 
 Private Function HayLava(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
