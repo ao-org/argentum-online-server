@@ -32,6 +32,10 @@ Public Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
 Public Declare Sub OutputDebugString Lib "Kernel32" Alias "OutputDebugStringA" (ByVal lpOutputString As String)
 Global LeerNPCs As New clsIniManager
 
+Private Const TREE_GRAPHICS_FILE As String = "EsArbol.ini"
+Private TreeGraphicIds()         As Long
+Private TreeGraphicCount         As Long
+
 Sub SetNakedBody(ByRef User As t_User)
     Const man_human_naked_body   As Integer = 3000
     Const man_drow_naked_body    As Integer = 3001
@@ -277,13 +281,110 @@ HayAgua_Err:
     Call TraceError(Err.Number, Err.Description, "General.HayAgua", Erl)
 End Function
 
+Public Sub LoadTreeGraphics()
+    On Error GoTo LoadTreeGraphics_Err
+    Dim treeFile As String
+
+    treeFile = DatPath & TREE_GRAPHICS_FILE
+
+    If Not LoadTreeGraphicsFromFile(treeFile) Then
+        Call LoadDefaultTreeGraphics
+        Call SaveTreeGraphicsFile(treeFile)
+    End If
+    Exit Sub
+LoadTreeGraphics_Err:
+    Call TraceError(Err.Number, Err.Description, "General.LoadTreeGraphics", Erl)
+End Sub
+
+Private Function LoadTreeGraphicsFromFile(ByVal FilePath As String) As Boolean
+    On Error GoTo LoadTreeGraphicsFromFile_Err
+
+    If Not FileExist(FilePath, vbArchive) Then Exit Function
+
+    Dim requestedCount As Long
+    Dim idx            As Long
+    Dim treeValue      As Long
+
+    requestedCount = val(GetVar(FilePath, "INIT", "Count"))
+
+    If requestedCount <= 0 Then Exit Function
+
+    ReDim TreeGraphicIds(1 To requestedCount) As Long
+    TreeGraphicCount = 0
+
+    For idx = 1 To requestedCount
+        treeValue = val(GetVar(FilePath, "TREES", "Tree" & idx))
+        If treeValue <> 0 Then
+            TreeGraphicCount = TreeGraphicCount + 1
+            TreeGraphicIds(TreeGraphicCount) = treeValue
+        End If
+    Next idx
+
+    If TreeGraphicCount = 0 Then
+        Erase TreeGraphicIds
+        Exit Function
+    End If
+
+    If TreeGraphicCount <> requestedCount Then
+        ReDim Preserve TreeGraphicIds(1 To TreeGraphicCount) As Long
+    End If
+
+    LoadTreeGraphicsFromFile = True
+    Exit Function
+LoadTreeGraphicsFromFile_Err:
+    Call TraceError(Err.Number, Err.Description, "General.LoadTreeGraphicsFromFile", Erl)
+End Function
+
+Private Sub LoadDefaultTreeGraphics()
+    On Error GoTo LoadDefaultTreeGraphics_Err
+
+    Dim defaults As Variant
+    Dim idx      As Long
+    Dim dest     As Long
+
+    defaults = Array(11905&, 644&, 1880&, 11906&, 12160&, 6597&, 2548&, 2549&, 15110&, 15109&, 15108&, 11904&, 7220&, 50990&, 55626&, 55627&, 55630&, 55632&, 55633&, 55635&, 55638&, 12584&, 50985&, 15510&, 14775&, 14687&, 11903&, 735&, 15698&, 14504&, 15697&, 6598&, 1121&, 1878&, 9513&, 9514&, 9515&, 9518&, 9519&, 9520&, 9529&)
+
+    TreeGraphicCount = UBound(defaults) - LBound(defaults) + 1
+    ReDim TreeGraphicIds(1 To TreeGraphicCount) As Long
+
+    dest = 1
+    For idx = LBound(defaults) To UBound(defaults)
+        TreeGraphicIds(dest) = CLng(defaults(idx))
+        dest = dest + 1
+    Next idx
+    Exit Sub
+LoadDefaultTreeGraphics_Err:
+    Call TraceError(Err.Number, Err.Description, "General.LoadDefaultTreeGraphics", Erl)
+End Sub
+
+Private Sub SaveTreeGraphicsFile(ByVal FilePath As String)
+    On Error GoTo SaveTreeGraphicsFile_Err
+
+    Dim idx As Long
+
+    If TreeGraphicCount = 0 Then Exit Sub
+
+    Call WriteVar(FilePath, "INIT", "Count", CStr(TreeGraphicCount))
+
+    For idx = 1 To TreeGraphicCount
+        Call WriteVar(FilePath, "TREES", "Tree" & idx, CStr(TreeGraphicIds(idx)))
+    Next idx
+    Exit Sub
+SaveTreeGraphicsFile_Err:
+    Call TraceError(Err.Number, Err.Description, "General.SaveTreeGraphicsFile", Erl)
+End Sub
+
 Function EsArbol(ByVal GrhIndex As Long) As Boolean
     On Error GoTo EsArbol_Err
-    EsArbol = GrhIndex = 11905 Or GrhIndex = 644 Or GrhIndex = 1880 Or GrhIndex = 11906 Or GrhIndex = 12160 Or GrhIndex = 6597 Or GrhIndex = 2548 Or GrhIndex = 2549 Or GrhIndex _
-            = 15110 Or GrhIndex = 15109 Or GrhIndex = 15108 Or GrhIndex = 11904 Or GrhIndex = 7220 Or GrhIndex = 50990 Or GrhIndex = 55626 Or GrhIndex = 55627 Or GrhIndex = _
-            55630 Or GrhIndex = 55632 Or GrhIndex = 55633 Or GrhIndex = 55635 Or GrhIndex = 55638 Or GrhIndex = 12584 Or GrhIndex = 50985 Or GrhIndex = 15510 Or GrhIndex = 14775 _
-            Or GrhIndex = 14687 Or GrhIndex = 11903 Or GrhIndex = 735 Or GrhIndex = 15698 Or GrhIndex = 14504 Or GrhIndex = 15697 Or GrhIndex = 6598 Or GrhIndex = 1121 Or _
-            GrhIndex = 1878 Or GrhIndex = 9513 Or GrhIndex = 9514 Or GrhIndex = 9515 Or GrhIndex = 9518 Or GrhIndex = 9519 Or GrhIndex = 9520 Or GrhIndex = 9529
+
+    Dim idx As Long
+
+    For idx = 1 To TreeGraphicCount
+        If TreeGraphicIds(idx) = GrhIndex Then
+            EsArbol = True
+            Exit Function
+        End If
+    Next idx
     Exit Function
 EsArbol_Err:
     Call TraceError(Err.Number, Err.Description, "General.EsArbol", Erl)
@@ -500,6 +601,8 @@ Sub Main()
     Call InitializeFishingBonuses()
     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
     Call LoadRecursosEspeciales
+    frmCargando.Label1(2).Caption = "Cargando definiciones de árboles"
+    Call LoadTreeGraphics
     frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
     Call LoadRangosFaccion
     frmCargando.Label1(2).Caption = "Cargando Recompensas de Faccion"
@@ -697,6 +800,7 @@ Sub Restart()
     Call LoadPesca
     Call InitializeFishingBonuses()
     Call LoadRecursosEspeciales
+    Call LoadTreeGraphics
     Call LoadMapData
     Call CargarHechizos
     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
