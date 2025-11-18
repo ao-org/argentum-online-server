@@ -3495,16 +3495,18 @@ End Sub
 Public Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
+        Const MapAreaSizeX as integer = 12
+        Const MapAreaSizeY as integer = 10
         Dim Seconds As Byte
         Seconds = reader.ReadInt8()
         Dim StartX
-        StartX = .pos.x - 12
+        StartX = .pos.x - MapAreaSizeX
         Dim StartY
-        StartY = .pos.y - 10
+        StartY = .pos.y - MapAreaSizeY
         Dim EndX
-        EndX = .pos.x + 12
+        EndX = .pos.x + MapAreaSizeX
         Dim EndY
-        EndY = .pos.y + 10
+        EndY = .pos.y + MapAreaSizeY
         Dim i As Integer
         Dim j As Integer
         If Not .flags.Privilegios And e_PlayerType.User Then
