@@ -275,6 +275,7 @@ Public Enum e_JobsTypes
     Woodcutter = 4
     Fisherman = 5
     Alchemist = 6
+    Herbalist = 7
 End Enum
 
 Public Type t_LlamadaGM
@@ -1472,7 +1473,7 @@ Public Enum e_OBJType
     otBackpack = 7
     otSignBoards = 8
     otKeys = 9
-    'otLibre = 10
+    otPlants = 10
     otPotions = 11
     'otLibre = 12
     otDrinks = 13
@@ -1515,7 +1516,7 @@ Public Enum e_OBJType
     OtQuest = 51
     otFishingPool = 52
     otUsableOntarget = 53
-    otPlants = 54
+    'otLibre = 54
     otElementalRune = 55
     otElse = 100
 End Enum
@@ -1538,6 +1539,9 @@ End Enum
 Public Enum e_ToolsSubtype
     eFishingRod = 1
     eFishingNet = 2
+    eWoodAxe = 6
+    eMiningPick = 8
+    eHerbalismShears = 10
 End Enum
 
 Public Enum e_MagicItemSubType
@@ -2184,6 +2188,9 @@ Public Type t_ObjData
     MaxHp As Integer ' Maximo puntos de vida
     MineralIndex As Integer
     LingoteInex As Integer
+    HarvestItemIndex As Integer
+    HarvestMinAmount As Integer
+    HarvestMaxAmount As Integer
     Proyectil As Integer
     Municion As Integer
     Crucial As Byte
