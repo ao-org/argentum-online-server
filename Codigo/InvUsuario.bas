@@ -2754,7 +2754,7 @@ End Sub
 ' Returns:     Boolean - True if the user is in a potion-free zone
 '                       False if the potion should be consumed
 '**************************************************************
-Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatus As e_Trigger6) As Boolean
+Public Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatus As e_Trigger6) As Boolean
     Dim currentMap     As Integer
     Dim isTriggerZone  As Boolean
     Dim isTierUser     As Boolean
@@ -3027,7 +3027,11 @@ Public Sub ResurrectWithItem(ByVal UserIndex As Integer)
         Dim ObjIndex As Integer
         ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
         Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
-        Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.UsingItemSlot)
+        Dim triggerStatus As e_Trigger6
+        triggerStatus = TriggerZonaPelea(UserIndex, UserIndex)
+        If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+            Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.UsingItemSlot)
+        End If
         Call ResurrectUser(TargetUser)
         If IsFeatureEnabled("remove-inv-on-attack") Then
             Call RemoveUserInvisibility(UserIndex)
