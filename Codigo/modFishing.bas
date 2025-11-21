@@ -154,13 +154,11 @@ Public Sub PerformFishing(ByVal UserIndex As Integer, Optional ByVal UsingFishin
             End If
 
             objValue = max(ObjData(fishingCatch.ObjIndex).Valor / 3, 1)
+            
+            If IsUniqueMapFish(fishingCatch.ObjIndex) And currentMap <> SvrConfig.GetValue("FISHING_MAP_SPECIAL_FISH1_ID") Then
 
-            Dim isSpecialFishCandidate As Boolean
-            isSpecialFishCandidate = (fishingCatch.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH1_ID")) Or _
-                                     (fishingCatch.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH2_ID"))
-
-            If isSpecialFishCandidate And currentMap <> SvrConfig.GetValue("FISHING_MAP_SPECIAL_FISH1_ID") Then
                 fishingCatch.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH1_REMPLAZO_ID")
+
                 If MapInfo(currentMap).Seguro = 0 Then
                     npcIndex = SpawnNpc(SvrConfig.GetValue("NPC_WATCHMAN_ID"), .pos, True, False)
                 End If
@@ -403,3 +401,19 @@ Public Function ObtenerPezRandom(ByVal PoderCania As Integer) As Long
 ObtenerPezRandom_Err:
     Call TraceError(Err.Number, Err.Description, "modFishing.ObtenerPezRandom", Erl)
 End Function
+Public Function IsUniqueMapFish(ByVal ObjIndex As Long) As Boolean
+On Error GoTo IsUniqueMapFish_Err
+    Dim i As Long
+    For i = 1 To UniqueMapFishCount
+        If UniqueMapFishIDs(i) = ObjIndex Then
+            IsUniqueMapFish = True
+            Exit Function
+        End If
+    Next
+    Exit Function
+IsUniqueMapFish_Err:
+    Call TraceError(Err.Number, Err.Description, "modFishing.IsUniqueMapFish", Erl)
+End Function
+
+
+

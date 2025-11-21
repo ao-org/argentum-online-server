@@ -2606,6 +2606,24 @@ Public Sub LoadPesca()
     Else
         ReDim Peces(0) As t_Obj
     End If
+    
+    ' Cargar UniqueMapfish
+    Dim uniqueCount As Long
+    Dim uniqueValue As String
+    uniqueCount = 0
+    i = 1
+    Do
+        uniqueValue = IniFile.GetValue("UNIQUEMAPFISH", "UniqueMapfish" & i)
+        If Len(Trim$(uniqueValue)) = 0 Then Exit Do
+    
+        uniqueCount = uniqueCount + 1
+        ReDim Preserve UniqueMapFishIDs(1 To uniqueCount) As Long
+        UniqueMapFishIDs(uniqueCount) = CLng(val(uniqueValue))
+    
+        i = i + 1
+    Loop
+    UniqueMapFishCount = uniqueCount
+    
     Set IniFile = Nothing
     Exit Sub
 LoadPesca_Err:
