@@ -3059,6 +3059,7 @@ Public Type t_NPCFlags
     Snd1 As Integer
     Snd2 As Integer
     Snd3 As Integer
+    SndRespawn As Integer
     BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
     team As Byte
@@ -3218,6 +3219,7 @@ Public Type t_NpcInfoCache
     Snd1 As Integer
     Snd2 As Integer
     Snd3 As Integer
+    SndRespawn As Integer
     NroExp As Integer
     Expresiones() As String
     NumQuiza As Integer
