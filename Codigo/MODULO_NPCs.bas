@@ -900,7 +900,7 @@ Function UpdateNpcSpeed(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)
         If .IntervaloMovimiento = 0 Then
             .IntervaloMovimiento = 380
-            .Char.speeding = frmMain.TIMER_AI.Interval / 330
+            .Char.speeding = IntervaloNPCAI / 330
         Else
             .Char.speeding = 210 / .IntervaloMovimiento
         End If
@@ -1325,7 +1325,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         .ShowKillerConsole = Info.ShowKillerConsole
         If .IntervaloMovimiento = 0 Then
             .IntervaloMovimiento = 380
-            .Char.speeding = frmMain.TIMER_AI.Interval / 330
+            .Char.speeding = IntervaloNPCAI / 330
         Else
             .Char.speeding = 210 / .IntervaloMovimiento
         End If
