@@ -717,7 +717,6 @@ Sub Main()
         .GameTimer.Enabled = True
         .Segundo.Enabled = True
         .KillLog.Enabled = True
-        .TIMER_AI.Enabled = True
         .T_UsersOnline.Enabled = True
         .t_Extraer.Enabled = True
         .t_Extraer.Interval = IntervaloTrabajarExtraer
@@ -781,6 +780,7 @@ Sub Main()
         Call PerformTimeLimitCheck(PerformanceTimer, "General Update Effects over time")
         Call MaybeRunUserAutoSave
         Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeRunUserAutoSave")
+        Call MaybeUpdateNpcAI(GlobalFrameTime)
         DoEvents
         Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
         Call AntiCheatUpdate

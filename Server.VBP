@@ -74,6 +74,7 @@ Module=Penas; Codigo\Penas.bas
 Class=clsCrafteo; Codigo\clsCrafteo.cls
 Module=modCrafteos; Codigo\modCrafteos.bas
 Module=modNetwork; Codigo\modNetwork.bas
+Module=modNpcAiLoop; Codigo\modNpcAiLoop.bas
 Form=Codigo\frmDbControl.frm
 Module=AO20CryptoSysWrapper; Codigo\AO20CryptoSysWrapper.bas
 Module=basCryptoSys; Codigo\basCryptoSys.bas

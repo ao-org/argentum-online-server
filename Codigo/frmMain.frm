@@ -387,12 +387,6 @@ Begin VB.Form frmMain
       Left            =   1680
       Top             =   3120
    End
-   Begin VB.Timer TIMER_AI 
-      Enabled         =   0   'False
-      Interval        =   100
-      Left            =   4560
-      Top             =   3000
-   End
    Begin VB.Frame Frame1 
       BackColor       =   &H00E0E0E0&
       Caption         =   "Mensaje a jugadores"
@@ -1664,37 +1658,6 @@ SubastaTimer_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.SubastaTimer_Timer", Erl)
 End Sub
 
-Private Sub TIMER_AI_Timer()
-    On Error GoTo ErrorHandler
-    Dim NpcIndex         As Long
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
-    If Not haciendoBK Then
-        For NpcIndex = 1 To LastNPC
-            With NpcList(NpcIndex)
-                If .pos.Map > 0 Then
-                    If MapInfo(.pos.Map).NumUsers > 0 Or MapInfo(.pos.Map).ForceUpdate Then
-                        If .flags.NPCActive Then
-                            If .npcType = DummyTarget Then
-                                Call NpcDummyUpdate(NpcIndex)
-                            Else
-                                If .flags.Paralizado > 0 Then Call EfectoParalisisNpc(NpcIndex)
-                                If .flags.Inmovilizado > 0 Then Call EfectoInmovilizadoNpc(NpcIndex)
-                                If IntervaloPermiteMoverse(NpcIndex) Then Call NpcAI(NpcIndex)
-                            End If 'If .npcType = DummyTarget Then
-                        End If 'If .flags.NPCActive Then
-                    End If 'If MapInfo(.Pos.Map).NumUsers > 0 Then
-                End If 'If .Pos.Map > 0 Then
-            End With
-        Next NpcIndex
-    End If
-    Call PerformTimeLimitCheck(PerformanceTimer, "TIMER_AI_Timer", 600)
-    Exit Sub
-ErrorHandler:
-    Call TraceError(Err.Number, Err.Description & vbNewLine & "NPC: " & NpcList(NpcIndex).name & " en la posicion: " & NpcList(NpcIndex).pos.Map & "-" & NpcList(NpcIndex).pos.x _
-            & "-" & NpcList(NpcIndex).pos.y, "frmMain.Timer_AI", Erl)
-    Call MuereNpc(NpcIndex, 0)
-End Sub
 
 Private Sub TimerMeteorologia_Timer()
     'Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1741, TimerMeteorologico, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1741=Servidor > Timer de lluvia en : ¬1
