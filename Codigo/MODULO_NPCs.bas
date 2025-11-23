@@ -289,6 +289,7 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
         .Snd1 = 0
         .Snd2 = 0
         .Snd3 = 0
+        .SndRespawn = 0
         .TierraInvalida = 0
         Call ResetMask(.BehaviorFlags)
         Call SetMask(.BehaviorFlags, e_BehaviorFlags.eAttackNpc Or e_BehaviorFlags.eAttackUsers)
@@ -1111,6 +1112,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Snd1 = Val(LeerNPCs.GetValue(SectionName, "Snd1"))
         .Snd2 = Val(LeerNPCs.GetValue(SectionName, "Snd2"))
         .Snd3 = Val(LeerNPCs.GetValue(SectionName, "Snd3"))
+        .SndRespawn = val(LeerNPCs.GetValue(SectionName, "SndRespawn"))
         aux = LeerNPCs.GetValue(SectionName, "NROEXP")
         If LenB(aux) = 0 Then
             .NroExp = 0
@@ -1430,6 +1432,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         .flags.Snd1 = Info.Snd1
         .flags.Snd2 = Info.Snd2
         .flags.Snd3 = Info.Snd3
+        .flags.SndRespawn = Info.SndRespawn
         .NroExpresiones = Info.NroExp
         If .NroExpresiones > 0 Then
             ReDim .Expresiones(1 To .NroExpresiones)
