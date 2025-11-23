@@ -3538,6 +3538,9 @@ Public ModRaza(1 To NUMRAZAS)                 As t_ModRaza
 Public Crafteos                               As New Dictionary
 Public GlobalDropTable()                      As t_GlobalDrop
 Public PoderCanas()                           As Integer
+Public UniqueMapFishIDs()                     As Long
+Public UniqueMapFishCount                     As Long
+
 '*********************************************************
 Public Nix                                    As t_WorldPos
 Public Ullathorpe                             As t_WorldPos
