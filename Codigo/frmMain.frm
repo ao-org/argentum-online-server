@@ -227,11 +227,6 @@ Begin VB.Form frmMain
       Left            =   240
       Top             =   4200
    End
-   Begin VB.Timer UptimeTimer 
-      Interval        =   1000
-      Left            =   3600
-      Top             =   3060
-   End
    Begin VB.Timer Truenos 
       Enabled         =   0   'False
       Interval        =   5000
@@ -606,7 +601,6 @@ Public GuardarYCerrar           As Boolean
 Private tHechizosMinutesCounter As Byte
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
 Private Declare Function Shell_NotifyIconA Lib "SHELL32" (ByVal dwMessage As Long, lpData As NOTIFYICONDATA) As Integer
-Private SERVER_UPTIME As Long
 #If DIRECT_PLAY = 1 Then
     Implements DirectPlay8Event
     Private mfExit As Boolean
@@ -1870,12 +1864,4 @@ Private Sub Truenos_Timer()
     Exit Sub
 Truenos_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Truenos_Timer", Erl)
-End Sub
-
-Private Sub UptimeTimer_Timer()
-    On Error GoTo UptimeTimer_Timer_Err
-    SERVER_UPTIME = SERVER_UPTIME + 1
-    Exit Sub
-UptimeTimer_Timer_Err:
-    Call TraceError(Err.Number, Err.Description, "frmMain.UptimeTimer_Timer", Erl)
 End Sub
