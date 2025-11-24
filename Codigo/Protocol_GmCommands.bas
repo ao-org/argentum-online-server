@@ -3495,11 +3495,32 @@ End Sub
 Public Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
+        Const MapAreaSizeX as integer = 12
+        Const MapAreaSizeY as integer = 10
         Dim Seconds As Byte
         Seconds = reader.ReadInt8()
+        Dim StartX
+        StartX = .pos.x - MapAreaSizeX
+        Dim StartY
+        StartY = .pos.y - MapAreaSizeY
+        Dim EndX
+        EndX = .pos.x + MapAreaSizeX
+        Dim EndY
+        EndY = .pos.y + MapAreaSizeY
+        Dim i As Integer
+        Dim j As Integer
         If Not .flags.Privilegios And e_PlayerType.User Then
             CuentaRegresivaTimer = Seconds
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1689, Seconds, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1689=¡Empezando cuenta regresiva desde: ¬1 segundos...!
+            For i = StartX To EndX
+                For j = StartY To EndY
+                    If InMapBounds(.pos.Map, i, j) Then
+                        If MapData(.pos.Map, i, j).UserIndex > 0 Then
+                            Call UserMod.Inmovilize(UserIndex, MapData(.pos.Map, i, j).UserIndex, CuentaRegresivaTimer, 0)
+                        End If
+                    End If
+                Next j
+            Next i
         End If
     End With
     Exit Sub

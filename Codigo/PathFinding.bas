@@ -140,17 +140,25 @@ End Function
 Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, ByVal CurY As Integer, ByVal Heading As e_Heading, ByRef EndPos As t_Position)
     On Error GoTo ErrHandler
     Dim x As Integer, y As Integer, DistanceFromStart As Integer
+    Dim Map As Integer
     Dim HeuristicDistance As Single, EstimatedDistance As Single
     Dim Noise As Single
+
+    Map = NpcList(NpcIndex).pos.Map
+
     With DirOffset(Heading)
         x = CurX + .x
         y = CurY + .y
     End With
+
+    If Not InMapBounds(Map, CurX, CurY) Then Exit Sub
+    If Not InMapBounds(Map, x, y) Then Exit Sub
+
     With Table(x, y)
         ' Si ya está cerrado, salimos
         If .Closed Then Exit Sub
         ' Nos quedamos en el campo de visión del NPC
-        If InsideLimits(x, y) Then
+        If InMapBounds(Map, x, y) Then
             ' Si puede atravesar el tile al siguiente
             If IsWalkable(NpcIndex, x, y, Heading) Then
                 ' Calculamos la distancia hasta este vértice
@@ -189,7 +197,16 @@ Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, By
     End With
     Exit Sub
 ErrHandler:
-    Call TraceError(Err.Number, Err.Description, "PathFinding.ProcessAdjacent", Erl)
+    Dim errorContext As String
+    errorContext = "NPC: <unknown> | Pos: <unknown>"
+
+    If NpcIndex >= LBound(NpcList) And NpcIndex <= UBound(NpcList) Then
+        With NpcList(NpcIndex)
+            errorContext = "NPC: " & .Name & " | Pos: Map=" & .pos.Map & " X=" & .pos.x & " Y=" & .pos.y
+        End With
+    End If
+
+    Call TraceError(Err.Number, Err.Description & " | " & errorContext, "PathFinding.ProcessAdjacent", Erl)
 End Sub
 
 Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Boolean) As Boolean

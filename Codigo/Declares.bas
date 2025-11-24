@@ -3059,6 +3059,7 @@ Public Type t_NPCFlags
     Snd1 As Integer
     Snd2 As Integer
     Snd3 As Integer
+    SndRespawn As Integer
     BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
     team As Byte
@@ -3218,6 +3219,7 @@ Public Type t_NpcInfoCache
     Snd1 As Integer
     Snd2 As Integer
     Snd3 As Integer
+    SndRespawn As Integer
     NroExp As Integer
     Expresiones() As String
     NumQuiza As Integer
@@ -3536,6 +3538,9 @@ Public ModRaza(1 To NUMRAZAS)                 As t_ModRaza
 Public Crafteos                               As New Dictionary
 Public GlobalDropTable()                      As t_GlobalDrop
 Public PoderCanas()                           As Integer
+Public UniqueMapFishIDs()                     As Long
+Public UniqueMapFishCount                     As Long
+
 '*********************************************************
 Public Nix                                    As t_WorldPos
 Public Ullathorpe                             As t_WorldPos
