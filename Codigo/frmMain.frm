@@ -44,11 +44,6 @@ Begin VB.Form frmMain
       Top             =   120
       Width           =   1695
    End
-   Begin VB.Timer Timer1 
-      Interval        =   10000
-      Left            =   4440
-      Top             =   1920
-   End
    Begin VB.CommandButton Command3 
       Caption         =   "Recargar Donadore"
       Height          =   495
