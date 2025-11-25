@@ -2224,9 +2224,7 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
             End If
         End If
     End With
-    Dim triggerStatus As e_Trigger6
-    triggerStatus = TriggerZonaPelea(UserIndex, UserIndex)
-    If DidConsumeAmunition And Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+    If DidConsumeAmunition And Not IsConsumableFreeZone(UserIndex) Then
         Call ConsumeAmunition(UserIndex)
     End If
 End Sub

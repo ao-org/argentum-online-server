@@ -2485,9 +2485,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         End If
                         If DummyInt <> 0 Then
                             'Take 1 arrow away - we do it AFTER hitting, since if Ammo Slot is 0 it gives a rt9 and kicks players
-                            Dim TriggerStatus As e_Trigger6
-                            TriggerStatus = TriggerZonaPelea(UserIndex, UserIndex)
-                            If consumirMunicion And Not IsPotionFreeZone(UserIndex, TriggerStatus) Then
+                            If consumirMunicion And Not IsConsumableFreeZone(UserIndex, TriggerStatus) Then
                                 Call QuitarUserInvItem(UserIndex, DummyInt, 1)
                             End If
                             If .Object(DummyInt).amount > 0 Then
