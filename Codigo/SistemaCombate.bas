@@ -2224,7 +2224,7 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
             End If
         End If
     End With
-    If DidConsumeAmunition Then
+    If DidConsumeAmunition And Not IsConsumableFreeZone(UserIndex) Then
         Call ConsumeAmunition(UserIndex)
     End If
 End Sub

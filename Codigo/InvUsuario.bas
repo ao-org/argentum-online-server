@@ -1853,9 +1853,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 .flags.TipoPocion = obj.TipoPocion
                 Dim CabezaFinal   As Integer
                 Dim CabezaActual  As Integer
-                ' Esta en Zona de Pelea?
-                Dim triggerStatus As e_Trigger6
-                triggerStatus = TriggerZonaPelea(UserIndex, UserIndex)
                 Select Case .flags.TipoPocion
                     Case e_PotionType.ModifiesAgility    'Modif la agilidad
                         .flags.DuracionEfecto = obj.DuracionEfecto
@@ -1863,7 +1860,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         .Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(.Stats.UserAtributos(e_Atributos.Agilidad) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
                         Call WriteFYA(UserIndex)
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
-                        If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+                        If Not IsConsumableFreeZone(UserIndex) Then
                             ' Quitamos el ítem del inventario
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         End If
@@ -1877,7 +1874,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         'Usa el item
                         .Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(.Stats.UserAtributos(e_Atributos.Fuerza) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
-                        If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+                        If Not IsConsumableFreeZone(UserIndex) Then
                             ' Quitamos el ítem del inventario
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         End If
@@ -1900,7 +1897,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         ' Modifica la salud del jugador
                         Call UserMod.ModifyHealth(UserIndex, HealingAmount)
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
-                        If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+                        If Not IsConsumableFreeZone(UserIndex) Then
                             ' Quitamos el ítem del inventario
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         End If
@@ -1917,7 +1914,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         .Stats.MinMAN = IIf(.Stats.MinMAN > 20000, 20000, .Stats.MinMAN + Porcentaje(.Stats.MaxMAN, porcentajeRec))
                         If .Stats.MinMAN > .Stats.MaxMAN Then .Stats.MinMAN = .Stats.MaxMAN
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
-                        If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+                        If Not IsConsumableFreeZone(UserIndex) Then
                             ' Quitamos el ítem del inventario
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         End If
@@ -1970,7 +1967,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         .Stats.MinSta = .Stats.MinSta + RandomNumber(obj.MinModificador, obj.MaxModificador)
                         If .Stats.MinSta > .Stats.MaxSta Then .Stats.MinSta = .Stats.MaxSta
                         'Quitamos del inv el item
-                        If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+                        If Not IsConsumableFreeZone(UserIndex) Then
                             ' Quitamos el ítem del inventario
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         End If
@@ -2754,7 +2751,7 @@ End Sub
 ' Returns:     Boolean - True if the user is in a potion-free zone
 '                       False if the potion should be consumed
 '**************************************************************
-Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatus As e_Trigger6) As Boolean
+Public Function IsConsumableFreeZone(ByVal UserIndex As Integer) As Boolean
     Dim currentMap     As Integer
     Dim isTriggerZone  As Boolean
     Dim isTierUser     As Boolean
@@ -2762,6 +2759,9 @@ Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatu
     Dim isSpecialZone  As Boolean
     Dim isTrainingZone As Boolean
     Dim isArena        As Boolean
+    Dim triggerStatus As e_Trigger6
+
+    triggerStatus = TriggerZonaPelea(UserIndex, UserIndex)
     ' Obtener el mapa actual del usuario
     currentMap = UserList(UserIndex).pos.Map
     ' Verificar si está en zona con trigger activo
@@ -2783,7 +2783,7 @@ Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatu
     ' Meson Hostigado - Beneficio Patreon: mapa 172, con trigger activo y jugador con tier
     isTrainingZone = (currentMap = MAP_MESON_HOSTIGADO And isTriggerZone And isTierUser)
     ' Si esta en alguna de las zonas anteriores, no se consume la poción
-    IsPotionFreeZone = (isHouseZone Or isSpecialZone Or isTrainingZone Or isArena)
+    IsConsumableFreeZone = (isHouseZone Or isSpecialZone Or isTrainingZone Or isArena)
 End Function
 
 Sub EnivarArmasConstruibles(ByVal UserIndex As Integer)
@@ -3027,7 +3027,9 @@ Public Sub ResurrectWithItem(ByVal UserIndex As Integer)
         Dim ObjIndex As Integer
         ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
         Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
-        Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.UsingItemSlot)
+        If Not IsConsumableFreeZone(UserIndex) Then
+            Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.UsingItemSlot)
+        End If
         Call ResurrectUser(TargetUser)
         If IsFeatureEnabled("remove-inv-on-attack") Then
             Call RemoveUserInvisibility(UserIndex)
