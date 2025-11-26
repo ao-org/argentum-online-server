@@ -27,23 +27,6 @@ Attribute VB_Name = "Declaraciones"
 '
 Option Explicit
 
-' Identificadores de últimos mensajes para evitar repetición.
-Public Const LASTMSG_PARALYZED = 1
-Public Const LASTMSG_ALREADY_HIDDEN = 2
-Public Const LASTMSG_CANNOT_HIDE_MOUNTED = 3
-Public Const LASTMSG_HIDE_FAILED = 4
-Public Const LASTMSG_TAME_FAILED = 5
-Public Const LASTMSG_MAP_NEWBIE_ONLY = 101
-Public Const LASTMSG_MAP_ONLY_CITIZENS = 102
-Public Const LASTMSG_MAP_ONLY_CRIMINALS = 103
-Public Const LASTMSG_MAP_REQUIRES_CLAN = 104
-Public Const LASTMSG_MAP_MIN_LEVEL = 105
-Public Const LASTMSG_MAP_MAX_LEVEL = 106
-Public Const LASTMSG_MAP_REQUIRES_GROUP = 107
-Public Const LASTMSG_MAP_REQUIRES_PATREON = 107
-Public Const LASTMSG_TILE_REQUIRES_PATREON = 108
-Public Const LASTMSG_PICKUP_UNAVAILABLE = 261
-
 ''
 ' Modulo de declaraciones. Aca hay de todo.
 '

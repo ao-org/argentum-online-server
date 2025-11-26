@@ -2110,7 +2110,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
         If Not EsGM(UserIndex) And Not IsPatreon(UserIndex) Then
             If TileRequiresPatreon(Map, x, y) Then
                 If .flags.UltimoMensaje <> LASTMSG_TILE_REQUIRES_PATREON Then
-                    Call WriteLocaleMsg(UserIndex, 776, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, LASTMSG_TILE_REQUIRES_PATREON, e_FontTypeNames.FONTTYPE_INFO)
                     .flags.UltimoMensaje = LASTMSG_TILE_REQUIRES_PATREON
                 End If
                 Exit Sub

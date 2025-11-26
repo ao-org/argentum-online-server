@@ -644,7 +644,7 @@ Sub PickObj(ByVal UserIndex As Integer)
         End If
     Else
         If Not UserList(UserIndex).flags.UltimoMensaje = LASTMSG_PICKUP_UNAVAILABLE Then
-            Call WriteLocaleMsg(UserIndex, 261, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, LASTMSG_PICKUP_UNAVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
             UserList(UserIndex).flags.UltimoMensaje = LASTMSG_PICKUP_UNAVAILABLE
         End If
     End If
