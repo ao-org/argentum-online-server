@@ -26,29 +26,15 @@ Attribute VB_Name = "modGuilds"
 '
 '
 Option Explicit
-'guilds nueva version. Hecho por el oso, eliminando los problemas
-'de sincronizacion con los datos en el HD... entre varios otros
-'º¬
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'DECLARACIOENS PUBLICAS CONCERNIENTES AL JUEGO
-'Y CONFIGURACION DEL SISTEMA DE CLANES
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Private GUILDINFOFILE             As String
-'archivo .\guilds\guildinfo.ini o similar
-Private Const MAX_GUILDS          As Integer = 1000
-'cantidad maxima de guilds en el servidor
-Public CANTIDADDECLANES           As Integer
-'cantidad actual de clanes en el servidor
-Private guilds(1 To MAX_GUILDS)   As clsClan
-'array global de guilds, se indexa por userlist().guildindex
-Private Const CANTIDADMAXIMACODEX As Byte = 8
-'cantidad maxima de codecs que se pueden definir
-Public Const MAXASPIRANTES        As Byte = 10
-'cantidad maxima de aspirantes que puede tener un clan acumulados a la vez
-Private Const MAXANTIFACCION      As Byte = 5
+Private GUILDINFOFILE             As String 'archivo .\guilds\guildinfo.ini o similar
+Private Const MAX_GUILDS          As Integer = 1000 'cantidad maxima de guilds en el servidor
+Public CANTIDADDECLANES           As Integer 'cantidad actual de clanes en el servidor
+Private guilds(1 To MAX_GUILDS)   As clsClan 'array global de guilds, se indexa por userlist().guildindex
+Private Const CANTIDADMAXIMACODEX As Byte = 8 'cantidad maxima de codecs que se pueden definir
+Public Const MAXASPIRANTES        As Byte = 10 'cantidad maxima de aspirantes que puede tener un clan acumulados a la vez
+Private Const MAXANTIFACCION      As Byte = 5 'puntos maximos de antifaccion que un clan tolera antes de ser cambiada su alineacion
 
-'puntos maximos de antifaccion que un clan tolera antes de ser cambiada su alineacion
+'alineaciones permitidas
 Public Enum e_ALINEACION_GUILD
     ALINEACION_NEUTRAL = 0
     ALINEACION_ARMADA = 1
@@ -57,24 +43,27 @@ Public Enum e_ALINEACION_GUILD
     ALINEACION_CRIMINAL = 4
 End Enum
 
-'alineaciones permitidas
+'numero de .wav del cliente
 Public Enum e_SONIDOS_GUILD
     SND_CREACIONCLAN = 44
     SND_ACEPTADOCLAN = 43
     SND_DECLAREWAR = 45
 End Enum
 
-'numero de .wav del cliente
+'estado entre clanes
 Public Enum e_RELACIONES_GUILD
     GUERRA = -1
     PAZ = 0
     ALIADOS = 1
 End Enum
 
-'estado entre clanes
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Const MAX_LEVEL_GUILD As Byte = 7
+Public ExpLevelUpGuild(1 To MAX_LEVEL_GUILD) As Long
+Public MembersByLevel(1 To MAX_LEVEL_GUILD) As Byte
+Public RequiredGuildLevelCallSupport As Byte
+Public RequiredGuildLevelSeeInvisible As Byte
+Public RequiredGuildLevelSafe As Byte
+Public RequiredGuildLevelShowHPBar As Byte
 Public Sub LoadGuildsDB()
     On Error GoTo LoadGuildsDB_Err
     Dim CantClanes As String
@@ -1036,7 +1025,7 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
         ExpActual = guilds(GI).GetExpActual
         nivel = guilds(GI).GetNivelDeClan
         ExpNecesaria = GetRequiredExpForGuildLevel(nivel)
-        If nivel >= 6 Then
+        If nivel >= MAX_LEVEL_GUILD Then
             Exit Sub
         End If
         Dim MemberIndex As Byte
@@ -1053,7 +1042,7 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
         If ExpActual >= ExpNecesaria Then
             'Checkea otra vez, esto sucede si tiene mas EXP y puede saltarse el maximo
             'nivel
-            If nivel >= 6 Then
+            If nivel >= MAX_LEVEL_GUILD Then
                 ExpActual = 0
                 ExpNecesaria = 0
                 Exit Sub
@@ -1062,7 +1051,7 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
             ExpActual = ExpActual - ExpNecesaria
             nivel = nivel + 1
             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1790, nivel, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1790=Clan> El clan ha subido a nivel ¬1. Nuevos beneficios disponibles.
-            If nivel > 5 Then
+            If nivel >= MAX_LEVEL_GUILD Then
                 ExpActual = 0
             End If
         End If
@@ -1075,16 +1064,8 @@ CheckClanExp_Err:
 End Sub
 
 Public Function GetRequiredExpForGuildLevel(ByVal CurrentLevel As Integer) As Long
-    If CurrentLevel = 1 Then
-        GetRequiredExpForGuildLevel = 1000
-    ElseIf CurrentLevel = 2 Then
-        GetRequiredExpForGuildLevel = 2000
-    ElseIf CurrentLevel = 3 Then
-        GetRequiredExpForGuildLevel = 4000
-    ElseIf CurrentLevel = 4 Then
-        GetRequiredExpForGuildLevel = 8000
-    ElseIf CurrentLevel = 5 Then
-        GetRequiredExpForGuildLevel = 16000
+    If CurrentLevel >= LBound(ExpLevelUpGuild) And CurrentLevel <= UBound(ExpLevelUpGuild) Then
+        GetRequiredExpForGuildLevel = ExpLevelUpGuild(CurrentLevel)
     Else
         GetRequiredExpForGuildLevel = 0
     End If
@@ -1092,23 +1073,17 @@ End Function
 
 Public Function MiembrosPermite(ByVal GI As Integer) As Byte
     On Error GoTo MiembrosPermite_Err
+
     Dim nivel As Byte
     nivel = guilds(GI).GetNivelDeClan
-    Select Case nivel
-        Case 1
-            MiembrosPermite = 5 ' 5 miembros
-        Case 2
-            MiembrosPermite = 8 ' 3 miembros + pedir ayuda
-        Case 3
-            MiembrosPermite = 11 ' 3 miembros + seguro de clan
-        Case 4
-            MiembrosPermite = 14 ' 3 miembros
-        Case 5
-            MiembrosPermite = 17 ' 3 miembros + barra de vida y de mana
-        Case 6
-            MiembrosPermite = 20 ' 3 miembros + verse invisible
-    End Select
+    
+    If nivel >= 1 And nivel <= MAX_LEVEL_GUILD Then
+        MiembrosPermite = MembersByLevel(nivel)
+    Else
+        MiembrosPermite = 0
+    End If
     Exit Function
+
 MiembrosPermite_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.MiembrosPermite", Erl)
 End Function

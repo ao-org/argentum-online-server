@@ -143,6 +143,9 @@ Public Nieblando                         As Boolean
 Public IpList                            As New Collection
 Public Baneos                            As New Collection
 
+
+
+
 Sub ReSpawnOrigPosNpcs()
     On Error GoTo Handler
     Dim i     As Integer
