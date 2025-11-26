@@ -136,7 +136,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
                 ' Busco algun objetivo en el area.
                 For i = 1 To ModAreas.ConnGroups(.pos.Map).CountEntrys
                     UserIndex = ModAreas.ConnGroups(.pos.Map).UserEntrys(i)
-                    If EsObjetivoValido(NpcIndex, UserIndex) Then
+                    If EsObjetivoValido(NpcIndex, UserIndex, agresor.ArrayIndex) Then
                         ' Busco el mas cercano, sea atacable o no.
                         If Distancia(UserList(UserIndex).pos, .pos) < minDistancia And Not (UserList(UserIndex).flags.invisible > 0 Or UserList(UserIndex).flags.Oculto) Then
                             enemigoCercano = UserIndex
@@ -1262,7 +1262,7 @@ End Sub
 ' ---------------------------------------------------------------------------------------------------
 '                                       HELPERS
 ' ---------------------------------------------------------------------------------------------------
-Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Optional ByRef AgressorIndex As Integer = 0) As Boolean
     If UserIndex = 0 Then Exit Function
     ' Esta condicion debe ejecutarse independiemente de el modo de busqueda.
     EsObjetivoValido = EnRangoVision(NpcIndex, UserIndex)
@@ -1270,7 +1270,8 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
     EsObjetivoValido = EsObjetivoValido And UserList(UserIndex).flags.Muerto = 0
     EsObjetivoValido = EsObjetivoValido And UserList(UserIndex).flags.EnConsulta = 0
     If NpcList(NpcIndex).nivel > 0 Then
-        EsObjetivoValido = EsObjetivoValido And UserList(UserIndex).Stats.ELV - NpcList(NpcIndex).nivel <= DEFAULT_NPC_HOSTILE_DELTA
+        EsObjetivoValido = EsObjetivoValido And (UserList(UserIndex).Stats.ELV - NpcList(NpcIndex).nivel <= DEFAULT_NPC_HOSTILE_DELTA)
+        EsObjetivoValido = EsObjetivoValido Or (AgressorIndex = UserIndex)
     End If
     Dim EsAdmin As Boolean: EsAdmin = EsGM(UserIndex) And Not UserList(UserIndex).flags.AdminPerseguible
     EsObjetivoValido = EsObjetivoValido And Not EsAdmin
