@@ -1607,8 +1607,6 @@ Public Const STAT_MAXMAN As Integer = 32000
 Public Const STAT_MAXHIT As Integer = 999
 Public Const STAT_MAXDEF As Byte = 99
 
-Public Const MAX_LEVEL_GUILD As Byte = 7
-
 ' **************************************************************
 ' **************************************************************
 ' ************************ TIPOS *******************************

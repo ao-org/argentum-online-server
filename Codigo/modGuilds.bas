@@ -56,6 +56,14 @@ Public Enum e_RELACIONES_GUILD
     PAZ = 0
     ALIADOS = 1
 End Enum
+
+Public Const MAX_LEVEL_GUILD As Byte = 7
+Public ExpLevelUpGuild(1 To MAX_LEVEL_GUILD) As Long
+Public MembersByLevel(1 To MAX_LEVEL_GUILD) As Byte
+Public RequiredGuildLevelCallSupport As Byte
+Public RequiredGuildLevelSeeInvisible As Byte
+Public RequiredGuildLevelSafe As Byte
+Public RequiredGuildLevelShowHPBar As Byte
 Public Sub LoadGuildsDB()
     On Error GoTo LoadGuildsDB_Err
     Dim CantClanes As String
