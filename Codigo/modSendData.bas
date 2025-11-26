@@ -285,7 +285,7 @@ End Sub
                             enviaDatos = True
                             If Not EsGM(tempIndex) Then
                                 If UserList(UserIndex).flags.invisible + UserList(UserIndex).flags.Oculto > 0 And ValidateInvi And Not (UserList(tempIndex).GuildIndex > 0 And _
-                                        UserList(tempIndex).GuildIndex = UserList(UserIndex).GuildIndex And modGuilds.NivelDeClan(UserList(tempIndex).GuildIndex) >= 6) And _
+                                        UserList(tempIndex).GuildIndex = UserList(UserIndex).GuildIndex And modGuilds.NivelDeClan(UserList(tempIndex).GuildIndex) >= RequiredGuildLevelSeeInvisible) And _
                                         UserList(UserIndex).flags.Navegando = 0 Then
                                     If Distancia(UserList(UserIndex).pos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS And UserList(UserIndex).Counters.timeFx + UserList( _
                                             UserIndex).Counters.timeChat = 0 Then
@@ -533,7 +533,7 @@ Public Function CheckGuildSend(ByRef SourceUser As t_User, ByRef TargetUser As t
     CheckGuildSend = False
     If SourceUser.GuildIndex = 0 Then Exit Function
     If SourceUser.GuildIndex <> TargetUser.GuildIndex Then Exit Function
-    If modGuilds.NivelDeClan(TargetUser.GuildIndex) < 6 Then
+    If modGuilds.NivelDeClan(TargetUser.GuildIndex) < MAX_LEVEL_GUILD Then
         CheckGuildSend = SourceUser.Counters.timeGuildChat > 0
         Exit Function
     End If

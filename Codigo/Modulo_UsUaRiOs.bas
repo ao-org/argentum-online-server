@@ -722,6 +722,7 @@ Dim tStr                        As String
         Call RestoreDCUserCache(UserIndex)
         Call CustomScenarios.UserConnected(UserIndex)
         Call AntiCheat.OnNewPlayerConnect(UserIndex)
+        Call WriteGuildConfig(UserIndex)
     End With
     ConnectUser_Complete = True
     Exit Function
@@ -734,7 +735,7 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal attackerIndex As Integer)
     Dim DaExp       As Integer
     Dim EraCriminal As Byte
     DaExp = CInt(UserList(VictimIndex).Stats.ELV * 2)
-    If UserList(attackerIndex).Stats.ELV < STAT_MAXELV Then
+    If UserList(attackerIndex).Stats.ELV < MAX_LEVEL_GUILD Then
         UserList(attackerIndex).Stats.Exp = UserList(attackerIndex).Stats.Exp + DaExp
         If UserList(attackerIndex).Stats.Exp > MAXEXP Then UserList(attackerIndex).Stats.Exp = MAXEXP
         Call WriteUpdateExp(attackerIndex)
@@ -1313,7 +1314,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                             tempIndex = MapData(.pos.Map, x, y).UserIndex
                             If tempIndex > 0 And tempIndex <> UserIndex And Not EsGM(tempIndex) Then
                                 If UserList(tempIndex).flags.invisible + UserList(tempIndex).flags.Oculto > 0 And UserList(tempIndex).flags.Navegando = 0 And (.GuildIndex = _
-                                        0 Or .GuildIndex <> UserList(tempIndex).GuildIndex Or modGuilds.NivelDeClan(.GuildIndex) < 6) Then
+                                        0 Or .GuildIndex <> UserList(tempIndex).GuildIndex Or modGuilds.NivelDeClan(.GuildIndex) < RequiredGuildLevelSeeInvisible) Then
                                     Call WritePosUpdateChar(UserIndex, x, y, UserList(tempIndex).Char.charindex)
                                 End If
                             End If
@@ -2776,7 +2777,7 @@ Public Function CanAttackUser(ByVal attackerIndex As Integer, _
     End If
     ' Seguro Clan
     If UserList(attackerIndex).GuildIndex > 0 Then
-        If UserList(attackerIndex).flags.SeguroClan And NivelDeClan(UserList(attackerIndex).GuildIndex) >= 3 Then
+        If UserList(attackerIndex).flags.SeguroClan And NivelDeClan(UserList(attackerIndex).GuildIndex) >= RequiredGuildLevelSafe Then
             If UserList(attackerIndex).GuildIndex = UserList(TargetIndex).GuildIndex Then
                 CanAttackUser = eSameClan
                 Exit Function

@@ -142,6 +142,15 @@ Public Nebando                           As Boolean
 Public Nieblando                         As Boolean
 Public IpList                            As New Collection
 Public Baneos                            As New Collection
+Public ExpLevelUpGuild(1 To MAX_LEVEL_GUILD) As Long
+Public MembersByLevel(1 To MAX_LEVEL_GUILD) As Byte
+Public RequiredGuildLevelCallSupport As Byte
+Public RequiredGuildLevelSeeInvisible As Byte
+Public RequiredGuildLevelSafe As Byte
+Public RequiredGuildLevelShowHPBar As Byte
+
+
+
 
 Sub ReSpawnOrigPosNpcs()
     On Error GoTo Handler
