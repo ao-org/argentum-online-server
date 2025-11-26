@@ -2817,6 +2817,22 @@ Public Type t_UserTrabajo
     Cantidad As Long
 End Type
 
+Public Type t_UserPersistQuestSnapshot
+    QuestIndex As Integer
+    NPCsKilled() As Integer
+    NPCsTarget() As Integer
+End Type
+
+Public Type t_UserPersistSnapshot
+    LastSpells(1 To MAXUSERHECHIZOS) As Integer
+    LastInventory(1 To MAX_INVENTORY_SLOTS) As t_UserOBJ
+    LastBank(1 To MAX_BANCOINVENTORY_SLOTS) As t_UserOBJ
+    LastSkills(1 To NUMSKILLS) As Integer
+    LastPetType(1 To MAXMASCOTAS) As Integer
+    LastQuests(1 To MAXUSERQUESTS) As t_UserPersistQuestSnapshot
+    LastQuestsDone() As Integer
+End Type
+
 Type Tgrupo
     EnGrupo As Boolean
     CantidadMiembros As Byte
@@ -2944,6 +2960,7 @@ Public Type t_User
     KeyCrypt As Integer
     AreasInfo As t_AreaInfo
     QuestStats As t_QuestStats
+    Persist As t_UserPersistSnapshot
     Keys(1 To MAXKEYS) As Integer
     HotkeyList(HotKeyCount) As t_HotkeyEntry
     CraftInventory(1 To MAX_SLOTS_CRAFTEO) As Integer
