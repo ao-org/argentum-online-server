@@ -1269,6 +1269,9 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
     EsObjetivoValido = EsObjetivoValido And EsEnemigo(NpcIndex, UserIndex)
     EsObjetivoValido = EsObjetivoValido And UserList(UserIndex).flags.Muerto = 0
     EsObjetivoValido = EsObjetivoValido And UserList(UserIndex).flags.EnConsulta = 0
+    If NpcList(NpcIndex).nivel > 0 Then
+        EsObjetivoValido = EsObjetivoValido And UserList(UserIndex).Stats.ELV - NpcList(NpcIndex).nivel <= DEFAULT_NPC_HOSTILE_DELTA
+    End If
     Dim EsAdmin As Boolean: EsAdmin = EsGM(UserIndex) And Not UserList(UserIndex).flags.AdminPerseguible
     EsObjetivoValido = EsObjetivoValido And Not EsAdmin
 End Function
