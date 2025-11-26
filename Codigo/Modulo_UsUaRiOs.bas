@@ -735,7 +735,7 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal attackerIndex As Integer)
     Dim DaExp       As Integer
     Dim EraCriminal As Byte
     DaExp = CInt(UserList(VictimIndex).Stats.ELV * 2)
-    If UserList(attackerIndex).Stats.ELV < MAX_LEVEL_GUILD Then
+    If UserList(attackerIndex).Stats.ELV < STAT_MAXELV Then
         UserList(attackerIndex).Stats.Exp = UserList(attackerIndex).Stats.Exp + DaExp
         If UserList(attackerIndex).Stats.Exp > MAXEXP Then UserList(attackerIndex).Stats.Exp = MAXEXP
         Call WriteUpdateExp(attackerIndex)
