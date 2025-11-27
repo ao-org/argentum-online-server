@@ -1266,13 +1266,13 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
     If UserIndex = 0 Then Exit Function
     ' Esta condicion debe ejecutarse independiemente de el modo de busqueda.
     EsObjetivoValido = EnRangoVision(NpcIndex, UserIndex)
-    EsObjetivoValido = EsObjetivoValido And EsEnemigo(NpcIndex, UserIndex)
-    EsObjetivoValido = EsObjetivoValido And UserList(UserIndex).flags.Muerto = 0
-    EsObjetivoValido = EsObjetivoValido And UserList(UserIndex).flags.EnConsulta = 0
     If NpcList(NpcIndex).nivel > 0 Then
         EsObjetivoValido = EsObjetivoValido And (UserList(UserIndex).Stats.ELV - NpcList(NpcIndex).nivel <= DEFAULT_NPC_HOSTILE_DELTA)
         EsObjetivoValido = EsObjetivoValido Or (AgressorIndex = UserIndex)
     End If
+    EsObjetivoValido = EsObjetivoValido And EsEnemigo(NpcIndex, UserIndex)
+    EsObjetivoValido = EsObjetivoValido And UserList(UserIndex).flags.Muerto = 0
+    EsObjetivoValido = EsObjetivoValido And UserList(UserIndex).flags.EnConsulta = 0
     Dim EsAdmin As Boolean: EsAdmin = EsGM(UserIndex) And Not UserList(UserIndex).flags.AdminPerseguible
     EsObjetivoValido = EsObjetivoValido And Not EsAdmin
 End Function
