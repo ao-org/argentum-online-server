@@ -1100,6 +1100,7 @@ Public Enum e_Trigger
     VALIDOPUENTE = 17
     NADOCOMBINADO = 18
     CARCEL = 19
+    ONLY_PATREON_TILE = 20
 End Enum
 
 Public Enum e_NpcInfoMask
