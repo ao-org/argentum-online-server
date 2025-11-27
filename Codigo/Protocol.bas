@@ -2485,7 +2485,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         End If
                         If DummyInt <> 0 Then
                             'Take 1 arrow away - we do it AFTER hitting, since if Ammo Slot is 0 it gives a rt9 and kicks players
-                            If consumirMunicion Then
+                            If consumirMunicion And Not IsConsumableFreeZone(UserIndex) Then
                                 Call QuitarUserInvItem(UserIndex, DummyInt, 1)
                             End If
                             If .Object(DummyInt).amount > 0 Then
@@ -6272,21 +6272,20 @@ ErrHandler:
 End Sub
 
 Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
     On Error GoTo ErrHandler
     With UserList(UserIndex)
         Dim refError   As String
         Dim clan_nivel As Byte
         If .GuildIndex <> 0 Then
             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
-            If clan_nivel >= 2 Then
+            If clan_nivel >= RequiredGuildLevelCallSupport Then
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1818, .name & "¬" & get_map_name(.pos.Map) & "¬" & .pos.Map & "¬" & .pos.x & "¬" & _
                         .pos.y, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1818=Clan> [¬1] solicita apoyo de su clan en ¬2 (¬3-¬4-¬5). Puedes ver su ubicación en el mapa del mundo.
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.pos.Map, .pos.x, .pos.y))
             Else
-                'Msg1240= Servidor » El nivel de tu clan debe ser 2 para utilizar esta opción.
-                Call WriteLocaleMsg(UserIndex, 1240, e_FontTypeNames.FONTTYPE_INFO)
+                'Msg1240= Servidor » El nivel de tu clan debe ser ¬ o mayor para utilizar esta opción.
+                Call WriteLocaleMsg(UserIndex, 1240, e_FontTypeNames.FONTTYPE_INFO, RequiredGuildLevelCallSupport)
             End If
         End If
     End With

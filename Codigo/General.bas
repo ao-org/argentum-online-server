@@ -684,7 +684,9 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Recompensas de Faccion"
     Call LoadRecompensasFaccion
     frmCargando.Label1(2).Caption = "Cargando Balance.dat"
-    Call LoadBalance    '4/01/08 Pablo ToxicWaste
+    Call LoadBalance
+    frmCargando.Label1(2).Caption = "Cargando Clanes.dat"
+    Call LoadGuildsConfig
     frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
     Call CargarCiudades
     If BootDelBackUp Then

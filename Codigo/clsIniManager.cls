@@ -103,7 +103,14 @@ End Sub
 ' @param    file Complete path of the INI file to be loaded.
 ' @see      GetValue
 Public Sub Initialize(ByVal File As String)
+    
     On Error GoTo Initialize_Err
+    If Not FileExist(File) Then
+        Debug.Print "Missing file : " & File
+        Debug.Assert False ' You must create the .Dat file
+        Exit Sub
+    End If
+    
     'Opens the requested file and loads it's data into memory
     Dim handle As Integer
     Dim Text   As String

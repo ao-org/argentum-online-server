@@ -867,6 +867,9 @@ Sub LoadBalance()
     MaxInvisibleSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "MaxInvisibleSpellDisplayTime"))
     MultiShotReduction = val(BalanceIni.GetValue("EXTRA", "MultiShotReduction"))
     HomeTimer = val(BalanceIni.GetValue("EXTRA", "HomeTimer"))
+    HomeTimerAdventurer = val(BalanceIni.GetValue("EXTRA", "HomeTimerAdventurer"))
+    HomeTimerHero = val(BalanceIni.GetValue("EXTRA", "HomeTimerHero"))
+    HomeTimerLegend = val(BalanceIni.GetValue("EXTRA", "HomeTimerLegend"))
     MagicSkillBonusDamageModifier = val(BalanceIni.GetValue("EXTRA", "MagicSkillBonusDamageModifier"))
     MRSkillProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifier"))
     MRSkillNpcProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifierNpc"))
@@ -897,7 +900,6 @@ Sub LoadBalance()
             ElementalMatrixForNpcs(i + 1, j + 1) = val(vals(j))
         Next j
     Next i
-    '--------------------
     Set BalanceIni = Nothing
     AgregarAConsola "Se cargó el balance (Balance.dat)"
     Exit Sub
@@ -2864,3 +2866,42 @@ Public Function GetActiveToggles(ByRef ActiveCount As Integer) As String()
     Next key
     GetActiveToggles = ActiveKeys
 End Function
+
+Sub LoadGuildsConfig()
+    On Error GoTo LoadGuildsConfig_Err
+    
+    Dim GuildsIni As clsIniManager
+    Set GuildsIni = New clsIniManager
+    GuildsIni.Initialize DatPath & "Clanes.dat"
+    
+    Dim i As Long
+
+    'Experiencia de niveles de clan
+    For i = 1 To MAX_LEVEL_GUILD
+        ExpLevelUpGuild(i) = CLng(val(GuildsIni.GetValue("GUILDEXP", "GuildExpLevel" & CStr(i), "0")))
+    Next i
+    
+    'Miembros máximos por nivel de clan
+    For i = 1 To MAX_LEVEL_GUILD
+        MembersByLevel(i) = CByte(val(GuildsIni.GetValue("MEMBERSBYLEVEL", "GuildMembersLevel" & CStr(i), "0")))
+    Next i
+    
+    'Requisito para usar llamada de clan
+    RequiredGuildLevelCallSupport = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "CallSupportRequiredLevel", "4")))
+    
+    'Requisito para ver miembros invisibles/ocultos
+    RequiredGuildLevelSeeInvisible = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "SeeInvisibleRequiredLevel", "7")))
+    
+    'Requisito para seguro de clan
+    RequiredGuildLevelSafe = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "SafeGuildRequiredLevel", "5")))
+    
+    'Requisito para ver barra de vida
+    RequiredGuildLevelShowHPBar = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "ShowHPBarRequiredLevel", "6")))
+    
+    Set GuildsIni = Nothing
+    AgregarAConsola "Se cargó la configuración de clanes (Clanes.dat)"
+    Exit Sub
+    
+LoadGuildsConfig_Err:
+    Call TraceError(Err.Number, Err.Description, "ES.LoadGuildsConfig", Erl)
+End Sub

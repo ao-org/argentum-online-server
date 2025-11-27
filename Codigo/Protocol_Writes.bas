@@ -4426,3 +4426,25 @@ Public Sub WriteChangeSkinSlot(ByVal UserIndex As Integer, ByVal TypeSkin As e_O
         Call modSendData.SendData(SendTarget.ToIndex, UserIndex)
     End With
 End Sub
+Public Sub WriteGuildConfig(ByVal UserIndex As Integer)
+    On Error GoTo WriteGuildConfig_Err
+
+    Call Writer.WriteInt16(ServerPacketID.eGuildConfig)
+    Call Writer.WriteInt8(RequiredGuildLevelCallSupport)
+    Call Writer.WriteInt8(RequiredGuildLevelSeeInvisible)
+    Call Writer.WriteInt8(RequiredGuildLevelSafe)
+    Call Writer.WriteInt8(RequiredGuildLevelShowHPBar)
+    Call Writer.WriteInt8(MAX_LEVEL_GUILD)
+    
+    Dim i As Byte
+    For i = 1 To MAX_LEVEL_GUILD
+        Call Writer.WriteInt8(MembersByLevel(i))
+    Next i
+    
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+
+WriteGuildConfig_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildConfig", Erl)
+End Sub

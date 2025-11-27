@@ -1641,7 +1641,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             Exit Sub
         End If
         If .GuildIndex > 0 Then
-            If .flags.SeguroClan And NivelDeClan(.GuildIndex) >= 3 Then
+            If .flags.SeguroClan And NivelDeClan(.GuildIndex) >= RequiredGuildLevelSafe Then
                 If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
                     'Msg1036= No podes robarle a un miembro de tu clan.
                     Call WriteLocaleMsg(LadronIndex, "1036", e_FontTypeNames.FONTTYPE_INFOIAO)

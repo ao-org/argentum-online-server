@@ -215,6 +215,7 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
             Call db_load_house_key(UserList(UserIndex))
         End If
     End With
+    Call InitUserPersistSnapshot(UserIndex)
     LoadCharacterFromDB = True
     Exit Function
 ErrorHandler:
@@ -685,11 +686,553 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
             Call Builder.Clear
         End If
         Call SaveInventorySkins(UserIndex)
+        Call InitUserPersistSnapshot(UserIndex)
         Call PerformTimeLimitCheck(PerformanceTimer, "save character id:" & .Id, 50)
     End With
     Exit Sub
 ErrorHandler:
     Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
+End Sub
+
+Private Function GetIntegerArrayLength(ByRef arr() As Integer) As Long
+    On Error Resume Next
+    GetIntegerArrayLength = UBound(arr)
+    If Err.Number <> 0 Then
+        Err.Clear
+        GetIntegerArrayLength = 0
+    End If
+End Function
+
+Private Function GetIntegerArrayValue(ByRef arr() As Integer, ByVal index As Long) As Integer
+    On Error Resume Next
+    GetIntegerArrayValue = arr(index)
+    If Err.Number <> 0 Then
+        Err.Clear
+        GetIntegerArrayValue = 0
+    End If
+End Function
+
+Public Sub InitUserPersistSnapshot(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+        Call UpdateSavedSpells(UserIndex)
+        Call UpdateSavedInventory(UserIndex)
+        Call UpdateSavedBank(UserIndex)
+        Call UpdateSavedSkills(UserIndex)
+        Call UpdateSavedPets(UserIndex)
+        Call UpdateSavedQuests(UserIndex)
+        Call UpdateSavedQuestsDone(UserIndex)
+    End With
+End Sub
+
+Public Function HaveSpellsChanged(ByVal UserIndex As Integer) As Boolean
+    Dim i As Long
+    With UserList(UserIndex)
+        For i = 1 To MAXUSERHECHIZOS
+            If .Stats.UserHechizos(i) <> .Persist.LastSpells(i) Then
+                HaveSpellsChanged = True
+                Exit Function
+            End If
+        Next i
+    End With
+End Function
+
+Public Sub UpdateSavedSpells(ByVal UserIndex As Integer)
+    Dim i As Long
+    With UserList(UserIndex)
+        For i = 1 To MAXUSERHECHIZOS
+            .Persist.LastSpells(i) = .Stats.UserHechizos(i)
+        Next i
+    End With
+End Sub
+
+Public Function HasInventoryChanged(ByVal UserIndex As Integer) As Boolean
+    Dim i As Long
+    With UserList(UserIndex)
+        For i = 1 To MAX_INVENTORY_SLOTS
+            If .invent.Object(i).ObjIndex <> .Persist.LastInventory(i).ObjIndex _
+               Or .invent.Object(i).amount <> .Persist.LastInventory(i).amount _
+               Or .invent.Object(i).Equipped <> .Persist.LastInventory(i).Equipped _
+               Or .invent.Object(i).ElementalTags <> .Persist.LastInventory(i).ElementalTags Then
+                HasInventoryChanged = True
+                Exit Function
+            End If
+        Next i
+    End With
+End Function
+
+Public Sub UpdateSavedInventory(ByVal UserIndex As Integer)
+    Dim i As Long
+    With UserList(UserIndex)
+        For i = 1 To MAX_INVENTORY_SLOTS
+            .Persist.LastInventory(i) = .invent.Object(i)
+        Next i
+    End With
+End Sub
+
+Public Function HasBankChanged(ByVal UserIndex As Integer) As Boolean
+    Dim i As Long
+    With UserList(UserIndex)
+        For i = 1 To MAX_BANCOINVENTORY_SLOTS
+            If .BancoInvent.Object(i).ObjIndex <> .Persist.LastBank(i).ObjIndex _
+               Or .BancoInvent.Object(i).amount <> .Persist.LastBank(i).amount _
+               Or .BancoInvent.Object(i).ElementalTags <> .Persist.LastBank(i).ElementalTags Then
+                HasBankChanged = True
+                Exit Function
+            End If
+        Next i
+    End With
+End Function
+
+Public Sub UpdateSavedBank(ByVal UserIndex As Integer)
+    Dim i As Long
+    With UserList(UserIndex)
+        For i = 1 To MAX_BANCOINVENTORY_SLOTS
+            .Persist.LastBank(i) = .BancoInvent.Object(i)
+        Next i
+    End With
+End Sub
+
+Public Function HaveSkillsChanged(ByVal UserIndex As Integer) As Boolean
+    Dim i As Long
+    With UserList(UserIndex)
+        For i = 1 To NUMSKILLS
+            If .Stats.UserSkills(i) <> .Persist.LastSkills(i) Then
+                HaveSkillsChanged = True
+                Exit Function
+            End If
+        Next i
+    End With
+End Function
+
+Public Sub UpdateSavedSkills(ByVal UserIndex As Integer)
+    Dim i As Long
+    With UserList(UserIndex)
+        For i = 1 To NUMSKILLS
+            .Persist.LastSkills(i) = .Stats.UserSkills(i)
+        Next i
+    End With
+End Sub
+
+Public Function HavePetsChanged(ByVal UserIndex As Integer) As Boolean
+    Dim i As Long
+    Dim petType As Integer
+    With UserList(UserIndex)
+        For i = 1 To MAXMASCOTAS
+            If IsValidNpcRef(.MascotasIndex(i)) Then
+                If NpcList(.MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia = 0 Then
+                    petType = .MascotasType(i)
+                Else
+                    petType = 0
+                End If
+            Else
+                petType = .MascotasType(i)
+            End If
+
+            If petType <> .Persist.LastPetType(i) Then
+                HavePetsChanged = True
+                Exit Function
+            End If
+        Next i
+    End With
+End Function
+
+Public Sub UpdateSavedPets(ByVal UserIndex As Integer)
+    Dim i As Long
+    Dim petType As Integer
+    With UserList(UserIndex)
+        For i = 1 To MAXMASCOTAS
+            If IsValidNpcRef(.MascotasIndex(i)) Then
+                If NpcList(.MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia = 0 Then
+                    petType = .MascotasType(i)
+                Else
+                    petType = 0
+                End If
+            Else
+                petType = .MascotasType(i)
+            End If
+            .Persist.LastPetType(i) = petType
+        Next i
+    End With
+End Sub
+
+Public Function HaveQuestsChanged(ByVal UserIndex As Integer) As Boolean
+    Dim i As Long
+    Dim k As Long
+    Dim required As Integer
+    With UserList(UserIndex)
+        For i = 1 To MAXUSERQUESTS
+            If .QuestStats.Quests(i).QuestIndex <> .Persist.LastQuests(i).QuestIndex Then
+                HaveQuestsChanged = True
+                Exit Function
+            End If
+
+            If .QuestStats.Quests(i).QuestIndex > 0 Then
+                required = QuestList(.QuestStats.Quests(i).QuestIndex).RequiredNPCs
+            Else
+                required = 0
+            End If
+
+            If required <> GetIntegerArrayLength(.Persist.LastQuests(i).NPCsKilled) Then
+                HaveQuestsChanged = True
+                Exit Function
+            End If
+
+            For k = 1 To required
+                If GetIntegerArrayValue(.QuestStats.Quests(i).NPCsKilled, k) <> GetIntegerArrayValue(.Persist.LastQuests(i).NPCsKilled, k) Then
+                    HaveQuestsChanged = True
+                    Exit Function
+                End If
+            Next k
+
+            If .QuestStats.Quests(i).QuestIndex > 0 Then
+                required = QuestList(.QuestStats.Quests(i).QuestIndex).RequiredTargetNPCs
+            Else
+                required = 0
+            End If
+
+            If required <> GetIntegerArrayLength(.Persist.LastQuests(i).NPCsTarget) Then
+                HaveQuestsChanged = True
+                Exit Function
+            End If
+
+            For k = 1 To required
+                If GetIntegerArrayValue(.QuestStats.Quests(i).NPCsTarget, k) <> GetIntegerArrayValue(.Persist.LastQuests(i).NPCsTarget, k) Then
+                    HaveQuestsChanged = True
+                    Exit Function
+                End If
+            Next k
+        Next i
+    End With
+End Function
+
+Public Sub UpdateSavedQuests(ByVal UserIndex As Integer)
+    Dim i As Long
+    Dim k As Long
+    Dim required As Integer
+    With UserList(UserIndex)
+        For i = 1 To MAXUSERQUESTS
+            .Persist.LastQuests(i).QuestIndex = .QuestStats.Quests(i).QuestIndex
+
+            If .QuestStats.Quests(i).QuestIndex > 0 Then
+                required = QuestList(.QuestStats.Quests(i).QuestIndex).RequiredNPCs
+            Else
+                required = 0
+            End If
+
+            If required > 0 Then
+                ReDim .Persist.LastQuests(i).NPCsKilled(1 To required)
+                For k = 1 To required
+                    .Persist.LastQuests(i).NPCsKilled(k) = GetIntegerArrayValue(.QuestStats.Quests(i).NPCsKilled, k)
+                Next k
+            Else
+                ReDim .Persist.LastQuests(i).NPCsKilled(0)
+            End If
+
+            If .QuestStats.Quests(i).QuestIndex > 0 Then
+                required = QuestList(.QuestStats.Quests(i).QuestIndex).RequiredTargetNPCs
+            Else
+                required = 0
+            End If
+
+            If required > 0 Then
+                ReDim .Persist.LastQuests(i).NPCsTarget(1 To required)
+                For k = 1 To required
+                    .Persist.LastQuests(i).NPCsTarget(k) = GetIntegerArrayValue(.QuestStats.Quests(i).NPCsTarget, k)
+                Next k
+            Else
+                ReDim .Persist.LastQuests(i).NPCsTarget(0)
+            End If
+        Next i
+    End With
+End Sub
+
+Public Function HaveQuestsDoneChanged(ByVal UserIndex As Integer) As Boolean
+    Dim i As Long
+    Dim savedCount As Long
+    With UserList(UserIndex)
+        savedCount = GetIntegerArrayLength(.Persist.LastQuestsDone)
+        If .QuestStats.NumQuestsDone <> savedCount Then
+            HaveQuestsDoneChanged = True
+            Exit Function
+        End If
+
+        For i = 1 To .QuestStats.NumQuestsDone
+            If GetIntegerArrayValue(.QuestStats.QuestsDone, i) <> GetIntegerArrayValue(.Persist.LastQuestsDone, i) Then
+                HaveQuestsDoneChanged = True
+                Exit Function
+            End If
+        Next i
+    End With
+End Function
+
+Public Sub UpdateSavedQuestsDone(ByVal UserIndex As Integer)
+    Dim i As Long
+    With UserList(UserIndex)
+        If .QuestStats.NumQuestsDone > 0 Then
+            ReDim .Persist.LastQuestsDone(1 To .QuestStats.NumQuestsDone)
+            For i = 1 To .QuestStats.NumQuestsDone
+                .Persist.LastQuestsDone(i) = GetIntegerArrayValue(.QuestStats.QuestsDone, i)
+            Next i
+        Else
+            ReDim .Persist.LastQuestsDone(0)
+        End If
+    End With
+End Sub
+
+Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
+    On Error GoTo ErrorHandler
+
+    Dim PerformanceTimer As Long
+    Call PerformanceTestStart(PerformanceTimer)
+
+    Dim Params() As Variant
+    Dim LoopC As Long
+    Dim LoopK As Long
+    Dim ParamC As Long
+    Dim Tmp As Integer
+
+    Call Builder.Clear
+
+    With UserList(UserIndex)
+
+        If Not .flags.UserLogged Then
+            Call LogDatabaseError("Error trying to save a user not logged in SaveChangesInUser")
+            Exit Sub
+        End If
+
+        ReDim Params(65)
+        Dim i As Integer
+        i = 0
+        Params(post_increment(i)) = .name
+        Params(post_increment(i)) = .Stats.ELV
+        Params(post_increment(i)) = .Stats.Exp
+        Params(post_increment(i)) = .genero
+        Params(post_increment(i)) = .raza
+        Params(post_increment(i)) = .clase
+        Params(post_increment(i)) = .Hogar
+        Params(post_increment(i)) = .Desc
+        Params(post_increment(i)) = .Stats.GLD
+        Params(post_increment(i)) = .Stats.Banco
+        Params(post_increment(i)) = .Stats.SkillPts
+        Params(post_increment(i)) = .flags.MascotasGuardadas
+        Params(post_increment(i)) = .pos.Map
+        Params(post_increment(i)) = .pos.x
+        Params(post_increment(i)) = .pos.y
+        Params(post_increment(i)) = .MENSAJEINFORMACION
+        Params(post_increment(i)) = .Char.body
+        Params(post_increment(i)) = .OrigChar.originalhead
+        Params(post_increment(i)) = .Char.WeaponAnim
+        Params(post_increment(i)) = .Char.CascoAnim
+        Params(post_increment(i)) = .Char.ShieldAnim
+        Params(post_increment(i)) = .Char.Heading
+        Params(post_increment(i)) = .Stats.MaxHp
+        Params(post_increment(i)) = .Stats.MinHp
+        Params(post_increment(i)) = .Stats.MinMAN
+        Params(post_increment(i)) = .Stats.MinSta
+        Params(post_increment(i)) = .Stats.MinHam
+        Params(post_increment(i)) = .Stats.MinAGU
+        Params(post_increment(i)) = .Stats.NPCsMuertos
+        Params(post_increment(i)) = .Stats.UsuariosMatados
+        Params(post_increment(i)) = .Stats.PuntosPesca
+        Params(post_increment(i)) = .Stats.ELO
+        Params(post_increment(i)) = .flags.Desnudo
+        Params(post_increment(i)) = .flags.Envenenado
+        Params(post_increment(i)) = .flags.Incinerado
+        Params(post_increment(i)) = .flags.Muerto
+        Params(post_increment(i)) = .flags.Navegando
+        Params(post_increment(i)) = .flags.Paralizado
+        Params(post_increment(i)) = .flags.Montado
+        Params(post_increment(i)) = .flags.Silenciado
+        Params(post_increment(i)) = .flags.MinutosRestantes
+        Params(post_increment(i)) = .flags.SegundosPasados
+        Params(post_increment(i)) = .flags.SpouseId
+        Params(post_increment(i)) = .Counters.Pena
+        Params(post_increment(i)) = .flags.VecesQueMoriste
+        Params(post_increment(i)) = .Faccion.ciudadanosMatados
+        Params(post_increment(i)) = .Faccion.CriminalesMatados
+        Params(post_increment(i)) = .Faccion.RecibioArmaduraReal
+        Params(post_increment(i)) = .Faccion.RecibioArmaduraCaos
+        Params(post_increment(i)) = .Faccion.RecompensasReal
+        Params(post_increment(i)) = .Faccion.FactionScore
+        Params(post_increment(i)) = .Faccion.RecompensasCaos
+        Params(post_increment(i)) = .Faccion.Reenlistadas
+        Params(post_increment(i)) = .Faccion.NivelIngreso
+        Params(post_increment(i)) = .Faccion.MatadosIngreso
+        Params(post_increment(i)) = .Faccion.Status
+        Params(post_increment(i)) = .GuildIndex
+        Params(post_increment(i)) = .ChatCombate
+        Params(post_increment(i)) = .ChatGlobal
+        Params(post_increment(i)) = .Stats.Advertencias
+        Params(post_increment(i)) = .flags.ReturnPos.Map
+        Params(post_increment(i)) = .flags.ReturnPos.x
+        Params(post_increment(i)) = .flags.ReturnPos.y
+        Params(post_increment(i)) = .Stats.JineteLevel
+        Params(post_increment(i)) = .Char.BackpackAnim
+        Params(post_increment(i)) = .Id
+
+        Call Execute(QUERY_UPDATE_MAINPJ, Params)
+
+        If HaveSpellsChanged(UserIndex) Then
+            ReDim Params(MAXUSERHECHIZOS * 3 - 1)
+            ParamC = 0
+            For LoopC = 1 To MAXUSERHECHIZOS
+                Params(ParamC) = .Id
+                Params(ParamC + 1) = LoopC
+                Params(ParamC + 2) = .Stats.UserHechizos(LoopC)
+                ParamC = ParamC + 3
+            Next LoopC
+            Call Execute(QUERY_UPSERT_SPELLS, Params)
+            Call UpdateSavedSpells(UserIndex)
+        End If
+
+        If HasInventoryChanged(UserIndex) Then
+            ReDim Params(MAX_INVENTORY_SLOTS * 6 - 1)
+            ParamC = 0
+            For LoopC = 1 To MAX_INVENTORY_SLOTS
+                Params(ParamC) = .Id
+                Params(ParamC + 1) = LoopC
+                Params(ParamC + 2) = .invent.Object(LoopC).ObjIndex
+                Params(ParamC + 3) = .invent.Object(LoopC).amount
+                Params(ParamC + 4) = .invent.Object(LoopC).Equipped
+                Params(ParamC + 5) = .invent.Object(LoopC).ElementalTags
+                ParamC = ParamC + 6
+            Next LoopC
+            Call Execute(QUERY_UPSERT_INVENTORY, Params)
+            Call UpdateSavedInventory(UserIndex)
+        End If
+
+        If HasBankChanged(UserIndex) Then
+            ReDim Params(MAX_BANCOINVENTORY_SLOTS * 5 - 1)
+            ParamC = 0
+            For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
+                Params(ParamC) = .Id
+                Params(ParamC + 1) = LoopC
+                Params(ParamC + 2) = .BancoInvent.Object(LoopC).ObjIndex
+                Params(ParamC + 3) = .BancoInvent.Object(LoopC).amount
+                Params(ParamC + 4) = .BancoInvent.Object(LoopC).ElementalTags
+                ParamC = ParamC + 5
+            Next LoopC
+            Call Execute(QUERY_SAVE_BANCOINV, Params)
+            Call UpdateSavedBank(UserIndex)
+        End If
+
+        If HaveSkillsChanged(UserIndex) Then
+            ReDim Params(NUMSKILLS * 3 - 1)
+            ParamC = 0
+            For LoopC = 1 To NUMSKILLS
+                Params(ParamC) = .Id
+                Params(ParamC + 1) = LoopC
+                Params(ParamC + 2) = .Stats.UserSkills(LoopC)
+                ParamC = ParamC + 3
+            Next LoopC
+            Call Execute(QUERY_UPSERT_SKILLS, Params)
+            Call UpdateSavedSkills(UserIndex)
+        End If
+
+        If HavePetsChanged(UserIndex) Then
+            ReDim Params(MAXMASCOTAS * 3 - 1)
+            ParamC = 0
+            Dim petType As Integer
+            For LoopC = 1 To MAXMASCOTAS
+                Params(ParamC) = .Id
+                Params(ParamC + 1) = LoopC
+                If IsValidNpcRef(.MascotasIndex(LoopC)) Then
+                    If NpcList(.MascotasIndex(LoopC).ArrayIndex).Contadores.TiempoExistencia = 0 Then
+                        petType = .MascotasType(LoopC)
+                    Else
+                        petType = 0
+                    End If
+                Else
+                    petType = .MascotasType(LoopC)
+                End If
+                Params(ParamC + 2) = petType
+                ParamC = ParamC + 3
+            Next LoopC
+            Call Execute(QUERY_UPSERT_PETS, Params)
+            Call UpdateSavedPets(UserIndex)
+        End If
+
+        If HaveQuestsChanged(UserIndex) Then
+            Call Builder.Clear
+            Builder.Append "REPLACE INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
+
+            For LoopC = 1 To MAXUSERQUESTS
+                Builder.Append "("
+                Builder.Append .Id & ", "
+                Builder.Append LoopC & ", "
+                Builder.Append .QuestStats.Quests(LoopC).QuestIndex & ", '"
+
+                If .QuestStats.Quests(LoopC).QuestIndex > 0 Then
+                    Tmp = QuestList(.QuestStats.Quests(LoopC).QuestIndex).RequiredNPCs
+                    If Tmp Then
+                        For LoopK = 1 To Tmp
+                            Builder.Append CStr(.QuestStats.Quests(LoopC).NPCsKilled(LoopK))
+                            If LoopK < Tmp Then Builder.Append "-"
+                        Next LoopK
+                    End If
+                End If
+
+                Builder.Append "', '"
+
+                If .QuestStats.Quests(LoopC).QuestIndex > 0 Then
+                    Tmp = QuestList(.QuestStats.Quests(LoopC).QuestIndex).RequiredTargetNPCs
+                    For LoopK = 1 To Tmp
+                        Builder.Append CStr(.QuestStats.Quests(LoopC).NPCsTarget(LoopK))
+                        If LoopK < Tmp Then Builder.Append "-"
+                    Next LoopK
+                End If
+
+                Builder.Append "')"
+                If LoopC < MAXUSERQUESTS Then
+                    Builder.Append ", "
+                End If
+            Next LoopC
+
+            Call Execute(Builder.ToString())
+            Call Builder.Clear
+            Call UpdateSavedQuests(UserIndex)
+        End If
+
+        If HaveQuestsDoneChanged(UserIndex) Then
+            If .QuestStats.NumQuestsDone > 0 Then
+                Call Builder.Clear
+                Builder.Append "REPLACE INTO quest_done (user_id, quest_id) VALUES "
+                For LoopC = 1 To .QuestStats.NumQuestsDone
+                    Builder.Append "(?, ?)"
+                    If LoopC < .QuestStats.NumQuestsDone Then
+                        Builder.Append ", "
+                    End If
+                Next LoopC
+
+                ReDim Params(.QuestStats.NumQuestsDone * 2 - 1)
+                ParamC = 0
+                For LoopC = 1 To .QuestStats.NumQuestsDone
+                    Params(ParamC) = .Id
+                    Params(ParamC + 1) = .QuestStats.QuestsDone(LoopC)
+                    ParamC = ParamC + 2
+                Next LoopC
+
+                Call Execute(Builder.ToString(), Params)
+                Call Builder.Clear
+            Else
+                Call Execute("DELETE FROM quest_done WHERE user_id = ?;", .Id)
+            End If
+
+            Call UpdateSavedQuestsDone(UserIndex)
+        End If
+
+        Call SaveInventorySkins(UserIndex)
+
+        .Counters.LastSave = GetTickCountRaw()
+
+        Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser id:" & .Id, 50)
+
+    End With
+
+    Exit Sub
+
+ErrorHandler:
+    Call LogDatabaseError("Error in SaveChangesInUser. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 End Sub
 
 Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)

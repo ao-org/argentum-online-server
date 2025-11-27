@@ -118,6 +118,9 @@ Public NpcStunTime                       As Long
 Public PlayerInmuneTime                  As Long
 Public MultiShotReduction                As Single
 Public HomeTimer                         As Integer
+Public HomeTimerAdventurer               As Integer
+Public HomeTimerHero                     As Integer
+Public HomeTimerLegend                   As Integer
 Public MagicSkillBonusDamageModifier     As Single
 Public MRSkillProtectionModifier         As Single
 Public MRSkillNpcProtectionModifier      As Single
@@ -139,6 +142,9 @@ Public Nebando                           As Boolean
 Public Nieblando                         As Boolean
 Public IpList                            As New Collection
 Public Baneos                            As New Collection
+
+
+
 
 Sub ReSpawnOrigPosNpcs()
     On Error GoTo Handler
