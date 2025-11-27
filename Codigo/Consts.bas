@@ -39,6 +39,7 @@ Public Const DEFAULT_NPC_ORBIT_TANGENT_WEIGHT       As Double = 0.35
 Public Const DEFAULT_NPC_RETREAT_DISTANCE_BUFFER    As Double = 0.75
 Public Const DEFAULT_NPC_ORBIT_STEP_DEGREES         As Double = 55
 Public Const DEFAULT_NPC_STRAFE_DURATION_MS         As Long = 900
+Public Const DEFAULT_NPC_HOSTILE_DELTA              As Byte = 5
 
 
 'General consts
