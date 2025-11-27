@@ -28,21 +28,21 @@ Attribute VB_Name = "modMessageIDs"
 Option Explicit
     
     
-Public Const LASTMSG_PARALYZED                                  As Integer = 1123
-Public Const LASTMSG_ALREADY_HIDDEN                             As Integer = 1127
-Public Const LASTMSG_CANNOT_HIDE_MOUNTED                        As Integer = 704
-Public Const LASTMSG_HIDE_FAILED                                As Integer = 57
-Public Const LASTMSG_TAME_FAILED                                As Integer = 659
-Public Const LASTMSG_MAP_NEWBIE_ONLY                            As Integer = 771
-Public Const LASTMSG_MAP_ONLY_CITIZENS                          As Integer = 772
-Public Const LASTMSG_MAP_ONLY_CRIMINALS                         As Integer = 773
-Public Const LASTMSG_MAP_REQUIRES_CLAN                          As Integer = 774
-Public Const LASTMSG_MAP_MIN_LEVEL                              As Integer = 1108
-Public Const LASTMSG_MAP_MAX_LEVEL                              As Integer = 1109
-Public Const LASTMSG_MAP_REQUIRES_GROUP                         As Integer = 775
-Public Const LASTMSG_MAP_REQUIRES_PATREON                       As Integer = 776
-Public Const LASTMSG_TILE_REQUIRES_PATREON                      As Integer = 776
-Public Const LASTMSG_PICKUP_UNAVAILABLE                         As Integer = 261
+Public Const MSG_PARALYZED                                  As Integer = 1123
+Public Const MSG_ALREADY_HIDDEN                             As Integer = 1127
+Public Const MSG_CANNOT_HIDE_MOUNTED                        As Integer = 704
+Public Const MSG_HIDE_FAILED                                As Integer = 57
+Public Const MSG_TAME_FAILED                                As Integer = 659
+Public Const MSG_MAP_NEWBIE_ONLY                            As Integer = 771
+Public Const MSG_MAP_ONLY_CITIZENS                          As Integer = 772
+Public Const MSG_MAP_ONLY_CRIMINALS                         As Integer = 773
+Public Const MSG_MAP_REQUIRES_CLAN                          As Integer = 774
+Public Const MSG_MAP_MIN_LEVEL                              As Integer = 1108
+Public Const MSG_MAP_MAX_LEVEL                              As Integer = 1109
+Public Const MSG_MAP_REQUIRES_GROUP                         As Integer = 775
+Public Const MSG_MAP_REQUIRES_PATREON                       As Integer = 776
+Public Const MSG_TILE_REQUIRES_PATREON                      As Integer = 776
+Public Const MSG_PICKUP_UNAVAILABLE                         As Integer = 261
 
 Public Const MSG_CLIENT_UPDATE_REQUIRED                        As Integer = 2092
 Public Const MSG_INVALID_SESSION_TOKEN                         As Integer = 2093

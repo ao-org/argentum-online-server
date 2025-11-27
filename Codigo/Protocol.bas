@@ -1549,10 +1549,10 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 Call WritePosUpdate(UserIndex)
             End If
         Else    'paralized
-            If Not .flags.UltimoMensaje = LASTMSG_PARALYZED Then
-                .flags.UltimoMensaje = LASTMSG_PARALYZED
+            If Not .flags.UltimoMensaje = MSG_PARALYZED Then
+                .flags.UltimoMensaje = MSG_PARALYZED
                 'Msg1123= No podes moverte porque estas paralizado.
-                Call WriteLocaleMsg(UserIndex, LASTMSG_PARALYZED, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_PARALYZED, e_FontTypeNames.FONTTYPE_INFO)
                 Call WriteLocaleMsg(UserIndex, 54, e_FontTypeNames.FONTTYPE_INFO)
             End If
             Call WritePosUpdate(UserIndex)
@@ -2110,21 +2110,21 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
                         "Ocultar", PacketTimerThreshold(PacketNames.Hide), MacroIterations(PacketNames.Hide)) Then Exit Sub
                 If .flags.Montado = 1 Then
                     '[CDT 17-02-2004]
-                    If Not .flags.UltimoMensaje = LASTMSG_CANNOT_HIDE_MOUNTED Then
+                    If Not .flags.UltimoMensaje = MSG_CANNOT_HIDE_MOUNTED Then
                         ' Msg704=No podés ocultarte si estás montado.
-                        Call WriteLocaleMsg(UserIndex, LASTMSG_CANNOT_HIDE_MOUNTED, e_FontTypeNames.FONTTYPE_INFO)
-                        .flags.UltimoMensaje = LASTMSG_CANNOT_HIDE_MOUNTED
+                        Call WriteLocaleMsg(UserIndex, MSG_CANNOT_HIDE_MOUNTED, e_FontTypeNames.FONTTYPE_INFO)
+                        .flags.UltimoMensaje = MSG_CANNOT_HIDE_MOUNTED
                     End If
                     '[/CDT]
                     Exit Sub
                 End If
                 If .flags.Oculto = 1 Then
                     '[CDT 17-02-2004]
-                    If Not .flags.UltimoMensaje = LASTMSG_ALREADY_HIDDEN Then
+                    If Not .flags.UltimoMensaje = MSG_ALREADY_HIDDEN Then
                         Call WriteLocaleMsg(UserIndex, 55, e_FontTypeNames.FONTTYPE_INFO)
                         'Msg1127= Ya estás oculto.
-                        Call WriteLocaleMsg(UserIndex, LASTMSG_ALREADY_HIDDEN, e_FontTypeNames.FONTTYPE_INFO)
-                        .flags.UltimoMensaje = LASTMSG_ALREADY_HIDDEN
+                        Call WriteLocaleMsg(UserIndex, MSG_ALREADY_HIDDEN, e_FontTypeNames.FONTTYPE_INFO)
+                        .flags.UltimoMensaje = MSG_ALREADY_HIDDEN
                     End If
                     '[/CDT]
                     Exit Sub
@@ -2360,7 +2360,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         DummyInt = 1
                     ElseIf .EquippedMunitionObjIndex = 0 Then
                         DummyInt = 1
-                    ElseIf ObjData(.EquippedWeaponObjIndex).Proyectil <> LASTMSG_PARALYZED Then
+                    ElseIf ObjData(.EquippedWeaponObjIndex).Proyectil <> MSG_PARALYZED Then
                         DummyInt = 2
                     ElseIf ObjData(.EquippedMunitionObjIndex).OBJType <> e_OBJType.otArrows Then
                         DummyInt = 1
