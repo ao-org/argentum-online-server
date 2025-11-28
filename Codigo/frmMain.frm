@@ -1757,6 +1757,7 @@ Private Sub TimerRespawn_Timer()
             End If
         End If
     Next NpcIndex
+    Call ProcessResourceRespawns()
     Call PerformTimeLimitCheck(PerformanceTimer, "TimerRespawn_Timer")
     Exit Sub
 ErrorHandler:
