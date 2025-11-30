@@ -653,10 +653,21 @@ MakeNPCChar_Err:
     contextInfo = "Params: toMap=" & CStr(toMap) & ", sndIndex=" & sndIndex & ", NpcIndex=" & NpcIndex & ", Map=" & Map & _
                   ", x=" & x & ", y=" & y
 
+    Dim npcLowerBound As Long
+    Dim npcUpperBound As Long
+
     On Error Resume Next
-    contextInfo = contextInfo & ", NpcName=" & NpcList(NpcIndex).name & NpcList(NpcIndex).SubName
-    contextInfo = contextInfo & ", CharIndex=" & NpcList(NpcIndex).Char.charindex
-    contextInfo = contextInfo & ", NPCType=" & NpcList(NpcIndex).npcType
+    npcLowerBound = LBound(NpcList)
+    npcUpperBound = UBound(NpcList)
+
+    If NpcIndex >= npcLowerBound And NpcIndex <= npcUpperBound Then
+        contextInfo = contextInfo & ", NpcName=" & NpcList(NpcIndex).name & NpcList(NpcIndex).SubName
+        contextInfo = contextInfo & ", CharIndex=" & NpcList(NpcIndex).Char.charindex
+        contextInfo = contextInfo & ", NPCType=" & NpcList(NpcIndex).npcType
+    Else
+        contextInfo = contextInfo & ", NpcIndexOutOfBounds=True (Bounds " & npcLowerBound & "-" & npcUpperBound & ")"
+    End If
+
     On Error GoTo 0
 
     Call TraceError(errNumber, errDescription & " | " & contextInfo, "NPCs.MakeNPCChar", Erl)
