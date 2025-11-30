@@ -7060,10 +7060,6 @@ HandleQuestDetailsRequest_Err:
 End Sub
  
 Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    'Maneja el paquete QuestAbandon.
-    'Last modified: 31/01/2010 by Amraphen
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     On Error GoTo HandleQuestAbandon_Err
     With UserList(UserIndex)
         Dim Slot As Byte
@@ -7098,6 +7094,9 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
                 Next i
             End If
         End With
+        'Le avisamos que abandono la quest
+        'Msg2115=Has abandonado la misión ¬1.
+        Call WriteLocaleMsg(UserIndex, 2115, e_FontTypeNames.FONTTYPE_INFOIAO, QuestList(UserList(UserIndex).QuestStats.Quests(Slot).QuestIndex).nombre)
         'Borramos la quest.
         Call CleanQuestSlot(UserIndex, Slot)
         'Ordenamos la lista de quests del usuario.
