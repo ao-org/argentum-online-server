@@ -643,7 +643,34 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
     End With
     Exit Sub
 MakeNPCChar_Err:
-    Call TraceError(Err.Number, Err.Description, "NPCs.MakeNPCChar", Erl)
+    Dim errNumber As Long
+    Dim errDescription As String
+    Dim contextInfo As String
+
+    errNumber = Err.Number
+    errDescription = Err.Description
+
+    contextInfo = "Params: toMap=" & CStr(toMap) & ", sndIndex=" & sndIndex & ", NpcIndex=" & NpcIndex & ", Map=" & Map & _
+                  ", x=" & x & ", y=" & y
+
+    Dim npcLowerBound As Long
+    Dim npcUpperBound As Long
+
+    On Error Resume Next
+    npcLowerBound = LBound(NpcList)
+    npcUpperBound = UBound(NpcList)
+
+    If NpcIndex >= npcLowerBound And NpcIndex <= npcUpperBound Then
+        contextInfo = contextInfo & ", NpcName=" & NpcList(NpcIndex).name & NpcList(NpcIndex).SubName
+        contextInfo = contextInfo & ", CharIndex=" & NpcList(NpcIndex).Char.charindex
+        contextInfo = contextInfo & ", NPCType=" & NpcList(NpcIndex).npcType
+    Else
+        contextInfo = contextInfo & ", NpcIndexOutOfBounds=True (Bounds " & npcLowerBound & "-" & npcUpperBound & ")"
+    End If
+
+    On Error GoTo 0
+
+    Call TraceError(errNumber, errDescription & " | " & contextInfo, "NPCs.MakeNPCChar", Erl)
 End Sub
 
 Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As e_Heading)
