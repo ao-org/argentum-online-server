@@ -1268,7 +1268,7 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
     ' Esta condicion debe ejecutarse independiemente de el modo de busqueda.
     EsObjetivoValido = EnRangoVision(NpcIndex, UserIndex)
     If NpcList(NpcIndex).nivel > 0 Then
-        EsObjetivoValido = EsObjetivoValido And (UserList(UserIndex).Stats.ELV - NpcList(NpcIndex).nivel <= NpcDeltaLevelPenalties)
+        EsObjetivoValido = EsObjetivoValido And (UserList(UserIndex).Stats.ELV - NpcList(NpcIndex).nivel <= CInt(SvrConfig.GetValue("NpcDeltaLevelPenalties")))
         EsObjetivoValido = EsObjetivoValido Or (AgressorIndex = UserIndex)
     End If
     EsObjetivoValido = EsObjetivoValido And EsEnemigo(NpcIndex, UserIndex)
