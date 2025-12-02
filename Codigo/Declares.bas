@@ -1770,6 +1770,7 @@ Public Type t_Hechizo
     EotId As Integer
     SpellRequirementMask As Long
     RequireWeaponType As e_WeaponType
+    MaxLevelCasteable As Byte
 End Type
 
 Public Type t_ActiveModifiers
