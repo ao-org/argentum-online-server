@@ -665,8 +665,15 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
         Dim RequiredItemResult As e_SpellRequirementMask
         RequiredItemResult = TestRequiredEquipedItem(.invent, Hechizos(HechizoIndex).SpellRequirementMask, 0)
         If RequiredItemResult > 0 Then
-            Call SendrequiredItemMessage(UserIndex, RequiredItemResult, "para usar este hechizo.")
+            Call SendrequiredItemMessage(UserIndex, RequiredItemResult)
             Exit Function
+        Else
+            If Hechizos(HechizoIndex).RequireArmor > 0 Then
+                If UserList(UserIndex).invent.EquippedArmorObjIndex <> Hechizos(HechizoIndex).RequireArmor Then
+                    Call SendrequiredItemMessage(UserIndex, RequiredItemResult)
+                    Exit Function
+                End If
+            End If
         End If
         Dim TargetRef As t_AnyReference
         If IsValidUserRef(.flags.TargetUser) Then

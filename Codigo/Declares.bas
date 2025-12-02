@@ -1769,6 +1769,7 @@ Public Type t_Hechizo
     StaffAffected As Boolean
     EotId As Integer
     SpellRequirementMask As Long
+    RequireArmor As Integer
     RequireWeaponType As e_WeaponType
 End Type
 

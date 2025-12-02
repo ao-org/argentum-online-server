@@ -785,6 +785,7 @@ Dim obj                         As t_ObjData
                     If obj.ResistenciaMagica > 0 Then
                         Call WriteUpdateRM(UserIndex)
                     End If
+                    Call ActualizarVelocidadDeUsuario(UserIndex)
                     
                 Case e_OBJType.otHelmet
                     .invent.Object(Slot).Equipped = 0

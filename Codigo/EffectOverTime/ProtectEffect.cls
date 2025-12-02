@@ -44,6 +44,13 @@ Dim DamageProtection  As Long
 Dim TickTime          As Long
 Private DotInfo       As t_BaseDotInfo
 Private Source        As t_AnyReference
+Dim DotMax               As Integer
+Dim DotMin               As Integer
+Dim TargetTicks          As Integer
+Dim TickCount            As Integer
+Dim TickEffect           As Integer
+Dim Modifiers            As Integer
+Dim SecondTargetModifier As Single
 
 Public Sub Setup(ByVal SourceIndex As Integer, _
                  ByVal SourceType As e_ReferenceType, _
@@ -52,13 +59,20 @@ Public Sub Setup(ByVal SourceIndex As Integer, _
                  ByVal EffectId As Integer, _
                  ByVal Id As Long)
     TimeSinceLastTick = 0
+    TickCount = 0
     Call SetBaseDot(DotInfo, TargetIndex, TargetType, Id, EffectId)
     Call SetRef(Source, SourceIndex, SourceType)
     With EffectOverTime(EffectId)
         DamageProtection = RandomNumber(.TickPowerMin, .TickPowerMax)
+        TargetTicks = .Ticks
         TickTime = .TickTime
+        TickEffect = .TickFX
+        DotMax = .TickPowerMax / 10
+        DotMin = .TickPowerMin / 10
+        Modifiers = .EffectModifiers
+        SecondTargetModifier = 1 - .SecondaryTargetModifier
         If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
-            Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, Id, .TickTime, .TickTime, .buffType)
+            Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, Id, .TickTime * TargetTicks, .TickTime * TargetTicks, .buffType)
         End If
     End With
     Call AddShieldToReference(DotInfo.TargetRef, DamageProtection)
@@ -114,10 +128,15 @@ Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
 End Property
 
 Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
-    TimeSinceLastTick = TimeSinceLastTick + DeltaTime
-    If TimeSinceLastTick >= TickTime Or Not IsValidRef(DotInfo.TargetRef) Then
+    If TickCount >= TargetTicks Or Not IsValidRef(DotInfo.TargetRef) Then
         DotInfo.RemoveEffect = True
         Exit Sub
+    End If
+    TimeSinceLastTick = TimeSinceLastTick + DeltaTime
+    If TimeSinceLastTick >= TickTime Then
+        TimeSinceLastTick = 0
+        TickCount = TickCount + 1
+        Call PerformAction
     End If
 End Sub
 
@@ -147,7 +166,13 @@ Public Sub IBaseEffectOverTime_OnRemove()
     DotInfo.Removed = True
     DotInfo.RemoveEffect = True
     Call EffectsOverTime.RemoveEotModifier(DotInfo.TargetRef, EffectOverTime(DotInfo.EotId), 0)
-    Call AddShieldToReference(DotInfo.TargetRef, -DamageProtection)
+    
+    If DotInfo.TargetRef.RefType = eUser Then
+        Call AddShieldToReference(DotInfo.TargetRef, -UserList(DotInfo.TargetRef.ArrayIndex).Stats.shield)
+    Else
+        Call AddShieldToReference(DotInfo.TargetRef, -NpcList(DotInfo.TargetRef.ArrayIndex).Stats.shield)
+    End If
+    
     If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
     End If
@@ -226,3 +251,53 @@ End Property
 
 Public Sub IBaseEffectOverTime_TargetChangeTerrain()
 End Sub
+
+
+Public Sub PerformAction()
+    Dim TickShield As Integer
+    TickShield = RandomNumber(DotMin, DotMax)
+    If DotInfo.TargetRef.RefType = e_ReferenceType.eUser Then
+        If IsSet(Modifiers, e_ModifierTypes.MagicReduction) Then
+            TickShield = TickShield * UserMod.GetMagicDamageReduction(UserList(DotInfo.TargetRef.ArrayIndex))
+        End If
+        If IsSet(Modifiers, e_ModifierTypes.PhysicalReduction) Then
+            TickShield = TickShield * UserMod.GetPhysicDamageReduction(UserList(DotInfo.TargetRef.ArrayIndex))
+        End If
+        If IsSet(Modifiers, e_ModifierTypes.SelfHealingBonus) Then
+            TickShield = TickShield * UserMod.GetSelfHealingBonus(UserList(DotInfo.TargetRef.ArrayIndex))
+        End If
+        If IsValidRef(Source) Then
+            Call AddShieldToReference(DotInfo.TargetRef, TickShield)
+        Else
+            Call AddShieldToReference(DotInfo.TargetRef, TickShield)
+        End If
+        If TickEffect > 0 Then
+            If IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) Then
+                Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, _
+                   0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+            Else
+                Call SendData(SendTarget.ToIndex, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, _
+                   UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+            End If
+        End If
+    ElseIf DotInfo.TargetRef.RefType = e_ReferenceType.eNpc Then
+        If IsSet(Modifiers, e_ModifierTypes.MagicReduction) Then
+            TickShield = TickShield * NPCs.GetMagicDamageReduction(NpcList(DotInfo.TargetRef.ArrayIndex))
+        End If
+        If IsSet(Modifiers, e_ModifierTypes.PhysicalReduction) Then
+            TickShield = TickShield * NPCs.GetPhysicDamageReduction(NpcList(DotInfo.TargetRef.ArrayIndex))
+        End If
+        If IsSet(Modifiers, e_ModifierTypes.SelfHealingBonus) Then
+            TickShield = TickShield * NPCs.GetSelfHealingBonus(NpcList(DotInfo.TargetRef.ArrayIndex))
+        End If
+        TickShield = TickShield * SecondTargetModifier
+        If IsValidRef(Source) Then
+            Call AddShieldToReference(DotInfo.TargetRef, TickShield)
+        Else
+            Call AddShieldToReference(DotInfo.TargetRef, TickShield)
+        End If
+        If TickEffect > 0 Then Call SendData(SendTarget.ToNPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(NpcList( _
+           DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, NpcList(DotInfo.TargetRef.ArrayIndex).pos.x, NpcList(DotInfo.TargetRef.ArrayIndex).pos.y))
+    End If
+End Sub
+
