@@ -2473,7 +2473,7 @@ Public Type t_UserStats
     UsuariosMatados As Long
     PuntosPesca As Long
     CriminalesMatados As Long
-    NPCsMuertos As Integer
+    NPCsMuertos As Long
     SkillPts As Integer
     Advertencias As Byte
     NumObj_PezEspecial As Integer

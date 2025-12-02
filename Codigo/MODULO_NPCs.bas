@@ -190,7 +190,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         If UserList(UserIndex).ChatCombate = 1 Then
             Call WriteLocaleMsg(UserIndex, 184, e_FontTypeNames.FONTTYPE_DIOS)
         End If
-        If UserList(UserIndex).Stats.NPCsMuertos < 32000 Then UserList(UserIndex).Stats.NPCsMuertos = UserList(UserIndex).Stats.NPCsMuertos + 1
+        UserList(UserIndex).Stats.NPCsMuertos = UserList(UserIndex).Stats.NPCsMuertos + 1
         If IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
         Call SubirSkill(UserIndex, e_Skill.Supervivencia)
         If MiNPC.flags.ExpCount > 0 Then
