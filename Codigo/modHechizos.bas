@@ -670,7 +670,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
         Else
             If Hechizos(HechizoIndex).RequireArmor > 0 Then
                 If UserList(UserIndex).invent.EquippedArmorObjIndex <> Hechizos(HechizoIndex).RequireArmor Then
-                    Call SendrequiredItemMessage(UserIndex, RequiredItemResult)
+                    Call WriteLocaleMsg(UserIndex, 2117, e_FontTypeNames.FONTTYPE_INFO, Hechizos(HechizoIndex).RequireArmor)
                     Exit Function
                 End If
             End If
