@@ -645,14 +645,20 @@ NpcDamageNpc_Err:
 End Function
 
 Public Function NpcPerformAttackNpc(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer) As Boolean
+    Dim danio As Long
+    Dim impacto As Boolean
+
+    danio = -1
+
     If NpcList(attackerIndex).flags.Snd1 > 0 Then
-        Call SendData(SendTarget.ToNPCAliveArea, attackerIndex, PrepareMessagePlayWave(NpcList(attackerIndex).flags.Snd1, NpcList(attackerIndex).pos.x, NpcList( _
-                attackerIndex).pos.y))
+        Call SendData(SendTarget.ToNPCAliveArea, attackerIndex, PrepareMessagePlayWave(NpcList(attackerIndex).flags.Snd1, NpcList(attackerIndex).pos.x, NpcList(attackerIndex).pos.y))
     End If
     If NpcList(attackerIndex).Char.WeaponAnim > 0 Then
         Call SendData(SendTarget.ToNPCAliveArea, attackerIndex, PrepareMessageArmaMov(NpcList(attackerIndex).Char.charindex, 0))
     End If
-    If NpcImpactoNpc(attackerIndex, TargetIndex) Then
+    impacto = NpcImpactoNpc(attackerIndex, TargetIndex)
+
+    If impacto Then
         If NpcList(attackerIndex).flags.Snd2 > 0 Then
             Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(NpcList(TargetIndex).flags.Snd2, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
         Else
@@ -660,9 +666,12 @@ Public Function NpcPerformAttackNpc(ByVal attackerIndex As Integer, ByVal Target
         End If
         Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
         Call NpcDamageNpc(attackerIndex, TargetIndex)
+        danio = 0
     Else
         Call SendData(SendTarget.ToNPCAliveArea, attackerIndex, PrepareMessageCharSwing(NpcList(attackerIndex).Char.charindex, False, True))
     End If
+
+    Call SendData(SendTarget.ToNPCAliveArea, attackerIndex, PrepareMessageCharAtaca(NpcList(attackerIndex).Char.charindex, NpcList(TargetIndex).Char.charindex, danio, NpcList(attackerIndex).Char.Ataque1))
 End Function
 
 Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Optional ByVal cambiarMovimiento As Boolean = True)
