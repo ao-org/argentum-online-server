@@ -7662,27 +7662,46 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
     Dim LoopC    As Integer
     Dim obj      As t_Obj
     Dim caniaOld As Integer
+    Dim shouldBreak As Boolean
+
     With UserList(UserIndex)
         obj.ObjIndex = .invent.EquippedWorkingToolObjIndex
         caniaOld = .invent.EquippedWorkingToolObjIndex
         obj.amount = 1
+        shouldBreak = (RandomNumber(1, 3) = 1)
         For LoopC = 1 To MAX_INVENTORY_SLOTS
             'Rastreo la caña que está usando en el inventario y se la rompo
             If .invent.Object(LoopC).ObjIndex = .invent.EquippedWorkingToolObjIndex Then
-                'Le quito una caña
-                Call QuitarUserInvItem(UserIndex, LoopC, 1)
-                Call UpdateUserInv(False, UserIndex, LoopC)
-                Select Case caniaOld
-                    Case 881
-                        obj.ObjIndex = 3457
-                    Case 2121
-                        obj.ObjIndex = 3456
-                    Case 2132
-                        obj.ObjIndex = 3459
-                    Case 2133
-                        obj.ObjIndex = 3458
-                End Select
-                Call MeterItemEnInventario(UserIndex, obj)
+                If caniaOld = 138 Or caniaOld = 139 Then
+                    If shouldBreak Then
+                        'Le quito una red
+                        Call QuitarUserInvItem(UserIndex, LoopC, 1)
+                        Call UpdateUserInv(False, UserIndex, LoopC)
+                        Call WriteLocaleMsg(UserIndex, 2118, e_FontTypeNames.FONTTYPE_INFO)
+                    Else
+                        Call WriteLocaleMsg(UserIndex, 2119, e_FontTypeNames.FONTTYPE_INFO)
+                    End If
+                Else
+                    If shouldBreak Then
+                        'Le quito una caña
+                        Call QuitarUserInvItem(UserIndex, LoopC, 1)
+                        Call UpdateUserInv(False, UserIndex, LoopC)
+
+                        Select Case caniaOld
+                            Case 881
+                                obj.ObjIndex = 3457
+                            Case 2121
+                                obj.ObjIndex = 3456
+                            Case 2132
+                                obj.ObjIndex = 3459
+                            Case 2133
+                                obj.ObjIndex = 3458
+                        End Select
+                        Call MeterItemEnInventario(UserIndex, obj)
+                    Else
+                        Call WriteLocaleMsg(UserIndex, 2120, e_FontTypeNames.FONTTYPE_INFO)
+                    End If
+                End If
                 Exit Sub
             End If
         Next LoopC
