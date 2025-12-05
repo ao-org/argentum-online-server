@@ -621,6 +621,8 @@ Sub PickObj(ByVal UserIndex As Integer)
                 'Si el obj es oro (12), se muestra la cantidad que agarro arriba del personaje
                 If MiObj.ObjIndex = 12 Then
                     Call WriteTextOverTile(UserIndex, "+" & PonerPuntos(MiObj.amount), UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, RGB(212, 175, 55))
+                Else
+                    Call WriteShowPickUpObj(UserIndex, MiObj.ObjIndex, MiObj.amount)
                 End If
                 Call UserDidPickupItem(UserIndex, MiObj.ObjIndex)
                 If UserList(UserIndex).flags.jugando_captura = 1 Then

@@ -4448,3 +4448,17 @@ WriteGuildConfig_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildConfig", Erl)
 End Sub
+Public Sub WriteShowPickUpObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal amount As Integer)
+    On Error GoTo WriteShowPickUpObj_Err
+
+    Call Writer.WriteInt16(ServerPacketID.eShowPickUpObj)
+    Call Writer.WriteInt16(ObjIndex)
+    Call Writer.WriteInt16(amount)
+    
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+
+WriteShowPickUpObj_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowPickUpObj", Erl)
+End Sub
