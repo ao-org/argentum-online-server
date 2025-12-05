@@ -808,7 +808,8 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
                   ByVal FX As Boolean, _
                   ByVal Respawn As Boolean, _
                   Optional Avisar As Boolean = False, _
-                  Optional ByVal MaestroUser As Integer = 0) As Integer
+                  Optional ByVal MaestroUser As Integer = 0, _
+                  Optional ByVal SpellWav As Integer = SND_WARP) As Integer
     On Error GoTo SpawnNpc_Err
     '***************************************************
     'Autor: Unknown (orginal version)
@@ -851,8 +852,10 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
     NpcList(nIndex).Orig = NpcList(nIndex).pos
     'Crea el NPC
     Call MakeNPCChar(True, Map, nIndex, Map, x, y)
-    If FX Then
+    If FX And SpellWav = SND_WARP Then
         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessagePlayWave(SND_WARP, x, y))
+        Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.charindex, e_GraphicEffects.ModernGmWarp, 0))
+    Else
         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.charindex, e_GraphicEffects.ModernGmWarp, 0))
     End If
     If Avisar Then
