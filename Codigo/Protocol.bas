@@ -6008,14 +6008,14 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
         If SlotViejo > getMaxInventorySlots(UserIndex) Or SlotNuevo > getMaxInventorySlots(UserIndex) Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
         If .invent.Object(SlotViejo).ObjIndex = 2183 Then
             Select Case .invent.Object(SlotNuevo).ObjIndex
-                Case 3457
-                    ObjCania.ObjIndex = 881
-                Case 3456
-                    ObjCania.ObjIndex = 2121
-                Case 3459
-                    ObjCania.ObjIndex = 2132
-                Case 3458
-                    ObjCania.ObjIndex = 2133
+                Case OBJ_BROKEN_FISHING_ROD_BASIC
+                    ObjCania.ObjIndex = OBJ_FISHING_ROD_BASIC
+                Case OBJ_BROKEN_FISHING_ROD_COMMON
+                    ObjCania.ObjIndex = OBJ_FISHING_ROD_COMMON
+                Case OBJ_BROKEN_FISHING_ROD_FINE
+                    ObjCania.ObjIndex = OBJ_FISHING_ROD_FINE
+                Case OBJ_BROKEN_FISHING_ROD_ELITE
+                    ObjCania.ObjIndex = OBJ_FISHING_ROD_ELITE
             End Select
             ObjCania.amount = 1
             'si el objeto que estaba pisando era una caña rota.
@@ -7688,14 +7688,14 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
                         Call UpdateUserInv(False, UserIndex, LoopC)
 
                         Select Case caniaOld
-                            Case 881
-                                obj.ObjIndex = 3457
-                            Case 2121
-                                obj.ObjIndex = 3456
-                            Case 2132
-                                obj.ObjIndex = 3459
-                            Case 2133
-                                obj.ObjIndex = 3458
+                            Case OBJ_FISHING_ROD_BASIC
+                                obj.ObjIndex = OBJ_BROKEN_FISHING_ROD_BASIC
+                            Case OBJ_FISHING_ROD_COMMON
+                                obj.ObjIndex = OBJ_BROKEN_FISHING_ROD_COMMON
+                            Case OBJ_FISHING_ROD_FINE
+                                obj.ObjIndex = OBJ_BROKEN_FISHING_ROD_FINE
+                            Case OBJ_FISHING_ROD_ELITE
+                                obj.ObjIndex = OBJ_BROKEN_FISHING_ROD_ELITE
                         End Select
                         Call MeterItemEnInventario(UserIndex, obj)
                     Else
