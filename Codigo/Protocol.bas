@@ -7672,7 +7672,7 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
         For LoopC = 1 To MAX_INVENTORY_SLOTS
             'Rastreo la caña que está usando en el inventario y se la rompo
             If .invent.Object(LoopC).ObjIndex = .invent.EquippedWorkingToolObjIndex Then
-                If caniaOld = 138 Or caniaOld = 139 Then
+                If caniaOld = OBJ_FISHING_NET_BASIC Or caniaOld = OBJ_FISHING_NET_ELITE Then
                     If shouldBreak Then
                         'Le quito una red
                         Call QuitarUserInvItem(UserIndex, LoopC, 1)
