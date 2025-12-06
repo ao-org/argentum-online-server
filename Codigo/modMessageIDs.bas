@@ -71,4 +71,5 @@ Public Const OBJ_BROKEN_FISHING_ROD_BASIC                      As Integer = 3457
 Public Const OBJ_BROKEN_FISHING_ROD_COMMON                     As Integer = 3456
 Public Const OBJ_BROKEN_FISHING_ROD_FINE                       As Integer = 3459
 Public Const OBJ_BROKEN_FISHING_ROD_ELITE                      As Integer = 3458
-
+Public Const OBJ_FISHING_NET_BASIC                             As Integer = 138
+Public Const OBJ_FISHING_NET_ELITE                             As Integer = 139
