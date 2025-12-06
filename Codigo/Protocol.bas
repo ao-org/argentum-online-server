@@ -2360,7 +2360,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         DummyInt = 1
                     ElseIf .EquippedMunitionObjIndex = 0 Then
                         DummyInt = 1
-                    ElseIf ObjData(.EquippedWeaponObjIndex).Proyectil <> MSG_PARALYZED Then
+                    ElseIf ObjData(.EquippedWeaponObjIndex).Proyectil <> 1 Then
                         DummyInt = 2
                     ElseIf ObjData(.EquippedMunitionObjIndex).OBJType <> e_OBJType.otArrows Then
                         DummyInt = 1
