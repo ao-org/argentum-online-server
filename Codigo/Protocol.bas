@@ -1549,10 +1549,10 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 Call WritePosUpdate(UserIndex)
             End If
         Else    'paralized
-            If Not .flags.UltimoMensaje = 1 Then
-                .flags.UltimoMensaje = 1
+            If Not .flags.UltimoMensaje = MSG_PARALYZED Then
+                .flags.UltimoMensaje = MSG_PARALYZED
                 'Msg1123= No podes moverte porque estas paralizado.
-                Call WriteLocaleMsg(UserIndex, 1123, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_PARALYZED, e_FontTypeNames.FONTTYPE_INFO)
                 Call WriteLocaleMsg(UserIndex, 54, e_FontTypeNames.FONTTYPE_INFO)
             End If
             Call WritePosUpdate(UserIndex)
@@ -2110,21 +2110,21 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
                         "Ocultar", PacketTimerThreshold(PacketNames.Hide), MacroIterations(PacketNames.Hide)) Then Exit Sub
                 If .flags.Montado = 1 Then
                     '[CDT 17-02-2004]
-                    If Not .flags.UltimoMensaje = 3 Then
+                    If Not .flags.UltimoMensaje = MSG_CANNOT_HIDE_MOUNTED Then
                         ' Msg704=No podés ocultarte si estás montado.
-                        Call WriteLocaleMsg(UserIndex, 704, e_FontTypeNames.FONTTYPE_INFO)
-                        .flags.UltimoMensaje = 3
+                        Call WriteLocaleMsg(UserIndex, MSG_CANNOT_HIDE_MOUNTED, e_FontTypeNames.FONTTYPE_INFO)
+                        .flags.UltimoMensaje = MSG_CANNOT_HIDE_MOUNTED
                     End If
                     '[/CDT]
                     Exit Sub
                 End If
                 If .flags.Oculto = 1 Then
                     '[CDT 17-02-2004]
-                    If Not .flags.UltimoMensaje = 2 Then
+                    If Not .flags.UltimoMensaje = MSG_ALREADY_HIDDEN Then
                         Call WriteLocaleMsg(UserIndex, 55, e_FontTypeNames.FONTTYPE_INFO)
                         'Msg1127= Ya estás oculto.
-                        Call WriteLocaleMsg(UserIndex, 1127, e_FontTypeNames.FONTTYPE_INFO)
-                        .flags.UltimoMensaje = 2
+                        Call WriteLocaleMsg(UserIndex, MSG_ALREADY_HIDDEN, e_FontTypeNames.FONTTYPE_INFO)
+                        .flags.UltimoMensaje = MSG_ALREADY_HIDDEN
                     End If
                     '[/CDT]
                     Exit Sub
@@ -7060,10 +7060,6 @@ HandleQuestDetailsRequest_Err:
 End Sub
  
 Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    'Maneja el paquete QuestAbandon.
-    'Last modified: 31/01/2010 by Amraphen
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     On Error GoTo HandleQuestAbandon_Err
     With UserList(UserIndex)
         Dim Slot As Byte
@@ -7098,6 +7094,9 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
                 Next i
             End If
         End With
+        'Le avisamos que abandono la quest
+        'Msg2115=Has abandonado la misión ¬1.
+        Call WriteLocaleMsg(UserIndex, 2115, e_FontTypeNames.FONTTYPE_INFOIAO, QuestList(UserList(UserIndex).QuestStats.Quests(Slot).QuestIndex).nombre)
         'Borramos la quest.
         Call CleanQuestSlot(UserIndex, Slot)
         'Ordenamos la lista de quests del usuario.

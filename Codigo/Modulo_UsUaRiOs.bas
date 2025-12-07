@@ -2108,6 +2108,15 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
     Dim OldY   As Integer
     With UserList(UserIndex)
         If Map <= 0 Then Exit Sub
+        If Not EsGM(UserIndex) And Not IsPatreon(UserIndex) Then
+            If TileRequiresPatreon(Map, x, y) Then
+                If .flags.UltimoMensaje <> MSG_TILE_REQUIRES_PATREON Then
+                    Call WriteLocaleMsg(UserIndex, MSG_TILE_REQUIRES_PATREON, e_FontTypeNames.FONTTYPE_INFO)
+                    .flags.UltimoMensaje = MSG_TILE_REQUIRES_PATREON
+                End If
+                Exit Sub
+            End If
+        End If
         If IsValidUserRef(.ComUsu.DestUsu) Then
             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = UserIndex Then
@@ -2183,7 +2192,9 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
             Call SendData(ToIndex, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True))
         End If
         If .NroMascotas > 0 Then Call WarpMascotas(UserIndex)
-        If MapInfo(Map).zone = "DUNGEON" Or MapData(Map, x, y).trigger >= 9 Then
+        If MapInfo(Map).zone = "DUNGEON" Or _
+           (MapData(Map, x, y).trigger >= e_Trigger.PESCAINVALIDA And _
+            MapData(Map, x, y).trigger <> e_Trigger.ONLY_PATREON_TILE) Then
             If .flags.Montado > 0 Then
                 Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
             End If

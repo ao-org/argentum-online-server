@@ -1100,6 +1100,7 @@ Public Enum e_Trigger
     VALIDOPUENTE = 17
     NADOCOMBINADO = 18
     CARCEL = 19
+    ONLY_PATREON_TILE = 20
 End Enum
 
 Public Enum e_NpcInfoMask
@@ -1769,6 +1770,7 @@ Public Type t_Hechizo
     EotId As Integer
     SpellRequirementMask As Long
     RequireWeaponType As e_WeaponType
+    MaxLevelCasteable As Byte
 End Type
 
 Public Type t_ActiveModifiers
@@ -2472,7 +2474,7 @@ Public Type t_UserStats
     UsuariosMatados As Long
     PuntosPesca As Long
     CriminalesMatados As Long
-    NPCsMuertos As Integer
+    NPCsMuertos As Long
     SkillPts As Integer
     Advertencias As Byte
     NumObj_PezEspecial As Integer
@@ -2817,6 +2819,22 @@ Public Type t_UserTrabajo
     Cantidad As Long
 End Type
 
+Public Type t_UserPersistQuestSnapshot
+    QuestIndex As Integer
+    NPCsKilled() As Integer
+    NPCsTarget() As Integer
+End Type
+
+Public Type t_UserPersistSnapshot
+    LastSpells(1 To MAXUSERHECHIZOS) As Integer
+    LastInventory(1 To MAX_INVENTORY_SLOTS) As t_UserOBJ
+    LastBank(1 To MAX_BANCOINVENTORY_SLOTS) As t_UserOBJ
+    LastSkills(1 To NUMSKILLS) As Integer
+    LastPetType(1 To MAXMASCOTAS) As Integer
+    LastQuests(1 To MAXUSERQUESTS) As t_UserPersistQuestSnapshot
+    LastQuestsDone() As Integer
+End Type
+
 Type Tgrupo
     EnGrupo As Boolean
     CantidadMiembros As Byte
@@ -2944,6 +2962,7 @@ Public Type t_User
     KeyCrypt As Integer
     AreasInfo As t_AreaInfo
     QuestStats As t_QuestStats
+    Persist As t_UserPersistSnapshot
     Keys(1 To MAXKEYS) As Integer
     HotkeyList(HotKeyCount) As t_HotkeyEntry
     CraftInventory(1 To MAX_SLOTS_CRAFTEO) As Integer
