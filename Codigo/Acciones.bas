@@ -674,7 +674,7 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal x As Integer, ByVal y As Intege
         Call WriteLocaleMsg(UserIndex, 1071, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
-    If ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo <> 7 Then
+    If ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo <> e_WorkingToolSubType.SmithHammer Then
         'Msg1072= La herramienta que tienes no es la correcta, necesitas un martillo de herrero para poder trabajar.
         Call WriteLocaleMsg(UserIndex, 1072, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
