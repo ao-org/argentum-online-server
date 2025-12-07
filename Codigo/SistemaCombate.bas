@@ -1558,7 +1558,7 @@ Private Sub GetExpForUser(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
             If NpcList(NpcIndex).nivel Then
                 Dim DeltaLevel As Integer
                 DeltaLevel = .Stats.ELV - NpcList(NpcIndex).nivel
-                If DeltaLevel > CInt(SvrConfig.GetValue("DeltaLevelExpPenalty")) Then
+                If DeltaLevel > CInt(SvrConfig.GetValue("NpcDeltaLevelPenalties")) Then
                     Dim Penalty As Single
                     Penalty = GetExpPenalty(UserIndex, NpcIndex, DeltaLevel)
                     ExpaDar = ExpaDar * Penalty
@@ -1659,7 +1659,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                             If UserList(Index).Stats.ELV < STAT_MAXELV Then
                                 If NpcList(NpcIndex).nivel Then
                                     DeltaLevel = UserList(Index).Stats.ELV - NpcList(NpcIndex).nivel
-                                    If DeltaLevel > CInt(SvrConfig.GetValue("DeltaLevelExpPenalty")) Then
+                                    If DeltaLevel > CInt(SvrConfig.GetValue("NpcDeltaLevelPenalties")) Then
                                         Dim Penalty As Single
                                         Penalty = GetExpPenalty(Index, NpcIndex, DeltaLevel)
                                         ExpUser = ExpUser * Penalty

@@ -93,7 +93,7 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "PartyELV", CInt(val(reader.GetValue("CONFIGURACIONES", "PartyELV", "4")))
     mSettings.Add "PartyELVwLeadership", CInt(val(reader.GetValue("CONFIGURACIONES", "PartyELVwLeadership", "5")))
     mSettings.Add "PenaltyExpUserPerLevel", CSng(val(reader.GetValue("CONFIGURACIONES", "PenaltyExpUserPerLevel", "0.05")))
-    mSettings.Add "DeltaLevelExpPenalty", CInt(val(reader.GetValue("CONFIGURACIONES", "DeltaLevelExpPenalty", "4")))
+    mSettings.Add "NpcDeltaLevelPenalties", CInt(val(reader.GetValue("CONFIGURACIONES", "NpcDeltaLevelPenalties", "4")))
     mSettings.Add "LeadershipExpPartyBonus", CDbl(val(reader.GetValue("CONFIGURACIONES", "LeadershipExpPartyBonus", "1.01")))
     mSettings.Add "JineteLevel1Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel1Speed", "1.05")))
     mSettings.Add "JineteLevel2Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel2Speed", "1.07")))

@@ -391,10 +391,10 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
             End If
             Call SubirSkill(UserIndex, Ocultarse)
         Else
-            If Not .flags.UltimoMensaje = 4 Then
+            If Not .flags.UltimoMensaje = MSG_HIDE_FAILED Then
                 'Msg57=¡No has logrado esconderte!
                 Call WriteLocaleMsg(UserIndex, 57, e_FontTypeNames.FONTTYPE_INFO)
-                .flags.UltimoMensaje = 4
+                .flags.UltimoMensaje = MSG_HIDE_FAILED
             End If
         End If
         .Counters.Ocultando = .Counters.Ocultando + 1
@@ -1235,7 +1235,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
     End If
     If CarpinteroTieneMateriales(UserIndex, ItemIndex, cantidad_a_construir) And UserList(UserIndex).Stats.UserSkills(e_Skill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria _
             And PuedeConstruirCarpintero(ItemIndex) And ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).OBJType = e_OBJType.otWorkingTools And ObjData(UserList( _
-            UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = 5 Then
+            UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = MSG_TAME_FAILED Then
         If UserList(UserIndex).Stats.MinSta > 2 Then
             Call QuitarSta(UserIndex, 2)
         Else
@@ -1720,7 +1720,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                         If .clase = e_Class.Thief Then
                             'Si no tiene puestos los guantes de hurto roba un 50% menos.
                             If .invent.EquippedWeaponObjIndex > 0 Then
-                                If ObjData(.invent.EquippedWeaponObjIndex).Subtipo = 5 Then
+                                If ObjData(.invent.EquippedWeaponObjIndex).Subtipo = MSG_TAME_FAILED Then
                                     n = RandomNumber(.Stats.ELV * 50 * Extra, .Stats.ELV * 100 * Extra) * SvrConfig.GetValue("GoldMult")
                                 Else
                                     n = RandomNumber(.Stats.ELV * 25 * Extra, .Stats.ELV * 50 * Extra) * SvrConfig.GetValue("GoldMult")
@@ -1989,7 +1989,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
             res = 1
             Suerte = 100
         End If
-        If res <= 5 Then
+        If res <= MSG_TAME_FAILED Then
             Dim MiObj As t_Obj
             Dim nPos  As t_WorldPos
             Call ActualizarRecurso(.pos.Map, x, y)
@@ -2107,7 +2107,8 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
             Call WriteLocaleMsg(UserIndex, 652, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        If .flags.Montado = 0 And (MapData(.pos.Map, .pos.x, .pos.y).trigger > 10) Then
+        If .flags.Montado = 0 And (MapData(.pos.Map, .pos.x, .pos.y).trigger > e_Trigger.PESCAINVALIDA) _
+           And MapData(.pos.Map, .pos.x, .pos.y).trigger <> e_Trigger.ONLY_PATREON_TILE Then
             ' Msg653=No podés montar aquí.
             Call WriteLocaleMsg(UserIndex, 653, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
@@ -2340,10 +2341,10 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                     Call WriteLocaleMsg(UserIndex, 658, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Else
-                If Not .flags.UltimoMensaje = 5 Then
+                If Not .flags.UltimoMensaje = MSG_TAME_FAILED Then
                     ' Msg659=No has logrado domar la criatura.
                     Call WriteLocaleMsg(UserIndex, 659, e_FontTypeNames.FONTTYPE_INFO)
-                    .flags.UltimoMensaje = 5
+                    .flags.UltimoMensaje = MSG_TAME_FAILED
                 End If
             End If
             Call SubirSkill(UserIndex, e_Skill.Domar)

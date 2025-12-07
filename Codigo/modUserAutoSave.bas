@@ -54,7 +54,7 @@ Public Sub MaybeRunUserAutoSave()
             If .flags.UserLogged Then
                 nowRaw = GetTickCountRaw()
                 If TicksElapsed(.Counters.LastSave, nowRaw) > IntervaloGuardarUsuarios Then
-                    Call SaveUser(UserIndex)
+                    Call SaveChangesInUser(UserIndex)
                     UserGuardados = UserGuardados + 1
                     If UserGuardados > NumUsers Then Exit For
                     If TicksElapsed(PerformanceTimer, GetTickCountRaw()) > 100 Then Exit For

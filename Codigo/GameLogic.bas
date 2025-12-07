@@ -217,66 +217,66 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
             Exit Function
         End If
         If MapInfo(Map).Newbie And Not EsNewbie(UserIndex) Then
-            If .flags.UltimoMensaje <> 101 Then
+            If .flags.UltimoMensaje <> MSG_MAP_NEWBIE_ONLY Then
                 ' Msg771=Sólo los newbies pueden entrar a este mapa.
-                Call WriteLocaleMsg(UserIndex, 771, e_FontTypeNames.FONTTYPE_INFO)
-                .flags.UltimoMensaje = 101
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_NEWBIE_ONLY, e_FontTypeNames.FONTTYPE_INFO)
+                .flags.UltimoMensaje = MSG_MAP_NEWBIE_ONLY
             End If
             Exit Function
         End If
         If MapInfo(Map).NoPKs And (Status(UserIndex) = 0 Or Status(UserIndex) = 2) Then
-            If .flags.UltimoMensaje <> 102 Then
+            If .flags.UltimoMensaje <> MSG_MAP_ONLY_CITIZENS Then
                 ' Msg772=Sólo los ciudadanos pueden entrar a este mapa.
-                Call WriteLocaleMsg(UserIndex, 772, e_FontTypeNames.FONTTYPE_INFO)
-                .flags.UltimoMensaje = 102
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_ONLY_CITIZENS, e_FontTypeNames.FONTTYPE_INFO)
+                .flags.UltimoMensaje = MSG_MAP_ONLY_CITIZENS
             End If
             Exit Function
         End If
         If MapInfo(Map).NoCiudadanos And (Status(UserIndex) = 1 Or Status(UserIndex) = 3) Then
-            If .flags.UltimoMensaje <> 103 Then
+            If .flags.UltimoMensaje <> MSG_MAP_ONLY_CRIMINALS Then
                 ' Msg773=Sólo los criminales pueden entrar a este mapa.
-                Call WriteLocaleMsg(UserIndex, 773, e_FontTypeNames.FONTTYPE_INFO)
-                .flags.UltimoMensaje = 103
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_ONLY_CRIMINALS, e_FontTypeNames.FONTTYPE_INFO)
+                .flags.UltimoMensaje = MSG_MAP_ONLY_CRIMINALS
             End If
             Exit Function
         End If
         If MapInfo(Map).SoloClanes And .GuildIndex <= 0 Then
-            If .flags.UltimoMensaje <> 104 Then
+            If .flags.UltimoMensaje <> MSG_MAP_REQUIRES_CLAN Then
                 ' Msg774=Necesitas pertenecer a un clan para entrar a este mapa.
-                Call WriteLocaleMsg(UserIndex, 774, e_FontTypeNames.FONTTYPE_INFO)
-                .flags.UltimoMensaje = 104
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_REQUIRES_CLAN, e_FontTypeNames.FONTTYPE_INFO)
+                .flags.UltimoMensaje = MSG_MAP_REQUIRES_CLAN
             End If
             Exit Function
         End If
         If MapInfo(Map).MinLevel <> 0 And .Stats.ELV < MapInfo(Map).MinLevel Then
-            If .flags.UltimoMensaje <> 105 Then
+            If .flags.UltimoMensaje <> MSG_MAP_MIN_LEVEL Then
                 'Msg1108= Necesitas ser al menos nivel ¬1
-                Call WriteLocaleMsg(UserIndex, 1108, e_FontTypeNames.FONTTYPE_INFO, MapInfo(Map).MinLevel)
-                .flags.UltimoMensaje = 105
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_MIN_LEVEL, e_FontTypeNames.FONTTYPE_INFO, MapInfo(Map).MinLevel)
+                .flags.UltimoMensaje = MSG_MAP_MIN_LEVEL
             End If
             Exit Function
         End If
         If MapInfo(Map).MaxLevel <> 0 And .Stats.ELV >= MapInfo(Map).MaxLevel Then
-            If .flags.UltimoMensaje <> 106 Then
+            If .flags.UltimoMensaje <> MSG_MAP_MAX_LEVEL Then
                 'Msg1109= Sólo los personajes inferiores a nivel ¬1
-                Call WriteLocaleMsg(UserIndex, 1109, e_FontTypeNames.FONTTYPE_INFO, MapInfo(Map).MaxLevel)
-                .flags.UltimoMensaje = 106
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_MAX_LEVEL, e_FontTypeNames.FONTTYPE_INFO, MapInfo(Map).MaxLevel)
+                .flags.UltimoMensaje = MSG_MAP_MAX_LEVEL
             End If
             Exit Function
         End If
         If MapInfo(Map).OnlyGroups And Not .Grupo.EnGrupo Then
-            If .flags.UltimoMensaje <> 107 Then
+            If .flags.UltimoMensaje <> MSG_MAP_REQUIRES_GROUP Then
                 ' Msg775=Necesitas pertenecer a un grupo para entrar a este mapa.
-                Call WriteLocaleMsg(UserIndex, 775, e_FontTypeNames.FONTTYPE_INFO)
-                .flags.UltimoMensaje = 107
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_REQUIRES_GROUP, e_FontTypeNames.FONTTYPE_INFO)
+                .flags.UltimoMensaje = MSG_MAP_REQUIRES_GROUP
             End If
             Exit Function
         End If
         If MapInfo(Map).OnlyPatreon And Not (.Stats.tipoUsuario = tAventurero Or .Stats.tipoUsuario = tHeroe Or .Stats.tipoUsuario = tLeyenda) Then
-            If .flags.UltimoMensaje <> 107 Then
+            If .flags.UltimoMensaje <> MSG_MAP_REQUIRES_PATREON Then
                 ' Msg776=Necesitas ser Patreon para entrar a este mapa.
-                Call WriteLocaleMsg(UserIndex, 776, e_FontTypeNames.FONTTYPE_INFO)
-                .flags.UltimoMensaje = 107
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_REQUIRES_PATREON, e_FontTypeNames.FONTTYPE_INFO)
+                .flags.UltimoMensaje = MSG_MAP_REQUIRES_PATREON
             End If
             Exit Function
         End If
@@ -478,6 +478,15 @@ Function InMapBounds(ByVal Map As Integer, ByVal x As Integer, ByVal y As Intege
     Exit Function
 InMapBounds_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.InMapBounds", Erl)
+End Function
+
+Public Function TileRequiresPatreon(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    On Error GoTo TileRequiresPatreon_Err
+    If Not InMapBounds(Map, x, y) Then Exit Function
+    TileRequiresPatreon = MapData(Map, x, y).trigger = e_Trigger.ONLY_PATREON_TILE
+    Exit Function
+TileRequiresPatreon_Err:
+    Call TraceError(Err.Number, Err.Description, "Extra.TileRequiresPatreon", Erl)
 End Function
 
 Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, ByVal MaxRange As Integer, Optional ByVal IgnoreUsers As Boolean, Optional ByVal IgnoreDeadUsers As Boolean) As t_WorldPos
@@ -841,6 +850,17 @@ Function LegalWalk(ByVal Map As Integer, _
         End If
         If .trigger = WORKERONLY Then
             If Not UserList(WalkerIndex).clase = Trabajador Then Exit Function
+        End If
+        If WalkerIndex <> 0 Then
+            If TileRequiresPatreon(Map, x, y) Then
+                If Not EsGM(WalkerIndex) And Not IsPatreon(WalkerIndex) Then
+                    If UserList(WalkerIndex).flags.UltimoMensaje <> MSG_TILE_REQUIRES_PATREON Then
+                        Call WriteLocaleMsg(WalkerIndex, MSG_TILE_REQUIRES_PATREON, e_FontTypeNames.FONTTYPE_INFO)
+                        UserList(WalkerIndex).flags.UltimoMensaje = MSG_TILE_REQUIRES_PATREON
+                    End If
+                    Exit Function
+                End If
+            End If
         End If
         If (.Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
     End With
