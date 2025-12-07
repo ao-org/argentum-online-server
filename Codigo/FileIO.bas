@@ -600,6 +600,7 @@ Public Sub CargarHechizos()
             Hechizos(Hechizo).RequireArmor = val(Leer.GetValue("Hechizo" & Hechizo, "RequireArmor"))
             Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eArmor)
         End If
+        Hechizos(Hechizo).MaxLevelCasteable = val(Leer.GetValue("Hechizo" & Hechizo, "MaxLevelCasteable"))
         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireShip")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eShip)
         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireHelm")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eHelm)
         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireKnucle")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eKnucle)

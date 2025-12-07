@@ -1771,6 +1771,7 @@ Public Type t_Hechizo
     SpellRequirementMask As Long
     RequireArmor As Integer
     RequireWeaponType As e_WeaponType
+    MaxLevelCasteable As Byte
 End Type
 
 Public Type t_ActiveModifiers
@@ -2474,7 +2475,7 @@ Public Type t_UserStats
     UsuariosMatados As Long
     PuntosPesca As Long
     CriminalesMatados As Long
-    NPCsMuertos As Integer
+    NPCsMuertos As Long
     SkillPts As Integer
     Advertencias As Byte
     NumObj_PezEspecial As Integer

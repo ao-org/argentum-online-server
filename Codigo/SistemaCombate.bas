@@ -617,19 +617,41 @@ NpcImpactoNpc_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcImpactoNpc", Erl)
 End Function
 
-Private Sub NpcDamageNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
-    With NpcList(Atacante)
-        Call NpcDamageToNpc(Atacante, Victima, RandomNumber(.Stats.MinHIT, .Stats.MaxHit) + NPCs.GetLinearDamageBonus(Atacante) - NPCs.GetDefenseBonus(Victima) - NpcList( _
-                Victima).Stats.def)
-    End With
-End Sub
+Public Function NpcDamageNpc(ByVal Atacante As Integer, ByVal Victima As Integer) As Long
+    Dim Damage As Long
 
-Public Function NpcDamageToNpc(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Integer) As e_DamageResult
+    With NpcList(Atacante)
+        Damage = RandomNumber(.Stats.MinHIT, .Stats.MaxHit) _
+                 + NPCs.GetLinearDamageBonus(Atacante) _
+                 - NPCs.GetDefenseBonus(Victima) _
+                 - NpcList(Victima).Stats.def
+    End With
+
+    ' Evitamos valores negativos
+    If Damage < 0 Then Damage = 0
+
+    ' Aplicamos el daño real en el juego (usa la lógica existente)
+    Call NpcDamageToNpc(Atacante, Victima, CInt(Damage))
+
+    ' Devolvemos el daño para que el caller lo mande al cliente
+    NpcDamageNpc = Damage
+End Function
+
+Public Function NpcDamageToNpc(ByVal attackerIndex As Integer, _
+                               ByVal TargetIndex As Integer, _
+                               ByVal Damage As Integer) As e_DamageResult
     On Error GoTo NpcDamageNpc_Err
+
     With NpcList(attackerIndex)
-        Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
-        Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
-        NpcDamageToNpc = NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, eNpc, -Damage, e_phisical, 0)
+        ' Ojo: aquí se recalcula el Damage interno con modificadores
+        Dim finalDamage As Long
+
+        finalDamage = Damage
+        finalDamage = finalDamage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
+        finalDamage = finalDamage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
+
+        NpcDamageToNpc = NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, eNpc, -finalDamage, e_phisical, 0)
+
         If NpcDamageToNpc = eDead Then
             If Not IsValidUserRef(NpcList(attackerIndex).MaestroUser) Then
                 Call SetMovement(attackerIndex, .flags.OldMovement)
@@ -644,25 +666,46 @@ NpcDamageNpc_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamageNpc")
 End Function
 
+
 Public Function NpcPerformAttackNpc(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer) As Boolean
+    Dim danio As Long
+    Dim impacto As Boolean
+
+    danio = -1 ' -1 = miss by default
+
     If NpcList(attackerIndex).flags.Snd1 > 0 Then
-        Call SendData(SendTarget.ToNPCAliveArea, attackerIndex, PrepareMessagePlayWave(NpcList(attackerIndex).flags.Snd1, NpcList(attackerIndex).pos.x, NpcList( _
-                attackerIndex).pos.y))
+        Call SendData( _
+            SendTarget.ToNPCAliveArea, _
+            attackerIndex, _
+            PrepareMessagePlayWave(NpcList(attackerIndex).flags.Snd1, NpcList(attackerIndex).pos.x, NpcList(attackerIndex).pos.y))
     End If
+
     If NpcList(attackerIndex).Char.WeaponAnim > 0 Then
         Call SendData(SendTarget.ToNPCAliveArea, attackerIndex, PrepareMessageArmaMov(NpcList(attackerIndex).Char.charindex, 0))
     End If
-    If NpcImpactoNpc(attackerIndex, TargetIndex) Then
+
+    impacto = NpcImpactoNpc(attackerIndex, TargetIndex)
+
+    If impacto Then
         If NpcList(attackerIndex).flags.Snd2 > 0 Then
             Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(NpcList(TargetIndex).flags.Snd2, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
         Else
-            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
+            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
         End If
+
         Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
-        Call NpcDamageNpc(attackerIndex, TargetIndex)
+
+        danio = NpcDamageNpc(attackerIndex, TargetIndex)
     Else
         Call SendData(SendTarget.ToNPCAliveArea, attackerIndex, PrepareMessageCharSwing(NpcList(attackerIndex).Char.charindex, False, True))
     End If
+
+    Call SendData( _
+        SendTarget.ToNPCAliveArea, _
+        attackerIndex, _
+        PrepareMessageCharAtaca(NpcList(attackerIndex).Char.charindex, NpcList(TargetIndex).Char.charindex, danio, NpcList(attackerIndex).Char.Ataque1))
+
+    NpcPerformAttackNpc = impacto
 End Function
 
 Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Optional ByVal cambiarMovimiento As Boolean = True)

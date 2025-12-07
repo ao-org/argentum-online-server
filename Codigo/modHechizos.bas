@@ -611,6 +611,10 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             Call WriteLocaleMsg(UserIndex, 1636, e_FontTypeNames.FONTTYPE_INFO, Hechizos(HechizoIndex).MinSkill) 'Msg1636=No tienes suficientes puntos de magia para lanzar este hechizo, necesitas ¬1 puntos.
             Exit Function
         End If
+        If Hechizos(HechizoIndex).MaxLevelCasteable > 0 And .Stats.ELV > Hechizos(HechizoIndex).MaxLevelCasteable Then
+            Call WriteLocaleMsg(UserIndex, 2116, e_FontTypeNames.FONTTYPE_INFO, Hechizos(HechizoIndex).MaxLevelCasteable) 'Msg2116=Para lanzar este hechizo debes ser nivel ¬1 o inferior.
+            Exit Function
+        End If
         If .Stats.MinHp < Hechizos(HechizoIndex).RequiredHP Then
             Call WriteLocaleMsg(UserIndex, 1637, e_FontTypeNames.FONTTYPE_INFO, Hechizos(HechizoIndex).RequiredHP) 'Msg1637=No tienes suficiente vida. Necesitas ¬1 puntos de vida.
             Exit Function
