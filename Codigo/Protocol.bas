@@ -1526,6 +1526,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
             If MoveUserChar(UserIndex, Heading) Then
                 ' Save current step for anti-sh
                 .Counters.LastStep = currentTick
+                Call ResetUserAutomatedActions(UserIndex)
                 If UserList(UserIndex).Grupo.EnGrupo Then
                     Call CompartirUbicacion(UserIndex)
                 End If
