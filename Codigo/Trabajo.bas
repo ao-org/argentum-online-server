@@ -101,7 +101,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                 If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
                 If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
                 Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
-                    Case e_ToolsSubtype.eFishingRod
+                    Case e_WorkingToolSubType.FishingRod
                         If (MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 And Not MapData(.pos.Map, .pos.x, .pos.y).trigger = _
                                 e_Trigger.PESCAINVALIDA Then
                             Dim isStandingOnWater As Boolean
@@ -137,7 +137,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                             Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
                             Call WriteMacroTrabajoToggle(UserIndex, False)
                         End If
-                    Case e_ToolsSubtype.eFishingNet
+                    Case e_WorkingToolSubType.FishingNet
                         Call HandleFishingNet(UserIndex)
                 End Select
             Case e_Skill.Carpinteria
@@ -157,7 +157,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                 'Check interval
                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
                 Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
-                    Case 8  ' Herramientas de Mineria - Piquete
+                    Case e_WorkingToolSubType.MinerPickaxe  ' Herramientas de Mineria - Piquete
                         'Target whatever is in the tile
                         Call LookatTile(UserIndex, .pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y)
                         DummyInt = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex
@@ -212,7 +212,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                 'Check interval
                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
                 Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
-                    Case 6      ' Herramientas de Carpinteria - Hacha
+                    Case e_WorkingToolSubType.FellingAxe      ' Herramientas de Carpinteria - Hacha
                         DummyInt = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex
                         If DummyInt > 0 Then
                             If Abs(.pos.x - .Trabajo.Target_X) + Abs(.pos.y - .Trabajo.Target_Y) > 1 Then
@@ -1235,7 +1235,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
     End If
     If CarpinteroTieneMateriales(UserIndex, ItemIndex, cantidad_a_construir) And UserList(UserIndex).Stats.UserSkills(e_Skill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria _
             And PuedeConstruirCarpintero(ItemIndex) And ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).OBJType = e_OBJType.otWorkingTools And ObjData(UserList( _
-            UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = MSG_TAME_FAILED Then
+            UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.CarpentryHacksaw Then
         If UserList(UserIndex).Stats.MinSta > 2 Then
             Call QuitarSta(UserIndex, 2)
         Else
@@ -1341,7 +1341,7 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
     End If
     If SastreTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(e_Skill.Sastreria) >= ObjData(ItemIndex).SkSastreria And PuedeConstruirSastre( _
             ItemIndex) And ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).OBJType = e_OBJType.otWorkingTools And ObjData(UserList( _
-            UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = 9 Then
+            UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.TailorSewingbox Then
         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
         Call WriteUpdateSta(UserIndex)
         Call SastreQuitarMateriales(UserIndex, ItemIndex)
@@ -1720,7 +1720,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                         If .clase = e_Class.Thief Then
                             'Si no tiene puestos los guantes de hurto roba un 50% menos.
                             If .invent.EquippedWeaponObjIndex > 0 Then
-                                If ObjData(.invent.EquippedWeaponObjIndex).Subtipo = MSG_TAME_FAILED Then
+                                If ObjData(.invent.EquippedWeaponObjIndex).Subtipo = 5 Then
                                     n = RandomNumber(.Stats.ELV * 50 * Extra, .Stats.ELV * 100 * Extra) * SvrConfig.GetValue("GoldMult")
                                 Else
                                     n = RandomNumber(.Stats.ELV * 25 * Extra, .Stats.ELV * 50 * Extra) * SvrConfig.GetValue("GoldMult")
@@ -1989,7 +1989,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byt
             res = 1
             Suerte = 100
         End If
-        If res <= MSG_TAME_FAILED Then
+        If res <= 5 Then
             Dim MiObj As t_Obj
             Dim nPos  As t_WorldPos
             Call ActualizarRecurso(.pos.Map, x, y)
@@ -2409,7 +2409,7 @@ Public Sub FishOrThrowNet(ByVal UserIndex As Integer)
     On Error GoTo FishOrThrowNet_Err:
     With UserList(UserIndex)
         If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
-        If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo = e_ToolsSubtype.eFishingNet Then
+        If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.FishingNet Then
             If MapInfo(.pos.Map).Seguro = 1 Or Not ExpectObjectTypeAt(e_OBJType.otFishingPool, .pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y) Then
                 If IsValidUserRef(.flags.TargetUser) Or IsValidNpcRef(.flags.TargetNPC) Then
                     ThrowNetToTarget (UserIndex)
@@ -2430,7 +2430,7 @@ Sub ThrowNetToTarget(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
         If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
-        If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo <> e_ToolsSubtype.eFishingNet Then Exit Sub
+        If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo <> e_WorkingToolSubType.FishingNet Then Exit Sub
         'If it's outside range log it and exit
         If Abs(.pos.x - .Trabajo.Target_X) > RANGO_VISION_X Or Abs(.pos.y - .Trabajo.Target_Y) > RANGO_VISION_Y Then
             Call LogSecurity("Ataque fuera de rango de " & .name & "(" & .pos.Map & "/" & .pos.x & "/" & .pos.y & ") ip: " & .ConnectionDetails.IP & " a la posicion (" & _
