@@ -46,7 +46,6 @@ Public Function DECRYPT(ByVal hex_key As String, ByVal encrypted_text_b64 As Str
     Dim iv()                  As Byte
     Dim key()                 As Byte
     Dim encrypted_text_byte() As Byte
-    Dim decrypted_text()      As Byte
     Dim encrypted_text_hex    As String
     Dim algstr                As String
     algstr = "Aes128/CFB/nopad"
@@ -60,17 +59,16 @@ Public Function DECRYPT(ByVal hex_key As String, ByVal encrypted_text_b64 As Str
 End Function
 
 'HarThaoS: Convierto el str en arr() bytes
-Public Sub Str2ByteArr(ByVal str As String, ByRef arr() As Byte, Optional ByVal length As Long = 0)
-    Dim i   As Long
-    Dim asd As String
-    If length = 0 Then
+Public Sub Str2ByteArr(ByVal str As String, ByRef arr() As Byte, Optional ByVal Length As Long = 0)
+    Dim i As Long
+    If Length = 0 Then
         ReDim arr(0 To (Len(str) - 1))
         For i = 0 To (Len(str) - 1)
             arr(i) = Asc(mid$(str, i + 1, 1))
         Next i
     Else
-        ReDim arr(0 To (length - 1)) As Byte
-        For i = 0 To (length - 1)
+        ReDim arr(0 To (Length - 1)) As Byte
+        For i = 0 To (Length - 1)
             arr(i) = Asc(mid$(str, i + 1, 1))
         Next i
     End If
@@ -86,10 +84,10 @@ Public Function ByteArr2String(ByRef arr() As Byte) As String
 End Function
 
 Public Function hiByte(ByVal w As Integer) As Byte
-    Dim hi As Integer
-    If w And &H8000 Then hi = &H4000
+    Dim Hi As Integer
+    If w And &H8000 Then Hi = &H4000
     hiByte = (w And &H7FFE) \ 256
-    hiByte = (hiByte Or (hi \ 128))
+    hiByte = (hiByte Or (Hi \ 128))
 End Function
 
 Public Function LoByte(w As Integer) As Byte
@@ -100,20 +98,28 @@ Public Function MakeInt(ByVal LoByte As Byte, ByVal hiByte As Byte) As Integer
     MakeInt = ((hiByte * &H100) + LoByte)
 End Function
 
-Public Sub CopyBytes(ByRef src() As Byte, ByRef dst() As Byte, ByVal Size As Long, Optional ByVal offset As Long = 0)
+Public Sub CopyBytes(ByRef src() As Byte, ByRef dst() As Byte, ByVal size As Long, Optional ByVal offset As Long = 0)
+    On Error GoTo CopyBytes_Err
     Dim i As Long
-    For i = 0 To (Size - 1)
+    For i = 0 To (size - 1)
         dst(i + offset) = src(i)
     Next i
+    Exit Sub
+CopyBytes_Err:
+    Call TraceError(Err.Number, Err.Description, "AO20CryptoSysWrapper.CopyBytes", Erl)
 End Sub
 
 Public Function ByteArrayToHex(ByRef ByteArray() As Byte) As String
+    On Error GoTo ByteArrayToHex_Err
     Dim l As Long, strRet As String
     For l = LBound(ByteArray) To UBound(ByteArray)
         strRet = strRet & Hex$(ByteArray(l)) & " "
     Next l
     'Remove last space at end.
     ByteArrayToHex = Left$(strRet, Len(strRet) - 1)
+    Exit Function
+ByteArrayToHex_Err:
+    Call TraceError(Err.Number, Err.Description, "AO20CryptoSysWrapper.ByteArrayToHex", Erl)
 End Function
 
 Public Sub initBase64Chars()
@@ -188,7 +194,9 @@ Public Function IsBase64(ByVal str As String) As Boolean
     Dim i          As Long, j As Long
     Dim isInStr    As Boolean
     Dim token_char As String
-    For i = 1 To Len(str)
+    Dim Length     As Integer
+    Length = Len(str)
+    For i = 1 To Length
         isInStr = False
         token_char = mid$(str, i, 1)
         For j = 1 To UBound(base64_chars)
