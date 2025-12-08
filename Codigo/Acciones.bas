@@ -38,58 +38,57 @@ End Function
 Public Function PuedeUsarObjeto(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional ByVal writeInConsole As Boolean = False) As Byte
     On Error GoTo PuedeUsarObjeto_Err
     Dim Objeto As t_ObjData
-    Dim Msg    As String
+    Dim msg    As String
     Dim Extra  As String
-    Dim i      As Long
     Extra = vbNullString
     Objeto = ObjData(ObjIndex)
     With UserList(UserIndex)
         If EsGM(UserIndex) Then
             PuedeUsarObjeto = 0
-            Msg = vbNullString
+            msg = vbNullString
             Exit Function
         End If
         ' Keep the original priority: first match wins
         If Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
             PuedeUsarObjeto = 7
-            Msg = "679" ' Only newbies can use this item.
+            msg = "679" ' Only newbies can use this item.
         ElseIf .Stats.ELV < Objeto.MinELV Then
             PuedeUsarObjeto = 6
-            Msg = "1926" ' Need level {0}
+            msg = "1926" ' Need level {0}
             Extra = CStr(Objeto.MinELV)
         ElseIf .Stats.ELV > Objeto.MaxLEV And Objeto.MaxLEV > 0 Then
             PuedeUsarObjeto = 6
-            Msg = "1982" ' Not for level {0} or higher
+            msg = "1982" ' Not for level {0} or higher
             Extra = CStr(Objeto.MaxLEV)
         ElseIf Not FaccionPuedeUsarItem(UserIndex, ObjIndex) And JerarquiaPuedeUsarItem(UserIndex, ObjIndex) Then
             PuedeUsarObjeto = 3
-            Msg = "416"  ' Faction doesn't allow it.
+            msg = "416"  ' Faction doesn't allow it.
         ElseIf Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
             PuedeUsarObjeto = 2
-            Msg = "265"  ' Class cannot use this item.
+            msg = "265"  ' Class cannot use this item.
         ElseIf Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
             PuedeUsarObjeto = 1
-            Msg = "267"  ' Sex cannot use this item.
+            msg = "267"  ' Sex cannot use this item.
         ElseIf Not RazaPuedeUsarItem(UserIndex, ObjIndex) Then
             PuedeUsarObjeto = 5
-            Msg = "266"  ' Race cannot use this item.
+            msg = "266"  ' Race cannot use this item.
         ElseIf (Objeto.SkillIndex > 0) Then
             If (.Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
                 PuedeUsarObjeto = 4
-                Msg = "NEED_SKILL_POINTS" ' e.g. "Necesitas {0} puntos en {1}..."
+                msg = "NEED_SKILL_POINTS" ' e.g. "Necesitas {0} puntos en {1}..."
                 Extra = CStr(Objeto.SkillRequerido) & "¬" & SkillsNames(Objeto.SkillIndex)
             Else
                 PuedeUsarObjeto = 0
-                Msg = vbNullString
+                msg = vbNullString
             End If
         Else
             PuedeUsarObjeto = 0
-            Msg = vbNullString
+            msg = vbNullString
         End If
         ' Only emit when we actually have a message
-        If Msg <> vbNullString Then
+        If msg <> vbNullString Then
             If writeInConsole Then
-                Call WriteLocaleMsg(UserIndex, Msg, e_FontTypeNames.FONTTYPE_INFO, Extra)
+                Call WriteLocaleMsg(UserIndex, msg, e_FontTypeNames.FONTTYPE_INFO, Extra)
             End If
         End If
     End With
@@ -205,9 +204,9 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                     If Resu Then
                         UserList(UserIndex).Counters.TimerBarra = 5
                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Resucitar, UserList( _
-                                UserIndex).Counters.TimerBarra, False))
+                           UserIndex).Counters.TimerBarra, False))
                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.charindex, UserList(UserIndex).Counters.TimerBarra, _
-                                e_AccionBarra.Resucitar))
+                           e_AccionBarra.Resucitar))
                         UserList(UserIndex).Accion.AccionPendiente = True
                         UserList(UserIndex).Accion.Particula = e_ParticleEffects.Resucitar
                         UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.Resucitar
@@ -285,8 +284,10 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
             UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
         Case e_AccionBarra.Intermundia
             If UserList(UserIndex).flags.Muerto = 0 Then
-                Dim uh As Integer
-                Dim Mapaf, Xf, Yf As Integer
+                Dim uh    As Integer
+                Dim Mapaf As Integer
+                Dim Xf    As Integer
+                Dim Yf    As Integer
                 uh = UserList(UserIndex).Accion.HechizoPendiente
                 Mapaf = Hechizos(uh).TeleportXMap
                 Xf = Hechizos(uh).TeleportXX
@@ -345,9 +346,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer,
     If UserIndex <= 0 Then Exit Sub
     '¿Posicion valida?
     If InMapBounds(Map, x, y) Then
-        Dim FoundChar      As Byte
-        Dim FoundSomething As Byte
-        Dim TempCharIndex  As Integer
+        Dim TempCharIndex As Integer
         If MapData(Map, x, y).NpcIndex > 0 Then     'Acciones NPCs
             TempCharIndex = MapData(Map, x, y).NpcIndex
             'Set the target NPC
@@ -570,7 +569,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer,
                     Call WritePreguntaBox(UserIndex, 1593, PuntosTotales & "¬" & PonerPuntos(OroTotal * 1.2)) 'Msg1593= Tienes un total de ¬1 puntos y ¬2 monedas de oro para reclamar, ¿Deseas aceptar?
                 Else
                     Dim charindexstr As Integer
-                    charindexstr = str(NpcList(TempCharIndex).Char.charindex)
+                    charindexstr = str$(NpcList(TempCharIndex).Char.charindex)
                     Call WriteLocaleChatOverHead(UserIndex, "1352", "", charindexstr, &HFFFF00) ' Msg1352=No tienes ningún trofeo de pesca para entregar.
                 End If
             ElseIf NpcList(TempCharIndex).npcType = e_NPCType.AO20Shop Then
@@ -691,7 +690,7 @@ AccionParaYunque_Err:
     Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaYunque", Erl)
 End Sub
 
-Sub AccionParaPuerta(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByVal UserIndex As Integer, Optional ByVal SinDistancia As Boolean)
+Sub AccionParaPuerta(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByVal UserIndex As Integer, Optional ByVal SinDistancia As Boolean = False)
     On Error GoTo Handler
     Dim puerta As t_ObjData 'ver ReyarB
     If Distance(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, x, y) > 2 And Not SinDistancia Then
@@ -755,14 +754,11 @@ End Sub
 
 Sub AccionParaCartel(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal UserIndex As Integer)
     On Error GoTo Handler
-    Dim MiObj As t_Obj
-    'If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = 8 Then
     If Len(ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).texto) > 0 Then
         Call WriteShowSignal(UserIndex, MapData(Map, x, y).ObjInfo.ObjIndex)
     Else
         Call WriteShowPapiro(UserIndex)
     End If
-    'End If
     Exit Sub
 Handler:
     Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaCartel", Erl)
@@ -772,7 +768,6 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal x As Integer, ByVal y As Intege
     On Error GoTo Handler
     Dim Suerte As Byte
     Dim exito  As Byte
-    Dim raise  As Integer
     Dim pos    As t_WorldPos
     pos.Map = Map
     pos.x = x
@@ -794,7 +789,7 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal x As Integer, ByVal y As Intege
             Exit Sub
         End If
         If MapData(Map, x - 1, y).ObjInfo.ObjIndex = FOGATA Or MapData(Map, x + 1, y).ObjInfo.ObjIndex = FOGATA Or MapData(Map, x, y - 1).ObjInfo.ObjIndex = FOGATA Or MapData( _
-                Map, x, y + 1).ObjInfo.ObjIndex = FOGATA Then
+           Map, x, y + 1).ObjInfo.ObjIndex = FOGATA Then
             'Msg1078= Debes alejarte un poco de la otra fogata.
             Call WriteLocaleMsg(UserIndex, 1078, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
