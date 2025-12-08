@@ -980,8 +980,8 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
                 Call Sanar(UserIndex, bEnviarStats_HP, IIf(.flags.Descansar, SanaIntervaloDescansar, SanaIntervaloSinDescansar))
             End If
         End If
-        If .flags.Desnudo = 0 And Not HambreOSed And Not .AutomatedAction.IsActive Then
-            If Not Lloviendo Or Not Intemperie(UserIndex) Then
+        If .flags.Desnudo = 0 And Not HambreOSed Then
+            If (Not Lloviendo Or Not Intemperie(UserIndex)) And Not .AutomatedAction.IsActive Then
                 Call RecStamina(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, StaminaIntervaloDescansar, StaminaIntervaloSinDescansar))
             End If
         Else
