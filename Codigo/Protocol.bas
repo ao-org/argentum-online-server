@@ -2545,7 +2545,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 'Check interval
                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
                 Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
-                    Case 3  ' Herramientas de Alquimia - Tijeras
+                    Case e_WorkingToolSubType.AlchemyScissors  ' Herramientas de Alquimia - Tijeras
                         If MapInfo(UserList(UserIndex).pos.Map).Seguro = 1 Then
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             ' Msg711=Esta prohibido cortar raices en las ciudades.
