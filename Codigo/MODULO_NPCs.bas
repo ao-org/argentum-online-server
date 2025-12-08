@@ -808,7 +808,8 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
                   ByVal FX As Boolean, _
                   ByVal Respawn As Boolean, _
                   Optional Avisar As Boolean = False, _
-                  Optional ByVal MaestroUser As Integer = 0) As Integer
+                  Optional ByVal MaestroUser As Integer = 0, _
+                  Optional ByVal SpreadFormula As Integer = 1) As Integer
     On Error GoTo SpawnNpc_Err
     '***************************************************
     'Autor: Unknown (orginal version)
@@ -830,7 +831,18 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
     End If
     PuedeAgua = NpcList(nIndex).flags.AguaValida = 1
     PuedeTierra = NpcList(nIndex).flags.TierraInvalida = 0
-    Call ClosestLegalPos(pos, NewPos, PuedeAgua, PuedeTierra)  'Nos devuelve la posicion valida mas cercana
+    
+    
+    Select Case SpreadFormula
+    
+        Case e_NpcSpreadFormula.NextToSummoner
+            Call ClosestLegalPos(pos, NewPos, PuedeAgua, PuedeTierra)  'Nos devuelve la posicion valida mas cercana
+        Case e_NpcSpreadFormula.FillMapAsChekers
+            
+    End Select
+    
+    
+    
     'Si X e Y son iguales a 0 significa que no se encontro posicion valida
     If NewPos.x <> 0 And NewPos.y <> 0 Then
         'Asignamos las nuevas coordenas solo si son validas

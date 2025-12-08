@@ -586,6 +586,39 @@ ClosestLegalPos_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.ClosestLegalPos", Erl)
 End Sub
 
+Sub CheckersLegalPos(pos As t_WorldPos, ByRef nPos As t_WorldPos, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True)
+    On Error GoTo CheckersLegalPos_Err
+    Dim Notfound As Boolean
+    Dim LoopC    As Integer
+    Dim tX       As Integer
+    Dim tY       As Integer
+    nPos.Map = pos.Map
+    Do While Not LegalPos(pos.Map, nPos.x, nPos.y, PuedeAgua, PuedeTierra, , False)
+        If LoopC > 12 Then
+            Notfound = True
+            Exit Do
+        End If
+        For tY = pos.y - LoopC To pos.y + LoopC
+            For tX = pos.x - LoopC To pos.x + LoopC
+                If LegalPos(nPos.Map, tX, tY, PuedeAgua, PuedeTierra, , False) Then
+                    nPos.x = tX
+                    nPos.y = tY
+                    Exit Sub
+                End If
+            Next tX
+        Next tY
+        LoopC = LoopC + 1
+    Loop
+    If Notfound = True Then
+        nPos.x = 0
+        nPos.y = 0
+    End If
+    Exit Sub
+CheckersLegalPos_Err:
+    Call TraceError(Err.Number, Err.Description, "Extra.CheckersLegalPos", Erl)
+End Sub
+
+
 Sub ClosestStablePos(pos As t_WorldPos, ByRef nPos As t_WorldPos)
     '*****************************************************************
     'Encuentra la posicion legal mas cercana que no sea un portal y la guarda en nPos

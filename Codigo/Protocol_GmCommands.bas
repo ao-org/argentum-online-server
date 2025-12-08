@@ -2825,18 +2825,26 @@ Public Sub HandleCreateNPC(ByVal UserIndex As Integer)
     On Error GoTo HandleCreateNPC_Err
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
     With UserList(UserIndex)
-        Dim NpcIndex As Integer
+        Dim NpcIndex      As Integer
+        Dim Quantity      As Integer
+        Dim SpreadFormula As Byte
         NpcIndex = reader.ReadInt16()
+        Quantity = reader.ReadInt16()
+        SpreadFormula = reader.ReadInt()
         If Not EsGM(UserIndex) Then Exit Sub
         If .flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios) Then
             'Msg528=Servidor » Comando deshabilitado para tu cargo.
             Call WriteLocaleMsg(UserIndex, 528, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        NpcIndex = SpawnNpc(NpcIndex, .pos, True, False)
-        If NpcIndex <> 0 Then
-            Call LogGM(.name, "Sumoneo a " & NpcList(NpcIndex).name & " en mapa " & .pos.Map)
-        End If
+        Dim i           As Integer
+        Dim AuxNpcIndex As Integer
+        For i = 0 To Quantity
+            AuxNpcIndex = SpawnNpc(NpcIndex, .pos, True, False)
+            If AuxNpcIndex <> 0 Then
+                Call LogGM(.name, "Sumoneo a " & NpcList(NpcIndex).name & " en mapa " & .pos.Map)
+            End If
+        Next i
     End With
     Exit Sub
 HandleCreateNPC_Err:
@@ -2847,18 +2855,26 @@ Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
     On Error GoTo HandleCreateNPCWithRespawn_Err
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
     With UserList(UserIndex)
-        Dim NpcIndex As Integer
+        Dim NpcIndex      As Integer
+        Dim Quantity      As Integer
+        Dim SpreadFormula As Byte
         NpcIndex = reader.ReadInt16()
+        Quantity = reader.ReadInt16()
+        SpreadFormula = reader.ReadInt()
         If Not EsGM(UserIndex) Then Exit Sub
-        If .flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios) Then
-            'Msg985= Servidor » Comando deshabilitado para tu cargo. Si el motivo es probar algo ya saben ir a Test
-            Call WriteLocaleMsg(UserIndex, 985, e_FontTypeNames.FONTTYPE_INFO)
+        If .flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios) Then
+            'Msg528=Servidor » Comando deshabilitado para tu cargo.
+            Call WriteLocaleMsg(UserIndex, 528, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        NpcIndex = SpawnNpc(NpcIndex, .pos, True, True)
-        If NpcIndex <> 0 Then
-            Call LogGM(.name, "Sumoneo con respawn " & NpcList(NpcIndex).name & " en mapa " & .pos.Map)
-        End If
+        Dim i           As Integer
+        Dim AuxNpcIndex As Integer
+        For i = 0 To Quantity
+            AuxNpcIndex = SpawnNpc(NpcIndex, .pos, True, True)
+            If AuxNpcIndex <> 0 Then
+                Call LogGM(.name, "Sumoneo con respawn a " & NpcList(NpcIndex).name & " en mapa " & .pos.Map)
+            End If
+        Next i
     End With
     Exit Sub
 HandleCreateNPCWithRespawn_Err:

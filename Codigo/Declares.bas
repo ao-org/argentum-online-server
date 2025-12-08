@@ -159,6 +159,11 @@ Public Enum e_AttackInteractionResult
     eAttackPetSameFaction
 End Enum
 
+Public Enum e_NpcSpreadFormula
+    NextToSummoner = 1
+    FillMapAsChekers = 2
+End Enum
+
 Public Enum e_DeleteSource
     eNone
     eDie
