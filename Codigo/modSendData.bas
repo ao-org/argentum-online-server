@@ -533,7 +533,7 @@ Public Function CheckGuildSend(ByRef SourceUser As t_User, ByRef TargetUser As t
     CheckGuildSend = False
     If SourceUser.GuildIndex = 0 Then Exit Function
     If SourceUser.GuildIndex <> TargetUser.GuildIndex Then Exit Function
-    If modGuilds.NivelDeClan(TargetUser.GuildIndex) < MAX_LEVEL_GUILD Then
+    If modGuilds.NivelDeClan(TargetUser.GuildIndex) < RequiredGuildLevelSeeInvisible Then
         CheckGuildSend = SourceUser.Counters.timeGuildChat > 0
         Exit Function
     End If
