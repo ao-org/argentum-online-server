@@ -327,6 +327,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleCraftCarpenter(UserIndex)
         Case ClientPacketID.eWorkLeftClick
             Call HandleWorkLeftClick(UserIndex)
+        Case ClientPacketID.eStartAutomatedAction
+            Call HandleStartAutomatedAction(UserIndex)
         Case ClientPacketID.eCreateNewGuild
             Call HandleCreateNewGuild(UserIndex)
         Case ClientPacketID.eSpellInfo
@@ -7961,4 +7963,18 @@ Public Function IsInMapCarcelRestrictedArea(ByRef position As t_WorldPos) As Boo
     If position.x >= 33 And position.x <= 62 And position.y >= 32 And position.y <= 62 Then
         IsInMapCarcelRestrictedArea = True
     End If
+End Function
+
+Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
+    On Error GoTo HandleStartAutomatedAction_Err
+    Dim x     As Byte
+    Dim y     As Byte
+    Dim skill As e_Skill
+    x = reader.ReadInt8()
+    y = reader.ReadInt8()
+    skill = reader.ReadInt8()
+    Call StartAutomatedAction(x, y, skill, UserIndex)
+    Exit Function
+HandleStartAutomatedAction_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartAutomatedAction", Erl)
 End Function

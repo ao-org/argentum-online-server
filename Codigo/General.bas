@@ -782,6 +782,8 @@ Sub Main()
         Call PerformTimeLimitCheck(PerformanceTimer, "General Update Effects over time")
         Call MaybeRunUserAutoSave
         Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeRunUserAutoSave")
+        Call RunAutomatedActions
+        Call PerformTimeLimitCheck(PerformanceTimer, "General StartAutomatedAction")
         Call MaybeUpdateNpcAI(GlobalFrameTime)
         DoEvents
         Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
@@ -978,7 +980,7 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
                 Call Sanar(UserIndex, bEnviarStats_HP, IIf(.flags.Descansar, SanaIntervaloDescansar, SanaIntervaloSinDescansar))
             End If
         End If
-        If .flags.Desnudo = 0 And Not HambreOSed Then
+        If .flags.Desnudo = 0 And Not HambreOSed And Not .AutomatedAction.IsActive Then
             If Not Lloviendo Or Not Intemperie(UserIndex) Then
                 Call RecStamina(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, StaminaIntervaloDescansar, StaminaIntervaloSinDescansar))
             End If
