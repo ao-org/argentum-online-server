@@ -116,7 +116,7 @@ Public Sub KickUnregisteredPlayers()
         End If
     End If
     Exit Sub
-    KickUnregisteredPlayers_Err
+KickUnregisteredPlayers_Err:
     Call TraceError(Err.Number, Err.Description, "Anticheat.KickUnregisteredPlayers", Erl)
 End Sub
 
