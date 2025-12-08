@@ -2578,7 +2578,6 @@ Public Function cipherStreamFile(szFileOut As String, szFileIn As String, lpKey(
     n3 = cnvBytesLen(lpIV)
     ' Fudge to allow an empty input array
     If n3 = 0 Then ReDim lpIV(0)
-    Dim r As Long
     ' NB order of parameters (nCounter <=> nOptions)
     cipherStreamFile = CIPHER_StreamFile(szFileOut, szFileIn, lpKey(0), n2, lpIV(0), n3, nCounter, nOptions)
     If n3 = 0 Then lpIV = vbNullString
@@ -2609,7 +2608,6 @@ Public Function cipherStreamInit(lpKey() As Byte, lpIV() As Byte, nOptions As Lo
     n3 = cnvBytesLen(lpIV)
     ' Fudge to allow an empty input array
     If n3 = 0 Then ReDim lpIV(0)
-    Dim r As Long
     ' NB order of parameters (nCounter <=> nOptions)
     cipherStreamInit = CIPHER_StreamInit(lpKey(0), n2, lpIV(0), n3, nCounter, nOptions)
     If n3 = 0 Then lpIV = vbNullString
