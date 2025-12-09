@@ -30,6 +30,20 @@ Option Explicit
 ''
 ' Modulo de declaraciones. Aca hay de todo.
 '
+
+Public Enum e_WorkingToolSubType
+        FishingRod = 1
+        FishingNet = 2
+        AlchemyScissors = 3
+        AlchemyCauldron = 4
+        CarpentryHacksaw = 5
+        FellingAxe = 6
+        SmithHammer = 7
+        MinerPickaxe = 8
+        TailorSewingbox = 9
+End Enum
+
+
 Public Enum e_PotionType
     ModifiesAgility = 1
     ModifiesStrength = 2
@@ -1534,11 +1548,6 @@ End Enum
 Public Enum e_TeleportSubType
     eTeleport = 1
     eTransportNetwork = 2
-End Enum
-
-Public Enum e_ToolsSubtype
-    eFishingRod = 1
-    eFishingNet = 2
 End Enum
 
 Public Enum e_MagicItemSubType
