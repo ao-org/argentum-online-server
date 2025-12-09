@@ -1,4 +1,4 @@
-Attribute VB_Name = "AutomatedActions"
+Attribute VB_Name = "ModAutomatedActions"
 Option Explicit
 
 
