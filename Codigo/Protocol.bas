@@ -2361,7 +2361,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         DummyInt = 1
                     ElseIf .EquippedMunitionObjIndex = 0 Then
                         DummyInt = 1
-                    ElseIf ObjData(.EquippedWeaponObjIndex).Proyectil <> MSG_PARALYZED Then
+                    ElseIf ObjData(.EquippedWeaponObjIndex).Proyectil <> 1 Then
                         DummyInt = 2
                     ElseIf ObjData(.EquippedMunitionObjIndex).OBJType <> e_OBJType.otArrows Then
                         DummyInt = 1
@@ -2546,7 +2546,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 'Check interval
                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
                 Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
-                    Case 3  ' Herramientas de Alquimia - Tijeras
+                    Case e_WorkingToolSubType.AlchemyScissors  ' Herramientas de Alquimia - Tijeras
                         If MapInfo(UserList(UserIndex).pos.Map).Seguro = 1 Then
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             ' Msg711=Esta prohibido cortar raices en las ciudades.

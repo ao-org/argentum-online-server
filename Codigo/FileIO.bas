@@ -2891,7 +2891,7 @@ Sub LoadGuildsConfig()
     RequiredGuildLevelCallSupport = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "CallSupportRequiredLevel", "4")))
     
     'Requisito para ver miembros invisibles/ocultos
-    RequiredGuildLevelSeeInvisible = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "SeeInvisibleRequiredLevel", "7")))
+    RequiredGuildLevelSeeInvisible = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "SeeInvisibleRequiredLevel", "6")))
     
     'Requisito para seguro de clan
     RequiredGuildLevelSafe = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "SafeGuildRequiredLevel", "5")))
