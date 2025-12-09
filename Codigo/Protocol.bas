@@ -30,19 +30,6 @@ Option Explicit
 'When we have a list of strings, we use this to separate them and prevent
 'having too many string lengths in the queue. Yes, each string is NULL-terminated :P
 
-' Msg2117 = You need to have ¬1 equipped to perform this action.
-Public Const MSG_REMOVE_NEED_EQUIPPED As Integer = 2117
-
-' Msg2118 = Pay attention! You lost your net, it got caught on the special fish.
-Public Const MSG_REMOVE_NET_LOST As Integer = 2118
-
-' Msg2119 = Pay attention! You almost lost your net to the special fish.
-Public Const MSG_REMOVE_NET_ALMOST_LOST As Integer = 2119
-
-' Msg2120 = Pay attention! You almost lost your fishing rod to the special fish.
-Public Const MSG_REMOVE_ALMOST_YOUR_FISHING As Integer = 2120
-
-
 Public Const SEPARATOR As String * 1 = vbNullChar
 Private Const SPELL_UNASSISTED_FULGOR = 52
 Private Const SPELL_UNASSISTED_ECO = 61
