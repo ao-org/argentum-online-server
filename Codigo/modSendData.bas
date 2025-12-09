@@ -148,6 +148,7 @@ SendToConnection_Err:
 End Sub
 
 Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Optional Args As Variant, Optional ByVal ValidateInvi As Boolean = False)
+    Err.Clear
     On Error GoTo SendData_Err
     #If DIRECT_PLAY = 0 Then
         Dim Buffer As Network.Writer
