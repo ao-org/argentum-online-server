@@ -26,7 +26,6 @@ Attribute VB_Name = "modSendData"
 '
 '
 Option Explicit
-
 Public Enum SendTarget
     ToAll = 1
     ToIndex
@@ -66,6 +65,71 @@ Public Enum SendTarget
     ToGroupButIndex
 End Enum
 
+Private Function SendTargetToString(ByVal sndRoute As SendTarget) As String
+    Select Case sndRoute
+        Case SendTarget.ToAll: SendTargetToString = "ToAll"
+        Case SendTarget.ToIndex: SendTargetToString = "ToIndex"
+        Case SendTarget.toMap: SendTargetToString = "toMap"
+        Case SendTarget.ToPCArea: SendTargetToString = "ToPCArea"
+        Case SendTarget.ToPCAliveArea: SendTargetToString = "ToPCAliveArea"
+        Case SendTarget.ToPCAreaButGMs: SendTargetToString = "ToPCAreaButGMs"
+        Case SendTarget.ToAllButIndex: SendTargetToString = "ToAllButIndex"
+        Case SendTarget.ToMapButIndex: SendTargetToString = "ToMapButIndex"
+        Case SendTarget.ToGM: SendTargetToString = "ToGM"
+        Case SendTarget.ToNPCArea: SendTargetToString = "ToNPCArea"
+        Case SendTarget.ToNPCAliveArea: SendTargetToString = "ToNPCAliveArea"
+        Case SendTarget.ToNPCDeadArea: SendTargetToString = "ToNPCDeadArea"
+        Case SendTarget.ToGuildMembers: SendTargetToString = "ToGuildMembers"
+        Case SendTarget.ToAdmins: SendTargetToString = "ToAdmins"
+        Case SendTarget.ToPCAreaButIndex: SendTargetToString = "ToPCAreaButIndex"
+        Case SendTarget.ToPCAliveAreaButIndex: SendTargetToString = "ToPCAliveAreaButIndex"
+        Case SendTarget.ToAdminAreaButIndex: SendTargetToString = "ToAdminAreaButIndex"
+        Case SendTarget.ToDiosesYclan: SendTargetToString = "ToDiosesYclan"
+        Case SendTarget.ToConsejo: SendTargetToString = "ToConsejo"
+        Case SendTarget.ToClanArea: SendTargetToString = "ToClanArea"
+        Case SendTarget.ToConsejoCaos: SendTargetToString = "ToConsejoCaos"
+        Case SendTarget.ToRolesMasters: SendTargetToString = "ToRolesMasters"
+        Case SendTarget.ToReal: SendTargetToString = "ToReal"
+        Case SendTarget.ToCaos: SendTargetToString = "ToCaos"
+        Case SendTarget.ToCiudadanosYRMs: SendTargetToString = "ToCiudadanosYRMs"
+        Case SendTarget.ToCriminalesYRMs: SendTargetToString = "ToCriminalesYRMs"
+        Case SendTarget.ToRealYRMs: SendTargetToString = "ToRealYRMs"
+        Case SendTarget.ToCaosYRMs: SendTargetToString = "ToCaosYRMs"
+        Case SendTarget.ToSuperiores: SendTargetToString = "ToSuperiores"
+        Case SendTarget.ToSuperioresArea: SendTargetToString = "ToSuperioresArea"
+        Case SendTarget.ToPCDeadArea: SendTargetToString = "ToPCDeadArea"
+        Case SendTarget.ToPCDeadAreaButIndex: SendTargetToString = "ToPCDeadAreaButIndex"
+        Case SendTarget.ToAdminsYDioses: SendTargetToString = "ToAdminsYDioses"
+        Case SendTarget.ToJugadoresCaptura: SendTargetToString = "ToJugadoresCaptura"
+        Case SendTarget.ToGroup: SendTargetToString = "ToGroup"
+        Case SendTarget.ToGroupButIndex: SendTargetToString = "ToGroupButIndex"
+        Case Else: SendTargetToString = "Unknown"
+    End Select
+End Function
+
+Private Function BuildSendDataContext(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByVal ValidateInvi As Boolean, Optional Args As Variant) As String
+    Dim context As String
+    On Error GoTo ContextErr
+    context = "sndRoute=" & sndRoute & " (" & SendTargetToString(sndRoute) & ")"
+    context = context & " | sndIndex=" & sndIndex
+    context = context & " | ValidateInvi=" & ValidateInvi
+    If Not IsMissing(Args) Then
+        context = context & " | ArgsType=" & TypeName(Args)
+    Else
+        context = context & " | ArgsType=missing"
+    End If
+    If sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList) Then
+        context = context & " | UserLogged=" & UserList(sndIndex).flags.UserLogged
+        context = context & " | ConnValid=" & UserList(sndIndex).ConnectionDetails.ConnIDValida
+        context = context & " | Map=" & UserList(sndIndex).pos.Map & " Pos=" & UserList(sndIndex).pos.x & "," & UserList(sndIndex).pos.y
+    Else
+        context = context & " | UserIndexOutOfBounds (" & LBound(UserList) & "-" & UBound(UserList) & ")"
+    End If
+ContextErr:
+    BuildSendDataContext = context
+End Function
+
+
 Public Sub SendToConnection(ByVal ConnectionID, Optional Args As Variant)
     On Error GoTo SendToConnection_Err
     #If DIRECT_PLAY = 0 Then
@@ -84,6 +148,7 @@ SendToConnection_Err:
 End Sub
 
 Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Optional Args As Variant, Optional ByVal ValidateInvi As Boolean = False)
+    Err.Clear
     On Error GoTo SendData_Err
     #If DIRECT_PLAY = 0 Then
         Dim Buffer As Network.Writer
@@ -252,9 +317,13 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Opt
             Call SendToGroupButIndex(sndIndex, Buffer)
     End Select
 SendData_Err:
-    Call Buffer.Clear
+    If Not Buffer Is Nothing Then
+        Call Buffer.Clear
+    End If
     If (Err.Number <> 0) Then
-        Call TraceError(Err.Number, Err.Description, "modSendData.SendData", Erl)
+        Dim errorContext As String
+        errorContext = BuildSendDataContext(sndRoute, sndIndex, ValidateInvi, Args)
+        Call TraceError(Err.Number, Err.Description & " | Context: " & errorContext, "modSendData.SendData", Erl)
     End If
 End Sub
 
