@@ -246,10 +246,6 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                                 Call WriteMacroTrabajoToggle(UserIndex, False)
                                 Exit Sub
                             End If
-                            '¡Hay un arbol donde clickeo?
-                            If ObjData(DummyInt).OBJType = e_OBJType.otTrees Then
-                                Call DoTalar(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.invent.EquippedWorkingToolObjIndex).Dorada = 1)
-                            End If
                         Else
                             ' Msg604=No hay ningún árbol ahí.
                             Call WriteLocaleMsg(UserIndex, 604, e_FontTypeNames.FONTTYPE_INFO)
@@ -1864,101 +1860,6 @@ Public Sub QuitarSta(ByVal UserIndex As Integer, ByVal Cantidad As Integer)
     Exit Sub
 QuitarSta_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.QuitarSta", Erl)
-End Sub
-
-
-Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
-    On Error GoTo ErrHandler
-    Dim Suerte As Integer
-    Dim res    As Integer
-    With UserList(UserIndex)
-        If .flags.Privilegios And (e_PlayerType.Consejero) Then
-            Exit Sub
-        End If
-        'EsfuerzoTalarLeñador = 1
-        If .Stats.MinSta > 5 Then
-            Call QuitarSta(UserIndex, 5)
-        Else
-            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Sub
-        End If
-        Dim Skill As Integer
-        Skill = .Stats.UserSkills(e_Skill.Talar)
-        Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
-        'HarThaoS: Le agrego más dificultad al talar en zona segura.  37% probabilidad de fallo en segura vs 16% en insegura
-        res = RandomNumber(1, IIf(MapInfo(UserList(UserIndex).pos.Map).Seguro = 1, Suerte + 4, Suerte))
-        'ReyarB: aumento chances solamente si es el arbol de pino nudoso.
-        If ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex).Pino = 1 Then
-            res = 1
-            Suerte = 100
-        End If
-        '118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
-        If res < 6 Then
-            Dim nPos  As t_WorldPos
-            Dim MiObj As t_Obj
-            Call ActualizarRecurso(.pos.Map, x, y)
-            MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
-            If .clase = Trabajador Then
-                MiObj.amount = GetExtractResourceForLevel(.Stats.ELV)
-            Else
-                MiObj.amount = RandomNumber(1, 2)
-            End If
-            MiObj.amount = MiObj.amount * SvrConfig.GetValue("RecoleccionMult")
-            If ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex).Elfico = 1 Then
-                MiObj.ObjIndex = ElvenWood
-            ElseIf ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex).Pino = 1 Then
-                MiObj.ObjIndex = PinoWood
-            Else
-                MiObj.ObjIndex = Wood
-            End If
-            If MiObj.amount > MapData(.pos.Map, x, y).ObjInfo.amount Then
-                MiObj.amount = MapData(.pos.Map, x, y).ObjInfo.amount
-            End If
-            MapData(.pos.Map, x, y).ObjInfo.amount = MapData(.pos.Map, x, y).ObjInfo.amount - MiObj.amount
-            ' AGREGAR FX
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
-            If Not MeterItemEnInventario(UserIndex, MiObj) Then
-                Call TirarItemAlPiso(.pos, MiObj)
-            End If
-            Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)
-            If MapInfo(.pos.Map).Seguro = 1 Then
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(SND_TALAR, .pos.x, .pos.y))
-            Else
-                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .pos.x, .pos.y))
-            End If
-            ' Al talar también podés dropear cosas raras (se setean desde RecursosEspeciales.dat)
-            Dim i As Integer
-            ' Por cada drop posible
-            For i = 1 To UBound(EspecialesTala)
-                ' Tiramos al azar entre 1 y la probabilidad
-                res = RandomNumber(1, EspecialesTala(i).data)
-                ' Si tiene suerte y le pega
-                If res = 1 Then
-                    MiObj.ObjIndex = EspecialesTala(i).ObjIndex
-                    MiObj.amount = 1 ' Solo un item por vez
-                    ' Tiro siempre el item al piso, me parece más rolero, como que cae del árbol :P
-                    Call TirarItemAlPiso(.pos, MiObj)
-                End If
-            Next i
-            If IsFeatureEnabled("gain_exp_while_working") Then
-                Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Woodcutter)
-                Call WriteUpdateExp(UserIndex)
-                Call CheckUserLevel(UserIndex)
-            End If
-        Else
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(64, .pos.x, .pos.y))
-        End If
-        Call SubirSkill(UserIndex, e_Skill.Talar)
-        .Counters.Trabajando = .Counters.Trabajando + 1
-        .Counters.LastTrabajo = Int(IntervaloTrabajarExtraer / 1000)
-        If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
-            Call WriteMacroTrabajoToggle(UserIndex, True)
-        End If
-    End With
-    Exit Sub
-ErrHandler:
-    Call LogError("Error en DoTalar")
 End Sub
 
 Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
