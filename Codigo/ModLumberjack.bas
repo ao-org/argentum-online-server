@@ -1,10 +1,20 @@
 Attribute VB_Name = "ModLumberjack"
 Option Explicit
-
 Private Const MIN_STA_REQUIRED As Integer = 5
 
 Public Sub ChopWood(ByRef AutomatedAction As t_AutomatedAction, ByVal UserIndex As Integer)
     With UserList(UserIndex)
+        Dim playerPosition As t_WorldPos
+        playerPosition.Map = .pos.Map
+        playerPosition.x = .pos.x
+        playerPosition.y = .pos.y
+        Dim treePosition As t_WorldPos
+        treePosition.x = AutomatedAction.x
+        treePosition.y = AutomatedAction.y
+        treePosition.Map = .pos.Map
+        If Distancia(playerPosition, treePosition) > 1 Then
+            Exit Sub
+        End If
         If .Stats.MinSta > MIN_STA_REQUIRED Then
             Call QuitarSta(UserIndex, MIN_STA_REQUIRED)
         Else

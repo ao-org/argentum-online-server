@@ -21,7 +21,6 @@ Public Sub RunAutomatedActions()
         With UserList(UserIndex)
             If .flags.UserLogged Then
                 If .AutomatedAction.IsActive Then
-                    Debug.Print "User doing automated action " & UserIndex
                     Select Case .AutomatedAction.skill
                         Case e_Skill.Talar
                             Call ChopWood(.AutomatedAction, UserIndex)
