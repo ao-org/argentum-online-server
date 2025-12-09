@@ -26,6 +26,44 @@ Attribute VB_Name = "modSendData"
 '
 '
 Option Explicit
+Public Enum SendTarget
+    ToAll = 1
+    ToIndex
+    toMap
+    ToPCArea
+    ToPCAliveArea
+    ToPCAreaButGMs
+    ToAllButIndex
+    ToMapButIndex
+    ToGM
+    ToNPCArea
+    ToNPCAliveArea
+    ToNPCDeadArea
+    ToGuildMembers
+    ToAdmins
+    ToPCAreaButIndex
+    ToPCAliveAreaButIndex
+    ToAdminAreaButIndex
+    ToDiosesYclan
+    ToConsejo
+    ToClanArea
+    ToConsejoCaos
+    ToRolesMasters
+    ToReal
+    ToCaos
+    ToCiudadanosYRMs
+    ToCriminalesYRMs
+    ToRealYRMs
+    ToCaosYRMs
+    ToSuperiores
+    ToSuperioresArea
+    ToPCDeadArea
+    ToPCDeadAreaButIndex
+    ToAdminsYDioses
+    ToJugadoresCaptura
+    ToGroup
+    ToGroupButIndex
+End Enum
 
 Private Function SendTargetToString(ByVal sndRoute As SendTarget) As String
     Select Case sndRoute
@@ -91,44 +129,6 @@ ContextErr:
     BuildSendDataContext = context
 End Function
 
-Public Enum SendTarget
-    ToAll = 1
-    ToIndex
-    toMap
-    ToPCArea
-    ToPCAliveArea
-    ToPCAreaButGMs
-    ToAllButIndex
-    ToMapButIndex
-    ToGM
-    ToNPCArea
-    ToNPCAliveArea
-    ToNPCDeadArea
-    ToGuildMembers
-    ToAdmins
-    ToPCAreaButIndex
-    ToPCAliveAreaButIndex
-    ToAdminAreaButIndex
-    ToDiosesYclan
-    ToConsejo
-    ToClanArea
-    ToConsejoCaos
-    ToRolesMasters
-    ToReal
-    ToCaos
-    ToCiudadanosYRMs
-    ToCriminalesYRMs
-    ToRealYRMs
-    ToCaosYRMs
-    ToSuperiores
-    ToSuperioresArea
-    ToPCDeadArea
-    ToPCDeadAreaButIndex
-    ToAdminsYDioses
-    ToJugadoresCaptura
-    ToGroup
-    ToGroupButIndex
-End Enum
 
 Public Sub SendToConnection(ByVal ConnectionID, Optional Args As Variant)
     On Error GoTo SendToConnection_Err
