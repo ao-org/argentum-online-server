@@ -1818,6 +1818,8 @@ Public Type t_EffectOverTime
     TickFX As Integer
     OnHitFx As Integer
     OnHitWav As Integer
+    OnRemoveFx As Integer
+    OnRemoveWav As Integer
     buffType As e_EffectType
     Override As Boolean
     PhysicalDamageReduction As Single
