@@ -220,6 +220,7 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
     Else
         Call WriteLocaleMsg(UserIndex, 1617, e_FontTypeNames.FONTTYPE_INFO, GmName & "¬" & minutos) 'Msg1617=¬1 te ha encarcelado, deberás permanecer en la cárcel ¬2 minutos.
     End If
+    Call WriteJailCounterToUser(UserIndex)
     Exit Sub
 Encarcelar_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.Encarcelar", Erl)

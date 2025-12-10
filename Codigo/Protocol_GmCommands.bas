@@ -902,7 +902,7 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
                         If PersonajeExiste(username) Then
                             Call SavePenaDatabase(username, .name & ": CARCEL " & jailTime & "m, MOTIVO: " & Reason & " " & Date & " " & Time)
                         End If
-                        .LastJailPenaltyDescription = Reason
+                        UserList(tUser.ArrayIndex).LastJailPenaltyDescription = Reason
                         Call Encarcelar(tUser.ArrayIndex, jailTime, .name)
                         Call LogGM(.name, " encarceló a " & username)
                     End If
