@@ -170,24 +170,24 @@ Public Sub IBaseEffectOverTime_OnRemove()
     Call EffectsOverTime.RemoveEotModifier(DotInfo.TargetRef, EffectOverTime(DotInfo.EotId), 0)
     If DotInfo.TargetRef.RefType = eUser Then
         Call AddShieldToReference(DotInfo.TargetRef, -UniqueShieldReferenceAccumulator(DotInfo.UniqueId))
+        If EffectOverTime(DotInfo.EotId).OnRemoveFx > 0 Then
+            If IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) Then
+                Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
+                   DotInfo.EotId).OnRemoveFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+            Else
+                Call SendData(SendTarget.ToIndex, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
+                   DotInfo.EotId).OnRemoveFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+            End If
+        End If
+        If EffectOverTime(DotInfo.EotId).OnRemoveWav > 0 Then
+            Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessagePlayWave(EffectOverTime(DotInfo.EotId).OnRemoveWav, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y), False)
+        End If
     Else
         Call AddShieldToReference(DotInfo.TargetRef, -UniqueShieldReferenceAccumulator(DotInfo.UniqueId))
     End If
     Call UniqueShieldReferenceAccumulator.Remove(DotInfo.UniqueId)
     If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
-    End If
-    If EffectOverTime(DotInfo.EotId).OnRemoveFx > 0 Then
-        If IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) Then
-            Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
-               DotInfo.EotId).OnRemoveFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
-        Else
-            Call SendData(SendTarget.ToIndex, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
-               DotInfo.EotId).OnRemoveFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
-        End If
-    End If
-    If EffectOverTime(DotInfo.EotId).OnRemoveWav > 0 Then
-        Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessagePlayWave(EffectOverTime(DotInfo.EotId).OnRemoveWav), False)
     End If
 End Sub
 
@@ -210,17 +210,19 @@ Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
                                                          ByVal SourceUserId As Integer, _
                                                          ByVal SourceType As e_ReferenceType, _
                                                          ByVal AttackType As e_DamageSourceType) As Long
-    If EffectOverTime(DotInfo.EotId).OnHitFx > 0 Then
-        If IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) Then
-            Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
-               DotInfo.EotId).OnHitFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
-        Else
-            Call SendData(SendTarget.ToIndex, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
-               DotInfo.EotId).OnHitFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+    If DotInfo.TargetRef.RefType = eUser Then
+        If EffectOverTime(DotInfo.EotId).OnHitFx > 0 Then
+            If IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) Then
+                Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
+                   DotInfo.EotId).OnHitFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+            Else
+                Call SendData(SendTarget.ToIndex, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
+                   DotInfo.EotId).OnHitFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+            End If
         End If
-    End If
-    If EffectOverTime(DotInfo.EotId).OnHitWav > 0 Then
-        Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessagePlayWave(EffectOverTime(DotInfo.EotId).OnHitWav), False)
+        If EffectOverTime(DotInfo.EotId).OnHitWav > 0 Then
+            Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessagePlayWave(EffectOverTime(DotInfo.EotId).OnHitWav, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y), False)
+        End If
     End If
     Dim Reduction As Long
     Reduction = DamageProtection + Damage
@@ -267,7 +269,6 @@ End Property
 
 Public Sub IBaseEffectOverTime_TargetChangeTerrain()
 End Sub
-
 
 Public Sub PerformAction()
     Dim TickShield As Integer
@@ -320,4 +321,3 @@ Public Sub PerformAction()
            DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, NpcList(DotInfo.TargetRef.ArrayIndex).pos.x, NpcList(DotInfo.TargetRef.ArrayIndex).pos.y))
     End If
 End Sub
-
