@@ -200,6 +200,7 @@ Public Sub PurgarPenas()
                     'Msg1103= Has sido liberado.
                     Call WriteLocaleMsg(i, "1103", e_FontTypeNames.FONTTYPE_INFO)
                 End If
+                Call WriteJailCounterToUser(i)
             End If
         End If
     Next i

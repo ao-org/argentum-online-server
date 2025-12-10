@@ -4462,3 +4462,13 @@ WriteShowPickUpObj_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowPickUpObj", Erl)
 End Sub
+
+Public Sub WriteJailCounterToUser(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+        Call Writer.WriteInt16(ServerPacketID.eJailTimeAndPenaltyReason)
+        Call Writer.WriteInt32(.Counters.Pena)
+        Call Writer.WriteString16(.LastJailPenaltyDescription)
+        Call modSendData.SendData(SendTarget.ToIndex, UserIndex)
+    End With
+End Sub
+
