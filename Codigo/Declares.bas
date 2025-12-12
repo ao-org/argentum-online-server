@@ -2968,6 +2968,7 @@ Public Type t_User
     FundandoGuildAlineacion As e_ALINEACION_GUILD     'esto esta aca hasta que se parchee el cliente y se pongan cadenas de datos distintas para cada alineacion
     EscucheClan As Integer
     LastGuildRejection As String
+    LastJailPenaltyDescription As String
     KeyCrypt As Integer
     AreasInfo As t_AreaInfo
     QuestStats As t_QuestStats
