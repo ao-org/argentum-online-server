@@ -257,7 +257,7 @@ Public Enum ClientPacketID
     eGuildLeave              '/SALIRCLAN
     eRequestAccountState     '/BALANCE
     ePetStand                '/QUIETO
-    ePetFollow               '/ACOMPAÑAR
+    ePetFollow               '/ACOMPAï¿½AR
     ePetLeave                '/LIBERAR
     eGrupoMsg                '/GrupoMsg
     eTrainList               '/ENTRENAR
