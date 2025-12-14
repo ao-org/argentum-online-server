@@ -2522,6 +2522,14 @@ Public Enum e_InventorySlotMask
     eTool = 64
 End Enum
 
+Public Type t_AutomatedAction
+    x As Byte
+    y As Byte
+    skill As e_Skill
+    StartingTime As Long
+    IsActive As Boolean
+End Type
+
 'Flags
 Public Type t_UserFlags
     Nadando As Byte
@@ -2985,6 +2993,7 @@ Public Type t_User
     MacroIterations(1 To MAX_PACKET_COUNTERS) As Long
     PacketTimers(1 To MAX_PACKET_COUNTERS) As Long
     PacketCounters(1 To MAX_PACKET_COUNTERS) As Long
+    AutomatedAction As t_AutomatedAction
 End Type
 
 Public MacroIterations(1 To MAX_PACKET_COUNTERS)      As Long
