@@ -644,6 +644,7 @@ Public Enum e_SoundEffects
     'Repetido = 1152
     SnowStorm = 2000
     'Imperium 2028 - 2186
+    FailToExtractOre = 2185
     NewApunialar = 2187
     MortarLaunch = 2222
     RoarDinosaur = 2323
