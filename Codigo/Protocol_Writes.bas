@@ -2795,11 +2795,6 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
     Dim i As Integer
     'ID del paquete
     Call Writer.WriteInt16(ServerPacketID.eQuestDetails)
-    'Se usa la variable QuestSlot para saber si enviamos la info de una quest ya empezada o la info de una quest que no se aceptí todavía (1 para el primer caso y 0 para el segundo)
-    Call Writer.WriteInt8(IIf(QuestSlot, 1, 0))
-    'Enviamos nombre, descripción y nivel requerido de la quest
-    'Call Writer.WriteString8(QuestList(QuestIndex).Nombre)
-    'Call Writer.WriteString8(QuestList(QuestIndex).Desc)
     Call Writer.WriteInt16(QuestIndex)
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
     Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
@@ -2826,6 +2821,18 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
             'escribe si tiene ese objeto en el inventario y que cantidad
             Call Writer.WriteInt16(get_object_amount_from_inventory(UserIndex, QuestList(QuestIndex).RequiredOBJ(i).ObjIndex))
             ' Call Writer.WriteInt16(0)
+        Next i
+    End If
+    'Enviamos la cantidad de spells requeridos
+    Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSpellCount)
+    If QuestList(QuestIndex).RequiredSpellCount > 0 Then
+        For i = 1 To QuestList(QuestIndex).RequiredSpellCount
+            Call Writer.WriteInt16(QuestList(QuestIndex).RequiredSpellList(i))
+            If TieneHechizo(QuestList(QuestIndex).RequiredSpellList(i), UserIndex) Then
+                Call Writer.WriteInt16(1)
+            Else
+                Call Writer.WriteInt16(0)
+            End If
         Next i
     End If
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.SkillType)
@@ -4447,4 +4454,18 @@ Public Sub WriteGuildConfig(ByVal UserIndex As Integer)
 WriteGuildConfig_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildConfig", Erl)
+End Sub
+Public Sub WriteShowPickUpObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal amount As Integer)
+    On Error GoTo WriteShowPickUpObj_Err
+
+    Call Writer.WriteInt16(ServerPacketID.eShowPickUpObj)
+    Call Writer.WriteInt16(ObjIndex)
+    Call Writer.WriteInt16(amount)
+    
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+
+WriteShowPickUpObj_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowPickUpObj", Erl)
 End Sub

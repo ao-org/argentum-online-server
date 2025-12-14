@@ -95,6 +95,7 @@ Public LimiteGuardarUsuarios         As Integer
 Public IntervaloTimerGuardarUsuarios As Long
 Public IntervaloMensajeGlobal        As Long
 Public Const IntervaloConsultaGM     As Long = 300000
+Public IntervalAutomatedAction       As Long
 'BALANCE
 Public PorcentajeRecuperoMana        As Integer
 Public RecoveryMana                  As Integer
@@ -143,9 +144,6 @@ Public Nieblando                         As Boolean
 Public IpList                            As New Collection
 Public Baneos                            As New Collection
 
-
-
-
 Sub ReSpawnOrigPosNpcs()
     On Error GoTo Handler
     Dim i     As Integer
@@ -168,15 +166,14 @@ End Sub
 Sub WorldSave()
     On Error GoTo Handler
     Dim LoopX As Integer
-    Dim Porc  As Long
     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1732", vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1732=Servidor » Iniciando WorldSave
     Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
-    Dim j As Integer, K As Integer
+    Dim j As Integer, k As Integer
     For j = 1 To NumMaps
-        If MapInfo(j).backup_mode = 1 Then K = K + 1
+        If MapInfo(j).backup_mode = 1 Then k = k + 1
     Next j
     FrmStat.ProgressBar1.Min = 0
-    FrmStat.ProgressBar1.max = K
+    FrmStat.ProgressBar1.max = k
     FrmStat.ProgressBar1.value = 0
     For LoopX = 1 To NumMaps
         'DoEvents
@@ -248,16 +245,16 @@ Public Function IsValidUserId(ByVal UserId As Long) As Boolean
     IsValidUserId = GetUserValueById(UserId, "COUNT(*)") > 0
 End Function
 
-Public Function UnBan(ByVal name As String) As Boolean
+Public Sub UnBan(ByVal name As String)
     On Error GoTo UnBan_Err
     Call UnBanDatabase(name)
     'Remove it from the banned people database
-    Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", name, "BannedBy", "")
-    Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", name, "Reason", "")
-    Exit Function
+    Call WriteVar(App.path & "\logs\" & "BanDetail.dat", name, "BannedBy", "")
+    Call WriteVar(App.path & "\logs\" & "BanDetail.dat", name, "Reason", "")
+    Exit Sub
 UnBan_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.UnBan", Erl)
-End Function
+End Sub
 
 Public Function UserDarPrivilegioLevel(ByVal name As String) As e_PlayerType
     On Error GoTo UserDarPrivilegioLevel_Err

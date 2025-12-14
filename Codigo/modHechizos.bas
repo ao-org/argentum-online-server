@@ -780,7 +780,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                     End If
                 End If
                 If .NroMascotas < MAXMASCOTAS Then
-                    ind = SpawnNpc(Hechizos(h).NumNpc, TargetPos, True, False, False, UserIndex)
+                    ind = SpawnNpc(Hechizos(h).NumNpc, TargetPos, False, False, False, UserIndex, Hechizos(h).wav)
                     If ind > 0 Then
                         .NroMascotas = .NroMascotas + 1
                         Index = FreeMascotaIndex(UserIndex)

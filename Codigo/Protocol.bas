@@ -29,6 +29,7 @@ Option Explicit
 ''
 'When we have a list of strings, we use this to separate them and prevent
 'having too many string lengths in the queue. Yes, each string is NULL-terminated :P
+
 Public Const SEPARATOR As String * 1 = vbNullChar
 Private Const SPELL_UNASSISTED_FULGOR = 52
 Private Const SPELL_UNASSISTED_ECO = 61
@@ -327,6 +328,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleCraftCarpenter(UserIndex)
         Case ClientPacketID.eWorkLeftClick
             Call HandleWorkLeftClick(UserIndex)
+        Case ClientPacketID.eStartAutomatedAction
+            Call HandleStartAutomatedAction(UserIndex)
         Case ClientPacketID.eCreateNewGuild
             Call HandleCreateNewGuild(UserIndex)
         Case ClientPacketID.eSpellInfo
@@ -1524,6 +1527,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
             If MoveUserChar(UserIndex, Heading) Then
                 ' Save current step for anti-sh
                 .Counters.LastStep = currentTick
+                Call ResetUserAutomatedActions(UserIndex)
                 If UserList(UserIndex).Grupo.EnGrupo Then
                     Call CompartirUbicacion(UserIndex)
                 End If
@@ -2545,7 +2549,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 'Check interval
                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
                 Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
-                    Case 3  ' Herramientas de Alquimia - Tijeras
+                    Case e_WorkingToolSubType.AlchemyScissors  ' Herramientas de Alquimia - Tijeras
                         If MapInfo(UserList(UserIndex).pos.Map).Seguro = 1 Then
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             ' Msg711=Esta prohibido cortar raices en las ciudades.
@@ -6006,16 +6010,16 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
         Dim ObjCania             As t_Obj
         'HarThaoS: Si es un hilo de pesca y lo estoy arrastrando en una caña rota borro del slot viejo y en el nuevo pongo la caña correspondiente
         If SlotViejo > getMaxInventorySlots(UserIndex) Or SlotNuevo > getMaxInventorySlots(UserIndex) Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
-        If .invent.Object(SlotViejo).ObjIndex = 2183 Then
+        If .invent.Object(SlotViejo).ObjIndex = OBJ_FISHING_LINE Then
             Select Case .invent.Object(SlotNuevo).ObjIndex
-                Case 3457
-                    ObjCania.ObjIndex = 881
-                Case 3456
-                    ObjCania.ObjIndex = 2121
-                Case 3459
-                    ObjCania.ObjIndex = 2132
-                Case 3458
-                    ObjCania.ObjIndex = 2133
+                Case OBJ_BROKEN_FISHING_ROD_BASIC
+                    ObjCania.ObjIndex = OBJ_FISHING_ROD_BASIC
+                Case OBJ_BROKEN_FISHING_ROD_COMMON
+                    ObjCania.ObjIndex = OBJ_FISHING_ROD_COMMON
+                Case OBJ_BROKEN_FISHING_ROD_FINE
+                    ObjCania.ObjIndex = OBJ_FISHING_ROD_FINE
+                Case OBJ_BROKEN_FISHING_ROD_ELITE
+                    ObjCania.ObjIndex = OBJ_FISHING_ROD_ELITE
             End Select
             ObjCania.amount = 1
             'si el objeto que estaba pisando era una caña rota.
@@ -7662,27 +7666,46 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
     Dim LoopC    As Integer
     Dim obj      As t_Obj
     Dim caniaOld As Integer
+    Dim shouldBreak As Boolean
+
     With UserList(UserIndex)
         obj.ObjIndex = .invent.EquippedWorkingToolObjIndex
         caniaOld = .invent.EquippedWorkingToolObjIndex
         obj.amount = 1
+        shouldBreak = (RandomNumber(1, 3) = 1)
         For LoopC = 1 To MAX_INVENTORY_SLOTS
             'Rastreo la caña que está usando en el inventario y se la rompo
             If .invent.Object(LoopC).ObjIndex = .invent.EquippedWorkingToolObjIndex Then
-                'Le quito una caña
-                Call QuitarUserInvItem(UserIndex, LoopC, 1)
-                Call UpdateUserInv(False, UserIndex, LoopC)
-                Select Case caniaOld
-                    Case 881
-                        obj.ObjIndex = 3457
-                    Case 2121
-                        obj.ObjIndex = 3456
-                    Case 2132
-                        obj.ObjIndex = 3459
-                    Case 2133
-                        obj.ObjIndex = 3458
-                End Select
-                Call MeterItemEnInventario(UserIndex, obj)
+                If caniaOld = OBJ_FISHING_NET_BASIC Or caniaOld = OBJ_FISHING_NET_ELITE Then
+                    If shouldBreak Then
+                        'Le quito una red
+                        Call QuitarUserInvItem(UserIndex, LoopC, 1)
+                        Call UpdateUserInv(False, UserIndex, LoopC)
+                        Call WriteLocaleMsg(UserIndex, MSG_REMOVE_NET_LOST, e_FontTypeNames.FONTTYPE_INFO)
+                    Else
+                        Call WriteLocaleMsg(UserIndex, MSG_REMOVE_NET_ALMOST_LOST, e_FontTypeNames.FONTTYPE_INFO)
+                    End If
+                Else
+                    If shouldBreak Then
+                        'Le quito una caña
+                        Call QuitarUserInvItem(UserIndex, LoopC, 1)
+                        Call UpdateUserInv(False, UserIndex, LoopC)
+
+                        Select Case caniaOld
+                            Case OBJ_FISHING_ROD_BASIC
+                                obj.ObjIndex = OBJ_BROKEN_FISHING_ROD_BASIC
+                            Case OBJ_FISHING_ROD_COMMON
+                                obj.ObjIndex = OBJ_BROKEN_FISHING_ROD_COMMON
+                            Case OBJ_FISHING_ROD_FINE
+                                obj.ObjIndex = OBJ_BROKEN_FISHING_ROD_FINE
+                            Case OBJ_FISHING_ROD_ELITE
+                                obj.ObjIndex = OBJ_BROKEN_FISHING_ROD_ELITE
+                        End Select
+                        Call MeterItemEnInventario(UserIndex, obj)
+                    Else
+                        Call WriteLocaleMsg(UserIndex, MSG_REMOVE_ALMOST_YOUR_FISHING, e_FontTypeNames.FONTTYPE_INFO)
+                    End If
+                End If
                 Exit Sub
             End If
         Next LoopC
@@ -7961,4 +7984,18 @@ Public Function IsInMapCarcelRestrictedArea(ByRef position As t_WorldPos) As Boo
     If position.x >= 33 And position.x <= 62 And position.y >= 32 And position.y <= 62 Then
         IsInMapCarcelRestrictedArea = True
     End If
+End Function
+
+Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
+    On Error GoTo HandleStartAutomatedAction_Err
+    Dim x     As Byte
+    Dim y     As Byte
+    Dim skill As e_Skill
+    x = reader.ReadInt8()
+    y = reader.ReadInt8()
+    skill = reader.ReadInt8()
+    Call StartAutomatedAction(x, y, skill, UserIndex)
+    Exit Function
+HandleStartAutomatedAction_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartAutomatedAction", Erl)
 End Function

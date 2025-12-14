@@ -1270,6 +1270,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
     Call ResetUserSkills(UserIndex)
     Call ResetUserKeys(UserIndex)
     Call ResetCd(UserList(UserIndex))
+    Call ResetUserAutomatedActions(UserIndex)
     With UserList(UserIndex).ComUsu
         .Acepto = False
         .cant = 0
@@ -1485,6 +1486,17 @@ Sub ResetCd(ByRef User As t_User)
         User.CdTimes(i) = 0
     Next i
 End Sub
+
+Sub ResetUserAutomatedActions(ByRef UserIndex As Integer)
+    With UserList(UserIndex)
+        .AutomatedAction.IsActive = False
+        .AutomatedAction.skill = 0
+        .AutomatedAction.StartingTime = 0
+        .AutomatedAction.x = 0
+        .AutomatedAction.y = 0
+    End With
+End Sub
+
 
 Sub VaciarInventario(ByVal UserIndex As Integer)
     Dim i As Long

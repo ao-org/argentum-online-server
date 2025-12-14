@@ -359,12 +359,6 @@ Begin VB.Form frmMain
       Left            =   720
       Top             =   3060
    End
-   Begin VB.Timer GameTimer 
-      Enabled         =   0   'False
-      Interval        =   40
-      Left            =   1200
-      Top             =   3060
-   End
    Begin VB.Timer tPiqueteC 
       Enabled         =   0   'False
       Interval        =   6000
@@ -1475,43 +1469,6 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     Call CerrarServidor
-End Sub
-
-Private Sub GameTimer_Timer()
-    On Error GoTo HayError
-    Dim iUserIndex       As Long
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
-    '<<<<<< Procesa eventos de los usuarios >>>>>>
-    For iUserIndex = 1 To LastUser
-        With UserList(iUserIndex)
-            If .flags.UserLogged Then
-                Call DoTileEvents(iUserIndex, .pos.Map, .pos.x, .pos.y)
-                If .flags.Muerto = 0 Then
-                    'Efectos en mapas
-                    If (.flags.Privilegios And e_PlayerType.User) <> 0 Then
-                        Call EfectoLava(iUserIndex)
-                        Call EfectoFrio(iUserIndex)
-                        If .flags.Envenenado <> 0 Then Call EfectoVeneno(iUserIndex)
-                        If .flags.Incinerado <> 0 Then Call EfectoIncineramiento(iUserIndex)
-                    End If
-                    If .flags.Meditando Then Call DoMeditar(iUserIndex)
-                    If .flags.Mimetizado <> 0 Then Call EfectoMimetismo(iUserIndex)
-                    If .flags.AdminInvisible <> 1 Then
-                        If .flags.Oculto = 1 Then Call DoPermanecerOculto(iUserIndex)
-                    End If
-                    If .NroMascotas > 0 Then Call TiempoInvocacion(iUserIndex)
-                    Call EfectoStamina(iUserIndex)
-                End If 'Muerto
-            End If 'UserLogged
-        End With
-    Next iUserIndex
-    Call PerformTimeLimitCheck(PerformanceTimer, "GameTimer_Timer User loop", 400)
-    Call CustomScenarios.UpdateAll
-    Call PerformTimeLimitCheck(PerformanceTimer, "GameTimer_Timer customScenarios", 100)
-    Exit Sub
-HayError:
-    Call TraceError(Err.Number, Err.Description & vbNewLine & "UserIndex:" & iUserIndex, "frmMain.GameTimer", Erl)
 End Sub
 
 Private Sub HoraFantasia_Timer()

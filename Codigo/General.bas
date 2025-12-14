@@ -716,7 +716,6 @@ Sub Main()
     With frmMain
         .Minuto.Enabled = True
         .tPiqueteC.Enabled = True
-        .GameTimer.Enabled = True
         .Segundo.Enabled = True
         .KillLog.Enabled = True
         .T_UsersOnline.Enabled = True
@@ -731,6 +730,7 @@ Sub Main()
             MapInfo(BarcoNavegandoArghalForgat.Map).ForceUpdate = True
         End If
     End With
+    Call ResetGameEventsTimer
     Call ResetUserAutoSaveTimer
     Subasta.SubastaHabilitada = True
     Subasta.HaySubastaActiva = False
@@ -780,8 +780,12 @@ Sub Main()
         Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.Tick")
         Call UpdateEffectOverTime
         Call PerformTimeLimitCheck(PerformanceTimer, "General Update Effects over time")
+        Call MaybeRunGameEvents
+        Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeRunGameEvents")
         Call MaybeRunUserAutoSave
         Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeRunUserAutoSave")
+        Call RunAutomatedActions
+        Call PerformTimeLimitCheck(PerformanceTimer, "General StartAutomatedAction")
         Call MaybeUpdateNpcAI(GlobalFrameTime)
         DoEvents
         Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
@@ -979,7 +983,7 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
             End If
         End If
         If .flags.Desnudo = 0 And Not HambreOSed Then
-            If Not Lloviendo Or Not Intemperie(UserIndex) Then
+            If (Not Lloviendo Or Not Intemperie(UserIndex)) And Not .AutomatedAction.IsActive Then
                 Call RecStamina(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, StaminaIntervaloDescansar, StaminaIntervaloSinDescansar))
             End If
         Else

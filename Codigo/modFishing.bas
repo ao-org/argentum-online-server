@@ -4,6 +4,19 @@ Option Explicit
 Private FishingLevelBonus() As Double
 Private FishingBonusesInitialized As Boolean
 
+Public Const OBJ_FISHING_ROD_BASIC                             As Integer = 881
+Public Const OBJ_FISHING_ROD_COMMON                            As Integer = 2121
+Public Const OBJ_FISHING_ROD_FINE                              As Integer = 2132
+Public Const OBJ_FISHING_ROD_ELITE                             As Integer = 2133
+Public Const OBJ_BROKEN_FISHING_ROD_BASIC                      As Integer = 3457
+Public Const OBJ_BROKEN_FISHING_ROD_COMMON                     As Integer = 3456
+Public Const OBJ_BROKEN_FISHING_ROD_FINE                       As Integer = 3459
+Public Const OBJ_BROKEN_FISHING_ROD_ELITE                      As Integer = 3458
+Public Const OBJ_FISHING_NET_BASIC                             As Integer = 138
+Public Const OBJ_FISHING_NET_ELITE                             As Integer = 139
+Public Const OBJ_FISHING_LINE                                  As Integer = 2183
+
+
 Public Sub InitializeFishingBonuses()
     If FishingBonusesInitialized Then Exit Sub
 
