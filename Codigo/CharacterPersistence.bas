@@ -983,7 +983,9 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
 
     Dim PerformanceTimer As Long
+    Dim TotalPerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
+    Call PerformanceTestStart(TotalPerformanceTimer)
 
     Dim Params() As Variant
     Dim LoopC As Long
@@ -1071,6 +1073,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
         Params(post_increment(i)) = .Id
 
         Call Execute(QUERY_UPDATE_MAINPJ, Params)
+        Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] main data id:" & .Id, 50)
 
         If HaveSpellsChanged(UserIndex) Then
             ReDim Params(MAXUSERHECHIZOS * 3 - 1)
@@ -1083,6 +1086,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Next LoopC
             Call Execute(QUERY_UPSERT_SPELLS, Params)
             Call UpdateSavedSpells(UserIndex)
+            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] spells update id:" & .Id, 50)
         End If
 
         If HasInventoryChanged(UserIndex) Then
@@ -1099,6 +1103,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Next LoopC
             Call Execute(QUERY_UPSERT_INVENTORY, Params)
             Call UpdateSavedInventory(UserIndex)
+            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] inventory update id:" & .Id, 50)
         End If
 
         If HasBankChanged(UserIndex) Then
@@ -1114,6 +1119,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Next LoopC
             Call Execute(QUERY_SAVE_BANCOINV, Params)
             Call UpdateSavedBank(UserIndex)
+            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] bank update id:" & .Id, 50)
         End If
 
         If HaveSkillsChanged(UserIndex) Then
@@ -1127,6 +1133,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Next LoopC
             Call Execute(QUERY_UPSERT_SKILLS, Params)
             Call UpdateSavedSkills(UserIndex)
+            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] skills update id:" & .Id, 50)
         End If
 
         If HavePetsChanged(UserIndex) Then
@@ -1150,6 +1157,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Next LoopC
             Call Execute(QUERY_UPSERT_PETS, Params)
             Call UpdateSavedPets(UserIndex)
+            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] pets update id:" & .Id, 50)
         End If
 
         If HaveQuestsChanged(UserIndex) Then
@@ -1191,6 +1199,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Call Execute(Builder.ToString())
             Call Builder.Clear
             Call UpdateSavedQuests(UserIndex)
+            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] quests update id:" & .Id, 50)
         End If
 
         If HaveQuestsDoneChanged(UserIndex) Then
@@ -1219,13 +1228,15 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             End If
 
             Call UpdateSavedQuestsDone(UserIndex)
+            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] quests done update id:" & .Id, 50)
         End If
 
         Call SaveInventorySkins(UserIndex)
+        Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] inventory skins update id:" & .Id, 50)
 
         .Counters.LastSave = GetTickCountRaw()
 
-        Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser id:" & .Id, 50)
+        Call PerformTimeLimitCheck(TotalPerformanceTimer, "SaveChangesInUser [" & .name & "] total id:" & .Id, 50)
 
     End With
 
