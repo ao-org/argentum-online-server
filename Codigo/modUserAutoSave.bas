@@ -20,6 +20,8 @@ Attribute VB_Name = "modUserAutoSave"
 '    Copyright (C) 2002 Mrquez Pablo Ignacio
 Option Explicit
 
+Private Const AutoSaveLoopTimeLimitMs As Long = 200
+
 Private m_LastAutoSaveAttempt As Long
 
 Public Sub ResetUserAutoSaveTimer()
@@ -43,27 +45,58 @@ Public Sub MaybeRunUserAutoSave()
 
     m_LastAutoSaveAttempt = nowRaw
 
-    Dim UserIndex        As Integer
-    Dim UserGuardados    As Integer
-    Dim PerformanceTimer As Long
+    Dim UserIndex                         As Integer
+    Dim UserGuardados                     As Integer
+    Dim PerformanceTimer                  As Long
+    Dim elapsedSinceLastSave              As Long
+    Dim totalElapsedTime                  As Long
+    Dim unsavedUsersDueToShortInterval    As Integer
+    Dim unsavedUsersDueToTimeLimit        As Integer
+    Dim totalLoggedUsers                  As Integer
+    Dim processedLoggedUsers              As Integer
+
+    For UserIndex = 1 To LastUser
+        If UserList(UserIndex).flags.UserLogged Then
+            totalLoggedUsers = totalLoggedUsers + 1
+        End If
+    Next
 
     Call PerformanceTestStart(PerformanceTimer)
 
     For UserIndex = 1 To LastUser
         With UserList(UserIndex)
             If .flags.UserLogged Then
+                processedLoggedUsers = processedLoggedUsers + 1
                 nowRaw = GetTickCountRaw()
-                If TicksElapsed(.Counters.LastSave, nowRaw) > IntervaloGuardarUsuarios Then
+                elapsedSinceLastSave = TicksElapsed(.Counters.LastSave, nowRaw)
+
+                If elapsedSinceLastSave > IntervaloGuardarUsuarios Then
                     Call SaveChangesInUser(UserIndex)
+                    .Counters.LastSave = nowRaw
                     UserGuardados = UserGuardados + 1
                     If UserGuardados > NumUsers Then Exit For
-                    If TicksElapsed(PerformanceTimer, GetTickCountRaw()) > 100 Then Exit For
+                    If TicksElapsed(PerformanceTimer, GetTickCountRaw()) > AutoSaveLoopTimeLimitMs Then
+                        Exit For
+                    End If
+                Else
+                    unsavedUsersDueToShortInterval = unsavedUsersDueToShortInterval + 1
                 End If
             End If
         End With
     Next
 
-    Call PerformTimeLimitCheck(PerformanceTimer, "modUserAutoSave.MaybeRunUserAutoSave", 100)
+    totalElapsedTime = CLng(TicksElapsed(PerformanceTimer, GetTickCountRaw()))
+    unsavedUsersDueToTimeLimit = totalLoggedUsers - processedLoggedUsers
+    If unsavedUsersDueToTimeLimit < 0 Then unsavedUsersDueToTimeLimit = 0
+
+    Call LogPerformance("Auto-save summary - total users: " & LastUser & _
+                        " | logged: " & totalLoggedUsers & _
+                        " | saved: " & UserGuardados & _
+                        " | not saved (interval not elapsed): " & unsavedUsersDueToShortInterval & _
+                        " | not saved (time limit reached): " & unsavedUsersDueToTimeLimit & _
+                        " | elapsed ms: " & totalElapsedTime)
+
+    Call PerformTimeLimitCheck(PerformanceTimer, "modUserAutoSave.MaybeRunUserAutoSave", AutoSaveLoopTimeLimitMs)
     Exit Sub
 Handler:
     Call TraceError(Err.Number, Err.Description, "modUserAutoSave.MaybeRunUserAutoSave")

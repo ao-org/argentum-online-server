@@ -29,6 +29,7 @@ Option Explicit
 ''
 'When we have a list of strings, we use this to separate them and prevent
 'having too many string lengths in the queue. Yes, each string is NULL-terminated :P
+
 Public Const SEPARATOR As String * 1 = vbNullChar
 Private Const SPELL_UNASSISTED_FULGOR = 52
 Private Const SPELL_UNASSISTED_ECO = 61
@@ -6009,16 +6010,16 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
         Dim ObjCania             As t_Obj
         'HarThaoS: Si es un hilo de pesca y lo estoy arrastrando en una caña rota borro del slot viejo y en el nuevo pongo la caña correspondiente
         If SlotViejo > getMaxInventorySlots(UserIndex) Or SlotNuevo > getMaxInventorySlots(UserIndex) Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
-        If .invent.Object(SlotViejo).ObjIndex = 2183 Then
+        If .invent.Object(SlotViejo).ObjIndex = OBJ_FISHING_LINE Then
             Select Case .invent.Object(SlotNuevo).ObjIndex
-                Case 3457
-                    ObjCania.ObjIndex = 881
-                Case 3456
-                    ObjCania.ObjIndex = 2121
-                Case 3459
-                    ObjCania.ObjIndex = 2132
-                Case 3458
-                    ObjCania.ObjIndex = 2133
+                Case OBJ_BROKEN_FISHING_ROD_BASIC
+                    ObjCania.ObjIndex = OBJ_FISHING_ROD_BASIC
+                Case OBJ_BROKEN_FISHING_ROD_COMMON
+                    ObjCania.ObjIndex = OBJ_FISHING_ROD_COMMON
+                Case OBJ_BROKEN_FISHING_ROD_FINE
+                    ObjCania.ObjIndex = OBJ_FISHING_ROD_FINE
+                Case OBJ_BROKEN_FISHING_ROD_ELITE
+                    ObjCania.ObjIndex = OBJ_FISHING_ROD_ELITE
             End Select
             ObjCania.amount = 1
             'si el objeto que estaba pisando era una caña rota.
@@ -7665,27 +7666,46 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
     Dim LoopC    As Integer
     Dim obj      As t_Obj
     Dim caniaOld As Integer
+    Dim shouldBreak As Boolean
+
     With UserList(UserIndex)
         obj.ObjIndex = .invent.EquippedWorkingToolObjIndex
         caniaOld = .invent.EquippedWorkingToolObjIndex
         obj.amount = 1
+        shouldBreak = (RandomNumber(1, 3) = 1)
         For LoopC = 1 To MAX_INVENTORY_SLOTS
             'Rastreo la caña que está usando en el inventario y se la rompo
             If .invent.Object(LoopC).ObjIndex = .invent.EquippedWorkingToolObjIndex Then
-                'Le quito una caña
-                Call QuitarUserInvItem(UserIndex, LoopC, 1)
-                Call UpdateUserInv(False, UserIndex, LoopC)
-                Select Case caniaOld
-                    Case 881
-                        obj.ObjIndex = 3457
-                    Case 2121
-                        obj.ObjIndex = 3456
-                    Case 2132
-                        obj.ObjIndex = 3459
-                    Case 2133
-                        obj.ObjIndex = 3458
-                End Select
-                Call MeterItemEnInventario(UserIndex, obj)
+                If caniaOld = OBJ_FISHING_NET_BASIC Or caniaOld = OBJ_FISHING_NET_ELITE Then
+                    If shouldBreak Then
+                        'Le quito una red
+                        Call QuitarUserInvItem(UserIndex, LoopC, 1)
+                        Call UpdateUserInv(False, UserIndex, LoopC)
+                        Call WriteLocaleMsg(UserIndex, MSG_REMOVE_NET_LOST, e_FontTypeNames.FONTTYPE_INFO)
+                    Else
+                        Call WriteLocaleMsg(UserIndex, MSG_REMOVE_NET_ALMOST_LOST, e_FontTypeNames.FONTTYPE_INFO)
+                    End If
+                Else
+                    If shouldBreak Then
+                        'Le quito una caña
+                        Call QuitarUserInvItem(UserIndex, LoopC, 1)
+                        Call UpdateUserInv(False, UserIndex, LoopC)
+
+                        Select Case caniaOld
+                            Case OBJ_FISHING_ROD_BASIC
+                                obj.ObjIndex = OBJ_BROKEN_FISHING_ROD_BASIC
+                            Case OBJ_FISHING_ROD_COMMON
+                                obj.ObjIndex = OBJ_BROKEN_FISHING_ROD_COMMON
+                            Case OBJ_FISHING_ROD_FINE
+                                obj.ObjIndex = OBJ_BROKEN_FISHING_ROD_FINE
+                            Case OBJ_FISHING_ROD_ELITE
+                                obj.ObjIndex = OBJ_BROKEN_FISHING_ROD_ELITE
+                        End Select
+                        Call MeterItemEnInventario(UserIndex, obj)
+                    Else
+                        Call WriteLocaleMsg(UserIndex, MSG_REMOVE_ALMOST_YOUR_FISHING, e_FontTypeNames.FONTTYPE_INFO)
+                    End If
+                End If
                 Exit Sub
             End If
         Next LoopC

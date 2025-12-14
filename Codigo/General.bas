@@ -716,7 +716,6 @@ Sub Main()
     With frmMain
         .Minuto.Enabled = True
         .tPiqueteC.Enabled = True
-        .GameTimer.Enabled = True
         .Segundo.Enabled = True
         .KillLog.Enabled = True
         .T_UsersOnline.Enabled = True
@@ -731,6 +730,7 @@ Sub Main()
             MapInfo(BarcoNavegandoArghalForgat.Map).ForceUpdate = True
         End If
     End With
+    Call ResetGameEventsTimer
     Call ResetUserAutoSaveTimer
     Subasta.SubastaHabilitada = True
     Subasta.HaySubastaActiva = False
@@ -780,6 +780,8 @@ Sub Main()
         Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.Tick")
         Call UpdateEffectOverTime
         Call PerformTimeLimitCheck(PerformanceTimer, "General Update Effects over time")
+        Call MaybeRunGameEvents
+        Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeRunGameEvents")
         Call MaybeRunUserAutoSave
         Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeRunUserAutoSave")
         Call RunAutomatedActions
