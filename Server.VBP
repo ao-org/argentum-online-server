@@ -143,6 +143,7 @@ Module=modMessageIDs; Codigo\modMessageIDs.bas
 Module=modPartition; Codigo\modPartition.bas
 Module=ModAutomatedActions; Codigo\ModAutomatedActions.bas
 Module=ModLumberjack; Codigo\ModLumberjack.bas
+Module=ModMining; Codigo\ModMining.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
