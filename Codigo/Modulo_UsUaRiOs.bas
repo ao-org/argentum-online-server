@@ -644,6 +644,7 @@ Dim tStr                        As String
         'Actualiza el Num de usuarios
         NumUsers = NumUsers + 1
         .flags.UserLogged = True
+        Call ResetUserAutomatedActions(UserIndex)
         Call Execute("Update user set is_logged = true where id = ?", UserList(UserIndex).Id)
         .Counters.LastSave = GetTickCountRaw()
         MapInfo(.pos.Map).NumUsers = MapInfo(.pos.Map).NumUsers + 1
