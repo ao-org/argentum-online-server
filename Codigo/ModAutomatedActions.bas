@@ -1,8 +1,8 @@
 Attribute VB_Name = "ModAutomatedActions"
 Option Explicit
-
-
 Private m_LastAutomatedActionAttempt As Long
+Public Const MIN_STA_REQUIRED        As Integer = 5
+Public Const CLOSE_DISTANCE_EXTRACTION = 1
 
 Public Sub RunAutomatedActions()
     On Error GoTo RunAutomatedActions_Err
@@ -23,7 +23,9 @@ Public Sub RunAutomatedActions()
                 If .AutomatedAction.IsActive Then
                     Select Case .AutomatedAction.skill
                         Case e_Skill.Talar
-                            Call ChopWood(.AutomatedAction, UserIndex)
+                            Call ChopWood(UserIndex)
+                        Case e_Skill.Mineria
+                            Call MineMinerals(UserIndex)
                         Case Else
                             Debug.Assert False
                     End Select
@@ -46,3 +48,49 @@ Public Sub StartAutomatedAction(ByVal x As Byte, ByVal y As Byte, ByVal skill As
         .AutomatedAction.IsActive = True
     End With
 End Sub
+
+Public Function DecreaseUserStamina(ByVal UserIndex As Integer, ByVal StaminaRequirement As Integer) As Boolean
+    With UserList(UserIndex)
+        If .Stats.MinSta > StaminaRequirement Then
+            Call QuitarSta(UserIndex, StaminaRequirement)
+            DecreaseUserStamina = True
+        Else
+            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
+            .AutomatedAction.IsActive = False
+            DecreaseUserStamina = False
+        End If
+    End With
+End Function
+
+Public Function CheckResourceDistance(ByVal UserIndex As Integer, ByVal MaxExtractionDistance As Integer) As Boolean
+    With UserList(UserIndex)
+        Dim playerPosition As t_WorldPos
+        playerPosition.Map = .pos.Map
+        playerPosition.x = .pos.x
+        playerPosition.y = .pos.y
+        Dim resource As t_WorldPos
+        resource.x = .AutomatedAction.x
+        resource.y = .AutomatedAction.y
+        resource.Map = .pos.Map
+        If Distancia(playerPosition, resource) > MaxExtractionDistance Then
+            .AutomatedAction.IsActive = False
+            Exit Function
+        End If
+        CheckResourceDistance = True
+    End With
+End Function
+
+Public Function ValidResourceAtPos(ByVal UserIndex As Integer, ByVal ObjType As e_OBJType)
+    With UserList(UserIndex)
+            If MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.ObjIndex = 0 Then
+            .AutomatedAction.IsActive = False
+            Exit Function
+        End If
+        If ObjData(MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.ObjIndex).ObjType <> ObjType Then
+            .AutomatedAction.IsActive = False
+            Exit Function
+        End If
+
+        ValidResourceAtPos = True
+    End With
+End Function
