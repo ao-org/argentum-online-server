@@ -26,6 +26,8 @@ Public Sub RunAutomatedActions()
                             Call ChopWood(UserIndex)
                         Case e_Skill.Mineria
                             Call MineMinerals(UserIndex)
+                        Case e_Skill.Pescar
+                            Call PerformFishing(UserIndex)
                         Case Else
                             Debug.Assert False
                     End Select
@@ -56,7 +58,7 @@ Public Function DecreaseUserStamina(ByVal UserIndex As Integer, ByVal StaminaReq
             DecreaseUserStamina = True
         Else
             Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
-            .AutomatedAction.IsActive = False
+            Call ResetUserAutomatedActions(UserIndex)
             DecreaseUserStamina = False
         End If
     End With
@@ -73,7 +75,7 @@ Public Function CheckResourceDistance(ByVal UserIndex As Integer, ByVal MaxExtra
         resource.y = .AutomatedAction.y
         resource.Map = .pos.Map
         If Distancia(playerPosition, resource) > MaxExtractionDistance Then
-            .AutomatedAction.IsActive = False
+            Call ResetUserAutomatedActions(UserIndex)
             Exit Function
         End If
         CheckResourceDistance = True
@@ -83,11 +85,11 @@ End Function
 Public Function ValidResourceAtPos(ByVal UserIndex As Integer, ByVal ObjType As e_OBJType)
     With UserList(UserIndex)
             If MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.ObjIndex = 0 Then
-            .AutomatedAction.IsActive = False
+            Call ResetUserAutomatedActions(UserIndex)
             Exit Function
         End If
         If ObjData(MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.ObjIndex).ObjType <> ObjType Then
-            .AutomatedAction.IsActive = False
+            Call ResetUserAutomatedActions(UserIndex)
             Exit Function
         End If
 
