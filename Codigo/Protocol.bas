@@ -412,6 +412,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandlePetStand(UserIndex)
         Case ClientPacketID.ePetFollow
             Call HandlePetFollow(UserIndex)
+        Case ClientPacketID.ePetFollowAll
+            Call HandlePetFollowAll(UserIndex)
         Case ClientPacketID.ePetLeave
             Call HandlePetLeave(UserIndex)
         Case ClientPacketID.eGrupoMsg
@@ -3994,7 +3996,46 @@ Private Sub HandlePetFollow(ByVal UserIndex As Integer)
 HandlePetFollow_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetFollow", Erl)
 End Sub
-
+Private Sub HandlePetFollowAll(ByVal UserIndex As Integer)
+    On Error GoTo HandlePetFollowAll_Err
+    With UserList(UserIndex)
+        'Dead users can't use pets
+        If .flags.Muerto = 1 Then
+            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        'Validate target NPC
+        If Not IsValidNpcRef(.flags.TargetNPC) Then
+            ' Msg757=Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.
+            Call WriteLocaleMsg(UserIndex, 757, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        'Make sure it's close enough
+        If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).pos, .pos) > 10 Then
+            'Msg1164= Estás demasiado lejos.
+            Call WriteLocaleMsg(UserIndex, 1164, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        Dim i As Integer
+        Dim NpcIndex As Integer
+        For i = 1 To MAXMASCOTAS
+            If IsValidNpcRef(.MascotasIndex(i)) Then
+                NpcIndex = .MascotasIndex(i).ArrayIndex
+                If NpcList(NpcIndex).flags.NPCActive Then
+                    If IsValidUserRef(NpcList(NpcIndex).MaestroUser) Then
+                        If NpcList(NpcIndex).MaestroUser.ArrayIndex = UserIndex Then
+                            Call FollowAmo(NpcIndex)
+                            Call Expresar(NpcIndex, UserIndex)
+                        End If
+                    End If
+                End If
+            End If
+        Next i
+    End With
+    Exit Sub
+HandlePetFollowAll_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetFollowAll", Erl)
+End Sub
 ''
 ' Handles the "PetLeave" message.
 '
