@@ -8000,7 +8000,14 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
                 Exit Function
             End If
         Case e_Skill.Talar
+            If Not CanUserExtractResource(UserIndex, e_OBJType.otTrees, x, y) Then
+                Exit Function
+            End If
         Case e_Skill.Mineria
+            If Not CanUserExtractResource(UserIndex, e_OBJType.otOreDeposit, x, y) Then
+                Exit Function
+            End If
+        Case Else
     End Select
     Call StartAutomatedAction(x, y, skill, UserIndex)
     Exit Function
