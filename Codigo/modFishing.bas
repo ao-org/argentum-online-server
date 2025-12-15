@@ -73,84 +73,70 @@ Public Sub InitializeFishingBonuses()
     FishingBonusesInitialized = True
 End Sub
 
-Public Sub PerformFishing(ByVal UserIndex As Integer, Optional ByVal UsingFishingNet As Boolean = False)
+Public Sub PerformFishing(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
-
     If Not IsValidUserIndex(UserIndex) Then
         Call TraceError(1001, "Invalid user index in PerformFishing: " & UserIndex, "modFishing.PerformFishing", Erl)
         Exit Sub
     End If
-
     If Not FishingBonusesInitialized Then
         Call TraceError(1002, "Fishing bonuses were not initialized before use", "modFishing.PerformFishing", Erl)
         Call InitializeFishingBonuses
     End If
-
-    Dim staminaCost As Integer
-    Dim fishingRodBonus As Double
-    Dim levelBonus As Double
-    Dim totalBonus As Double
-    Dim reward As Double
-    Dim fishingChance As Integer
-    Dim caughtFish As Boolean
-    Dim npcIndex As Integer
-    Dim workingToolIndex As Integer
-    Dim fishingLevel As Long
-    Dim currentMap As Integer
-    Dim isSpecialFish As Boolean
-    Dim stopWorking As Boolean
-    Dim objValue As Integer
-    Dim specialRoll As Long
-    Dim fishingPoolId As Integer
-    Dim targetX As Integer
-    Dim targetY As Integer
-    Dim i As Long
-
+    Dim fishingRodBonus   As Double
+    Dim levelBonus        As Double
+    Dim totalBonus        As Double
+    Dim Reward            As Double
+    Dim fishingChance     As Integer
+    Dim caughtFish        As Boolean
+    Dim NpcIndex          As Integer
+    Dim workingToolIndex  As Integer
+    Dim fishingLevel      As Long
+    Dim isSpecialFish     As Boolean
+    Dim objValue          As Integer
+    Dim specialRoll       As Long
+    Dim fishingPoolId     As Integer
+    Dim TargetX           As Integer
+    Dim TargetY           As Integer
+    Dim i                 As Long
+    Dim IsUsingFishingNet As Boolean
     With UserList(UserIndex)
-        staminaCost = IIf(UsingFishingNet, 12, RandomNumber(2, 3))
-        If .flags.Privilegios And (e_PlayerType.Consejero) Then Exit Sub
-
-        If .Stats.MinSta > staminaCost Then
-            Call QuitarSta(UserIndex, staminaCost)
-        Else
-            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteMacroTrabajoToggle(UserIndex, False)
+        Debug.Assert .AutomatedAction.x <> 0
+        Debug.Assert .AutomatedAction.y <> 0
+        If Not DecreaseUserStamina(UserIndex, ModAutomatedActions.MIN_STA_REQUIRED) Then
             Exit Sub
         End If
-
-        currentMap = .pos.Map
-        If Not IsValidMapIndex(currentMap) Then
-            Call TraceError(1003, "Invalid map index in PerformFishing: " & currentMap, "modFishing.PerformFishing", Erl)
-            Exit Sub
-        End If
-
-        If MapInfo(currentMap).Seguro = 1 Then
+        If MapInfo(.pos.Map).Seguro = 1 Then
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageArmaMov(.Char.charindex, 0))
         Else
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(.Char.charindex, 0))
         End If
-
         workingToolIndex = .invent.EquippedWorkingToolObjIndex
         If Not IsValidObjectIndex(workingToolIndex) Then
             Call TraceError(1004, "Invalid fishing tool index: " & workingToolIndex, "modFishing.PerformFishing", Erl)
+            Call ResetUserAutomatedActions(UserIndex)
             Exit Sub
         End If
-
+        Select Case ObjData(workingToolIndex).Subtipo
+            Case e_WorkingToolSubType.FishingRod
+                IsUsingFishingNet = False
+            Case e_WorkingToolSubType.FishingNet
+                IsUsingFishingNet = True
+            Case Else
+                Call TraceError(1004, "Invalid fishing tool index: " & workingToolIndex, "modFishing.PerformFishing", Erl)
+                Call ResetUserAutomatedActions(UserIndex)
+                Exit Sub
+        End Select
         fishingLevel = ClampFishingLevel(.Stats.ELV)
         levelBonus = 1 + FishingLevelBonus(fishingLevel)
         fishingRodBonus = PoderCanas(ObjData(workingToolIndex).Power) / 10
         totalBonus = fishingRodBonus * levelBonus * SvrConfig.GetValue("RecoleccionMult")
-
-        If MapInfo(currentMap).Seguro <> 0 Then
+        If MapInfo(.pos.Map).Seguro <> 0 Then
             totalBonus = totalBonus * PorcentajePescaSegura / 100
         End If
-
         reward = (IntervaloTrabajarExtraer / 3600000#) * 8000# * totalBonus * 1.2 * (1 + (RandomNumber(0, 20) - 10) / 100)
-
         fishingChance = GetFishingChance(.Stats.UserSkills(e_Skill.Pescar))
         caughtFish = RandomNumber(1, 100) <= fishingChance
-
-        stopWorking = False
         If caughtFish Then
             If IsFeatureEnabled("gain_exp_while_working") Then
                 Call GiveExpWhileWorking(UserIndex, workingToolIndex, e_JobsTypes.Fisherman)
@@ -165,39 +151,31 @@ Public Sub PerformFishing(ByVal UserIndex As Integer, Optional ByVal UsingFishin
                 Call TraceError(1005, "Invalid fish object index: " & fishingCatch.ObjIndex, "modFishing.PerformFishing", Erl)
                 Exit Sub
             End If
-
             objValue = max(ObjData(fishingCatch.ObjIndex).Valor / 3, 1)
-            
-            If IsUniqueMapFish(fishingCatch.ObjIndex) And currentMap <> SvrConfig.GetValue("FISHING_MAP_SPECIAL_FISH1_ID") Then
-
+            If IsUniqueMapFish(fishingCatch.ObjIndex) And .pos.Map <> SvrConfig.GetValue("FISHING_MAP_SPECIAL_FISH1_ID") Then
                 fishingCatch.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH1_REMPLAZO_ID")
-
-                If MapInfo(currentMap).Seguro = 0 Then
+                If MapInfo(.pos.Map).Seguro = 0 Then
                     npcIndex = SpawnNpc(SvrConfig.GetValue("NPC_WATCHMAN_ID"), .pos, True, False)
                 End If
-                Call WriteMacroTrabajoToggle(UserIndex, False)
             End If
-
             fishingCatch.amount = Round(reward / objValue)
             If fishingCatch.amount <= 0 Then
                 fishingCatch.amount = 1
             End If
-
             targetX = .Trabajo.Target_X
             targetY = .Trabajo.Target_Y
-
-            If MapInfo(currentMap).Seguro = 0 Then
+            If MapInfo(.pos.Map).Seguro = 0 Then
                 fishingPoolId = SvrConfig.GetValue("FISHING_POOL_ID")
-                If fishingPoolId > 0 And IsValidMapPosition(currentMap, targetX, targetY) Then
-                    If fishingPoolId = MapData(currentMap, targetX, targetY).ObjInfo.ObjIndex Then
-                        If fishingCatch.amount > MapData(currentMap, targetX, targetY).ObjInfo.amount Then
-                            fishingCatch.amount = MapData(currentMap, targetX, targetY).ObjInfo.amount
-                            Call CreateFishingPool(currentMap)
-                            Call EraseObj(MapData(currentMap, targetX, targetY).ObjInfo.amount, currentMap, targetX, targetY)
+                If fishingPoolId > 0 And IsValidMapPosition(.pos.Map, TargetX, TargetY) Then
+                    If fishingPoolId = MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex Then
+                        If fishingCatch.amount > MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount Then
+                            fishingCatch.amount = MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount
+                            Call CreateFishingPool(.pos.Map)
+                            Call EraseObj(MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount, .pos.Map, TargetX, TargetY)
                             Call WriteLocaleMsg(UserIndex, 649, e_FontTypeNames.FONTTYPE_INFO)
-                            stopWorking = True
+                            .AutomatedAction.IsActive = True
                         End If
-                        MapData(currentMap, targetX, targetY).ObjInfo.amount = MapData(currentMap, targetX, targetY).ObjInfo.amount - fishingCatch.amount
+                        MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount = MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount - fishingCatch.amount
                     End If
                 End If
             End If
@@ -211,29 +189,24 @@ Public Sub PerformFishing(ByVal UserIndex As Integer, Optional ByVal UsingFishin
                     End If
                 Next i
             End If
-
             If Not isSpecialFish Then
                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(fishingCatch.ObjIndex).GrhIndex))
             Else
                 .flags.PescandoEspecial = True
-                Call WriteMacroTrabajoToggle(UserIndex, False)
                 .Stats.NumObj_PezEspecial = fishingCatch.ObjIndex
                 Call WritePelearConPezEspecial(UserIndex)
+                Call ResetUserAutomatedActions(UserIndex)
                 Exit Sub
             End If
-
             If fishingCatch.ObjIndex = 0 Then Exit Sub
-
             If Not MeterItemEnInventario(UserIndex, fishingCatch) Then
-                stopWorking = True
+                Call ResetUserAutomatedActions(UserIndex)
             End If
-
             Call WriteTextCharDrop(UserIndex, "+" & fishingCatch.amount, .Char.charindex, vbWhite)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .pos.x, .pos.y))
-
             If HasSpecialFishingRewards() Then
                 For i = 1 To UBound(EspecialesPesca)
-                    specialRoll = RandomNumber(1, IIf(UsingFishingNet, EspecialesPesca(i).data * 2, EspecialesPesca(i).data))
+                    specialRoll = RandomNumber(1, IIf(IsUsingFishingNet, EspecialesPesca(i).data * 2, EspecialesPesca(i).data))
                     If specialRoll = 1 Then
                         fishingCatch.ObjIndex = EspecialesPesca(i).ObjIndex
                         fishingCatch.amount = 1
@@ -247,25 +220,10 @@ Public Sub PerformFishing(ByVal UserIndex As Integer, Optional ByVal UsingFishin
         Else
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, GRH_FALLO_PESCA))
         End If
-
-        If MapInfo(currentMap).Seguro = 0 Then
+        If MapInfo(.pos.Map).Seguro = 0 Then
             Call SubirSkill(UserIndex, e_Skill.Pescar)
         End If
-
-        If stopWorking Then
-            Call WriteWorkRequestTarget(UserIndex, 0)
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Sub
-        End If
-
-        .Counters.Trabajando = .Counters.Trabajando + 1
-        .Counters.LastTrabajo = Int(IntervaloTrabajarExtraer / 1000)
-
-        If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
-            Call WriteMacroTrabajoToggle(UserIndex, True)
-        End If
     End With
-
     Exit Sub
 ErrHandler:
     Call LogError("Error in PerformFishing. Error " & Err.Number & " - " & Err.Description & " Line number: " & Erl)
@@ -428,5 +386,74 @@ IsUniqueMapFish_Err:
     Call TraceError(Err.Number, Err.Description, "modFishing.IsUniqueMapFish", Erl)
 End Function
 
+Public Function CanUserFish(ByVal UserIndex As Integer, ByVal TargetX As Integer, ByVal TargetY As Integer) As Boolean
+    With UserList(UserIndex)
+        Debug.Assert TargetX <> 0
+        Debug.Assert TargetY <> 0
+        If .invent.EquippedWorkingToolObjIndex = 0 Then
+            Exit Function
+        End If
+        If ObjData(.invent.EquippedWorkingToolObjIndex).ObjType <> e_OBJType.otWorkingTools Then
+            Exit Function
+        End If
+        If Not ValidateFishingPosition(UserIndex, TargetX, TargetY) Then
+            Exit Function
+        End If
+        CanUserFish = True
+    End With
+End Function
 
+Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal TargetX As Integer, ByVal TargetY As Integer) As Boolean
+    ValidateFishingPosition = False
+    With UserList(UserIndex)
+        ' Check if target position has water flag
+        If Not IsValidMapIndex(.pos.Map) Then
+            Call TraceError(1003, "Invalid map index in PerformFishing: " & .pos.Map, "modFishing.PerformFishing", Erl)
+            Exit Function
+        End If
+        If (MapData(.pos.Map, TargetX, TargetY).Blocked And FLAG_AGUA) = 0 Then
+            ' No water at target position
+            Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)  ' Zona de pesca no Autorizada
+            Exit Function
+        End If
+        ' Check for invalid fishing trigger
+        If MapData(.pos.Map, .pos.x, .pos.y).trigger = e_Trigger.PESCAINVALIDA Then
+            Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+        ' Validate player position relative to water
+        If IsStandingOnWater(.pos) Then
+            Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+        If Not IsAdjacentToWater(.pos) Then
+            ' Msg1021= Acércate a la costa para pescar.
+            Call WriteLocaleMsg(UserIndex, 1021, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+        If UserList(UserIndex).flags.Navegando <> 0 Then
+            Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+        If MapInfo(.pos.Map).zone = "DUNGEON" Then
+            Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+        ValidateFishingPosition = True
+    End With
+End Function
+
+' Helper function to check if position has water
+Private Function IsStandingOnWater(ByRef pos As t_WorldPos) As Boolean
+    IsStandingOnWater = (MapData(pos.Map, pos.x, pos.y).Blocked And FLAG_AGUA) <> 0
+End Function
+
+' Helper function to check if any adjacent tile has water
+Private Function IsAdjacentToWater(ByRef pos As t_WorldPos) As Boolean
+    IsAdjacentToWater = _
+        (MapData(pos.Map, pos.x + 1, pos.y).Blocked And FLAG_AGUA) <> 0 Or _
+        (MapData(pos.Map, pos.x - 1, pos.y).Blocked And FLAG_AGUA) <> 0 Or _
+        (MapData(pos.Map, pos.x, pos.y + 1).Blocked And FLAG_AGUA) <> 0 Or _
+        (MapData(pos.Map, pos.x, pos.y - 1).Blocked And FLAG_AGUA) <> 0
+End Function
 

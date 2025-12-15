@@ -26,6 +26,8 @@ Public Sub RunAutomatedActions()
                             Call ChopWood(UserIndex)
                         Case e_Skill.Mineria
                             Call MineMinerals(UserIndex)
+                        Case e_Skill.Pescar
+                            Call PerformFishing(UserIndex)
                         Case Else
                             Debug.Assert False
                     End Select
@@ -56,41 +58,47 @@ Public Function DecreaseUserStamina(ByVal UserIndex As Integer, ByVal StaminaReq
             DecreaseUserStamina = True
         Else
             Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
-            .AutomatedAction.IsActive = False
+            Call ResetUserAutomatedActions(UserIndex)
             DecreaseUserStamina = False
         End If
     End With
 End Function
 
-Public Function CheckResourceDistance(ByVal UserIndex As Integer, ByVal MaxExtractionDistance As Integer) As Boolean
+Public Function CheckResourceDistance(ByVal UserIndex As Integer, ByVal MaxExtractionDistance, ByVal TargetX As Integer, ByVal TargetY As Integer) As Boolean
     With UserList(UserIndex)
         Dim playerPosition As t_WorldPos
         playerPosition.Map = .pos.Map
         playerPosition.x = .pos.x
         playerPosition.y = .pos.y
         Dim resource As t_WorldPos
-        resource.x = .AutomatedAction.x
-        resource.y = .AutomatedAction.y
+        resource.x = TargetX
+        resource.y = TargetY
         resource.Map = .pos.Map
         If Distancia(playerPosition, resource) > MaxExtractionDistance Then
-            .AutomatedAction.IsActive = False
             Exit Function
         End If
         CheckResourceDistance = True
     End With
 End Function
 
-Public Function ValidResourceAtPos(ByVal UserIndex As Integer, ByVal ObjType As e_OBJType)
+Public Function ValidResourceAtPos(ByVal UserIndex As Integer, ByVal WorkingToolIndex As e_OBJType, ByVal TargetX As Integer, ByVal TargetY As Integer)
     With UserList(UserIndex)
-            If MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.ObjIndex = 0 Then
-            .AutomatedAction.IsActive = False
+            If MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex = 0 Then
             Exit Function
         End If
-        If ObjData(MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.ObjIndex).ObjType <> ObjType Then
-            .AutomatedAction.IsActive = False
+        If ObjData(MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex).ObjType <> WorkingToolIndex Then
             Exit Function
         End If
-
         ValidResourceAtPos = True
     End With
+End Function
+
+Public Function CanUserExtractResource(ByVal UserIndex As Integer, ByVal ResourceType As e_OBJType, ByVal TargetX As Integer, ByVal TargetY As Integer) As Boolean
+        If Not ValidResourceAtPos(UserIndex, ResourceType, TargetX, TargetY) Then
+            Exit Function
+        End If
+        If Not CheckResourceDistance(UserIndex, CLOSE_DISTANCE_EXTRACTION, TargetX, TargetY) Then
+            Exit Function
+        End If
+        CanUserExtractResource = True
 End Function

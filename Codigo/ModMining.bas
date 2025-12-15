@@ -3,13 +3,7 @@ Option Explicit
 
 Public Sub MineMinerals(ByVal UserIndex As Integer)
     With UserList(UserIndex)
-        If Not ValidResourceAtPos(UserIndex, otOreDeposit) Then
-            Exit Sub
-        End If
         If Not DecreaseUserStamina(UserIndex, ModAutomatedActions.MIN_STA_REQUIRED) Then
-            Exit Sub
-        End If
-        If Not CheckResourceDistance(UserIndex, CLOSE_DISTANCE_EXTRACTION) Then
             Exit Sub
         End If
         Dim Suerte     As Integer
