@@ -27,12 +27,70 @@ Option Explicit
 
 Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
     Select Case PacketId
-        Case ClientPacketID.eMinPacket
-            PacketID_to_string = "eMinPacket"
+        Case ClientPacketID.eLoginExistingChar
+            PacketID_to_string = "eLoginExistingChar"
+        Case ClientPacketID.eLoginNewChar
+            PacketID_to_string = "eLoginNewChar"
+        Case ClientPacketID.eWalk
+            PacketID_to_string = "eWalk"
+        Case ClientPacketID.eAttack
+            PacketID_to_string = "eAttack"
+        Case ClientPacketID.eTalk
+            PacketID_to_string = "eTalk"
+        Case ClientPacketID.eYell
+            PacketID_to_string = "eYell"
+        Case ClientPacketID.eWhisper
+            PacketID_to_string = "eWhisper"
+        Case ClientPacketID.eRequestPositionUpdate
+            PacketID_to_string = "eRequestPositionUpdate"
+        Case ClientPacketID.ePickUp
+            PacketID_to_string = "ePickUp"
+        Case ClientPacketID.eSafeToggle
+            PacketID_to_string = "eSafeToggle"
+        Case ClientPacketID.ePartySafeToggle
+            PacketID_to_string = "ePartySafeToggle"
+        Case ClientPacketID.eRequestGuildLeaderInfo
+            PacketID_to_string = "eRequestGuildLeaderInfo"
+        Case ClientPacketID.eRequestAtributes
+            PacketID_to_string = "eRequestAtributes"
+        Case ClientPacketID.eRequestSkills
+            PacketID_to_string = "eRequestSkills"
+        Case ClientPacketID.eRequestMiniStats
+            PacketID_to_string = "eRequestMiniStats"
+        Case ClientPacketID.eCommerceEnd
+            PacketID_to_string = "eCommerceEnd"
+        Case ClientPacketID.eUserCommerceEnd
+            PacketID_to_string = "eUserCommerceEnd"
+        Case ClientPacketID.eBankEnd
+            PacketID_to_string = "eBankEnd"
+        Case ClientPacketID.eUserCommerceOk
+            PacketID_to_string = "eUserCommerceOk"
+        Case ClientPacketID.eUserCommerceReject
+            PacketID_to_string = "eUserCommerceReject"
+        Case ClientPacketID.eDrop
+            PacketID_to_string = "eDrop"
+        Case ClientPacketID.eCastSpell
+            PacketID_to_string = "eCastSpell"
+        Case ClientPacketID.eLeftClick
+            PacketID_to_string = "eLeftClick"
+        Case ClientPacketID.eDoubleClick
+            PacketID_to_string = "eDoubleClick"
+        Case ClientPacketID.eWork
+            PacketID_to_string = "eWork"
+        Case ClientPacketID.eUseSpellMacro
+            PacketID_to_string = "eUseSpellMacro"
+        Case ClientPacketID.eUseItem
+            PacketID_to_string = "eUseItem"
+        Case ClientPacketID.eUseItemU
+            PacketID_to_string = "eUseItemU"
+        Case ClientPacketID.eCraftBlacksmith
+            PacketID_to_string = "eCraftBlacksmith"
         Case ClientPacketID.eCraftCarpenter
             PacketID_to_string = "eCraftCarpenter"
         Case ClientPacketID.eWorkLeftClick
             PacketID_to_string = "eWorkLeftClick"
+        Case ClientPacketID.eStartAutomatedAction
+            PacketID_to_string = "eStartAutomatedAction"
         Case ClientPacketID.eCreateNewGuild
             PacketID_to_string = "eCreateNewGuild"
         Case ClientPacketID.eSpellInfo
@@ -115,6 +173,8 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "ePetStand"
         Case ClientPacketID.ePetFollow
             PacketID_to_string = "ePetFollow"
+        Case ClientPacketID.ePetFollowAll
+            PacketID_to_string = "ePetFollowAll"
         Case ClientPacketID.ePetLeave
             PacketID_to_string = "ePetLeave"
         Case ClientPacketID.eGrupoMsg
@@ -153,8 +213,6 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eGuildOnline"
         Case ClientPacketID.eCouncilMessage
             PacketID_to_string = "eCouncilMessage"
-        Case ClientPacketID.eFactionMessage
-            PacketID_to_string = "eFactionMessage"
         Case ClientPacketID.eRoleMasterRequest
             PacketID_to_string = "eRoleMasterRequest"
         Case ClientPacketID.eChangeDescription
@@ -175,62 +233,6 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eBankDepositGold"
         Case ClientPacketID.eDenounce
             PacketID_to_string = "eDenounce"
-        Case ClientPacketID.eLoginExistingChar
-            PacketID_to_string = "eLoginExistingChar"
-        Case ClientPacketID.eLoginNewChar
-            PacketID_to_string = "eLoginNewChar"
-        Case ClientPacketID.eTalk
-            PacketID_to_string = "eTalk"
-        Case ClientPacketID.eYell
-            PacketID_to_string = "eYell"
-        Case ClientPacketID.eWhisper
-            PacketID_to_string = "eWhisper"
-        Case ClientPacketID.eWalk
-            PacketID_to_string = "eWalk"
-        Case ClientPacketID.eRequestPositionUpdate
-            PacketID_to_string = "eRequestPositionUpdate"
-        Case ClientPacketID.eAttack
-            PacketID_to_string = "eAttack"
-        Case ClientPacketID.ePickUp
-            PacketID_to_string = "ePickUp"
-        Case ClientPacketID.eSafeToggle
-            PacketID_to_string = "eSafeToggle"
-        Case ClientPacketID.ePartySafeToggle
-            PacketID_to_string = "ePartySafeToggle"
-        Case ClientPacketID.eRequestGuildLeaderInfo
-            PacketID_to_string = "eRequestGuildLeaderInfo"
-        Case ClientPacketID.eRequestAtributes
-            PacketID_to_string = "eRequestAtributes"
-        Case ClientPacketID.eRequestSkills
-            PacketID_to_string = "eRequestSkills"
-        Case ClientPacketID.eRequestMiniStats
-            PacketID_to_string = "eRequestMiniStats"
-        Case ClientPacketID.eCommerceEnd
-            PacketID_to_string = "eCommerceEnd"
-        Case ClientPacketID.eUserCommerceEnd
-            PacketID_to_string = "eUserCommerceEnd"
-        Case ClientPacketID.eBankEnd
-            PacketID_to_string = "eBankEnd"
-        Case ClientPacketID.eUserCommerceOk
-            PacketID_to_string = "eUserCommerceOk"
-        Case ClientPacketID.eUserCommerceReject
-            PacketID_to_string = "eUserCommerceReject"
-        Case ClientPacketID.eDrop
-            PacketID_to_string = "eDrop"
-        Case ClientPacketID.eCastSpell
-            PacketID_to_string = "eCastSpell"
-        Case ClientPacketID.eLeftClick
-            PacketID_to_string = "eLeftClick"
-        Case ClientPacketID.eDoubleClick
-            PacketID_to_string = "eDoubleClick"
-        Case ClientPacketID.eWork
-            PacketID_to_string = "eWork"
-        Case ClientPacketID.eUseSpellMacro
-            PacketID_to_string = "eUseSpellMacro"
-        Case ClientPacketID.eUseItem
-            PacketID_to_string = "eUseItem"
-        Case ClientPacketID.eCraftBlacksmith
-            PacketID_to_string = "eCraftBlacksmith"
         Case ClientPacketID.eGMMessage
             PacketID_to_string = "eGMMessage"
         Case ClientPacketID.eshowName
@@ -275,40 +277,50 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eKillNPC"
         Case ClientPacketID.eWarnUser
             PacketID_to_string = "eWarnUser"
-        Case ClientPacketID.eEditNPC
-            PacketID_to_string = "eEditNPC"
-        Case ClientPacketID.eEditNPCInv
-            PacketID_to_string = "eEditNPCInv"
-        Case ClientPacketID.eEditNPCSpells
-            PacketID_to_string = "eEditNPCSpells"
-        Case ClientPacketID.eReloadNPCs
-            PacketID_to_string = "eReloadNPCs"
-        Case ClientPacketID.eCreateNPC
-            PacketID_to_string = "eCreateNPC"
-        Case ClientPacketID.eImperialArmour
-            PacketID_to_string = "eImperialArmour"
-        Case ClientPacketID.eChaosArmour
-            PacketID_to_string = "eChaosArmour"
-        Case ClientPacketID.eNavigateToggle
-            PacketID_to_string = "eNavigateToggle"
-        Case ClientPacketID.eServerOpenToUsers
-            PacketID_to_string = "eServerOpenToUsers"
-        Case ClientPacketID.eTurnOffServer
-            PacketID_to_string = "eTurnOffServer"
-        Case ClientPacketID.eRequestUserStats
-            PacketID_to_string = "eRequestUserStats"
-        Case ClientPacketID.eRequestFullUserList
-            PacketID_to_string = "eRequestFullUserList"
-        Case ClientPacketID.eAlterPassword
-            PacketID_to_string = "eAlterPassword"
-        Case ClientPacketID.eAlterMail
-            PacketID_to_string = "eAlterMail"
-        Case ClientPacketID.ePetWatch
-            PacketID_to_string = "ePetWatch"
+        Case ClientPacketID.eEditChar
+            PacketID_to_string = "eEditChar"
+        Case ClientPacketID.eRequestCharInfo
+            PacketID_to_string = "eRequestCharInfo"
+        Case ClientPacketID.eRequestCharStats
+            PacketID_to_string = "eRequestCharStats"
+        Case ClientPacketID.eRequestCharGold
+            PacketID_to_string = "eRequestCharGold"
+        Case ClientPacketID.eRequestCharInventory
+            PacketID_to_string = "eRequestCharInventory"
+        Case ClientPacketID.eRequestCharBank
+            PacketID_to_string = "eRequestCharBank"
+        Case ClientPacketID.eRequestCharSkills
+            PacketID_to_string = "eRequestCharSkills"
+        Case ClientPacketID.eReviveChar
+            PacketID_to_string = "eReviveChar"
+        Case ClientPacketID.eNotifyInventarioHechizos
+            PacketID_to_string = "eNotifyInventarioHechizos"
+        Case ClientPacketID.eOnlineGM
+            PacketID_to_string = "eOnlineGM"
+        Case ClientPacketID.eOnlineMap
+            PacketID_to_string = "eOnlineMap"
+        Case ClientPacketID.eForgive
+            PacketID_to_string = "eForgive"
+        Case ClientPacketID.ePerdonFaccion
+            PacketID_to_string = "ePerdonFaccion"
+        Case ClientPacketID.eStartEvent
+            PacketID_to_string = "eStartEvent"
+        Case ClientPacketID.eCancelarEvento
+            PacketID_to_string = "eCancelarEvento"
+        Case ClientPacketID.eKick
+            PacketID_to_string = "eKick"
+        Case ClientPacketID.eExecute
+            PacketID_to_string = "eExecute"
+        Case ClientPacketID.eBanChar
+            PacketID_to_string = "eBanChar"
+        Case ClientPacketID.eUnbanChar
+            PacketID_to_string = "eUnbanChar"
+        Case ClientPacketID.eNPCFollow
+            PacketID_to_string = "eNPCFollow"
         Case ClientPacketID.eSummonChar
             PacketID_to_string = "eSummonChar"
-        Case ClientPacketID.eSpawnList
-            PacketID_to_string = "eSpawnList"
+        Case ClientPacketID.eSpawnListRequest
+            PacketID_to_string = "eSpawnListRequest"
         Case ClientPacketID.eSpawnCreature
             PacketID_to_string = "eSpawnCreature"
         Case ClientPacketID.eResetNPCInventory
@@ -323,14 +335,96 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eIPToNick"
         Case ClientPacketID.eGuildOnlineMembers
             PacketID_to_string = "eGuildOnlineMembers"
-        Case ClientPacketID.eOnlineGM
-            PacketID_to_string = "eOnlineGM"
-        Case ClientPacketID.eAddKill
-            PacketID_to_string = "eAddKill"
-        Case ClientPacketID.eADDGold
-            PacketID_to_string = "eADDGold"
-        Case ClientPacketID.eImpersonate
-            PacketID_to_string = "eImpersonate"
+        Case ClientPacketID.eTeleportCreate
+            PacketID_to_string = "eTeleportCreate"
+        Case ClientPacketID.eTeleportDestroy
+            PacketID_to_string = "eTeleportDestroy"
+        Case ClientPacketID.eRainToggle
+            PacketID_to_string = "eRainToggle"
+        Case ClientPacketID.eSetCharDescription
+            PacketID_to_string = "eSetCharDescription"
+        Case ClientPacketID.eForceMIDIToMap
+            PacketID_to_string = "eForceMIDIToMap"
+        Case ClientPacketID.eForceWAVEToMap
+            PacketID_to_string = "eForceWAVEToMap"
+        Case ClientPacketID.eRoyalArmyMessage
+            PacketID_to_string = "eRoyalArmyMessage"
+        Case ClientPacketID.eChaosLegionMessage
+            PacketID_to_string = "eChaosLegionMessage"
+        Case ClientPacketID.eTalkAsNPC
+            PacketID_to_string = "eTalkAsNPC"
+        Case ClientPacketID.eDestroyAllItemsInArea
+            PacketID_to_string = "eDestroyAllItemsInArea"
+        Case ClientPacketID.eAcceptRoyalCouncilMember
+            PacketID_to_string = "eAcceptRoyalCouncilMember"
+        Case ClientPacketID.eAcceptChaosCouncilMember
+            PacketID_to_string = "eAcceptChaosCouncilMember"
+        Case ClientPacketID.eItemsInTheFloor
+            PacketID_to_string = "eItemsInTheFloor"
+        Case ClientPacketID.eMakeDumb
+            PacketID_to_string = "eMakeDumb"
+        Case ClientPacketID.eMakeDumbNoMore
+            PacketID_to_string = "eMakeDumbNoMore"
+        Case ClientPacketID.eCouncilKick
+            PacketID_to_string = "eCouncilKick"
+        Case ClientPacketID.eSetTrigger
+            PacketID_to_string = "eSetTrigger"
+        Case ClientPacketID.eAskTrigger
+            PacketID_to_string = "eAskTrigger"
+        Case ClientPacketID.eGuildMemberList
+            PacketID_to_string = "eGuildMemberList"
+        Case ClientPacketID.eGuildBan
+            PacketID_to_string = "eGuildBan"
+        Case ClientPacketID.eCreateItem
+            PacketID_to_string = "eCreateItem"
+        Case ClientPacketID.eDestroyItems
+            PacketID_to_string = "eDestroyItems"
+        Case ClientPacketID.eChaosLegionKick
+            PacketID_to_string = "eChaosLegionKick"
+        Case ClientPacketID.eRoyalArmyKick
+            PacketID_to_string = "eRoyalArmyKick"
+        Case ClientPacketID.eForceMIDIAll
+            PacketID_to_string = "eForceMIDIAll"
+        Case ClientPacketID.eForceWAVEAll
+            PacketID_to_string = "eForceWAVEAll"
+        Case ClientPacketID.eRemovePunishment
+            PacketID_to_string = "eRemovePunishment"
+        Case ClientPacketID.eTileBlockedToggle
+            PacketID_to_string = "eTileBlockedToggle"
+        Case ClientPacketID.eKillNPCNoRespawn
+            PacketID_to_string = "eKillNPCNoRespawn"
+        Case ClientPacketID.eKillAllNearbyNPCs
+            PacketID_to_string = "eKillAllNearbyNPCs"
+        Case ClientPacketID.eLastIP
+            PacketID_to_string = "eLastIP"
+        Case ClientPacketID.eChangeMOTD
+            PacketID_to_string = "eChangeMOTD"
+        Case ClientPacketID.eSetMOTD
+            PacketID_to_string = "eSetMOTD"
+        Case ClientPacketID.eSystemMessage
+            PacketID_to_string = "eSystemMessage"
+        Case ClientPacketID.eCreateNPC
+            PacketID_to_string = "eCreateNPC"
+        Case ClientPacketID.eCreateNPCWithRespawn
+            PacketID_to_string = "eCreateNPCWithRespawn"
+        Case ClientPacketID.eImperialArmour
+            PacketID_to_string = "eImperialArmour"
+        Case ClientPacketID.eChaosArmour
+            PacketID_to_string = "eChaosArmour"
+        Case ClientPacketID.eNavigateToggle
+            PacketID_to_string = "eNavigateToggle"
+        Case ClientPacketID.eServerOpenToUsersToggle
+            PacketID_to_string = "eServerOpenToUsersToggle"
+        Case ClientPacketID.eParticipar
+            PacketID_to_string = "eParticipar"
+        Case ClientPacketID.eTurnCriminal
+            PacketID_to_string = "eTurnCriminal"
+        Case ClientPacketID.eResetFactions
+            PacketID_to_string = "eResetFactions"
+        Case ClientPacketID.eRemoveCharFromGuild
+            PacketID_to_string = "eRemoveCharFromGuild"
+        Case ClientPacketID.eAlterName
+            PacketID_to_string = "eAlterName"
         Case ClientPacketID.eDoBackUp
             PacketID_to_string = "eDoBackUp"
         Case ClientPacketID.eShowGuildMessages
@@ -531,20 +625,10 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eFinalizarPescaEspecial"
         Case ClientPacketID.eRomperCania
             PacketID_to_string = "eRomperCania"
-        Case ClientPacketID.eUseItemU
-            PacketID_to_string = "eUseItemU"
         Case ClientPacketID.eRepeatMacro
             PacketID_to_string = "eRepeatMacro"
         Case ClientPacketID.eBuyShopItem
             PacketID_to_string = "eBuyShopItem"
-        Case ClientPacketID.ePerdonFaccion
-            PacketID_to_string = "ePerdonFaccion"
-        Case ClientPacketID.eStartEvent
-            PacketID_to_string = "eStartEvent"
-        Case ClientPacketID.eCancelarEvento
-            PacketID_to_string = "eCancelarEvento"
-        Case ClientPacketID.eNotifyInventarioHechizos
-            PacketID_to_string = "eNotifyInventarioHechizos"
         Case ClientPacketID.ePublicarPersonajeMAO
             PacketID_to_string = "ePublicarPersonajeMAO"
         Case ClientPacketID.eEventoFaccionario
@@ -563,20 +647,14 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eUseHKeySlot"
         Case ClientPacketID.eAntiCheatMessage
             PacketID_to_string = "eAntiCheatMessage"
-        Case ClientPacketID.eRequestLobbyList
-            PacketID_to_string = "eRequestLobbyList"
+        Case ClientPacketID.eFactionMessage
+            PacketID_to_string = "eFactionMessage"
         Case ClientPacketID.eCreateAccount
             PacketID_to_string = "eCreateAccount"
         Case ClientPacketID.eLoginAccount
             PacketID_to_string = "eLoginAccount"
         Case ClientPacketID.eDeleteCharacter
             PacketID_to_string = "eDeleteCharacter"
-        Case ClientPacketID.eChangeSkinSlot
-            PacketID_to_string = "eChangeSkinSlot"
-        Case ClientPacketID.eStartAutomatedAction
-            PacketID_to_string = "eStartAutomatedAction"
-        Case ClientPacketID.ePetFollowAll
-            PacketID_to_string = "ePetFollowAll"
         Case Else
             PacketID_to_string = "Unknown ClientPacketID (" & CStr(PacketId) & ")"
     End Select
