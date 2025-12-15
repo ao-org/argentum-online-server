@@ -616,6 +616,7 @@ Sub Main()
     Call ChDir(App.Path)
     Call ChDrive(App.Path)
     Call InicializarConstantes
+    MAX_INVENTORY_OBJS = DEFAULT_MAX_INVENTORY_OBJS
     frmCargando.Show
     
     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
