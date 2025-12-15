@@ -7837,7 +7837,7 @@ Dim Slot As Byte
             End If
             
             If .Invent_Skins.Object(Slot).Equipped = 0 Then
-                Call LogShopTransactions("PJ ID: " & .Id & " Nick: " & .name & " -> Borró el Skin: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).name & " Tipo: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType & " Valor: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Valor)
+                Call LogShopTransactions("PJ ID: " & .Id & " Nick: " & .name & " -> Borró el Skin: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).name & " Tipo: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).ObjType & " Valor: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Valor)
                 Call DesequiparSkin(UserIndex, Slot)
                 'Msg1287= Objeto eliminado correctamente.
                 .Invent_Skins.Object(Slot).Deleted = True
@@ -7994,6 +7994,21 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
     x = reader.ReadInt8()
     y = reader.ReadInt8()
     skill = reader.ReadInt8()
+    Select Case skill
+        Case e_Skill.Pescar
+            If Not CanUserFish(UserIndex, x, y) Then
+                Exit Function
+            End If
+        Case e_Skill.Talar
+            If Not CanUserExtractResource(UserIndex, e_OBJType.otTrees, x, y) Then
+                Exit Function
+            End If
+        Case e_Skill.Mineria
+            If Not CanUserExtractResource(UserIndex, e_OBJType.otOreDeposit, x, y) Then
+                Exit Function
+            End If
+        Case Else
+    End Select
     Call StartAutomatedAction(x, y, skill, UserIndex)
     Exit Function
 HandleStartAutomatedAction_Err:

@@ -48,98 +48,10 @@ Function IsNpcAtPos(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte)
     IsNpcAtPos = MapData(Map, x, y).NpcIndex > 0
 End Function
 
-Sub HandleFishingNet(ByVal UserIndex As Integer)
-    On Error GoTo HandleFishingNet_Err:
-    With UserList(UserIndex)
-        If (MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Or MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).trigger = _
-                e_Trigger.PESCAINVALIDA Then
-            If Abs(.pos.x - .Trabajo.Target_X) + Abs(.pos.y - .Trabajo.Target_Y) > 8 Then
-                Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
-                Call WriteWorkRequestTarget(UserIndex, 0)
-                Exit Sub
-            End If
-            If MapInfo(UserList(UserIndex).pos.Map).Seguro = 1 Then
-                ' Msg593=Esta prohibida la pesca masiva en las ciudades.
-                Call WriteLocaleMsg(UserIndex, 593, e_FontTypeNames.FONTTYPE_INFO)
-                Call WriteWorkRequestTarget(UserIndex, 0)
-                Exit Sub
-            End If
-            If UserList(UserIndex).flags.Navegando = 0 Then
-                ' Msg594=Necesitas estar sobre tu barca para utilizar la red de pesca.
-                Call WriteLocaleMsg(UserIndex, 594, e_FontTypeNames.FONTTYPE_INFO)
-                Call WriteWorkRequestTarget(UserIndex, 0)
-                Exit Sub
-            End If
-            If SvrConfig.GetValue("FISHING_POOL_ID") <> MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex Then
-                ' Msg595=Para pescar con red deberás buscar un área de pesca.
-                Call WriteLocaleMsg(UserIndex, 595, e_FontTypeNames.FONTTYPE_INFO)
-                Call WriteWorkRequestTarget(UserIndex, 0)
-                Exit Sub
-            End If
-            If MapInfo(.pos.Map).zone = "DUNGEON" Then
-                Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
-                Call WriteWorkRequestTarget(UserIndex, 0)
-                Exit Sub
-            End If
-            Call PerformFishing(UserIndex, True)
-        Else
-            ' Msg596=Zona de pesca no Autorizada. Busca otro lugar para hacerlo.
-            Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteWorkRequestTarget(UserIndex, 0)
-        End If
-    End With
-    Exit Sub
-HandleFishingNet_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.HandleFishingNet", Erl)
-End Sub
-
 Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
     Dim DummyInt As Integer
     With UserList(UserIndex)
         Select Case Skill
-            Case e_Skill.Pescar
-                If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
-                If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
-                Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
-                    Case e_WorkingToolSubType.FishingRod
-                        If (MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 And Not MapData(.pos.Map, .pos.x, .pos.y).trigger = _
-                                e_Trigger.PESCAINVALIDA Then
-                            Dim isStandingOnWater As Boolean
-                            Dim isAdjacentToWater As Boolean
-
-                            isStandingOnWater = (MapData(.pos.Map, .pos.x, .pos.y).Blocked And FLAG_AGUA) <> 0
-                            isAdjacentToWater = (MapData(.pos.Map, .pos.x + 1, .pos.y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.pos.Map, .pos.x, .pos.y + 1).Blocked And FLAG_AGUA) <> 0 Or (MapData( _
-                                    .pos.Map, .pos.x - 1, .pos.y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.pos.Map, .pos.x, .pos.y - 1).Blocked And FLAG_AGUA) <> 0
-
-                            If isStandingOnWater Then
-                                Call WriteLocaleMsg(UserIndex, "1436", e_FontTypeNames.FONTTYPE_INFO)
-                                Call WriteMacroTrabajoToggle(UserIndex, False)
-                            ElseIf isAdjacentToWater Then
-                                .flags.PescandoEspecial = False
-                                If UserList(UserIndex).flags.Navegando = 0 Then
-                                    If MapInfo(.pos.Map).zone = "DUNGEON" Then
-                                        Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
-                                        Call WriteMacroTrabajoToggle(UserIndex, False)
-                                    Else
-                                        Call PerformFishing(UserIndex, False)
-                                    End If
-                                Else
-                                    Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
-                                    Call WriteMacroTrabajoToggle(UserIndex, False)
-                                End If
-                            Else
-                                'Msg1021= Acércate a la costa para pescar.
-                                Call WriteLocaleMsg(UserIndex, 1021, e_FontTypeNames.FONTTYPE_INFO)
-                                Call WriteMacroTrabajoToggle(UserIndex, False)
-                            End If
-                        Else
-                            ' Msg596=Zona de pesca no Autorizada. Busca otro lugar para hacerlo.
-                            Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
-                            Call WriteMacroTrabajoToggle(UserIndex, False)
-                        End If
-                    Case e_WorkingToolSubType.FishingNet
-                        Call HandleFishingNet(UserIndex)
-                End Select
             Case e_Skill.Carpinteria
                 'Veo cual es la cantidad máxima que puede construir de una
                 Dim cantidad_maxima As Long
