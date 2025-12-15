@@ -919,7 +919,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         HandleIncomingData = False
         Exit Function
     End If
-    Call PerformTimeLimitCheck(performance_timer, "Protocol handling message " & PacketId, 100)
+    Call PerformTimeLimitCheck(performance_timer, "Protocol handling message " & PacketID_to_string(PacketId), 100)
     HandleIncomingData = True
 End Function
 

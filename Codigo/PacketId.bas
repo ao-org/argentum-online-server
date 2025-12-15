@@ -538,3 +538,4 @@ Public Enum ClientPacketID
     eMaxPacket
     [PacketCount]
 End Enum
+
