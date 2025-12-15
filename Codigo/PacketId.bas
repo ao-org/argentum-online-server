@@ -534,6 +534,7 @@ Public Enum ClientPacketID
     #End If
     eChangeSkinSlot
     eStartAutomatedAction
+    ePetFollowAll
     eMaxPacket
     [PacketCount]
 End Enum
