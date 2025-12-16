@@ -1129,7 +1129,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                         End If
                     ElseIf NpcList(TempCharIndex).npcType = e_NPCType.GlobalQuestAnnouncer Then
                         Dim AnnouncerStr As String
-                        AnnouncerStr = "NPCDESC*" & NpcList(TempCharIndex).Numero & "*" & ModGlobalQuests.GlobalQuestGatheringGlobalCounter & "/" & ModGlobalQuests.GlobalQuestGatheringThreshold
+                        AnnouncerStr = "NPCDESC*" & NpcList(TempCharIndex).Numero & "*" & GlobalQuestInfo.GatheringGlobalCounter & "/" & GlobalQuestInfo.GatheringThreshold
                         Call WriteChatOverHead(UserIndex, AnnouncerStr, NpcList(TempCharIndex).Char.charindex, vbWhite)
                     End If
                 End If

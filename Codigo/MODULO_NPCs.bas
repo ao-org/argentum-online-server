@@ -153,11 +153,11 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     End If
     If NpcList(NpcIndex).ShowKillerConsole > 0 Then
         'Msg1986=¬1 ha muerto en manos de ¬2
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1986", NpcList(NpcIndex).name & "¬" & UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_GLOBAL))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1986", NpcList(NpcIndex).Name & "¬" & UserList(UserIndex).Name, e_FontTypeNames.FONTTYPE_GLOBAL))
     End If
     'Quitamos el npc
     If MiNPC.flags.IsGlobalQuestBoss Then
-        ModGlobalQuests.GlobalQuestIsBossAlive = False
+        GlobalQuestInfo.IsBossAlive = False
     End If
     Call QuitarNPC(NpcIndex, eDie)
     If UserIndex > 0 Then ' Lo mato un usuario?
