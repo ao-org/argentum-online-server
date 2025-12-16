@@ -674,7 +674,7 @@ Sub Main()
     Call LoadObjSastre
     frmCargando.Label1(2).Caption = "Cargando Pesca"
     Call LoadPesca
-    Call InitializeFishingBonuses()
+    Call InitializeFishingBonuses
     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
     Call LoadRecursosEspeciales
     frmCargando.Label1(2).Caption = "Cargando definiciones de árboles"
@@ -705,7 +705,7 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Baneos Temporales"
     Call LoadBans
     frmCargando.Label1(2).Caption = "Cargando Eventos Estacionales"
-    Call LoadSeasonalEvents
+    Call LoadGlobalQuests
     frmCargando.Label1(2).Caption = "Cargando Quests"
     Call LoadQuests
     Call ResetLastLogoutAndIsLogged

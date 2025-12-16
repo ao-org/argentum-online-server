@@ -1,24 +1,24 @@
 Attribute VB_Name = "ModSeasonalEvents"
 Option Explicit
 
-Public SeasonalEventGatheringGlobalThreshold As Long
-Public SeasonalEventGatheringGlobalCounter As Long
-Public SeasonalEventGatheringGlobalInstallments As Long
+Public GlobalQuestGatheringThreshold As Long
+Public GlobalQuestGatheringGlobalCounter As Long
+Public GlobalQuestGatheringGlobalInstallments As Long
 
-Public SeasonalEventGatheringInitialInstallments As Long
+Public GlobalQuestGatheringInitialInstallments As Long
 
 
-Public SeasonalEventIsBossAlive As Boolean
-Public SeasonalEventBossIndex As Integer
-Public SeasonalEventBossSpawnPosition As t_WorldPos
+Public GlobalQuestIsBossAlive As Boolean
+Public GlobalQuestBossIndex As Integer
+Public GlobalQuestBossSpawnPosition As t_WorldPos
 
-Public Sub ContributeToSeasonalEventGlobalCounter(ByVal Amount As Long)
-    SeasonalEventGatheringGlobalCounter = SeasonalEventGatheringGlobalCounter + Amount
-    If SeasonalEventGatheringGlobalCounter >= SeasonalEventGatheringGlobalInstallments Then
-        SeasonalEventGatheringGlobalInstallments = SeasonalEventGatheringGlobalInstallments + SeasonalEventGatheringInitialInstallments
-        If Not SeasonalEventIsBossAlive Then
-            Call SpawnNpc(SeasonalEventBossIndex, SeasonalEventBossSpawnPosition, False, False, True, 0)
-            SeasonalEventIsBossAlive = True
+Public Sub ContributeToGlobalQuestGlobalCounter(ByVal Amount As Long)
+    GlobalQuestGatheringGlobalCounter = GlobalQuestGatheringGlobalCounter + Amount
+    If GlobalQuestGatheringGlobalCounter >= GlobalQuestGatheringGlobalInstallments Then
+        GlobalQuestGatheringGlobalInstallments = GlobalQuestGatheringGlobalInstallments + GlobalQuestGatheringInitialInstallments
+        If Not GlobalQuestIsBossAlive Then
+            Call SpawnNpc(GlobalQuestBossIndex, GlobalQuestBossSpawnPosition, False, False, True, 0)
+            GlobalQuestIsBossAlive = True
         End If
     End If
 End Sub

@@ -1320,7 +1320,7 @@ Public Enum e_NPCType
     AO20ShopPjs = 22
     EventMaster = 23
     ArenaGuard = 24
-    SeasonalEventAnnouncer = 25
+    GlobalQuestAnnouncer = 25
 End Enum
 
 Public Const MIN_APUÑALAR As Byte = 10
@@ -2093,7 +2093,7 @@ Public Type t_Quest
     RewardSpellCount As Byte
     RewardSpellList() As Integer
     Repetible As Byte
-    SeasonalEventGathering As Boolean
+    GlobalQuestGathering As Boolean
 End Type
 
 ' ******************* RETOS ************************
@@ -2626,7 +2626,7 @@ Public Type t_UserFlags
     Ban As Byte
     AdministrativeBan As Byte
     BanMotivo As String
-    targetUser As t_UserReference ' Usuario señalado
+    TargetUser As t_UserReference ' Usuario señalado
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer
     TargetObjX As Integer
@@ -3103,7 +3103,7 @@ Public Type t_NPCFlags
     BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
     team As Byte
-    IsSeasonalEventBoss As Boolean
+    IsGlobalQuestBoss As Boolean
     ElementalTags As Long
 End Type
 
@@ -3173,7 +3173,7 @@ Public Type t_NpcInfoCache
     nivel As Integer
     Movement As Integer
     AguaValida As Integer
-    IsSeasonalEventBoss As Boolean
+    IsGlobalQuestBoss As Boolean
     TierraInvalida As Integer
     Faccion As Integer
     ElementalTags As Long

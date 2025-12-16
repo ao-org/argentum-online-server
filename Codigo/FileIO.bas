@@ -2908,23 +2908,23 @@ LoadGuildsConfig_Err:
     Call TraceError(Err.Number, Err.Description, "ES.LoadGuildsConfig", Erl)
 End Sub
 
-Public Sub LoadSeasonalEvents()
-    On Error GoTo LoadSeasonalEvents_Err
-    If Not FileExist(DatPath & "SeasonalEvents.dat", vbArchive) Then
+Public Sub LoadGlobalQuests()
+    On Error GoTo LoadGlobalQuests_Err
+    If Not FileExist(DatPath & "GlobalQuests.dat", vbArchive) Then
         Exit Sub
     End If
     Dim IniFile As clsIniManager
     Set IniFile = New clsIniManager
-    Call IniFile.Initialize(DatPath & "SeasonalEvents.dat")
-    ModSeasonalEvents.SeasonalEventGatheringGlobalThreshold = CLng(val(IniFile.GetValue("SEASONALEVENT", "SeasonalEventGatheringGlobalThreshold")))
-    ModSeasonalEvents.SeasonalEventGatheringInitialInstallments = CLng(val(IniFile.GetValue("SEASONALEVENT", "SeasonalEventGatheringInitialInstallments")))
-    ModSeasonalEvents.SeasonalEventGatheringGlobalInstallments = CLng(val(IniFile.GetValue("SEASONALEVENT", "SeasonalEventGatheringInitialInstallments")))
-    ModSeasonalEvents.SeasonalEventBossSpawnPosition.Map = CInt(val(IniFile.GetValue("SEASONALEVENT", "SeasonalEventBossSpawnPositionMap")))
-    ModSeasonalEvents.SeasonalEventBossSpawnPosition.x = CInt(val(IniFile.GetValue("SEASONALEVENT", "SeasonalEventBossSpawnPositionX")))
-    ModSeasonalEvents.SeasonalEventBossSpawnPosition.y = CInt(val(IniFile.GetValue("SEASONALEVENT", "SeasonalEventBossSpawnPositionY")))
-    ModSeasonalEvents.SeasonalEventBossIndex = CInt(val(IniFile.GetValue("SEASONALEVENT", "SeasonalEventBossIndex")))
+    Call IniFile.Initialize(DatPath & "GlobalQuests.dat")
+    ModGlobalQuests.GlobalQuestGatheringThreshold = CLng(val(IniFile.GetValue("GlobalQuest", "GlobalQuestGatheringThreshold")))
+    ModGlobalQuests.GlobalQuestGatheringInitialInstallments = CLng(val(IniFile.GetValue("GlobalQuest", "GlobalQuestGatheringInitialInstallments")))
+    ModGlobalQuests.GlobalQuestGatheringGlobalInstallments = CLng(val(IniFile.GetValue("GlobalQuest", "GlobalQuestGatheringInitialInstallments")))
+    ModGlobalQuests.GlobalQuestBossSpawnPosition.Map = CInt(val(IniFile.GetValue("GlobalQuest", "GlobalQuestBossSpawnPositionMap")))
+    ModGlobalQuests.GlobalQuestBossSpawnPosition.x = CInt(val(IniFile.GetValue("GlobalQuest", "GlobalQuestBossSpawnPositionX")))
+    ModGlobalQuests.GlobalQuestBossSpawnPosition.y = CInt(val(IniFile.GetValue("GlobalQuest", "GlobalQuestBossSpawnPositionY")))
+    ModGlobalQuests.GlobalQuestBossIndex = CInt(val(IniFile.GetValue("GlobalQuest", "GlobalQuestBossIndex")))
     Set IniFile = Nothing
     Exit Sub
-LoadSeasonalEvents_Err:
-    Call TraceError(Err.Number, Err.Description, "ES.LoadSeasonalEvents", Erl)
+LoadGlobalQuests_Err:
+    Call TraceError(Err.Number, Err.Description, "ES.LoadGlobalQuests", Erl)
 End Sub

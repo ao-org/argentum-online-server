@@ -156,8 +156,8 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1986", NpcList(NpcIndex).name & "¬" & UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_GLOBAL))
     End If
     'Quitamos el npc
-    If MiNPC.flags.IsSeasonalEventBoss Then
-        ModSeasonalEvents.SeasonalEventIsBossAlive = False
+    If MiNPC.flags.IsGlobalQuestBoss Then
+        ModGlobalQuests.GlobalQuestIsBossAlive = False
     End If
     Call QuitarNPC(NpcIndex, eDie)
     If UserIndex > 0 Then ' Lo mato un usuario?
@@ -214,7 +214,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
                                 If QuestList(.QuestIndex).RequiredNPC(j).amount >= .NPCsKilled(j) Then
                                     .NPCsKilled(j) = .NPCsKilled(j) + 1 '
                                     Call WriteLocaleMsg(UserIndex, 1623, e_FontTypeNames.FONTTYPE_INFOIAO, MiNPC.name & "¬" & .NPCsKilled(j) & "¬" & QuestList( _
-                                            .QuestIndex).RequiredNPC(j).amount) 'Msg1623=¬1 matados/as: ¬2 de ¬3
+                                            .QuestIndex).RequiredNPC(j).Amount) 'Msg1623=¬1 matados/as: ¬2 de ¬3
                                     Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.name, _
                                             UserList(UserIndex).Char.charindex, RGB(180, 180, 180))
                                 Else
@@ -1011,7 +1011,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .TierraInvalida = Val(LeerNPCs.GetValue(SectionName, "TierraInValida"))
         .Faccion = Val(LeerNPCs.GetValue(SectionName, "Faccion"))
         .ElementalTags = Val(LeerNPCs.GetValue(SectionName, "ElementalTags"))
-        .IsSeasonalEventBoss = val(LeerNPCs.GetValue(SectionName, "IsSeasonalEventBoss")) > 0
+        .IsGlobalQuestBoss = val(LeerNPCs.GetValue(SectionName, "IsGlobalQuestBoss")) > 0
         .npcType = Val(LeerNPCs.GetValue(SectionName, "NpcType"))
         .Body = Val(LeerNPCs.GetValue(SectionName, "Body"))
         .Head = Val(LeerNPCs.GetValue(SectionName, "Head"))
@@ -1288,7 +1288,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         Call SetMovement(NpcIndex, Info.Movement)
         .flags.OldMovement = .Movement
         .flags.AguaValida = Info.AguaValida
-        .flags.IsSeasonalEventBoss = Info.IsSeasonalEventBoss
+        .flags.IsGlobalQuestBoss = Info.IsGlobalQuestBoss
         .flags.TierraInvalida = Info.TierraInvalida
         .flags.Faccion = Info.Faccion
         .flags.ElementalTags = Info.ElementalTags

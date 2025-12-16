@@ -77,8 +77,8 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                     Call WriteLocaleChatOverHead(UserIndex, "1336", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1336=No has conseguido todos los objetos que te he pedido.
                     Exit Sub
                 End If
-                If .SeasonalEventGathering Then
-                    Call ContributeToSeasonalEventGlobalCounter(.RequiredOBJ(i).Amount)
+                If .GlobalQuestGathering Then
+                    Call ContributeToGlobalQuestGlobalCounter(.RequiredOBJ(i).Amount)
                 End If
             Next i
         End If
@@ -398,7 +398,7 @@ Public Sub LoadQuests()
             .RewardGLD = val(reader.GetValue("QUEST" & i, "RewardGLD"))
             .RewardEXP = val(reader.GetValue("QUEST" & i, "RewardEXP"))
             .Repetible = val(reader.GetValue("QUEST" & i, "Repetible"))
-            .SeasonalEventGathering = val(reader.GetValue("QUEST" & i, "SeasonalEventGathering")) > 0
+            .GlobalQuestGathering = val(reader.GetValue("QUEST" & i, "GlobalQuestGathering")) > 0
             'CARGAMOS OBJETOS DE RECOMPENSA
             .RewardOBJs = val(reader.GetValue("QUEST" & i, "RewardOBJs"))
             If .RewardOBJs > 0 Then
@@ -522,7 +522,7 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
             Next i
         End If
         
-        If .SeasonalEventGathering And ModSeasonalEvents.SeasonalEventIsBossAlive Then
+        If .GlobalQuestGathering And ModGlobalQuests.GlobalQuestIsBossAlive Then
             Call WriteLocaleMsg(UserIndex, 2121, FONTTYPE_WARNING)
             Exit Function
         End If
