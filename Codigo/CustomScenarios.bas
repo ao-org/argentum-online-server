@@ -326,7 +326,7 @@ Public Sub ClearMap(ByVal MapNumber As Integer)
         For x = 1 To 99
             If MapData(MapNumber, x, y).ObjInfo.ObjIndex > 0 Then
                 If ItemNoEsDeMapa(MapData(MapNumber, x, y).ObjInfo.ObjIndex) Then
-                    Call EraseObj(MAX_INVENTORY_OBJS, MapNumber, x, y)
+                    Call EraseObj(GetMaxInvOBJ(), MapNumber, x, y)
                 End If
             End If
         Next x

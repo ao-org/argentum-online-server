@@ -28,6 +28,11 @@ Attribute VB_Name = "InvUsuario"
 Option Explicit
 Private Const PATREON_HEAD = 900
 
+Public Function GetMaxInvOBJ() As Integer
+GetMaxInvOBJ = CInt(SvrConfig.GetValue("MaxInventoryObjs"))
+End Function
+
+
 Public Function IsObjecIndextInInventory(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Boolean
     On Error GoTo IsObjecIndextInInventory_Err
     Debug.Assert UserIndex >= LBound(UserList) And UserIndex <= UBound(UserList)
@@ -169,7 +174,7 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
         For j = 1 To UserList(UserIndex).CurrentInventorySlots
             If UserList(UserIndex).invent.Object(j).ObjIndex > 0 Then
                 If ObjData(UserList(UserIndex).invent.Object(j).ObjIndex).Newbie = 1 Then
-                    Call QuitarUserInvItem(UserIndex, j, MAX_INVENTORY_OBJS)
+                    Call QuitarUserInvItem(UserIndex, j, GetMaxInvOBJ())
                     Call UpdateUserInv(False, UserIndex, j)
                 End If
             End If
@@ -296,8 +301,8 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
             'info debug
             Dim loops As Long
             Do While (Cantidad > 0)
-                If Cantidad > MAX_INVENTORY_OBJS And .Stats.GLD > MAX_INVENTORY_OBJS Then
-                    MiObj.amount = MAX_INVENTORY_OBJS
+                If Cantidad > GetMaxInvOBJ() And .Stats.GLD > GetMaxInvOBJ() Then
+                    MiObj.amount = GetMaxInvOBJ()
                     Cantidad = Cantidad - MiObj.amount
                 Else
                     MiObj.amount = Cantidad
@@ -410,9 +415,9 @@ Sub DropObj(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal num As Integer
                 Suma = num + MapData(.pos.Map, x, y).ObjInfo.amount
                 'Check objeto en el suelo
                 If MapData(.pos.Map, x, y).ObjInfo.ObjIndex = 0 Or (MapData(.pos.Map, x, y).ObjInfo.ObjIndex = obj.ObjIndex And MapData(.pos.Map, x, y).ObjInfo.ElementalTags = _
-                        obj.ElementalTags And Suma <= MAX_INVENTORY_OBJS) Then
-                    If Suma > MAX_INVENTORY_OBJS Then
-                        num = MAX_INVENTORY_OBJS - MapData(.pos.Map, x, y).ObjInfo.amount
+                        obj.ElementalTags And Suma <= GetMaxInvOBJ()) Then
+                    If Suma > GetMaxInvOBJ() Then
+                        num = GetMaxInvOBJ() - MapData(.pos.Map, x, y).ObjInfo.amount
                     End If
                     ' Si sos Admin, Dios o Usuario, crea el objeto en el piso.
                     If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0 Then
@@ -492,7 +497,7 @@ Function GetSlotForItemInInventory(ByVal UserIndex As Integer, ByRef MyObject As
         If UserList(UserIndex).invent.Object(i).ObjIndex = 0 And GetSlotForItemInInventory = -1 Then
             GetSlotForItemInInventory = i 'we found a valid place but keep looking in case we can stack
         ElseIf UserList(UserIndex).invent.Object(i).ObjIndex = MyObject.ObjIndex And UserList(UserIndex).invent.Object(i).ElementalTags = MyObject.ElementalTags And UserList( _
-                UserIndex).invent.Object(i).amount + MyObject.amount <= MAX_INVENTORY_OBJS Then
+                UserIndex).invent.Object(i).amount + MyObject.amount <= GetMaxInvOBJ() Then
             GetSlotForItemInInventory = i 'we can stack the item, let use this slot
             Exit Function
         End If
@@ -539,13 +544,13 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
         UserList(UserIndex).invent.NroItems = UserList(UserIndex).invent.NroItems + 1
     End If
     'Mete el objeto
-    If UserList(UserIndex).invent.Object(Slot).amount + MiObj.amount <= MAX_INVENTORY_OBJS Then
+    If UserList(UserIndex).invent.Object(Slot).amount + MiObj.amount <= GetMaxInvOBJ() Then
         'Menor que MAX_INV_OBJS
         UserList(UserIndex).invent.Object(Slot).ObjIndex = MiObj.ObjIndex
         UserList(UserIndex).invent.Object(Slot).amount = UserList(UserIndex).invent.Object(Slot).amount + MiObj.amount
         UserList(UserIndex).invent.Object(Slot).ElementalTags = MiObj.ElementalTags
     Else
-        UserList(UserIndex).invent.Object(Slot).amount = MAX_INVENTORY_OBJS
+        UserList(UserIndex).invent.Object(Slot).amount = GetMaxInvOBJ()
     End If
     Call UpdateUserInv(False, UserIndex, Slot)
     MeterItemEnInventario = True

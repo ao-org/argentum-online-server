@@ -60,7 +60,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
     If Modo = eModoComercio.Compra Then
         If Slot > MAX_INVENTORY_SLOTS Then
             Exit Sub
-        ElseIf Cantidad > MAX_INVENTORY_OBJS Then
+        ElseIf Cantidad > GetMaxInvOBJ() Then
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1746, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1746=¬1 ha sido baneado por el sistema anti-cheats.
             Call Ban(UserList(UserIndex).name, "Sistema Anti Cheats", "Intentar hackear el sistema de comercio. Quiso comprar demasiados items:" & Cantidad)
             UserList(UserIndex).flags.Ban = 1
@@ -163,8 +163,8 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
             'Mete el obj en el slot
             NpcList(NpcIndex).invent.Object(NpcSlot).ObjIndex = Objeto.ObjIndex
             NpcList(NpcIndex).invent.Object(NpcSlot).amount = NpcList(NpcIndex).invent.Object(NpcSlot).amount + Objeto.amount
-            If NpcList(NpcIndex).invent.Object(NpcSlot).amount > MAX_INVENTORY_OBJS Then
-                NpcList(NpcIndex).invent.Object(NpcSlot).amount = MAX_INVENTORY_OBJS
+            If NpcList(NpcIndex).invent.Object(NpcSlot).amount > GetMaxInvOBJ() Then
+                NpcList(NpcIndex).invent.Object(NpcSlot).amount = GetMaxInvOBJ()
             End If
             Call UpdateNpcInvToAll(False, NpcIndex, NpcSlot)
         End If
@@ -216,7 +216,7 @@ Private Function SlotEnNPCInv(ByVal NpcIndex As Integer, ByVal Objeto As Integer
         If matchingSlots.count <> 0 Then
             Dim i As Variant
             For Each i In matchingSlots
-                If .Object(i).amount < MAX_INVENTORY_OBJS Then
+                If .Object(i).amount < GetMaxInvOBJ() Then
                     SlotEnNPCInv = i
                     Exit Function
                 End If
