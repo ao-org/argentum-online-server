@@ -570,6 +570,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
     End If
     NpcAtacaUser = True
     Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
+    Call ResetUserAutomatedActions(UserIndex)
     UserList(UserIndex).Counters.EnCombate = IntervaloEnCombate
     If Not IsValidUserRef(NpcList(NpcIndex).TargetUser) Then
         Call SetUserRef(NpcList(NpcIndex).TargetUser, UserIndex)
@@ -1028,6 +1029,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
     End If
     Call UsuarioAtacadoPorUsuario(AtacanteIndex, VictimaIndex)
     Call EffectsOverTime.TargetWillAttack(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
+    Call ResetUserAutomatedActions(VictimaIndex)
     If UsuarioImpacto(AtacanteIndex, VictimaIndex, aType) Then
         If UserList(VictimaIndex).flags.Navegando = 0 Or UserList(VictimaIndex).flags.Montado = 0 Then
             UserList(VictimaIndex).Counters.timeFx = 3

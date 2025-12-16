@@ -32,6 +32,7 @@ Public Sub ChopWood(ByVal UserIndex As Integer)
             End If
             If MiObj.amount > MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount Then
                 MiObj.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount
+                Call ResetUserAutomatedActions(UserIndex)
             End If
             MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount - MiObj.amount
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
