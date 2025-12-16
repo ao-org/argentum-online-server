@@ -1320,7 +1320,6 @@ Public Enum e_NPCType
     AO20ShopPjs = 22
     EventMaster = 23
     ArenaGuard = 24
-    GlobalQuestAnnouncer = 25
 End Enum
 
 Public Const MIN_APUÑALAR As Byte = 10

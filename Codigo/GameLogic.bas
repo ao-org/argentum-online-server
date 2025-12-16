@@ -1127,8 +1127,8 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                             End If
                             Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.charindex, vbWhite)
                         End If
-                    ElseIf NpcList(TempCharIndex).npcType = e_NPCType.GlobalQuestAnnouncer Then
-
+                    Else
+                        Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.charindex, vbWhite)
                     End If
                 End If
             ElseIf IsValidUserRef(NpcList(TempCharIndex).MaestroUser) Then
