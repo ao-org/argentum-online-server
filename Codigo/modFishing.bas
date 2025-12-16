@@ -18,6 +18,7 @@ Public Const OBJ_FISHING_LINE                                  As Integer = 2183
 Public Const OBJ_FISH_BANK                                     As Integer = 1992
 Public Const OBJ_SQUID_BANK                                    As Integer = 1990
 Public Const OBJ_SHRIMP_BANK                                   As Integer = 1991
+Public Const OBJ_FISH_AREA                                     As Integer = 3740
 
 
 
@@ -446,9 +447,10 @@ Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal Target
                     Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
-                If MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_FISH_BANK Or _
-                   MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_SHRIMP_BANK Or _
-                   MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_SHRIMP_BANK Then
+                If (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_FISH_AREA) And _
+                   (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_SHRIMP_BANK) And _
+                   (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_SQUID_BANK) And _
+                   (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_FISH_BANK) Then
                     Call WriteLocaleMsg(UserIndex, 595, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
