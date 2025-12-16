@@ -144,6 +144,7 @@ Module=modPartition; Codigo\modPartition.bas
 Module=ModAutomatedActions; Codigo\ModAutomatedActions.bas
 Module=ModLumberjack; Codigo\ModLumberjack.bas
 Module=ModMining; Codigo\ModMining.bas
+Module=ModSeasonalEvents; Codigo\ModSeasonalEvents.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
