@@ -15,6 +15,10 @@ Public Const OBJ_BROKEN_FISHING_ROD_ELITE                      As Integer = 3458
 Public Const OBJ_FISHING_NET_BASIC                             As Integer = 138
 Public Const OBJ_FISHING_NET_ELITE                             As Integer = 139
 Public Const OBJ_FISHING_LINE                                  As Integer = 2183
+Public Const OBJ_FISH_BANK                                     As Integer = 1992
+Public Const OBJ_SQUID_BANK                                    As Integer = 1990
+Public Const OBJ_SHRIMP_BANK                                   As Integer = 1991
+
 
 
 Public Sub InitializeFishingBonuses()
@@ -173,7 +177,8 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
                             Call CreateFishingPool(.pos.Map)
                             Call EraseObj(MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount, .pos.Map, TargetX, TargetY)
                             Call WriteLocaleMsg(UserIndex, 649, e_FontTypeNames.FONTTYPE_INFO)
-                            .AutomatedAction.IsActive = True
+                            'dont call to ResetUserAutomatedAction(UserIndex) because .Automated.x and .Automated.y are being used
+                            .AutomatedAction.IsActive = False
                         End If
                         MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount = MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount - fishingCatch.amount
                     End If
@@ -421,20 +426,37 @@ Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal Target
             Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
-        ' Validate player position relative to water
-        If IsStandingOnWater(.pos) Then
-            Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Function
-        End If
-        If Not IsAdjacentToWater(.pos) Then
-            ' Msg1021= Acércate a la costa para pescar.
-            Call WriteLocaleMsg(UserIndex, 1021, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Function
-        End If
-        If UserList(UserIndex).flags.Navegando <> 0 Then
-            Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Function
-        End If
+        Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
+            Case e_WorkingToolSubType.FishingRod
+                If IsStandingOnWater(.pos) Then
+                    Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+                If Not IsAdjacentToWater(.pos) Then
+                    ' Msg1021= Acércate a la costa para pescar.
+                    Call WriteLocaleMsg(UserIndex, 1021, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+                If UserList(UserIndex).flags.Navegando <> 0 Then
+                    Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            Case e_WorkingToolSubType.FishingNet
+                If UserList(UserIndex).flags.Navegando = 0 Then
+                    Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+                If MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_FISH_BANK Or _
+                   MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_SHRIMP_BANK Or _
+                   MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_SHRIMP_BANK Then
+                    Call WriteLocaleMsg(UserIndex, 595, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            Case Else
+                Debug.Assert False
+                Call TraceError(0, "Invalid fishing tool: " & UserIndex, "modFishing.ValidateFishingPosition", Erl)
+                Exit Function
+        End Select
         If MapInfo(.pos.Map).zone = "DUNGEON" Then
             Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
