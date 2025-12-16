@@ -29,7 +29,8 @@ Public Sub MineMinerals(ByVal UserIndex As Integer)
             MiObj.amount = MiObj.amount * SvrConfig.GetValue("RecoleccionMult")
             If MiObj.amount > MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount Then
                 MiObj.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount
-                Call ResetUserAutomatedActions(UserIndex)
+                'dont call to ResetUserAutomatedAction(UserIndex) because .Automated.x and .Automated.y are being used
+                .AutomatedAction.IsActive = False
             End If
             MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount - MiObj.amount
             If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)

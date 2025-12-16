@@ -177,7 +177,8 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
                             Call CreateFishingPool(.pos.Map)
                             Call EraseObj(MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount, .pos.Map, TargetX, TargetY)
                             Call WriteLocaleMsg(UserIndex, 649, e_FontTypeNames.FONTTYPE_INFO)
-                            .AutomatedAction.IsActive = True
+                            'dont call to ResetUserAutomatedAction(UserIndex) because .Automated.x and .Automated.y are being used
+                            .AutomatedAction.IsActive = False
                         End If
                         MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount = MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount - fishingCatch.amount
                     End If
