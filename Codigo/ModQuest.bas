@@ -49,10 +49,6 @@ End Function
  
 Public Function FreeQuestSlot(ByVal UserIndex As Integer) As Byte
     On Error GoTo FreeQuestSlot_Err
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    'Devuelve el proximo slot de quest libre.
-    'Last modified: 27/01/2010 by Amraphen
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     Dim i As Integer
     For i = 1 To MAXUSERQUESTS
         If UserList(UserIndex).QuestStats.Quests(i).QuestIndex = 0 Then
@@ -80,6 +76,9 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                 If TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex) = False Then
                     Call WriteLocaleChatOverHead(UserIndex, "1336", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1336=No has conseguido todos los objetos que te he pedido.
                     Exit Sub
+                End If
+                If .SeasonalEventGathering Then
+                    Call ContributeToSeasonalEventGlobalCounter(.RequiredOBJ(i).Amount)
                 End If
             Next i
         End If
@@ -399,6 +398,7 @@ Public Sub LoadQuests()
             .RewardGLD = val(reader.GetValue("QUEST" & i, "RewardGLD"))
             .RewardEXP = val(reader.GetValue("QUEST" & i, "RewardEXP"))
             .Repetible = val(reader.GetValue("QUEST" & i, "Repetible"))
+            .SeasonalEventGathering = val(reader.GetValue("QUEST" & i, "SeasonalEventGathering")) > 0
             'CARGAMOS OBJETOS DE RECOMPENSA
             .RewardOBJs = val(reader.GetValue("QUEST" & i, "RewardOBJs"))
             If .RewardOBJs > 0 Then
@@ -520,6 +520,11 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
                 If i > lastObj Then Exit For
                 If Not TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex) Then Exit Function
             Next i
+        End If
+        
+        If .SeasonalEventGathering And ModSeasonalEvents.SeasonalEventIsBossAlive Then
+            'cartel pendiente de no podes entregar porque el boss esta vivo
+            Exit Function
         End If
 
         ' --- Required NPC kills ---

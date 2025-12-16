@@ -156,6 +156,9 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1986", NpcList(NpcIndex).name & "¬" & UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_GLOBAL))
     End If
     'Quitamos el npc
+    If MiNPC.flags.IsSeasonalEventBoss Then
+        ModSeasonalEvents.SeasonalEventIsBossAlive = False
+    End If
     Call QuitarNPC(NpcIndex, eDie)
     If UserIndex > 0 Then ' Lo mato un usuario?
         If MiNPC.flags.Snd3 > 0 Then
@@ -1008,6 +1011,8 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .TierraInvalida = Val(LeerNPCs.GetValue(SectionName, "TierraInValida"))
         .Faccion = Val(LeerNPCs.GetValue(SectionName, "Faccion"))
         .ElementalTags = Val(LeerNPCs.GetValue(SectionName, "ElementalTags"))
+        .IsSeasonalEventBoss = val(LeerNPCs.GetValue(SectionName, "IsSeasonalEventBoss")) > 0
+        Debug.Assert .IsSeasonalEventBoss = False
         .npcType = Val(LeerNPCs.GetValue(SectionName, "NpcType"))
         .Body = Val(LeerNPCs.GetValue(SectionName, "Body"))
         .Head = Val(LeerNPCs.GetValue(SectionName, "Head"))
@@ -1284,6 +1289,9 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         Call SetMovement(NpcIndex, Info.Movement)
         .flags.OldMovement = .Movement
         .flags.AguaValida = Info.AguaValida
+        
+        .flags.IsSeasonalEventBoss = Info.IsSeasonalEventBoss
+        Debug.Assert Info.IsSeasonalEventBoss = False
         .flags.TierraInvalida = Info.TierraInvalida
         .flags.Faccion = Info.Faccion
         .flags.ElementalTags = Info.ElementalTags
