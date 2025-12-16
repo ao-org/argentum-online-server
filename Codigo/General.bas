@@ -704,6 +704,8 @@ Sub Main()
     Call CargarInfoEventos
     frmCargando.Label1(2).Caption = "Cargando Baneos Temporales"
     Call LoadBans
+    frmCargando.Label1(2).Caption = "Cargando Eventos Estacionales"
+    Call LoadSeasonalEvents
     frmCargando.Label1(2).Caption = "Cargando Quests"
     Call LoadQuests
     Call ResetLastLogoutAndIsLogged
@@ -880,7 +882,7 @@ Sub Restart()
     Call ResetUserAutoSaveTimer
     Call LoadOBJData
     Call LoadPesca
-    Call InitializeFishingBonuses()
+    Call InitializeFishingBonuses
     Call LoadRecursosEspeciales
     Call LoadTreeGraphics
     Call LoadMapData
