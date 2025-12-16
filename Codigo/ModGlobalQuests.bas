@@ -1,4 +1,4 @@
-Attribute VB_Name = "ModSeasonalEvents"
+Attribute VB_Name = "ModGlobalQuests"
 Option Explicit
 
 Public GlobalQuestGatheringThreshold As Long
