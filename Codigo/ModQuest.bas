@@ -523,7 +523,7 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
         End If
         
         If .SeasonalEventGathering And ModSeasonalEvents.SeasonalEventIsBossAlive Then
-            'cartel pendiente de no podes entregar porque el boss esta vivo
+            Call WriteLocaleMsg(UserIndex, 2121, FONTTYPE_WARNING)
             Exit Function
         End If
 

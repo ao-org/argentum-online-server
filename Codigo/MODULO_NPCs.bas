@@ -1012,7 +1012,6 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Faccion = Val(LeerNPCs.GetValue(SectionName, "Faccion"))
         .ElementalTags = Val(LeerNPCs.GetValue(SectionName, "ElementalTags"))
         .IsSeasonalEventBoss = val(LeerNPCs.GetValue(SectionName, "IsSeasonalEventBoss")) > 0
-        Debug.Assert .IsSeasonalEventBoss = False
         .npcType = Val(LeerNPCs.GetValue(SectionName, "NpcType"))
         .Body = Val(LeerNPCs.GetValue(SectionName, "Body"))
         .Head = Val(LeerNPCs.GetValue(SectionName, "Head"))
@@ -1289,9 +1288,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         Call SetMovement(NpcIndex, Info.Movement)
         .flags.OldMovement = .Movement
         .flags.AguaValida = Info.AguaValida
-        
         .flags.IsSeasonalEventBoss = Info.IsSeasonalEventBoss
-        Debug.Assert Info.IsSeasonalEventBoss = False
         .flags.TierraInvalida = Info.TierraInvalida
         .flags.Faccion = Info.Faccion
         .flags.ElementalTags = Info.ElementalTags
