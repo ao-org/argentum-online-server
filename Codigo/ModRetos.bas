@@ -706,7 +706,7 @@ Public Sub TerminarTiempoAgarrarItems(ByVal Sala As Integer)
         Dim y As Byte
         For x = .PosIzquierda.x To .PosDerecha.x
             For y = .PosIzquierda.y To .PosDerecha.y
-                Call EraseObj(MAX_INVENTORY_OBJS, .PosIzquierda.Map, x, y)
+                Call EraseObj(GetMaxInvOBJ(), .PosIzquierda.Map, x, y)
             Next y
         Next x
     End With

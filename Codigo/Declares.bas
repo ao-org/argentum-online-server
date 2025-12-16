@@ -1462,7 +1462,6 @@ Public Const MAXUSERQUESTS           As Integer = 5     'Maxima cantidad de ques
 ''
 ' Cantidad maxima de objetos por slot de inventario
 Public Const DEFAULT_MAX_INVENTORY_OBJS As Integer = 10000
-Public MAX_INVENTORY_OBJS            As Integer
 ''
 ' Cantidad de "slots" en el inventario con todos los slots desbloqueados
 Public Const MAX_INVENTORY_SLOTS     As Byte = 42

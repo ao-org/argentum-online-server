@@ -2298,7 +2298,6 @@ Sub LoadMainConfigFile()
     On Error GoTo LoadMainConfigFile_Err
     Set SvrConfig = New ServerConfig
     Call SvrConfig.LoadSettings(IniPath & "Configuracion.ini")
-    MAX_INVENTORY_OBJS = CInt(SvrConfig.GetValue("MaxInventoryObjs"))
     Call CargarEventos
     Call CargarInfoRetos
     Call CargarInfoEventos

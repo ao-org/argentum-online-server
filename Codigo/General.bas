@@ -496,7 +496,7 @@ Sub ApagarFogatas()
             For x = XMinMapSize To XMaxMapSize
                 If MapInfo(MapaActual).lluvia Then
                     If MapData(MapaActual, x, y).ObjInfo.ObjIndex = FOGATA Then
-                        Call EraseObj(MAX_INVENTORY_OBJS, MapaActual, x, y)
+                        Call EraseObj(GetMaxInvOBJ(), MapaActual, x, y)
                         Call MakeObj(obj, MapaActual, x, y)
                     End If
                 End If
@@ -616,7 +616,6 @@ Sub Main()
     Call ChDir(App.Path)
     Call ChDrive(App.Path)
     Call InicializarConstantes
-    MAX_INVENTORY_OBJS = DEFAULT_MAX_INVENTORY_OBJS
     frmCargando.Show
     
     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
