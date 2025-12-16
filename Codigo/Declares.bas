@@ -2093,7 +2093,7 @@ Public Type t_Quest
     RewardSpellCount As Byte
     RewardSpellList() As Integer
     Repetible As Byte
-    GlobalQuestGathering As Boolean
+    GlobalQuestGathering As Integer
 End Type
 
 ' ******************* RETOS ************************
@@ -3103,7 +3103,7 @@ Public Type t_NPCFlags
     BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
     team As Byte
-    IsGlobalQuestBoss As Boolean
+    IsGlobalQuestBoss As Integer
     ElementalTags As Long
 End Type
 
@@ -3173,7 +3173,7 @@ Public Type t_NpcInfoCache
     nivel As Integer
     Movement As Integer
     AguaValida As Integer
-    IsGlobalQuestBoss As Boolean
+    IsGlobalQuestBoss As Integer
     TierraInvalida As Integer
     Faccion As Integer
     ElementalTags As Long

@@ -157,7 +157,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     End If
     'Quitamos el npc
     If MiNPC.flags.IsGlobalQuestBoss Then
-        GlobalQuestInfo.IsBossAlive = False
+        GlobalQuestInfo(MiNPC.flags.IsGlobalQuestBoss).IsBossAlive = False
     End If
     Call QuitarNPC(NpcIndex, eDie)
     If UserIndex > 0 Then ' Lo mato un usuario?
@@ -1011,7 +1011,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .TierraInvalida = Val(LeerNPCs.GetValue(SectionName, "TierraInValida"))
         .Faccion = Val(LeerNPCs.GetValue(SectionName, "Faccion"))
         .ElementalTags = Val(LeerNPCs.GetValue(SectionName, "ElementalTags"))
-        .IsGlobalQuestBoss = val(LeerNPCs.GetValue(SectionName, "IsGlobalQuestBoss")) > 0
+        .IsGlobalQuestBoss = val(LeerNPCs.GetValue(SectionName, "IsGlobalQuestBoss"))
         .npcType = Val(LeerNPCs.GetValue(SectionName, "NpcType"))
         .Body = Val(LeerNPCs.GetValue(SectionName, "Body"))
         .Head = Val(LeerNPCs.GetValue(SectionName, "Head"))
