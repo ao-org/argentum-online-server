@@ -677,6 +677,8 @@ Sub Main()
     Call InitializeFishingBonuses
     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
     Call LoadRecursosEspeciales
+    frmCargando.Label1(2).Caption = "Cargando Eventos Estacionales"
+    Call LoadGlobalQuests
     frmCargando.Label1(2).Caption = "Cargando definiciones de árboles"
     Call LoadTreeGraphics
     frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
