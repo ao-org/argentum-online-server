@@ -77,8 +77,8 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                     Call WriteLocaleChatOverHead(UserIndex, "1336", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1336=No has conseguido todos los objetos que te he pedido.
                     Exit Sub
                 End If
-                If .GlobalQuestGathering > 0 Then
-                    Call ContributeToGlobalQuestGlobalCounter(.RequiredOBJ(i).Amount, .GlobalQuestGathering)
+                If .GlobalQuestGatheringIndex > 0 Then
+                    Call ContributeToGlobalQuestGlobalCounter(.RequiredOBJ(i).Amount, .GlobalQuestGatheringIndex)
                 End If
             Next i
         End If
@@ -398,7 +398,7 @@ Public Sub LoadQuests()
             .RewardGLD = val(reader.GetValue("QUEST" & i, "RewardGLD"))
             .RewardEXP = val(reader.GetValue("QUEST" & i, "RewardEXP"))
             .Repetible = val(reader.GetValue("QUEST" & i, "Repetible"))
-            .GlobalQuestGathering = val(reader.GetValue("QUEST" & i, "GlobalQuestGathering"))
+            .GlobalQuestGatheringIndex = val(reader.GetValue("QUEST" & i, "GlobalQuestGatheringIndex"))
             'CARGAMOS OBJETOS DE RECOMPENSA
             .RewardOBJs = val(reader.GetValue("QUEST" & i, "RewardOBJs"))
             If .RewardOBJs > 0 Then
@@ -521,7 +521,7 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
                 If Not TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex) Then Exit Function
             Next i
         End If
-        If .GlobalQuestGathering > 0 And GlobalQuestInfo(.GlobalQuestGathering).IsBossAlive Then
+        If .GlobalQuestGatheringIndex > 0 And GlobalQuestInfo(.GlobalQuestGatheringIndex).IsBossAlive Then
             Call WriteLocaleMsg(UserIndex, 2121, FONTTYPE_WARNING)
             Exit Function
         End If
