@@ -4203,21 +4203,28 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
                 .Char.FX = customEffect
             Else
                 Select Case .Stats.ELV
-                    Case 1 To 14
-                        .Char.FX = e_Meditaciones.MeditarInicial
-                        'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 37, -1, False))
-                    Case 15 To 24
-                        'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 38, -1, False))
-                        .Char.FX = e_Meditaciones.MeditarMayor15
-                    Case 25 To 35
-                        .Char.FX = e_Meditaciones.MeditarMayor30
-                        'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 39, -1, False))
-                    Case 35 To 44
-                        .Char.FX = e_Meditaciones.MeditarMayor40
+                    Case 1 To 12
+                        .Char.FX = MeditationLevel1to12
+                    Case 13 To 17
+                        .Char.FX = MeditationLevel13to17
+                    Case 18 To 24
+                        .Char.FX = MeditationLevel18to24
+                    Case 25 To 28
+                        .Char.FX = MeditationLevel25to28
+                    Case 29 To 32
+                        .Char.FX = MeditationLevel29to32
+                    Case 33 To 36
+                        .Char.FX = MeditationLevel33to36
+                    Case 37 To 39
+                        .Char.FX = MeditationLevel37to39
+                    Case 40 To 42
+                        .Char.FX = MeditationLevel40to42
+                    Case 43 To 44
+                        .Char.FX = MeditationLevel43to44
                     Case 45 To 46
-                        .Char.FX = e_Meditaciones.MeditarMayor45
+                        .Char.FX = MeditationLevel45to46
                     Case Else
-                        .Char.FX = e_Meditaciones.MeditarMayor47
+                        .Char.FX = MeditationLevelMax
                 End Select
             End If
         Else
