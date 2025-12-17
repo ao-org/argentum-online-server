@@ -496,7 +496,7 @@ Sub ApagarFogatas()
             For x = XMinMapSize To XMaxMapSize
                 If MapInfo(MapaActual).lluvia Then
                     If MapData(MapaActual, x, y).ObjInfo.ObjIndex = FOGATA Then
-                        Call EraseObj(MAX_INVENTORY_OBJS, MapaActual, x, y)
+                        Call EraseObj(GetMaxInvOBJ(), MapaActual, x, y)
                         Call MakeObj(obj, MapaActual, x, y)
                     End If
                 End If

@@ -6094,10 +6094,10 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
             If .invent.Object(SlotNuevo).ObjIndex = .invent.Object(SlotViejo).ObjIndex And .invent.Object(SlotNuevo).ElementalTags = .invent.Object(SlotViejo).ElementalTags Then
                 .invent.Object(SlotNuevo).amount = .invent.Object(SlotNuevo).amount + .invent.Object(SlotViejo).amount
                 Dim Excedente As Integer
-                Excedente = .invent.Object(SlotNuevo).amount - MAX_INVENTORY_OBJS
+                Excedente = .invent.Object(SlotNuevo).amount - GetMaxInvOBJ()
                 If Excedente > 0 Then
                     .invent.Object(SlotViejo).amount = Excedente
-                    .invent.Object(SlotNuevo).amount = MAX_INVENTORY_OBJS
+                    .invent.Object(SlotNuevo).amount = GetMaxInvOBJ()
                 Else
                     If .invent.Object(SlotViejo).Equipped = 1 Then
                         .invent.Object(SlotNuevo).Equipped = 1
@@ -7139,7 +7139,7 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
                             If Not QuitarItem Then Exit For
                         Next
                         If QuitarItem Then
-                            Call QuitarObjetos(ObjIndex, MAX_INVENTORY_OBJS, UserIndex)
+                            Call QuitarObjetos(ObjIndex, GetMaxInvOBJ(), UserIndex)
                         End If
                     End If
                 Next i
@@ -7546,7 +7546,7 @@ Private Sub HandleAddCatalyst(ByVal UserIndex As Integer)
         If .CraftCatalyst.ObjIndex <> 0 Then Exit Sub
         .CraftCatalyst.ObjIndex = .invent.Object(Slot).ObjIndex
         .CraftCatalyst.amount = .invent.Object(Slot).amount
-        Call QuitarUserInvItem(UserIndex, Slot, MAX_INVENTORY_OBJS)
+        Call QuitarUserInvItem(UserIndex, Slot, GetMaxInvOBJ())
         Call UpdateUserInv(False, UserIndex, Slot)
         If .CraftResult Is Nothing Then
             Call WriteCraftingCatalyst(UserIndex, .CraftCatalyst.ObjIndex, .CraftCatalyst.amount, 0)
