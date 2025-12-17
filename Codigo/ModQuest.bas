@@ -402,6 +402,7 @@ Public Sub LoadQuests()
             .RewardEXP = val(reader.GetValue("QUEST" & i, "RewardEXP"))
             .Repetible = val(reader.GetValue("QUEST" & i, "Repetible"))
             .GlobalQuestGatheringIndex = val(reader.GetValue("QUEST" & i, "GlobalQuestGatheringIndex"))
+            .GlobalQuestGatheringThresholdNeeded = val(reader.GetValue("QUEST" & i, "GlobalQuestGatheringThresholdNeeded"))
             'CARGAMOS OBJETOS DE RECOMPENSA
             .RewardOBJs = val(reader.GetValue("QUEST" & i, "RewardOBJs"))
             If .RewardOBJs > 0 Then
