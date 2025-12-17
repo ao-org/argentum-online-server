@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS "global_quest_desc" (
-	"id" INTEGER PRIMARY KEY,
+	"id" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"event_id" integer NOT NULL,
 	"name"  varchar(50) NOT NULL,
 	"obj_id" integer NOT NULL,
 	"counter" integer NOT NULL,

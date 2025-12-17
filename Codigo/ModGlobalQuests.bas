@@ -60,13 +60,13 @@ Public Sub LoadGlobalQuests()
             .EndDate = IniFile.GetValue("GlobalQuest" & i, "EndDate")
             .ObjectIndex = val(IniFile.GetValue("GlobalQuest" & i, "ObjectIndex"))
             Dim RS As ADODB.Recordset
-            Set RS = Query("SELECT * FROM global_quest_desc WHERE id = ?;", i)
+            Set RS = Query("SELECT * FROM global_quest_desc WHERE event_id = ?;", i)
             If RS Is Nothing Then Exit Sub
             'if global quest doesnt exist create it
             Dim QueryString As String
             If RS.RecordCount = 0 Then
-                QueryString = "INSERT INTO global_quest_desc (name, obj_id, counter, start_date, end_date) VALUES (?, ?, ?, ?, ?);"
-                Set RS = Query(QueryString, .Name, .ObjectIndex, .GatheringThreshold, .StartDate, .EndDate)
+                QueryString = "INSERT INTO global_quest_desc (event_id, name, obj_id, counter, start_date, end_date) VALUES (?,?, ?, ?, ?, ?);"
+                Set RS = Query(QueryString, i, .Name, .ObjectIndex, .GatheringThreshold, .StartDate, .EndDate)
                 'if exists load everything and reconstruct the current total user contribution
             Else
                 .Name = RS!Name
