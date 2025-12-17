@@ -2093,7 +2093,7 @@ Public Type t_Quest
     RewardSpellList() As Integer
     Repetible As Byte
     GlobalQuestGatheringIndex As Integer
-    GlobalQuestGatheringThresholdNeeded As Integer
+    GlobalQuestGatheringThresholdNeeded As Long
 End Type
 
 ' ******************* RETOS ************************
