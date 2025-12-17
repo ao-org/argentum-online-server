@@ -31,9 +31,15 @@ Option Explicit
 'having too many string lengths in the queue. Yes, each string is NULL-terminated :P
 
 Public Const SEPARATOR As String * 1 = vbNullChar
+Private Const SPELL_UNASSISTED_DARDO = 1
+Private Const SPELL_UNASSISTED_RUGIDO_SALVAJE = 5
 Private Const SPELL_UNASSISTED_FULGOR = 52
 Private Const SPELL_UNASSISTED_ECO = 61
 Private Const SPELL_UNASSISTED_DESTELLO = 62
+Private Const SPELL_UNASSISTED_ALIENTO_CARMESI = 64
+Private Const SPELL_UNASSISTED_ENERGIA_ANCESTRAL = 65
+Private Const SPELL_UNASSISTED_RUGIDO_ARCANO = 348
+Private Const SPELL_UNASSISTED_LATIDO_IGNEO = 349
 
 Public Enum e_EditOptions
     eo_Gold = 1
@@ -7397,7 +7403,8 @@ End Sub
 
 Private Function IsUnassistedSpellAllowed(ByVal spellID As Integer) As Boolean
     Select Case spellID
-        Case SPELL_UNASSISTED_FULGOR, SPELL_UNASSISTED_ECO, SPELL_UNASSISTED_DESTELLO
+        Case SPELL_UNASSISTED_DARDO, SPELL_UNASSISTED_RUGIDO_SALVAJE, SPELL_UNASSISTED_FULGOR, SPELL_UNASSISTED_ECO, SPELL_UNASSISTED_DESTELLO, _
+            SPELL_UNASSISTED_ALIENTO_CARMESI, SPELL_UNASSISTED_ENERGIA_ANCESTRAL, SPELL_UNASSISTED_RUGIDO_ARCANO, SPELL_UNASSISTED_LATIDO_IGNEO
             IsUnassistedSpellAllowed = True
         Case Else
             IsUnassistedSpellAllowed = False
