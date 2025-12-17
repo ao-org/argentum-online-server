@@ -77,12 +77,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                     Call WriteLocaleChatOverHead(UserIndex, "1336", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1336=No has conseguido todos los objetos que te he pedido.
                     Exit Sub
                 End If
-                'gathering threshold locked quests cannot also contribute to the global event
-                If .GlobalQuestGatheringIndex > 0 And .GlobalQuestGatheringThresholdNeeded = 0 Then
-                    Call ContributeToGlobalQuestGlobalCounter(.RequiredOBJ(i).Amount, .GlobalQuestGatheringIndex)
-                    Call InsertContributionIntoDatabase(UserIndex, .RequiredOBJ(i).Amount, .GlobalQuestGatheringIndex)
-                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(2122, UserList(UserIndex).Name & "¬" & .RequiredOBJ(i).Amount & "¬" & .RequiredOBJ(i).ObjIndex & "¬" & GlobalQuestInfo(.GlobalQuestGatheringIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(.GlobalQuestGatheringIndex).GatheringThreshold, e_FontTypeNames.FONTTYPE_INFOIAO))
-                End If
+                Call FinishGlobalQuest(UserIndex, .RequiredOBJ(i).Amount, .GlobalQuestGatheringIndex, .GlobalQuestGatheringThresholdNeeded)
             Next i
         End If
         'Comprobamos que haya matado todas las criaturas.
@@ -525,16 +520,9 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
                 If Not TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex) Then Exit Function
             Next i
         End If
-        If .GlobalQuestGatheringIndex > 0 And .GlobalQuestGatheringThresholdNeeded = 0 Then
-            If GlobalQuestInfo(.GlobalQuestGatheringIndex).IsBossAlive Then
-                Call WriteLocaleMsg(UserIndex, 2121, FONTTYPE_WARNING)
-                Exit Function
-            End If
-        End If
-        'boss alive mechanics shoudln't interfer with unique prizes
-        If .GlobalQuestGatheringThresholdNeeded > 0 And .GlobalQuestGatheringIndex > 0 Then
-            If GlobalQuestInfo(.GlobalQuestGatheringIndex).GatheringGlobalCounter < .GlobalQuestGatheringThresholdNeeded Then
-                Call WriteLocaleMsg(UserIndex, 2123, FONTTYPE_WARNING, GlobalQuestInfo(.GlobalQuestGatheringIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(.GlobalQuestGatheringIndex).GatheringThreshold & "¬" & .GlobalQuestGatheringThresholdNeeded)
+        
+        If .GlobalQuestGatheringIndex > 0 Then
+            If Not FinishGlobalQuestCheck(UserIndex, .GlobalQuestGatheringIndex, .GlobalQuestGatheringThresholdNeeded) Then
                 Exit Function
             End If
         End If
