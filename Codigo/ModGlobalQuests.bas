@@ -18,7 +18,7 @@ End Type
 
 Public GlobalQuestInfo() As t_GlobalQuestData
 
-Public Sub ContributeToGlobalQuestGlobalCounter(ByVal Amount As Long, ByVal GlobalQuestIndex)
+Public Sub ContributeToGlobalQuestGlobalCounter(ByVal Amount As Long, ByVal GlobalQuestIndex As Integer)
     With GlobalQuestInfo(GlobalQuestIndex)
         .GatheringGlobalCounter = .GatheringGlobalCounter + Amount
         If .GatheringGlobalCounter >= .GatheringGlobalInstallments Then
@@ -29,6 +29,18 @@ Public Sub ContributeToGlobalQuestGlobalCounter(ByVal Amount As Long, ByVal Glob
             End If
         End If
     End With
+End Sub
+
+Public Sub InsertContributionIntoDatabase(ByVal UserIndex As Integer, ByVal Amount, ByVal GlobalQuestIndex As Integer)
+    On Error GoTo InsertContributionIntoDatabase
+    Dim RS          As ADODB.Recordset
+    Dim QueryString As String
+    QueryString = "INSERT INTO global_quest_user_contribution (event_id,user_id,timestamp,amount) VALUES (?,?,?,?);"
+    Set RS = Query(QueryString, GlobalQuestIndex, UserList(UserIndex).Id, CStr(DateTime.Now), Amount)
+    If RS Is Nothing Then Exit Sub
+    Exit Sub
+InsertContributionIntoDatabase:
+    Call TraceError(Err.Number, Err.Description, "ModGlobalQuests.InsertContributionIntoDatabase", Erl)
 End Sub
 
 Public Sub LoadGlobalQuests()
@@ -85,5 +97,5 @@ Public Sub LoadGlobalQuests()
     Set IniFile = Nothing
     Exit Sub
 LoadGlobalQuests_Err:
-    Call TraceError(Err.Number, Err.Description, "ES.LoadGlobalQuests", Erl)
+    Call TraceError(Err.Number, Err.Description, "ModGlobalQuests.LoadGlobalQuests", Erl)
 End Sub

@@ -79,6 +79,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                 End If
                 If .GlobalQuestGatheringIndex > 0 Then
                     Call ContributeToGlobalQuestGlobalCounter(.RequiredOBJ(i).Amount, .GlobalQuestGatheringIndex)
+                    Call InsertContributionIntoDatabase(UserIndex, .RequiredOBJ(i).Amount, .GlobalQuestGatheringIndex)
                 End If
             Next i
         End If
