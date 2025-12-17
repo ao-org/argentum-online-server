@@ -534,7 +534,7 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
         'boss alive mechanics shoudln't interfer with unique prizes
         If .GlobalQuestGatheringThresholdNeeded > 0 And .GlobalQuestGatheringIndex > 0 Then
             If GlobalQuestInfo(.GlobalQuestGatheringIndex).GatheringGlobalCounter < .GlobalQuestGatheringThresholdNeeded Then
-                Call WriteLocaleMsg(UserIndex, 2123, FONTTYPE_WARNING)
+                Call WriteLocaleMsg(UserIndex, 2123, FONTTYPE_WARNING, GlobalQuestInfo(.GlobalQuestGatheringIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(.GlobalQuestGatheringIndex).GatheringThreshold & "¬" & .GlobalQuestGatheringThresholdNeeded)
                 Exit Function
             End If
         End If
