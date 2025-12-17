@@ -65,7 +65,7 @@ Public Sub LoadGlobalQuests()
             'if global quest doesnt exist create it
             Dim QueryString As String
             If RS.RecordCount = 0 Then
-                QueryString = "INSERT INTO global_quest_desc (event_id, name, obj_id, counter, start_date, end_date) VALUES (?,?, ?, ?, ?, ?);"
+                QueryString = "INSERT INTO global_quest_desc (event_id, name, obj_id, threshold, start_date, end_date) VALUES (?,?, ?, ?, ?, ?);"
                 Set RS = Query(QueryString, i, .Name, .ObjectIndex, .GatheringThreshold, .StartDate, .EndDate)
                 'if exists load everything and reconstruct the current total user contribution
             Else
