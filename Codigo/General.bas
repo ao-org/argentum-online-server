@@ -706,8 +706,6 @@ Sub Main()
     Call CargarInfoEventos
     frmCargando.Label1(2).Caption = "Cargando Baneos Temporales"
     Call LoadBans
-    frmCargando.Label1(2).Caption = "Cargando Eventos Estacionales"
-    Call LoadGlobalQuests
     frmCargando.Label1(2).Caption = "Cargando Quests"
     Call LoadQuests
     Call ResetLastLogoutAndIsLogged

@@ -88,7 +88,7 @@ Public Sub LoadGlobalQuests()
                 .EndDate = RS!end_date
                 QueryString = "SELECT SUM(amount) AS total_amount FROM global_quest_user_contribution WHERE event_id = ?;"
                 Set RS = Query(QueryString, i)
-                If RS!total_amount <> Null Then
+                If Not IsNull(RS!total_amount) Then
                     .GatheringGlobalCounter = RS!total_amount
                 End If
             End If

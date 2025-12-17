@@ -80,6 +80,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                 If .GlobalQuestGatheringIndex > 0 Then
                     Call ContributeToGlobalQuestGlobalCounter(.RequiredOBJ(i).Amount, .GlobalQuestGatheringIndex)
                     Call InsertContributionIntoDatabase(UserIndex, .RequiredOBJ(i).Amount, .GlobalQuestGatheringIndex)
+                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(2122, UserList(UserIndex).Name & "¬" & .RequiredOBJ(i).Amount & "¬" & .RequiredOBJ(i).ObjIndex & "¬" & GlobalQuestInfo(.GlobalQuestGatheringIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(.GlobalQuestGatheringIndex).GatheringThreshold, e_FontTypeNames.FONTTYPE_INFOIAO))
                 End If
             Next i
         End If
