@@ -156,8 +156,8 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1986", NpcList(NpcIndex).Name & "¬" & UserList(UserIndex).Name, e_FontTypeNames.FONTTYPE_GLOBAL))
     End If
     'Quitamos el npc
-    If MiNPC.flags.IsGlobalQuestBoss Then
-        GlobalQuestInfo(MiNPC.flags.IsGlobalQuestBoss).IsBossAlive = False
+    If MiNPC.flags.GlobalQuestBossIndex Then
+        GlobalQuestInfo(MiNPC.flags.GlobalQuestBossIndex).IsBossAlive = False
     End If
     Call QuitarNPC(NpcIndex, eDie)
     If UserIndex > 0 Then ' Lo mato un usuario?
@@ -1011,7 +1011,6 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .TierraInvalida = Val(LeerNPCs.GetValue(SectionName, "TierraInValida"))
         .Faccion = Val(LeerNPCs.GetValue(SectionName, "Faccion"))
         .ElementalTags = Val(LeerNPCs.GetValue(SectionName, "ElementalTags"))
-        .IsGlobalQuestBoss = val(LeerNPCs.GetValue(SectionName, "IsGlobalQuestBoss"))
         .npcType = Val(LeerNPCs.GetValue(SectionName, "NpcType"))
         .Body = Val(LeerNPCs.GetValue(SectionName, "Body"))
         .Head = Val(LeerNPCs.GetValue(SectionName, "Head"))
@@ -1288,7 +1287,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         Call SetMovement(NpcIndex, Info.Movement)
         .flags.OldMovement = .Movement
         .flags.AguaValida = Info.AguaValida
-        .flags.IsGlobalQuestBoss = Info.IsGlobalQuestBoss
+        .flags.GlobalQuestBossIndex = Info.GlobalQuestBossIndex
         .flags.TierraInvalida = Info.TierraInvalida
         .flags.Faccion = Info.Faccion
         .flags.ElementalTags = Info.ElementalTags

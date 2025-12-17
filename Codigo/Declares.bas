@@ -3102,7 +3102,7 @@ Public Type t_NPCFlags
     BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
     team As Byte
-    IsGlobalQuestBoss As Integer
+    GlobalQuestBossIndex As Integer
     ElementalTags As Long
 End Type
 
@@ -3172,7 +3172,7 @@ Public Type t_NpcInfoCache
     nivel As Integer
     Movement As Integer
     AguaValida As Integer
-    IsGlobalQuestBoss As Integer
+    GlobalQuestBossIndex As Integer
     TierraInvalida As Integer
     Faccion As Integer
     ElementalTags As Long
