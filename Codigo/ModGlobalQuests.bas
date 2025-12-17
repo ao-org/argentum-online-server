@@ -39,7 +39,7 @@ Public Sub LoadGlobalQuests()
         Exit Sub
     End If
     Dim GlobalQuest As Integer
-    Dim IniFile        As clsIniManager
+    Dim IniFile     As clsIniManager
     Set IniFile = New clsIniManager
     Call IniFile.Initialize(DatPath & "GlobalQuests.dat")
     MaxGlobalQuests = val(IniFile.GetValue("INIT", "NumGlobalQuest"))
@@ -55,6 +55,31 @@ Public Sub LoadGlobalQuests()
             .BossSpawnPosition.y = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionY")))
             .BossIndex = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossIndex")))
             .FinishOnThresholdReach = val(IniFile.GetValue("GlobalQuest" & i, "FinishOnThresholdReach"))
+            .Name = IniFile.GetValue("GlobalQuest" & i, "Name")
+            .StartDate = IniFile.GetValue("GlobalQuest" & i, "StartDate")
+            .EndDate = IniFile.GetValue("GlobalQuest" & i, "EndDate")
+            .ObjectIndex = val(IniFile.GetValue("GlobalQuest" & i, "ObjectIndex"))
+            Dim RS As ADODB.Recordset
+            Set RS = Query("SELECT * FROM global_quest_desc WHERE id = ?;", i)
+            If RS Is Nothing Then Exit Sub
+            'if global quest doesnt exist create it
+            Dim QueryString As String
+            If RS.RecordCount = 0 Then
+                QueryString = "INSERT INTO global_quest_desc (name, obj_id, counter, start_date, end_date) VALUES (?, ?, ?, ?, ?);"
+                Set RS = Query(QueryString, .Name, .ObjectIndex, .GatheringThreshold, .StartDate, .EndDate)
+                'if exists load everything and reconstruct the current total user contribution
+            Else
+                .Name = RS!Name
+                .ObjectIndex = RS!obj_id
+                .GatheringThreshold = RS!threshold
+                .StartDate = RS!start_date
+                .EndDate = RS!end_date
+                QueryString = "SELECT SUM(amount) AS total_amount FROM global_quest_user_contribution WHERE event_id = ?;"
+                Set RS = Query(QueryString, i)
+                If RS!total_amount <> Null Then
+                    .GatheringGlobalCounter = RS!total_amount
+                End If
+            End If
         End With
     Next i
     Set IniFile = Nothing
