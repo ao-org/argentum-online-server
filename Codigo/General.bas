@@ -687,6 +687,8 @@ Sub Main()
     Call LoadBalance
     frmCargando.Label1(2).Caption = "Cargando Clanes.dat"
     Call LoadGuildsConfig
+    frmCargando.Label1(2).Caption = "Cargando Meditaciones.dat"
+    Call LoadMeditations
     frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
     Call CargarCiudades
     If BootDelBackUp Then

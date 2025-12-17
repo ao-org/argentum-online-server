@@ -657,14 +657,18 @@ Public Enum e_SoundEffects
     CupDice = 10000
 End Enum
 
-Public Enum e_Meditaciones
-    MeditarInicial = 115
-    MeditarMayor15 = 116
-    MeditarMayor30 = 117
-    MeditarMayor40 = 118
-    MeditarMayor45 = 119
-    MeditarMayor47 = 120
-End Enum
+'Meditaciones
+Public MeditationLevel1to12 As Integer
+Public MeditationLevel13to17 As Integer
+Public MeditationLevel18to24 As Integer
+Public MeditationLevel25to28 As Integer
+Public MeditationLevel29to32 As Integer
+Public MeditationLevel33to36 As Integer
+Public MeditationLevel37to39 As Integer
+Public MeditationLevel40to42 As Integer
+Public MeditationLevel43to44 As Integer
+Public MeditationLevel45to46 As Integer
+Public MeditationLevelMax As Integer
 
 Public Enum e_GraphicEffects 'Image sequenced fxs like paralizar PrepareMessageCreateFX() or family of functions CreateFX()
     OldGmWarp = 1
