@@ -2092,8 +2092,8 @@ Public Type t_Quest
     RewardSpellCount As Byte
     RewardSpellList() As Integer
     Repetible As Byte
-    GlobalQuestGatheringIndex As Integer
-    GlobalQuestGatheringThresholdNeeded As Long
+    GlobalQuestIndex As Integer
+    GlobalQuestThresholdNeeded As Long
 End Type
 
 ' ******************* RETOS ************************

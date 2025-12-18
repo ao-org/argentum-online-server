@@ -19,7 +19,7 @@ End Type
 
 Public GlobalQuestInfo() As t_GlobalQuestData
 
-Public Sub ContributeToGlobalQuestGlobalCounter(ByVal Amount As Long, ByVal GlobalQuestIndex As Integer)
+Public Sub ContributeToGlobalQuestCounter(ByVal Amount As Long, ByVal GlobalQuestIndex As Integer)
     With GlobalQuestInfo(GlobalQuestIndex)
         .GatheringGlobalCounter = .GatheringGlobalCounter + Amount
         If .GatheringGlobalCounter >= .GatheringGlobalInstallments Then
@@ -33,18 +33,25 @@ Public Sub ContributeToGlobalQuestGlobalCounter(ByVal Amount As Long, ByVal Glob
 End Sub
 
 Public Sub InsertContributionIntoDatabase(ByVal UserIndex As Integer, ByVal Amount, ByVal GlobalQuestIndex As Integer)
-    On Error GoTo InsertContributionIntoDatabase
+    On Error GoTo InsertContributionIntoDatabase_Err
     Dim RS          As ADODB.Recordset
     Dim QueryString As String
     QueryString = "INSERT INTO global_quest_user_contribution (event_id,user_id,timestamp,amount) VALUES (?,?,?,?);"
     Set RS = Query(QueryString, GlobalQuestIndex, UserList(UserIndex).Id, CStr(DateTime.Now), Amount)
-    If RS Is Nothing Then Exit Sub
     Exit Sub
-InsertContributionIntoDatabase:
+InsertContributionIntoDatabase_Err:
     Call TraceError(Err.Number, Err.Description, "ModGlobalQuests.InsertContributionIntoDatabase", Erl)
 End Sub
 
-Public Sub UpdateGlobalQuestActiveStateIntoDatabase(ByVal Status As Boolean)
+Public Sub UpdateGlobalQuestActiveStateIntoDatabase(ByVal Status As Boolean, ByVal GlobalQuestIndex As Integer)
+    On Error GoTo UpdateGlobalQuestActiveStateIntoDatabase_Err
+    Dim RS          As ADODB.Recordset
+    Dim QueryString As String
+    QueryString = "UPDATE global_quest_desc SET is_active = ? WHERE id = ?;"
+    Set RS = Query(QueryString, Status, GlobalQuestIndex)
+    Exit Sub
+UpdateGlobalQuestActiveStateIntoDatabase_Err:
+    Call TraceError(Err.Number, Err.Description, "ModGlobalQuests.UpdateGlobalQuestActiveStateIntoDatabase", Erl)
 End Sub
 
 Public Sub LoadGlobalQuests()
@@ -106,39 +113,36 @@ LoadGlobalQuests_Err:
     Call TraceError(Err.Number, Err.Description, "ModGlobalQuests.LoadGlobalQuests", Erl)
 End Sub
 
-Public Function FinishGlobalQuestCheck(ByVal UserIndex As Integer, ByVal GlobalQuestGatheringIndex As Integer, ByVal GlobalQuestGatheringThresholdNeeded As Long) As Boolean
-    If Not GlobalQuestInfo(GlobalQuestGatheringIndex).IsActive Then
+Public Function FinishGlobalQuestCheck(ByVal UserIndex As Integer, ByVal GlobalQuestIndex As Integer, ByVal GlobalQuestThresholdNeeded As Long) As Boolean
+    If Not GlobalQuestInfo(GlobalQuestIndex).IsActive Then
         Call WriteLocaleMsg(UserIndex, 2124, FONTTYPE_WARNING)
         Exit Function
     End If
-    If GlobalQuestGatheringThresholdNeeded = 0 Then
-        If GlobalQuestInfo(GlobalQuestGatheringIndex).IsBossAlive Then
-            Call WriteLocaleMsg(UserIndex, 2121, FONTTYPE_WARNING)
+    'boss alive mechanics shoudln't interfer with unique prizes
+    If GlobalQuestThresholdNeeded > 0 Then
+        If GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter < GlobalQuestThresholdNeeded Then
+            Call WriteLocaleMsg(UserIndex, 2123, FONTTYPE_WARNING, GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold & "¬" & GlobalQuestThresholdNeeded)
             Exit Function
         End If
-    End If
-    'boss alive mechanics shoudln't interfer with unique prizes
-    If GlobalQuestGatheringThresholdNeeded > 0 Then
-        If GlobalQuestInfo(GlobalQuestGatheringIndex).GatheringGlobalCounter < GlobalQuestGatheringThresholdNeeded Then
-            Call WriteLocaleMsg(UserIndex, 2123, FONTTYPE_WARNING, GlobalQuestInfo(GlobalQuestGatheringIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(GlobalQuestGatheringIndex).GatheringThreshold & "¬" & GlobalQuestGatheringThresholdNeeded)
+    Else
+        If GlobalQuestInfo(GlobalQuestIndex).IsBossAlive Then
+            Call WriteLocaleMsg(UserIndex, 2121, FONTTYPE_WARNING)
             Exit Function
         End If
     End If
     FinishGlobalQuestCheck = True
 End Function
 
-Public Sub FinishGlobalQuest(ByVal UserIndex As Integer, _
-                             ByVal ContributionAmount As Integer, _
-                             ByVal GlobalQuestGatheringIndex As Integer, _
-                             ByVal GlobalQuestGatheringThresholdNeeded As Long)
+Public Sub FinishGlobalQuest(ByVal UserIndex As Integer, ByVal ContributionAmount As Integer, ByVal GlobalQuestIndex As Integer, ByVal GlobalQuestThresholdNeeded As Long)
     'gathering threshold locked quests cannot also contribute to the global event
-    If GlobalQuestGatheringIndex > 0 And GlobalQuestGatheringThresholdNeeded = 0 Then
-        Call ContributeToGlobalQuestGlobalCounter(ContributionAmount, GlobalQuestGatheringIndex)
-        Call InsertContributionIntoDatabase(UserIndex, ContributionAmount, GlobalQuestGatheringIndex)
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(2122, UserList(UserIndex).Name & "¬" & ContributionAmount & "¬" & GlobalQuestInfo(GlobalQuestGatheringIndex).ObjectIndex & "¬" & GlobalQuestInfo(GlobalQuestGatheringIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(GlobalQuestGatheringIndex).GatheringThreshold, e_FontTypeNames.FONTTYPE_INFOIAO))
-        If GlobalQuestInfo(GlobalQuestGatheringIndex).FinishOnThresholdReach Then
-            If GlobalQuestInfo(GlobalQuestGatheringIndex).GatheringGlobalCounter >= GlobalQuestInfo(GlobalQuestGatheringIndex).GatheringThreshold Then
-                GlobalQuestInfo(GlobalQuestGatheringIndex).IsActive = False
+    If GlobalQuestIndex > 0 And GlobalQuestThresholdNeeded = 0 Then
+        Call ContributeToGlobalQuestCounter(ContributionAmount, GlobalQuestIndex)
+        Call InsertContributionIntoDatabase(UserIndex, ContributionAmount, GlobalQuestIndex)
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(2122, UserList(UserIndex).Name & "¬" & ContributionAmount & "¬" & GlobalQuestInfo(GlobalQuestIndex).ObjectIndex & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold, e_FontTypeNames.FONTTYPE_INFOIAO))
+        If GlobalQuestInfo(GlobalQuestIndex).FinishOnThresholdReach Then
+            If GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter >= GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold Then
+                GlobalQuestInfo(GlobalQuestIndex).IsActive = False
+                Call UpdateGlobalQuestActiveStateIntoDatabase(False, GlobalQuestIndex)
             End If
         End If
     End If

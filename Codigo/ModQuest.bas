@@ -77,7 +77,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                     Call WriteLocaleChatOverHead(UserIndex, "1336", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1336=No has conseguido todos los objetos que te he pedido.
                     Exit Sub
                 End If
-                Call FinishGlobalQuest(UserIndex, .RequiredOBJ(i).Amount, .GlobalQuestGatheringIndex, .GlobalQuestGatheringThresholdNeeded)
+                Call FinishGlobalQuest(UserIndex, .RequiredOBJ(i).Amount, .GlobalQuestIndex, .GlobalQuestThresholdNeeded)
             Next i
         End If
         'Comprobamos que haya matado todas las criaturas.
@@ -396,8 +396,8 @@ Public Sub LoadQuests()
             .RewardGLD = val(reader.GetValue("QUEST" & i, "RewardGLD"))
             .RewardEXP = val(reader.GetValue("QUEST" & i, "RewardEXP"))
             .Repetible = val(reader.GetValue("QUEST" & i, "Repetible"))
-            .GlobalQuestGatheringIndex = val(reader.GetValue("QUEST" & i, "GlobalQuestGatheringIndex"))
-            .GlobalQuestGatheringThresholdNeeded = val(reader.GetValue("QUEST" & i, "GlobalQuestGatheringThresholdNeeded"))
+            .GlobalQuestIndex = val(reader.GetValue("QUEST" & i, "GlobalQuestIndex"))
+            .GlobalQuestThresholdNeeded = val(reader.GetValue("QUEST" & i, "GlobalQuestThresholdNeeded"))
             'CARGAMOS OBJETOS DE RECOMPENSA
             .RewardOBJs = val(reader.GetValue("QUEST" & i, "RewardOBJs"))
             If .RewardOBJs > 0 Then
@@ -521,8 +521,8 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
             Next i
         End If
         
-        If .GlobalQuestGatheringIndex > 0 Then
-            If Not FinishGlobalQuestCheck(UserIndex, .GlobalQuestGatheringIndex, .GlobalQuestGatheringThresholdNeeded) Then
+        If .GlobalQuestIndex > 0 Then
+            If Not FinishGlobalQuestCheck(UserIndex, .GlobalQuestIndex, .GlobalQuestThresholdNeeded) Then
                 Exit Function
             End If
         End If
