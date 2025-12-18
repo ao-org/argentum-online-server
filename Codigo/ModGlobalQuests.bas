@@ -17,8 +17,13 @@ Public Type t_GlobalQuestData
     IsActive As Boolean
 End Type
 
-Private m_GlobalQuestEndAttempt As Long
-Public GlobalQuestInfo()        As t_GlobalQuestData
+Private m_GlobalQuestEndAttempt                       As Long
+Public GlobalQuestInfo()                              As t_GlobalQuestData
+Private Const INSERT_GLOBAL_QUEST_USER_CONTRIBUTION   As String = "INSERT INTO global_quest_user_contribution (event_id,user_id,timestamp,amount) VALUES (?,?,?,?);"
+Private Const UPDATE_GLOBAL_QUEST_DESC                As String = "UPDATE global_quest_desc SET is_active = ? WHERE event_id = ?;"
+Private Const INSERT_NEW_GLOBAL_QUEST_DESC            As String = "INSERT INTO global_quest_desc (event_id, name, obj_id, threshold, start_date, end_date, is_active) VALUES (?,?, ?, ?, ?, ?, ?);"
+Private Const SELECT_ALL_GLOBAL_QUEST                 As String = "SELECT * FROM global_quest_desc WHERE event_id = ?;"
+Private Const SUM_TOTAL_AMOUNT_FROM_USER_CONTRIBUTION As String = "SELECT SUM(amount) AS total_amount FROM global_quest_user_contribution WHERE event_id = ?;"
 
 Public Sub ContributeToGlobalQuestCounter(ByVal Amount As Long, ByVal GlobalQuestIndex As Integer)
     With GlobalQuestInfo(GlobalQuestIndex)
@@ -35,10 +40,8 @@ End Sub
 
 Public Sub InsertContributionIntoDatabase(ByVal UserIndex As Integer, ByVal Amount, ByVal GlobalQuestIndex As Integer)
     On Error GoTo InsertContributionIntoDatabase_Err
-    Dim RS          As ADODB.Recordset
-    Dim QueryString As String
-    QueryString = "INSERT INTO global_quest_user_contribution (event_id,user_id,timestamp,amount) VALUES (?,?,?,?);"
-    Set RS = Query(QueryString, GlobalQuestIndex, UserList(UserIndex).Id, CStr(DateTime.Now), Amount)
+    Dim RS As ADODB.Recordset
+    Set RS = Query(INSERT_GLOBAL_QUEST_USER_CONTRIBUTION, GlobalQuestIndex, UserList(UserIndex).Id, CStr(DateTime.Now), Amount)
     Exit Sub
 InsertContributionIntoDatabase_Err:
     Call TraceError(Err.Number, Err.Description, "ModGlobalQuests.InsertContributionIntoDatabase", Erl)
@@ -46,10 +49,8 @@ End Sub
 
 Public Sub UpdateGlobalQuestActiveStateIntoDatabase(ByVal Status As Boolean, ByVal GlobalQuestIndex As Integer)
     On Error GoTo UpdateGlobalQuestActiveStateIntoDatabase_Err
-    Dim RS          As ADODB.Recordset
-    Dim QueryString As String
-    QueryString = "UPDATE global_quest_desc SET is_active = ? WHERE event_id = ?;"
-    Set RS = Query(QueryString, Status, GlobalQuestIndex)
+    Dim RS As ADODB.Recordset
+    Set RS = Query(UPDATE_GLOBAL_QUEST_DESC, Status, GlobalQuestIndex)
     Exit Sub
 UpdateGlobalQuestActiveStateIntoDatabase_Err:
     Call TraceError(Err.Number, Err.Description, "ModGlobalQuests.UpdateGlobalQuestActiveStateIntoDatabase", Erl)
@@ -85,13 +86,11 @@ Public Sub LoadGlobalQuests()
             .ObjectIndex = val(IniFile.GetValue("GlobalQuest" & i, "ObjectIndex"))
             .IsActive = False
             Dim RS As ADODB.Recordset
-            Set RS = Query("SELECT * FROM global_quest_desc WHERE event_id = ?;", i)
+            Set RS = Query(SELECT_ALL_GLOBAL_QUEST, i)
             If RS Is Nothing Then Exit Sub
             'if global quest doesnt exist create it
-            Dim QueryString As String
             If RS.RecordCount = 0 Then
-                QueryString = "INSERT INTO global_quest_desc (event_id, name, obj_id, threshold, start_date, end_date, is_active) VALUES (?,?, ?, ?, ?, ?, ?);"
-                Set RS = Query(QueryString, i, .Name, .ObjectIndex, .GatheringThreshold, DateToSQLite(.StartDate), DateToSQLite(.EndDate), False)
+                Set RS = Query(INSERT_NEW_GLOBAL_QUEST_DESC, i, .Name, .ObjectIndex, .GatheringThreshold, DateToSQLite(.StartDate), DateToSQLite(.EndDate), False)
                 'if exists load everything and reconstruct the current total user contribution
             Else
                 .Name = RS!Name
@@ -100,8 +99,7 @@ Public Sub LoadGlobalQuests()
                 .StartDate = SQLiteToDate(RS!start_date)
                 .EndDate = SQLiteToDate(RS!end_date)
                 .IsActive = RS!is_active
-                QueryString = "SELECT SUM(amount) AS total_amount FROM global_quest_user_contribution WHERE event_id = ?;"
-                Set RS = Query(QueryString, i)
+                Set RS = Query(SUM_TOTAL_AMOUNT_FROM_USER_CONTRIBUTION, i)
                 If Not IsNull(RS!total_amount) Then
                     .GatheringGlobalCounter = RS!total_amount
                 End If
@@ -189,7 +187,7 @@ Public Function HasGlobalQuestStarted(ByRef GlobalQuestData As t_GlobalQuestData
 End Function
 
 Public Function IsGlobalQuestInTheFuture(ByRef GlobalQuestData As t_GlobalQuestData) As Boolean
-    HasGlobalQuestEnded = GlobalQuestInfo.EndDate - DateTime.Now > 0
+    IsGlobalQuestInTheFuture = GlobalQuestData.EndDate - DateTime.Now > 0
 End Function
 
 Public Sub FinalizeGlobalQuest(ByVal GlobalQuestIndex As Integer)
