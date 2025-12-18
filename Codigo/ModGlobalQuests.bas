@@ -114,22 +114,25 @@ LoadGlobalQuests_Err:
 End Sub
 
 Public Function FinishGlobalQuestCheck(ByVal UserIndex As Integer, ByVal GlobalQuestIndex As Integer, ByVal GlobalQuestThresholdNeeded As Long) As Boolean
-    If Not GlobalQuestInfo(GlobalQuestIndex).IsActive Then
-        Call WriteLocaleMsg(UserIndex, 2124, FONTTYPE_WARNING)
-        Exit Function
-    End If
     'boss alive mechanics shoudln't interfer with unique prizes
     If GlobalQuestThresholdNeeded > 0 Then
         If GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter < GlobalQuestThresholdNeeded Then
             Call WriteLocaleMsg(UserIndex, 2123, FONTTYPE_WARNING, GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold & "¬" & GlobalQuestThresholdNeeded)
             Exit Function
         End If
+        'global quest unique prizes should be redeemable even if the event is finished
+        GoTo SkipEventIsActive
     Else
         If GlobalQuestInfo(GlobalQuestIndex).IsBossAlive Then
             Call WriteLocaleMsg(UserIndex, 2121, FONTTYPE_WARNING)
             Exit Function
         End If
     End If
+    If Not GlobalQuestInfo(GlobalQuestIndex).IsActive Then
+        Call WriteLocaleMsg(UserIndex, 2124, FONTTYPE_WARNING)
+        Exit Function
+    End If
+SkipEventIsActive:
     FinishGlobalQuestCheck = True
 End Function
 
