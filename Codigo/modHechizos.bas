@@ -4130,7 +4130,7 @@ AreaHechizo_Err:
     Call TraceError(Err.Number, Err.Description, "modHechizos.AreaHechizo", Erl)
 End Sub
 
-Private Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+Public Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     Dim BaseHit       As Integer
     Dim BonusDamage   As Single
     Dim BonusFromItem As Integer
