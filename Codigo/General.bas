@@ -35,6 +35,7 @@ Global LeerNPCs As New clsIniManager
 Private Const TREE_GRAPHICS_FILE As String = "EsArbol.ini"
 Private TreeGraphicIds()         As Long
 Private TreeGraphicCount         As Long
+Private TreeGraphicLookup        As Object
 
 Sub SetNakedBody(ByRef User As t_User)
     Const man_human_naked_body   As Integer = 3000
@@ -283,71 +284,111 @@ End Function
 
 Public Sub LoadTreeGraphics()
     On Error GoTo LoadTreeGraphics_Err
-    Dim initTreeFile   As String
-    Dim legacyTreeFile As String
+    Dim treeFile As String
 
-    initTreeFile = GetTreeGraphicsInitPath()
-    legacyTreeFile = GetTreeGraphicsLegacyPath()
+    Call ResetTreeGraphics
 
-    If LoadTreeGraphicsFromFile(initTreeFile) Then Exit Sub
+    treeFile = GetTreeGraphicsInitPath()
 
-    If LoadTreeGraphicsFromFile(legacyTreeFile) Then Exit Sub
+    If LenB(treeFile) <> 0 Then
+        If LoadTreeGraphicsFromFile(treeFile) Then Exit Sub
+        Debug.Print "EsArbol.ini no se pudo cargar en: " & treeFile
+    Else
+        Debug.Print "EsArbol.ini ruta vacia"
+    End If
 
     Call LoadDefaultTreeGraphics
-
-    If EnsureDirectoryExists(GetDirectoryName(initTreeFile)) Then
-        Call SaveTreeGraphicsFile(initTreeFile)
-    ElseIf EnsureDirectoryExists(GetDirectoryName(legacyTreeFile)) Then
-        Call SaveTreeGraphicsFile(legacyTreeFile)
-    Else
-        Call SaveTreeGraphicsFile(initTreeFile)
-    End If
     Exit Sub
 LoadTreeGraphics_Err:
     Call TraceError(Err.Number, Err.Description, "General.LoadTreeGraphics", Erl)
 End Sub
 
-Private Function GetTreeGraphicsInitPath() As String
-    GetTreeGraphicsInitPath = App.Path & "\Recursos\init\" & TREE_GRAPHICS_FILE
-End Function
 
-Private Function GetTreeGraphicsLegacyPath() As String
-    GetTreeGraphicsLegacyPath = DatPath & TREE_GRAPHICS_FILE
+Private Function GetTreeGraphicsInitPath() As String
+    Dim resourcesRoot As String
+
+    resourcesRoot = NormalizePath(App.Path)
+
+    Do While Len(resourcesRoot) > 0 And Right$(resourcesRoot, 1) = "\"
+        resourcesRoot = Left$(resourcesRoot, Len(resourcesRoot) - 1)
+    Loop
+
+    resourcesRoot = GetDirectoryName(resourcesRoot)
+
+    If LenB(resourcesRoot) = 0 Then Exit Function
+
+    GetTreeGraphicsInitPath = resourcesRoot & "\Recursos\init\" & TREE_GRAPHICS_FILE
 End Function
 
 
 Private Function LoadTreeGraphicsFromFile(ByVal FilePath As String) As Boolean
     On Error GoTo LoadTreeGraphicsFromFile_Err
 
-    If Not FileExist(FilePath, vbArchive) Then Exit Function
+    If LenB(FilePath) = 0 Then Exit Function
+
+    If Not FileExist(FilePath, vbArchive) Then
+        Debug.Print "EsArbol.ini no encontrado: " & FilePath
+        Exit Function
+    End If
 
     Dim requestedCount As Long
     Dim idx            As Long
     Dim treeValue      As Long
+    Dim rawIndices     As String
+    Dim indices        As Variant
+    Dim part           As Variant
 
     requestedCount = val(GetVar(FilePath, "INIT", "Count"))
 
-    If requestedCount <= 0 Then Exit Function
+    If requestedCount > 0 Then
+        ReDim TreeGraphicIds(1 To requestedCount) As Long
+        TreeGraphicCount = 0
 
-    ReDim TreeGraphicIds(1 To requestedCount) As Long
-    TreeGraphicCount = 0
+        For idx = 1 To requestedCount
+            treeValue = val(GetVar(FilePath, "TREES", "Tree" & idx))
+            Debug.Print "EsArbol.ini Tree" & idx & "=" & treeValue
+            If treeValue <> 0 Then
+                TreeGraphicCount = TreeGraphicCount + 1
+                TreeGraphicIds(TreeGraphicCount) = treeValue
+            End If
+        Next idx
+    Else
+        rawIndices = Trim$(GetVar(FilePath, "ARBOL", "Indices"))
 
-    For idx = 1 To requestedCount
-        treeValue = val(GetVar(FilePath, "TREES", "Tree" & idx))
-        If treeValue <> 0 Then
-            TreeGraphicCount = TreeGraphicCount + 1
-            TreeGraphicIds(TreeGraphicCount) = treeValue
+        If LenB(rawIndices) <> 0 Then
+            indices = Split(rawIndices, ",")
+            ReDim TreeGraphicIds(1 To UBound(indices) - LBound(indices) + 1) As Long
+            TreeGraphicCount = 0
+
+            For Each part In indices
+                treeValue = val(Trim$(CStr(part)))
+                Debug.Print "EsArbol.ini Indice=" & treeValue
+                If treeValue <> 0 Then
+                    TreeGraphicCount = TreeGraphicCount + 1
+                    TreeGraphicIds(TreeGraphicCount) = treeValue
+                End If
+            Next part
+
+            requestedCount = TreeGraphicCount
+
+            If TreeGraphicCount > 0 Then
+                ReDim Preserve TreeGraphicIds(1 To TreeGraphicCount) As Long
+            End If
         End If
-    Next idx
+    End If
 
     If TreeGraphicCount = 0 Then
         Erase TreeGraphicIds
         Exit Function
     End If
 
-    If TreeGraphicCount <> requestedCount Then
+    If requestedCount <> 0 And TreeGraphicCount < requestedCount Then
         ReDim Preserve TreeGraphicIds(1 To TreeGraphicCount) As Long
     End If
+
+    Call UpdateTreeGraphicsLookup
+
+    Debug.Print "EsArbol.ini cargado: " & TreeGraphicCount & " entradas"
 
     LoadTreeGraphicsFromFile = True
     Exit Function
@@ -372,32 +413,21 @@ Private Sub LoadDefaultTreeGraphics()
         TreeGraphicIds(dest) = CLng(defaults(idx))
         dest = dest + 1
     Next idx
+
+    Call UpdateTreeGraphicsLookup
     Exit Sub
 LoadDefaultTreeGraphics_Err:
     Call TraceError(Err.Number, Err.Description, "General.LoadDefaultTreeGraphics", Erl)
 End Sub
-
-Private Sub SaveTreeGraphicsFile(ByVal FilePath As String)
-    On Error GoTo SaveTreeGraphicsFile_Err
-
-    Dim idx As Long
-
-    If TreeGraphicCount = 0 Then Exit Sub
-
-    Call WriteVar(FilePath, "INIT", "Count", CStr(TreeGraphicCount))
-
-    For idx = 1 To TreeGraphicCount
-        Call WriteVar(FilePath, "TREES", "Tree" & idx, CStr(TreeGraphicIds(idx)))
-    Next idx
-    Exit Sub
-SaveTreeGraphicsFile_Err:
-    Call TraceError(Err.Number, Err.Description, "General.SaveTreeGraphicsFile", Erl)
-End Sub
-
 Function EsArbol(ByVal GrhIndex As Long) As Boolean
     On Error GoTo EsArbol_Err
 
     Dim idx As Long
+
+    If Not TreeGraphicLookup Is Nothing Then
+        EsArbol = TreeGraphicLookup.Exists(CStr(GrhIndex))
+        Exit Function
+    End If
 
     For idx = 1 To TreeGraphicCount
         If TreeGraphicIds(idx) = GrhIndex Then
@@ -409,6 +439,30 @@ Function EsArbol(ByVal GrhIndex As Long) As Boolean
 EsArbol_Err:
     Call TraceError(Err.Number, Err.Description, "General.EsArbol", Erl)
 End Function
+
+Private Sub ResetTreeGraphics()
+    TreeGraphicCount = 0
+    Erase TreeGraphicIds
+    Set TreeGraphicLookup = Nothing
+End Sub
+
+Private Sub UpdateTreeGraphicsLookup()
+    Dim idx As Long
+
+    If TreeGraphicCount = 0 Then
+        Set TreeGraphicLookup = Nothing
+        Exit Sub
+    End If
+
+    Set TreeGraphicLookup = CreateObject("Scripting.Dictionary")
+
+    For idx = 1 To TreeGraphicCount
+        If Not TreeGraphicLookup.Exists(CStr(TreeGraphicIds(idx))) Then
+            TreeGraphicLookup.Add CStr(TreeGraphicIds(idx)), True
+        End If
+    Next idx
+End Sub
+
 
 Private Function EnsureDirectoryExists(ByVal DirectoryPath As String) As Boolean
     On Error GoTo EnsureDirectoryExists_Err
