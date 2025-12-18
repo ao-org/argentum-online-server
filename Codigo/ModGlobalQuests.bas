@@ -196,6 +196,7 @@ Public Sub FinalizeGlobalQuest(ByVal GlobalQuestIndex As Integer)
         Call UpdateGlobalQuestActiveStateIntoDatabase(False, GlobalQuestIndex)
         'TBD change map indexes and de-spawn corresponding npcs
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(2127, .Name & "¬" & .GatheringGlobalCounter & "¬" & .GatheringThreshold, e_FontTypeNames.FONTTYPE_INFOIAO))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.BAOLegionHorn, NO_3D_SOUND, NO_3D_SOUND))
     End With
 End Sub
 
@@ -205,6 +206,7 @@ Public Sub StartGlobalQuest(ByVal GlobalQuestIndex As Integer)
         Call UpdateGlobalQuestActiveStateIntoDatabase(True, GlobalQuestIndex)
         'TBD change map indexes and spawn corresponding npcs
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(2128, .Name & "¬" & .GatheringThreshold & "¬" & .ObjectIndex, e_FontTypeNames.FONTTYPE_INFOIAO))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.BAOLegionHorn, NO_3D_SOUND, NO_3D_SOUND))
     End With
 End Sub
 
