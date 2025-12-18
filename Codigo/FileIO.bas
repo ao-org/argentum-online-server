@@ -612,6 +612,7 @@ Public Sub CargarHechizos()
         If val(Leer.GetValue("Hechizo" & Hechizo, "IsSkill")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eIsSkill)
         If val(Leer.GetValue("Hechizo" & Hechizo, "IsBindable")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eIsBindable)
         Hechizos(Hechizo).RequireWeaponType = val(Leer.GetValue("Hechizo" & Hechizo, "RequireWeaponType"))
+        Hechizos(Hechizo).IsElementalTagsOnly = val(Leer.GetValue("Hechizo" & Hechizo, "IsElementalTagsOnly")) > 0
         Dim SubeHP As Byte
         SubeHP = val(Leer.GetValue("Hechizo" & Hechizo, "SubeHP"))
         If SubeHP = 1 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.eDoHeal)
