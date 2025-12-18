@@ -16,8 +16,9 @@ Public Type t_GlobalQuestData
     ObjectIndex As Integer
     IsActive As Boolean
 End Type
+
 Private m_GlobalQuestEndAttempt As Long
-Public GlobalQuestInfo() As t_GlobalQuestData
+Public GlobalQuestInfo()        As t_GlobalQuestData
 
 Public Sub ContributeToGlobalQuestCounter(ByVal Amount As Long, ByVal GlobalQuestIndex As Integer)
     With GlobalQuestInfo(GlobalQuestIndex)
@@ -47,7 +48,7 @@ Public Sub UpdateGlobalQuestActiveStateIntoDatabase(ByVal Status As Boolean, ByV
     On Error GoTo UpdateGlobalQuestActiveStateIntoDatabase_Err
     Dim RS          As ADODB.Recordset
     Dim QueryString As String
-    QueryString = "UPDATE global_quest_desc SET is_active = ? WHERE id = ?;"
+    QueryString = "UPDATE global_quest_desc SET is_active = ? WHERE event_id = ?;"
     Set RS = Query(QueryString, Status, GlobalQuestIndex)
     Exit Sub
 UpdateGlobalQuestActiveStateIntoDatabase_Err:
@@ -79,8 +80,8 @@ Public Sub LoadGlobalQuests()
             .BossIndex = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossIndex")))
             .FinishOnThresholdReach = val(IniFile.GetValue("GlobalQuest" & i, "FinishOnThresholdReach"))
             .Name = IniFile.GetValue("GlobalQuest" & i, "Name")
-            .StartDate = IniFile.GetValue("GlobalQuest" & i, "StartDate")
-            .EndDate = IniFile.GetValue("GlobalQuest" & i, "EndDate")
+            .StartDate = CDate(IniFile.GetValue("GlobalQuest" & i, "StartDate"))
+            .EndDate = CDate(IniFile.GetValue("GlobalQuest" & i, "EndDate"))
             .ObjectIndex = val(IniFile.GetValue("GlobalQuest" & i, "ObjectIndex"))
             .IsActive = False
             Dim RS As ADODB.Recordset
@@ -90,14 +91,14 @@ Public Sub LoadGlobalQuests()
             Dim QueryString As String
             If RS.RecordCount = 0 Then
                 QueryString = "INSERT INTO global_quest_desc (event_id, name, obj_id, threshold, start_date, end_date, is_active) VALUES (?,?, ?, ?, ?, ?, ?);"
-                Set RS = Query(QueryString, i, .Name, .ObjectIndex, .GatheringThreshold, .StartDate, .EndDate, False)
+                Set RS = Query(QueryString, i, .Name, .ObjectIndex, .GatheringThreshold, DateToSQLite(.StartDate), DateToSQLite(.EndDate), False)
                 'if exists load everything and reconstruct the current total user contribution
             Else
                 .Name = RS!Name
                 .ObjectIndex = RS!obj_id
                 .GatheringThreshold = RS!threshold
-                .StartDate = RS!start_date
-                .EndDate = RS!end_date
+                .StartDate = SQLiteToDate(RS!start_date)
+                .EndDate = SQLiteToDate(RS!end_date)
                 .IsActive = RS!is_active
                 QueryString = "SELECT SUM(amount) AS total_amount FROM global_quest_user_contribution WHERE event_id = ?;"
                 Set RS = Query(QueryString, i)
@@ -165,19 +166,48 @@ Public Sub MaybeChangeGlobalQuestsState()
     Call PerformanceTestStart(PerformanceTimer)
     Dim i As Integer
     For i = 1 To UBound(GlobalQuestInfo)
-        'if global quest EndDate has already been reached
-        If GlobalQuestInfo(i).EndDate - DateTime.Now < 0 Then
-            GlobalQuestInfo(i).IsActive = False
-            Call UpdateGlobalQuestActiveStateIntoDatabase(False, i)
-        Else
-            'if not, check if its time to activate it
-            If DateTime.Now - GlobalQuestInfo(i).StartDate > 0 Then
-                GlobalQuestInfo(i).IsActive = True
-                Call UpdateGlobalQuestActiveStateIntoDatabase(True, i)
-            End If
+        If GlobalQuestInfo(i).IsActive And HasGlobalQuestEnded(GlobalQuestInfo(i)) Then
+            Call FinalizeGlobalQuest(i)
+        ElseIf Not GlobalQuestInfo(i).IsActive And HasGlobalQuestStarted(GlobalQuestInfo(i)) Then
+            Call StartGlobalQuest(i)
         End If
     Next i
     Exit Sub
 MaybeChangeGlobalQuestsState_Err:
     Call TraceError(Err.Number, Err.Description, "ModGlobalQuests.MaybeChangeGlobalQuestsState", Erl)
 End Sub
+
+Public Function HasGlobalQuestEnded(ByRef GlobalQuestData As t_GlobalQuestData) As Boolean
+    HasGlobalQuestEnded = GlobalQuestData.EndDate - DateTime.Now < 0
+End Function
+
+Public Function HasGlobalQuestStarted(ByRef GlobalQuestData As t_GlobalQuestData) As Boolean
+    HasGlobalQuestStarted = DateTime.Now - GlobalQuestData.StartDate > 0
+End Function
+
+Public Sub FinalizeGlobalQuest(ByVal GlobalQuestIndex As Integer)
+    With GlobalQuestInfo(GlobalQuestIndex)
+        .IsActive = False
+        Call UpdateGlobalQuestActiveStateIntoDatabase(False, GlobalQuestIndex)
+        'TBD change map indexes and de-spawn corresponding npcs
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(2127, .Name & "¬" & .GatheringGlobalCounter & "¬" & .GatheringThreshold, e_FontTypeNames.FONTTYPE_INFOIAO))
+    End With
+End Sub
+
+Public Sub StartGlobalQuest(ByVal GlobalQuestIndex As Integer)
+    With GlobalQuestInfo(GlobalQuestIndex)
+        .IsActive = True
+        Call UpdateGlobalQuestActiveStateIntoDatabase(True, GlobalQuestIndex)
+        'TBD change map indexes and spawn corresponding npcs
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(2128, .Name & "¬" & .GatheringThreshold & "¬" & .ObjectIndex, e_FontTypeNames.FONTTYPE_INFOIAO))
+    End With
+End Sub
+
+Function SQLiteToDate(strDate As String) As Date
+    ' For format "2025-12-18 14:30:00"
+    SQLiteToDate = CDate(strDate)
+End Function
+
+Function DateToSQLite(dt As Date) As String
+    DateToSQLite = Format$(dt, "yyyy-mm-dd hh:nn:ss")
+End Function
