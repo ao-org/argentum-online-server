@@ -789,6 +789,8 @@ Sub Main()
         Call RunAutomatedActions
         Call PerformTimeLimitCheck(PerformanceTimer, "General StartAutomatedAction")
         Call MaybeUpdateNpcAI(GlobalFrameTime)
+        Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeChangeGlobalQuestsState")
+        Call MaybeChangeGlobalQuestsState
         DoEvents
         Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
         Call AntiCheatUpdate

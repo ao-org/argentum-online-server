@@ -11,12 +11,12 @@ Public Type t_GlobalQuestData
     BossSpawnPosition As t_WorldPos
     FinishOnThresholdReach As Boolean
     Name As String
-    StartDate As String
-    EndDate As String
+    StartDate As Date
+    EndDate As Date
     ObjectIndex As Integer
     IsActive As Boolean
 End Type
-
+Private m_GlobalQuestEndAttempt As Long
 Public GlobalQuestInfo() As t_GlobalQuestData
 
 Public Sub ContributeToGlobalQuestCounter(ByVal Amount As Long, ByVal GlobalQuestIndex As Integer)
@@ -82,15 +82,15 @@ Public Sub LoadGlobalQuests()
             .StartDate = IniFile.GetValue("GlobalQuest" & i, "StartDate")
             .EndDate = IniFile.GetValue("GlobalQuest" & i, "EndDate")
             .ObjectIndex = val(IniFile.GetValue("GlobalQuest" & i, "ObjectIndex"))
-            .IsActive = True
+            .IsActive = False
             Dim RS As ADODB.Recordset
             Set RS = Query("SELECT * FROM global_quest_desc WHERE event_id = ?;", i)
             If RS Is Nothing Then Exit Sub
             'if global quest doesnt exist create it
             Dim QueryString As String
             If RS.RecordCount = 0 Then
-                QueryString = "INSERT INTO global_quest_desc (event_id, name, obj_id, threshold, start_date, end_date) VALUES (?,?, ?, ?, ?, ?);"
-                Set RS = Query(QueryString, i, .Name, .ObjectIndex, .GatheringThreshold, .StartDate, .EndDate)
+                QueryString = "INSERT INTO global_quest_desc (event_id, name, obj_id, threshold, start_date, end_date, is_active) VALUES (?,?, ?, ?, ?, ?, ?);"
+                Set RS = Query(QueryString, i, .Name, .ObjectIndex, .GatheringThreshold, .StartDate, .EndDate, False)
                 'if exists load everything and reconstruct the current total user contribution
             Else
                 .Name = RS!Name
@@ -146,4 +146,35 @@ Public Sub FinishGlobalQuest(ByVal UserIndex As Integer, ByVal ContributionAmoun
             End If
         End If
     End If
+End Sub
+
+Public Sub MaybeChangeGlobalQuestsState()
+    On Error GoTo MaybeChangeGlobalQuestsState_Err
+    Dim nowRaw As Long
+    nowRaw = GetTickCountRaw()
+    If m_GlobalQuestEndAttempt = 0 Then
+        m_GlobalQuestEndAttempt = nowRaw
+        Exit Sub
+    End If
+    If TicksElapsed(m_GlobalQuestEndAttempt, nowRaw) < IntervalChangeGlobalQuestsState Then Exit Sub
+    m_GlobalQuestEndAttempt = nowRaw
+    Dim PerformanceTimer As Long
+    Call PerformanceTestStart(PerformanceTimer)
+    Dim i As Integer
+    For i = 1 To UBound(GlobalQuestInfo)
+        'if global quest EndDate has already been reached
+        If GlobalQuestInfo(i).EndDate - DateTime.Now < 0 Then
+            GlobalQuestInfo(i).IsActive = False
+            Call UpdateGlobalQuestActiveStateIntoDatabase(False, i)
+        Else
+            'if not, check if its time to activate it
+            If DateTime.Now - GlobalQuestInfo(i).StartDate > 0 Then
+                GlobalQuestInfo(i).IsActive = True
+                Call UpdateGlobalQuestActiveStateIntoDatabase(True, i)
+            End If
+        End If
+    Next i
+    Exit Sub
+MaybeChangeGlobalQuestsState_Err:
+    Call TraceError(Err.Number, Err.Description, "ModGlobalQuests.MaybeChangeGlobalQuestsState", Erl)
 End Sub

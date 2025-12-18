@@ -520,7 +520,6 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
                 If Not TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex) Then Exit Function
             Next i
         End If
-        
         If .GlobalQuestIndex > 0 Then
             If Not FinishGlobalQuestCheck(UserIndex, .GlobalQuestIndex, .GlobalQuestThresholdNeeded) Then
                 Exit Function
