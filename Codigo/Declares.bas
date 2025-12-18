@@ -1785,6 +1785,7 @@ Public Type t_Hechizo
     SpellRequirementMask As Long
     RequireWeaponType As e_WeaponType
     MaxLevelCasteable As Byte
+    IsElementalTagsOnly As Boolean
 End Type
 
 Public Type t_ActiveModifiers

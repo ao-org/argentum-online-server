@@ -2379,6 +2379,21 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
             b = False
         End If
     ElseIf IsSet(Hechizos(hIndex).Effects, e_SpellEffects.eDoDamage) Then
+        If Hechizos(hIndex).IsElementalTagsOnly Then
+            If NpcList(NpcIndex).flags.ElementalTags = 0 Then
+                Call WriteLocaleMsg(UserIndex, 2125, e_FontTypeNames.FONTTYPE_INFOIAO)
+                Exit Sub
+            End If
+            If UserList(UserIndex).invent.EquippedWeaponObjIndex = 0 Then
+                Call WriteLocaleMsg(UserIndex, 2126, e_FontTypeNames.FONTTYPE_INFOIAO)
+                Exit Sub
+            Else
+                If ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).ElementalTags = 0 And UserList(UserIndex).invent.Object(UserList(UserIndex).invent.EquippedWeaponSlot).ElementalTags = 0 Then
+                    Call WriteLocaleMsg(UserIndex, 2126, e_FontTypeNames.FONTTYPE_INFOIAO)
+                    Exit Sub
+                End If
+            End If
+        End If
         UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
         Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
         If UserAttackInteractionResult.CanAttack Then
