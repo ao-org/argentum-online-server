@@ -143,17 +143,22 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
             Call SendData(ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, GRH_FALLO_PESCA))
             GoTo SkillImprovement
         End If
-        ' Award experience if enabled
-        If IsFeatureEnabled("gain_exp_while_working") Then
-            Call GiveExpWhileWorking(UserIndex, WorkingToolIndex, e_JobsTypes.Fisherman)
-            Call WriteUpdateExp(UserIndex)
-            Call CheckUserLevel(UserIndex)
-        End If
         ' Determine what fish was caught
         Dim fishingCatch As t_Obj
         fishingCatch.ObjIndex = ObtenerPezRandom(ObjData(WorkingToolIndex).Power)
-        fishingCatch.amount = RandomNumber(1, 10)
-        If fishingCatch.amount <= 0 Then
+        If .clase = e_Class.Trabajador Then
+            If IsUsingFishingNet Then
+                fishingCatch.amount = RandomNumber(2, 6)
+            Else
+                fishingCatch.amount = RandomNumber(1, 3)
+            End If
+            ' Award experience if enabled
+            If IsFeatureEnabled("gain_exp_while_working") Then
+                Call GiveExpWhileWorking(UserIndex, WorkingToolIndex, e_JobsTypes.Fisherman)
+                Call WriteUpdateExp(UserIndex)
+                Call CheckUserLevel(UserIndex)
+            End If
+        Else
             fishingCatch.amount = 1
         End If
         ' Handle unique map fish replacement
@@ -316,17 +321,18 @@ Private Function ClampFishingLevel(ByVal level As Long) As Long
 End Function
 
 Private Function GetFishingChance(ByVal FishingSkill As Integer) As Integer
-    If FishingSkill < 20 Then
-        GetFishingChance = 20
-    ElseIf FishingSkill < 40 Then
-        GetFishingChance = 35
-    ElseIf FishingSkill < 70 Then
-        GetFishingChance = 55
-    ElseIf FishingSkill < 100 Then
-        GetFishingChance = 68
-    Else
-        GetFishingChance = 80
-    End If
+    Select Case FishingSkill
+        Case Is < 20
+            GetFishingChance = 20
+        Case Is < 40
+            GetFishingChance = 35
+        Case Is < 70
+            GetFishingChance = 55
+        Case Is < 100
+            GetFishingChance = 68
+        Case Else
+            GetFishingChance = 80
+    End Select
 End Function
 
 Private Function HasSpecialFishDefinitions() As Boolean
@@ -458,6 +464,10 @@ Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal Target
                    (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_SQUID_BANK) And _
                    (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_FISH_BANK) Then
                     Call WriteLocaleMsg(UserIndex, 595, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+                If Not CheckResourceDistance(UserIndex, CLOSE_DISTANCE_EXTRACTION, TargetX, TargetY) Then
+                    Call WriteLocaleMsg(UserIndex, 424, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case Else
