@@ -496,7 +496,7 @@ Sub ApagarFogatas()
             For x = XMinMapSize To XMaxMapSize
                 If MapInfo(MapaActual).lluvia Then
                     If MapData(MapaActual, x, y).ObjInfo.ObjIndex = FOGATA Then
-                        Call EraseObj(MAX_INVENTORY_OBJS, MapaActual, x, y)
+                        Call EraseObj(GetMaxInvOBJ(), MapaActual, x, y)
                         Call MakeObj(obj, MapaActual, x, y)
                     End If
                 End If
@@ -689,6 +689,8 @@ Sub Main()
     Call LoadBalance
     frmCargando.Label1(2).Caption = "Cargando Clanes.dat"
     Call LoadGuildsConfig
+    frmCargando.Label1(2).Caption = "Cargando Meditaciones.dat"
+    Call LoadMeditations
     frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
     Call CargarCiudades
     If BootDelBackUp Then

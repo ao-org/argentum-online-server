@@ -126,7 +126,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
             slotvalido = True
         End If
         '¿Ya tiene un objeto de este tipo?
-        If UserList(UserIndex).invent.Object(slotdestino).ObjIndex = obji And UserList(UserIndex).invent.Object(slotdestino).amount + Cantidad <= MAX_INVENTORY_OBJS And UserList( _
+        If UserList(UserIndex).invent.Object(slotdestino).ObjIndex = obji And UserList(UserIndex).invent.Object(slotdestino).amount + Cantidad <= GetMaxInvOBJ() And UserList( _
                 UserIndex).invent.Object(slotdestino).ElementalTags = UserList(UserIndex).BancoInvent.Object(ObjIndex).ElementalTags Then
             slotvalido = True
         End If
@@ -134,7 +134,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
     If slotvalido = False Then
         '¿Ya tiene un objeto de este tipo?
         Slot = 1
-        Do Until UserList(UserIndex).invent.Object(Slot).ObjIndex = obji And UserList(UserIndex).invent.Object(Slot).amount + Cantidad <= MAX_INVENTORY_OBJS And UserList( _
+        Do Until UserList(UserIndex).invent.Object(Slot).ObjIndex = obji And UserList(UserIndex).invent.Object(Slot).amount + Cantidad <= GetMaxInvOBJ() And UserList( _
                 UserIndex).invent.Object(Slot).ElementalTags = UserList(UserIndex).BancoInvent.Object(ObjIndex).ElementalTags
             Slot = Slot + 1
             If Slot > UserList(UserIndex).CurrentInventorySlots Then
@@ -159,7 +159,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
         UserList(UserIndex).invent.NroItems = UserList(UserIndex).invent.NroItems + 1
     End If
     'Mete el obj en el slot
-    If UserList(UserIndex).invent.Object(Slot).amount + Cantidad <= MAX_INVENTORY_OBJS Then
+    If UserList(UserIndex).invent.Object(Slot).amount + Cantidad <= GetMaxInvOBJ() Then
         'Menor que MAX_INV_OBJS
         UserList(UserIndex).invent.Object(Slot).ObjIndex = obji
         UserList(UserIndex).invent.Object(Slot).amount = UserList(UserIndex).invent.Object(Slot).amount + Cantidad
@@ -225,7 +225,7 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
             slotvalido = True
         End If
         If UserList(UserIndex).BancoInvent.Object(slotdestino).ObjIndex = obji And UserList(UserIndex).BancoInvent.Object(slotdestino).ElementalTags = UserList( _
-                UserIndex).invent.Object(ObjIndex).ElementalTags And UserList(UserIndex).BancoInvent.Object(slotdestino).amount + Cantidad <= MAX_INVENTORY_OBJS Then '¿Ya tiene un objeto de este tipo?
+                UserIndex).invent.Object(ObjIndex).ElementalTags And UserList(UserIndex).BancoInvent.Object(slotdestino).amount + Cantidad <= GetMaxInvOBJ() Then '¿Ya tiene un objeto de este tipo?
             slotvalido = True
         End If
     End If
@@ -233,7 +233,7 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
         '¿Ya tiene un objeto de este tipo?
         Slot = 1
         Do Until UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex = obji And UserList(UserIndex).BancoInvent.Object(Slot).ElementalTags = UserList(UserIndex).invent.Object( _
-                ObjIndex).ElementalTags And UserList(UserIndex).BancoInvent.Object(Slot).amount + Cantidad <= MAX_INVENTORY_OBJS
+                ObjIndex).ElementalTags And UserList(UserIndex).BancoInvent.Object(Slot).amount + Cantidad <= GetMaxInvOBJ()
             Slot = Slot + 1
             If Slot > MAX_BANCOINVENTORY_SLOTS Then
                 Exit Do
@@ -258,7 +258,7 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
     End If
     If Slot <= MAX_BANCOINVENTORY_SLOTS Then 'Slot valido
         'Mete el obj en el slot
-        If UserList(UserIndex).BancoInvent.Object(Slot).amount + Cantidad <= MAX_INVENTORY_OBJS Then
+        If UserList(UserIndex).BancoInvent.Object(Slot).amount + Cantidad <= GetMaxInvOBJ() Then
             'Menor que MAX_INV_OBJS
             UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex = obji
             UserList(UserIndex).BancoInvent.Object(Slot).amount = UserList(UserIndex).BancoInvent.Object(Slot).amount + Cantidad

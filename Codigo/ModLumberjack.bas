@@ -3,13 +3,7 @@ Option Explicit
 
 Public Sub ChopWood(ByVal UserIndex As Integer)
     With UserList(UserIndex)
-        If Not ValidResourceAtPos(UserIndex, otTrees) Then
-            Exit Sub
-        End If
         If Not DecreaseUserStamina(UserIndex, ModAutomatedActions.MIN_STA_REQUIRED) Then
-            Exit Sub
-        End If
-        If Not CheckResourceDistance(UserIndex, CLOSE_DISTANCE_EXTRACTION) Then
             Exit Sub
         End If
         Dim skillPoints As Integer
@@ -38,6 +32,8 @@ Public Sub ChopWood(ByVal UserIndex As Integer)
             End If
             If MiObj.amount > MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount Then
                 MiObj.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount
+                'dont call to ResetUserAutomatedAction(UserIndex) because .Automated.x and .Automated.y are being used
+                .AutomatedAction.IsActive = False
             End If
             MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount - MiObj.amount
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))

@@ -367,7 +367,7 @@ Private Sub PerderItemsFaccionarios(ByVal UserIndex As Integer)
             ItemIndex = .invent.Object(i).ObjIndex
             If ItemIndex > 0 Then
                 If ObjData(ItemIndex).Real = 1 Or ObjData(ItemIndex).Caos = 1 Then
-                    Call QuitarUserInvItem(UserIndex, i, MAX_INVENTORY_OBJS)
+                    Call QuitarUserInvItem(UserIndex, i, GetMaxInvOBJ())
                     Call UpdateUserInv(False, UserIndex, i)
                 End If
             End If

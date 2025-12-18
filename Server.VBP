@@ -126,6 +126,7 @@ Class=BonusDamageEffect; Codigo\EffectOverTime\BonusDamageEffect.cls
 Class=ScenarioNavalBoarding; Codigo\Scenearios\ScenarioNavalBoarding.cls
 Class=IInventoryInterface; Codigo\Scenearios\IInventoryInterface.cls
 Module=PacketId; Codigo\PacketId.bas
+Module=modDebugUtils; Codigo\modDebugUtils.bas
 Module=AntiCheat; Codigo\AntiCheat.bas
 Module=InstanceManager; Codigo\InstanceManager.bas
 Class=ServerConfig; Codigo\ServerConfig.cls

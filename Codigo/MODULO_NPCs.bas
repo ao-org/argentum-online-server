@@ -906,9 +906,9 @@ Sub NPCTirarOro(MiNPC As t_Npc, ByVal UserIndex As Integer)
         Dim MiObj As t_Obj
         MiObj.ObjIndex = iORO
         While (Oro > 0)
-            If Oro > MAX_INVENTORY_OBJS Then
-                MiObj.amount = MAX_INVENTORY_OBJS
-                Oro = Oro - MAX_INVENTORY_OBJS
+            If Oro > GetMaxInvOBJ() Then
+                MiObj.amount = GetMaxInvOBJ()
+                Oro = Oro - GetMaxInvOBJ()
             Else
                 MiObj.amount = Oro
                 Oro = 0

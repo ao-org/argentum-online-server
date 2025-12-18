@@ -2908,4 +2908,29 @@ Sub LoadGuildsConfig()
 LoadGuildsConfig_Err:
     Call TraceError(Err.Number, Err.Description, "ES.LoadGuildsConfig", Erl)
 End Sub
-
+Sub LoadMeditations()
+    On Error GoTo LoadMeditations_Err
+    
+    Dim MeditationsIni As clsIniManager
+    Set MeditationsIni = New clsIniManager
+    MeditationsIni.Initialize DatPath & "Meditaciones.dat"
+    
+    MeditationLevel1to12 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel1to12", "115")))
+    MeditationLevel13to17 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel13to17", "116")))
+    MeditationLevel18to24 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel18to24", "116")))
+    MeditationLevel25to28 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel25to28", "117")))
+    MeditationLevel29to32 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel29to32", "117")))
+    MeditationLevel33to36 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel33to36", "118")))
+    MeditationLevel37to39 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel37to39", "118")))
+    MeditationLevel40to42 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel40to42", "118")))
+    MeditationLevel43to44 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel43to44", "118")))
+    MeditationLevel45to46 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel45to46", "118")))
+    MeditationLevelMax = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevelMax", "120")))
+    
+    Set MeditationsIni = Nothing
+    AgregarAConsola "Se cargaron las meditaciones (Meditaciones.dat)"
+    Exit Sub
+    
+LoadMeditations_Err:
+    Call TraceError(Err.Number, Err.Description, "ES.LoadMeditations", Erl)
+End Sub

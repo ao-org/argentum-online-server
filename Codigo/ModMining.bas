@@ -3,13 +3,7 @@ Option Explicit
 
 Public Sub MineMinerals(ByVal UserIndex As Integer)
     With UserList(UserIndex)
-        If Not ValidResourceAtPos(UserIndex, otOreDeposit) Then
-            Exit Sub
-        End If
         If Not DecreaseUserStamina(UserIndex, ModAutomatedActions.MIN_STA_REQUIRED) Then
-            Exit Sub
-        End If
-        If Not CheckResourceDistance(UserIndex, CLOSE_DISTANCE_EXTRACTION) Then
             Exit Sub
         End If
         Dim Suerte     As Integer
@@ -35,6 +29,8 @@ Public Sub MineMinerals(ByVal UserIndex As Integer)
             MiObj.amount = MiObj.amount * SvrConfig.GetValue("RecoleccionMult")
             If MiObj.amount > MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount Then
                 MiObj.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount
+                'dont call to ResetUserAutomatedAction(UserIndex) because .Automated.x and .Automated.y are being used
+                .AutomatedAction.IsActive = False
             End If
             MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount - MiObj.amount
             If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)

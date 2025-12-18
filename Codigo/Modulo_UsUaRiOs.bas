@@ -2051,7 +2051,7 @@ Sub Tilelibre(ByRef pos As t_WorldPos, ByRef nPos As t_WorldPos, ByRef obj As t_
                     'the amount of items exceeds the max quantity of items on the floor
                     hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex <> obj.ObjIndex)
                     If Not hayobj Then hayobj = MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags <> obj.ElementalTags
-                    If Not hayobj Then hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.amount + obj.amount > MAX_INVENTORY_OBJS)
+                    If Not hayobj Then hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.amount + obj.amount > GetMaxInvOBJ())
                     If Not hayobj And MapData(nPos.Map, tX, tY).TileExit.Map = 0 And (InitialPos Or (tX <> pos.x And tY <> pos.y)) Then
                         nPos.x = tX
                         nPos.y = tY
