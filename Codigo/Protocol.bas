@@ -4208,27 +4208,33 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
             If customEffect > 0 Then
                 .Char.FX = customEffect
             Else
+                Dim isCriminal As Boolean
+                
+                isCriminal = (.Faccion.Status = e_Facciones.Caos _
+                           Or .Faccion.Status = e_Facciones.Criminal _
+                           Or .Faccion.Status = e_Facciones.concilio)
+                
                 Select Case .Stats.ELV
                     Case 1 To 12
-                        .Char.FX = MeditationLevel1to12
+                        .Char.FX = IIf(isCriminal, MeditationCriminalLevel1to12, MeditationLevel1to12)
                     Case 13 To 17
-                        .Char.FX = MeditationLevel13to17
+                        .Char.FX = IIf(isCriminal, MeditationCriminalLevel13to17, MeditationLevel13to17)
                     Case 18 To 24
-                        .Char.FX = MeditationLevel18to24
+                        .Char.FX = IIf(isCriminal, MeditationCriminalLevel18to24, MeditationLevel18to24)
                     Case 25 To 28
-                        .Char.FX = MeditationLevel25to28
+                        .Char.FX = IIf(isCriminal, MeditationCriminalLevel25to28, MeditationLevel25to28)
                     Case 29 To 32
-                        .Char.FX = MeditationLevel29to32
+                        .Char.FX = IIf(isCriminal, MeditationCriminalLevel29to32, MeditationLevel29to32)
                     Case 33 To 36
-                        .Char.FX = MeditationLevel33to36
+                        .Char.FX = IIf(isCriminal, MeditationCriminalLevel33to36, MeditationLevel33to36)
                     Case 37 To 39
-                        .Char.FX = MeditationLevel37to39
+                        .Char.FX = IIf(isCriminal, MeditationCriminalLevel37to39, MeditationLevel37to39)
                     Case 40 To 42
-                        .Char.FX = MeditationLevel40to42
+                        .Char.FX = IIf(isCriminal, MeditationCriminalLevel40to42, MeditationLevel40to42)
                     Case 43 To 44
-                        .Char.FX = MeditationLevel43to44
+                        .Char.FX = IIf(isCriminal, MeditationCriminalLevel43to44, MeditationLevel43to44)
                     Case 45 To 46
-                        .Char.FX = MeditationLevel45to46
+                        .Char.FX = IIf(isCriminal, MeditationCriminalLevel45to46, MeditationLevel45to46)
                     Case Else
                         .Char.FX = MeditationLevelMax
                 End Select
