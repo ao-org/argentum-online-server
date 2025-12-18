@@ -166,10 +166,13 @@ Public Sub MaybeChangeGlobalQuestsState()
     Call PerformanceTestStart(PerformanceTimer)
     Dim i As Integer
     For i = 1 To UBound(GlobalQuestInfo)
-        If GlobalQuestInfo(i).IsActive And HasGlobalQuestEnded(GlobalQuestInfo(i)) Then
-            Call FinalizeGlobalQuest(i)
-        ElseIf Not GlobalQuestInfo(i).IsActive And HasGlobalQuestStarted(GlobalQuestInfo(i)) Then
-            Call StartGlobalQuest(i)
+        'if the end date is programmed to be in the future
+        If IsGlobalQuestInTheFuture(GlobalQuestInfo(i)) Then
+            If GlobalQuestInfo(i).IsActive And HasGlobalQuestEnded(GlobalQuestInfo(i)) And Not GlobalQuestInfo(i).FinishOnThresholdReach Then
+                Call FinalizeGlobalQuest(i)
+            ElseIf Not GlobalQuestInfo(i).IsActive And HasGlobalQuestStarted(GlobalQuestInfo(i)) Then
+                Call StartGlobalQuest(i)
+            End If
         End If
     Next i
     Exit Sub
@@ -183,6 +186,10 @@ End Function
 
 Public Function HasGlobalQuestStarted(ByRef GlobalQuestData As t_GlobalQuestData) As Boolean
     HasGlobalQuestStarted = DateTime.Now - GlobalQuestData.StartDate > 0
+End Function
+
+Public Function IsGlobalQuestInTheFuture(ByRef GlobalQuestData As t_GlobalQuestData) As Boolean
+    HasGlobalQuestEnded = GlobalQuestInfo.EndDate - DateTime.Now > 0
 End Function
 
 Public Sub FinalizeGlobalQuest(ByVal GlobalQuestIndex As Integer)
