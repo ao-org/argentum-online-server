@@ -612,6 +612,7 @@ Public Sub CargarHechizos()
         If val(Leer.GetValue("Hechizo" & Hechizo, "IsSkill")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eIsSkill)
         If val(Leer.GetValue("Hechizo" & Hechizo, "IsBindable")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eIsBindable)
         Hechizos(Hechizo).RequireWeaponType = val(Leer.GetValue("Hechizo" & Hechizo, "RequireWeaponType"))
+        Hechizos(Hechizo).IsElementalTagsOnly = val(Leer.GetValue("Hechizo" & Hechizo, "IsElementalTagsOnly")) > 0
         Dim SubeHP As Byte
         SubeHP = val(Leer.GetValue("Hechizo" & Hechizo, "SubeHP"))
         If SubeHP = 1 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.eDoHeal)
@@ -2915,16 +2916,29 @@ Sub LoadMeditations()
     Set MeditationsIni = New clsIniManager
     MeditationsIni.Initialize DatPath & "Meditaciones.dat"
     
-    MeditationLevel1to12 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel1to12", "115")))
-    MeditationLevel13to17 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel13to17", "116")))
-    MeditationLevel18to24 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel18to24", "116")))
-    MeditationLevel25to28 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel25to28", "117")))
-    MeditationLevel29to32 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel29to32", "117")))
-    MeditationLevel33to36 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel33to36", "118")))
-    MeditationLevel37to39 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel37to39", "118")))
-    MeditationLevel40to42 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel40to42", "118")))
-    MeditationLevel43to44 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel43to44", "118")))
-    MeditationLevel45to46 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel45to46", "118")))
+    MeditationLevel1to12 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel1to12", "153")))
+    MeditationLevel13to17 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel13to17", "155")))
+    MeditationLevel18to24 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel18to24", "157")))
+    MeditationLevel25to28 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel25to28", "159")))
+    MeditationLevel29to32 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel29to32", "161")))
+    MeditationLevel33to36 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel33to36", "163")))
+    MeditationLevel37to39 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel37to39", "165")))
+    MeditationLevel40to42 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel40to42", "167")))
+    MeditationLevel43to44 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel43to44", "169")))
+    MeditationLevel45to46 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel45to46", "171")))
+    
+    'Meditaciones para criminales
+    MeditationCriminalLevel1to12 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel1to12", "154")))
+    MeditationCriminalLevel13to17 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel13to17", "156")))
+    MeditationCriminalLevel18to24 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel18to24", "158")))
+    MeditationCriminalLevel25to28 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel25to28", "160")))
+    MeditationCriminalLevel29to32 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel29to32", "162")))
+    MeditationCriminalLevel33to36 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel33to36", "164")))
+    MeditationCriminalLevel37to39 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel37to39", "166")))
+    MeditationCriminalLevel40to42 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel40to42", "168")))
+    MeditationCriminalLevel43to44 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel43to44", "170")))
+    MeditationCriminalLevel45to46 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel45to46", "172")))
+    
     MeditationLevelMax = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevelMax", "120")))
     
     Set MeditationsIni = Nothing

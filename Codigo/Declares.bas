@@ -669,6 +669,17 @@ Public MeditationLevel40to42 As Integer
 Public MeditationLevel43to44 As Integer
 Public MeditationLevel45to46 As Integer
 Public MeditationLevelMax As Integer
+'Meditaciones criminales
+Public MeditationCriminalLevel1to12 As Integer
+Public MeditationCriminalLevel13to17 As Integer
+Public MeditationCriminalLevel18to24 As Integer
+Public MeditationCriminalLevel25to28 As Integer
+Public MeditationCriminalLevel29to32 As Integer
+Public MeditationCriminalLevel33to36 As Integer
+Public MeditationCriminalLevel37to39 As Integer
+Public MeditationCriminalLevel40to42 As Integer
+Public MeditationCriminalLevel43to44 As Integer
+Public MeditationCriminalLevel45to46 As Integer
 
 Public Enum e_GraphicEffects 'Image sequenced fxs like paralizar PrepareMessageCreateFX() or family of functions CreateFX()
     OldGmWarp = 1
@@ -1785,6 +1796,7 @@ Public Type t_Hechizo
     SpellRequirementMask As Long
     RequireWeaponType As e_WeaponType
     MaxLevelCasteable As Byte
+    IsElementalTagsOnly As Boolean
 End Type
 
 Public Type t_ActiveModifiers
