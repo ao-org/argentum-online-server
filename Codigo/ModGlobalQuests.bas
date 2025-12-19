@@ -209,11 +209,14 @@ End Sub
 
 Public Sub StartGlobalQuest(ByVal GlobalQuestIndex As Integer)
     Debug.Assert Not HasGlobalQuestStarted(GlobalQuestInfo(GlobalQuestIndex))
-    If (HasGlobalQuestStarted(GlobalQuestInfo(GlobalQuestIndex))) Then
-        LogError "Calling StartGlobalQuest on a quest that has already started"
+    
+    If GlobalQuestInfo(GlobalQuestIndex).IsActive And HasGlobalQuestStarted(GlobalQuestInfo(GlobalQuestIndex)) Then
+        LogError "Calling StartGlobalQuest on a quest that has already started : " & GlobalQuestInfo(GlobalQuestIndex).Name
         Exit Sub
     End If
+    
     With GlobalQuestInfo(GlobalQuestIndex)
+        LogError "Starting GlobalQuest " & GlobalQuestIndex & " " & .Name
         .IsActive = True
         Call UpdateGlobalQuestActiveStateIntoDatabase(True, GlobalQuestIndex)
         'TBD change map indexes and spawn corresponding npcs
