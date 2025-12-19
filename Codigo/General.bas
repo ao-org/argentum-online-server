@@ -674,9 +674,11 @@ Sub Main()
     Call LoadObjSastre
     frmCargando.Label1(2).Caption = "Cargando Pesca"
     Call LoadPesca
-    Call InitializeFishingBonuses()
+    Call InitializeFishingBonuses
     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
     Call LoadRecursosEspeciales
+    frmCargando.Label1(2).Caption = "Cargando Eventos Estacionales"
+    Call LoadGlobalQuests
     frmCargando.Label1(2).Caption = "Cargando definiciones de árboles"
     Call LoadTreeGraphics
     frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
@@ -789,6 +791,8 @@ Sub Main()
         Call RunAutomatedActions
         Call PerformTimeLimitCheck(PerformanceTimer, "General StartAutomatedAction")
         Call MaybeUpdateNpcAI(GlobalFrameTime)
+        Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeChangeGlobalQuestsState")
+        Call MaybeChangeGlobalQuestsState
         DoEvents
         Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
         Call AntiCheatUpdate
@@ -882,7 +886,7 @@ Sub Restart()
     Call ResetUserAutoSaveTimer
     Call LoadOBJData
     Call LoadPesca
-    Call InitializeFishingBonuses()
+    Call InitializeFishingBonuses
     Call LoadRecursosEspeciales
     Call LoadTreeGraphics
     Call LoadMapData
