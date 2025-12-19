@@ -191,6 +191,13 @@ Public Function IsGlobalQuestInTheFuture(ByRef GlobalQuestData As t_GlobalQuestD
 End Function
 
 Public Sub FinalizeGlobalQuest(ByVal GlobalQuestIndex As Integer)
+    If GlobalQuestIndex < LBound(GlobalQuestInfo) Or GlobalQuestIndex > UBound(GlobalQuestInfo) Then Exit Sub
+    Debug.Assert Not HasGlobalQuestEnded(GlobalQuestInfo(GlobalQuestIndex))
+    Debug.Assert HasGlobalQuestStarted(GlobalQuestInfo(GlobalQuestIndex))
+    If (Not GlobalQuestInfo(GlobalQuestIndex).IsActive) Then
+        LogError "Calling FinalizeGlobalQueston a quest that has already finished"
+        Exit Sub
+    End If
     With GlobalQuestInfo(GlobalQuestIndex)
         .IsActive = False
         Call UpdateGlobalQuestActiveStateIntoDatabase(False, GlobalQuestIndex)
@@ -201,6 +208,11 @@ Public Sub FinalizeGlobalQuest(ByVal GlobalQuestIndex As Integer)
 End Sub
 
 Public Sub StartGlobalQuest(ByVal GlobalQuestIndex As Integer)
+    Debug.Assert Not HasGlobalQuestStarted(GlobalQuestInfo(GlobalQuestIndex))
+    If (HasGlobalQuestStarted(GlobalQuestInfo(GlobalQuestIndex))) Then
+        LogError "Calling StartGlobalQuest on a quest that has already started"
+        Exit Sub
+    End If
     With GlobalQuestInfo(GlobalQuestIndex)
         .IsActive = True
         Call UpdateGlobalQuestActiveStateIntoDatabase(True, GlobalQuestIndex)
