@@ -1043,8 +1043,10 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         If UserList(UserIndex).Stats.MinSta > 2 Then
             Call QuitarSta(UserIndex, 2)
         Else
-            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
             'Msg93=Estás muy cansado para trabajar.
+            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
+            'Msg2129=¡No tengo energía!
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Sub
         End If
@@ -1080,6 +1082,9 @@ End Sub
 Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
     On Error GoTo AlquimistaConstruirItem_Err
     If Not UserList(UserIndex).Stats.MinSta > 0 Then
+        'Msg2129=¡No tengo energía!
+        Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+        'Msg93=Estás muy cansado
         Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
@@ -1136,6 +1141,9 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
     On Error GoTo SastreConstruirItem_Err
     If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
     If Not UserList(UserIndex).Stats.MinSta > 0 Then
+        'Msg2129=¡No tengo energía!
+        Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+        'Msg93=Estás muy cansado
         Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
@@ -1193,8 +1201,10 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
     If UserList(UserIndex).Stats.MinSta > 2 Then
         Call QuitarSta(UserIndex, 2)
     Else
+        'Msg2129=¡No tengo energía!
+        Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+        'Msg93=Estás muy cansado.
         Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
-        'Msg93=Estás muy cansado para excavar.
         Call WriteMacroTrabajoToggle(UserIndex, False)
         Exit Sub
     End If
@@ -1436,9 +1446,13 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
         ' Tiene energia?
         If .Stats.MinSta < 15 Then
             If .genero = e_Genero.Hombre Then
+                'Msg2129=¡No tengo energía!
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
                 'Msg1034= Estás muy cansado para robar.
                 Call WriteLocaleMsg(LadronIndex, "1034", e_FontTypeNames.FONTTYPE_INFO)
             Else
+                'Msg2129=¡No tengo energía!
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
                 'Msg1035= Estás muy cansada para robar.
                 Call WriteLocaleMsg(LadronIndex, "1035", e_FontTypeNames.FONTTYPE_INFO)
             End If
