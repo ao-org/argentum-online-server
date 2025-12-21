@@ -882,7 +882,10 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         'Quitamos stamina
         If .Stats.MinSta < 10 Then
+            'Msg93=Estás muy cansado
             Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
+            'Msg2129=¡No tengo energía!
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
             Exit Sub
         End If
         Call QuitarSta(UserIndex, RandomNumber(1, 10))
