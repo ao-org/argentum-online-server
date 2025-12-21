@@ -2108,6 +2108,8 @@ Public Type t_Quest
     RewardSpellCount As Byte
     RewardSpellList() As Integer
     Repetible As Byte
+    GlobalQuestIndex As Integer
+    GlobalQuestThresholdNeeded As Long
 End Type
 
 ' ******************* RETOS ************************
@@ -2640,7 +2642,7 @@ Public Type t_UserFlags
     Ban As Byte
     AdministrativeBan As Byte
     BanMotivo As String
-    targetUser As t_UserReference ' Usuario señalado
+    TargetUser As t_UserReference ' Usuario señalado
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer
     TargetObjX As Integer
@@ -3117,6 +3119,7 @@ Public Type t_NPCFlags
     BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
     team As Byte
+    GlobalQuestBossIndex As Integer
     ElementalTags As Long
 End Type
 
@@ -3186,6 +3189,7 @@ Public Type t_NpcInfoCache
     nivel As Integer
     Movement As Integer
     AguaValida As Integer
+    GlobalQuestBossIndex As Integer
     TierraInvalida As Integer
     Faccion As Integer
     ElementalTags As Long
