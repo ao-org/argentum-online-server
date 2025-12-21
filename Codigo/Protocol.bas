@@ -2395,8 +2395,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 If .Stats.MinSta >= 10 Then
                     Call QuitarSta(UserIndex, RandomNumber(1, 10))
                 Else
-                    Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
-                    'Msg1128= Estís muy cansado para luchar.
+                    'Msg2129=¡No tengo energía!
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                    'Msg1128= Estás muy cansado para luchar.
                     Call WriteLocaleMsg(UserIndex, 1128, e_FontTypeNames.FONTTYPE_INFO)
                     Call WriteWorkRequestTarget(UserIndex, 0)
                     Exit Sub
@@ -2808,6 +2809,8 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             Case e_Skill.TargetableItem
                 If .Stats.MinSta < ObjData(.invent.Object(.flags.TargetObjInvSlot).ObjIndex).MinSta Then
                     Call WriteLocaleMsg(UserIndex, MsgNotEnoughtStamina, e_FontTypeNames.FONTTYPE_INFO)
+                    'Msg2129=¡No tengo energía!
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
                     Exit Sub
                 End If
                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, x, y)
