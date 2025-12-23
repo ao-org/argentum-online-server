@@ -2402,6 +2402,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
                 If iMinHP Then NpcList(Index).Stats.MinHp = iMinHP
                 Call SetUserRef(NpcList(Index).MaestroUser, UserIndex)
                 Call FollowAmo(Index)
+                Call AdjustNpcStatWithCasterLevel(UserIndex, Index)
             Else
                 SpawnInvalido = True
             End If

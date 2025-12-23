@@ -657,14 +657,29 @@ Public Enum e_SoundEffects
     CupDice = 10000
 End Enum
 
-Public Enum e_Meditaciones
-    MeditarInicial = 115
-    MeditarMayor15 = 116
-    MeditarMayor30 = 117
-    MeditarMayor40 = 118
-    MeditarMayor45 = 119
-    MeditarMayor47 = 120
-End Enum
+'Meditaciones
+Public MeditationLevel1to12 As Integer
+Public MeditationLevel13to17 As Integer
+Public MeditationLevel18to24 As Integer
+Public MeditationLevel25to28 As Integer
+Public MeditationLevel29to32 As Integer
+Public MeditationLevel33to36 As Integer
+Public MeditationLevel37to39 As Integer
+Public MeditationLevel40to42 As Integer
+Public MeditationLevel43to44 As Integer
+Public MeditationLevel45to46 As Integer
+Public MeditationLevelMax As Integer
+'Meditaciones criminales
+Public MeditationCriminalLevel1to12 As Integer
+Public MeditationCriminalLevel13to17 As Integer
+Public MeditationCriminalLevel18to24 As Integer
+Public MeditationCriminalLevel25to28 As Integer
+Public MeditationCriminalLevel29to32 As Integer
+Public MeditationCriminalLevel33to36 As Integer
+Public MeditationCriminalLevel37to39 As Integer
+Public MeditationCriminalLevel40to42 As Integer
+Public MeditationCriminalLevel43to44 As Integer
+Public MeditationCriminalLevel45to46 As Integer
 
 Public Enum e_GraphicEffects 'Image sequenced fxs like paralizar PrepareMessageCreateFX() or family of functions CreateFX()
     OldGmWarp = 1
@@ -1781,6 +1796,7 @@ Public Type t_Hechizo
     SpellRequirementMask As Long
     RequireWeaponType As e_WeaponType
     MaxLevelCasteable As Byte
+    IsElementalTagsOnly As Boolean
 End Type
 
 Public Type t_ActiveModifiers
@@ -2092,6 +2108,8 @@ Public Type t_Quest
     RewardSpellCount As Byte
     RewardSpellList() As Integer
     Repetible As Byte
+    GlobalQuestIndex As Integer
+    GlobalQuestThresholdNeeded As Long
 End Type
 
 ' ******************* RETOS ************************
@@ -2624,7 +2642,7 @@ Public Type t_UserFlags
     Ban As Byte
     AdministrativeBan As Byte
     BanMotivo As String
-    targetUser As t_UserReference ' Usuario señalado
+    TargetUser As t_UserReference ' Usuario señalado
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer
     TargetObjX As Integer
@@ -3101,6 +3119,7 @@ Public Type t_NPCFlags
     BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
     team As Byte
+    GlobalQuestBossIndex As Integer
     ElementalTags As Long
 End Type
 
@@ -3170,6 +3189,7 @@ Public Type t_NpcInfoCache
     nivel As Integer
     Movement As Integer
     AguaValida As Integer
+    GlobalQuestBossIndex As Integer
     TierraInvalida As Integer
     Faccion As Integer
     ElementalTags As Long

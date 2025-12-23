@@ -1789,6 +1789,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Exit Sub
                 End If
                 If Not .Stats.MinSta > 0 Then
+                    'Msg2129=¡No tengo energía!
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                    'Msg93=Estás muy cansado
                     Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
@@ -1815,6 +1818,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Exit Sub
                 End If
                 If Not .Stats.MinSta > 0 Then
+                    'Msg2129=¡No tengo energía!
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                    'Msg93=Estás muy cansado
                     Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
@@ -2978,6 +2984,9 @@ Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer
                 Exit Sub
             End If
             If .MinSta > UserList(UserIndex).Stats.MinSta Then
+                'Msg2129=¡No tengo energía!
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                'Msg420=Estas muy cansado para realizar esta acción.
                 Call WriteLocaleMsg(UserIndex, MsgTiredToPerformAction, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If

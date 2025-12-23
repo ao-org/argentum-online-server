@@ -674,9 +674,11 @@ Sub Main()
     Call LoadObjSastre
     frmCargando.Label1(2).Caption = "Cargando Pesca"
     Call LoadPesca
-    Call InitializeFishingBonuses()
+    Call InitializeFishingBonuses
     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
     Call LoadRecursosEspeciales
+    frmCargando.Label1(2).Caption = "Cargando Eventos Estacionales"
+    Call LoadGlobalQuests
     frmCargando.Label1(2).Caption = "Cargando definiciones de árboles"
     Call LoadTreeGraphics
     frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
@@ -687,6 +689,8 @@ Sub Main()
     Call LoadBalance
     frmCargando.Label1(2).Caption = "Cargando Clanes.dat"
     Call LoadGuildsConfig
+    frmCargando.Label1(2).Caption = "Cargando Meditaciones.dat"
+    Call LoadMeditations
     frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
     Call CargarCiudades
     If BootDelBackUp Then
@@ -787,6 +791,8 @@ Sub Main()
         Call RunAutomatedActions
         Call PerformTimeLimitCheck(PerformanceTimer, "General StartAutomatedAction")
         Call MaybeUpdateNpcAI(GlobalFrameTime)
+        Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeChangeGlobalQuestsState")
+        Call MaybeChangeGlobalQuestsState
         DoEvents
         Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
         Call AntiCheatUpdate
@@ -880,7 +886,7 @@ Sub Restart()
     Call ResetUserAutoSaveTimer
     Call LoadOBJData
     Call LoadPesca
-    Call InitializeFishingBonuses()
+    Call InitializeFishingBonuses
     Call LoadRecursosEspeciales
     Call LoadTreeGraphics
     Call LoadMapData
@@ -942,6 +948,8 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
             .Counters.Frio = .Counters.Frio + 1
         Else
             If MapInfo(.pos.Map).terrain = Nieve Then
+                'Msg2130=¡Tengo mucho frío!
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2130, UserList(UserIndex).Char.charindex, vbWhite))
                 ' Msg512=¡Estás muriendo de frío, abrígate o morirás!
                 Call WriteLocaleMsg(UserIndex, 512, e_FontTypeNames.FONTTYPE_INFO)
                 '  Sin ropa perdés vida más rápido que con una ropa no-invernal

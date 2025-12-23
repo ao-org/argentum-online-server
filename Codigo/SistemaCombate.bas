@@ -688,14 +688,11 @@ Public Function NpcPerformAttackNpc(ByVal attackerIndex As Integer, ByVal Target
     impacto = NpcImpactoNpc(attackerIndex, TargetIndex)
 
     If impacto Then
-        If NpcList(attackerIndex).flags.Snd2 > 0 Then
-            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(NpcList(TargetIndex).flags.Snd2, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
+        If NpcList(attackerIndex).flags.Snd1 > 0 Then
+            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(NpcList(attackerIndex).flags.Snd1, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
         Else
-            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
+            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
         End If
-
-        Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
-
         danio = NpcDamageNpc(attackerIndex, TargetIndex)
     Else
         Call SendData(SendTarget.ToNPCAliveArea, attackerIndex, PrepareMessageCharSwing(NpcList(attackerIndex).Char.charindex, False, True))
@@ -885,7 +882,10 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         'Quitamos stamina
         If .Stats.MinSta < 10 Then
+            'Msg93=Estás muy cansado
             Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
+            'Msg2129=¡No tengo energía!
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
             Exit Sub
         End If
         Call QuitarSta(UserIndex, RandomNumber(1, 10))
