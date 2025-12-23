@@ -86,10 +86,10 @@ End Function
 
 Public Function ValidResourceAtPos(ByVal UserIndex As Integer, ByVal WorkingToolIndex As e_OBJType, ByVal TargetX As Integer, ByVal TargetY As Integer)
     With UserList(UserIndex)
-            If MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex = 0 Then
+        If MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex = 0 Then
             Exit Function
         End If
-        If ObjData(MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex).ObjType <> WorkingToolIndex Then
+        If ObjData(MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex).OBJType <> WorkingToolIndex Then
             Exit Function
         End If
         ValidResourceAtPos = True
@@ -97,11 +97,12 @@ Public Function ValidResourceAtPos(ByVal UserIndex As Integer, ByVal WorkingTool
 End Function
 
 Public Function CanUserExtractResource(ByVal UserIndex As Integer, ByVal ResourceType As e_OBJType, ByVal TargetX As Integer, ByVal TargetY As Integer) As Boolean
-        If Not ValidResourceAtPos(UserIndex, ResourceType, TargetX, TargetY) Then
-            Exit Function
-        End If
-        If Not CheckResourceDistance(UserIndex, CLOSE_DISTANCE_EXTRACTION, TargetX, TargetY) Then
-            Exit Function
-        End If
-        CanUserExtractResource = True
+    If Not ValidResourceAtPos(UserIndex, ResourceType, TargetX, TargetY) Then
+        Exit Function
+    End If
+    If Not CheckResourceDistance(UserIndex, CLOSE_DISTANCE_EXTRACTION, TargetX, TargetY) Then
+        Call WriteLocaleMsg(UserIndex, 324, e_FontTypeNames.FONTTYPE_INFO)
+        Exit Function
+    End If
+    CanUserExtractResource = True
 End Function
