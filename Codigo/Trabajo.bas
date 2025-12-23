@@ -1447,12 +1447,12 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
         If .Stats.MinSta < 15 Then
             If .genero = e_Genero.Hombre Then
                 'Msg2129=¡No tengo energía!
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                Call SendData(SendTarget.ToIndex, LadronIndex, PrepareLocalizedChatOverHead(2129, UserList(LadronIndex).Char.charindex, vbWhite))
                 'Msg1034= Estás muy cansado para robar.
                 Call WriteLocaleMsg(LadronIndex, "1034", e_FontTypeNames.FONTTYPE_INFO)
             Else
                 'Msg2129=¡No tengo energía!
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                Call SendData(SendTarget.ToIndex, LadronIndex, PrepareLocalizedChatOverHead(2129, UserList(LadronIndex).Char.charindex, vbWhite))
                 'Msg1035= Estás muy cansada para robar.
                 Call WriteLocaleMsg(LadronIndex, "1035", e_FontTypeNames.FONTTYPE_INFO)
             End If
