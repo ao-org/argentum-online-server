@@ -488,19 +488,18 @@ Dim tStr                        As String
         .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
         .Counters.TiempoDeInmunidadParalisisNoMagicas = 0
   
-        If MapInfo(.pos.Map).MapResource = 0 Then
+        If Not MapaValido(.pos.Map) Then
+            Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
             .pos.Map = Ciudades(.Hogar).Map
             .pos.x = Ciudades(.Hogar).x
             .pos.y = Ciudades(.Hogar).y
         End If
-        'Mapa válido
-        If Not MapaValido(.pos.Map) Then
-            Call WriteErrorMsg(UserIndex, "The character is in an invalid postion/map. Please ask for support on Discord.")
-            Call CloseSocket(UserIndex)
-            Exit Function
+        If MapInfo(.pos.Map).MapResource = 0 Then
+            Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
+            .pos.Map = Ciudades(.Hogar).Map
+            .pos.x = Ciudades(.Hogar).x
+            .pos.y = Ciudades(.Hogar).y
         End If
-        
-        
         If MapData(.pos.Map, .pos.x, .pos.y).UserIndex <> 0 Or MapData(.pos.Map, .pos.x, .pos.y).NpcIndex <> 0 Then
             Dim FoundPlace As Boolean
             Dim esAgua     As Boolean
