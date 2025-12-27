@@ -70,15 +70,17 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
     Dim NpcIndex       As Integer
     NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
     With QuestList(QuestIndex)
-        'Comprobamos que tenga los objetos.
-        If .RequiredOBJs > 0 Then
-            For i = 1 To .RequiredOBJs
-                If TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex) = False Then
-                    Call WriteLocaleChatOverHead(UserIndex, "1336", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1336=No has conseguido todos los objetos que te he pedido.
-                    Exit Sub
-                End If
-                Call FinishGlobalQuest(UserIndex, .RequiredOBJ(i).Amount, .GlobalQuestIndex, .GlobalQuestThresholdNeeded)
+        'Comprobamos que el usuario tenga espacio para recibir los items.
+        If .RewardOBJs > 0 Then
+            'Buscamos la cantidad de slots de inventario libres.
+            For i = 1 To UserList(UserIndex).CurrentInventorySlots
+                If UserList(UserIndex).invent.Object(i).ObjIndex = 0 Then InvSlotsLibres = InvSlotsLibres + 1
             Next i
+            'Nos fijamos si entra
+            If InvSlotsLibres < .RewardOBJs Then
+                Call WriteLocaleChatOverHead(UserIndex, "1340", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1340=No tienes suficiente espacio en el inventario para recibir la recompensa. Vuelve cuando hayas hecho mas espacio.
+                Exit Sub
+            End If
         End If
         'Comprobamos que haya matado todas las criaturas.
         If .RequiredNPCs > 0 Then
@@ -110,18 +112,6 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         If .RequiredSkill.SkillType > 0 Then
             If UserList(UserIndex).Stats.UserSkills(.RequiredSkill.SkillType) < .RequiredSkill.RequiredValue Then
                 Call WriteLocaleChatOverHead(UserIndex, MsgRequiredSkill, SkillsNames(.RequiredSkill.SkillType), NpcList(NpcIndex).Char.charindex, vbYellow)
-                Exit Sub
-            End If
-        End If
-        'Comprobamos que el usuario tenga espacio para recibir los items.
-        If .RewardOBJs > 0 Then
-            'Buscamos la cantidad de slots de inventario libres.
-            For i = 1 To UserList(UserIndex).CurrentInventorySlots
-                If UserList(UserIndex).invent.Object(i).ObjIndex = 0 Then InvSlotsLibres = InvSlotsLibres + 1
-            Next i
-            'Nos fijamos si entra
-            If InvSlotsLibres < .RewardOBJs Then
-                Call WriteLocaleChatOverHead(UserIndex, "1340", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1340=No tienes suficiente espacio en el inventario para recibir la recompensa. Vuelve cuando hayas hecho mas espacio.
                 Exit Sub
             End If
         End If
@@ -212,6 +202,16 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                     End If
                     UserList(UserIndex).flags.ModificoHechizos = True
                 End If
+            Next i
+        End If
+        'Comprobamos que tenga los objetos.
+        If .RequiredOBJs > 0 Then
+            For i = 1 To .RequiredOBJs
+                If TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).Amount, UserIndex) = False Then
+                    Call WriteLocaleChatOverHead(UserIndex, "1336", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1336=No has conseguido todos los objetos que te he pedido.
+                    Exit Sub
+                End If
+                Call FinishGlobalQuest(UserIndex, .RequiredOBJ(i).Amount, .GlobalQuestIndex, .GlobalQuestThresholdNeeded)
             Next i
         End If
         'Actualizamos el personaje
