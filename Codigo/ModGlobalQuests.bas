@@ -102,6 +102,7 @@ Public Sub LoadGlobalQuests()
                 Set RS = Query(SUM_TOTAL_AMOUNT_FROM_USER_CONTRIBUTION, i)
                 If Not IsNull(RS!total_amount) Then
                     .GatheringGlobalCounter = RS!total_amount
+                    .GatheringGlobalInstallments = RS!total_amount + .GatheringInitialInstallments
                 End If
             End If
         End With
