@@ -181,12 +181,6 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
         Call CloseSocket(UserIndex)
         Exit Function
     End If
-    If Not EsGM(UserIndex) And ServerSoloGMs > 0 Then
-        failureReason = "Server restricted to administrators."
-        Call WriteShowMessageBox(UserIndex, 1760, vbNullString) 'Msg1760=Servidor restringido a administradores. Por favor reintente en unos momentos.
-        Call CloseSocket(UserIndex)
-        Exit Function
-    End If
     With UserList(UserIndex)
         If .flags.UserLogged Then
             failureReason = "User is already logged in."
@@ -217,29 +211,34 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
                 Exit Function
             End If
         End If
-        
-#If LOGIN_STRESS_TEST = 0 Then
-        '¿Supera el máximo de usuarios por cuenta?
-        If MaxUsersPorCuenta > 0 Then
-            If ContarUsuariosMismaCuenta(.AccountID) >= MaxUsersPorCuenta Then
-                If MaxUsersPorCuenta = 1 Then
-                    failureReason = "Another user is already connected with this account."
-                Else
-                    failureReason = "Account has reached the maximum number of simultaneous users (" & MaxUsersPorCuenta & ")."
+        #If LOGIN_STRESS_TEST = 0 Then
+            '¿Supera el máximo de usuarios por cuenta?
+            If MaxUsersPorCuenta > 0 Then
+                If ContarUsuariosMismaCuenta(.AccountID) >= MaxUsersPorCuenta Then
+                    If MaxUsersPorCuenta = 1 Then
+                        failureReason = "Another user is already connected with this account."
+                    Else
+                        failureReason = "Account has reached the maximum number of simultaneous users (" & MaxUsersPorCuenta & ")."
+                    End If
+                    If MaxUsersPorCuenta = 1 Then
+                        Call WriteShowMessageBox(UserIndex, 1764, vbNullString) 'Msg1764=Ya hay un usuario conectado con esta cuenta.
+                    Else
+                        Call WriteShowMessageBox(UserIndex, 1765, MaxUsersPorCuenta) 'Msg1765=La cuenta ya alcanzó el máximo de ¬1 usuarios conectados.
+                    End If
+                    Call CloseSocket(UserIndex)
+                    Exit Function
                 End If
-                If MaxUsersPorCuenta = 1 Then
-                    Call WriteShowMessageBox(UserIndex, 1764, vbNullString) 'Msg1764=Ya hay un usuario conectado con esta cuenta.
-                Else
-                    Call WriteShowMessageBox(UserIndex, 1765, MaxUsersPorCuenta) 'Msg1765=La cuenta ya alcanzó el máximo de ¬1 usuarios conectados.
-                End If
-                Call CloseSocket(UserIndex)
-                Exit Function
             End If
-        End If
-#End If
+        #End If
         .flags.Privilegios = UserDarPrivilegioLevel(name)
         If EsRolesMaster(name) Then
             .flags.Privilegios = .flags.Privilegios Or e_PlayerType.RoleMaster
+        End If
+        If Not EsGM(UserIndex) And ServerSoloGMs > 0 Then
+            failureReason = "Server restricted to administrators."
+            Call WriteShowMessageBox(UserIndex, 1760, vbNullString) 'Msg1760=Servidor restringido a administradores. Por favor reintente en unos momentos.
+            Call CloseSocket(UserIndex)
+            Exit Function
         End If
         If EsGM(UserIndex) Then
             Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1706, name, e_FontTypeNames.FONTTYPE_INFOBOLD)) 'Msg1706=Servidor » ¬1 se conecto al juego.
