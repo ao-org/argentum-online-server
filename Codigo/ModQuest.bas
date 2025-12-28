@@ -662,6 +662,23 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
             Exit Function
         End If
     End If
+    If tmpQuest.GlobalQuestIndex > 0 Then
+        If tmpQuest.GlobalQuestThresholdNeeded > 0 Then
+            If tmpQuest.GlobalQuestThresholdNeeded > GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringGlobalCounter Then
+                Call WriteLocaleMsg(UserIndex, 2123, FONTTYPE_WARNING, GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringThreshold & "¬" & tmpQuest.GlobalQuestThresholdNeeded)
+                Exit Function
+            End If
+        Else
+            If Not GlobalQuestInfo(tmpQuest.GlobalQuestIndex).IsActive Then
+                Call WriteLocaleMsg(UserIndex, 2124, FONTTYPE_WARNING)
+                Exit Function
+            End If
+            If GlobalQuestInfo(tmpQuest.GlobalQuestIndex).IsBossAlive Then
+                Call WriteLocaleMsg(UserIndex, 2121, FONTTYPE_WARNING)
+                Exit Function
+            End If
+        End If
+    End If
     CanUserAcceptQuest = True
     Exit Function
 ErrHandler:

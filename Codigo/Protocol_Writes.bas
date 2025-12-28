@@ -2977,6 +2977,17 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
                         PuedeHacerla = False
                     End If
                 End If
+                If QuestList(QuestIndex).GlobalQuestIndex > 0 Then
+                    If Not GlobalQuestInfo(QuestList(QuestIndex).GlobalQuestIndex).IsActive Then
+                        PuedeHacerla = False
+                    End If
+                    If GlobalQuestInfo(QuestList(QuestIndex).GlobalQuestIndex).IsBossAlive Then
+                        PuedeHacerla = False
+                    End If
+                    If QuestList(QuestIndex).GlobalQuestThresholdNeeded > GlobalQuestInfo(QuestList(QuestIndex).GlobalQuestIndex).GatheringGlobalCounter Then
+                        PuedeHacerla = False
+                    End If
+                End If
                 If PuedeHacerla Then
                     Call Writer.WriteInt8(0)
                 Else
