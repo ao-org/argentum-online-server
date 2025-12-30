@@ -39,11 +39,19 @@ Attribute VB_Exposed = False
 '
 Option Explicit
 Implements IBaseEffectOverTime
-Dim TimeSinceLastTick As Long
-Dim DamageProtection  As Long
-Dim TickTime          As Long
-Private DotInfo       As t_BaseDotInfo
-Private Source        As t_AnyReference
+Dim TimeSinceLastTick                As Long
+Dim DamageProtection                 As Long
+Dim TickTime                         As Long
+Private DotInfo                      As t_BaseDotInfo
+Private Source                       As t_AnyReference
+Dim DotMax                           As Long
+Dim DotMin                           As Long
+Dim TargetTicks                      As Long
+Dim TickCount                        As Long
+Dim TickEffect                       As Long
+Dim Modifiers                        As Long
+Dim SecondTargetModifier             As Single
+Dim UniqueShieldReferenceAccumulator As New Dictionary
 
 Public Sub Setup(ByVal SourceIndex As Integer, _
                  ByVal SourceType As e_ReferenceType, _
@@ -52,17 +60,25 @@ Public Sub Setup(ByVal SourceIndex As Integer, _
                  ByVal EffectId As Integer, _
                  ByVal Id As Long)
     TimeSinceLastTick = 0
+    TickCount = 0
     Call SetBaseDot(DotInfo, TargetIndex, TargetType, Id, EffectId)
     Call SetRef(Source, SourceIndex, SourceType)
     With EffectOverTime(EffectId)
         DamageProtection = RandomNumber(.TickPowerMin, .TickPowerMax)
+        TargetTicks = .Ticks
         TickTime = .TickTime
+        TickEffect = .TickFX
+        DotMax = .TickPowerMax / 10
+        DotMin = .TickPowerMin / 10
+        Modifiers = .EffectModifiers
+        SecondTargetModifier = 1 - .SecondaryTargetModifier
         If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
-            Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, Id, .TickTime, .TickTime, .buffType)
+            Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, Id, .TickTime * TargetTicks, .TickTime * TargetTicks, .buffType)
         End If
     End With
     Call AddShieldToReference(DotInfo.TargetRef, DamageProtection)
     Call EffectsOverTime.ApplyEotModifier(DotInfo.TargetRef, EffectOverTime(EffectId), 0)
+    Call UniqueShieldReferenceAccumulator.Add(Id, 0)
 End Sub
 
 Public Property Get IBaseEffectOverTime_TypeId() As Integer
@@ -114,10 +130,15 @@ Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
 End Property
 
 Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
-    TimeSinceLastTick = TimeSinceLastTick + DeltaTime
-    If TimeSinceLastTick >= TickTime Or Not IsValidRef(DotInfo.TargetRef) Then
+    If TickCount >= TargetTicks Or Not IsValidRef(DotInfo.TargetRef) Then
         DotInfo.RemoveEffect = True
         Exit Sub
+    End If
+    TimeSinceLastTick = TimeSinceLastTick + DeltaTime
+    If TimeSinceLastTick >= TickTime Then
+        TimeSinceLastTick = 0
+        TickCount = TickCount + 1
+        Call PerformAction
     End If
 End Sub
 
@@ -134,7 +155,7 @@ Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal S
     TimeSinceLastTick = 0
     If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, TickTime, TickTime, EffectOverTime( _
-                DotInfo.EotId).buffType)
+           DotInfo.EotId).buffType)
     End If
 End Function
 
@@ -147,7 +168,24 @@ Public Sub IBaseEffectOverTime_OnRemove()
     DotInfo.Removed = True
     DotInfo.RemoveEffect = True
     Call EffectsOverTime.RemoveEotModifier(DotInfo.TargetRef, EffectOverTime(DotInfo.EotId), 0)
-    Call AddShieldToReference(DotInfo.TargetRef, -DamageProtection)
+    If DotInfo.TargetRef.RefType = eUser Then
+        Call AddShieldToReference(DotInfo.TargetRef, -UniqueShieldReferenceAccumulator(DotInfo.UniqueId))
+        If EffectOverTime(DotInfo.EotId).OnRemoveFx > 0 Then
+            If IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) Then
+                Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
+                   DotInfo.EotId).OnRemoveFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+            Else
+                Call SendData(SendTarget.ToIndex, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
+                   DotInfo.EotId).OnRemoveFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+            End If
+        End If
+        If EffectOverTime(DotInfo.EotId).OnRemoveWav > 0 Then
+            Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessagePlayWave(EffectOverTime(DotInfo.EotId).OnRemoveWav, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y), False)
+        End If
+    Else
+        Call AddShieldToReference(DotInfo.TargetRef, -UniqueShieldReferenceAccumulator(DotInfo.UniqueId))
+    End If
+    Call UniqueShieldReferenceAccumulator.Remove(DotInfo.UniqueId)
     If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
     End If
@@ -172,13 +210,18 @@ Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
                                                          ByVal SourceUserId As Integer, _
                                                          ByVal SourceType As e_ReferenceType, _
                                                          ByVal AttackType As e_DamageSourceType) As Long
-    If EffectOverTime(DotInfo.EotId).OnHitFx > 0 Then
-        If IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) Then
-            Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
-                    DotInfo.EotId).OnHitFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
-        Else
-            Call SendData(SendTarget.ToIndex, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
-                    DotInfo.EotId).OnHitFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+    If DotInfo.TargetRef.RefType = eUser Then
+        If EffectOverTime(DotInfo.EotId).OnHitFx > 0 Then
+            If IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) Then
+                Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
+                   DotInfo.EotId).OnHitFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+            Else
+                Call SendData(SendTarget.ToIndex, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
+                   DotInfo.EotId).OnHitFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+            End If
+        End If
+        If EffectOverTime(DotInfo.EotId).OnHitWav > 0 Then
+            Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessagePlayWave(EffectOverTime(DotInfo.EotId).OnHitWav, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y), False)
         End If
     End If
     Dim Reduction As Long
@@ -209,7 +252,7 @@ Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer
     Call SetRef(DotInfo.TargetRef, NewTargetIndex, NewTargetType)
     If DotInfo.TargetRef.RefType = eUser Then
         Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, TickTime - TimeSinceLastTick, TickTime, _
-                EffectOverTime(DotInfo.EotId).buffType)
+           EffectOverTime(DotInfo.EotId).buffType)
     End If
     Call AddShieldToReference(DotInfo.TargetRef, DamageProtection)
     Call EffectsOverTime.ApplyEotModifier(DotInfo.TargetRef, EffectOverTime(DotInfo.EotId), 0)
@@ -225,4 +268,56 @@ Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
 End Property
 
 Public Sub IBaseEffectOverTime_TargetChangeTerrain()
+End Sub
+
+Public Sub PerformAction()
+    Dim TickShield As Integer
+    TickShield = RandomNumber(DotMin, DotMax)
+    If DotInfo.TargetRef.RefType = e_ReferenceType.eUser Then
+        If IsSet(Modifiers, e_ModifierTypes.MagicReduction) Then
+            TickShield = TickShield * UserMod.GetMagicDamageReduction(UserList(DotInfo.TargetRef.ArrayIndex))
+        End If
+        If IsSet(Modifiers, e_ModifierTypes.PhysicalReduction) Then
+            TickShield = TickShield * UserMod.GetPhysicDamageReduction(UserList(DotInfo.TargetRef.ArrayIndex))
+        End If
+        If IsSet(Modifiers, e_ModifierTypes.SelfHealingBonus) Then
+            TickShield = TickShield * UserMod.GetSelfHealingBonus(UserList(DotInfo.TargetRef.ArrayIndex))
+        End If
+        If IsValidRef(Source) Then
+            Call AddShieldToReference(DotInfo.TargetRef, TickShield)
+            DamageProtection = DamageProtection + TickShield
+            UniqueShieldReferenceAccumulator(DotInfo.UniqueId) = UniqueShieldReferenceAccumulator(DotInfo.UniqueId) + TickShield
+        Else
+            Call AddShieldToReference(DotInfo.TargetRef, TickShield)
+            DamageProtection = DamageProtection + TickShield
+            UniqueShieldReferenceAccumulator(DotInfo.UniqueId) = UniqueShieldReferenceAccumulator(DotInfo.UniqueId) + TickShield
+        End If
+        If TickEffect > 0 Then
+            If IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) Then
+                Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, _
+                   0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+            Else
+                Call SendData(SendTarget.ToIndex, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, _
+                   UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+            End If
+        End If
+    ElseIf DotInfo.TargetRef.RefType = e_ReferenceType.eNpc Then
+        If IsSet(Modifiers, e_ModifierTypes.MagicReduction) Then
+            TickShield = TickShield * NPCs.GetMagicDamageReduction(NpcList(DotInfo.TargetRef.ArrayIndex))
+        End If
+        If IsSet(Modifiers, e_ModifierTypes.PhysicalReduction) Then
+            TickShield = TickShield * NPCs.GetPhysicDamageReduction(NpcList(DotInfo.TargetRef.ArrayIndex))
+        End If
+        If IsSet(Modifiers, e_ModifierTypes.SelfHealingBonus) Then
+            TickShield = TickShield * NPCs.GetSelfHealingBonus(NpcList(DotInfo.TargetRef.ArrayIndex))
+        End If
+        TickShield = TickShield * SecondTargetModifier
+        If IsValidRef(Source) Then
+            Call AddShieldToReference(DotInfo.TargetRef, TickShield)
+        Else
+            Call AddShieldToReference(DotInfo.TargetRef, TickShield)
+        End If
+        If TickEffect > 0 Then Call SendData(SendTarget.ToNPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(NpcList( _
+           DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, NpcList(DotInfo.TargetRef.ArrayIndex).pos.x, NpcList(DotInfo.TargetRef.ArrayIndex).pos.y))
+    End If
 End Sub
