@@ -1784,6 +1784,10 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal targetUserIndex As I
                     Call SetMask(FactionStatuses, e_UsersInfoMask2.ArmyFourthHierarchy)
                 Case e_RoyalArmyRanks.FifthHierarchy
                     Call SetMask(FactionStatuses, e_UsersInfoMask2.ArmyFifthHierarchy)
+                Case e_RoyalArmyRanks.SixthHierarchy
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ArmySixthHierarchy)
+                Case e_RoyalArmyRanks.SeventhHierarchy
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ArmySeventhHierarchy)
                 Case Else
             End Select
         End If
@@ -1800,6 +1804,10 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal targetUserIndex As I
                     Call SetMask(FactionStatuses, e_UsersInfoMask2.ChaosFourthHierarchy)
                 Case e_ChaosArmyRanks.FifthHierarchy
                     Call SetMask(FactionStatuses, e_UsersInfoMask2.ChaosFifthHierarchy)
+                Case e_ChaosArmyRanks.SixthHierarchy
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ChaosSixthHierarchy)
+                Case e_ChaosArmyRanks.SeventhHierarchy
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ChaosSeventhHierarchy)
                 Case Else
             End Select
         End If
