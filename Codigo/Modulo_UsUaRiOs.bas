@@ -703,6 +703,7 @@ Dim tStr                        As String
             .flags.Seguro = True
             Call WriteSafeModeOn(UserIndex)
         End If
+        Call NotifyConnectionToFaction(UserIndex)
         If LenB(.MENSAJEINFORMACION) > 0 Then
             Dim Lines() As String
             Lines = Split(.MENSAJEINFORMACION, vbNewLine)
