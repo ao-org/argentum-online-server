@@ -86,6 +86,8 @@ Public Enum e_RoyalArmyRanks
     ThirdHierarchy = 3
     FourthHierarchy = 4
     FifthHierarchy = 5
+    SixthHierarchy = 6
+    SeventhHierarchy = 7
 End Enum
 
 Public Enum e_ChaosArmyRanks
@@ -95,6 +97,8 @@ Public Enum e_ChaosArmyRanks
     ThirdHierarchy = 3
     FourthHierarchy = 4
     FifthHierarchy = 5
+    SixthHierarchy = 6
+    SeventhHierarchy = 7
 End Enum
 
 Public Enum e_elecciones
@@ -1186,11 +1190,15 @@ Public Enum e_UsersInfoMask2
     ArmyThirdHierarchy = 256
     ArmyFourthHierarchy = 512
     ArmyFifthHierarchy = 1024
-    ChaosFirstHierarchy = 2048
-    ChaosSecondHierarchy = 4096
-    ChaosThirdHierarchy = 8192
-    ChaosFourthHierarchy = 16384
-    ChaosFifthHierarchy = 32768
+    ArmySixthHierarchy = 2048
+    ArmySeventhHierarchy = 4096
+    ChaosFirstHierarchy = 8192
+    ChaosSecondHierarchy = 16384
+    ChaosThirdHierarchy = 32768
+    ChaosFourthHierarchy = 65536
+    ChaosFifthHierarchy = 131072
+    ChaosSixthHierarchy = 262144
+    ChaosSeventhHierarchy = 524288
 End Enum
 
 ''
