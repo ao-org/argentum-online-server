@@ -424,20 +424,20 @@ Private Function GetRandomFactionMsgId(ByVal faction As e_Facciones) As Integer
     Select Case faction
         Case e_Facciones.Armada, e_Facciones.consejo
             Select Case RandomNumber(1, 5)
-                Case 1: GetRandomFactionMsgId = 2133
-                Case 2: GetRandomFactionMsgId = 2134
-                Case 3: GetRandomFactionMsgId = 2135
-                Case 4: GetRandomFactionMsgId = 2136
-                Case 5: GetRandomFactionMsgId = 2137
+                Case 1: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_1
+                Case 2: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_2
+                Case 3: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_3
+                Case 4: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_4
+                Case 5: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_5
             End Select
 
         Case e_Facciones.Caos, e_Facciones.concilio
             Select Case RandomNumber(1, 5)
-                Case 1: GetRandomFactionMsgId = 2138
-                Case 2: GetRandomFactionMsgId = 2139
-                Case 3: GetRandomFactionMsgId = 2140
-                Case 4: GetRandomFactionMsgId = 2141
-                Case 5: GetRandomFactionMsgId = 2142
+                Case 1: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_1
+                Case 2: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_2
+                Case 3: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_3
+                Case 4: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_4
+                Case 5: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_5
             End Select
 
         Case Else
