@@ -241,8 +241,8 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
             Exit Function
         End If
         If EsGM(UserIndex) Then
-            Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1706, name, e_FontTypeNames.FONTTYPE_INFOBOLD)) 'Msg1706=Servidor » ¬1 se conecto al juego.
-            Call LogGM(name, "Se conectó con IP: " & .ConnectionDetails.IP)
+            Call SendData(sendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1706, Name, e_FontTypeNames.FONTTYPE_INFOBOLD)) 'Msg1706=Servidor » ¬1 se conecto al juego.
+            Call LogGM(Name, "Se conectó con IP: " & .ConnectionDetails.IP)
         End If
     End With
     ConnectUser_Check = True
@@ -2284,11 +2284,6 @@ End Sub
 
 Sub VolverCriminal(ByVal UserIndex As Integer)
     On Error GoTo VolverCriminal_Err
-    '**************************************************************
-    'Author: Unknown
-    'Last Modify Date: 21/06/2006
-    'Nacho: Actualiza el tag al cliente
-    '**************************************************************
     With UserList(UserIndex)
         If MapData(.pos.Map, .pos.x, .pos.y).trigger = 6 Then Exit Sub
         If .flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero) Then
@@ -2310,6 +2305,15 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
         Else
             Call RefreshCharStatus(UserIndex)
         End If
+        If .Grupo.EnGrupo Then
+            'Msg2144=Ahora sos criminal, no podés estar en un grupo con ciudadanos.
+            Call WriteLocaleMsg(UserIndex, 2144, e_FontTypeNames.FONTTYPE_INFO)
+            If .Grupo.Lider.ArrayIndex = UserIndex Then
+                Call FinalizarGrupo(UserIndex)
+            Else
+                Call SalirDeGrupo(UserIndex)
+            End If
+        End If
     End With
     Exit Sub
 VolverCriminal_Err:
@@ -2317,11 +2321,6 @@ VolverCriminal_Err:
 End Sub
 
 Sub VolverCiudadano(ByVal UserIndex As Integer)
-    '**************************************************************
-    'Author: Unknown
-    'Last Modify Date: 21/06/2006
-    'Nacho: Actualiza el tag al cliente.
-    '**************************************************************
     On Error GoTo VolverCiudadano_Err
     With UserList(UserIndex)
         If MapData(.pos.Map, .pos.x, .pos.y).trigger = 6 Then Exit Sub
@@ -2335,6 +2334,15 @@ Sub VolverCiudadano(ByVal UserIndex As Integer)
             Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
         Else
             Call RefreshCharStatus(UserIndex)
+        End If
+        If .Grupo.EnGrupo Then
+            'Msg2143=Ahora sos ciudadano, no podés estar en un grupo con criminales.
+            Call WriteLocaleMsg(UserIndex, 2143, e_FontTypeNames.FONTTYPE_INFO)
+            If .Grupo.Lider.ArrayIndex = UserIndex Then
+                Call FinalizarGrupo(UserIndex)
+            Else
+                Call SalirDeGrupo(UserIndex)
+            End If
         End If
         Call WriteSafeModeOn(UserIndex)
         .flags.Seguro = True
