@@ -8,7 +8,9 @@ Public Type t_GlobalQuestData
     GatheringInitialInstallments As Long
     IsBossAlive As Boolean
     BossIndex As Integer
-    BossSpawnPosition As t_WorldPos
+    BossSpawnMap            As Integer
+    BossSpawnPositionTopLeft As t_Position
+    BossSpawnPositionBottomRight As t_Position
     FinishOnThresholdReach As Boolean
     Name As String
     StartDate As Date
@@ -31,7 +33,11 @@ Public Sub ContributeToGlobalQuestCounter(ByVal Amount As Long, ByVal GlobalQues
         If .GatheringGlobalCounter >= .GatheringGlobalInstallments Then
             .GatheringGlobalInstallments = .GatheringGlobalInstallments + .GatheringInitialInstallments
             If Not .IsBossAlive Then
-                Call SpawnNpc(.BossIndex, .BossSpawnPosition, False, False, True, 0)
+                Dim RandomizedSpawnPosition As t_WorldPos
+                RandomizedSpawnPosition.Map = .BossSpawnMap
+                RandomizedSpawnPosition.x = RandomNumber(.BossSpawnPositionTopLeft.x, .BossSpawnPositionBottomRight.x)
+                RandomizedSpawnPosition.y = RandomNumber(.BossSpawnPositionTopLeft.y, .BossSpawnPositionBottomRight.y)
+                Call SpawnNpc(.BossIndex, RandomizedSpawnPosition, False, False, True, 0)
                 .IsBossAlive = True
             End If
         End If
@@ -75,9 +81,11 @@ Public Sub LoadGlobalQuests()
             .GatheringThreshold = CLng(val(IniFile.GetValue("GlobalQuest" & i, "GatheringThreshold")))
             .GatheringInitialInstallments = CLng(val(IniFile.GetValue("GlobalQuest" & i, "GatheringInitialInstallments")))
             .GatheringGlobalInstallments = CLng(val(IniFile.GetValue("GlobalQuest" & i, "GatheringInitialInstallments")))
-            .BossSpawnPosition.Map = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionMap")))
-            .BossSpawnPosition.x = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionX")))
-            .BossSpawnPosition.y = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionY")))
+            .BossSpawnMap = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnMap")))
+            .BossSpawnPositionBottomRight.x = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionBottomRightX")))
+            .BossSpawnPositionBottomRight.y = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionBottomRightY")))
+            .BossSpawnPositionTopLeft.x = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionTopLeftX")))
+            .BossSpawnPositionTopLeft.y = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionTopLeftY")))
             .BossIndex = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossIndex")))
             .FinishOnThresholdReach = val(IniFile.GetValue("GlobalQuest" & i, "FinishOnThresholdReach"))
             .Name = IniFile.GetValue("GlobalQuest" & i, "Name")
@@ -95,9 +103,6 @@ Public Sub LoadGlobalQuests()
             Else
                 .Name = RS!Name
                 .ObjectIndex = RS!obj_id
-                .GatheringThreshold = RS!threshold
-                .StartDate = SQLiteToDate(RS!start_date)
-                .EndDate = SQLiteToDate(RS!end_date)
                 .IsActive = RS!is_active
                 Set RS = Query(SUM_TOTAL_AMOUNT_FROM_USER_CONTRIBUTION, i)
                 If Not IsNull(RS!total_amount) Then
@@ -166,12 +171,10 @@ Public Sub MaybeChangeGlobalQuestsState()
     Dim i As Integer
     For i = 1 To UBound(GlobalQuestInfo)
         'if the end date is programmed to be in the future
-        If IsGlobalQuestInTheFuture(GlobalQuestInfo(i)) Then
-            If GlobalQuestInfo(i).IsActive And HasGlobalQuestEnded(GlobalQuestInfo(i)) And Not GlobalQuestInfo(i).FinishOnThresholdReach Then
-                Call FinalizeGlobalQuest(i)
-            ElseIf Not GlobalQuestInfo(i).IsActive And HasGlobalQuestStarted(GlobalQuestInfo(i)) Then
-                Call StartGlobalQuest(i)
-            End If
+        If GlobalQuestInfo(i).IsActive And HasGlobalQuestEnded(GlobalQuestInfo(i)) And Not GlobalQuestInfo(i).FinishOnThresholdReach Then
+            Call FinalizeGlobalQuest(i)
+        ElseIf Not GlobalQuestInfo(i).IsActive And HasGlobalQuestStarted(GlobalQuestInfo(i)) And Not HasGlobalQuestEnded(GlobalQuestInfo(i)) Then
+            Call StartGlobalQuest(i)
         End If
     Next i
     Exit Sub
@@ -209,13 +212,10 @@ Public Sub FinalizeGlobalQuest(ByVal GlobalQuestIndex As Integer)
 End Sub
 
 Public Sub StartGlobalQuest(ByVal GlobalQuestIndex As Integer)
-    Debug.Assert Not HasGlobalQuestStarted(GlobalQuestInfo(GlobalQuestIndex))
-    
     If GlobalQuestInfo(GlobalQuestIndex).IsActive And HasGlobalQuestStarted(GlobalQuestInfo(GlobalQuestIndex)) Then
         LogError "Calling StartGlobalQuest on a quest that has already started : " & GlobalQuestInfo(GlobalQuestIndex).Name
         Exit Sub
     End If
-    
     With GlobalQuestInfo(GlobalQuestIndex)
         LogError "Starting GlobalQuest " & GlobalQuestIndex & " " & .Name
         .IsActive = True
