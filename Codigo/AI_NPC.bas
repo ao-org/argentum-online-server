@@ -1217,6 +1217,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
         Case e_TargetType.uUsuarios
             If UsuarioAtacableConMagia(Target) And PuedeDanarAlUsuario Then
                 Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
+                Call ResetUserAutomatedActions(Target)
                 If Not IsValidNpcRef(UserList(Target).flags.AtacadoPorNpc) Then
                     Call SetNpcRef(UserList(Target).flags.AtacadoPorNpc, NpcIndex)
                 End If

@@ -95,6 +95,8 @@ Public LimiteGuardarUsuarios         As Integer
 Public IntervaloTimerGuardarUsuarios As Long
 Public IntervaloMensajeGlobal        As Long
 Public Const IntervaloConsultaGM     As Long = 300000
+Public IntervalAutomatedAction       As Long
+Public IntervalChangeGlobalQuestsState       As Long
 'BALANCE
 Public PorcentajeRecuperoMana        As Integer
 Public RecoveryMana                  As Integer

@@ -74,3 +74,15 @@ Public Const MSG_REMOVE_NET_ALMOST_LOST As Integer = 2119
 
 ' Msg2120 = Pay attention! You almost lost your fishing rod to the special fish.
 Public Const MSG_REMOVE_ALMOST_YOUR_FISHING As Integer = 2120
+
+' Message IDs used for faction connection notifications (randomized variants).
+Public Const MSG_CONNECTION_ROYAL_ARMY_1 As Integer = 2133
+Public Const MSG_CONNECTION_ROYAL_ARMY_2 As Integer = 2134
+Public Const MSG_CONNECTION_ROYAL_ARMY_3 As Integer = 2135
+Public Const MSG_CONNECTION_ROYAL_ARMY_4 As Integer = 2136
+Public Const MSG_CONNECTION_ROYAL_ARMY_5 As Integer = 2137
+Public Const MSG_CONNECTION_DARK_LEGION_1 As Integer = 2138
+Public Const MSG_CONNECTION_DARK_LEGION_2 As Integer = 2139
+Public Const MSG_CONNECTION_DARK_LEGION_3 As Integer = 2140
+Public Const MSG_CONNECTION_DARK_LEGION_4 As Integer = 2141
+Public Const MSG_CONNECTION_DARK_LEGION_5 As Integer = 2142

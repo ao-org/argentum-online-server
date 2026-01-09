@@ -28,6 +28,8 @@ Attribute VB_Name = "CharacterPersistence"
 Option Explicit
 Option Base 0
 
+Private Const SAVE_CHARACTER_TIME_LIMIT_MS As Long = 50
+
 Private Function db_load_house_key(ByRef User As t_User) As Boolean
     db_load_house_key = False
     With User
@@ -483,6 +485,8 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
+    Dim QueryTimer As Long
+    Dim QueryBreakdown As String
     Dim Params() As Variant
     Dim LoopC    As Long
     Dim ParamC   As Long
@@ -562,7 +566,9 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
         Params(post_increment(i)) = .Char.BackpackAnim
         ' WHERE block
         Params(post_increment(i)) = .Id
+        QueryTimer = GetTickCountRaw()
         Call Execute(QUERY_UPDATE_MAINPJ, Params)
+        Call AppendQueryDuration(QueryBreakdown, "update main", QueryTimer)
         ' ************************** User spells *********************************
         ReDim Params(MAXUSERHECHIZOS * 3 - 1)
         ParamC = 0
@@ -572,7 +578,9 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
             Params(ParamC + 2) = .Stats.UserHechizos(LoopC)
             ParamC = ParamC + 3
         Next LoopC
+        QueryTimer = GetTickCountRaw()
         Call Execute(QUERY_UPSERT_SPELLS, Params)
+        Call AppendQueryDuration(QueryBreakdown, "upsert spells", QueryTimer)
         ' ************************** User inventory *********************************
         ReDim Params(MAX_INVENTORY_SLOTS * 6 - 1)
         ParamC = 0
@@ -585,7 +593,9 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
             Params(ParamC + 5) = .invent.Object(LoopC).ElementalTags
             ParamC = ParamC + 6
         Next LoopC
+        QueryTimer = GetTickCountRaw()
         Call Execute(QUERY_UPSERT_INVENTORY, Params)
+        Call AppendQueryDuration(QueryBreakdown, "upsert inventory", QueryTimer)
         ' ************************** User bank inventory *********************************
         ReDim Params(MAX_BANCOINVENTORY_SLOTS * 5 - 1)
         ParamC = 0
@@ -597,7 +607,9 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
             Params(ParamC + 4) = .BancoInvent.Object(LoopC).ElementalTags
             ParamC = ParamC + 5
         Next LoopC
+        QueryTimer = GetTickCountRaw()
         Call Execute(QUERY_SAVE_BANCOINV, Params)
+        Call AppendQueryDuration(QueryBreakdown, "save bank inventory", QueryTimer)
         ' ************************** User skills *********************************
         ReDim Params(NUMSKILLS * 3 - 1)
         ParamC = 0
@@ -607,7 +619,9 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
             Params(ParamC + 2) = .Stats.UserSkills(LoopC)
             ParamC = ParamC + 3
         Next LoopC
+        QueryTimer = GetTickCountRaw()
         Call Execute(QUERY_UPSERT_SKILLS, Params)
+        Call AppendQueryDuration(QueryBreakdown, "upsert skills", QueryTimer)
         ' ************************** User pets *********************************
         ReDim Params(MAXMASCOTAS * 3 - 1)
         ParamC = 0
@@ -627,7 +641,9 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
             Params(ParamC + 2) = petType
             ParamC = ParamC + 3
         Next LoopC
+        QueryTimer = GetTickCountRaw()
         Call Execute(QUERY_UPSERT_PETS, Params)
+        Call AppendQueryDuration(QueryBreakdown, "upsert pets", QueryTimer)
         ' ************************** User quests *********************************
         Builder.Append "REPLACE INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
         Dim Tmp As Integer, LoopK As Long
@@ -662,7 +678,9 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
                 Builder.Append ", "
             End If
         Next LoopC
+        QueryTimer = GetTickCountRaw()
         Call Execute(Builder.ToString())
+        Call AppendQueryDuration(QueryBreakdown, "replace quests", QueryTimer)
         Call Builder.Clear
         ' ************************** User completed quests *********************************
         If .QuestStats.NumQuestsDone > 0 Then
@@ -682,16 +700,41 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
                 Params(ParamC + 1) = .QuestStats.QuestsDone(LoopC)
                 ParamC = ParamC + 2
             Next LoopC
+            QueryTimer = GetTickCountRaw()
             Call Execute(Builder.ToString(), Params)
+            Call AppendQueryDuration(QueryBreakdown, "replace quests done", QueryTimer)
             Call Builder.Clear
         End If
+        QueryTimer = GetTickCountRaw()
         Call SaveInventorySkins(UserIndex)
+        Call AppendQueryDuration(QueryBreakdown, "save inventory skins", QueryTimer)
         Call InitUserPersistSnapshot(UserIndex)
-        Call PerformTimeLimitCheck(PerformanceTimer, "save character id:" & .Id, 50)
+        Call LogSaveCharacterDuration(PerformanceTimer, QueryBreakdown, .name, .Id)
     End With
     Exit Sub
 ErrorHandler:
     Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
+End Sub
+
+
+Private Sub AppendQueryDuration(ByRef QueryBreakdown As String, ByVal QueryName As String, ByVal QueryStartTime As Long)
+    Dim elapsed As Double
+    elapsed = TicksElapsed(QueryStartTime, GetTickCountRaw())
+    If Len(QueryBreakdown) > 0 Then
+        QueryBreakdown = QueryBreakdown & "; "
+    End If
+    QueryBreakdown = QueryBreakdown & QueryName & ": " & CLng(elapsed) & "ms"
+End Sub
+
+Private Sub LogSaveCharacterDuration(ByVal StartTime As Long, ByVal QueryBreakdown As String, ByVal CharacterName As String, ByVal CharacterId As Long)
+    Dim nowRaw As Long
+    Dim totalElapsed As Double
+    nowRaw = GetTickCountRaw()
+    totalElapsed = TicksElapsed(StartTime, nowRaw)
+    If totalElapsed > SAVE_CHARACTER_TIME_LIMIT_MS Then
+        Call LogPerformance("Performance warning at: save character [" & CharacterName & "] id:" & CharacterId & _
+                           " elapsed time: " & CLng(totalElapsed) & " breakdown: " & QueryBreakdown)
+    End If
 End Sub
 
 Private Function GetIntegerArrayLength(ByRef arr() As Integer) As Long
@@ -983,7 +1026,9 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
 
     Dim PerformanceTimer As Long
+    Dim TotalPerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
+    Call PerformanceTestStart(TotalPerformanceTimer)
 
     Dim Params() As Variant
     Dim LoopC As Long
@@ -1071,6 +1116,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
         Params(post_increment(i)) = .Id
 
         Call Execute(QUERY_UPDATE_MAINPJ, Params)
+        Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] main data id:" & .Id, 50)
 
         If HaveSpellsChanged(UserIndex) Then
             ReDim Params(MAXUSERHECHIZOS * 3 - 1)
@@ -1083,6 +1129,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Next LoopC
             Call Execute(QUERY_UPSERT_SPELLS, Params)
             Call UpdateSavedSpells(UserIndex)
+            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] spells update id:" & .Id, 50)
         End If
 
         If HasInventoryChanged(UserIndex) Then
@@ -1099,6 +1146,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Next LoopC
             Call Execute(QUERY_UPSERT_INVENTORY, Params)
             Call UpdateSavedInventory(UserIndex)
+            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] inventory update id:" & .Id, 50)
         End If
 
         If HasBankChanged(UserIndex) Then
@@ -1114,6 +1162,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Next LoopC
             Call Execute(QUERY_SAVE_BANCOINV, Params)
             Call UpdateSavedBank(UserIndex)
+            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] bank update id:" & .Id, 50)
         End If
 
         If HaveSkillsChanged(UserIndex) Then
@@ -1127,6 +1176,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Next LoopC
             Call Execute(QUERY_UPSERT_SKILLS, Params)
             Call UpdateSavedSkills(UserIndex)
+            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] skills update id:" & .Id, 50)
         End If
 
         If HavePetsChanged(UserIndex) Then
@@ -1150,6 +1200,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Next LoopC
             Call Execute(QUERY_UPSERT_PETS, Params)
             Call UpdateSavedPets(UserIndex)
+            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] pets update id:" & .Id, 50)
         End If
 
         If HaveQuestsChanged(UserIndex) Then
@@ -1191,6 +1242,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Call Execute(Builder.ToString())
             Call Builder.Clear
             Call UpdateSavedQuests(UserIndex)
+            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] quests update id:" & .Id, 50)
         End If
 
         If HaveQuestsDoneChanged(UserIndex) Then
@@ -1219,13 +1271,15 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             End If
 
             Call UpdateSavedQuestsDone(UserIndex)
+            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] quests done update id:" & .Id, 50)
         End If
 
         Call SaveInventorySkins(UserIndex)
+        Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] inventory skins update id:" & .Id, 50)
 
         .Counters.LastSave = GetTickCountRaw()
 
-        Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser id:" & .Id, 50)
+        Call PerformTimeLimitCheck(TotalPerformanceTimer, "SaveChangesInUser [" & .name & "] total id:" & .Id, 50)
 
     End With
 

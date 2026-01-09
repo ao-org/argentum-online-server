@@ -1116,8 +1116,8 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                 End If
                 If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).flags.Muerto = 1 And NpcList(TempCharIndex).npcType = e_NPCType.Revividor) Then
                     If NpcList(TempCharIndex).npcType = e_NPCType.Quest Or NpcList(TempCharIndex).npcType = e_NPCType.Banquero Or NpcList(TempCharIndex).npcType = _
-                            e_NPCType.Revividor Or NpcList(TempCharIndex).npcType = e_NPCType.Comun Or NpcList(TempCharIndex).npcType = e_NPCType.Entrenador Or NpcList( _
-                            TempCharIndex).npcType = e_NPCType.Gobernador Then
+                       e_NPCType.Revividor Or NpcList(TempCharIndex).npcType = e_NPCType.Comun Or NpcList(TempCharIndex).npcType = e_NPCType.Entrenador Or NpcList( _
+                       TempCharIndex).npcType = e_NPCType.Gobernador Then
                         If Distance(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, NpcList(TempCharIndex).pos.x, NpcList(TempCharIndex).pos.y) < 3 Then
                             If NpcList(TempCharIndex).Movement = Caminata Then
                                 NpcList(TempCharIndex).Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), 15000) ' 15 segundos
@@ -1128,7 +1128,6 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                             Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.charindex, vbWhite)
                         End If
                     Else
-                        'Optimizacion de protocolo por Ladder
                         Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.charindex, vbWhite)
                     End If
                 End If
@@ -1785,6 +1784,10 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal targetUserIndex As I
                     Call SetMask(FactionStatuses, e_UsersInfoMask2.ArmyFourthHierarchy)
                 Case e_RoyalArmyRanks.FifthHierarchy
                     Call SetMask(FactionStatuses, e_UsersInfoMask2.ArmyFifthHierarchy)
+                Case e_RoyalArmyRanks.SixthHierarchy
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ArmySixthHierarchy)
+                Case e_RoyalArmyRanks.SeventhHierarchy
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ArmySeventhHierarchy)
                 Case Else
             End Select
         End If
@@ -1801,6 +1804,10 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal targetUserIndex As I
                     Call SetMask(FactionStatuses, e_UsersInfoMask2.ChaosFourthHierarchy)
                 Case e_ChaosArmyRanks.FifthHierarchy
                     Call SetMask(FactionStatuses, e_UsersInfoMask2.ChaosFifthHierarchy)
+                Case e_ChaosArmyRanks.SixthHierarchy
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ChaosSixthHierarchy)
+                Case e_ChaosArmyRanks.SeventhHierarchy
+                    Call SetMask(FactionStatuses, e_UsersInfoMask2.ChaosSeventhHierarchy)
                 Case Else
             End Select
         End If

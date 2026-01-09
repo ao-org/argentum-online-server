@@ -2795,11 +2795,6 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
     Dim i As Integer
     'ID del paquete
     Call Writer.WriteInt16(ServerPacketID.eQuestDetails)
-    'Se usa la variable QuestSlot para saber si enviamos la info de una quest ya empezada o la info de una quest que no se aceptí todavía (1 para el primer caso y 0 para el segundo)
-    Call Writer.WriteInt8(IIf(QuestSlot, 1, 0))
-    'Enviamos nombre, descripción y nivel requerido de la quest
-    'Call Writer.WriteString8(QuestList(QuestIndex).Nombre)
-    'Call Writer.WriteString8(QuestList(QuestIndex).Desc)
     Call Writer.WriteInt16(QuestIndex)
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
     Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
@@ -2826,6 +2821,18 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
             'escribe si tiene ese objeto en el inventario y que cantidad
             Call Writer.WriteInt16(get_object_amount_from_inventory(UserIndex, QuestList(QuestIndex).RequiredOBJ(i).ObjIndex))
             ' Call Writer.WriteInt16(0)
+        Next i
+    End If
+    'Enviamos la cantidad de spells requeridos
+    Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSpellCount)
+    If QuestList(QuestIndex).RequiredSpellCount > 0 Then
+        For i = 1 To QuestList(QuestIndex).RequiredSpellCount
+            Call Writer.WriteInt16(QuestList(QuestIndex).RequiredSpellList(i))
+            If TieneHechizo(QuestList(QuestIndex).RequiredSpellList(i), UserIndex) Then
+                Call Writer.WriteInt16(1)
+            Else
+                Call Writer.WriteInt16(0)
+            End If
         Next i
     End If
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.SkillType)
@@ -2967,6 +2974,17 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
                 'Si el personaje es nivel mayor al limite no puede hacerla
                 If QuestList(QuestIndex).LimitLevel > 0 Then
                     If UserList(UserIndex).Stats.ELV > QuestList(QuestIndex).LimitLevel Then
+                        PuedeHacerla = False
+                    End If
+                End If
+                If QuestList(QuestIndex).GlobalQuestIndex > 0 Then
+                    If Not GlobalQuestInfo(QuestList(QuestIndex).GlobalQuestIndex).IsActive Then
+                        PuedeHacerla = False
+                    End If
+                    If GlobalQuestInfo(QuestList(QuestIndex).GlobalQuestIndex).IsBossAlive Then
+                        PuedeHacerla = False
+                    End If
+                    If QuestList(QuestIndex).GlobalQuestThresholdNeeded > GlobalQuestInfo(QuestList(QuestIndex).GlobalQuestIndex).GatheringGlobalCounter Then
                         PuedeHacerla = False
                     End If
                 End If

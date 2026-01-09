@@ -153,9 +153,12 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     End If
     If NpcList(NpcIndex).ShowKillerConsole > 0 Then
         'Msg1986=¬1 ha muerto en manos de ¬2
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1986", NpcList(NpcIndex).name & "¬" & UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_GLOBAL))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1986", NpcList(NpcIndex).Name & "¬" & UserList(UserIndex).Name, e_FontTypeNames.FONTTYPE_GLOBAL))
     End If
     'Quitamos el npc
+    If MiNPC.flags.GlobalQuestBossIndex Then
+        GlobalQuestInfo(MiNPC.flags.GlobalQuestBossIndex).IsBossAlive = False
+    End If
     Call QuitarNPC(NpcIndex, eDie)
     If UserIndex > 0 Then ' Lo mato un usuario?
         If MiNPC.flags.Snd3 > 0 Then
@@ -211,7 +214,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
                                 If QuestList(.QuestIndex).RequiredNPC(j).amount >= .NPCsKilled(j) Then
                                     .NPCsKilled(j) = .NPCsKilled(j) + 1 '
                                     Call WriteLocaleMsg(UserIndex, 1623, e_FontTypeNames.FONTTYPE_INFOIAO, MiNPC.name & "¬" & .NPCsKilled(j) & "¬" & QuestList( _
-                                            .QuestIndex).RequiredNPC(j).amount) 'Msg1623=¬1 matados/as: ¬2 de ¬3
+                                            .QuestIndex).RequiredNPC(j).Amount) 'Msg1623=¬1 matados/as: ¬2 de ¬3
                                     Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.name, _
                                             UserList(UserIndex).Char.charindex, RGB(180, 180, 180))
                                 Else
@@ -903,9 +906,9 @@ Sub NPCTirarOro(MiNPC As t_Npc, ByVal UserIndex As Integer)
         Dim MiObj As t_Obj
         MiObj.ObjIndex = iORO
         While (Oro > 0)
-            If Oro > MAX_INVENTORY_OBJS Then
-                MiObj.amount = MAX_INVENTORY_OBJS
-                Oro = Oro - MAX_INVENTORY_OBJS
+            If Oro > GetMaxInvOBJ() Then
+                MiObj.amount = GetMaxInvOBJ()
+                Oro = Oro - GetMaxInvOBJ()
             Else
                 MiObj.amount = Oro
                 Oro = 0
@@ -1008,6 +1011,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .TierraInvalida = Val(LeerNPCs.GetValue(SectionName, "TierraInValida"))
         .Faccion = Val(LeerNPCs.GetValue(SectionName, "Faccion"))
         .ElementalTags = Val(LeerNPCs.GetValue(SectionName, "ElementalTags"))
+        .GlobalQuestBossIndex = val(LeerNPCs.GetValue(SectionName, "GlobalQuestBossIndex"))
         .npcType = Val(LeerNPCs.GetValue(SectionName, "NpcType"))
         .Body = Val(LeerNPCs.GetValue(SectionName, "Body"))
         .Head = Val(LeerNPCs.GetValue(SectionName, "Head"))
@@ -1287,6 +1291,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         Call SetMovement(NpcIndex, Info.Movement)
         .flags.OldMovement = .Movement
         .flags.AguaValida = Info.AguaValida
+        .flags.GlobalQuestBossIndex = Info.GlobalQuestBossIndex
         .flags.TierraInvalida = Info.TierraInvalida
         .flags.Faccion = Info.Faccion
         .flags.ElementalTags = Info.ElementalTags
