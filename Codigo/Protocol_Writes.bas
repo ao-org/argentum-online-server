@@ -3306,13 +3306,14 @@ End Function
 ''
 ' Prepares the "CharAtaca" message and returns it.
 '
-Public Function PrepareMessageCharAtaca(ByVal charindex As Integer, ByVal attackerIndex As Integer, ByVal danio As Long, ByVal AnimAttack As Integer)
+Public Function PrepareMessageCharAtaca(ByVal charindex As Integer, ByVal attackerIndex As Integer, ByVal danio As Long, ByVal AnimAttack As Integer, Optional ByVal AnimAttack2 As Integer = 0)
     On Error GoTo PrepareMessageCharAtaca_Err
     Call Writer.WriteInt16(ServerPacketID.eCharAtaca)
     Call Writer.WriteInt16(charindex)
     Call Writer.WriteInt16(attackerIndex)
     Call Writer.WriteInt32(danio)
     Call Writer.WriteInt16(AnimAttack)
+    Call Writer.WriteInt16(AnimAttack2)
     Exit Function
 PrepareMessageCharAtaca_Err:
     Call Writer.Clear
