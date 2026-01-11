@@ -1494,6 +1494,8 @@ Sub ResetUserAutomatedActions(ByRef UserIndex As Integer)
         .AutomatedAction.StartingTime = 0
         .AutomatedAction.x = 0
         .AutomatedAction.y = 0
+        'old legacy system to check people working
+        .Counters.Trabajando = 0
     End With
 End Sub
 
