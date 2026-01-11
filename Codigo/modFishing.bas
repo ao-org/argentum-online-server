@@ -204,6 +204,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
                         Call EraseObj(MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount, .pos.Map, TargetX, TargetY)
                         Call WriteLocaleMsg(UserIndex, 649, e_FontTypeNames.FONTTYPE_INFO)
                         .AutomatedAction.IsActive = False
+                        .Counters.Trabajando = 0
                     End If
                     MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount = MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount - fishingCatch.amount
                 End If
@@ -240,6 +241,7 @@ SkillImprovement:
         If MapInfo(.pos.Map).Seguro = 0 Then
             Call SubirSkill(UserIndex, e_Skill.Pescar)
         End If
+        .Counters.Trabajando = .Counters.Trabajando + 1
     End With
     Exit Sub
 ErrHandler:
