@@ -1155,6 +1155,7 @@ Dim Ropaje                      As Integer
                     .invent.Object(Slot).Equipped = 1
                     .invent.EquippedWeaponObjIndex = .invent.Object(Slot).ObjIndex
                     .invent.EquippedWeaponSlot = Slot
+                    Call ValidateEquippedArrow(UserIndex)
                     If obj.DosManos = 1 Then
                         If .invent.EquippedShieldObjIndex > 0 Then
                             Call Desequipar(UserIndex, .invent.EquippedShieldSlot)
@@ -1335,13 +1336,7 @@ Dim Ropaje                      As Integer
                     Call Desequipar(UserIndex, Slot)
                     Exit Sub
                 End If
-                'Quitamos el elemento anterior
-                If .invent.EquippedMunitionObjIndex > 0 Then
-                    Call Desequipar(UserIndex, .invent.EquippedMunitionSlot)
-                End If
-                .invent.Object(Slot).Equipped = 1
-                .invent.EquippedMunitionObjIndex = .invent.Object(Slot).ObjIndex
-                .invent.EquippedMunitionSlot = Slot
+                Call EquipArrow(UserIndex, Slot)
             Case e_OBJType.otArmor
                 If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eArmor) Then
                     Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
@@ -4078,3 +4073,81 @@ SkinRequireObject_Error:
     Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.SkinRequireObject", Erl())
     
 End Function
+Public Sub EquipArrow(ByVal UserIndex As Integer, ByVal Slot As Integer)
+    On Error GoTo EquipArrow_Error
+    Dim bowIndex  As Integer
+    Dim BowCategory   As Byte
+    Dim ArrowCategory As Byte
+    Dim ArrowObjIndex As Integer
+
+    With UserList(UserIndex).invent
+        Debug.Assert ObjData(Slot).OBJType = e_OBJType.otArrows
+        ArrowObjIndex = .Object(Slot).ObjIndex
+        bowIndex = .EquippedWeaponObjIndex
+        BowCategory = ObjData(bowIndex).BowCategory
+        ArrowCategory = ObjData(ArrowObjIndex).ArrowCategory
+        
+        ' No hay arco equipado
+        If bowIndex <= 0 Then
+            'Msg2145=Debes equipar un arco para usar flechas.
+            Call WriteLocaleMsg(UserIndex, 2145, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
+        ' El arma equipada no es un arco
+        If ObjData(bowIndex).WeaponType <> eBow Then
+            'Msg2146=El arma equipada no permite usar flechas.
+            Call WriteLocaleMsg(UserIndex, 2146, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
+        ' No se permite flecha de mayor categoria que el arco
+        If ArrowCategory > BowCategory Then
+            'Msg2147=No podés equipar esta flecha con el arco actual.
+            Call WriteLocaleMsg(UserIndex, 2147, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
+        ' Quitar flecha previa
+        If .EquippedMunitionObjIndex > 0 Then
+            Call Desequipar(UserIndex, .EquippedMunitionSlot)
+        End If
+
+        ' Equipar flecha
+        .Object(Slot).Equipped = 1
+        .EquippedMunitionObjIndex = ArrowObjIndex
+        .EquippedMunitionSlot = Slot
+    End With
+    Exit Sub
+EquipArrow_Error:
+    Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.EquipArrow", Erl())
+End Sub
+Public Sub ValidateEquippedArrow(ByVal UserIndex As Integer)
+    On Error GoTo ValidateEquippedArrow_Error
+    Dim bowIndex   As Integer
+    Dim arrowIndex As Integer
+
+    With UserList(UserIndex).invent
+        arrowIndex = .EquippedMunitionObjIndex
+        bowIndex = .EquippedWeaponObjIndex
+
+        ' No hay flecha equipada ? nada que validar
+        If arrowIndex <= 0 Then Exit Sub
+
+        ' No hay arma equipada ? no hacer nada
+        If bowIndex <= 0 Then Exit Sub
+
+        ' El arma equipada no es un arco ? no hacer nada
+        If ObjData(bowIndex).WeaponType <> eBow Then Exit Sub
+
+        ' Se desequipa la flecha al cambiar a un arco de menor categoría
+        If ObjData(bowIndex).BowCategory < ObjData(arrowIndex).ArrowCategory Then
+            Call Desequipar(UserIndex, .EquippedMunitionSlot)
+            'Msg2148=La flecha fue desequipada porque no es compatible con el arco actual.
+            Call WriteLocaleMsg(UserIndex, 2148, e_FontTypeNames.FONTTYPE_INFO)
+        End If
+    End With
+    Exit Sub
+ValidateEquippedArrow_Error:
+    Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.ValidateEquippedArrow", Erl())
+End Sub

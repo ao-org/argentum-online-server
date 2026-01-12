@@ -2397,6 +2397,8 @@ Public Type t_ObjData
     ElementalTags As Long
     Camouflage As Boolean
     RequiereObjeto                  As Integer
+    BowCategory As Byte
+    ArrowCategory As Byte
 End Type
 
 '[Pablo ToxicWaste]
