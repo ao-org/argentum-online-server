@@ -79,6 +79,7 @@ Database_Close_Err:
 End Sub
 
 Public Function Query(ByVal Text As String, ParamArray Arguments() As Variant) As ADODB.Recordset
+    On Error GoTo Query_Err
     Dim Command  As New ADODB.Command
     Dim Argument As Variant
     Command.ActiveConnection = Connection
@@ -95,7 +96,6 @@ Public Function Query(ByVal Text As String, ParamArray Arguments() As Variant) A
             Command.Parameters.Append CreateParameter(Argument, adParamInput)
         End If
     Next Argument
-    On Error GoTo Query_Err
     ' Statistics
     If frmMain.chkLogDbPerfomance.value = 1 Then
         Call GetElapsedTime
@@ -107,11 +107,13 @@ Public Function Query(ByVal Text As String, ParamArray Arguments() As Variant) A
     End If
     Exit Function
 Query_Err:
+    Debug.Assert False
     DBError = Err.Description
     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - " & vbCrLf & Text)
 End Function
 
 Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant) As Boolean
+    On Error GoTo Execute_Err
     Dim Command  As New ADODB.Command
     Dim Argument As Variant
     Command.ActiveConnection = Connection_async(Current_async)
@@ -128,7 +130,6 @@ Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant)
             Command.Parameters.Append CreateParameter(Argument, adParamInput)
         End If
     Next Argument
-    On Error GoTo Execute_Err
     ' Statistics
     If frmMain.chkLogDbPerfomance.value = 1 Then
         Call GetElapsedTime
@@ -145,6 +146,7 @@ Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant)
     Execute = (Err.Number = 0)
     Exit Function
 Execute_Err:
+    Debug.Assert False
     If (Err.Number <> 0) Then
         Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - " & vbCrLf & Text)
     End If

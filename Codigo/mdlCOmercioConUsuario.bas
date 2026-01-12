@@ -108,7 +108,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
             If UserList(UserIndex).ComUsu.itemsAenviar(i).ObjIndex = ObjAEnviar.ObjIndex And UserList(UserIndex).ComUsu.itemsAenviar(i).ElementalTags = ObjAEnviar.ElementalTags _
                     And UserList(UserIndex).ComUsu.itemsAenviar(i).amount <= 10000 Then
                 'Me fijo si le va a entrar el objeto con las cantidades en el slot que encontró
-                If UserList(UserIndex).ComUsu.itemsAenviar(i).amount + ObjAEnviar.amount <= MAX_INVENTORY_OBJS Then
+                If UserList(UserIndex).ComUsu.itemsAenviar(i).amount + ObjAEnviar.amount <= GetMaxInvOBJ() Then
                     'Si le entra simplemente le agrego las cantidades
                     UserList(UserIndex).ComUsu.itemsAenviar(i).amount = UserList(UserIndex).ComUsu.itemsAenviar(i).amount + ObjAEnviar.amount
                     nada = True

@@ -624,7 +624,10 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             Exit Function
         End If
         If .Stats.MinSta < Hechizos(HechizoIndex).StaRequerido Then
+            'Msg93=Estás muy cansado
             Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
+            'Msg2129=¡No tengo energía!
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
             Exit Function
         End If
         If .clase = e_Class.Mage And Not IsFeatureEnabled("remove-staff-requirements") Then
@@ -2386,6 +2389,21 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
             b = False
         End If
     ElseIf IsSet(Hechizos(hIndex).Effects, e_SpellEffects.eDoDamage) Then
+        If Hechizos(hIndex).IsElementalTagsOnly Then
+            If NpcList(NpcIndex).flags.ElementalTags = 0 Then
+                Call WriteLocaleMsg(UserIndex, 2125, e_FontTypeNames.FONTTYPE_INFOIAO)
+                Exit Sub
+            End If
+            If UserList(UserIndex).invent.EquippedWeaponObjIndex = 0 Then
+                Call WriteLocaleMsg(UserIndex, 2126, e_FontTypeNames.FONTTYPE_INFOIAO)
+                Exit Sub
+            Else
+                If ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).ElementalTags = 0 And UserList(UserIndex).invent.Object(UserList(UserIndex).invent.EquippedWeaponSlot).ElementalTags = 0 Then
+                    Call WriteLocaleMsg(UserIndex, 2126, e_FontTypeNames.FONTTYPE_INFOIAO)
+                    Exit Sub
+                End If
+            End If
+        End If
         UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
         Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
         If UserAttackInteractionResult.CanAttack Then
@@ -4137,7 +4155,7 @@ AreaHechizo_Err:
     Call TraceError(Err.Number, Err.Description, "modHechizos.AreaHechizo", Erl)
 End Sub
 
-Private Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+Public Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     Dim BaseHit       As Integer
     Dim BonusDamage   As Single
     Dim BonusFromItem As Integer

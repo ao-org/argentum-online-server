@@ -86,6 +86,8 @@ Public Enum e_RoyalArmyRanks
     ThirdHierarchy = 3
     FourthHierarchy = 4
     FifthHierarchy = 5
+    SixthHierarchy = 6
+    SeventhHierarchy = 7
 End Enum
 
 Public Enum e_ChaosArmyRanks
@@ -95,6 +97,8 @@ Public Enum e_ChaosArmyRanks
     ThirdHierarchy = 3
     FourthHierarchy = 4
     FifthHierarchy = 5
+    SixthHierarchy = 6
+    SeventhHierarchy = 7
 End Enum
 
 Public Enum e_elecciones
@@ -644,6 +648,7 @@ Public Enum e_SoundEffects
     'Repetido = 1152
     SnowStorm = 2000
     'Imperium 2028 - 2186
+    FailToExtractOre = 2185
     NewApunialar = 2187
     MortarLaunch = 2222
     RoarDinosaur = 2323
@@ -656,14 +661,29 @@ Public Enum e_SoundEffects
     CupDice = 10000
 End Enum
 
-Public Enum e_Meditaciones
-    MeditarInicial = 115
-    MeditarMayor15 = 116
-    MeditarMayor30 = 117
-    MeditarMayor40 = 118
-    MeditarMayor45 = 119
-    MeditarMayor47 = 120
-End Enum
+'Meditaciones
+Public MeditationLevel1to12 As Integer
+Public MeditationLevel13to17 As Integer
+Public MeditationLevel18to24 As Integer
+Public MeditationLevel25to28 As Integer
+Public MeditationLevel29to32 As Integer
+Public MeditationLevel33to36 As Integer
+Public MeditationLevel37to39 As Integer
+Public MeditationLevel40to42 As Integer
+Public MeditationLevel43to44 As Integer
+Public MeditationLevel45to46 As Integer
+Public MeditationLevelMax As Integer
+'Meditaciones criminales
+Public MeditationCriminalLevel1to12 As Integer
+Public MeditationCriminalLevel13to17 As Integer
+Public MeditationCriminalLevel18to24 As Integer
+Public MeditationCriminalLevel25to28 As Integer
+Public MeditationCriminalLevel29to32 As Integer
+Public MeditationCriminalLevel33to36 As Integer
+Public MeditationCriminalLevel37to39 As Integer
+Public MeditationCriminalLevel40to42 As Integer
+Public MeditationCriminalLevel43to44 As Integer
+Public MeditationCriminalLevel45to46 As Integer
 
 Public Enum e_GraphicEffects 'Image sequenced fxs like paralizar PrepareMessageCreateFX() or family of functions CreateFX()
     OldGmWarp = 1
@@ -1170,11 +1190,15 @@ Public Enum e_UsersInfoMask2
     ArmyThirdHierarchy = 256
     ArmyFourthHierarchy = 512
     ArmyFifthHierarchy = 1024
-    ChaosFirstHierarchy = 2048
-    ChaosSecondHierarchy = 4096
-    ChaosThirdHierarchy = 8192
-    ChaosFourthHierarchy = 16384
-    ChaosFifthHierarchy = 32768
+    ArmySixthHierarchy = 2048
+    ArmySeventhHierarchy = 4096
+    ChaosFirstHierarchy = 8192
+    ChaosSecondHierarchy = 16384
+    ChaosThirdHierarchy = 32768
+    ChaosFourthHierarchy = 65536
+    ChaosFifthHierarchy = 131072
+    ChaosSixthHierarchy = 262144
+    ChaosSeventhHierarchy = 524288
 End Enum
 
 ''
@@ -1252,8 +1276,8 @@ Public Const ElvenWood                        As Integer = 2781 'OK
 Public Const Raices                           As Integer = 888 'OK
 Public Const Botella                          As Integer = 2097 'OK
 Public Const Cuchara                          As Integer = 163 'OK
-Public Const Mortero                          As Integer = 4304
-Public Const FrascoAlq                        As Integer = 4305
+Public Const Mortero                          As Integer = 4997
+Public Const FrascoAlq                        As Integer = 3075
 Public Const FrascoElixir                     As Integer = 4306
 Public Const Dosificador                      As Integer = 4307
 Public Const Orquidea                         As Integer = 4308
@@ -1460,7 +1484,7 @@ Public Const POCION_RESET            As Long = 3378
 Public Const MAXUSERQUESTS           As Integer = 5     'Maxima cantidad de quests que puede tener un usuario al mismo tiempo.
 ''
 ' Cantidad maxima de objetos por slot de inventario
-Public Const MAX_INVENTORY_OBJS      As Integer = 10000
+Public Const DEFAULT_MAX_INVENTORY_OBJS As Integer = 10000
 ''
 ' Cantidad de "slots" en el inventario con todos los slots desbloqueados
 Public Const MAX_INVENTORY_SLOTS     As Byte = 42
@@ -1781,6 +1805,7 @@ Public Type t_Hechizo
     RequireArmor As Integer
     RequireWeaponType As e_WeaponType
     MaxLevelCasteable As Byte
+    IsElementalTagsOnly As Boolean
 End Type
 
 Public Type t_ActiveModifiers
@@ -2094,6 +2119,8 @@ Public Type t_Quest
     RewardSpellCount As Byte
     RewardSpellList() As Integer
     Repetible As Byte
+    GlobalQuestIndex As Integer
+    GlobalQuestThresholdNeeded As Long
 End Type
 
 ' ******************* RETOS ************************
@@ -2626,7 +2653,7 @@ Public Type t_UserFlags
     Ban As Byte
     AdministrativeBan As Byte
     BanMotivo As String
-    targetUser As t_UserReference ' Usuario señalado
+    TargetUser As t_UserReference ' Usuario señalado
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer
     TargetObjX As Integer
@@ -3103,6 +3130,7 @@ Public Type t_NPCFlags
     BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
     team As Byte
+    GlobalQuestBossIndex As Integer
     ElementalTags As Long
 End Type
 
@@ -3172,6 +3200,7 @@ Public Type t_NpcInfoCache
     nivel As Integer
     Movement As Integer
     AguaValida As Integer
+    GlobalQuestBossIndex As Integer
     TierraInvalida As Integer
     Faccion As Integer
     ElementalTags As Long

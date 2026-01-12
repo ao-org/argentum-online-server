@@ -367,7 +367,7 @@ Private Sub PerderItemsFaccionarios(ByVal UserIndex As Integer)
             ItemIndex = .invent.Object(i).ObjIndex
             If ItemIndex > 0 Then
                 If ObjData(ItemIndex).Real = 1 Or ObjData(ItemIndex).Caos = 1 Then
-                    Call QuitarUserInvItem(UserIndex, i, MAX_INVENTORY_OBJS)
+                    Call QuitarUserInvItem(UserIndex, i, GetMaxInvOBJ())
                     Call UpdateUserInv(False, UserIndex, i)
                 End If
             End If
@@ -377,3 +377,84 @@ Private Sub PerderItemsFaccionarios(ByVal UserIndex As Integer)
 PerderItemsFaccionarios_Err:
     Call TraceError(Err.Number, Err.Description, "ModFacciones.PerderItemsFaccionarios", Erl)
 End Sub
+Public Sub NotifyConnectionToFaction(ByVal UserIndex As Integer)
+    On Error GoTo NotifyConnectionToFaction_Err
+    With UserList(UserIndex)
+        ' Excluir GMs
+        Select Case .flags.Privilegios
+            Case e_PlayerType.Admin, e_PlayerType.Dios, e_PlayerType.SemiDios, e_PlayerType.Consejero
+                Exit Sub
+        End Select
+        
+        Dim msgId As Integer
+        msgId = GetRandomFactionMsgId(.faccion.Status)
+
+        Select Case .faccion.Status
+            Case e_Facciones.Armada
+                If msgId > 0 Then
+                    Call SendData(SendTarget.ToRealYRMs, 0, _
+                        PrepareMessageLocaleMsg(msgId, .Name, e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA))
+                End If
+
+            Case e_Facciones.consejo
+                If msgId > 0 Then
+                    Call SendData(SendTarget.ToRealYRMs, 0, _
+                        PrepareMessageLocaleMsg(msgId, .Name, e_FontTypeNames.FONTTYPE_CONSEJO))
+                End If
+
+            Case e_Facciones.Caos
+                If msgId > 0 Then
+                    Call SendData(SendTarget.ToCaosYRMs, 0, _
+                        PrepareMessageLocaleMsg(msgId, .Name, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS))
+                End If
+
+            Case e_Facciones.concilio
+                If msgId > 0 Then
+                    Call SendData(SendTarget.ToCaosYRMs, 0, _
+                        PrepareMessageLocaleMsg(msgId, .Name, e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
+                End If
+        End Select
+    End With
+    Exit Sub
+NotifyConnectionToFaction_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.NotifyConnectionToFaction", Erl)
+End Sub
+Private Function GetRandomFactionMsgId(ByVal faction As e_Facciones) As Integer
+    On Error GoTo GetRandomFactionMsgId_Err
+    Select Case faction
+        Case e_Facciones.Armada, e_Facciones.consejo
+            Select Case RandomNumber(1, 10)
+                Case 1: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_1
+                Case 2: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_2
+                Case 3: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_3
+                Case 4: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_4
+                Case 5: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_5
+                Case 6: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_6
+                Case 7: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_7
+                Case 8: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_8
+                Case 9: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_9
+                Case 10: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_10
+            End Select
+
+        Case e_Facciones.Caos, e_Facciones.concilio
+            Select Case RandomNumber(1, 10)
+                Case 1: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_1
+                Case 2: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_2
+                Case 3: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_3
+                Case 4: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_4
+                Case 5: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_5
+                Case 6: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_6
+                Case 7: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_7
+                Case 8: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_8
+                Case 9: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_9
+                Case 10: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_10
+            End Select
+
+        Case Else
+            GetRandomFactionMsgId = 0
+    End Select
+    Exit Function
+GetRandomFactionMsgId_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.GetRandomFactionMsgId", Erl)
+End Function
+

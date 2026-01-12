@@ -49,10 +49,6 @@ End Function
  
 Public Function FreeQuestSlot(ByVal UserIndex As Integer) As Byte
     On Error GoTo FreeQuestSlot_Err
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    'Devuelve el proximo slot de quest libre.
-    'Last modified: 27/01/2010 by Amraphen
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     Dim i As Integer
     For i = 1 To MAXUSERQUESTS
         If UserList(UserIndex).QuestStats.Quests(i).QuestIndex = 0 Then
@@ -74,15 +70,16 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
     Dim NpcIndex       As Integer
     NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
     With QuestList(QuestIndex)
-        'Comprobamos que tenga los objetos.
+                'Comprobamos que tenga los objetos.
         If .RequiredOBJs > 0 Then
             For i = 1 To .RequiredOBJs
-                If TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex) = False Then
+                If TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).Amount, UserIndex) = False Then
                     Call WriteLocaleChatOverHead(UserIndex, "1336", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1336=No has conseguido todos los objetos que te he pedido.
                     Exit Sub
                 End If
             Next i
         End If
+
         'Comprobamos que haya matado todas las criaturas.
         If .RequiredNPCs > 0 Then
             For i = 1 To .RequiredNPCs
@@ -116,6 +113,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                 Exit Sub
             End If
         End If
+
         'Comprobamos que el usuario tenga espacio para recibir los items.
         If .RewardOBJs > 0 Then
             'Buscamos la cantidad de slots de inventario libres.
@@ -128,6 +126,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                 Exit Sub
             End If
         End If
+
         Dim KnownSkills As Integer
         If .RewardSpellCount > 0 Then
             For i = 1 To .RewardSpellCount
@@ -142,11 +141,13 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                 Exit Sub
             End If
         End If
+
         'A esta altura ya cumplio los objetivos, entonces se le entregan las recompensas.
         Call WriteChatOverHead(UserIndex, "QUESTFIN*" & QuestIndex, NpcList(NpcIndex).Char.charindex, vbYellow)
-        'Si la quest pedia objetos, se los saca al personaje.
+                'Si la quest pedia objetos, se los saca al personaje.
         If .RequiredOBJs Then
             For i = 1 To .RequiredOBJs
+                Call FinishGlobalQuest(UserIndex, .RequiredOBJ(i).Amount, .GlobalQuestIndex, .GlobalQuestThresholdNeeded)
                 Call QuitarObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex)
             Next i
         End If
@@ -399,6 +400,8 @@ Public Sub LoadQuests()
             .RewardGLD = val(reader.GetValue("QUEST" & i, "RewardGLD"))
             .RewardEXP = val(reader.GetValue("QUEST" & i, "RewardEXP"))
             .Repetible = val(reader.GetValue("QUEST" & i, "Repetible"))
+            .GlobalQuestIndex = val(reader.GetValue("QUEST" & i, "GlobalQuestIndex"))
+            .GlobalQuestThresholdNeeded = val(reader.GetValue("QUEST" & i, "GlobalQuestThresholdNeeded"))
             'CARGAMOS OBJETOS DE RECOMPENSA
             .RewardOBJs = val(reader.GetValue("QUEST" & i, "RewardOBJs"))
             If .RewardOBJs > 0 Then
@@ -521,14 +524,18 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
                 If Not TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex) Then Exit Function
             Next i
         End If
-
+        If .GlobalQuestIndex > 0 Then
+            If Not FinishGlobalQuestCheck(UserIndex, .GlobalQuestIndex, .GlobalQuestThresholdNeeded) Then
+                Exit Function
+            End If
+        End If
         ' --- Required NPC kills ---
         If .RequiredNPCs > 0 Then
             Dim lastReqNPC As Long, lastKilled As Long
             lastReqNPC = -1: lastKilled = -1
             On Error Resume Next
-                lastReqNPC = UBound(.RequiredNPC)
-                lastKilled = UBound(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled)
+            lastReqNPC = UBound(.RequiredNPC)
+            lastKilled = UBound(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled)
             On Error GoTo FinishQuestCheck_Err
             If lastReqNPC < 1 Or lastKilled < 1 Then Exit Function
             For i = 1 To .RequiredNPCs
@@ -557,14 +564,13 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
             If skillType < firstSkill Or skillType > lastSkill Then Exit Function
             If UserList(UserIndex).Stats.UserSkills(skillType) < .RequiredSkill.RequiredValue Then Exit Function
         End If
-
         ' --- Required target NPCs ---
         If .RequiredTargetNPCs > 0 Then
             Dim lastTargetReq As Long, lastTargetHave As Long
             lastTargetReq = -1: lastTargetHave = -1
             On Error Resume Next
-                lastTargetReq = UBound(.RequiredTargetNPC)
-                lastTargetHave = UBound(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsTarget)
+            lastTargetReq = UBound(.RequiredTargetNPC)
+            lastTargetHave = UBound(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsTarget)
             On Error GoTo FinishQuestCheck_Err
             If lastTargetReq < 1 Or lastTargetHave < 1 Then Exit Function
             For i = 1 To .RequiredTargetNPCs
@@ -629,7 +635,7 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
     End If
     'El personaje tiene suficiente nivel?
     If UserList(UserIndex).Stats.ELV < tmpQuest.RequiredLevel Then
-        Call WriteLocaleMsg(UserIndex, 1425, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, 1425, e_FontTypeNames.FONTTYPE_INFO, tmpQuest.RequiredLevel)
         Exit Function
     End If
     'El personaje es nivel muy alto?
@@ -654,6 +660,23 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
         If UserDoneQuest(UserIndex, QuestIndex) Then
             Call WriteLocaleMsg(UserIndex, MSG_QUEST_ALREADY_COMPLETED, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
+        End If
+    End If
+    If tmpQuest.GlobalQuestIndex > 0 Then
+        If tmpQuest.GlobalQuestThresholdNeeded > 0 Then
+            If tmpQuest.GlobalQuestThresholdNeeded > GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringGlobalCounter Then
+                Call WriteLocaleMsg(UserIndex, 2123, FONTTYPE_WARNING, GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringThreshold & "¬" & tmpQuest.GlobalQuestThresholdNeeded)
+                Exit Function
+            End If
+        Else
+            If Not GlobalQuestInfo(tmpQuest.GlobalQuestIndex).IsActive Then
+                Call WriteLocaleMsg(UserIndex, 2124, FONTTYPE_WARNING)
+                Exit Function
+            End If
+            If GlobalQuestInfo(tmpQuest.GlobalQuestIndex).IsBossAlive Then
+                Call WriteLocaleMsg(UserIndex, 2121, FONTTYPE_WARNING)
+                Exit Function
+            End If
         End If
     End If
     CanUserAcceptQuest = True

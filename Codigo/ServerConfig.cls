@@ -87,6 +87,7 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "RecoleccionMult", CDbl(val(reader.GetValue("CONFIGURACIONES", "RecoleccionMult")))
     mSettings.Add "OroPorNivelBilletera", CLng(val(reader.GetValue("CONFIGURACIONES", "OroPorNivelBilletera")))
     mSettings.Add "OroPorNivel", val(reader.GetValue("CONFIGURACIONES", "OroPorNivel"))
+    mSettings.Add "MaxInventoryObjs", CInt(val(reader.GetValue("CONFIGURACIONES", "MaxInventoryObjs", DEFAULT_MAX_INVENTORY_OBJS)))
     mSettings.Add "DayLength", CLng(val(reader.GetValue("CONFIGURACIONES", "DuracionDia"))) * 60 * 1000
     mSettings.Add "CostoPerdonPorCiudadano", CLng(val(reader.GetValue("CONFIGURACIONES", "CostoPerdonPorCiudadano")))
     mSettings.Add "ChatGlobal", CInt(val(reader.GetValue("CONFIGURACIONES", "ChatGlobal", "1")))
@@ -94,6 +95,7 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "PartyELVwLeadership", CInt(val(reader.GetValue("CONFIGURACIONES", "PartyELVwLeadership", "5")))
     mSettings.Add "PenaltyExpUserPerLevel", CSng(val(reader.GetValue("CONFIGURACIONES", "PenaltyExpUserPerLevel", "0.05")))
     mSettings.Add "NpcDeltaLevelPenalties", CInt(val(reader.GetValue("CONFIGURACIONES", "NpcDeltaLevelPenalties", "4")))
+    mSettings.Add "NpcDeltaLevelCloseRange", CInt(val(reader.GetValue("CONFIGURACIONES", "NpcDeltaLevelCloseRange", "3")))
     mSettings.Add "LeadershipExpPartyBonus", CDbl(val(reader.GetValue("CONFIGURACIONES", "LeadershipExpPartyBonus", "1.01")))
     mSettings.Add "JineteLevel1Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel1Speed", "1.05")))
     mSettings.Add "JineteLevel2Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel2Speed", "1.07")))
