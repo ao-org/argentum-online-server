@@ -4081,6 +4081,7 @@ Public Sub EquipArrow(ByVal UserIndex As Integer, ByVal Slot As Integer)
     Dim ArrowObjIndex As Integer
 
     With UserList(UserIndex).invent
+        Debug.Assert ObjData(Slot).OBJType = e_OBJType.otArrows
         ArrowObjIndex = .Object(Slot).ObjIndex
         bowIndex = .EquippedWeaponObjIndex
         BowCategory = ObjData(bowIndex).BowCategory
