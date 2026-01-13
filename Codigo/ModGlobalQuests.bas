@@ -212,6 +212,7 @@ Public Sub FinalizeGlobalQuest(ByVal GlobalQuestIndex As Integer)
 End Sub
 
 Public Sub StartGlobalQuest(ByVal GlobalQuestIndex As Integer)
+    Debug.Assert Not HasGlobalQuestEnded(GlobalQuestInfo(GlobalQuestIndex))
     If GlobalQuestInfo(GlobalQuestIndex).IsActive And HasGlobalQuestStarted(GlobalQuestInfo(GlobalQuestIndex)) Then
         LogError "Calling StartGlobalQuest on a quest that has already started : " & GlobalQuestInfo(GlobalQuestIndex).Name
         Exit Sub
