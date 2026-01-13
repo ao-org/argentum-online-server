@@ -735,7 +735,7 @@ Public Function GetNPCProgressColor(ByVal Killed As Integer, _
         Exit Function
     End If
 
-    pct = Killed / Required
+    pct = CSng(killed) / CSng(required)
 
     Select Case pct
         Case Is < 0.2
