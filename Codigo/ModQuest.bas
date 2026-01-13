@@ -684,3 +684,74 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "ModQuest.CanUserAcceptQuest", Erl)
 End Function
+Public Function AllRequiredNPCsKilled(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte) As Boolean
+    On Error GoTo AllRequiredNPCsKilled_Err
+
+    Dim i As Integer
+    Dim lastRequiredNPC As Long
+    Dim lastKilled As Long
+
+    With QuestList(QuestIndex)
+
+        If .RequiredNPCs <= 0 Then Exit Function
+
+        lastRequiredNPC = -1
+        lastKilled = -1
+
+        On Error Resume Next
+        lastRequiredNPC = UBound(.RequiredNPC)
+        lastKilled = UBound(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled)
+        On Error GoTo AllRequiredNPCsKilled_Err
+
+        If lastRequiredNPC < 1 Or lastKilled < 1 Then Exit Function
+
+        For i = 1 To .RequiredNPCs
+            If i > lastRequiredNPC Or i > lastKilled Then Exit For
+            If .RequiredNPC(i).Amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i) Then
+                Exit Function
+            End If
+        Next i
+
+    End With
+
+    AllRequiredNPCsKilled = True
+    Exit Function
+
+AllRequiredNPCsKilled_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.AllRequiredNPCsKilled", Erl)
+End Function
+Public Function GetNPCProgressColor(ByVal Killed As Integer, _
+                                     ByVal Required As Integer) As Long
+    On Error GoTo GetNPCProgressColor_Err
+    Dim pct As Single
+
+    If Required <= 0 Then
+        GetNPCProgressColor = RGB(180, 180, 180)
+        Exit Function
+    End If
+    
+    If Killed >= Required Then
+        GetNPCProgressColor = RGB(80, 220, 80) ' Verde fuerte (completo)
+        Exit Function
+    End If
+
+    pct = CSng(killed) / CSng(required)
+
+    Select Case pct
+        Case Is < 0.2
+            ' Rojo
+            GetNPCProgressColor = RGB(200, 80, 80)
+
+        Case Is < 0.7
+            ' Amarillo
+            GetNPCProgressColor = RGB(220, 200, 80)
+
+        Case Else
+            ' Verde claro
+            GetNPCProgressColor = RGB(160, 230, 160)
+    End Select
+    Exit Function
+
+GetNPCProgressColor_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.GetNPCProgressColor", Erl)
+End Function
