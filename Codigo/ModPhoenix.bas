@@ -11,6 +11,7 @@ Private PhoenixSpawnPosition As t_WorldPos
 
 Public Sub MaybeSpawnFenix()
     On Error GoTo MaybeSpawnFenix_Err
+    If UBound(PhoenixMapPool) < 1 Then Exit Sub
     Dim nowRaw As Long
     nowRaw = GetTickCountRaw()
     If TicksElapsed(m_LastPhoenixSpawnAttempt, nowRaw) < IntervalPhoenixSpawn Then Exit Sub
@@ -34,6 +35,7 @@ Public Sub LoadPhoenixModule()
     m_LastPhoenixSpawnAttempt = GetTickCountRaw()
     If Not FileExist(DatPath & "PhoenixMapPool.dat", vbArchive) Then
         Debug.Assert False
+        Call LogError("Missing file PhoenixMapPool.Dat")
         Exit Sub
     End If
     Dim IniFile     As clsIniManager
