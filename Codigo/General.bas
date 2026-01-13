@@ -1219,7 +1219,7 @@ Public Sub EfectoInmoUser(ByVal UserIndex As Integer)
             .Counters.Inmovilizado = .Counters.Inmovilizado - 1
         Else
             .flags.Inmovilizado = 0
-            If .clase = e_Class.Warrior Or .clase = e_Class.Hunter Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
+            If .clase = e_Class.Warrior Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
                 .Counters.TiempoDeInmunidadParalisisNoMagicas = 3
             End If
             Call WriteInmovilizaOK(UserIndex)
