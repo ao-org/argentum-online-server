@@ -211,16 +211,26 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
                     If QuestList(.QuestIndex).RequiredNPCs Then
                         For j = 1 To QuestList(.QuestIndex).RequiredNPCs
                             If QuestList(.QuestIndex).RequiredNPC(j).NpcIndex = MiNPC.Numero Then
-                                If QuestList(.QuestIndex).RequiredNPC(j).amount >= .NPCsKilled(j) Then
-                                    .NPCsKilled(j) = .NPCsKilled(j) + 1 '
-                                    Call WriteLocaleMsg(UserIndex, 1623, e_FontTypeNames.FONTTYPE_INFOIAO, MiNPC.name & "¬" & .NPCsKilled(j) & "¬" & QuestList( _
+                                Dim chatColor As Long
+                                If QuestList(.QuestIndex).RequiredNPC(j).Amount > .NPCsKilled(j) Then
+                                    .NPCsKilled(j) = .NPCsKilled(j) + 1
+                                    chatColor = GetNPCProgressColor(.NPCsKilled(j), QuestList(.QuestIndex).RequiredNPC(j).Amount)
+                                    Call WriteLocaleMsg(UserIndex, 1623, e_FontTypeNames.FONTTYPE_INFOIAO, MiNPC.Name & "¬" & .NPCsKilled(j) & "¬" & QuestList( _
                                             .QuestIndex).RequiredNPC(j).Amount) 'Msg1623=¬1 matados/as: ¬2 de ¬3
                                     Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.name, _
-                                            UserList(UserIndex).Char.charindex, RGB(180, 180, 180))
+                                            UserList(UserIndex).Char.charindex, chatColor)
                                 Else
-                                    Call WriteLocaleMsg(UserIndex, 1624, e_FontTypeNames.FONTTYPE_INFOIAO, MiNPC.name & "¬" & QuestList(.QuestIndex).nombre) 'Msg1624=Ya has matado todos los ¬1 que la misión ¬2 requería. Revisa si ya estás listo para recibir la recompensa.
-                                    Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & QuestList(.QuestIndex).RequiredNPC(j).amount & "/" & QuestList(.QuestIndex).RequiredNPC( _
-                                            j).amount & " " & MiNPC.name, UserList(UserIndex).Char.charindex, RGB(180, 180, 180))
+                                    chatColor = GetNPCProgressColor(.NPCsKilled(j), QuestList(.QuestIndex).RequiredNPC(j).Amount)
+                                    ' Solo avisar por consola si ha matado todos los npcs de la quest
+                                    If AllRequiredNPCsKilled(UserIndex, .QuestIndex, i) Then
+                                        'Msg2160=Ya has matado todas las criaturas que la misión ¬1 requería.
+                                        Call WriteLocaleMsg(UserIndex, 2160, e_FontTypeNames.FONTTYPE_INFOIAO, QuestList(.QuestIndex).nombre)
+                                    End If
+                                
+                                    Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & _
+                                        QuestList(.QuestIndex).RequiredNPC(j).Amount & "/" & _
+                                        QuestList(.QuestIndex).RequiredNPC(j).Amount & " " & MiNPC.Name, _
+                                        UserList(UserIndex).Char.charindex, chatColor)
                                 End If
                             End If
                         Next j
