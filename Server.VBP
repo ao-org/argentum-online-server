@@ -146,6 +146,7 @@ Module=ModAutomatedActions; Codigo\ModAutomatedActions.bas
 Module=ModLumberjack; Codigo\ModLumberjack.bas
 Module=ModMining; Codigo\ModMining.bas
 Module=ModGlobalQuests; Codigo\ModGlobalQuests.bas
+Module=ModPhoenix; Codigo\ModPhoenix.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""

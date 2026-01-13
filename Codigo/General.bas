@@ -711,6 +711,7 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Quests"
     Call LoadQuests
     Call ResetLastLogoutAndIsLogged
+    Call LoadPhoenixModule
     'Comentado porque hay worldsave en ese mapa!
     Dim LoopC As Integer
     'Resetea las conexiones de los usuarios
@@ -793,6 +794,7 @@ Sub Main()
         Call MaybeUpdateNpcAI(GlobalFrameTime)
         Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeChangeGlobalQuestsState")
         Call MaybeChangeGlobalQuestsState
+        Call MaybeSpawnFenix
         DoEvents
         Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
         Call AntiCheatUpdate

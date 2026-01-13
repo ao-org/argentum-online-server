@@ -151,6 +151,13 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     If MiNPC.flags.InvasionIndex Then
         Call MuereNpcInvasion(MiNPC.flags.InvasionIndex, MiNPC.flags.IndexInInvasion)
     End If
+    If MiNPC.Numero = PHOENIX_NPC_INDEX Then
+        If IsPhoenixAlive Then
+            IsPhoenixAlive = False
+        Else
+            Call LogError("Phoenix killed while isnt alive, it was gm-Spawned or this is an error.")
+        End If
+    End If
     If NpcList(NpcIndex).ShowKillerConsole > 0 Then
         'Msg1986=¬1 ha muerto en manos de ¬2
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1986", NpcList(NpcIndex).Name & "¬" & UserList(UserIndex).Name, e_FontTypeNames.FONTTYPE_GLOBAL))
