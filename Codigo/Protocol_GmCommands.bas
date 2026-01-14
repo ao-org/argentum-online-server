@@ -204,7 +204,7 @@ Public Sub HandleGamble(ByVal UserIndex As Integer)
         ElseIf .Stats.GLD < amount Then
             Call WriteLocaleChatOverHead(UserIndex, 1325, vbNullString, charindex, vbWhite)
         Else
-            If RandomNumber(1, 100) <= 10 Then
+            If RandomNumber(1, 100) <= 35 Then
                 ' GANADOR
                 .Stats.GLD = .Stats.GLD + amount
                 Call WriteLocaleChatOverHead(UserIndex, GetWinnerMsgID(), PonerPuntos(amount), charindex, vbWhite)
