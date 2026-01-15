@@ -3262,18 +3262,23 @@ Function LevelCanUseItem(ByVal UserIndex As Integer, ByRef obj As t_ObjData) As 
     End With
     
 End Function
-Public Sub HandleUserPetsOnDeath(ByVal UserIndex As Integer)
-On Error GoTo HandleUserPetsOnDeath_Err
-    Dim i As Long
-    Dim PreventPetLoss As Boolean
 
+Public Sub HandleUserPetsOnDeath(ByVal UserIndex As Integer)
+    On Error GoTo HandleUserPetsOnDeath_Err
+    Dim i              As Long
+    Dim PreventPetLoss As Boolean
     With UserList(UserIndex)
         ' Determinar si el druida tiene protección de pérdida
         ' (objeto mágico de madera élfica equipado)
-        PreventPetLoss = (.clase = e_Class.Druid And _
-                          ObjData(.invent.EquippedRingAccesoryObjIndex).OBJType = otMagicalInstrument And _
-                          ObjData(.invent.EquippedRingAccesoryObjIndex).MaderaElfica > 0)
-
+        If .clase = e_Class.Druid Then
+            If .invent.EquippedRingAccesoryObjIndex > 0 Then
+                If ObjData(.invent.EquippedRingAccesoryObjIndex).OBJType = otMagicalInstrument Then
+                    If ObjData(.invent.EquippedRingAccesoryObjIndex).MaderaElfica > 0 Then
+                        PreventPetLoss = True
+                    End If
+                End If
+            End If
+        End If
         'Procesar mascotas ACTIVAS, si hay protección guardarlas, si no hay protección matarlas
         For i = 1 To MAXMASCOTAS
             If .MascotasIndex(i).ArrayIndex > 0 Then   ' Hay mascota activa
@@ -3283,7 +3288,6 @@ On Error GoTo HandleUserPetsOnDeath_Err
                 If IsValidNpcRef(.MascotasIndex(i)) Then
                     isTamed = (NpcList(.MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia = 0)
                 End If
-                
                 If PreventPetLoss Then
                     If isTamed Then
                         'Guardar mascota domada usando la misma lógica que HechizoInvocacion
@@ -3304,35 +3308,13 @@ On Error GoTo HandleUserPetsOnDeath_Err
                 End If
             End If
         Next i
-
-         'Limpieza de base de datos si corresponde
-        If .clase = e_Class.Druid Then
-            If Not PreventPetLoss Then
-                'Si ya tenía mascotas guardadas, no borramos nada
-                If .flags.MascotasGuardadas = 1 Then GoTo SkipDBWipe
-                'Borrar todas las mascotas de la base
-                Dim Params() As Variant
-                Dim ParamC As Long
-
-                ReDim Params(MAXMASCOTAS * 3 - 1)
-                ParamC = 0
-
-                For i = 1 To MAXMASCOTAS
-                    Params(ParamC) = .Id: ParamC = ParamC + 1
-                    Params(ParamC) = i:   ParamC = ParamC + 1
-                    Params(ParamC) = 0:   ParamC = ParamC + 1
-                Next i
-                Call Execute(QUERY_UPSERT_PETS, Params)
-            End If
-        End If
-
-SkipDBWipe:
-
         'Si no hay protección y no estaban guardadas resetear contador
         If Not PreventPetLoss Then
             If .flags.MascotasGuardadas = 0 Then
                 .NroMascotas = 0
             End If
+        Else
+            .flags.MascotasGuardadas = 1
         End If
     End With
     Exit Sub
