@@ -241,6 +241,7 @@ Function DateToSQLite(dt As Date) As String
 End Function
 
 Public Sub HandleModifyGlobalQuest(ByVal UserIndex As Integer)
+    '/modglobalquest GLOBALQUESTINDEX STARTDATE ENDDATE NAME OBJINDEX GATHERINGTHRESHOLD
     Dim GlobalQuestIndex      As Integer
     Dim newStartDate          As Date
     Dim newEndDate            As Date
@@ -267,6 +268,5 @@ Public Sub HandleModifyGlobalQuest(ByVal UserIndex As Integer)
     GlobalQuestInfo(GlobalQuestIndex).ObjectIndex = newObjIndex
     GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold = newGatheringThreshold
     Dim RS As ADODB.Recordset
-    Set RS = Query(MODIFY_GLOBAL_QUEST_DESC, newName, newObjIndex, newGatheringThreshold, newStartDate, newEndDate, GlobalQuestIndex)
-    If RS Is Nothing Then Exit Sub
+    Set RS = Query(MODIFY_GLOBAL_QUEST_DESC, newName, newObjIndex, newGatheringThreshold, DateToSQLite(newStartDate), DateToSQLite(newEndDate), GlobalQuestIndex)
 End Sub
