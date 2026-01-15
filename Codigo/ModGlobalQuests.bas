@@ -21,8 +21,9 @@ End Type
 
 Private m_GlobalQuestEndAttempt                       As Long
 Public GlobalQuestInfo()                              As t_GlobalQuestData
-Private Const INSERT_GLOBAL_QUEST_USER_CONTRIBUTION   As String = "INSERT INTO global_quest_user_contribution (event_id,user_id,timestamp,amount) VALUES (?,?,?,?);"
+Private Const INSERT_GLOBAL_QUEST_USER_CONTRIBUTION   As String = "INSERT INTO global_quest_user_contribution (event_id,user_id,timestamp,amount) VALUES (?, ?, ?, ?);"
 Private Const UPDATE_GLOBAL_QUEST_DESC                As String = "UPDATE global_quest_desc SET is_active = ? WHERE event_id = ?;"
+Private Const MODIFY_GLOBAL_QUEST_DESC                As String = "UPDATE global_quest_desc SET name = ?, obj_id = ?, threshold = ?, start_date = ?, end_date = ? WHERE event_id = ?;"
 Private Const INSERT_NEW_GLOBAL_QUEST_DESC            As String = "INSERT INTO global_quest_desc (event_id, name, obj_id, threshold, start_date, end_date, is_active) VALUES (?,?, ?, ?, ?, ?, ?);"
 Private Const SELECT_ALL_GLOBAL_QUEST                 As String = "SELECT * FROM global_quest_desc WHERE event_id = ?;"
 Private Const SUM_TOTAL_AMOUNT_FROM_USER_CONTRIBUTION As String = "SELECT SUM(amount) AS total_amount FROM global_quest_user_contribution WHERE event_id = ?;"
@@ -238,3 +239,34 @@ End Function
 Function DateToSQLite(dt As Date) As String
     DateToSQLite = Format$(dt, "yyyy-mm-dd hh:nn:ss")
 End Function
+
+Public Sub HandleModifyGlobalQuest(ByVal UserIndex As Integer)
+    Dim GlobalQuestIndex      As Integer
+    Dim newStartDate          As Date
+    Dim newEndDate            As Date
+    Dim newName               As String
+    Dim newObjIndex           As Integer
+    Dim newGatheringThreshold As Long
+    If Not EsGM(UserIndex) Then Exit Sub
+    If (UserList(UserIndex).flags.Privilegios And e_PlayerType.Admin) = 0 Then
+        Exit Sub
+    End If
+    GlobalQuestIndex = reader.ReadInt16()
+    newStartDate = reader.ReadString16()
+    newEndDate = reader.ReadString16()
+    newName = reader.ReadString16()
+    newObjIndex = reader.ReadInt16()
+    newGatheringThreshold = reader.ReadInt32()
+    If GlobalQuestIndex > UBound(GlobalQuestInfo) Or GlobalQuestIndex < LBound(GlobalQuestInfo) Then
+        Call LogError("Invalid index for given global quest, it's out of bounds")
+        Exit Sub
+    End If
+    GlobalQuestInfo(GlobalQuestIndex).StartDate = newStartDate
+    GlobalQuestInfo(GlobalQuestIndex).EndDate = newEndDate
+    GlobalQuestInfo(GlobalQuestIndex).Name = newName
+    GlobalQuestInfo(GlobalQuestIndex).ObjectIndex = newObjIndex
+    GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold = newGatheringThreshold
+    Dim RS As ADODB.Recordset
+    Set RS = Query(MODIFY_GLOBAL_QUEST_DESC, newName, newObjIndex, newGatheringThreshold, newStartDate, newEndDate, GlobalQuestIndex)
+    If RS Is Nothing Then Exit Sub
+End Sub
