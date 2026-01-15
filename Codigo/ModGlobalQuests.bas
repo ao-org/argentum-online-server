@@ -269,4 +269,6 @@ Public Sub HandleModifyGlobalQuest(ByVal UserIndex As Integer)
     GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold = newGatheringThreshold
     Dim RS As ADODB.Recordset
     Set RS = Query(MODIFY_GLOBAL_QUEST_DESC, newName, newObjIndex, newGatheringThreshold, DateToSQLite(newStartDate), DateToSQLite(newEndDate), GlobalQuestIndex)
+    Call SendData(ToAdmins, UserIndex, PrepareMessageConsoleMsg("The quest " & GlobalQuestIndex & " has been modified", FONTTYPE_GMMSG))
+    Call SendData(ToAdmins, UserIndex, PrepareMessageConsoleMsg("Velues: " & newStartDate & " " & newEndDate & " " & newName & " " & newObjIndex & " " & newGatheringThreshold, FONTTYPE_GMMSG))
 End Sub
