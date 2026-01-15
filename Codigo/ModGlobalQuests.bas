@@ -103,6 +103,9 @@ Public Sub LoadGlobalQuests()
             Else
                 .Name = RS!Name
                 .ObjectIndex = RS!obj_id
+                .GatheringThreshold = RS!threshold
+                .StartDate = SQLiteToDate(RS!start_date)
+                .EndDate = SQLiteToDate(RS!end_date)
                 .IsActive = RS!is_active
                 Set RS = Query(SUM_TOTAL_AMOUNT_FROM_USER_CONTRIBUTION, i)
                 If Not IsNull(RS!total_amount) Then
