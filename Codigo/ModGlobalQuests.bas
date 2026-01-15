@@ -242,6 +242,7 @@ End Function
 
 Public Sub HandleModifyGlobalQuest(ByVal UserIndex As Integer)
     '/modglobalquest GLOBALQUESTINDEX STARTDATE ENDDATE NAME OBJINDEX GATHERINGTHRESHOLD
+    On Error GoTo HandleModifyGlobalQuest_Err:
     Dim GlobalQuestIndex      As Integer
     Dim newStartDate          As Date
     Dim newEndDate            As Date
@@ -270,5 +271,10 @@ Public Sub HandleModifyGlobalQuest(ByVal UserIndex As Integer)
     Dim RS As ADODB.Recordset
     Set RS = Query(MODIFY_GLOBAL_QUEST_DESC, newName, newObjIndex, newGatheringThreshold, DateToSQLite(newStartDate), DateToSQLite(newEndDate), GlobalQuestIndex)
     Call SendData(ToAdmins, UserIndex, PrepareMessageConsoleMsg("The quest " & GlobalQuestIndex & " has been modified", FONTTYPE_GMMSG))
-    Call SendData(ToAdmins, UserIndex, PrepareMessageConsoleMsg("Velues: " & newStartDate & " " & newEndDate & " " & newName & " " & newObjIndex & " " & newGatheringThreshold, FONTTYPE_GMMSG))
+    Call SendData(ToAdmins, UserIndex, PrepareMessageConsoleMsg("Values: " & newStartDate & " " & newEndDate & " " & newName & " " & newObjIndex & " " & newGatheringThreshold, FONTTYPE_GMMSG))
+    Exit Sub
+HandleModifyGlobalQuest_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "ModGlobalQuests.HandleModifyGlobalQuest", Erl)
+    Call SendData(ToAdmins, UserIndex, PrepareMessageConsoleMsg("Error updating global quest", FONTTYPE_GMMSG))
 End Sub
