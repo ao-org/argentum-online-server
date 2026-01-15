@@ -274,7 +274,6 @@ Public Sub HandleModifyGlobalQuest(ByVal UserIndex As Integer)
     Call SendData(ToAdmins, UserIndex, PrepareMessageConsoleMsg("Values: " & newStartDate & " " & newEndDate & " " & newName & " " & newObjIndex & " " & newGatheringThreshold, FONTTYPE_GMMSG))
     Exit Sub
 HandleModifyGlobalQuest_Err:
-    Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "ModGlobalQuests.HandleModifyGlobalQuest", Erl)
     Call SendData(ToAdmins, UserIndex, PrepareMessageConsoleMsg("Error updating global quest", FONTTYPE_GMMSG))
 End Sub
