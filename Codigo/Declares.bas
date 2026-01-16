@@ -2055,6 +2055,9 @@ Public Type t_Char
     Ataque1 As Integer
     Animation() As Integer
     CastAnimation As Integer
+    BodyOnLand As Integer
+    BodyOnWater As Integer
+    Ataque2 As Integer
 End Type
 
 Public Type t_Obj
@@ -3209,6 +3212,9 @@ Public Type t_NpcInfoCache
     Heading As Integer
     BodyIdle As Integer
     Ataque1 As Integer
+    BodyOnLand As Integer
+    BodyOnWater As Integer
+    Ataque2 As Integer
     CastAnimation As Integer
     AnimacionesCount As Integer
     Animaciones() As Integer
