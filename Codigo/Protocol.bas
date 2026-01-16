@@ -892,6 +892,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleSetHotkeySlot(UserIndex)
         Case ClientPacketID.eUseHKeySlot
             Call HandleUseHKeySlot(UserIndex)
+        Case ClientPacketID.eModifyGlobalQuest
+            Call HandleModifyGlobalQuest(UserIndex)
         Case ClientPacketID.eAntiCheatMessage
             Call HandleAntiCheatMessage(UserIndex)
         Case ClientPacketID.eFactionMessage
