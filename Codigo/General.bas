@@ -729,7 +729,7 @@ Sub Main()
         .tControlHechizos.Enabled = True
         .tControlHechizos.Interval = 60000
         If IsFeatureEnabled("ShipTravelEnabled") Then
-            .TimerBarco.Enabled = True
+            Call ResetShipTravelTimer
             MapInfo(BarcoNavegandoForgatNix.Map).ForceUpdate = True
             MapInfo(BarcoNavegandoNixArghal.Map).ForceUpdate = True
             MapInfo(BarcoNavegandoArghalForgat.Map).ForceUpdate = True
