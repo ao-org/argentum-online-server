@@ -984,6 +984,7 @@ Private Sub UpdateBarcoNixArghal()
     Dim User      As Integer
     Dim PassFound As Boolean
     Dim PassSlot  As Integer
+    If NixDock.Map > NumMaps Then Exit Sub
     ' Modificado por Shugar 5/6/24
     ' Viaje de Nix a Arghal
     ' Verificar si el barco está en un muelle:
@@ -1033,6 +1034,7 @@ Private Sub UpdateBarcoArghalForgat()
     Dim User      As Integer
     Dim PassFound As Boolean
     Dim PassSlot  As Integer
+    If ArghalDock.Map > NumMaps Then Exit Sub
     ' Modificado por Shugar 5/6/24
     ' Viaje de Arghal a Forgat
     ' Verificar si el barco está en un muelle:
