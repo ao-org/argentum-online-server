@@ -1378,12 +1378,18 @@ Dim Ropaje                      As Integer
                     Call ActualizarVelocidadDeUsuario(UserIndex)
                     errordesc = "Armadura 3"
                 End If
-                'Si esta equipando armadura faccionaria fuera de zona segura o fuera de trigger seguro
+                'Si esta equipando armadura faccionaria fuera de zona segura o fuera de trigger seguro y no tiene los stats full
                 If Not UserIsLoggingIn Then
                     If obj.Real > 0 Or obj.Caos > 0 Then
                         If Not MapData(.pos.Map, .pos.x, .pos.y).trigger = e_Trigger.ZonaSegura And Not MapInfo(.pos.Map).Seguro = 1 Then
-                            Call WriteLocaleMsg(UserIndex, 2091, e_FontTypeNames.FONTTYPE_INFO)
-                            Exit Sub
+                            If .Stats.MinAGU < .Stats.MaxAGU Or _
+                                .Stats.MinHam < .Stats.MaxHam Or _
+                                .Stats.MinHp < .Stats.MaxHp Or _
+                                .Stats.MinMAN < .Stats.MaxMAN Then
+                                'Msg2091=Solo puedes equipar este objeto si tus estadísticas están al 100%.
+                                Call WriteLocaleMsg(UserIndex, 2091, e_FontTypeNames.FONTTYPE_INFO)
+                                Exit Sub
+                            End If
                         End If
                     End If
                 End If
