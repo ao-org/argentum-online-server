@@ -17,6 +17,7 @@ Module=Extra; Codigo\GameLogic.bas
 Module=General; Codigo\General.bas
 Module=modUserAutoSave; Codigo\modUserAutoSave.bas
 Module=modGameEvents; Codigo\modGameEvents.bas
+Module=modShipTravel; Codigo\modShipTravel.bas
 Module=InvNpc; Codigo\Modulo_InventANDobj.bas
 Module=NPCs; Codigo\MODULO_NPCs.bas
 Module=SysTray; Codigo\Modulo_SysTray.bas

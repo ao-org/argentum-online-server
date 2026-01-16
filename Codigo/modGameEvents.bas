@@ -77,6 +77,7 @@ Public Sub MaybeRunGameEvents()
     Call PerformTimeLimitCheck(PerformanceTimer, "MaybeRunGameEvents User loop", USER_LOOP_TIME_LIMIT_MS)
     Call CustomScenarios.UpdateAll
     Call PerformTimeLimitCheck(PerformanceTimer, "MaybeRunGameEvents customScenarios", CUSTOM_SCENARIOS_TIME_LIMIT_MS)
+    Call MaybeRunShipTravel
 
     Exit Sub
 Handler:
