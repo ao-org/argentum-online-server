@@ -2797,6 +2797,8 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
     Call Writer.WriteInt16(ServerPacketID.eQuestDetails)
     Call Writer.WriteInt16(QuestIndex)
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
+    Call Writer.WriteInt8(QuestList(QuestIndex).LimitLevel)
+    Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClass)
     Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
     'Enviamos la cantidad de npcs requeridos
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredNPCs)
