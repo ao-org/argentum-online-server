@@ -977,11 +977,11 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, _
                                 ByVal DM_Aura As String, _
                                 ByVal RM_Aura As String, _
                                 ByVal Otra_Aura As String, _
-                                ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False, Optional ByVal tipoUsuario As e_TipoUsuario = 0, Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal AnimAtaque1 As Integer = 0, Optional ByVal BodyOnLand As Integer = 0, Optional ByVal BodyOnWater As Integer = 0, Optional ByVal AnimAtaque2 As Integer = 0)
+                                ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False, Optional ByVal tipoUsuario As e_TipoUsuario = 0, Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal NpcNum As Integer = 0)
     On Error GoTo WriteCharacterCreate_Err
     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterCreate(body, head, Heading, charindex, x, y, weapon, shield, Cart, BackPack, FX, FXLoops, helmet, name, _
             Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, appear, group_index, clan_index, _
-            clan_nivel, UserMinHp, UserMaxHp, UserMinMAN, UserMaxMAN, Simbolo, Idle, Navegando, tipoUsuario, TeamCaptura, TieneBandera, AnimAtaque1, BodyOnLand, BodyOnWater, AnimAtaque2))
+            clan_nivel, UserMinHp, UserMaxHp, UserMinMAN, UserMaxMAN, Simbolo, Idle, Navegando, tipoUsuario, TeamCaptura, TieneBandera))
     Exit Sub
 WriteCharacterCreate_Err:
     Call Writer.Clear
@@ -3306,14 +3306,13 @@ End Function
 ''
 ' Prepares the "CharAtaca" message and returns it.
 '
-Public Function PrepareMessageCharAtaca(ByVal charindex As Integer, ByVal attackerIndex As Integer, ByVal danio As Long, ByVal AnimAttack As Integer, Optional ByVal AnimAttack2 As Integer = 0)
+Public Function PrepareMessageCharAtaca(ByVal charindex As Integer, ByVal attackerIndex As Integer, ByVal danio As Long, Optional ByVal NpcNumber As Integer = 0)
     On Error GoTo PrepareMessageCharAtaca_Err
     Call Writer.WriteInt16(ServerPacketID.eCharAtaca)
     Call Writer.WriteInt16(charindex)
     Call Writer.WriteInt16(attackerIndex)
     Call Writer.WriteInt32(danio)
-    Call Writer.WriteInt16(AnimAttack)
-    Call Writer.WriteInt16(AnimAttack2)
+    Call Writer.WriteInt16(NpcNumber)
     Exit Function
 PrepareMessageCharAtaca_Err:
     Call Writer.Clear
@@ -3894,7 +3893,7 @@ Public Function PrepareMessageCharacterCreate(ByVal body As Integer, _
                                               ByVal RM_Aura As String, _
                                               ByVal Otra_Aura As String, _
                                               ByVal Escudo_Aura As String, _
-                                              ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean, ByVal tipoUsuario As e_TipoUsuario, Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal AnimAtaque1 As Integer = 0, Optional ByVal BodyOnLand As Integer = 0, Optional ByVal BodyOnWater As Integer = 0, Optional ByVal AnimAtaque2 As Integer = 0)
+                                              ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean, ByVal tipoUsuario As e_TipoUsuario, Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal NpcNum As Integer = 0)
     On Error GoTo PrepareMessageCharacterCreate_Err
     Call Writer.WriteInt16(ServerPacketID.eCharacterCreate)
     Call Writer.WriteInt16(charindex)
@@ -3940,10 +3939,7 @@ Public Function PrepareMessageCharacterCreate(ByVal body As Integer, _
     Call Writer.WriteInt8(tipoUsuario)
     Call Writer.WriteInt8(TeamCaptura)
     Call Writer.WriteInt8(TieneBandera)
-    Call Writer.WriteInt16(AnimAtaque1)
-    Call Writer.WriteInt16(BodyOnLand)
-    Call Writer.WriteInt16(BodyOnWater)
-    Call Writer.WriteInt16(AnimAtaque2)
+    Call Writer.WriteInt16(NpcNum)
     Exit Function
 PrepareMessageCharacterCreate_Err:
     Call Writer.Clear

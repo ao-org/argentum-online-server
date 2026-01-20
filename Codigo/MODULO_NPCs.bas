@@ -621,15 +621,9 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
             Else
                 body = IIf(.flags.NPCIdle, .Char.BodyIdle, .Char.body)
             End If
-            If UserList(sndIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 90 Then
                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, _
                         .Char.CartAnim, 0, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, _
-                        .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Char.Ataque1, .Char.BodyOnLand, .Char.BodyOnWater, .Char.Ataque2)
-            Else
-                Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, _
-                        .Char.CartAnim, 0, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, 0, 0, 0, 0, Simbolo, _
-                        .flags.NPCIdle, , , .flags.team, , .Char.Ataque1, .Char.BodyOnLand, .Char.BodyOnWater, .Char.Ataque2)
-            End If
+                        .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Numero)
             If IsSet(.flags.StatusMask, e_StatusMask.eDontBlockTile) Then
                 Call SendData(ToIndex, sndIndex, PrepareUpdateCharValue(.Char.charindex, e_CharValue.eDontBlockTile, True))
             End If
@@ -1016,11 +1010,6 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Body = Val(LeerNPCs.GetValue(SectionName, "Body"))
         .Head = Val(LeerNPCs.GetValue(SectionName, "Head"))
         .Heading = Val(LeerNPCs.GetValue(SectionName, "Heading"))
-        .BodyIdle = Val(LeerNPCs.GetValue(SectionName, "BodyIdle"))
-        .Ataque1 = Val(LeerNPCs.GetValue(SectionName, "Ataque1"))
-        .BodyOnLand = val(LeerNPCs.GetValue(SectionName, "BodyOnLand"))
-        .BodyOnWater = val(LeerNPCs.GetValue(SectionName, "BodyOnWater"))
-        .Ataque2 = val(LeerNPCs.GetValue(SectionName, "Ataque2"))
         .CastAnimation = Val(LeerNPCs.GetValue(SectionName, "CastAnimation"))
         AnimacionesCount = Val(LeerNPCs.GetValue(SectionName, "Animaciones"))
         .AnimacionesCount = AnimacionesCount
@@ -1299,11 +1288,6 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         .Char.body = Info.Body
         .Char.head = Info.Head
         .Char.Heading = Info.Heading
-        .Char.BodyIdle = Info.BodyIdle
-        .Char.Ataque1 = Info.Ataque1
-        .Char.BodyOnLand = Info.BodyOnLand
-        .Char.BodyOnWater = Info.BodyOnWater
-        .Char.Ataque2 = Info.Ataque2
         .Char.CastAnimation = Info.CastAnimation
         If .Char.BodyIdle > 0 Then
             .flags.NPCIdle = True
