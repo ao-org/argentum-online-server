@@ -239,42 +239,4 @@ End Function
 Function DateToSQLite(dt As Date) As String
     DateToSQLite = Format$(dt, "yyyy-mm-dd hh:nn:ss")
 End Function
-
-'Public Sub HandleModifyGlobalQuest(ByVal UserIndex As Integer)
-'    '/modglobalquest GLOBALQUESTINDEX STARTDATE ENDDATE NAME OBJINDEX GATHERINGTHRESHOLD
-'    On Error GoTo HandleModifyGlobalQuest_Err:
-'    Dim GlobalQuestIndex      As Integer
-'    Dim newStartDate          As Date
-'    Dim newEndDate            As Date
-'    Dim newName               As String
-'    Dim newObjIndex           As Integer
-'    Dim newGatheringThreshold As Long
-'    If Not EsGM(UserIndex) Then Exit Sub
-'    If (UserList(UserIndex).flags.Privilegios And e_PlayerType.Admin) = 0 Then
-'        Exit Sub
-'    End If
-'    GlobalQuestIndex = reader.ReadInt16()
-'    newStartDate = reader.ReadString16()
-'    newEndDate = reader.ReadString16()
-'    newName = reader.ReadString16()
-'    newObjIndex = reader.ReadInt16()
-'    newGatheringThreshold = reader.ReadInt32()
-'    If GlobalQuestIndex > UBound(GlobalQuestInfo) Or GlobalQuestIndex < LBound(GlobalQuestInfo) Then
-'        Call LogError("Invalid index for given global quest, it's out of bounds")
-'        Exit Sub
-'    End If
-'    GlobalQuestInfo(GlobalQuestIndex).StartDate = newStartDate
-'    GlobalQuestInfo(GlobalQuestIndex).EndDate = newEndDate
-'    GlobalQuestInfo(GlobalQuestIndex).Name = newName
-'    GlobalQuestInfo(GlobalQuestIndex).ObjectIndex = newObjIndex
-'    GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold = newGatheringThreshold
-'    Dim RS As ADODB.Recordset
-'    Set RS = Query(MODIFY_GLOBAL_QUEST_DESC, newName, newObjIndex, newGatheringThreshold, DateToSQLite(newStartDate), DateToSQLite'(newEndDate), GlobalQuestIndex)
-'    Call SendData(ToAdmins, UserIndex, PrepareMessageConsoleMsg("The quest " & GlobalQuestIndex & " has been modified", 'FONTTYPE_GMMSG))
-'    Call SendData(ToAdmins, UserIndex, PrepareMessageConsoleMsg("Values: " & newStartDate & " " & newEndDate & " " & newName & " " & 'newObjIndex & " " & newGatheringThreshold, FONTTYPE_GMMSG))
-'    Exit Sub
-'HandleModifyGlobalQuest_Err:
-'    Call TraceError(Err.Number, Err.Description, "ModGlobalQuests.HandleModifyGlobalQuest", Erl)
-'    Call SendData(ToAdmins, UserIndex, PrepareMessageConsoleMsg("Error updating global quest", FONTTYPE_GMMSG))
-'End Sub
 '
