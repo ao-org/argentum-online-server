@@ -174,10 +174,10 @@ Public Sub MaybeChangeGlobalQuestsState()
     Call PerformanceTestStart(PerformanceTimer)
     Dim i As Integer
     For i = 1 To UBound(GlobalQuestInfo)
-        'if the end date is programmed to be in the future
         If GlobalQuestInfo(i).IsActive And HasGlobalQuestEnded(GlobalQuestInfo(i)) And Not GlobalQuestInfo(i).FinishOnThresholdReach Then
             Call FinalizeGlobalQuest(i)
         ElseIf Not GlobalQuestInfo(i).IsActive And HasGlobalQuestStarted(GlobalQuestInfo(i)) And Not HasGlobalQuestEnded(GlobalQuestInfo(i)) Then
+            'if the quest is not active and the start date has passed but the end date hasn't passed yet [startDate;now;endDate] , start it
             Call StartGlobalQuest(i)
         End If
     Next i
