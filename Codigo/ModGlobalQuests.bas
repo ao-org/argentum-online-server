@@ -8,7 +8,9 @@ Public Type t_GlobalQuestData
     GatheringInitialInstallments As Long
     IsBossAlive As Boolean
     BossIndex As Integer
-    BossSpawnPosition As t_WorldPos
+    BossSpawnMap            As Integer
+    BossSpawnPositionTopLeft As t_Position
+    BossSpawnPositionBottomRight As t_Position
     FinishOnThresholdReach As Boolean
     Name As String
     StartDate As Date
@@ -19,8 +21,9 @@ End Type
 
 Private m_GlobalQuestEndAttempt                       As Long
 Public GlobalQuestInfo()                              As t_GlobalQuestData
-Private Const INSERT_GLOBAL_QUEST_USER_CONTRIBUTION   As String = "INSERT INTO global_quest_user_contribution (event_id,user_id,timestamp,amount) VALUES (?,?,?,?);"
+Private Const INSERT_GLOBAL_QUEST_USER_CONTRIBUTION   As String = "INSERT INTO global_quest_user_contribution (event_id,user_id,timestamp,amount) VALUES (?, ?, ?, ?);"
 Private Const UPDATE_GLOBAL_QUEST_DESC                As String = "UPDATE global_quest_desc SET is_active = ? WHERE event_id = ?;"
+Private Const MODIFY_GLOBAL_QUEST_DESC                As String = "UPDATE global_quest_desc SET name = ?, obj_id = ?, threshold = ?, start_date = ?, end_date = ? WHERE event_id = ?;"
 Private Const INSERT_NEW_GLOBAL_QUEST_DESC            As String = "INSERT INTO global_quest_desc (event_id, name, obj_id, threshold, start_date, end_date, is_active) VALUES (?,?, ?, ?, ?, ?, ?);"
 Private Const SELECT_ALL_GLOBAL_QUEST                 As String = "SELECT * FROM global_quest_desc WHERE event_id = ?;"
 Private Const SUM_TOTAL_AMOUNT_FROM_USER_CONTRIBUTION As String = "SELECT SUM(amount) AS total_amount FROM global_quest_user_contribution WHERE event_id = ?;"
@@ -31,7 +34,11 @@ Public Sub ContributeToGlobalQuestCounter(ByVal Amount As Long, ByVal GlobalQues
         If .GatheringGlobalCounter >= .GatheringGlobalInstallments Then
             .GatheringGlobalInstallments = .GatheringGlobalInstallments + .GatheringInitialInstallments
             If Not .IsBossAlive Then
-                Call SpawnNpc(.BossIndex, .BossSpawnPosition, False, False, True, 0)
+                Dim RandomizedSpawnPosition As t_WorldPos
+                RandomizedSpawnPosition.Map = .BossSpawnMap
+                RandomizedSpawnPosition.x = RandomNumber(.BossSpawnPositionTopLeft.x, .BossSpawnPositionBottomRight.x)
+                RandomizedSpawnPosition.y = RandomNumber(.BossSpawnPositionTopLeft.y, .BossSpawnPositionBottomRight.y)
+                Call SpawnNpc(.BossIndex, RandomizedSpawnPosition, False, False, True, 0)
                 .IsBossAlive = True
             End If
         End If
@@ -75,9 +82,11 @@ Public Sub LoadGlobalQuests()
             .GatheringThreshold = CLng(val(IniFile.GetValue("GlobalQuest" & i, "GatheringThreshold")))
             .GatheringInitialInstallments = CLng(val(IniFile.GetValue("GlobalQuest" & i, "GatheringInitialInstallments")))
             .GatheringGlobalInstallments = CLng(val(IniFile.GetValue("GlobalQuest" & i, "GatheringInitialInstallments")))
-            .BossSpawnPosition.Map = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionMap")))
-            .BossSpawnPosition.x = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionX")))
-            .BossSpawnPosition.y = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionY")))
+            .BossSpawnMap = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnMap")))
+            .BossSpawnPositionBottomRight.x = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionBottomRightX")))
+            .BossSpawnPositionBottomRight.y = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionBottomRightY")))
+            .BossSpawnPositionTopLeft.x = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionTopLeftX")))
+            .BossSpawnPositionTopLeft.y = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionTopLeftY")))
             .BossIndex = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossIndex")))
             .FinishOnThresholdReach = val(IniFile.GetValue("GlobalQuest" & i, "FinishOnThresholdReach"))
             .Name = IniFile.GetValue("GlobalQuest" & i, "Name")
@@ -165,13 +174,11 @@ Public Sub MaybeChangeGlobalQuestsState()
     Call PerformanceTestStart(PerformanceTimer)
     Dim i As Integer
     For i = 1 To UBound(GlobalQuestInfo)
-        'if the end date is programmed to be in the future
-        If IsGlobalQuestInTheFuture(GlobalQuestInfo(i)) Then
-            If GlobalQuestInfo(i).IsActive And HasGlobalQuestEnded(GlobalQuestInfo(i)) And Not GlobalQuestInfo(i).FinishOnThresholdReach Then
-                Call FinalizeGlobalQuest(i)
-            ElseIf Not GlobalQuestInfo(i).IsActive And HasGlobalQuestStarted(GlobalQuestInfo(i)) Then
-                Call StartGlobalQuest(i)
-            End If
+        If GlobalQuestInfo(i).IsActive And HasGlobalQuestEnded(GlobalQuestInfo(i)) And Not GlobalQuestInfo(i).FinishOnThresholdReach Then
+            Call FinalizeGlobalQuest(i)
+        ElseIf Not GlobalQuestInfo(i).IsActive And HasGlobalQuestStarted(GlobalQuestInfo(i)) And Not HasGlobalQuestEnded(GlobalQuestInfo(i)) Then
+            'if the quest is not active and the start date has passed but the end date hasn't passed yet [startDate;now;endDate] , start it
+            Call StartGlobalQuest(i)
         End If
     Next i
     Exit Sub
@@ -209,13 +216,11 @@ Public Sub FinalizeGlobalQuest(ByVal GlobalQuestIndex As Integer)
 End Sub
 
 Public Sub StartGlobalQuest(ByVal GlobalQuestIndex As Integer)
-    Debug.Assert Not HasGlobalQuestStarted(GlobalQuestInfo(GlobalQuestIndex))
-    
+    Debug.Assert Not HasGlobalQuestEnded(GlobalQuestInfo(GlobalQuestIndex))
     If GlobalQuestInfo(GlobalQuestIndex).IsActive And HasGlobalQuestStarted(GlobalQuestInfo(GlobalQuestIndex)) Then
         LogError "Calling StartGlobalQuest on a quest that has already started : " & GlobalQuestInfo(GlobalQuestIndex).Name
         Exit Sub
     End If
-    
     With GlobalQuestInfo(GlobalQuestIndex)
         LogError "Starting GlobalQuest " & GlobalQuestIndex & " " & .Name
         .IsActive = True
@@ -234,3 +239,4 @@ End Function
 Function DateToSQLite(dt As Date) As String
     DateToSQLite = Format$(dt, "yyyy-mm-dd hh:nn:ss")
 End Function
+'

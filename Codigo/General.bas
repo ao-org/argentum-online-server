@@ -711,6 +711,7 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Quests"
     Call LoadQuests
     Call ResetLastLogoutAndIsLogged
+    Call LoadPhoenixModule
     'Comentado porque hay worldsave en ese mapa!
     Dim LoopC As Integer
     'Resetea las conexiones de los usuarios
@@ -728,7 +729,7 @@ Sub Main()
         .tControlHechizos.Enabled = True
         .tControlHechizos.Interval = 60000
         If IsFeatureEnabled("ShipTravelEnabled") Then
-            .TimerBarco.Enabled = True
+            Call ResetShipTravelTimer
             MapInfo(BarcoNavegandoForgatNix.Map).ForceUpdate = True
             MapInfo(BarcoNavegandoNixArghal.Map).ForceUpdate = True
             MapInfo(BarcoNavegandoArghalForgat.Map).ForceUpdate = True
@@ -793,6 +794,7 @@ Sub Main()
         Call MaybeUpdateNpcAI(GlobalFrameTime)
         Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeChangeGlobalQuestsState")
         Call MaybeChangeGlobalQuestsState
+        Call MaybeSpawnFenix
         DoEvents
         Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
         Call AntiCheatUpdate
@@ -1217,7 +1219,7 @@ Public Sub EfectoInmoUser(ByVal UserIndex As Integer)
             .Counters.Inmovilizado = .Counters.Inmovilizado - 1
         Else
             .flags.Inmovilizado = 0
-            If .clase = e_Class.Warrior Or .clase = e_Class.Hunter Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
+            If .clase = e_Class.Warrior Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
                 .Counters.TiempoDeInmunidadParalisisNoMagicas = 3
             End If
             Call WriteInmovilizaOK(UserIndex)

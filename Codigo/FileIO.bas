@@ -1040,6 +1040,8 @@ Sub LoadOBJData()
             .ApplyEffectId = val(Leer.GetValue(ObjKey, "ApplyEffectId"))
             .JineteLevel = val(Leer.GetValue(ObjKey, "JineteLevel"))
             .ElementalTags = val(Leer.GetValue(ObjKey, "ElementalTags"))
+            .BowCategory = val(Leer.GetValue(ObjKey, "BowCategory"))
+            .ArrowCategory = val(Leer.GetValue(ObjKey, "ArrowCategory"))
             If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
             If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
             Dim i As Integer
@@ -2294,6 +2296,7 @@ Sub LoadIntervalos()
     IntervaloMensajeGlobal = val(Lector.GetValue("INTERVALOS", "IntervaloMensajeGlobal"))
     IntervalAutomatedAction = val(Lector.GetValue("INTERVALOS", "IntervalAutomatedAction"))
     IntervalChangeGlobalQuestsState = val(Lector.GetValue("INTERVALOS", "IntervalChangeGlobalQuestsState"))
+    IntervalPhoenixSpawn = val(Lector.GetValue("INTERVALOS", "IntervalPhoenixSpawn"))
     '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     Set Lector = Nothing
     Exit Sub
