@@ -423,21 +423,31 @@ Private Function GetRandomFactionMsgId(ByVal faction As e_Facciones) As Integer
     On Error GoTo GetRandomFactionMsgId_Err
     Select Case faction
         Case e_Facciones.Armada, e_Facciones.consejo
-            Select Case RandomNumber(1, 5)
+            Select Case RandomNumber(1, 10)
                 Case 1: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_1
                 Case 2: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_2
                 Case 3: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_3
                 Case 4: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_4
                 Case 5: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_5
+                Case 6: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_6
+                Case 7: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_7
+                Case 8: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_8
+                Case 9: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_9
+                Case 10: GetRandomFactionMsgId = MSG_CONNECTION_ROYAL_ARMY_10
             End Select
 
         Case e_Facciones.Caos, e_Facciones.concilio
-            Select Case RandomNumber(1, 5)
+            Select Case RandomNumber(1, 10)
                 Case 1: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_1
                 Case 2: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_2
                 Case 3: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_3
                 Case 4: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_4
                 Case 5: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_5
+                Case 6: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_6
+                Case 7: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_7
+                Case 8: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_8
+                Case 9: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_9
+                Case 10: GetRandomFactionMsgId = MSG_CONNECTION_DARK_LEGION_10
             End Select
 
         Case Else
