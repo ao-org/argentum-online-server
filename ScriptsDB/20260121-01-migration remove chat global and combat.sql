@@ -1,0 +1,6 @@
+BEGIN TRANSACTION;
+
+ALTER TABLE user DROP COLUMN chat_combate;
+ALTER TABLE user DROP COLUMN chat_global;
+
+COMMIT;
