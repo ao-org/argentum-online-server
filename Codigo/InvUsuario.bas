@@ -4085,13 +4085,23 @@ Public Sub EquipArrow(ByVal UserIndex As Integer, ByVal Slot As Integer)
     Dim BowCategory   As Byte
     Dim ArrowCategory As Byte
     Dim ArrowObjIndex As Integer
+    Dim maxItemsInventory As Integer
 
     With UserList(UserIndex).invent
-        Debug.Assert ObjData(Slot).OBJType = e_OBJType.otArrows
+        maxItemsInventory = get_num_inv_slots_from_tier(UserList(UserIndex).Stats.tipoUsuario)
+        If Slot < 1 Or Slot > maxItemsInventory Then
+            Call LogError("EquipArrow invalid slot: " & Slot & " max=" & maxItemsInventory & " user=" & UserList(UserIndex).name)
+            Exit Sub
+        End If
+
         ArrowObjIndex = .Object(Slot).ObjIndex
+        If ArrowObjIndex < LBound(ObjData) Or ArrowObjIndex > UBound(ObjData) Then
+            Call LogError("EquipArrow invalid arrow index: " & ArrowObjIndex & " slot=" & Slot & " user=" & UserList(UserIndex).name)
+            Exit Sub
+        End If
+        Debug.Assert ObjData(ArrowObjIndex).OBJType = e_OBJType.otArrows
+
         bowIndex = .EquippedWeaponObjIndex
-        BowCategory = ObjData(bowIndex).BowCategory
-        ArrowCategory = ObjData(ArrowObjIndex).ArrowCategory
         
         ' No hay arco equipado
         If bowIndex <= 0 Then
@@ -4099,6 +4109,13 @@ Public Sub EquipArrow(ByVal UserIndex As Integer, ByVal Slot As Integer)
             Call WriteLocaleMsg(UserIndex, 2145, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
+
+        If bowIndex < LBound(ObjData) Or bowIndex > UBound(ObjData) Then
+            Call LogError("EquipArrow invalid bow index: " & bowIndex & " user=" & UserList(UserIndex).name)
+            Exit Sub
+        End If
+        BowCategory = ObjData(bowIndex).BowCategory
+        ArrowCategory = ObjData(ArrowObjIndex).ArrowCategory
 
         ' El arma equipada no es un arco
         If ObjData(bowIndex).WeaponType <> eBow Then
