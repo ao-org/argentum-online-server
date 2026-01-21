@@ -29,6 +29,12 @@ Option Explicit
 Private UserNameCache     As New Dictionary
 Private AvailableUserSlot As t_IndexHeap
 
+Public Function IsUserAdmin(ByVal UserIndex As Integer) As Boolean
+    IsUserAdmin = False
+    If UserIndex < LBound(UserList) Or UserIndex > UBound(UserList) Then Exit Function
+    IsUserAdmin = UserList(UserIndex).flags.Privilegios And e_PlayerType.Admin
+End Function
+
 Public Sub InitializeUserIndexHeap(Optional ByVal Size As Integer = NpcIndexHeapSize)
     On Error GoTo ErrHandler_InitializeUserIndexHeap
     ReDim AvailableUserSlot.IndexInfo(Size)

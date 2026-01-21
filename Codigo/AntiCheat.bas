@@ -112,7 +112,11 @@ Public Sub KickUnregisteredPlayers()
         Dim Result  As Long
         Result = QueryAndRemoveOldPendingRegistey(UserRef, 30000)
         If Result > 0 And IsValidUserRef(UserRef) Then
-            Call modNetwork.Kick(UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID, "Anticheat detection timeout")
+            If Not IsUserAdmin(UserRef.ArrayIndex) Then
+                With UserList(UserRef.ArrayIndex)
+                    Call modNetwork.Kick(.ConnectionDetails.ConnID, "Anticheat detection timeout for Username: " & .name)
+                End With
+            End If
         End If
     End If
     Exit Sub
