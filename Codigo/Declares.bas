@@ -2996,6 +2996,7 @@ Public Type t_User
     Faccion As t_Facciones
     ChatCombate As Byte
     ChatGlobal As Byte
+    ShowNothingInterestingMessage As Byte
     ComUsu As t_ComercioUsuario
     EmpoCont As Byte
     NroMascotas As Integer
