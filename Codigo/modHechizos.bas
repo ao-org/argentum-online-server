@@ -1388,6 +1388,8 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
         If IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTransformed) Then
             If UserList(UserIndex).Char.CastAnimation > 0 Then
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageDoAnimation(UserList(UserIndex).Char.charindex, UserList(UserIndex).Char.CastAnimation))
+            ElseIf UserList(UserIndex).Char.Ataque1 > 0 Then
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageDoAnimation(UserList(UserIndex).Char.charindex, UserList(UserIndex).Char.Ataque1))
             End If
         End If
         If Hechizos(uh).TargetEffectType = e_TargetEffectType.eNegative Then
