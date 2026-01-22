@@ -3199,6 +3199,7 @@ Public Type t_NpcInfoCache
     GlobalQuestBossIndex As Integer
     TierraInvalida As Integer
     Faccion As Integer
+    BodyIdle As Integer
     ElementalTags As Long
     npcType As Integer
     Body As Integer

@@ -1012,6 +1012,8 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Heading = Val(LeerNPCs.GetValue(SectionName, "Heading"))
         .CastAnimation = Val(LeerNPCs.GetValue(SectionName, "CastAnimation"))
         AnimacionesCount = Val(LeerNPCs.GetValue(SectionName, "Animaciones"))
+        
+        .BodyIdle = val(LeerNPCs.GetValue(SectionName, "BodyIdle"))
         .AnimacionesCount = AnimacionesCount
         If AnimacionesCount > 0 Then
             ReDim .Animaciones(1 To AnimacionesCount)
@@ -1288,6 +1290,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         .Char.body = Info.Body
         .Char.head = Info.Head
         .Char.Heading = Info.Heading
+        .Char.BodyIdle = Info.BodyIdle
         .Char.CastAnimation = Info.CastAnimation
         If .Char.BodyIdle > 0 Then
             .flags.NPCIdle = True
