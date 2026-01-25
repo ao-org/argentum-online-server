@@ -5066,7 +5066,7 @@ Private Sub HandlePerdonFaccion(ByVal UserIndex As Integer)
         Dim tUser    As t_UserReference
         Dim LoopC    As Byte
         username = reader.ReadString8()
-        If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
+        If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
             If UCase$(username) <> "YO" Then
                 tUser = NameIndex(username)
             Else
@@ -5422,7 +5422,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
         Dim username As String
         Dim tUser    As t_UserReference
         username = reader.ReadString8()
-        If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
+        If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
             If (InStrB(username, "\") <> 0) Then
                 username = Replace(username, "\", "")
             End If
@@ -5479,7 +5479,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
         Dim tUser    As t_UserReference
         username = reader.ReadString8()
 
-        If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
+        If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
             If (InStrB(username, "\") <> 0) Then
                 username = Replace(username, "\", "")
             End If
