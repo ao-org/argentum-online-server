@@ -48,98 +48,10 @@ Function IsNpcAtPos(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte)
     IsNpcAtPos = MapData(Map, x, y).NpcIndex > 0
 End Function
 
-Sub HandleFishingNet(ByVal UserIndex As Integer)
-    On Error GoTo HandleFishingNet_Err:
-    With UserList(UserIndex)
-        If (MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Or MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).trigger = _
-                e_Trigger.PESCAINVALIDA Then
-            If Abs(.pos.x - .Trabajo.Target_X) + Abs(.pos.y - .Trabajo.Target_Y) > 8 Then
-                Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
-                Call WriteWorkRequestTarget(UserIndex, 0)
-                Exit Sub
-            End If
-            If MapInfo(UserList(UserIndex).pos.Map).Seguro = 1 Then
-                ' Msg593=Esta prohibida la pesca masiva en las ciudades.
-                Call WriteLocaleMsg(UserIndex, 593, e_FontTypeNames.FONTTYPE_INFO)
-                Call WriteWorkRequestTarget(UserIndex, 0)
-                Exit Sub
-            End If
-            If UserList(UserIndex).flags.Navegando = 0 Then
-                ' Msg594=Necesitas estar sobre tu barca para utilizar la red de pesca.
-                Call WriteLocaleMsg(UserIndex, 594, e_FontTypeNames.FONTTYPE_INFO)
-                Call WriteWorkRequestTarget(UserIndex, 0)
-                Exit Sub
-            End If
-            If SvrConfig.GetValue("FISHING_POOL_ID") <> MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex Then
-                ' Msg595=Para pescar con red deberás buscar un área de pesca.
-                Call WriteLocaleMsg(UserIndex, 595, e_FontTypeNames.FONTTYPE_INFO)
-                Call WriteWorkRequestTarget(UserIndex, 0)
-                Exit Sub
-            End If
-            If MapInfo(.pos.Map).zone = "DUNGEON" Then
-                Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
-                Call WriteWorkRequestTarget(UserIndex, 0)
-                Exit Sub
-            End If
-            Call PerformFishing(UserIndex, True)
-        Else
-            ' Msg596=Zona de pesca no Autorizada. Busca otro lugar para hacerlo.
-            Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteWorkRequestTarget(UserIndex, 0)
-        End If
-    End With
-    Exit Sub
-HandleFishingNet_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.HandleFishingNet", Erl)
-End Sub
-
 Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
     Dim DummyInt As Integer
     With UserList(UserIndex)
         Select Case Skill
-            Case e_Skill.Pescar
-                If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
-                If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
-                Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
-                    Case e_ToolsSubtype.eFishingRod
-                        If (MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 And Not MapData(.pos.Map, .pos.x, .pos.y).trigger = _
-                                e_Trigger.PESCAINVALIDA Then
-                            Dim isStandingOnWater As Boolean
-                            Dim isAdjacentToWater As Boolean
-
-                            isStandingOnWater = (MapData(.pos.Map, .pos.x, .pos.y).Blocked And FLAG_AGUA) <> 0
-                            isAdjacentToWater = (MapData(.pos.Map, .pos.x + 1, .pos.y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.pos.Map, .pos.x, .pos.y + 1).Blocked And FLAG_AGUA) <> 0 Or (MapData( _
-                                    .pos.Map, .pos.x - 1, .pos.y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.pos.Map, .pos.x, .pos.y - 1).Blocked And FLAG_AGUA) <> 0
-
-                            If isStandingOnWater Then
-                                Call WriteLocaleMsg(UserIndex, "1436", e_FontTypeNames.FONTTYPE_INFO)
-                                Call WriteMacroTrabajoToggle(UserIndex, False)
-                            ElseIf isAdjacentToWater Then
-                                .flags.PescandoEspecial = False
-                                If UserList(UserIndex).flags.Navegando = 0 Then
-                                    If MapInfo(.pos.Map).zone = "DUNGEON" Then
-                                        Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
-                                        Call WriteMacroTrabajoToggle(UserIndex, False)
-                                    Else
-                                        Call PerformFishing(UserIndex, False)
-                                    End If
-                                Else
-                                    Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
-                                    Call WriteMacroTrabajoToggle(UserIndex, False)
-                                End If
-                            Else
-                                'Msg1021= Acércate a la costa para pescar.
-                                Call WriteLocaleMsg(UserIndex, 1021, e_FontTypeNames.FONTTYPE_INFO)
-                                Call WriteMacroTrabajoToggle(UserIndex, False)
-                            End If
-                        Else
-                            ' Msg596=Zona de pesca no Autorizada. Busca otro lugar para hacerlo.
-                            Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
-                            Call WriteMacroTrabajoToggle(UserIndex, False)
-                        End If
-                    Case e_ToolsSubtype.eFishingNet
-                        Call HandleFishingNet(UserIndex)
-                End Select
             Case e_Skill.Carpinteria
                 'Veo cual es la cantidad máxima que puede construir de una
                 Dim cantidad_maxima As Long
@@ -151,114 +63,6 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                     cantidad_maxima = 1
                 End If
                 Call CarpinteroConstruirItem(UserIndex, UserList(UserIndex).Trabajo.Item, UserList(UserIndex).Trabajo.Cantidad, cantidad_maxima)
-            Case e_Skill.Mineria
-                If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
-                If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
-                'Check interval
-                If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
-                Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
-                    Case 8  ' Herramientas de Mineria - Piquete
-                        'Target whatever is in the tile
-                        Call LookatTile(UserIndex, .pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y)
-                        DummyInt = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex
-                        If DummyInt > 0 Then
-                            'Check distance
-                            If Abs(.pos.x - .Trabajo.Target_X) + Abs(.pos.y - .Trabajo.Target_Y) > 2 Then
-                                Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
-                                'Msg8=Estís demasiado lejos.
-                                Call WriteWorkRequestTarget(UserIndex, 0)
-                                Exit Sub
-                            End If
-                            '¡Hay un yacimiento donde clickeo?
-                            If ObjData(DummyInt).OBJType = e_OBJType.otOreDeposit Then
-                                ' Si el Yacimiento requiere herramienta `Dorada` y la herramienta no lo es, o vice versa.
-                                ' Se usa para el yacimiento de Oro.
-                                If ObjData(DummyInt).Dorada <> ObjData(.invent.EquippedWorkingToolObjIndex).Dorada Or ObjData(DummyInt).Blodium <> ObjData( _
-                                        .invent.EquippedWorkingToolObjIndex).Blodium Then
-                                    If ObjData(DummyInt).Blodium <> ObjData(.invent.EquippedWorkingToolObjIndex).Blodium Then
-                                        ' Msg597=El pico minero especial solo puede extraer minerales del yacimiento de Blodium.
-                                        Call WriteLocaleMsg(UserIndex, 597, e_FontTypeNames.FONTTYPE_INFO)
-                                        Call WriteWorkRequestTarget(UserIndex, 0)
-                                        Exit Sub
-                                    Else
-                                        'Msg1022= El pico dorado solo puede extraer minerales del yacimiento de Oro.
-                                        Call WriteLocaleMsg(UserIndex, 1022, e_FontTypeNames.FONTTYPE_INFO)
-                                        Call WriteWorkRequestTarget(UserIndex, 0)
-                                        Exit Sub
-                                    End If
-                                End If
-                                If MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount <= 0 Then
-                                    ' Msg598=Este yacimiento no tiene más minerales para entregar.
-                                    Call WriteLocaleMsg(UserIndex, 598, e_FontTypeNames.FONTTYPE_INFO)
-                                    Call WriteWorkRequestTarget(UserIndex, 0)
-                                    Call WriteMacroTrabajoToggle(UserIndex, False)
-                                    Exit Sub
-                                End If
-                                Call DoMineria(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.invent.EquippedWorkingToolObjIndex).Dorada = 1)
-                            Else
-                                ' Msg599=Ahí no hay ningún yacimiento.
-                                Call WriteLocaleMsg(UserIndex, 599, e_FontTypeNames.FONTTYPE_INFO)
-                                Call WriteWorkRequestTarget(UserIndex, 0)
-                            End If
-                        Else
-                            ' Msg599=Ahí no hay ningún yacimiento.
-                            Call WriteLocaleMsg(UserIndex, 599, e_FontTypeNames.FONTTYPE_INFO)
-                            Call WriteWorkRequestTarget(UserIndex, 0)
-                        End If
-                End Select
-            Case e_Skill.Talar
-                If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
-                If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
-                'Check interval
-                If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
-                Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
-                    Case 6      ' Herramientas de Carpinteria - Hacha
-                        DummyInt = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex
-                        If DummyInt > 0 Then
-                            If Abs(.pos.x - .Trabajo.Target_X) + Abs(.pos.y - .Trabajo.Target_Y) > 1 Then
-                                Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
-                                'Msg8=Estas demasiado lejos.
-                                Call WriteWorkRequestTarget(UserIndex, 0)
-                                Exit Sub
-                            End If
-                            If .pos.x = .Trabajo.Target_X And .pos.y = .Trabajo.Target_Y Then
-                                ' Msg600=No podés talar desde allí.
-                                Call WriteLocaleMsg(UserIndex, 600, e_FontTypeNames.FONTTYPE_INFO)
-                                Call WriteWorkRequestTarget(UserIndex, 0)
-                                Exit Sub
-                            End If
-                            If ObjData(DummyInt).Elfico <> ObjData(.invent.EquippedWorkingToolObjIndex).Elfico Then
-                                ' Msg601=Sólo puedes talar árboles elficos con un hacha élfica.
-                                Call WriteLocaleMsg(UserIndex, 601, e_FontTypeNames.FONTTYPE_INFO)
-                                Call WriteWorkRequestTarget(UserIndex, 0)
-                                Exit Sub
-                            End If
-                            If ObjData(DummyInt).Pino <> ObjData(.invent.EquippedWorkingToolObjIndex).Pino Then
-                                ' Msg602=Sólo puedes talar árboles de pino nudoso con un hacha de pino.
-                                Call WriteLocaleMsg(UserIndex, 602, e_FontTypeNames.FONTTYPE_INFO)
-                                Call WriteWorkRequestTarget(UserIndex, 0)
-                                Exit Sub
-                            End If
-                            If MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount <= 0 Then
-                                ' Msg603=El árbol ya no te puede entregar más leña.
-                                Call WriteLocaleMsg(UserIndex, 603, e_FontTypeNames.FONTTYPE_INFO)
-                                Call WriteWorkRequestTarget(UserIndex, 0)
-                                Call WriteMacroTrabajoToggle(UserIndex, False)
-                                Exit Sub
-                            End If
-                            '¡Hay un arbol donde clickeo?
-                            If ObjData(DummyInt).OBJType = e_OBJType.otTrees Then
-                                Call DoTalar(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.invent.EquippedWorkingToolObjIndex).Dorada = 1)
-                            End If
-                        Else
-                            ' Msg604=No hay ningún árbol ahí.
-                            Call WriteLocaleMsg(UserIndex, 604, e_FontTypeNames.FONTTYPE_INFO)
-                            Call WriteWorkRequestTarget(UserIndex, 0)
-                            If UserList(UserIndex).Counters.Trabajando > 1 Then
-                                Call WriteMacroTrabajoToggle(UserIndex, False)
-                            End If
-                        End If
-                End Select
             Case FundirMetal    'UGLY!!! This is a constant, not a skill!!
                 'Check interval
                 If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
@@ -391,10 +195,10 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
             End If
             Call SubirSkill(UserIndex, Ocultarse)
         Else
-            If Not .flags.UltimoMensaje = 4 Then
+            If Not .flags.UltimoMensaje = MSG_HIDE_FAILED Then
                 'Msg57=¡No has logrado esconderte!
                 Call WriteLocaleMsg(UserIndex, 57, e_FontTypeNames.FONTTYPE_INFO)
-                .flags.UltimoMensaje = 4
+                .flags.UltimoMensaje = MSG_HIDE_FAILED
             End If
         End If
         .Counters.Ocultando = .Counters.Ocultando + 1
@@ -1235,12 +1039,14 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
     End If
     If CarpinteroTieneMateriales(UserIndex, ItemIndex, cantidad_a_construir) And UserList(UserIndex).Stats.UserSkills(e_Skill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria _
             And PuedeConstruirCarpintero(ItemIndex) And ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).OBJType = e_OBJType.otWorkingTools And ObjData(UserList( _
-            UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = 5 Then
+            UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.CarpentryHacksaw Then
         If UserList(UserIndex).Stats.MinSta > 2 Then
             Call QuitarSta(UserIndex, 2)
         Else
-            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
             'Msg93=Estás muy cansado para trabajar.
+            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
+            'Msg2129=¡No tengo energía!
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Sub
         End If
@@ -1276,6 +1082,9 @@ End Sub
 Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
     On Error GoTo AlquimistaConstruirItem_Err
     If Not UserList(UserIndex).Stats.MinSta > 0 Then
+        'Msg2129=¡No tengo energía!
+        Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+        'Msg93=Estás muy cansado
         Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
@@ -1332,6 +1141,9 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
     On Error GoTo SastreConstruirItem_Err
     If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
     If Not UserList(UserIndex).Stats.MinSta > 0 Then
+        'Msg2129=¡No tengo energía!
+        Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+        'Msg93=Estás muy cansado
         Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
@@ -1341,7 +1153,7 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
     End If
     If SastreTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(e_Skill.Sastreria) >= ObjData(ItemIndex).SkSastreria And PuedeConstruirSastre( _
             ItemIndex) And ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).OBJType = e_OBJType.otWorkingTools And ObjData(UserList( _
-            UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = 9 Then
+            UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.TailorSewingbox Then
         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
         Call WriteUpdateSta(UserIndex)
         Call SastreQuitarMateriales(UserIndex, ItemIndex)
@@ -1389,8 +1201,10 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
     If UserList(UserIndex).Stats.MinSta > 2 Then
         Call QuitarSta(UserIndex, 2)
     Else
+        'Msg2129=¡No tengo energía!
+        Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+        'Msg93=Estás muy cansado.
         Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
-        'Msg93=Estás muy cansado para excavar.
         Call WriteMacroTrabajoToggle(UserIndex, False)
         Exit Sub
     End If
@@ -1632,16 +1446,20 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
         ' Tiene energia?
         If .Stats.MinSta < 15 Then
             If .genero = e_Genero.Hombre Then
+                'Msg2129=¡No tengo energía!
+                Call SendData(SendTarget.ToIndex, LadronIndex, PrepareLocalizedChatOverHead(2129, UserList(LadronIndex).Char.charindex, vbWhite))
                 'Msg1034= Estás muy cansado para robar.
                 Call WriteLocaleMsg(LadronIndex, "1034", e_FontTypeNames.FONTTYPE_INFO)
             Else
+                'Msg2129=¡No tengo energía!
+                Call SendData(SendTarget.ToIndex, LadronIndex, PrepareLocalizedChatOverHead(2129, UserList(LadronIndex).Char.charindex, vbWhite))
                 'Msg1035= Estás muy cansada para robar.
                 Call WriteLocaleMsg(LadronIndex, "1035", e_FontTypeNames.FONTTYPE_INFO)
             End If
             Exit Sub
         End If
         If .GuildIndex > 0 Then
-            If .flags.SeguroClan And NivelDeClan(.GuildIndex) >= 3 Then
+            If .flags.SeguroClan And NivelDeClan(.GuildIndex) >= RequiredGuildLevelSafe Then
                 If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
                     'Msg1036= No podes robarle a un miembro de tu clan.
                     Call WriteLocaleMsg(LadronIndex, "1036", e_FontTypeNames.FONTTYPE_INFOIAO)
@@ -1867,194 +1685,6 @@ QuitarSta_Err:
 End Sub
 
 
-Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
-    On Error GoTo ErrHandler
-    Dim Suerte As Integer
-    Dim res    As Integer
-    With UserList(UserIndex)
-        If .flags.Privilegios And (e_PlayerType.Consejero) Then
-            Exit Sub
-        End If
-        'EsfuerzoTalarLeñador = 1
-        If .Stats.MinSta > 5 Then
-            Call QuitarSta(UserIndex, 5)
-        Else
-            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Sub
-        End If
-        Dim Skill As Integer
-        Skill = .Stats.UserSkills(e_Skill.Talar)
-        Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
-        'HarThaoS: Le agrego más dificultad al talar en zona segura.  37% probabilidad de fallo en segura vs 16% en insegura
-        res = RandomNumber(1, IIf(MapInfo(UserList(UserIndex).pos.Map).Seguro = 1, Suerte + 4, Suerte))
-        'ReyarB: aumento chances solamente si es el arbol de pino nudoso.
-        If ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex).Pino = 1 Then
-            res = 1
-            Suerte = 100
-        End If
-        '118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
-        If res < 6 Then
-            Dim nPos  As t_WorldPos
-            Dim MiObj As t_Obj
-            Call ActualizarRecurso(.pos.Map, x, y)
-            MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
-            If .clase = Trabajador Then
-                MiObj.amount = GetExtractResourceForLevel(.Stats.ELV)
-            Else
-                MiObj.amount = RandomNumber(1, 2)
-            End If
-            MiObj.amount = MiObj.amount * SvrConfig.GetValue("RecoleccionMult")
-            If ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex).Elfico = 1 Then
-                MiObj.ObjIndex = ElvenWood
-            ElseIf ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex).Pino = 1 Then
-                MiObj.ObjIndex = PinoWood
-            Else
-                MiObj.ObjIndex = Wood
-            End If
-            If MiObj.amount > MapData(.pos.Map, x, y).ObjInfo.amount Then
-                MiObj.amount = MapData(.pos.Map, x, y).ObjInfo.amount
-            End If
-            MapData(.pos.Map, x, y).ObjInfo.amount = MapData(.pos.Map, x, y).ObjInfo.amount - MiObj.amount
-            ' AGREGAR FX
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
-            If Not MeterItemEnInventario(UserIndex, MiObj) Then
-                Call TirarItemAlPiso(.pos, MiObj)
-            End If
-            Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)
-            If MapInfo(.pos.Map).Seguro = 1 Then
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(SND_TALAR, .pos.x, .pos.y))
-            Else
-                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .pos.x, .pos.y))
-            End If
-            ' Al talar también podés dropear cosas raras (se setean desde RecursosEspeciales.dat)
-            Dim i As Integer
-            ' Por cada drop posible
-            For i = 1 To UBound(EspecialesTala)
-                ' Tiramos al azar entre 1 y la probabilidad
-                res = RandomNumber(1, EspecialesTala(i).data)
-                ' Si tiene suerte y le pega
-                If res = 1 Then
-                    MiObj.ObjIndex = EspecialesTala(i).ObjIndex
-                    MiObj.amount = 1 ' Solo un item por vez
-                    ' Tiro siempre el item al piso, me parece más rolero, como que cae del árbol :P
-                    Call TirarItemAlPiso(.pos, MiObj)
-                End If
-            Next i
-            If IsFeatureEnabled("gain_exp_while_working") Then
-                Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Woodcutter)
-                Call WriteUpdateExp(UserIndex)
-                Call CheckUserLevel(UserIndex)
-            End If
-        Else
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(64, .pos.x, .pos.y))
-        End If
-        Call SubirSkill(UserIndex, e_Skill.Talar)
-        .Counters.Trabajando = .Counters.Trabajando + 1
-        .Counters.LastTrabajo = Int(IntervaloTrabajarExtraer / 1000)
-        If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
-            Call WriteMacroTrabajoToggle(UserIndex, True)
-        End If
-    End With
-    Exit Sub
-ErrHandler:
-    Call LogError("Error en DoTalar")
-End Sub
-
-Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
-    On Error GoTo ErrHandler
-    Dim Suerte     As Integer
-    Dim res        As Integer
-    Dim Metal      As Integer
-    Dim Yacimiento As t_ObjData
-    With UserList(UserIndex)
-        If .flags.Privilegios And (e_PlayerType.Consejero) Then
-            Exit Sub
-        End If
-        If .Stats.MinSta > 5 Then
-            Call QuitarSta(UserIndex, 5)
-        Else
-            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Sub
-        End If
-        Dim Skill As Integer
-        Skill = .Stats.UserSkills(e_Skill.Mineria)
-        Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
-        'HarThaoS: Le agrego más dificultad al talar en zona segura.  37% probabilidad de fallo en segura vs 16% en insegura
-        res = RandomNumber(1, IIf(MapInfo(UserList(UserIndex).pos.Map).Seguro = 1, Suerte + 2, Suerte))
-        '118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
-        'ReyarB: aumento chances solamente si es mineria de blodium.
-        If ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex).MineralIndex = 3787 Then
-            res = 1
-            Suerte = 100
-        End If
-        If res <= 5 Then
-            Dim MiObj As t_Obj
-            Dim nPos  As t_WorldPos
-            Call ActualizarRecurso(.pos.Map, x, y)
-            MapData(.pos.Map, x, y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
-            Yacimiento = ObjData(MapData(.pos.Map, x, y).ObjInfo.ObjIndex)
-            MiObj.ObjIndex = Yacimiento.MineralIndex
-            If .clase = Trabajador Then
-                MiObj.amount = GetExtractResourceForLevel(.Stats.ELV)
-            Else
-                MiObj.amount = RandomNumber(1, 2)
-            End If
-            MiObj.amount = MiObj.amount * SvrConfig.GetValue("RecoleccionMult")
-            If MiObj.amount > MapData(.pos.Map, x, y).ObjInfo.amount Then
-                MiObj.amount = MapData(.pos.Map, x, y).ObjInfo.amount
-            End If
-            MapData(.pos.Map, x, y).ObjInfo.amount = MapData(.pos.Map, x, y).ObjInfo.amount - MiObj.amount
-            If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
-            ' AGREGAR FX
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
-            Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)
-            ' Msg651=¡Has extraído algunos minerales!
-            Call WriteLocaleMsg(UserIndex, 651, e_FontTypeNames.FONTTYPE_INFO)
-            If MapInfo(.pos.Map).Seguro = 1 Then
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(15, .pos.x, .pos.y))
-            Else
-                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(15, .pos.x, .pos.y))
-            End If
-            ' Al minar también puede dropear una gema
-            Dim i As Integer
-            ' Por cada drop posible
-            For i = 1 To Yacimiento.CantItem
-                ' Tiramos al azar entre 1 y la probabilidad
-                res = RandomNumber(1, Yacimiento.Item(i).amount)
-                ' Si tiene suerte y le pega
-                If res = 1 Then
-                    ' Se lo metemos al inventario (o lo tiramos al piso)
-                    MiObj.ObjIndex = Yacimiento.Item(i).ObjIndex
-                    MiObj.amount = 1 ' Solo una gema por vez
-                    If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
-                    ' Le mandamos un mensaje
-                    Call WriteLocaleMsg(UserIndex, 1465, e_FontTypeNames.FONTTYPE_INFO)  ' Msg1465=¡Has conseguido ¬1!
-                End If
-            Next
-            
-            If IsFeatureEnabled("gain_exp_while_working") Then
-                Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Miner)
-                Call WriteUpdateExp(UserIndex)
-                Call CheckUserLevel(UserIndex)
-            End If
-            
-        Else
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(2185, .pos.x, .pos.y))
-        End If
-        Call SubirSkill(UserIndex, e_Skill.Mineria)
-        .Counters.Trabajando = .Counters.Trabajando + 1
-        .Counters.LastTrabajo = Int(IntervaloTrabajarExtraer / 1000)
-        If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
-            Call WriteMacroTrabajoToggle(UserIndex, True)
-        End If
-    End With
-    Exit Sub
-ErrHandler:
-    Call LogError("Error en Sub DoMineria")
-End Sub
-
 Public Sub DoMeditar(ByVal UserIndex As Integer)
     On Error GoTo DoMeditar_Err
     Dim Mana As Long
@@ -2107,7 +1737,8 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
             Call WriteLocaleMsg(UserIndex, 652, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        If .flags.Montado = 0 And (MapData(.pos.Map, .pos.x, .pos.y).trigger > 10) Then
+        If .flags.Montado = 0 And (MapData(.pos.Map, .pos.x, .pos.y).trigger > e_Trigger.PESCAINVALIDA) _
+           And MapData(.pos.Map, .pos.x, .pos.y).trigger <> e_Trigger.ONLY_PATREON_TILE Then
             ' Msg653=No podés montar aquí.
             Call WriteLocaleMsg(UserIndex, 653, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
@@ -2340,10 +1971,10 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                     Call WriteLocaleMsg(UserIndex, 658, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Else
-                If Not .flags.UltimoMensaje = 5 Then
+                If Not .flags.UltimoMensaje = MSG_TAME_FAILED Then
                     ' Msg659=No has logrado domar la criatura.
                     Call WriteLocaleMsg(UserIndex, 659, e_FontTypeNames.FONTTYPE_INFO)
-                    .flags.UltimoMensaje = 5
+                    .flags.UltimoMensaje = MSG_TAME_FAILED
                 End If
             End If
             Call SubirSkill(UserIndex, e_Skill.Domar)
@@ -2408,7 +2039,7 @@ Public Sub FishOrThrowNet(ByVal UserIndex As Integer)
     On Error GoTo FishOrThrowNet_Err:
     With UserList(UserIndex)
         If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
-        If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo = e_ToolsSubtype.eFishingNet Then
+        If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.FishingNet Then
             If MapInfo(.pos.Map).Seguro = 1 Or Not ExpectObjectTypeAt(e_OBJType.otFishingPool, .pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y) Then
                 If IsValidUserRef(.flags.TargetUser) Or IsValidNpcRef(.flags.TargetNPC) Then
                     ThrowNetToTarget (UserIndex)
@@ -2429,7 +2060,7 @@ Sub ThrowNetToTarget(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
         If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
-        If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo <> e_ToolsSubtype.eFishingNet Then Exit Sub
+        If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo <> e_WorkingToolSubType.FishingNet Then Exit Sub
         'If it's outside range log it and exit
         If Abs(.pos.x - .Trabajo.Target_X) > RANGO_VISION_X Or Abs(.pos.y - .Trabajo.Target_Y) > RANGO_VISION_Y Then
             Call LogSecurity("Ataque fuera de rango de " & .name & "(" & .pos.Map & "/" & .pos.x & "/" & .pos.y & ") ip: " & .ConnectionDetails.IP & " a la posicion (" & _

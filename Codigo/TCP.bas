@@ -84,48 +84,52 @@ Sub RellenarInventario(ByVal UserIndex As String)
         NumItems = 1
         ' Todos reciben pociones rojas
         .invent.Object(NumItems).ObjIndex = 4335 'Pocion Roja
-        .invent.Object(NumItems).amount = 350
+        .invent.Object(NumItems).amount = 500
         NumItems = NumItems + 1
         ' Magicas puras reciben más azules
         Select Case .clase
             Case e_Class.Mage, e_Class.Druid
                 .invent.Object(NumItems).ObjIndex = 4336 ' Pocion Azul
-                .invent.Object(NumItems).amount = 550
+                .invent.Object(NumItems).amount = 850
                 NumItems = NumItems + 1
             Case e_Class.Bard, e_Class.Cleric
                 .invent.Object(NumItems).ObjIndex = 4336 ' Pocion Azul
-                .invent.Object(NumItems).amount = 450
+                .invent.Object(NumItems).amount = 650
                 NumItems = NumItems + 1
             Case e_Class.Paladin, e_Class.Assasin, e_Class.Bandit
                 .invent.Object(NumItems).ObjIndex = 4336 ' Pocion Azul
-                .invent.Object(NumItems).amount = 350
+                .invent.Object(NumItems).amount = 450
                 NumItems = NumItems + 1
         End Select
         ' Hechizos
         Select Case .clase
-            Case e_Class.Mage, e_Class.Cleric, e_Class.Druid, e_Class.Bard, e_Class.Paladin, e_Class.Bandit, e_Class.Assasin
+            Case e_Class.Mage, e_Class.Cleric, e_Class.Druid, e_Class.Bard
                 .Stats.UserHechizos(1) = 1 ' Dardo mágico
+                .Stats.UserHechizos(2) = 7 ' Invocar lobo
+            Case e_Class.Paladin, e_Class.Bandit, e_Class.Assasin
+                .Stats.UserHechizos(1) = 291 ' Onda mágica
+                .Stats.UserHechizos(2) = 12 ' Curar heridas leves
         End Select
         ' Pociones amarillas y verdes
         Select Case .clase
             Case e_Class.Assasin, e_Class.Bard, e_Class.Cleric, e_Class.Hunter, e_Class.Paladin, e_Class.Trabajador, e_Class.Warrior, e_Class.Bandit, e_Class.Pirat, e_Class.Thief
                 .invent.Object(NumItems).ObjIndex = 4337 ' Pocion Amarilla
-                .invent.Object(NumItems).amount = 60
+                .invent.Object(NumItems).amount = 100
                 NumItems = NumItems + 1
                 .invent.Object(NumItems).ObjIndex = 4338 ' Pocion Verde
-                .invent.Object(NumItems).amount = 60
+                .invent.Object(NumItems).amount = 120
                 NumItems = NumItems + 1
             Case e_Class.Mage, e_Class.Druid
                 .invent.Object(NumItems).ObjIndex = 4337 ' Pocion Amarilla
-                .invent.Object(NumItems).amount = 60
+                .invent.Object(NumItems).amount = 80
                 NumItems = NumItems + 1
         End Select
         ' Poción violeta
         .invent.Object(NumItems).ObjIndex = 4334 ' Pocion violeta
-        .invent.Object(NumItems).amount = 15
+        .invent.Object(NumItems).amount = 35
         NumItems = NumItems + 1
         .invent.Object(NumItems).ObjIndex = 3791 ' Pasaje a Jourmut
-        .invent.Object(NumItems).amount = 2
+        .invent.Object(NumItems).amount = 4
         NumItems = NumItems + 1
         ' Armas
         Select Case .clase
@@ -194,7 +198,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
                 .invent.Object(NumItems).amount = 1
                 NumItems = NumItems + 1
                 .invent.Object(NumItems).ObjIndex = 3492 ' Flecha del Principiante
-                .invent.Object(NumItems).amount = 600
+                .invent.Object(NumItems).amount = 850
                 NumItems = NumItems + 1
             Case e_Class.Pirat
                 .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
@@ -232,7 +236,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
                 .invent.Object(NumItems).amount = 1
                 NumItems = NumItems + 1
                 .invent.Object(NumItems).ObjIndex = 3492 ' Flecha del Principiante
-                .invent.Object(NumItems).amount = 600
+                .invent.Object(NumItems).amount = 650
                 NumItems = NumItems + 1
                 .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
                 .invent.Object(NumItems).amount = 1
@@ -336,7 +340,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
         .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
         ' Comida y bebida
         .invent.Object(NumItems).ObjIndex = 3684 ' Manzana
-        .invent.Object(NumItems).amount = 50
+        .invent.Object(NumItems).amount = 100
         NumItems = NumItems + 1
         .invent.Object(NumItems).ObjIndex = 3685 ' Agua
         .invent.Object(NumItems).amount = 50
@@ -1266,6 +1270,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
     Call ResetUserSkills(UserIndex)
     Call ResetUserKeys(UserIndex)
     Call ResetCd(UserList(UserIndex))
+    Call ResetUserAutomatedActions(UserIndex)
     With UserList(UserIndex).ComUsu
         .Acepto = False
         .cant = 0
@@ -1481,6 +1486,19 @@ Sub ResetCd(ByRef User As t_User)
         User.CdTimes(i) = 0
     Next i
 End Sub
+
+Sub ResetUserAutomatedActions(ByRef UserIndex As Integer)
+    With UserList(UserIndex)
+        .AutomatedAction.IsActive = False
+        .AutomatedAction.skill = 0
+        .AutomatedAction.StartingTime = 0
+        .AutomatedAction.x = 0
+        .AutomatedAction.y = 0
+        'old legacy system to check people working
+        .Counters.Trabajando = 0
+    End With
+End Sub
+
 
 Sub VaciarInventario(ByVal UserIndex As Integer)
     Dim i As Long

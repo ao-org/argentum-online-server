@@ -129,13 +129,6 @@ QuitarMascotaNpc_Err:
 End Sub
 
 Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
-    '********************************************************
-    'Author: Unknown
-    'Llamado cuando la vida de un NPC llega a cero.
-    'Last Modify Date: 24/01/2007
-    '22/06/06: (Nacho) Chequeamos si es pretoriano
-    '24/01/2007: Pablo (ToxicWaste): Agrego para actualización de tag si cambia de status.
-    '********************************************************
     On Error GoTo ErrHandler
     Dim MiNPC       As t_Npc
     Dim EraCriminal As Byte
@@ -158,11 +151,21 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     If MiNPC.flags.InvasionIndex Then
         Call MuereNpcInvasion(MiNPC.flags.InvasionIndex, MiNPC.flags.IndexInInvasion)
     End If
+    If MiNPC.Numero = PHOENIX_NPC_INDEX Then
+        If IsPhoenixAlive Then
+            IsPhoenixAlive = False
+        Else
+            Call LogError("Phoenix killed while isnt alive, it was gm-Spawned or this is an error.")
+        End If
+    End If
     If NpcList(NpcIndex).ShowKillerConsole > 0 Then
         'Msg1986=¬1 ha muerto en manos de ¬2
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1986", NpcList(NpcIndex).name & "¬" & UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_GLOBAL))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1986", NpcList(NpcIndex).Name & "¬" & UserList(UserIndex).Name, e_FontTypeNames.FONTTYPE_GLOBAL))
     End If
     'Quitamos el npc
+    If MiNPC.flags.GlobalQuestBossIndex Then
+        GlobalQuestInfo(MiNPC.flags.GlobalQuestBossIndex).IsBossAlive = False
+    End If
     Call QuitarNPC(NpcIndex, eDie)
     If UserIndex > 0 Then ' Lo mato un usuario?
         If MiNPC.flags.Snd3 > 0 Then
@@ -190,7 +193,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         If UserList(UserIndex).ChatCombate = 1 Then
             Call WriteLocaleMsg(UserIndex, 184, e_FontTypeNames.FONTTYPE_DIOS)
         End If
-        If UserList(UserIndex).Stats.NPCsMuertos < 32000 Then UserList(UserIndex).Stats.NPCsMuertos = UserList(UserIndex).Stats.NPCsMuertos + 1
+        Call IncrementLongCounter(UserList(UserIndex).Stats.NPCsMuertos, "NPCsMuertos")
         If IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
         Call SubirSkill(UserIndex, e_Skill.Supervivencia)
         If MiNPC.flags.ExpCount > 0 Then
@@ -209,30 +212,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
                 Call modGuilds.CheckClanExp(UserIndex, MiNPC.GiveEXPClan * SvrConfig.GetValue("ExpMult"))
             End If
         End If
-        For i = 1 To MAXUSERQUESTS
-            With UserList(UserIndex).QuestStats.Quests(i)
-                If .QuestIndex Then
-                    If QuestList(.QuestIndex).RequiredNPCs Then
-                        For j = 1 To QuestList(.QuestIndex).RequiredNPCs
-                            If QuestList(.QuestIndex).RequiredNPC(j).NpcIndex = MiNPC.Numero Then
-                                If QuestList(.QuestIndex).RequiredNPC(j).amount >= .NPCsKilled(j) Then
-                                    .NPCsKilled(j) = .NPCsKilled(j) + 1 '
-                                    Call WriteLocaleMsg(UserIndex, 1623, e_FontTypeNames.FONTTYPE_INFOIAO, MiNPC.name & "¬" & .NPCsKilled(j) & "¬" & QuestList( _
-                                            .QuestIndex).RequiredNPC(j).amount) 'Msg1623=¬1 matados/as: ¬2 de ¬3
-                                    Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.name, _
-                                            UserList(UserIndex).Char.charindex, RGB(180, 180, 180))
-                                Else
-                                    Call WriteLocaleMsg(UserIndex, 1624, e_FontTypeNames.FONTTYPE_INFOIAO, MiNPC.name & "¬" & QuestList(.QuestIndex).nombre) 'Msg1624=Ya has matado todos los ¬1 que la misión ¬2 requería. Revisa si ya estás listo para recibir la recompensa.
-                                    Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & QuestList(.QuestIndex).RequiredNPC(j).amount & "/" & QuestList(.QuestIndex).RequiredNPC( _
-                                            j).amount & " " & MiNPC.name, UserList(UserIndex).Char.charindex, RGB(180, 180, 180))
-                                End If
-                            End If
-                        Next j
-                    End If
-                    UserList(UserIndex).flags.ModificoQuests = True
-                End If
-            End With
-        Next i
+        Call OnNpcKilledUpdateQuest(UserIndex, MiNPC)
         'Tiramos el oro
         Call NPCTirarOro(MiNPC, UserIndex)
         Call DropObjQuest(MiNPC, UserIndex)
@@ -643,7 +623,34 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
     End With
     Exit Sub
 MakeNPCChar_Err:
-    Call TraceError(Err.Number, Err.Description, "NPCs.MakeNPCChar", Erl)
+    Dim errNumber As Long
+    Dim errDescription As String
+    Dim contextInfo As String
+
+    errNumber = Err.Number
+    errDescription = Err.Description
+
+    contextInfo = "Params: toMap=" & CStr(toMap) & ", sndIndex=" & sndIndex & ", NpcIndex=" & NpcIndex & ", Map=" & Map & _
+                  ", x=" & x & ", y=" & y
+
+    Dim npcLowerBound As Long
+    Dim npcUpperBound As Long
+
+    On Error Resume Next
+    npcLowerBound = LBound(NpcList)
+    npcUpperBound = UBound(NpcList)
+
+    If NpcIndex >= npcLowerBound And NpcIndex <= npcUpperBound Then
+        contextInfo = contextInfo & ", NpcName=" & NpcList(NpcIndex).name & NpcList(NpcIndex).SubName
+        contextInfo = contextInfo & ", CharIndex=" & NpcList(NpcIndex).Char.charindex
+        contextInfo = contextInfo & ", NPCType=" & NpcList(NpcIndex).npcType
+    Else
+        contextInfo = contextInfo & ", NpcIndexOutOfBounds=True (Bounds " & npcLowerBound & "-" & npcUpperBound & ")"
+    End If
+
+    On Error GoTo 0
+
+    Call TraceError(errNumber, errDescription & " | " & contextInfo, "NPCs.MakeNPCChar", Erl)
 End Sub
 
 Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As e_Heading)
@@ -788,7 +795,8 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
                   ByVal FX As Boolean, _
                   ByVal Respawn As Boolean, _
                   Optional Avisar As Boolean = False, _
-                  Optional ByVal MaestroUser As Integer = 0) As Integer
+                  Optional ByVal MaestroUser As Integer = 0, _
+                  Optional ByVal SpellWav As Integer = SND_WARP) As Integer
     On Error GoTo SpawnNpc_Err
     '***************************************************
     'Autor: Unknown (orginal version)
@@ -831,8 +839,10 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
     NpcList(nIndex).Orig = NpcList(nIndex).pos
     'Crea el NPC
     Call MakeNPCChar(True, Map, nIndex, Map, x, y)
-    If FX Then
+    If FX And SpellWav = SND_WARP Then
         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessagePlayWave(SND_WARP, x, y))
+        Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.charindex, e_GraphicEffects.ModernGmWarp, 0))
+    Else
         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.charindex, e_GraphicEffects.ModernGmWarp, 0))
     End If
     If Avisar Then
@@ -880,9 +890,9 @@ Sub NPCTirarOro(MiNPC As t_Npc, ByVal UserIndex As Integer)
         Dim MiObj As t_Obj
         MiObj.ObjIndex = iORO
         While (Oro > 0)
-            If Oro > MAX_INVENTORY_OBJS Then
-                MiObj.amount = MAX_INVENTORY_OBJS
-                Oro = Oro - MAX_INVENTORY_OBJS
+            If Oro > GetMaxInvOBJ() Then
+                MiObj.amount = GetMaxInvOBJ()
+                Oro = Oro - GetMaxInvOBJ()
             Else
                 MiObj.amount = Oro
                 Oro = 0
@@ -985,6 +995,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .TierraInvalida = Val(LeerNPCs.GetValue(SectionName, "TierraInValida"))
         .Faccion = Val(LeerNPCs.GetValue(SectionName, "Faccion"))
         .ElementalTags = Val(LeerNPCs.GetValue(SectionName, "ElementalTags"))
+        .GlobalQuestBossIndex = val(LeerNPCs.GetValue(SectionName, "GlobalQuestBossIndex"))
         .npcType = Val(LeerNPCs.GetValue(SectionName, "NpcType"))
         .Body = Val(LeerNPCs.GetValue(SectionName, "Body"))
         .Head = Val(LeerNPCs.GetValue(SectionName, "Head"))
@@ -1261,6 +1272,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         Call SetMovement(NpcIndex, Info.Movement)
         .flags.OldMovement = .Movement
         .flags.AguaValida = Info.AguaValida
+        .flags.GlobalQuestBossIndex = Info.GlobalQuestBossIndex
         .flags.TierraInvalida = Info.TierraInvalida
         .flags.Faccion = Info.Faccion
         .flags.ElementalTags = Info.ElementalTags
@@ -2220,3 +2232,36 @@ Public Function CanAttackNotOwner(ByVal NpcIndex As Integer, ByVal UserIndex As 
         CanAttackNotOwner = AttackResult.Result = eMounted Or AttackResult.Result = eOutOfRange
     End If
 End Function
+Public Sub OnNpcKilledUpdateQuest(ByVal UserIndex As Integer, ByRef MiNPC As t_Npc)
+    On Error GoTo OnNpcKilledUpdateQuest_Err
+    Dim i As Integer
+    Dim j As Integer
+    Dim chatColor As Long
+        
+    For i = 1 To MAXUSERQUESTS
+        With UserList(UserIndex).QuestStats.Quests(i)
+            If .QuestIndex Then
+                If QuestList(.QuestIndex).RequiredNPCs Then
+                    For j = 1 To QuestList(.QuestIndex).RequiredNPCs
+                        If QuestList(.QuestIndex).RequiredNPC(j).NpcIndex = MiNPC.Numero Then
+                            If QuestList(.QuestIndex).RequiredNPC(j).Amount > .NPCsKilled(j) Then
+                                .NPCsKilled(j) = .NPCsKilled(j) + 1
+                            End If
+                            chatColor = GetNPCProgressColor(.NPCsKilled(j), QuestList(.QuestIndex).RequiredNPC(j).Amount)
+                            Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).Amount & " " & MiNPC.Name, _
+                                    UserList(UserIndex).Char.charindex, chatColor)
+                            If AllRequiredNPCsKilled(UserIndex, .QuestIndex, i) Then
+                                'Msg2160=Ya has matado todas las criaturas que la misión ¬1 requería.
+                                Call WriteLocaleMsg(UserIndex, 2160, e_FontTypeNames.FONTTYPE_INFOIAO, QuestList(.QuestIndex).nombre)
+                            End If
+                        End If
+                    Next j
+                End If
+                UserList(UserIndex).flags.ModificoQuests = True
+            End If
+        End With
+    Next i
+    Exit Sub
+OnNpcKilledUpdateQuest_Err:
+    Call TraceError(Err.Number, Err.Description, "NPCs.OnNpcKilledUpdateQuest_Err", Erl)
+End Sub

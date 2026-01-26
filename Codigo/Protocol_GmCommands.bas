@@ -2359,7 +2359,7 @@ Public Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
                 If x > 0 And y > 0 And x < 101 And y < 101 Then
                     If MapData(.pos.Map, x, y).ObjInfo.ObjIndex > 0 Then
                         If ItemNoEsDeMapa(MapData(.pos.Map, x, y).ObjInfo.ObjIndex) Then
-                            Call EraseObj(MAX_INVENTORY_OBJS, .pos.Map, x, y)
+                            Call EraseObj(GetMaxInvOBJ(), .pos.Map, x, y)
                         End If
                     End If
                 End If
@@ -2499,8 +2499,8 @@ Public Sub HandleCreateItem(ByVal UserIndex As Integer)
         ' Si es Dios, dejamos crear un item siempre y cuando pueda estar en el inventario.
         If (.flags.Privilegios And e_PlayerType.Dios) <> 0 And ObjData(tObj).Agarrable = 1 Then Exit Sub
         ' Si hace mas de 10000, lo sacamos cagando.
-        If Cuantos > MAX_INVENTORY_OBJS Then
-            Call WriteLocaleMsg(UserIndex, 1499, e_FontTypeNames.FONTTYPE_TALK, CStr(MAX_INVENTORY_OBJS)) ' Msg1499=Solo podés crear hasta ¬1 unidades
+        If Cuantos > GetMaxInvOBJ() Then
+            Call WriteLocaleMsg(UserIndex, 1499, e_FontTypeNames.FONTTYPE_TALK, CStr(GetMaxInvOBJ())) ' Msg1499=Solo podés crear hasta ¬1 unidades
             Exit Sub
         End If
         ' El indice proporcionado supera la cantidad minima o total de items existentes en el juego?
@@ -2554,7 +2554,7 @@ Public Sub HandleDestroyItems(ByVal UserIndex As Integer)
         End If
         If MapData(.pos.Map, .pos.x, .pos.y).ObjInfo.ObjIndex = 0 Then Exit Sub
         Call LogGM(.name, "/DEST")
-        Call EraseObj(MAX_INVENTORY_OBJS, .pos.Map, .pos.x, .pos.y)
+        Call EraseObj(GetMaxInvOBJ(), .pos.Map, .pos.x, .pos.y)
     End With
     Exit Sub
 HandleDestroyItems_Err:
@@ -3408,7 +3408,7 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
         Motivo = reader.ReadString8()
         If (.flags.Privilegios And e_PlayerType.Admin) Then
             If ObjData(ObjIndex).Agarrable = 1 Then Exit Sub
-            If Cantidad > MAX_INVENTORY_OBJS Then Cantidad = MAX_INVENTORY_OBJS
+            If Cantidad > GetMaxInvOBJ() Then Cantidad = GetMaxInvOBJ()
             ' El indice proporcionado supera la cantidad minima o total de items existentes en el juego?
             If ObjIndex < 1 Or ObjIndex > NumObjDatas Then Exit Sub
             ' El nombre del objeto es nulo?

@@ -28,6 +28,11 @@ Attribute VB_Name = "InvUsuario"
 Option Explicit
 Private Const PATREON_HEAD = 900
 
+Public Function GetMaxInvOBJ() As Integer
+GetMaxInvOBJ = CInt(SvrConfig.GetValue("MaxInventoryObjs"))
+End Function
+
+
 Public Function IsObjecIndextInInventory(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Boolean
     On Error GoTo IsObjecIndextInInventory_Err
     Debug.Assert UserIndex >= LBound(UserList) And UserIndex <= UBound(UserList)
@@ -169,7 +174,7 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
         For j = 1 To UserList(UserIndex).CurrentInventorySlots
             If UserList(UserIndex).invent.Object(j).ObjIndex > 0 Then
                 If ObjData(UserList(UserIndex).invent.Object(j).ObjIndex).Newbie = 1 Then
-                    Call QuitarUserInvItem(UserIndex, j, MAX_INVENTORY_OBJS)
+                    Call QuitarUserInvItem(UserIndex, j, GetMaxInvOBJ())
                     Call UpdateUserInv(False, UserIndex, j)
                 End If
             End If
@@ -296,8 +301,8 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
             'info debug
             Dim loops As Long
             Do While (Cantidad > 0)
-                If Cantidad > MAX_INVENTORY_OBJS And .Stats.GLD > MAX_INVENTORY_OBJS Then
-                    MiObj.amount = MAX_INVENTORY_OBJS
+                If Cantidad > GetMaxInvOBJ() And .Stats.GLD > GetMaxInvOBJ() Then
+                    MiObj.amount = GetMaxInvOBJ()
                     Cantidad = Cantidad - MiObj.amount
                 Else
                     MiObj.amount = Cantidad
@@ -410,9 +415,9 @@ Sub DropObj(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal num As Integer
                 Suma = num + MapData(.pos.Map, x, y).ObjInfo.amount
                 'Check objeto en el suelo
                 If MapData(.pos.Map, x, y).ObjInfo.ObjIndex = 0 Or (MapData(.pos.Map, x, y).ObjInfo.ObjIndex = obj.ObjIndex And MapData(.pos.Map, x, y).ObjInfo.ElementalTags = _
-                        obj.ElementalTags And Suma <= MAX_INVENTORY_OBJS) Then
-                    If Suma > MAX_INVENTORY_OBJS Then
-                        num = MAX_INVENTORY_OBJS - MapData(.pos.Map, x, y).ObjInfo.amount
+                        obj.ElementalTags And Suma <= GetMaxInvOBJ()) Then
+                    If Suma > GetMaxInvOBJ() Then
+                        num = GetMaxInvOBJ() - MapData(.pos.Map, x, y).ObjInfo.amount
                     End If
                     ' Si sos Admin, Dios o Usuario, crea el objeto en el piso.
                     If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0 Then
@@ -492,7 +497,7 @@ Function GetSlotForItemInInventory(ByVal UserIndex As Integer, ByRef MyObject As
         If UserList(UserIndex).invent.Object(i).ObjIndex = 0 And GetSlotForItemInInventory = -1 Then
             GetSlotForItemInInventory = i 'we found a valid place but keep looking in case we can stack
         ElseIf UserList(UserIndex).invent.Object(i).ObjIndex = MyObject.ObjIndex And UserList(UserIndex).invent.Object(i).ElementalTags = MyObject.ElementalTags And UserList( _
-                UserIndex).invent.Object(i).amount + MyObject.amount <= MAX_INVENTORY_OBJS Then
+                UserIndex).invent.Object(i).amount + MyObject.amount <= GetMaxInvOBJ() Then
             GetSlotForItemInInventory = i 'we can stack the item, let use this slot
             Exit Function
         End If
@@ -539,13 +544,13 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
         UserList(UserIndex).invent.NroItems = UserList(UserIndex).invent.NroItems + 1
     End If
     'Mete el objeto
-    If UserList(UserIndex).invent.Object(Slot).amount + MiObj.amount <= MAX_INVENTORY_OBJS Then
+    If UserList(UserIndex).invent.Object(Slot).amount + MiObj.amount <= GetMaxInvOBJ() Then
         'Menor que MAX_INV_OBJS
         UserList(UserIndex).invent.Object(Slot).ObjIndex = MiObj.ObjIndex
         UserList(UserIndex).invent.Object(Slot).amount = UserList(UserIndex).invent.Object(Slot).amount + MiObj.amount
         UserList(UserIndex).invent.Object(Slot).ElementalTags = MiObj.ElementalTags
     Else
-        UserList(UserIndex).invent.Object(Slot).amount = MAX_INVENTORY_OBJS
+        UserList(UserIndex).invent.Object(Slot).amount = GetMaxInvOBJ()
     End If
     Call UpdateUserInv(False, UserIndex, Slot)
     MeterItemEnInventario = True
@@ -621,6 +626,8 @@ Sub PickObj(ByVal UserIndex As Integer)
                 'Si el obj es oro (12), se muestra la cantidad que agarro arriba del personaje
                 If MiObj.ObjIndex = 12 Then
                     Call WriteTextOverTile(UserIndex, "+" & PonerPuntos(MiObj.amount), UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, RGB(212, 175, 55))
+                Else
+                    Call WriteShowPickUpObj(UserIndex, MiObj.ObjIndex, MiObj.amount)
                 End If
                 Call UserDidPickupItem(UserIndex, MiObj.ObjIndex)
                 If UserList(UserIndex).flags.jugando_captura = 1 Then
@@ -643,9 +650,9 @@ Sub PickObj(ByVal UserIndex As Integer)
             End If
         End If
     Else
-        If Not UserList(UserIndex).flags.UltimoMensaje = 261 Then
-            Call WriteLocaleMsg(UserIndex, 261, e_FontTypeNames.FONTTYPE_INFO)
-            UserList(UserIndex).flags.UltimoMensaje = 261
+        If Not UserList(UserIndex).flags.UltimoMensaje = MSG_PICKUP_UNAVAILABLE Then
+            Call WriteLocaleMsg(UserIndex, MSG_PICKUP_UNAVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
+            UserList(UserIndex).flags.UltimoMensaje = MSG_PICKUP_UNAVAILABLE
         End If
     End If
     Exit Sub
@@ -1148,6 +1155,7 @@ Dim Ropaje                      As Integer
                     .invent.Object(Slot).Equipped = 1
                     .invent.EquippedWeaponObjIndex = .invent.Object(Slot).ObjIndex
                     .invent.EquippedWeaponSlot = Slot
+                    Call ValidateEquippedArrow(UserIndex)
                     If obj.DosManos = 1 Then
                         If .invent.EquippedShieldObjIndex > 0 Then
                             Call Desequipar(UserIndex, .invent.EquippedShieldSlot)
@@ -1328,13 +1336,7 @@ Dim Ropaje                      As Integer
                     Call Desequipar(UserIndex, Slot)
                     Exit Sub
                 End If
-                'Quitamos el elemento anterior
-                If .invent.EquippedMunitionObjIndex > 0 Then
-                    Call Desequipar(UserIndex, .invent.EquippedMunitionSlot)
-                End If
-                .invent.Object(Slot).Equipped = 1
-                .invent.EquippedMunitionObjIndex = .invent.Object(Slot).ObjIndex
-                .invent.EquippedMunitionSlot = Slot
+                Call EquipArrow(UserIndex, Slot)
             Case e_OBJType.otArmor
                 If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eArmor) Then
                     Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
@@ -1376,12 +1378,18 @@ Dim Ropaje                      As Integer
                     Call ActualizarVelocidadDeUsuario(UserIndex)
                     errordesc = "Armadura 3"
                 End If
-                'Si esta equipando armadura faccionaria fuera de zona segura o fuera de trigger seguro
+                'Si esta equipando armadura faccionaria fuera de zona segura o fuera de trigger seguro y no tiene los stats full
                 If Not UserIsLoggingIn Then
                     If obj.Real > 0 Or obj.Caos > 0 Then
                         If Not MapData(.pos.Map, .pos.x, .pos.y).trigger = e_Trigger.ZonaSegura And Not MapInfo(.pos.Map).Seguro = 1 Then
-                            Call WriteLocaleMsg(UserIndex, 2091, e_FontTypeNames.FONTTYPE_INFO)
-                            Exit Sub
+                            If .Stats.MinAGU < .Stats.MaxAGU Or _
+                                .Stats.MinHam < .Stats.MaxHam Or _
+                                .Stats.MinHp < .Stats.MaxHp Or _
+                                .Stats.MinMAN < .Stats.MaxMAN Then
+                                'Msg2091=Solo puedes equipar este objeto si tus estadísticas están al 100%.
+                                Call WriteLocaleMsg(UserIndex, 2091, e_FontTypeNames.FONTTYPE_INFO)
+                                Exit Sub
+                            End If
                         End If
                     End If
                 End If
@@ -1782,6 +1790,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Exit Sub
                 End If
                 If Not .Stats.MinSta > 0 Then
+                    'Msg2129=¡No tengo energía!
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                    'Msg93=Estás muy cansado
                     Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
@@ -1808,6 +1819,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Exit Sub
                 End If
                 If Not .Stats.MinSta > 0 Then
+                    'Msg2129=¡No tengo energía!
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                    'Msg93=Estás muy cansado
                     Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
@@ -1853,9 +1867,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 .flags.TipoPocion = obj.TipoPocion
                 Dim CabezaFinal   As Integer
                 Dim CabezaActual  As Integer
-                ' Esta en Zona de Pelea?
-                Dim triggerStatus As e_Trigger6
-                triggerStatus = TriggerZonaPelea(UserIndex, UserIndex)
                 Select Case .flags.TipoPocion
                     Case e_PotionType.ModifiesAgility    'Modif la agilidad
                         .flags.DuracionEfecto = obj.DuracionEfecto
@@ -1863,7 +1874,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         .Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(.Stats.UserAtributos(e_Atributos.Agilidad) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
                         Call WriteFYA(UserIndex)
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
-                        If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+                        If Not IsConsumableFreeZone(UserIndex) Then
                             ' Quitamos el ítem del inventario
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         End If
@@ -1877,7 +1888,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         'Usa el item
                         .Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(.Stats.UserAtributos(e_Atributos.Fuerza) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
-                        If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+                        If Not IsConsumableFreeZone(UserIndex) Then
                             ' Quitamos el ítem del inventario
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         End If
@@ -1900,7 +1911,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         ' Modifica la salud del jugador
                         Call UserMod.ModifyHealth(UserIndex, HealingAmount)
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
-                        If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+                        If Not IsConsumableFreeZone(UserIndex) Then
                             ' Quitamos el ítem del inventario
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         End If
@@ -1917,7 +1928,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         .Stats.MinMAN = IIf(.Stats.MinMAN > 20000, 20000, .Stats.MinMAN + Porcentaje(.Stats.MaxMAN, porcentajeRec))
                         If .Stats.MinMAN > .Stats.MaxMAN Then .Stats.MinMAN = .Stats.MaxMAN
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
-                        If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+                        If Not IsConsumableFreeZone(UserIndex) Then
                             ' Quitamos el ítem del inventario
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         End If
@@ -1970,7 +1981,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         .Stats.MinSta = .Stats.MinSta + RandomNumber(obj.MinModificador, obj.MaxModificador)
                         If .Stats.MinSta > .Stats.MaxSta Then .Stats.MinSta = .Stats.MaxSta
                         'Quitamos del inv el item
-                        If Not IsPotionFreeZone(UserIndex, triggerStatus) Then
+                        If Not IsConsumableFreeZone(UserIndex) Then
                             ' Quitamos el ítem del inventario
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         End If
@@ -2754,7 +2765,7 @@ End Sub
 ' Returns:     Boolean - True if the user is in a potion-free zone
 '                       False if the potion should be consumed
 '**************************************************************
-Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatus As e_Trigger6) As Boolean
+Public Function IsConsumableFreeZone(ByVal UserIndex As Integer) As Boolean
     Dim currentMap     As Integer
     Dim isTriggerZone  As Boolean
     Dim isTierUser     As Boolean
@@ -2762,6 +2773,9 @@ Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatu
     Dim isSpecialZone  As Boolean
     Dim isTrainingZone As Boolean
     Dim isArena        As Boolean
+    Dim triggerStatus As e_Trigger6
+
+    triggerStatus = TriggerZonaPelea(UserIndex, UserIndex)
     ' Obtener el mapa actual del usuario
     currentMap = UserList(UserIndex).pos.Map
     ' Verificar si está en zona con trigger activo
@@ -2783,7 +2797,7 @@ Private Function IsPotionFreeZone(ByVal UserIndex As Integer, ByVal triggerStatu
     ' Meson Hostigado - Beneficio Patreon: mapa 172, con trigger activo y jugador con tier
     isTrainingZone = (currentMap = MAP_MESON_HOSTIGADO And isTriggerZone And isTierUser)
     ' Si esta en alguna de las zonas anteriores, no se consume la poción
-    IsPotionFreeZone = (isHouseZone Or isSpecialZone Or isTrainingZone Or isArena)
+    IsConsumableFreeZone = (isHouseZone Or isSpecialZone Or isTrainingZone Or isArena)
 End Function
 
 Sub EnivarArmasConstruibles(ByVal UserIndex As Integer)
@@ -2971,6 +2985,9 @@ Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer
                 Exit Sub
             End If
             If .MinSta > UserList(UserIndex).Stats.MinSta Then
+                'Msg2129=¡No tengo energía!
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                'Msg420=Estas muy cansado para realizar esta acción.
                 Call WriteLocaleMsg(UserIndex, MsgTiredToPerformAction, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -3027,7 +3044,9 @@ Public Sub ResurrectWithItem(ByVal UserIndex As Integer)
         Dim ObjIndex As Integer
         ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
         Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
-        Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.UsingItemSlot)
+        If Not IsConsumableFreeZone(UserIndex) Then
+            Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.UsingItemSlot)
+        End If
         Call ResurrectUser(TargetUser)
         If IsFeatureEnabled("remove-inv-on-attack") Then
             Call RemoveUserInvisibility(UserIndex)
@@ -4060,3 +4079,98 @@ SkinRequireObject_Error:
     Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.SkinRequireObject", Erl())
     
 End Function
+Public Sub EquipArrow(ByVal UserIndex As Integer, ByVal Slot As Integer)
+    On Error GoTo EquipArrow_Error
+    Dim bowIndex  As Integer
+    Dim BowCategory   As Byte
+    Dim ArrowCategory As Byte
+    Dim ArrowObjIndex As Integer
+    Dim maxItemsInventory As Integer
+
+    With UserList(UserIndex).invent
+        maxItemsInventory = get_num_inv_slots_from_tier(UserList(UserIndex).Stats.tipoUsuario)
+        If Slot < 1 Or Slot > maxItemsInventory Then
+            Call LogError("EquipArrow invalid slot: " & Slot & " max=" & maxItemsInventory & " user=" & UserList(UserIndex).name)
+            Exit Sub
+        End If
+
+        ArrowObjIndex = .Object(Slot).ObjIndex
+        If ArrowObjIndex < LBound(ObjData) Or ArrowObjIndex > UBound(ObjData) Then
+            Call LogError("EquipArrow invalid arrow index: " & ArrowObjIndex & " slot=" & Slot & " user=" & UserList(UserIndex).name)
+            Exit Sub
+        End If
+        Debug.Assert ObjData(ArrowObjIndex).OBJType = e_OBJType.otArrows
+
+        bowIndex = .EquippedWeaponObjIndex
+        
+        ' No hay arco equipado
+        If bowIndex <= 0 Then
+            'Msg2145=Debes equipar un arco para usar flechas.
+            Call WriteLocaleMsg(UserIndex, 2145, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
+        If bowIndex < LBound(ObjData) Or bowIndex > UBound(ObjData) Then
+            Call LogError("EquipArrow invalid bow index: " & bowIndex & " user=" & UserList(UserIndex).name)
+            Exit Sub
+        End If
+        BowCategory = ObjData(bowIndex).BowCategory
+        ArrowCategory = ObjData(ArrowObjIndex).ArrowCategory
+
+        ' El arma equipada no es un arco
+        If ObjData(bowIndex).WeaponType <> eBow Then
+            'Msg2146=El arma equipada no permite usar flechas.
+            Call WriteLocaleMsg(UserIndex, 2146, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
+        ' No se permite flecha de mayor categoria que el arco
+        If ArrowCategory > BowCategory Then
+            'Msg2147=No podés equipar esta flecha con el arco actual.
+            Call WriteLocaleMsg(UserIndex, 2147, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
+        ' Quitar flecha previa
+        If .EquippedMunitionObjIndex > 0 Then
+            Call Desequipar(UserIndex, .EquippedMunitionSlot)
+        End If
+
+        ' Equipar flecha
+        .Object(Slot).Equipped = 1
+        .EquippedMunitionObjIndex = ArrowObjIndex
+        .EquippedMunitionSlot = Slot
+    End With
+    Exit Sub
+EquipArrow_Error:
+    Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.EquipArrow", Erl())
+End Sub
+Public Sub ValidateEquippedArrow(ByVal UserIndex As Integer)
+    On Error GoTo ValidateEquippedArrow_Error
+    Dim bowIndex   As Integer
+    Dim arrowIndex As Integer
+
+    With UserList(UserIndex).invent
+        arrowIndex = .EquippedMunitionObjIndex
+        bowIndex = .EquippedWeaponObjIndex
+
+        ' No hay flecha equipada ? nada que validar
+        If arrowIndex <= 0 Then Exit Sub
+
+        ' No hay arma equipada ? no hacer nada
+        If bowIndex <= 0 Then Exit Sub
+
+        ' El arma equipada no es un arco ? no hacer nada
+        If ObjData(bowIndex).WeaponType <> eBow Then Exit Sub
+
+        ' Se desequipa la flecha al cambiar a un arco de menor categoría
+        If ObjData(bowIndex).BowCategory < ObjData(arrowIndex).ArrowCategory Then
+            Call Desequipar(UserIndex, .EquippedMunitionSlot)
+            'Msg2148=La flecha fue desequipada porque no es compatible con el arco actual.
+            Call WriteLocaleMsg(UserIndex, 2148, e_FontTypeNames.FONTTYPE_INFO)
+        End If
+    End With
+    Exit Sub
+ValidateEquippedArrow_Error:
+    Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.ValidateEquippedArrow", Erl())
+End Sub

@@ -28,6 +28,22 @@ Attribute VB_Name = "modMessageIDs"
 Option Explicit
     
     
+Public Const MSG_PARALYZED                                  As Integer = 1123
+Public Const MSG_ALREADY_HIDDEN                             As Integer = 1127
+Public Const MSG_CANNOT_HIDE_MOUNTED                        As Integer = 704
+Public Const MSG_HIDE_FAILED                                As Integer = 57
+Public Const MSG_TAME_FAILED                                As Integer = 659
+Public Const MSG_MAP_NEWBIE_ONLY                            As Integer = 771
+Public Const MSG_MAP_ONLY_CITIZENS                          As Integer = 772
+Public Const MSG_MAP_ONLY_CRIMINALS                         As Integer = 773
+Public Const MSG_MAP_REQUIRES_CLAN                          As Integer = 774
+Public Const MSG_MAP_MIN_LEVEL                              As Integer = 1108
+Public Const MSG_MAP_MAX_LEVEL                              As Integer = 1109
+Public Const MSG_MAP_REQUIRES_GROUP                         As Integer = 775
+Public Const MSG_MAP_REQUIRES_PATREON                       As Integer = 776
+Public Const MSG_TILE_REQUIRES_PATREON                      As Integer = 776
+Public Const MSG_PICKUP_UNAVAILABLE                         As Integer = 261
+
 Public Const MSG_CLIENT_UPDATE_REQUIRED                        As Integer = 2092
 Public Const MSG_INVALID_SESSION_TOKEN                         As Integer = 2093
 Public Const MSG_CONNECTION_SLOT_ERROR                         As Integer = 2094
@@ -47,3 +63,36 @@ Public Const MSG_CANNOT_USE_HOME_IN_JAIL                       As Integer = 2112
 Public Const MAP_HOME_IN_JAIL                                  As Integer = 66
 Public Const MSG_QUEST_ALREADY_COMPLETED                       As Integer = 2114
 
+' Msg2117 = You need to have ¬1 equipped to perform this action.
+Public Const MSG_REMOVE_NEED_EQUIPPED As Integer = 2117
+
+' Msg2118 = Pay attention! You lost your net, it got caught on the special fish.
+Public Const MSG_REMOVE_NET_LOST As Integer = 2118
+
+' Msg2119 = Pay attention! You almost lost your net to the special fish.
+Public Const MSG_REMOVE_NET_ALMOST_LOST As Integer = 2119
+
+' Msg2120 = Pay attention! You almost lost your fishing rod to the special fish.
+Public Const MSG_REMOVE_ALMOST_YOUR_FISHING As Integer = 2120
+
+' Message IDs used for faction connection notifications (randomized variants).
+Public Const MSG_CONNECTION_ROYAL_ARMY_1 As Integer = 2133
+Public Const MSG_CONNECTION_ROYAL_ARMY_2 As Integer = 2134
+Public Const MSG_CONNECTION_ROYAL_ARMY_3 As Integer = 2135
+Public Const MSG_CONNECTION_ROYAL_ARMY_4 As Integer = 2136
+Public Const MSG_CONNECTION_ROYAL_ARMY_5 As Integer = 2137
+Public Const MSG_CONNECTION_ROYAL_ARMY_6 As Integer = 2138
+Public Const MSG_CONNECTION_ROYAL_ARMY_7 As Integer = 2139
+Public Const MSG_CONNECTION_ROYAL_ARMY_8 As Integer = 2140
+Public Const MSG_CONNECTION_ROYAL_ARMY_9 As Integer = 2141
+Public Const MSG_CONNECTION_ROYAL_ARMY_10 As Integer = 2142
+Public Const MSG_CONNECTION_DARK_LEGION_1 As Integer = 2149
+Public Const MSG_CONNECTION_DARK_LEGION_2 As Integer = 2150
+Public Const MSG_CONNECTION_DARK_LEGION_3 As Integer = 2151
+Public Const MSG_CONNECTION_DARK_LEGION_4 As Integer = 2152
+Public Const MSG_CONNECTION_DARK_LEGION_5 As Integer = 2153
+Public Const MSG_CONNECTION_DARK_LEGION_6 As Integer = 2154
+Public Const MSG_CONNECTION_DARK_LEGION_7 As Integer = 2155
+Public Const MSG_CONNECTION_DARK_LEGION_8 As Integer = 2156
+Public Const MSG_CONNECTION_DARK_LEGION_9 As Integer = 2157
+Public Const MSG_CONNECTION_DARK_LEGION_10 As Integer = 2158

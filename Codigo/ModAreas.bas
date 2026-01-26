@@ -231,7 +231,7 @@ Private Sub NotifyUser(ByVal UserNotificado As Integer, ByVal UserIngresante As 
                 sendChar = False
             End If
         ElseIf UserList(UserNotificado).flags.Muerto = 1 And MapInfo(.pos.Map).Seguro = 0 And (UserList(UserNotificado).GuildIndex = 0 Or UserList(UserNotificado).GuildIndex <> _
-                UserList(UserIngresante).GuildIndex Or modGuilds.NivelDeClan(UserList(UserIngresante).GuildIndex) < 6) And Not IsSet(UserList(UserIngresante).flags.StatusMask, _
+                UserList(UserIngresante).GuildIndex Or modGuilds.NivelDeClan(UserList(UserIngresante).GuildIndex) < RequiredGuildLevelSeeInvisible) And Not IsSet(UserList(UserIngresante).flags.StatusMask, _
                 e_StatusMask.eTalkToDead) Then
             sendChar = False
         End If

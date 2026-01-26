@@ -146,7 +146,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
         Next a
     End With
     With UserList(UserIndexEchar)
-        Call WriteLocaleMsg(UserIndex, 2054, .name, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2054="¬1 fue expulsado del grupo."
+        Call WriteLocaleMsg(UserIndex, 2054, e_FontTypeNames.FONTTYPE_New_GRUPO, .name) ' Msg2054="¬1 fue expulsado del grupo."
         Call WriteLocaleMsg(UserIndexEchar, "37", e_FontTypeNames.FONTTYPE_New_GRUPO)
         .Grupo.EnGrupo = False
         Call SetUserRef(.Grupo.Lider, 0)

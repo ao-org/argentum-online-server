@@ -30,6 +30,20 @@ Option Explicit
 ''
 ' Modulo de declaraciones. Aca hay de todo.
 '
+
+Public Enum e_WorkingToolSubType
+        FishingRod = 1
+        FishingNet = 2
+        AlchemyScissors = 3
+        AlchemyCauldron = 4
+        CarpentryHacksaw = 5
+        FellingAxe = 6
+        SmithHammer = 7
+        MinerPickaxe = 8
+        TailorSewingbox = 9
+End Enum
+
+
 Public Enum e_PotionType
     ModifiesAgility = 1
     ModifiesStrength = 2
@@ -72,6 +86,8 @@ Public Enum e_RoyalArmyRanks
     ThirdHierarchy = 3
     FourthHierarchy = 4
     FifthHierarchy = 5
+    SixthHierarchy = 6
+    SeventhHierarchy = 7
 End Enum
 
 Public Enum e_ChaosArmyRanks
@@ -81,6 +97,8 @@ Public Enum e_ChaosArmyRanks
     ThirdHierarchy = 3
     FourthHierarchy = 4
     FifthHierarchy = 5
+    SixthHierarchy = 6
+    SeventhHierarchy = 7
 End Enum
 
 Public Enum e_elecciones
@@ -630,6 +648,7 @@ Public Enum e_SoundEffects
     'Repetido = 1152
     SnowStorm = 2000
     'Imperium 2028 - 2186
+    FailToExtractOre = 2185
     NewApunialar = 2187
     MortarLaunch = 2222
     RoarDinosaur = 2323
@@ -642,14 +661,29 @@ Public Enum e_SoundEffects
     CupDice = 10000
 End Enum
 
-Public Enum e_Meditaciones
-    MeditarInicial = 115
-    MeditarMayor15 = 116
-    MeditarMayor30 = 117
-    MeditarMayor40 = 118
-    MeditarMayor45 = 119
-    MeditarMayor47 = 120
-End Enum
+'Meditaciones
+Public MeditationLevel1to12 As Integer
+Public MeditationLevel13to17 As Integer
+Public MeditationLevel18to24 As Integer
+Public MeditationLevel25to28 As Integer
+Public MeditationLevel29to32 As Integer
+Public MeditationLevel33to36 As Integer
+Public MeditationLevel37to39 As Integer
+Public MeditationLevel40to42 As Integer
+Public MeditationLevel43to44 As Integer
+Public MeditationLevel45to46 As Integer
+Public MeditationLevelMax As Integer
+'Meditaciones criminales
+Public MeditationCriminalLevel1to12 As Integer
+Public MeditationCriminalLevel13to17 As Integer
+Public MeditationCriminalLevel18to24 As Integer
+Public MeditationCriminalLevel25to28 As Integer
+Public MeditationCriminalLevel29to32 As Integer
+Public MeditationCriminalLevel33to36 As Integer
+Public MeditationCriminalLevel37to39 As Integer
+Public MeditationCriminalLevel40to42 As Integer
+Public MeditationCriminalLevel43to44 As Integer
+Public MeditationCriminalLevel45to46 As Integer
 
 Public Enum e_GraphicEffects 'Image sequenced fxs like paralizar PrepareMessageCreateFX() or family of functions CreateFX()
     OldGmWarp = 1
@@ -1100,6 +1134,7 @@ Public Enum e_Trigger
     VALIDOPUENTE = 17
     NADOCOMBINADO = 18
     CARCEL = 19
+    ONLY_PATREON_TILE = 20
 End Enum
 
 Public Enum e_NpcInfoMask
@@ -1155,11 +1190,15 @@ Public Enum e_UsersInfoMask2
     ArmyThirdHierarchy = 256
     ArmyFourthHierarchy = 512
     ArmyFifthHierarchy = 1024
-    ChaosFirstHierarchy = 2048
-    ChaosSecondHierarchy = 4096
-    ChaosThirdHierarchy = 8192
-    ChaosFourthHierarchy = 16384
-    ChaosFifthHierarchy = 32768
+    ArmySixthHierarchy = 2048
+    ArmySeventhHierarchy = 4096
+    ChaosFirstHierarchy = 8192
+    ChaosSecondHierarchy = 16384
+    ChaosThirdHierarchy = 32768
+    ChaosFourthHierarchy = 65536
+    ChaosFifthHierarchy = 131072
+    ChaosSixthHierarchy = 262144
+    ChaosSeventhHierarchy = 524288
 End Enum
 
 ''
@@ -1237,8 +1276,8 @@ Public Const ElvenWood                        As Integer = 2781 'OK
 Public Const Raices                           As Integer = 888 'OK
 Public Const Botella                          As Integer = 2097 'OK
 Public Const Cuchara                          As Integer = 163 'OK
-Public Const Mortero                          As Integer = 4304
-Public Const FrascoAlq                        As Integer = 4305
+Public Const Mortero                          As Integer = 4997
+Public Const FrascoAlq                        As Integer = 3075
 Public Const FrascoElixir                     As Integer = 4306
 Public Const Dosificador                      As Integer = 4307
 Public Const Orquidea                         As Integer = 4308
@@ -1445,7 +1484,7 @@ Public Const POCION_RESET            As Long = 3378
 Public Const MAXUSERQUESTS           As Integer = 5     'Maxima cantidad de quests que puede tener un usuario al mismo tiempo.
 ''
 ' Cantidad maxima de objetos por slot de inventario
-Public Const MAX_INVENTORY_OBJS      As Integer = 10000
+Public Const DEFAULT_MAX_INVENTORY_OBJS As Integer = 10000
 ''
 ' Cantidad de "slots" en el inventario con todos los slots desbloqueados
 Public Const MAX_INVENTORY_SLOTS     As Byte = 42
@@ -1533,11 +1572,6 @@ End Enum
 Public Enum e_TeleportSubType
     eTeleport = 1
     eTransportNetwork = 2
-End Enum
-
-Public Enum e_ToolsSubtype
-    eFishingRod = 1
-    eFishingNet = 2
 End Enum
 
 Public Enum e_MagicItemSubType
@@ -1769,6 +1803,8 @@ Public Type t_Hechizo
     EotId As Integer
     SpellRequirementMask As Long
     RequireWeaponType As e_WeaponType
+    MaxLevelCasteable As Byte
+    IsElementalTagsOnly As Boolean
 End Type
 
 Public Type t_ActiveModifiers
@@ -2080,6 +2116,8 @@ Public Type t_Quest
     RewardSpellCount As Byte
     RewardSpellList() As Integer
     Repetible As Byte
+    GlobalQuestIndex As Integer
+    GlobalQuestThresholdNeeded As Long
 End Type
 
 ' ******************* RETOS ************************
@@ -2359,6 +2397,8 @@ Public Type t_ObjData
     ElementalTags As Long
     Camouflage As Boolean
     RequiereObjeto                  As Integer
+    BowCategory As Byte
+    ArrowCategory As Byte
 End Type
 
 '[Pablo ToxicWaste]
@@ -2472,7 +2512,7 @@ Public Type t_UserStats
     UsuariosMatados As Long
     PuntosPesca As Long
     CriminalesMatados As Long
-    NPCsMuertos As Integer
+    NPCsMuertos As Long
     SkillPts As Integer
     Advertencias As Byte
     NumObj_PezEspecial As Integer
@@ -2510,6 +2550,14 @@ Public Enum e_InventorySlotMask
     eMagicItem = 32
     eTool = 64
 End Enum
+
+Public Type t_AutomatedAction
+    x As Byte
+    y As Byte
+    skill As e_Skill
+    StartingTime As Long
+    IsActive As Boolean
+End Type
 
 'Flags
 Public Type t_UserFlags
@@ -2604,7 +2652,7 @@ Public Type t_UserFlags
     Ban As Byte
     AdministrativeBan As Byte
     BanMotivo As String
-    targetUser As t_UserReference ' Usuario señalado
+    TargetUser As t_UserReference ' Usuario señalado
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer
     TargetObjX As Integer
@@ -2817,6 +2865,22 @@ Public Type t_UserTrabajo
     Cantidad As Long
 End Type
 
+Public Type t_UserPersistQuestSnapshot
+    QuestIndex As Integer
+    NPCsKilled() As Integer
+    NPCsTarget() As Integer
+End Type
+
+Public Type t_UserPersistSnapshot
+    LastSpells(1 To MAXUSERHECHIZOS) As Integer
+    LastInventory(1 To MAX_INVENTORY_SLOTS) As t_UserOBJ
+    LastBank(1 To MAX_BANCOINVENTORY_SLOTS) As t_UserOBJ
+    LastSkills(1 To NUMSKILLS) As Integer
+    LastPetType(1 To MAXMASCOTAS) As Integer
+    LastQuests(1 To MAXUSERQUESTS) As t_UserPersistQuestSnapshot
+    LastQuestsDone() As Integer
+End Type
+
 Type Tgrupo
     EnGrupo As Boolean
     CantidadMiembros As Byte
@@ -2944,6 +3008,7 @@ Public Type t_User
     KeyCrypt As Integer
     AreasInfo As t_AreaInfo
     QuestStats As t_QuestStats
+    Persist As t_UserPersistSnapshot
     Keys(1 To MAXKEYS) As Integer
     HotkeyList(HotKeyCount) As t_HotkeyEntry
     CraftInventory(1 To MAX_SLOTS_CRAFTEO) As Integer
@@ -2956,6 +3021,7 @@ Public Type t_User
     MacroIterations(1 To MAX_PACKET_COUNTERS) As Long
     PacketTimers(1 To MAX_PACKET_COUNTERS) As Long
     PacketCounters(1 To MAX_PACKET_COUNTERS) As Long
+    AutomatedAction As t_AutomatedAction
 End Type
 
 Public MacroIterations(1 To MAX_PACKET_COUNTERS)      As Long
@@ -3063,6 +3129,7 @@ Public Type t_NPCFlags
     BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
     team As Byte
+    GlobalQuestBossIndex As Integer
     ElementalTags As Long
 End Type
 
@@ -3132,6 +3199,7 @@ Public Type t_NpcInfoCache
     nivel As Integer
     Movement As Integer
     AguaValida As Integer
+    GlobalQuestBossIndex As Integer
     TierraInvalida As Integer
     Faccion As Integer
     ElementalTags As Long

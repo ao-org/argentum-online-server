@@ -611,6 +611,10 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             Call WriteLocaleMsg(UserIndex, 1636, e_FontTypeNames.FONTTYPE_INFO, Hechizos(HechizoIndex).MinSkill) 'Msg1636=No tienes suficientes puntos de magia para lanzar este hechizo, necesitas ¬1 puntos.
             Exit Function
         End If
+        If Hechizos(HechizoIndex).MaxLevelCasteable > 0 And .Stats.ELV > Hechizos(HechizoIndex).MaxLevelCasteable Then
+            Call WriteLocaleMsg(UserIndex, 2116, e_FontTypeNames.FONTTYPE_INFO, Hechizos(HechizoIndex).MaxLevelCasteable) 'Msg2116=Para lanzar este hechizo debes ser nivel ¬1 o inferior.
+            Exit Function
+        End If
         If .Stats.MinHp < Hechizos(HechizoIndex).RequiredHP Then
             Call WriteLocaleMsg(UserIndex, 1637, e_FontTypeNames.FONTTYPE_INFO, Hechizos(HechizoIndex).RequiredHP) 'Msg1637=No tienes suficiente vida. Necesitas ¬1 puntos de vida.
             Exit Function
@@ -620,7 +624,10 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             Exit Function
         End If
         If .Stats.MinSta < Hechizos(HechizoIndex).StaRequerido Then
+            'Msg93=Estás muy cansado
             Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
+            'Msg2129=¡No tengo energía!
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
             Exit Function
         End If
         If .clase = e_Class.Mage And Not IsFeatureEnabled("remove-staff-requirements") Then
@@ -769,7 +776,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                     End If
                 End If
                 If .NroMascotas < MAXMASCOTAS Then
-                    ind = SpawnNpc(Hechizos(h).NumNpc, TargetPos, True, False, False, UserIndex)
+                    ind = SpawnNpc(Hechizos(h).NumNpc, TargetPos, False, False, False, UserIndex, Hechizos(h).wav)
                     If ind > 0 Then
                         .NroMascotas = .NroMascotas + 1
                         Index = FreeMascotaIndex(UserIndex)
@@ -1930,7 +1937,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         End If
         If UserList(targetUserIndex).flags.Inmovilizado = 1 Then
             UserList(targetUserIndex).Counters.Inmovilizado = 0
-            If UserList(targetUserIndex).clase = e_Class.Warrior Or UserList(targetUserIndex).clase = e_Class.Hunter Or UserList(targetUserIndex).clase = e_Class.Thief Or _
+            If UserList(targetUserIndex).clase = e_Class.Warrior Or UserList(targetUserIndex).clase = e_Class.Thief Or _
                     UserList(targetUserIndex).clase = e_Class.Pirat Then
                 UserList(targetUserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
             End If
@@ -1940,7 +1947,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         End If
         If UserList(targetUserIndex).flags.Paralizado = 1 Then
             UserList(targetUserIndex).flags.Paralizado = 0
-            If UserList(targetUserIndex).clase = e_Class.Warrior Or UserList(targetUserIndex).clase = e_Class.Hunter Or UserList(targetUserIndex).clase = e_Class.Thief Or _
+            If UserList(targetUserIndex).clase = e_Class.Warrior Or UserList(targetUserIndex).clase = e_Class.Thief Or _
                     UserList(targetUserIndex).clase = e_Class.Pirat Then
                 UserList(targetUserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
             End If
@@ -2375,6 +2382,21 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
             b = False
         End If
     ElseIf IsSet(Hechizos(hIndex).Effects, e_SpellEffects.eDoDamage) Then
+        If Hechizos(hIndex).IsElementalTagsOnly Then
+            If NpcList(NpcIndex).flags.ElementalTags = 0 Then
+                Call WriteLocaleMsg(UserIndex, 2125, e_FontTypeNames.FONTTYPE_INFOIAO)
+                Exit Sub
+            End If
+            If UserList(UserIndex).invent.EquippedWeaponObjIndex = 0 Then
+                Call WriteLocaleMsg(UserIndex, 2126, e_FontTypeNames.FONTTYPE_INFOIAO)
+                Exit Sub
+            Else
+                If ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).ElementalTags = 0 And UserList(UserIndex).invent.Object(UserList(UserIndex).invent.EquippedWeaponSlot).ElementalTags = 0 Then
+                    Call WriteLocaleMsg(UserIndex, 2126, e_FontTypeNames.FONTTYPE_INFOIAO)
+                    Exit Sub
+                End If
+            End If
+        End If
         UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
         Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
         If UserAttackInteractionResult.CanAttack Then
@@ -3646,7 +3668,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         If UserList(tU).flags.Inmovilizado = 1 Then
             UserList(tU).Counters.Inmovilizado = 0
             UserList(tU).flags.Inmovilizado = 0
-            If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Hunter Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
+            If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
                 UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
             End If
             Call WriteInmovilizaOK(tU)
@@ -3656,7 +3678,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         If UserList(tU).flags.Paralizado = 1 Then
             UserList(tU).Counters.Paralisis = 0
             UserList(tU).flags.Paralizado = 0
-            If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Hunter Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
+            If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
                 UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
             End If
             Call WriteParalizeOK(tU)
@@ -4070,7 +4092,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
         If UserList(NpcIndex).flags.Inmovilizado = 1 Then
             UserList(NpcIndex).Counters.Inmovilizado = 0
             UserList(NpcIndex).flags.Inmovilizado = 0
-            If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Hunter Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = _
+            If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = _
                     e_Class.Pirat Then
                 UserList(NpcIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
             End If
@@ -4078,7 +4100,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
         End If
         If UserList(NpcIndex).flags.Paralizado = 1 Then
             UserList(NpcIndex).flags.Paralizado = 0
-            If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Hunter Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = _
+            If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = _
                     e_Class.Pirat Then
                 UserList(NpcIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
             End If
@@ -4126,7 +4148,7 @@ AreaHechizo_Err:
     Call TraceError(Err.Number, Err.Description, "modHechizos.AreaHechizo", Erl)
 End Sub
 
-Private Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+Public Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     Dim BaseHit       As Integer
     Dim BonusDamage   As Single
     Dim BonusFromItem As Integer

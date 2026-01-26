@@ -26,12 +26,6 @@ Begin VB.Form frmMain
    ScaleHeight     =   6255
    ScaleWidth      =   8595
    StartUpPosition =   2  'CenterScreen
-   Begin VB.Timer TimerBarco 
-      Enabled         =   0   'False
-      Interval        =   12000
-      Left            =   7200
-      Top             =   4560
-   End
    Begin VB.Timer tControlHechizos 
       Left            =   4440
       Top             =   4800
@@ -357,12 +351,6 @@ Begin VB.Form frmMain
       Enabled         =   0   'False
       Interval        =   1000
       Left            =   720
-      Top             =   3060
-   End
-   Begin VB.Timer GameTimer 
-      Enabled         =   0   'False
-      Interval        =   40
-      Left            =   1200
       Top             =   3060
    End
    Begin VB.Timer tPiqueteC 
@@ -888,203 +876,6 @@ Handler:
     Call TraceError(Err.Number, Err.Description, "frmMain.TiempoRetos_Timer")
 End Sub
 
-Private Sub TimerBarco_Timer()
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
-    Call UpdateBarcoForgatNix
-    Call UpdateBarcoNixArghal
-    Call UpdateBarcoArghalForgat
-    Call MsnEnbarque(ForgatDock)
-    Call MsnEnbarque(ArghalDock)
-    Call MsnEnbarque(NixDock)
-    Call PerformTimeLimitCheck(PerformanceTimer, "TimerBarco_Timer", 100)
-End Sub
-
-Private Function GetPassSlot(ByVal UserIndex As Integer) As Integer
-    Dim i As Integer
-    With UserList(UserIndex)
-        For i = 1 To UBound(.invent.Object)
-            ' Le saco el item requerido de Forgat a Nix
-            ' Es el mismo item que de Nix a Arghal y de Arghal a Forgat
-            If .invent.Object(i).ObjIndex = BarcoNavegandoForgatNix.RequiredPassID Then
-                GetPassSlot = i
-                Exit Function
-            End If
-        Next
-    End With
-    GetPassSlot = -1
-End Function
-
-Private Sub MsnEnbarque(ByRef ShipInfo As t_Transport)
-    On Error GoTo SendToMap_Err
-    Dim LoopC     As Long
-    Dim tempIndex As Integer
-    If Not MapaValido(ShipInfo.Map) Then Exit Sub
-    For LoopC = 1 To ConnGroups(ShipInfo.Map).CountEntrys
-        tempIndex = ConnGroups(ShipInfo.Map).UserEntrys(LoopC)
-        If UserList(tempIndex).ConnectionDetails.ConnIDValida And UserList(tempIndex).pos.x >= ShipInfo.startX And UserList(tempIndex).pos.x <= ShipInfo.EndX And UserList( _
-                tempIndex).pos.y >= ShipInfo.startY And UserList(tempIndex).pos.y <= ShipInfo.EndY Then
-            If Not GetPassSlot(tempIndex) > 0 Then
-                Call WriteLocaleMsg(tempIndex, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
-            Else
-                Call WriteLocaleMsg(tempIndex, MsgStartingTrip, e_FontTypeNames.FONTTYPE_GUILD)
-            End If
-        End If
-    Next LoopC
-    Exit Sub
-SendToMap_Err:
-    Call TraceError(Err.Number, Err.Description, "modSendData.SendToMap", Erl)
-End Sub
-
-Private Sub UpdateBarcoForgatNix()
-    Dim TileX, TileY As Integer
-    Dim User      As Integer
-    Dim PassFound As Boolean
-    Dim PassSlot  As Integer
-    ' Modificado por Shugar 5/6/24
-    ' Viaje de Forgat a Nix
-    ' Verificar si el barco está en un muelle:
-    ' Para ver si está en el muelle o no, miramos hay un NpcIndex en Map DockX DockY del mapa BarcoNavegando.
-    ' Ese Npc solía ser un muelle, y se usa de referencia para saber si el barco partió o sigue quieto.
-    ' Si no hay NPC ahí es que el barco está navegando, por lo tanto no hay movimiento de pasajeros.
-    If MapData(BarcoNavegandoForgatNix.Map, BarcoNavegandoForgatNix.DockX, BarcoNavegandoForgatNix.DockY).NpcIndex = 0 Then
-        Exit Sub
-    End If
-    ' Desembarcar: bajamos del barco a los usuarios que llegan a Nix
-    ' Para cada tile en el área del barco
-    For TileX = BarcoNavegandoForgatNix.startX To BarcoNavegandoForgatNix.EndX
-        For TileY = BarcoNavegandoForgatNix.startY To BarcoNavegandoForgatNix.EndY
-            ' Si hay un usuario en el tile del barco
-            User = MapData(BarcoNavegandoForgatNix.Map, TileX, TileY).UserIndex
-            If User > 0 Then
-                ' Enviar usuario a Nix
-                Call WarpToLegalPos(User, NixDock.Map, NixDock.DestX, NixDock.DestY, True)
-                Call WriteLocaleMsg(User, MsgThanksForTravelNix, e_FontTypeNames.FONTTYPE_GUILD)
-            End If
-        Next TileY
-    Next TileX
-    ' Embarcacar: subimos al barco a los usuarios que salen de Forgat
-    ' Para cada tile en el área del muelle de Forgat
-    For TileX = ForgatDock.startX To ForgatDock.EndX
-        For TileY = ForgatDock.startY To ForgatDock.EndY
-            ' Si hay un usuario en el tile del muelle
-            User = MapData(ForgatDock.Map, TileX, TileY).UserIndex
-            If User > 0 Then
-                ' Sacarle el pasaje y moverlo al barco navegando
-                PassSlot = GetPassSlot(User)
-                If PassSlot > 0 Then
-                    Call WriteLocaleMsg(User, MsgPassForgat, e_FontTypeNames.FONTTYPE_GUILD)
-                    Call QuitarUserInvItem(User, PassSlot, 1)
-                    Call UpdateUserInv(False, User, PassSlot)
-                    Call WarpToLegalPos(User, BarcoNavegandoForgatNix.Map, BarcoNavegandoForgatNix.DestX, BarcoNavegandoForgatNix.DestY, True)
-                Else
-                    Call WriteLocaleMsg(User, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
-                End If
-            End If
-        Next TileY
-    Next TileX
-End Sub
-
-Private Sub UpdateBarcoNixArghal()
-    Dim TileX, TileY As Integer
-    Dim User      As Integer
-    Dim PassFound As Boolean
-    Dim PassSlot  As Integer
-    ' Modificado por Shugar 5/6/24
-    ' Viaje de Nix a Arghal
-    ' Verificar si el barco está en un muelle:
-    ' Para ver si está en el muelle o no, miramos hay un NpcIndex en Map DockX DockY del mapa BarcoNavegando.
-    ' Ese Npc solía ser un muelle, y se usa de referencia para saber si el barco partió o sigue quieto.
-    ' Si no hay NPC ahí es que el barco está navegando, por lo tanto no hay movimiento de pasajeros.
-    If MapData(BarcoNavegandoNixArghal.Map, BarcoNavegandoNixArghal.DockX, BarcoNavegandoNixArghal.DockY).NpcIndex = 0 Then
-        Exit Sub
-    End If
-    ' Desembarcar: bajamos del barco a los usuarios que llegan a Arghal
-    ' Para cada tile en el área del barco
-    For TileX = BarcoNavegandoNixArghal.startX To BarcoNavegandoNixArghal.EndX
-        For TileY = BarcoNavegandoNixArghal.startY To BarcoNavegandoNixArghal.EndY
-            ' Si hay un usuario en el tile del barco
-            User = MapData(BarcoNavegandoNixArghal.Map, TileX, TileY).UserIndex
-            If User > 0 Then
-                ' Enviar al usuario a Arghal
-                Call WarpToLegalPos(User, ArghalDock.Map, ArghalDock.DestX, ArghalDock.DestY, True)
-                Call WriteLocaleMsg(User, MsgThanksForTravelArghal, e_FontTypeNames.FONTTYPE_GUILD)
-            End If
-        Next TileY
-    Next TileX
-    ' Embarcacar: subimos al barco a los usuarios que salen de Nix
-    ' Para cada tile en el área del muelle de Nix
-    For TileX = NixDock.startX To NixDock.EndX
-        For TileY = NixDock.startY To NixDock.EndY
-            ' Si hay un usuario en el tile del muelle
-            User = MapData(NixDock.Map, TileX, TileY).UserIndex
-            If User > 0 Then
-                ' Sacarle el pasaje y moverlo al barco navegando
-                PassSlot = GetPassSlot(User)
-                If PassSlot > 0 Then
-                    Call WriteLocaleMsg(User, MsgPassNix, e_FontTypeNames.FONTTYPE_GUILD)
-                    Call QuitarUserInvItem(User, PassSlot, 1)
-                    Call UpdateUserInv(False, User, PassSlot)
-                    Call WarpToLegalPos(User, BarcoNavegandoNixArghal.Map, BarcoNavegandoNixArghal.DestX, BarcoNavegandoNixArghal.DestY, True)
-                Else
-                    Call WriteLocaleMsg(User, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
-                End If
-            End If
-        Next TileY
-    Next TileX
-End Sub
-
-Private Sub UpdateBarcoArghalForgat()
-    Dim TileX, TileY As Integer
-    Dim User      As Integer
-    Dim PassFound As Boolean
-    Dim PassSlot  As Integer
-    ' Modificado por Shugar 5/6/24
-    ' Viaje de Arghal a Forgat
-    ' Verificar si el barco está en un muelle:
-    ' Para ver si está en el muelle o no, miramos hay un NpcIndex en Map DockX DockY del mapa BarcoNavegando.
-    ' Ese Npc solía ser un muelle, y se usa de referencia para saber si el barco partió o sigue quieto.
-    ' Si no hay NPC ahí es que el barco está navegando, por lo tanto no hay movimiento de pasajeros.
-    If MapData(BarcoNavegandoArghalForgat.Map, BarcoNavegandoArghalForgat.DockX, BarcoNavegandoArghalForgat.DockY).NpcIndex = 0 Then
-        Exit Sub
-    End If
-    ' Desembarcar: bajamos del barco a los usuarios que llegan a Forgat
-    ' Para cada tile en el área del barco
-    For TileX = BarcoNavegandoArghalForgat.startX To BarcoNavegandoArghalForgat.EndX
-        For TileY = BarcoNavegandoArghalForgat.startY To BarcoNavegandoArghalForgat.EndY
-            ' Si hay un usuario en el tile del barco
-            User = MapData(BarcoNavegandoArghalForgat.Map, TileX, TileY).UserIndex
-            If User > 0 Then
-                ' Enviar al usuario a Forgat
-                Call WarpToLegalPos(User, ForgatDock.Map, ForgatDock.DestX, ForgatDock.DestY, True)
-                Call WriteLocaleMsg(User, MsgThanksForTravelForgat, e_FontTypeNames.FONTTYPE_GUILD)
-            End If
-        Next TileY
-    Next TileX
-    ' Embarcacar: subimos al barco a los usuarios que salen de Arghal
-    ' Para cada tile en el área del muelle de Arghal
-    For TileX = ArghalDock.startX To ArghalDock.EndX
-        For TileY = ArghalDock.startY To ArghalDock.EndY
-            ' Si hay un usuario en el tile del muelle
-            User = MapData(ArghalDock.Map, TileX, TileY).UserIndex
-            If User > 0 Then
-                ' Sacarle el pasaje y moverlo al barco navegando
-                PassSlot = GetPassSlot(User)
-                If PassSlot > 0 Then
-                    Call WriteLocaleMsg(User, MsgPassArghal, e_FontTypeNames.FONTTYPE_GUILD)
-                    Call QuitarUserInvItem(User, PassSlot, 1)
-                    Call UpdateUserInv(False, User, PassSlot)
-                    Call WarpToLegalPos(User, BarcoNavegandoArghalForgat.Map, BarcoNavegandoArghalForgat.DestX, BarcoNavegandoArghalForgat.DestY, True)
-                Else
-                    Call WriteLocaleMsg(User, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
-                End If
-            End If
-        Next TileY
-    Next TileX
-End Sub
-
-
-
 Private Sub Minuto_Timer()
     On Error GoTo ErrHandler
     'fired every minute
@@ -1475,43 +1266,6 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     Call CerrarServidor
-End Sub
-
-Private Sub GameTimer_Timer()
-    On Error GoTo HayError
-    Dim iUserIndex       As Long
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
-    '<<<<<< Procesa eventos de los usuarios >>>>>>
-    For iUserIndex = 1 To LastUser
-        With UserList(iUserIndex)
-            If .flags.UserLogged Then
-                Call DoTileEvents(iUserIndex, .pos.Map, .pos.x, .pos.y)
-                If .flags.Muerto = 0 Then
-                    'Efectos en mapas
-                    If (.flags.Privilegios And e_PlayerType.User) <> 0 Then
-                        Call EfectoLava(iUserIndex)
-                        Call EfectoFrio(iUserIndex)
-                        If .flags.Envenenado <> 0 Then Call EfectoVeneno(iUserIndex)
-                        If .flags.Incinerado <> 0 Then Call EfectoIncineramiento(iUserIndex)
-                    End If
-                    If .flags.Meditando Then Call DoMeditar(iUserIndex)
-                    If .flags.Mimetizado <> 0 Then Call EfectoMimetismo(iUserIndex)
-                    If .flags.AdminInvisible <> 1 Then
-                        If .flags.Oculto = 1 Then Call DoPermanecerOculto(iUserIndex)
-                    End If
-                    If .NroMascotas > 0 Then Call TiempoInvocacion(iUserIndex)
-                    Call EfectoStamina(iUserIndex)
-                End If 'Muerto
-            End If 'UserLogged
-        End With
-    Next iUserIndex
-    Call PerformTimeLimitCheck(PerformanceTimer, "GameTimer_Timer User loop", 400)
-    Call CustomScenarios.UpdateAll
-    Call PerformTimeLimitCheck(PerformanceTimer, "GameTimer_Timer customScenarios", 100)
-    Exit Sub
-HayError:
-    Call TraceError(Err.Number, Err.Description & vbNewLine & "UserIndex:" & iUserIndex, "frmMain.GameTimer", Erl)
 End Sub
 
 Private Sub HoraFantasia_Timer()

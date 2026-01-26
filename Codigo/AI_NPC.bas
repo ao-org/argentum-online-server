@@ -136,7 +136,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
                 ' Busco algun objetivo en el area.
                 For i = 1 To ModAreas.ConnGroups(.pos.Map).CountEntrys
                     UserIndex = ModAreas.ConnGroups(.pos.Map).UserEntrys(i)
-                    If EsObjetivoValido(NpcIndex, UserIndex) Then
+                    If EsObjetivoValido(NpcIndex, UserIndex, agresor.ArrayIndex) Then
                         ' Busco el mas cercano, sea atacable o no.
                         If Distancia(UserList(UserIndex).pos, .pos) < minDistancia And Not (UserList(UserIndex).flags.invisible > 0 Or UserList(UserIndex).flags.Oculto) Then
                             enemigoCercano = UserIndex
@@ -434,7 +434,8 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
                         NpcList(NpcIndex).pathFindingInfo.RangoVision = Min(SvrConfig.GetValue("NPC_MAX_VISION_RANGE"), NpcList(NpcIndex).pathFindingInfo.RangoVision + _
                                 PATH_VISION_DELTA)
                     End If
-                    If NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 And NpcList(NpcIndex).flags.LanzaSpells = 0 Then
+                    If NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 And NpcList(NpcIndex).flags.LanzaSpells = 0 And _
+                       NpcList(NpcIndex).flags.Inmovilizado = 0 And NpcList(NpcIndex).flags.AttackedBy = vbNullString Then
                         Call NpcMarkTargetUnreachable(NpcIndex)
                     End If
                     Call AnimacionIdle(NpcIndex, True)
@@ -1216,6 +1217,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
         Case e_TargetType.uUsuarios
             If UsuarioAtacableConMagia(Target) And PuedeDanarAlUsuario Then
                 Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
+                Call ResetUserAutomatedActions(Target)
                 If Not IsValidNpcRef(UserList(Target).flags.AtacadoPorNpc) Then
                     Call SetNpcRef(UserList(Target).flags.AtacadoPorNpc, NpcIndex)
                 End If
@@ -1262,10 +1264,17 @@ End Sub
 ' ---------------------------------------------------------------------------------------------------
 '                                       HELPERS
 ' ---------------------------------------------------------------------------------------------------
-Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Optional ByRef AgressorIndex As Integer = 0) As Boolean
     If UserIndex = 0 Then Exit Function
     ' Esta condicion debe ejecutarse independiemente de el modo de busqueda.
     EsObjetivoValido = EnRangoVision(NpcIndex, UserIndex)
+    If NpcList(NpcIndex).nivel > 0 Then
+        Dim tieneNivelPermitido As Boolean
+        Dim estaCercaPorNivel As Boolean
+        tieneNivelPermitido = (UserList(UserIndex).Stats.ELV - NpcList(NpcIndex).nivel <= CInt(SvrConfig.GetValue("NpcDeltaLevelPenalties")))
+        estaCercaPorNivel = DistanciaRadial(NpcList(NpcIndex).pos, UserList(UserIndex).pos) <= CInt(SvrConfig.GetValue("NpcDeltaLevelCloseRange"))
+        EsObjetivoValido = EsObjetivoValido And (tieneNivelPermitido Or estaCercaPorNivel Or (AgressorIndex = UserIndex))
+    End If
     EsObjetivoValido = EsObjetivoValido And EsEnemigo(NpcIndex, UserIndex)
     EsObjetivoValido = EsObjetivoValido And UserList(UserIndex).flags.Muerto = 0
     EsObjetivoValido = EsObjetivoValido And UserList(UserIndex).flags.EnConsulta = 0

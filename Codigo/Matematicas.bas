@@ -33,6 +33,55 @@ Public Type t_Vector
     y As Double
 End Type
 
+
+' ============================================================================
+' Safely increments a Long counter.
+' - Prevents overflow
+' - Logs using LogError
+' - Wraps the counter back to 0 when the maximum Long limit is exceeded
+' ============================================================================
+Public Sub IncrementLongCounter(ByRef counter As Long, Optional ByVal counterName As String = "")
+
+    Const LONG_MAX As Long = &H7FFFFFFF
+
+    On Error GoTo IncrementLongCounter_Error
+
+    ' Negative or corrupted value -> reset and log
+    If counter < 0 Then
+        Call LogCounterIssue(counterName, counter, "Negative value detected. Resetting to 0.")
+        counter = 0
+        Exit Sub
+    End If
+
+    ' Overflow guard -> wrap and log
+    If counter >= LONG_MAX Then
+        Call LogCounterIssue(counterName, counter, "Overflow detected. Wrapping to 0.")
+        counter = 0
+        Exit Sub
+    End If
+
+    ' Normal increment
+    counter = counter + 1
+    Exit Sub
+
+IncrementLongCounter_Error:
+    Call TraceError(Err.Number, Err.Description, "IncrementLongCounter", Erl)
+End Sub
+
+Private Sub LogCounterIssue(ByVal counterName As String, ByVal counterValue As Long, ByVal msg As String)
+    Dim fullMessage As String
+
+    If counterName <> "" Then
+        fullMessage = counterName & " (" & CStr(counterValue) & "): " & msg
+    Else
+        fullMessage = "Counter (" & CStr(counterValue) & "): " & msg
+    End If
+
+    ' Always log through LogError for consistency
+    Call TraceError(0, fullMessage, "IncrementLongCounter", 0)
+End Sub
+
+
 Function max(ByVal a As Double, ByVal b As Double) As Double
     On Error GoTo max_Err
     If a > b Then

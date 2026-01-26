@@ -206,6 +206,8 @@ Public Enum ServerPacketID
         eAccountCharacterList
     #End If
     eChangeSkinSlot
+    eGuildConfig
+    eShowPickUpObj
     eMaxPacket
     [PacketCount]
 End Enum
@@ -255,7 +257,7 @@ Public Enum ClientPacketID
     eGuildLeave              '/SALIRCLAN
     eRequestAccountState     '/BALANCE
     ePetStand                '/QUIETO
-    ePetFollow               '/ACOMPAÑAR
+    ePetFollow               '/ACOMPAï¿½AR
     ePetLeave                '/LIBERAR
     eGrupoMsg                '/GrupoMsg
     eTrainList               '/ENTRENAR
@@ -531,6 +533,9 @@ Public Enum ClientPacketID
         eDeleteCharacter
     #End If
     eChangeSkinSlot
+    eStartAutomatedAction
+    ePetFollowAll
     eMaxPacket
     [PacketCount]
 End Enum
+

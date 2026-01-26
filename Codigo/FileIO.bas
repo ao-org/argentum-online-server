@@ -596,6 +596,7 @@ Public Sub CargarHechizos()
         Hechizos(Hechizo).RequiereInstrumento = val(Leer.GetValue("Hechizo" & Hechizo, "RequiereInstrumento"))
         Hechizos(Hechizo).StaffAffected = CBool(val(Leer.GetValue("Hechizo" & Hechizo, "StaffAffected")))
         Hechizos(Hechizo).EotId = val(Leer.GetValue("Hechizo" & Hechizo, "EOTID"))
+        Hechizos(Hechizo).MaxLevelCasteable = val(Leer.GetValue("Hechizo" & Hechizo, "MaxLevelCasteable"))
         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireArmor")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eArmor)
         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireShip")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eShip)
         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireHelm")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eHelm)
@@ -611,6 +612,7 @@ Public Sub CargarHechizos()
         If val(Leer.GetValue("Hechizo" & Hechizo, "IsSkill")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eIsSkill)
         If val(Leer.GetValue("Hechizo" & Hechizo, "IsBindable")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eIsBindable)
         Hechizos(Hechizo).RequireWeaponType = val(Leer.GetValue("Hechizo" & Hechizo, "RequireWeaponType"))
+        Hechizos(Hechizo).IsElementalTagsOnly = val(Leer.GetValue("Hechizo" & Hechizo, "IsElementalTagsOnly")) > 0
         Dim SubeHP As Byte
         SubeHP = val(Leer.GetValue("Hechizo" & Hechizo, "SubeHP"))
         If SubeHP = 1 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.eDoHeal)
@@ -867,6 +869,9 @@ Sub LoadBalance()
     MaxInvisibleSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "MaxInvisibleSpellDisplayTime"))
     MultiShotReduction = val(BalanceIni.GetValue("EXTRA", "MultiShotReduction"))
     HomeTimer = val(BalanceIni.GetValue("EXTRA", "HomeTimer"))
+    HomeTimerAdventurer = val(BalanceIni.GetValue("EXTRA", "HomeTimerAdventurer"))
+    HomeTimerHero = val(BalanceIni.GetValue("EXTRA", "HomeTimerHero"))
+    HomeTimerLegend = val(BalanceIni.GetValue("EXTRA", "HomeTimerLegend"))
     MagicSkillBonusDamageModifier = val(BalanceIni.GetValue("EXTRA", "MagicSkillBonusDamageModifier"))
     MRSkillProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifier"))
     MRSkillNpcProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifierNpc"))
@@ -897,7 +902,6 @@ Sub LoadBalance()
             ElementalMatrixForNpcs(i + 1, j + 1) = val(vals(j))
         Next j
     Next i
-    '--------------------
     Set BalanceIni = Nothing
     AgregarAConsola "Se cargó el balance (Balance.dat)"
     Exit Sub
@@ -1031,6 +1035,8 @@ Sub LoadOBJData()
             .ApplyEffectId = val(Leer.GetValue(ObjKey, "ApplyEffectId"))
             .JineteLevel = val(Leer.GetValue(ObjKey, "JineteLevel"))
             .ElementalTags = val(Leer.GetValue(ObjKey, "ElementalTags"))
+            .BowCategory = val(Leer.GetValue(ObjKey, "BowCategory"))
+            .ArrowCategory = val(Leer.GetValue(ObjKey, "ArrowCategory"))
             If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
             If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
             Dim i As Integer
@@ -2283,6 +2289,9 @@ Sub LoadIntervalos()
     IntervaloGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloGuardarUsuarios"))
     IntervaloTimerGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloTimerGuardarUsuarios"))
     IntervaloMensajeGlobal = val(Lector.GetValue("INTERVALOS", "IntervaloMensajeGlobal"))
+    IntervalAutomatedAction = val(Lector.GetValue("INTERVALOS", "IntervalAutomatedAction"))
+    IntervalChangeGlobalQuestsState = val(Lector.GetValue("INTERVALOS", "IntervalChangeGlobalQuestsState"))
+    IntervalPhoenixSpawn = val(Lector.GetValue("INTERVALOS", "IntervalPhoenixSpawn"))
     '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     Set Lector = Nothing
     Exit Sub
@@ -2864,3 +2873,81 @@ Public Function GetActiveToggles(ByRef ActiveCount As Integer) As String()
     Next key
     GetActiveToggles = ActiveKeys
 End Function
+
+Sub LoadGuildsConfig()
+    On Error GoTo LoadGuildsConfig_Err
+    
+    Dim GuildsIni As clsIniManager
+    Set GuildsIni = New clsIniManager
+    GuildsIni.Initialize DatPath & "Clanes.dat"
+    
+    Dim i As Long
+
+    'Experiencia de niveles de clan
+    For i = 1 To MAX_LEVEL_GUILD
+        ExpLevelUpGuild(i) = CLng(val(GuildsIni.GetValue("GUILDEXP", "GuildExpLevel" & CStr(i), "0")))
+    Next i
+    
+    'Miembros máximos por nivel de clan
+    For i = 1 To MAX_LEVEL_GUILD
+        MembersByLevel(i) = CByte(val(GuildsIni.GetValue("MEMBERSBYLEVEL", "GuildMembersLevel" & CStr(i), "0")))
+    Next i
+    
+    'Requisito para usar llamada de clan
+    RequiredGuildLevelCallSupport = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "CallSupportRequiredLevel", "4")))
+    
+    'Requisito para ver miembros invisibles/ocultos
+    RequiredGuildLevelSeeInvisible = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "SeeInvisibleRequiredLevel", "6")))
+    
+    'Requisito para seguro de clan
+    RequiredGuildLevelSafe = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "SafeGuildRequiredLevel", "5")))
+    
+    'Requisito para ver barra de vida
+    RequiredGuildLevelShowHPBar = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "ShowHPBarRequiredLevel", "6")))
+    
+    Set GuildsIni = Nothing
+    AgregarAConsola "Se cargó la configuración de clanes (Clanes.dat)"
+    Exit Sub
+    
+LoadGuildsConfig_Err:
+    Call TraceError(Err.Number, Err.Description, "ES.LoadGuildsConfig", Erl)
+End Sub
+Sub LoadMeditations()
+    On Error GoTo LoadMeditations_Err
+    
+    Dim MeditationsIni As clsIniManager
+    Set MeditationsIni = New clsIniManager
+    MeditationsIni.Initialize DatPath & "Meditaciones.dat"
+    
+    MeditationLevel1to12 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel1to12", "153")))
+    MeditationLevel13to17 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel13to17", "155")))
+    MeditationLevel18to24 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel18to24", "157")))
+    MeditationLevel25to28 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel25to28", "159")))
+    MeditationLevel29to32 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel29to32", "161")))
+    MeditationLevel33to36 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel33to36", "163")))
+    MeditationLevel37to39 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel37to39", "165")))
+    MeditationLevel40to42 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel40to42", "167")))
+    MeditationLevel43to44 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel43to44", "169")))
+    MeditationLevel45to46 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevel45to46", "171")))
+    
+    'Meditaciones para criminales
+    MeditationCriminalLevel1to12 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel1to12", "154")))
+    MeditationCriminalLevel13to17 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel13to17", "156")))
+    MeditationCriminalLevel18to24 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel18to24", "158")))
+    MeditationCriminalLevel25to28 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel25to28", "160")))
+    MeditationCriminalLevel29to32 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel29to32", "162")))
+    MeditationCriminalLevel33to36 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel33to36", "164")))
+    MeditationCriminalLevel37to39 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel37to39", "166")))
+    MeditationCriminalLevel40to42 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel40to42", "168")))
+    MeditationCriminalLevel43to44 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel43to44", "170")))
+    MeditationCriminalLevel45to46 = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSCRIMINALBYLEVEL", "MeditationCriminalLevel45to46", "172")))
+    
+    MeditationLevelMax = CInt(val(MeditationsIni.GetValue("FXsMEDITATIONSBYLEVEL", "MeditationLevelMax", "120")))
+    
+    Set MeditationsIni = Nothing
+    AgregarAConsola "Se cargaron las meditaciones (Meditaciones.dat)"
+    Exit Sub
+    
+LoadMeditations_Err:
+    Call TraceError(Err.Number, Err.Description, "ES.LoadMeditations", Erl)
+End Sub

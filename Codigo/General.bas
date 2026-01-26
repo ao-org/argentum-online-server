@@ -496,7 +496,7 @@ Sub ApagarFogatas()
             For x = XMinMapSize To XMaxMapSize
                 If MapInfo(MapaActual).lluvia Then
                     If MapData(MapaActual, x, y).ObjInfo.ObjIndex = FOGATA Then
-                        Call EraseObj(MAX_INVENTORY_OBJS, MapaActual, x, y)
+                        Call EraseObj(GetMaxInvOBJ(), MapaActual, x, y)
                         Call MakeObj(obj, MapaActual, x, y)
                     End If
                 End If
@@ -674,9 +674,11 @@ Sub Main()
     Call LoadObjSastre
     frmCargando.Label1(2).Caption = "Cargando Pesca"
     Call LoadPesca
-    Call InitializeFishingBonuses()
+    Call InitializeFishingBonuses
     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
     Call LoadRecursosEspeciales
+    frmCargando.Label1(2).Caption = "Cargando Eventos Estacionales"
+    Call LoadGlobalQuests
     frmCargando.Label1(2).Caption = "Cargando definiciones de árboles"
     Call LoadTreeGraphics
     frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
@@ -684,7 +686,11 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Recompensas de Faccion"
     Call LoadRecompensasFaccion
     frmCargando.Label1(2).Caption = "Cargando Balance.dat"
-    Call LoadBalance    '4/01/08 Pablo ToxicWaste
+    Call LoadBalance
+    frmCargando.Label1(2).Caption = "Cargando Clanes.dat"
+    Call LoadGuildsConfig
+    frmCargando.Label1(2).Caption = "Cargando Meditaciones.dat"
+    Call LoadMeditations
     frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
     Call CargarCiudades
     If BootDelBackUp Then
@@ -705,6 +711,7 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Quests"
     Call LoadQuests
     Call ResetLastLogoutAndIsLogged
+    Call LoadPhoenixModule
     'Comentado porque hay worldsave en ese mapa!
     Dim LoopC As Integer
     'Resetea las conexiones de los usuarios
@@ -714,7 +721,6 @@ Sub Main()
     With frmMain
         .Minuto.Enabled = True
         .tPiqueteC.Enabled = True
-        .GameTimer.Enabled = True
         .Segundo.Enabled = True
         .KillLog.Enabled = True
         .T_UsersOnline.Enabled = True
@@ -723,12 +729,13 @@ Sub Main()
         .tControlHechizos.Enabled = True
         .tControlHechizos.Interval = 60000
         If IsFeatureEnabled("ShipTravelEnabled") Then
-            .TimerBarco.Enabled = True
+            Call ResetShipTravelTimer
             MapInfo(BarcoNavegandoForgatNix.Map).ForceUpdate = True
             MapInfo(BarcoNavegandoNixArghal.Map).ForceUpdate = True
             MapInfo(BarcoNavegandoArghalForgat.Map).ForceUpdate = True
         End If
     End With
+    Call ResetGameEventsTimer
     Call ResetUserAutoSaveTimer
     Subasta.SubastaHabilitada = True
     Subasta.HaySubastaActiva = False
@@ -778,9 +785,16 @@ Sub Main()
         Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.Tick")
         Call UpdateEffectOverTime
         Call PerformTimeLimitCheck(PerformanceTimer, "General Update Effects over time")
+        Call MaybeRunGameEvents
+        Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeRunGameEvents")
         Call MaybeRunUserAutoSave
         Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeRunUserAutoSave")
+        Call RunAutomatedActions
+        Call PerformTimeLimitCheck(PerformanceTimer, "General StartAutomatedAction")
         Call MaybeUpdateNpcAI(GlobalFrameTime)
+        Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeChangeGlobalQuestsState")
+        Call MaybeChangeGlobalQuestsState
+        Call MaybeSpawnFenix
         DoEvents
         Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
         Call AntiCheatUpdate
@@ -874,7 +888,7 @@ Sub Restart()
     Call ResetUserAutoSaveTimer
     Call LoadOBJData
     Call LoadPesca
-    Call InitializeFishingBonuses()
+    Call InitializeFishingBonuses
     Call LoadRecursosEspeciales
     Call LoadTreeGraphics
     Call LoadMapData
@@ -936,6 +950,8 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
             .Counters.Frio = .Counters.Frio + 1
         Else
             If MapInfo(.pos.Map).terrain = Nieve Then
+                'Msg2130=¡Tengo mucho frío!
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2130, UserList(UserIndex).Char.charindex, vbWhite))
                 ' Msg512=¡Estás muriendo de frío, abrígate o morirás!
                 Call WriteLocaleMsg(UserIndex, 512, e_FontTypeNames.FONTTYPE_INFO)
                 '  Sin ropa perdés vida más rápido que con una ropa no-invernal
@@ -977,7 +993,7 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
             End If
         End If
         If .flags.Desnudo = 0 And Not HambreOSed Then
-            If Not Lloviendo Or Not Intemperie(UserIndex) Then
+            If (Not Lloviendo Or Not Intemperie(UserIndex)) And Not .AutomatedAction.IsActive Then
                 Call RecStamina(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, StaminaIntervaloDescansar, StaminaIntervaloSinDescansar))
             End If
         Else
@@ -1203,7 +1219,7 @@ Public Sub EfectoInmoUser(ByVal UserIndex As Integer)
             .Counters.Inmovilizado = .Counters.Inmovilizado - 1
         Else
             .flags.Inmovilizado = 0
-            If .clase = e_Class.Warrior Or .clase = e_Class.Hunter Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
+            If .clase = e_Class.Warrior Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
                 .Counters.TiempoDeInmunidadParalisisNoMagicas = 3
             End If
             Call WriteInmovilizaOK(UserIndex)

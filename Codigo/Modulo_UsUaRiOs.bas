@@ -29,6 +29,12 @@ Option Explicit
 Private UserNameCache     As New Dictionary
 Private AvailableUserSlot As t_IndexHeap
 
+Public Function IsUserAdmin(ByVal UserIndex As Integer) As Boolean
+    IsUserAdmin = False
+    If UserIndex < LBound(UserList) Or UserIndex > UBound(UserList) Then Exit Function
+    IsUserAdmin = UserList(UserIndex).flags.Privilegios And e_PlayerType.Admin
+End Function
+
 Public Sub InitializeUserIndexHeap(Optional ByVal Size As Integer = NpcIndexHeapSize)
     On Error GoTo ErrHandler_InitializeUserIndexHeap
     ReDim AvailableUserSlot.IndexInfo(Size)
@@ -181,12 +187,6 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
         Call CloseSocket(UserIndex)
         Exit Function
     End If
-    If Not EsGM(UserIndex) And ServerSoloGMs > 0 Then
-        failureReason = "Server restricted to administrators."
-        Call WriteShowMessageBox(UserIndex, 1760, vbNullString) 'Msg1760=Servidor restringido a administradores. Por favor reintente en unos momentos.
-        Call CloseSocket(UserIndex)
-        Exit Function
-    End If
     With UserList(UserIndex)
         If .flags.UserLogged Then
             failureReason = "User is already logged in."
@@ -217,33 +217,38 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
                 Exit Function
             End If
         End If
-        
-#If LOGIN_STRESS_TEST = 0 Then
-        '¿Supera el máximo de usuarios por cuenta?
-        If MaxUsersPorCuenta > 0 Then
-            If ContarUsuariosMismaCuenta(.AccountID) >= MaxUsersPorCuenta Then
-                If MaxUsersPorCuenta = 1 Then
-                    failureReason = "Another user is already connected with this account."
-                Else
-                    failureReason = "Account has reached the maximum number of simultaneous users (" & MaxUsersPorCuenta & ")."
+        #If LOGIN_STRESS_TEST = 0 Then
+            '¿Supera el máximo de usuarios por cuenta?
+            If MaxUsersPorCuenta > 0 Then
+                If ContarUsuariosMismaCuenta(.AccountID) >= MaxUsersPorCuenta Then
+                    If MaxUsersPorCuenta = 1 Then
+                        failureReason = "Another user is already connected with this account."
+                    Else
+                        failureReason = "Account has reached the maximum number of simultaneous users (" & MaxUsersPorCuenta & ")."
+                    End If
+                    If MaxUsersPorCuenta = 1 Then
+                        Call WriteShowMessageBox(UserIndex, 1764, vbNullString) 'Msg1764=Ya hay un usuario conectado con esta cuenta.
+                    Else
+                        Call WriteShowMessageBox(UserIndex, 1765, MaxUsersPorCuenta) 'Msg1765=La cuenta ya alcanzó el máximo de ¬1 usuarios conectados.
+                    End If
+                    Call CloseSocket(UserIndex)
+                    Exit Function
                 End If
-                If MaxUsersPorCuenta = 1 Then
-                    Call WriteShowMessageBox(UserIndex, 1764, vbNullString) 'Msg1764=Ya hay un usuario conectado con esta cuenta.
-                Else
-                    Call WriteShowMessageBox(UserIndex, 1765, MaxUsersPorCuenta) 'Msg1765=La cuenta ya alcanzó el máximo de ¬1 usuarios conectados.
-                End If
-                Call CloseSocket(UserIndex)
-                Exit Function
             End If
-        End If
-#End If
+        #End If
         .flags.Privilegios = UserDarPrivilegioLevel(name)
         If EsRolesMaster(name) Then
             .flags.Privilegios = .flags.Privilegios Or e_PlayerType.RoleMaster
         End If
+        If Not EsGM(UserIndex) And ServerSoloGMs > 0 Then
+            failureReason = "Server restricted to administrators."
+            Call WriteShowMessageBox(UserIndex, 1760, vbNullString) 'Msg1760=Servidor restringido a administradores. Por favor reintente en unos momentos.
+            Call CloseSocket(UserIndex)
+            Exit Function
+        End If
         If EsGM(UserIndex) Then
-            Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1706, name, e_FontTypeNames.FONTTYPE_INFOBOLD)) 'Msg1706=Servidor » ¬1 se conecto al juego.
-            Call LogGM(name, "Se conectó con IP: " & .ConnectionDetails.IP)
+            Call SendData(sendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1706, Name, e_FontTypeNames.FONTTYPE_INFOBOLD)) 'Msg1706=Servidor » ¬1 se conecto al juego.
+            Call LogGM(Name, "Se conectó con IP: " & .ConnectionDetails.IP)
         End If
     End With
     ConnectUser_Check = True
@@ -488,19 +493,18 @@ Dim tStr                        As String
         .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
         .Counters.TiempoDeInmunidadParalisisNoMagicas = 0
   
-        If MapInfo(.pos.Map).MapResource = 0 Then
+        If Not MapaValido(.pos.Map) Then
+            Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
             .pos.Map = Ciudades(.Hogar).Map
             .pos.x = Ciudades(.Hogar).x
             .pos.y = Ciudades(.Hogar).y
         End If
-        'Mapa válido
-        If Not MapaValido(.pos.Map) Then
-            Call WriteErrorMsg(UserIndex, "The character is in an invalid postion/map. Please ask for support on Discord.")
-            Call CloseSocket(UserIndex)
-            Exit Function
+        If MapInfo(.pos.Map).MapResource = 0 Then
+            Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
+            .pos.Map = Ciudades(.Hogar).Map
+            .pos.x = Ciudades(.Hogar).x
+            .pos.y = Ciudades(.Hogar).y
         End If
-        
-        
         If MapData(.pos.Map, .pos.x, .pos.y).UserIndex <> 0 Or MapData(.pos.Map, .pos.x, .pos.y).NpcIndex <> 0 Then
             Dim FoundPlace As Boolean
             Dim esAgua     As Boolean
@@ -644,6 +648,7 @@ Dim tStr                        As String
         'Actualiza el Num de usuarios
         NumUsers = NumUsers + 1
         .flags.UserLogged = True
+        Call ResetUserAutomatedActions(UserIndex)
         Call Execute("Update user set is_logged = true where id = ?", UserList(UserIndex).Id)
         .Counters.LastSave = GetTickCountRaw()
         MapInfo(.pos.Map).NumUsers = MapInfo(.pos.Map).NumUsers + 1
@@ -704,6 +709,7 @@ Dim tStr                        As String
             .flags.Seguro = True
             Call WriteSafeModeOn(UserIndex)
         End If
+        Call NotifyConnectionToFaction(UserIndex)
         If LenB(.MENSAJEINFORMACION) > 0 Then
             Dim Lines() As String
             Lines = Split(.MENSAJEINFORMACION, vbNewLine)
@@ -722,6 +728,7 @@ Dim tStr                        As String
         Call RestoreDCUserCache(UserIndex)
         Call CustomScenarios.UserConnected(UserIndex)
         Call AntiCheat.OnNewPlayerConnect(UserIndex)
+        Call WriteGuildConfig(UserIndex)
     End With
     ConnectUser_Complete = True
     Exit Function
@@ -1313,7 +1320,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                             tempIndex = MapData(.pos.Map, x, y).UserIndex
                             If tempIndex > 0 And tempIndex <> UserIndex And Not EsGM(tempIndex) Then
                                 If UserList(tempIndex).flags.invisible + UserList(tempIndex).flags.Oculto > 0 And UserList(tempIndex).flags.Navegando = 0 And (.GuildIndex = _
-                                        0 Or .GuildIndex <> UserList(tempIndex).GuildIndex Or modGuilds.NivelDeClan(.GuildIndex) < 6) Then
+                                        0 Or .GuildIndex <> UserList(tempIndex).GuildIndex Or modGuilds.NivelDeClan(.GuildIndex) < RequiredGuildLevelSeeInvisible) Then
                                     Call WritePosUpdateChar(UserIndex, x, y, UserList(tempIndex).Char.charindex)
                                 End If
                             End If
@@ -2019,7 +2026,7 @@ Sub Tilelibre(ByRef pos As t_WorldPos, ByRef nPos As t_WorldPos, ByRef obj As t_
                     'the amount of items exceeds the max quantity of items on the floor
                     hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex <> obj.ObjIndex)
                     If Not hayobj Then hayobj = MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags <> obj.ElementalTags
-                    If Not hayobj Then hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.amount + obj.amount > MAX_INVENTORY_OBJS)
+                    If Not hayobj Then hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.amount + obj.amount > GetMaxInvOBJ())
                     If Not hayobj And MapData(nPos.Map, tX, tY).TileExit.Map = 0 And (InitialPos Or (tX <> pos.x And tY <> pos.y)) Then
                         nPos.x = tX
                         nPos.y = tY
@@ -2077,6 +2084,15 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
     Dim OldY   As Integer
     With UserList(UserIndex)
         If Map <= 0 Then Exit Sub
+        If Not EsGM(UserIndex) And Not IsPatreon(UserIndex) Then
+            If TileRequiresPatreon(Map, x, y) Then
+                If .flags.UltimoMensaje <> MSG_TILE_REQUIRES_PATREON Then
+                    Call WriteLocaleMsg(UserIndex, MSG_TILE_REQUIRES_PATREON, e_FontTypeNames.FONTTYPE_INFO)
+                    .flags.UltimoMensaje = MSG_TILE_REQUIRES_PATREON
+                End If
+                Exit Sub
+            End If
+        End If
         If IsValidUserRef(.ComUsu.DestUsu) Then
             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = UserIndex Then
@@ -2152,7 +2168,9 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
             Call SendData(ToIndex, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True))
         End If
         If .NroMascotas > 0 Then Call WarpMascotas(UserIndex)
-        If MapInfo(Map).zone = "DUNGEON" Or MapData(Map, x, y).trigger >= 9 Then
+        If MapInfo(Map).zone = "DUNGEON" Or _
+           (MapData(Map, x, y).trigger >= e_Trigger.PESCAINVALIDA And _
+            MapData(Map, x, y).trigger <> e_Trigger.ONLY_PATREON_TILE) Then
             If .flags.Montado > 0 Then
                 Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
             End If
@@ -2242,11 +2260,6 @@ End Sub
 
 Sub VolverCriminal(ByVal UserIndex As Integer)
     On Error GoTo VolverCriminal_Err
-    '**************************************************************
-    'Author: Unknown
-    'Last Modify Date: 21/06/2006
-    'Nacho: Actualiza el tag al cliente
-    '**************************************************************
     With UserList(UserIndex)
         If MapData(.pos.Map, .pos.x, .pos.y).trigger = 6 Then Exit Sub
         If .flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero) Then
@@ -2268,6 +2281,15 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
         Else
             Call RefreshCharStatus(UserIndex)
         End If
+        If .Grupo.EnGrupo Then
+            'Msg2144=Ahora sos criminal, no podés estar en un grupo con ciudadanos.
+            Call WriteLocaleMsg(UserIndex, 2144, e_FontTypeNames.FONTTYPE_INFO)
+            If .Grupo.Lider.ArrayIndex = UserIndex Then
+                Call FinalizarGrupo(UserIndex)
+            Else
+                Call SalirDeGrupo(UserIndex)
+            End If
+        End If
     End With
     Exit Sub
 VolverCriminal_Err:
@@ -2275,11 +2297,6 @@ VolverCriminal_Err:
 End Sub
 
 Sub VolverCiudadano(ByVal UserIndex As Integer)
-    '**************************************************************
-    'Author: Unknown
-    'Last Modify Date: 21/06/2006
-    'Nacho: Actualiza el tag al cliente.
-    '**************************************************************
     On Error GoTo VolverCiudadano_Err
     With UserList(UserIndex)
         If MapData(.pos.Map, .pos.x, .pos.y).trigger = 6 Then Exit Sub
@@ -2293,6 +2310,15 @@ Sub VolverCiudadano(ByVal UserIndex As Integer)
             Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
         Else
             Call RefreshCharStatus(UserIndex)
+        End If
+        If .Grupo.EnGrupo Then
+            'Msg2143=Ahora sos ciudadano, no podés estar en un grupo con criminales.
+            Call WriteLocaleMsg(UserIndex, 2143, e_FontTypeNames.FONTTYPE_INFO)
+            If .Grupo.Lider.ArrayIndex = UserIndex Then
+                Call FinalizarGrupo(UserIndex)
+            Else
+                Call SalirDeGrupo(UserIndex)
+            End If
         End If
         Call WriteSafeModeOn(UserIndex)
         .flags.Seguro = True
@@ -2359,6 +2385,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
                 If iMinHP Then NpcList(Index).Stats.MinHp = iMinHP
                 Call SetUserRef(NpcList(Index).MaestroUser, UserIndex)
                 Call FollowAmo(Index)
+                Call AdjustNpcStatWithCasterLevel(UserIndex, Index)
             Else
                 SpawnInvalido = True
             End If
@@ -2746,7 +2773,7 @@ Public Function CanAttackUser(ByVal attackerIndex As Integer, _
     End If
     ' Seguro Clan
     If UserList(attackerIndex).GuildIndex > 0 Then
-        If UserList(attackerIndex).flags.SeguroClan And NivelDeClan(UserList(attackerIndex).GuildIndex) >= 3 Then
+        If UserList(attackerIndex).flags.SeguroClan And NivelDeClan(UserList(attackerIndex).GuildIndex) >= RequiredGuildLevelSafe Then
             If UserList(attackerIndex).GuildIndex = UserList(TargetIndex).GuildIndex Then
                 CanAttackUser = eSameClan
                 Exit Function

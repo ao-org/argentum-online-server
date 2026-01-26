@@ -2795,13 +2795,10 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
     Dim i As Integer
     'ID del paquete
     Call Writer.WriteInt16(ServerPacketID.eQuestDetails)
-    'Se usa la variable QuestSlot para saber si enviamos la info de una quest ya empezada o la info de una quest que no se aceptí todavía (1 para el primer caso y 0 para el segundo)
-    Call Writer.WriteInt8(IIf(QuestSlot, 1, 0))
-    'Enviamos nombre, descripción y nivel requerido de la quest
-    'Call Writer.WriteString8(QuestList(QuestIndex).Nombre)
-    'Call Writer.WriteString8(QuestList(QuestIndex).Desc)
     Call Writer.WriteInt16(QuestIndex)
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
+    Call Writer.WriteInt8(QuestList(QuestIndex).LimitLevel)
+    Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClass)
     Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
     'Enviamos la cantidad de npcs requeridos
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredNPCs)
@@ -2826,6 +2823,18 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
             'escribe si tiene ese objeto en el inventario y que cantidad
             Call Writer.WriteInt16(get_object_amount_from_inventory(UserIndex, QuestList(QuestIndex).RequiredOBJ(i).ObjIndex))
             ' Call Writer.WriteInt16(0)
+        Next i
+    End If
+    'Enviamos la cantidad de spells requeridos
+    Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSpellCount)
+    If QuestList(QuestIndex).RequiredSpellCount > 0 Then
+        For i = 1 To QuestList(QuestIndex).RequiredSpellCount
+            Call Writer.WriteInt16(QuestList(QuestIndex).RequiredSpellList(i))
+            If TieneHechizo(QuestList(QuestIndex).RequiredSpellList(i), UserIndex) Then
+                Call Writer.WriteInt16(1)
+            Else
+                Call Writer.WriteInt16(0)
+            End If
         Next i
     End If
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.SkillType)
@@ -2967,6 +2976,17 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
                 'Si el personaje es nivel mayor al limite no puede hacerla
                 If QuestList(QuestIndex).LimitLevel > 0 Then
                     If UserList(UserIndex).Stats.ELV > QuestList(QuestIndex).LimitLevel Then
+                        PuedeHacerla = False
+                    End If
+                End If
+                If QuestList(QuestIndex).GlobalQuestIndex > 0 Then
+                    If Not GlobalQuestInfo(QuestList(QuestIndex).GlobalQuestIndex).IsActive Then
+                        PuedeHacerla = False
+                    End If
+                    If GlobalQuestInfo(QuestList(QuestIndex).GlobalQuestIndex).IsBossAlive Then
+                        PuedeHacerla = False
+                    End If
+                    If QuestList(QuestIndex).GlobalQuestThresholdNeeded > GlobalQuestInfo(QuestList(QuestIndex).GlobalQuestIndex).GatheringGlobalCounter Then
                         PuedeHacerla = False
                     End If
                 End If
@@ -4425,4 +4445,40 @@ Public Sub WriteChangeSkinSlot(ByVal UserIndex As Integer, ByVal TypeSkin As e_O
         End If
         Call modSendData.SendData(SendTarget.ToIndex, UserIndex)
     End With
+End Sub
+Public Sub WriteGuildConfig(ByVal UserIndex As Integer)
+    On Error GoTo WriteGuildConfig_Err
+
+    Call Writer.WriteInt16(ServerPacketID.eGuildConfig)
+    Call Writer.WriteInt8(RequiredGuildLevelCallSupport)
+    Call Writer.WriteInt8(RequiredGuildLevelSeeInvisible)
+    Call Writer.WriteInt8(RequiredGuildLevelSafe)
+    Call Writer.WriteInt8(RequiredGuildLevelShowHPBar)
+    Call Writer.WriteInt8(MAX_LEVEL_GUILD)
+    
+    Dim i As Byte
+    For i = 1 To MAX_LEVEL_GUILD
+        Call Writer.WriteInt8(MembersByLevel(i))
+    Next i
+    
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+
+WriteGuildConfig_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildConfig", Erl)
+End Sub
+Public Sub WriteShowPickUpObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal amount As Integer)
+    On Error GoTo WriteShowPickUpObj_Err
+
+    Call Writer.WriteInt16(ServerPacketID.eShowPickUpObj)
+    Call Writer.WriteInt16(ObjIndex)
+    Call Writer.WriteInt16(amount)
+    
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+
+WriteShowPickUpObj_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowPickUpObj", Erl)
 End Sub
