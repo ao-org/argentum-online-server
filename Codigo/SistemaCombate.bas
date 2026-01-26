@@ -203,6 +203,14 @@ PoderAtaqueProyectil_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueProyectil", Erl)
 End Function
 
+Private Function AttackPowerDaggers(ByVal UserIndex As Integer) As Long
+    On Error GoTo AttackPowerDaggers_Err:
+    AttackPowerDaggers = AttackPower(UserIndex, e_Skill.Apuñalar, ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+    Exit Function
+AttackPowerDaggers_Err:
+    Call TraceError(Err.Number, Err.Description, "Argentum20.Protocol_Writes.AttackPowerDaggers", Erl)
+End Function
+
 Private Function PoderAtaqueWrestling(ByVal UserIndex As Integer) As Long
     On Error GoTo PoderAtaqueWrestling_Err
     PoderAtaqueWrestling = AttackPower(UserIndex, e_Skill.Wrestling, ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
@@ -949,15 +957,18 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
     Arma = UserList(AtacanteIndex).invent.EquippedWeaponObjIndex
     Dim RequiredSkill As e_Skill
     RequiredSkill = GetSkillRequiredForWeapon(Arma)
-    If RequiredSkill = Wrestling Then
-        PoderAtaque = PoderAtaqueWrestling(AtacanteIndex)
-    ElseIf RequiredSkill = Armas Then
-        PoderAtaque = PoderAtaqueArma(AtacanteIndex)
-    ElseIf RequiredSkill = Proyectiles Then
-        PoderAtaque = PoderAtaqueProyectil(AtacanteIndex)
-    Else
-        PoderAtaque = PoderAtaqueWrestling(AtacanteIndex)
-    End If
+    Select Case RequiredSkill
+        Case e_Skill.Wrestling
+            PoderAtaque = PoderAtaqueWrestling(AtacanteIndex)
+        Case e_Skill.Armas
+            PoderAtaque = PoderAtaqueArma(AtacanteIndex)
+        Case e_Skill.Proyectiles
+            PoderAtaque = PoderAtaqueProyectil(AtacanteIndex)
+        Case e_Skill.Apuñalar
+            PoderAtaque = AttackPowerDaggers(AtacanteIndex)
+        Case Else
+            PoderAtaque = PoderAtaqueWrestling(AtacanteIndex)
+    End Select
     'Calculamos el poder de evasion...
     UserPoderEvasion = PoderEvasion(VictimaIndex)
     If UserList(VictimaIndex).invent.EquippedShieldObjIndex > 0 Then
@@ -1150,7 +1161,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
         ' Golpe crítico (ignora defensa)
         If PuedeGolpeCritico(AtacanteIndex) Then
             ' Si acertó
-            If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(AtacanteIndex) Then
+            If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(AtacanteIndex, VictimaIndex) Then
                 ' Daño del golpe crítico (usamos el daño base)
                 BonusDamage = Damage * ModDañoGolpeCritico
                 DamageStr = PonerPuntos(BonusDamage)
@@ -1168,7 +1179,6 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             End If
             ' Apuñalar (le afecta la defensa)
         ElseIf PuedeApuñalar(AtacanteIndex) Then
-            If RandomNumber(1, 100) <= ProbabilidadApuñalar(AtacanteIndex) Then
                 ' Daño del apuñalamiento
                 BonusDamage = Damage * ModicadorApuñalarClase(UserList(AtacanteIndex).clase)
                 DamageStr = PonerPuntos(BonusDamage)
@@ -1981,7 +1991,7 @@ Private Function PuedeGolpeCritico(ByVal UserIndex As Integer) As Boolean
     On Error GoTo PuedeGolpeCritico_Err
     With UserList(UserIndex)
         If .invent.EquippedWeaponObjIndex > 0 Then
-            PuedeGolpeCritico = .clase = e_Class.Bandit And ObjData(.invent.EquippedWeaponObjIndex).Subtipo = 2
+            PuedeGolpeCritico = .clase = e_Class.Bandit And ObjData(.invent.EquippedWeaponObjIndex).WeaponType = e_WeaponType.eKnuckle
         End If
     End With
     Exit Function
@@ -1989,7 +1999,7 @@ PuedeGolpeCritico_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeGolpeCritico", Erl)
 End Function
 
-Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer, Optional ByVal NpcIndex As Integer) As Integer
+Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer, Optional ByVal NpcIndex As Integer, Optional ByVal TargetUserIndex As Integer) As Integer
     ' Autor: WyroX - 16/01/2021
     On Error GoTo ProbabilidadApuñalar_Err
     With UserList(UserIndex)
@@ -2003,13 +2013,18 @@ Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer, Optional ByVa
                     ProbabilidadApuñalar = 0.25 * Skill '25% vs users
                 End If
             Case e_Class.Bard, e_Class.Hunter  '15%
-                ProbabilidadApuñalar = 0.15 * Skill
+                ProbabilidadApuñalar = 0.2 * skill
             Case Else ' 10%
                 ProbabilidadApuñalar = 0.1 * Skill
         End Select
         ' Daga especial da +5 de prob. de apu
         If ObjData(.invent.EquippedWeaponObjIndex).Subtipo = 42 Then
-            ProbabilidadApuñalar = ProbabilidadApuñalar + 5
+            ProbabilidadApuñalar = ProbabilidadApuñalar + 8
+        End If
+        If TargetUserIndex > 0 Then
+            If .Char.Heading = UserList(TargetUserIndex).Char.Heading Then
+                ProbabilidadApuñalar = ProbabilidadApuñalar + 7
+            End If
         End If
     End With
     Exit Function
@@ -2021,23 +2036,35 @@ Private Function GetSkillRequiredForWeapon(ByVal ObjId As Integer) As e_Skill
     If ObjId = 0 Then
         GetSkillRequiredForWeapon = e_Skill.Wrestling
     Else
-        If ObjData(ObjId).WeaponType = eKnuckle Then
-            GetSkillRequiredForWeapon = e_Skill.Wrestling
-        ElseIf ObjData(ObjId).WeaponType = eBow Or ObjData(ObjId).WeaponType = eGunPowder Then
-            GetSkillRequiredForWeapon = e_Skill.Proyectiles
-        Else
-            GetSkillRequiredForWeapon = e_Skill.Armas
-        End If
+        Select Case ObjData(ObjId).WeaponType
+            Case e_WeaponType.eKnuckle
+                GetSkillRequiredForWeapon = e_Skill.Wrestling
+            Case e_WeaponType.eBow
+                GetSkillRequiredForWeapon = e_Skill.Proyectiles
+            Case e_WeaponType.eGunPowder
+                GetSkillRequiredForWeapon = e_Skill.Proyectiles
+            Case e_WeaponType.eDagger
+                GetSkillRequiredForWeapon = e_Skill.Apuñalar
+            Case Else
+                GetSkillRequiredForWeapon = e_Skill.Armas
+        End Select
     End If
 End Function
 
-Private Function ProbabilidadGolpeCritico(ByVal UserIndex As Integer) As Integer
+Private Function ProbabilidadGolpeCritico(ByVal UserIndex As Integer, Optional ByVal TargetUserIndex As Integer) As Integer
     On Error GoTo ProbabilidadGolpeCritico_Err
-    ProbabilidadGolpeCritico = 0.25 * UserList(UserIndex).Stats.UserSkills(GetSkillRequiredForWeapon(UserList(UserIndex).invent.EquippedWeaponObjIndex))
-    Exit Function
+    With UserList(UserIndex)
+        ProbabilidadGolpeCritico = 0.25 * .Stats.UserSkills(GetSkillRequiredForWeapon(.invent.EquippedWeaponObjIndex))
+        If TargetUserIndex > 0 Then
+            If .Char.Heading = UserList(TargetUserIndex).Char.Heading Then
+                ProbabilidadGolpeCritico = ProbabilidadGolpeCritico + 15
+            End If
+        End If
+    End With
+        Exit Function
 ProbabilidadGolpeCritico_Err:
-    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadGolpeCritico", Erl)
-End Function
+        Call TraceError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadGolpeCritico", Erl)
+    End Function
 
 Private Function ProbabilidadDesequipar(ByVal UserIndex As Integer) As Integer
     On Error GoTo ProbabilidadDesequipar_Err
