@@ -2052,7 +2052,6 @@ Public Type t_Char
     Otra_Aura As String
     speeding As Single
     BodyIdle As Integer
-    Ataque1 As Integer
     Animation() As Integer
     CastAnimation As Integer
 End Type
@@ -3202,13 +3201,12 @@ Public Type t_NpcInfoCache
     GlobalQuestBossIndex As Integer
     TierraInvalida As Integer
     Faccion As Integer
+    BodyIdle As Integer
     ElementalTags As Long
     npcType As Integer
     Body As Integer
     Head As Integer
     Heading As Integer
-    BodyIdle As Integer
-    Ataque1 As Integer
     CastAnimation As Integer
     AnimacionesCount As Integer
     Animaciones() As Integer
