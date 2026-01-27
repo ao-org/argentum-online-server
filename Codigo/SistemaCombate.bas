@@ -208,7 +208,7 @@ Private Function AttackPowerDaggers(ByVal UserIndex As Integer) As Long
     AttackPowerDaggers = AttackPower(UserIndex, e_Skill.Apuñalar, ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
     Exit Function
 AttackPowerDaggers_Err:
-    Call TraceError(Err.Number, Err.Description, "Argentum20.Protocol_Writes.AttackPowerDaggers", Erl)
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.AttackPowerDaggers", Erl)
 End Function
 
 Private Function PoderAtaqueWrestling(ByVal UserIndex As Integer) As Long
@@ -419,7 +419,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
             ' Stab
         ElseIf PuedeApuñalar(UserIndex) Then
             ' Si acertó - Doble chance contra NPCs
-            If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex, NpcIndex) Then
+            If RandomNumber(1, 100) <= GetStabbingChanceBase(UserIndex) Then
                 Dim min_stab_npc As Double
                 Dim max_stab_npc As Double
                 min_stab_npc = GetStabbingNPCMinForClass(UserList(UserIndex).clase)
@@ -1179,7 +1179,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             End If
             ' Apuñalar (le afecta la defensa)
         ElseIf PuedeApuñalar(AtacanteIndex) Then
-            If RandomNumber(1, 100) <= ProbabilidadApuñalar(AtacanteIndex, 0, VictimaIndex) Then
+            If RandomNumber(1, 100) <= (GetStabbingChanceBase(AtacanteIndex) + GetStabbingChanceAgainstUsers(AtacanteIndex, VictimaIndex)) Then
                 ' Daño del apuñalamiento
                 BonusDamage = Damage * ModicadorApuñalarClase(UserList(AtacanteIndex).clase)
                 DamageStr = PonerPuntos(BonusDamage)
@@ -2000,39 +2000,6 @@ PuedeGolpeCritico_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeGolpeCritico", Erl)
 End Function
 
-Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer, Optional ByVal NpcIndex As Integer, Optional ByVal TargetUserIndex As Integer) As Integer
-    ' Autor: WyroX - 16/01/2021
-    On Error GoTo ProbabilidadApuñalar_Err
-    With UserList(UserIndex)
-        Dim Skill As Integer
-        Skill = .Stats.UserSkills(e_Skill.Apuñalar)
-        Select Case .clase
-            Case e_Class.Assasin
-                If NpcIndex <> 0 Then
-                    ProbabilidadApuñalar = 0.33 * Skill '33% vs npcs
-                Else
-                    ProbabilidadApuñalar = 0.25 * Skill '25% vs users
-                End If
-            Case e_Class.Bard, e_Class.Hunter  '15%
-                ProbabilidadApuñalar = 0.2 * skill
-            Case Else ' 10%
-                ProbabilidadApuñalar = 0.1 * Skill
-        End Select
-        ' Daga especial da +5 de prob. de apu
-        If ObjData(.invent.EquippedWeaponObjIndex).Subtipo = 42 Then
-            ProbabilidadApuñalar = ProbabilidadApuñalar + 8
-        End If
-        If TargetUserIndex > 0 Then
-            If .Char.Heading = UserList(TargetUserIndex).Char.Heading Then
-                ProbabilidadApuñalar = ProbabilidadApuñalar + 7
-            End If
-        End If
-    End With
-    Exit Function
-ProbabilidadApuñalar_Err:
-    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadApuñalar", Erl)
-End Function
-
 Private Function GetSkillRequiredForWeapon(ByVal ObjId As Integer) As e_Skill
     If ObjId = 0 Then
         GetSkillRequiredForWeapon = e_Skill.Wrestling
@@ -2374,3 +2341,34 @@ Public Sub CalculateElementalTagsModifiers(ByVal UserIndex As Integer, ByVal Npc
         End If
     Next attackerIndex
 End Sub
+
+Private Function GetStabbingChanceBase(UserIndex) As Long
+    On Error GoTo GetStabbingChanceBase_Err:
+    Dim skill As Integer
+    With UserList(UserIndex)
+        skill = .Stats.UserSkills(e_Skill.Apuñalar)
+        Select Case .clase
+            Case e_Class.Assasin
+                GetStabbingChanceBase = skill * 0.33
+            Case e_Class.Bard, e_Class.Hunter
+                GetStabbingChanceBase = skill * 0.2
+            Case Else
+                GetStabbingChanceBase = skill * 0.1
+        End Select
+    End With
+    Exit Function
+GetStabbingChanceBase_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingChanceBase", Erl)
+End Function
+
+Private Function GetStabbingChanceAgainstUsers(UserIndex, targetUserIndex) As Long
+    On Error GoTo GetStabbingChanceAgainstUsers_Err:
+    If UserList(UserIndex).Char.Heading = UserList(targetUserIndex).Char.Heading Then
+        GetStabbingChanceAgainstUsers = ExtraBackstabChanceAgainstPlayers
+    End If
+    Exit Function
+GetStabbingChanceAgainstUsers_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingChanceAgainstUsers", Erl)
+End Function
+
+

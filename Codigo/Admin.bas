@@ -115,6 +115,7 @@ Public CapVidaMin                    As Single
 Public ExpLevelUp(1 To STAT_MAXELV)  As Long
 Public InfluenciaPromedioVidas       As Single
 Public ModDañoGolpeCritico          As Single
+Public ExtraBackstabChanceAgainstPlayers              As Single
 Public MinutosWs                         As Long
 Public PlayerStunTime                    As Long
 Public NpcStunTime                       As Long
