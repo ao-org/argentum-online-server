@@ -2279,6 +2279,8 @@ Public Type t_ObjData
     LingoteIndex As Integer
     MinHIT As Integer 'Minimo golpe
     MaxHit As Integer 'Maximo golpe
+    MinHitToNPC As Integer
+    MaxHitToNPC As Integer
     IgnoreArmorAmmount As Integer
     IgnoreArmorPercent As Single
     MinHam As Integer

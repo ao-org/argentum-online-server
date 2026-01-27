@@ -3132,7 +3132,7 @@ Public Sub UseArpon(ByVal UserIndex As Integer)
         ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
         Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
         Dim Damage As Integer
-        Damage = GetUserDamageWithItem(UserIndex, ObjIndex, 0)
+        Damage = GetUserDamageWithItem(UserIndex, ObjIndex, 0, TargetRef.RefType)
         If TargetRef.RefType = eUser Then
             UserList(TargetRef.ArrayIndex).Counters.timeFx = 3
             Call RemoveUserInvisibility(UserIndex)
