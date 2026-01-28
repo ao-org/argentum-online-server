@@ -1163,7 +1163,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             ' Si acertó
             If RandomNumber(1, 100) <= GetCriticalHitChanceBase(AtacanteIndex) + GetBackHitBonusChanceAgainstUsers(AtacanteIndex, VictimaIndex) Then
                 ' Daño del golpe crítico (usamos el daño base)
-                BonusDamage = Damage * ModDañoGolpeCritico
+                BonusDamage = Damage * CriticalHitDmgModifier
                 DamageStr = PonerPuntos(BonusDamage)
                 ' Mostramos en consola el daño al atacante
                 If UserList(AtacanteIndex).ChatCombate = 1 Then
@@ -2019,9 +2019,6 @@ Private Function GetSkillRequiredForWeapon(ByVal ObjId As Integer) As e_Skill
     End If
 End Function
 
-    With UserList(UserIndex)
-
-
 Private Function ProbabilidadDesequipar(ByVal UserIndex As Integer) As Integer
     On Error GoTo ProbabilidadDesequipar_Err
     With UserList(UserIndex)
@@ -2337,11 +2334,13 @@ Private Function GetStabbingChanceBase(ByVal UserIndex As Integer) As Long
         skill = .Stats.UserSkills(e_Skill.Apuñalar)
         Select Case .clase
             Case e_Class.Assasin
-                GetStabbingChanceBase = skill * 0.33
-            Case e_Class.Bard, e_Class.Hunter
-                GetStabbingChanceBase = skill * 0.2
+                GetStabbingChanceBase = skill * AssasinBackStabChance
+            Case e_Class.Bard
+                GetStabbingChanceBase = skill * BardBackStabChance
+            Case e_Class.Hunter
+                GetStabbingChanceBase = skill * HunterBackStabChance
             Case Else
-                GetStabbingChanceBase = skill * 0.1
+                GetStabbingChanceBase = skill * ElseBackStabChance
         End Select
     End With
     Exit Function
@@ -2364,7 +2363,7 @@ Private Function GetCriticalHitChanceBase(ByVal UserIndex As Integer) As Long
     Dim skill As Integer
     With UserList(UserIndex)
         skill = .Stats.UserSkills(e_Skill.Wrestling)
-        GetCriticalHitChanceBase = 0.33 * skill
+        GetCriticalHitChanceBase = skill * BanditCriticalHitChance
     End With
     Exit Function
 GetCriticalHitChanceBase_Err:
