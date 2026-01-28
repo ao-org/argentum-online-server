@@ -6814,11 +6814,11 @@ HandleHecharDeGrupo_Err:
 End Sub
 
 Private Sub HandleMacroPos(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
     On Error GoTo HandleMacroPos_Err
     With UserList(UserIndex)
         .ChatCombate = reader.ReadInt8()
         .ChatGlobal = reader.ReadInt8()
+        .ShowNothingInterestingMessage = reader.ReadInt8()
     End With
     Exit Sub
 HandleMacroPos_Err:

@@ -1174,35 +1174,43 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                 End With
             Next i
         End If
-        If FoundChar = 0 Then
-            Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
-            UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
-            Call SetUserRef(UserList(UserIndex).flags.TargetUser, 0)
-        End If
-        '*** NO ENCONTRO NADA ***
-        If FoundSomething = 0 Then
-            Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
-            UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
-            Call SetUserRef(UserList(UserIndex).flags.TargetUser, 0)
-            UserList(UserIndex).flags.TargetObj = 0
-            UserList(UserIndex).flags.TargetObjMap = 0
-            UserList(UserIndex).flags.TargetObjX = 0
-            UserList(UserIndex).flags.TargetObjY = 0
-            'Msg1114= No ves nada interesante.
-            Call WriteLocaleMsg(UserIndex, 1114, e_FontTypeNames.FONTTYPE_INFO)
-        End If
+        With UserList(UserIndex)
+            If FoundChar = 0 Then
+                Call ClearNpcRef(.flags.TargetNPC)
+                .flags.TargetNpcTipo = e_NPCType.Comun
+                Call SetUserRef(.flags.TargetUser, 0)
+            End If
+            '*** NO ENCONTRO NADA ***
+            If FoundSomething = 0 Then
+                Call ClearNpcRef(.flags.TargetNPC)
+                .flags.TargetNpcTipo = e_NPCType.Comun
+                Call SetUserRef(.flags.TargetUser, 0)
+                .flags.TargetObj = 0
+                .flags.TargetObjMap = 0
+                .flags.TargetObjX = 0
+                .flags.TargetObjY = 0
+                If .ShowNothingInterestingMessage > 0 Then
+                    'Msg1114= No ves nada interesante.
+                    Call WriteLocaleMsg(UserIndex, 1114, e_FontTypeNames.FONTTYPE_INFO)
+                End If
+            End If
+        End With
     Else
-        If FoundSomething = 0 Then
-            Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
-            UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
-            Call SetUserRef(UserList(UserIndex).flags.TargetUser, 0)
-            UserList(UserIndex).flags.TargetObj = 0
-            UserList(UserIndex).flags.TargetObjMap = 0
-            UserList(UserIndex).flags.TargetObjX = 0
-            UserList(UserIndex).flags.TargetObjY = 0
-            'Msg1106= No ves nada interesante.
-            Call WriteLocaleMsg(UserIndex, 1106, e_FontTypeNames.FONTTYPE_INFO)
-        End If
+        With UserList(UserIndex)
+            If FoundSomething = 0 Then
+                Call ClearNpcRef(.flags.TargetNPC)
+                .flags.TargetNpcTipo = e_NPCType.Comun
+                Call SetUserRef(UserList(UserIndex).flags.TargetUser, 0)
+                .flags.TargetObj = 0
+                .flags.TargetObjMap = 0
+                .flags.TargetObjX = 0
+                .flags.TargetObjY = 0
+                If .ShowNothingInterestingMessage > 0 Then
+                    'Msg1106= No ves nada interesante.
+                    Call WriteLocaleMsg(UserIndex, 1106, e_FontTypeNames.FONTTYPE_INFO)
+                End If
+            End If
+        End With
     End If
     Exit Sub
 LookatTile_Err:
