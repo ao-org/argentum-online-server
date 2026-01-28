@@ -1999,3 +1999,9 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, ByVal 
 PrepareStatusMsgsForNpcs_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.PrepareStatusMsgsForNpcs", Erl)
 End Function
+
+Public Function ClampChance(ByVal v As Single) As Integer
+    If v < 0 Then v = 0
+    If v > 100 Then v = 100
+    ClampChance = CInt(v)
+End Function

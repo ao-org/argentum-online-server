@@ -1161,7 +1161,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
         ' Golpe crítico (ignora defensa)
         If PuedeGolpeCritico(AtacanteIndex) Then
             ' Si acertó
-            If RandomNumber(1, 100) <= GetCriticalHitChanceBase(AtacanteIndex) + GetBackHitBonusChanceAgainstUsers(AtacanteIndex, VictimaIndex) Then
+            If RandomNumber(1, 100) <= GetCriticalHitChanceAgainstUsers(AtacanteIndex, VictimaIndex) Then
                 ' Daño del golpe crítico (usamos el daño base)
                 BonusDamage = Damage * CriticalHitDmgModifier
                 DamageStr = PonerPuntos(BonusDamage)
@@ -1179,7 +1179,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             End If
             ' Apuñalar (le afecta la defensa)
         ElseIf PuedeApuñalar(AtacanteIndex) Then
-            If RandomNumber(1, 100) <= (GetStabbingChanceBase(AtacanteIndex) + GetBackHitBonusChanceAgainstUsers(AtacanteIndex, VictimaIndex)) Then
+            If RandomNumber(1, 100) <= GetStabbingChanceAgainstUsers(AtacanteIndex, VictimaIndex) Then
                 ' Daño del apuñalamiento
                 BonusDamage = Damage * ModicadorApuñalarClase(UserList(AtacanteIndex).clase)
                 DamageStr = PonerPuntos(BonusDamage)
@@ -2327,7 +2327,6 @@ Public Sub CalculateElementalTagsModifiers(ByVal UserIndex As Integer, ByVal Npc
     Next attackerIndex
 End Sub
 
-Private Function GetStabbingChanceBase(ByVal UserIndex As Integer) As Long
     On Error GoTo GetStabbingChanceBase_Err:
     Dim skill As Integer
     With UserList(UserIndex)
@@ -2348,7 +2347,7 @@ GetStabbingChanceBase_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingChanceBase", Erl)
 End Function
 
-Private Function GetBackHitBonusChanceAgainstUsers(ByVal UserIndex As Integer, ByVal TargetUserIndex As Integer) As Long
+Private Function GetBackHitBonusChanceAgainstUsers(ByVal UserIndex As Integer, ByVal targetUserIndex As Integer) As Single
     On Error GoTo GetBackHitBonusChanceAgainstUsers_Err:
     If UserList(UserIndex).Char.Heading = UserList(targetUserIndex).Char.Heading Then
         GetBackHitBonusChanceAgainstUsers = ExtraBackHitChanceAgainstPlayers
@@ -2358,7 +2357,7 @@ GetBackHitBonusChanceAgainstUsers_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetBackHitBonusChanceAgainstUsers", Erl)
 End Function
 
-Private Function GetCriticalHitChanceBase(ByVal UserIndex As Integer) As Long
+Private Function GetCriticalHitChanceBase(ByVal UserIndex As Integer) As Single
     On Error GoTo GetCriticalHitChanceBase_Err:
     Dim skill As Integer
     With UserList(UserIndex)
@@ -2369,3 +2368,12 @@ Private Function GetCriticalHitChanceBase(ByVal UserIndex As Integer) As Long
 GetCriticalHitChanceBase_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetCriticalHitChanceBase", Erl)
 End Function
+
+Private Function GetStabbingChanceAgainstUsers(ByVal UserIndex As Integer, ByVal targetUserIndex As Integer) As Single
+    GetStabbingChanceAgainstUsers = GetStabbingChanceBase(UserIndex) + GetBackHitBonusChanceAgainstUsers(UserIndex, targetUserIndex)
+End Function
+
+Private Function GetCriticalHitChanceAgainstUsers(ByVal UserIndex As Integer, ByVal targetUserIndex As Integer) As Single
+    GetCriticalHitChanceAgainstUsers = GetCriticalHitChanceBase(UserIndex) + GetBackHitBonusChanceAgainstUsers(UserIndex, targetUserIndex)
+End Function
+
