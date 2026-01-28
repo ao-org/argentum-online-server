@@ -2326,7 +2326,7 @@ Public Sub CalculateElementalTagsModifiers(ByVal UserIndex As Integer, ByVal Npc
         End If
     Next attackerIndex
 End Sub
-
+Public Function GetStabbingChanceBase(ByVal UserIndex As Integer)
     On Error GoTo GetStabbingChanceBase_Err:
     Dim skill As Integer
     With UserList(UserIndex)
