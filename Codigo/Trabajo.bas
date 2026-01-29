@@ -959,7 +959,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
         If IsFeatureEnabled("gain_exp_while_working") Then
-            Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Blacksmith)
+            Call GiveExpWhileWorking(UserIndex, MiObj.ObjIndex, e_JobsTypes.Blacksmith)
             Call WriteUpdateExp(UserIndex)
             Call CheckUserLevel(UserIndex)
         End If
@@ -1067,7 +1067,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         End If
         Call SubirSkill(UserIndex, e_Skill.Carpinteria)
         If IsFeatureEnabled("gain_exp_while_working") Then
-            Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Carpenter)
+            Call GiveExpWhileWorking(UserIndex, MiObj.ObjIndex, e_JobsTypes.Carpenter)
             Call WriteUpdateExp(UserIndex)
             Call CheckUserLevel(UserIndex)
         End If
@@ -2151,16 +2151,32 @@ End Function
 
 Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal JobType As Byte)
     On Error GoTo GiveExpWhileWorking_Err:
-    Dim tmpExp As Byte
+    Dim tmpExp As Long
     Select Case JobType
         Case e_JobsTypes.Miner
             tmpExp = SvrConfig.GetValue("MiningExp")
         Case e_JobsTypes.Woodcutter
             tmpExp = SvrConfig.GetValue("FellingExp")
         Case e_JobsTypes.Blacksmith
-            tmpExp = SvrConfig.GetValue("ForgingExp")
+            If ObjData(ItemIndex).LingH > 0 Then
+                tmpExp = tmpExp + ObjData(ItemIndex).LingH * SvrConfig.GetValue("IronForgingExp")
+            End If
+            If ObjData(ItemIndex).LingP > 0 Then
+                tmpExp = tmpExp + ObjData(ItemIndex).LingP * SvrConfig.GetValue("SilverForgingExp")
+            End If
+            If ObjData(ItemIndex).LingO > 0 Then
+                tmpExp = tmpExp + ObjData(ItemIndex).LingO * SvrConfig.GetValue("GoldForgingExp")
+            End If
+            If ObjData(ItemIndex).Blodium > 0 Then
+                tmpExp = tmpExp + ObjData(ItemIndex).Blodium * SvrConfig.GetValue("BlodiumForgingExp")
+            End If
         Case e_JobsTypes.Carpenter
-            tmpExp = SvrConfig.GetValue("CarpentryExp")
+            If ObjData(ItemIndex).Madera > 0 Then
+                tmpExp = tmpExp + ObjData(ItemIndex).Madera * SvrConfig.GetValue("WoodCarpentryExp")
+            End If
+            If ObjData(ItemIndex).MaderaElfica > 0 Then
+                tmpExp = tmpExp + ObjData(ItemIndex).MaderaElfica * SvrConfig.GetValue("ElvenWoodCarpentryExp")
+            End If
         Case e_JobsTypes.Woodcutter
             tmpExp = SvrConfig.GetValue("FellingExp")
         Case e_JobsTypes.Fisherman
@@ -2168,7 +2184,27 @@ Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByVal ItemIndex 
                 tmpExp = SvrConfig.GetValue("FishingExp")
             End If
         Case e_JobsTypes.Alchemist
-            tmpExp = SvrConfig.GetValue("MixingExp")
+            If ObjData(ItemIndex).FlorRoja > 0 Then
+                tmpExp = tmpExp + ObjData(ItemIndex).FlorRoja * SvrConfig.GetValue("MixingExp")
+            End If
+            If ObjData(ItemIndex).FlorOceano > 0 Then
+                tmpExp = tmpExp + ObjData(ItemIndex).FlorRoja * SvrConfig.GetValue("MixingExp")
+            End If
+            If ObjData(ItemIndex).ColaDeZorro > 0 Then
+                tmpExp = tmpExp + ObjData(ItemIndex).FlorRoja * SvrConfig.GetValue("MixingExp")
+            End If
+            If ObjData(ItemIndex).Tuna > 0 Then
+                tmpExp = tmpExp + ObjData(ItemIndex).FlorRoja * SvrConfig.GetValue("MixingExp")
+            End If
+            If ObjData(ItemIndex).HongoDeLuz > 0 Then
+                tmpExp = tmpExp + ObjData(ItemIndex).FlorRoja * SvrConfig.GetValue("MixingExp")
+            End If
+            If ObjData(ItemIndex).SemillasPros > 0 Then
+                tmpExp = tmpExp + ObjData(ItemIndex).FlorRoja * SvrConfig.GetValue("MixingExp")
+            End If
+            If ObjData(ItemIndex).Cala > 0 Then
+                tmpExp = tmpExp + ObjData(ItemIndex).FlorRoja * SvrConfig.GetValue("MixingExp")
+            End If
         Case Else
             tmpExp = SvrConfig.GetValue("ElseExp")
     End Select
