@@ -17,7 +17,7 @@ Attribute VB_Name = "Declaraciones"
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'    Copyright (C) 2002 Márquez Pablo Ignacio
+'    Copyright (C) 2002 Mï¿½rquez Pablo Ignacio
 '
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
@@ -317,12 +317,12 @@ End Enum
 
 Public Enum e_Class
     Mage = 1    'Mago
-    Cleric      'Clérigo
+    Cleric      'Clï¿½rigo
     Warrior     'Guerrero
     Assasin     'Asesino
     Bard        'Bardo
     Druid       'Druida
-    Paladin     'Paladín
+    Paladin     'Paladï¿½n
     Hunter      'Cazador
     Trabajador  'Trabajador
     Pirat       'Pirata
@@ -1255,7 +1255,7 @@ Public Const MAXUSERHECHIZOS     As Byte = 40
 Public Const FX_TELEPORT_INDEX   As Integer = 1
 Public Const HiddenSpellTextTime As Integer = 500
 
-' La utilidad de esto es casi nula, sólo se revisa si fue a la cabeza...
+' La utilidad de esto es casi nula, sï¿½lo se revisa si fue a la cabeza...
 Public Enum e_PartesCuerpo
     bCabeza = 1
     bPiernaIzquierda = 2
@@ -1345,7 +1345,7 @@ Public Enum e_NPCType
     ArenaGuard = 24
 End Enum
 
-Public Const MIN_APUÑALAR As Byte = 10
+Public Const MIN_APUï¿½ALAR As Byte = 10
 '********** CONSTANTANTES ***********
 ''
 ' Cantidad de skills
@@ -1403,7 +1403,7 @@ Public Enum e_Skill
     Tacticas = 3
     Armas = 4
     Meditar = 5
-    Apuñalar = 6
+    Apuï¿½alar = 6
     Ocultarse = 7
     Supervivencia = 8
     Comerciar = 9
@@ -1444,15 +1444,15 @@ Public Const AumentoSTDef        As Byte = 15
 Public Const AumentoSTLadron     As Byte = AumentoSTDef + 3
 Public Const AumentoSTMago       As Byte = AumentoSTDef - 1
 Public Const AumentoStBandido    As Byte = AumentoSTDef + 3
-'Tamaño del mapa
+'Tamaï¿½o del mapa
 Public Const XMaxMapSize         As Byte = 100
 Public Const XMinMapSize         As Byte = 1
 Public Const YMaxMapSize         As Byte = 100
 Public Const YMinMapSize         As Byte = 1
-'Tamaño del tileset
+'Tamaï¿½o del tileset
 Public Const TileSizeX           As Byte = 32
 Public Const TileSizeY           As Byte = 32
-'Tamaño en Tiles de la pantalla de visualizacion
+'Tamaï¿½o en Tiles de la pantalla de visualizacion
 Public Const XWindow             As Byte = 23
 Public Const YWindow             As Byte = 18
 'Sonidos
@@ -1471,7 +1471,7 @@ Public Const SND_IMPACTO_APU     As Integer = 2187
 Public Const SND_IMPACTO_CRITICO As Integer = 2186
 Public Const SND_IMPACTO2        As Byte = 12
 Public Const SND_DOPA            As Byte = 77
-Public Const SND_LEÑADOR         As Byte = 13
+Public Const SND_LEï¿½ADOR         As Byte = 13
 Public Const SND_FOGATA              As Byte = 116
 Public Const SND_SACARARMA           As Byte = 25
 Public Const SND_ESCUDO              As Byte = 37
@@ -1479,7 +1479,7 @@ Public Const MARTILLOHERRERO         As Byte = 41
 Public Const LABUROCARPINTERO        As Byte = 42
 Public Const SND_BEBER               As Byte = 135
 Public Const GRH_FALLO_PESCA         As Long = 48974
-'Numero de objeto de la poción de reset
+'Numero de objeto de la pociï¿½n de reset
 Public Const POCION_RESET            As Long = 3378
 Public Const MAXUSERQUESTS           As Integer = 5     'Maxima cantidad de quests que puede tener un usuario al mismo tiempo.
 ''
@@ -1490,7 +1490,7 @@ Public Const DEFAULT_MAX_INVENTORY_OBJS As Integer = 10000
 Public Const MAX_INVENTORY_SLOTS     As Byte = 42
 Public Const MAX_SKINSINVENTORY_SLOTS As Byte = 66
 Public Const MAX_SKINSSPELLS_SLOTS    As Integer = 350
-' Cantidad de "slots" en el inventario básico
+' Cantidad de "slots" en el inventario bï¿½sico
 Public Const MAX_USERINVENTORY_SLOTS As Byte = 24
 ' Cantidad de "slots" en el inventario por fila
 Public Const SLOTS_PER_ROW_INVENTORY As Byte = 6
@@ -1739,7 +1739,7 @@ Public Type t_Hechizo
     TeleportXMap As Integer
     TeleportXX As Integer
     TeleportXY As Integer
-    'Hechizo de Materialización
+    'Hechizo de Materializaciï¿½n
     MaterializaObj As Integer
     MaterializaCant As Integer
     NecesitaObj As Integer
@@ -1906,7 +1906,7 @@ End Enum
 
 Public Type t_UserOBJ
     ObjIndex As Integer
-    amount As Integer
+    Amount As Long
     Equipped As Byte
     ElementalTags As Long
 End Type
@@ -1946,7 +1946,7 @@ Public Type t_Inventario
 End Type
 
 Public Type tSkinInventario 'MAX_SKINSINVENTORY_SLOTS
-    'Type debe ir en el Storage Manager pero acá no hace falta, ya está en OBJECT.
+    'Type debe ir en el Storage Manager pero acï¿½ no hace falta, ya estï¿½ en OBJECT.
     Object(1 To MAX_SKINSINVENTORY_SLOTS) As t_UserSkins
     ObjIndexArmourEquipped      As Integer
     ObjIndexHelmetEquipped      As Integer
@@ -2159,13 +2159,13 @@ Public Type t_SalaReto
     CaenItems As Boolean
     TiempoRestante As Long
     TiempoItems As Integer
-    TamañoEquipoIzq As Byte
-    TamañoEquipoDer As Byte
+    Tamaï¿½oEquipoIzq As Byte
+    Tamaï¿½oEquipoDer As Byte
     Jugadores() As t_UserReference
 End Type
 
 Public Type t_Retos
-    TamañoMaximoEquipo As Byte
+    Tamaï¿½oMaximoEquipo As Byte
     ApuestaMinima As Long
     ImpuestoApuesta As Single
     DuracionMaxima As Long
@@ -2210,7 +2210,7 @@ Public Type t_ObjData
     'Solo contenedores
     MaxItems As Integer
     Conte As t_Inventario
-    Apuñala As Byte
+    Apuï¿½ala As Byte
     Paraliza As Byte
     Estupidiza As Byte
     Envenena As Byte
@@ -2408,9 +2408,9 @@ Public Type t_ModClase
     Evasion As Double
     AtaqueArmas As Double
     AtaqueProyectiles As Double
-    DañoArmas As Double
-    DañoProyectiles As Double
-    DañoWrestling As Double
+    Daï¿½oArmas As Double
+    Daï¿½oProyectiles As Double
+    Daï¿½oWrestling As Double
     ModApunalar As Double
     ModStabbingNPCMin As Double
     ModStabbingNPCMax As Double
@@ -2508,7 +2508,7 @@ Public Type t_UserStats
     UserAtributos(1 To NUMATRIBUTOS) As Byte
     UserAtributosBackUP(1 To NUMATRIBUTOS) As Byte
     UserHechizos(1 To MAXUSERHECHIZOS) As Integer
-    UserSkinsHechizos(1 To MAX_SKINSSPELLS_SLOTS) As Integer 'No puede ser MAXUSERHECHIZOS porque la cantidad máxima de skins podría escalar en el futuro, debe ser independiente.
+    UserSkinsHechizos(1 To MAX_SKINSSPELLS_SLOTS) As Integer 'No puede ser MAXUSERHECHIZOS porque la cantidad mï¿½xima de skins podrï¿½a escalar en el futuro, debe ser independiente.
     UsuariosMatados As Long
     PuntosPesca As Long
     CriminalesMatados As Long
@@ -2610,11 +2610,11 @@ Public Type t_UserFlags
     Montado As Byte
     Subastando As Boolean
     Incinerado As Byte
-    Muerto As Byte '¿Esta muerto?
-    Escondido As Byte '¿Esta escondido?
-    Comerciando As Boolean '¿Esta comerciando?
-    UserLogged As Boolean '¿Esta online?
-    FirstPacket As Boolean ' ¿El socket envió algun paquete válido?
+    Muerto As Byte 'ï¿½Esta muerto?
+    Escondido As Byte 'ï¿½Esta escondido?
+    Comerciando As Boolean 'ï¿½Esta comerciando?
+    UserLogged As Boolean 'ï¿½Esta online?
+    FirstPacket As Boolean ' ï¿½El socket enviï¿½ algun paquete vï¿½lido?
     Meditando As Boolean
     Crafteando As Byte
     IsSlotFree As Boolean
@@ -2646,14 +2646,14 @@ Public Type t_UserFlags
     SeguroResu As Boolean
     LegionarySecure As Boolean
     DuracionEfecto As Long
-    TargetNPC As t_NpcReference ' Npc señalado por el usuario
-    TargetNpcTipo As e_NPCType ' Tipo del npc señalado
+    TargetNPC As t_NpcReference ' Npc seï¿½alado por el usuario
+    TargetNpcTipo As e_NPCType ' Tipo del npc seï¿½alado
     NpcInv As Integer
     Ban As Byte
     AdministrativeBan As Byte
     BanMotivo As String
-    TargetUser As t_UserReference ' Usuario señalado
-    TargetObj As Integer ' Obj señalado
+    TargetUser As t_UserReference ' Usuario seï¿½alado
+    TargetObj As Integer ' Obj seï¿½alado
     TargetObjMap As Integer
     TargetObjX As Integer
     TargetObjY As Integer
@@ -2860,7 +2860,7 @@ Public Type t_UserTrabajo
     TargetSkill As e_Skill
     Target_X As Integer
     Target_Y As Integer
-    'Para macro de Carpinteria, Herrería y Sastrería
+    'Para macro de Carpinteria, Herrerï¿½a y Sastrerï¿½a
     Item As Integer
     Cantidad As Long
 End Type
@@ -3092,7 +3092,7 @@ Public Type t_NPCFlags
     GolpeExacto As Byte
     Domable As Integer
     Respawn As Byte
-    NPCActive As Boolean '¿Esta vivo?
+    NPCActive As Boolean 'ï¿½Esta vivo?
     Follow As Boolean
     Faccion As e_Facciones
     LanzaSpells As Byte

@@ -29,7 +29,7 @@ Attribute VB_Exposed = False
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'    Copyright (C) 2002 Márquez Pablo Ignacio
+'    Copyright (C) 2002 Mï¿½rquez Pablo Ignacio
 '
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
@@ -73,7 +73,7 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "DP_MaxEnumPayloadSize", CLng(val(reader.GetValue("DIRECTPLAY", "MaxEnumPayloadSize", 1024)))
     'Number of threads the service provider will use for servicing network requests. The default value is based on an algorithm that takes into account the number of processors on the system.
     'Most applications will not need to modify this value. After a service provider is active in your process you may only increase this value.
-    'Decreasing the value will have no effect. The setting is process wide, meaning it will effect your current Microsoft® DirectPlay® object and any other DirectPlay objects in your process.
+    'Decreasing the value will have no effect. The setting is process wide, meaning it will effect your current Microsoftï¿½ DirectPlayï¿½ object and any other DirectPlay objects in your process.
     mSettings.Add "DP_NumThreads", CLng(val(reader.GetValue("DIRECTPLAY", "NumThreads", 48)))
     mSettings.Add "DP_SystemBufferSizeAs", CLng(val(reader.GetValue("DIRECTPLAY", "SystemBufferSizeAs", 65536)))
     'Number of milliseconds DirectPlay should wait, since the last time it received a packet from an endpoint, before it sends a keep-alive message. You can catch the KeepAlive up to 2 times of what you specify.
@@ -176,8 +176,12 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "AUTONAVALBATTLE_Description", reader.GetValue("AUTONAVALBATTLE", "Description")
     mSettings.Add "MiningExp", CByte(val(reader.GetValue("JOBEXP", "MiningExp", 1)))
     mSettings.Add "FellingExp", CByte(val(reader.GetValue("JOBEXP", "FellingExp", 1)))
-    mSettings.Add "ForgingExp", CByte(val(reader.GetValue("JOBEXP", "ForgingExp", 1)))
-    mSettings.Add "CarpentryExp", CByte(val(reader.GetValue("JOBEXP", "CarpentryExp", 1)))
+    mSettings.Add "IronForgingExp", CByte(val(reader.GetValue("JOBEXP", "IronForgingExp", 1)))
+    mSettings.Add "SilverForgingExp", CByte(val(reader.GetValue("JOBEXP", "SilverForgingExp", 1)))
+    mSettings.Add "GoldForgingExp", CByte(val(reader.GetValue("JOBEXP", "GoldForgingExp", 1)))
+    mSettings.Add "BlodiumForgingExp", CByte(val(reader.GetValue("JOBEXP", "BlodiumForgingExp", 1)))
+    mSettings.Add "WoodCarpentryExp", CByte(val(reader.GetValue("JOBEXP", "WoodCarpentryExp", 1)))
+    mSettings.Add "ElvenWoodCarpentryExp", CByte(val(reader.GetValue("JOBEXP", "ElvenWoodCarpentryExp", 1)))
     mSettings.Add "FishingExp", CByte(val(reader.GetValue("JOBEXP", "FishingExp", 1)))
     mSettings.Add "MixingExp", CByte(val(reader.GetValue("JOBEXP", "MixingExp", 1)))
     mSettings.Add "ElseExp", CByte(val(reader.GetValue("JOBEXP", "ElseExp", 1)))
