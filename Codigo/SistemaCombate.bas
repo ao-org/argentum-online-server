@@ -2326,7 +2326,7 @@ Public Sub CalculateElementalTagsModifiers(ByVal UserIndex As Integer, ByVal Npc
         End If
     Next attackerIndex
 End Sub
-Public Function GetStabbingChanceBase(ByVal UserIndex As Integer)
+Public Function GetStabbingChanceBase(ByVal UserIndex As Integer) As Single
     On Error GoTo GetStabbingChanceBase_Err:
     Dim skill As Integer
     With UserList(UserIndex)
@@ -2342,6 +2342,7 @@ Public Function GetStabbingChanceBase(ByVal UserIndex As Integer)
                 GetStabbingChanceBase = skill * ElseBackStabChance
         End Select
     End With
+    GetStabbingChanceBase = ClampChance(GetStabbingChanceBase)
     Exit Function
 GetStabbingChanceBase_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingChanceBase", Erl)
@@ -2349,7 +2350,7 @@ End Function
 
 Private Function GetBackHitBonusChanceAgainstUsers(ByVal UserIndex As Integer, ByVal targetUserIndex As Integer) As Single
     On Error GoTo GetBackHitBonusChanceAgainstUsers_Err:
-    If UserList(UserIndex).Char.Heading = UserList(targetUserIndex).Char.Heading Then
+    If UserList(UserIndex).Char.Heading = UserList(targetUserIndex).Char.Heading And Distancia(UserList(UserIndex).pos, UserList(targetUserIndex).pos) <= 1 Then
         GetBackHitBonusChanceAgainstUsers = ExtraBackHitChanceAgainstPlayers
     End If
     Exit Function
@@ -2364,16 +2365,17 @@ Private Function GetCriticalHitChanceBase(ByVal UserIndex As Integer) As Single
         skill = .Stats.UserSkills(e_Skill.Wrestling)
         GetCriticalHitChanceBase = skill * BanditCriticalHitChance
     End With
+    GetCriticalHitChanceBase = ClampChance(GetCriticalHitChanceBase)
     Exit Function
 GetCriticalHitChanceBase_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetCriticalHitChanceBase", Erl)
 End Function
 
 Private Function GetStabbingChanceAgainstUsers(ByVal UserIndex As Integer, ByVal targetUserIndex As Integer) As Single
-    GetStabbingChanceAgainstUsers = GetStabbingChanceBase(UserIndex) + GetBackHitBonusChanceAgainstUsers(UserIndex, targetUserIndex)
+    GetStabbingChanceAgainstUsers = ClampChance(GetStabbingChanceBase(UserIndex) + GetBackHitBonusChanceAgainstUsers(UserIndex, targetUserIndex))
 End Function
 
 Private Function GetCriticalHitChanceAgainstUsers(ByVal UserIndex As Integer, ByVal targetUserIndex As Integer) As Single
-    GetCriticalHitChanceAgainstUsers = GetCriticalHitChanceBase(UserIndex) + GetBackHitBonusChanceAgainstUsers(UserIndex, targetUserIndex)
+    GetCriticalHitChanceAgainstUsers = ClampChance(GetCriticalHitChanceBase(UserIndex) + GetBackHitBonusChanceAgainstUsers(UserIndex, targetUserIndex))
 End Function
 
