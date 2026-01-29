@@ -203,6 +203,14 @@ PoderAtaqueProyectil_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueProyectil", Erl)
 End Function
 
+Private Function AttackPowerDaggers(ByVal UserIndex As Integer) As Long
+    On Error GoTo AttackPowerDaggers_Err:
+    AttackPowerDaggers = AttackPower(UserIndex, e_Skill.Apuñalar, ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+    Exit Function
+AttackPowerDaggers_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.AttackPowerDaggers", Erl)
+End Function
+
 Private Function PoderAtaqueWrestling(ByVal UserIndex As Integer) As Long
     On Error GoTo PoderAtaqueWrestling_Err
     PoderAtaqueWrestling = AttackPower(UserIndex, e_Skill.Wrestling, ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
@@ -396,7 +404,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
         ' Golpe crítico
         If PuedeGolpeCritico(UserIndex) Then
             ' Si acertó - Doble chance contra NPCs
-            If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(UserIndex) Then
+            If RandomNumber(1, 100) <= GetCriticalHitChanceBase(UserIndex) Then
                 ' Daño del golpe crítico (usamos el daño base)
                 DamageExtra = DamageBase * 0.33
                 DamageExtra = DamageExtra * UserMod.GetPhysicalDamageModifier(UserList(UserIndex))
@@ -411,7 +419,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
             ' Stab
         ElseIf PuedeApuñalar(UserIndex) Then
             ' Si acertó - Doble chance contra NPCs
-            If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex, NpcIndex) Then
+            If RandomNumber(1, 100) <= GetStabbingChanceBase(UserIndex) Then
                 Dim min_stab_npc As Double
                 Dim max_stab_npc As Double
                 min_stab_npc = GetStabbingNPCMinForClass(UserList(UserIndex).clase)
@@ -949,15 +957,18 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
     Arma = UserList(AtacanteIndex).invent.EquippedWeaponObjIndex
     Dim RequiredSkill As e_Skill
     RequiredSkill = GetSkillRequiredForWeapon(Arma)
-    If RequiredSkill = Wrestling Then
-        PoderAtaque = PoderAtaqueWrestling(AtacanteIndex)
-    ElseIf RequiredSkill = Armas Then
-        PoderAtaque = PoderAtaqueArma(AtacanteIndex)
-    ElseIf RequiredSkill = Proyectiles Then
-        PoderAtaque = PoderAtaqueProyectil(AtacanteIndex)
-    Else
-        PoderAtaque = PoderAtaqueWrestling(AtacanteIndex)
-    End If
+    Select Case RequiredSkill
+        Case e_Skill.Wrestling
+            PoderAtaque = PoderAtaqueWrestling(AtacanteIndex)
+        Case e_Skill.Armas
+            PoderAtaque = PoderAtaqueArma(AtacanteIndex)
+        Case e_Skill.Proyectiles
+            PoderAtaque = PoderAtaqueProyectil(AtacanteIndex)
+        Case e_Skill.Apuñalar
+            PoderAtaque = AttackPowerDaggers(AtacanteIndex)
+        Case Else
+            PoderAtaque = PoderAtaqueWrestling(AtacanteIndex)
+    End Select
     'Calculamos el poder de evasion...
     UserPoderEvasion = PoderEvasion(VictimaIndex)
     If UserList(VictimaIndex).invent.EquippedShieldObjIndex > 0 Then
@@ -1150,9 +1161,9 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
         ' Golpe crítico (ignora defensa)
         If PuedeGolpeCritico(AtacanteIndex) Then
             ' Si acertó
-            If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(AtacanteIndex) Then
+            If RandomNumber(1, 100) <= GetCriticalHitChanceAgainstUsers(AtacanteIndex, VictimaIndex) Then
                 ' Daño del golpe crítico (usamos el daño base)
-                BonusDamage = Damage * ModDañoGolpeCritico
+                BonusDamage = Damage * CriticalHitDmgModifier
                 DamageStr = PonerPuntos(BonusDamage)
                 ' Mostramos en consola el daño al atacante
                 If UserList(AtacanteIndex).ChatCombate = 1 Then
@@ -1168,7 +1179,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             End If
             ' Apuñalar (le afecta la defensa)
         ElseIf PuedeApuñalar(AtacanteIndex) Then
-            If RandomNumber(1, 100) <= ProbabilidadApuñalar(AtacanteIndex) Then
+            If RandomNumber(1, 100) <= GetStabbingChanceAgainstUsers(AtacanteIndex, VictimaIndex) Then
                 ' Daño del apuñalamiento
                 BonusDamage = Damage * ModicadorApuñalarClase(UserList(AtacanteIndex).clase)
                 DamageStr = PonerPuntos(BonusDamage)
@@ -1981,7 +1992,7 @@ Private Function PuedeGolpeCritico(ByVal UserIndex As Integer) As Boolean
     On Error GoTo PuedeGolpeCritico_Err
     With UserList(UserIndex)
         If .invent.EquippedWeaponObjIndex > 0 Then
-            PuedeGolpeCritico = .clase = e_Class.Bandit And ObjData(.invent.EquippedWeaponObjIndex).Subtipo = 2
+            PuedeGolpeCritico = .clase = e_Class.Bandit And ObjData(.invent.EquippedWeaponObjIndex).WeaponType = e_WeaponType.eKnuckle
         End If
     End With
     Exit Function
@@ -1989,54 +2000,23 @@ PuedeGolpeCritico_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeGolpeCritico", Erl)
 End Function
 
-Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer, Optional ByVal NpcIndex As Integer) As Integer
-    ' Autor: WyroX - 16/01/2021
-    On Error GoTo ProbabilidadApuñalar_Err
-    With UserList(UserIndex)
-        Dim Skill As Integer
-        Skill = .Stats.UserSkills(e_Skill.Apuñalar)
-        Select Case .clase
-            Case e_Class.Assasin
-                If NpcIndex <> 0 Then
-                    ProbabilidadApuñalar = 0.33 * Skill '33% vs npcs
-                Else
-                    ProbabilidadApuñalar = 0.25 * Skill '25% vs users
-                End If
-            Case e_Class.Bard, e_Class.Hunter  '15%
-                ProbabilidadApuñalar = 0.15 * Skill
-            Case Else ' 10%
-                ProbabilidadApuñalar = 0.1 * Skill
-        End Select
-        ' Daga especial da +5 de prob. de apu
-        If ObjData(.invent.EquippedWeaponObjIndex).Subtipo = 42 Then
-            ProbabilidadApuñalar = ProbabilidadApuñalar + 5
-        End If
-    End With
-    Exit Function
-ProbabilidadApuñalar_Err:
-    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadApuñalar", Erl)
-End Function
-
 Private Function GetSkillRequiredForWeapon(ByVal ObjId As Integer) As e_Skill
     If ObjId = 0 Then
         GetSkillRequiredForWeapon = e_Skill.Wrestling
     Else
-        If ObjData(ObjId).WeaponType = eKnuckle Then
-            GetSkillRequiredForWeapon = e_Skill.Wrestling
-        ElseIf ObjData(ObjId).WeaponType = eBow Or ObjData(ObjId).WeaponType = eGunPowder Then
-            GetSkillRequiredForWeapon = e_Skill.Proyectiles
-        Else
-            GetSkillRequiredForWeapon = e_Skill.Armas
-        End If
+        Select Case ObjData(ObjId).WeaponType
+            Case e_WeaponType.eKnuckle
+                GetSkillRequiredForWeapon = e_Skill.Wrestling
+            Case e_WeaponType.eBow
+                GetSkillRequiredForWeapon = e_Skill.Proyectiles
+            Case e_WeaponType.eGunPowder
+                GetSkillRequiredForWeapon = e_Skill.Proyectiles
+            Case e_WeaponType.eDagger
+                GetSkillRequiredForWeapon = e_Skill.Apuñalar
+            Case Else
+                GetSkillRequiredForWeapon = e_Skill.Armas
+        End Select
     End If
-End Function
-
-Private Function ProbabilidadGolpeCritico(ByVal UserIndex As Integer) As Integer
-    On Error GoTo ProbabilidadGolpeCritico_Err
-    ProbabilidadGolpeCritico = 0.25 * UserList(UserIndex).Stats.UserSkills(GetSkillRequiredForWeapon(UserList(UserIndex).invent.EquippedWeaponObjIndex))
-    Exit Function
-ProbabilidadGolpeCritico_Err:
-    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadGolpeCritico", Erl)
 End Function
 
 Private Function ProbabilidadDesequipar(ByVal UserIndex As Integer) As Integer
@@ -2346,3 +2326,56 @@ Public Sub CalculateElementalTagsModifiers(ByVal UserIndex As Integer, ByVal Npc
         End If
     Next attackerIndex
 End Sub
+Public Function GetStabbingChanceBase(ByVal UserIndex As Integer) As Single
+    On Error GoTo GetStabbingChanceBase_Err:
+    Dim skill As Integer
+    With UserList(UserIndex)
+        skill = .Stats.UserSkills(e_Skill.Apuñalar)
+        Select Case .clase
+            Case e_Class.Assasin
+                GetStabbingChanceBase = skill * AssasinBackStabChance
+            Case e_Class.Bard
+                GetStabbingChanceBase = skill * BardBackStabChance
+            Case e_Class.Hunter
+                GetStabbingChanceBase = skill * HunterBackStabChance
+            Case Else
+                GetStabbingChanceBase = skill * ElseBackStabChance
+        End Select
+    End With
+    GetStabbingChanceBase = ClampChance(GetStabbingChanceBase)
+    Exit Function
+GetStabbingChanceBase_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingChanceBase", Erl)
+End Function
+
+Private Function GetBackHitBonusChanceAgainstUsers(ByVal UserIndex As Integer, ByVal targetUserIndex As Integer) As Single
+    On Error GoTo GetBackHitBonusChanceAgainstUsers_Err:
+    If UserList(UserIndex).Char.Heading = UserList(targetUserIndex).Char.Heading And Distancia(UserList(UserIndex).pos, UserList(targetUserIndex).pos) <= 1 Then
+        GetBackHitBonusChanceAgainstUsers = ExtraBackHitChanceAgainstPlayers
+    End If
+    Exit Function
+GetBackHitBonusChanceAgainstUsers_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetBackHitBonusChanceAgainstUsers", Erl)
+End Function
+
+Private Function GetCriticalHitChanceBase(ByVal UserIndex As Integer) As Single
+    On Error GoTo GetCriticalHitChanceBase_Err:
+    Dim skill As Integer
+    With UserList(UserIndex)
+        skill = .Stats.UserSkills(e_Skill.Wrestling)
+        GetCriticalHitChanceBase = skill * BanditCriticalHitChance
+    End With
+    GetCriticalHitChanceBase = ClampChance(GetCriticalHitChanceBase)
+    Exit Function
+GetCriticalHitChanceBase_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetCriticalHitChanceBase", Erl)
+End Function
+
+Private Function GetStabbingChanceAgainstUsers(ByVal UserIndex As Integer, ByVal targetUserIndex As Integer) As Single
+    GetStabbingChanceAgainstUsers = ClampChance(GetStabbingChanceBase(UserIndex) + GetBackHitBonusChanceAgainstUsers(UserIndex, targetUserIndex))
+End Function
+
+Private Function GetCriticalHitChanceAgainstUsers(ByVal UserIndex As Integer, ByVal targetUserIndex As Integer) As Single
+    GetCriticalHitChanceAgainstUsers = ClampChance(GetCriticalHitChanceBase(UserIndex) + GetBackHitBonusChanceAgainstUsers(UserIndex, targetUserIndex))
+End Function
+
