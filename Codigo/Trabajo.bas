@@ -2152,6 +2152,7 @@ End Function
 Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal JobType As Byte, Optional ByVal Quantity As Integer = 1)
     On Error GoTo GiveExpWhileWorking_Err:
     Dim tmpExp As Long
+    tmpExp = 0
     Select Case JobType
         Case e_JobsTypes.Miner
             tmpExp = SvrConfig.GetValue("MiningExp")
