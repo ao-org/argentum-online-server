@@ -504,15 +504,42 @@ Public Function GetUserAmountOfPunishmentsDatabase(ByVal username As String) As 
 ErrorHandler:
     Call LogDatabaseError("Error in GetUserAmountOfPunishmentsDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 End Function
-
-Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal username As String)
+Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal username As String, Optional ByVal ShowFullInfo As Boolean = False)
     On Error GoTo ErrorHandler
     Dim RS As ADODB.Recordset
+    Dim CleanReason As String
+    Dim DisplayText As String
+    
     Set RS = Query("SELECT user_id, number, reason FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", UCase$(username))
+    
     If RS Is Nothing Then Exit Sub
+    
     If Not RS.RecordCount = 0 Then
         While Not RS.EOF
-            Call WriteConsoleMsg(UserIndex, RS!Number & " - " & RS!Reason, e_FontTypeNames.FONTTYPE_INFO)
+            If ShowFullInfo Then
+                DisplayText = RS!Number & " - " & RS!Reason
+            Else
+                CleanReason = RS!Reason
+                
+                If InStr(1, CleanReason, "Plus:", vbTextCompare) > 0 Then
+                    CleanReason = Replace(CleanReason, "Plus:", "", , , vbTextCompare)
+                End If
+                
+                If InStr(1, CleanReason, "WEB:", vbTextCompare) > 0 Then
+                    CleanReason = Replace(CleanReason, "WEB:", "", , , vbTextCompare)
+                End If
+                
+                If InStr(1, CleanReason, "GM:", vbTextCompare) > 0 Then
+                    CleanReason = Replace(CleanReason, "GM:", "", , , vbTextCompare)
+                End If
+                
+                CleanReason = LTrim(CleanReason)
+                
+                DisplayText = RS!Number & " - " & CleanReason
+            End If
+            
+            Call WriteConsoleMsg(UserIndex, DisplayText, e_FontTypeNames.FONTTYPE_INFO)
+            
             RS.MoveNext
         Wend
     End If

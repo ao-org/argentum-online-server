@@ -127,21 +127,27 @@ ErrHandler:
 End Sub
 
 Public Sub HandlePunishments(ByVal UserIndex As Integer)
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
         Dim name As String
         name = reader.ReadString8()
+        
         ' Si un GM usa este comando, me fijo que me haya dado el nick del PJ a analizar.
         If LenB(name) = 0 Then Exit Sub
+        
+        ' Verificar si el jugador está consultando sus propias penas o las de otro
         If UserList(UserIndex).name <> name Then
-            If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
+            ' Si no es GM, no puede ver penas de otros jugadores
+            If (.flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
                 ' Msg528=Servidor » Comando deshabilitado para tu cargo.
                 Call WriteLocaleMsg(UserIndex, 528, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         End If
+        
         Dim count As Integer
+        
+        ' Sanitizar el nombre
         If (InStrB(name, "\") <> 0) Then
             name = Replace(name, "\", vbNullString)
         End If
@@ -154,8 +160,15 @@ Public Sub HandlePunishments(ByVal UserIndex As Integer)
         If (InStrB(name, "|") <> 0) Then
             name = Replace(name, "|", vbNullString)
         End If
+        
         Dim TargetUserName As String
-        If EsGM(UserIndex) Then
+        Dim IsGMQuery As Boolean
+        
+        ' Determinar el nombre del objetivo y si es consulta de GM
+        IsGMQuery = EsGM(UserIndex)
+        
+        If IsGMQuery Then
+            ' Los GMs pueden consultar cualquier personaje
             If PersonajeExiste(name) Then
                 TargetUserName = name
             Else
@@ -163,14 +176,23 @@ Public Sub HandlePunishments(ByVal UserIndex As Integer)
                 Exit Sub
             End If
         Else
-            TargetUserName = .name
+            ' Los jugadores comunes solo pueden ver sus propias penas
+            If PersonajeExiste(Name) Then
+                TargetUserName = Name
+            Else
+                Call WriteLocaleMsg(UserIndex, 1471, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
         End If
+        
         count = GetUserAmountOfPunishmentsDatabase(TargetUserName)
+        
         If count = 0 Then
             ' Msg529=Sin prontuario..
             Call WriteLocaleMsg(UserIndex, 529, e_FontTypeNames.FONTTYPE_INFO)
         Else
-            Call SendUserPunishmentsDatabase(UserIndex, TargetUserName)
+            ' Pasamos el parámetro IsGMQuery para mostrar info diferente
+            Call SendUserPunishmentsDatabase(UserIndex, TargetUserName, IsGMQuery)
         End If
     End With
     Exit Sub
