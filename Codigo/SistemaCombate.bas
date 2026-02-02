@@ -2381,7 +2381,7 @@ End Function
 
 Private Function GetWeaponExtraChance(ByVal UserIndex As Integer) As Single
     With UserList(UserIndex)
-        If .invent.EquippedWeaponObjIndex = 0 Then Exit Sub
+        If .invent.EquippedWeaponObjIndex = 0 Then Exit Function
         GetWeaponExtraChance = ObjData(.invent.EquippedWeaponObjIndex).ExtraCritAndStabChance
     End With
 End Function
