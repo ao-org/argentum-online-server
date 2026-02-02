@@ -3054,12 +3054,22 @@ Public Function GetArmorPenetration(ByVal UserIndex As Integer, ByVal TargetArmo
     If Not IsFeatureEnabled("armor_penetration_feature") Then Exit Function
     Dim PenetrationChance As Single
     With UserList(UserIndex)
-        PenetrationChance = ClampChance(.Stats.UserSkills(e_Skill.Armas) * IgnoreArmorChance)
         If .invent.EquippedWeaponObjIndex = 0 Then Exit Function
+        PenetrationChance = ClampChance(.Stats.UserSkills(e_Skill.Armas) * IgnoreArmorChance)
         If RandomNumber(1, 100) > PenetrationChance Then
             Exit Function
         End If
-        GetArmorPenetration = RandomNumber(ObjData(.invent.EquippedWeaponObjIndex).MinArmorPenetrationFlat, ObjData(.invent.EquippedWeaponObjIndex).MaxArmorPenetrationFlat)
+        Dim nimPen As Integer
+        Dim maxPen As Integer
+        minPen = ObjData(.invent.EquippedWeaponObjIndex).MinArmorPenetrationFlat
+        maxPen = ObjData(.invent.EquippedWeaponObjIndex).MaxArmorPenetrationFlat
+        If minPen < 0 Then minPen = 0
+        If maxPen < 0 Then maxPen = 0
+        If minPen > maxPen Then
+            Dim tmp As Integer
+            tmp = minPen: minPen = maxPen: maxPen = tmp
+        End If
+        GetArmorPenetration = RandomNumber(minPen, maxPen)
         If ObjData(.invent.EquippedWeaponObjIndex).ArmorPenetrationPercent > 0 Then
             Dim pct As Single
             pct = ObjData(.invent.EquippedWeaponObjIndex).ArmorPenetrationPercent
