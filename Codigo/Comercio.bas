@@ -109,10 +109,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
             'Msg1085= Lo siento, no puedo comprarte ese item.
             Call WriteLocaleMsg(UserIndex, 1085, e_FontTypeNames.FONTTYPE_TALK)
             Exit Sub
-            
-            
-            
-        ElseIf ((NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> e_OBJType.otElse) Or Objeto.ObjIndex = iORO) And Not IsFeatureEnabled("destroy_npc_bought_items") Then
+        ElseIf ((NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> e_OBJType.otElse) Or Objeto.ObjIndex = iORO) Then
             'Agrego que si vende el item, lo compre tambien.
             Dim LoVende As Boolean
             Dim i       As Integer
@@ -126,8 +123,6 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
                 Call WriteLocaleMsg(UserIndex, 1086, e_FontTypeNames.FONTTYPE_TALK)
                 Exit Sub
             End If
-            
-            
         ElseIf UserList(UserIndex).invent.Object(Slot).amount < 0 Or Cantidad = 0 Then
             Exit Sub
         ElseIf Slot < LBound(UserList(UserIndex).invent.Object()) Or Slot > UBound(UserList(UserIndex).invent.Object()) Then
@@ -301,16 +296,15 @@ Public Function SalePrice(ByVal ObjIndex As Integer, Optional ByVal UserIndex As
     On Error GoTo SalePrice_Err
     If ObjIndex < 1 Or ObjIndex > UBound(ObjData) Then Exit Function
     If ItemNewbie(ObjIndex) Then Exit Function
+    Dim denom As Single
+    denom = REDUCTOR_PRECIOVENTA
     If UserIndex > 0 Then
-        Select Case UserList(UserIndex).clase
-            Case e_Class.Trabajador
-                SalePrice = ObjData(ObjIndex).Valor / (REDUCTOR_PRECIOVENTA - (UserList(UserIndex).Stats.ELV * 0.25 / 10))
-            Case Else
-                SalePrice = ObjData(ObjIndex).Valor / REDUCTOR_PRECIOVENTA
-        End Select
-    Else
-        SalePrice = ObjData(ObjIndex).Valor / REDUCTOR_PRECIOVENTA
+        If UserList(UserIndex).clase = e_Class.Trabajador Then
+            denom = denom - (UserList(UserIndex).Stats.ELV * 0.025) '0.25/10 = 0.025
+            If denom < 2 Then denom = 2 'clamp: evita div0 y negativos
+        End If
     End If
+    SalePrice = ObjData(ObjIndex).Valor / denom
     Exit Function
 SalePrice_Err:
     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.SalePrice", Erl)
