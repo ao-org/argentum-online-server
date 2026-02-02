@@ -3061,8 +3061,10 @@ Public Function GetArmorPenetration(ByVal UserIndex As Integer, ByVal TargetArmo
         If ObjData(.invent.EquippedWeaponObjIndex).ArmorPenetrationPercent > 0 Then
             GetArmorPenetration = GetArmorPenetration + TargetArmor * ObjData(.invent.EquippedWeaponObjIndex).ArmorPenetrationPercent
         End If
-        Call modSendData.SendData(ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.SwordClash, .pos.x, .pos.y))
-        Call WriteLocaleMsg(UserIndex, MSG_PERFORATED_ARMOR, e_FontTypeNames.FONTTYPE_INFOBOLD, GetArmorPenetration)
+        If GetArmorPenetration > 0 Then
+            Call modSendData.SendData(ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.SwordClash, .pos.x, .pos.y))
+            Call WriteLocaleMsg(UserIndex, MSG_PERFORATED_ARMOR, e_FontTypeNames.FONTTYPE_INFOBOLD, GetArmorPenetration)
+        End If
     End With
 End Function
 
