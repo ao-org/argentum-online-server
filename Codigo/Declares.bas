@@ -2282,7 +2282,7 @@ Public Type t_ObjData
     MinArmorPenetrationFlat As Integer
     MaxArmorPenetrationFlat As Integer
     ArmorPenetrationPercent As Single
-    ExtraCritAndStabChance As Single
+    ExtraCritAndStabChance As Integer
     MinHam As Integer
     MinSed As Integer
     def As Integer
