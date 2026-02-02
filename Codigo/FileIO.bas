@@ -852,11 +852,11 @@ Sub LoadBalance()
         End With
     Next i
     CriticalHitDmgModifier = val(BalanceIni.GetValue("BACKSTAB", "CriticalHitDmgModifier"))
-    ExtraBackHitChanceAgainstPlayers = val(BalanceIni.GetValue("BACKSTAB", "ExtraBackHitChanceAgainstPlayers"))
-    AssasinBackStabChance = val(BalanceIni.GetValue("BACKSTAB", "AssasinBackStabChance"))
-    HunterBackStabChance = val(BalanceIni.GetValue("BACKSTAB", "HunterBackStabChance"))
-    BardBackStabChance = val(BalanceIni.GetValue("BACKSTAB", "BardBackStabChance"))
-    ElseBackStabChance = val(BalanceIni.GetValue("BACKSTAB", "ElseBackStabChance"))
+    ExtraBackstabChance = val(BalanceIni.GetValue("BACKSTAB", "ExtraBackstabChance"))
+    AssasinStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "AssasinStabbingChance"))
+    HunterStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "HunterStabbingChance"))
+    BardStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "BardStabbingChance"))
+    GenericStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "GenericStabbingChance"))
     BanditCriticalHitChance = val(BalanceIni.GetValue("BACKSTAB", "BanditCriticalHitChance"))
     'Extra
     PorcentajeRecuperoMana = val(BalanceIni.GetValue("EXTRA", "PorcentajeRecuperoMana"))

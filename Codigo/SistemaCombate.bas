@@ -2333,13 +2333,13 @@ Public Function GetStabbingChanceBase(ByVal UserIndex As Integer) As Single
         skill = .Stats.UserSkills(e_Skill.Apuñalar)
         Select Case .clase
             Case e_Class.Assasin
-                GetStabbingChanceBase = skill * AssasinBackStabChance
+                GetStabbingChanceBase = skill * AssasinStabbingChance
             Case e_Class.Bard
-                GetStabbingChanceBase = skill * BardBackStabChance
+                GetStabbingChanceBase = skill * BardStabbingChance
             Case e_Class.Hunter
-                GetStabbingChanceBase = skill * HunterBackStabChance
+                GetStabbingChanceBase = skill * HunterStabbingChance
             Case Else
-                GetStabbingChanceBase = skill * ElseBackStabChance
+                GetStabbingChanceBase = skill * GenericStabbingChance
         End Select
     End With
     GetStabbingChanceBase = ClampChance(GetStabbingChanceBase)
@@ -2351,7 +2351,7 @@ End Function
 Private Function GetBackHitBonusChanceAgainstUsers(ByVal UserIndex As Integer, ByVal targetUserIndex As Integer) As Single
     On Error GoTo GetBackHitBonusChanceAgainstUsers_Err:
     If UserList(UserIndex).Char.Heading = UserList(targetUserIndex).Char.Heading And Distancia(UserList(UserIndex).pos, UserList(targetUserIndex).pos) <= 1 Then
-        GetBackHitBonusChanceAgainstUsers = ExtraBackHitChanceAgainstPlayers
+        GetBackHitBonusChanceAgainstUsers = ExtraBackstabChance
     End If
     Exit Function
 GetBackHitBonusChanceAgainstUsers_Err:
