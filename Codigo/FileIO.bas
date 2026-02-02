@@ -1078,11 +1078,9 @@ Sub LoadOBJData()
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
-                    
                 Case e_OBJType.otBackpack, e_OBJType.otSkinsWings
                     .RequiereObjeto = val(Leer.GetValue(ObjKey, "RequiereObjeto"))
                     '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
-                    
                 Case e_OBJType.otMagicalInstrument
                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
                 Case e_OBJType.otWeapon, e_OBJType.otSkinsWeapons
@@ -1095,8 +1093,9 @@ Sub LoadOBJData()
                     .incinera = val(Leer.GetValue(ObjKey, "Incinera"))
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
-                    .IgnoreArmorAmmount = val(Leer.GetValue(ObjKey, "IgnoreArmorAmmount"))
-                    .IgnoreArmorPercent = val(Leer.GetValue(ObjKey, "IgnoreArmorPercent"))
+                    .MinArmorPenetrationFlat = val(Leer.GetValue(ObjKey, "MinArmorPenetrationFlat"))
+                    .MaxArmorPenetrationFlat = val(Leer.GetValue(ObjKey, "MaxArmorPenetrationFlat"))
+                    .ArmorPenetrationPercent = val(Leer.GetValue(ObjKey, "ArmorPenetrationPercent"))
                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
                     .Municion = val(Leer.GetValue(ObjKey, "Municiones"))
                     .Power = val(Leer.GetValue(ObjKey, "StaffPower"))
@@ -1250,7 +1249,7 @@ Sub LoadOBJData()
                 Case e_OBJType.otElementalRune
                     .Hechizo = val(Leer.GetValue(ObjKey, "Hechizo"))
                 Case e_OBJType.otParchment, e_OBJType.otSkinsSpells
-                   .RequiereObjeto = val(Leer.GetValue(ObjKey, "RequiereObjeto"))
+                    .RequiereObjeto = val(Leer.GetValue(ObjKey, "RequiereObjeto"))
             End Select
             .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
             .MagicAbsoluteBonus = val(Leer.GetValue(ObjKey, "MagicAbsoluteBonus"))

@@ -3051,17 +3051,14 @@ Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As In
 End Function
 
 Public Function GetArmorPenetration(ByVal UserIndex As Integer, ByVal TargetArmor As Integer) As Integer
-    Dim ArmorPenetration As Integer
     If Not IsFeatureEnabled("armor_penetration_feature") Then Exit Function
     With UserList(UserIndex)
-        If .invent.EquippedWeaponObjIndex > 0 Then
-            ArmorPenetration = ObjData(.invent.EquippedWeaponObjIndex).IgnoreArmorAmmount
-            If ObjData(.invent.EquippedWeaponObjIndex).IgnoreArmorPercent > 0 Then
-                ArmorPenetration = ArmorPenetration + TargetArmor * ObjData(.invent.EquippedWeaponObjIndex).IgnoreArmorPercent
-            End If
+        If .invent.EquippedWeaponObjIndex = 0 Then Exit Sub
+        GetArmorPenetration = RandomNumber(ObjData(.invent.EquippedWeaponObjIndex).MinArmorPenetrationFlat, ObjData(.invent.EquippedWeaponObjIndex).MaxArmorPenetrationFlat)
+        If ObjData(.invent.EquippedWeaponObjIndex).ArmorPenetrationPercent > 0 Then
+            GetArmorPenetration = GetArmorPenetration + TargetArmor * ObjData(.invent.EquippedWeaponObjIndex).ArmorPenetrationPercent
         End If
     End With
-    GetArmorPenetration = ArmorPenetration
 End Function
 
 Public Function GetEvasionBonus(ByRef User As t_User) As Integer
