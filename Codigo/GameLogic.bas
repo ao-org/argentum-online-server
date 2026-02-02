@@ -2003,5 +2003,5 @@ End Function
 Public Function ClampChance(ByVal v As Single) As Integer
     If v < 0 Then v = 0
     If v > 100 Then v = 100
-    ClampChance = CInt(v)
+    ClampChance = CInt(Fix(v))
 End Function

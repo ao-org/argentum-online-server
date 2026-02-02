@@ -381,7 +381,13 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
         Color = vbRed
         Dim NpcDef As Integer
         NpcDef = NpcList(NpcIndex).Stats.def + NPCs.GetDefenseBonus(NpcIndex)
-        NpcDef = max(0, NpcDef - GetArmorPenetration(UserIndex, NpcDef))
+        Dim ArmorPen As Integer
+        ArmorPen = GetArmorPenetration(UserIndex, NpcDef)
+        If ArmorPen > 0 Then
+            Call modSendData.SendData(ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.SwordClash, .pos.x, .pos.y))
+            Call WriteLocaleMsg(UserIndex, MSG_PERFORATED_ARMOR, e_FontTypeNames.FONTTYPE_INFOBOLD, GetArmorPenetration)
+        End If
+        NpcDef = max(0, NpcDef - ArmorPen)
         ' Defensa del NPC
         Damage = DamageBase - NpcDef
         Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(UserIndex))
@@ -1145,7 +1151,13 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             Defensa = Defensa + RandomNumber(Montura.MinDef, Montura.MaxDef)
         End If
         Defensa = Defensa + UserMod.GetDefenseBonus(VictimaIndex)
-        Defensa = max(0, Defensa - GetArmorPenetration(AtacanteIndex, Defensa))
+        Dim ArmorPen As Integer
+        ArmorPen = GetArmorPenetration(AtacanteIndex, Defensa)
+        If ArmorPen > 0 Then
+            Call modSendData.SendData(ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.SwordClash, .pos.x, .pos.y))
+            Call WriteLocaleMsg(UserIndex, MSG_PERFORATED_ARMOR, e_FontTypeNames.FONTTYPE_INFOBOLD, GetArmorPenetration)
+        End If
+        Defensa = max(0, Defensa - ArmorPen)
         ' Restamos la defensa
         Damage = BaseDamage - Defensa
         Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AtacanteIndex))

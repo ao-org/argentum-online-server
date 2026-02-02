@@ -3052,18 +3052,23 @@ End Function
 
 Public Function GetArmorPenetration(ByVal UserIndex As Integer, ByVal TargetArmor As Integer) As Integer
     If Not IsFeatureEnabled("armor_penetration_feature") Then Exit Function
+    Dim PenetrationChance As Single
     With UserList(UserIndex)
+        PenetrationChance = ClampChance(.Stats.UserSkills(e_Skill.Armas) * IgnoreArmorChance)
         If .invent.EquippedWeaponObjIndex = 0 Then Exit Function
-        If RandomNumber(0, 100) > .Stats.UserSkills(e_Skill.Armas) * IgnoreArmorChance Then
+        If RandomNumber(1, 100) > PenetrationChance Then
             Exit Function
         End If
         GetArmorPenetration = RandomNumber(ObjData(.invent.EquippedWeaponObjIndex).MinArmorPenetrationFlat, ObjData(.invent.EquippedWeaponObjIndex).MaxArmorPenetrationFlat)
         If ObjData(.invent.EquippedWeaponObjIndex).ArmorPenetrationPercent > 0 Then
-            GetArmorPenetration = GetArmorPenetration + TargetArmor * ObjData(.invent.EquippedWeaponObjIndex).ArmorPenetrationPercent
-        End If
-        If GetArmorPenetration > 0 Then
-            Call modSendData.SendData(ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.SwordClash, .pos.x, .pos.y))
-            Call WriteLocaleMsg(UserIndex, MSG_PERFORATED_ARMOR, e_FontTypeNames.FONTTYPE_INFOBOLD, GetArmorPenetration)
+            Dim pct As Single
+            pct = ObjData(.invent.EquippedWeaponObjIndex).ArmorPenetrationPercent
+            If pct > 1! Then pct = pct / 100!
+            If pct < 0! Then pct = 0!
+            If pct > 1! Then pct = 1!
+            If pct > 0! Then
+                GetArmorPenetration = GetArmorPenetration + (TargetArmor * pct)
+            End If
         End If
     End With
 End Function

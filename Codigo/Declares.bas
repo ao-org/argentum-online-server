@@ -2281,7 +2281,7 @@ Public Type t_ObjData
     MaxHit As Integer 'Maximo golpe
     MinArmorPenetrationFlat As Integer
     MaxArmorPenetrationFlat As Integer
-    ArmorPenetrationPercent As Single
+    ArmorPenetrationPercent As Integer
     ExtraCritAndStabChance As Integer
     MinHam As Integer
     MinSed As Integer
