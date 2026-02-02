@@ -3053,11 +3053,16 @@ End Function
 Public Function GetArmorPenetration(ByVal UserIndex As Integer, ByVal TargetArmor As Integer) As Integer
     If Not IsFeatureEnabled("armor_penetration_feature") Then Exit Function
     With UserList(UserIndex)
-        If .invent.EquippedWeaponObjIndex = 0 Then Exit Sub
+        If .invent.EquippedWeaponObjIndex = 0 Then Exit Function
+        If RandomNumber(0, 100) > .Stats.UserSkills(e_Skill.Armas) * IgnoreArmorChance Then
+            Exit Function
+        End If
         GetArmorPenetration = RandomNumber(ObjData(.invent.EquippedWeaponObjIndex).MinArmorPenetrationFlat, ObjData(.invent.EquippedWeaponObjIndex).MaxArmorPenetrationFlat)
         If ObjData(.invent.EquippedWeaponObjIndex).ArmorPenetrationPercent > 0 Then
             GetArmorPenetration = GetArmorPenetration + TargetArmor * ObjData(.invent.EquippedWeaponObjIndex).ArmorPenetrationPercent
         End If
+        Call modSendData.SendData(ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.SwordClash, .pos.x, .pos.y))
+        Call WriteLocaleMsg(UserIndex, MSG_PERFORATED_ARMOR, e_FontTypeNames.FONTTYPE_INFOBOLD, GetArmorPenetration)
     End With
 End Function
 

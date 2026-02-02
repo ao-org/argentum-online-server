@@ -852,6 +852,7 @@ Sub LoadBalance()
         End With
     Next i
     CriticalHitDmgModifier = val(BalanceIni.GetValue("BACKSTAB", "CriticalHitDmgModifier"))
+    IgnoreArmorChance = val(BalanceIni.GetValue("BACKSTAB", "IgnoreArmorChance"))
     ExtraBackstabChance = val(BalanceIni.GetValue("BACKSTAB", "ExtraBackstabChance"))
     AssasinStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "AssasinStabbingChance"))
     HunterStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "HunterStabbingChance"))

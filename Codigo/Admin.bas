@@ -115,6 +115,7 @@ Public CapVidaMin                    As Single
 Public ExpLevelUp(1 To STAT_MAXELV)  As Long
 Public InfluenciaPromedioVidas       As Single
 Public CriticalHitDmgModifier          As Single
+Public IgnoreArmorChance            As Single
 Public ExtraBackstabChance  As Single
 Public AssasinStabbingChance             As Single
 Public HunterStabbingChance              As Single
