@@ -3059,7 +3059,7 @@ Public Function GetArmorPenetration(ByVal UserIndex As Integer, ByVal TargetArmo
         If RandomNumber(1, 100) > PenetrationChance Then
             Exit Function
         End If
-        Dim nimPen As Integer
+        Dim minPen As Integer
         Dim maxPen As Integer
         minPen = ObjData(.invent.EquippedWeaponObjIndex).MinArmorPenetrationFlat
         maxPen = ObjData(.invent.EquippedWeaponObjIndex).MaxArmorPenetrationFlat
