@@ -2342,7 +2342,7 @@ Public Function GetStabbingChanceBase(ByVal UserIndex As Integer) As Single
                 GetStabbingChanceBase = skill * GenericStabbingChance
         End Select
     End With
-    GetStabbingChanceBase = ClampChance(GetStabbingChanceBase)
+    GetStabbingChanceBase = ClampChance(GetStabbingChanceBase + GetWeaponExtraChance(UserIndex))
     Exit Function
 GetStabbingChanceBase_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetStabbingChanceBase", Erl)
@@ -2365,7 +2365,7 @@ Private Function GetCriticalHitChanceBase(ByVal UserIndex As Integer) As Single
         skill = .Stats.UserSkills(e_Skill.Wrestling)
         GetCriticalHitChanceBase = skill * BanditCriticalHitChance
     End With
-    GetCriticalHitChanceBase = ClampChance(GetCriticalHitChanceBase)
+    GetCriticalHitChanceBase = ClampChance(GetCriticalHitChanceBase + GetWeaponExtraChance(UserIndex))
     Exit Function
 GetCriticalHitChanceBase_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetCriticalHitChanceBase", Erl)
@@ -2379,3 +2379,9 @@ Private Function GetCriticalHitChanceAgainstUsers(ByVal UserIndex As Integer, By
     GetCriticalHitChanceAgainstUsers = ClampChance(GetCriticalHitChanceBase(UserIndex) + GetBackHitBonusChanceAgainstUsers(UserIndex, targetUserIndex))
 End Function
 
+Private Function GetWeaponExtraChance(ByVal UserIndex As Integer) As Single
+    With UserList(UserIndex)
+        If .invent.EquippedWeaponObjIndex = 0 Then Exit Sub
+        GetWeaponExtraChance = ObjData(.invent.EquippedWeaponObjIndex).ExtraCritAndStabChance
+    End With
+End Function
