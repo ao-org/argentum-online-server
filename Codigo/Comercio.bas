@@ -134,7 +134,6 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
         End If
         Call QuitarUserInvItem(UserIndex, Slot, Cantidad)
         Call UpdateUserInv(False, UserIndex, Slot)
-        'Precio = Round(ObjData(Objeto.ObjIndex).valor / REDUCTOR_PRECIOVENTA * Cantidad, 0)
         precio = Fix(SalePrice(Objeto.ObjIndex, UserIndex) * Cantidad)
         UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + precio
         If UserList(UserIndex).Stats.GLD > MAXORO Then UserList(UserIndex).Stats.GLD = MAXORO
