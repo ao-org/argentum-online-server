@@ -295,7 +295,7 @@ Public Function SalePrice(ByVal ObjIndex As Integer, Optional ByVal UserIndex As
     On Error GoTo SalePrice_Err
     If ObjIndex < 1 Or ObjIndex > UBound(ObjData) Then Exit Function
     If ItemNewbie(ObjIndex) Then Exit Function
-    Dim denom As Single
+    Dim denom As Double
     denom = REDUCTOR_PRECIOVENTA
     If UserIndex > 0 Then
         If UserList(UserIndex).clase = e_Class.Trabajador Then
@@ -303,7 +303,7 @@ Public Function SalePrice(ByVal ObjIndex As Integer, Optional ByVal UserIndex As
             If denom < 2 Then denom = 2 'clamp: evita div0 y negativos
         End If
     End If
-    SalePrice = ObjData(ObjIndex).Valor / denom
+    SalePrice = CSng(ObjData(ObjIndex).Valor / denom)
     Exit Function
 SalePrice_Err:
     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.SalePrice", Erl)
