@@ -614,12 +614,12 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
             If UserList(sndIndex).flags.Muerto = 1 And MapInfo(UserList(sndIndex).pos.Map).Seguro = 0 Then
                 'Solamente mando el body si es de tipo revividor.
                 If .npcType = e_NPCType.Revividor Then
-                    body = IIf(.flags.NPCIdle, .Char.BodyIdle, .Char.body)
+                    body = .Char.body
                 Else
                     body = 0
                 End If
             Else
-                body = IIf(.flags.NPCIdle, .Char.BodyIdle, .Char.body)
+                body = .Char.body
             End If
                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, _
                         .Char.CartAnim, 0, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, _
@@ -645,7 +645,6 @@ MakeNPCChar_Err:
 
     Dim npcLowerBound As Long
     Dim npcUpperBound As Long
-
     On Error Resume Next
     npcLowerBound = LBound(NpcList)
     npcUpperBound = UBound(NpcList)
@@ -1010,7 +1009,6 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .CastAnimation = Val(LeerNPCs.GetValue(SectionName, "CastAnimation"))
         AnimacionesCount = Val(LeerNPCs.GetValue(SectionName, "Animaciones"))
         
-        .BodyIdle = val(LeerNPCs.GetValue(SectionName, "BodyIdle"))
         .AnimacionesCount = AnimacionesCount
         If AnimacionesCount > 0 Then
             ReDim .Animaciones(1 To AnimacionesCount)
@@ -1287,11 +1285,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         .Char.body = Info.Body
         .Char.head = Info.Head
         .Char.Heading = Info.Heading
-        .Char.BodyIdle = Info.BodyIdle
         .Char.CastAnimation = Info.CastAnimation
-        If .Char.BodyIdle > 0 Then
-            .flags.NPCIdle = True
-        End If
         If Info.AnimacionesCount > 0 Then
             ReDim .Char.Animation(1 To Info.AnimacionesCount)
             For LoopC = 1 To Info.AnimacionesCount
@@ -1665,7 +1659,6 @@ End Sub
 Sub AnimacionIdle(ByVal NpcIndex As Integer, ByVal Show As Boolean)
     On Error GoTo Handler
     With NpcList(NpcIndex)
-        If .Char.BodyIdle = 0 Then Exit Sub
         If .flags.NPCIdle = Show Then Exit Sub
         .flags.NPCIdle = Show
         Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, .Char.Heading)
