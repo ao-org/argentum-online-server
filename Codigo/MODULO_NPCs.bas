@@ -667,9 +667,6 @@ Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal body As Integer, ByVal head A
     On Error GoTo ChangeNPCChar_Err
     With NpcList(NpcIndex)
         If NpcIndex > 0 Then
-            If .flags.NPCIdle Then
-                body = .Char.BodyIdle
-            End If
             .Char.head = head
             .Char.Heading = Heading
             If .Char.charindex > 0 Then

@@ -3976,6 +3976,11 @@ Public Function PrepareMessageCharacterChange(ByVal body As Integer, _
     On Error GoTo PrepareMessageCharacterChange_Err
     Call Writer.WriteInt16(ServerPacketID.eCharacterChange)
     Call Writer.WriteInt16(charindex)
+    Dim flags As Byte
+    flags = 0
+    If Idle Then flags = flags Or &O1
+    If Navegando Then flags = flags Or &O2
+    Call Writer.WriteInt8(flags)
     Call Writer.WriteInt16(body)
     Call Writer.WriteInt16(head)
     Call Writer.WriteInt8(Heading)
@@ -3986,11 +3991,6 @@ Public Function PrepareMessageCharacterChange(ByVal body As Integer, _
     Call Writer.WriteInt16(BackPack)
     Call Writer.WriteInt16(FX)
     Call Writer.WriteInt16(FXLoops)
-    Dim flags As Byte
-    flags = 0
-    If Idle Then flags = flags Or &O1
-    If Navegando Then flags = flags Or &O2
-    Call Writer.WriteInt8(flags)
     Exit Function
 PrepareMessageCharacterChange_Err:
     Call Writer.Clear
