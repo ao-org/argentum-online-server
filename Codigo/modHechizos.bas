@@ -3925,6 +3925,9 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
                 If UserList(NpcIndex).invent.EquippedHelmetObjIndex > 0 Then
                     Damage = Damage - Porcentaje(Damage, ObjData(UserList(NpcIndex).invent.EquippedHelmetObjIndex).ResistenciaMagica)
                 End If
+                If UserList(NpcIndex).invent.EquippedBackpackObjIndex > 0 Then
+                    Damage = Damage - Porcentaje(Damage, ObjData(UserList(NpcIndex).invent.EquippedBackpackObjIndex).ResistenciaMagica)
+                End If
                 ' Resistencia mágica de la clase
                 Damage = Damage - Damage * ModClase(UserList(NpcIndex).clase).ResistenciaMagica
             End If

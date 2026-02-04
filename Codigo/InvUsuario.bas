@@ -861,27 +861,20 @@ Desequipar_Err:
 End Sub
 
 Sub DesequiparSkin(ByVal UserIndex As Integer, ByVal Slot As Byte)
-
-Dim obj                         As t_ObjData
-Dim eSkinType                   As e_OBJType
-
+    Dim obj       As t_ObjData
+    Dim eSkinType As e_OBJType
     On Error GoTo DesequiparSkin_Error
-    
     With UserList(UserIndex)
-        
         If (Slot < LBound(.Invent_Skins.Object)) Or (Slot > UBound(.Invent_Skins.Object)) Then
             Exit Sub
         ElseIf .Invent_Skins.Object(Slot).ObjIndex = 0 Then
             Exit Sub
         End If
-        
         eSkinType = ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType
         obj = ObjData(.Invent_Skins.Object(Slot).ObjIndex)
-
         If .Invent_Skins.Object(Slot).Equipped Then
             .Invent_Skins.Object(Slot).Equipped = False
         End If
-        
         Select Case eSkinType
             Case e_OBJType.otSkinsArmours
                 .Invent_Skins.ObjIndexArmourEquipped = 0
@@ -893,18 +886,15 @@ Dim eSkinType                   As e_OBJType
                         Call SetNakedBody(UserList(UserIndex))
                     End If
                 End If
-                
             Case e_OBJType.otSkinsSpells
-               .Stats.UserSkinsHechizos(ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex) = 0
-               .Invent_Skins.Object(Slot).Equipped = False
-
+                .Stats.UserSkinsHechizos(ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex) = 0
+                .Invent_Skins.Object(Slot).Equipped = False
             Case e_OBJType.otSkinsHelmets
                 If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
                     .Char.head = .OrigChar.head
                 End If
                 .Invent_Skins.ObjIndexHelmetEquipped = 0
                 .Invent_Skins.SlotHelmetEquipped = 0
-                
                 If .invent.EquippedHelmetObjIndex > 0 Then
                     .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
                 Else
@@ -912,7 +902,6 @@ Dim eSkinType                   As e_OBJType
                         .Char.CascoAnim = NingunCasco
                     End If
                 End If
-                
             Case e_OBJType.otSkinsWings
                 If .Invent_Skins.ObjIndexBackpackEquipped > 0 Then
                     .Char.BackpackAnim = NoBackPack
@@ -920,12 +909,17 @@ Dim eSkinType                   As e_OBJType
                 'Ojo acá!
                 .Invent_Skins.ObjIndexBackpackEquipped = 0
                 .Invent_Skins.SlotWindsEquipped = 0
-                
+                If .invent.EquippedBackpackObjIndex > 0 Then
+                    .Char.BackpackAnim = ObjData(.invent.EquippedBackpackObjIndex).ShieldAnim
+                Else
+                    If SkinRequireObject(UserIndex, Slot) Then
+                        .Char.BackpackAnim = NingunEscudo
+                    End If
+                End If
             Case e_OBJType.otSkinsBoats
-                    .Invent_Skins.ObjIndexBoatEquipped = 0
-                    .Invent_Skins.SlotBoatEquipped = 0
-                    Call EquiparBarco(UserIndex)
-    
+                .Invent_Skins.ObjIndexBoatEquipped = 0
+                .Invent_Skins.SlotBoatEquipped = 0
+                Call EquiparBarco(UserIndex)
             Case e_OBJType.otSkinsShields
                 .Invent_Skins.ObjIndexShieldEquipped = 0
                 .Invent_Skins.SlotShieldEquipped = 0
@@ -948,11 +942,9 @@ Dim eSkinType                   As e_OBJType
                     End If
                 End If
         End Select
-        
         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
         Call WriteChangeSkinSlot(UserIndex, eSkinType, Slot)
     End With
-    
     On Error GoTo 0
     Exit Sub
 DesequiparSkin_Error:

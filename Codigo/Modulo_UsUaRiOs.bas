@@ -1743,6 +1743,7 @@ Sub UserDie(ByVal UserIndex As Integer)
         Call Desequipar(UserIndex, .invent.EquippedMunitionSlot)
         Call Desequipar(UserIndex, .invent.EquippedAmuletAccesorySlot)
         Call Desequipar(UserIndex, .invent.EquippedRingAccesorySlot)
+        Call Desequipar(UserIndex, .invent.EquippedBackpackObjIndex)
         'desequipar montura
         If .flags.Montado > 0 Then
             Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
@@ -3233,17 +3234,17 @@ Public Function GetUserMRForNpc(ByVal UserIndex As Integer) As Integer
         If .invent.EquippedArmorObjIndex > 0 Then
             MR = MR + ObjData(.invent.EquippedArmorObjIndex).ResistenciaMagica
         End If
-        ' Resistencia mágica anillo
         If .invent.EquippedRingAccesoryObjIndex > 0 Then
             MR = MR + ObjData(.invent.EquippedRingAccesoryObjIndex).ResistenciaMagica
         End If
-        ' Resistencia mágica escudo
         If .invent.EquippedShieldObjIndex > 0 Then
             MR = MR + ObjData(.invent.EquippedShieldObjIndex).ResistenciaMagica
         End If
-        ' Resistencia mágica casco
         If .invent.EquippedHelmetObjIndex > 0 Then
             MR = MR + ObjData(.invent.EquippedHelmetObjIndex).ResistenciaMagica
+        End If
+        If .invent.EquippedBackpackObjIndex > 0 Then
+            MR = MR + ObjData(.invent.EquippedBackpackObjIndex).ResistenciaMagica
         End If
         If IsFeatureEnabled("mr-magic-bonus-damage") Then
             MR = MR + .Stats.UserSkills(Resistencia) * MRSkillNpcProtectionModifier
@@ -3259,17 +3260,17 @@ Public Function GetUserMR(ByVal UserIndex As Integer) As Integer
         If .invent.EquippedArmorObjIndex > 0 Then
             MR = MR + ObjData(.invent.EquippedArmorObjIndex).ResistenciaMagica
         End If
-        ' Resistencia mágica anillo
         If .invent.EquippedRingAccesoryObjIndex > 0 Then
             MR = MR + ObjData(.invent.EquippedRingAccesoryObjIndex).ResistenciaMagica
         End If
-        ' Resistencia mágica escudo
         If .invent.EquippedShieldObjIndex > 0 Then
             MR = MR + ObjData(.invent.EquippedShieldObjIndex).ResistenciaMagica
         End If
-        ' Resistencia mágica casco
         If .invent.EquippedHelmetObjIndex > 0 Then
             MR = MR + ObjData(.invent.EquippedHelmetObjIndex).ResistenciaMagica
+        End If
+        If .invent.EquippedBackpackObjIndex > 0 Then
+            MR = MR + ObjData(.invent.EquippedBackpackObjIndex).ResistenciaMagica
         End If
         If IsFeatureEnabled("mr-magic-bonus-damage") Then
             MR = MR + .Stats.UserSkills(Resistencia) * MRSkillProtectionModifier

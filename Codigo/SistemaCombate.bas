@@ -518,6 +518,11 @@ Private Function NpcDamage(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
                 Escudo = ObjData(UserList(UserIndex).invent.EquippedShieldObjIndex)
                 absorbido = absorbido + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
             End If
+            If UserList(UserIndex).invent.EquippedBackpackObjIndex > 0 Then
+                Dim Backpack As t_ObjData
+                Backpack = ObjData(UserList(UserIndex).invent.EquippedBackpackObjIndex)
+                absorbido = absorbido + RandomNumber(Backpack.MinDef, Backpack.MaxDef)
+            End If
     End Select
     Damage = Damage - absorbido - defbarco - defMontura - UserMod.GetDefenseBonus(UserIndex)
     Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(NpcIndex))
@@ -1120,6 +1125,11 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                     Dim Escudo As t_ObjData
                     Escudo = ObjData(.invent.EquippedShieldObjIndex)
                     Defensa = Defensa + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
+                End If
+                If UserList(UserIndex).invent.EquippedBackpackObjIndex > 0 Then
+                    Dim Backpack As t_ObjData
+                    Backpack = ObjData(UserList(UserIndex).invent.EquippedBackpackObjIndex)
+                    absorbido = absorbido + RandomNumber(Backpack.MinDef, Backpack.MaxDef)
                 End If
         End Select
         ' Defensa del barco de la víctima
