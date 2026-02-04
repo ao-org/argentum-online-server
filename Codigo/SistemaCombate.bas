@@ -1126,10 +1126,10 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                     Escudo = ObjData(.invent.EquippedShieldObjIndex)
                     Defensa = Defensa + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
                 End If
-                If UserList(UserIndex).invent.EquippedBackpackObjIndex > 0 Then
+                If .invent.EquippedBackpackObjIndex > 0 Then
                     Dim Backpack As t_ObjData
-                    Backpack = ObjData(UserList(UserIndex).invent.EquippedBackpackObjIndex)
-                    absorbido = absorbido + RandomNumber(Backpack.MinDef, Backpack.MaxDef)
+                    BackPack = ObjData(.invent.EquippedBackpackObjIndex)
+                    Defensa = Defensa + RandomNumber(BackPack.MinDef, BackPack.MaxDef)
                 End If
         End Select
         ' Defensa del barco de la víctima

@@ -1072,7 +1072,7 @@ Sub LoadOBJData()
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
-                Case e_OBJType.otBackpack, e_OBJType.otSkinsWings
+                Case e_OBJType.otBackpack, e_OBJType.otSkinBackpacks
                     .RequiereObjeto = val(Leer.GetValue(ObjKey, "RequiereObjeto"))
                     .Real = val(Leer.GetValue(ObjKey, "Real"))
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
