@@ -409,8 +409,6 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eServerOpenToUsersToggle"
         Case ClientPacketID.eParticipar
             PacketID_to_string = "eParticipar"
-        Case ClientPacketID.eResetFactions
-            PacketID_to_string = "eResetFactions"
         Case ClientPacketID.eRemoveCharFromGuild
             PacketID_to_string = "eRemoveCharFromGuild"
         Case ClientPacketID.eAlterName

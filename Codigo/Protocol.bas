@@ -656,8 +656,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleServerOpenToUsersToggle(UserIndex)
         Case ClientPacketID.eParticipar
             Call HandleParticipar(UserIndex)
-        Case ClientPacketID.eResetFactions
-            Call HandleResetFactions(UserIndex)
         Case ClientPacketID.eRemoveCharFromGuild
             Call HandleRemoveCharFromGuild(UserIndex)
         Case ClientPacketID.eAlterName
@@ -5653,27 +5651,6 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
     Exit Sub
 HandleParticipar_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleParticipar", Erl)
-End Sub
-
-''
-' Handle the "ResetFactions" message
-'
-' @param UserIndex The index of the user sending the message
-Public Sub HandleResetFactions(ByVal UserIndex As Integer)
-    On Error GoTo ErrHandler
-    With UserList(UserIndex)
-        Dim username As String
-        Dim tUser    As t_UserReference
-        username = reader.ReadString8()
-        If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
-            Call LogGM(.name, "/RAJAR " & username)
-            tUser = NameIndex(username)
-            If IsValidUserRef(tUser) Then Call ResetFacciones(tUser.ArrayIndex)
-        End If
-    End With
-    Exit Sub
-ErrHandler:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetFactions", Erl)
 End Sub
 
 ''
