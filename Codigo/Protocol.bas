@@ -8033,11 +8033,9 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
                 Exit Function
             End If
         Case e_Skill.Smelting
-            If Not CanUserSmelt(UserIndex) Then
+            If Not CanUserSmelt(UserIndex, e_OBJType.otMinerals, x, y) Then
                 Exit Function
             End If
-        
-        
         Case Else
     End Select
     Call StartAutomatedAction(x, y, skill, UserIndex)

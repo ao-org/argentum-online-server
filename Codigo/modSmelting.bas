@@ -1,7 +1,7 @@
 Attribute VB_Name = "modSmelting"
 Option Explicit
 
-Public Function CanUserSmelt(ByVal UserIndex As Integer) As Boolean
+Public Function CanUserSmelt(ByVal UserIndex As Integer, ByVal ResourceType As e_OBJType, ByVal TargetX As Integer, ByVal TargetY As Integer) As Boolean
     On Error GoTo CanUserSmelt_Err
     CanUserSmelt = False
     With UserList(UserIndex)
@@ -14,11 +14,16 @@ Public Function CanUserSmelt(ByVal UserIndex As Integer) As Boolean
             Call ResetUserAutomatedActions(UserIndex)
             Exit Function
         End If
-        If MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.ObjIndex = 0 Then
+        If Not CheckResourceDistance(UserIndex, 3, TargetX, TargetY) Then
+            Call WriteLocaleMsg(UserIndex, 424, e_FontTypeNames.FONTTYPE_INFO)
             Call ResetUserAutomatedActions(UserIndex)
             Exit Function
         End If
-        If ObjData(MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.ObjIndex).OBJType <> otForge Then
+        If MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex = 0 Then
+            Call ResetUserAutomatedActions(UserIndex)
+            Exit Function
+        End If
+        If ObjData(MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex).OBJType <> otForge Then
             Call ResetUserAutomatedActions(UserIndex)
             Exit Function
         End If

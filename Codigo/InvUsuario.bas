@@ -1812,7 +1812,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 If .invent.Object(Slot).Equipped = 0 Then
                     Exit Sub
                 End If
-            Case e_OBJType.otWorkingTools
+            Case e_OBJType.otWorkingTools, e_OBJType.otMinerals
                 If .flags.Muerto = 1 Then
                     Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg77=¡¡Estás muerto!!.
@@ -1826,9 +1826,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Exit Sub
                 End If
                 'Solo si es herramienta ;) (en realidad si no es ni proyectil ni daga)
-                If .invent.Object(Slot).Equipped = 0 Then
-                    Call WriteLocaleMsg(UserIndex, 376, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                If ObjData(.invent.Object(Slot).ObjIndex).OBJType <> otMinerals Then
+                    If .invent.Object(Slot).Equipped = 0 Then
+                        Call WriteLocaleMsg(UserIndex, 376, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
                 End If
                 Select Case obj.Subtipo
                     Case 1, 2  ' Herramientas del Pescador - Caña y Red
@@ -1851,6 +1853,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Case 9     ' Herramientas de Sastreria - Costurero
                         Call EnivarObjConstruiblesSastre(UserIndex)
                         Call WriteShowSastreForm(UserIndex)
+                    Case Else
+                        Call WriteWorkRequestTarget(UserIndex, e_Skill.Smelting)
                 End Select
             Case e_OBJType.otPotions
                 If .flags.Muerto = 1 Then
