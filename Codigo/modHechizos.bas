@@ -76,6 +76,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             Call WriteLocaleMsg(UserIndex, 1627, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr) 'Msg1627=¬1 te ha quitado ¬2 puntos de vida.
             Call SubirSkill(UserIndex, Resistencia)
             If NpcList(NpcIndex).Char.CastAnimation > 0 Then Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharAtaca(NpcList(NpcIndex).Char.charindex, _
+                    .Char.charindex, DamageStr))
             
         End If
         If IsAlive Then
