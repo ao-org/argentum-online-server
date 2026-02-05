@@ -650,18 +650,12 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleCreateNPC(UserIndex)
         Case ClientPacketID.eCreateNPCWithRespawn
             Call HandleCreateNPCWithRespawn(UserIndex)
-        Case ClientPacketID.eImperialArmour
-            Call HandleImperialArmour(UserIndex)
-        Case ClientPacketID.eChaosArmour
-            Call HandleChaosArmour(UserIndex)
         Case ClientPacketID.eNavigateToggle
             Call HandleNavigateToggle(UserIndex)
         Case ClientPacketID.eServerOpenToUsersToggle
             Call HandleServerOpenToUsersToggle(UserIndex)
         Case ClientPacketID.eParticipar
             Call HandleParticipar(UserIndex)
-        Case ClientPacketID.eTurnCriminal
-            Call HandleTurnCriminal(UserIndex)
         Case ClientPacketID.eResetFactions
             Call HandleResetFactions(UserIndex)
         Case ClientPacketID.eRemoveCharFromGuild
@@ -4452,8 +4446,6 @@ HandleBankStart_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankStart", Erl)
 End Sub
 
-Private Sub HandleEnlist(ByVal UserIndex As Integer)
-    On Error GoTo HandleEnlist_Err
 Private Sub HandleInformation(ByVal UserIndex As Integer)
     On Error GoTo HandleInformation_Err
     With UserList(UserIndex)
