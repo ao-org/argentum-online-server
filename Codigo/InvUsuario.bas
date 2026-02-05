@@ -2516,7 +2516,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     'Msg77=¡¡Estás muerto!!.
                     Exit Sub
                 End If
-                Call WriteWorkRequestTarget(UserIndex, FundirMetal)
+                Call StartAutomatedAction(.flags.TargetX, .flags.TargetY, e_Skill.MeltMinerals, UserIndex)
             Case e_OBJType.otMusicalInstruments
                 If .flags.Muerto = 1 Then
                     Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)

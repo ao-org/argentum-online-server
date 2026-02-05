@@ -63,46 +63,6 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                     cantidad_maxima = 1
                 End If
                 Call CarpinteroConstruirItem(UserIndex, UserList(UserIndex).Trabajo.Item, UserList(UserIndex).Trabajo.Cantidad, cantidad_maxima)
-            Case FundirMetal    'UGLY!!! This is a constant, not a skill!!
-                'Check interval
-                If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
-                'Check there is a proper item there
-                If .flags.TargetObj > 0 Then
-                    If ObjData(.flags.TargetObj).OBJType = e_OBJType.otForge Then
-                        'Validate other items
-                        If .flags.TargetObjInvSlot < 1 Or .flags.TargetObjInvSlot > UserList(UserIndex).CurrentInventorySlots Then
-                            Exit Sub
-                        End If
-                        ''chequeamos que no se zarpe duplicando oro
-                        If .invent.Object(.flags.TargetObjInvSlot).ObjIndex <> .flags.TargetObjInvIndex Then
-                            If .invent.Object(.flags.TargetObjInvSlot).ObjIndex = 0 Or .invent.Object(.flags.TargetObjInvSlot).amount = 0 Then
-                                ' Msg605=No tienes más minerales
-                                Call WriteLocaleMsg(UserIndex, 605, e_FontTypeNames.FONTTYPE_INFO)
-                                Call WriteWorkRequestTarget(UserIndex, 0)
-                                Exit Sub
-                            End If
-                            ''FUISTE
-                            Call WriteShowMessageBox(UserIndex, 1774, vbNullString) 'Msg1774=Has sido expulsado por el sistema anti cheats.
-                            Call CloseSocket(UserIndex)
-                            Exit Sub
-                        End If
-                        Call FundirMineral(UserIndex)
-                    Else
-                        ' Msg606=Ahí no hay ninguna fragua.
-                        Call WriteLocaleMsg(UserIndex, 606, e_FontTypeNames.FONTTYPE_INFO)
-                        Call WriteWorkRequestTarget(UserIndex, 0)
-                        If UserList(UserIndex).Counters.Trabajando > 1 Then
-                            Call WriteMacroTrabajoToggle(UserIndex, False)
-                        End If
-                    End If
-                Else
-                    ' Msg606=Ahí no hay ninguna fragua.
-                    Call WriteLocaleMsg(UserIndex, 606, e_FontTypeNames.FONTTYPE_INFO)
-                    Call WriteWorkRequestTarget(UserIndex, 0)
-                    If UserList(UserIndex).Counters.Trabajando > 1 Then
-                        Call WriteMacroTrabajoToggle(UserIndex, False)
-                    End If
-                End If
         End Select
     End With
 End Sub
@@ -324,33 +284,6 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
     Exit Sub
 DoNavega_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.DoNavega", Erl)
-End Sub
-
-Public Sub FundirMineral(ByVal UserIndex As Integer)
-    On Error GoTo FundirMineral_Err
-    If UserList(UserIndex).clase <> e_Class.Trabajador Then
-        ' Msg607=Tu clase no tiene el conocimiento suficiente para trabajar este mineral.
-        Call WriteLocaleMsg(UserIndex, 607, e_FontTypeNames.FONTTYPE_INFO)
-        Exit Sub
-    End If
-    If UserList(UserIndex).flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios) Then
-        Exit Sub
-    End If
-    If UserList(UserIndex).flags.TargetObjInvIndex > 0 Then
-        Dim SkillRequerido As Integer
-        SkillRequerido = ObjData(UserList(UserIndex).flags.TargetObjInvIndex).MinSkill
-        If ObjData(UserList(UserIndex).flags.TargetObjInvIndex).OBJType = e_OBJType.otMinerals And UserList(UserIndex).Stats.UserSkills(e_Skill.Mineria) >= SkillRequerido Then
-            Call DoLingotes(UserIndex)
-        ElseIf SkillRequerido > 100 Then
-            ' Msg608=Los mortales no pueden fundir este mineral.
-            Call WriteLocaleMsg(UserIndex, 608, e_FontTypeNames.FONTTYPE_INFO)
-        Else
-            Call WriteLocaleMsg(UserIndex, 1449, e_FontTypeNames.FONTTYPE_INFO)  ' Msg1449=No tenés conocimientos de minería suficientes para trabajar este mineral. Necesitas ¬1 puntos en minería.
-        End If
-    End If
-    Exit Sub
-FundirMineral_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.FundirMineral", Erl)
 End Sub
 
 Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal UserIndex As Integer, Optional ByVal ElementalTags As Long = e_ElementalTags.Normal) As Boolean
@@ -1191,57 +1124,6 @@ Private Function MineralesParaLingote(ByVal Lingote As e_Minerales, ByVal cant A
 MineralesParaLingote_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.MineralesParaLingote", Erl)
 End Function
-
-Public Sub DoLingotes(ByVal UserIndex As Integer)
-    On Error GoTo DoLingotes_Err
-    Dim Slot       As Integer
-    Dim obji       As Integer
-    Dim cant       As Byte
-    Dim necesarios As Integer
-    If UserList(UserIndex).Stats.MinSta > 2 Then
-        Call QuitarSta(UserIndex, 2)
-    Else
-        'Msg2129=¡No tengo energía!
-        Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
-        'Msg93=Estás muy cansado.
-        Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
-        Call WriteMacroTrabajoToggle(UserIndex, False)
-        Exit Sub
-    End If
-    Slot = UserList(UserIndex).flags.TargetObjInvSlot
-    obji = UserList(UserIndex).invent.Object(Slot).ObjIndex
-    cant = RandomNumber(10, 20)
-    necesarios = MineralesParaLingote(obji, cant)
-    If UserList(UserIndex).invent.Object(Slot).amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> e_OBJType.otMinerals Then
-        ' Msg645=No tienes suficientes minerales para hacer un lingote.
-        Call WriteLocaleMsg(UserIndex, 645, e_FontTypeNames.FONTTYPE_INFO)
-        Call WriteMacroTrabajoToggle(UserIndex, False)
-        Exit Sub
-    End If
-    UserList(UserIndex).invent.Object(Slot).amount = UserList(UserIndex).invent.Object(Slot).amount - MineralesParaLingote(obji, cant)
-    If UserList(UserIndex).invent.Object(Slot).amount < 1 Then
-        UserList(UserIndex).invent.Object(Slot).amount = 0
-        UserList(UserIndex).invent.Object(Slot).ObjIndex = 0
-    End If
-    Dim nPos  As t_WorldPos
-    Dim MiObj As t_Obj
-    MiObj.amount = cant
-    MiObj.ObjIndex = ObjData(UserList(UserIndex).flags.TargetObjInvIndex).LingoteIndex
-    If Not MeterItemEnInventario(UserIndex, MiObj) Then
-        Call TirarItemAlPiso(UserList(UserIndex).pos, MiObj)
-    End If
-    Call UpdateUserInv(False, UserIndex, Slot)
-    Call WriteTextCharDrop(UserIndex, "+" & cant, UserList(UserIndex).Char.charindex, vbWhite)
-    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(41, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
-    Call SubirSkill(UserIndex, e_Skill.Mineria)
-    UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
-    If UserList(UserIndex).Counters.Trabajando = 1 And Not UserList(UserIndex).flags.UsandoMacro Then
-        Call WriteMacroTrabajoToggle(UserIndex, True)
-    End If
-    Exit Sub
-DoLingotes_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.DoLingotes", Erl)
-End Sub
 
 Function ModAlquimia(ByVal clase As e_Class) As Integer
     On Error GoTo ModAlquimia_Err

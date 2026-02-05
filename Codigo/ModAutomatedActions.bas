@@ -28,6 +28,8 @@ Public Sub RunAutomatedActions()
                             Call MineMinerals(UserIndex)
                         Case e_Skill.Pescar
                             Call PerformFishing(UserIndex)
+                        Case e_Skill.MeltMinerals
+                            Call SmeltMinerals(UserIndex)
                         Case Else
                             Debug.Assert False
                     End Select
