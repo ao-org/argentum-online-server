@@ -14,7 +14,7 @@ Public Function CanUserSmelt(ByVal UserIndex As Integer, ByVal ResourceType As e
             Call ResetUserAutomatedActions(UserIndex)
             Exit Function
         End If
-        If Not CheckResourceDistance(UserIndex, 3, TargetX, TargetY) Then
+        If Not CheckResourceDistance(UserIndex, MEDIUM_DISTANCE_EXTRACTION, TargetX, TargetY) Then
             Call WriteLocaleMsg(UserIndex, 424, e_FontTypeNames.FONTTYPE_INFO)
             Call ResetUserAutomatedActions(UserIndex)
             Exit Function
@@ -35,25 +35,27 @@ Public Function CanUserSmelt(ByVal UserIndex As Integer, ByVal ResourceType As e
     CanUserSmelt = True
     Exit Function
 CanUserSmelt_Err:
-    Call TraceError(Err.Number, Err.Description, "modSmelting.CanUserSmelt", Erl)
+    Call TraceError(Err.Number, Err.Description, "ModSmelting.CanUserSmelt", Erl)
 End Function
 
 Public Sub SmeltMinerals(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim RequiredSkill As Integer
         RequiredSkill = ObjData(.flags.TargetObjInvIndex).MinSkill
-        If ObjData(.flags.TargetObjInvIndex).OBJType = e_OBJType.otMinerals And .Stats.UserSkills(e_Skill.Mineria) >= RequiredSkill Then
-            Call CraftIngots(UserIndex)
-        ElseIf RequiredSkill > 100 Then
-            ' Msg608=Los mortales no pueden fundir este mineral.
+        If RequiredSkill > 100 Then
             Call WriteLocaleMsg(UserIndex, 608, e_FontTypeNames.FONTTYPE_INFO)
+            Call ResetUserAutomatedActions(UserIndex)
+            Exit Sub
+        End If
+        If .Stats.UserSkills(e_Skill.Mineria) >= RequiredSkill Then
+            Call CraftIngots(UserIndex)
         Else
             Call WriteLocaleMsg(UserIndex, 1449, e_FontTypeNames.FONTTYPE_INFO)  ' Msg1449=No tenés conocimientos de minería suficientes para trabajar este mineral. Necesitas ¬1 puntos en minería.
+            Call ResetUserAutomatedActions(UserIndex)
+            Exit Sub
         End If
     End With
 End Sub
-
-
 
 Public Sub CraftIngots(ByVal UserIndex As Integer)
     On Error GoTo CraftIngots_Err
@@ -64,9 +66,7 @@ Public Sub CraftIngots(ByVal UserIndex As Integer)
     If UserList(UserIndex).Stats.MinSta > 2 Then
         Call QuitarSta(UserIndex, 2)
     Else
-        'Msg2129=¡No tengo energía!
         Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
-        'Msg93=Estás muy cansado.
         Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
         Call WriteMacroTrabajoToggle(UserIndex, False)
         Exit Sub
@@ -74,14 +74,14 @@ Public Sub CraftIngots(ByVal UserIndex As Integer)
     Slot = UserList(UserIndex).flags.TargetObjInvSlot
     obji = UserList(UserIndex).invent.Object(Slot).ObjIndex
     cant = RandomNumber(10, 20)
-    necesarios = MineralesParaLingote(obji, cant)
-    If UserList(UserIndex).invent.Object(Slot).Amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> e_OBJType.otMinerals Then
+    necesarios = MineralsRequiredPerIngot(obji, cant)
+    If UserList(UserIndex).invent.Object(Slot).Amount < MineralsRequiredPerIngot(obji, cant) Or ObjData(obji).OBJType <> e_OBJType.otMinerals Then
         ' Msg645=No tienes suficientes minerales para hacer un lingote.
         Call WriteLocaleMsg(UserIndex, 645, e_FontTypeNames.FONTTYPE_INFO)
         Call ResetUserAutomatedActions(UserIndex)
         Exit Sub
     End If
-    UserList(UserIndex).invent.Object(Slot).Amount = UserList(UserIndex).invent.Object(Slot).Amount - MineralesParaLingote(obji, cant)
+    UserList(UserIndex).invent.Object(Slot).Amount = UserList(UserIndex).invent.Object(Slot).Amount - MineralsRequiredPerIngot(obji, cant)
     If UserList(UserIndex).invent.Object(Slot).Amount < 1 Then
         UserList(UserIndex).invent.Object(Slot).Amount = 0
         UserList(UserIndex).invent.Object(Slot).ObjIndex = 0
@@ -100,22 +100,22 @@ Public Sub CraftIngots(ByVal UserIndex As Integer)
     UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
     Exit Sub
 CraftIngots_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.CraftIngots", Erl)
+    Call TraceError(Err.Number, Err.Description, "ModSmelting.CraftIngots", Erl)
 End Sub
 
-Private Function MineralesParaLingote(ByVal Lingote As e_Minerales, ByVal cant As Byte) As Integer
-    On Error GoTo MineralesParaLingote_Err
+Private Function MineralsRequiredPerIngot(ByVal Lingote As e_Minerales, ByVal cant As Byte) As Integer
+    On Error GoTo MineralsRequiredPerIngot_Err
     Select Case Lingote
         Case e_Minerales.HierroCrudo
-            MineralesParaLingote = 13 * cant
+            MineralsRequiredPerIngot = 13 * cant
         Case e_Minerales.PlataCruda
-            MineralesParaLingote = 25 * cant
+            MineralsRequiredPerIngot = 25 * cant
         Case e_Minerales.OroCrudo
-            MineralesParaLingote = 50 * cant
+            MineralsRequiredPerIngot = 50 * cant
         Case Else
-            MineralesParaLingote = 10000
+            MineralsRequiredPerIngot = 10000
     End Select
     Exit Function
-MineralesParaLingote_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.MineralesParaLingote", Erl)
+MineralsRequiredPerIngot_Err:
+    Call TraceError(Err.Number, Err.Description, "ModSmelting.MineralsRequiredPerIngot", Erl)
 End Function
