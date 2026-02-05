@@ -5313,10 +5313,7 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildBan", Erl)
 End Sub
 
-''
 ' Handles the "ChaosLegionKick" message.
-'
-' @param    UserIndex The index of the user sending the message.
 Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
@@ -5339,7 +5336,9 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                         Call m_EcharMiembroDeClan(UserIndex, UserList(tUser.ArrayIndex).Id)
                     End If
                 End If
+                    UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
                     UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Criminal
+                    UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
                     Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1992, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1992=¬1 expulsado de las fuerzas del caos y prohibida la reenlistada.
                     Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1991, .name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1991=¬1 te ha expulsado en forma definitiva de las fuerzas del caos.
             Else
@@ -5368,10 +5367,6 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChaosLegionKick", Erl)
 End Sub
 
-''
-' Handles the "RoyalArmyKick" message.
-'
-' @param    UserIndex The index of the user sending the message.
 Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
@@ -5395,8 +5390,9 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                         Call m_EcharMiembroDeClan(UserIndex, UserList(tUser.ArrayIndex).Id)
                     End If
                 End If
-                UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS
+                UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
                 UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Ciudadano
+                UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
                 Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1990, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1990=¬1 expulsado de las fuerzas reales y prohibida la reenlistada.
                 Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1989, .name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1989=¬1 te ha expulsado en forma definitiva de las fuerzas reales.
             Else
