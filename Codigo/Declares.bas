@@ -2051,8 +2051,6 @@ Public Type t_Char
     RM_Aura As String
     Otra_Aura As String
     speeding As Single
-    BodyIdle As Integer
-    Ataque1 As Integer
     Animation() As Integer
     CastAnimation As Integer
 End Type
@@ -3209,8 +3207,6 @@ Public Type t_NpcInfoCache
     Body As Integer
     Head As Integer
     Heading As Integer
-    BodyIdle As Integer
-    Ataque1 As Integer
     CastAnimation As Integer
     AnimacionesCount As Integer
     Animaciones() As Integer

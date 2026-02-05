@@ -202,7 +202,7 @@ Public Sub PurgarPenas()
     Dim i As Long
     For i = 1 To LastUser
         If UserList(i).flags.UserLogged Then
-            If UserList(i).Counters.Pena > 0 Then
+            If UserList(i).Counters.Pena > 0 And UserList(i).flags.Muerto = 0 Then
                 UserList(i).Counters.Pena = UserList(i).Counters.Pena - 1
                 If UserList(i).Counters.Pena < 1 Then
                     UserList(i).Counters.Pena = 0

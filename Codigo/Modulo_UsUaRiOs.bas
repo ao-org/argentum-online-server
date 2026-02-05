@@ -1693,11 +1693,6 @@ End Sub
 ' @param UserIndex  Indice del usuario que muere
 '
 Sub UserDie(ByVal UserIndex As Integer)
-    '************************************************
-    'Author: Uknown
-    'Last Modified: 04/15/2008 (NicoNZ)
-    'Ahora se resetea el counter del invi
-    '************************************************
     On Error GoTo ErrorHandler
     Dim i  As Long
     Dim aN As Integer
@@ -1724,6 +1719,8 @@ Sub UserDie(ByVal UserIndex As Integer)
         Call WriteUpdateHP(UserIndex)
         Call WriteUpdateSta(UserIndex)
         Call ClearAttackerNpc(UserIndex)
+        '<< Guardar o matar mascotas >>
+        Call HandleUserPetsOnDeath(UserIndex)
         If MapData(.pos.Map, .pos.x, .pos.y).trigger <> e_Trigger.ZONAPELEA And MapInfo(.pos.Map).DropItems Then
             If (.flags.Privilegios And e_PlayerType.User) <> 0 Then
                 If .flags.PendienteDelSacrificio = 0 Then
@@ -1780,33 +1777,6 @@ Sub UserDie(ByVal UserIndex As Integer)
         End If
         Call ActualizarVelocidadDeUsuario(UserIndex)
         Call LimpiarEstadosAlterados(UserIndex)
-        For i = 1 To MAXMASCOTAS
-            If .MascotasIndex(i).ArrayIndex > 0 Then
-                If IsValidNpcRef(.MascotasIndex(i)) Then
-                    Call MuereNpc(.MascotasIndex(i).ArrayIndex, 0)
-                Else
-                    Call ClearNpcRef(.MascotasIndex(i))
-                End If
-            End If
-        Next i
-        If .clase = e_Class.Druid Then
-            Dim Params() As Variant
-            Dim ParamC   As Long
-            ReDim Params(MAXMASCOTAS * 3 - 1)
-            ParamC = 0
-            For i = 1 To MAXMASCOTAS
-                Params(ParamC) = .Id
-                ParamC = ParamC + 1
-                Params(ParamC) = i
-                ParamC = ParamC + 1
-                Params(ParamC) = 0
-                ParamC = ParamC + 1
-            Next i
-            Call Execute(QUERY_UPSERT_PETS, Params)
-        End If
-        If (.flags.MascotasGuardadas = 0) Then
-            .NroMascotas = 0
-        End If
         '<< Actualizamos clientes >>
         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
         If MapInfo(.pos.Map).Seguro = 0 Then
@@ -3338,3 +3308,64 @@ Function LevelCanUseItem(ByVal UserIndex As Integer, ByRef obj As t_ObjData) As 
     End With
     
 End Function
+
+Public Sub HandleUserPetsOnDeath(ByVal UserIndex As Integer)
+    On Error GoTo HandleUserPetsOnDeath_Err
+    Dim i              As Long
+    Dim PreventPetLoss As Boolean
+    With UserList(UserIndex)
+        ' Determinar si el druida tiene protección de pérdida
+        ' (objeto mágico de madera élfica equipado)
+        If .clase = e_Class.Druid Then
+            If .invent.EquippedRingAccesoryObjIndex > 0 Then
+                If ObjData(.invent.EquippedRingAccesoryObjIndex).OBJType = otMagicalInstrument Then
+                    If ObjData(.invent.EquippedRingAccesoryObjIndex).MaderaElfica > 0 Then
+                        PreventPetLoss = True
+                    End If
+                End If
+            End If
+        End If
+        'Procesar mascotas ACTIVAS, si hay protección guardarlas, si no hay protección matarlas
+        For i = 1 To MAXMASCOTAS
+            If .MascotasIndex(i).ArrayIndex > 0 Then   ' Hay mascota activa
+                'Obtener si es mascota domada (TiempoExistencia = 0)
+                Dim isTamed As Boolean
+                isTamed = False
+                If IsValidNpcRef(.MascotasIndex(i)) Then
+                    isTamed = (NpcList(.MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia = 0)
+                End If
+                If PreventPetLoss Then
+                    If isTamed Then
+                        'Guardar mascota domada usando la misma lógica que HechizoInvocacion
+                        Call SetUserRef(NpcList(.MascotasIndex(i).ArrayIndex).MaestroUser, 0)
+                        Call QuitarNPC(.MascotasIndex(i).ArrayIndex, eStorePets)
+                        Call ClearNpcRef(.MascotasIndex(i))
+                    Else
+                        'Mascota invocada siempre muere aunque haya protección
+                        Call MuereNpc(.MascotasIndex(i).ArrayIndex, 0)
+                        Call ClearNpcRef(.MascotasIndex(i))
+                    End If
+                Else
+                    'Sin protección comportamiento normal, mueren todas
+                    If IsValidNpcRef(.MascotasIndex(i)) Then
+                        Call MuereNpc(.MascotasIndex(i).ArrayIndex, 0)
+                    End If
+                    Call ClearNpcRef(.MascotasIndex(i))
+                End If
+            End If
+        Next i
+        'Si no hay protección y no estaban guardadas resetear contador
+        If Not PreventPetLoss Then
+            If .flags.MascotasGuardadas = 0 Then
+                .NroMascotas = 0
+            End If
+        Else
+            .flags.MascotasGuardadas = 1
+        End If
+    End With
+    Exit Sub
+HandleUserPetsOnDeath_Err:
+    Call TraceError(Err.Number, Err.Description, "UsUaRiOs.HandleUserPetsOnDeath", Erl)
+    Resume Next
+End Sub
+

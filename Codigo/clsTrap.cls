@@ -215,7 +215,7 @@ End Sub
 Public Function CanAffectTarget(ByVal TargetIndex, ByVal TargetType As e_ReferenceType) As Boolean
     If mDotInfo.TargetRef.RefType = eUser Then
         If TargetType = eUser Then
-            CanAffectTarget = UserMod.CanAttackUser(mDotInfo.TargetRef.ArrayIndex, mDotInfo.TargetRef.VersionId, TargetIndex, UserList(TargetIndex).VersionId) = eCanAttack
+            CanAffectTarget = False
             Exit Function
         End If
         If TargetType = eNpc Then
