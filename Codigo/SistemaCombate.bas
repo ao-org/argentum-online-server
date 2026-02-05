@@ -591,7 +591,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
         '¿Puede envenenar?
         If NpcList(NpcIndex).Veneno > 0 Then Call NpcEnvenenarUser(UserIndex, NpcList(NpcIndex).Veneno)
     End If
-    Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharAtaca(NpcList(NpcIndex).Char.charindex, UserList(UserIndex).Char.charindex, danio, NpcList(NpcIndex).Numero))
+    Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharAtaca(NpcList(NpcIndex).Char.charindex, UserList(UserIndex).Char.charindex, danio))
     If NpcList(NpcIndex).Char.WeaponAnim > 0 Then
         Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageArmaMov(NpcList(NpcIndex).Char.charindex, 0))
     End If
@@ -700,7 +700,7 @@ Public Function NpcPerformAttackNpc(ByVal attackerIndex As Integer, ByVal Target
     Call SendData( _
         SendTarget.ToNPCAliveArea, _
         attackerIndex, _
-        PrepareMessageCharAtaca(NpcList(attackerIndex).Char.charindex, NpcList(TargetIndex).Char.charindex, danio, NpcList(attackerIndex).Numero))
+        PrepareMessageCharAtaca(NpcList(attackerIndex).Char.charindex, NpcList(TargetIndex).Char.charindex, danio))
 
     NpcPerformAttackNpc = impacto
 End Function
