@@ -3021,17 +3021,36 @@ Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As In
 End Function
 
 Public Function GetArmorPenetration(ByVal UserIndex As Integer, ByVal TargetArmor As Integer) As Integer
-    Dim ArmorPenetration As Integer
     If Not IsFeatureEnabled("armor_penetration_feature") Then Exit Function
+    Dim PenetrationChance As Single
     With UserList(UserIndex)
-        If .invent.EquippedWeaponObjIndex > 0 Then
-            ArmorPenetration = ObjData(.invent.EquippedWeaponObjIndex).IgnoreArmorAmmount
-            If ObjData(.invent.EquippedWeaponObjIndex).IgnoreArmorPercent > 0 Then
-                ArmorPenetration = ArmorPenetration + TargetArmor * ObjData(.invent.EquippedWeaponObjIndex).IgnoreArmorPercent
+        If .invent.EquippedWeaponObjIndex = 0 Then Exit Function
+        PenetrationChance = ClampChance(.Stats.UserSkills(e_Skill.Armas) * IgnoreArmorChance)
+        If RandomNumber(1, 100) > PenetrationChance Then
+            Exit Function
+        End If
+        Dim minPen As Integer
+        Dim maxPen As Integer
+        minPen = ObjData(.invent.EquippedWeaponObjIndex).MinArmorPenetrationFlat
+        maxPen = ObjData(.invent.EquippedWeaponObjIndex).MaxArmorPenetrationFlat
+        If minPen < 0 Then minPen = 0
+        If maxPen < 0 Then maxPen = 0
+        If minPen > maxPen Then
+            Dim tmp As Integer
+            tmp = minPen: minPen = maxPen: maxPen = tmp
+        End If
+        GetArmorPenetration = RandomNumber(minPen, maxPen)
+        If ObjData(.invent.EquippedWeaponObjIndex).ArmorPenetrationPercent > 0 Then
+            Dim pct As Single
+            pct = ObjData(.invent.EquippedWeaponObjIndex).ArmorPenetrationPercent
+            If pct > 1! Then pct = pct / 100!
+            If pct < 0! Then pct = 0!
+            If pct > 1! Then pct = 1!
+            If pct > 0! Then
+                GetArmorPenetration = GetArmorPenetration + (TargetArmor * pct)
             End If
         End If
     End With
-    GetArmorPenetration = ArmorPenetration
 End Function
 
 Public Function GetEvasionBonus(ByRef User As t_User) As Integer
