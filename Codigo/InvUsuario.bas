@@ -2510,13 +2510,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     'Msg906= Por mas que lo intentas, no podés comprender el manuescrito.
                     Call WriteLocaleMsg(UserIndex, 906, e_FontTypeNames.FONTTYPE_INFO)
                 End If
-            Case e_OBJType.otMinerals
-                If .flags.Muerto = 1 Then
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
-                    'Msg77=¡¡Estás muerto!!.
-                    Exit Sub
-                End If
-                Call StartAutomatedAction(.flags.TargetX, .flags.TargetY, e_Skill.MeltMinerals, UserIndex)
             Case e_OBJType.otMusicalInstruments
                 If .flags.Muerto = 1 Then
                     Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)

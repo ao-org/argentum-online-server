@@ -8032,6 +8032,12 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
             If Not CanUserExtractResource(UserIndex, e_OBJType.otOreDeposit, x, y) Then
                 Exit Function
             End If
+        Case e_Skill.Smelting
+            If Not CanUserSmelt(UserIndex) Then
+                Exit Function
+            End If
+        
+        
         Case Else
     End Select
     Call StartAutomatedAction(x, y, skill, UserIndex)

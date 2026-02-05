@@ -1108,22 +1108,7 @@ SastreConstruirItem_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.SastreConstruirItem", Erl)
 End Sub
 
-Private Function MineralesParaLingote(ByVal Lingote As e_Minerales, ByVal cant As Byte) As Integer
-    On Error GoTo MineralesParaLingote_Err
-    Select Case Lingote
-        Case e_Minerales.HierroCrudo
-            MineralesParaLingote = 13 * cant
-        Case e_Minerales.PlataCruda
-            MineralesParaLingote = 25 * cant
-        Case e_Minerales.OroCrudo
-            MineralesParaLingote = 50 * cant
-        Case Else
-            MineralesParaLingote = 10000
-    End Select
-    Exit Function
-MineralesParaLingote_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.MineralesParaLingote", Erl)
-End Function
+
 
 Function ModAlquimia(ByVal clase As e_Class) As Integer
     On Error GoTo ModAlquimia_Err
