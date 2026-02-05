@@ -2394,6 +2394,7 @@ Public Type t_ObjData
     ProjectileType As Integer
     ObjFlags As Long 'use bitmask from enum e_ObjFlags
     JineteLevel As Byte
+    FactionScore As Integer
     ElementalTags As Long
     Camouflage As Boolean
     RequiereObjeto                  As Integer
