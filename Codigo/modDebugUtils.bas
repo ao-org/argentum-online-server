@@ -403,18 +403,12 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eCreateNPC"
         Case ClientPacketID.eCreateNPCWithRespawn
             PacketID_to_string = "eCreateNPCWithRespawn"
-        Case ClientPacketID.eImperialArmour
-            PacketID_to_string = "eImperialArmour"
-        Case ClientPacketID.eChaosArmour
-            PacketID_to_string = "eChaosArmour"
         Case ClientPacketID.eNavigateToggle
             PacketID_to_string = "eNavigateToggle"
         Case ClientPacketID.eServerOpenToUsersToggle
             PacketID_to_string = "eServerOpenToUsersToggle"
         Case ClientPacketID.eParticipar
             PacketID_to_string = "eParticipar"
-        Case ClientPacketID.eTurnCriminal
-            PacketID_to_string = "eTurnCriminal"
         Case ClientPacketID.eResetFactions
             PacketID_to_string = "eResetFactions"
         Case ClientPacketID.eRemoveCharFromGuild
