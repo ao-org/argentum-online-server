@@ -5313,7 +5313,6 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildBan", Erl)
 End Sub
 
-' Handles the "ChaosLegionKick" message.
 Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
