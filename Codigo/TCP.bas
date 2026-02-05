@@ -782,17 +782,11 @@ End Sub
 
 Sub ResetFacciones(ByVal UserIndex As Integer)
     On Error GoTo ResetFacciones_Err
-    '*************************************************
-    'Author: Unknown
-    'Last modified: 23/01/2007
-    'Resetea todos los valores generales y las stats
-    '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
-    '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, MatadosIngreso y NextRecompensa.
-    '*************************************************
     With UserList(UserIndex).Faccion
-        If .Status = e_Facciones.Armada Or .Status = e_Facciones.concilio Then
+        If .Status = e_Facciones.Armada Or .Status = e_Facciones.consejo Then
             .Status = e_Facciones.Ciudadano
-        Else
+        End If
+        If .Status = e_Facciones.Caos Or .Status = e_Facciones.concilio Then
             .Status = e_Facciones.Criminal
         End If
         .RecibioArmaduraCaos = 0
