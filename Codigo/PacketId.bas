@@ -269,7 +269,6 @@ Public Enum ClientPacketID
     eRequestStats            '/EST
     eCommerceStart           '/COMERCIAR
     eBankStart               '/BOVEDA
-    eEnlist                  '/ENLISTAR
     eInformation             '/INFORMACION
     eReward                  '/RECOMPENSA
     eRequestMOTD             '/MOTD
@@ -284,7 +283,7 @@ Public Enum ClientPacketID
     epunishments             '/PENAS
     eGamble                  '/APOSTAR
     eMapPriceEntrance        '/ARENA
-    eLeaveFaction            '/RETIRAR ( with no arguments )
+    eLeaveFaction            '/RETIRARFACCION
     eBankExtractGold         '/RETIRAR ( with arguments )
     eBankDepositGold         '/DEPOSITAR
     eDenounce                '/DENUNCIAR
@@ -513,7 +512,6 @@ Public Enum ClientPacketID
     eUseItemU
     eRepeatMacro
     eBuyShopItem
-    ePerdonFaccion              '/PERDONFACCION NAME
     eStartEvent           '/EVENTO CAPTURA/LOBBY
     eCancelarEvento          '/CANCELAREVENTO
     eNotifyInventarioHechizos

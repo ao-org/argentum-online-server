@@ -197,8 +197,6 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eCommerceStart"
         Case ClientPacketID.eBankStart
             PacketID_to_string = "eBankStart"
-        Case ClientPacketID.eEnlist
-            PacketID_to_string = "eEnlist"
         Case ClientPacketID.eInformation
             PacketID_to_string = "eInformation"
         Case ClientPacketID.eReward
@@ -301,8 +299,6 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eOnlineMap"
         Case ClientPacketID.eForgive
             PacketID_to_string = "eForgive"
-        Case ClientPacketID.ePerdonFaccion
-            PacketID_to_string = "ePerdonFaccion"
         Case ClientPacketID.eStartEvent
             PacketID_to_string = "eStartEvent"
         Case ClientPacketID.eCancelarEvento

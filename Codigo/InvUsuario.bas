@@ -2749,8 +2749,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 .flags.UsingItemSlot = .flags.TargetObjInvSlot
                 Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
             Case e_OBJType.otFactionForgiveness
-                Call ResetFacciones(UserIndex)
-                Call QuitarUserInvItem(UserIndex, Slot, 1)
+                If ForgiveUserFactionStats(UserIndex) Then
+                    Call QuitarUserInvItem(UserIndex, Slot, 1)
+                    Call UpdateUserInv(False, UserIndex, Slot)
+                End If
         End Select
     End With
     Exit Sub

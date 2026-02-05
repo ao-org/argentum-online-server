@@ -444,8 +444,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleCommerceStart(UserIndex)
         Case ClientPacketID.eBankStart
             Call HandleBankStart(UserIndex)
-        Case ClientPacketID.eEnlist
-            Call HandleEnlist(UserIndex)
         Case ClientPacketID.eInformation
             Call HandleInformation(UserIndex)
         Case ClientPacketID.eReward
@@ -4456,31 +4454,6 @@ End Sub
 
 Private Sub HandleEnlist(ByVal UserIndex As Integer)
     On Error GoTo HandleEnlist_Err
-    With UserList(UserIndex)
-        If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-        'Validate target NPC
-        If Not IsValidNpcRef(.flags.TargetNPC) Then
-            ' Msg761=Primero tenés que seleccionar un personaje, hacé click izquierdo sobre él.
-            Call WriteLocaleMsg(UserIndex, 761, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Enlistador Or .flags.Muerto <> 0 Then Exit Sub
-        If Distancia(.pos, NpcList(.flags.TargetNPC.ArrayIndex).pos) > 4 Then
-            'Msg1170= Debes acercarte más.
-            Call WriteLocaleMsg(UserIndex, 1170, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        If NpcList(.flags.TargetNPC.ArrayIndex).flags.Faccion = 0 Then
-            Call EnlistarArmadaReal(UserIndex)
-        Else
-            Call EnlistarCaos(UserIndex)
-        End If
-    End With
-    Exit Sub
-HandleEnlist_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleEnlist", Erl)
-End Sub
-
 Private Sub HandleInformation(ByVal UserIndex As Integer)
     On Error GoTo HandleInformation_Err
     With UserList(UserIndex)
@@ -5057,7 +5030,6 @@ ErrHandler:
 End Sub
 
 
-    On Error GoTo ErrHandler
 ''
 ' Handles the "GuildOnlineMembers" message.
 '
@@ -5377,7 +5349,6 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                         Call m_EcharMiembroDeClan(UserIndex, UserList(tUser.ArrayIndex).Id)
                     End If
                 End If
-                    UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 2
                     UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Criminal
                     Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1992, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1992=¬1 expulsado de las fuerzas del caos y prohibida la reenlistada.
                     Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1991, .name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1991=¬1 te ha expulsado en forma definitiva de las fuerzas del caos.
@@ -5434,7 +5405,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                         Call m_EcharMiembroDeClan(UserIndex, UserList(tUser.ArrayIndex).Id)
                     End If
                 End If
-                UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 2
+                UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS
                 UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Ciudadano
                 Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1990, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1990=¬1 expulsado de las fuerzas reales y prohibida la reenlistada.
                 Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1989, .name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1989=¬1 te ha expulsado en forma definitiva de las fuerzas reales.
@@ -7330,7 +7301,6 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
         Dim Motivo    As String
         tipoMacro = reader.ReadInt8
         clicks = reader.ReadInt32
-        mensaje = "Control AntiCheat--> El usuario " & .name & "| está utilizando "
         Select Case tipoMacro
             Case tMacro.Coordenadas
                 Motivo = "macro de COORDENADAS"
