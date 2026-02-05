@@ -1423,12 +1423,11 @@ Public Enum e_Skill
     Sastreria = 23
     Domar = 24
     TargetableItem = 25
+    Smelting = 26
     Grupo = 90
     MarcaDeClan = 91
     MarcaDeGM = 92
 End Enum
-
-Public Const FundirMetal = 88
 
 Public Enum e_Atributos
     Fuerza = 1
