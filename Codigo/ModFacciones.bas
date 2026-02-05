@@ -28,7 +28,7 @@ Attribute VB_Name = "ModFacciones"
 '
 Option Explicit
 
-Public Const MAX_FACTION_ENLISTMENTS = 1
+Public Const MAX_FACTION_ENLISTMENTS = 0
 
 Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
     On Error GoTo EnlistarArmadaReal_Err
@@ -463,14 +463,14 @@ Public Function ForgiveUserFactionStats(ByVal UserIndex As Integer) As Boolean
                 Call WriteLocaleMsg(UserIndex, 1189, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             Case e_Facciones.Ciudadano
-                If .ciudadanosMatados = 0 Or .Reenlistadas < MAX_FACTION_ENLISTMENTS Then
+                If .ciudadanosMatados = 0 And .Reenlistadas = MAX_FACTION_ENLISTMENTS Then
                     Call WriteLocaleMsg(UserIndex, 1192, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 Else
                     .ciudadanosMatados = 0
                 End If
             Case e_Facciones.Criminal
-                If .Reenlistadas < MAX_FACTION_ENLISTMENTS Then
+                If .Reenlistadas = MAX_FACTION_ENLISTMENTS Then
                     Call WriteLocaleMsg(UserIndex, 1192, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
