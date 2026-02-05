@@ -33,23 +33,8 @@ End Enum
 
 Public Const REDUCTOR_PRECIOVENTA As Byte = 3
 
-''
-' Makes a trade. (Buy or Sell)
-'
-' @param Modo The trade type (sell or buy)
-' @param UserIndex Specifies the index of the user
-' @param NpcIndex specifies the index of the npc
-' @param Slot Specifies which slot are you trying to sell / buy
-' @param Cantidad Specifies how many items in that slot are you trying to sell / buy
 Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal Slot As Integer, ByVal Cantidad As Integer)
     On Error GoTo Comercio_Err
-    '*************************************************
-    'Author: Nacho (Integer)
-    'Last modified: 27/07/08 (MarKoxX) |
-    '27/07/08 (MarKoxX) - New changes in the way of trading (now when you buy it rounds to ceil and when you sell it rounds to floor)
-    '06/13/08 (NicoNZ)
-    '24/01/2020: WyroX = Reduzco la cantidad de paquetes que se envian, actualizo solo los slots necesarios y solo el oro, no todos los stats.
-    '*************************************************
     Dim precio           As Long
     Dim Objeto           As t_Obj
     Dim objquedo         As t_Obj
@@ -124,7 +109,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
             'Msg1085= Lo siento, no puedo comprarte ese item.
             Call WriteLocaleMsg(UserIndex, 1085, e_FontTypeNames.FONTTYPE_TALK)
             Exit Sub
-        ElseIf (NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> e_OBJType.otElse) Or Objeto.ObjIndex = iORO Then
+        ElseIf ((NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> e_OBJType.otElse) Or Objeto.ObjIndex = iORO) Then
             'Agrego que si vende el item, lo compre tambien.
             Dim LoVende As Boolean
             Dim i       As Integer
@@ -149,24 +134,25 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
         End If
         Call QuitarUserInvItem(UserIndex, Slot, Cantidad)
         Call UpdateUserInv(False, UserIndex, Slot)
-        'Precio = Round(ObjData(Objeto.ObjIndex).valor / REDUCTOR_PRECIOVENTA * Cantidad, 0)
-        precio = Fix(SalePrice(Objeto.ObjIndex) * Cantidad)
+        precio = Fix(SalePrice(Objeto.ObjIndex, UserIndex) * Cantidad)
         UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + precio
         If UserList(UserIndex).Stats.GLD > MAXORO Then UserList(UserIndex).Stats.GLD = MAXORO
         Call WriteUpdateGold(UserIndex)
-        NpcSlot = SlotEnNPCInv(NpcIndex, Objeto.ObjIndex, Objeto.amount)
-        If NpcSlot > 0 And NpcSlot <= MAX_INVENTORY_SLOTS Then 'Slot valido
-            ' Saque este incremento de SlotEnNPCInv porque me parece mejor manejarlo junto con el resto de las asignaciones
-            If NpcList(NpcIndex).invent.Object(NpcSlot).ObjIndex = 0 Then
-                NpcList(NpcIndex).invent.NroItems = NpcList(NpcIndex).invent.NroItems + 1
+        If Not IsFeatureEnabled("destroy_npc_bought_items") Then
+            NpcSlot = SlotEnNPCInv(NpcIndex, Objeto.ObjIndex, Objeto.Amount)
+            If NpcSlot > 0 And NpcSlot <= MAX_INVENTORY_SLOTS Then 'Slot valido
+                ' Saque este incremento de SlotEnNPCInv porque me parece mejor manejarlo junto con el resto de las asignaciones
+                If NpcList(NpcIndex).invent.Object(NpcSlot).ObjIndex = 0 Then
+                    NpcList(NpcIndex).invent.NroItems = NpcList(NpcIndex).invent.NroItems + 1
+                End If
+                'Mete el obj en el slot
+                NpcList(NpcIndex).invent.Object(NpcSlot).ObjIndex = Objeto.ObjIndex
+                NpcList(NpcIndex).invent.Object(NpcSlot).Amount = NpcList(NpcIndex).invent.Object(NpcSlot).Amount + Objeto.Amount
+                If NpcList(NpcIndex).invent.Object(NpcSlot).Amount > GetMaxInvOBJ() Then
+                    NpcList(NpcIndex).invent.Object(NpcSlot).Amount = GetMaxInvOBJ()
+                End If
+                Call UpdateNpcInvToAll(False, NpcIndex, NpcSlot)
             End If
-            'Mete el obj en el slot
-            NpcList(NpcIndex).invent.Object(NpcSlot).ObjIndex = Objeto.ObjIndex
-            NpcList(NpcIndex).invent.Object(NpcSlot).amount = NpcList(NpcIndex).invent.Object(NpcSlot).amount + Objeto.amount
-            If NpcList(NpcIndex).invent.Object(NpcSlot).amount > GetMaxInvOBJ() Then
-                NpcList(NpcIndex).invent.Object(NpcSlot).amount = GetMaxInvOBJ()
-            End If
-            Call UpdateNpcInvToAll(False, NpcIndex, NpcSlot)
         End If
     End If
     Call SubirSkill(UserIndex, e_Skill.Comerciar)
@@ -283,14 +269,8 @@ EnviarNpcInv_Err:
     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.UpdateNpcInv", Erl)
 End Sub
 
-''
-' Update the inventory of the Npc to all users trading with him
-'
-' @param updateAll if is needed to update all
-' @param npcIndex The index of the NPC
-' @param slot The slot to update
+
 Public Sub UpdateNpcInvToAll(ByVal UpdateAll As Boolean, ByVal NpcIndex As Integer, ByVal Slot As Byte)
-    '***************************************************
     On Error GoTo ErrHandler:
     Dim LoopC As Long
     ' Recorremos todos los usuarios
@@ -311,19 +291,19 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.UpdateNpcInvToAll")
 End Sub
 
-''
-' Devuelve el valor de venta del objeto
-'
-' @param valor  El valor de compra de objeto
-Public Function SalePrice(ByVal ObjIndex As Integer) As Single
+Public Function SalePrice(ByVal ObjIndex As Integer, Optional ByVal UserIndex As Integer = 0) As Single
     On Error GoTo SalePrice_Err
-    '*************************************************
-    'Author: Nicolás (NicoNZ)
-    '
-    '*************************************************
     If ObjIndex < 1 Or ObjIndex > UBound(ObjData) Then Exit Function
     If ItemNewbie(ObjIndex) Then Exit Function
-    SalePrice = ObjData(ObjIndex).Valor / REDUCTOR_PRECIOVENTA
+    Dim denom As Double
+    denom = REDUCTOR_PRECIOVENTA
+    If UserIndex > 0 Then
+        If UserList(UserIndex).clase = e_Class.Trabajador Then
+            denom = denom - (UserList(UserIndex).Stats.ELV * 0.025) '0.25/10 = 0.025
+            If denom < 2 Then denom = 2 'clamp: evita div0 y negativos
+        End If
+    End If
+    SalePrice = CSng(ObjData(ObjIndex).Valor / denom)
     Exit Function
 SalePrice_Err:
     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.SalePrice", Erl)

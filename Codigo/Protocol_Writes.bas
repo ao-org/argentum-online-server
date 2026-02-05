@@ -1465,7 +1465,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As By
     Call Writer.WriteInt16(ObjIndex)
     Call Writer.WriteInt16(UserList(UserIndex).invent.Object(Slot).amount)
     Call Writer.WriteBool(UserList(UserIndex).invent.Object(Slot).Equipped)
-    Call Writer.WriteReal32(SalePrice(ObjIndex))
+    Call Writer.WriteReal32(SalePrice(ObjIndex,UserIndex))
     Call Writer.WriteInt8(PodraUsarlo)
     Call Writer.WriteInt32(UserList(UserIndex).invent.Object(Slot).ElementalTags Or NaturalElementalTags)
     If ObjIndex > 0 Then
@@ -2797,6 +2797,8 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
     Call Writer.WriteInt16(ServerPacketID.eQuestDetails)
     Call Writer.WriteInt16(QuestIndex)
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
+    Call Writer.WriteInt8(QuestList(QuestIndex).LimitLevel)
+    Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClass)
     Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
     'Enviamos la cantidad de npcs requeridos
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredNPCs)

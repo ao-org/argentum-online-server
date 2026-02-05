@@ -34,6 +34,7 @@ Public Sub ChopWood(ByVal UserIndex As Integer)
                 MiObj.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount
                 'dont call to ResetUserAutomatedAction(UserIndex) because .Automated.x and .Automated.y are being used
                 .AutomatedAction.IsActive = False
+                .Counters.Trabajando = 0
             End If
             MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount - MiObj.amount
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
@@ -50,6 +51,7 @@ Public Sub ChopWood(ByVal UserIndex As Integer)
         Else
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(64, .pos.x, .pos.y))
         End If
+        .Counters.Trabajando = .Counters.Trabajando + 1
         Call SubirSkill(UserIndex, e_Skill.Talar)
     End With
 End Sub

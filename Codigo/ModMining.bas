@@ -31,6 +31,7 @@ Public Sub MineMinerals(ByVal UserIndex As Integer)
                 MiObj.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount
                 'dont call to ResetUserAutomatedAction(UserIndex) because .Automated.x and .Automated.y are being used
                 .AutomatedAction.IsActive = False
+                .Counters.Trabajando = 0
             End If
             MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount - MiObj.amount
             If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
@@ -46,6 +47,7 @@ Public Sub MineMinerals(ByVal UserIndex As Integer)
         Else
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.FailToExtractOre, .pos.x, .pos.y))
         End If
+        .Counters.Trabajando = .Counters.Trabajando + 1
         Call SubirSkill(UserIndex, e_Skill.Mineria)
     End With
     Exit Sub

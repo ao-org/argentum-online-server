@@ -1930,7 +1930,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         End If
         If UserList(targetUserIndex).flags.Inmovilizado = 1 Then
             UserList(targetUserIndex).Counters.Inmovilizado = 0
-            If UserList(targetUserIndex).clase = e_Class.Warrior Or UserList(targetUserIndex).clase = e_Class.Hunter Or UserList(targetUserIndex).clase = e_Class.Thief Or _
+            If UserList(targetUserIndex).clase = e_Class.Warrior Or UserList(targetUserIndex).clase = e_Class.Thief Or _
                     UserList(targetUserIndex).clase = e_Class.Pirat Then
                 UserList(targetUserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
             End If
@@ -1940,7 +1940,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         End If
         If UserList(targetUserIndex).flags.Paralizado = 1 Then
             UserList(targetUserIndex).flags.Paralizado = 0
-            If UserList(targetUserIndex).clase = e_Class.Warrior Or UserList(targetUserIndex).clase = e_Class.Hunter Or UserList(targetUserIndex).clase = e_Class.Thief Or _
+            If UserList(targetUserIndex).clase = e_Class.Warrior Or UserList(targetUserIndex).clase = e_Class.Thief Or _
                     UserList(targetUserIndex).clase = e_Class.Pirat Then
                 UserList(targetUserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
             End If
@@ -3661,7 +3661,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         If UserList(tU).flags.Inmovilizado = 1 Then
             UserList(tU).Counters.Inmovilizado = 0
             UserList(tU).flags.Inmovilizado = 0
-            If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Hunter Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
+            If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
                 UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
             End If
             Call WriteInmovilizaOK(tU)
@@ -3671,7 +3671,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         If UserList(tU).flags.Paralizado = 1 Then
             UserList(tU).Counters.Paralisis = 0
             UserList(tU).flags.Paralizado = 0
-            If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Hunter Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
+            If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
                 UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
             End If
             Call WriteParalizeOK(tU)
@@ -4085,7 +4085,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
         If UserList(NpcIndex).flags.Inmovilizado = 1 Then
             UserList(NpcIndex).Counters.Inmovilizado = 0
             UserList(NpcIndex).flags.Inmovilizado = 0
-            If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Hunter Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = _
+            If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = _
                     e_Class.Pirat Then
                 UserList(NpcIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
             End If
@@ -4093,7 +4093,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
         End If
         If UserList(NpcIndex).flags.Paralizado = 1 Then
             UserList(NpcIndex).flags.Paralizado = 0
-            If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Hunter Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = _
+            If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = _
                     e_Class.Pirat Then
                 UserList(NpcIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
             End If

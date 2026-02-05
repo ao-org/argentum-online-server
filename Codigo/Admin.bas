@@ -96,6 +96,7 @@ Public IntervaloTimerGuardarUsuarios As Long
 Public IntervaloMensajeGlobal        As Long
 Public Const IntervaloConsultaGM     As Long = 300000
 Public IntervalAutomatedAction       As Long
+Public IntervalPhoenixSpawn          As Long
 Public IntervalChangeGlobalQuestsState       As Long
 'BALANCE
 Public PorcentajeRecuperoMana        As Integer
@@ -194,7 +195,7 @@ Public Sub PurgarPenas()
     Dim i As Long
     For i = 1 To LastUser
         If UserList(i).flags.UserLogged Then
-            If UserList(i).Counters.Pena > 0 Then
+            If UserList(i).Counters.Pena > 0 And UserList(i).flags.Muerto = 0 Then
                 UserList(i).Counters.Pena = UserList(i).Counters.Pena - 1
                 If UserList(i).Counters.Pena < 1 Then
                     UserList(i).Counters.Pena = 0
