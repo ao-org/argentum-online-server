@@ -1763,6 +1763,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Exit Sub
                     End If
                 End If
+                If obj.FactionScore > 0 Then
+                    .Faccion.FactionScore = .Faccion.FactionScore + obj.FactionScore
+                End If
                 'Sonido
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, .pos.x, .pos.y))
                 'Quitamos del inv el item
