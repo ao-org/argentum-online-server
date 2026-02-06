@@ -2676,47 +2676,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     ' Msg719=No hay ninguna criatura alli!
                     Call WriteLocaleMsg(UserIndex, 719, e_FontTypeNames.FONTTYPE_INFO)
                 End If
-            Case FundirMetal    'UGLY!!! This is a constant, not a skill!!
-                'Check interval
-                If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
-                Call LookatTile(UserIndex, .pos.Map, x, y)
-                'Check there is a proper item there
-                If .flags.TargetObj > 0 Then
-                    If ObjData(.flags.TargetObj).OBJType = e_OBJType.otForge Then
-                        'Validate other items
-                        If .flags.TargetObjInvSlot < 1 Or .flags.TargetObjInvSlot > UserList(UserIndex).CurrentInventorySlots Then
-                            Exit Sub
-                        End If
-                        ''chequeamos que no se zarpe duplicando oro
-                        If .invent.Object(.flags.TargetObjInvSlot).ObjIndex <> .flags.TargetObjInvIndex Then
-                            If .invent.Object(.flags.TargetObjInvSlot).ObjIndex = 0 Or .invent.Object(.flags.TargetObjInvSlot).amount = 0 Then
-                                ' Msg605=No tienes más minerales
-                                Call WriteLocaleMsg(UserIndex, 605, e_FontTypeNames.FONTTYPE_INFO)
-                                Call WriteWorkRequestTarget(UserIndex, 0)
-                                Exit Sub
-                            End If
-                            ''FUISTE
-                            Call WriteShowMessageBox(UserIndex, 1783, vbNullString) 'Msg1783=Has sido expulsado por el sistema anti cheats.
-                            Call CloseSocket(UserIndex)
-                            Exit Sub
-                        End If
-                        Call FundirMineral(UserIndex)
-                    Else
-                        ' Msg606=Ahí no hay ninguna fragua.
-                        Call WriteLocaleMsg(UserIndex, 606, e_FontTypeNames.FONTTYPE_INFO)
-                        Call WriteWorkRequestTarget(UserIndex, 0)
-                        If UserList(UserIndex).Counters.Trabajando > 1 Then
-                            Call WriteMacroTrabajoToggle(UserIndex, False)
-                        End If
-                    End If
-                Else
-                    ' Msg606=Ahí no hay ninguna fragua.
-                    Call WriteLocaleMsg(UserIndex, 606, e_FontTypeNames.FONTTYPE_INFO)
-                    Call WriteWorkRequestTarget(UserIndex, 0)
-                    If UserList(UserIndex).Counters.Trabajando > 1 Then
-                        Call WriteMacroTrabajoToggle(UserIndex, False)
-                    End If
-                End If
             Case e_Skill.Grupo
                 Call LookatTile(UserIndex, .pos.Map, x, y)
                 'Target whatever is in that tile
@@ -8071,6 +8030,10 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
             End If
         Case e_Skill.Mineria
             If Not CanUserExtractResource(UserIndex, e_OBJType.otOreDeposit, x, y) Then
+                Exit Function
+            End If
+        Case e_Skill.Smelting
+            If Not CanUserSmelt(UserIndex, e_OBJType.otMinerals, x, y) Then
                 Exit Function
             End If
         Case Else
