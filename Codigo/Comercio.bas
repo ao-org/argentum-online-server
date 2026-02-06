@@ -297,7 +297,7 @@ Public Function SalePrice(ByVal ObjIndex As Integer, Optional ByVal UserIndex As
     If ItemNewbie(ObjIndex) Then Exit Function
     Dim denom As Double
     denom = REDUCTOR_PRECIOVENTA
-    If UserIndex > 0 Then
+    If UserIndex > 0 And If IsFeatureEnabled("destroy_npc_bought_items") Then
         If UserList(UserIndex).clase = e_Class.Trabajador Then
             denom = denom - (UserList(UserIndex).Stats.ELV * 0.025) '0.25/10 = 0.025
             If denom < 2 Then denom = 2 'clamp: evita div0 y negativos
