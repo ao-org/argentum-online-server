@@ -115,7 +115,8 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
         Dim counter           As Long
         Dim SQLQuery          As String
         Dim max_slots_to_load As Integer
-        max_slots_to_load = get_num_inv_slots_from_tier(.Stats.tipoUsuario)
+        'Load all slots to avoid destroying items when user stops being patreon
+        max_slots_to_load = get_num_inv_slots_from_tier(tLeyenda)
         SQLQuery = "SELECT number, item_id, is_equipped, amount, elemental_tags FROM inventory_item WHERE number <= " & max_slots_to_load & " AND user_id = ?;"
         Set RS = Query(SQLQuery, .Id)
         counter = 0

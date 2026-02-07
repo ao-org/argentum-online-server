@@ -1112,6 +1112,11 @@ Dim Ropaje                      As Integer
 
     On Error GoTo ErrHandler
     With UserList(UserIndex)
+        If Slot > get_num_inv_slots_from_tier(.Stats.tipoUsuario) Then
+            'Patreon slot
+            'TODO: Send msg to client...WriteLocaleMsg
+            Exit Sub
+        End If
 
         If .flags.Muerto = 1 Then
             'Msg77=¡¡Estás muerto!!.
