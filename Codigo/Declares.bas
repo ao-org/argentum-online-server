@@ -2952,6 +2952,7 @@ Public Const HotKeyCount As Integer = 10
 'Tipo de los Usuarios
 Public Type t_User
     name As String
+    Alias As String
     Cuenta As String
     'User types are created at startup and reused every time,
     'the version id help to validate that a reference we stored is still valid,

@@ -228,6 +228,11 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
     With User
         .Id = RS!Id
         .name = RS!name
+        If IsNull(RS!alias) Then
+            .Alias = vbNullString
+        Else
+            .Alias = RS!alias
+        End If
         .Stats.ELV = RS!level
         .Stats.Exp = RS!Exp
         .genero = RS!genre_id
