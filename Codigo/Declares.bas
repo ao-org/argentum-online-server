@@ -1423,12 +1423,11 @@ Public Enum e_Skill
     Sastreria = 23
     Domar = 24
     TargetableItem = 25
+    Smelting = 26
     Grupo = 90
     MarcaDeClan = 91
     MarcaDeGM = 92
 End Enum
-
-Public Const FundirMetal = 88
 
 Public Enum e_Atributos
     Fuerza = 1
@@ -2052,8 +2051,6 @@ Public Type t_Char
     RM_Aura As String
     Otra_Aura As String
     speeding As Single
-    BodyIdle As Integer
-    Ataque1 As Integer
     Animation() As Integer
     CastAnimation As Integer
 End Type
@@ -2280,8 +2277,10 @@ Public Type t_ObjData
     LingoteIndex As Integer
     MinHIT As Integer 'Minimo golpe
     MaxHit As Integer 'Maximo golpe
-    IgnoreArmorAmmount As Integer
-    IgnoreArmorPercent As Single
+    MinArmorPenetrationFlat As Integer
+    MaxArmorPenetrationFlat As Integer
+    ArmorPenetrationPercent As Integer
+    ExtraCritAndStabChance As Integer
     MinHam As Integer
     MinSed As Integer
     def As Integer
@@ -2395,6 +2394,7 @@ Public Type t_ObjData
     ProjectileType As Integer
     ObjFlags As Long 'use bitmask from enum e_ObjFlags
     JineteLevel As Byte
+    FactionScore As Integer
     ElementalTags As Long
     Camouflage As Boolean
     RequiereObjeto                  As Integer
@@ -3207,8 +3207,6 @@ Public Type t_NpcInfoCache
     Body As Integer
     Head As Integer
     Heading As Integer
-    BodyIdle As Integer
-    Ataque1 As Integer
     CastAnimation As Integer
     AnimacionesCount As Integer
     Animaciones() As Integer

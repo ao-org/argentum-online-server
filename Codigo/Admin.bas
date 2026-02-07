@@ -114,7 +114,14 @@ Public CapVidaMax                    As Single
 Public CapVidaMin                    As Single
 Public ExpLevelUp(1 To STAT_MAXELV)  As Long
 Public InfluenciaPromedioVidas       As Single
-Public ModDañoGolpeCritico          As Single
+Public CriticalHitDmgModifier          As Single
+Public IgnoreArmorChance            As Single
+Public ExtraBackstabChance  As Single
+Public AssasinStabbingChance             As Single
+Public HunterStabbingChance              As Single
+Public BardStabbingChance                As Single
+Public GenericStabbingChance                As Single
+Public BanditCriticalHitChance           As Single
 Public MinutosWs                         As Long
 Public PlayerStunTime                    As Long
 Public NpcStunTime                       As Long
