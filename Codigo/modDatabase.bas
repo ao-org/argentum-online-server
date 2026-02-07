@@ -472,7 +472,7 @@ End Sub
 
 Public Sub EcharLegionDatabase(username As String)
     On Error GoTo EcharLegionDatabase_Err
-    Call Execute("UPDATE user SET status = ? WHERE UPPER(name) = ?;", e_Facciones.Criminal, UCase$(username))
+    Call Execute("UPDATE user SET status = ?, reenlistadas = ?,faction_score = ? WHERE UPPER(name) = ?;", e_Facciones.Criminal, MAX_FACTION_ENLISTMENTS + 1, 0, UCase$(username))
     Exit Sub
 EcharLegionDatabase_Err:
     Call TraceError(Err.Number, Err.Description, "modDatabase.EcharLegionDatabase", Erl)
@@ -480,7 +480,7 @@ End Sub
 
 Public Sub EcharArmadaDatabase(username As String)
     On Error GoTo EcharArmadaDatabase_Err
-    Call Execute("UPDATE user SET status = ? WHERE UPPER(name) = ?;", e_Facciones.Ciudadano, UCase$(username))
+    Call Execute("UPDATE user SET status = ?, reenlistadas = ?,faction_score = ? WHERE UPPER(name) = ?;", e_Facciones.Ciudadano, MAX_FACTION_ENLISTMENTS + 1, 0, UCase$(username))
     Exit Sub
 EcharArmadaDatabase_Err:
     Call TraceError(Err.Number, Err.Description, "modDatabase.EcharArmadaDatabase", Erl)

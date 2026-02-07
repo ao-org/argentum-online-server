@@ -2748,6 +2748,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Case e_OBJType.otUsableOntarget
                 .flags.UsingItemSlot = .flags.TargetObjInvSlot
                 Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
+            Case e_OBJType.otFactionForgiveness
+                If ForgiveUserFactionStats(UserIndex) Then
+                    Call QuitarUserInvItem(UserIndex, Slot, 1)
+                    Call UpdateUserInv(False, UserIndex, Slot)
+                End If
         End Select
     End With
     Exit Sub

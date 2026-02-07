@@ -444,8 +444,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleCommerceStart(UserIndex)
         Case ClientPacketID.eBankStart
             Call HandleBankStart(UserIndex)
-        Case ClientPacketID.eEnlist
-            Call HandleEnlist(UserIndex)
         Case ClientPacketID.eInformation
             Call HandleInformation(UserIndex)
         Case ClientPacketID.eReward
@@ -548,8 +546,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleOnlineMap(UserIndex)
         Case ClientPacketID.eForgive
             Call HandleForgive(UserIndex)
-        Case ClientPacketID.ePerdonFaccion
-            Call HandlePerdonFaccion(UserIndex)
         Case ClientPacketID.eStartEvent
             Call HandleStartEvent(UserIndex)
         Case ClientPacketID.eCancelarEvento
@@ -654,20 +650,12 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleCreateNPC(UserIndex)
         Case ClientPacketID.eCreateNPCWithRespawn
             Call HandleCreateNPCWithRespawn(UserIndex)
-        Case ClientPacketID.eImperialArmour
-            Call HandleImperialArmour(UserIndex)
-        Case ClientPacketID.eChaosArmour
-            Call HandleChaosArmour(UserIndex)
         Case ClientPacketID.eNavigateToggle
             Call HandleNavigateToggle(UserIndex)
         Case ClientPacketID.eServerOpenToUsersToggle
             Call HandleServerOpenToUsersToggle(UserIndex)
         Case ClientPacketID.eParticipar
             Call HandleParticipar(UserIndex)
-        Case ClientPacketID.eTurnCriminal
-            Call HandleTurnCriminal(UserIndex)
-        Case ClientPacketID.eResetFactions
-            Call HandleResetFactions(UserIndex)
         Case ClientPacketID.eRemoveCharFromGuild
             Call HandleRemoveCharFromGuild(UserIndex)
         Case ClientPacketID.eAlterName
@@ -4415,33 +4403,6 @@ HandleBankStart_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankStart", Erl)
 End Sub
 
-Private Sub HandleEnlist(ByVal UserIndex As Integer)
-    On Error GoTo HandleEnlist_Err
-    With UserList(UserIndex)
-        If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-        'Validate target NPC
-        If Not IsValidNpcRef(.flags.TargetNPC) Then
-            ' Msg761=Primero tenés que seleccionar un personaje, hacé click izquierdo sobre él.
-            Call WriteLocaleMsg(UserIndex, 761, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Enlistador Or .flags.Muerto <> 0 Then Exit Sub
-        If Distancia(.pos, NpcList(.flags.TargetNPC.ArrayIndex).pos) > 4 Then
-            'Msg1170= Debes acercarte más.
-            Call WriteLocaleMsg(UserIndex, 1170, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        If NpcList(.flags.TargetNPC.ArrayIndex).flags.Faccion = 0 Then
-            Call EnlistarArmadaReal(UserIndex)
-        Else
-            Call EnlistarCaos(UserIndex)
-        End If
-    End With
-    Exit Sub
-HandleEnlist_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleEnlist", Erl)
-End Sub
-
 Private Sub HandleInformation(ByVal UserIndex As Integer)
     On Error GoTo HandleInformation_Err
     With UserList(UserIndex)
@@ -5018,66 +4979,6 @@ ErrHandler:
 End Sub
 
 
-Private Sub HandlePerdonFaccion(ByVal UserIndex As Integer)
-    On Error GoTo ErrHandler
-    With UserList(UserIndex)
-        Dim username As String
-        Dim tUser    As t_UserReference
-        Dim LoopC    As Byte
-        username = reader.ReadString8()
-        If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
-            If UCase$(username) <> "YO" Then
-                tUser = NameIndex(username)
-            Else
-                Call SetUserRef(tUser, UserIndex)
-            End If
-            If Not IsValidUserRef(tUser) Then
-                ' Msg743=Usuario offline.
-                Call WriteLocaleMsg(UserIndex, 743, e_FontTypeNames.FONTTYPE_INFO)
-            End If
-            If UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Armada Or UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Caos Or UserList( _
-                    tUser.ArrayIndex).Faccion.Status = e_Facciones.consejo Or UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.concilio Then
-                'Msg1189= No puedes perdonar a alguien que ya pertenece a una facción
-                Call WriteLocaleMsg(UserIndex, 1189, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            'Si es ciudadano aparte de quitarle las reenlistadas le saco los ciudadanos matados.
-            If UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Ciudadano Then
-                If UserList(tUser.ArrayIndex).Faccion.ciudadanosMatados > 0 Or UserList(tUser.ArrayIndex).Faccion.Reenlistadas > 0 Then
-                    UserList(tUser.ArrayIndex).Faccion.ciudadanosMatados = 0
-                    UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 0
-                    UserList(tUser.ArrayIndex).Faccion.RecibioArmaduraReal = 0
-                    'Msg1190= Has sido perdonado.
-                    Call WriteLocaleMsg(tUser.ArrayIndex, 1190, e_FontTypeNames.FONTTYPE_INFO)
-                    'Msg1191= Has perdonado a ¬1
-                    Call WriteLocaleMsg(UserIndex, 1191, e_FontTypeNames.FONTTYPE_INFO, UserList(tUser.ArrayIndex).name)
-                Else
-                    'Msg1192= No necesitas ser perdonado.
-                    Call WriteLocaleMsg(tUser.ArrayIndex, 1192, e_FontTypeNames.FONTTYPE_INFO)
-                End If
-            ElseIf UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Criminal Then
-                If UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 0 Then
-                    'Msg1193= No necesitas ser perdonado.
-                    Call WriteLocaleMsg(tUser.ArrayIndex, 1193, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                Else
-                    UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 0
-                    UserList(tUser.ArrayIndex).Faccion.RecibioArmaduraCaos = 0
-                    'Msg1194= Has sido perdonado.
-                    Call WriteLocaleMsg(tUser.ArrayIndex, 1194, e_FontTypeNames.FONTTYPE_INFO)
-                    'Msg1195= Has perdonado a ¬1
-                    Call WriteLocaleMsg(UserIndex, 1195, e_FontTypeNames.FONTTYPE_INFO, UserList(tUser.ArrayIndex).name)
-                End If
-            End If
-        Else
-            Call WriteLocaleMsg(UserIndex, 528, e_FontTypeNames.FONTTYPE_INFO)
-        End If
-    End With
-    Exit Sub
-ErrHandler:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandlePerdonFaccion", Erl)
-End Sub
-
 ''
 ' Handles the "GuildOnlineMembers" message.
 '
@@ -5371,10 +5272,6 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildBan", Erl)
 End Sub
 
-''
-' Handles the "ChaosLegionKick" message.
-'
-' @param    UserIndex The index of the user sending the message.
 Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
@@ -5397,8 +5294,9 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                         Call m_EcharMiembroDeClan(UserIndex, UserList(tUser.ArrayIndex).Id)
                     End If
                 End If
-                    UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 2
+                    UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
                     UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Criminal
+                    UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
                     Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1992, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1992=¬1 expulsado de las fuerzas del caos y prohibida la reenlistada.
                     Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1991, .name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1991=¬1 te ha expulsado en forma definitiva de las fuerzas del caos.
             Else
@@ -5427,10 +5325,6 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChaosLegionKick", Erl)
 End Sub
 
-''
-' Handles the "RoyalArmyKick" message.
-'
-' @param    UserIndex The index of the user sending the message.
 Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
@@ -5454,8 +5348,9 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                         Call m_EcharMiembroDeClan(UserIndex, UserList(tUser.ArrayIndex).Id)
                     End If
                 End If
-                UserList(tUser.ArrayIndex).Faccion.Reenlistadas = 2
+                UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
                 UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Ciudadano
+                UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
                 Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1990, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1990=¬1 expulsado de las fuerzas reales y prohibida la reenlistada.
                 Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1989, .name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1989=¬1 te ha expulsado en forma definitiva de las fuerzas reales.
             Else
@@ -5710,27 +5605,6 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
     Exit Sub
 HandleParticipar_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleParticipar", Erl)
-End Sub
-
-''
-' Handle the "ResetFactions" message
-'
-' @param UserIndex The index of the user sending the message
-Public Sub HandleResetFactions(ByVal UserIndex As Integer)
-    On Error GoTo ErrHandler
-    With UserList(UserIndex)
-        Dim username As String
-        Dim tUser    As t_UserReference
-        username = reader.ReadString8()
-        If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
-            Call LogGM(.name, "/RAJAR " & username)
-            tUser = NameIndex(username)
-            If IsValidUserRef(tUser) Then Call ResetFacciones(tUser.ArrayIndex)
-        End If
-    End With
-    Exit Sub
-ErrHandler:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetFactions", Erl)
 End Sub
 
 ''
@@ -7350,7 +7224,6 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
         Dim Motivo    As String
         tipoMacro = reader.ReadInt8
         clicks = reader.ReadInt32
-        mensaje = "Control AntiCheat--> El usuario " & .name & "| está utilizando "
         Select Case tipoMacro
             Case tMacro.Coordenadas
                 Motivo = "macro de COORDENADAS"
