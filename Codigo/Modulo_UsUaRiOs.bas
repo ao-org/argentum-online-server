@@ -2599,8 +2599,10 @@ Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Sing
         velocidad = VelocidadNormal * modificadorItem * JineteLevelSpeed * modificadorHechizo * max(0, (1 + .Modifiers.MovementSpeed))
 UpdateSpeed:
         .Char.speeding = velocidad
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.charindex, .Char.speeding))
-        Call WriteVelocidadToggle(UserIndex)
+        If .flags.UserLogged Then
+            Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageSpeedingACT(.Char.charindex, .Char.speeding))
+            Call WriteVelocidadToggle(userindex)
+        End If
     End With
     Exit Function
 ActualizarVelocidadDeUsuario_Err:
