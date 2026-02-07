@@ -264,8 +264,6 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .Stats.ELO = RS!ELO
         .Stats.JineteLevel = RS!jinete_level
         .Counters.Pena = RS!counter_pena
-        .ChatGlobal = RS!chat_global
-        .ChatCombate = RS!chat_combate
         .Stats.Advertencias = RS!warnings
         .GuildIndex = SanitizeNullValue(RS!Guild_Index, 0)
         .LastGuildRejection = SanitizeNullValue(RS!guild_rejected_because, vbNullString)
@@ -497,7 +495,7 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
             Call LogDatabaseError("Error trying to save an user not logged in SaveCharacterDB")
             Exit Sub
         End If
-        ReDim Params(65)
+        ReDim Params(63)
         Dim i As Integer
         Params(post_increment(i)) = .name
         Params(post_increment(i)) = .Stats.ELV
@@ -556,8 +554,6 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
         Params(post_increment(i)) = .Faccion.MatadosIngreso
         Params(post_increment(i)) = .Faccion.Status
         Params(post_increment(i)) = .GuildIndex
-        Params(post_increment(i)) = .ChatCombate
-        Params(post_increment(i)) = .ChatGlobal
         Params(post_increment(i)) = .Stats.Advertencias
         Params(post_increment(i)) = .flags.ReturnPos.Map
         Params(post_increment(i)) = .flags.ReturnPos.x
@@ -1045,7 +1041,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Exit Sub
         End If
 
-        ReDim Params(65)
+        ReDim Params(63)
         Dim i As Integer
         i = 0
         Params(post_increment(i)) = .name
@@ -1105,8 +1101,6 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
         Params(post_increment(i)) = .Faccion.MatadosIngreso
         Params(post_increment(i)) = .Faccion.Status
         Params(post_increment(i)) = .GuildIndex
-        Params(post_increment(i)) = .ChatCombate
-        Params(post_increment(i)) = .ChatGlobal
         Params(post_increment(i)) = .Stats.Advertencias
         Params(post_increment(i)) = .flags.ReturnPos.Map
         Params(post_increment(i)) = .flags.ReturnPos.x
