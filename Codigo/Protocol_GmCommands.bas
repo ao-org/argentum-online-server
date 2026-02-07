@@ -1330,6 +1330,10 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
                 If Not IsFeatureEnabled("EnablePatreonAlias") Then
                     Call WriteConsoleMsg(UserIndex, "EnablePatreonAlias esta desactivado.", e_FontTypeNames.FONTTYPE_INFO)
                 End If
+                'Force update char to display the new alias
+                With UserList(userindex)
+                    Call WarpUserChar(userindex, .pos.Map, .pos.x, .pos.y, True)
+                End With
             Case Else
                 ' Msg546=Comando no permitido.
                 Call WriteLocaleMsg(UserIndex, 546, e_FontTypeNames.FONTTYPE_INFO)
