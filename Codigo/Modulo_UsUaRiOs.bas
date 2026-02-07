@@ -633,6 +633,7 @@ Dim tStr                        As String
                 Call WarpToLegalPos(UserIndex, Ciudades(.Hogar).Map, Ciudades(.Hogar).x, Ciudades(.Hogar).y, True)
             End If
         End If
+        .flags.UserLogged = True
         'Crea  el personaje del usuario
         Call MakeUserChar(True, .pos.Map, UserIndex, .pos.Map, .pos.x, .pos.y, 1)
         Call WriteUserCharIndexInServer(UserIndex)
