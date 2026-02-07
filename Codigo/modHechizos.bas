@@ -1125,7 +1125,7 @@ Function HandlePhysicalSkill(ByVal SourceIndex As Integer, _
                     If .invent.EquippedMunitionObjIndex = 0 Then
                         Exit Function
                     End If
-                    Damage = GetUserDamageWithItem(SourceIndex, .invent.EquippedWeaponObjIndex, .invent.EquippedMunitionObjIndex) / 2
+                    Damage = GetUserDamageWithItem(SourceIndex, .invent.EquippedWeaponObjIndex, .invent.EquippedMunitionObjIndex, TargetRef.RefType) / 2
                     objectIndex = .invent.EquippedWeaponObjIndex
                     Proyectile = ObjData(.invent.EquippedMunitionObjIndex).ProjectileType
                 End With
