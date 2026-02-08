@@ -1195,11 +1195,12 @@ Sub LoadOBJData()
                         .MaxItems = val(Leer.GetValue(ObjKey, "Peces"))
                     End If
                 Case e_OBJType.otRecallStones
-                    .TipoRuna = val(Leer.GetValue(ObjKey, "TipoRuna"))
+                    .TipoRuna = val(Leer.GetValue(ObjKey, "Runetype"))
                     .DesdeMap = val(Leer.GetValue(ObjKey, "DesdeMap"))
-                    .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
-                    .HastaX = val(Leer.GetValue(ObjKey, "X"))
-                    .HastaY = val(Leer.GetValue(ObjKey, "Y"))
+                    .HastaMap = val(Leer.GetValue(ObjKey, "HastaMap"))
+                    .HastaX = val(Leer.GetValue(ObjKey, "HastaX"))
+                    .HastaY = val(Leer.GetValue(ObjKey, "HastaY"))
+                    .Cooldown = val(Leer.GetValue(ObjKey, "Cooldown"))
                 Case e_OBJType.otTeleport
                     .Radio = val(Leer.GetValue(ObjKey, "Radio"))
                 Case e_OBJType.otChest

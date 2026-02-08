@@ -1561,8 +1561,8 @@ End Enum
 
 Public Enum e_RuneType
     ReturnHome = 1
-    Escape = 2
-    MesonSafePassage = 3
+    MesonSafePassage = 2
+    FastTravel = 3
 End Enum
 
 Public Enum e_UseOnceSubType

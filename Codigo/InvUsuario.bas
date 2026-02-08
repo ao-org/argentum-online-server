@@ -2713,14 +2713,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 If .Accion.AccionPendiente Then
                     Exit Sub
                 End If
-                Select Case ObjData(ObjIndex).TipoRuna
-                    Case e_RuneType.ReturnHome
-                        .Counters.TimerBarra = HomeTimer
-                    Case e_RuneType.Escape
-                        .Counters.TimerBarra = HomeTimer
-                    Case e_RuneType.MesonSafePassage
-                        .Counters.TimerBarra = 5
-                End Select
+                If obj.Cooldown > 32766 Then
+                    .Counters.TimerBarra = 32766
+                Else
+                    .Counters.TimerBarra = CInt(obj.Cooldown)
+                End If
                 If Not EsGM(UserIndex) Then
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, 400, False))
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 350, e_AccionBarra.Runa))
