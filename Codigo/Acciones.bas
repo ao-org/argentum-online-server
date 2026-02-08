@@ -97,8 +97,8 @@ PuedeUsarObjeto_Err:
     Call TraceError(Err.Number, Err.Description, "Acciones.PuedeUsarObjeto", Erl)
 End Function
 
-Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
-    On Error GoTo CompletarAccionFin_Err
+Public Sub EndProgrammedAction(ByVal UserIndex As Integer)
+    On Error GoTo EndProgrammedAction_Err
     Dim obj  As t_ObjData
     Dim Slot As Byte
     With UserList(UserIndex)
@@ -147,8 +147,8 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
         .Accion.AccionPendiente = False
     End With
     Exit Sub
-CompletarAccionFin_Err:
-    Call TraceError(Err.Number, Err.Description, "Acciones.CompletarAccionFin", Erl)
+EndProgrammedAction_Err:
+    Call TraceError(Err.Number, Err.Description, "Acciones.EndProgrammedAction", Erl)
 End Sub
 
 Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)

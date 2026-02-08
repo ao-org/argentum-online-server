@@ -1551,124 +1551,112 @@ Sub PasarSegundo()
                 If .Counters.TimerBarra > 0 Then
                     .Counters.TimerBarra = .Counters.TimerBarra - 1
                     If .Counters.TimerBarra = 0 Then
-                        Select Case .Accion.TipoAccion
-                            Case e_AccionBarra.Hogar
-                                Call HomeArrival(i)
-                            Case e_AccionBarra.Runa
-                                Call CompletarAccionFin(i)
-                        End Select
-                        .Accion.Particula = 0
-                        .Accion.TipoAccion = e_AccionBarra.CancelarAccion
-                        .Accion.HechizoPendiente = 0
-                        .Accion.RunaObj = 0
-                        .Accion.ObjSlot = 0
-                        .Accion.AccionPendiente = False
+                        Call EndProgrammedAction(i)
                     End If
-                End If
-                If .flags.UltimoMensaje > 0 Then
-                    .Counters.RepetirMensaje = .Counters.RepetirMensaje + 1
-                    If .Counters.RepetirMensaje >= 3 Then
-                        .flags.UltimoMensaje = 0
-                        .Counters.RepetirMensaje = 0
-                    End If
-                End If
-                If .Counters.CuentaRegresiva >= 0 Then
-                    If .Counters.CuentaRegresiva > 0 Then
-                        Call WriteConsoleMsg(i, ">>>  " & .Counters.CuentaRegresiva & "  <<<", e_FontTypeNames.FONTTYPE_New_Gris)
-                    Else
-                        'Msg1019= >>> YA! <<<
-                        Call WriteLocaleMsg(i, "1019", e_FontTypeNames.FONTTYPE_FIGHT)
-                        Call WriteStopped(i, False)
-                    End If
-                    .Counters.CuentaRegresiva = .Counters.CuentaRegresiva - 1
-                End If
-                If .flags.Portal > 1 Then
-                    .flags.Portal = .flags.Portal - 1
-                    If .flags.Portal = 1 Then
-                        Mapa = .flags.PortalM
-                        x = .flags.PortalX
-                        y = .flags.PortalY
-                        Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageParticleFXToFloor(x, y, e_GraphicEffects.TpVerde, 0))
-                        Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageLightFXToFloor(x, y, 0, 105))
-                        If MapData(Mapa, x, y).TileExit.Map > 0 Then
-                            MapData(Mapa, x, y).TileExit.Map = 0
-                            MapData(Mapa, x, y).TileExit.x = 0
-                            MapData(Mapa, x, y).TileExit.y = 0
+                    If .flags.UltimoMensaje > 0 Then
+                        .Counters.RepetirMensaje = .Counters.RepetirMensaje + 1
+                        If .Counters.RepetirMensaje >= 3 Then
+                            .flags.UltimoMensaje = 0
+                            .Counters.RepetirMensaje = 0
                         End If
-                        MapData(Mapa, x, y).Particula = 0
-                        MapData(Mapa, x, y).TimeParticula = 0
-                        MapData(Mapa, x, y).Particula = 0
-                        MapData(Mapa, x, y).TimeParticula = 0
-                        .flags.Portal = 0
-                        .flags.PortalM = 0
-                        .flags.PortalY = 0
-                        .flags.PortalX = 0
-                        .flags.PortalMDestino = 0
-                        .flags.PortalYDestino = 0
-                        .flags.PortalXDestino = 0
+                    End If
+                    If .Counters.CuentaRegresiva >= 0 Then
+                        If .Counters.CuentaRegresiva > 0 Then
+                            Call WriteConsoleMsg(i, ">>>  " & .Counters.CuentaRegresiva & "  <<<", e_FontTypeNames.FONTTYPE_New_Gris)
+                        Else
+                            'Msg1019= >>> YA! <<<
+                            Call WriteLocaleMsg(i, "1019", e_FontTypeNames.FONTTYPE_FIGHT)
+                            Call WriteStopped(i, False)
+                        End If
+                        .Counters.CuentaRegresiva = .Counters.CuentaRegresiva - 1
+                    End If
+                    If .flags.Portal > 1 Then
+                        .flags.Portal = .flags.Portal - 1
+                        If .flags.Portal = 1 Then
+                            Mapa = .flags.PortalM
+                            x = .flags.PortalX
+                            y = .flags.PortalY
+                            Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageParticleFXToFloor(x, y, e_GraphicEffects.TpVerde, 0))
+                            Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageLightFXToFloor(x, y, 0, 105))
+                            If MapData(Mapa, x, y).TileExit.Map > 0 Then
+                                MapData(Mapa, x, y).TileExit.Map = 0
+                                MapData(Mapa, x, y).TileExit.x = 0
+                                MapData(Mapa, x, y).TileExit.y = 0
+                            End If
+                            MapData(Mapa, x, y).Particula = 0
+                            MapData(Mapa, x, y).TimeParticula = 0
+                            MapData(Mapa, x, y).Particula = 0
+                            MapData(Mapa, x, y).TimeParticula = 0
+                            .flags.Portal = 0
+                            .flags.PortalM = 0
+                            .flags.PortalY = 0
+                            .flags.PortalX = 0
+                            .flags.PortalMDestino = 0
+                            .flags.PortalYDestino = 0
+                            .flags.PortalXDestino = 0
+                        End If
+                    End If
+                    If .Counters.EnCombate > 0 Then
+                        .Counters.EnCombate = .Counters.EnCombate - 1
+                    End If
+                    If .Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
+                        .Counters.TiempoDeInmunidadParalisisNoMagicas = .Counters.TiempoDeInmunidadParalisisNoMagicas - 1
+                    End If
+                    If .Counters.TiempoDeInmunidad > 0 Then
+                        .Counters.TiempoDeInmunidad = .Counters.TiempoDeInmunidad - 1
+                        If .Counters.TiempoDeInmunidad = 0 Then
+                            .flags.Inmunidad = 0
+                        End If
+                    End If
+                    If .flags.Subastando Then
+                        .Counters.TiempoParaSubastar = .Counters.TiempoParaSubastar - 1
+                        If .Counters.TiempoParaSubastar = 0 Then
+                            Call CancelarSubasta
+                        End If
+                    End If
+                    'Cerrar usuario
+                    If .Counters.Saliendo Then
+                        '  If .flags.Muerto = 1 Then .Counters.Salir = 0
+                        .Counters.Salir = .Counters.Salir - 1
+                        ' Call WriteConsoleMsg(i, "Se saldrá del juego en " & .Counters.Salir & " segundos...", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(i, "203", e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
+                        If .Counters.Salir <= 0 Then
+                            'Msg1020= Gracias por jugar Argentum 20.
+                            Call WriteLocaleMsg(i, "1020", e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteDisconnect(i)
+                            Call CloseSocket(i)
+                        End If
+                    End If
+                End If ' If UserLogged
+            End With
+        Next i
+        ' **********************************
+        ' **********  Invasiones  **********
+        ' **********************************
+        For i = 1 To UBound(Invasiones)
+            With Invasiones(i)
+                ' Si la invasión está activa
+                If .Activa Then
+                    .TimerSpawn = .TimerSpawn + 1
+                    ' Comprobamos si hay que spawnear NPCs
+                    If .TimerSpawn >= .IntervaloSpawn Then
+                        Call InvasionSpawnNPC(i)
+                        .TimerSpawn = 0
+                    End If
+                    ' ------------------------------------
+                    .TimerMostrarInfo = .TimerMostrarInfo + 1
+                    ' Comprobamos si hay que mostrar la info
+                    If .TimerMostrarInfo >= 5 Then
+                        Call EnviarInfoInvasion(i)
+                        .TimerMostrarInfo = 0
                     End If
                 End If
-                If .Counters.EnCombate > 0 Then
-                    .Counters.EnCombate = .Counters.EnCombate - 1
-                End If
-                If .Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
-                    .Counters.TiempoDeInmunidadParalisisNoMagicas = .Counters.TiempoDeInmunidadParalisisNoMagicas - 1
-                End If
-                If .Counters.TiempoDeInmunidad > 0 Then
-                    .Counters.TiempoDeInmunidad = .Counters.TiempoDeInmunidad - 1
-                    If .Counters.TiempoDeInmunidad = 0 Then
-                        .flags.Inmunidad = 0
-                    End If
-                End If
-                If .flags.Subastando Then
-                    .Counters.TiempoParaSubastar = .Counters.TiempoParaSubastar - 1
-                    If .Counters.TiempoParaSubastar = 0 Then
-                        Call CancelarSubasta
-                    End If
-                End If
-                'Cerrar usuario
-                If .Counters.Saliendo Then
-                    '  If .flags.Muerto = 1 Then .Counters.Salir = 0
-                    .Counters.Salir = .Counters.Salir - 1
-                    ' Call WriteConsoleMsg(i, "Se saldrá del juego en " & .Counters.Salir & " segundos...", e_FontTypeNames.FONTTYPE_INFO)
-                    Call WriteLocaleMsg(i, "203", e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
-                    If .Counters.Salir <= 0 Then
-                        'Msg1020= Gracias por jugar Argentum 20.
-                        Call WriteLocaleMsg(i, "1020", e_FontTypeNames.FONTTYPE_INFO)
-                        Call WriteDisconnect(i)
-                        Call CloseSocket(i)
-                    End If
-                End If
-            End If ' If UserLogged
-        End With
-    Next i
-    ' **********************************
-    ' **********  Invasiones  **********
-    ' **********************************
-    For i = 1 To UBound(Invasiones)
-        With Invasiones(i)
-            ' Si la invasión está activa
-            If .Activa Then
-                .TimerSpawn = .TimerSpawn + 1
-                ' Comprobamos si hay que spawnear NPCs
-                If .TimerSpawn >= .IntervaloSpawn Then
-                    Call InvasionSpawnNPC(i)
-                    .TimerSpawn = 0
-                End If
-                ' ------------------------------------
-                .TimerMostrarInfo = .TimerMostrarInfo + 1
-                ' Comprobamos si hay que mostrar la info
-                If .TimerMostrarInfo >= 5 Then
-                    Call EnviarInfoInvasion(i)
-                    .TimerMostrarInfo = 0
-                End If
-            End If
-        End With
-    Next
-    Exit Sub
+            End With
+        Next
+        Exit Sub
 ErrHandler:
-    Call TraceError(Err.Number, Err.Description, "General.PasarSegundo", Erl)
-End Sub
+        Call TraceError(Err.Number, Err.Description, "General.PasarSegundo", Erl)
+    End Sub
 
 Sub GuardarUsuarios()
     On Error GoTo GuardarUsuarios_Err

@@ -6349,7 +6349,7 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
         Accion = reader.ReadInt8()
         If .Accion.AccionPendiente = True Then
             If .Accion.TipoAccion = Accion Then
-                Call CompletarAccionFin(UserIndex)
+                Call EndProgrammedAction(UserIndex)
             Else
                 ' Msg749=Servidor » La acción que solicitas no se corresponde.
                 Call WriteLocaleMsg(UserIndex, 749, e_FontTypeNames.FONTTYPE_SERVER)
