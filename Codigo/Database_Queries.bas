@@ -58,6 +58,7 @@ Private Sub ConstruirQuery_CargarPersonaje()
     QueryBuilder.Append "account_id,"
     QueryBuilder.Append "ID,"
     QueryBuilder.Append "name,"
+    QueryBuilder.Append "alias,"
     QueryBuilder.Append "level,"
     QueryBuilder.Append "Exp,"
     QueryBuilder.Append "genre_id,"

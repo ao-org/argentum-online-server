@@ -182,6 +182,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 	"account_id"	integer NOT NULL,
 	"deleted"	integer NOT NULL DEFAULT '0',
 	"name"	varchar(30) NOT NULL,
+	"alias"	varchar(30) NOT NULL DEFAULT '',
 	"level"	integer NOT NULL,
 	"exp"	integer NOT NULL,
 	"genre_id"	integer NOT NULL,

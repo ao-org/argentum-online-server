@@ -2729,17 +2729,17 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
             If .Grupo.Lider.ArrayIndex = UserIndex Then
                 For i = 1 To UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros
                     If i = 1 Then
-                        Call Writer.WriteString8(UserList(.Grupo.Miembros(i).ArrayIndex).name & "(Líder)")
+                        Call Writer.WriteString8(GetUserDisplayName(.Grupo.Miembros(i).ArrayIndex) & "(Líder)")
                     Else
-                        Call Writer.WriteString8(UserList(.Grupo.Miembros(i).ArrayIndex).name)
+                        Call Writer.WriteString8(GetUserDisplayName(.Grupo.Miembros(i).ArrayIndex))
                     End If
                 Next i
             Else
                 For i = 1 To UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros
                     If i = 1 Then
-                        Call Writer.WriteString8(UserList(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name & "(Líder)")
+                        Call Writer.WriteString8(GetUserDisplayName(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex) & "(Líder)")
                     Else
-                        Call Writer.WriteString8(UserList(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name)
+                        Call Writer.WriteString8(GetUserDisplayName(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex))
                     End If
                 Next i
             End If
@@ -3762,7 +3762,7 @@ Public Function PrepareUpdateGroupInfo(ByVal UserIndex As Integer)
             Dim i As Integer
             Writer.WriteInt8 (.CantidadMiembros)
             For i = 1 To .CantidadMiembros
-                Writer.WriteString8 (UserList(.Miembros(i).ArrayIndex).name)
+                Writer.WriteString8 (GetUserDisplayName(.Miembros(i).ArrayIndex))
                 Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Char.charindex)
                 Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Char.head)
                 Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Stats.MinHp)
