@@ -119,19 +119,13 @@ Public Sub EndProgrammedAction(ByVal UserIndex As Integer)
                             Exit Sub
                         End If
                         .flags.ReturnPos = .pos
-                        Map = obj.HastaMap
-                        x = obj.HastaX
-                        y = obj.HastaY
-                        Call WarpUserChar(UserIndex, Map, x, y, True)
+                        Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
                         Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_FontTypeNames.FONTTYPE_WARNING)
                     Case e_RuneType.FastTravel
                         If .pos.Map <> obj.DesdeMap Then
                             Call WriteLocaleMsg(UserIndex, MSG_INVALID_FAST_TRAVEL_MAP_ORIGIN, e_FontTypeNames.FONTTYPE_WARNING)
                         End If
-                        Map = obj.HastaMap
-                        x = obj.HastaX
-                        y = obj.HastaY
-                        Call WarpUserChar(UserIndex, Map, x, y, True)
+                        Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
                         Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_FontTypeNames.FONTTYPE_WARNING)
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
                         Call UpdateUserInv(False, UserIndex, Slot)
