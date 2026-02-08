@@ -3,6 +3,7 @@ Option Explicit
 Private m_LastAutomatedActionAttempt As Long
 Public Const MIN_STA_REQUIRED        As Integer = 5
 Public Const CLOSE_DISTANCE_EXTRACTION = 1
+Public Const MEDIUM_DISTANCE_EXTRACTION = 3
 
 Public Sub RunAutomatedActions()
     On Error GoTo RunAutomatedActions_Err
@@ -28,6 +29,8 @@ Public Sub RunAutomatedActions()
                             Call MineMinerals(UserIndex)
                         Case e_Skill.Pescar
                             Call PerformFishing(UserIndex)
+                        Case e_Skill.Smelting
+                            Call SmeltMinerals(UserIndex)
                         Case Else
                             Debug.Assert False
                     End Select

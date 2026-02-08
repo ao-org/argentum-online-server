@@ -598,22 +598,16 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
             If UserList(sndIndex).flags.Muerto = 1 And MapInfo(UserList(sndIndex).pos.Map).Seguro = 0 Then
                 'Solamente mando el body si es de tipo revividor.
                 If .npcType = e_NPCType.Revividor Then
-                    body = IIf(.flags.NPCIdle, .Char.BodyIdle, .Char.body)
+                    body = .Char.body
                 Else
                     body = 0
                 End If
             Else
-                body = IIf(.flags.NPCIdle, .Char.BodyIdle, .Char.body)
+                body = .Char.body
             End If
-            If UserList(sndIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 90 Then
                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, _
                         .Char.CartAnim, 0, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, _
-                        .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Char.Ataque1)
-            Else
-                Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, _
-                        .Char.CartAnim, 0, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, 0, 0, 0, 0, Simbolo, _
-                        .flags.NPCIdle, , , .flags.team, , .Char.Ataque1)
-            End If
+                        .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Numero)
             If IsSet(.flags.StatusMask, e_StatusMask.eDontBlockTile) Then
                 Call SendData(ToIndex, sndIndex, PrepareUpdateCharValue(.Char.charindex, e_CharValue.eDontBlockTile, True))
             End If
@@ -635,7 +629,6 @@ MakeNPCChar_Err:
 
     Dim npcLowerBound As Long
     Dim npcUpperBound As Long
-
     On Error Resume Next
     npcLowerBound = LBound(NpcList)
     npcUpperBound = UBound(NpcList)
@@ -657,9 +650,6 @@ Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal body As Integer, ByVal head A
     On Error GoTo ChangeNPCChar_Err
     With NpcList(NpcIndex)
         If NpcIndex > 0 Then
-            If .flags.NPCIdle Then
-                body = .Char.BodyIdle
-            End If
             .Char.head = head
             .Char.Heading = Heading
             If .Char.charindex > 0 Then
@@ -1000,10 +990,9 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Body = Val(LeerNPCs.GetValue(SectionName, "Body"))
         .Head = Val(LeerNPCs.GetValue(SectionName, "Head"))
         .Heading = Val(LeerNPCs.GetValue(SectionName, "Heading"))
-        .BodyIdle = Val(LeerNPCs.GetValue(SectionName, "BodyIdle"))
-        .Ataque1 = Val(LeerNPCs.GetValue(SectionName, "Ataque1"))
         .CastAnimation = Val(LeerNPCs.GetValue(SectionName, "CastAnimation"))
         AnimacionesCount = Val(LeerNPCs.GetValue(SectionName, "Animaciones"))
+        
         .AnimacionesCount = AnimacionesCount
         If AnimacionesCount > 0 Then
             ReDim .Animaciones(1 To AnimacionesCount)
@@ -1280,12 +1269,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         .Char.body = Info.Body
         .Char.head = Info.Head
         .Char.Heading = Info.Heading
-        .Char.BodyIdle = Info.BodyIdle
-        .Char.Ataque1 = Info.Ataque1
         .Char.CastAnimation = Info.CastAnimation
-        If .Char.BodyIdle > 0 Then
-            .flags.NPCIdle = True
-        End If
         If Info.AnimacionesCount > 0 Then
             ReDim .Char.Animation(1 To Info.AnimacionesCount)
             For LoopC = 1 To Info.AnimacionesCount
@@ -1659,7 +1643,6 @@ End Sub
 Sub AnimacionIdle(ByVal NpcIndex As Integer, ByVal Show As Boolean)
     On Error GoTo Handler
     With NpcList(NpcIndex)
-        If .Char.BodyIdle = 0 Then Exit Sub
         If .flags.NPCIdle = Show Then Exit Sub
         .flags.NPCIdle = Show
         Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, .Char.Heading)

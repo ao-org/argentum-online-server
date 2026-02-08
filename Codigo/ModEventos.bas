@@ -220,7 +220,12 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi 
         Exit Sub
     End If
     Dim aviso As String
-    aviso = "Eventos> " & Quien & " inicio un nuevo evento: "
+    Dim displayName As String
+    displayName = GetUserDisplayName(tUser.ArrayIndex)
+    If LenB(displayName) = 0 Then
+        displayName = Quien
+    End If
+    aviso = "Eventos> " & displayName & " inicio un nuevo evento: "
     PublicidadEvento = "Evento en curso>"
     Select Case Tipo
         Case 1
