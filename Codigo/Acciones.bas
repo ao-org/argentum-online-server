@@ -108,43 +108,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                 Slot = .Accion.ObjSlot
                 Select Case obj.TipoRuna
                     Case e_RuneType.ReturnHome
-                        Dim DeDonde As t_CityWorldPos
-                        Dim Map     As Integer
-                        Dim x       As Byte
-                        Dim y       As Byte
-                        Select Case .Hogar
-                            Case e_Ciudad.cUllathorpe
-                                DeDonde = CityUllathorpe
-                            Case e_Ciudad.cNix
-                                DeDonde = CityNix
-                            Case e_Ciudad.cBanderbill
-                                DeDonde = CityBanderbill
-                            Case e_Ciudad.cLindos
-                                DeDonde = CityLindos
-                            Case e_Ciudad.cArghal
-                                DeDonde = CityArghal
-                            Case e_Ciudad.cForgat
-                                DeDonde = CityForgat
-                            Case e_Ciudad.cEldoria
-                                DeDonde = CityEldoria
-                            Case e_Ciudad.cArkhein
-                                DeDonde = CityArkhein
-                            Case e_Ciudad.cPenthar
-                                DeDonde = CityPenthar
-                            Case Else
-                                DeDonde = CityUllathorpe
-                        End Select
-                        Map = DeDonde.Map
-                        x = DeDonde.x
-                        y = DeDonde.y
-                        Call FindLegalPos(UserIndex, Map, x, y)
-                        Call WarpUserChar(UserIndex, Map, x, y, True)
-                        Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_RETURN_TO_HOME_CITY, e_FontTypeNames.FONTTYPE_WARNING)
-                        If .flags.Navegando = 1 Then
-                            Dim barca As t_ObjData
-                            barca = ObjData(.invent.EquippedShipObjIndex)
-                            Call DoNavega(UserIndex, barca, .invent.EquippedShipSlot)
-                        End If
+                        Call HomeArrival(UserIndex)
                     Case e_RuneType.MesonSafePassage
                         If .pos.Map = MAP_MESON_HOSTIGADO Or .pos.Map = MAP_MESON_HOSTIGADO_TRADING_ZONE Then
                             Call WriteLocaleMsg(UserIndex, MSG_NOT_USABLE_INSIDE_MESON, e_FontTypeNames.FONTTYPE_INFO)
