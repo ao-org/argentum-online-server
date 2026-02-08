@@ -118,12 +118,20 @@ Public Sub EndProgrammedAction(ByVal UserIndex As Integer)
                             Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
+                        If IsValidMapPosition(obj.HastaMap, obj.HastaX, obj.HastaY) Then
+                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
                         .flags.ReturnPos = .pos
                         Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
                         Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_FontTypeNames.FONTTYPE_WARNING)
                     Case e_RuneType.FastTravel
                         If .pos.Map <> obj.DesdeMap Then
                             Call WriteLocaleMsg(UserIndex, MSG_INVALID_FAST_TRAVEL_MAP_ORIGIN, e_FontTypeNames.FONTTYPE_WARNING)
+                        End If
+                        If IsValidMapPosition(obj.HastaMap, obj.HastaX, obj.HastaY) Then
+                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
                         End If
                         Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
                         Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_FontTypeNames.FONTTYPE_WARNING)
