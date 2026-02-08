@@ -299,7 +299,7 @@ InvalidIndex:
     IsValidMapIndex = False
 End Function
 
-Private Function IsValidMapPosition(ByVal mapIndex As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+Public Function IsValidMapPosition(ByVal mapIndex As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     If Not IsValidMapIndex(mapIndex) Then Exit Function
     If x < XMinMapSize Or x > XMaxMapSize Then Exit Function
     If y < YMinMapSize Or y > YMaxMapSize Then Exit Function
