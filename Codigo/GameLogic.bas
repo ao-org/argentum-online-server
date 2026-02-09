@@ -1764,6 +1764,9 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal targetUserIndex As I
         'if im am a gm and im clicking other person i have extra data
         If EsGM(SourceUserIndex) Then
             extraStrings = extraStrings & .clase & "-" & .raza & "-" & .Stats.ELV & "-" & .Stats.ELO & "-"
+            If .Counters.Trabajando > 0 Then
+                Call SetMask(Statuses, e_UsersInfoMask.Working)
+            End If
         Else
             extraStrings = extraStrings & "----"
         End If
