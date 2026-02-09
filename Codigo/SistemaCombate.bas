@@ -227,15 +227,18 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As In
     Arma = UserList(UserIndex).invent.EquippedWeaponObjIndex
     Dim RequiredSkill As e_Skill
     RequiredSkill = GetSkillRequiredForWeapon(Arma)
-    If RequiredSkill = Wrestling Then
-        PoderAtaque = PoderAtaqueWrestling(UserIndex)
-    ElseIf RequiredSkill = Armas Then
-        PoderAtaque = PoderAtaqueArma(UserIndex)
-    ElseIf RequiredSkill = Proyectiles Then
-        PoderAtaque = PoderAtaqueProyectil(UserIndex)
-    Else
-        PoderAtaque = PoderAtaqueWrestling(UserIndex)
-    End If
+    Select Case RequiredSkill
+        Case e_Skill.Wrestling
+            PoderAtaque = PoderAtaqueWrestling(UserIndex)
+        Case e_Skill.Armas
+            PoderAtaque = PoderAtaqueArma(UserIndex)
+        Case e_Skill.Proyectiles
+            PoderAtaque = PoderAtaqueProyectil(UserIndex)
+        Case e_Skill.Apuñalar
+            PoderAtaque = AttackPowerDaggers(UserIndex)
+        Case Else
+            PoderAtaque = PoderAtaqueWrestling(UserIndex)
+    End Select
     ProbExito = MaximoInt(10, MinimoInt(90, 50 + ((PoderAtaque - NpcList(NpcIndex).PoderEvasion) * 0.4)))
     UserImpactoNpc = (RandomNumber(1, 100) <= ProbExito)
     If UserImpactoNpc Then
