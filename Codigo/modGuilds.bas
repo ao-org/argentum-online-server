@@ -728,7 +728,7 @@ Public Function PersonajeEsLeader(ByVal CharId As Long) As Boolean
     End If
 End Function
 
-Public Sub a_RechazarAspiranteChar(ByRef Aspirante As String, ByVal guild As Integer, ByRef Detalles As String)
+Public Sub a_RechazarAspiranteChar(ByRef Aspirante As String, ByRef Detalles As String)
     On Error GoTo a_RechazarAspiranteChar_Err
     If InStrB(Aspirante, "\") <> 0 Then
         Aspirante = Replace(Aspirante, "\", "")

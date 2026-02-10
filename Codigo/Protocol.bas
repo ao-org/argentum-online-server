@@ -3661,7 +3661,7 @@ Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
                 Call WriteConsoleMsg(tUser.ArrayIndex, errorStr & " : " & Reason, e_FontTypeNames.FONTTYPE_GUILD)
             Else
                 'hay que grabar en el char su rechazo
-                Call modGuilds.a_RechazarAspiranteChar(username, .GuildIndex, Reason)
+                Call modGuilds.a_RechazarAspiranteChar(username, Reason)
             End If
         End If
     End With
