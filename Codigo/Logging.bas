@@ -225,14 +225,14 @@ Public Sub LogGM(name As String, Desc As String)
 ErrHandler:
 End Sub
 
-Public Sub LogPremios(GM As String, username As String, ByVal ObjIndex As Integer, ByVal Cantidad As Integer, Motivo As String)
-    On Error GoTo ErrHandler
-    Dim s As String
-    s = "Item: " & ObjData(ObjIndex).name & " (" & ObjIndex & ") Cantidad: " & Cantidad & vbNewLine & "Motivo: " & Motivo & vbNewLine & vbNewLine
-    Call LogThis(eType_Log.Premios, s, vbLogEventTypeInformation)
-    Exit Sub
-ErrHandler:
-End Sub
+
+
+
+
+
+
+
+
 
 Public Sub LogDatabaseError(Desc As String)
     On Error GoTo ErrHandler
