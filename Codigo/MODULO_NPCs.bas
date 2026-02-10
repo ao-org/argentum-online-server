@@ -2157,7 +2157,7 @@ Public Function GetMagicHealingBonus(ByRef Npc As t_Npc) As Single
     GetMagicHealingBonus = max(1 + Npc.Modifiers.MagicHealingBonus, 0)
 End Function
 
-Public Function CanSeeUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
+Public Function CanSeeUser(ByVal UserIndex As Integer)
     CanSeeUser = UserMod.IsVisible(UserList(UserIndex))
 End Function
 

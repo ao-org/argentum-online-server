@@ -854,7 +854,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         Case ClientPacketID.eResetChar
             Call HandleResetChar(UserIndex)
         Case ClientPacketID.eResetearPersonaje
-            Call HandleResetearPersonaje(UserIndex)
+
         Case ClientPacketID.eDeleteItem
             Call HandleDeleteItem(UserIndex)
         Case ClientPacketID.eFinalizarPescaEspecial
@@ -891,7 +891,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Case ClientPacketID.eLoginAccount
                 Call HandleLoginAccount(ConnectionID)
             Case ClientPacketID.eDeleteCharacter
-                Call HandleDeleteCharacter(ConnectionID)
+
             #End If
         Case Else
             Call TraceError(&HDEAD0001, "Invalid or unhandled message ID: " & PacketId, "Protocol.HandleIncomingData", Erl)
@@ -990,11 +990,11 @@ LoginAccount_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginAccount", Erl)
 End Sub
 
-Private Sub HandleDeleteCharacter(ByVal ConnectionID As Long)
-    On Error GoTo DeleteCharacter_Err:
-DeleteCharacter_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteCharacter", Erl)
-End Sub
+
+
+
+
+
 
 Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     On Error GoTo ErrHandler
@@ -7552,13 +7552,13 @@ HandleResetChar_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetChar", Erl)
 End Sub
 
-Private Sub HandleResetearPersonaje(ByVal UserIndex As Integer)
-    On Error GoTo HandleResetearPersonaje_Err:
-    ' Call resetPj(UserIndex)
-    Exit Sub
-HandleResetearPersonaje_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetearPersonaje", Erl)
-End Sub
+
+
+
+
+
+
+
 
 Private Sub HandleRomperCania(ByVal UserIndex As Integer)
     On Error GoTo HandleRomperCania_Err:
