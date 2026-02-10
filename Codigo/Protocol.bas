@@ -853,7 +853,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandlePetLeaveAll(UserIndex)
         Case ClientPacketID.eResetChar
             Call HandleResetChar(UserIndex)
-        Case ClientPacketID.eResetearPersonaje
+
 
         Case ClientPacketID.eDeleteItem
             Call HandleDeleteItem(UserIndex)
@@ -890,7 +890,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                 Call HandleCreateAccount(ConnectionID)
             Case ClientPacketID.eLoginAccount
                 Call HandleLoginAccount(ConnectionID)
-            Case ClientPacketID.eDeleteCharacter
+
 
             #End If
         Case Else
