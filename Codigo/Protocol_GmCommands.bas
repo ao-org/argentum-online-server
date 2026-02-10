@@ -866,12 +866,12 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim username As String
         Dim Reason   As String
-        Dim jailTime As Integer
+        Dim jailTime As Long
         Dim count    As Byte
         Dim tUser    As t_UserReference
         username = reader.ReadString8()
         Reason = reader.ReadString8()
-        jailTime = reader.ReadInt16()
+        jailTime = reader.ReadInt32()
         If InStr(1, username, "+") Then
             username = Replace(username, "+", " ")
         End If
