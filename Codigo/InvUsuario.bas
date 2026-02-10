@@ -466,7 +466,7 @@ EraseObj_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.EraseObj", Erl)
 End Sub
 
-Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, Optional ByVal Limpiar As Boolean = True)
+Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo MakeObj_Err
     Dim Color As Long
     Dim Rango As Byte
@@ -660,7 +660,7 @@ PickObj_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.PickObj", Erl)
 End Sub
 
-Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal bSkin As Boolean = False, Optional ByVal eSkinType As e_OBJType)
+Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal bSkin As Boolean = False)
 
 Dim obj                         As t_ObjData
 
@@ -1102,7 +1102,7 @@ EquiparBarco_Err:
 End Sub
 
 'Equipa un item del inventario
-Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal UserIsLoggingIn As Boolean = False, Optional ByVal bSkin As Boolean = False, Optional ByVal eSkinType As e_OBJType)
+Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal UserIsLoggingIn As Boolean = False, Optional ByVal bSkin As Boolean = False)
 
 Dim bEquipSkin                  As Boolean
 Dim obj                         As t_ObjData
@@ -1572,21 +1572,21 @@ Dim Ropaje                      As Integer
             Case e_OBJType.otSkinsArmours, e_OBJType.otSkinsSpells, e_OBJType.otSkinsWeapons, e_OBJType.otSkinsShields, e_OBJType.otSkinsHelmets, e_OBJType.otSkinsBoats, e_OBJType.otSkinsWings
                 'Si esta equipado lo quita
                 If .Invent_Skins.Object(Slot).Equipped And Not UserIsLoggingIn Then
-                    'Sonido
-                    'Feat para implementar más adelante.
-                    'tmpSoundItem = ObjData(.Invent_Skins.Object(Slot).ObjIndex).Snd2
-                    'If tmpSoundItem > 0 Then
-                    '    Call SendData(SendTarget.ToPCAreaWithSound, UserIndex, PrepareMessagePlayWave(tmpSoundItem, .pos.x, .pos.y))
-                    'End If
-                    Call Desequipar(UserIndex, Slot, True, ObjData(ObjIndex).OBJType)
+
+
+
+
+
+
+                    Call Desequipar(UserIndex, Slot, True)
                     Exit Sub   'Revisar este EXIT SUB
                 End If
 
-                'Feat para implementar más adelante.
-                'tmpSoundItem = ObjData(.Invent_Skins.Object(Slot).ObjIndex).Snd1
-                'If tmpSoundItem > 0 Then
-                '    Call SendData(SendTarget.ToPCAreaWithSound, UserIndex, PrepareMessagePlayWave(tmpSoundItem, .pos.x, .pos.y))
-                'End If
+
+
+
+
+
                 If CanEquipSkin(UserIndex, Slot, True) Then
                     Call SkinEquip(UserIndex, Slot, ObjIndex)
                 End If
