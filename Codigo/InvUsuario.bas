@@ -126,7 +126,7 @@ manejador:
     LogError ("Error en ClasePuedeUsarItem")
 End Function
 
-Function RazaPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional Slot As Byte) As Boolean
+Function RazaPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Boolean
     On Error GoTo RazaPuedeUsarItem_Err
     Dim Objeto As t_ObjData, i As Long
     Objeto = ObjData(ObjIndex)
@@ -1741,7 +1741,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     If Not HaveThisSkin(UserIndex, .invent.Object(Slot).ObjIndex) Then
                         If AddSkin(UserIndex, .invent.Object(Slot).ObjIndex) Then
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
-                            Call UpdateSingleItemInv(UserIndex, Slot, False)
+                            Call UpdateSingleItemInv(UserIndex, Slot)
                         End If
                     Else
                         Call WriteLocaleMsg(UserIndex, 2101, e_FontTypeNames.FONTTYPE_INFO) 'Msg2101=Ya tienes este skin.
@@ -2509,7 +2509,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     'Msg77=¡¡Estás muerto!!.
                     Exit Sub
                 End If
-                If ClasePuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex, Slot) And RazaPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex, Slot) Then
+                If ClasePuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex, Slot) And RazaPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) Then
                     'If .Stats.MaxMAN > 0 Then
                     If .Stats.MinHam > 0 And .Stats.MinAGU > 0 Then
                         Call AgregarHechizo(UserIndex, Slot)
@@ -2868,7 +2868,7 @@ ItemSeCae_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.ItemSeCae", Erl)
 End Function
 
-Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
+Public Function PirataCaeItem(ByVal UserIndex As Integer)
     On Error GoTo PirataCaeItem_Err
     With UserList(UserIndex)
         If .clase = e_Class.Pirat And .Stats.ELV >= 37 And .flags.Navegando = 1 Then
@@ -2906,7 +2906,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
         For i = 1 To .CurrentInventorySlots
             ItemIndex = .invent.Object(i).ObjIndex
             If ItemIndex > 0 Then
-                If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex, i) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
+                If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
                     NuevaPos.x = 0
                     NuevaPos.y = 0
                     MiObj.amount = DropAmmount(.invent, i)
@@ -4048,7 +4048,7 @@ CanEquipSkin_Error:
 
 End Function
 
-Sub UpdateSingleItemInv(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal UpdateFullInfo As Boolean = True)
+Sub UpdateSingleItemInv(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
 Dim NullObj                     As t_UserOBJ
     

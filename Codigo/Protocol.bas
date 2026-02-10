@@ -2874,7 +2874,7 @@ Dim eSkinType                   As e_OBJType
             'Auto Fix errores de dateos en ï¿½tems.
             If .invent.Object(itemSlot).amount = 0 Then
                 .invent.Object(itemSlot).ObjIndex = 0
-                Call UpdateSingleItemInv(UserIndex, itemSlot, False)
+                Call UpdateSingleItemInv(UserIndex, itemSlot)
                 Exit Sub
             End If
             Call EquiparInvItem(UserIndex, itemSlot)
