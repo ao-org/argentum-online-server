@@ -3019,6 +3019,7 @@ Public Type t_User
     decrypted_session_token As String
     encrypted_session_token As String
     encrypted_session_token_db_id As Long
+    LastLogin As String  ' ISO-8601 UTC, e.g. 2026-02-11T11:32:10Z
     MacroIterations(1 To MAX_PACKET_COUNTERS) As Long
     PacketTimers(1 To MAX_PACKET_COUNTERS) As Long
     PacketCounters(1 To MAX_PACKET_COUNTERS) As Long

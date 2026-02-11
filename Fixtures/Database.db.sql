@@ -1,3 +1,4 @@
+-- Date: 11/02/2026
 BEGIN TRANSACTION;
 CREATE TABLE IF NOT EXISTS "account" (
 	"id"	integer NOT NULL,
@@ -206,7 +207,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 	"return_map"	integer NOT NULL DEFAULT '0',
 	"return_x"	integer NOT NULL DEFAULT '0',
 	"return_y"	integer NOT NULL DEFAULT '0',
-	"last_logout"	integer NOT NULL DEFAULT 0,
+	"last_login"	text NOT NULL DEFAULT '',
 	"is_locked_in_mao"	boolean NOT NULL DEFAULT TRUE,
 	"eth_wallet_id"	TEXT,
 	UNIQUE("id","account_id","deleted"),

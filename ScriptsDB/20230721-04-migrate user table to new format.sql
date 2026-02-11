@@ -1,3 +1,4 @@
+-- Date: 11/02/2026
 INSERT INTO "user_new" (
     "id",
     "account_id",
@@ -67,7 +68,7 @@ INSERT INTO "user_new" (
     "return_map",
     "return_x",
     "return_y",
-    "last_logout",
+    "last_login",
     "is_locked_in_mao",
     "is_logged",
     "puntos_pesca",
@@ -145,7 +146,7 @@ SELECT
     "return_map",
     "return_x",
     "return_y",
-    "last_logout",
+    '' AS "last_login",
     "is_locked_in_mao",
     "is_logged",
     "puntos_pesca",

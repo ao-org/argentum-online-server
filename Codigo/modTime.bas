@@ -80,6 +80,25 @@ GetHoraActual_Err:
     Call TraceError(Err.Number, Err.Description, "ModLadder.GetHoraActual", Erl)
 End Sub
 
+Public Function GetUtcIso8601() As String
+    On Error GoTo GetUtcIso8601_Err
+
+    Dim st As t_SYSTEMTIME
+    GetSystemTime st   ' UTC
+
+    GetUtcIso8601 = _
+        Right$("0000" & CStr(st.wYear), 4) & "-" & _
+        Right$("00" & CStr(st.wMonth), 2) & "-" & _
+        Right$("00" & CStr(st.wDay), 2) & "T" & _
+        Right$("00" & CStr(st.wHour), 2) & ":" & _
+        Right$("00" & CStr(st.wMinute), 2) & ":" & _
+        Right$("00" & CStr(st.wSecond), 2) & "Z"
+    Exit Function
+
+GetUtcIso8601_Err:
+    Call TraceError(Err.Number, Err.Description, "modTime.GetUtcIso8601", Erl)
+End Function
+
 Public Function SumarTiempo(segundos As Integer) As String
     On Error GoTo SumarTiempo_Err
     Dim a As Variant, b As Variant

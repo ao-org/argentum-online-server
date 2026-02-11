@@ -1,3 +1,4 @@
+-- Date: 11/02/2026
 CREATE TABLE IF NOT EXISTS "user_new" (
 	"id"	integer NOT NULL,
 	"account_id"	integer NOT NULL,
@@ -69,7 +70,7 @@ CREATE TABLE IF NOT EXISTS "user_new" (
 	"return_map"	integer NOT NULL DEFAULT '0',
 	"return_x"	integer NOT NULL DEFAULT '0',
 	"return_y"	integer NOT NULL DEFAULT '0',
-	"last_logout"	integer NOT NULL DEFAULT 0,
+	"last_login"	text NOT NULL DEFAULT '',
 	"is_locked_in_mao"	boolean DEFAULT 0,
 	"is_logged"	boolean NOT NULL DEFAULT 0,
 	"puntos_pesca"	INTEGER DEFAULT 0,

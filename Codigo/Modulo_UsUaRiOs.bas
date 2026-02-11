@@ -649,6 +649,7 @@ Dim tStr                        As String
         'Actualiza el Num de usuarios
         NumUsers = NumUsers + 1
         .flags.UserLogged = True
+        .LastLogin = GetUtcIso8601()
         Call ResetUserAutomatedActions(UserIndex)
         Call Execute("Update user set is_logged = true where id = ?", UserList(UserIndex).Id)
         .Counters.LastSave = GetTickCountRaw()

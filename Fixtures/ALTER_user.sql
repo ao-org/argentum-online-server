@@ -1,3 +1,4 @@
+-- Date: 11/02/2026
 CREATE TABLE IF NOT EXISTS "user_new" (
 	"id"	integer NOT NULL,
 	"account_id"	integer NOT NULL,
@@ -97,7 +98,7 @@ CREATE TABLE IF NOT EXISTS "user_new" (
 	"return_map"	integer NOT NULL DEFAULT '0',
 	"return_x"	integer NOT NULL DEFAULT '0',
 	"return_y"	integer NOT NULL DEFAULT '0',
-	"last_logout"	integer NOT NULL DEFAULT 0,
+	"last_login"	text NOT NULL DEFAULT '',
 	"is_locked_in_mao"	boolean DEFAULT 0,
 	"is_logged"	boolean NOT NULL DEFAULT 0,
 	"eth_wallet_id"	TEXT,
@@ -203,7 +204,7 @@ INSERT INTO user_new (account_id,
 	return_map,
 	return_x,
 	return_y,
-	last_logout,
+	last_login,
 	eth_wallet_id) 
 SELECT account_id,
 	deleted,
@@ -302,7 +303,7 @@ SELECT account_id,
 	return_map,
 	return_x,
 	return_y,
-	last_logout,
+		'' as last_login,
 	eth_wallet_id FROM user;
 
 DROP TABLE user;

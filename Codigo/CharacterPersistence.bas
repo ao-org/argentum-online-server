@@ -503,7 +503,7 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
             Call LogDatabaseError("Error trying to save an user not logged in SaveCharacterDB")
             Exit Sub
         End If
-        ReDim Params(65)
+        ReDim Params(66)
         Dim i As Integer
         Params(post_increment(i)) = .name
         Params(post_increment(i)) = .Stats.ELV
@@ -570,6 +570,7 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
         Params(post_increment(i)) = .flags.ReturnPos.y
         Params(post_increment(i)) = .Stats.JineteLevel
         Params(post_increment(i)) = .Char.BackpackAnim
+        Params(post_increment(i)) = .LastLogin
         ' WHERE block
         Params(post_increment(i)) = .Id
         QueryTimer = GetTickCountRaw()
@@ -1051,7 +1052,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Exit Sub
         End If
 
-        ReDim Params(65)
+        ReDim Params(66)
         Dim i As Integer
         i = 0
         Params(post_increment(i)) = .name
@@ -1119,6 +1120,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
         Params(post_increment(i)) = .flags.ReturnPos.y
         Params(post_increment(i)) = .Stats.JineteLevel
         Params(post_increment(i)) = .Char.BackpackAnim
+        Params(post_increment(i)) = .LastLogin
         Params(post_increment(i)) = .Id
 
         Call Execute(QUERY_UPDATE_MAINPJ, Params)

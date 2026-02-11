@@ -710,7 +710,7 @@ Sub Main()
     Call LoadBans
     frmCargando.Label1(2).Caption = "Cargando Quests"
     Call LoadQuests
-    Call ResetLastLogoutAndIsLogged
+    Call ResetIsLogged
     Call LoadPhoenixModule
     'Comentado porque hay worldsave en ese mapa!
     Dim LoopC As Integer
