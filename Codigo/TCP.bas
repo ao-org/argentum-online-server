@@ -1377,7 +1377,6 @@ Sub CloseUser(ByVal UserIndex As Integer)
         errordesc = "ERROR Update Map Users map: " & Map
         'Update Map Users
         MapInfo(Map).NumUsers = MapInfo(Map).NumUsers - 1
-        Call Execute("update user set is_logged = 0 where id = ?;", UserList(UserIndex).Id)
         If MapInfo(Map).NumUsers < 0 Then MapInfo(Map).NumUsers = 0
         ' Si el usuario habia dejado un msg en la gm's queue lo borramos
         'If Ayuda.Existe(.Name) Then Call Ayuda.Quitar(.Name)
