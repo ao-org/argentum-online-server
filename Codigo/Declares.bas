@@ -201,7 +201,7 @@ End Enum
 
 Public lstUsuariosDonadores()        As String
 Public Administradores               As clsIniManager
-Public Const TIEMPO_MINIMO_CENTINELA As Long = 300
+
 
 Public Enum e_SoundIndex
     MUERTE_HOMBRE = 11
@@ -266,7 +266,7 @@ Public Const iGaleraArmada = 1271
 Public Const iGaleraCaos = 1272
 Public Const iGaleonArmada = 1264
 Public Const iGaleonCaos = 1263
-Public Const iRopaBuceoMuerto = 772
+
 Public MapasInterdimensionales() As Integer
 Public MapasEventos()            As Integer
 Public MapasNoDrop()             As Integer
@@ -1087,7 +1087,7 @@ Public Const NONEXPERT_SKILL_CUTOFF As Integer = 10
 Public Const GOLD_SLOT              As Byte = 200
 Public Const VelocidadNormal        As Single = 1
 Public Const VelocidadMuerto        As Single = 1.4
-Public Const TIEMPO_CARCEL_PIQUETE  As Long = 5
+
 
 Public Enum e_ElementalTags
     Normal = 0
@@ -1216,12 +1216,12 @@ Public Enum e_Trigger6
 End Enum
 
 'TODO : Reemplazar por un enum
-Public Const Bosque = "BOSQUE"
+
 Public Const Nieve = "NIEVE"
-Public Const Desierto = "DESIERTO"
+
 Public Const Ciudad = "CIUDAD"
-Public Const Campo = "CAMPO"
-Public Const Dungeon = "DUNGEON"
+
+
 
 ' <<<<<< Targets >>>>>>
 Public Enum e_TargetType
@@ -1252,8 +1252,8 @@ End Enum
 
 Public Const MAX_MENSAJES_FORO   As Byte = 35
 Public Const MAXUSERHECHIZOS     As Byte = 40
-Public Const FX_TELEPORT_INDEX   As Integer = 1
-Public Const HiddenSpellTextTime As Integer = 500
+
+
 
 ' La utilidad de esto es casi nula, sólo se revisa si fue a la cabeza...
 Public Enum e_PartesCuerpo
@@ -1308,8 +1308,8 @@ Public Const FOGATA                           As Integer = 63 'OK
 Public Const ORO_MINA                         As Integer = 194 'OK
 Public Const PLATA_MINA                       As Integer = 193 'OK
 Public Const HIERRO_MINA                      As Integer = 192 'OK
-Public Const ObjArboles                       As Integer = 4 'OK
-Public Const FishSubType                      As Integer = 1
+
+
 Public Const PinoWood                         As Integer = 3788 'OK
 Public Const BLODIUM_MINA                     As Integer = 3787 'OK
 Public Const MAP_CAPTURE_THE_FLAG_1           As Integer = 275
@@ -1365,7 +1365,7 @@ Public Const MAXSKILLPOINTS As Byte = 100
 ''
 ' Cantidad maxima de mascotas
 Public Const MAXMASCOTAS    As Byte = 3
-Public Const MAXUSERTRAP    As Byte = 3
+
 
 ''
 'Direccion
@@ -1437,41 +1437,41 @@ Public Enum e_Atributos
     Carisma = 5
 End Enum
 
-Public Const AdicionalHPGuerrero As Byte = 2 'HP adicionales cuando sube de nivel
-Public Const AdicionalHPCazador  As Byte = 1 'HP adicionales cuando sube de nivel
+
+
 Public Const AumentoSTDef        As Byte = 15
-Public Const AumentoSTLadron     As Byte = AumentoSTDef + 3
-Public Const AumentoSTMago       As Byte = AumentoSTDef - 1
-Public Const AumentoStBandido    As Byte = AumentoSTDef + 3
+
+
+
 'Tamaño del mapa
 Public Const XMaxMapSize         As Byte = 100
 Public Const XMinMapSize         As Byte = 1
 Public Const YMaxMapSize         As Byte = 100
 Public Const YMinMapSize         As Byte = 1
-'Tamaño del tileset
-Public Const TileSizeX           As Byte = 32
-Public Const TileSizeY           As Byte = 32
+
+
+
 'Tamaño en Tiles de la pantalla de visualizacion
 Public Const XWindow             As Byte = 23
 Public Const YWindow             As Byte = 18
 'Sonidos
-Public Const SND_SWING           As Byte = 2
+
 Public Const SND_TALAR           As Byte = 13
-Public Const SND_TIJERAS         As Byte = 211
+
 Public Const SND_PESCAR          As Byte = 14
-Public Const SND_MINERO          As Byte = 15
+
 Public Const SND_WARP            As Byte = 3
 Public Const SND_PUERTA          As Integer = 5
 Public Const SND_PUERTA_DUCTO    As Integer = 380
 Public Const SND_NIVEL           As Integer = 554
-Public Const SND_USERMUERTE      As Byte = 11
+
 Public Const SND_IMPACTO         As Byte = 10
 Public Const SND_IMPACTO_APU     As Integer = 2187
 Public Const SND_IMPACTO_CRITICO As Integer = 2186
 Public Const SND_IMPACTO2        As Byte = 12
-Public Const SND_DOPA            As Byte = 77
-Public Const SND_LEÑADOR         As Byte = 13
-Public Const SND_FOGATA              As Byte = 116
+
+
+
 Public Const SND_SACARARMA           As Byte = 25
 Public Const SND_ESCUDO              As Byte = 37
 Public Const MARTILLOHERRERO         As Byte = 41
@@ -1491,8 +1491,8 @@ Public Const MAX_SKINSINVENTORY_SLOTS As Byte = 66
 Public Const MAX_SKINSSPELLS_SLOTS    As Integer = 350
 ' Cantidad de "slots" en el inventario básico
 Public Const MAX_USERINVENTORY_SLOTS As Byte = 24
-' Cantidad de "slots" en el inventario por fila
-Public Const SLOTS_PER_ROW_INVENTORY As Byte = 6
+
+
 ''
 ' Constante para indicar que se esta usando ORO
 Public Const FLAGORO                 As Integer = 200
@@ -1637,9 +1637,9 @@ Public Const STAT_MAXELV As Byte = 47
 Public Const STAT_MAXHP  As Integer = 32000
 Public Const STAT_MAXMP  As Integer = 32000
 Public Const STAT_MAXSTA As Integer = 32000
-Public Const STAT_MAXMAN As Integer = 32000
+
 Public Const STAT_MAXHIT As Integer = 999
-Public Const STAT_MAXDEF As Byte = 99
+
 
 ' **************************************************************
 ' **************************************************************
@@ -3699,7 +3699,7 @@ Public Type tPaso
     wav() As Integer
 End Type
 
-Public Const NUM_PASOS     As Byte = 6
+
 Public pasos()             As tPaso
 Public DBError             As String
 Public EnEventoFaccionario As Boolean

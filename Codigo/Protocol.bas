@@ -33,7 +33,7 @@ Option Explicit
 Public Const SEPARATOR As String * 1 = vbNullChar
 Private Const SPELL_UNASSISTED_DARDO = 1
 Private Const SPELL_UNASSISTED_RUGIDO_SALVAJE = 5
-Private Const SPELL_UNASSISTED_RUGIDO_ARCANO = 348
+
 Private Const SPELL_UNASSISTED_FULGOR_IGNEO = 52
 Private Const SPELL_UNASSISTED_LATIDO_IGNEO = 349
 Private Const SPELL_UNASSISTED_ECO_IGNEO = 61
@@ -853,8 +853,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandlePetLeaveAll(UserIndex)
         Case ClientPacketID.eResetChar
             Call HandleResetChar(UserIndex)
-        Case ClientPacketID.eResetearPersonaje
-            Call HandleResetearPersonaje(UserIndex)
+
+
         Case ClientPacketID.eDeleteItem
             Call HandleDeleteItem(UserIndex)
         Case ClientPacketID.eFinalizarPescaEspecial
@@ -890,8 +890,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                 Call HandleCreateAccount(ConnectionID)
             Case ClientPacketID.eLoginAccount
                 Call HandleLoginAccount(ConnectionID)
-            Case ClientPacketID.eDeleteCharacter
-                Call HandleDeleteCharacter(ConnectionID)
+
+
             #End If
         Case Else
             Call TraceError(&HDEAD0001, "Invalid or unhandled message ID: " & PacketId, "Protocol.HandleIncomingData", Erl)
@@ -990,11 +990,11 @@ LoginAccount_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginAccount", Erl)
 End Sub
 
-Private Sub HandleDeleteCharacter(ByVal ConnectionID As Long)
-    On Error GoTo DeleteCharacter_Err:
-DeleteCharacter_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteCharacter", Erl)
-End Sub
+
+
+
+
+
 
 Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     On Error GoTo ErrHandler
@@ -2874,7 +2874,7 @@ Dim eSkinType                   As e_OBJType
             'Auto Fix errores de dateos en ï¿½tems.
             If .invent.Object(itemSlot).amount = 0 Then
                 .invent.Object(itemSlot).ObjIndex = 0
-                Call UpdateSingleItemInv(UserIndex, itemSlot, False)
+                Call UpdateSingleItemInv(UserIndex, itemSlot)
                 Exit Sub
             End If
             Call EquiparInvItem(UserIndex, itemSlot)
@@ -3661,7 +3661,7 @@ Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
                 Call WriteConsoleMsg(tUser.ArrayIndex, errorStr & " : " & Reason, e_FontTypeNames.FONTTYPE_GUILD)
             Else
                 'hay que grabar en el char su rechazo
-                Call modGuilds.a_RechazarAspiranteChar(username, .GuildIndex, Reason)
+                Call modGuilds.a_RechazarAspiranteChar(username, Reason)
             End If
         End If
     End With
@@ -7555,13 +7555,13 @@ HandleResetChar_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetChar", Erl)
 End Sub
 
-Private Sub HandleResetearPersonaje(ByVal UserIndex As Integer)
-    On Error GoTo HandleResetearPersonaje_Err:
-    ' Call resetPj(UserIndex)
-    Exit Sub
-HandleResetearPersonaje_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetearPersonaje", Erl)
-End Sub
+
+
+
+
+
+
+
 
 Private Sub HandleRomperCania(ByVal UserIndex As Integer)
     On Error GoTo HandleRomperCania_Err:

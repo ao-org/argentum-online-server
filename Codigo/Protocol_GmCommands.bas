@@ -3392,7 +3392,7 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
             End If
             ' Lo registro en los logs.
             Call LogGM(GetUserRealName(UserIndex), "/DAR " & username & " - Item: " & ObjData(ObjIndex).name & "(" & ObjIndex & ") Cantidad : " & Cantidad)
-            Call LogPremios(.name, username, ObjIndex, Cantidad, Motivo)
+
         Else
             ' Msg551=Servidor » Comando deshabilitado para tu cargo, debes pedir a un Admin que lo de.
             Call WriteLocaleMsg(UserIndex, 551, e_FontTypeNames.FONTTYPE_INFO)
@@ -3605,8 +3605,8 @@ Public Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
         Dim UserNameOEmail As String
         UserNameOEmail = reader.ReadString8()
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
-            If DesbanearCuenta(UserIndex, UserNameOEmail) Then
-                Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1703, .name & "¬" & UserNameOEmail, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1703=Servidor » ¬1 ha desbaneado la cuenta de ¬2.
+            If DesbanearCuenta(UserNameOEmail) Then
+                Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1703, .Name & "¬" & UserNameOEmail, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1703=Servidor » ¬1 ha desbaneado la cuenta de ¬2.
             Else
                 ' Msg556=No se ha podido desbanear la cuenta.
                 Call WriteLocaleMsg(UserIndex, 556, e_FontTypeNames.FONTTYPE_INFO)

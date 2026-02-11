@@ -48,9 +48,9 @@ IniciarBanco_Err:
     Call TraceError(Err.Number, Err.Description, "modBanco.IniciarBanco", Erl)
 End Sub
 
-Sub SendBanObj(UserIndex As Integer, Slot As Byte, Object As t_UserOBJ)
+Sub SendBanObj(UserIndex As Integer, Slot As Byte, obj As t_UserOBJ)
     On Error GoTo SendBanObj_Err
-    UserList(UserIndex).BancoInvent.Object(Slot) = Object
+    UserList(UserIndex).BancoInvent.Object(Slot) = obj
     Call WriteChangeBankSlot(UserIndex, Slot)
     Exit Sub
 SendBanObj_Err:

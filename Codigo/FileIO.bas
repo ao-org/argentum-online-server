@@ -2334,7 +2334,7 @@ End Sub
 Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
     On Error GoTo SaveUser_Err
     If Logout Then
-        Call UserDisconnected(UserList(UserIndex).pos.Map, UserIndex)
+        Call UserDisconnected(UserIndex)
     End If
     Call SaveCharacterDB(UserIndex)
     If Logout Then
