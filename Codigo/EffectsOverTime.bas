@@ -28,7 +28,7 @@ Attribute VB_Name = "EffectsOverTime"
 Option Explicit
 Private LastUpdateTime        As Long
 Private UniqueIdCounter       As Long
-Const ACTIVE_EFFECTS_MIN_SIZE As Integer = 500
+
 Private ActiveEffects         As t_EffectOverTimeList
 Const UnequipEffectId = 23
 Const INITIAL_POOL_SIZE = 200

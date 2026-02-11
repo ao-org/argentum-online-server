@@ -33,7 +33,7 @@ Option Explicit
 Public Const SEPARATOR As String * 1 = vbNullChar
 Private Const SPELL_UNASSISTED_DARDO = 1
 Private Const SPELL_UNASSISTED_RUGIDO_SALVAJE = 5
-Private Const SPELL_UNASSISTED_RUGIDO_ARCANO = 348
+
 Private Const SPELL_UNASSISTED_FULGOR_IGNEO = 52
 Private Const SPELL_UNASSISTED_LATIDO_IGNEO = 349
 Private Const SPELL_UNASSISTED_ECO_IGNEO = 61
@@ -2874,7 +2874,7 @@ Dim eSkinType                   As e_OBJType
             'Auto Fix errores de dateos en ï¿½tems.
             If .invent.Object(itemSlot).amount = 0 Then
                 .invent.Object(itemSlot).ObjIndex = 0
-                Call UpdateSingleItemInv(UserIndex, itemSlot, False)
+                Call UpdateSingleItemInv(UserIndex, itemSlot)
                 Exit Sub
             End If
             Call EquiparInvItem(UserIndex, itemSlot)

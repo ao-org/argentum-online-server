@@ -165,11 +165,11 @@ Public Sub IBaseEffectOverTime_TargetWillAttack(ByVal TargetUserId As Integer, B
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-    Call RestoreDamage(TargetUserId)
+    Call RestoreDamage
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetFailedAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-    Call RestoreDamage(TargetUserId)
+    Call RestoreDamage
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
@@ -205,7 +205,7 @@ Private Sub ApplyReduction(ByVal TargetUserId As Integer)
     End If
 End Sub
 
-Private Sub RestoreDamage(ByVal TargetUserId As Integer)
+Private Sub RestoreDamage()
     If ReductionActive And DotInfo.TargetRef.RefType = eUser Then
         Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.MagicDamageBonus, -MagicDamageModifier)
         Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.PhysicalDamageBonus, -PhysicalDamageModfier)

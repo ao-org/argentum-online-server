@@ -52,9 +52,9 @@ Private Function IsFreeSpawnTile(ByVal M As Integer, ByVal x As Long, ByVal y As
     ' Keep same legality criteria as old code (agua/tierra)
     Dim ok As Boolean
     If esAgua Then
-        ok = LegalPos(M, x, y, True, True, False, False, False)
+        ok = LegalPos(m, x, y, True, True, False, False)
     Else
-        ok = LegalPos(M, x, y, False, True, False, False, False)
+        ok = LegalPos(m, x, y, False, True, False, False)
     End If
     If Not ok Then Exit Function
 

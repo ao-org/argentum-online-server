@@ -126,7 +126,7 @@ manejador:
     LogError ("Error en ClasePuedeUsarItem")
 End Function
 
-Function RazaPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional Slot As Byte) As Boolean
+Function RazaPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Boolean
     On Error GoTo RazaPuedeUsarItem_Err
     Dim Objeto As t_ObjData, i As Long
     Objeto = ObjData(ObjIndex)
@@ -466,7 +466,7 @@ EraseObj_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.EraseObj", Erl)
 End Sub
 
-Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, Optional ByVal Limpiar As Boolean = True)
+Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo MakeObj_Err
     Dim Color As Long
     Dim Rango As Byte
@@ -660,7 +660,7 @@ PickObj_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.PickObj", Erl)
 End Sub
 
-Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal bSkin As Boolean = False, Optional ByVal eSkinType As e_OBJType)
+Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal bSkin As Boolean = False)
 
 Dim obj                         As t_ObjData
 
@@ -1102,7 +1102,7 @@ EquiparBarco_Err:
 End Sub
 
 'Equipa un item del inventario
-Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal UserIsLoggingIn As Boolean = False, Optional ByVal bSkin As Boolean = False, Optional ByVal eSkinType As e_OBJType)
+Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal UserIsLoggingIn As Boolean = False, Optional ByVal bSkin As Boolean = False)
 
 Dim bEquipSkin                  As Boolean
 Dim obj                         As t_ObjData
@@ -1572,21 +1572,21 @@ Dim Ropaje                      As Integer
             Case e_OBJType.otSkinsArmours, e_OBJType.otSkinsSpells, e_OBJType.otSkinsWeapons, e_OBJType.otSkinsShields, e_OBJType.otSkinsHelmets, e_OBJType.otSkinsBoats, e_OBJType.otSkinsWings
                 'Si esta equipado lo quita
                 If .Invent_Skins.Object(Slot).Equipped And Not UserIsLoggingIn Then
-                    'Sonido
-                    'Feat para implementar más adelante.
-                    'tmpSoundItem = ObjData(.Invent_Skins.Object(Slot).ObjIndex).Snd2
-                    'If tmpSoundItem > 0 Then
-                    '    Call SendData(SendTarget.ToPCAreaWithSound, UserIndex, PrepareMessagePlayWave(tmpSoundItem, .pos.x, .pos.y))
-                    'End If
-                    Call Desequipar(UserIndex, Slot, True, ObjData(ObjIndex).OBJType)
+
+
+
+
+
+
+                    Call Desequipar(UserIndex, Slot, True)
                     Exit Sub   'Revisar este EXIT SUB
                 End If
 
-                'Feat para implementar más adelante.
-                'tmpSoundItem = ObjData(.Invent_Skins.Object(Slot).ObjIndex).Snd1
-                'If tmpSoundItem > 0 Then
-                '    Call SendData(SendTarget.ToPCAreaWithSound, UserIndex, PrepareMessagePlayWave(tmpSoundItem, .pos.x, .pos.y))
-                'End If
+
+
+
+
+
                 If CanEquipSkin(UserIndex, Slot, True) Then
                     Call SkinEquip(UserIndex, Slot, ObjIndex)
                 End If
@@ -1741,7 +1741,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     If Not HaveThisSkin(UserIndex, .invent.Object(Slot).ObjIndex) Then
                         If AddSkin(UserIndex, .invent.Object(Slot).ObjIndex) Then
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
-                            Call UpdateSingleItemInv(UserIndex, Slot, False)
+                            Call UpdateSingleItemInv(UserIndex, Slot)
                         End If
                     Else
                         Call WriteLocaleMsg(UserIndex, 2101, e_FontTypeNames.FONTTYPE_INFO) 'Msg2101=Ya tienes este skin.
@@ -2509,7 +2509,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     'Msg77=¡¡Estás muerto!!.
                     Exit Sub
                 End If
-                If ClasePuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex, Slot) And RazaPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex, Slot) Then
+                If ClasePuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex, Slot) And RazaPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) Then
                     'If .Stats.MaxMAN > 0 Then
                     If .Stats.MinHam > 0 And .Stats.MinAGU > 0 Then
                         Call AgregarHechizo(UserIndex, Slot)
@@ -2868,7 +2868,7 @@ ItemSeCae_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.ItemSeCae", Erl)
 End Function
 
-Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
+Public Function PirataCaeItem(ByVal UserIndex As Integer)
     On Error GoTo PirataCaeItem_Err
     With UserList(UserIndex)
         If .clase = e_Class.Pirat And .Stats.ELV >= 37 And .flags.Navegando = 1 Then
@@ -2906,7 +2906,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
         For i = 1 To .CurrentInventorySlots
             ItemIndex = .invent.Object(i).ObjIndex
             If ItemIndex > 0 Then
-                If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex, i) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
+                If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
                     NuevaPos.x = 0
                     NuevaPos.y = 0
                     MiObj.amount = DropAmmount(.invent, i)
@@ -4048,7 +4048,7 @@ CanEquipSkin_Error:
 
 End Function
 
-Sub UpdateSingleItemInv(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal UpdateFullInfo As Boolean = True)
+Sub UpdateSingleItemInv(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
 Dim NullObj                     As t_UserOBJ
     
