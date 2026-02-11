@@ -7230,20 +7230,20 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
         UserName = GetUserDisplayName(UserIndex)
         Select Case tipoMacro
             Case tMacro.Coordenadas
-                Motivo = "macro de COORDENADAS"
+                Motivo = "macro de COORDENADAS."
             Case tMacro.dobleclick
                 Motivo = "macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & ")"
             Case tMacro.inasistidoPosFija
                 Dim spellID As Integer
                 spellID = .Stats.UserHechizos(.flags.Hechizo)
                 If Not IsUnassistedSpellAllowed(spellID) Then
-                    Motivo = "Usa macro de INASISTIDO"
+                    Motivo = "macro INASISTIDO."
                 End If
             Case tMacro.borrarCartel
-                Motivo = "Usa macro de CARTELEO"
+                Motivo = "macro de CARTELEO."
         End Select
         If Motivo <> "" Then
-            Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg("El usuario " & UserName & " " & Motivo & ".", e_FontTypeNames.FONTTYPE_INFO))
+            Call SendData(sendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg("Control de macro---> El usuario " & username & "| Revisar --> " & Motivo & ".", e_FontTypeNames.FONTTYPE_INFO))
         End If
     End With
 End Sub
