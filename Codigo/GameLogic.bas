@@ -745,7 +745,6 @@ Function LegalPos(ByVal Map As Integer, _
                   ByVal y As Integer, _
                   Optional ByVal PuedeAgua As Boolean = False, _
                   Optional ByVal PuedeTierra As Boolean = True, _
-                  Optional ByVal Montado As Boolean = False, _
                   Optional ByVal PuedeTraslado As Boolean = True, _
                   Optional ByVal PuedeBloqueoParcial As Boolean = True) As Boolean
     '***************************************************
@@ -787,7 +786,6 @@ Function LegalPosDestrabar(ByVal Map As Integer, _
                            ByVal y As Integer, _
                            Optional ByVal PuedeAgua As Boolean = False, _
                            Optional ByVal PuedeTierra As Boolean = True, _
-                           Optional ByVal Montado As Boolean = False, _
                            Optional ByVal PuedeTraslado As Boolean = True, _
                            Optional ByVal PuedeBloqueoParcial As Boolean = True) As Boolean
     On Error GoTo LegalPosDestrabar_Err
@@ -823,7 +821,6 @@ Function LegalWalk(ByVal Map As Integer, _
                    ByVal Heading As e_Heading, _
                    Optional ByVal PuedeAgua As Boolean = False, _
                    Optional ByVal PuedeTierra As Boolean = True, _
-                   Optional ByVal Montado As Boolean = False, _
                    Optional ByVal PuedeTraslado As Boolean = True, _
                    Optional ByVal WalkerIndex As Integer) As Boolean
     On Error GoTo LegalWalk_Err
