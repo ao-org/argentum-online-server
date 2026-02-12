@@ -7290,6 +7290,24 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
         End If
         If .flags.Traveling = 0 Then
             If .pos.Map <> Ciudades(.Hogar).Map Then
+                
+                ' Costo en oro
+                Dim homeCostGLD As Long
+                
+                If .Stats.ELV <= 24 Then
+                    homeCostGLD = (.Stats.ELV * 15) + (CLng(.Stats.ELV ^ 1.5))
+                Else
+                    homeCostGLD = .Stats.ELV ^ 2
+                End If
+                
+                If .Stats.GLD < homeCostGLD Then
+                    Call WriteLocaleMsg(UserIndex, 2163, e_FontTypeNames.FONTTYPE_INFO, homeCostGLD)
+                    Exit Sub
+                End If
+                
+                .Stats.GLD = .Stats.GLD - homeCostGLD
+                Call WriteUpdateGold(UserIndex)
+                
                 Call goHome(UserIndex)
             Else
                 'Msg1276= Ya te encuentras en tu hogar.
