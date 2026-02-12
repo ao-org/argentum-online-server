@@ -295,10 +295,10 @@ NpcImpacto_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcImpacto", Erl)
 End Function
 
-Private Function GetUserDamage(ByVal UserIndex As Integer) As Long
+Private Function GetUserDamage(ByVal UserIndex As Integer, ByVal TargetType As e_ReferenceType) As Long
     On Error GoTo GetUserDamge_Err
     With UserList(UserIndex)
-        GetUserDamage = GetUserDamageWithItem(UserIndex, .invent.EquippedWeaponObjIndex, .invent.EquippedMunitionObjIndex) + UserMod.GetLinearDamageBonus(UserIndex)
+        GetUserDamage = GetUserDamageWithItem(UserIndex, .invent.EquippedWeaponObjIndex, .invent.EquippedMunitionObjIndex, TargetType) + UserMod.GetLinearDamageBonus(UserIndex)
     End With
     Exit Function
 GetUserDamge_Err:
@@ -315,9 +315,9 @@ Public Function GetClassAttackModifier(ByRef ObjData As t_ObjData, ByVal Class A
     End If
 End Function
 
-Public Function GetUserDamageWithItem(ByVal UserIndex As Integer, ByVal WeaponObjIndex As Integer, ByVal AmunitionObjIndex As Integer) As Long
+Public Function GetUserDamageWithItem(ByVal UserIndex As Integer, ByVal WeaponObjIndex As Integer, ByVal AmunitionObjIndex As Integer, ByVal TargetType As e_ReferenceType) As Long
     On Error GoTo GetUserDamageWithItem_Err
-    Dim UserDamage As Long, WeaponDamage As Long, MaxWeaponDamage As Long, ClassModifier As Single
+    Dim UserDamage As Long, WeaponDamage As Long, MaxWeaponDamage As Long, ClassModifier As Single, MinHit As Integer, MaxHit As Integer
     With UserList(UserIndex)
         ' Daño base del usuario
         UserDamage = RandomNumber(.Stats.MinHIT, .Stats.MaxHit)
@@ -326,10 +326,10 @@ Public Function GetUserDamageWithItem(ByVal UserIndex As Integer, ByVal WeaponOb
             Dim Arma As t_ObjData
             Arma = ObjData(WeaponObjIndex)
             ClassModifier = GetClassAttackModifier(Arma, .clase)
-            ' Calculamos el daño del arma
-            WeaponDamage = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-            ' Daño máximo del arma
-            MaxWeaponDamage = Arma.MaxHit
+            'Daño del arma
+            Call GetHitRangeValues(Arma, TargetType, MinHit, MaxHit)
+            WeaponDamage = RandomNumber(MinHit, MaxHit)
+            MaxWeaponDamage = MaxHit
             ' Si lanza proyectiles
             If Arma.Proyectil > 0 Then
                 ' Si requiere munición
@@ -337,8 +337,9 @@ Public Function GetUserDamageWithItem(ByVal UserIndex As Integer, ByVal WeaponOb
                     Dim Municion As t_ObjData
                     Municion = ObjData(AmunitionObjIndex)
                     ' Agregamos el daño de la munición al daño del arma
-                    WeaponDamage = WeaponDamage + RandomNumber(Municion.MinHIT, Municion.MaxHit)
-                    MaxWeaponDamage = Arma.MaxHit + Municion.MaxHit
+                    Call GetHitRangeValues(Municion, TargetType, MinHit, MaxHit)
+                    WeaponDamage = WeaponDamage + RandomNumber(MinHit, MaxHit)
+                    MaxWeaponDamage = MaxWeaponDamage + MaxHit
                 End If
             End If
             ' Daño con puños
@@ -374,7 +375,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
             Call LogGM(.name, " Mato un Dragon Rojo ")
         Else
             ' Daño normal o elemental
-            DamageBase = GetUserDamage(UserIndex)
+            DamageBase = GetUserDamage(UserIndex, eNpc)
             ' NPC de pruebas
             If NpcList(NpcIndex).npcType = DummyTarget Then
                 Call DummyTargetAttacked(NpcIndex)
@@ -1104,7 +1105,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
     With UserList(VictimaIndex)
         Dim Damage As Long, BaseDamage As Long, BonusDamage As Long, Defensa As Long, Color As Long, DamageStr As String, Lugar As e_PartesCuerpo
         ' Daño normal
-        BaseDamage = GetUserDamage(AtacanteIndex)
+        BaseDamage = GetUserDamage(AtacanteIndex, eUser)
         ' Color por defecto rojo
         Color = vbRed
         ' Elegimos al azar una parte del cuerpo
@@ -2393,3 +2394,29 @@ Private Function GetWeaponExtraChance(ByVal UserIndex As Integer) As Single
         GetWeaponExtraChance = ObjData(.invent.EquippedWeaponObjIndex).ExtraCritAndStabChance
     End With
 End Function
+Public Sub GetHitRangeValues(ByRef Obj As t_ObjData, ByVal TargetType As e_ReferenceType, ByRef MinHit As Integer, ByRef MaxHit As Integer)
+    On Error GoTo GetHitRangeValues_Err
+    If TargetType = eNpc And (Obj.MinHitToNPC > 0 Or Obj.MaxHitToNPC > 0) Then
+        ' Min
+        If Obj.MinHitToNPC > 0 Then
+            MinHit = Obj.MinHitToNPC
+        Else
+            MinHit = Obj.MinHit
+        End If
+
+        ' Max
+        If Obj.MaxHitToNPC > 0 Then
+            MaxHit = Obj.MaxHitToNPC
+        Else
+            MaxHit = Obj.MaxHit
+        End If
+    Else
+        MinHit = Obj.MinHit
+        MaxHit = Obj.MaxHit
+    End If
+
+    If MaxHit < MinHit Then MaxHit = MinHit
+    Exit Sub
+GetHitRangeValues_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetHitRangeValues", Erl)
+End Sub
