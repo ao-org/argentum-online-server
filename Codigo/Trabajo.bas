@@ -105,25 +105,49 @@ DoPermanecerOculto_Err:
 End Sub
 
 Public Sub DoOcultarse(ByVal UserIndex As Integer)
-    'Pablo (ToxicWaste): No olvidar agregar IntervaloOculto=500 al Server.ini.
-    'Modifique la fórmula y ahora anda bien.
+    'No olvidar agregar IntervaloOculto=500 al Server.ini.
     On Error GoTo ErrHandler
+
     Dim Suerte As Double
     Dim res    As Integer
     Dim Skill  As Integer
+    Dim dt     As Double
+
     With UserList(UserIndex)
+
+        ' --- Basic guards (with visibility) ---
         If .flags.Navegando = 1 And .clase <> e_Class.Pirat Then
             Call WriteLocaleMsg(UserIndex, 56, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        If GlobalFrameTime - .Counters.LastAttackTime < HideAfterHitTime Then
+
+        ' --- Wrap-safe elapsed time since last attack ---
+        dt = TicksElapsed(.Counters.LastAttackTime, GlobalFrameTime)
+
+        If dt < HideAfterHitTime Then
+            LogInfoServidor "[Hide] Blocked by recent hit | U=" & UserIndex & _
+                            " dt=" & dt & _
+                            " Required=" & HideAfterHitTime & _
+                            " Now=" & GlobalFrameTime & _
+                            " LastAttack=" & .Counters.LastAttackTime
             Exit Sub
         End If
+
+        ' --- Config sanity check (helps catch IntervaloOculto missing/0) ---
+        If IntervaloOculto <= 0 Then
+            LogInfoServidor "[Hide] WARNING IntervaloOculto<=0 | U=" & UserIndex & " IntervaloOculto=" & IntervaloOculto
+            ' Do not force-change config here; just surface it clearly.
+        End If
+
+        ' --- Compute chance ---
         Skill = .Stats.UserSkills(e_Skill.Ocultarse)
         Suerte = (((0.000002 * Skill - 0.0002) * Skill + 0.0064) * Skill + 0.1124) * 100
         res = RandomNumber(1, 100)
+
         If res <= Suerte Then
             .flags.Oculto = 1
+
+            ' Duration curve (based on (100 - skill)) then scaled by IntervaloOculto
             Suerte = (-0.000001 * (100 - Skill) ^ 3)
             Suerte = Suerte + (0.00009229 * (100 - Skill) ^ 2)
             Suerte = Suerte + (-0.0088 * (100 - Skill))
@@ -137,23 +161,30 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
                 Case Else
                     .Counters.TiempoOculto = Int(Suerte / 3)
             End Select
+
+
             If .flags.Navegando = 1 Then
                 If .clase = e_Class.Pirat Then
                     .Char.body = iFragataFantasmal
                     .flags.Oculto = 1
                     .Counters.TiempoOculto = IntervaloOculto
-                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
+
+                    Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, _
+                                        NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
                     'Msg1024= ¡Te has camuflado como barco fantasma!
                     Call WriteLocaleMsg(UserIndex, 1024, e_FontTypeNames.FONTTYPE_INFO)
                     Call RefreshCharStatus(UserIndex)
                 End If
             Else
                 UserList(UserIndex).Counters.timeFx = 3
-                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, _
+                              PrepareMessageSetInvisible(.Char.charindex, True, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
                 'Msg55=¡Te has escondido entre las sombras!
                 Call WriteLocaleMsg(UserIndex, 55, e_FontTypeNames.FONTTYPE_INFO)
             End If
+
             Call SubirSkill(UserIndex, Ocultarse)
+
         Else
             If Not .flags.UltimoMensaje = MSG_HIDE_FAILED Then
                 'Msg57=¡No has logrado esconderte!
@@ -161,11 +192,15 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
                 .flags.UltimoMensaje = MSG_HIDE_FAILED
             End If
         End If
+
         .Counters.Ocultando = .Counters.Ocultando + 1
+
     End With
+
     Exit Sub
+
 ErrHandler:
-    Call LogError("Error en Sub DoOcultarse")
+    Call LogInfoServidor("[Hide] ERROR in DoOcultarse | U=" & UserIndex & " Err=" & Err.Number & " Desc=" & Err.Description)
 End Sub
 
 Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal Slot As Integer)
@@ -1522,11 +1557,11 @@ Private Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Inte
                 Call TirarItemAlPiso(UserList(LadronIndex).pos, MiObj)
             End If
             If UserList(LadronIndex).clase = e_Class.Thief Then
-                Call WriteLocaleMsg(LadronIndex, "1460", e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, MiObj.amount & "¬" & ObjData(MiObj.ObjIndex).name)  ' Msg1460=Has robado ¬1 ¬2
-                Call WriteLocaleMsg(VictimaIndex, "1531", e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, UserList(LadronIndex).name & "¬" & MiObj.amount & "¬" & ObjData( _
+                Call WriteLocaleMsg(LadronIndex, "1460", e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, MiObj.Amount & "¬" & ObjData(MiObj.ObjIndex).name)  ' Msg1460=Has robado ¬1 ¬2
+                Call WriteLocaleMsg(VictimaIndex, "1531", e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, UserList(LadronIndex).name & "¬" & MiObj.Amount & "¬" & ObjData( _
                         MiObj.ObjIndex).name) 'Msg1531=¬1 te ha robado ¬2 ¬3.
             Else
-                Call WriteLocaleMsg(LadronIndex, "1461", e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, MiObj.amount & "¬" & ObjData(MiObj.ObjIndex).name)  ' Msg1461=Has hurtado ¬1 ¬2
+                Call WriteLocaleMsg(LadronIndex, "1461", e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, MiObj.Amount & "¬" & ObjData(MiObj.ObjIndex).name)  ' Msg1461=Has hurtado ¬1 ¬2
             End If
         Else
             'Msg1040= No has logrado robar ningun objeto.
