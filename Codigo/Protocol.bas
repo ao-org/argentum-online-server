@@ -1010,85 +1010,94 @@ End Sub
 
 #End If
 #If PYMMO = 1 Then
-
-
 Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
-        On Error GoTo ErrHandler
+    On Error GoTo ErrHandler
 
-        Dim user_name    As String
-        Dim CuentaEmail As String
-        Dim Version     As String
-        Dim md5         As String
-        Dim encrypted_session_token As String
-        Dim encrypted_username As String
-        
-        encrypted_session_token = reader.ReadString8
-        encrypted_username = reader.ReadString8
-        Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
-        md5 = reader.ReadString8()
+    Dim encrypted_session_token As String
+    Dim char_id As Long
+    Dim md5 As String
+    Dim Version As String
+    Dim CuentaEmail As String
+    Dim UserIndex As Integer
 
-        If Len(encrypted_session_token) <> 88 Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092)) ', "Cliente inválido, por favor realice una actualización."))
-            Call KickConnection(ConnectionID)
-            Exit Sub
-        End If
-                
-        
-        Dim encrypted_session_token_byte() As Byte
-        Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_session_token, encrypted_session_token_byte)
-        
-        Dim decrypted_session_token As String
-        decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
-                
-        If Not IsBase64(decrypted_session_token) Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092)) ', "Cliente inválido, por favor realice una actualización"))
-            Call KickConnection(ConnectionID)
-            Exit Sub
-        End If
-        
-        ' Para recibir el ID del user
-        Dim RS As ADODB.Recordset
-        Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
-                
-        If RS Is Nothing Or RS.RecordCount = 0 Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2093)) ', "Sesión inválida, conéctese nuevamente."))
-            Call KickConnection(ConnectionID)
-            Exit Sub
-        End If
-        
-        CuentaEmail = CStr(RS!username)
-                    
-        If RS!encrypted_token <> encrypted_session_token Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092)) ', "Cliente inválido, por favor realice una actualización."))
-            Call KickConnection(ConnectionID)
-            Exit Sub
-        End If
-        Dim UserIndex As Integer
-        UserIndex = MapConnectionToUser(ConnectionID)
-        If UserIndex < 1 Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094)) ', "No hay slot disponibles para el usuario."))
-            Call KickConnection(ConnectionID)
-            Exit Sub
-        End If
-        
-        UserList(UserIndex).encrypted_session_token_db_id = RS!Id
-        UserList(UserIndex).encrypted_session_token = encrypted_session_token
-        UserList(UserIndex).decrypted_session_token = decrypted_session_token
-        UserList(UserIndex).public_key = mid$(decrypted_session_token, 1, 16)
-        
-        user_name = AO20CryptoSysWrapper.DECRYPT(cnvHexStrFromString(UserList(UserIndex).public_key), encrypted_username)
-         
-        If Not EntrarCuenta(UserIndex, CuentaEmail, md5) Then
-            Call CloseSocket(UserIndex)
-            Exit Sub
-        End If
-        Call ConnectUser(UserIndex, user_name, False)
-        Exit Sub
+    encrypted_session_token = reader.ReadString8
+    char_id = reader.ReadInt32
     
-ErrHandler:
-        Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
+    If char_id <= 0 Or char_id > 2000000000 Then
+        LogInfoServidor ("HandleLoginExistingChar: invalid char_id " & char_id)
+        Call KickConnection(ConnectionID)
+        Exit Sub
+    End If
 
+    Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
+    md5 = reader.ReadString8()
+
+    If Len(encrypted_session_token) <> 88 Or char_id <= 0 Then
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092))
+        Call KickConnection(ConnectionID)
+        Exit Sub
+    End If
+
+    Dim encrypted_session_token_byte() As Byte
+    Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_session_token, encrypted_session_token_byte)
+
+    Dim decrypted_session_token As String
+    decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
+
+    If Not IsBase64(decrypted_session_token) Then
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092))
+        Call KickConnection(ConnectionID)
+        Exit Sub
+    End If
+
+    Dim RS As ADODB.Recordset
+    Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
+
+    If RS Is Nothing Or RS.RecordCount = 0 Then
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2093))
+        Call KickConnection(ConnectionID)
+        Exit Sub
+    End If
+
+    CuentaEmail = CStr(RS!username)
+
+    If CStr(RS!encrypted_token) <> encrypted_session_token Then
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092))
+        Call KickConnection(ConnectionID)
+        Exit Sub
+    End If
+
+    UserIndex = MapConnectionToUser(ConnectionID)
+    If UserIndex < 1 Then
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094))
+        Call KickConnection(ConnectionID)
+        Exit Sub
+    End If
+
+    With UserList(UserIndex)
+        .encrypted_session_token_db_id = RS!id
+        .encrypted_session_token = encrypted_session_token
+        .decrypted_session_token = decrypted_session_token
+        .public_key = mid$(decrypted_session_token, 1, 16)
+    End With
+
+    If Not EntrarCuenta(UserIndex, CuentaEmail, md5) Then
+        Call LogInfoServidor("HandleLoginExistingChar failed for " & CuentaEmail)
+        Call CloseSocket(UserIndex)
+        Exit Sub
+    End If
+
+    ' Store selected char id on the user struct
+    UserList(UserIndex).id = char_id
+
+    ' Fast/clean path:
+    Call ConnectUserByID(UserIndex, char_id, False)
+    Exit Sub
+
+ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
 End Sub
+
 
 Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
     On Error GoTo ErrHandler
@@ -7739,7 +7748,7 @@ Dim Slot As Byte
             End If
             
             If .Invent_Skins.Object(Slot).Equipped = 0 Then
-                Call LogShopTransactions("PJ ID: " & .Id & " Nick: " & GetUserRealName(UserIndex) & " -> Borró el Skin: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).name & " Tipo: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).ObjType & " Valor: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Valor)
+                Call LogShopTransactions("PJ ID: " & .id & " Nick: " & GetUserRealName(UserIndex) & " -> Borró el Skin: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).name & " Tipo: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType & " Valor: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Valor)
                 Call DesequiparSkin(UserIndex, Slot)
                 'Msg1287= Objeto eliminado correctamente.
                 .Invent_Skins.Object(Slot).Deleted = True
