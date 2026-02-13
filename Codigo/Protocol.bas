@@ -3627,7 +3627,7 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
         Dim tUser    As t_UserReference
         Dim CharacterId As Integer
         username = reader.ReadString8()
-        CharacterId = reader.ReadInt16()
+        CharacterId = reader.ReadInt32()
         tUser = NameIndex(username)
         If IsValidUserRef(tUser) Then
             If Not modGuilds.a_AceptarAspirante(UserIndex, CharacterId, username, errorStr) Then
@@ -3692,7 +3692,7 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
         Dim GuildIndex As Integer
         Dim CharacterId As Integer
         username = reader.ReadString8()
-        CharacterId = reader.ReadInt16()
+        CharacterId = reader.ReadInt32()
         GuildIndex = modGuilds.m_EcharMiembroDeClan(UserIndex, CharacterId)
         If GuildIndex > 0 Then
             Dim expulsado As t_UserReference

@@ -865,7 +865,7 @@ a_NuevoAspirante_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.a_NuevoAspirante", Erl)
 End Function
 
-Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByVal CharacterId As Integer, ByRef CharacterName As String, ByRef refError As String) As Boolean
+Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByVal CharacterId As Long, ByRef CharacterName As String, ByRef refError As String) As Boolean
     On Error GoTo a_AceptarAspirante_Err
     Dim GI           As Integer
     Dim tGI          As Integer
@@ -1117,7 +1117,7 @@ SaveUserGuildMember_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.SaveUserGuildMember", Erl)
 End Sub
 
-Public Sub SaveUserGuildPedidos(ByVal CharacterId As Integer, ByVal Pedidos As String)
+Public Sub SaveUserGuildPedidos(ByVal CharacterId As Long, ByVal Pedidos As String)
     On Error GoTo SaveUserGuildPedidos_Err
     Call SaveUserGuildPedidosDatabase(CharacterId, Pedidos)
     Exit Sub

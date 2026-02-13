@@ -529,7 +529,7 @@ ErrorHandler:
     Call LogDatabaseError("Error in GetUserGuildIndexDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 End Function
 
-Public Function GetUserGuildMemberDatabase(ByVal CharacterId As Integer) As String
+Public Function GetUserGuildMemberDatabase(ByVal CharacterId As Long) As String
     On Error GoTo ErrorHandler
     Dim RS      As ADODB.Recordset
     Dim History As String
@@ -561,7 +561,7 @@ ErrorHandler:
     Call LogDatabaseError("Error in GetUserGuildAspirantDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 End Function
 
-Public Function GetUserGuildPedidosDatabase(ByVal CharacterId As Integer) As String
+Public Function GetUserGuildPedidosDatabase(ByVal CharacterId As Long) As String
     On Error GoTo ErrorHandler
     Dim RS      As ADODB.Recordset
     Dim History As String
@@ -616,7 +616,7 @@ ErrorHandler:
     Call LogDatabaseError("Error in SaveUserGuildMemberDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 End Sub
 
-Public Sub SaveUserGuildPedidosDatabase(ByVal CharacterId As Integer, ByVal Pedidos As String)
+Public Sub SaveUserGuildPedidosDatabase(ByVal CharacterId As Long, ByVal Pedidos As String)
     On Error GoTo ErrorHandler
     Call Execute("INSERT INTO guild_request_history (user_id, guild_name) VALUES (?, ?)", CharacterId, Pedidos)
     Exit Sub
