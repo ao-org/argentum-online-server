@@ -1113,6 +1113,11 @@ Dim Ropaje                      As Integer
 
     On Error GoTo ErrHandler
     With UserList(UserIndex)
+        If Slot > get_num_inv_slots_from_tier(.Stats.tipoUsuario) Then
+            'Patreon slot
+            'TODO: Send msg to client...WriteLocaleMsg
+            Exit Sub
+        End If
 
         If .flags.Muerto = 1 Then
             'Msg77=¡¡Estás muerto!!.
@@ -1764,6 +1769,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Exit Sub
                     End If
                 End If
+                If obj.FactionScore > 0 Then
+                    .Faccion.FactionScore = .Faccion.FactionScore + obj.FactionScore
+                End If
                 'Sonido
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, .pos.x, .pos.y))
                 'Quitamos del inv el item
@@ -1813,7 +1821,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 If .invent.Object(Slot).Equipped = 0 Then
                     Exit Sub
                 End If
-            Case e_OBJType.otWorkingTools
+            Case e_OBJType.otWorkingTools, e_OBJType.otMinerals
                 If .flags.Muerto = 1 Then
                     Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg77=¡¡Estás muerto!!.
@@ -1827,9 +1835,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Exit Sub
                 End If
                 'Solo si es herramienta ;) (en realidad si no es ni proyectil ni daga)
-                If .invent.Object(Slot).Equipped = 0 Then
-                    Call WriteLocaleMsg(UserIndex, 376, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                If ObjData(.invent.Object(Slot).ObjIndex).OBJType <> otMinerals Then
+                    If .invent.Object(Slot).Equipped = 0 Then
+                        Call WriteLocaleMsg(UserIndex, 376, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
                 End If
                 Select Case obj.Subtipo
                     Case 1, 2  ' Herramientas del Pescador - Caña y Red
@@ -1852,6 +1862,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Case 9     ' Herramientas de Sastreria - Costurero
                         Call EnivarObjConstruiblesSastre(UserIndex)
                         Call WriteShowSastreForm(UserIndex)
+                    Case Else
+                        Call WriteWorkRequestTarget(UserIndex, e_Skill.Smelting)
                 End Select
             Case e_OBJType.otPotions
                 If .flags.Muerto = 1 Then
@@ -2511,13 +2523,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     'Msg906= Por mas que lo intentas, no podés comprender el manuescrito.
                     Call WriteLocaleMsg(UserIndex, 906, e_FontTypeNames.FONTTYPE_INFO)
                 End If
-            Case e_OBJType.otMinerals
-                If .flags.Muerto = 1 Then
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
-                    'Msg77=¡¡Estás muerto!!.
-                    Exit Sub
-                End If
-                Call WriteWorkRequestTarget(UserIndex, FundirMetal)
             Case e_OBJType.otMusicalInstruments
                 If .flags.Muerto = 1 Then
                     Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
@@ -2749,6 +2754,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Case e_OBJType.otUsableOntarget
                 .flags.UsingItemSlot = .flags.TargetObjInvSlot
                 Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
+            Case e_OBJType.otFactionForgiveness
+                If ForgiveUserFactionStats(UserIndex) Then
+                    Call QuitarUserInvItem(UserIndex, Slot, 1)
+                    Call UpdateUserInv(False, UserIndex, Slot)
+                End If
         End Select
     End With
     Exit Sub
@@ -4086,13 +4096,23 @@ Public Sub EquipArrow(ByVal UserIndex As Integer, ByVal Slot As Integer)
     Dim BowCategory   As Byte
     Dim ArrowCategory As Byte
     Dim ArrowObjIndex As Integer
+    Dim maxItemsInventory As Integer
 
     With UserList(UserIndex).invent
-        Debug.Assert ObjData(Slot).OBJType = e_OBJType.otArrows
+        maxItemsInventory = get_num_inv_slots_from_tier(UserList(UserIndex).Stats.tipoUsuario)
+        If Slot < 1 Or Slot > maxItemsInventory Then
+            Call LogError("EquipArrow invalid slot: " & Slot & " max=" & maxItemsInventory & " user=" & UserList(UserIndex).name)
+            Exit Sub
+        End If
+
         ArrowObjIndex = .Object(Slot).ObjIndex
+        If ArrowObjIndex < LBound(ObjData) Or ArrowObjIndex > UBound(ObjData) Then
+            Call LogError("EquipArrow invalid arrow index: " & ArrowObjIndex & " slot=" & Slot & " user=" & UserList(UserIndex).name)
+            Exit Sub
+        End If
+        Debug.Assert ObjData(ArrowObjIndex).OBJType = e_OBJType.otArrows
+
         bowIndex = .EquippedWeaponObjIndex
-        BowCategory = ObjData(bowIndex).BowCategory
-        ArrowCategory = ObjData(ArrowObjIndex).ArrowCategory
         
         ' No hay arco equipado
         If bowIndex <= 0 Then
@@ -4100,6 +4120,13 @@ Public Sub EquipArrow(ByVal UserIndex As Integer, ByVal Slot As Integer)
             Call WriteLocaleMsg(UserIndex, 2145, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
+
+        If bowIndex < LBound(ObjData) Or bowIndex > UBound(ObjData) Then
+            Call LogError("EquipArrow invalid bow index: " & bowIndex & " user=" & UserList(UserIndex).name)
+            Exit Sub
+        End If
+        BowCategory = ObjData(bowIndex).BowCategory
+        ArrowCategory = ObjData(ArrowObjIndex).ArrowCategory
 
         ' El arma equipada no es un arco
         If ObjData(bowIndex).WeaponType <> eBow Then

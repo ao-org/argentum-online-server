@@ -58,6 +58,7 @@ Private Sub ConstruirQuery_CargarPersonaje()
     QueryBuilder.Append "account_id,"
     QueryBuilder.Append "ID,"
     QueryBuilder.Append "name,"
+    QueryBuilder.Append "alias,"
     QueryBuilder.Append "level,"
     QueryBuilder.Append "Exp,"
     QueryBuilder.Append "genre_id,"
@@ -124,7 +125,6 @@ Private Sub ConstruirQuery_CargarPersonaje()
     QueryBuilder.Append "Guild_Index,"
     QueryBuilder.Append "guild_rejected_because,"
     QueryBuilder.Append "warnings,"
-    QueryBuilder.Append "last_logout,"
     QueryBuilder.Append "is_reset,"
     QueryBuilder.Append "is_locked_in_mao,"
     QueryBuilder.Append "jinete_level,"
@@ -306,8 +306,7 @@ Private Sub ConstruirQuery_GuardarPersonaje()
     QueryBuilder.Append "return_x = ?, "
     QueryBuilder.Append "return_y = ?, "
     QueryBuilder.Append "jinete_level = ?, "
-    QueryBuilder.Append "backpack_id = ?, "
-    QueryBuilder.Append "last_logout = strftime('%s','now') "
+    QueryBuilder.Append "backpack_id = ? "
     QueryBuilder.Append "WHERE id = ?"
     ' Guardo la query ensamblada
     QUERY_UPDATE_MAINPJ = QueryBuilder.ToString

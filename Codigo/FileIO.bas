@@ -856,6 +856,14 @@ Sub LoadBalance()
             .Constitucion = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Constitucion"))
         End With
     Next i
+    CriticalHitDmgModifier = val(BalanceIni.GetValue("BACKSTAB", "CriticalHitDmgModifier"))
+    IgnoreArmorChance = val(BalanceIni.GetValue("BACKSTAB", "IgnoreArmorChance"))
+    ExtraBackstabChance = val(BalanceIni.GetValue("BACKSTAB", "ExtraBackstabChance"))
+    AssasinStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "AssasinStabbingChance"))
+    HunterStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "HunterStabbingChance"))
+    BardStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "BardStabbingChance"))
+    GenericStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "GenericStabbingChance"))
+    BanditCriticalHitChance = val(BalanceIni.GetValue("BACKSTAB", "BanditCriticalHitChance"))
     'Extra
     PorcentajeRecuperoMana = val(BalanceIni.GetValue("EXTRA", "PorcentajeRecuperoMana"))
     RecoveryMana = val(BalanceIni.GetValue("EXTRA", "RecoveryMana"))
@@ -869,7 +877,6 @@ Sub LoadBalance()
     RangoVidas = val(BalanceIni.GetValue("EXTRA", "RangoVidas"))
     CapVidaMax = val(BalanceIni.GetValue("EXTRA", "CapVidaMax"))
     CapVidaMin = val(BalanceIni.GetValue("EXTRA", "CapVidaMin"))
-    ModDañoGolpeCritico = val(BalanceIni.GetValue("EXTRA", "ModDañoGolpeCritico"))
     RequiredSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "RequiredSpellDisplayTime"))
     MaxInvisibleSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "MaxInvisibleSpellDisplayTime"))
     MultiShotReduction = val(BalanceIni.GetValue("EXTRA", "MultiShotReduction"))
@@ -1039,6 +1046,7 @@ Sub LoadOBJData()
             .ImprovedMeleeHitChance = val(Leer.GetValue(ObjKey, "ImprovedMHit"))
             .ApplyEffectId = val(Leer.GetValue(ObjKey, "ApplyEffectId"))
             .JineteLevel = val(Leer.GetValue(ObjKey, "JineteLevel"))
+            .FactionScore = val(Leer.GetValue(ObjKey, "FactionScore"))
             .ElementalTags = val(Leer.GetValue(ObjKey, "ElementalTags"))
             .BowCategory = val(Leer.GetValue(ObjKey, "BowCategory"))
             .ArrowCategory = val(Leer.GetValue(ObjKey, "ArrowCategory"))
@@ -1077,11 +1085,9 @@ Sub LoadOBJData()
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
-                    
                 Case e_OBJType.otBackpack, e_OBJType.otSkinsWings
                     .RequiereObjeto = val(Leer.GetValue(ObjKey, "RequiereObjeto"))
                     '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
-                    
                 Case e_OBJType.otMagicalInstrument
                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
                 Case e_OBJType.otWeapon, e_OBJType.otSkinsWeapons
@@ -1094,8 +1100,10 @@ Sub LoadOBJData()
                     .incinera = val(Leer.GetValue(ObjKey, "Incinera"))
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
-                    .IgnoreArmorAmmount = val(Leer.GetValue(ObjKey, "IgnoreArmorAmmount"))
-                    .IgnoreArmorPercent = val(Leer.GetValue(ObjKey, "IgnoreArmorPercent"))
+                    .MinArmorPenetrationFlat = val(Leer.GetValue(ObjKey, "MinArmorPenetrationFlat"))
+                    .MaxArmorPenetrationFlat = val(Leer.GetValue(ObjKey, "MaxArmorPenetrationFlat"))
+                    .ArmorPenetrationPercent = val(Leer.GetValue(ObjKey, "ArmorPenetrationPercent"))
+                    .ExtraCritAndStabChance = val(Leer.GetValue(ObjKey, "ExtraCritAndStabChance"))
                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
                     .Municion = val(Leer.GetValue(ObjKey, "Municiones"))
                     .Power = val(Leer.GetValue(ObjKey, "StaffPower"))
@@ -1249,7 +1257,7 @@ Sub LoadOBJData()
                 Case e_OBJType.otElementalRune
                     .Hechizo = val(Leer.GetValue(ObjKey, "Hechizo"))
                 Case e_OBJType.otParchment, e_OBJType.otSkinsSpells
-                   .RequiereObjeto = val(Leer.GetValue(ObjKey, "RequiereObjeto"))
+                    .RequiereObjeto = val(Leer.GetValue(ObjKey, "RequiereObjeto"))
             End Select
             .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
             .MagicAbsoluteBonus = val(Leer.GetValue(ObjKey, "MagicAbsoluteBonus"))
@@ -1490,7 +1498,7 @@ Sub LoadMapData()
     #Else
         If RunningInVB() Then
             'VB runs out of memory when debugging
-            NumMaps = 300
+            NumMaps = 550
         Else
             NumMaps = CountFiles(MapPath, "*.csm") - 1
         End If

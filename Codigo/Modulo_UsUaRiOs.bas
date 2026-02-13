@@ -29,6 +29,12 @@ Option Explicit
 Private UserNameCache     As New Dictionary
 Private AvailableUserSlot As t_IndexHeap
 
+Public Function IsUserAdmin(ByVal UserIndex As Integer) As Boolean
+    IsUserAdmin = False
+    If UserIndex < LBound(UserList) Or UserIndex > UBound(UserList) Then Exit Function
+    IsUserAdmin = UserList(UserIndex).flags.Privilegios And e_PlayerType.Admin
+End Function
+
 Public Sub InitializeUserIndexHeap(Optional ByVal Size As Integer = NpcIndexHeapSize)
     On Error GoTo ErrHandler_InitializeUserIndexHeap
     ReDim AvailableUserSlot.IndexInfo(Size)
@@ -627,6 +633,7 @@ Dim tStr                        As String
                 Call WarpToLegalPos(UserIndex, Ciudades(.Hogar).Map, Ciudades(.Hogar).x, Ciudades(.Hogar).y, True)
             End If
         End If
+        .flags.UserLogged = True
         'Crea  el personaje del usuario
         Call MakeUserChar(True, .pos.Map, UserIndex, .pos.Map, .pos.x, .pos.y, 1)
         Call WriteUserCharIndexInServer(UserIndex)
@@ -643,7 +650,6 @@ Dim tStr                        As String
         NumUsers = NumUsers + 1
         .flags.UserLogged = True
         Call ResetUserAutomatedActions(UserIndex)
-        Call Execute("Update user set is_logged = true where id = ?", UserList(UserIndex).Id)
         .Counters.LastSave = GetTickCountRaw()
         MapInfo(.pos.Map).NumUsers = MapInfo(.pos.Map).NumUsers + 1
         If .Stats.SkillPts > 0 Then
@@ -690,7 +696,7 @@ Dim tStr                        As String
         If ServidorNublado Then Call WriteNubesToggle(UserIndex)
         Call WriteLoggedMessage(UserIndex, newUser)
         If .Stats.ELV = 1 Then
-            Call WriteLocaleMsg(UserIndex, 522, e_FontTypeNames.FONTTYPE_GUILD, .name) ' Msg522=¡Bienvenido a las tierras de Argentum Online! ¡<nombre> que tengas buen viaje y mucha suerte!
+            Call WriteLocaleMsg(UserIndex, 522, e_FontTypeNames.FONTTYPE_GUILD, GetUserDisplayName(UserIndex)) ' Msg522=¡Bienvenido a las tierras de Argentum Online! ¡<nombre> que tengas buen viaje y mucha suerte!
         Else
             Call WriteLocaleMsg(UserIndex, 1439, e_FontTypeNames.FONTTYPE_GUILD, .name & "¬" & .Stats.ELV & "¬" & get_map_name(.pos.Map)) ' Msg1439=¡Bienvenido de nuevo ¬1! Actualmente estas en el nivel ¬2 en ¬3, ¡buen viaje y mucha suerte!
         End If
@@ -741,9 +747,9 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal attackerIndex As Integer)
         Call WriteUpdateExp(attackerIndex)
         Call CheckUserLevel(attackerIndex)
     End If
-    Call WriteLocaleMsg(attackerIndex, "76", e_FontTypeNames.FONTTYPE_FIGHT, UserList(VictimIndex).name)
+    Call WriteLocaleMsg(attackerIndex, "76", e_FontTypeNames.FONTTYPE_FIGHT, GetUserDisplayName(VictimIndex))
     Call WriteLocaleMsg(attackerIndex, "140", e_FontTypeNames.FONTTYPE_EXP, DaExp)
-    Call WriteLocaleMsg(VictimIndex, "185", e_FontTypeNames.FONTTYPE_FIGHT, UserList(attackerIndex).name)
+    Call WriteLocaleMsg(VictimIndex, "185", e_FontTypeNames.FONTTYPE_FIGHT, GetUserDisplayName(attackerIndex))
     If Not PeleaSegura(VictimIndex, attackerIndex) Then
         EraCriminal = Status(attackerIndex)
         If EraCriminal = 2 And Status(attackerIndex) < 2 Then
@@ -924,13 +930,15 @@ Sub RefreshCharStatus(ByVal UserIndex As Integer)
     'Refreshes the status and tag of UserIndex.
     '*************************************************
     Dim klan As String, name As String
+    Dim displayName As String
+    displayName = GetUserDisplayNameOrReal(UserIndex)
     If UserList(UserIndex).showName Then
         If UserList(UserIndex).flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
             If UserList(UserIndex).GuildIndex > 0 Then
                 klan = modGuilds.GuildName(UserList(UserIndex).GuildIndex)
                 klan = " <" & klan & ">"
             End If
-            name = UserList(UserIndex).name & klan
+            name = displayName & klan
         Else
             name = UserList(UserIndex).NameMimetizado
         End If
@@ -956,6 +964,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
     On Error GoTo HayError
     Dim charindex As Integer
     Dim TempName  As String
+    Dim displayName As String
     If InMapBounds(Map, x, y) Then
         With UserList(UserIndex)
             'If needed make a new character in list
@@ -973,19 +982,20 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
             Dim klan       As String
             Dim clan_nivel As Byte
             If Not toMap Then
+                displayName = GetUserDisplayNameOrReal(UserIndex)
                 If .showName Then
                     If .flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
                         If .GuildIndex > 0 Then
                             klan = modGuilds.GuildName(.GuildIndex)
                             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
-                            TempName = .name & " <" & klan & ">"
+                            TempName = displayName & " <" & klan & ">"
                         Else
                             klan = vbNullString
                             clan_nivel = 0
                             If .flags.EnConsulta Then
-                                TempName = .name & " [CONSULTA]"
+                                TempName = displayName & " [CONSULTA]"
                             Else
-                                TempName = .name
+                                TempName = displayName
                             End If
                         End If
                     Else
@@ -1006,7 +1016,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
     Exit Sub
 HayError:
     Dim Desc As String
-    Desc = Err.Description & vbNewLine & " Usuario: " & UserList(UserIndex).name & vbNewLine & "Pos: " & Map & "-" & x & "-" & y
+    Desc = Err.Description & vbNewLine & " Usuario: " & GetUserRealName(UserIndex) & vbNewLine & "Pos: " & Map & "-" & x & "-" & y
     Call TraceError(Err.Number, Err.Description, "Usuarios.MakeUserChar", Erl())
     Call CloseSocket(UserIndex)
 End Sub
@@ -1413,7 +1423,7 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     On Error GoTo SendUserStatsTxt_Err
     Dim GuildI As Integer
     'Msg1295= Estadisticas de: ¬1
-    Call WriteLocaleMsg(sendIndex, "1295", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).name)
+    Call WriteLocaleMsg(sendIndex, "1295", e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
     Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1857, UserList(UserIndex).Stats.ELV & "¬" & UserList(UserIndex).Stats.Exp & "¬" & ExpLevelUp(UserList( _
             UserIndex).Stats.ELV), e_FontTypeNames.FONTTYPE_INFO)) ' Msg1857=Nivel: ¬1  EXP: ¬2/¬3
     Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1858, UserList(UserIndex).Stats.MinHp & "¬" & UserList(UserIndex).Stats.MaxHp & "¬" & UserList( _
@@ -1501,7 +1511,7 @@ Sub SendUserMiniStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     '*************************************************
     With UserList(UserIndex)
         'Msg1301= Pj: ¬1
-        Call WriteLocaleMsg(sendIndex, "1301", e_FontTypeNames.FONTTYPE_INFO, .name)
+        Call WriteLocaleMsg(sendIndex, "1301", e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
         'Msg1302= Ciudadanos Matados: ¬1
         Call WriteLocaleMsg(sendIndex, "1302", e_FontTypeNames.FONTTYPE_INFO, .Faccion.ciudadanosMatados)
         'Msg1303= Criminales Matados: ¬1
@@ -1531,7 +1541,7 @@ End Sub
 Sub SendUserInvTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     On Error GoTo SendUserInvTxt_Err
     Dim j As Long
-    Call WriteConsoleMsg(sendIndex, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)
+    Call WriteConsoleMsg(sendIndex, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_INFO)
     'Msg1311= Tiene ¬1 objetos.
     Call WriteLocaleMsg(sendIndex, "1311", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).invent.NroItems)
     For j = 1 To UserList(UserIndex).CurrentInventorySlots
@@ -1548,7 +1558,7 @@ End Sub
 Sub SendUserSkillsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     On Error GoTo SendUserSkillsTxt_Err
     Dim j As Integer
-    Call WriteConsoleMsg(sendIndex, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)
+    Call WriteConsoleMsg(sendIndex, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_INFO)
     For j = 1 To NUMSKILLS
         Call WriteConsoleMsg(sendIndex, SkillsNames(j) & " = " & UserList(UserIndex).Stats.UserSkills(j), e_FontTypeNames.FONTTYPE_INFO)
     Next
@@ -1687,11 +1697,6 @@ End Sub
 ' @param UserIndex  Indice del usuario que muere
 '
 Sub UserDie(ByVal UserIndex As Integer)
-    '************************************************
-    'Author: Uknown
-    'Last Modified: 04/15/2008 (NicoNZ)
-    'Ahora se resetea el counter del invi
-    '************************************************
     On Error GoTo ErrorHandler
     Dim i  As Long
     Dim aN As Integer
@@ -1718,6 +1723,8 @@ Sub UserDie(ByVal UserIndex As Integer)
         Call WriteUpdateHP(UserIndex)
         Call WriteUpdateSta(UserIndex)
         Call ClearAttackerNpc(UserIndex)
+        '<< Guardar o matar mascotas >>
+        Call HandleUserPetsOnDeath(UserIndex)
         If MapData(.pos.Map, .pos.x, .pos.y).trigger <> e_Trigger.ZONAPELEA And MapInfo(.pos.Map).DropItems Then
             If (.flags.Privilegios And e_PlayerType.User) <> 0 Then
                 If .flags.PendienteDelSacrificio = 0 Then
@@ -1774,33 +1781,6 @@ Sub UserDie(ByVal UserIndex As Integer)
         End If
         Call ActualizarVelocidadDeUsuario(UserIndex)
         Call LimpiarEstadosAlterados(UserIndex)
-        For i = 1 To MAXMASCOTAS
-            If .MascotasIndex(i).ArrayIndex > 0 Then
-                If IsValidNpcRef(.MascotasIndex(i)) Then
-                    Call MuereNpc(.MascotasIndex(i).ArrayIndex, 0)
-                Else
-                    Call ClearNpcRef(.MascotasIndex(i))
-                End If
-            End If
-        Next i
-        If .clase = e_Class.Druid Then
-            Dim Params() As Variant
-            Dim ParamC   As Long
-            ReDim Params(MAXMASCOTAS * 3 - 1)
-            ParamC = 0
-            For i = 1 To MAXMASCOTAS
-                Params(ParamC) = .Id
-                ParamC = ParamC + 1
-                Params(ParamC) = i
-                ParamC = ParamC + 1
-                Params(ParamC) = 0
-                ParamC = ParamC + 1
-            Next i
-            Call Execute(QUERY_UPSERT_PETS, Params)
-        End If
-        If (.flags.MascotasGuardadas = 0) Then
-            .NroMascotas = 0
-        End If
         '<< Actualizamos clientes >>
         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
         If MapInfo(.pos.Map).Seguro = 0 Then
@@ -2618,8 +2598,10 @@ Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Sing
         velocidad = VelocidadNormal * modificadorItem * JineteLevelSpeed * modificadorHechizo * max(0, (1 + .Modifiers.MovementSpeed))
 UpdateSpeed:
         .Char.speeding = velocidad
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.charindex, .Char.speeding))
-        Call WriteVelocidadToggle(UserIndex)
+        If .flags.UserLogged Then
+            Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageSpeedingACT(.Char.charindex, .Char.speeding))
+            Call WriteVelocidadToggle(userindex)
+        End If
     End With
     Exit Function
 ActualizarVelocidadDeUsuario_Err:
@@ -2949,10 +2931,10 @@ Public Function DoDamageOrHeal(ByVal UserIndex As Integer, _
         DamageStr = PonerPuntos(Math.Abs(amount))
         If SourceType = eUser Then
             If UserList(SourceIndex).ChatCombate = 1 And DoDamageText > 0 Then
-                Call WriteLocaleMsg(SourceIndex, DoDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).name & "¬" & DamageStr)
+                Call WriteLocaleMsg(SourceIndex, DoDamageText, e_FontTypeNames.FONTTYPE_FIGHT, GetUserDisplayName(UserIndex) & "¬" & DamageStr)
             End If
             If UserList(UserIndex).ChatCombate = 1 And GotDamageText > 0 Then
-                Call WriteLocaleMsg(UserIndex, GotDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(SourceIndex).name & "¬" & DamageStr)
+                Call WriteLocaleMsg(UserIndex, GotDamageText, e_FontTypeNames.FONTTYPE_FIGHT, GetUserDisplayName(SourceIndex) & "¬" & DamageStr)
             End If
         End If
         amount = EffectsOverTime.TargetApplyDamageReduction(UserList(UserIndex).EffectOverTime, amount, SourceIndex, SourceType, DamageSourceType)
@@ -3045,17 +3027,36 @@ Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As In
 End Function
 
 Public Function GetArmorPenetration(ByVal UserIndex As Integer, ByVal TargetArmor As Integer) As Integer
-    Dim ArmorPenetration As Integer
     If Not IsFeatureEnabled("armor_penetration_feature") Then Exit Function
+    Dim PenetrationChance As Single
     With UserList(UserIndex)
-        If .invent.EquippedWeaponObjIndex > 0 Then
-            ArmorPenetration = ObjData(.invent.EquippedWeaponObjIndex).IgnoreArmorAmmount
-            If ObjData(.invent.EquippedWeaponObjIndex).IgnoreArmorPercent > 0 Then
-                ArmorPenetration = ArmorPenetration + TargetArmor * ObjData(.invent.EquippedWeaponObjIndex).IgnoreArmorPercent
+        If .invent.EquippedWeaponObjIndex = 0 Then Exit Function
+        PenetrationChance = ClampChance(.Stats.UserSkills(e_Skill.Armas) * IgnoreArmorChance)
+        If RandomNumber(1, 100) > PenetrationChance Then
+            Exit Function
+        End If
+        Dim minPen As Integer
+        Dim maxPen As Integer
+        minPen = ObjData(.invent.EquippedWeaponObjIndex).MinArmorPenetrationFlat
+        maxPen = ObjData(.invent.EquippedWeaponObjIndex).MaxArmorPenetrationFlat
+        If minPen < 0 Then minPen = 0
+        If maxPen < 0 Then maxPen = 0
+        If minPen > maxPen Then
+            Dim tmp As Integer
+            tmp = minPen: minPen = maxPen: maxPen = tmp
+        End If
+        GetArmorPenetration = RandomNumber(minPen, maxPen)
+        If ObjData(.invent.EquippedWeaponObjIndex).ArmorPenetrationPercent > 0 Then
+            Dim pct As Single
+            pct = ObjData(.invent.EquippedWeaponObjIndex).ArmorPenetrationPercent
+            If pct > 1! Then pct = pct / 100!
+            If pct < 0! Then pct = 0!
+            If pct > 1! Then pct = 1!
+            If pct > 0! Then
+                GetArmorPenetration = GetArmorPenetration + (TargetArmor * pct)
             End If
         End If
     End With
-    GetArmorPenetration = ArmorPenetration
 End Function
 
 Public Function GetEvasionBonus(ByRef User As t_User) As Integer
@@ -3313,3 +3314,64 @@ Function LevelCanUseItem(ByVal UserIndex As Integer, ByRef obj As t_ObjData) As 
     End With
     
 End Function
+
+Public Sub HandleUserPetsOnDeath(ByVal UserIndex As Integer)
+    On Error GoTo HandleUserPetsOnDeath_Err
+    Dim i              As Long
+    Dim PreventPetLoss As Boolean
+    With UserList(UserIndex)
+        ' Determinar si el druida tiene protección de pérdida
+        ' (objeto mágico de madera élfica equipado)
+        If .clase = e_Class.Druid Then
+            If .invent.EquippedRingAccesoryObjIndex > 0 Then
+                If ObjData(.invent.EquippedRingAccesoryObjIndex).OBJType = otMagicalInstrument Then
+                    If ObjData(.invent.EquippedRingAccesoryObjIndex).MaderaElfica > 0 Then
+                        PreventPetLoss = True
+                    End If
+                End If
+            End If
+        End If
+        'Procesar mascotas ACTIVAS, si hay protección guardarlas, si no hay protección matarlas
+        For i = 1 To MAXMASCOTAS
+            If .MascotasIndex(i).ArrayIndex > 0 Then   ' Hay mascota activa
+                'Obtener si es mascota domada (TiempoExistencia = 0)
+                Dim isTamed As Boolean
+                isTamed = False
+                If IsValidNpcRef(.MascotasIndex(i)) Then
+                    isTamed = (NpcList(.MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia = 0)
+                End If
+                If PreventPetLoss Then
+                    If isTamed Then
+                        'Guardar mascota domada usando la misma lógica que HechizoInvocacion
+                        Call SetUserRef(NpcList(.MascotasIndex(i).ArrayIndex).MaestroUser, 0)
+                        Call QuitarNPC(.MascotasIndex(i).ArrayIndex, eStorePets)
+                        Call ClearNpcRef(.MascotasIndex(i))
+                    Else
+                        'Mascota invocada siempre muere aunque haya protección
+                        Call MuereNpc(.MascotasIndex(i).ArrayIndex, 0)
+                        Call ClearNpcRef(.MascotasIndex(i))
+                    End If
+                Else
+                    'Sin protección comportamiento normal, mueren todas
+                    If IsValidNpcRef(.MascotasIndex(i)) Then
+                        Call MuereNpc(.MascotasIndex(i).ArrayIndex, 0)
+                    End If
+                    Call ClearNpcRef(.MascotasIndex(i))
+                End If
+            End If
+        Next i
+        'Si no hay protección y no estaban guardadas resetear contador
+        If Not PreventPetLoss Then
+            If .flags.MascotasGuardadas = 0 Then
+                .NroMascotas = 0
+            End If
+        Else
+            .flags.MascotasGuardadas = 1
+        End If
+    End With
+    Exit Sub
+HandleUserPetsOnDeath_Err:
+    Call TraceError(Err.Number, Err.Description, "UsUaRiOs.HandleUserPetsOnDeath", Erl)
+    Resume Next
+End Sub
+

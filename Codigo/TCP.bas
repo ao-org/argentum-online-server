@@ -782,17 +782,11 @@ End Sub
 
 Sub ResetFacciones(ByVal UserIndex As Integer)
     On Error GoTo ResetFacciones_Err
-    '*************************************************
-    'Author: Unknown
-    'Last modified: 23/01/2007
-    'Resetea todos los valores generales y las stats
-    '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
-    '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, MatadosIngreso y NextRecompensa.
-    '*************************************************
     With UserList(UserIndex).Faccion
-        If .Status = e_Facciones.Armada Or .Status = e_Facciones.concilio Then
+        If .Status = e_Facciones.Armada Or .Status = e_Facciones.consejo Then
             .Status = e_Facciones.Ciudadano
-        Else
+        End If
+        If .Status = e_Facciones.Caos Or .Status = e_Facciones.concilio Then
             .Status = e_Facciones.Criminal
         End If
         .RecibioArmaduraCaos = 0
@@ -1383,7 +1377,6 @@ Sub CloseUser(ByVal UserIndex As Integer)
         errordesc = "ERROR Update Map Users map: " & Map
         'Update Map Users
         MapInfo(Map).NumUsers = MapInfo(Map).NumUsers - 1
-        Call Execute("update user set is_logged = 0 where id = ?;", UserList(UserIndex).Id)
         If MapInfo(Map).NumUsers < 0 Then MapInfo(Map).NumUsers = 0
         ' Si el usuario habia dejado un msg en la gm's queue lo borramos
         'If Ayuda.Existe(.Name) Then Call Ayuda.Quitar(.Name)

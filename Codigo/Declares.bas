@@ -1423,12 +1423,11 @@ Public Enum e_Skill
     Sastreria = 23
     Domar = 24
     TargetableItem = 25
+    Smelting = 26
     Grupo = 90
     MarcaDeClan = 91
     MarcaDeGM = 92
 End Enum
-
-Public Const FundirMetal = 88
 
 Public Enum e_Atributos
     Fuerza = 1
@@ -1556,6 +1555,7 @@ Public Enum e_OBJType
     otUsableOntarget = 53
     otPlants = 54
     otElementalRune = 55
+    otFactionForgiveness = 56
     otElse = 100
 End Enum
 
@@ -2054,8 +2054,6 @@ Public Type t_Char
     RM_Aura As String
     Otra_Aura As String
     speeding As Single
-    BodyIdle As Integer
-    Ataque1 As Integer
     Animation() As Integer
     CastAnimation As Integer
 End Type
@@ -2282,8 +2280,10 @@ Public Type t_ObjData
     LingoteIndex As Integer
     MinHIT As Integer 'Minimo golpe
     MaxHit As Integer 'Maximo golpe
-    IgnoreArmorAmmount As Integer
-    IgnoreArmorPercent As Single
+    MinArmorPenetrationFlat As Integer
+    MaxArmorPenetrationFlat As Integer
+    ArmorPenetrationPercent As Integer
+    ExtraCritAndStabChance As Integer
     MinHam As Integer
     MinSed As Integer
     def As Integer
@@ -2397,6 +2397,7 @@ Public Type t_ObjData
     ProjectileType As Integer
     ObjFlags As Long 'use bitmask from enum e_ObjFlags
     JineteLevel As Byte
+    FactionScore As Integer
     ElementalTags As Long
     Camouflage As Boolean
     RequiereObjeto                  As Integer
@@ -2514,7 +2515,6 @@ Public Type t_UserStats
     UserSkinsHechizos(1 To MAX_SKINSSPELLS_SLOTS) As Integer 'No puede ser MAXUSERHECHIZOS porque la cantidad máxima de skins podría escalar en el futuro, debe ser independiente.
     UsuariosMatados As Long
     PuntosPesca As Long
-    CriminalesMatados As Long
     NPCsMuertos As Long
     SkillPts As Integer
     Advertencias As Byte
@@ -2955,6 +2955,7 @@ Public Const HotKeyCount As Integer = 10
 'Tipo de los Usuarios
 Public Type t_User
     name As String
+    Alias As String
     Cuenta As String
     'User types are created at startup and reused every time,
     'the version id help to validate that a reference we stored is still valid,
@@ -3210,8 +3211,6 @@ Public Type t_NpcInfoCache
     Body As Integer
     Head As Integer
     Heading As Integer
-    BodyIdle As Integer
-    Ataque1 As Integer
     CastAnimation As Integer
     AnimacionesCount As Integer
     Animaciones() As Integer

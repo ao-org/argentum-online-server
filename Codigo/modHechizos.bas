@@ -76,7 +76,8 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             Call WriteLocaleMsg(UserIndex, 1627, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr) 'Msg1627=¬1 te ha quitado ¬2 puntos de vida.
             Call SubirSkill(UserIndex, Resistencia)
             If NpcList(NpcIndex).Char.CastAnimation > 0 Then Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharAtaca(NpcList(NpcIndex).Char.charindex, _
-                    .Char.charindex, DamageStr, NpcList(NpcIndex).Char.CastAnimation))
+                    .Char.charindex, DamageStr))
+            
         End If
         If IsAlive Then
             Dim Effect As IBaseEffectOverTime
@@ -212,8 +213,6 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         End If
         If NpcList(NpcIndex).Char.CastAnimation > 0 Then
             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(NpcList(NpcIndex).Char.charindex, NpcList(NpcIndex).Char.CastAnimation))
-        ElseIf NpcList(NpcIndex).Char.Ataque1 > 0 Then
-            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(NpcList(NpcIndex).Char.charindex, NpcList(NpcIndex).Char.Ataque1))
         ElseIf NpcList(NpcIndex).Char.WeaponAnim > 0 Then
             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageArmaMov(NpcList(NpcIndex).Char.charindex, 0))
         End If
@@ -318,8 +317,6 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
     With NpcList(NpcIndex)
         If .Char.CastAnimation > 0 Then
             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(.Char.charindex, .Char.CastAnimation))
-        ElseIf .Char.Ataque1 > 0 Then
-            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(.Char.charindex, .Char.Ataque1))
         ElseIf .Char.WeaponAnim > 0 Then
             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageArmaMov(.Char.charindex, 0))
         End If
@@ -402,8 +399,6 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
     With NpcList(NpcIndex)
         If .Char.CastAnimation > 0 Then
             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(.Char.charindex, .Char.CastAnimation))
-        ElseIf .Char.Ataque1 > 0 Then
-            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(.Char.charindex, .Char.Ataque1))
         ElseIf .Char.WeaponAnim > 0 Then
             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageArmaMov(.Char.charindex, 0))
         End If
@@ -1400,8 +1395,6 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
         If IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTransformed) Then
             If UserList(UserIndex).Char.CastAnimation > 0 Then
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageDoAnimation(UserList(UserIndex).Char.charindex, UserList(UserIndex).Char.CastAnimation))
-            ElseIf UserList(UserIndex).Char.Ataque1 > 0 Then
-                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageDoAnimation(UserList(UserIndex).Char.charindex, UserList(UserIndex).Char.Ataque1))
             End If
         End If
         If Hechizos(uh).TargetEffectType = e_TargetEffectType.eNegative Then
