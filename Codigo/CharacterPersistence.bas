@@ -166,14 +166,18 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
     Dim counter As Long
     LoadCharacterFromDB = False
     With UserList(UserIndex)
+        Debug.Assert .id > 0
         ' Load main character data using the user name.
-        Set RS = Query(QUERY_LOAD_MAINPJ, .name)
+        Set RS = Query(QUERY_LOAD_MAINPJ, .id)
         If RS Is Nothing Then Exit Function
         Debug.Assert .AccountID > -1
         If CLng(RS!account_id) <> .AccountID Then
             Call CloseSocket(UserIndex)
             Exit Function
         End If
+
+        .name = CStr(RS!name)
+
         ' Set up the Patreon tier early (needed by subsequent initialization).
         .Stats.tipoUsuario = GetPatronTierFromAccountID(.AccountID)
         ' Check for ban status.
