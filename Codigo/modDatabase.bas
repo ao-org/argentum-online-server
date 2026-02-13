@@ -753,9 +753,6 @@ Public Sub ChangeNameDatabase(ByVal CurName As String, ByVal NewName As String)
     Call SetUserValue(CurName, "name", NewName)
 End Sub
 
-Public Sub ResetLastLogoutAndIsLogged()
-    Call Execute("Update user set last_logout = 0, is_logged = 0")
-End Sub
 
 Public Sub SaveEpicLogin(ByVal Id As String, ByVal UserIndex As Integer)
     Call Query("insert or replace into epic_id_mapping (epic_id, user_id, last_login) values ( ?, ?, strftime('%s','now'))", Id, UserList(UserIndex).Id)

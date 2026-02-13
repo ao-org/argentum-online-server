@@ -650,7 +650,6 @@ Dim tStr                        As String
         NumUsers = NumUsers + 1
         .flags.UserLogged = True
         Call ResetUserAutomatedActions(UserIndex)
-        Call Execute("Update user set is_logged = true where id = ?", UserList(UserIndex).Id)
         .Counters.LastSave = GetTickCountRaw()
         MapInfo(.pos.Map).NumUsers = MapInfo(.pos.Map).NumUsers + 1
         If .Stats.SkillPts > 0 Then
