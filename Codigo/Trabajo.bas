@@ -73,8 +73,15 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
         Dim velocidadOcultarse As Integer
         velocidadOcultarse = 1
         If .clase = e_Class.Hunter Then
-            If ObjData(.invent.EquippedArmorObjIndex).Camouflage And .Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
-                Exit Sub
+            If .invent.EquippedArmorObjIndex > 0 Then
+                If ObjData(.invent.EquippedArmorObjIndex).Camouflage And .Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+                    Exit Sub
+                End If
+            End If
+            If .invent.EquippedBackpackObjIndex > 0 Then
+                If ObjData(.invent.EquippedBackpackObjIndex).Camouflage And .Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+                    Exit Sub
+                End If
             End If
         End If
         .Counters.TiempoOculto = .Counters.TiempoOculto - velocidadOcultarse

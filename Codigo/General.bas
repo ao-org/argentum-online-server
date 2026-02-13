@@ -942,8 +942,10 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
     If Not Intemperie(UserIndex) Then Exit Sub
     With UserList(UserIndex)
         If .invent.EquippedArmorObjIndex > 0 Then
-            '  Ropa invernal
             If ObjData(.invent.EquippedArmorObjIndex).Invernal Then Exit Sub
+        End If
+        If .invent.EquippedBackpackObjIndex > 0 Then
+            If ObjData(.invent.EquippedBackpackObjIndex).Invernal Then Exit Sub
         End If
         If .Counters.Frio < IntervaloFrio Then
             .Counters.Frio = .Counters.Frio + 1
