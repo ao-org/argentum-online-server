@@ -518,6 +518,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 Exit Function
             End If
         End If
+        If IsFeatureEnabled("healers_and_tanks") And .flags.DivineBlood And IsSet(Hechizos(HechizoIndex).Effects, e_SpellEffects.eDoDamage) Then
             Call WriteLocaleMsg(UserIndex, 2095, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
