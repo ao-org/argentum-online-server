@@ -72,9 +72,6 @@ End Enum
 
 Public Enum e_AccionBarra
     Runa = 1
-    Resucitar = 2
-    Intermundia = 3
-    GoToPareja = 5
     Hogar = 6
     CancelarAccion = 99
 End Enum
@@ -1561,8 +1558,8 @@ End Enum
 
 Public Enum e_RuneType
     ReturnHome = 1
-    Escape = 2
-    MesonSafePassage = 3
+    MesonSafePassage = 2
+    FastTravel = 3
 End Enum
 
 Public Enum e_UseOnceSubType

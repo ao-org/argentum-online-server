@@ -1550,18 +1550,7 @@ Sub PasarSegundo()
                 If .Counters.TimerBarra > 0 Then
                     .Counters.TimerBarra = .Counters.TimerBarra - 1
                     If .Counters.TimerBarra = 0 Then
-                        Select Case .Accion.TipoAccion
-                            Case e_AccionBarra.Hogar
-                                Call HomeArrival(i)
-                            Case e_AccionBarra.Runa
-                                Call CompletarAccionFin(i)
-                        End Select
-                        .Accion.Particula = 0
-                        .Accion.TipoAccion = e_AccionBarra.CancelarAccion
-                        .Accion.HechizoPendiente = 0
-                        .Accion.RunaObj = 0
-                        .Accion.ObjSlot = 0
-                        .Accion.AccionPendiente = False
+                        Call EndProgrammedAction(i)
                     End If
                 End If
                 If .flags.UltimoMensaje > 0 Then

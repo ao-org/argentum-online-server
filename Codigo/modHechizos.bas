@@ -951,53 +951,6 @@ HechizoSobreArea_Err:
     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoSobreArea", Erl)
 End Sub
 
-Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
-    On Error GoTo HechizoPortal_Err
-    Dim PosCasteadaX As Byte
-    Dim PosCasteadaY As Byte
-    Dim PosCasteadaM As Integer
-    Dim uh           As Integer
-    Dim TempX        As Integer
-    Dim TempY        As Integer
-    PosCasteadaX = UserList(UserIndex).flags.TargetX
-    PosCasteadaY = UserList(UserIndex).flags.TargetY
-    PosCasteadaM = UserList(UserIndex).flags.TargetMap
-    uh = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
-    'Envio Palabras magicas, wavs y fxs.
-    If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).ObjInfo.amount > 0 Or (MapData(UserList(UserIndex).pos.Map, _
-            UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Or MapData(UserList(UserIndex).pos.Map, _
-            UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).TileExit.Map > 0 Or UserList(UserIndex).flags.TargetUser.ArrayIndex <> 0 Then
-        b = False
-        'Call WriteConsoleMsg(UserIndex, "Area invalida para lanzar este Hechizo!", e_FontTypeNames.FONTTYPE_INFO)
-        Call WriteLocaleMsg(UserIndex, 262, e_FontTypeNames.FONTTYPE_INFO)
-    Else
-        If Hechizos(uh).TeleportX = 1 Then
-            If UserList(UserIndex).flags.Portal = 0 Then
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_GraphicEffects.Runa, -1, False))
-                UserList(UserIndex).flags.PortalM = UserList(UserIndex).pos.Map
-                UserList(UserIndex).flags.PortalX = UserList(UserIndex).flags.TargetX
-                UserList(UserIndex).flags.PortalY = UserList(UserIndex).flags.TargetY
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.charindex, 600, e_AccionBarra.Intermundia))
-                UserList(UserIndex).Accion.AccionPendiente = True
-                UserList(UserIndex).Accion.Particula = e_GraphicEffects.Runa
-                UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.Intermundia
-                UserList(UserIndex).Accion.HechizoPendiente = uh
-                If UserList(UserIndex).flags.NoPalabrasMagicas = 0 Then
-                    Call DecirPalabrasMagicas(uh, UserIndex)
-                End If
-                b = True
-            Else
-                'Msg788= No podés lanzar mas de un portal a la vez.
-                Call WriteLocaleMsg(UserIndex, 788, e_FontTypeNames.FONTTYPE_INFO)
-                b = False
-            End If
-        End If
-    End If
-    Exit Sub
-HechizoPortal_Err:
-    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoPortal", Erl)
-End Sub
-
 Sub HechizoMaterializacion(ByVal UserIndex As Integer, ByRef b As Boolean)
     On Error GoTo HechizoMaterializacion_Err
     Dim h   As Integer
@@ -1034,8 +987,6 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
                 Call HechizoMaterializacion(UserIndex, b)
             Case e_TipoHechizo.uArea 'Tipo 5
                 Call HechizoSobreArea(UserIndex, b)
-            Case e_TipoHechizo.uPortal 'Tipo 6
-                Call HechizoPortal(UserIndex, b)
             Case e_TipoHechizo.uMultiShoot
                 Dim TargetPos As t_WorldPos
                 TargetPos.Map = .pos.Map

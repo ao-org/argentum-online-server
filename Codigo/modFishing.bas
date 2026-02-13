@@ -1,32 +1,26 @@
 Attribute VB_Name = "modFishing"
 Option Explicit
-
-Private FishingLevelBonus() As Double
-Private FishingBonusesInitialized As Boolean
-
-Public Const OBJ_FISHING_ROD_BASIC                             As Integer = 881
-Public Const OBJ_FISHING_ROD_COMMON                            As Integer = 2121
-Public Const OBJ_FISHING_ROD_FINE                              As Integer = 2132
-Public Const OBJ_FISHING_ROD_ELITE                             As Integer = 2133
-Public Const OBJ_BROKEN_FISHING_ROD_BASIC                      As Integer = 3457
-Public Const OBJ_BROKEN_FISHING_ROD_COMMON                     As Integer = 3456
-Public Const OBJ_BROKEN_FISHING_ROD_FINE                       As Integer = 3459
-Public Const OBJ_BROKEN_FISHING_ROD_ELITE                      As Integer = 3458
-Public Const OBJ_FISHING_NET_BASIC                             As Integer = 138
-Public Const OBJ_FISHING_NET_ELITE                             As Integer = 139
-Public Const OBJ_FISHING_LINE                                  As Integer = 2183
-Public Const OBJ_FISH_BANK                                     As Integer = 1992
-Public Const OBJ_SQUID_BANK                                    As Integer = 1990
-Public Const OBJ_SHRIMP_BANK                                   As Integer = 1991
-Public Const OBJ_FISH_AREA                                     As Integer = 3740
-
-
+Private FishingLevelBonus()                As Double
+Private FishingBonusesInitialized          As Boolean
+Public Const OBJ_FISHING_ROD_BASIC         As Integer = 881
+Public Const OBJ_FISHING_ROD_COMMON        As Integer = 2121
+Public Const OBJ_FISHING_ROD_FINE          As Integer = 2132
+Public Const OBJ_FISHING_ROD_ELITE         As Integer = 2133
+Public Const OBJ_BROKEN_FISHING_ROD_BASIC  As Integer = 3457
+Public Const OBJ_BROKEN_FISHING_ROD_COMMON As Integer = 3456
+Public Const OBJ_BROKEN_FISHING_ROD_FINE   As Integer = 3459
+Public Const OBJ_BROKEN_FISHING_ROD_ELITE  As Integer = 3458
+Public Const OBJ_FISHING_NET_BASIC         As Integer = 138
+Public Const OBJ_FISHING_NET_ELITE         As Integer = 139
+Public Const OBJ_FISHING_LINE              As Integer = 2183
+Public Const OBJ_FISH_BANK                 As Integer = 1992
+Public Const OBJ_SQUID_BANK                As Integer = 1990
+Public Const OBJ_SHRIMP_BANK               As Integer = 1991
+Public Const OBJ_FISH_AREA                 As Integer = 3740
 
 Public Sub InitializeFishingBonuses()
     If FishingBonusesInitialized Then Exit Sub
-
     ReDim FishingLevelBonus(1 To 47) As Double
-
     FishingLevelBonus(1) = 0#
     FishingLevelBonus(2) = 0.009
     FishingLevelBonus(3) = 0.015
@@ -74,7 +68,6 @@ Public Sub InitializeFishingBonuses()
     FishingLevelBonus(45) = 1.8
     FishingLevelBonus(46) = 2#
     FishingLevelBonus(47) = 2.5
-
     FishingBonusesInitialized = True
 End Sub
 
@@ -252,12 +245,9 @@ Private Function IsValidUserIndex(ByVal UserIndex As Integer) As Boolean
     On Error GoTo InvalidIndex
     Dim LowerBound As Long
     Dim UpperBound As Long
-
     LowerBound = LBound(UserList)
     UpperBound = UBound(UserList)
-
     If UserIndex < LowerBound Or UserIndex > UpperBound Then Exit Function
-
     IsValidUserIndex = True
     Exit Function
 InvalidIndex:
@@ -265,16 +255,13 @@ InvalidIndex:
     IsValidUserIndex = False
 End Function
 
-Private Function IsValidObjectIndex(ByVal objectIndex As Integer) As Boolean
+Private Function IsValidObjectIndex(ByVal ObjectIndex As Integer) As Boolean
     On Error GoTo InvalidIndex
     Dim LowerBound As Long
     Dim UpperBound As Long
-
     LowerBound = LBound(ObjData)
     UpperBound = UBound(ObjData)
-
-    If objectIndex < LowerBound Or objectIndex > UpperBound Then Exit Function
-
+    If ObjectIndex < LowerBound Or ObjectIndex > UpperBound Then Exit Function
     IsValidObjectIndex = True
     Exit Function
 InvalidIndex:
@@ -282,37 +269,11 @@ InvalidIndex:
     IsValidObjectIndex = False
 End Function
 
-Private Function IsValidMapIndex(ByVal mapIndex As Integer) As Boolean
-    On Error GoTo InvalidIndex
-    Dim LowerBound As Long
-    Dim UpperBound As Long
-
-    LowerBound = LBound(MapInfo)
-    UpperBound = UBound(MapInfo)
-
-    If mapIndex < LowerBound Or mapIndex > UpperBound Then Exit Function
-
-    IsValidMapIndex = True
-    Exit Function
-InvalidIndex:
-    Err.Clear
-    IsValidMapIndex = False
-End Function
-
-Private Function IsValidMapPosition(ByVal mapIndex As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
-    If Not IsValidMapIndex(mapIndex) Then Exit Function
-    If x < XMinMapSize Or x > XMaxMapSize Then Exit Function
-    If y < YMinMapSize Or y > YMaxMapSize Then Exit Function
-    IsValidMapPosition = True
-End Function
-
 Private Function ClampFishingLevel(ByVal level As Long) As Long
     Dim LowerBound As Long
     Dim UpperBound As Long
-
     LowerBound = LBound(FishingLevelBonus)
     UpperBound = UBound(FishingLevelBonus)
-
     If level < LowerBound Then
         ClampFishingLevel = LowerBound
     ElseIf level > UpperBound Then
@@ -357,43 +318,36 @@ End Function
 
 Public Function ObtenerPezRandom(ByVal PoderCania As Integer) As Long
     On Error GoTo ObtenerPezRandom_Err
-
-    Dim PesoMinimo As Long
-    Dim PesoMaximo As Long
+    Dim PesoMinimo    As Long
+    Dim PesoMaximo    As Long
     Dim ValorGenerado As Long
-    Dim PezIndex As Long
-
+    Dim PezIndex      As Long
     ' Aseguramos que PoderCania esté dentro del rango válido del array.
     PoderCania = Clamp(PoderCania, LBound(PesoPeces), UBound(PesoPeces))
-    
     ' PesoMaximo: suma de pesos acumulados de todos los peces que puede pescar esta caña
     PesoMaximo = PesoPeces(PoderCania)
-    
     ' Esto asegura que el aleatorio solo considere los peces que pertenecen al Power actual
     If PoderCania > LBound(PesoPeces) Then
         PesoMinimo = PesoPeces(PoderCania - 1)
     Else
         PesoMinimo = 0
     End If
-
     ' Generamos un valor aleatorio solo dentro del rango correspondiente
     If PesoMaximo <= PesoMinimo Then
         ValorGenerado = RandomNumber(0, PesoMaximo - 1)
     Else
         ValorGenerado = RandomNumber(PesoMinimo, PesoMaximo - 1)
     End If
-
     ' Obtenemos el pez correspondiente
     PezIndex = BinarySearchPeces(ValorGenerado) ' BinarySearchPeces() espera un valor en el mismo espacio acumulado que PesoPeces().
     ObtenerPezRandom = Peces(PezIndex).ObjIndex
-
     Exit Function
-
 ObtenerPezRandom_Err:
     Call TraceError(Err.Number, Err.Description, "modFishing.ObtenerPezRandom", Erl)
 End Function
+
 Public Function IsUniqueMapFish(ByVal ObjIndex As Long) As Boolean
-On Error GoTo IsUniqueMapFish_Err
+    On Error GoTo IsUniqueMapFish_Err
     Dim i As Long
     For i = 1 To UniqueMapFishCount
         If UniqueMapFishIDs(i) = ObjIndex Then
@@ -498,4 +452,3 @@ Private Function IsAdjacentToWater(ByRef pos As t_WorldPos) As Boolean
         (MapData(pos.Map, pos.x, pos.y + 1).Blocked And FLAG_AGUA) <> 0 Or _
         (MapData(pos.Map, pos.x, pos.y - 1).Blocked And FLAG_AGUA) <> 0
 End Function
-
