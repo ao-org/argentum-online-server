@@ -529,13 +529,11 @@ ErrorHandler:
     Call LogDatabaseError("Error in GetUserGuildIndexDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 End Function
 
-Public Function GetUserGuildMemberDatabase(username As String) As String
+Public Function GetUserGuildMemberDatabase(ByVal CharacterId As Integer) As String
     On Error GoTo ErrorHandler
-    Dim user_id As Long
-    user_id = GetCharacterIdWithName(username)
     Dim RS      As ADODB.Recordset
     Dim History As String
-    Set RS = Query("SELECT DISTINCT guild_name FROM guild_member_history where user_id = ? order by request_time DESC", user_id)
+    Set RS = Query("SELECT DISTINCT guild_name FROM guild_member_history where user_id = ? order by request_time DESC", CharacterId)
     If RS Is Nothing Then Exit Function
     If Not RS.RecordCount = 0 Then
         Dim i As Integer
@@ -563,13 +561,11 @@ ErrorHandler:
     Call LogDatabaseError("Error in GetUserGuildAspirantDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 End Function
 
-Public Function GetUserGuildPedidosDatabase(username As String) As String
+Public Function GetUserGuildPedidosDatabase(ByVal CharacterId As Integer) As String
     On Error GoTo ErrorHandler
-    Dim user_id As Long
-    user_id = GetCharacterIdWithName(username)
     Dim RS      As ADODB.Recordset
     Dim History As String
-    Set RS = Query("SELECT DISTINCT guild_name FROM guild_request_history where user_id = ? order by request_time DESC", user_id)
+    Set RS = Query("SELECT DISTINCT guild_name FROM guild_request_history where user_id = ? order by request_time DESC", CharacterId)
     If RS Is Nothing Then Exit Function
     If Not RS.RecordCount = 0 Then
         Dim i As Integer
@@ -620,11 +616,9 @@ ErrorHandler:
     Call LogDatabaseError("Error in SaveUserGuildMemberDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 End Sub
 
-Public Sub SaveUserGuildPedidosDatabase(ByVal username As String, ByVal Pedidos As String)
+Public Sub SaveUserGuildPedidosDatabase(ByVal CharacterId As Integer, ByVal Pedidos As String)
     On Error GoTo ErrorHandler
-    Dim user_id As Long
-    user_id = GetCharacterIdWithName(username)
-    Call Execute("INSERT INTO guild_request_history (user_id, guild_name) VALUES (?, ?)", user_id, Pedidos)
+    Call Execute("INSERT INTO guild_request_history (user_id, guild_name) VALUES (?, ?)", CharacterId, Pedidos)
     Exit Sub
 ErrorHandler:
     Call LogDatabaseError("Error in SaveUserGuildPedidosDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
@@ -694,23 +688,6 @@ Public Function PersonajePerteneceID(ByVal username As String, ByVal AccountID A
         Exit Function
     End If
     PersonajePerteneceID = True
-End Function
-
-Public Function GetCharacterIdWithName(ByVal username As String) As Long
-    Dim tUser As t_UserReference
-    tUser = NameIndex(username)
-    If IsValidUserRef(tUser) Then
-        GetCharacterIdWithName = UserList(tUser.ArrayIndex).Id
-        Exit Function
-    End If
-    Dim RS As ADODB.Recordset
-    Set RS = Query("SELECT id FROM user WHERE name = ? COLLATE NOCASE;", username)
-    If Not RS Is Nothing Then
-        If RS.EOF Then Exit Function
-        GetCharacterIdWithName = RS!Id
-        Exit Function
-    End If
-    GetCharacterIdWithName = 0
 End Function
 
 Public Function SetPositionDatabase(username As String, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean

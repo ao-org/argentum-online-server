@@ -801,29 +801,6 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
         Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1947, vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG)) ' Msg1947=No eres el líder de tu clan.
         Exit Sub
     End If
-    If InStrB(Personaje, "\") <> 0 Then
-        Personaje = Replace$(Personaje, "\", vbNullString)
-    End If
-    If InStrB(Personaje, "/") <> 0 Then
-        Personaje = Replace$(Personaje, "/", vbNullString)
-    End If
-    If InStrB(Personaje, ".") <> 0 Then
-        Personaje = Replace$(Personaje, ".", vbNullString)
-    End If
-    Dim HasRequest As Boolean
-    Dim CharId     As Long
-    CharId = GetCharacterIdWithName(Personaje)
-    HasRequest = guilds(GI).HasGuildRequest(CharId)
-    If Not HasRequest Then
-        list = guilds(GI).GetMemberList()
-        For i = 0 To UBound(list())
-            If CharId = list(i) Then Exit For
-        Next i
-        If i > UBound(list()) Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1948, vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG)) ' Msg1948=El personaje no es ni aspirante ni miembro del clan.
-            Exit Sub
-        End If
-    End If
     Call SendCharacterInfoDatabase(UserIndex, Personaje)
     Exit Sub
 Error:
@@ -888,12 +865,11 @@ a_NuevoAspirante_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.a_NuevoAspirante", Erl)
 End Function
 
-Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante As String, ByRef refError As String) As Boolean
+Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByVal CharacterId As Integer, ByRef CharacterName As String, ByRef refError As String) As Boolean
     On Error GoTo a_AceptarAspirante_Err
     Dim GI           As Integer
     Dim tGI          As Integer
     Dim AspiranteRef As t_UserReference
-    'un pj ingresa al clan :D
     a_AceptarAspirante = False
     GI = UserList(UserIndex).GuildIndex
     If GI <= 0 Or GI > CANTIDADDECLANES Then
@@ -905,40 +881,37 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
         Exit Function
     End If
     Dim UserDidRequest As Boolean
-    Dim CharId         As Long
-    CharId = GetCharacterIdWithName(Aspirante)
-    UserDidRequest = guilds(GI).HasGuildRequest(CharId)
+    UserDidRequest = guilds(GI).HasGuildRequest(CharacterId)
     If Not UserDidRequest Then
         refError = 2013 'El Pj no es aspirante al clan.
         Exit Function
     End If
-    AspiranteRef = NameIndex(Aspirante)
     If IsValidUserRef(AspiranteRef) Then
         'pj Online
         If Not m_EstadoPermiteEntrar(AspiranteRef.ArrayIndex, GI) Then
-            refError = 2014 & "¬" & Aspirante & "¬" & Alineacion2String(guilds(GI).Alineacion) '¬1 no puede entrar a un clan ¬2.
-            Call guilds(GI).RetirarAspirante(Aspirante)
+            refError = 2014 & "¬" & CharacterName & "¬" & Alineacion2String(guilds(GI).Alineacion) '¬1 no puede entrar a un clan ¬2.
+            Call guilds(GI).RetirarAspirante(CharacterName)
             Exit Function
         ElseIf Not UserList(AspiranteRef.ArrayIndex).GuildIndex = 0 Then
-            refError = 2015 & "¬" & Aspirante '¬1 ya es parte de otro clan.
-            Call guilds(GI).RetirarAspirante(Aspirante)
+            refError = 2015 & "¬" & CharacterName '¬1 ya es parte de otro clan.
+            Call guilds(GI).RetirarAspirante(CharacterName)
             Exit Function
         End If
         If GuildAlignmentIndex(GI) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA And UserList(AspiranteRef.ArrayIndex).flags.Seguro = False Then
-            refError = 2016 & "¬" & Aspirante '¬1 deberá activar el seguro para entrar al clan.
-            Call guilds(GI).RetirarAspirante(Aspirante)
+            refError = 2016 & "¬" & CharacterName '¬1 deberá activar el seguro para entrar al clan.
+            Call guilds(GI).RetirarAspirante(CharacterName)
             Exit Function
         End If
     Else
-        If Not m_EstadoPermiteEntrarChar(Aspirante, GI) Then
-            refError = 2017 & "¬" & Aspirante & "¬" & Alineacion2String(guilds(GI).Alineacion) '¬1 no puede entrar a un clan ¬2.
-            Call guilds(GI).RetirarAspirante(Aspirante)
+        If Not m_EstadoPermiteEntrarChar(CharacterName, GI) Then
+            refError = 2017 & "¬" & CharacterName & "¬" & Alineacion2String(guilds(GI).Alineacion) '¬1 no puede entrar a un clan ¬2.
+            Call guilds(GI).RetirarAspirante(CharacterName)
             Exit Function
         Else
-            tGI = GetUserGuildIndexDatabase(CharId)
+            tGI = GetUserGuildIndexDatabase(CharacterId)
             If tGI <> 0 Then
-                refError = 2018 & "¬" & Aspirante '¬1 ya es parte de otro clan.
-                Call guilds(GI).RetirarAspirante(Aspirante)
+                refError = 2018 & "¬" & CharacterName '¬1 ya es parte de otro clan.
+                Call guilds(GI).RetirarAspirante(CharacterName)
                 Exit Function
             End If
         End If
@@ -947,9 +920,9 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
         refError = 2019 'La capacidad del clan está completa.
         Exit Function
     End If
-    'el pj es aspirante al clan y puede entrar
-    Call guilds(GI).RetirarAspirante(Aspirante)
-    Call guilds(GI).AceptarNuevoMiembro(CharId)
+    'el pj es CharacterName al clan y puede entrar
+    Call guilds(GI).RetirarAspirante(CharacterName)
+    Call guilds(GI).AceptarNuevoMiembro(CharacterId)
     ' If player is online, update tag
     If IsValidUserRef(AspiranteRef) Then
         Call RefreshCharStatus(AspiranteRef.ArrayIndex)
@@ -1144,9 +1117,9 @@ SaveUserGuildMember_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.SaveUserGuildMember", Erl)
 End Sub
 
-Public Sub SaveUserGuildPedidos(ByVal username As String, ByVal Pedidos As String)
+Public Sub SaveUserGuildPedidos(ByVal CharacterId As Integer, ByVal Pedidos As String)
     On Error GoTo SaveUserGuildPedidos_Err
-    Call SaveUserGuildPedidosDatabase(username, Pedidos)
+    Call SaveUserGuildPedidosDatabase(CharacterId, Pedidos)
     Exit Sub
 SaveUserGuildPedidos_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.SaveUserGuildPedidos", Erl)

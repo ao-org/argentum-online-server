@@ -271,18 +271,18 @@ DesConectarMiembro_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.DesConectarMiembro", Erl)
 End Sub
 
-Public Sub AceptarNuevoMiembro(ByRef UserId As Long)
+Public Sub AceptarNuevoMiembro(ByVal CharacterId As Integer)
     On Error GoTo AceptarNuevoMiembro_Err
-    If IsValidUserId(UserId) Then
-        Call SaveUserGuildIndex(UserId, p_GuildNumber)
-        Call SaveUserGuildAspirant(UserId, 0)
-        Call Query("INSERT INTO guild_members (guild_id, user_id) VALUES (?,?)", p_GuildId, UserId)
+    If IsValidUserId(CharacterId) Then
+        Call SaveUserGuildIndex(CharacterId, p_GuildNumber)
+        Call SaveUserGuildAspirant(CharacterId, 0)
+        Call Query("INSERT INTO guild_members (guild_id, user_id) VALUES (?,?)", p_GuildId, CharacterId)
         If Not MemberListLoaded Then
             Call ReloadMemberList
         Else
             memberCount = memberCount + 1
             ReDim Preserve MemberList(memberCount - 1) As Long
-            MemberList(memberCount - 1) = UserId
+            MemberList(memberCount - 1) = CharacterId
         End If
     End If
     Exit Sub
@@ -359,15 +359,10 @@ CantidadAspirantes_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.CantidadAspirantes", Erl)
 End Function
 
-Public Function DetallesSolicitudAspirante(ByVal username As String) As String
+Public Function DetallesSolicitudAspirante(ByVal CharacterId As Integer) As String
     On Error GoTo DetallesSolicitudAspirante_Err
-    Dim CharId As Long
-    CharId = GetCharacterIdWithName(username)
-    If CharId <= 0 Then
-        Exit Function
-    End If
     Dim RS As ADODB.Recordset
-    Set RS = Query("SELECT description FROM guild_request where guild_id = ? and user_id = ?", p_GuildId, CharId)
+    Set RS = Query("SELECT description FROM guild_request where guild_id = ? and user_id = ?", p_GuildId, CharacterId)
     If RS Is Nothing Then Exit Function
     DetallesSolicitudAspirante = RS.Fields(0).value
     Exit Function
@@ -375,29 +370,19 @@ DetallesSolicitudAspirante_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.DetallesSolicitudAspirante", Erl)
 End Function
 
-Public Sub NuevoAspirante(ByRef name As String, ByRef Peticion As String)
+Public Sub NuevoAspirante(ByVal CharacterId As Integer, ByRef Peticion As String)
     On Error GoTo NuevoAspirante_Err
-    Dim CharId As Long
-    CharId = GetCharacterIdWithName(name)
-    If CharId <= 0 Then
-        Exit Sub
-    End If
-    Call Execute("insert into guild_request (guild_id, user_id, description) values ( ?, ?, ?)", p_GuildId, CharId, Peticion)
+    Call Execute("insert into guild_request (guild_id, user_id, description) values ( ?, ?, ?)", p_GuildId, CharacterId, Peticion)
     Exit Sub
 NuevoAspirante_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.NuevoAspirante", Erl)
 End Sub
 
-Public Sub RetirarAspirante(ByRef name As String)
+Public Sub RetirarAspirante(ByVal CharacterId As Integer)
     On Error GoTo RetirarAspirante_Err
-    Dim CharId As Long
-    CharId = GetCharacterIdWithName(name)
-    If CharId <= 0 Then
-        Exit Sub
-    End If
-    Call Execute("DELETE FROM guild_request WHERE user_id = ? AND guild_id = ?;", CharId, p_GuildId)
-    Call SaveUserGuildAspirant(CharId, 0)
-    Call SaveUserGuildPedidos(name, p_GuildName)
+    Call Execute("DELETE FROM guild_request WHERE user_id = ? AND guild_id = ?;", CharacterId, p_GuildId)
+    Call SaveUserGuildAspirant(CharacterId, 0)
+    Call SaveUserGuildPedidos(CharacterId, p_GuildName)
     Exit Sub
 RetirarAspirante_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.RetirarAspirante", Erl)

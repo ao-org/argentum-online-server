@@ -3625,10 +3625,12 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
         Dim errorStr As String
         Dim username As String
         Dim tUser    As t_UserReference
+        Dim CharacterId As Integer
         username = reader.ReadString8()
+        CharacterId = reader.ReadInt16()
         tUser = NameIndex(username)
         If IsValidUserRef(tUser) Then
-            If Not modGuilds.a_AceptarAspirante(UserIndex, username, errorStr) Then
+            If Not modGuilds.a_AceptarAspirante(UserIndex, CharacterId, username, errorStr) Then
                 Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
             Else
                 Call modGuilds.m_ConectarMiembroAClan(tUser.ArrayIndex, .GuildIndex)
@@ -3637,7 +3639,7 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave(43, NO_3D_SOUND, NO_3D_SOUND))
             End If
         Else
-            If Not modGuilds.a_AceptarAspirante(UserIndex, username, errorStr) Then
+            If Not modGuilds.a_AceptarAspirante(UserIndex, CharacterId, username, errorStr) Then
                 Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
             Else
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1809, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1809=[¬1] ha sido aceptado como miembro del clan.
@@ -3688,13 +3690,10 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim username   As String
         Dim GuildIndex As Integer
+        Dim CharacterId As Integer
         username = reader.ReadString8()
-        Dim CharId As Long
-        CharId = GetCharacterIdWithName(username)
-        If CharId <= 0 Then
-            Exit Sub
-        End If
-        GuildIndex = modGuilds.m_EcharMiembroDeClan(UserIndex, CharId)
+        CharacterId = reader.ReadInt16()
+        GuildIndex = modGuilds.m_EcharMiembroDeClan(UserIndex, CharacterId)
         If GuildIndex > 0 Then
             Dim expulsado As t_UserReference
             expulsado = NameIndex(username)
