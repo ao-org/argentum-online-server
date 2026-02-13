@@ -1913,7 +1913,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Call WriteFYA(UserIndex)
                     Case e_PotionType.ModifiesHp     'Poción roja, restaura HP
                         ' Usa el ítem
-                        If .flags.DivineBlood > 0 Then
+                        If .flags.DivineBlood Then
                             Call WriteLocaleMsg(UserIndex, 2096, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If

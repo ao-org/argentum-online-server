@@ -518,7 +518,6 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 Exit Function
             End If
         End If
-        If IsFeatureEnabled("healers_and_tanks") And .flags.DivineBlood > 0 And IsSet(Hechizos(HechizoIndex).Effects, e_SpellEffects.eDoDamage) Then
             Call WriteLocaleMsg(UserIndex, 2095, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
@@ -1266,7 +1265,7 @@ Public Function GetSpellManaCostModifierByClass(ByVal UserIndex As Integer, Hech
                     Exit Function
                 End If
             Case e_Class.Cleric
-                If IsFeatureEnabled("healers_and_tanks") And .flags.DivineBlood > 0 Then
+                If IsFeatureEnabled("healers_and_tanks") And .flags.DivineBlood Then
                     If IsSet(Hechizo.Effects, e_SpellEffects.eDoHeal) Then
                         GetSpellManaCostModifierByClass = GetSpellManaCostModifierByClass * DivineBloodManaCostMultiplier
                     End If
@@ -2128,7 +2127,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
     Character = UserList(UserIndex)
     If IsFeatureEnabled("healers_and_tanks") And IsSet(Hechizos(h).Effects, e_SpellEffects.ToggleDivineBlood) Then
         If UserList(UserIndex).flags.DivineBlood Then
-            UserList(UserIndex).flags.DivineBlood = 0
+            UserList(UserIndex).flags.DivineBlood = False
             If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, 0, 0, eBuff)
             Character.Char.BackpackAnim = 0
             Call ChangeUserChar(UserIndex, Character.Char.body, Character.Char.head, Character.Char.Heading, Character.Char.WeaponAnim, Character.Char.ShieldAnim, _
@@ -2137,7 +2136,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                     Character.pos.y))
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.BAOLegionHorn, Character.pos.x, Character.pos.y))
         Else
-            UserList(UserIndex).flags.DivineBlood = 1
+            UserList(UserIndex).flags.DivineBlood = True
             If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, -1, -1, eBuff)
             Character.Char.BackpackAnim = 4997
             Call ChangeUserChar(UserIndex, Character.Char.body, Character.Char.head, Character.Char.Heading, Character.Char.WeaponAnim, Character.Char.ShieldAnim, _
@@ -3080,7 +3079,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
         Damage = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
         Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
         Damage = Damage * UserMod.GetSelfHealingBonus(UserList(tempChr))
-        If IsFeatureEnabled("healers_and_tanks") And UserList(UserIndex).flags.DivineBlood > 0 Then
+        If IsFeatureEnabled("healers_and_tanks") And UserList(UserIndex).flags.DivineBlood Then
             Damage = Damage * DivineBloodHealingMultiplierBonus
         End If
         Call InfoHechizo(UserIndex)
@@ -3330,7 +3329,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         Damage = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
         Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
         Damage = Damage * UserMod.GetSelfHealingBonus(UserList(targetUserIndex))
-        If UserList(UserIndex).flags.DivineBlood > 0 And IsFeatureEnabled("healers_and_tanks") Then
+        If UserList(UserIndex).flags.DivineBlood And IsFeatureEnabled("healers_and_tanks") Then
             Damage = Damage * DivineBloodHealingMultiplierBonus
         End If
         enviarInfoHechizo = True
