@@ -327,13 +327,14 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
     On Error GoTo GetPersonajesCuentaDatabase_Err
     Dim RS As ADODB.Recordset
     Set RS = Query( _
-            "SELECT name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index,backpack_id, is_dead, is_sailing FROM user WHERE account_id = ?;", _
+            "SELECT id,name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index,backpack_id, is_dead, is_sailing FROM user WHERE account_id = ?;", _
             AccountID)
     If RS Is Nothing Then Exit Function
     GetPersonajesCuentaDatabase = RS.RecordCount
     Dim i As Integer
     If GetPersonajesCuentaDatabase = 0 Then Exit Function
     For i = 1 To GetPersonajesCuentaDatabase
+        Personaje(i).id = RS!id
         Personaje(i).nombre = RS!name
         Personaje(i).Cabeza = RS!head_id
         Personaje(i).clase = RS!class_id

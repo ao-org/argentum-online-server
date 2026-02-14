@@ -49,6 +49,7 @@ End Function
         Dim i As Long
         For i = 1 To count
             With Personajes(i)
+                Call Writer.WriteInt(.id)
                 Call Writer.WriteString8(.nombre)
                 Call Writer.WriteInt(.cuerpo)
                 Call Writer.WriteInt(.Cabeza)

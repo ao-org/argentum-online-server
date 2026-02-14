@@ -122,6 +122,7 @@ Public Enum e_FontTypeNames
 End Enum
 
 Public Type t_PersonajeCuenta
+    id As Long
     nombre As String
     nivel As Byte
     Mapa As Integer
@@ -1001,7 +1002,10 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     Dim user_name As String
     Dim UserIndex As Integer
     UserIndex = Mapping(ConnectionID).UserRef.ArrayIndex
+    Dim char_id As Long
+    char_id = reader.ReadInt32
     user_name = reader.ReadString8
+    UserList(UserIndex).id = char_id
     Call ConnectUser(UserIndex, user_name)
     Exit Sub
 ErrHandler:
