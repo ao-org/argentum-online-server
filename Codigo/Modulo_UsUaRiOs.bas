@@ -776,7 +776,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
         .Stats.MinHp = .Stats.MaxHp
         ' El comportamiento cambia si usamos el hechizo Resucitar
         If MedianteHechizo And CasterUserIndex > 0 Then
-            If IsFeatureEnabled("healers_and_tanks") And UserList(CasterUserIndex).flags.DivineBlood > 0 Then
+            If IsFeatureEnabled("healers_and_tanks") And UserList(CasterUserIndex).flags.DivineBlood Then
                 .Stats.MinHp = .Stats.MaxHp
             Else
                 .Stats.MinHp = 1
@@ -1716,7 +1716,7 @@ Sub UserDie(ByVal UserIndex As Integer)
         .flags.Paraliza = 0
         .flags.Envenena = 0
         .flags.Estupidiza = 0
-        .flags.DivineBlood = 0
+        .flags.DivineBlood = False
         Call ClearEffectList(.EffectOverTime, e_EffectType.eAny, True)
         Call ClearModifiers(.Modifiers)
         .flags.Muerto = 1
@@ -2471,7 +2471,7 @@ End Sub
 Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
     On Error GoTo Handler
     With UserList(UserIndex)
-        .flags.DivineBlood = 0
+        .flags.DivineBlood = False
         '<<<< Envenenamiento >>>>
         .flags.Envenenado = 0
         '<<<< Paralisis >>>>
