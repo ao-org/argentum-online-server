@@ -33,7 +33,7 @@ Option Explicit
 Public Const SEPARATOR As String * 1 = vbNullChar
 Private Const SPELL_UNASSISTED_DARDO = 1
 Private Const SPELL_UNASSISTED_RUGIDO_SALVAJE = 5
-Private Const SPELL_UNASSISTED_RUGIDO_ARCANO = 348
+
 Private Const SPELL_UNASSISTED_FULGOR_IGNEO = 52
 Private Const SPELL_UNASSISTED_LATIDO_IGNEO = 349
 Private Const SPELL_UNASSISTED_ECO_IGNEO = 61
@@ -122,6 +122,7 @@ Public Enum e_FontTypeNames
 End Enum
 
 Public Type t_PersonajeCuenta
+    id As Long
     nombre As String
     nivel As Byte
     Mapa As Integer
@@ -1001,7 +1002,10 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     Dim user_name As String
     Dim UserIndex As Integer
     UserIndex = Mapping(ConnectionID).UserRef.ArrayIndex
+    Dim char_id As Long
+    char_id = reader.ReadInt32
     user_name = reader.ReadString8
+    UserList(UserIndex).id = char_id
     Call ConnectUser(UserIndex, user_name)
     Exit Sub
 ErrHandler:
@@ -1010,85 +1014,94 @@ End Sub
 
 #End If
 #If PYMMO = 1 Then
-
-
 Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
-        On Error GoTo ErrHandler
+    On Error GoTo ErrHandler
 
-        Dim user_name    As String
-        Dim CuentaEmail As String
-        Dim Version     As String
-        Dim md5         As String
-        Dim encrypted_session_token As String
-        Dim encrypted_username As String
-        
-        encrypted_session_token = reader.ReadString8
-        encrypted_username = reader.ReadString8
-        Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
-        md5 = reader.ReadString8()
+    Dim encrypted_session_token As String
+    Dim char_id As Long
+    Dim md5 As String
+    Dim Version As String
+    Dim CuentaEmail As String
+    Dim UserIndex As Integer
 
-        If Len(encrypted_session_token) <> 88 Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092)) ', "Cliente inválido, por favor realice una actualización."))
-            Call KickConnection(ConnectionID)
-            Exit Sub
-        End If
-                
-        
-        Dim encrypted_session_token_byte() As Byte
-        Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_session_token, encrypted_session_token_byte)
-        
-        Dim decrypted_session_token As String
-        decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
-                
-        If Not IsBase64(decrypted_session_token) Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092)) ', "Cliente inválido, por favor realice una actualización"))
-            Call KickConnection(ConnectionID)
-            Exit Sub
-        End If
-        
-        ' Para recibir el ID del user
-        Dim RS As ADODB.Recordset
-        Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
-                
-        If RS Is Nothing Or RS.RecordCount = 0 Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2093)) ', "Sesión inválida, conéctese nuevamente."))
-            Call KickConnection(ConnectionID)
-            Exit Sub
-        End If
-        
-        CuentaEmail = CStr(RS!username)
-                    
-        If RS!encrypted_token <> encrypted_session_token Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092)) ', "Cliente inválido, por favor realice una actualización."))
-            Call KickConnection(ConnectionID)
-            Exit Sub
-        End If
-        Dim UserIndex As Integer
-        UserIndex = MapConnectionToUser(ConnectionID)
-        If UserIndex < 1 Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094)) ', "No hay slot disponibles para el usuario."))
-            Call KickConnection(ConnectionID)
-            Exit Sub
-        End If
-        
-        UserList(UserIndex).encrypted_session_token_db_id = RS!Id
-        UserList(UserIndex).encrypted_session_token = encrypted_session_token
-        UserList(UserIndex).decrypted_session_token = decrypted_session_token
-        UserList(UserIndex).public_key = mid$(decrypted_session_token, 1, 16)
-        
-        user_name = AO20CryptoSysWrapper.DECRYPT(cnvHexStrFromString(UserList(UserIndex).public_key), encrypted_username)
-         
-        If Not EntrarCuenta(UserIndex, CuentaEmail, md5) Then
-            Call CloseSocket(UserIndex)
-            Exit Sub
-        End If
-        Call ConnectUser(UserIndex, user_name, False)
-        Exit Sub
+    encrypted_session_token = reader.ReadString8
+    char_id = reader.ReadInt32
     
-ErrHandler:
-        Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
+    If char_id <= 0 Or char_id > 2000000000 Then
+        LogInfoServidor ("HandleLoginExistingChar: invalid char_id " & char_id)
+        Call KickConnection(ConnectionID)
+        Exit Sub
+    End If
 
+    Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
+    md5 = reader.ReadString8()
+
+    If Len(encrypted_session_token) <> 88 Or char_id <= 0 Then
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092))
+        Call KickConnection(ConnectionID)
+        Exit Sub
+    End If
+
+    Dim encrypted_session_token_byte() As Byte
+    Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_session_token, encrypted_session_token_byte)
+
+    Dim decrypted_session_token As String
+    decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
+
+    If Not IsBase64(decrypted_session_token) Then
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092))
+        Call KickConnection(ConnectionID)
+        Exit Sub
+    End If
+
+    Dim RS As ADODB.Recordset
+    Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
+
+    If RS Is Nothing Or RS.RecordCount = 0 Then
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2093))
+        Call KickConnection(ConnectionID)
+        Exit Sub
+    End If
+
+    CuentaEmail = CStr(RS!username)
+
+    If CStr(RS!encrypted_token) <> encrypted_session_token Then
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092))
+        Call KickConnection(ConnectionID)
+        Exit Sub
+    End If
+
+    UserIndex = MapConnectionToUser(ConnectionID)
+    If UserIndex < 1 Then
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094))
+        Call KickConnection(ConnectionID)
+        Exit Sub
+    End If
+
+    With UserList(UserIndex)
+        .encrypted_session_token_db_id = RS!id
+        .encrypted_session_token = encrypted_session_token
+        .decrypted_session_token = decrypted_session_token
+        .public_key = mid$(decrypted_session_token, 1, 16)
+    End With
+
+    If Not EntrarCuenta(UserIndex, CuentaEmail, md5) Then
+        Call LogInfoServidor("HandleLoginExistingChar failed for " & CuentaEmail)
+        Call CloseSocket(UserIndex)
+        Exit Sub
+    End If
+
+    ' Store selected char id on the user struct
+    UserList(UserIndex).id = char_id
+
+    ' Fast/clean path:
+    Call ConnectUserByID(UserIndex, char_id, False)
+    Exit Sub
+
+ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
 End Sub
+
 
 Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
     On Error GoTo ErrHandler
@@ -7225,22 +7238,25 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
         Dim Motivo    As String
         tipoMacro = reader.ReadInt8
         clicks = reader.ReadInt32
+        Dim UserName As String
+        
+        UserName = GetUserDisplayName(UserIndex)
         Select Case tipoMacro
             Case tMacro.Coordenadas
-                Motivo = "macro de COORDENADAS"
+                Motivo = "macro de COORDENADAS."
             Case tMacro.dobleclick
                 Motivo = "macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & ")"
             Case tMacro.inasistidoPosFija
                 Dim spellID As Integer
                 spellID = .Stats.UserHechizos(.flags.Hechizo)
                 If Not IsUnassistedSpellAllowed(spellID) Then
-                    Motivo = "macro de INASISTIDO"
+                    Motivo = "macro INASISTIDO."
                 End If
             Case tMacro.borrarCartel
-                Motivo = "macro de CARTELEO"
+                Motivo = "macro de CARTELEO."
         End Select
         If Motivo <> "" Then
-            Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(mensaje & Motivo & ".", e_FontTypeNames.FONTTYPE_INFO))
+            Call SendData(sendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg("Control de macro---> El usuario " & username & "| Revisar --> " & Motivo & ".", e_FontTypeNames.FONTTYPE_INFO))
         End If
     End With
 End Sub
@@ -7287,6 +7303,24 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
         End If
         If .flags.Traveling = 0 Then
             If .pos.Map <> Ciudades(.Hogar).Map Then
+                
+                ' Costo en oro
+                Dim homeCostGLD As Long
+                
+                If .Stats.ELV <= 24 Then
+                    homeCostGLD = (.Stats.ELV * 15) + (CLng(.Stats.ELV ^ 1.5))
+                Else
+                    homeCostGLD = .Stats.ELV ^ 2
+                End If
+                
+                If .Stats.GLD < homeCostGLD Then
+                    Call WriteLocaleMsg(UserIndex, 2163, e_FontTypeNames.FONTTYPE_INFO, homeCostGLD)
+                    Exit Sub
+                End If
+                
+                .Stats.GLD = .Stats.GLD - homeCostGLD
+                Call WriteUpdateGold(UserIndex)
+                
                 Call goHome(UserIndex)
             Else
                 'Msg1276= Ya te encuentras en tu hogar.
@@ -7736,7 +7770,7 @@ Dim Slot As Byte
             End If
             
             If .Invent_Skins.Object(Slot).Equipped = 0 Then
-                Call LogShopTransactions("PJ ID: " & .Id & " Nick: " & GetUserRealName(UserIndex) & " -> Borró el Skin: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).name & " Tipo: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).ObjType & " Valor: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Valor)
+                Call LogShopTransactions("PJ ID: " & .id & " Nick: " & GetUserRealName(UserIndex) & " -> Borró el Skin: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).name & " Tipo: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType & " Valor: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Valor)
                 Call DesequiparSkin(UserIndex, Slot)
                 'Msg1287= Objeto eliminado correctamente.
                 .Invent_Skins.Object(Slot).Deleted = True

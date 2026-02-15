@@ -1854,6 +1854,11 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal targetUserIndex As I
                     fontType = e_FontTypeNames.FONTTYPE_GM
             End Select
         End If
+        
+        If .Counters.Trabajando > 0 Or .AutomatedAction.IsActive Then
+            Call SetMask(Statuses, e_UsersInfoMask.Working)
+        End If
+        
         'if im clicking and i have survival skill 50 or more i see all status
         If UserList(SourceUserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 50 Then
             If .flags.Envenenado > 0 Then
@@ -1870,9 +1875,6 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal targetUserIndex As I
             End If
             If .flags.Inmovilizado = 1 Then
                 Call SetMask(Statuses, e_UsersInfoMask.Inmovilized)
-            End If
-            If .Counters.Trabajando > 0 Then
-                Call SetMask(Statuses, e_UsersInfoMask.Working)
             End If
             If .flags.invisible = 1 Then
                 Call SetMask(Statuses, e_UsersInfoMask.invisible)

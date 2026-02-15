@@ -63,8 +63,8 @@ Public Const MSG_CANNOT_USE_HOME_IN_JAIL                       As Integer = 2112
 Public Const MAP_HOME_IN_JAIL                                  As Integer = 66
 Public Const MSG_QUEST_ALREADY_COMPLETED                       As Integer = 2114
 
-' Msg2117 = You need to have ¬1 equipped to perform this action.
-Public Const MSG_REMOVE_NEED_EQUIPPED As Integer = 2117
+
+
 
 ' Msg2118 = Pay attention! You lost your net, it got caught on the special fish.
 Public Const MSG_REMOVE_NET_LOST As Integer = 2118

@@ -147,6 +147,12 @@ Public Sub LogEdicionPaquete(texto As String)
     Exit Sub
 ErrHandler:
 End Sub
+Public Sub LogInfoServidor(texto As String)
+    On Error GoTo ErrHandler
+    Call LogThis(eType_Log.MacroServidor, "[Info] " & texto, vbLogEventTypeInformation)
+    Exit Sub
+ErrHandler:
+End Sub
 
 Public Sub LogMacroServidor(texto As String)
     On Error GoTo ErrHandler

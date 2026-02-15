@@ -32,7 +32,7 @@ Public CANTIDADDECLANES           As Integer 'cantidad actual de clanes en el se
 Private guilds(1 To MAX_GUILDS)   As clsClan 'array global de guilds, se indexa por userlist().guildindex
 Private Const CANTIDADMAXIMACODEX As Byte = 8 'cantidad maxima de codecs que se pueden definir
 Public Const MAXASPIRANTES        As Byte = 10 'cantidad maxima de aspirantes que puede tener un clan acumulados a la vez
-Private Const MAXANTIFACCION      As Byte = 5 'puntos maximos de antifaccion que un clan tolera antes de ser cambiada su alineacion
+
 
 'alineaciones permitidas
 Public Enum e_ALINEACION_GUILD
