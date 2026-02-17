@@ -33,7 +33,7 @@ Option Explicit
 Public Const SEPARATOR As String * 1 = vbNullChar
 Private Const SPELL_UNASSISTED_DARDO = 1
 Private Const SPELL_UNASSISTED_RUGIDO_SALVAJE = 5
-
+Private Const SPELL_UNASSISTED_RUGIDO_ARCANO = 348
 Private Const SPELL_UNASSISTED_FULGOR_IGNEO = 52
 Private Const SPELL_UNASSISTED_LATIDO_IGNEO = 349
 Private Const SPELL_UNASSISTED_ECO_IGNEO = 61
@@ -7243,17 +7243,17 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
         UserName = GetUserDisplayName(UserIndex)
         Select Case tipoMacro
             Case tMacro.Coordenadas
-                Motivo = "macro de COORDENADAS."
+                Motivo = "Macro de Cordenadas."
             Case tMacro.dobleclick
-                Motivo = "macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & ")"
+                Motivo = "Macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & ")"
             Case tMacro.inasistidoPosFija
                 Dim spellID As Integer
                 spellID = .Stats.UserHechizos(.flags.Hechizo)
                 If Not IsUnassistedSpellAllowed(spellID) Then
-                    Motivo = "macro INASISTIDO."
+                    Motivo = "Macro Inasistido."
                 End If
             Case tMacro.borrarCartel
-                Motivo = "macro de CARTELEO."
+                Motivo = "Macro de Carteleo."
         End Select
         If Motivo <> "" Then
             Call SendData(sendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg("Control de macro---> El usuario " & username & "| Revisar --> " & Motivo & ".", e_FontTypeNames.FONTTYPE_INFO))
@@ -7263,7 +7263,7 @@ End Sub
 
 Private Function IsUnassistedSpellAllowed(ByVal spellID As Integer) As Boolean
     Select Case spellID
-        Case SPELL_UNASSISTED_DARDO, SPELL_UNASSISTED_RUGIDO_SALVAJE, SPELL_UNASSISTED_RUGIDO_SALVAJE, SPELL_UNASSISTED_FULGOR_IGNEO, SPELL_UNASSISTED_LATIDO_IGNEO, SPELL_UNASSISTED_ECO_IGNEO, SPELL_UNASSISTED_DESTELLO_MALVA, _
+        Case SPELL_UNASSISTED_DARDO, SPELL_UNASSISTED_RUGIDO_SALVAJE, SPELL_UNASSISTED_RUGIDO_ARCANO, SPELL_UNASSISTED_FULGOR_IGNEO, SPELL_UNASSISTED_LATIDO_IGNEO, SPELL_UNASSISTED_ECO_IGNEO, SPELL_UNASSISTED_DESTELLO_MALVA, _
             SPELL_UNASSISTED_FRACTURA_GLACIAL, SPELL_UNASSISTED_ALIENTO_CARMESI, SPELL_UNASSISTED_ENERGIA_ANCESTRAL
             IsUnassistedSpellAllowed = True
         Case Else
