@@ -418,10 +418,8 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer,
                     Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
-                '  Hacemos que se detenga a hablar un momento :P
-                If NpcList(TempCharIndex).Movement = Caminata Then
-                    NpcList(TempCharIndex).Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), 5000) ' 5 segundos
-                End If
+                '  No frenamos la caminata al curar/revivir para evitar que puedan dejar al NPC quieto a base de clicks.
+                
                 UserList(UserIndex).flags.Envenenado = 0
                 UserList(UserIndex).flags.Incinerado = 0
                 'Revivimos si es necesario
