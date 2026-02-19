@@ -6937,8 +6937,15 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
     'Agregamos la quest.
     With UserList(UserIndex).QuestStats.Quests(QuestSlot)
         .QuestIndex = tmpIndex
-        If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
-        If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
+        .Dirty = True ' Quest slot changed: new quest assignment.
+        If QuestList(.QuestIndex).RequiredNPCs Then
+            ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
+            .Dirty = True ' Quest slot changed: NPC kill progress array resized for assigned quest.
+        End If
+        If QuestList(.QuestIndex).RequiredTargetNPCs Then
+            ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
+            .Dirty = True ' Quest slot changed: target progress array resized for assigned quest.
+        End If
         UserList(UserIndex).flags.ModificoQuests = True
         'Msg1264= Has aceptado la misión ¬1
         Call WriteLocaleMsg(UserIndex, 1264, e_FontTypeNames.FONTTYPE_INFOIAO, .QuestIndex)
