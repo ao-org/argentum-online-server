@@ -6937,6 +6937,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
     'Agregamos la quest.
     With UserList(UserIndex).QuestStats.Quests(QuestSlot)
         .QuestIndex = tmpIndex
+        .Dirty = True ' Quest slot changed: new quest assignment.
         If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
         If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
         UserList(UserIndex).flags.ModificoQuests = True

@@ -386,11 +386,16 @@ End Sub
 Private Sub SetupUserQuests(ByRef User As t_User)
     Dim RS    As ADODB.Recordset
     Dim LoopC As Byte
+    Dim SlotC As Byte
+    For SlotC = 1 To MAXUSERQUESTS
+        User.QuestStats.Quests(SlotC).Dirty = False ' Loaded state starts clean.
+    Next SlotC
     Set RS = Query("SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = ?;", User.Id)
     If Not RS Is Nothing Then
         While Not RS.EOF
             If Not IsNull(RS!Number) Then
                 User.QuestStats.Quests(RS!Number).QuestIndex = RS!quest_id
+                User.QuestStats.Quests(RS!Number).Dirty = False ' Loaded from DB.
                 If User.QuestStats.Quests(RS!Number).QuestIndex > 0 Then
                     If QuestList(User.QuestStats.Quests(RS!Number).QuestIndex).RequiredNPCs Then
                         Dim NPCs() As String
@@ -655,43 +660,7 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
         Call Execute(QUERY_UPSERT_PETS, Params)
         Call AppendQueryDuration(QueryBreakdown, "upsert pets", QueryTimer)
         ' ************************** User quests *********************************
-        Builder.Append "REPLACE INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
-        Dim Tmp As Integer, LoopK As Long
-        For LoopC = 1 To MAXUSERQUESTS
-            Builder.Append "("
-            Builder.Append .Id & ", "
-            Builder.Append LoopC & ", "
-            Builder.Append .QuestStats.Quests(LoopC).QuestIndex & ", '"
-            If .QuestStats.Quests(LoopC).QuestIndex > 0 Then
-                Tmp = QuestList(.QuestStats.Quests(LoopC).QuestIndex).RequiredNPCs
-                If Tmp Then
-                    For LoopK = 1 To Tmp
-                        Builder.Append CStr(.QuestStats.Quests(LoopC).NPCsKilled(LoopK))
-                        If LoopK < Tmp Then
-                            Builder.Append "-"
-                        End If
-                    Next LoopK
-                End If
-            End If
-            Builder.Append "', '"
-            If .QuestStats.Quests(LoopC).QuestIndex > 0 Then
-                Tmp = QuestList(.QuestStats.Quests(LoopC).QuestIndex).RequiredTargetNPCs
-                For LoopK = 1 To Tmp
-                    Builder.Append CStr(.QuestStats.Quests(LoopC).NPCsTarget(LoopK))
-                    If LoopK < Tmp Then
-                        Builder.Append "-"
-                    End If
-                Next LoopK
-            End If
-            Builder.Append "')"
-            If LoopC < MAXUSERQUESTS Then
-                Builder.Append ", "
-            End If
-        Next LoopC
-        QueryTimer = GetTickCountRaw()
-        Call Execute(Builder.ToString())
-        Call AppendQueryDuration(QueryBreakdown, "replace quests", QueryTimer)
-        Call Builder.Clear
+        Call SaveCharacterQuestsDB(UserList(UserIndex), QueryBreakdown)
         ' ************************** User completed quests *********************************
         If .QuestStats.NumQuestsDone > 0 Then
             ' Armamos la query con los placeholders
@@ -724,6 +693,125 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
     Exit Sub
 ErrorHandler:
     Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
+End Sub
+
+Private Sub SaveCharacterQuestsDB(ByRef User As t_User, ByRef QueryBreakdown As String)
+    Dim QueryTimer As Long
+    Dim LoopC As Long
+    Dim LoopK As Long
+    Dim Tmp As Integer
+    Dim DirtyQuestSlotsSaved As Long
+    Dim DirtyQuestSlotsDeleted As Long
+    Dim DirtyQuestSlotsTotal As Long
+    Dim DirtyQuestSaveSlots() As Integer
+    Dim DirtyQuestDeleteSlots() As Integer
+    Dim QuestSlotToSave As Integer
+
+    ' Split dirty quest slots into two groups:
+    '   1) Active slots (QuestIndex > 0) that must be upserted.
+    '   2) Cleared slots (QuestIndex = 0) that must be deleted.
+    For LoopC = 1 To MAXUSERQUESTS
+        If User.QuestStats.Quests(LoopC).Dirty Then
+            If User.QuestStats.Quests(LoopC).QuestIndex > 0 Then
+                DirtyQuestSlotsSaved = DirtyQuestSlotsSaved + 1
+                If DirtyQuestSlotsSaved = 1 Then
+                    ReDim DirtyQuestSaveSlots(1 To 1)
+                Else
+                    ReDim Preserve DirtyQuestSaveSlots(1 To DirtyQuestSlotsSaved)
+                End If
+                DirtyQuestSaveSlots(DirtyQuestSlotsSaved) = LoopC
+            Else
+                DirtyQuestSlotsDeleted = DirtyQuestSlotsDeleted + 1
+                If DirtyQuestSlotsDeleted = 1 Then
+                    ReDim DirtyQuestDeleteSlots(1 To 1)
+                Else
+                    ReDim Preserve DirtyQuestDeleteSlots(1 To DirtyQuestSlotsDeleted)
+                End If
+                DirtyQuestDeleteSlots(DirtyQuestSlotsDeleted) = LoopC
+            End If
+        End If
+    Next LoopC
+
+    DirtyQuestSlotsTotal = DirtyQuestSlotsSaved + DirtyQuestSlotsDeleted
+
+    ' Persist only dirty active quest slots, keeping existing dash-separated
+    ' serialization for NPC kill and target progress columns.
+    If DirtyQuestSlotsSaved > 0 Then
+        Builder.Append "REPLACE INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
+        For LoopC = 1 To DirtyQuestSlotsSaved
+            QuestSlotToSave = DirtyQuestSaveSlots(LoopC)
+
+            Builder.Append "("
+            Builder.Append User.Id & ", "
+            Builder.Append QuestSlotToSave & ", "
+            Builder.Append User.QuestStats.Quests(QuestSlotToSave).QuestIndex & ", '"
+            Tmp = QuestList(User.QuestStats.Quests(QuestSlotToSave).QuestIndex).RequiredNPCs
+            If Tmp Then
+                For LoopK = 1 To Tmp
+                    Builder.Append CStr(User.QuestStats.Quests(QuestSlotToSave).NPCsKilled(LoopK))
+                    If LoopK < Tmp Then
+                        Builder.Append "-"
+                    End If
+                Next LoopK
+            End If
+            Builder.Append "', '"
+            Tmp = QuestList(User.QuestStats.Quests(QuestSlotToSave).QuestIndex).RequiredTargetNPCs
+            For LoopK = 1 To Tmp
+                Builder.Append CStr(User.QuestStats.Quests(QuestSlotToSave).NPCsTarget(LoopK))
+                If LoopK < Tmp Then
+                    Builder.Append "-"
+                End If
+            Next LoopK
+            Builder.Append "')"
+            If LoopC < DirtyQuestSlotsSaved Then
+                Builder.Append ", "
+            End If
+        Next LoopC
+
+        QueryTimer = GetTickCountRaw()
+        Call Execute(Builder.ToString())
+        Call AppendQueryDuration(QueryBreakdown, "replace dirty quests", QueryTimer)
+        Call Builder.Clear
+    End If
+
+    ' Remove dirty slots that were reset/abandoned and no longer have a quest.
+    If DirtyQuestSlotsDeleted > 0 Then
+        Builder.Append "DELETE FROM quest WHERE user_id = " & User.Id & " AND number IN ("
+        For LoopC = 1 To DirtyQuestSlotsDeleted
+            Builder.Append CStr(DirtyQuestDeleteSlots(LoopC))
+            If LoopC < DirtyQuestSlotsDeleted Then
+                Builder.Append ", "
+            End If
+        Next LoopC
+        Builder.Append ")"
+
+        QueryTimer = GetTickCountRaw()
+        Call Execute(Builder.ToString())
+        Call AppendQueryDuration(QueryBreakdown, "delete dirty quests", QueryTimer)
+        Call Builder.Clear
+    End If
+
+    ' If no dirty slots were found, explicitly log that quest persistence was skipped.
+    If DirtyQuestSlotsTotal = 0 Then
+        If Len(QueryBreakdown) > 0 Then
+            QueryBreakdown = QueryBreakdown & "; "
+        End If
+        QueryBreakdown = QueryBreakdown & "quests skipped"
+    End If
+
+    ' Emit counters so performance logs can show real quest write pressure.
+    If Len(QueryBreakdown) > 0 Then
+        QueryBreakdown = QueryBreakdown & "; "
+    End If
+    QueryBreakdown = QueryBreakdown & "dirty_quest_slots_saved = " & DirtyQuestSlotsSaved & "; dirty_quest_slots_deleted = " & DirtyQuestSlotsDeleted
+
+    ' Clear dirty flags only after DB operations completed successfully.
+    For LoopC = 1 To DirtyQuestSlotsSaved
+        User.QuestStats.Quests(DirtyQuestSaveSlots(LoopC)).Dirty = False ' Cleared only after successful DB write.
+    Next LoopC
+    For LoopC = 1 To DirtyQuestSlotsDeleted
+        User.QuestStats.Quests(DirtyQuestDeleteSlots(LoopC)).Dirty = False ' Cleared only after successful DB delete.
+    Next LoopC
 End Sub
 
 
