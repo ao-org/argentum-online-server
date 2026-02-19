@@ -1111,7 +1111,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             Dim NpcStatusMask As Long
             If Len(NpcList(TempCharIndex).Desc) > 1 Then
                 '  Hacemos que se detenga a hablar un momento :P
-                If NpcList(TempCharIndex).Movement = Caminata Then
+                If NpcList(TempCharIndex).Movement = Caminata And NpcList(TempCharIndex).pos.Map <> 66 Then
                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), 5000 + Len(NpcList(TempCharIndex).Desc) * 50) ' 5 segundos + 1 segundo cada 20 caracteres
                 End If
                 If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).flags.Muerto = 1 And NpcList(TempCharIndex).npcType = e_NPCType.Revividor) Then
@@ -1119,7 +1119,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                        e_NPCType.Revividor Or NpcList(TempCharIndex).npcType = e_NPCType.Comun Or NpcList(TempCharIndex).npcType = e_NPCType.Entrenador Or NpcList( _
                        TempCharIndex).npcType = e_NPCType.Gobernador Then
                         If Distance(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, NpcList(TempCharIndex).pos.x, NpcList(TempCharIndex).pos.y) < 3 Then
-                            If NpcList(TempCharIndex).Movement = Caminata Then
+                            If NpcList(TempCharIndex).Movement = Caminata And NpcList(TempCharIndex).pos.Map <> 66 Then
                                 NpcList(TempCharIndex).Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), 15000) ' 15 segundos
                             End If
                             If NpcList(TempCharIndex).SoundOpen <> 0 Then
@@ -1854,6 +1854,11 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal targetUserIndex As I
                     fontType = e_FontTypeNames.FONTTYPE_GM
             End Select
         End If
+        
+        If .Counters.Trabajando > 0 Or .AutomatedAction.IsActive Then
+            Call SetMask(Statuses, e_UsersInfoMask.Working)
+        End If
+        
         'if im clicking and i have survival skill 50 or more i see all status
         If UserList(SourceUserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 50 Then
             If .flags.Envenenado > 0 Then
@@ -1870,9 +1875,6 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal targetUserIndex As I
             End If
             If .flags.Inmovilizado = 1 Then
                 Call SetMask(Statuses, e_UsersInfoMask.Inmovilized)
-            End If
-            If .Counters.Trabajando > 0 Then
-                Call SetMask(Statuses, e_UsersInfoMask.Working)
             End If
             If .flags.invisible = 1 Then
                 Call SetMask(Statuses, e_UsersInfoMask.invisible)
