@@ -419,9 +419,10 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer,
                     Exit Sub
                 End If
                 '  No frenamos la caminata al curar/revivir para evitar que puedan dejar al NPC quieto a base de clicks.
-                
-                UserList(UserIndex).flags.Envenenado = 0
-                UserList(UserIndex).flags.Incinerado = 0
+                If UserList(UserIndex).pos.Map <> MAP_HOME_IN_JAIL Then
+                    UserList(UserIndex).flags.Envenenado = 0
+                    UserList(UserIndex).flags.Incinerado = 0
+                End If
                 'Revivimos si es necesario
                 If UserList(UserIndex).flags.Muerto = 1 And (NpcList(TempCharIndex).npcType = e_NPCType.Revividor Or EsNewbie(UserIndex)) Then
                     ' Msg585=¡Has sido resucitado!
@@ -430,6 +431,9 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer,
                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Resucitar, 30, False))
                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
                 Else
+                    If UserList(UserIndex).pos.Map = MAP_HOME_IN_JAIL And NpcList(TempCharIndex).npcType = e_NPCType.Revividor Then
+                        Exit Sub
+                    End If
                     'curamos totalmente
                     If UserList(UserIndex).Stats.MinHp <> UserList(UserIndex).Stats.MaxHp Then
                         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp

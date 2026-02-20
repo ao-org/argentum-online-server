@@ -2078,6 +2078,7 @@ Public Type t_UserQuest
     NPCsTarget() As Integer
     NPCsKilled() As Integer
     QuestIndex As Integer
+    Dirty As Boolean
 End Type
 
 Public Type t_QuestSkill

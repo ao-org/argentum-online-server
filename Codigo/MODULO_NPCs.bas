@@ -2229,6 +2229,7 @@ Public Sub OnNpcKilledUpdateQuest(ByVal UserIndex As Integer, ByRef MiNPC As t_N
                         If QuestList(.QuestIndex).RequiredNPC(j).NpcIndex = MiNPC.Numero Then
                             If QuestList(.QuestIndex).RequiredNPC(j).Amount > .NPCsKilled(j) Then
                                 .NPCsKilled(j) = .NPCsKilled(j) + 1
+                                .Dirty = True ' Quest slot changed: NPC kill progress increased.
                             End If
                             chatColor = GetNPCProgressColor(.NPCsKilled(j), QuestList(.QuestIndex).RequiredNPC(j).Amount)
                             Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).Amount & " " & MiNPC.Name, _

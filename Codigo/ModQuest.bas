@@ -292,15 +292,18 @@ Public Sub CleanQuestSlot(ByVal UserIndex As Integer, ByVal QuestSlot As Integer
             If QuestList(.QuestIndex).RequiredNPCs Then
                 For i = 1 To QuestList(.QuestIndex).RequiredNPCs
                     .NPCsKilled(i) = 0
+                    .Dirty = True ' Quest slot changed: kill progress reset.
                 Next i
             End If
             If QuestList(.QuestIndex).RequiredTargetNPCs Then
                 For i = 1 To QuestList(.QuestIndex).RequiredTargetNPCs
                     .NPCsTarget(i) = 0
+                    .Dirty = True ' Quest slot changed: target progress reset.
                 Next i
             End If
         End If
         .QuestIndex = 0
+        .Dirty = True ' Quest slot changed: quest removed/reset.
         UserList(UserIndex).flags.ModificoQuests = True
     End With
     Exit Sub
@@ -442,6 +445,7 @@ Public Sub ArrangeUserQuests(ByVal UserIndex As Integer)
                 For j = i + 1 To MAXUSERQUESTS
                     If .Quests(j).QuestIndex Then
                         .Quests(i) = .Quests(j)
+                        .Quests(i).Dirty = True ' Quest slot changed: quest moved to compact active slots.
                         Call CleanQuestSlot(UserIndex, j)
                         Exit For
                     End If
