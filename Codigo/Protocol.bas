@@ -4261,6 +4261,7 @@ Private Sub HandleHeal(ByVal UserIndex As Integer)
         End If
         If (NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Revividor And NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.ResucitadorNewbie) Or .flags.Muerto _
                 <> 0 Then Exit Sub
+        If .pos.Map = MAP_HOME_IN_JAIL And NpcList(.flags.TargetNPC.ArrayIndex).npcType = e_NPCType.Revividor Then Exit Sub
         If Distancia(.pos, NpcList(.flags.TargetNPC.ArrayIndex).pos) > 10 Then
             Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
