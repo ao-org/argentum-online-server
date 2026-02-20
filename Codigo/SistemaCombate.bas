@@ -317,6 +317,10 @@ End Function
 
 Public Function GetUserDamageWithItem(ByVal UserIndex As Integer, ByVal WeaponObjIndex As Integer, ByVal AmunitionObjIndex As Integer, ByVal TargetType As e_ReferenceType) As Long
     On Error GoTo GetUserDamageWithItem_Err
+    
+    ' Sanitizar tipo de objetivo
+    TargetType = NormalizeTargetType(TargetType)
+    
     Dim UserDamage As Long, WeaponDamage As Long, MaxWeaponDamage As Long, ClassModifier As Single, MinHit As Integer, MaxHit As Integer
     With UserList(UserIndex)
         ' Daño base del usuario
@@ -2420,3 +2424,15 @@ Public Sub GetHitRangeValues(ByRef Obj As t_ObjData, ByVal TargetType As e_Refer
 GetHitRangeValues_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetHitRangeValues", Erl)
 End Sub
+Private Function NormalizeTargetType(ByVal TargetType As e_ReferenceType) As e_ReferenceType
+    On Error GoTo NormalizeTargetType_Err
+    Select Case TargetType
+        Case eUser, eNpc
+            NormalizeTargetType = TargetType
+        Case Else
+            NormalizeTargetType = eUser
+    End Select
+    Exit Function
+NormalizeTargetType_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.NormalizeTargetType", Erl)
+End Function
