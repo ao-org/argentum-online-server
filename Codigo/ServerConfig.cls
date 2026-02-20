@@ -106,7 +106,7 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "JineteLevel7Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel7Speed", "1.30")))
     mSettings.Add "JineteLevel8Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel8Speed", "1.45")))
     mSettings.Add "JineteLevel9Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel9Speed", "1.50")))
-    mSettings.Add "MaxJailTime", CInt(val(reader.GetValue("CONFIGURACIONES", "MaxJailTime", "8640")))
+    mSettings.Add "MaxJailTime", CLng(val(reader.GetValue("CONFIGURACIONES", "MaxJailTime", "8640")))
     mSettings.Add "DropMult", CInt(val(reader.GetValue("DROPEO", "DropMult")))
     mSettings.Add "DropActive", CInt(val(reader.GetValue("DROPEO", "DropActive")))
     mSettings.Add "MaximoSpeedHack", CInt(val(reader.GetValue("ANTICHEAT", "MaximoSpeedHack")))
