@@ -7321,7 +7321,8 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
                 End If
                 
                 If .Stats.GLD < homeCostGLD Then
-                    Call WriteLocaleMsg(UserIndex, 2163, e_FontTypeNames.FONTTYPE_INFO, homeCostGLD)
+                    'Msg2164=Para utilizar este comando necesitas ¬1 monedas de oro.
+                    Call WriteLocaleMsg(UserIndex, 2164, e_FontTypeNames.FONTTYPE_INFO, homeCostGLD)
                     Exit Sub
                 End If
                 
