@@ -27,11 +27,9 @@ Create a new folder named `C:\AO20` and navigate to it. Follow these steps:
 
 5. Clone `Recursos` (https://github.com/ao-org/Recursos)
 
-6. Copy `Example.EsArbol.ini` to `Recursos\init\EsArbol.ini` and customize it if you need different tree graphics.
+6. Open Visual Basic 6 as an administrator
 
-7. Open Visual Basic 6 as an administrator
-
-8. Open the file `Server.VBP`
+7. Open the file `Server.VBP`
 
 # 🔛 Feature Toggle/Flag (Turn ON/OFF features)
 

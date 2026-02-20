@@ -32,7 +32,6 @@ Public Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
 Public Declare Sub OutputDebugString Lib "Kernel32" Alias "OutputDebugStringA" (ByVal lpOutputString As String)
 Global LeerNPCs As New clsIniManager
 
-Private Const TREE_GRAPHICS_FILE As String = "EsArbol.ini"
 Private TreeGraphicIds()         As Long
 Private TreeGraphicCount         As Long
 
@@ -283,115 +282,64 @@ End Function
 
 Public Sub LoadTreeGraphics()
     On Error GoTo LoadTreeGraphics_Err
-    Dim initTreeFile   As String
-    Dim legacyTreeFile As String
-
-    initTreeFile = GetTreeGraphicsInitPath()
-    legacyTreeFile = GetTreeGraphicsLegacyPath()
-
-    If LoadTreeGraphicsFromFile(initTreeFile) Then Exit Sub
-
-    If LoadTreeGraphicsFromFile(legacyTreeFile) Then Exit Sub
 
     Call LoadDefaultTreeGraphics
-
-    If EnsureDirectoryExists(GetDirectoryName(initTreeFile)) Then
-        Call SaveTreeGraphicsFile(initTreeFile)
-    ElseIf EnsureDirectoryExists(GetDirectoryName(legacyTreeFile)) Then
-        Call SaveTreeGraphicsFile(legacyTreeFile)
-    Else
-        Call SaveTreeGraphicsFile(initTreeFile)
-    End If
     Exit Sub
 LoadTreeGraphics_Err:
     Call TraceError(Err.Number, Err.Description, "General.LoadTreeGraphics", Erl)
 End Sub
 
-Private Function GetTreeGraphicsInitPath() As String
-    GetTreeGraphicsInitPath = App.Path & "\Recursos\init\" & TREE_GRAPHICS_FILE
-End Function
-
-Private Function GetTreeGraphicsLegacyPath() As String
-    GetTreeGraphicsLegacyPath = DatPath & TREE_GRAPHICS_FILE
-End Function
-
-
-Private Function LoadTreeGraphicsFromFile(ByVal FilePath As String) As Boolean
-    On Error GoTo LoadTreeGraphicsFromFile_Err
-
-    If Not FileExist(FilePath, vbArchive) Then Exit Function
-
-    Dim requestedCount As Long
-    Dim idx            As Long
-    Dim treeValue      As Long
-
-    requestedCount = val(GetVar(FilePath, "INIT", "Count"))
-
-    If requestedCount <= 0 Then Exit Function
-
-    ReDim TreeGraphicIds(1 To requestedCount) As Long
-    TreeGraphicCount = 0
-
-    For idx = 1 To requestedCount
-        treeValue = val(GetVar(FilePath, "TREES", "Tree" & idx))
-        If treeValue <> 0 Then
-            TreeGraphicCount = TreeGraphicCount + 1
-            TreeGraphicIds(TreeGraphicCount) = treeValue
-        End If
-    Next idx
-
-    If TreeGraphicCount = 0 Then
-        Erase TreeGraphicIds
-        Exit Function
-    End If
-
-    If TreeGraphicCount <> requestedCount Then
-        ReDim Preserve TreeGraphicIds(1 To TreeGraphicCount) As Long
-    End If
-
-    LoadTreeGraphicsFromFile = True
-    Exit Function
-LoadTreeGraphicsFromFile_Err:
-    Call TraceError(Err.Number, Err.Description, "General.LoadTreeGraphicsFromFile", Erl)
-End Function
-
 Private Sub LoadDefaultTreeGraphics()
     On Error GoTo LoadDefaultTreeGraphics_Err
 
-    Dim defaults As Variant
-    Dim idx      As Long
-    Dim dest     As Long
-
-    defaults = Array(11905&, 644&, 1880&, 11906&, 12160&, 6597&, 2548&, 2549&, 15110&, 15109&, 15108&, 11904&, 7220&, 50990&, 55626&, 55627&, 55630&, 55632&, 55633&, 55635&, 55638&, 12584&, 50985&, 15510&, 14775&, 14687&, 11903&, 735&, 15698&, 14504&, 15697&, 6598&, 1121&, 1878&, 9513&, 9514&, 9515&, 9518&, 9519&, 9520&, 9529&)
-
-    TreeGraphicCount = UBound(defaults) - LBound(defaults) + 1
+    ' Valores migrados desde EsArbol.ini ([TREES] Tree1..Tree41).
+    TreeGraphicCount = 41
     ReDim TreeGraphicIds(1 To TreeGraphicCount) As Long
 
-    dest = 1
-    For idx = LBound(defaults) To UBound(defaults)
-        TreeGraphicIds(dest) = CLng(defaults(idx))
-        dest = dest + 1
-    Next idx
+    TreeGraphicIds(1) = 11905
+    TreeGraphicIds(2) = 644
+    TreeGraphicIds(3) = 1880
+    TreeGraphicIds(4) = 11906
+    TreeGraphicIds(5) = 12160
+    TreeGraphicIds(6) = 6597
+    TreeGraphicIds(7) = 2548
+    TreeGraphicIds(8) = 2549
+    TreeGraphicIds(9) = 15110
+    TreeGraphicIds(10) = 15109
+    TreeGraphicIds(11) = 15108
+    TreeGraphicIds(12) = 11904
+    TreeGraphicIds(13) = 7220
+    TreeGraphicIds(14) = 50990
+    TreeGraphicIds(15) = 55626
+    TreeGraphicIds(16) = 55627
+    TreeGraphicIds(17) = 55630
+    TreeGraphicIds(18) = 55632
+    TreeGraphicIds(19) = 55633
+    TreeGraphicIds(20) = 55635
+    TreeGraphicIds(21) = 55638
+    TreeGraphicIds(22) = 12584
+    TreeGraphicIds(23) = 50985
+    TreeGraphicIds(24) = 15510
+    TreeGraphicIds(25) = 14775
+    TreeGraphicIds(26) = 14687
+    TreeGraphicIds(27) = 11903
+    TreeGraphicIds(28) = 735
+    TreeGraphicIds(29) = 15698
+    TreeGraphicIds(30) = 14504
+    TreeGraphicIds(31) = 15697
+    TreeGraphicIds(32) = 6598
+    TreeGraphicIds(33) = 1121
+    TreeGraphicIds(34) = 1878
+    TreeGraphicIds(35) = 9513
+    TreeGraphicIds(36) = 9514
+    TreeGraphicIds(37) = 9515
+    TreeGraphicIds(38) = 9518
+    TreeGraphicIds(39) = 9519
+    TreeGraphicIds(40) = 9520
+    TreeGraphicIds(41) = 9529
     Exit Sub
 LoadDefaultTreeGraphics_Err:
     Call TraceError(Err.Number, Err.Description, "General.LoadDefaultTreeGraphics", Erl)
-End Sub
-
-Private Sub SaveTreeGraphicsFile(ByVal FilePath As String)
-    On Error GoTo SaveTreeGraphicsFile_Err
-
-    Dim idx As Long
-
-    If TreeGraphicCount = 0 Then Exit Sub
-
-    Call WriteVar(FilePath, "INIT", "Count", CStr(TreeGraphicCount))
-
-    For idx = 1 To TreeGraphicCount
-        Call WriteVar(FilePath, "TREES", "Tree" & idx, CStr(TreeGraphicIds(idx)))
-    Next idx
-    Exit Sub
-SaveTreeGraphicsFile_Err:
-    Call TraceError(Err.Number, Err.Description, "General.SaveTreeGraphicsFile", Erl)
 End Sub
 
 Function EsArbol(ByVal GrhIndex As Long) As Boolean
@@ -410,66 +358,13 @@ EsArbol_Err:
     Call TraceError(Err.Number, Err.Description, "General.EsArbol", Erl)
 End Function
 
-Private Function EnsureDirectoryExists(ByVal DirectoryPath As String) As Boolean
-    On Error GoTo EnsureDirectoryExists_Err
-
-    Dim normalizedPath As String
-    Dim parentDirectory As String
-
-    normalizedPath = NormalizePath(DirectoryPath)
-
-    If LenB(normalizedPath) = 0 Then Exit Function
-
-    If Len(normalizedPath) = 2 And Mid$(normalizedPath, 2, 1) = ":" Then
-        EnsureDirectoryExists = True
-        Exit Function
-    End If
-
-    If FileExist(normalizedPath, vbDirectory) Then
-        EnsureDirectoryExists = True
-        Exit Function
-    End If
-
-    parentDirectory = GetDirectoryName(normalizedPath)
-    If LenB(parentDirectory) <> 0 Then
-        If Not EnsureDirectoryExists(parentDirectory) Then Exit Function
-    End If
-
-    MkDir normalizedPath
-    EnsureDirectoryExists = True
-    Exit Function
-EnsureDirectoryExists_Err:
-    EnsureDirectoryExists = False
-End Function
-
-Private Function GetDirectoryName(ByVal PathValue As String) As String
-    Dim normalizedPath As String
-    Dim separatorPos   As Long
-
-    normalizedPath = NormalizePath(PathValue)
-    separatorPos = InStrRev(normalizedPath, "\")
-
-    If separatorPos > 0 Then
-        GetDirectoryName = Left$(normalizedPath, separatorPos - 1)
-    End If
-End Function
-
-Private Function NormalizePath(ByVal PathValue As String) As String
-    Dim normalizedPath As String
-
-    normalizedPath = Replace$(PathValue, "/", "\")
-
-    Do While Len(normalizedPath) > 0 And Right$(normalizedPath, 1) = "\"
-        normalizedPath = Left$(normalizedPath, Len(normalizedPath) - 1)
-    Loop
-
-    NormalizePath = normalizedPath
-End Function
-
 Private Function HayLava(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     On Error GoTo HayLava_Err
     If Map > 0 And Map < NumMaps + 1 And x > 0 And x < 101 And y > 0 And y < 101 Then
-        If MapData(Map, x, y).Graphic(1) >= 5837 And MapData(Map, x, y).Graphic(1) <= 5852 Or MapData(Map, x, y).Graphic(1) >= 16101 And MapData(Map, x, y).Graphic(1) <= 16116 Then
+        If (MapData(Map, x, y).Graphic(1) >= 5837 And MapData(Map, x, y).Graphic(1) <= 5852) _
+        Or (MapData(Map, x, y).Graphic(1) >= 16101 And MapData(Map, x, y).Graphic(1) <= 16116) _
+        Or (MapData(Map, x, y).Graphic(1) >= 26767 And MapData(Map, x, y).Graphic(1) <= 26782) Then
+            
             HayLava = True
         Else
             HayLava = False
@@ -710,7 +605,6 @@ Sub Main()
     Call LoadBans
     frmCargando.Label1(2).Caption = "Cargando Quests"
     Call LoadQuests
-    Call ResetLastLogoutAndIsLogged
     Call LoadPhoenixModule
     'Comentado porque hay worldsave en ese mapa!
     Dim LoopC As Integer

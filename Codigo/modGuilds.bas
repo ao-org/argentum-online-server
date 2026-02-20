@@ -64,6 +64,7 @@ Public RequiredGuildLevelCallSupport As Byte
 Public RequiredGuildLevelSeeInvisible As Byte
 Public RequiredGuildLevelSafe As Byte
 Public RequiredGuildLevelShowHPBar As Byte
+Public PriceAcceptMemberGuild(1 To MAX_LEVEL_GUILD) As Integer
 Public Sub LoadGuildsDB()
     On Error GoTo LoadGuildsDB_Err
     Dim CantClanes As String
@@ -892,10 +893,12 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
     On Error GoTo a_AceptarAspirante_Err
     Dim GI           As Integer
     Dim tGI          As Integer
+    Dim priceAcceptMember As Integer
     Dim AspiranteRef As t_UserReference
     'un pj ingresa al clan :D
     a_AceptarAspirante = False
     GI = UserList(UserIndex).GuildIndex
+    priceAcceptMember = PriceAcceptMemberGuild(guilds(GI).GetNivelDeClan)
     If GI <= 0 Or GI > CANTIDADDECLANES Then
         refError = 2011 'No perteneces a ningún clan.
         Exit Function
@@ -904,6 +907,13 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
         refError = 2012 'No eres el líder de tu clan.
         Exit Function
     End If
+    
+    If UserList(UserIndex).Stats.GLD < priceAcceptMember Then
+        'Msg2163=Para aceptar un nuevo miembro necesitas ¬1 monedas de oro.
+        Call WriteLocaleMsg(UserIndex, 2163, e_FontTypeNames.FONTTYPE_INFO, priceAcceptMember)
+        Exit Function
+    End If
+    
     Dim UserDidRequest As Boolean
     Dim CharId         As Long
     CharId = GetCharacterIdWithName(Aspirante)
@@ -948,6 +958,8 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
         Exit Function
     End If
     'el pj es aspirante al clan y puede entrar
+    UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - priceAcceptMember 'Le saca el oro
+    Call WriteUpdateGold(UserIndex)
     Call guilds(GI).RetirarAspirante(Aspirante)
     Call guilds(GI).AceptarNuevoMiembro(CharId)
     ' If player is online, update tag
