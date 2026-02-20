@@ -2913,6 +2913,11 @@ Sub LoadGuildsConfig()
     'Requisito para ver barra de vida
     RequiredGuildLevelShowHPBar = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "ShowHPBarRequiredLevel", "6")))
     
+    'Precio para aceptar un nuevo miembro según el nivel del clan
+    For i = 1 To MAX_LEVEL_GUILD
+        PriceAcceptMemberGuild(i) = CInt(val(GuildsIni.GetValue("GUILDPRICEACCEPTMEMBER", "PriceAcceptMemberGuildLevel" & CStr(i), "0")))
+    Next i
+    
     Set GuildsIni = Nothing
     AgregarAConsola "Se cargó la configuración de clanes (Clanes.dat)"
     Exit Sub
