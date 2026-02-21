@@ -7067,6 +7067,12 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
                 Call WriteLocaleMsg(UserIndex, 1265, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
+            'Si el gm es Consejero y el usuario esta en zona insegura, no puede ir
+            If e_PlayerType.Consejero And MapInfo(UserList(UserConsulta.ArrayIndex).pos.Map).Seguro = 0 Then
+                'Msg2165=El usuario ¬1 se encuentra en zona insegura, no puedes acercarte a él.
+                Call WriteLocaleMsg(UserIndex, 2165, e_FontTypeNames.FONTTYPE_INFO, Nick)
+                Exit Sub
+            End If
         Else
             Call SetUserRef(UserConsulta, .flags.TargetUser.ArrayIndex)
             'Se asegura que el target exista
