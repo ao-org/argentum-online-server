@@ -214,7 +214,7 @@ Private Sub DoBlast()
                     If UserMod.CanAttackUser(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.VersionId, MapData(TargetMap, j, i).UserIndex, UserList(MapData(TargetMap, j, _
                             i).UserIndex).VersionId) = eCanAttack Then
                         Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetUserDamageWithItem( _
-                                DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
+                                DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0, eUser)), e_phisical, SourceObjIndex)
                         Call RegisterNewAttack(MapData(TargetMap, j, i).UserIndex, DotInfo.TargetRef.ArrayIndex)
                     End If
                 Else
@@ -230,7 +230,7 @@ Private Sub DoBlast()
                     If UserAttackInteractionResult.CanAttack Then
                         If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(DotInfo.TargetRef.ArrayIndex)
                         Call UserDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex, GetDamageForTile(j, i, GetUserDamageWithItem( _
-                                DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
+                                DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0, eNpc)), e_phisical, SourceObjIndex)
                     End If
                 Else
                     If NPCs.CanAttackNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex) = eCanAttack Then
@@ -242,7 +242,7 @@ Private Sub DoBlast()
             If DotInfo.TargetRef.RefType = eUser Then
                 If MapData(TargetMap, j, i).UserIndex = DotInfo.TargetRef.ArrayIndex Then
                     Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetUserDamageWithItem( _
-                            DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
+                            DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0, eUser)), e_phisical, SourceObjIndex)
                 End If
             End If
         Next j
