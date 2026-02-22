@@ -44,7 +44,7 @@ Public Sub Database_Connect_Async()
         Set Connection_async(i) = New ADODB.Connection
         Connection_async(i).CursorLocation = adUseClient
         Connection_async(i).ConnectionString = ConnectionID
-        Call Connection_async(i).Open(, , , adAsyncConnect)
+        Call Connection_async(i).Open
     Next i
     Current_async = 1
     Set Builder = New cStringBuilder
