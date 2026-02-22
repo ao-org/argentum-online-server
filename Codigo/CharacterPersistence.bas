@@ -500,11 +500,7 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
-    Dim QueryTimer As Long
     Dim QueryBreakdown As String
-    Dim Params() As Variant
-    Dim LoopC    As Long
-    Dim ParamC   As Long
     Call Builder.Clear
     With UserList(UserIndex)
         Debug.Assert .flags.UserLogged = True
@@ -512,187 +508,238 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
             Call LogDatabaseError("Error trying to save an user not logged in SaveCharacterDB")
             Exit Sub
         End If
-        ReDim Params(65)
-        Dim i As Integer
-        Params(post_increment(i)) = .name
-        Params(post_increment(i)) = .Stats.ELV
-        Params(post_increment(i)) = .Stats.Exp
-        Params(post_increment(i)) = .genero
-        Params(post_increment(i)) = .raza
-        Params(post_increment(i)) = .clase
-        Params(post_increment(i)) = .Hogar
-        Params(post_increment(i)) = .Desc
-        Params(post_increment(i)) = .Stats.GLD
-        Params(post_increment(i)) = .Stats.Banco
-        Params(post_increment(i)) = .Stats.SkillPts
-        Params(post_increment(i)) = .flags.MascotasGuardadas
-        Params(post_increment(i)) = .pos.Map
-        Params(post_increment(i)) = .pos.x
-        Params(post_increment(i)) = .pos.y
-        Params(post_increment(i)) = .MENSAJEINFORMACION
-        Params(post_increment(i)) = .Char.body
-        Params(post_increment(i)) = .OrigChar.originalhead
-        Params(post_increment(i)) = .Char.WeaponAnim
-        Params(post_increment(i)) = .Char.CascoAnim
-        Params(post_increment(i)) = .Char.ShieldAnim
-        Params(post_increment(i)) = .Char.Heading
-        Params(post_increment(i)) = .Stats.MaxHp
-        Params(post_increment(i)) = .Stats.MinHp
-        Params(post_increment(i)) = .Stats.MinMAN
-        Params(post_increment(i)) = .Stats.MinSta
-        Params(post_increment(i)) = .Stats.MinHam
-        Params(post_increment(i)) = .Stats.MinAGU
-        Params(post_increment(i)) = .Stats.NPCsMuertos
-        Params(post_increment(i)) = .Stats.UsuariosMatados
-        Params(post_increment(i)) = .Stats.PuntosPesca
-        Params(post_increment(i)) = .Stats.ELO
-        Params(post_increment(i)) = .flags.Desnudo
-        Params(post_increment(i)) = .flags.Envenenado
-        Params(post_increment(i)) = .flags.Incinerado
-        Params(post_increment(i)) = .flags.Muerto
-        Params(post_increment(i)) = .flags.Navegando
-        Params(post_increment(i)) = .flags.Paralizado
-        Params(post_increment(i)) = .flags.Montado
-        Params(post_increment(i)) = .flags.Silenciado
-        Params(post_increment(i)) = .flags.MinutosRestantes
-        Params(post_increment(i)) = .flags.SegundosPasados
-        Params(post_increment(i)) = .flags.SpouseId
-        Params(post_increment(i)) = .Counters.Pena
-        Params(post_increment(i)) = .flags.VecesQueMoriste
-        Params(post_increment(i)) = .Faccion.ciudadanosMatados
-        Params(post_increment(i)) = .Faccion.CriminalesMatados
-        Params(post_increment(i)) = .Faccion.RecibioArmaduraReal
-        Params(post_increment(i)) = .Faccion.RecibioArmaduraCaos
-        Params(post_increment(i)) = .Faccion.RecompensasReal
-        Params(post_increment(i)) = .Faccion.FactionScore
-        Params(post_increment(i)) = .Faccion.RecompensasCaos
-        Params(post_increment(i)) = .Faccion.Reenlistadas
-        Params(post_increment(i)) = .Faccion.NivelIngreso
-        Params(post_increment(i)) = .Faccion.MatadosIngreso
-        Params(post_increment(i)) = .Faccion.Status
-        Params(post_increment(i)) = .GuildIndex
-        Params(post_increment(i)) = .ChatCombate
-        Params(post_increment(i)) = .ChatGlobal
-        Params(post_increment(i)) = .Stats.Advertencias
-        Params(post_increment(i)) = .flags.ReturnPos.Map
-        Params(post_increment(i)) = .flags.ReturnPos.x
-        Params(post_increment(i)) = .flags.ReturnPos.y
-        Params(post_increment(i)) = .Stats.JineteLevel
-        Params(post_increment(i)) = .Char.BackpackAnim
-        ' WHERE block
-        Params(post_increment(i)) = .Id
-        QueryTimer = GetTickCountRaw()
-        Call Execute(QUERY_UPDATE_MAINPJ, Params)
-        Call AppendQueryDuration(QueryBreakdown, "update main", QueryTimer)
-        ' ************************** User spells *********************************
-        ReDim Params(MAXUSERHECHIZOS * 3 - 1)
-        ParamC = 0
-        For LoopC = 1 To MAXUSERHECHIZOS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            Params(ParamC + 2) = .Stats.UserHechizos(LoopC)
-            ParamC = ParamC + 3
-        Next LoopC
-        QueryTimer = GetTickCountRaw()
-        Call Execute(QUERY_UPSERT_SPELLS, Params)
-        Call AppendQueryDuration(QueryBreakdown, "upsert spells", QueryTimer)
-        ' ************************** User inventory *********************************
-        ReDim Params(MAX_INVENTORY_SLOTS * 6 - 1)
-        ParamC = 0
-        For LoopC = 1 To MAX_INVENTORY_SLOTS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            Params(ParamC + 2) = .invent.Object(LoopC).ObjIndex
-            Params(ParamC + 3) = .invent.Object(LoopC).amount
-            Params(ParamC + 4) = .invent.Object(LoopC).Equipped
-            Params(ParamC + 5) = .invent.Object(LoopC).ElementalTags
-            ParamC = ParamC + 6
-        Next LoopC
-        QueryTimer = GetTickCountRaw()
-        Call Execute(QUERY_UPSERT_INVENTORY, Params)
-        Call AppendQueryDuration(QueryBreakdown, "upsert inventory", QueryTimer)
-        ' ************************** User bank inventory *********************************
-        ReDim Params(MAX_BANCOINVENTORY_SLOTS * 5 - 1)
-        ParamC = 0
-        For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            Params(ParamC + 2) = .BancoInvent.Object(LoopC).ObjIndex
-            Params(ParamC + 3) = .BancoInvent.Object(LoopC).amount
-            Params(ParamC + 4) = .BancoInvent.Object(LoopC).ElementalTags
-            ParamC = ParamC + 5
-        Next LoopC
-        QueryTimer = GetTickCountRaw()
-        Call Execute(QUERY_SAVE_BANCOINV, Params)
-        Call AppendQueryDuration(QueryBreakdown, "save bank inventory", QueryTimer)
-        ' ************************** User skills *********************************
-        ReDim Params(NUMSKILLS * 3 - 1)
-        ParamC = 0
-        For LoopC = 1 To NUMSKILLS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            Params(ParamC + 2) = .Stats.UserSkills(LoopC)
-            ParamC = ParamC + 3
-        Next LoopC
-        QueryTimer = GetTickCountRaw()
-        Call Execute(QUERY_UPSERT_SKILLS, Params)
-        Call AppendQueryDuration(QueryBreakdown, "upsert skills", QueryTimer)
-        ' ************************** User pets *********************************
-        ReDim Params(MAXMASCOTAS * 3 - 1)
-        ParamC = 0
-        Dim petType As Integer
-        For LoopC = 1 To MAXMASCOTAS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            If IsValidNpcRef(.MascotasIndex(LoopC)) Then
-                If NpcList(.MascotasIndex(LoopC).ArrayIndex).Contadores.TiempoExistencia = 0 Then
-                    petType = .MascotasType(LoopC)
-                Else
-                    petType = 0
-                End If
-            Else
-                petType = .MascotasType(LoopC)
-            End If
-            Params(ParamC + 2) = petType
-            ParamC = ParamC + 3
-        Next LoopC
-        QueryTimer = GetTickCountRaw()
-        Call Execute(QUERY_UPSERT_PETS, Params)
-        Call AppendQueryDuration(QueryBreakdown, "upsert pets", QueryTimer)
+        Call SaveCharacterMainDB(UserList(UserIndex), QueryBreakdown)
+        Call SaveCharacterSpellsDB(UserList(UserIndex), QueryBreakdown)
+        Call SaveCharacterInventoryDB(UserList(UserIndex), QueryBreakdown)
+        Call SaveCharacterBankInventoryDB(UserList(UserIndex), QueryBreakdown)
+        Call SaveCharacterSkillsDB(UserList(UserIndex), QueryBreakdown)
+        Call SaveCharacterPetsDB(UserList(UserIndex), QueryBreakdown)
         ' ************************** User quests *********************************
         Call SaveCharacterQuestsDB(UserList(UserIndex), QueryBreakdown, Builder)
-        ' ************************** User completed quests *********************************
-        If .QuestStats.NumQuestsDone > 0 Then
-            ' Armamos la query con los placeholders
-            Builder.Append "REPLACE INTO quest_done (user_id, quest_id) VALUES "
-            For LoopC = 1 To .QuestStats.NumQuestsDone
-                Builder.Append "(?, ?)"
-                If LoopC < .QuestStats.NumQuestsDone Then
-                    Builder.Append ", "
-                End If
-            Next LoopC
-            ' Metemos los parametros
-            ReDim Params(.QuestStats.NumQuestsDone * 2 - 1)
-            ParamC = 0
-            For LoopC = 1 To .QuestStats.NumQuestsDone
-                Params(ParamC) = .Id
-                Params(ParamC + 1) = .QuestStats.QuestsDone(LoopC)
-                ParamC = ParamC + 2
-            Next LoopC
-            QueryTimer = GetTickCountRaw()
-            Call Execute(Builder.ToString(), Params)
-            Call AppendQueryDuration(QueryBreakdown, "replace quests done", QueryTimer)
-            Call Builder.Clear
-        End If
-        QueryTimer = GetTickCountRaw()
-        Call SaveInventorySkins(UserIndex)
-        Call AppendQueryDuration(QueryBreakdown, "save inventory skins", QueryTimer)
+        Call SaveCharacterQuestsDoneDB(UserList(UserIndex), QueryBreakdown, Builder)
+        Call SaveCharacterInventorySkinsDB(UserIndex, QueryBreakdown)
         Call InitUserPersistSnapshot(UserIndex)
         Call LogSaveCharacterDuration(PerformanceTimer, QueryBreakdown, .name, .Id)
     End With
     Exit Sub
 ErrorHandler:
     Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
+End Sub
+
+Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As String)
+    Dim QueryTimer As Long
+    Dim Params() As Variant
+    ReDim Params(65)
+    Dim i As Integer
+    Params(post_increment(i)) = U.name
+    Params(post_increment(i)) = U.Stats.ELV
+    Params(post_increment(i)) = U.Stats.Exp
+    Params(post_increment(i)) = U.genero
+    Params(post_increment(i)) = U.raza
+    Params(post_increment(i)) = U.clase
+    Params(post_increment(i)) = U.Hogar
+    Params(post_increment(i)) = U.Desc
+    Params(post_increment(i)) = U.Stats.GLD
+    Params(post_increment(i)) = U.Stats.Banco
+    Params(post_increment(i)) = U.Stats.SkillPts
+    Params(post_increment(i)) = U.flags.MascotasGuardadas
+    Params(post_increment(i)) = U.pos.Map
+    Params(post_increment(i)) = U.pos.x
+    Params(post_increment(i)) = U.pos.y
+    Params(post_increment(i)) = U.MENSAJEINFORMACION
+    Params(post_increment(i)) = U.Char.body
+    Params(post_increment(i)) = U.OrigChar.originalhead
+    Params(post_increment(i)) = U.Char.WeaponAnim
+    Params(post_increment(i)) = U.Char.CascoAnim
+    Params(post_increment(i)) = U.Char.ShieldAnim
+    Params(post_increment(i)) = U.Char.Heading
+    Params(post_increment(i)) = U.Stats.MaxHp
+    Params(post_increment(i)) = U.Stats.MinHp
+    Params(post_increment(i)) = U.Stats.MinMAN
+    Params(post_increment(i)) = U.Stats.MinSta
+    Params(post_increment(i)) = U.Stats.MinHam
+    Params(post_increment(i)) = U.Stats.MinAGU
+    Params(post_increment(i)) = U.Stats.NPCsMuertos
+    Params(post_increment(i)) = U.Stats.UsuariosMatados
+    Params(post_increment(i)) = U.Stats.PuntosPesca
+    Params(post_increment(i)) = U.Stats.ELO
+    Params(post_increment(i)) = U.flags.Desnudo
+    Params(post_increment(i)) = U.flags.Envenenado
+    Params(post_increment(i)) = U.flags.Incinerado
+    Params(post_increment(i)) = U.flags.Muerto
+    Params(post_increment(i)) = U.flags.Navegando
+    Params(post_increment(i)) = U.flags.Paralizado
+    Params(post_increment(i)) = U.flags.Montado
+    Params(post_increment(i)) = U.flags.Silenciado
+    Params(post_increment(i)) = U.flags.MinutosRestantes
+    Params(post_increment(i)) = U.flags.SegundosPasados
+    Params(post_increment(i)) = U.flags.SpouseId
+    Params(post_increment(i)) = U.Counters.Pena
+    Params(post_increment(i)) = U.flags.VecesQueMoriste
+    Params(post_increment(i)) = U.Faccion.ciudadanosMatados
+    Params(post_increment(i)) = U.Faccion.CriminalesMatados
+    Params(post_increment(i)) = U.Faccion.RecibioArmaduraReal
+    Params(post_increment(i)) = U.Faccion.RecibioArmaduraCaos
+    Params(post_increment(i)) = U.Faccion.RecompensasReal
+    Params(post_increment(i)) = U.Faccion.FactionScore
+    Params(post_increment(i)) = U.Faccion.RecompensasCaos
+    Params(post_increment(i)) = U.Faccion.Reenlistadas
+    Params(post_increment(i)) = U.Faccion.NivelIngreso
+    Params(post_increment(i)) = U.Faccion.MatadosIngreso
+    Params(post_increment(i)) = U.Faccion.Status
+    Params(post_increment(i)) = U.GuildIndex
+    Params(post_increment(i)) = U.ChatCombate
+    Params(post_increment(i)) = U.ChatGlobal
+    Params(post_increment(i)) = U.Stats.Advertencias
+    Params(post_increment(i)) = U.flags.ReturnPos.Map
+    Params(post_increment(i)) = U.flags.ReturnPos.x
+    Params(post_increment(i)) = U.flags.ReturnPos.y
+    Params(post_increment(i)) = U.Stats.JineteLevel
+    Params(post_increment(i)) = U.Char.BackpackAnim
+    ' WHERE block
+    Params(post_increment(i)) = U.Id
+    QueryTimer = GetTickCountRaw()
+    Call Execute(QUERY_UPDATE_MAINPJ, Params)
+    Call AppendQueryDuration(QueryBreakdown, "update main", QueryTimer)
+End Sub
+
+Private Sub SaveCharacterSpellsDB(ByRef U As t_User, ByRef QueryBreakdown As String)
+    Dim QueryTimer As Long
+    Dim Params() As Variant
+    Dim LoopC As Long
+    Dim ParamC As Long
+    ReDim Params(MAXUSERHECHIZOS * 3 - 1)
+    ParamC = 0
+    For LoopC = 1 To MAXUSERHECHIZOS
+        Params(ParamC) = U.Id
+        Params(ParamC + 1) = LoopC
+        Params(ParamC + 2) = U.Stats.UserHechizos(LoopC)
+        ParamC = ParamC + 3
+    Next LoopC
+    QueryTimer = GetTickCountRaw()
+    Call Execute(QUERY_UPSERT_SPELLS, Params)
+    Call AppendQueryDuration(QueryBreakdown, "upsert spells", QueryTimer)
+End Sub
+
+Private Sub SaveCharacterInventoryDB(ByRef U As t_User, ByRef QueryBreakdown As String)
+    Dim QueryTimer As Long
+    Dim Params() As Variant
+    Dim LoopC As Long
+    Dim ParamC As Long
+    ReDim Params(MAX_INVENTORY_SLOTS * 6 - 1)
+    ParamC = 0
+    For LoopC = 1 To MAX_INVENTORY_SLOTS
+        Params(ParamC) = U.Id
+        Params(ParamC + 1) = LoopC
+        Params(ParamC + 2) = U.invent.Object(LoopC).ObjIndex
+        Params(ParamC + 3) = U.invent.Object(LoopC).amount
+        Params(ParamC + 4) = U.invent.Object(LoopC).Equipped
+        Params(ParamC + 5) = U.invent.Object(LoopC).ElementalTags
+        ParamC = ParamC + 6
+    Next LoopC
+    QueryTimer = GetTickCountRaw()
+    Call Execute(QUERY_UPSERT_INVENTORY, Params)
+    Call AppendQueryDuration(QueryBreakdown, "upsert inventory", QueryTimer)
+End Sub
+
+Private Sub SaveCharacterBankInventoryDB(ByRef U As t_User, ByRef QueryBreakdown As String)
+    Dim QueryTimer As Long
+    Dim Params() As Variant
+    Dim LoopC As Long
+    Dim ParamC As Long
+    ReDim Params(MAX_BANCOINVENTORY_SLOTS * 5 - 1)
+    ParamC = 0
+    For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
+        Params(ParamC) = U.Id
+        Params(ParamC + 1) = LoopC
+        Params(ParamC + 2) = U.BancoInvent.Object(LoopC).ObjIndex
+        Params(ParamC + 3) = U.BancoInvent.Object(LoopC).amount
+        Params(ParamC + 4) = U.BancoInvent.Object(LoopC).ElementalTags
+        ParamC = ParamC + 5
+    Next LoopC
+    QueryTimer = GetTickCountRaw()
+    Call Execute(QUERY_SAVE_BANCOINV, Params)
+    Call AppendQueryDuration(QueryBreakdown, "save bank inventory", QueryTimer)
+End Sub
+
+Private Sub SaveCharacterSkillsDB(ByRef U As t_User, ByRef QueryBreakdown As String)
+    Dim QueryTimer As Long
+    Dim Params() As Variant
+    Dim LoopC As Long
+    Dim ParamC As Long
+    ReDim Params(NUMSKILLS * 3 - 1)
+    ParamC = 0
+    For LoopC = 1 To NUMSKILLS
+        Params(ParamC) = U.Id
+        Params(ParamC + 1) = LoopC
+        Params(ParamC + 2) = U.Stats.UserSkills(LoopC)
+        ParamC = ParamC + 3
+    Next LoopC
+    QueryTimer = GetTickCountRaw()
+    Call Execute(QUERY_UPSERT_SKILLS, Params)
+    Call AppendQueryDuration(QueryBreakdown, "upsert skills", QueryTimer)
+End Sub
+
+Private Sub SaveCharacterPetsDB(ByRef U As t_User, ByRef QueryBreakdown As String)
+    Dim QueryTimer As Long
+    Dim Params() As Variant
+    Dim LoopC As Long
+    Dim ParamC As Long
+    Dim petType As Integer
+    ReDim Params(MAXMASCOTAS * 3 - 1)
+    ParamC = 0
+    For LoopC = 1 To MAXMASCOTAS
+        Params(ParamC) = U.Id
+        Params(ParamC + 1) = LoopC
+        If IsValidNpcRef(U.MascotasIndex(LoopC)) Then
+            If NpcList(U.MascotasIndex(LoopC).ArrayIndex).Contadores.TiempoExistencia = 0 Then
+                petType = U.MascotasType(LoopC)
+            Else
+                petType = 0
+            End If
+        Else
+            petType = U.MascotasType(LoopC)
+        End If
+        Params(ParamC + 2) = petType
+        ParamC = ParamC + 3
+    Next LoopC
+    QueryTimer = GetTickCountRaw()
+    Call Execute(QUERY_UPSERT_PETS, Params)
+    Call AppendQueryDuration(QueryBreakdown, "upsert pets", QueryTimer)
+End Sub
+
+Private Sub SaveCharacterQuestsDoneDB(ByRef U As t_User, ByRef QueryBreakdown As String, ByRef SqlBuilder As cStringBuilder)
+    Dim QueryTimer As Long
+    Dim Params() As Variant
+    Dim LoopC As Long
+    Dim ParamC As Long
+    If U.QuestStats.NumQuestsDone > 0 Then
+        SqlBuilder.Append "REPLACE INTO quest_done (user_id, quest_id) VALUES "
+        For LoopC = 1 To U.QuestStats.NumQuestsDone
+            SqlBuilder.Append "(?, ?)"
+            If LoopC < U.QuestStats.NumQuestsDone Then
+                SqlBuilder.Append ", "
+            End If
+        Next LoopC
+        ReDim Params(U.QuestStats.NumQuestsDone * 2 - 1)
+        ParamC = 0
+        For LoopC = 1 To U.QuestStats.NumQuestsDone
+            Params(ParamC) = U.Id
+            Params(ParamC + 1) = U.QuestStats.QuestsDone(LoopC)
+            ParamC = ParamC + 2
+        Next LoopC
+        QueryTimer = GetTickCountRaw()
+        Call Execute(SqlBuilder.ToString(), Params)
+        Call AppendQueryDuration(QueryBreakdown, "replace quests done", QueryTimer)
+        Call SqlBuilder.Clear
+    End If
+End Sub
+
+Private Sub SaveCharacterInventorySkinsDB(ByVal UserIndex As Integer, ByRef QueryBreakdown As String)
+    Dim QueryTimer As Long
+    QueryTimer = GetTickCountRaw()
+    Call SaveInventorySkins(UserIndex)
+    Call AppendQueryDuration(QueryBreakdown, "save inventory skins", QueryTimer)
 End Sub
 
 Private Sub SaveCharacterQuestsDB(ByRef User As t_User, ByRef QueryBreakdown As String, ByRef SqlBuilder As cStringBuilder)
