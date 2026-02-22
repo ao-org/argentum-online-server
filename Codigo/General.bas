@@ -544,6 +544,7 @@ Sub Main()
     Call Database_Connect_Async
     ' Construimos las querys grandes
     Call Contruir_Querys
+    Call PreparePreparedCommands
     Call LoadDBMigrations
     ' ******************* FIN - Base de Datos ********************
     Call LoadGuildsDB
