@@ -660,7 +660,7 @@ Private Sub SaveCharacterBankInventoryDB(ByRef U As t_User, ByRef QueryBreakdown
         ParamC = ParamC + 5
     Next LoopC
     QueryTimer = GetTickCountRaw()
-    Call Execute(QUERY_SAVE_BANCOINV, Params)
+    Call ExecutePreparedBankSave(Params)
     Call AppendQueryDuration(QueryBreakdown, "save bank inventory", QueryTimer)
 End Sub
 
