@@ -511,7 +511,12 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
         Call SaveCharacterMainDB(UserList(UserIndex), QueryBreakdown)
         Call SaveCharacterSpellsDB(UserList(UserIndex), QueryBreakdown)
         Call SaveCharacterInventoryDB(UserList(UserIndex), QueryBreakdown)
-        Call SaveCharacterBankInventoryDB(UserList(UserIndex), QueryBreakdown)
+        If HasBankChanged(UserIndex) Then
+            Call SaveCharacterBankInventoryDB(UserList(UserIndex), QueryBreakdown)
+        Else
+            If LenB(QueryBreakdown) <> 0 Then QueryBreakdown = QueryBreakdown & "; "
+            QueryBreakdown = QueryBreakdown & "save bank inventory: skipped"
+        End If
         Call SaveCharacterSkillsDB(UserList(UserIndex), QueryBreakdown)
         Call SaveCharacterPetsDB(UserList(UserIndex), QueryBreakdown)
         ' ************************** User quests *********************************
