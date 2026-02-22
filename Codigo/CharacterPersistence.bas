@@ -529,14 +529,10 @@ End Sub
 Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As String)
     Dim QueryTimer As Long
     Dim Params() As Variant
-    ReDim Params(65)
+    ReDim Params(61)
     Dim i As Integer
-    Params(post_increment(i)) = U.name
     Params(post_increment(i)) = U.Stats.ELV
     Params(post_increment(i)) = U.Stats.Exp
-    Params(post_increment(i)) = U.genero
-    Params(post_increment(i)) = U.raza
-    Params(post_increment(i)) = U.clase
     Params(post_increment(i)) = U.Hogar
     Params(post_increment(i)) = U.Desc
     Params(post_increment(i)) = U.Stats.GLD
@@ -598,6 +594,7 @@ Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As Strin
     Params(post_increment(i)) = U.Char.BackpackAnim
     ' WHERE block
     Params(post_increment(i)) = U.Id
+    Debug.Assert i = UBound(Params) + 1
     QueryTimer = GetTickCountRaw()
     Call Execute(QUERY_UPDATE_MAINPJ, Params)
     Call AppendQueryDuration(QueryBreakdown, "update main", QueryTimer)
@@ -1190,15 +1187,11 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Exit Sub
         End If
 
-        ReDim Params(65)
+        ReDim Params(61)
         Dim i As Integer
         i = 0
-        Params(post_increment(i)) = .name
         Params(post_increment(i)) = .Stats.ELV
         Params(post_increment(i)) = .Stats.Exp
-        Params(post_increment(i)) = .genero
-        Params(post_increment(i)) = .raza
-        Params(post_increment(i)) = .clase
         Params(post_increment(i)) = .Hogar
         Params(post_increment(i)) = .Desc
         Params(post_increment(i)) = .Stats.GLD
@@ -1260,6 +1253,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
         Params(post_increment(i)) = .Char.BackpackAnim
         Params(post_increment(i)) = .Id
 
+        Debug.Assert i = UBound(Params) + 1
         Call Execute(QUERY_UPDATE_MAINPJ, Params)
         Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] main data id:" & .Id, 50)
 
