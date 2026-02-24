@@ -1245,7 +1245,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         If Info.TestOnly > 0 Then Exit Function
     #End If
     
-    #If BATTLESERVER = 1 Then
+    #If BATTLESERVER = 0 Then
         If Info.DisabledInBattleServer > 0 Then Exit Function
     #End If
     
