@@ -3196,6 +3196,7 @@ End Type
 Public Type t_NpcInfoCache
     Exists As Boolean
     TestOnly As Integer
+    DisabledInBattleServer As Integer
     RequireToggle As String
     name As String
     SubName As String

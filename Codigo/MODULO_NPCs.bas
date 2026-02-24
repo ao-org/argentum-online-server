@@ -975,6 +975,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
     With NpcInfoCache(NpcNumber)
         .Exists = True
         .TestOnly = Val(LeerNPCs.GetValue(SectionName, "TESTONLY"))
+        .DisabledInBattleServer = val(LeerNPCs.GetValue(SectionName, "DISABLEDINBATTLESERVER"))
         .RequireToggle = LeerNPCs.GetValue(SectionName, "REQUIRETOGGLE")
         .name = LeerNPCs.GetValue(SectionName, "Name")
         .SubName = LeerNPCs.GetValue(SectionName, "SubName")
@@ -1208,49 +1209,112 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "NPCs.LoadNpcInfoIntoCache", Erl)
 End Sub
-
-Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean = True, Optional ByVal Reload As Boolean = False) As Integer
+'==========================================================
+' OpenNPC: allocates an NPC slot and initializes it from cache
+'==========================================================
+Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean = True) As Integer
     On Error GoTo OpenNPC_Err
+
     Dim NpcIndex As Integer
     Dim Info As t_NpcInfoCache
-    Dim LoopC As Long
-    Dim cant As Long
+    Dim FailReason As String
 
+    ' Default return (failure)
+    OpenNPC = 0
+
+    '----------------------------
+    ' Ensure cache initialized
+    '----------------------------
     If Not NpcInfoCacheInitialized Then
         If LeerNPCs Is Nothing Then
-            OpenNPC = 0
-            Exit Function
+            FailReason = "NpcInfoCache not initialized and LeerNPCs is Nothing"
+            GoTo Fail
         End If
+
         Call BuildNpcInfoCache
+
         If Not NpcInfoCacheInitialized Then
-            OpenNPC = 0
-            Exit Function
+            FailReason = "NpcInfoCache failed to initialize after BuildNpcInfoCache"
+            GoTo Fail
         End If
     End If
 
+    '----------------------------
+    ' Validate NPC number bounds
+    '----------------------------
     If NpcNumber < LBound(NpcInfoCache) Or NpcNumber > UBound(NpcInfoCache) Then
-        OpenNPC = 0
-        Exit Function
+        FailReason = "NpcNumber out of bounds: " & NpcNumber
+        GoTo Fail
     End If
 
     Info = NpcInfoCache(NpcNumber)
 
     If Not Info.Exists Then
-        OpenNPC = 0
-        Exit Function
-    End If
-#If DEBUGGING = 0 Then
-    If Info.TestOnly > 0 Then Exit Function
-#End If
-    If Info.RequireToggle <> "" Then
-        If Not IsFeatureEnabled(Info.RequireToggle) Then Exit Function
+        FailReason = "NpcInfoCache entry does not exist: " & NpcNumber
+        GoTo Fail
     End If
 
+#If DEBUGGING = 0 Then
+    If Info.TestOnly > 0 Then
+        FailReason = "NPC is TestOnly in production: " & NpcNumber
+        GoTo Fail
+    End If
+#End If
+
+#If BATTLESERVER = 1 Then
+    If Info.DisabledInBattleServer > 0 Then
+        FailReason = "NPC disabled in battle server: " & NpcNumber
+        GoTo Fail
+    End If
+#End If
+
+    If Info.RequireToggle <> "" Then
+        If Not IsFeatureEnabled(Info.RequireToggle) Then
+            FailReason = "Feature toggle disabled: " & Info.RequireToggle & " for NPC " & NpcNumber
+            GoTo Fail
+        End If
+    End If
+
+    '----------------------------
+    ' Allocate slot
+    '----------------------------
     NpcIndex = GetNextAvailableNpc
     If NpcIndex > MaxNPCs Then
-        OpenNPC = 0
-        Exit Function
+        FailReason = "No available NPC slots (MaxNPCs reached)"
+        GoTo Fail
     End If
+
+    '----------------------------
+    ' Initialize NPC instance
+    '----------------------------
+    Call InitializeNpcFromInfo(NpcIndex, NpcNumber, Info, Respawn)
+
+    ' Always update counters (Reload removed)
+    If NpcIndex > LastNPC Then LastNPC = NpcIndex
+    NumNPCs = NumNPCs + 1
+
+    OpenNPC = NpcIndex
+    Exit Function
+
+Fail:
+    LogInfoServidor "OpenNPC FAILED | NpcNumber=" & NpcNumber & " | Reason=" & FailReason
+    Exit Function
+
+OpenNPC_Err:
+    LogInfoServidor "OpenNPC ERROR | NpcNumber=" & NpcNumber & _
+                    " | Err=" & Err.Number & _
+                    " | Desc=" & Err.Description
+    Call TraceError(Err.Number, Err.Description, "NPCs.OpenNPC", Erl)
+End Function
+
+
+Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
+                                  ByVal NpcNumber As Integer, _
+                                  ByRef Info As t_NpcInfoCache, _
+                                  ByVal Respawn As Boolean)
+
+    Dim LoopC As Long
+    Dim cant As Long
 
     With NpcList(NpcIndex)
         .Numero = NpcNumber
@@ -1508,17 +1572,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
             Erase .Caminata
         End If
     End With
-
-    If Reload = False Then
-        If NpcIndex > LastNPC Then LastNPC = NpcIndex
-        NumNPCs = NumNPCs + 1
-    End If
-
-    OpenNPC = NpcIndex
-    Exit Function
-OpenNPC_Err:
-    Call TraceError(Err.Number, Err.Description, "NPCs.OpenNPC", Erl)
-End Function
+End Sub
 
 Function NpcSellsItem(ByVal NpcNumber As Integer, ByVal NroObjeto As Integer) As Boolean
     On Error GoTo NpcSellsItem_Err
