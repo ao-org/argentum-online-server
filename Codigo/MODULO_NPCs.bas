@@ -975,6 +975,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
     With NpcInfoCache(NpcNumber)
         .Exists = True
         .TestOnly = Val(LeerNPCs.GetValue(SectionName, "TESTONLY"))
+        .DisabledInBattleServer = val(LeerNPCs.GetValue(SectionName, "DISABLEDINBATTLESERVER"))
         .RequireToggle = LeerNPCs.GetValue(SectionName, "REQUIRETOGGLE")
         .name = LeerNPCs.GetValue(SectionName, "Name")
         .SubName = LeerNPCs.GetValue(SectionName, "SubName")
@@ -1239,9 +1240,15 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         OpenNPC = 0
         Exit Function
     End If
-#If DEBUGGING = 0 Then
-    If Info.TestOnly > 0 Then Exit Function
-#End If
+    
+    #If DEBUGGING = 0 Then
+        If Info.TestOnly > 0 Then Exit Function
+    #End If
+    
+    #If BATTLESERVER = 1 Then
+        If Info.DisabledInBattleServer > 0 Then Exit Function
+    #End If
+    
     If Info.RequireToggle <> "" Then
         If Not IsFeatureEnabled(Info.RequireToggle) Then Exit Function
     End If
