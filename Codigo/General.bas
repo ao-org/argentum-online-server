@@ -1369,7 +1369,7 @@ Public Sub CargaNpcsDat(Optional ByVal ActualizarNPCsExistentes As Boolean = Fal
         Dim i As Long
         For i = 1 To NumNPCs
             If NpcList(i).flags.NPCActive Then
-                Call OpenNPC(CInt(i), False, True)
+                Call OpenNPC(CInt(i), False)
             End If
             DoEvents
         Next i
