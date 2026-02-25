@@ -1234,6 +1234,8 @@ Dim Ropaje                      As Integer
                 End If
 
             Case e_OBJType.otWorkingTools
+            Dim EquippedWorkingToolObjType As e_WorkingToolSubType
+            
                 If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eTool) Then
                     Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
@@ -1246,6 +1248,11 @@ Dim Ropaje                      As Integer
                 End If
                 'Quitamos el elemento anterior
                 If .invent.EquippedWorkingToolObjIndex > 0 Then
+                    EquippedWorkingToolObjType = ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
+                    If EquippedWorkingToolObjType = e_WorkingToolSubType.FishingRod And obj.Subtipo = e_WorkingToolSubType.FishingNet Then
+                        Call WriteConsoleMsg(UserIndex, "No puedes equipar una red mientras tengas una caña equipada.", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
                     Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
                 End If
                 If .invent.EquippedWeaponObjIndex > 0 Then
