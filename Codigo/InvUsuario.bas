@@ -1139,6 +1139,20 @@ Dim Ropaje                      As Integer
                         Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
+                    
+                If obj.Subtipo = e_WorkingToolSubType.FishingNet Then
+                    If .flags.Navegando = 0 And .invent.EquippedShipObjIndex = 0 Then
+                        Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+
+                    If .invent.EquippedWorkingToolObjIndex > 0 Then
+                        If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.FishingRod Then
+                            Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
+                        End If
+                    End If
+                End If
+                
                     'Si esta equipado lo quita
                     If .invent.Object(Slot).Equipped Then
                         'Quitamos del inv el item
