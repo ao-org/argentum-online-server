@@ -1383,6 +1383,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .MinTameLevel = Info.MinTameLevel
         .OnlyForGuilds = Info.OnlyForGuilds
         .ShowKillerConsole = Info.ShowKillerConsole
+        .DisabledInBattleServer = Info.DisabledInBattleServer
         If .IntervaloMovimiento = 0 Then
             .IntervaloMovimiento = 380
             .Char.speeding = IntervaloNPCAI / 330

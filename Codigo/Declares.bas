@@ -3426,6 +3426,7 @@ Public Type t_Npc
     CaminataActual As Byte
     PuedeInvocar As Byte
     Humanoide As Boolean
+    DisabledInBattleServer As Byte
 End Type
 
 '**********************************************************
