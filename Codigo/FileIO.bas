@@ -1095,6 +1095,8 @@ Sub LoadOBJData()
                     .incinera = val(Leer.GetValue(ObjKey, "Incinera"))
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
+                    .MaxHitToNPC = val(Leer.GetValue(ObjKey, "MaxHitToNPC"))
+                    .MinHitToNPC = val(Leer.GetValue(ObjKey, "MinHitToNPC"))
                     .MinArmorPenetrationFlat = val(Leer.GetValue(ObjKey, "MinArmorPenetrationFlat"))
                     .MaxArmorPenetrationFlat = val(Leer.GetValue(ObjKey, "MaxArmorPenetrationFlat"))
                     .ArmorPenetrationPercent = val(Leer.GetValue(ObjKey, "ArmorPenetrationPercent"))
@@ -1165,6 +1167,8 @@ Sub LoadOBJData()
                 Case e_OBJType.otArrows
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
+                    .MaxHitToNPC = val(Leer.GetValue(ObjKey, "MaxHitToNPC"))
+                    .MinHitToNPC = val(Leer.GetValue(ObjKey, "MinHitToNPC"))
                     .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
                     .Paraliza = val(Leer.GetValue(ObjKey, "Paraliza"))
                     .Estupidiza = val(Leer.GetValue(ObjKey, "Estupidiza"))
@@ -2334,7 +2338,7 @@ End Sub
 Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
     On Error GoTo SaveUser_Err
     If Logout Then
-        Call UserDisconnected(UserList(UserIndex).pos.Map, UserIndex)
+        Call UserDisconnected(UserIndex)
     End If
     Call SaveCharacterDB(UserIndex)
     If Logout Then
@@ -2912,6 +2916,11 @@ Sub LoadGuildsConfig()
     
     'Requisito para ver barra de vida
     RequiredGuildLevelShowHPBar = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "ShowHPBarRequiredLevel", "6")))
+    
+    'Precio para aceptar un nuevo miembro según el nivel del clan
+    For i = 1 To MAX_LEVEL_GUILD
+        PriceAcceptMemberGuild(i) = CInt(val(GuildsIni.GetValue("GUILDPRICEACCEPTMEMBER", "PriceAcceptMemberGuildLevel" & CStr(i), "0")))
+    Next i
     
     Set GuildsIni = Nothing
     AgregarAConsola "Se cargó la configuración de clanes (Clanes.dat)"

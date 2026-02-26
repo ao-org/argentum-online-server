@@ -49,6 +49,7 @@ End Function
         Dim i As Long
         For i = 1 To count
             With Personajes(i)
+                Call Writer.WriteInt(.id)
                 Call Writer.WriteString8(.nombre)
                 Call Writer.WriteInt(.cuerpo)
                 Call Writer.WriteInt(.Cabeza)
@@ -2009,7 +2010,7 @@ Public Sub WriteMiniStats(ByVal UserIndex As Integer)
     Call Writer.WriteInt32(UserList(UserIndex).Faccion.ciudadanosMatados)
     Call Writer.WriteInt32(UserList(UserIndex).Faccion.CriminalesMatados)
     Call Writer.WriteInt8(UserList(UserIndex).Faccion.Status)
-    Call Writer.WriteInt16(UserList(UserIndex).Stats.NPCsMuertos)
+    Call Writer.WriteInt32(UserList(UserIndex).Stats.NPCsMuertos)
     Call Writer.WriteInt8(UserList(UserIndex).clase)
     Call Writer.WriteInt32(UserList(UserIndex).Counters.Pena)
     Call Writer.WriteInt32(UserList(UserIndex).flags.VecesQueMoriste)

@@ -759,6 +759,76 @@ ErrHandler:
     Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUser")
 End Function
 
+Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long, Optional ByVal newUser As Boolean = False) As Boolean
+    On Error GoTo ErrHandler
+
+    Dim PerformanceTimer As Long
+    Dim failureReason As String
+    Dim LogMessage As String
+
+    ConnectUserByID = False
+    Call PerformanceTestStart(PerformanceTimer)
+
+    If CharID <= 0 Then
+        Call WriteShowMessageBox(UserIndex, 1773, vbNullString)
+        Call CloseSocket(UserIndex)
+        Exit Function
+    End If
+
+    ' Ensure we have an account loaded
+    If UserList(UserIndex).AccountID <= 0 Then
+        Call WriteShowMessageBox(UserIndex, 2093, vbNullString)
+        Call CloseSocket(UserIndex)
+        Exit Function
+    End If
+
+    ' Validate char belongs to account (fast & safe)
+    Dim RS As ADODB.Recordset
+    Set RS = Query("select name from user where id=" & CStr(CharID) & " and account_id=" & CStr(UserList(UserIndex).AccountID))
+
+    If RS Is Nothing Or RS.EOF Then
+        Call WriteShowMessageBox(UserIndex, 2093, vbNullString)
+        Call CloseSocket(UserIndex)
+        Exit Function
+    End If
+
+    Dim name As String
+    name = CStr(RS!name)
+
+    ' Run the existing checks/prep using authoritative name
+    If Not ConnectUser_Check(UserIndex, name, failureReason) Then
+        LogMessage = "ConnectUser_Check (ByID) " & name & " failed."
+        If LenB(failureReason) > 0 Then LogMessage = LogMessage & " Reason: " & failureReason
+        Call LogSecurity(LogMessage)
+        Call CloseSocket(UserIndex)
+        Exit Function
+    End If
+
+    Call ConnectUser_Prepare(UserIndex, name)
+
+    ' Tell the loader to load by ID
+    UserList(UserIndex).id = CharID
+
+    If LoadCharacterFromDB(UserIndex) Then
+        If ConnectUser_Complete(UserIndex, name, newUser) Then
+            ConnectUserByID = True
+        End If
+    Else
+        Call WriteShowMessageBox(UserIndex, 1773, vbNullString)
+        Call CloseSocket(UserIndex)
+    End If
+
+    Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUserByID")
+    Exit Function
+
+ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "TCP.ConnectUserByID", Erl)
+    Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
+    Call CloseSocket(UserIndex)
+    Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUserByID")
+End Function
+
+
 Private Sub SendWelcomeUptime(ByVal UserIndex As Integer)
     Dim Msg As String
     Msg = "Server Uptime: " & FormatUptime()

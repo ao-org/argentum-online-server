@@ -26,8 +26,8 @@ Attribute VB_Name = "mdlCOmercioConUsuario"
 '
 '
 Option Explicit
-Private Const MAX_ORO_LOGUEABLE As Long = 50000
-Private Const MAX_OBJ_LOGUEABLE As Long = 1000
+
+
 
 'origen: origen de la transaccion, originador del comando
 'destino: receptor de la transaccion

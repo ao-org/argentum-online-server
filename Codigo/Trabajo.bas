@@ -117,7 +117,6 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
 
         ' --- Basic guards (with visibility) ---
         If .flags.Navegando = 1 And .clase <> e_Class.Pirat Then
-            LogInfoServidor "[Hide] Blocked: Navegando=1 and not Pirat | U=" & UserIndex & " Clase=" & .clase
             Call WriteLocaleMsg(UserIndex, 56, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
@@ -145,14 +144,6 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
         Suerte = (((0.000002 * Skill - 0.0002) * Skill + 0.0064) * Skill + 0.1124) * 100
         res = RandomNumber(1, 100)
 
-        LogInfoServidor "[Hide] Attempt | U=" & UserIndex & _
-                        " skill=" & skill & _
-                        " chance=" & Format$(Suerte, "0.00") & _
-                        " roll=" & res & _
-                        " IntervaloOculto=" & IntervaloOculto & _
-                        " Navegando=" & .flags.Navegando & _
-                        " Clase=" & .clase
-
         If res <= Suerte Then
             .flags.Oculto = 1
 
@@ -171,11 +162,6 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
                     .Counters.TiempoOculto = Int(Suerte / 3)
             End Select
 
-            LogInfoServidor "[Hide] SUCCESS | U=" & UserIndex & _
-                            " TiempoOculto=" & .Counters.TiempoOculto & _
-                            " IntervaloOculto=" & IntervaloOculto & _
-                            " Clase=" & .clase & _
-                            " Navegando=" & .flags.Navegando
 
             If .flags.Navegando = 1 Then
                 If .clase = e_Class.Pirat Then
@@ -188,9 +174,6 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
                     'Msg1024= ¡Te has camuflado como barco fantasma!
                     Call WriteLocaleMsg(UserIndex, 1024, e_FontTypeNames.FONTTYPE_INFO)
                     Call RefreshCharStatus(UserIndex)
-
-                    LogInfoServidor "[Hide] SUCCESS Pirat ship-camo | U=" & UserIndex & _
-                                    " TiempoOculto=" & .Counters.TiempoOculto
                 End If
             Else
                 UserList(UserIndex).Counters.timeFx = 3
@@ -203,11 +186,6 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
             Call SubirSkill(UserIndex, Ocultarse)
 
         Else
-            LogInfoServidor "[Hide] FAIL | U=" & UserIndex & _
-                            " skill=" & skill & _
-                            " chance=" & Format$(Suerte, "0.00") & _
-                            " roll=" & res
-
             If Not .flags.UltimoMensaje = MSG_HIDE_FAILED Then
                 'Msg57=¡No has logrado esconderte!
                 Call WriteLocaleMsg(UserIndex, 57, e_FontTypeNames.FONTTYPE_INFO)

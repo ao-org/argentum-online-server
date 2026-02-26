@@ -27,6 +27,10 @@ Attribute VB_Name = "Database"
 '
 Public Const DatabaseFileName = "Database.db"
 
+' Bank save prepared command cache (one per async connection)
+Private BankSaveCmdInit As Boolean
+Private BankSaveCmd()   As ADODB.Command
+
 Public Sub Database_Connect_Async()
     On Error GoTo Database_Connect_AsyncErr
     Dim ConnectionID As String
@@ -40,7 +44,7 @@ Public Sub Database_Connect_Async()
         Set Connection_async(i) = New ADODB.Connection
         Connection_async(i).CursorLocation = adUseClient
         Connection_async(i).ConnectionString = ConnectionID
-        Call Connection_async(i).Open(, , , adAsyncConnect)
+        Call Connection_async(i).Open
     Next i
     Current_async = 1
     Set Builder = New cStringBuilder
@@ -150,6 +154,78 @@ Execute_Err:
     If (Err.Number <> 0) Then
         Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - " & vbCrLf & Text)
     End If
+End Function
+
+
+Public Sub PreparePreparedCommands()
+    On Error GoTo PreparePreparedCommandsErr
+
+    If BankSaveCmdInit Then Exit Sub
+
+    Dim connIdx As Byte
+    Dim slot    As Long
+    ReDim BankSaveCmd(1 To MAX_ASYNC)
+
+    For connIdx = 1 To MAX_ASYNC
+        Set BankSaveCmd(connIdx) = New ADODB.Command
+        Set BankSaveCmd(connIdx).ActiveConnection = Connection_async(connIdx)
+        BankSaveCmd(connIdx).CommandType = adCmdText
+        BankSaveCmd(connIdx).CommandText = QUERY_SAVE_BANCOINV
+        BankSaveCmd(connIdx).Prepared = True
+
+        For slot = 1 To MAX_BANCOINVENTORY_SLOTS
+            BankSaveCmd(connIdx).Parameters.Append BankSaveCmd(connIdx).CreateParameter(, adInteger, adParamInput)
+            BankSaveCmd(connIdx).Parameters.Append BankSaveCmd(connIdx).CreateParameter(, adInteger, adParamInput)
+            BankSaveCmd(connIdx).Parameters.Append BankSaveCmd(connIdx).CreateParameter(, adInteger, adParamInput)
+            BankSaveCmd(connIdx).Parameters.Append BankSaveCmd(connIdx).CreateParameter(, adInteger, adParamInput)
+            BankSaveCmd(connIdx).Parameters.Append BankSaveCmd(connIdx).CreateParameter(, adLongVarChar, adParamInput, 2048)
+        Next slot
+    Next connIdx
+
+    BankSaveCmdInit = True
+    Exit Sub
+
+PreparePreparedCommandsErr:
+    BankSaveCmdInit = False
+    Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - PreparePreparedCommands")
+End Sub
+
+Public Function ExecutePreparedBankSave(ByRef Params() As Variant) As Boolean
+    On Error GoTo ExecutePreparedBankSaveErr
+
+    If Not BankSaveCmdInit Then
+        ExecutePreparedBankSave = Execute(QUERY_SAVE_BANCOINV, Params)
+        Exit Function
+    End If
+
+    Dim connIdx As Byte
+    Dim i       As Long
+    Dim cmd     As ADODB.Command
+
+    connIdx = Current_async
+    Set cmd = BankSaveCmd(connIdx)
+
+    If cmd.ActiveConnection Is Nothing Then
+        Set cmd.ActiveConnection = Connection_async(connIdx)
+    End If
+
+    For i = 0 To UBound(Params)
+        cmd.Parameters(i).Value = Params(i)
+    Next i
+
+    Call cmd.Execute(, , adAsyncExecute)
+
+    Current_async = Current_async + 1
+    If Current_async = MAX_ASYNC Then
+        Current_async = 1
+    End If
+
+    ExecutePreparedBankSave = True
+    Exit Function
+
+ExecutePreparedBankSaveErr:
+    ExecutePreparedBankSave = False
+    Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - ExecutePreparedBankSave")
 End Function
 
 Public Function Invoke(ByVal Procedure As String, ParamArray Arguments() As Variant) As ADODB.Recordset
@@ -327,13 +403,14 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
     On Error GoTo GetPersonajesCuentaDatabase_Err
     Dim RS As ADODB.Recordset
     Set RS = Query( _
-            "SELECT name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index,backpack_id, is_dead, is_sailing FROM user WHERE account_id = ?;", _
+            "SELECT id,name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index,backpack_id, is_dead, is_sailing FROM user WHERE account_id = ?;", _
             AccountID)
     If RS Is Nothing Then Exit Function
     GetPersonajesCuentaDatabase = RS.RecordCount
     Dim i As Integer
     If GetPersonajesCuentaDatabase = 0 Then Exit Function
     For i = 1 To GetPersonajesCuentaDatabase
+        Personaje(i).id = RS!id
         Personaje(i).nombre = RS!name
         Personaje(i).Cabeza = RS!head_id
         Personaje(i).clase = RS!class_id

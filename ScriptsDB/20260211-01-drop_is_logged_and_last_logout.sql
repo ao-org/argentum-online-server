@@ -1,6 +1,0 @@
-BEGIN TRANSACTION;
-
-ALTER TABLE user DROP COLUMN is_logged;
-ALTER TABLE user DROP COLUMN last_logout;
-
-COMMIT;
