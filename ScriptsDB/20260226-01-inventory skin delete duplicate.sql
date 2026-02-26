@@ -1,0 +1,1 @@
+DELETE FROM inventory_item_skins WHERE id NOT IN (SELECT MAX(id) FROM inventory_item_skins GROUP BY user_id, skin_id)
