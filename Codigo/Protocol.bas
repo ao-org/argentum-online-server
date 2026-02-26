@@ -2973,10 +2973,12 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
                 .SkillPts = .SkillPts - points(i)
                 If .UserSkills(i) <> .UserSkills(i) + points(i) Then
                     .UserSkills(i) = .UserSkills(i) + points(i)
+                    .SkillDirty(i) = True
                     'Client should prevent this, but just in case...
                     If .UserSkills(i) > 100 Then
                         .SkillPts = .SkillPts + .UserSkills(i) - 100
                         .UserSkills(i) = 100
+                        .SkillDirty(i) = True
                     End If
                     UserList(UserIndex).flags.ModificoSkills = True
                 End If
@@ -7575,6 +7577,7 @@ Private Sub HandleResetChar(ByVal UserIndex As Integer)
                 Dim i As Integer
                 For i = 1 To NUMSKILLS
                     .Stats.UserSkills(i) = 0
+                    .Stats.SkillDirty(i) = True
                 Next
                 .Stats.MaxAGU = 100
                 .Stats.MinAGU = 100

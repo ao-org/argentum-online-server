@@ -726,6 +726,7 @@ Dim obj                         As t_ObjData
                         Case e_MagicItemEffect.eModifySkills
                             If obj.Que_Skill <> 0 Then
                                 .Stats.UserSkills(obj.Que_Skill) = .Stats.UserSkills(obj.Que_Skill) - obj.CuantoAumento
+                                .Stats.SkillDirty(obj.Que_Skill) = True
                             End If
                         Case e_MagicItemEffect.eRegenerateHealth
                             .flags.RegeneracionHP = 0
@@ -1293,6 +1294,7 @@ Dim Ropaje                      As Integer
                         Call WriteFYA(UserIndex)
                     Case e_MagicItemEffect.eModifySkills
                         .Stats.UserSkills(obj.Que_Skill) = .Stats.UserSkills(obj.Que_Skill) + obj.CuantoAumento
+                        .Stats.SkillDirty(obj.Que_Skill) = True
                     Case e_MagicItemEffect.eRegenerateHealth
                         .flags.RegeneracionHP = 1
                     Case e_MagicItemEffect.eRegenerateMana

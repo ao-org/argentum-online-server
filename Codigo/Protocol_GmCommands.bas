@@ -1144,6 +1144,7 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
                         Call WriteLocaleMsg(UserIndex, 1485, e_FontTypeNames.FONTTYPE_INFO, username) ' Msg1485=Usuario Offline Alterado: ¬1
                     Else
                         UserList(tUser.ArrayIndex).Stats.UserSkills(LoopC) = val(Arg2)
+                        UserList(tUser.ArrayIndex).Stats.SkillDirty(LoopC) = True
                     End If
                 End If
             Case e_EditOptions.eo_SkillPointsLeft
@@ -3568,6 +3569,7 @@ Public Sub HandleGenio(ByVal UserIndex As Integer)
         Dim i As Byte
         For i = 1 To NUMSKILLS
             .Stats.UserSkills(i) = 100
+            .Stats.SkillDirty(i) = True
         Next i
         ' Msg555=Tus skills fueron editados.
         Call WriteLocaleMsg(UserIndex, 555, e_FontTypeNames.FONTTYPE_INFOIAO)
