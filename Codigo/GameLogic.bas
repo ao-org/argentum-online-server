@@ -1382,6 +1382,7 @@ Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As 
         Dim i As Long
         For i = 1 To NUMSKILLS
             .Stats.UserSkills(i) = 100
+            .Stats.SkillDirty(i) = True
         Next i
         .Char.WeaponAnim = NingunArma
         .Char.ShieldAnim = NingunEscudo

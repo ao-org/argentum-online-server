@@ -2509,6 +2509,7 @@ Public Type t_UserStats
     ELV As Byte
     ELO As Long
     UserSkills(1 To NUMSKILLS) As Byte
+    SkillDirty(1 To NUMSKILLS) As Boolean
     UserAtributos(1 To NUMATRIBUTOS) As Byte
     UserAtributosBackUP(1 To NUMATRIBUTOS) As Byte
     UserHechizos(1 To MAXUSERHECHIZOS) As Integer

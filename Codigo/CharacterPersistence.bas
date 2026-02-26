@@ -374,13 +374,19 @@ End Sub
 
 Private Sub SetupUserSkills(ByRef User As t_User)
     Dim RS As ADODB.Recordset
+    Dim LoopC As Long
     Set RS = Query("SELECT number, value FROM skillpoint WHERE user_id = ?;", User.Id)
     If Not RS Is Nothing Then
         While Not RS.EOF
             User.Stats.UserSkills(RS!Number) = RS!value
+            User.Stats.SkillDirty(RS!Number) = False
             RS.MoveNext
         Wend
     End If
+
+    For LoopC = 1 To NUMSKILLS
+        User.Stats.SkillDirty(LoopC) = False
+    Next LoopC
 End Sub
 
 Private Sub SetupUserQuests(ByRef User As t_User)
@@ -678,19 +684,50 @@ Private Sub SaveCharacterSkillsDB(ByRef U As t_User, ByRef QueryBreakdown As Str
     Dim Params() As Variant
     Dim LoopC As Long
     Dim ParamC As Long
-    ReDim Params(NUMSKILLS * 3 - 1)
+    Dim DirtyCount As Long
+
+    For LoopC = 1 To NUMSKILLS
+        If U.Stats.SkillDirty(LoopC) Then
+            DirtyCount = DirtyCount + 1
+        End If
+    Next LoopC
+
+    If DirtyCount = 0 Then
+        If LenB(QueryBreakdown) <> 0 Then QueryBreakdown = QueryBreakdown & "; "
+        QueryBreakdown = QueryBreakdown & "upsert skills: skipped"
+        Exit Sub
+    End If
+
+    Call Builder.Clear
+    Builder.Append "REPLACE INTO skillpoint (user_id, number, value) VALUES "
+    For LoopC = 1 To DirtyCount
+        Builder.Append "(?, ?, ?)"
+        If LoopC < DirtyCount Then
+            Builder.Append ", "
+        End If
+    Next LoopC
+
+    ReDim Params(DirtyCount * 3 - 1)
     ParamC = 0
     For LoopC = 1 To NUMSKILLS
-        Params(ParamC) = U.Id
-        Params(ParamC + 1) = LoopC
-        Params(ParamC + 2) = U.Stats.UserSkills(LoopC)
-        ParamC = ParamC + 3
+        If U.Stats.SkillDirty(LoopC) Then
+            Params(ParamC) = U.Id
+            Params(ParamC + 1) = LoopC
+            Params(ParamC + 2) = U.Stats.UserSkills(LoopC)
+            ParamC = ParamC + 3
+        End If
     Next LoopC
+
     QueryTimer = GetTickCountRaw()
-    Call Execute(QUERY_UPSERT_SKILLS, Params)
+    Call Execute(Builder.ToString(), Params)
     Call AppendQueryDuration(QueryBreakdown, "upsert skills", QueryTimer)
+    Call Builder.Clear
+
     For LoopC = 1 To NUMSKILLS
-        U.Persist.LastSkills(LoopC) = U.Stats.UserSkills(LoopC)
+        If U.Stats.SkillDirty(LoopC) Then
+            U.Stats.SkillDirty(LoopC) = False
+            U.Persist.LastSkills(LoopC) = U.Stats.UserSkills(LoopC)
+        End If
     Next LoopC
 End Sub
 
@@ -1057,7 +1094,7 @@ Public Function HaveSkillsChanged(ByVal UserIndex As Integer) As Boolean
     Dim i As Long
     With UserList(UserIndex)
         For i = 1 To NUMSKILLS
-            If .Stats.UserSkills(i) <> .Persist.LastSkills(i) Then
+            If .Stats.SkillDirty(i) Then
                 HaveSkillsChanged = True
                 Exit Function
             End If
@@ -1070,6 +1107,7 @@ Public Sub UpdateSavedSkills(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         For i = 1 To NUMSKILLS
             .Persist.LastSkills(i) = .Stats.UserSkills(i)
+            .Stats.SkillDirty(i) = False
         Next i
     End With
 End Sub

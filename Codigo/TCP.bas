@@ -412,7 +412,10 @@ Function Validate_Skills(ByVal UserIndex As Integer) As Boolean
     For LoopC = 1 To NUMSKILLS
         If UserList(UserIndex).Stats.UserSkills(LoopC) < 0 Then
             Exit Function
-            If UserList(UserIndex).Stats.UserSkills(LoopC) > 100 Then UserList(UserIndex).Stats.UserSkills(LoopC) = 100
+        End If
+        If UserList(UserIndex).Stats.UserSkills(LoopC) > 100 Then
+            UserList(UserIndex).Stats.UserSkills(LoopC) = 100
+            UserList(UserIndex).Stats.SkillDirty(LoopC) = True
         End If
     Next LoopC
     Validate_Skills = True
@@ -1237,6 +1240,7 @@ Sub ResetUserSkills(ByVal UserIndex As Integer)
     Dim LoopC As Long
     For LoopC = 1 To NUMSKILLS
         UserList(UserIndex).Stats.UserSkills(LoopC) = 0
+        UserList(UserIndex).Stats.SkillDirty(LoopC) = True
     Next LoopC
     Exit Sub
 ResetUserSkills_Err:
