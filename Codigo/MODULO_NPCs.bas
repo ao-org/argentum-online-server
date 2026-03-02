@@ -572,8 +572,21 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                             Simbolo = 4
                         End If
                     Else
+                        Dim validClass As Boolean
+                        Dim i As Integer
+                        validClass = False
+                        
+                        If QuestList(.QuestNumber(q)).RequiredClassesCount > 0 Then
+                            For i = 1 To QuestList(.QuestNumber(q)).RequiredClassesCount
+                                If UserList(sndIndex).clase = QuestList(.QuestNumber(q)).RequiredClass(i) Then
+                                    validClass = True
+                                    Exit For
+                                End If
+                            Next i
+                        End If
+                        
                         If UserDoneQuest(sndIndex, .QuestNumber(q)) Or Not UserDoneQuest(sndIndex, QuestList(.QuestNumber(q)).RequiredQuest) Or UserList(sndIndex).Stats.ELV < _
-                                QuestList(.QuestNumber(q)).RequiredLevel Or UserList(sndIndex).clase = QuestList(.QuestNumber(q)).RequiredClass Then
+                                QuestList(.QuestNumber(q)).RequiredLevel Or validClass = True Then
                             Simbolo = 2
                         Else
                             Simbolo = 1
