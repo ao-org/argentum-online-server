@@ -2075,6 +2075,7 @@ Public Type t_UserQuest
     NPCsTarget() As Integer
     NPCsKilled() As Integer
     QuestIndex As Integer
+    Dirty As Boolean
 End Type
 
 Public Type t_QuestSkill
@@ -2274,6 +2275,8 @@ Public Type t_ObjData
     LingoteIndex As Integer
     MinHIT As Integer 'Minimo golpe
     MaxHit As Integer 'Maximo golpe
+    MinHitToNPC As Integer
+    MaxHitToNPC As Integer
     MinArmorPenetrationFlat As Integer
     MaxArmorPenetrationFlat As Integer
     ArmorPenetrationPercent As Integer
@@ -2503,6 +2506,7 @@ Public Type t_UserStats
     ELV As Byte
     ELO As Long
     UserSkills(1 To NUMSKILLS) As Byte
+    SkillDirty(1 To NUMSKILLS) As Boolean
     UserAtributos(1 To NUMATRIBUTOS) As Byte
     UserAtributosBackUP(1 To NUMATRIBUTOS) As Byte
     UserHechizos(1 To MAXUSERHECHIZOS) As Integer
@@ -3190,6 +3194,7 @@ End Type
 Public Type t_NpcInfoCache
     Exists As Boolean
     TestOnly As Integer
+    DisabledInBattleServer As Integer
     RequireToggle As String
     name As String
     SubName As String
@@ -3419,6 +3424,7 @@ Public Type t_Npc
     CaminataActual As Byte
     PuedeInvocar As Byte
     Humanoide As Boolean
+    DisabledInBattleServer As Byte
 End Type
 
 '**********************************************************

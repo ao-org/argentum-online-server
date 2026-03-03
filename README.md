@@ -25,9 +25,9 @@ Create a new folder named `C:\AO20` and navigate to it. Follow these steps:
 
 4. Rename the file `Empty_db.db` to `Database.db`
 
-5. Clone `Recursos` (https://github.com/ao-org/Recursos)
+5. Rename the file `../Recursos/Dat/Example.Motd.ini` to `Motd.ini`
 
-6. Copy `Example.EsArbol.ini` to `Recursos\init\EsArbol.ini` and customize it if you need different tree graphics.
+6. Clone `Recursos` (https://github.com/ao-org/Recursos)
 
 7. Open Visual Basic 6 as an administrator
 

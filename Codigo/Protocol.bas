@@ -1014,7 +1014,10 @@ End Sub
 
 #End If
 #If PYMMO = 1 Then
+
+
 Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
+    Const LoginExistingCharWarnMs As Long = 80 ' ajusta a gusto
     On Error GoTo ErrHandler
 
     Dim encrypted_session_token As String
@@ -1024,59 +1027,139 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     Dim CuentaEmail As String
     Dim UserIndex As Integer
 
+    Dim decrypted_session_token As String
+    Dim encrypted_session_token_byte() As Byte
+    Dim RS As ADODB.Recordset
+
+    ' Instrumentation
+    Dim PerformanceTimer As Long
+    Dim stepTimer As Long
+    Dim t_read As Long, t_validate As Long, t_decrypt As Long, t_base64 As Long
+    Dim t_query As Long, t_map As Long, t_assign As Long, t_entrar As Long, t_connect As Long
+    Dim totalMs As Long
+    Dim outcome As String
+    Dim tokenLen As Long, md5Len As Long
+    Dim rsCount As Long
+
+    outcome = "ok"
+    Call PerformanceTestStart(PerformanceTimer)
+
+    ' ----------------------------
+    ' Read input
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
     encrypted_session_token = reader.ReadString8
     char_id = reader.ReadInt32
-    
+    Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
+    md5 = reader.ReadString8
+    t_read = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+
+    tokenLen = Len(encrypted_session_token)
+    md5Len = Len(md5)
+
+    ' ----------------------------
+    ' Validate
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
+
     If char_id <= 0 Or char_id > 2000000000 Then
-        LogInfoServidor ("HandleLoginExistingChar: invalid char_id " & char_id)
+        outcome = "kick_invalid_char_id"
+        LogInfoServidor "HandleLoginExistingChar: invalid char_id " & char_id
         Call KickConnection(ConnectionID)
-        Exit Sub
+        GoTo FinallyLog
     End If
 
-    Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
-    md5 = reader.ReadString8()
-
-    If Len(encrypted_session_token) <> 88 Or char_id <= 0 Then
+    If tokenLen <> 88 Or char_id <= 0 Then
+        outcome = "kick_invalid_token_len"
         Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092))
         Call KickConnection(ConnectionID)
-        Exit Sub
+        GoTo FinallyLog
     End If
 
-    Dim encrypted_session_token_byte() As Byte
-    Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_session_token, encrypted_session_token_byte)
+    t_validate = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
 
-    Dim decrypted_session_token As String
+    ' ----------------------------
+    ' Decrypt token
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
+
+    Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_session_token, encrypted_session_token_byte)
     decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
 
+    t_decrypt = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+
+    ' ----------------------------
+    ' Base64 check
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
+
     If Not IsBase64(decrypted_session_token) Then
+        outcome = "kick_decrypt_not_base64"
         Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092))
         Call KickConnection(ConnectionID)
-        Exit Sub
+        t_base64 = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+        GoTo FinallyLog
     End If
 
-    Dim RS As ADODB.Recordset
+    t_base64 = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+
+    ' ----------------------------
+    ' Query token row
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
+
+    ' Nota: mantenemos tu SQL tal cual, solo medimos.
     Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
 
-    If RS Is Nothing Or RS.RecordCount = 0 Then
+    If RS Is Nothing Then
+        rsCount = -1
+    ElseIf RS.EOF And RS.BOF Then
+        rsCount = 0
+    Else
+        On Error Resume Next
+        rsCount = RS.RecordCount
+        On Error GoTo ErrHandler
+        If rsCount < 0 Then rsCount = 1 ' algunos providers devuelven -1
+    End If
+
+    t_query = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+
+    If RS Is Nothing Or rsCount = 0 Then
+        outcome = "kick_token_not_found"
         Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2093))
         Call KickConnection(ConnectionID)
-        Exit Sub
+        GoTo FinallyLog
     End If
 
     CuentaEmail = CStr(RS!username)
 
     If CStr(RS!encrypted_token) <> encrypted_session_token Then
+        outcome = "kick_token_mismatch"
         Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092))
         Call KickConnection(ConnectionID)
-        Exit Sub
+        GoTo FinallyLog
     End If
 
+    ' ----------------------------
+    ' Map connection -> user
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
+
     UserIndex = MapConnectionToUser(ConnectionID)
+
+    t_map = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+
     If UserIndex < 1 Then
+        outcome = "kick_no_userindex"
         Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094))
         Call KickConnection(ConnectionID)
-        Exit Sub
+        GoTo FinallyLog
     End If
+
+    ' ----------------------------
+    ' Assign to user struct
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
 
     With UserList(UserIndex)
         .encrypted_session_token_db_id = RS!id
@@ -1085,20 +1168,81 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
         .public_key = mid$(decrypted_session_token, 1, 16)
     End With
 
+    t_assign = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+
+    ' ----------------------------
+    ' EntrarCuenta
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
+
     If Not EntrarCuenta(UserIndex, CuentaEmail, md5) Then
+        outcome = "fail_entrar_cuenta"
         Call LogInfoServidor("HandleLoginExistingChar failed for " & CuentaEmail)
         Call CloseSocket(UserIndex)
-        Exit Sub
+        t_entrar = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+        GoTo FinallyLog
     End If
 
-    ' Store selected char id on the user struct
-    UserList(UserIndex).id = char_id
+    t_entrar = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
 
-    ' Fast/clean path:
+    ' ----------------------------
+    ' Connect user by ID
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
+
+    UserList(UserIndex).Id = char_id
     Call ConnectUserByID(UserIndex, char_id, False)
+
+    t_connect = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+
+FinallyLog:
+    totalMs = CLng(TicksElapsed(PerformanceTimer, GetTickCountRaw()))
+
+    ' Log similar to Auto-save: solo si tarda mucho o si no fue ok
+    If totalMs >= LoginExistingCharWarnMs Or outcome <> "ok" Then
+        Call LogPerformance( _
+            "LoginExistingChar summary - conn: " & ConnectionID & _
+            " | user: " & UserIndex & _
+            " | char_id: " & char_id & _
+            " | email: " & CuentaEmail & _
+            " | ver: " & Version & _
+            " | tokenLen: " & tokenLen & _
+            " | md5Len: " & md5Len & _
+            " | rsCount: " & rsCount & _
+            " | outcome: " & outcome & _
+            " | read: " & t_read & "ms" & _
+            " | validate: " & t_validate & "ms" & _
+            " | decrypt: " & t_decrypt & "ms" & _
+            " | base64: " & t_base64 & "ms" & _
+            " | query: " & t_query & "ms" & _
+            " | map: " & t_map & "ms" & _
+            " | assign: " & t_assign & "ms" & _
+            " | entrar: " & t_entrar & "ms" & _
+            " | connect: " & t_connect & "ms" & _
+            " | total: " & totalMs & "ms" _
+        )
+    End If
+
     Exit Sub
 
 ErrHandler:
+    outcome = "error_" & Err.Number
+
+    ' Intentá loguear aunque reviente en medio
+    On Error Resume Next
+    totalMs = CLng(TicksElapsed(PerformanceTimer, GetTickCountRaw()))
+    Call LogPerformance( _
+        "LoginExistingChar ERROR - conn: " & ConnectionID & _
+        " | user: " & UserIndex & _
+        " | char_id: " & char_id & _
+        " | email: " & CuentaEmail & _
+        " | ver: " & Version & _
+        " | outcome: " & outcome & _
+        " | total: " & totalMs & "ms" & _
+        " | err: " & Err.Description _
+    )
+    On Error GoTo 0
+
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
 End Sub
 
@@ -2973,10 +3117,12 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
                 .SkillPts = .SkillPts - points(i)
                 If .UserSkills(i) <> .UserSkills(i) + points(i) Then
                     .UserSkills(i) = .UserSkills(i) + points(i)
+                    .SkillDirty(i) = True
                     'Client should prevent this, but just in case...
                     If .UserSkills(i) > 100 Then
                         .SkillPts = .SkillPts + .UserSkills(i) - 100
                         .UserSkills(i) = 100
+                        .SkillDirty(i) = True
                     End If
                     UserList(UserIndex).flags.ModificoSkills = True
                 End If
@@ -4261,6 +4407,7 @@ Private Sub HandleHeal(ByVal UserIndex As Integer)
         End If
         If (NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Revividor And NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.ResucitadorNewbie) Or .flags.Muerto _
                 <> 0 Then Exit Sub
+        If .pos.Map = MAP_HOME_IN_JAIL And NpcList(.flags.TargetNPC.ArrayIndex).npcType = e_NPCType.Revividor Then Exit Sub
         If Distancia(.pos, NpcList(.flags.TargetNPC.ArrayIndex).pos) > 10 Then
             Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
@@ -6937,8 +7084,15 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
     'Agregamos la quest.
     With UserList(UserIndex).QuestStats.Quests(QuestSlot)
         .QuestIndex = tmpIndex
-        If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
-        If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
+        .Dirty = True ' Quest slot changed: new quest assignment.
+        If QuestList(.QuestIndex).RequiredNPCs Then
+            ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
+            .Dirty = True ' Quest slot changed: NPC kill progress array resized for assigned quest.
+        End If
+        If QuestList(.QuestIndex).RequiredTargetNPCs Then
+            ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
+            .Dirty = True ' Quest slot changed: target progress array resized for assigned quest.
+        End If
         UserList(UserIndex).flags.ModificoQuests = True
         'Msg1264= Has aceptado la misión ¬1
         Call WriteLocaleMsg(UserIndex, 1264, e_FontTypeNames.FONTTYPE_INFOIAO, .QuestIndex)
@@ -7057,6 +7211,12 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
             If Not IsValidUserRef(UserConsulta) Then
                 'Msg1265= El usuario se encuentra offline.
                 Call WriteLocaleMsg(UserIndex, 1265, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            'Si el gm es Consejero y el usuario esta en zona insegura, no puede ir
+            If e_PlayerType.Consejero And MapInfo(UserList(UserConsulta.ArrayIndex).pos.Map).Seguro = 0 Then
+                'Msg2165=El usuario ¬1 se encuentra en zona insegura, no puedes acercarte a él.
+                Call WriteLocaleMsg(UserIndex, 2165, e_FontTypeNames.FONTTYPE_INFO, Nick)
                 Exit Sub
             End If
         Else
@@ -7243,17 +7403,17 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
         UserName = GetUserDisplayName(UserIndex)
         Select Case tipoMacro
             Case tMacro.Coordenadas
-                Motivo = "macro de COORDENADAS."
+                Motivo = "Macro de Cordenadas."
             Case tMacro.dobleclick
-                Motivo = "macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & ")"
+                Motivo = "Macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & ")"
             Case tMacro.inasistidoPosFija
                 Dim spellID As Integer
                 spellID = .Stats.UserHechizos(.flags.Hechizo)
                 If Not IsUnassistedSpellAllowed(spellID) Then
-                    Motivo = "macro INASISTIDO."
+                    Motivo = "Macro Inasistido."
                 End If
             Case tMacro.borrarCartel
-                Motivo = "macro de CARTELEO."
+                Motivo = "Macro de Carteleo."
         End Select
         If Motivo <> "" Then
             Call SendData(sendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg("Control de macro---> El usuario " & username & "| Revisar --> " & Motivo & ".", e_FontTypeNames.FONTTYPE_INFO))
@@ -7263,7 +7423,7 @@ End Sub
 
 Private Function IsUnassistedSpellAllowed(ByVal spellID As Integer) As Boolean
     Select Case spellID
-        Case SPELL_UNASSISTED_DARDO, SPELL_UNASSISTED_RUGIDO_SALVAJE, SPELL_UNASSISTED_RUGIDO_SALVAJE, SPELL_UNASSISTED_FULGOR_IGNEO, SPELL_UNASSISTED_LATIDO_IGNEO, SPELL_UNASSISTED_ECO_IGNEO, SPELL_UNASSISTED_DESTELLO_MALVA, _
+        Case SPELL_UNASSISTED_DARDO, SPELL_UNASSISTED_RUGIDO_SALVAJE, SPELL_UNASSISTED_FULGOR_IGNEO, SPELL_UNASSISTED_LATIDO_IGNEO, SPELL_UNASSISTED_ECO_IGNEO, SPELL_UNASSISTED_DESTELLO_MALVA, _
             SPELL_UNASSISTED_FRACTURA_GLACIAL, SPELL_UNASSISTED_ALIENTO_CARMESI, SPELL_UNASSISTED_ENERGIA_ANCESTRAL
             IsUnassistedSpellAllowed = True
         Case Else
@@ -7314,7 +7474,8 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
                 End If
                 
                 If .Stats.GLD < homeCostGLD Then
-                    Call WriteLocaleMsg(UserIndex, 2163, e_FontTypeNames.FONTTYPE_INFO, homeCostGLD)
+                    'Msg2164=Para utilizar este comando necesitas ¬1 monedas de oro.
+                    Call WriteLocaleMsg(UserIndex, 2164, e_FontTypeNames.FONTTYPE_INFO, homeCostGLD)
                     Exit Sub
                 End If
                 
@@ -7560,6 +7721,7 @@ Private Sub HandleResetChar(ByVal UserIndex As Integer)
                 Dim i As Integer
                 For i = 1 To NUMSKILLS
                     .Stats.UserSkills(i) = 0
+                    .Stats.SkillDirty(i) = True
                 Next
                 .Stats.MaxAGU = 100
                 .Stats.MinAGU = 100

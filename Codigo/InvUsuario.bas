@@ -726,6 +726,7 @@ Dim obj                         As t_ObjData
                         Case e_MagicItemEffect.eModifySkills
                             If obj.Que_Skill <> 0 Then
                                 .Stats.UserSkills(obj.Que_Skill) = .Stats.UserSkills(obj.Que_Skill) - obj.CuantoAumento
+                                .Stats.SkillDirty(obj.Que_Skill) = True
                             End If
                         Case e_MagicItemEffect.eRegenerateHealth
                             .flags.RegeneracionHP = 0
@@ -1234,6 +1235,8 @@ Dim Ropaje                      As Integer
                 End If
 
             Case e_OBJType.otWorkingTools
+                Dim EquippedWorkingToolObjType As e_WorkingToolSubType
+                
                 If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eTool) Then
                     Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
@@ -1246,6 +1249,11 @@ Dim Ropaje                      As Integer
                 End If
                 'Quitamos el elemento anterior
                 If .invent.EquippedWorkingToolObjIndex > 0 Then
+                    EquippedWorkingToolObjType = ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
+                    If EquippedWorkingToolObjType = e_WorkingToolSubType.FishingRod And obj.Subtipo = e_WorkingToolSubType.FishingNet Then
+                        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(2166, "", e_FontTypeNames.FONTTYPE_INFO))
+                        Exit Sub
+                    End If
                     Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
                 End If
                 If .invent.EquippedWeaponObjIndex > 0 Then
@@ -1286,6 +1294,7 @@ Dim Ropaje                      As Integer
                         Call WriteFYA(UserIndex)
                     Case e_MagicItemEffect.eModifySkills
                         .Stats.UserSkills(obj.Que_Skill) = .Stats.UserSkills(obj.Que_Skill) + obj.CuantoAumento
+                        .Stats.SkillDirty(obj.Que_Skill) = True
                     Case e_MagicItemEffect.eRegenerateHealth
                         .flags.RegeneracionHP = 1
                     Case e_MagicItemEffect.eRegenerateMana
@@ -3139,7 +3148,7 @@ Public Sub UseArpon(ByVal UserIndex As Integer)
         ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
         Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
         Dim Damage As Integer
-        Damage = GetUserDamageWithItem(UserIndex, ObjIndex, 0)
+        Damage = GetUserDamageWithItem(UserIndex, ObjIndex, 0, TargetRef.RefType)
         If TargetRef.RefType = eUser Then
             UserList(TargetRef.ArrayIndex).Counters.timeFx = 3
             Call RemoveUserInvisibility(UserIndex)
