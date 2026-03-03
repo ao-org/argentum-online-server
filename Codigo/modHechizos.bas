@@ -26,7 +26,7 @@ Attribute VB_Name = "modHechizos"
 '
 '
 Option Explicit
-Private Const FLAUTA_ELFICA As Long = 40
+
 
 Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Spell As Integer, Optional ByVal IgnoreVisibilityCheck As Boolean = False)
     On Error GoTo NpcLanzaSpellSobreUser_Err
@@ -1125,7 +1125,7 @@ Function HandlePhysicalSkill(ByVal SourceIndex As Integer, _
                     If .invent.EquippedMunitionObjIndex = 0 Then
                         Exit Function
                     End If
-                    Damage = GetUserDamageWithItem(SourceIndex, .invent.EquippedWeaponObjIndex, .invent.EquippedMunitionObjIndex) / 2
+                    Damage = GetUserDamageWithItem(SourceIndex, .invent.EquippedWeaponObjIndex, .invent.EquippedMunitionObjIndex, TargetRef.RefType) / 2
                     objectIndex = .invent.EquippedWeaponObjIndex
                     Proyectile = ObjData(.invent.EquippedMunitionObjIndex).ProjectileType
                 End With

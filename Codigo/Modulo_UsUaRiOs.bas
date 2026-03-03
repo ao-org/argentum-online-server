@@ -650,7 +650,6 @@ Dim tStr                        As String
         NumUsers = NumUsers + 1
         .flags.UserLogged = True
         Call ResetUserAutomatedActions(UserIndex)
-        Call Execute("Update user set is_logged = true where id = ?", UserList(UserIndex).Id)
         .Counters.LastSave = GetTickCountRaw()
         MapInfo(.pos.Map).NumUsers = MapInfo(.pos.Map).NumUsers + 1
         If .Stats.SkillPts > 0 Then
@@ -1649,6 +1648,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
     End If
     If Aumenta >= cutoff Then Exit Sub
     UserList(UserIndex).Stats.UserSkills(Skill) = UserList(UserIndex).Stats.UserSkills(Skill) + 1
+    UserList(UserIndex).Stats.SkillDirty(Skill) = True
     Call WriteLocaleMsg(UserIndex, 1626, e_FontTypeNames.FONTTYPE_INFO, SkillsNames(Skill) & "¬" & UserList(UserIndex).Stats.UserSkills(Skill))
     Dim BonusExp As Long
     BonusExp = 5& * SvrConfig.GetValue("ExpMult")

@@ -721,6 +721,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal bS
                         Case e_MagicItemEffect.eModifySkills
                             If obj.Que_Skill <> 0 Then
                                 .Stats.UserSkills(obj.Que_Skill) = .Stats.UserSkills(obj.Que_Skill) - obj.CuantoAumento
+                                .Stats.SkillDirty(obj.Que_Skill) = True
                             End If
                         Case e_MagicItemEffect.eRegenerateHealth
                             .flags.RegeneracionHP = 0
@@ -3125,7 +3126,7 @@ Public Sub UseArpon(ByVal UserIndex As Integer)
         ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
         Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
         Dim Damage As Integer
-        Damage = GetUserDamageWithItem(UserIndex, ObjIndex, 0)
+        Damage = GetUserDamageWithItem(UserIndex, ObjIndex, 0, TargetRef.RefType)
         If TargetRef.RefType = eUser Then
             UserList(TargetRef.ArrayIndex).Counters.timeFx = 3
             Call RemoveUserInvisibility(UserIndex)

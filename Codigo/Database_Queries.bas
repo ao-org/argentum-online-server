@@ -125,12 +125,11 @@ Private Sub ConstruirQuery_CargarPersonaje()
     QueryBuilder.Append "Guild_Index,"
     QueryBuilder.Append "guild_rejected_because,"
     QueryBuilder.Append "warnings,"
-    QueryBuilder.Append "last_logout,"
     QueryBuilder.Append "is_reset,"
     QueryBuilder.Append "is_locked_in_mao,"
     QueryBuilder.Append "jinete_level,"
     QueryBuilder.Append "backpack_id"
-    QueryBuilder.Append " FROM user WHERE name= ?"
+    QueryBuilder.Append " FROM user WHERE id= ?"
     ' Guardo la query ensamblada
     QUERY_LOAD_MAINPJ = QueryBuilder.ToString
     ' Limpio el constructor de querys
@@ -243,12 +242,8 @@ End Sub
 Private Sub ConstruirQuery_GuardarPersonaje()
     Dim LoopC As Long
     QueryBuilder.Append "UPDATE user SET "
-    QueryBuilder.Append "name = ?, "
     QueryBuilder.Append "level = ?, "
     QueryBuilder.Append "exp = ?, "
-    QueryBuilder.Append "genre_id = ?, "
-    QueryBuilder.Append "race_id = ?, "
-    QueryBuilder.Append "class_id = ?, "
     QueryBuilder.Append "home_id = ?, "
     QueryBuilder.Append "description = ?, "
     QueryBuilder.Append "gold = ?, "
@@ -307,8 +302,7 @@ Private Sub ConstruirQuery_GuardarPersonaje()
     QueryBuilder.Append "return_x = ?, "
     QueryBuilder.Append "return_y = ?, "
     QueryBuilder.Append "jinete_level = ?, "
-    QueryBuilder.Append "backpack_id = ?, "
-    QueryBuilder.Append "last_logout = strftime('%s','now') "
+    QueryBuilder.Append "backpack_id = ? "
     QueryBuilder.Append "WHERE id = ?"
     ' Guardo la query ensamblada
     QUERY_UPDATE_MAINPJ = QueryBuilder.ToString

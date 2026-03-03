@@ -412,7 +412,10 @@ Function Validate_Skills(ByVal UserIndex As Integer) As Boolean
     For LoopC = 1 To NUMSKILLS
         If UserList(UserIndex).Stats.UserSkills(LoopC) < 0 Then
             Exit Function
-            If UserList(UserIndex).Stats.UserSkills(LoopC) > 100 Then UserList(UserIndex).Stats.UserSkills(LoopC) = 100
+        End If
+        If UserList(UserIndex).Stats.UserSkills(LoopC) > 100 Then
+            UserList(UserIndex).Stats.UserSkills(LoopC) = 100
+            UserList(UserIndex).Stats.SkillDirty(LoopC) = True
         End If
     Next LoopC
     Validate_Skills = True
@@ -758,6 +761,76 @@ ErrHandler:
     Call CloseSocket(UserIndex)
     Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUser")
 End Function
+
+Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long, Optional ByVal newUser As Boolean = False) As Boolean
+    On Error GoTo ErrHandler
+
+    Dim PerformanceTimer As Long
+    Dim failureReason As String
+    Dim LogMessage As String
+
+    ConnectUserByID = False
+    Call PerformanceTestStart(PerformanceTimer)
+
+    If CharID <= 0 Then
+        Call WriteShowMessageBox(UserIndex, 1773, vbNullString)
+        Call CloseSocket(UserIndex)
+        Exit Function
+    End If
+
+    ' Ensure we have an account loaded
+    If UserList(UserIndex).AccountID <= 0 Then
+        Call WriteShowMessageBox(UserIndex, 2093, vbNullString)
+        Call CloseSocket(UserIndex)
+        Exit Function
+    End If
+
+    ' Validate char belongs to account (fast & safe)
+    Dim RS As ADODB.Recordset
+    Set RS = Query("select name from user where id=" & CStr(CharID) & " and account_id=" & CStr(UserList(UserIndex).AccountID))
+
+    If RS Is Nothing Or RS.EOF Then
+        Call WriteShowMessageBox(UserIndex, 2093, vbNullString)
+        Call CloseSocket(UserIndex)
+        Exit Function
+    End If
+
+    Dim name As String
+    name = CStr(RS!name)
+
+    ' Run the existing checks/prep using authoritative name
+    If Not ConnectUser_Check(UserIndex, name, failureReason) Then
+        LogMessage = "ConnectUser_Check (ByID) " & name & " failed."
+        If LenB(failureReason) > 0 Then LogMessage = LogMessage & " Reason: " & failureReason
+        Call LogSecurity(LogMessage)
+        Call CloseSocket(UserIndex)
+        Exit Function
+    End If
+
+    Call ConnectUser_Prepare(UserIndex, name)
+
+    ' Tell the loader to load by ID
+    UserList(UserIndex).id = CharID
+
+    If LoadCharacterFromDB(UserIndex) Then
+        If ConnectUser_Complete(UserIndex, name, newUser) Then
+            ConnectUserByID = True
+        End If
+    Else
+        Call WriteShowMessageBox(UserIndex, 1773, vbNullString)
+        Call CloseSocket(UserIndex)
+    End If
+
+    Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUserByID")
+    Exit Function
+
+ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "TCP.ConnectUserByID", Erl)
+    Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
+    Call CloseSocket(UserIndex)
+    Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUserByID")
+End Function
+
 
 Private Sub SendWelcomeUptime(ByVal UserIndex As Integer)
     Dim Msg As String
@@ -1167,6 +1240,7 @@ Sub ResetUserSkills(ByVal UserIndex As Integer)
     Dim LoopC As Long
     For LoopC = 1 To NUMSKILLS
         UserList(UserIndex).Stats.UserSkills(LoopC) = 0
+        UserList(UserIndex).Stats.SkillDirty(LoopC) = True
     Next LoopC
     Exit Sub
 ResetUserSkills_Err:
@@ -1377,7 +1451,6 @@ Sub CloseUser(ByVal UserIndex As Integer)
         errordesc = "ERROR Update Map Users map: " & Map
         'Update Map Users
         MapInfo(Map).NumUsers = MapInfo(Map).NumUsers - 1
-        Call Execute("update user set is_logged = 0 where id = ?;", UserList(UserIndex).Id)
         If MapInfo(Map).NumUsers < 0 Then MapInfo(Map).NumUsers = 0
         ' Si el usuario habia dejado un msg en la gm's queue lo borramos
         'If Ayuda.Existe(.Name) Then Call Ayuda.Quitar(.Name)
