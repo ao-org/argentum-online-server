@@ -551,6 +551,11 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer,
                     Call WritePreguntaBox(UserIndex, 1592, DeDonde)
                 End If
             ElseIf NpcList(TempCharIndex).npcType = e_NPCType.EntregaPesca Then
+                If UserList(UserIndex).clase <> Trabajador Then
+                    'Msg2168=Solo los trabajadores pueden registrar los peces especiales.
+                    Call WriteLocaleMsg(UserIndex, 2168, e_FontTypeNames.FONTTYPE_INFOIAO)
+                    Exit Sub
+                End If
                 Dim i                   As Integer, j As Integer
                 Dim PuntosTotales       As Long
                 Dim CantPecesEspeciales As Long
