@@ -1014,7 +1014,10 @@ End Sub
 
 #End If
 #If PYMMO = 1 Then
+
+
 Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
+    Const LoginExistingCharWarnMs As Long = 80 ' ajusta a gusto
     On Error GoTo ErrHandler
 
     Dim encrypted_session_token As String
@@ -1024,59 +1027,139 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     Dim CuentaEmail As String
     Dim UserIndex As Integer
 
+    Dim decrypted_session_token As String
+    Dim encrypted_session_token_byte() As Byte
+    Dim RS As ADODB.Recordset
+
+    ' Instrumentation
+    Dim PerformanceTimer As Long
+    Dim stepTimer As Long
+    Dim t_read As Long, t_validate As Long, t_decrypt As Long, t_base64 As Long
+    Dim t_query As Long, t_map As Long, t_assign As Long, t_entrar As Long, t_connect As Long
+    Dim totalMs As Long
+    Dim outcome As String
+    Dim tokenLen As Long, md5Len As Long
+    Dim rsCount As Long
+
+    outcome = "ok"
+    Call PerformanceTestStart(PerformanceTimer)
+
+    ' ----------------------------
+    ' Read input
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
     encrypted_session_token = reader.ReadString8
     char_id = reader.ReadInt32
-    
+    Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
+    md5 = reader.ReadString8
+    t_read = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+
+    tokenLen = Len(encrypted_session_token)
+    md5Len = Len(md5)
+
+    ' ----------------------------
+    ' Validate
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
+
     If char_id <= 0 Or char_id > 2000000000 Then
-        LogInfoServidor ("HandleLoginExistingChar: invalid char_id " & char_id)
+        outcome = "kick_invalid_char_id"
+        LogInfoServidor "HandleLoginExistingChar: invalid char_id " & char_id
         Call KickConnection(ConnectionID)
-        Exit Sub
+        GoTo FinallyLog
     End If
 
-    Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
-    md5 = reader.ReadString8()
-
-    If Len(encrypted_session_token) <> 88 Or char_id <= 0 Then
+    If tokenLen <> 88 Or char_id <= 0 Then
+        outcome = "kick_invalid_token_len"
         Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092))
         Call KickConnection(ConnectionID)
-        Exit Sub
+        GoTo FinallyLog
     End If
 
-    Dim encrypted_session_token_byte() As Byte
-    Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_session_token, encrypted_session_token_byte)
+    t_validate = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
 
-    Dim decrypted_session_token As String
+    ' ----------------------------
+    ' Decrypt token
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
+
+    Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_session_token, encrypted_session_token_byte)
     decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
 
+    t_decrypt = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+
+    ' ----------------------------
+    ' Base64 check
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
+
     If Not IsBase64(decrypted_session_token) Then
+        outcome = "kick_decrypt_not_base64"
         Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092))
         Call KickConnection(ConnectionID)
-        Exit Sub
+        t_base64 = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+        GoTo FinallyLog
     End If
 
-    Dim RS As ADODB.Recordset
+    t_base64 = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+
+    ' ----------------------------
+    ' Query token row
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
+
+    ' Nota: mantenemos tu SQL tal cual, solo medimos.
     Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
 
-    If RS Is Nothing Or RS.RecordCount = 0 Then
+    If RS Is Nothing Then
+        rsCount = -1
+    ElseIf RS.EOF And RS.BOF Then
+        rsCount = 0
+    Else
+        On Error Resume Next
+        rsCount = RS.RecordCount
+        On Error GoTo ErrHandler
+        If rsCount < 0 Then rsCount = 1 ' algunos providers devuelven -1
+    End If
+
+    t_query = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+
+    If RS Is Nothing Or rsCount = 0 Then
+        outcome = "kick_token_not_found"
         Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2093))
         Call KickConnection(ConnectionID)
-        Exit Sub
+        GoTo FinallyLog
     End If
 
     CuentaEmail = CStr(RS!username)
 
     If CStr(RS!encrypted_token) <> encrypted_session_token Then
+        outcome = "kick_token_mismatch"
         Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092))
         Call KickConnection(ConnectionID)
-        Exit Sub
+        GoTo FinallyLog
     End If
 
+    ' ----------------------------
+    ' Map connection -> user
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
+
     UserIndex = MapConnectionToUser(ConnectionID)
+
+    t_map = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+
     If UserIndex < 1 Then
+        outcome = "kick_no_userindex"
         Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094))
         Call KickConnection(ConnectionID)
-        Exit Sub
+        GoTo FinallyLog
     End If
+
+    ' ----------------------------
+    ' Assign to user struct
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
 
     With UserList(UserIndex)
         .encrypted_session_token_db_id = RS!id
@@ -1085,20 +1168,81 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
         .public_key = mid$(decrypted_session_token, 1, 16)
     End With
 
+    t_assign = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+
+    ' ----------------------------
+    ' EntrarCuenta
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
+
     If Not EntrarCuenta(UserIndex, CuentaEmail, md5) Then
+        outcome = "fail_entrar_cuenta"
         Call LogInfoServidor("HandleLoginExistingChar failed for " & CuentaEmail)
         Call CloseSocket(UserIndex)
-        Exit Sub
+        t_entrar = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+        GoTo FinallyLog
     End If
 
-    ' Store selected char id on the user struct
-    UserList(UserIndex).id = char_id
+    t_entrar = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
 
-    ' Fast/clean path:
+    ' ----------------------------
+    ' Connect user by ID
+    ' ----------------------------
+    Call PerformanceTestStart(stepTimer)
+
+    UserList(UserIndex).Id = char_id
     Call ConnectUserByID(UserIndex, char_id, False)
+
+    t_connect = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
+
+FinallyLog:
+    totalMs = CLng(TicksElapsed(PerformanceTimer, GetTickCountRaw()))
+
+    ' Log similar to Auto-save: solo si tarda mucho o si no fue ok
+    If totalMs >= LoginExistingCharWarnMs Or outcome <> "ok" Then
+        Call LogPerformance( _
+            "LoginExistingChar summary - conn: " & ConnectionID & _
+            " | user: " & UserIndex & _
+            " | char_id: " & char_id & _
+            " | email: " & CuentaEmail & _
+            " | ver: " & Version & _
+            " | tokenLen: " & tokenLen & _
+            " | md5Len: " & md5Len & _
+            " | rsCount: " & rsCount & _
+            " | outcome: " & outcome & _
+            " | read: " & t_read & "ms" & _
+            " | validate: " & t_validate & "ms" & _
+            " | decrypt: " & t_decrypt & "ms" & _
+            " | base64: " & t_base64 & "ms" & _
+            " | query: " & t_query & "ms" & _
+            " | map: " & t_map & "ms" & _
+            " | assign: " & t_assign & "ms" & _
+            " | entrar: " & t_entrar & "ms" & _
+            " | connect: " & t_connect & "ms" & _
+            " | total: " & totalMs & "ms" _
+        )
+    End If
+
     Exit Sub
 
 ErrHandler:
+    outcome = "error_" & Err.Number
+
+    ' Intentá loguear aunque reviente en medio
+    On Error Resume Next
+    totalMs = CLng(TicksElapsed(PerformanceTimer, GetTickCountRaw()))
+    Call LogPerformance( _
+        "LoginExistingChar ERROR - conn: " & ConnectionID & _
+        " | user: " & UserIndex & _
+        " | char_id: " & char_id & _
+        " | email: " & CuentaEmail & _
+        " | ver: " & Version & _
+        " | outcome: " & outcome & _
+        " | total: " & totalMs & "ms" & _
+        " | err: " & Err.Description _
+    )
+    On Error GoTo 0
+
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
 End Sub
 
