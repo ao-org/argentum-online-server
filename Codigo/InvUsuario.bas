@@ -908,6 +908,7 @@ Dim eSkinType                   As e_OBJType
                .Invent_Skins.Object(Slot).Equipped = False
 
             Case e_OBJType.otSkinsHelmets
+                If .Invent_Skins.ObjIndexHelmetEquipped < 1 Then Exit Sub
                 If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
                     .Char.head = .OrigChar.head
                 End If
