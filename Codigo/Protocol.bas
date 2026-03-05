@@ -5094,17 +5094,17 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
                 tUser = NameIndex(username)
                 If IsValidUserRef(tUser) Then
                     'Msg1187= Mensaje recibido de ¬1
-                    Call WriteLocaleMsg(tUser.ArrayIndex, 1187, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
+                    Call WriteLocaleMsg(tUser.ArrayIndex, MSG_MESSAGE_RECEIVED, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
                     Call WriteConsoleMsg(tUser.ArrayIndex, mensaje, e_FontTypeNames.FONTTYPE_New_DONADOR)
                     'Msg2169=¬1 respondió tu consulta: ¬2
-                    Call WriteShowMessageBox(tUser.ArrayIndex, 2169, GetUserDisplayName(UserIndex) & "¬" & mensaje)
+                    Call WriteShowMessageBox(tUser.ArrayIndex, MSG_QUESTION_ANSWERED, GetUserDisplayName(UserIndex) & "¬" & mensaje)
                 Else
                     If PersonajeExiste(username) Then
                         Call SetMessageInfoDatabase(username, "Mensaje recibido de " & GetUserDisplayName(UserIndex) & " [Game Master]: " & vbNewLine & mensaje & vbNewLine)
                     End If
                 End If
                 'Msg1188= Mensaje enviado a ¬1
-                Call WriteLocaleMsg(UserIndex, 1188, e_FontTypeNames.FONTTYPE_INFO, username)
+                Call WriteLocaleMsg(UserIndex, MSG_MESSAGE_SENT, e_FontTypeNames.FONTTYPE_INFO, username)
                 Call LogGM(GetUserRealName(UserIndex), "Envió mensaje como GM a " & username & ": " & mensaje)
             End If
         End If
