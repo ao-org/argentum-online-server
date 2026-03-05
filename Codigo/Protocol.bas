@@ -6068,6 +6068,8 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
         Dim Equipado2            As Boolean
         Dim Equipado3            As Boolean
         
+        If SlotViejo > getMaxInventorySlots(UserIndex) Or SlotNuevo > getMaxInventorySlots(UserIndex) Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
+        
         'Reparacion de caña de pescar con hilo
         If TryRepairFishingRod(UserIndex, SlotViejo, SlotNuevo) Then Exit Sub
         
