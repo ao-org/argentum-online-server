@@ -46,7 +46,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
         If Slot > MAX_INVENTORY_SLOTS Then
             Exit Sub
         ElseIf Cantidad > GetMaxInvOBJ() Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1746, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1746=¬1 ha sido baneado por el sistema anti-cheats.
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SIDO_BANEADO_SISTEMA_ANTI_CHEATS, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1746=¬1 ha sido baneado por el sistema anti-cheats.
             Call Ban(UserList(UserIndex).name, "Sistema Anti Cheats", "Intentar hackear el sistema de comercio. Quiso comprar demasiados items:" & Cantidad)
             UserList(UserIndex).flags.Ban = 1
             Call WriteShowMessageBox(UserIndex, 1757, vbNullString) 'Msg1751=Has sido baneado por el Sistema AntiCheat.

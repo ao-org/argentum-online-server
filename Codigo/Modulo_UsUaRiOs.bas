@@ -532,7 +532,7 @@ Dim tStr                        As String
                         If destIdx > 0 And UserList(destIdx).flags.UserLogged Then
                             Call FinComerciarUsu(destIdx)
                             Call WriteConsoleMsg(destIdx, _
-                                PrepareMessageLocaleMsg(MSG_ID_1925, vbNullString, e_FontTypeNames.FONTTYPE_WARNING)) ' "Comercio cancelado..."
+                                PrepareMessageLocaleMsg(MSG_TRADE_CANCELLED, vbNullString, e_FontTypeNames.FONTTYPE_WARNING)) ' "Comercio cancelado..."
                         End If
                     End If
         

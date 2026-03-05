@@ -1252,7 +1252,7 @@ Dim Ropaje                      As Integer
                 If .invent.EquippedWorkingToolObjIndex > 0 Then
                     EquippedWorkingToolObjType = ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
                     If EquippedWorkingToolObjType = e_WorkingToolSubType.FishingRod And obj.Subtipo = e_WorkingToolSubType.FishingNet Then
-                        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_ID_2166, "", e_FontTypeNames.FONTTYPE_INFO))
+                        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_EQUIP_NET_WITH_ROD, "", e_FontTypeNames.FONTTYPE_INFO))
                         Exit Sub
                     End If
                     Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)

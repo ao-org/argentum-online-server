@@ -97,7 +97,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
             .Faccion.NivelIngreso = .Stats.ELV
             .Faccion.MatadosIngreso = .Faccion.ciudadanosMatados
         End If
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1932, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1932=¡Ahora perteneces al Ejército Real!
+        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NOW_BELONG_ROYAL_ARMY, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1932=¡Ahora perteneces al Ejército Real!
         Call DarRecompensas(UserIndex)
         Call RefreshCharStatus(UserIndex)
     End With
@@ -146,7 +146,7 @@ Public Sub ExpulsarFaccionReal(ByVal UserIndex As Integer)
     UserList(UserIndex).Faccion.Status = e_Facciones.Ciudadano
     Call RefreshCharStatus(UserIndex)
     Call PerderItemsFaccionarios(UserIndex)
-    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1933, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1933=Has sido expulsado del Ejército Real.
+    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPELLED_FROM_ROYAL_ARMY, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1933=Has sido expulsado del Ejército Real.
     Exit Sub
 ExpulsarFaccionReal_Err:
     Call TraceError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionReal", Erl)
@@ -157,7 +157,7 @@ Public Sub ExpulsarFaccionCaos(ByVal UserIndex As Integer)
     UserList(UserIndex).Faccion.Status = e_Facciones.Criminal
     Call RefreshCharStatus(UserIndex)
     Call PerderItemsFaccionarios(UserIndex)
-    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1934, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1934=Has sido expulsado de la Legión Oscura.
+    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPELLED_FROM_DARK_LEGION, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1934=Has sido expulsado de la Legión Oscura.
     Exit Sub
 ExpulsarFaccionCaos_Err:
     Call TraceError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionCaos", Erl)
@@ -224,7 +224,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
             Call WriteLocaleChatOverHead(UserIndex, 1374, vbNullString, charindexstr, vbWhite)  ' Msg1374=Aquí tienes tu armadura legionario, ve a derramar sangre de los súbditos de Tancredo. Esta guerra será larga y cruel.
             .Faccion.NivelIngreso = .Stats.ELV
         End If
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1935, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1935=¡Ahora perteneces a la Legión Oscura!
+        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NOW_BELONG_DARK_LEGION, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1935=¡Ahora perteneces a la Legión Oscura!
         Call DarRecompensas(UserIndex)
         Call RefreshCharStatus(UserIndex)
     End With

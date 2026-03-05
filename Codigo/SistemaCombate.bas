@@ -1027,7 +1027,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
                     VictimaIndex).pos.y))
             Call SubirSkill(VictimaIndex, e_Skill.Defensa)
         Else
-            Call WriteConsoleMsg(VictimaIndex, PrepareMessageLocaleMsg(1930, UserList(AtacanteIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1930=¡¬1 te atacó y falló!
+            Call WriteConsoleMsg(VictimaIndex, PrepareMessageLocaleMsg(MSG_ATACO_FALLO, UserList(AtacanteIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1930=¡¬1 te atacó y falló!
             'Msg1043= ¡Has fallado el golpe!
             Call WriteLocaleMsg(AtacanteIndex, "1043", e_FontTypeNames.FONTTYPE_FIGHT)
         End If
@@ -1777,7 +1777,7 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
                     If OroDar > 0 Then
                         UserList(Index).Stats.GLD = UserList(Index).Stats.GLD + OroDar
                         If UserList(Index).ChatCombate = 1 Then
-                            Call WriteConsoleMsg(Index, PrepareMessageLocaleMsg(1980, PonerPuntos(OroDar), e_FontTypeNames.FONTTYPE_New_GRUPO)) ' Msg1780=¡El grupo ha ganado ¬1 monedas de oro!
+                            Call WriteConsoleMsg(Index, PrepareMessageLocaleMsg(MSG_GROUP_GOLD_REWARD, PonerPuntos(OroDar), e_FontTypeNames.FONTTYPE_New_GRUPO)) ' Msg1780=¡El grupo ha ganado ¬1 monedas de oro!
                         End If
                         Call WriteUpdateGold(Index)
                     End If

@@ -191,7 +191,7 @@ Sub WorldSave()
         End If
     Next LoopX
     FrmStat.Visible = False
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1733, vbNullString, e_FontTypeNames.FONTTYPE_SERVER))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_WORLD_SAVE_NOTIFICATION, vbNullString, e_FontTypeNames.FONTTYPE_SERVER))
     Exit Sub
 Handler:
     Call TraceError(Err.Number, Err.Description, "Admin.WorldSave", Erl)
@@ -298,7 +298,7 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
     tBan.Baneador = Baneador
     Call Baneos.Add(tBan)
     Call SaveBan(Baneos.count)
-    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1705, nombre & "¬" & Causa & "¬" & dias & "¬" & Baneador, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1705=¬1 fue baneado por ¬2 durante los próximos ¬3 días. La medida fue tomada por: ¬4.
+    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_BANEADO_DURANTE_PROXIMOS_DIAS_MEDIDA_TOMADA, nombre & "¬" & Causa & "¬" & dias & "¬" & Baneador, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1705=¬1 fue baneado por ¬2 durante los próximos ¬3 días. La medida fue tomada por: ¬4.
     Exit Sub
 BanTemporal_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.BanTemporal", Erl)
