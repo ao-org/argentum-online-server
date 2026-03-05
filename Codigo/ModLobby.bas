@@ -607,9 +607,9 @@ Public Sub UpdateWaitingForPlayers(ByVal frametime As Long, ByRef instance As t_
                         Seconds = (WaitingForPlayersTime - (GlobalFrameTime - instance.MapOpenTime)) / 1000
                         Minutes = Seconds / 60
                         Seconds = Seconds - (Minutes * 60)
-                        Call SendData(SendTarget.ToIndex, instance.Players(i).User.ArrayIndex, PrepareMessageLocaleMsg(1727, GetTimeString(Minutes, Seconds), _
+                        Call SendData(SendTarget.ToIndex, instance.Players(i).User.ArrayIndex, PrepareMessageLocaleMsg(MSG_ESPERANDO_JUGADORES_PARTIDA_INICIARA_CUANDO_LLENE_SALA, GetTimeString(Minutes, Seconds), _
                                 e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1727=Esperando jugadores, La partida iniciara en ¬1 o cuando se llene la sala
-                        Call SendData(SendTarget.ToIndex, instance.Players(i).User.ArrayIndex, PrepareMessageLocaleMsg(1728, instance.RegisteredPlayers & "¬" & _
+                        Call SendData(SendTarget.ToIndex, instance.Players(i).User.ArrayIndex, PrepareMessageLocaleMsg(MSG_MOMENTO_HAY_REQUIERE_MINIMO_PUEDA_INICIAR, instance.RegisteredPlayers & "¬" & _
                                 instance.MaxPlayers & "¬" & instance.MinPlayers, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1728=En este momento hay ¬1 / ¬2 y se requiere un minimo de ¬3 para que pueda iniciar
                     End If
                 Next i
@@ -622,7 +622,7 @@ Public Sub UpdateWaitingForPlayers(ByVal frametime As Long, ByRef instance As t_
         Else
             For i = 0 To instance.RegisteredPlayers - 1
                 If IsValidUserRef(instance.Players(i).User) Then
-                    Call SendData(SendTarget.ToIndex, instance.Players(i).User.ArrayIndex, PrepareMessageLocaleMsg(1729, "", e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1729=Evento cancelado por falta de jugadores
+                    Call SendData(SendTarget.ToIndex, instance.Players(i).User.ArrayIndex, PrepareMessageLocaleMsg(MSG_EVENTO_CANCELADO_FALTA_JUGADORES, "", e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1729=Evento cancelado por falta de jugadores
                 End If
             Next i
             Call CancelLobby(instance)
@@ -985,11 +985,11 @@ End Function
 
 Public Function ValidateLobbySettings(ByRef LobbySettings As t_NewScenearioSettings)
     If LobbySettings.MinLevel < 1 Or LobbySettings.MaxLevel > 47 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1607, "", e_FontTypeNames.FONTTYPE_GLOBAL))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_LOBBY_INVALID_LEVEL_RANGE, "", e_FontTypeNames.FONTTYPE_GLOBAL))
         Exit Function
     End If
     If LobbySettings.MinLevel > LobbySettings.MaxLevel Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1609, "", e_FontTypeNames.FONTTYPE_GLOBAL))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_LOBBY_MIN_LEVEL_GREATER_THAN_MAX, "", e_FontTypeNames.FONTTYPE_GLOBAL))
         Exit Function
     End If
     ValidateLobbySettings = True

@@ -731,7 +731,7 @@ End Sub
 Sub LoadMotd()
     On Error GoTo LoadMotd_Err
     Dim i As Integer
-    MaxLines = val(GetVar(DatPath & "Motd.ini", "INIT", "NumLines"))
+    MaxLines = max(1, val(GetVar(DatPath & "Motd.ini", "INIT", "NumLines")))
     ReDim MOTD(1 To MaxLines)
     For i = 1 To MaxLines
         MOTD(i).texto = GetVar(DatPath & "Motd.ini", "Motd", "Line" & i)
