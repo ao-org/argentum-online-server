@@ -5096,6 +5096,8 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
                     'Msg1187= Mensaje recibido de ¬1
                     Call WriteLocaleMsg(tUser.ArrayIndex, 1187, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
                     Call WriteConsoleMsg(tUser.ArrayIndex, mensaje, e_FontTypeNames.FONTTYPE_New_DONADOR)
+                    'Msg2169=¬1 respondió tu consulta: ¬2
+                    Call WriteShowMessageBox(tUser.ArrayIndex, 2169, GetUserDisplayName(UserIndex) & "¬" & mensaje)
                 Else
                     If PersonajeExiste(username) Then
                         Call SetMessageInfoDatabase(username, "Mensaje recibido de " & GetUserDisplayName(UserIndex) & " [Game Master]: " & vbNewLine & mensaje & vbNewLine)
