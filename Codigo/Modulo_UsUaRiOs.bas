@@ -247,7 +247,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
             Exit Function
         End If
         If EsGM(UserIndex) Then
-            Call SendData(sendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1706, Name, e_FontTypeNames.FONTTYPE_INFOBOLD)) 'Msg1706=Servidor » ¬1 se conecto al juego.
+            Call SendData(sendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_SERVER_USER_CONNECTED, Name, e_FontTypeNames.FONTTYPE_INFOBOLD)) 'Msg1706=Servidor » ¬1 se conecto al juego.
             Call LogGM(Name, "Se conectó con IP: " & .ConnectionDetails.IP)
         End If
     End With
@@ -532,7 +532,7 @@ Dim tStr                        As String
                         If destIdx > 0 And UserList(destIdx).flags.UserLogged Then
                             Call FinComerciarUsu(destIdx)
                             Call WriteConsoleMsg(destIdx, _
-                                PrepareMessageLocaleMsg(1925, vbNullString, e_FontTypeNames.FONTTYPE_WARNING)) ' "Comercio cancelado..."
+                                PrepareMessageLocaleMsg(MSG_ID_1925, vbNullString, e_FontTypeNames.FONTTYPE_WARNING)) ' "Comercio cancelado..."
                         End If
                     End If
         
@@ -658,7 +658,7 @@ Dim tStr                        As String
         End If
         If NumUsers > DayStats.MaxUsuarios Then DayStats.MaxUsuarios = NumUsers
         If NumUsers > RecordUsuarios Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1550", NumUsers, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1550=Record de usuarios conectados simultáneamente: ¬1 usuarios.
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_ONLINE_RECORD_USERS, NumUsers, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1550=Record de usuarios conectados simultáneamente: ¬1 usuarios.
             RecordUsuarios = NumUsers
         End If
         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageOnlineUser(NumUsers))
@@ -1424,20 +1424,20 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     Dim GuildI As Integer
     'Msg1295= Estadisticas de: ¬1
     Call WriteLocaleMsg(sendIndex, "1295", e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
-    Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1857, UserList(UserIndex).Stats.ELV & "¬" & UserList(UserIndex).Stats.Exp & "¬" & ExpLevelUp(UserList( _
+    Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_LEVEL_EXP, UserList(UserIndex).Stats.ELV & "¬" & UserList(UserIndex).Stats.Exp & "¬" & ExpLevelUp(UserList( _
             UserIndex).Stats.ELV), e_FontTypeNames.FONTTYPE_INFO)) ' Msg1857=Nivel: ¬1  EXP: ¬2/¬3
-    Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1858, UserList(UserIndex).Stats.MinHp & "¬" & UserList(UserIndex).Stats.MaxHp & "¬" & UserList( _
+    Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_HEALTH_MANA_STAMINA, UserList(UserIndex).Stats.MinHp & "¬" & UserList(UserIndex).Stats.MaxHp & "¬" & UserList( _
             UserIndex).Stats.MinMAN & "¬" & UserList(UserIndex).Stats.MaxMAN & "¬" & UserList(UserIndex).Stats.MinSta & "¬" & UserList(UserIndex).Stats.MaxSta, _
             e_FontTypeNames.FONTTYPE_INFO)) ' Msg1858=Salud: ¬1/¬2  Mana: ¬3/¬4  Vitalidad: ¬5/¬6
     If UserList(UserIndex).invent.EquippedWeaponObjIndex > 0 Then
-        Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1859, UserList(UserIndex).Stats.MinHIT & "¬" & UserList(UserIndex).Stats.MaxHit & "¬" & ObjData(UserList( _
+        Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_DAMAGE_WITH_WEAPON, UserList(UserIndex).Stats.MinHIT & "¬" & UserList(UserIndex).Stats.MaxHit & "¬" & ObjData(UserList( _
                 UserIndex).invent.EquippedWeaponObjIndex).MinHIT & "¬" & ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MaxHit, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1859=Menor Golpe/Mayor Golpe: ¬1/¬2 (¬3/¬4)
     Else
-        Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1860, UserList(UserIndex).Stats.MinHIT & "¬" & UserList(UserIndex).Stats.MaxHit, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1860=Menor Golpe/Mayor Golpe: ¬1/¬2
+        Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_DAMAGE, UserList(UserIndex).Stats.MinHIT & "¬" & UserList(UserIndex).Stats.MaxHit, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1860=Menor Golpe/Mayor Golpe: ¬1/¬2
     End If
     If UserList(UserIndex).invent.EquippedArmorObjIndex > 0 Then
         If UserList(UserIndex).invent.EquippedShieldObjIndex > 0 Then
-            Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1861, ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).MinDef + ObjData(UserList( _
+            Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_BODY_DEFENSE, ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).MinDef + ObjData(UserList( _
                     UserIndex).invent.EquippedShieldObjIndex).MinDef & "¬" & ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).MaxDef + ObjData(UserList( _
                     UserIndex).invent.EquippedShieldObjIndex).MaxDef, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1861=(CUERPO) Min Def/Max Def: ¬1/¬2
         Else
@@ -1449,7 +1449,7 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         Call WriteLocaleMsg(sendIndex, "1098", e_FontTypeNames.FONTTYPE_INFO)
     End If
     If UserList(UserIndex).invent.EquippedHelmetObjIndex > 0 Then
-        Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1862, ObjData(UserList(UserIndex).invent.EquippedHelmetObjIndex).MinDef & "¬" & ObjData(UserList( _
+        Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_HEAD_DEFENSE, ObjData(UserList(UserIndex).invent.EquippedHelmetObjIndex).MinDef & "¬" & ObjData(UserList( _
                 UserIndex).invent.EquippedHelmetObjIndex).MaxDef, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1862=(CABEZA) Min Def/Max Def: ¬1/¬2
     Else
         'Msg1099= (CABEZA) Min Def/Max Def: 0
@@ -1546,7 +1546,7 @@ Sub SendUserInvTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     Call WriteLocaleMsg(sendIndex, "1311", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).invent.NroItems)
     For j = 1 To UserList(UserIndex).CurrentInventorySlots
         If UserList(UserIndex).invent.Object(j).ObjIndex > 0 Then
-            Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1865, j & "¬" & ObjData(UserList(UserIndex).invent.Object(j).ObjIndex).name & "¬" & UserList( _
+            Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_INVENTORY_ITEM, j & "¬" & ObjData(UserList(UserIndex).invent.Object(j).ObjIndex).name & "¬" & UserList( _
                     UserIndex).invent.Object(j).amount, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1865= Objeto ¬1 ¬2 Cantidad:¬3
         End If
     Next j
