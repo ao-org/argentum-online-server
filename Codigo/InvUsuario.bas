@@ -637,13 +637,13 @@ Sub PickObj(ByVal UserIndex As Integer)
                 End If
                 If BusquedaTesoroActiva Then
                     If UserList(UserIndex).pos.Map = TesoroNumMapa And UserList(UserIndex).pos.x = TesoroX And UserList(UserIndex).pos.y = TesoroY Then
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1639, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1640=Eventos> ¬1 encontró el tesoro ¡Felicitaciones!
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_FOUND_TREASURE, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1640=Eventos> ¬1 encontró el tesoro ¡Felicitaciones!
                         BusquedaTesoroActiva = False
                     End If
                 End If
                 If BusquedaRegaloActiva Then
                     If UserList(UserIndex).pos.Map = RegaloNumMapa And UserList(UserIndex).pos.x = RegaloX And UserList(UserIndex).pos.y = RegaloY Then
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1640, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1640=Eventos> ¬1 fue el valiente que encontró el gran ítem mágico ¡Felicitaciones!
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_FOUND_MAGIC_ITEM, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1640=Eventos> ¬1 fue el valiente que encontró el gran ítem mágico ¡Felicitaciones!
                         BusquedaRegaloActiva = False
                     End If
                 End If
@@ -1252,7 +1252,7 @@ Dim Ropaje                      As Integer
                 If .invent.EquippedWorkingToolObjIndex > 0 Then
                     EquippedWorkingToolObjType = ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
                     If EquippedWorkingToolObjType = e_WorkingToolSubType.FishingRod And obj.Subtipo = e_WorkingToolSubType.FishingNet Then
-                        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(2166, "", e_FontTypeNames.FONTTYPE_INFO))
+                        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_ID_2166, "", e_FontTypeNames.FONTTYPE_INFO))
                         Exit Sub
                     End If
                     Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
@@ -1732,11 +1732,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Exit Sub
         End If
         If .Stats.ELV < obj.MinELV Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1926, obj.MinELV, e_FontTypeNames.FONTTYPE_INFO))    ' Msg1926=Necesitas ser nivel ¬1 para usar este item.
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_ITEM_MIN_LEVEL_REQUIRED, obj.MinELV, e_FontTypeNames.FONTTYPE_INFO))    ' Msg1926=Necesitas ser nivel ¬1 para usar este item.
             Exit Sub
         End If
         If .Stats.ELV > obj.MaxLEV And obj.MaxLEV > 0 Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1982, obj.MaxLEV, e_FontTypeNames.FONTTYPE_INFO))    ' Msg1982=Este objeto no puede ser utilizado por personajes de nivel ¬1 o superior.
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_ITEM_MAX_LEVEL_ALLOWED, obj.MaxLEV, e_FontTypeNames.FONTTYPE_INFO))    ' Msg1982=Este objeto no puede ser utilizado por personajes de nivel ¬1 o superior.
             Exit Sub
         End If
         ObjIndex = .invent.Object(Slot).ObjIndex
@@ -2231,7 +2231,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 .flags.SpouseId = 0
                                 'Msg886= Te has divorciado.
                                 Call WriteLocaleMsg(UserIndex, 886, e_FontTypeNames.FONTTYPE_INFOIAO)
-                                Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1983, .name, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1983=¬1 se ha divorciado de ti.
+                                Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_DIVORCE_NOTIFICATION, .name, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1983=¬1 se ha divorciado de ti.
                                 If obj.Snd1 <> 0 Then
                                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
                                 Else
@@ -2371,7 +2371,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 'Quitamos del inv el item
                 Call QuitarUserInvItem(UserIndex, Slot, 1)
                 Call UpdateUserInv(False, UserIndex, Slot)
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1984, obj.name, e_FontTypeNames.FONTTYPE_New_DONADOR))    ' Msg1984=Has abierto un ¬1 y obtuviste...
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_LOOT_BOX_OPENED, obj.name, e_FontTypeNames.FONTTYPE_New_DONADOR))    ' Msg1984=Has abierto un ¬1 y obtuviste...
                 If obj.Snd1 <> 0 Then
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
                 End If
@@ -3048,7 +3048,7 @@ Public Sub ResurrectWithItem(ByVal UserIndex As Integer)
         If UserList(TargetUser).flags.SeguroResu Then
             ' Msg693=El usuario tiene el seguro de resurrección activado.
             Call WriteLocaleMsg(UserIndex, 693, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(TargetUser, PrepareMessageLocaleMsg(1985, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1985=¬1 está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.
+            Call WriteConsoleMsg(TargetUser, PrepareMessageLocaleMsg(MSG_RESURRECTION_ATTEMPT_NOTIFICATION, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1985=¬1 está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.
             Exit Sub
         End If
         If CanHelpResult <> eInteractionOk Then
