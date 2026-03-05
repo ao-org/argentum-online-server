@@ -85,9 +85,9 @@ Public Sub IniciarTorneo()
             End If
         Next i
     End If
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1674, Torneo.nombre & "¬" & Torneo.NivelMinimo & "¬" & Torneo.NivelMaximo & "¬" & inscriptos & "¬" & Torneo.cupos _
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTO_ABIERTAS_INSCRIPCIONES_CARACTERISTICAS_NIVEL_ENTRE_INSCRIPTOS, Torneo.nombre & "¬" & Torneo.NivelMinimo & "¬" & Torneo.NivelMaximo & "¬" & inscriptos & "¬" & Torneo.cupos _
             & "¬" & PonerPuntos(Torneo.costo) & "¬" & Torneo.reglas, e_FontTypeNames.FONTTYPE_CITIZEN)) 'Msg1674=Evento> Están abiertas las inscripciones para: ¬1: características: Nivel entre: ¬2/¬3. Inscriptos: ¬4/¬5. Precio de inscripción: ¬6 monedas de oro. Reglas: ¬7.
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1675, Torneo.ClasesTexto, e_FontTypeNames.FONTTYPE_CITIZEN)) 'Msg1675=Evento> Clases participantes: ¬1. Escribí /PARTICIPAR para ingresar al evento.
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTO_CLASES_PARTICIPANTES_ESCRIBI_PARTICIPAR_INGRESAR_EVENTO, Torneo.ClasesTexto, e_FontTypeNames.FONTTYPE_CITIZEN)) 'Msg1675=Evento> Clases participantes: ¬1. Escribí /PARTICIPAR para ingresar al evento.
     Exit Sub
 IniciarTorneo_Err:
     Call TraceError(Err.Number, Err.Description, "ModTorneos.IniciarTorneo", Erl)
@@ -147,7 +147,7 @@ Public Sub ComenzarTorneoOk()
         Call FindLegalPos(Torneo.IndexParticipantes(i), Torneo.Mapa, x, y)
         Call WarpUserChar(Torneo.IndexParticipantes(i), Torneo.Mapa, x, y, True)
     Next i
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1676, nombres, e_FontTypeNames.FONTTYPE_CITIZEN)) 'Msg1676=Evento> Los elegidos para participar son: ¬1 damos inicio al evento.
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTO_ELEGIDOS_PARTICIPAR_DAMOS_INICIO_EVENTO, nombres, e_FontTypeNames.FONTTYPE_CITIZEN)) 'Msg1676=Evento> Los elegidos para participar son: ¬1 damos inicio al evento.
     Exit Sub
 ComenzarTorneoOk_Err:
     Call TraceError(Err.Number, Err.Description, "ModTorneos.ComenzarTorneoOk", Erl)
@@ -184,7 +184,7 @@ Public Sub ResetearTorneo()
     Next i
     Torneo.participantes = 0
     ReDim Torneo.IndexParticipantes(1 To 1)
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1677, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN)) 'Msg1677=Eventos> Evento Finalizado.
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_FINALIZADO_1677, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN)) 'Msg1677=Eventos> Evento Finalizado.
     Exit Sub
 ResetearTorneo_Err:
     Call TraceError(Err.Number, Err.Description, "ModTorneos.ResetearTorneo", Erl)

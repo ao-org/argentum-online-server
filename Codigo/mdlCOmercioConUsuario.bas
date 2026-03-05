@@ -84,7 +84,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
         If UserList(UserIndex).ComUsu.Oro + ObjAEnviar.amount <= UserList(UserIndex).Stats.GLD Then
             UserList(UserIndex).ComUsu.Oro = UserList(UserIndex).ComUsu.Oro + ObjAEnviar.amount
         Else
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1936, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1936=No tienes esa cantidad disponible para agregar.
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_TIENES_ESA_CANTIDAD_DISPONIBLE_AGREGAR, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1936=No tienes esa cantidad disponible para agregar.
             Exit Sub
         End If
     Else
@@ -98,7 +98,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
         Next j
         cantidadTotalItem = cantidadTotalItem + ObjAEnviar.amount
         If Not TieneObjetos(ObjAEnviar.ObjIndex, cantidadTotalItem, UserIndex, ObjAEnviar.ElementalTags) Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1997, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1997=No tienes esa cantidad disponible para agregar.
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_TIENES_ESA_CANTIDAD_DISPONIBLE_AGREGAR_1997, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1997=No tienes esa cantidad disponible para agregar.
             Exit Sub
         End If
         'Si es un item recorro todo el array para ver si ese elemento ya está agregado y de paso me guardo la primer posición vacía
@@ -142,7 +142,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
                 .itemsAenviar(FirstEmptyPos).ElementalTags = ObjAEnviar.ElementalTags
             ElseIf FirstEmptyPos = 0 And nada = False Then
                 'le aviso que no le entran los items
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1998, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1998=No tienes suficiente lugar para agregar esa cantidad o item.
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_TIENES_SUFICIENTE_LUGAR_AGREGAR_ESA_CANTIDAD, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1998=No tienes suficiente lugar para agregar esa cantidad o item.
             End If
         End With
     End If
@@ -206,7 +206,7 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
         TerminarAhora = True
     End If
     If UserList(OtroUserIndex).ComUsu.Oro > UserList(OtroUserIndex).Stats.GLD Then
-        Call WriteConsoleMsg(OtroUserIndex, PrepareMessageLocaleMsg(1999, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1999=No tienes esa cantidad.
+        Call WriteConsoleMsg(OtroUserIndex, PrepareMessageLocaleMsg(MSG_NO_TIENES_ESA_CANTIDAD, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1999=No tienes esa cantidad.
         GoTo FinalizarComercio
     End If
     ' Verificamos que si tiene los objetos JUSTO ANTES de intercambiarlos

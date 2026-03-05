@@ -279,10 +279,10 @@ Sub SendUserBovedaTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     On Error GoTo SendUserBovedaTxt_Err
     Dim j As Integer
     Call WriteConsoleMsg(sendIndex, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)
-    Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1939, UserList(UserIndex).BancoInvent.NroItems, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1939= Tiene ¬1 objetos.
+    Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_BANK_ITEM_COUNT, UserList(UserIndex).BancoInvent.NroItems, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1939= Tiene ¬1 objetos.
     For j = 1 To MAX_BANCOINVENTORY_SLOTS
         If UserList(UserIndex).BancoInvent.Object(j).ObjIndex > 0 Then
-            Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(1940, j & "¬" & ObjData(UserList(UserIndex).BancoInvent.Object(j).ObjIndex).name & "¬" & UserList( _
+            Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_BANK_ITEM_ENTRY, j & "¬" & ObjData(UserList(UserIndex).BancoInvent.Object(j).ObjIndex).name & "¬" & UserList( _
                     UserIndex).BancoInvent.Object(j).amount, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1940= Objeto ¬1 ¬2 Cantidad:¬3
         End If
     Next

@@ -136,7 +136,7 @@ Public Sub FinalizarEvento()
             Exit Sub
     End Select
     Call AgregarAConsola("Eventos > Evento finalizado.")
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1563, vbNullString, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1563=Eventos > Evento finalizado.
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_FINALIZADO, vbNullString, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1563=Eventos > Evento finalizado.
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(551, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
     Exit Sub
 FinalizarEvento_Err:

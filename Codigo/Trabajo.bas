@@ -1414,7 +1414,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                     If TieneObjetosRobables(VictimaIndex) Then
                         Call RobarObjeto(LadronIndex, VictimaIndex)
                     Else
-                        Call WriteConsoleMsg(LadronIndex, PrepareMessageLocaleMsg(1867, UserList(VictimaIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1867=¬1 no tiene objetos.
+                        Call WriteConsoleMsg(LadronIndex, PrepareMessageLocaleMsg(MSG_NO_TIENE_OBJETOS, UserList(VictimaIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1867=¬1 no tiene objetos.
                     End If
                 Else '50% de robar oro
                     If UserList(VictimaIndex).Stats.GLD > 0 Then
@@ -1467,7 +1467,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                         Call WriteUpdateGold(LadronIndex) 'Le actualizamos la billetera al ladron
                         Call WriteUpdateGold(VictimaIndex) 'Le actualizamos la billetera a la victima
                     Else
-                        Call WriteConsoleMsg(LadronIndex, PrepareMessageLocaleMsg(1868, UserList(VictimaIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1868=¬1 no tiene oro.
+                        Call WriteConsoleMsg(LadronIndex, PrepareMessageLocaleMsg(MSG_NO_TIENE_ORO, UserList(VictimaIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1868=¬1 no tiene oro.
                     End If
                 End If
                 Call SubirSkill(LadronIndex, e_Skill.Robar)

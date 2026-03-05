@@ -1981,7 +1981,7 @@ Private Sub HandleUserCommerceEnd(ByVal UserIndex As Integer)
         'Quits commerce mode with user
         If IsValidUserRef(.ComUsu.DestUsu) Then
             If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = UserIndex Then
-                Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(1949, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1949=¬1 ha dejado de comerciar con vos.
+                Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(MSG_DEJADO_COMERCIAR_VOS, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1949=¬1 ha dejado de comerciar con vos.
                 Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
                 'Send data in the outgoing buffer of the other user
             End If
@@ -2036,7 +2036,7 @@ Private Sub HandleUserCommerceReject(ByVal UserIndex As Integer)
         'Offer rejected
         If otherUser > 0 Then
             If UserList(otherUser).flags.UserLogged Then
-                Call WriteConsoleMsg(otherUser, PrepareMessageLocaleMsg(1950, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1950=¬1 ha rechazado tu oferta.
+                Call WriteConsoleMsg(otherUser, PrepareMessageLocaleMsg(MSG_RECHAZADO_OFERTA, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1950=¬1 ha rechazado tu oferta.
                 Call FinComerciarUsu(otherUser)
                 'Send data in the outgoing buffer of the other user
             End If
@@ -2895,7 +2895,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageParticleFX(UserList(tU).Char.charindex, 210, 150, False, , UserList(UserIndex).pos.x, _
                                     UserList(UserIndex).pos.y))
                         End If
-                        Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageLocaleMsg(1798, GetUserDisplayName(UserIndex) & "¬" & GetUserDisplayName(tU), _
+                        Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageLocaleMsg(MSG_CLAN_MARCO, GetUserDisplayName(UserIndex) & "¬" & GetUserDisplayName(tU), _
                                 e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1798=Clan> [¬1] marcó a ¬2.
                     Else
                         Call WriteLocaleMsg(UserIndex, 7, e_FontTypeNames.FONTTYPE_INFO)
@@ -2948,7 +2948,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
             Call QuitarObjetos(408, 1, UserIndex)
             Call QuitarObjetos(409, 1, UserIndex)
             Call QuitarObjetos(412, 1, UserIndex)
-            Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageLocaleMsg(1642, GetUserDisplayName(UserIndex) & "¬" & GuildName & "¬" & GuildAlignment(.GuildIndex), _
+            Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageLocaleMsg(MSG_FUNDADO_CLAN_ALINEACION, GetUserDisplayName(UserIndex) & "¬" & GuildName & "¬" & GuildAlignment(.GuildIndex), _
                     e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1642=¬1 ha fundado el clan <¬2> de alineación ¬3.
             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
             'Update tag
@@ -3478,7 +3478,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             'If the other one had accepted, we turn that back and inform of the new offer (just to be cautious).
             If UserList(tUser).ComUsu.Acepto Then
                 UserList(tUser).ComUsu.Acepto = False
-                Call WriteConsoleMsg(tUser, PrepareMessageLocaleMsg(1951, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1951=¬1 ha cambiado su oferta.
+                Call WriteConsoleMsg(tUser, PrepareMessageLocaleMsg(MSG_CAMBIADO_OFERTA, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1951=¬1 ha cambiado su oferta.
             End If
             Dim ObjAEnviar As t_Obj
             ObjAEnviar.amount = amount
@@ -3501,13 +3501,13 @@ Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
         Dim errorStr       As String
         Dim otherClanIndex As String
         guild = reader.ReadString8()
-        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1799, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1799=No se pueden actualizar relaciones.
+        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_NO_PUEDEN_ACTUALIZAR_RELACIONES, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1799=No se pueden actualizar relaciones.
         Exit Sub
         If otherClanIndex = 0 Then
             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
         Else
-            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1800, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1800=Tu clan ha firmado la paz con ¬1
-            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(1800, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1800=Tu clan ha firmado la paz con ¬1
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_FIRMADO_PAZ, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1800=Tu clan ha firmado la paz con ¬1
+            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(MSG_CLAN_FIRMADO_PAZ, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1800=Tu clan ha firmado la paz con ¬1
         End If
     End With
     Exit Sub
@@ -3526,13 +3526,13 @@ Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
         Dim errorStr       As String
         Dim otherClanIndex As String
         guild = reader.ReadString8()
-        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1801, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
+        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_RELACIONES_CLAN_DESACTIVADAS_MOMENTO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
         Exit Sub
         If otherClanIndex = 0 Then
             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
         Else
-            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1802, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1802=Tu clan ha rechazado la propuesta de alianza de ¬1
-            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(1803, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1803=¬1 ha rechazado nuestra propuesta de alianza con su clan.
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_RECHAZADO_PROPUESTA_ALIANZA, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1802=Tu clan ha rechazado la propuesta de alianza de ¬1
+            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(MSG_RECHAZADO_NUESTRA_PROPUESTA_ALIANZA_CLAN, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1803=¬1 ha rechazado nuestra propuesta de alianza con su clan.
         End If
     End With
     Exit Sub
@@ -3551,13 +3551,13 @@ Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
         Dim errorStr       As String
         Dim otherClanIndex As String
         guild = reader.ReadString8()
-        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1801, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
+        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_RELACIONES_CLAN_DESACTIVADAS_MOMENTO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
         Exit Sub
         If otherClanIndex = 0 Then
             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
         Else
-            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1804, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1804=Tu clan ha rechazado la propuesta de paz de ¬1
-            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(1805, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1805=¬1 ha rechazado nuestra propuesta de paz con su clan.
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_RECHAZADO_PROPUESTA_PAZ, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1804=Tu clan ha rechazado la propuesta de paz de ¬1
+            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(MSG_RECHAZADO_NUESTRA_PROPUESTA_PAZ_CLAN, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1805=¬1 ha rechazado nuestra propuesta de paz con su clan.
         End If
     End With
     Exit Sub
@@ -3576,13 +3576,13 @@ Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
         Dim errorStr       As String
         Dim otherClanIndex As String
         guild = reader.ReadString8()
-        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1801, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
+        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_RELACIONES_CLAN_DESACTIVADAS_MOMENTO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
         Exit Sub
         If otherClanIndex = 0 Then
             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
         Else
-            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1806, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1806=Tu clan ha firmado la alianza con ¬1
-            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(1800, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1800=Tu clan ha firmado la paz con ¬1
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_FIRMADO_ALIANZA, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1806=Tu clan ha firmado la alianza con ¬1
+            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(MSG_CLAN_FIRMADO_PAZ, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1800=Tu clan ha firmado la paz con ¬1
         End If
     End With
     Exit Sub
@@ -3602,7 +3602,7 @@ Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
         Dim errorStr As String
         guild = reader.ReadString8()
         proposal = reader.ReadString8()
-        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1801, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
+        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_RELACIONES_CLAN_DESACTIVADAS_MOMENTO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
         Exit Sub
     End With
     Exit Sub
@@ -3742,8 +3742,8 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
         Else
             'WAR shall be!
-            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1807, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1807=TU CLAN HA ENTRADO EN GUERRA CON ¬1
-            Call SendData(SendTarget.ToGuildMembers, otherGuildIndex, PrepareMessageLocaleMsg(1808, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1808=¬1 LE DECLARA LA GUERRA A TU CLAN
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_ENTRADO_GUERRA, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1807=TU CLAN HA ENTRADO EN GUERRA CON ¬1
+            Call SendData(SendTarget.ToGuildMembers, otherGuildIndex, PrepareMessageLocaleMsg(MSG_DECLARA_GUERRA_CLAN, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1808=¬1 LE DECLARA LA GUERRA A TU CLAN
             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
             Call SendData(SendTarget.ToGuildMembers, otherGuildIndex, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
         End If
@@ -3783,14 +3783,14 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
             Else
                 Call modGuilds.m_ConectarMiembroAClan(tUser.ArrayIndex, .GuildIndex)
                 Call RefreshCharStatus(tUser.ArrayIndex)
-                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1809, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1809=[¬1] ha sido aceptado como miembro del clan.
+                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_SIDO_ACEPTADO_MIEMBRO_CLAN, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1809=[¬1] ha sido aceptado como miembro del clan.
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave(43, NO_3D_SOUND, NO_3D_SOUND))
             End If
         Else
             If Not modGuilds.a_AceptarAspirante(UserIndex, username, errorStr) Then
                 Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
             Else
-                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1809, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1809=[¬1] ha sido aceptado como miembro del clan.
+                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_SIDO_ACEPTADO_MIEMBRO_CLAN, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1809=[¬1] ha sido aceptado como miembro del clan.
             End If
         End If
     End With
@@ -3850,7 +3850,7 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
             expulsado = NameIndex(username)
             'Msg1152= Has sido expulsado del clan.
             Call WriteLocaleMsg(expulsado.ArrayIndex, "1152", e_FontTypeNames.FONTTYPE_INFO)
-            Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageLocaleMsg(1810, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1810=¬1 fue expulsado del clan.
+            Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_CLAN, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1810=¬1 fue expulsado del clan.
             Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
         Else
             'Msg1153= No podés expulsar ese personaje del clan.
@@ -3988,7 +3988,7 @@ Private Sub HandleGuildLeave(ByVal UserIndex As Integer)
         If GuildIndex > 0 Then
             'Msg1159= Dejas el clan.
             Call WriteLocaleMsg(UserIndex, 1159, e_FontTypeNames.FONTTYPE_INFO)
-            Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageLocaleMsg(1811, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1811=¬1 deja el clan.
+            Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageLocaleMsg(MSG_DEJA_CLAN, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1811=¬1 deja el clan.
         Else
             'Msg1160= Tu no puedes salir de ningún clan.
             Call WriteLocaleMsg(UserIndex, 1160, e_FontTypeNames.FONTTYPE_INFO)
@@ -4714,9 +4714,9 @@ Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
             Next
             .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
             If .Faccion.Status = e_Facciones.consejo Then
-                Call SendData(SendTarget.ToConsejo, UserIndex, PrepareMessageLocaleMsg(1812, GetUserDisplayName(UserIndex) & "¬" & chat, e_FontTypeNames.FONTTYPE_CONSEJO)) ' Msg1812=(Consejo) ¬1> ¬2
+                Call SendData(SendTarget.ToConsejo, UserIndex, PrepareMessageLocaleMsg(MSG_CONSEJO, GetUserDisplayName(UserIndex) & "¬" & chat, e_FontTypeNames.FONTTYPE_CONSEJO)) ' Msg1812=(Consejo) ¬1> ¬2
             ElseIf .Faccion.Status = e_Facciones.concilio Then
-                Call SendData(SendTarget.ToConsejoCaos, UserIndex, PrepareMessageLocaleMsg(1813, GetUserDisplayName(UserIndex) & "¬" & chat, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) ' Msg1813=(Concilio) ¬1> ¬2)
+                Call SendData(SendTarget.ToConsejoCaos, UserIndex, PrepareMessageLocaleMsg(MSG_CONCILIO, GetUserDisplayName(UserIndex) & "¬" & chat, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) ' Msg1813=(Concilio) ¬1> ¬2)
             End If
         End If
     End With
@@ -4971,7 +4971,7 @@ Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
             Dim MembersId() As Long
             MembersId = GetGuildMemberList(guild)
             For i = LBound(MembersId) To UBound(MembersId)
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1993, GetUserName(MembersId(i)) & "¬" & guild, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1993=¬1 <¬2>
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_USER_GUILD_TAG, GetUserName(MembersId(i)) & "¬" & guild, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1993=¬1 <¬2>
             Next i
         End If
     End With
@@ -5179,7 +5179,7 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
         Message = reader.ReadString8()
         'Solo dioses, admins y RMS
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Or .Faccion.Status = e_Facciones.consejo Then
-            Call SendData(SendTarget.ToRealYRMs, 0, PrepareMessageLocaleMsg(1815, GetUserDisplayName(UserIndex) & "¬" & Message, e_FontTypeNames.FONTTYPE_CONSEJO)) ' Msg1815=[ARMADA REAL] ¬1> ¬2
+            Call SendData(SendTarget.ToRealYRMs, 0, PrepareMessageLocaleMsg(MSG_ARMADA_REAL, GetUserDisplayName(UserIndex) & "¬" & Message, e_FontTypeNames.FONTTYPE_CONSEJO)) ' Msg1815=[ARMADA REAL] ¬1> ¬2
         End If
     End With
     Exit Sub
@@ -5198,7 +5198,7 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
         Message = reader.ReadString8()
         'Solo dioses, admins y RMS
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Or .Faccion.Status = e_Facciones.concilio Then
-            Call SendData(SendTarget.ToCaosYRMs, 0, PrepareMessageLocaleMsg(1816, GetUserDisplayName(UserIndex) & "¬" & Message, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) ' Msg1816=[FUERZAS DEL CAOS] ¬1> ¬2
+            Call SendData(SendTarget.ToCaosYRMs, 0, PrepareMessageLocaleMsg(MSG_FUERZAS_CAOS, GetUserDisplayName(UserIndex) & "¬" & Message, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) ' Msg1816=[FUERZAS DEL CAOS] ¬1> ¬2
         End If
     End With
     Exit Sub
@@ -5287,7 +5287,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
                         Call WriteLocaleMsg(UserIndex, 1198, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1643, username, e_FontTypeNames.FONTTYPE_CONSEJO)) 'Msg1643=¬1 fue aceptado en el honorable Consejo Real de Banderbill.
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_ACEPTADO_HONORABLE_CONSEJO_REAL_BANDERBILL, username, e_FontTypeNames.FONTTYPE_CONSEJO)) 'Msg1643=¬1 fue aceptado en el honorable Consejo Real de Banderbill.
                 With UserList(tUser.ArrayIndex)
                     .Faccion.Status = e_Facciones.consejo
                     Call WarpUserChar(tUser.ArrayIndex, .pos.Map, .pos.x, .pos.y, False)
@@ -5323,7 +5323,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
                         Call WriteLocaleMsg(UserIndex, 1200, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1644, username, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) 'Msg1644=¬1 fue aceptado en el Consejo de la Legión Oscura.
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_ACEPTADO_CONSEJO_LEGION_OSCURA, username, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) 'Msg1644=¬1 fue aceptado en el Consejo de la Legión Oscura.
                 With UserList(tUser.ArrayIndex)
                     .Faccion.Status = e_Facciones.concilio
                     Call WarpUserChar(tUser.ArrayIndex, .pos.Map, .pos.x, .pos.y, False)
@@ -5368,14 +5368,14 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
                         Call WriteLocaleMsg(tUser.ArrayIndex, 1204, e_FontTypeNames.FONTTYPE_INFO)
                         .Faccion.Status = e_Facciones.Armada
                         Call WarpUserChar(tUser.ArrayIndex, .pos.Map, .pos.x, .pos.y)
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1645, username, e_FontTypeNames.FONTTYPE_CONSEJO)) 'Msg1645=¬1 fue expulsado del Consejo Real de Banderbill.
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_CONSEJO_REAL_BANDERBILL, username, e_FontTypeNames.FONTTYPE_CONSEJO)) 'Msg1645=¬1 fue expulsado del Consejo Real de Banderbill.
                     End If
                     If .Faccion.Status = e_Facciones.concilio Then
                         'Msg1205= Has sido echado del consejo de la Legión Oscura
                         Call WriteLocaleMsg(tUser.ArrayIndex, 1205, e_FontTypeNames.FONTTYPE_INFO)
                         .Faccion.Status = e_Facciones.Caos
                         Call WarpUserChar(tUser.ArrayIndex, .pos.Map, .pos.x, .pos.y)
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1646, username, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) 'Msg1646=¬1 fue expulsado del Consejo de la Legión Oscura.
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_CONSEJO_LEGION_OSCURA, username, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) 'Msg1646=¬1 fue expulsado del Consejo de la Legión Oscura.
                     End If
                     Call RefreshCharStatus(tUser.ArrayIndex)
                 End With
@@ -5408,7 +5408,7 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
                 'Msg1206= No existe el clan: ¬1
                 Call WriteLocaleMsg(UserIndex, 1206, e_FontTypeNames.FONTTYPE_INFO, GuildName)
             Else
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1647, GetUserDisplayName(UserIndex) & "¬" & UCase$(GuildName), e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1647=¬1 banned al clan ¬2.
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BANNED_CLAN, GetUserDisplayName(UserIndex) & "¬" & UCase$(GuildName), e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1647=¬1 banned al clan ¬2.
                 'baneamos a los miembros
                 Call LogGM(GetUserRealName(UserIndex), "BANCLAN a " & UCase$(GuildName))
                 cantMembers = val(GetVar(tFile, "INIT", "NroMembers"))
@@ -5416,7 +5416,7 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
                     'member es la victima
                     member = GetVar(tFile, "Members", "Member" & LoopC)
                     Call Ban(member, "Administracion del servidor", "Clan Banned")
-                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1648, member & "¬" & GuildName, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1648=¬1<¬2> ha sido expulsado del servidor.
+                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SIDO_EXPULSADO_SERVIDOR, member & "¬" & GuildName, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1648=¬1<¬2> ha sido expulsado del servidor.
                     tUser = NameIndex(member)
                     If IsValidUserRef(tUser) Then
                         'esta online
@@ -5458,8 +5458,8 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                     UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
                     UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Criminal
                     UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
-                    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1992, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1992=¬1 expulsado de las fuerzas del caos y prohibida la reenlistada.
-                    Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1991, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1991=¬1 te ha expulsado en forma definitiva de las fuerzas del caos.
+                    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FUERZAS_CAOS_PROHIBIDA_REENLISTADA, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1992=¬1 expulsado de las fuerzas del caos y prohibida la reenlistada.
+                    Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FORMA_DEFINITIVA_FUERZAS_CAOS, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1991=¬1 te ha expulsado en forma definitiva de las fuerzas del caos.
             Else
                 If PersonajeExiste(username) Then
                     'Msg1208= Usuario offline, echando de la facción
@@ -5512,8 +5512,8 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                 UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
                 UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Ciudadano
                 UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1990, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1990=¬1 expulsado de las fuerzas reales y prohibida la reenlistada.
-                Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1989, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1989=¬1 te ha expulsado en forma definitiva de las fuerzas reales.
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FUERZAS_REALES_PROHIBIDA_REENLISTADA, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1990=¬1 expulsado de las fuerzas reales y prohibida la reenlistada.
+                Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FORMA_DEFINITIVA_FUERZAS_REALES, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1989=¬1 te ha expulsado en forma definitiva de las fuerzas reales.
             Else
                 If PersonajeExiste(username) Then
                     'Msg1213= Usuario offline, echando de la facción
@@ -5787,7 +5787,7 @@ Public Sub HandleRemoveCharFromGuild(ByVal UserIndex As Integer)
             Else
                 'Msg1225= Expulsado.
                 Call WriteLocaleMsg(UserIndex, 1225, e_FontTypeNames.FONTTYPE_INFO)
-                Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageLocaleMsg(1817, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1817=¬1 ha sido expulsado del clan por los administradores del servidor.
+                Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageLocaleMsg(MSG_SIDO_EXPULSADO_CLAN_ADMINISTRADORES_SERVIDOR, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1817=¬1 ha sido expulsado del clan por los administradores del servidor.
             End If
         End If
     End With
@@ -5852,7 +5852,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
             UserList(UserIndex).Counters.TiempoParaSubastar = 0
             Subasta.OfertaInicial = Oferta
             Subasta.MejorOferta = 0
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1649, GetUserDisplayName(UserIndex) & "¬" & ObjData(Subasta.ObjSubastado).name & "¬" & Subasta.ObjSubastadoCantidad & "¬" & _
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTANDO_CANTIDAD_PRECIO_INICIAL_MONEDAS_ESCRIBE_OFERTAR, GetUserDisplayName(UserIndex) & "¬" & ObjData(Subasta.ObjSubastado).name & "¬" & Subasta.ObjSubastadoCantidad & "¬" & _
                     PonerPuntos(Subasta.OfertaInicial), e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1649=¬1 está subastando: ¬2 (Cantidad: ¬3 ) - con un precio inicial de ¬4 monedas. Escribe /OFERTAR (cantidad) para participar.
             .flags.Subastando = False
             Subasta.HaySubastaActiva = True
@@ -5908,7 +5908,7 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
             .Stats.GLD = .Stats.GLD - Oferta
             Call WriteUpdateGold(UserIndex)
             If Subasta.TiempoRestanteSubasta < 60 Then
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1650, GetUserDisplayName(UserIndex) & "¬" & PonerPuntos(Oferta) & "¬", e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1650=Oferta mejorada por: ¬1 (Ofrece ¬2 monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_OFERTA_MEJORADA_OFRECE_MONEDAS_ORO_TIEMPO_EXTENDIDO, GetUserDisplayName(UserIndex) & "¬" & PonerPuntos(Oferta) & "¬", e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1650=Oferta mejorada por: ¬1 (Ofrece ¬2 monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.
                 Call LogearEventoDeSubasta(GetUserRealName(UserIndex) & ": Mejoro la oferta en el ultimo minuto ofreciendo " & PonerPuntos(Oferta) & " monedas.")
                 Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta + 30
             Else
@@ -6342,7 +6342,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
         If .GuildIndex <> 0 Then
             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
             If clan_nivel >= RequiredGuildLevelCallSupport Then
-                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1818, GetUserDisplayName(UserIndex) & "¬" & get_map_name(.pos.Map) & "¬" & .pos.Map & "¬" & .pos.x & "¬" & _
+                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_SOLICITA_APOYO_CLAN_PUEDES_VER_UBICACION, GetUserDisplayName(UserIndex) & "¬" & get_map_name(.pos.Map) & "¬" & .pos.Map & "¬" & .pos.x & "¬" & _
                         .pos.y, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1818=Clan> [¬1] solicita apoyo de su clan en ¬2 (¬3-¬4-¬5). Puedes ver su ubicación en el mapa del mundo.
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.pos.Map, .pos.x, .pos.y))
@@ -6393,13 +6393,13 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
                             .flags.Casado = 1
                             .flags.SpouseId = UserList(tUser.ArrayIndex).Id
                             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.Casamiento_sound, NO_3D_SOUND, NO_3D_SOUND))
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1651, get_map_name(.pos.Map) & "¬" & GetUserDisplayName(UserIndex) & "¬" & GetUserDisplayName( _
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SACERDOTE_CELEBRA_CASAMIENTO_ENTRE, get_map_name(.pos.Map) & "¬" & GetUserDisplayName(UserIndex) & "¬" & GetUserDisplayName( _
                                     tUser.ArrayIndex), e_FontTypeNames.FONTTYPE_WARNING)) 'Msg1651=El sacerdote de ¬1 celebra el casamiento entre ¬2 y ¬3.
                             Call WriteLocaleChatOverHead(UserIndex, 1414, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1414=Los declaro unidos en legal matrimonio ¡Felicidades!
                             Call WriteLocaleChatOverHead(tUser.ArrayIndex, 1415, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1415=Los declaro unidos en legal matrimonio ¡Felicidades!
                         Else
                             Call WriteLocaleChatOverHead(UserIndex, 1420, username, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1420=La solicitud de casamiento a sido enviada a ¬1.
-                            Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1956, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1956=¬1 desea casarse contigo, para permitirlo haz click en el sacerdote y escribe /PROPONER ¬1.
+                            Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_DESEA_CASARSE_CONTIGO_PERMITIRLO_HAZ_CLICK_SACERDOTE, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1956=¬1 desea casarse contigo, para permitirlo haz click en el sacerdote y escribe /PROPONER ¬1.
                             .flags.Candidato = tUser
                         End If
                     End If
@@ -6439,7 +6439,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Call PerderTesoro
                     Else
                         If BusquedaTesoroActiva Then
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1652, get_map_name(TesoroNumMapa) & "¬" & TesoroNumMapa, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1652=Eventos> Todavia nadie fue capaz de encontar el tesoro, recorda que se encuentra en ¬1(¬2). ¿Quien sera el valiente que lo encuentre?
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_TODAVIA_NADIE_CAPAZ_ENCONTAR_TESORO_RECORDA, get_map_name(TesoroNumMapa) & "¬" & TesoroNumMapa, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1652=Eventos> Todavia nadie fue capaz de encontar el tesoro, recorda que se encuentra en ¬1(¬2). ¿Quien sera el valiente que lo encuentre?
                             'Msg1241= Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: ¬1
                             Call WriteLocaleMsg(UserIndex, 1241, e_FontTypeNames.FONTTYPE_INFO, TesoroNumMapa)
                         Else
@@ -6452,7 +6452,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Call PerderRegalo
                     Else
                         If BusquedaRegaloActiva Then
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1653, get_map_name(RegaloNumMapa) & "¬" & RegaloNumMapa, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1653=Eventos> Ningún valiente fue capaz de encontrar el item misterioso, recuerda que se encuentra en ¬1(¬2). ¡Ten cuidado!
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_NINGUN_VALIENTE_CAPAZ_ENCONTRAR_ITEM_MISTERIOSO, get_map_name(RegaloNumMapa) & "¬" & RegaloNumMapa, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1653=Eventos> Ningún valiente fue capaz de encontrar el item misterioso, recuerda que se encuentra en ¬1(¬2). ¡Ten cuidado!
                             'Msg1242= Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: ¬1
                             Call WriteLocaleMsg(UserIndex, 1242, e_FontTypeNames.FONTTYPE_INFO, RegaloNumMapa)
                         Else
@@ -6470,7 +6470,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         BusquedaNpcActiva = True
                     Else
                         If BusquedaNpcActiva Then
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1654, NpcList(npc_index_evento).pos.Map, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1654=Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa ¬1.
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_TODAVIA_NADIE_LOGRO_MATAR_NPC_ENCUENTRA, NpcList(npc_index_evento).pos.Map, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1654=Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa ¬1.
                             'Msg1243= Ya hay una busqueda de npc activo. El tesoro se encuentra en: ¬1
                             Call WriteLocaleMsg(UserIndex, 1243, e_FontTypeNames.FONTTYPE_INFO, NpcList(npc_index_evento).pos.Map)
                         Else
@@ -6865,7 +6865,7 @@ Private Sub HandleEventoInfo(ByVal UserIndex As Integer)
     On Error GoTo HandleEventoInfo_Err
     With UserList(UserIndex)
         If EventoActivo Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1957, PublicidadEvento & "¬" & TiempoRestanteEvento, e_FontTypeNames.FONTTYPE_New_Eventos)) ' Msg1957=¬1. Tiempo restante: ¬2 minuto(s).
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_TIEMPO_RESTANTE_MINUTO_S, PublicidadEvento & "¬" & TiempoRestanteEvento, e_FontTypeNames.FONTTYPE_New_Eventos)) ' Msg1957=¬1. Tiempo restante: ¬2 minuto(s).
         Else
             ' Msg729=Eventos> Actualmente no hay ningún evento en curso.
             Call WriteLocaleMsg(UserIndex, 729, e_FontTypeNames.FONTTYPE_New_Eventos)

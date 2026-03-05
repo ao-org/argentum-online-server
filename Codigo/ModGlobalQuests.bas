@@ -150,7 +150,7 @@ Public Sub FinishGlobalQuest(ByVal UserIndex As Integer, ByVal ContributionAmoun
     If GlobalQuestIndex > 0 And GlobalQuestThresholdNeeded = 0 Then
         Call ContributeToGlobalQuestCounter(ContributionAmount, GlobalQuestIndex)
         Call InsertContributionIntoDatabase(UserIndex, ContributionAmount, GlobalQuestIndex)
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_ID_2122, UserList(UserIndex).Name & "¬" & ContributionAmount & "¬" & GlobalQuestInfo(GlobalQuestIndex).ObjectIndex & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold, e_FontTypeNames.FONTTYPE_INFOIAO))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_GLOBAL_QUEST_CONTRIBUTION_UPDATE, UserList(UserIndex).Name & "¬" & ContributionAmount & "¬" & GlobalQuestInfo(GlobalQuestIndex).ObjectIndex & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold, e_FontTypeNames.FONTTYPE_INFOIAO))
         If GlobalQuestInfo(GlobalQuestIndex).FinishOnThresholdReach Then
             If GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter >= GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold Then
                 GlobalQuestInfo(GlobalQuestIndex).IsActive = False
@@ -210,7 +210,7 @@ Public Sub FinalizeGlobalQuest(ByVal GlobalQuestIndex As Integer)
         .IsActive = False
         Call UpdateGlobalQuestActiveStateIntoDatabase(False, GlobalQuestIndex)
         'TBD change map indexes and de-spawn corresponding npcs
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_ID_2127, .Name & "¬" & .GatheringGlobalCounter & "¬" & .GatheringThreshold, e_FontTypeNames.FONTTYPE_INFOIAO))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_GLOBAL_QUEST_FINISHED, .Name & "¬" & .GatheringGlobalCounter & "¬" & .GatheringThreshold, e_FontTypeNames.FONTTYPE_INFOIAO))
         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.BAOLegionHorn, NO_3D_SOUND, NO_3D_SOUND))
     End With
 End Sub
@@ -226,7 +226,7 @@ Public Sub StartGlobalQuest(ByVal GlobalQuestIndex As Integer)
         .IsActive = True
         Call UpdateGlobalQuestActiveStateIntoDatabase(True, GlobalQuestIndex)
         'TBD change map indexes and spawn corresponding npcs
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_ID_2128, .Name & "¬" & .GatheringThreshold & "¬" & .ObjectIndex, e_FontTypeNames.FONTTYPE_INFOIAO))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_GLOBAL_QUEST_STARTED, .Name & "¬" & .GatheringThreshold & "¬" & .ObjectIndex, e_FontTypeNames.FONTTYPE_INFOIAO))
         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.BAOLegionHorn, NO_3D_SOUND, NO_3D_SOUND))
     End With
 End Sub

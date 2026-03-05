@@ -1389,9 +1389,9 @@ Sub PasarSegundo()
     If TiempoPesca > 0 Then TiempoPesca = TiempoPesca + 1
     If CuentaRegresivaTimer > 0 Then
         If CuentaRegresivaTimer > 1 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1655, CuentaRegresivaTimer - 1, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1655=¬1 segundos...!
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SEGUNDOS, CuentaRegresivaTimer - 1, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1655=¬1 segundos...!
         Else
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1656, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1656=¡Ya!!
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_COUNTDOWN_GO, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1656=¡Ya!!
         End If
         CuentaRegresivaTimer = CuentaRegresivaTimer - 1
     End If
@@ -1558,7 +1558,7 @@ Sub GuardarUsuarios()
     On Error GoTo GuardarUsuarios_Err
     haciendoBK = True
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1657, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1657=Servidor » Grabando Personajes
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_GRABANDO_PERSONAJES, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1657=Servidor » Grabando Personajes
     Dim i As Long
     For i = 1 To LastUser
         If UserList(i).flags.UserLogged Then
@@ -1570,7 +1570,7 @@ Sub GuardarUsuarios()
             Call SaveUser(i)
         End If
     Next i
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1658, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1658=Servidor » Personajes Grabados
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_PERSONAJES_GRABADOS, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1658=Servidor » Personajes Grabados
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
     haciendoBK = False
     Exit Sub
