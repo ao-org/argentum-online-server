@@ -41,6 +41,7 @@ Public Enum e_WorkingToolSubType
         SmithHammer = 7
         MinerPickaxe = 8
         TailorSewingbox = 9
+        FishingLine = 10
 End Enum
 
 
@@ -2400,6 +2401,7 @@ Public Type t_ObjData
     RequiereObjeto                  As Integer
     BowCategory As Byte
     ArrowCategory As Byte
+    RepairTo As Integer
 End Type
 
 '[Pablo ToxicWaste]

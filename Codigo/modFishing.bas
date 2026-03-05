@@ -12,7 +12,6 @@ Public Const OBJ_BROKEN_FISHING_ROD_FINE   As Integer = 3459
 Public Const OBJ_BROKEN_FISHING_ROD_ELITE  As Integer = 3458
 Public Const OBJ_FISHING_NET_BASIC         As Integer = 138
 Public Const OBJ_FISHING_NET_ELITE         As Integer = 139
-Public Const OBJ_FISHING_LINE              As Integer = 2183
 Public Const OBJ_FISH_BANK                 As Integer = 1992
 Public Const OBJ_SQUID_BANK                As Integer = 1990
 Public Const OBJ_SHRIMP_BANK               As Integer = 1991

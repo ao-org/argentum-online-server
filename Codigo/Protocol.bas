@@ -6055,7 +6055,6 @@ ErrHandler:
 End Sub
 
 Private Sub HandleMoveItem(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
     On Error GoTo ErrHandler
     With UserList(UserIndex)
         Dim SlotViejo As Byte
@@ -6068,32 +6067,10 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
         Dim Equipado             As Boolean
         Dim Equipado2            As Boolean
         Dim Equipado3            As Boolean
-        Dim ObjCania             As t_Obj
-        'HarThaoS: Si es un hilo de pesca y lo estoy arrastrando en una caña rota borro del slot viejo y en el nuevo pongo la caña correspondiente
-        If SlotViejo > getMaxInventorySlots(UserIndex) Or SlotNuevo > getMaxInventorySlots(UserIndex) Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
-        If .invent.Object(SlotViejo).ObjIndex = OBJ_FISHING_LINE Then
-            Select Case .invent.Object(SlotNuevo).ObjIndex
-                Case OBJ_BROKEN_FISHING_ROD_BASIC
-                    ObjCania.ObjIndex = OBJ_FISHING_ROD_BASIC
-                Case OBJ_BROKEN_FISHING_ROD_COMMON
-                    ObjCania.ObjIndex = OBJ_FISHING_ROD_COMMON
-                Case OBJ_BROKEN_FISHING_ROD_FINE
-                    ObjCania.ObjIndex = OBJ_FISHING_ROD_FINE
-                Case OBJ_BROKEN_FISHING_ROD_ELITE
-                    ObjCania.ObjIndex = OBJ_FISHING_ROD_ELITE
-            End Select
-            ObjCania.amount = 1
-            'si el objeto que estaba pisando era una caña rota.
-            If ObjCania.ObjIndex > 0 Then
-                'Quitamos del inv el item
-                Call QuitarUserInvItem(UserIndex, SlotViejo, 1)
-                Call UpdateUserInv(False, UserIndex, SlotViejo)
-                Call QuitarUserInvItem(UserIndex, SlotNuevo, 1)
-                Call UpdateUserInv(False, UserIndex, SlotNuevo)
-                Call MeterItemEnInventario(UserIndex, ObjCania)
-                Exit Sub
-            End If
-        End If
+        
+        'Reparacion de caña de pescar con hilo
+        If TryRepairFishingRod(UserIndex, SlotViejo, SlotNuevo) Then Exit Sub
+        
         If IsFeatureEnabled("elemental_tags") Then
             AppliedElementalTags = False
             If CanElementalTagBeApplied(UserIndex, SlotNuevo, SlotViejo) Then

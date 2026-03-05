@@ -4191,3 +4191,50 @@ Public Sub ValidateEquippedArrow(ByVal UserIndex As Integer)
 ValidateEquippedArrow_Error:
     Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.ValidateEquippedArrow", Erl())
 End Sub
+Public Function TryRepairFishingRod(ByVal UserIndex As Integer, ByVal oldSlot As Byte, ByVal newSlot As Byte) As Boolean
+    On Error GoTo TryRepairFishingRod_Error
+    Dim objRod As t_Obj
+    Dim rodObjIndex As Integer
+    Dim powerLine As Integer
+    Dim powerRod As Integer
+    
+    With UserList(UserIndex)
+        'Debe ser hilo de pesca
+        If ObjData(.invent.Object(oldSlot).ObjIndex).OBJType <> otWorkingTools Then Exit Function
+        If ObjData(.invent.Object(oldSlot).ObjIndex).Subtipo <> FishingLine Then Exit Function
+                
+        'Debe ser caña rota reparable
+        rodObjIndex = .invent.Object(newSlot).ObjIndex
+        If ObjData(rodObjIndex).RepairTo <= 0 Then Exit Function
+                
+        powerLine = ObjData(.invent.Object(oldSlot).ObjIndex).Power
+        powerRod = ObjData(ObjData(rodObjIndex).RepairTo).Power
+        
+        'El hilo no puede reparar una caña con mayor power
+        If powerRod > powerLine Then
+            'Msg2170= El hilo no es lo suficientemente fuerte para reparar esta caña.
+            Call WriteLocaleMsg(UserIndex, 2170, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+        
+        'Objeto reparado
+        objRod.ObjIndex = ObjData(rodObjIndex).RepairTo
+        objRod.Amount = 1
+        
+        'Quitamos hilo
+        Call QuitarUserInvItem(UserIndex, oldSlot, 1)
+        Call UpdateUserInv(False, UserIndex, oldSlot)
+        
+        'Quitamos caña rota
+        Call QuitarUserInvItem(UserIndex, newSlot, 1)
+        Call UpdateUserInv(False, UserIndex, newSlot)
+        
+        'Agregamos caña reparada
+        Call MeterItemEnInventario(UserIndex, objRod)
+        
+        TryRepairFishingRod = True
+    End With
+    Exit Function
+TryRepairFishingRod_Error:
+    Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.TryRepairFishingRod", Erl())
+End Function
