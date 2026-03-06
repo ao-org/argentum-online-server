@@ -53,7 +53,7 @@ Public Const MsgFactionForbidAction = 416
 Public Const MsgClanForbidAction = 417
 Public Const MsgDisableAttackGuardToContinue = 418
 Public Const MsgInvalidTarget = 419
-Public Const MsgNetOnlyUsers = 2083
+Public Const MsgNetOnlyUsers = 2171
 Public Const MsgTiredToPerformAction = 420
 Public Const MsgRequiresMoreHealth = 421
 Public Const MsgTargetAlreadyAffected = 422
@@ -141,3 +141,4 @@ Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As I
             Debug.Assert False
     End Select
 End Function
+
