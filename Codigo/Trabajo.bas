@@ -1940,14 +1940,38 @@ End Function
 Public Sub FishOrThrowNet(ByVal UserIndex As Integer)
     On Error GoTo FishOrThrowNet_Err:
     With UserList(UserIndex)
+        Dim targetUserIndex As Integer
+        Dim targetNpcIndex As Integer
         If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
         If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.FishingNet Then
+            targetUserIndex = ResolveUserTargetAtPos(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y)
+            targetNpcIndex = ResolveNpcTargetAtPos(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y)
+            If targetUserIndex > 0 Then
+                Call SetUserRef(.flags.TargetUser, targetUserIndex)
+                Call ClearNpcRef(.flags.TargetNPC)
+            Else
+                Call SetUserRef(.flags.TargetUser, 0)
+                If targetNpcIndex > 0 Then
+                    Call SetNpcRef(.flags.TargetNPC, targetNpcIndex)
+                Else
+                    Call ClearNpcRef(.flags.TargetNPC)
+                End If
+            End If
+            If IsValidNpcRef(.flags.TargetNPC) Then
+                Call WriteLocaleMsg(UserIndex, MsgNetOnlyUsers, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteWorkRequestTarget(UserIndex, 0)
+                Call ClearNpcRef(.flags.TargetNPC)
+                Exit Sub
+            End If
             If MapInfo(.pos.Map).Seguro = 1 Or Not ExpectObjectTypeAt(e_OBJType.otFishingPool, .pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y) Then
-                If IsValidUserRef(.flags.TargetUser) Or IsValidNpcRef(.flags.TargetNPC) Then
+                If IsValidUserRef(.flags.TargetUser) Then
                     ThrowNetToTarget (UserIndex)
                     Call WriteWorkRequestTarget(UserIndex, 0)
                     Exit Sub
                 End If
+                Call WriteLocaleMsg(UserIndex, MsgInvalidTarget, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteWorkRequestTarget(UserIndex, 0)
+                Exit Sub
             End If
         End If
         Call Trabajar(UserIndex, e_Skill.Pescar)
@@ -1963,6 +1987,7 @@ Sub ThrowNetToTarget(ByVal UserIndex As Integer)
         If .invent.EquippedWorkingToolObjIndex = 0 Then Exit Sub
         If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
         If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo <> e_WorkingToolSubType.FishingNet Then Exit Sub
+        If Not IsValidUserRef(.flags.TargetUser) Then Exit Sub
         'If it's outside range log it and exit
         If Abs(.pos.x - .Trabajo.Target_X) > RANGO_VISION_X Or Abs(.pos.y - .Trabajo.Target_Y) > RANGO_VISION_Y Then
             Call LogSecurity("Ataque fuera de rango de " & .name & "(" & .pos.Map & "/" & .pos.x & "/" & .pos.y & ") ip: " & .ConnectionDetails.IP & " a la posicion (" & _
@@ -1978,64 +2003,39 @@ Sub ThrowNetToTarget(ByVal UserIndex As Integer)
         'check item cd
         Dim ThrowNet As Boolean
         ThrowNet = False
-        If IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then
-            Dim tU As Integer
-            tU = UserList(UserIndex).flags.TargetUser.ArrayIndex
-            If UserIndex = tU Then
-                Call WriteLocaleMsg(UserIndex, MsgCantAttackYourself, e_FontTypeNames.FONTTYPE_FIGHT)
-                Exit Sub
-            End If
-            If IsSet(UserList(tU).flags.StatusMask, eCCInmunity) Then
-                Call WriteLocaleMsg(UserIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
-                Exit Sub
-            End If
-            If Not UserMod.CanMove(UserList(tU).flags, UserList(tU).Counters) Then
-                ' Msg661=No podes inmovilizar un objetivo que no puede moverse.
-                Call WriteLocaleMsg(UserIndex, 661, e_FontTypeNames.FONTTYPE_FIGHT)
-                Exit Sub
-            End If
-            If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
-            Call UsuarioAtacadoPorUsuario(UserIndex, tU)
-            UserList(tU).Counters.Inmovilizado = NET_INMO_DURATION
-            If UserList(tU).flags.Inmovilizado = 0 Then
-                UserList(tU).flags.Inmovilizado = 1
-                Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageCreateFX(UserList(tU).Char.charindex, FISHING_NET_FX, 0, UserList(tU).pos.x, UserList(tU).pos.y))
-                Call WriteInmovilizaOK(tU)
-                Call WritePosUpdate(tU)
-                ThrowNet = True
-            End If
-            Call SetUserRef(UserList(UserIndex).flags.TargetUser, 0)
-        ElseIf IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-            Dim NpcIndex As Integer
-            NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
-            If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
-                Dim UserAttackInteractionResult As t_AttackInteractionResult
-                UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
-                Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
-                If UserAttackInteractionResult.CanAttack Then
-                    If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
-                Else
-                    Exit Sub
-                End If
-                Call NPCAtacado(NpcIndex, UserIndex)
-                NpcList(NpcIndex).flags.Inmovilizado = 1
-                NpcList(NpcIndex).Contadores.Inmovilizado = (NET_INMO_DURATION * 6.5) * 6
-                NpcList(NpcIndex).flags.Paralizado = 0
-                NpcList(NpcIndex).Contadores.Paralisis = 0
-                Call AnimacionIdle(NpcIndex, True)
-                ThrowNet = True
-                Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageFxPiso(FISHING_NET_FX, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y))
-                Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
-            Else
-                Call WriteLocaleMsg(UserIndex, MSgNpcInmuneToEffect, e_FontTypeNames.FONTTYPE_INFOIAO)
-            End If
+
+        Dim tU As Integer
+        tU = .flags.TargetUser.ArrayIndex
+        If UserIndex = tU Then
+            Call WriteLocaleMsg(UserIndex, MsgCantAttackYourself, e_FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
         End If
+        If IsSet(UserList(tU).flags.StatusMask, eCCInmunity) Then
+            Call WriteLocaleMsg(UserIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+        End If
+        If Not UserMod.CanMove(UserList(tU).flags, UserList(tU).Counters) Then
+            ' Msg661=No podes inmovilizar un objetivo que no puede moverse.
+            Call WriteLocaleMsg(UserIndex, 661, e_FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+        End If
+        If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
+        Call UsuarioAtacadoPorUsuario(UserIndex, tU)
+        UserList(tU).Counters.Inmovilizado = NET_INMO_DURATION
+        If UserList(tU).flags.Inmovilizado = 0 Then
+            UserList(tU).flags.Inmovilizado = 1
+            Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageCreateFX(UserList(tU).Char.charindex, FISHING_NET_FX, 0, UserList(tU).pos.x, UserList(tU).pos.y))
+            Call WriteInmovilizaOK(tU)
+            Call WritePosUpdate(tU)
+            ThrowNet = True
+        End If
+        Call SetUserRef(.flags.TargetUser, 0)
+
         If ThrowNet Then
             Call UpdateCd(UserIndex, ObjData(.invent.EquippedWorkingToolObjIndex).cdType)
             Call QuitarUserInvItem(UserIndex, .invent.EquippedWorkingToolSlot, 1)
             Call UpdateUserInv(True, UserIndex, .invent.EquippedWorkingToolSlot)
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, .Trabajo.Target_X, _
-                    .Trabajo.Target_Y, 3))
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(.pos.x, .pos.y, .Trabajo.Target_X, .Trabajo.Target_Y, 3))
         End If
     End With
     Exit Sub
@@ -2094,4 +2094,19 @@ Public Function KnowsCraftingRecipe(ByVal UserIndex As Integer, ByVal ItemIndex 
         KnowsCraftingRecipe = False
         Exit Function
     End If
+End Function
+Public Function ResolveUserTargetAtPos(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte) As Integer
+    If y + 1 <= YMaxMapSize Then
+        ResolveUserTargetAtPos = MapData(Map, x, y + 1).UserIndex
+        If ResolveUserTargetAtPos > 0 Then Exit Function
+    End If
+    ResolveUserTargetAtPos = MapData(Map, x, y).UserIndex
+End Function
+
+Public Function ResolveNpcTargetAtPos(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte) As Integer
+    If y + 1 <= YMaxMapSize Then
+        ResolveNpcTargetAtPos = MapData(Map, x, y + 1).NpcIndex
+        If ResolveNpcTargetAtPos > 0 Then Exit Function
+    End If
+    ResolveNpcTargetAtPos = MapData(Map, x, y).NpcIndex
 End Function
