@@ -776,6 +776,12 @@ Private Sub SaveCharacterQuestsDoneDB(ByRef U As t_User, ByRef QueryBreakdown As
     Dim Params() As Variant
     Dim LoopC As Long
     Dim ParamC As Long
+
+    If Not HaveQuestsDoneChanged(U) Then
+        If Len(QueryBreakdown) > 0 Then QueryBreakdown = QueryBreakdown & "; "
+        QueryBreakdown = QueryBreakdown & "quests done skipped"
+        Exit Sub
+    End If
     If U.QuestStats.NumQuestsDone > 0 Then
         SqlBuilder.Append "REPLACE INTO quest_done (user_id, quest_id) VALUES "
         For LoopC = 1 To U.QuestStats.NumQuestsDone
@@ -1333,10 +1339,8 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] quests update id:" & .Id, 50)
         End If
 
-        If HaveQuestsDoneChanged(UserIndex) Then
-            Call SaveCharacterQuestsDoneDB(UserList(UserIndex), QueryBreakdown, Builder)
-            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] quests done update id:" & .Id, 50)
-        End If
+        Call SaveCharacterQuestsDoneDB(UserList(UserIndex), QueryBreakdown, Builder)
+        Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] quests done update id:" & .Id, 50)
 
         Call SaveCharacterInventorySkinsDB(UserIndex, QueryBreakdown)
         Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] inventory skins update id:" & .Id, 50)
