@@ -4213,7 +4213,7 @@ Public Function TryRepairFishingRod(ByVal UserIndex As Integer, ByVal oldSlot As
         'El hilo no puede reparar una caña con mayor power
         If powerRod > powerLine Then
             'Msg2170= El hilo no es lo suficientemente fuerte para reparar esta caña.
-            Call WriteLocaleMsg(UserIndex, 2170, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_THREAD_NOT_STRONG_ENOUGH, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
         
