@@ -169,9 +169,15 @@ End Function
 Public Function AddShieldToReference(ByRef SourceRef As t_AnyReference, ByVal ShieldSize As Long)
     If SourceRef.RefType = eUser Then
         Call IncreaseLong(UserList(SourceRef.ArrayIndex).Stats.shield, ShieldSize)
+        If UserList(SourceRef.ArrayIndex).Stats.shield < 0 Then
+            UserList(SourceRef.ArrayIndex).Stats.shield = 0
+        End If
         WriteUpdateHP (SourceRef.ArrayIndex)
     Else
         Call IncreaseLong(NpcList(SourceRef.ArrayIndex).Stats.shield, ShieldSize)
+        If NpcList(SourceRef.ArrayIndex).Stats.shield < 0 Then
+            NpcList(SourceRef.ArrayIndex).Stats.shield = 0
+        End If
         Call SendData(SendTarget.ToNPCAliveArea, SourceRef.ArrayIndex, PrepareMessageNpcUpdateHP(SourceRef.ArrayIndex))
     End If
 End Function

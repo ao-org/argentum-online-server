@@ -1799,6 +1799,7 @@ Public Type t_Hechizo
     StaffAffected As Boolean
     EotId As Integer
     SpellRequirementMask As Long
+    RequireArmor As Integer
     RequireWeaponType As e_WeaponType
     MaxLevelCasteable As Byte
     IsElementalTagsOnly As Boolean
@@ -1848,6 +1849,8 @@ Public Type t_EffectOverTime
     TickFX As Integer
     OnHitFx As Integer
     OnHitWav As Integer
+    OnRemoveFx As Integer
+    OnRemoveWav As Integer
     buffType As e_EffectType
     Override As Boolean
     PhysicalDamageReduction As Single
