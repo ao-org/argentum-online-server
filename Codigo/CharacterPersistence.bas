@@ -1250,24 +1250,24 @@ Public Sub UpdateSavedQuests(ByVal UserIndex As Integer)
         Next i
     End With
 End Sub
-
-Public Function HaveQuestsDoneChanged(ByVal UserIndex As Integer) As Boolean
+Public Function HaveQuestsDoneChanged(ByRef U As t_User) As Boolean
     Dim i As Long
     Dim savedCount As Long
-    With UserList(UserIndex)
-        savedCount = GetIntegerArrayLength(.Persist.LastQuestsDone)
-        If .QuestStats.NumQuestsDone <> savedCount Then
+
+    savedCount = GetIntegerArrayLength(U.Persist.LastQuestsDone)
+
+    If U.QuestStats.NumQuestsDone <> savedCount Then
+        HaveQuestsDoneChanged = True
+        Exit Function
+    End If
+
+    For i = 1 To U.QuestStats.NumQuestsDone
+        If GetIntegerArrayValue(U.QuestStats.QuestsDone, i) <> _
+           GetIntegerArrayValue(U.Persist.LastQuestsDone, i) Then
             HaveQuestsDoneChanged = True
             Exit Function
         End If
-
-        For i = 1 To .QuestStats.NumQuestsDone
-            If GetIntegerArrayValue(.QuestStats.QuestsDone, i) <> GetIntegerArrayValue(.Persist.LastQuestsDone, i) Then
-                HaveQuestsDoneChanged = True
-                Exit Function
-            End If
-        Next i
-    End With
+    Next i
 End Function
 
 Public Sub UpdateSavedQuestsDone(ByVal UserIndex As Integer)
