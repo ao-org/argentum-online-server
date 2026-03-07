@@ -2163,6 +2163,7 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, _
                 UserList(UserIndex).ConnectionDetails.IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
         Call LogEdicionPaquete("El usuario " & GetUserRealName(UserIndex) & " editó el paquete " & PacketName & ".")
         LastCount = ActualCount
+        Call WriteCerrarleCliente(UserIndex)
         Call CloseSocket(UserIndex)
         Exit Function
     End If
