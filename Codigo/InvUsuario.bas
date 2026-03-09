@@ -1809,7 +1809,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 End If
                 If Not .Stats.MinSta > 0 Then
                     'Msg2129=¡No tengo energía!
-                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
                     'Msg93=Estás muy cansado
                     Call WriteLocaleMsg(UserIndex, MSG_MUY_CANSADO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
@@ -1838,7 +1838,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 End If
                 If Not .Stats.MinSta > 0 Then
                     'Msg2129=¡No tengo energía!
-                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
                     'Msg93=Estás muy cansado
                     Call WriteLocaleMsg(UserIndex, MSG_MUY_CANSADO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
@@ -3003,7 +3003,7 @@ Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer
             End If
             If .MinSta > UserList(UserIndex).Stats.MinSta Then
                 'Msg2129=¡No tengo energía!
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
                 'Msg420=Estas muy cansado para realizar esta acción.
                 Call WriteLocaleMsg(UserIndex, MsgTiredToPerformAction, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub

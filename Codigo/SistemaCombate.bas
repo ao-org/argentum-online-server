@@ -906,7 +906,7 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
             'Msg93=Estás muy cansado
             Call WriteLocaleMsg(UserIndex, MSG_MUY_CANSADO, e_FontTypeNames.FONTTYPE_INFO)
             'Msg2129=¡No tengo energía!
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
             Exit Sub
         End If
         Call QuitarSta(UserIndex, RandomNumber(1, 10))

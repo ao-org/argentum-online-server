@@ -62,6 +62,12 @@ Public Const MSG_CANNOT_TRADE_IN_JAIL                          As Integer = 2111
 Public Const MSG_CANNOT_USE_HOME_IN_JAIL                       As Integer = 2112
 Public Const MAP_HOME_IN_JAIL                                  As Integer = 66
 Public Const MSG_QUEST_ALREADY_COMPLETED                       As Integer = 2114
+Public Const MSG_CANNOT_SUMMON_MORE_THAN_FIVE_CREATURES        As Integer = 2082
+Public Const MSG_NOT_INTERESTED_IN_TRADING                     As Integer = 2084
+Public Const MSG_NO_MISSION_FOR_YOU                            As Integer = 2085
+Public Const MSG_TOO_MANY_ACTIVE_MISSIONS                      As Integer = 2086
+Public Const MSG_NO_ENERGY                                     As Integer = 2129
+Public Const MSG_TOO_COLD                                      As Integer = 2130
 
 
 
