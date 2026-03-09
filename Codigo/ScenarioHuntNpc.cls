@@ -247,7 +247,7 @@ Private Sub IBaseScenario_PlayerKillNpc(ByVal NpcIndex As Integer, ByVal UserInd
             End If
         End If
     Else
-        Call WriteLocaleMsg(UserIndex, MSG_ID_402, FONTTYPE_INFO, ObjData(RequiredWeaponId).name)
+        Call WriteLocaleMsg(UserIndex, MSG_MUST_HIT_WITH_WEAPON_TO_SCORE_POINTS, FONTTYPE_INFO, ObjData(RequiredWeaponId).name)
     End If
     Call SpawnedCreaturesId.Remove(NpcIndex)
     Call SpawnNpc(npcType)

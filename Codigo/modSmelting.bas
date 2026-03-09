@@ -6,7 +6,7 @@ Public Function CanUserSmelt(ByVal UserIndex As Integer, ByVal ResourceType As e
     CanUserSmelt = False
     With UserList(UserIndex)
         If .clase <> e_Class.Trabajador Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_607, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_CLASS_LACKS_KNOWLEDGE_FOR_THIS_ORE, e_FontTypeNames.FONTTYPE_INFO)
             Call ResetUserAutomatedActions(UserIndex)
             Exit Function
         End If
@@ -15,7 +15,7 @@ Public Function CanUserSmelt(ByVal UserIndex As Integer, ByVal ResourceType As e
             Exit Function
         End If
         If Not CheckResourceDistance(UserIndex, MEDIUM_DISTANCE_EXTRACTION, TargetX, TargetY) Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_424, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_TOO_FAR_AWAY, e_FontTypeNames.FONTTYPE_INFO)
             Call ResetUserAutomatedActions(UserIndex)
             Exit Function
         End If
@@ -43,7 +43,7 @@ Public Sub SmeltMinerals(ByVal UserIndex As Integer)
         Dim RequiredSkill As Integer
         RequiredSkill = ObjData(.flags.TargetObjInvIndex).MinSkill
         If RequiredSkill > 100 Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_608, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MORTALS_CANNOT_SMELT_THIS_ORE, e_FontTypeNames.FONTTYPE_INFO)
             Call ResetUserAutomatedActions(UserIndex)
             Exit Sub
         End If

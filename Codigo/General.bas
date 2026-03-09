@@ -1229,7 +1229,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
             Damage = (1 + Damage * .Stats.MaxHp \ 100) ' Redondea para arriba
             If .ChatCombate = 1 Then
                 ' "El veneno te ha causado ¬1 puntos de daño."
-                Call WriteLocaleMsg(UserIndex, MSG_ID_390, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
+                Call WriteLocaleMsg(UserIndex, MSG_POISON_DEALT_DAMAGE, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
             End If
             If UserMod.ModifyHealth(UserIndex, -Damage) Then
                 Call CustomScenarios.UserDie(UserIndex)
@@ -1250,12 +1250,12 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
         ' 4 Mini intervalitos, dentro del intervalo total de incineracion
         If .Counters.Incineracion Mod (IntervaloIncineracion \ 4) = 0 Then
             ' "Te estás incinerando, si no te curas morirás.
-            Call WriteLocaleMsg(UserIndex, MSG_ID_392, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_YOU_ARE_BURNING_HEAL_OR_DIE, e_FontTypeNames.FONTTYPE_FIGHT)
             UserList(UserIndex).Counters.timeFx = 3
             Damage = RandomNumber(20, 30)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 73, 0, .pos.x, .pos.y))
             If .ChatCombate = 1 Then
-                Call WriteLocaleMsg(UserIndex, MSG_ID_391, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
+                Call WriteLocaleMsg(UserIndex, MSG_FIRE_DEALT_DAMAGE, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
             End If
             If UserMod.ModifyHealth(UserIndex, -Damage) Then
                 Call CustomScenarios.UserDie(UserIndex)

@@ -104,7 +104,7 @@ Public Function CanUserExtractResource(ByVal UserIndex As Integer, ByVal Resourc
         Exit Function
     End If
     If Not CheckResourceDistance(UserIndex, CLOSE_DISTANCE_EXTRACTION, TargetX, TargetY) Then
-        Call WriteLocaleMsg(UserIndex, MSG_ID_324, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_PORTAL_TO_DESTINATION, e_FontTypeNames.FONTTYPE_INFO)
         Exit Function
     End If
     CanUserExtractResource = True

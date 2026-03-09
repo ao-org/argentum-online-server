@@ -55,7 +55,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             If Damage > 0 Then
                 Call UserMod.DoDamageOrHeal(UserIndex, NpcIndex, eNpc, Damage, e_DamageSourceType.e_magic, Spell)
                 DamageStr = PonerPuntos(Damage)
-                Call WriteLocaleMsg(UserIndex, MSG_ID_32, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr)
+                Call WriteLocaleMsg(UserIndex, MSG_TARGET_RESTORED_HEALTH, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr)
             End If
         ElseIf IsSet(Hechizos(Spell).Effects, e_SpellEffects.eDoDamage) Then
             .Counters.EnCombate = IntervaloEnCombate
@@ -519,7 +519,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             End If
         End If
         If IsFeatureEnabled("healers_and_tanks") And .flags.DivineBlood > 0 And IsSet(Hechizos(HechizoIndex).Effects, e_SpellEffects.eDoDamage) Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_2095, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_DIVINE_BLOOD_ONLY_HEALING_SPELLS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
         If .flags.Privilegios And e_PlayerType.Consejero Then
@@ -615,7 +615,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             Exit Function
         End If
         If .Stats.MinMAN < GetSpellManaCostModifierByClass(UserIndex, Hechizos(HechizoIndex), HechizoIndex) Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_222, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NOT_ENOUGH_MANA, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
         If .Stats.MinSta < Hechizos(HechizoIndex).StaRequerido Then
@@ -678,7 +678,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
         End If
         If IsValidRef(TargetRef) Then
             If IsDead(TargetRef) And Not IsSet(Hechizos(HechizoIndex).SpellRequirementMask, e_SpellRequirementMask.eWorkOnDead) Then
-                Call WriteLocaleMsg(UserIndex, MSG_ID_7, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_USER_IS_DEAD, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
         End If
@@ -959,7 +959,7 @@ Sub HechizoMaterializacion(ByVal UserIndex As Integer, ByRef b As Boolean)
     If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).ObjInfo.amount > 0 Or MapData(UserList(UserIndex).pos.Map, _
             UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).Blocked Then
         b = False
-        Call WriteLocaleMsg(UserIndex, MSG_ID_262, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_NO_SPACE_ON_GROUND, e_FontTypeNames.FONTTYPE_INFO)
         ' Call WriteConsoleMsg(UserIndex, "Area invalida para lanzar este Hechizo!", e_FontTypeNames.FONTTYPE_INFO)
     Else
         MAT.amount = Hechizos(h).MaterializaCant
@@ -1613,7 +1613,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
     End If
     If IsSet(Hechizos(h).Effects, e_SpellEffects.Incinerate) Then
         If UserIndex = targetUserIndex Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
         If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
@@ -1662,12 +1662,12 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         If Not PeleaSegura(UserIndex, targetUserIndex) Then
             If Status(targetUserIndex) = 0 And Status(UserIndex) = 1 Or Status(targetUserIndex) = 2 And Status(UserIndex) = 1 Then
                 If esArmada(UserIndex) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_379, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_ARMADA_CANNOT_HELP_CRIMINALS, e_FontTypeNames.FONTTYPE_INFO)
                     b = False
                     Exit Sub
                 End If
                 If UserList(UserIndex).flags.Seguro Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_378, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_HELPING_CRIMINALS_MAKES_YOU_CRIMINAL, e_FontTypeNames.FONTTYPE_INFO)
                     b = False
                     Exit Sub
                 End If
@@ -1686,7 +1686,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
     End If
     If IsSet(Hechizos(h).Effects, e_SpellEffects.Curse) Then
         If UserIndex = targetUserIndex Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
         If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
@@ -1711,7 +1711,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
     End If
     If IsSet(Hechizos(h).Effects, e_SpellEffects.Paralize) Then
         If UserIndex = targetUserIndex Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
         If UserList(targetUserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
@@ -1755,7 +1755,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         End If
         If Hechizos(h).velocidad < 1 Then
             If UserIndex = targetUserIndex Then
-                Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
             If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
@@ -1764,12 +1764,12 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             If Not PeleaSegura(UserIndex, targetUserIndex) Then
                 If Status(targetUserIndex) = 0 And Status(UserIndex) = 1 Or Status(targetUserIndex) = 2 And Status(UserIndex) = 1 Then
                     If esArmada(UserIndex) Then
-                        Call WriteLocaleMsg(UserIndex, MSG_ID_379, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_ARMADA_CANNOT_HELP_CRIMINALS, e_FontTypeNames.FONTTYPE_INFO)
                         b = False
                         Exit Sub
                     End If
                     If UserList(UserIndex).flags.Seguro Then
-                        Call WriteLocaleMsg(UserIndex, MSG_ID_378, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_HELPING_CRIMINALS_MAKES_YOU_CRIMINAL, e_FontTypeNames.FONTTYPE_INFO)
                         b = False
                         Exit Sub
                     End If
@@ -1793,7 +1793,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
     End If
     If IsSet(Hechizos(h).Effects, e_SpellEffects.Immobilize) Then
         If UserIndex = targetUserIndex Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
         If Not UserMod.CanMove(UserList(targetUserIndex).flags, UserList(targetUserIndex).Counters) Then
@@ -1907,12 +1907,12 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             If Not PeleaSegura(UserIndex, targetUserIndex) Then
                 If Status(targetUserIndex) = 0 And Status(UserIndex) = 1 Or Status(targetUserIndex) = 2 And Status(UserIndex) = 1 Then
                     If esArmada(UserIndex) Then
-                        Call WriteLocaleMsg(UserIndex, MSG_ID_379, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_ARMADA_CANNOT_HELP_CRIMINALS, e_FontTypeNames.FONTTYPE_INFO)
                         b = False
                         Exit Sub
                     End If
                     If UserList(UserIndex).flags.Seguro Then
-                        Call WriteLocaleMsg(UserIndex, MSG_ID_378, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_HELPING_CRIMINALS_MAKES_YOU_CRIMINAL, e_FontTypeNames.FONTTYPE_INFO)
                         b = False
                         Exit Sub
                     End If
@@ -2028,7 +2028,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
     End If
     If IsSet(Hechizos(h).Effects, e_SpellEffects.Blindness) Then
         If UserIndex = targetUserIndex Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
         If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
@@ -2043,7 +2043,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
     End If
     If IsSet(Hechizos(h).Effects, e_SpellEffects.Dumb) Then
         If UserIndex = targetUserIndex Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
         If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
@@ -2191,7 +2191,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
             Call AnimacionIdle(NpcIndex, False)
             b = True
         Else
-            Call WriteLocaleMsg(UserIndex, MSG_ID_381, e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteLocaleMsg(UserIndex, MSG_NPC_IMMUNE_TO_THIS_SPELL, e_FontTypeNames.FONTTYPE_INFOIAO)
             b = False
             Exit Sub
         End If
@@ -2236,7 +2236,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
             Call InfoHechizo(UserIndex)
             b = True
         Else
-            Call WriteLocaleMsg(UserIndex, MSG_ID_381, e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteLocaleMsg(UserIndex, MSG_NPC_IMMUNE_TO_THIS_SPELL, e_FontTypeNames.FONTTYPE_INFOIAO)
         End If
     End If
     If Hechizos(hIndex).Mimetiza = 1 Then
@@ -2317,7 +2317,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
             Call NPCs.DoDamageOrHeal(NpcIndex, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, hIndex)
             If Damage > 0 Then
                 DamageStr = PonerPuntos(Damage)
-                Call WriteLocaleMsg(UserIndex, MSG_ID_388, e_FontTypeNames.FONTTYPE_FIGHT, "la criatura¬" & DamageStr)
+                Call WriteLocaleMsg(UserIndex, MSG_HEALED_TARGET_HP, e_FontTypeNames.FONTTYPE_FIGHT, "la criatura¬" & DamageStr)
             End If
             b = True
         Else
@@ -2328,15 +2328,15 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
     ElseIf IsSet(Hechizos(hIndex).Effects, e_SpellEffects.eDoDamage) Then
         If Hechizos(hIndex).IsElementalTagsOnly Then
             If NpcList(NpcIndex).flags.ElementalTags = 0 Then
-                Call WriteLocaleMsg(UserIndex, MSG_ID_2125, e_FontTypeNames.FONTTYPE_INFOIAO)
+                Call WriteLocaleMsg(UserIndex, MSG_SPELL_ONLY_ON_ELEMENTAL_NPC, e_FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
             End If
             If UserList(UserIndex).invent.EquippedWeaponObjIndex = 0 Then
-                Call WriteLocaleMsg(UserIndex, MSG_ID_2126, e_FontTypeNames.FONTTYPE_INFOIAO)
+                Call WriteLocaleMsg(UserIndex, MSG_SPELL_REQUIRES_ELEMENTAL_WEAPON, e_FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
             Else
                 If ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).ElementalTags = 0 And UserList(UserIndex).invent.Object(UserList(UserIndex).invent.EquippedWeaponSlot).ElementalTags = 0 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_2126, e_FontTypeNames.FONTTYPE_INFOIAO)
+                    Call WriteLocaleMsg(UserIndex, MSG_SPELL_REQUIRES_ELEMENTAL_WEAPON, e_FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
                 End If
             End If
@@ -3004,12 +3004,12 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
         If Not PeleaSegura(UserIndex, tempChr) Then
             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
                 If esArmada(UserIndex) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_379, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_ARMADA_CANNOT_HELP_CRIMINALS, e_FontTypeNames.FONTTYPE_INFO)
                     b = False
                     Exit Sub
                 End If
                 If UserList(UserIndex).flags.Seguro Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_378, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_HELPING_CRIMINALS_MAKES_YOU_CRIMINAL, e_FontTypeNames.FONTTYPE_INFO)
                     b = False
                     Exit Sub
                 End If
@@ -3031,15 +3031,15 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
         Call UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, h)
         DamageStr = PonerPuntos(Damage)
         If UserIndex <> tempChr Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_388, e_FontTypeNames.FONTTYPE_FIGHT, UserList(tempChr).name & "¬" & DamageStr)
-            Call WriteLocaleMsg(tempChr, MSG_ID_32, e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).name & "¬" & DamageStr)
+            Call WriteLocaleMsg(UserIndex, MSG_HEALED_TARGET_HP, e_FontTypeNames.FONTTYPE_FIGHT, UserList(tempChr).name & "¬" & DamageStr)
+            Call WriteLocaleMsg(tempChr, MSG_TARGET_RESTORED_HEALTH, e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).name & "¬" & DamageStr)
         Else
-            Call WriteLocaleMsg(UserIndex, MSG_ID_33, e_FontTypeNames.FONTTYPE_FIGHT, DamageStr)
+            Call WriteLocaleMsg(UserIndex, MSG_SELF_RESTORED_HEALTH, e_FontTypeNames.FONTTYPE_FIGHT, DamageStr)
         End If
         b = True
     ElseIf IsSet(Hechizos(h).Effects, e_SpellEffects.eDoDamage) Then
         If UserIndex = tempChr Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
         If Not PuedeAtacar(UserIndex, tempChr) Then Exit Sub
@@ -3168,12 +3168,12 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         If Not PeleaSegura(UserIndex, targetUserIndex) Then
             If Status(targetUserIndex) = 0 And Status(UserIndex) = 1 Or Status(targetUserIndex) = 2 And Status(UserIndex) = 1 Then
                 If esArmada(UserIndex) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_379, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_ARMADA_CANNOT_HELP_CRIMINALS, e_FontTypeNames.FONTTYPE_INFO)
                     b = False
                     Exit Sub
                 End If
                 If UserList(UserIndex).flags.Seguro Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_378, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_HELPING_CRIMINALS_MAKES_YOU_CRIMINAL, e_FontTypeNames.FONTTYPE_INFO)
                     b = False
                     Exit Sub
                 Else
@@ -3211,12 +3211,12 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         If Not PeleaSegura(UserIndex, targetUserIndex) Then
             If Status(targetUserIndex) = 0 And Status(UserIndex) = 1 Or Status(targetUserIndex) = 2 And Status(UserIndex) = 1 Then
                 If esArmada(UserIndex) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_379, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_ARMADA_CANNOT_HELP_CRIMINALS, e_FontTypeNames.FONTTYPE_INFO)
                     b = False
                     Exit Sub
                 End If
                 If UserList(UserIndex).flags.Seguro Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_378, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_HELPING_CRIMINALS_MAKES_YOU_CRIMINAL, e_FontTypeNames.FONTTYPE_INFO)
                     b = False
                     Exit Sub
                 End If
@@ -3260,12 +3260,12 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         If Not PeleaSegura(UserIndex, targetUserIndex) Then
             If Status(targetUserIndex) = 0 And Status(UserIndex) = 1 Or Status(targetUserIndex) = 2 And Status(UserIndex) = 1 Then
                 If esArmada(UserIndex) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_379, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_ARMADA_CANNOT_HELP_CRIMINALS, e_FontTypeNames.FONTTYPE_INFO)
                     b = False
                     Exit Sub
                 End If
                 If UserList(UserIndex).flags.Seguro Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_378, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_HELPING_CRIMINALS_MAKES_YOU_CRIMINAL, e_FontTypeNames.FONTTYPE_INFO)
                     b = False
                     Exit Sub
                 End If
@@ -3288,7 +3288,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         b = True
     ElseIf IsSet(Hechizos(h).Effects, e_SpellEffects.eDoDamage) Then ' Damage
         If UserIndex = targetUserIndex Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
         If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
@@ -3484,7 +3484,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
     End If
     If IsSet(Hechizos(h).Effects, e_SpellEffects.Incinerate) Then
         If UserIndex = tU Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
@@ -3508,12 +3508,12 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         If Not PeleaSegura(UserIndex, tU) Then
             If Status(tU) = 0 And Status(UserIndex) = 1 Or Status(tU) = 2 And Status(UserIndex) = 1 Then
                 If esArmada(UserIndex) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_379, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_ARMADA_CANNOT_HELP_CRIMINALS, e_FontTypeNames.FONTTYPE_INFO)
                     b = False
                     Exit Sub
                 End If
                 If UserList(UserIndex).flags.Seguro Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_378, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_HELPING_CRIMINALS_MAKES_YOU_CRIMINAL, e_FontTypeNames.FONTTYPE_INFO)
                     b = False
                     Exit Sub
                 End If
@@ -3532,7 +3532,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
     End If
     If IsSet(Hechizos(h).Effects, e_SpellEffects.Curse) Then
         If UserIndex = tU Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
@@ -3557,7 +3557,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
     End If
     If IsSet(Hechizos(h).Effects, e_SpellEffects.Paralize) Then
         If UserIndex = tU Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
@@ -3575,7 +3575,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
     End If
     If IsSet(Hechizos(h).Effects, e_SpellEffects.Immobilize) Then
         If UserIndex = tU Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
@@ -3596,12 +3596,12 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         If Not PeleaSegura(UserIndex, tU) Then
             If Status(tU) = 0 And Status(UserIndex) = 1 Or Status(tU) = 2 And Status(UserIndex) = 1 Then
                 If esArmada(UserIndex) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_379, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_ARMADA_CANNOT_HELP_CRIMINALS, e_FontTypeNames.FONTTYPE_INFO)
                     b = False
                     Exit Sub
                 End If
                 If UserList(UserIndex).flags.Seguro Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_378, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_HELPING_CRIMINALS_MAKES_YOU_CRIMINAL, e_FontTypeNames.FONTTYPE_INFO)
                     b = False
                     Exit Sub
                 Else
@@ -3632,7 +3632,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
     End If
     If IsSet(Hechizos(h).Effects, e_SpellEffects.Blindness) Then
         If UserIndex = tU Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
@@ -3647,7 +3647,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
     End If
     If IsSet(Hechizos(h).Effects, e_SpellEffects.Dumb) Then
         If UserIndex = tU Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
@@ -3665,7 +3665,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
     If Hechizos(h).velocidad <> 0 Then
         If Hechizos(h).velocidad < 1 Then
             If UserIndex = tU Then
-                Call WriteLocaleMsg(UserIndex, MSG_ID_380, e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
             If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
@@ -4126,7 +4126,7 @@ Public Sub UseSpellSlot(ByVal UserIndex As Integer, ByVal spellSlot As Integer)
         End If
         .flags.Hechizo = spellSlot
         If UserMod.IsStun(.flags, .Counters) Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_394, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_CAST_SPELL_STUNNED, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .flags.Hechizo < 1 Or .flags.Hechizo > MAXUSERHECHIZOS Then

@@ -438,7 +438,7 @@ Sub DropObj(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal num As Integer
                         End If
                     End If
                 Else
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_262, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_SPACE_ON_GROUND, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Else
                 Call QuitarUserInvItem(UserIndex, Slot, num)
@@ -1676,7 +1676,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     With UserList(UserIndex)
         If .invent.Object(Slot).amount = 0 Then Exit Sub
         If Not CanUseItem(.flags, .Counters) Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_395, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_USE_ITEMS_STUNNED, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
@@ -1774,7 +1774,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         .Stats.JineteLevel = obj.JineteLevel
                     Else
                         'Msg2080 = No puedes consumir un nivel de jinete menor al que posees actualmente
-                        Call WriteLocaleMsg(UserIndex, MSG_ID_2079, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_CANNOT_CONSUME_LOWER_MOUNT_LEVEL, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 End If
@@ -1846,7 +1846,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 'Solo si es herramienta ;) (en realidad si no es ni proyectil ni daga)
                 If ObjData(.invent.Object(Slot).ObjIndex).OBJType <> otMinerals Then
                     If .invent.Object(Slot).Equipped = 0 Then
-                        Call WriteLocaleMsg(UserIndex, MSG_ID_376, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_MUST_EQUIP_TOOL_FIRST, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 End If
@@ -1923,7 +1923,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Case e_PotionType.ModifiesHp     'Poción roja, restaura HP
                         ' Usa el ítem
                         If .flags.DivineBlood > 0 Then
-                            Call WriteLocaleMsg(UserIndex, MSG_ID_2096, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_DIVINE_BLOOD_CANNOT_MIX_WITH_MORTAL_BLOOD, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         Dim HealingAmount As Long
@@ -3451,15 +3451,15 @@ Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal Targe
         Exit Function
     End If
     If TargetObj.ElementalTags <> e_ElementalTags.Normal Then
-        Call WriteLocaleMsg(UserIndex, MSG_ID_2087, e_FontTypeNames.FONTTYPE_INFOIAO)
+        Call WriteLocaleMsg(UserIndex, MSG_ITEM_ALREADY_HAS_ELEMENTAL_TAG, e_FontTypeNames.FONTTYPE_INFOIAO)
         Exit Function
     End If
     If UserList(UserIndex).invent.Object(TargetSlot).ElementalTags <> e_ElementalTags.Normal Then
-        Call WriteLocaleMsg(UserIndex, MSG_ID_2087, e_FontTypeNames.FONTTYPE_INFOIAO)
+        Call WriteLocaleMsg(UserIndex, MSG_ITEM_ALREADY_HAS_ELEMENTAL_TAG, e_FontTypeNames.FONTTYPE_INFOIAO)
         Exit Function
     End If
     If UserList(UserIndex).invent.Object(TargetSlot).amount > 1 Then
-        Call WriteLocaleMsg(UserIndex, MSG_ID_2088, e_FontTypeNames.FONTTYPE_INFOIAO)
+        Call WriteLocaleMsg(UserIndex, MSG_CANNOT_APPLY_ELEMENT_TO_STACKED_ITEMS, e_FontTypeNames.FONTTYPE_INFOIAO)
         Exit Function
     End If
     Select Case SourceObj.ElementalTags
