@@ -4191,3 +4191,72 @@ Public Sub ValidateEquippedArrow(ByVal UserIndex As Integer)
 ValidateEquippedArrow_Error:
     Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.ValidateEquippedArrow", Erl())
 End Sub
+Public Function TryRepairFishingRod(ByVal UserIndex As Integer, ByVal oldSlot As Byte, ByVal newSlot As Byte) As Boolean
+    On Error GoTo TryRepairFishingRod_Error
+    Dim objRod As t_Obj
+    Dim rodObjIndex As Integer
+    Dim powerLine As Integer
+    Dim powerRod As Integer
+    Dim repairedObjIndex As Integer
+    Dim lineSlot As Byte
+    Dim rodSlot As Byte
+    
+    With UserList(UserIndex)
+    
+        'Validar que ambos slots tengan un objeto
+        If .invent.Object(oldSlot).ObjIndex <= 0 Then Exit Function
+        If .invent.Object(newSlot).ObjIndex <= 0 Then Exit Function
+    
+        'Determinar qué slot es hilo y cuál es caña (permitir ambas direcciones de arrastre)
+        If ObjData(.invent.Object(oldSlot).ObjIndex).Subtipo = FishingLine Then
+            lineSlot = oldSlot
+            rodSlot = newSlot
+        ElseIf ObjData(.invent.Object(newSlot).ObjIndex).Subtipo = FishingLine Then
+            lineSlot = newSlot
+            rodSlot = oldSlot
+        Else
+            Exit Function
+        End If
+    
+        'Validar que el hilo sea una herramienta de trabajo
+        If ObjData(.invent.Object(lineSlot).ObjIndex).OBJType <> otWorkingTools Then Exit Function
+                
+        'Debe ser caña rota reparable
+        rodObjIndex = .invent.Object(rodSlot).ObjIndex
+        If rodObjIndex > UBound(ObjData) Then Exit Function
+        
+        repairedObjIndex = ObjData(rodObjIndex).RepairTo
+        If repairedObjIndex <= 0 Then Exit Function
+        If repairedObjIndex > UBound(ObjData) Then Exit Function
+                
+        powerLine = ObjData(.invent.Object(lineSlot).ObjIndex).Power
+        powerRod = ObjData(repairedObjIndex).Power
+        
+        'El hilo no puede reparar una caña con mayor power
+        If powerRod > powerLine Then
+            'Msg2170= El hilo no es lo suficientemente fuerte para reparar esta caña.
+            Call WriteLocaleMsg(UserIndex, MSG_THREAD_NOT_STRONG_ENOUGH, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+        
+        'Objeto reparado
+        objRod.ObjIndex = repairedObjIndex
+        objRod.Amount = 1
+        
+        'Quitamos hilo
+        Call QuitarUserInvItem(UserIndex, lineSlot, 1)
+        Call UpdateUserInv(False, UserIndex, lineSlot)
+        
+        'Quitamos caña rota
+        Call QuitarUserInvItem(UserIndex, rodSlot, 1)
+        Call UpdateUserInv(False, UserIndex, rodSlot)
+        
+        'Agregamos caña reparada, MeterItemEnInventario se encarga de actualizar el inventario del cliente
+        Call MeterItemEnInventario(UserIndex, objRod)
+        
+        TryRepairFishingRod = True
+    End With
+    Exit Function
+TryRepairFishingRod_Error:
+    Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.TryRepairFishingRod", Erl())
+End Function
