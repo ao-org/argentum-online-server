@@ -2544,7 +2544,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     Call QuitarSta(UserIndex, RandomNumber(1, 10))
                 Else
                     'Msg2129=¡No tengo energía!
-                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
                     'Msg1128= Estás muy cansado para luchar.
                     Call WriteLocaleMsg(UserIndex, MSG_MUY_CANSADO_LUCHAR, e_FontTypeNames.FONTTYPE_INFO)
                     Call WriteWorkRequestTarget(UserIndex, 0)
@@ -2917,7 +2917,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 If .Stats.MinSta < ObjData(.invent.Object(.flags.TargetObjInvSlot).ObjIndex).MinSta Then
                     Call WriteLocaleMsg(UserIndex, MsgNotEnoughtStamina, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg2129=¡No tengo energía!
-                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
                     Exit Sub
                 End If
                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, x, y)
@@ -3156,7 +3156,7 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
                 End If
             End If
         Else
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareLocalizedChatOverHead(2082, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareLocalizedChatOverHead(MSG_CANNOT_SUMMON_MORE_THAN_FIVE_CREATURES, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
         End If
     End With
     Exit Sub
@@ -3184,7 +3184,7 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
         If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
         'íEl NPC puede comerciar?
         If NpcList(.flags.TargetNPC.ArrayIndex).Comercia = 0 Then
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareLocalizedChatOverHead(2084, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareLocalizedChatOverHead(MSG_NOT_INTERESTED_IN_TRADING, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
             Exit Sub
         End If
         'Only if in commerce mode....
@@ -3252,7 +3252,7 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
         If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
         'íEl NPC puede comerciar?
         If NpcList(.flags.TargetNPC.ArrayIndex).Comercia = 0 Then
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareLocalizedChatOverHead(2084, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareLocalizedChatOverHead(MSG_NOT_INTERESTED_IN_TRADING, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
             Exit Sub
         End If
         'User compra el item del slot
@@ -7042,10 +7042,10 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
     End If
     'El NPC hace quests?
     If NpcList(NpcIndex).NumQuest = 0 Then
-        Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2085, NpcList(NpcIndex).Char.charindex, vbWhite))
+        Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_MISSION_FOR_YOU, NpcList(NpcIndex).Char.charindex, vbWhite))
         Exit Sub
     End If
-    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2086, NpcList(NpcIndex).Char.charindex, vbWhite))
+    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_TOO_MANY_ACTIVE_MISSIONS, NpcList(NpcIndex).Char.charindex, vbWhite))
     Exit Sub
 HandleQuest_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuest", Erl)

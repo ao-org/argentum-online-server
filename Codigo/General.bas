@@ -846,7 +846,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
         Else
             If MapInfo(.pos.Map).terrain = Nieve Then
                 'Msg2130=¡Tengo mucho frío!
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2130, UserList(UserIndex).Char.charindex, vbWhite))
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_TOO_COLD, UserList(UserIndex).Char.charindex, vbWhite))
                 ' Msg512=¡Estás muriendo de frío, abrígate o morirás!
                 Call WriteLocaleMsg(UserIndex, MSG_MURIENDO_FRIO_ABRIGATE_MORIRAS, e_FontTypeNames.FONTTYPE_INFO)
                 '  Sin ropa perdés vida más rápido que con una ropa no-invernal
