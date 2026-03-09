@@ -2401,7 +2401,7 @@ Public Type t_ObjData
     RequiereObjeto                  As Integer
     BowCategory As Byte
     ArrowCategory As Byte
-    RepairTo As Integer
+    RepairTo As Integer ' ObjIndex of the item granted when this object is repaired.
 End Type
 
 '[Pablo ToxicWaste]

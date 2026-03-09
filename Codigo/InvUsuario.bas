@@ -4197,18 +4197,40 @@ Public Function TryRepairFishingRod(ByVal UserIndex As Integer, ByVal oldSlot As
     Dim rodObjIndex As Integer
     Dim powerLine As Integer
     Dim powerRod As Integer
+    Dim repairedObjIndex As Integer
+    Dim lineSlot As Byte
+    Dim rodSlot As Byte
     
     With UserList(UserIndex)
-        'Debe ser hilo de pesca
-        If ObjData(.invent.Object(oldSlot).ObjIndex).OBJType <> otWorkingTools Then Exit Function
-        If ObjData(.invent.Object(oldSlot).ObjIndex).Subtipo <> FishingLine Then Exit Function
+    
+        'Validar que ambos slots tengan un objeto
+        If .invent.Object(oldSlot).ObjIndex <= 0 Then Exit Function
+        If .invent.Object(newSlot).ObjIndex <= 0 Then Exit Function
+    
+        'Determinar qué slot es hilo y cuál es caña (permitir ambas direcciones de arrastre)
+        If ObjData(.invent.Object(oldSlot).ObjIndex).Subtipo = FishingLine Then
+            lineSlot = oldSlot
+            rodSlot = newSlot
+        ElseIf ObjData(.invent.Object(newSlot).ObjIndex).Subtipo = FishingLine Then
+            lineSlot = newSlot
+            rodSlot = oldSlot
+        Else
+            Exit Function
+        End If
+    
+        'Validar que el hilo sea una herramienta de trabajo
+        If ObjData(.invent.Object(lineSlot).ObjIndex).OBJType <> otWorkingTools Then Exit Function
                 
         'Debe ser caña rota reparable
-        rodObjIndex = .invent.Object(newSlot).ObjIndex
-        If ObjData(rodObjIndex).RepairTo <= 0 Then Exit Function
+        rodObjIndex = .invent.Object(rodSlot).ObjIndex
+        If rodObjIndex > UBound(ObjData) Then Exit Function
+        
+        repairedObjIndex = ObjData(rodObjIndex).RepairTo
+        If repairedObjIndex <= 0 Then Exit Function
+        If repairedObjIndex > UBound(ObjData) Then Exit Function
                 
-        powerLine = ObjData(.invent.Object(oldSlot).ObjIndex).Power
-        powerRod = ObjData(ObjData(rodObjIndex).RepairTo).Power
+        powerLine = ObjData(.invent.Object(lineSlot).ObjIndex).Power
+        powerRod = ObjData(repairedObjIndex).Power
         
         'El hilo no puede reparar una caña con mayor power
         If powerRod > powerLine Then
@@ -4218,18 +4240,18 @@ Public Function TryRepairFishingRod(ByVal UserIndex As Integer, ByVal oldSlot As
         End If
         
         'Objeto reparado
-        objRod.ObjIndex = ObjData(rodObjIndex).RepairTo
+        objRod.ObjIndex = repairedObjIndex
         objRod.Amount = 1
         
         'Quitamos hilo
-        Call QuitarUserInvItem(UserIndex, oldSlot, 1)
-        Call UpdateUserInv(False, UserIndex, oldSlot)
+        Call QuitarUserInvItem(UserIndex, lineSlot, 1)
+        Call UpdateUserInv(False, UserIndex, lineSlot)
         
         'Quitamos caña rota
-        Call QuitarUserInvItem(UserIndex, newSlot, 1)
-        Call UpdateUserInv(False, UserIndex, newSlot)
+        Call QuitarUserInvItem(UserIndex, rodSlot, 1)
+        Call UpdateUserInv(False, UserIndex, rodSlot)
         
-        'Agregamos caña reparada
+        'Agregamos caña reparada, MeterItemEnInventario se encarga de actualizar el inventario del cliente
         Call MeterItemEnInventario(UserIndex, objRod)
         
         TryRepairFishingRod = True
