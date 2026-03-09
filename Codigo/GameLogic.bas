@@ -1030,23 +1030,23 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             Else
                 If ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otOreDeposit Then
                     Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
-                    Call WriteLocaleMsg(UserIndex, 1618, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(Map, UserList( _
+                    Call WriteLocaleMsg(UserIndex, MSG_MINERALES_DISPONIBLES, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(Map, UserList( _
                             UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount))   'Msg1618=¬1 - (Minerales disponibles: ¬2)
                 ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otTrees Then
                     Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
-                    Call WriteLocaleMsg(UserIndex, 1619, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(Map, UserList( _
+                    Call WriteLocaleMsg(UserIndex, MSG_RECURSOS_DISPONIBLES, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(Map, UserList( _
                             UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount)) 'Msg1619=¬1 - (Recursos disponibles: ¬2)
                 ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otTeleport Then
                     If MapData(Map, x, y).TileExit.Map > 0 Then
                         If LenB(MapInfo(MapData(Map, x, y).TileExit.Map).map_name) <> 0 Then
-                            Call WriteLocaleMsg(UserIndex, 1620, e_FontTypeNames.FONTTYPE_INFO, MapInfo(MapData(Map, x, y).TileExit.Map).map_name) 'Msg1620=Portal a ¬1
+                            Call WriteLocaleMsg(UserIndex, MSG_PORTAL, e_FontTypeNames.FONTTYPE_INFO, MapInfo(MapData(Map, x, y).TileExit.Map).map_name) 'Msg1620=Portal a ¬1
                         Else
                             'Msg492=Portal a un mapa desconocido...
-                            Call WriteLocaleMsg(UserIndex, 492, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_PORTAL_MAPA_DESCONOCIDO, e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     Else
                         'Msg493=Portal hacia la quinta dimensión
-                        Call WriteLocaleMsg(UserIndex, 493, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_PORTAL_HACIA_QUINTA_DIMENSION, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
                     Call WriteConsoleMsg(UserIndex, "O*" & UserList(UserIndex).flags.TargetObj & "*", e_FontTypeNames.FONTTYPE_INFO)
@@ -1096,7 +1096,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                         'if im not dead or (i have guild and the target is a guildmate) or im clicking myself
                         If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(TempCharIndex).GuildIndex) _
                                 Or UserIndex = TempCharIndex Then
-                            Call WriteLocaleMsg(UserIndex, 1105, ft, extraStrings & "¬" & Statuses & "¬" & FactionStatuses)
+                            Call WriteLocaleMsg(UserIndex, MSG_ID_1105, ft, extraStrings & "¬" & Statuses & "¬" & FactionStatuses)
                         End If
                     End If
                     FoundSomething = 1
@@ -1134,13 +1134,13 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             ElseIf IsValidUserRef(NpcList(TempCharIndex).MaestroUser) Then
                 If UserList(UserIndex).flags.Muerto = 0 Then
                     estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex, NpcStatusMask)
-                    Call WriteLocaleMsg(UserIndex, 1621, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
+                    Call WriteLocaleMsg(UserIndex, MSG_NPC_MASCOTA, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
                             estatus & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).name)  'Msg1621=NPC ¬1 ¬2 es mascota de ¬3
                 End If
             Else
                 If UserList(UserIndex).flags.Muerto = 0 Then
                     estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex, NpcStatusMask)
-                    Call WriteLocaleMsg(UserIndex, 1622, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
+                    Call WriteLocaleMsg(UserIndex, MSG_NPC, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
                             estatus)  'Msg1622=NPC ¬1 ¬2
                 End If
             End If
@@ -1166,7 +1166,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                                         Call WriteUpdateNPCSimbolo(UserIndex, TempCharIndex, 1)
                                         Call WriteLocaleChatOverHead(UserIndex, 1353, "", NpcList(TempCharIndex).Char.charindex, vbYellow) ' Msg1353=¡Quest Finalizada!
                                         ' Msg494=Quest Finalizada!
-                                        Call WriteLocaleMsg(UserIndex, 494, e_FontTypeNames.FONTTYPE_INFOIAO)
+                                        Call WriteLocaleMsg(UserIndex, MSG_QUEST_FINALIZADA, e_FontTypeNames.FONTTYPE_INFOIAO)
                                     End If
                                 End If
                             Next j
@@ -1190,7 +1190,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             UserList(UserIndex).flags.TargetObjX = 0
             UserList(UserIndex).flags.TargetObjY = 0
             'Msg1114= No ves nada interesante.
-            Call WriteLocaleMsg(UserIndex, 1114, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_VES_NADA_INTERESANTE_1114, e_FontTypeNames.FONTTYPE_INFO)
         End If
     Else
         If FoundSomething = 0 Then
@@ -1202,7 +1202,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             UserList(UserIndex).flags.TargetObjX = 0
             UserList(UserIndex).flags.TargetObjY = 0
             'Msg1106= No ves nada interesante.
-            Call WriteLocaleMsg(UserIndex, 1106, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_VES_NADA_INTERESANTE, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End If
     Exit Sub
@@ -1467,7 +1467,7 @@ Public Sub ResucitarOCurar(ByVal UserIndex As Integer)
         UserList(UserIndex).Counters.timeFx = 3
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.charindex, 35, 1, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         ' Msg495=¡¡Hás sido resucitado!!
-        Call WriteLocaleMsg(UserIndex, 495, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_SIDO_RESUCITADO, e_FontTypeNames.FONTTYPE_INFO)
     ElseIf UserList(UserIndex).Stats.MinHp < UserList(UserIndex).Stats.MaxHp Then
         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
         UserList(UserIndex).flags.Envenenado = False
@@ -1476,7 +1476,7 @@ Public Sub ResucitarOCurar(ByVal UserIndex As Integer)
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.charindex, 9, 1, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(18, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         ' Msg496=¡¡Hás sido curado!!
-        Call WriteLocaleMsg(UserIndex, 496, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_SIDO_CURADO, e_FontTypeNames.FONTTYPE_INFO)
     End If
 End Sub
 
@@ -1613,31 +1613,31 @@ Public Sub SendrequiredItemMessage(ByVal UserIndex As Integer, ByVal itemMask As
     Select Case itemMask
         Case e_SpellRequirementMask.eArmor
             ' Msg497=Necesitás una armadura
-            Call WriteLocaleMsg(UserIndex, 497, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ARMADURA, Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eHelm
             ' Msg564=Necesitás un casco
-            Call WriteLocaleMsg(UserIndex, 564, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_CASCO, Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eKnucle
             ' Msg565=Necesitás unos nudillos
-            Call WriteLocaleMsg(UserIndex, 565, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_NUDILLOS, Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eMagicItem
             ' Msg566=Necesitás un objeto magico
-            Call WriteLocaleMsg(UserIndex, 566, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_OBJETO_MAGICO, Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eProjectile
             ' Msg567=Necesitás municiones
-            Call WriteLocaleMsg(UserIndex, 567, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_MUNICIONES, Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eShield
             ' Msg568=Necesitás un escudo
-            Call WriteLocaleMsg(UserIndex, 568, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ESCUDO, Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eShip
             ' Msg569=Necesitás un barco
-            Call WriteLocaleMsg(UserIndex, 569, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_BARCO, Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eTool
             ' Msg570=Necesitás una herramienta
-            Call WriteLocaleMsg(UserIndex, 570, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_HERRAMIENTA, Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eWeapon
             ' Msg571=Necesitás un arma
-            Call WriteLocaleMsg(UserIndex, 571, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ARMA, Message, e_FontTypeNames.FONTTYPE_INFO)
     End Select
 End Sub
 
@@ -1659,58 +1659,58 @@ Public Sub SendAttackInteractionMessage(ByVal UserIndex As Integer, ByVal CanAtt
         Case e_AttackInteractionResult.eCanAttack
             'Do nothing
         Case e_AttackInteractionResult.eDeathAttacker
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
         Case e_AttackInteractionResult.eFightActive
             ' Msg498=No podés atacar en este momento.
-            Call WriteLocaleMsg(UserIndex, 498, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_MOMENTO, e_FontTypeNames.FONTTYPE_INFO)
         Case e_AttackInteractionResult.eDeathTarget
             ' Msg499=No podés atacar a un espiritu.
-            Call WriteLocaleMsg(UserIndex, 499, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_ESPIRITU, e_FontTypeNames.FONTTYPE_INFO)
         Case e_AttackInteractionResult.eSameGroup
             ' Msg500=No podés atacar a un miembro de tu grupo.
-            Call WriteLocaleMsg(UserIndex, 500, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_MIEMBRO_GRUPO, e_FontTypeNames.FONTTYPE_INFO)
         Case e_AttackInteractionResult.eTalkWithMaster
             ' Msg501=No podés atacar usuarios mientras estás en consulta.
-            Call WriteLocaleMsg(UserIndex, 501, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_USUARIOS_MIENTRAS_CONSULTA, e_FontTypeNames.FONTTYPE_INFO)
         Case e_AttackInteractionResult.eAttackerIsCursed
             ' Msg502=No podés atacar usuarios mientras estás en consulta.
-            Call WriteLocaleMsg(UserIndex, 502, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_USUARIOS_MIENTRAS_CONSULTA_502, e_FontTypeNames.FONTTYPE_INFO)
         Case e_AttackInteractionResult.eMounted
             ' Msg503=No podés atacar usando una montura.
-            Call WriteLocaleMsg(UserIndex, 503, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_USANDO_MONTURA, e_FontTypeNames.FONTTYPE_INFO)
         Case e_AttackInteractionResult.eSameTeam
             ' Msg504=No podes atacar un miembro de tu equipo.
-            Call WriteLocaleMsg(UserIndex, 504, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_MIEMBRO_EQUIPO, e_FontTypeNames.FONTTYPE_WARNING)
         Case e_AttackInteractionResult.eNotEnougthPrivileges
             ' Msg505=El ser es demasiado poderoso.
-            Call WriteLocaleMsg(UserIndex, 505, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_DEMASIADO_PODEROSO, e_FontTypeNames.FONTTYPE_WARNING)
         Case e_AttackInteractionResult.eSameClan
             ' Msg506=No podes atacar a un miembro de tu clan.
-            Call WriteLocaleMsg(UserIndex, 506, e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_MIEMBRO_CLAN, e_FontTypeNames.FONTTYPE_INFOIAO)
         Case e_AttackInteractionResult.eSameFaction
             Call WriteLocaleMsg(UserIndex, MsgFacctionForbidAttack, e_FontTypeNames.FONTTYPE_INFOIAO)
         Case e_AttackInteractionResult.eRemoveSafe
             Call WriteLocaleMsg(UserIndex, MsgRemoveSafeToAttack, e_FontTypeNames.FONTTYPE_INFOIAO)
         Case e_AttackInteractionResult.eSafeArea
             ' Msg572=Esta es una zona segura, aquí no podés atacar otros usuarios.
-            Call WriteLocaleMsg(UserIndex, 572, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_ZONA_SEGURA_AQUI_PODES_ATACAR_OTROS_USUARIOS, e_FontTypeNames.FONTTYPE_WARNING)
         Case e_AttackInteractionResult.eCantAttackYourself
             Call WriteLocaleMsg(UserIndex, MsgCantAttackYourself, e_FontTypeNames.FONTTYPE_WARNING)
         Case e_AttackInteractionResult.eAttackSameFaction
             ' Msg507=¡Atacaste un ciudadano! Te has convertido en un Criminal.
-            Call WriteLocaleMsg(UserIndex, 507, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_ATACASTE_CIUDADANO_CONVERTIDO_CRIMINAL, e_FontTypeNames.FONTTYPE_WARNING)
         Case e_AttackInteractionResult.eAttackPetSameFaction
             ' Msg508=¡Atacaste una mascota de un ciudadano! Te has convertido en un Criminal.
-            Call WriteLocaleMsg(UserIndex, 508, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_ATACASTE_MASCOTA_CIUDADANO_CONVERTIDO_CRIMINAL, e_FontTypeNames.FONTTYPE_WARNING)
         Case e_AttackInteractionResult.eRemoveSafeCitizenNpc
             ' Msg509=Debes quitar el seguro para poder atacar la criatura que esta luchando con otro usuario.
-            Call WriteLocaleMsg(UserIndex, 509, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_DEBES_QUITAR_SEGURO_PODER_ATACAR_CRIATURA_LUCHANDO_OTRO, e_FontTypeNames.FONTTYPE_WARNING)
         Case e_AttackInteractionResult.eAttackCitizenNpc
             ' Msg510=¡Atacaste una criatura de otro usuario! Te has convertido en un Criminal.
-            Call WriteLocaleMsg(UserIndex, 510, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_ATACASTE_CRIATURA_OTRO_USUARIO_CONVERTIDO_CRIMINAL, e_FontTypeNames.FONTTYPE_WARNING)
         Case Else
             ' Msg511=Target inválido.
-            Call WriteLocaleMsg(UserIndex, 511, e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteLocaleMsg(UserIndex, MSG_TARGET_INVALIDO, e_FontTypeNames.FONTTYPE_INFOIAO)
     End Select
 End Sub
 

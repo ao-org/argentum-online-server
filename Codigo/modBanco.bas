@@ -147,7 +147,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
             Do Until UserList(UserIndex).invent.Object(Slot).ObjIndex = 0
                 Slot = Slot + 1
                 If Slot > UserList(UserIndex).CurrentInventorySlots Then
-                    Call WriteLocaleMsg(UserIndex, 1600, e_FontTypeNames.FONTTYPE_INFO) 'Msg1600= No podés tener más objetos.
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_TENER_MAS_OBJETOS, e_FontTypeNames.FONTTYPE_INFO) 'Msg1600= No podés tener más objetos.
                     Exit Function
                 End If
             Loop
@@ -167,7 +167,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
         UserList(UserIndex).flags.ModificoInventario = True
         Call QuitarBancoInvItem(UserIndex, CByte(ObjIndex), Cantidad)
     Else
-        Call WriteLocaleMsg(UserIndex, 1600, e_FontTypeNames.FONTTYPE_INFO) 'Msg1600= No podés tener más objetos.
+        Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_TENER_MAS_OBJETOS, e_FontTypeNames.FONTTYPE_INFO) 'Msg1600= No podés tener más objetos.
     End If
     UserReciveObj = Slot
     Exit Function
@@ -245,7 +245,7 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
             Do Until UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex = 0
                 Slot = Slot + 1
                 If Slot > MAX_BANCOINVENTORY_SLOTS Then
-                    Call WriteLocaleMsg(UserIndex, 1601, e_FontTypeNames.FONTTYPE_INFOIAO) 'Msg1601= No tienes más espacio en el banco.
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_MAS_ESPACIO_BANCO, e_FontTypeNames.FONTTYPE_INFOIAO) 'Msg1601= No tienes más espacio en el banco.
                     Exit Function
                 End If
             Loop
@@ -266,7 +266,7 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
             UserList(UserIndex).flags.ModificoInventarioBanco = True
             Call QuitarUserInvItem(UserIndex, CByte(ObjIndex), Cantidad)
         Else
-            Call WriteLocaleMsg(UserIndex, 1602, e_FontTypeNames.FONTTYPE_INFO) 'Msg1602= El banco no puede cargar tantos objetos.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_BANCO_PUEDE_CARGAR_TANTOS_OBJETOS, e_FontTypeNames.FONTTYPE_INFO) 'Msg1602= El banco no puede cargar tantos objetos.
         End If
     End If
     UserDejaObj = Slot

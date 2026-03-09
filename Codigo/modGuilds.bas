@@ -679,7 +679,7 @@ Public Function GMEscuchaClan(ByVal UserIndex As Integer, ByVal GuildName As Str
     'listen to no guild at all
     If LenB(GuildName) = 0 And UserList(UserIndex).EscucheClan <> 0 Then
         'Quit listening to previous guild!!
-        Call WriteLocaleMsg(UserIndex, 1603, guilds(UserList(UserIndex).EscucheClan).GuildName, e_FontTypeNames.FONTTYPE_GUILD) 'Msg1603= Dejas de escuchar a : ¬1
+        Call WriteLocaleMsg(UserIndex, MSG_DEJAS_ESCUCHAR_1603, guilds(UserList(UserIndex).EscucheClan).GuildName, e_FontTypeNames.FONTTYPE_GUILD) 'Msg1603= Dejas de escuchar a : ¬1
         guilds(UserList(UserIndex).EscucheClan).DesconectarGM (UserIndex)
         Exit Function
     End If
@@ -910,7 +910,7 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
     
     If UserList(UserIndex).Stats.GLD < priceAcceptMember Then
         'Msg2163=Para aceptar un nuevo miembro necesitas ¬1 monedas de oro.
-        Call WriteLocaleMsg(UserIndex, 2163, e_FontTypeNames.FONTTYPE_INFO, priceAcceptMember)
+        Call WriteLocaleMsg(UserIndex, MSG_ACEPTAR_NUEVO_MIEMBRO_NECESITAS_MONEDAS_ORO, e_FontTypeNames.FONTTYPE_INFO, priceAcceptMember)
         Exit Function
     End If
     

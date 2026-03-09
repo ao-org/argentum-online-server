@@ -100,7 +100,7 @@ Public Sub ParticiparTorneo(ByVal UserIndex As Integer)
     Torneo.IndexParticipantes(IndexVacio) = UserIndex
     Torneo.participantes = Torneo.participantes + 1
     UserList(UserIndex).flags.EnTorneo = True
-    Call WriteLocaleMsg(UserIndex, 2067, e_FontTypeNames.FONTTYPE_INFOIAO) ' Msg2067="¡Ya estas anotado! Solo debes aguardar hasta que seas enviado a la sala de espera."
+    Call WriteLocaleMsg(UserIndex, MSG_ALREADY_REGISTERED_IN_TOURNAMENT, e_FontTypeNames.FONTTYPE_INFOIAO) ' Msg2067="¡Ya estas anotado! Solo debes aguardar hasta que seas enviado a la sala de espera."
     Exit Sub
 ParticiparTorneo_Err:
     Call TraceError(Err.Number, Err.Description, "ModTorneos.ParticiparTorneo", Erl)

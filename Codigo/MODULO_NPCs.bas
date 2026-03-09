@@ -191,7 +191,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             Next
         End If
         If UserList(UserIndex).ChatCombate = 1 Then
-            Call WriteLocaleMsg(UserIndex, 184, e_FontTypeNames.FONTTYPE_DIOS)
+            Call WriteLocaleMsg(UserIndex, MSG_ID_184, e_FontTypeNames.FONTTYPE_DIOS)
         End If
         Call IncrementLongCounter(UserList(UserIndex).Stats.NPCsMuertos, "NPCsMuertos")
         If IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
@@ -772,7 +772,7 @@ Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
         UserList(UserIndex).flags.Envenenado = VenenoNivel
         'Msg182=¡¡La criatura te ha envenenado!!
         If UserList(UserIndex).ChatCombate = 1 Then
-            Call WriteLocaleMsg(UserIndex, 182, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CRIATURA_HA_ENVENENADO, e_FontTypeNames.FONTTYPE_FIGHT)
         End If
     End If
     Exit Sub
@@ -1831,7 +1831,7 @@ Public Function DoDamageOrHeal(ByVal NpcIndex As Integer, _
         If SourceType = eUser Then
             DamageStr = PonerPuntos(Math.Abs(amount))
             If UserList(SourceIndex).ChatCombate = 1 Then
-                Call WriteLocaleMsg(SourceIndex, 382, e_FontTypeNames.FONTTYPE_FIGHT, DamageStr)
+                Call WriteLocaleMsg(SourceIndex, MSG_ID_382, e_FontTypeNames.FONTTYPE_FIGHT, DamageStr)
             End If
         End If
         amount = EffectsOverTime.TargetApplyDamageReduction(NpcList(NpcIndex).EffectOverTime, amount, SourceIndex, SourceType, DamageSourceType)
@@ -2291,7 +2291,7 @@ Public Sub OnNpcKilledUpdateQuest(ByVal UserIndex As Integer, ByRef MiNPC As t_N
                                     UserList(UserIndex).Char.charindex, chatColor)
                             If AllRequiredNPCsKilled(UserIndex, .QuestIndex, i) Then
                                 'Msg2160=Ya has matado todas las criaturas que la misión ¬1 requería.
-                                Call WriteLocaleMsg(UserIndex, 2160, e_FontTypeNames.FONTTYPE_INFOIAO, QuestList(.QuestIndex).nombre)
+                                Call WriteLocaleMsg(UserIndex, MSG_MATADO_TODAS_CRIATURAS_MISION_REQUERIA, e_FontTypeNames.FONTTYPE_INFOIAO, QuestList(.QuestIndex).nombre)
                             End If
                         End If
                     Next j
