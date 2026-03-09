@@ -460,18 +460,18 @@ Public Function ForgiveUserFactionStats(ByVal UserIndex As Integer) As Boolean
     With UserList(UserIndex).Faccion
         Select Case .Status
             Case e_Facciones.Caos, e_Facciones.Armada, e_Facciones.concilio, e_Facciones.consejo
-                Call WriteLocaleMsg(UserIndex, 1189, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_ID_1189, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             Case e_Facciones.Ciudadano
                 If .ciudadanosMatados = 0 And .Reenlistadas = MAX_FACTION_ENLISTMENTS Then
-                    Call WriteLocaleMsg(UserIndex, 1192, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_ID_1192, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 Else
                     .ciudadanosMatados = 0
                 End If
             Case e_Facciones.Criminal
                 If .Reenlistadas = MAX_FACTION_ENLISTMENTS Then
-                    Call WriteLocaleMsg(UserIndex, 1192, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_ID_1192, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case Else
@@ -487,7 +487,7 @@ Public Function ForgiveUserFactionStats(ByVal UserIndex As Integer) As Boolean
         .NivelIngreso = 0
         .MatadosIngreso = 0
         ForgiveUserFactionStats = True
-        Call WriteLocaleMsg(UserIndex, 1190, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_ID_1190, e_FontTypeNames.FONTTYPE_INFO)
     End With
     Exit Function
 ResetFacciones_Err:

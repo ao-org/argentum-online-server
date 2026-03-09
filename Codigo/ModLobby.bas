@@ -411,7 +411,7 @@ Public Function AddPlayerOrGroup(ByRef instance As t_Lobby, ByVal UserIndex As I
                 If IsValidUserRef(.Grupo.Miembros(i)) Then
                     AddPlayerOrGroup = CanPlayerJoin(instance, .Grupo.Miembros(i).ArrayIndex)
                     If Not AddPlayerOrGroup.Success Then
-                        Call WriteLocaleMsg(UserIndex, 1604, UserList(.Grupo.Miembros(i).ArrayIndex).name, e_FontTypeNames.FONTTYPE_New_Verde_Oscuro) 'Msg1604= ¬1: no puede participar, motivo: 'ver ReyarB
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_TEAM_MEMBER_CANNOT_PARTICIPATE_REASON, UserList(.Grupo.Miembros(i).ArrayIndex).name, e_FontTypeNames.FONTTYPE_New_Verde_Oscuro) 'Msg1604= ¬1: no puede participar, motivo: 'ver ReyarB
                         Call WriteLocaleMsg(UserIndex, AddPlayerOrGroup.Message, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Function
                     End If
@@ -787,14 +787,14 @@ End Function
 
 Public Sub StartLobby(ByRef instance As t_Lobby, ByVal UserIndex As Integer)
     If instance.State = Initialized And UserIndex >= 0 Then
-        Call WriteLocaleMsg(UserIndex, 1605, e_FontTypeNames.FONTTYPE_INFO) 'Msg1605= El evento ya fue iniciado.
+        Call WriteLocaleMsg(UserIndex, MSG_EVENT_ALREADY_STARTED, e_FontTypeNames.FONTTYPE_INFO) 'Msg1605= El evento ya fue iniciado.
         Exit Sub
     End If
     If (instance.TeamSize > 1 Or instance.TeamType = eFixedTeamCount) And instance.TeamType = eRandom Then
         Call SortTeams(instance)
     End If
     Call ModLobby.UpdateLobbyState(instance, e_LobbyState.InProgress)
-    If UserIndex >= 0 Then Call WriteLocaleMsg(UserIndex, 1606, e_FontTypeNames.FONTTYPE_INFO) 'Msg1606= Evento iniciado
+    If UserIndex >= 0 Then Call WriteLocaleMsg(UserIndex, MSG_EVENT_STARTED, e_FontTypeNames.FONTTYPE_INFO) 'Msg1606= Evento iniciado
 End Sub
 
 Public Function HandleRemoteLobbyCommand(ByVal Command, ByVal Params As String, ByVal UserIndex As Integer, ByVal LobbyIndex As Integer) As Boolean
