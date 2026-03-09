@@ -1483,7 +1483,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
             Call LogGM(GetUserRealName(UserIndex), "Dijo: " & chat)
         End If
         If .flags.Silenciado = 1 Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_110, e_FontTypeNames.FONTTYPE_INFO, .flags.MinutosRestantes)
+            Call WriteLocaleMsg(UserIndex, MSG_ADMINS_MUTED_YOU, e_FontTypeNames.FONTTYPE_INFO, .flags.MinutosRestantes)
         Else
             If LenB(chat) <> 0 Then
                 '  Foto-denuncias - Push message
@@ -1550,7 +1550,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
                 End If
             End If
             If .flags.Silenciado = 1 Then
-                Call WriteLocaleMsg(UserIndex, MSG_ID_110, e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
+                Call WriteLocaleMsg(UserIndex, MSG_ADMINS_MUTED_YOU, e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
                 'Msg1116= Los administradores te han impedido hablar durante los proximos ¬1
                 Call WriteLocaleMsg(UserIndex, MSG_ADMINISTRADORES_IMPEDIDO_HABLAR_DURANTE_PROXIMOS, e_FontTypeNames.FONTTYPE_INFO, .flags.MinutosRestantes)
             Else
@@ -1693,7 +1693,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                     Call WriteRestOK(UserIndex)
                     'Msg1121= Has dejado de descansar.
                     Call WriteLocaleMsg(UserIndex, MSG_DEJADO_DESCANSAR, e_FontTypeNames.FONTTYPE_INFO)
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_178, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_YOU_STAND_UP, e_FontTypeNames.FONTTYPE_INFO)
                 End If
                 Call CancelExit(UserIndex)
                 'Esta usando el /HOGAR, no se puede mover
@@ -1713,7 +1713,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 .flags.UltimoMensaje = MSG_NO_PARALYZED
                 'Msg1123= No podes moverte porque estas paralizado.
                 Call WriteLocaleMsg(UserIndex, MSG_NO_PARALYZED, e_FontTypeNames.FONTTYPE_INFO)
-                Call WriteLocaleMsg(UserIndex, MSG_ID_54, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_CANNOT_MOVE_PARALYZED, e_FontTypeNames.FONTTYPE_INFO)
             End If
             Call WritePosUpdate(UserIndex)
         End If
@@ -2844,7 +2844,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 Call InvitarMiembro(UserIndex, tU)
                             End If
                         Else
-                            Call WriteLocaleMsg(UserIndex, MSG_ID_7, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_USER_IS_DEAD, e_FontTypeNames.FONTTYPE_INFO)
                             Call WriteWorkRequestTarget(UserIndex, 0)
                         End If
                     Else
@@ -2898,7 +2898,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageLocaleMsg(MSG_CLAN_MARCO, GetUserDisplayName(UserIndex) & "¬" & GetUserDisplayName(tU), _
                                 e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1798=Clan> [¬1] marcó a ¬2.
                     Else
-                        Call WriteLocaleMsg(UserIndex, MSG_ID_7, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_USER_IS_DEAD, e_FontTypeNames.FONTTYPE_INFO)
                         Call WriteWorkRequestTarget(UserIndex, 0)
                     End If
                 Else
@@ -5223,7 +5223,7 @@ Private Sub HandleFactionMessage(ByVal UserIndex As Integer)
         elapsedMs = TicksElapsed(.Counters.MensajeGlobal, currentTime)
         'Si esta silenciado no le deja enviar mensaje
         If .flags.Silenciado = 1 Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_110, e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
+            Call WriteLocaleMsg(UserIndex, MSG_ADMINS_MUTED_YOU, e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
             Exit Sub
         End If
         'Previene spam de mensajes globales
@@ -5624,7 +5624,7 @@ End Sub
 Public Sub HandlePromedio(ByVal UserIndex As Integer)
     On Error GoTo handle
     With UserList(UserIndex)
-        Call WriteLocaleMsg(UserIndex, MSG_ID_1988, e_FontTypeNames.FONTTYPE_INFOBOLD, .clase & "¬" & .raza & "¬" & .Stats.ELV)
+        Call WriteLocaleMsg(UserIndex, MSG_CHARACTER_CLASS_RACE_LEVEL, e_FontTypeNames.FONTTYPE_INFOBOLD, .clase & "¬" & .raza & "¬" & .Stats.ELV)
         Dim Promedio As Double, Vida As Long
         Promedio = ModClase(.clase).Vida - (21 - .Stats.UserAtributos(e_Atributos.Constitucion)) * 0.5
         Vida = 18 + ModRaza(.raza).Constitucion + Promedio * (.Stats.ELV - 1)

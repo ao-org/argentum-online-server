@@ -191,7 +191,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             Next
         End If
         If UserList(UserIndex).ChatCombate = 1 Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_184, e_FontTypeNames.FONTTYPE_DIOS)
+            Call WriteLocaleMsg(UserIndex, MSG_YOU_KILLED_CREATURE, e_FontTypeNames.FONTTYPE_DIOS)
         End If
         Call IncrementLongCounter(UserList(UserIndex).Stats.NPCsMuertos, "NPCsMuertos")
         If IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
@@ -1831,7 +1831,7 @@ Public Function DoDamageOrHeal(ByVal NpcIndex As Integer, _
         If SourceType = eUser Then
             DamageStr = PonerPuntos(Math.Abs(amount))
             If UserList(SourceIndex).ChatCombate = 1 Then
-                Call WriteLocaleMsg(SourceIndex, MSG_ID_382, e_FontTypeNames.FONTTYPE_FIGHT, DamageStr)
+                Call WriteLocaleMsg(SourceIndex, MSG_DEALT_DAMAGE_TO_CREATURE, e_FontTypeNames.FONTTYPE_FIGHT, DamageStr)
             End If
         End If
         amount = EffectsOverTime.TargetApplyDamageReduction(NpcList(NpcIndex).EffectOverTime, amount, SourceIndex, SourceType, DamageSourceType)

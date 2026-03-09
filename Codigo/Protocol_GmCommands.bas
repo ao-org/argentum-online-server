@@ -186,7 +186,7 @@ Public Sub HandleGamble(ByVal UserIndex As Integer)
         Dim NpcIndex  As Integer
         Dim charindex As Integer
         If Not IsValidNpcRef(.flags.TargetNPC) Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_530, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUST_SELECT_CHARACTER_FIRST, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         NpcIndex = .flags.TargetNPC.ArrayIndex
@@ -239,7 +239,7 @@ Public Sub HandleMapPriceEntrance(ByVal UserIndex As Integer)
     On Error GoTo HandleMapPriceEntrance_Err
     With UserList(UserIndex)
         If Not IsValidNpcRef(.flags.TargetNPC) Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_530, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUST_SELECT_CHARACTER_FIRST, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         Dim entryPrice     As Integer
@@ -432,7 +432,7 @@ Public Sub HandleWhere(ByVal UserIndex As Integer)
                 Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_540, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 If CompararPrivilegiosUser(UserIndex, tUser.ArrayIndex) >= 0 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_1090, e_FontTypeNames.FONTTYPE_FIGHT, username & ": " & UserList(tUser.ArrayIndex).pos.Map & ", " & UserList( _
+                    Call WriteLocaleMsg(UserIndex, MSG_LOCATION_FOUND_AT_COORDINATES, e_FontTypeNames.FONTTYPE_FIGHT, username & ": " & UserList(tUser.ArrayIndex).pos.Map & ", " & UserList( _
                             tUser.ArrayIndex).pos.x & ", " & UserList(tUser.ArrayIndex).pos.y & ".")
                     Call LogGM(GetUserRealName(UserIndex), "/Donde " & username)
                 End If
@@ -2546,7 +2546,7 @@ Public Sub HandleCreateItem(ByVal UserIndex As Integer)
         If ObjData(tObj).Agarrable = 0 Then
             ' Trato de meterlo en el inventario.
             If MeterItemEnInventario(UserIndex, Objeto) Then
-                Call WriteLocaleMsg(UserIndex, MSG_ID_1500, e_FontTypeNames.FONTTYPE_INFO, (ObjData(tObj).name & "¬" & CStr(Cuantos)))
+                Call WriteLocaleMsg(UserIndex, MSG_YOU_CREATED_ITEM, e_FontTypeNames.FONTTYPE_INFO, (ObjData(tObj).name & "¬" & CStr(Cuantos)))
             Else
                 'Msg980= No tenes espacio en tu inventario para crear el item.
                 Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_ESPACIO_INVENTARIO_CREAR_ITEM, e_FontTypeNames.FONTTYPE_INFO)
@@ -2976,7 +2976,7 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
         End If
         Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la informacion sobre si es seguro el mapa.")
         MapInfo(.pos.Map).Seguro = IIf(isMapPk, 1, 0)
-        Call WriteLocaleMsg(UserIndex, MSG_ID_1506, e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "¬" & IIf(isMapPk, "No", "Sí"))
+        Call WriteLocaleMsg(UserIndex, MSG_MAP_SAFE_STATUS, e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "¬" & IIf(isMapPk, "No", "Sí"))
     End With
     Exit Sub
 HandleChangeMapInfoPK_Err:
@@ -3000,7 +3000,7 @@ Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
         End If
         'Change the boolean to string in a fast way
         Call WriteVar(MapPath & "mapa" & .pos.Map & ".dat", "Mapa" & .pos.Map, "backup", MapInfo(.pos.Map).backup_mode)
-        Call WriteLocaleMsg(UserIndex, MSG_ID_1507, e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "¬" & IIf(doTheBackUp, "Sí", "No"))
+        Call WriteLocaleMsg(UserIndex, MSG_MAP_BACKUP_STATUS, e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "¬" & IIf(doTheBackUp, "Sí", "No"))
     End With
     Exit Sub
 HandleChangeMapInfoBackup_Err:
@@ -3310,7 +3310,7 @@ Public Sub HandleGlobalMessage(ByVal UserIndex As Integer)
         Dim chat As String
         chat = reader.ReadString8()
         If .flags.Silenciado = 1 Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_110, e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
+            Call WriteLocaleMsg(UserIndex, MSG_ADMINS_MUTED_YOU, e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
         ElseIf elapsedMs < IntervaloMensajeGlobal Then
             ' Msg548=No puedes escribir mensajes globales tan rápido.
             Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_ESCRIBIR_MENSAJES_GLOBALES_TAN_RAPIDO, e_FontTypeNames.FONTTYPE_WARNING)

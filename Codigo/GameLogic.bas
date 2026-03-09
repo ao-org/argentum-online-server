@@ -1096,7 +1096,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                         'if im not dead or (i have guild and the target is a guildmate) or im clicking myself
                         If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(TempCharIndex).GuildIndex) _
                                 Or UserIndex = TempCharIndex Then
-                            Call WriteLocaleMsg(UserIndex, MSG_ID_1105, ft, extraStrings & "¬" & Statuses & "¬" & FactionStatuses)
+                            Call WriteLocaleMsg(UserIndex, MSG_YOU_SEE_CHARACTER, ft, extraStrings & "¬" & Statuses & "¬" & FactionStatuses)
                         End If
                     End If
                     FoundSomething = 1

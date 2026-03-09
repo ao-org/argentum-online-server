@@ -84,11 +84,11 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
         End If
     End If
     If Invitado.Grupo.EnGrupo Then
-        Call WriteLocaleMsg(UserIndex, MSG_ID_41, e_FontTypeNames.FONTTYPE_New_GRUPO)
+        Call WriteLocaleMsg(UserIndex, MSG_CHARACTER_ALREADY_IN_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
         Exit Sub
     End If
     If UserList(InvitadoIndex).flags.RespondiendoPregunta = False Then
-        Call WriteLocaleMsg(UserIndex, MSG_ID_42, e_FontTypeNames.FONTTYPE_New_GRUPO)
+        Call WriteLocaleMsg(UserIndex, MSG_GROUP_REQUEST_SENT_WAIT_RESPONSE, e_FontTypeNames.FONTTYPE_New_GRUPO)
         Call WriteLocaleMsg(InvitadoIndex, MSG_INVITO_UNIRSE_SU_GRUPO, e_FontTypeNames.FONTTYPE_New_GRUPO, Remitente.name) ' Msg2049="¬1 te invitó a unirse a su grupo."
         With UserList(InvitadoIndex)
             Call SetUserRef(.Grupo.PropuestaDe, UserIndex)
@@ -162,7 +162,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
     End With
     With UserList(UserIndex).Grupo
         If .CantidadMiembros = 1 Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_35, e_FontTypeNames.FONTTYPE_New_GRUPO)
+            Call WriteLocaleMsg(UserIndex, MSG_GROUP_DISBANDED_ALL_MEMBERS_LEFT, e_FontTypeNames.FONTTYPE_New_GRUPO)
             .EnGrupo = False
             Call SetUserRef(.Lider, 0)
             Call SetUserRef(.PropuestaDe, 0)
@@ -214,10 +214,10 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
         For a = 1 To UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros
             Call WriteUbicacion(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(a).ArrayIndex, indexviejo, 0)
         Next a
-        Call WriteLocaleMsg(UserIndex, MSG_ID_37, e_FontTypeNames.FONTTYPE_New_GRUPO) 'quit group message
-        Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, MSG_ID_202, e_FontTypeNames.FONTTYPE_New_GRUPO, .name)
+        Call WriteLocaleMsg(UserIndex, MSG_REMOVED_FROM_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO) 'quit group message
+        Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, MSG_USER_LEFT_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO, .name)
         If UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = 1 Then
-            Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, MSG_ID_35, e_FontTypeNames.FONTTYPE_New_GRUPO)
+            Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, MSG_GROUP_DISBANDED_ALL_MEMBERS_LEFT, e_FontTypeNames.FONTTYPE_New_GRUPO)
             Call WriteUbicacion(.Grupo.Lider.ArrayIndex, 1, 0)
             UserList(.Grupo.Lider.ArrayIndex).Grupo.Id = -1
             UserList(.Grupo.Lider.ArrayIndex).Grupo.EnGrupo = False

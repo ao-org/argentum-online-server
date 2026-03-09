@@ -117,7 +117,7 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
 
         ' --- Basic guards (with visibility) ---
         If .flags.Navegando = 1 And .clase <> e_Class.Pirat Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_56, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_HIDE_WHILE_SAILING, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
@@ -786,7 +786,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
     End If
     If ObjData(ItemIndex).Blodium > 0 Then
         If Not TieneObjetos(e_Minerales.Blodium, ObjData(ItemIndex).Blodium, UserIndex) Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_2089, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NOT_ENOUGH_BLODIUM, e_FontTypeNames.FONTTYPE_INFO)
             HerreroTieneMateriales = False
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
@@ -809,7 +809,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
     End If
     If ObjData(ItemIndex).FireEssence > 0 Then
         If Not TieneObjetos(e_Minerales.FireEssence, ObjData(ItemIndex).FireEssence, UserIndex) Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_2090, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_REQUIRED_ESSENCE_MISSING, e_FontTypeNames.FONTTYPE_INFO)
             HerreroTieneMateriales = False
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
@@ -817,7 +817,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
     End If
     If ObjData(ItemIndex).WaterEssence > 0 Then
         If Not TieneObjetos(e_Minerales.WaterEssence, ObjData(ItemIndex).WaterEssence, UserIndex) Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_2090, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_REQUIRED_ESSENCE_MISSING, e_FontTypeNames.FONTTYPE_INFO)
             HerreroTieneMateriales = False
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
@@ -825,7 +825,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
     End If
     If ObjData(ItemIndex).EarthEssence > 0 Then
         If Not TieneObjetos(e_Minerales.EarthEssence, ObjData(ItemIndex).EarthEssence, UserIndex) Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_2090, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_REQUIRED_ESSENCE_MISSING, e_FontTypeNames.FONTTYPE_INFO)
             HerreroTieneMateriales = False
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
@@ -833,7 +833,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
     End If
     If ObjData(ItemIndex).WindEssence > 0 Then
         If Not TieneObjetos(e_Minerales.WindEssence, ObjData(ItemIndex).WindEssence, UserIndex) Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_2090, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_REQUIRED_ESSENCE_MISSING, e_FontTypeNames.FONTTYPE_INFO)
             HerreroTieneMateriales = False
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
@@ -992,7 +992,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
     'Si no tiene equipado el serrucho
     If UserList(UserIndex).invent.EquippedWorkingToolObjIndex = 0 Then
         ' Antes de usar la herramienta deberias equipartela.
-        Call WriteLocaleMsg(UserIndex, MSG_ID_376, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_MUST_EQUIP_TOOL_FIRST, e_FontTypeNames.FONTTYPE_INFO)
         Call WriteMacroTrabajoToggle(UserIndex, False)
         Exit Sub
     End If

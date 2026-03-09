@@ -1649,7 +1649,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
     If Aumenta >= cutoff Then Exit Sub
     UserList(UserIndex).Stats.UserSkills(Skill) = UserList(UserIndex).Stats.UserSkills(Skill) + 1
     UserList(UserIndex).Stats.SkillDirty(Skill) = True
-    Call WriteLocaleMsg(UserIndex, MSG_ID_1626, e_FontTypeNames.FONTTYPE_INFO, SkillsNames(Skill) & "¬" & UserList(UserIndex).Stats.UserSkills(Skill))
+    Call WriteLocaleMsg(UserIndex, MSG_SKILL_IMPROVED_BY_ONE_POINT, e_FontTypeNames.FONTTYPE_INFO, SkillsNames(Skill) & "¬" & UserList(UserIndex).Stats.UserSkills(Skill))
     Dim BonusExp As Long
     BonusExp = 5& * SvrConfig.GetValue("ExpMult")
     If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
@@ -2215,7 +2215,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Bool
                     Call InstanciaCaptura.eliminarParticipante(InstanciaCaptura.GetPlayer(UserIndex))
                 End If
             End If
-            Call WriteLocaleMsg(UserIndex, MSG_ID_203, e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
+            Call WriteLocaleMsg(UserIndex, MSG_GAME_CLOSING_IN_SECONDS, e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
             If EsGM(UserIndex) Or MapInfo(.pos.Map).Seguro = 1 Or forceClose Then
                 Call WriteDisconnect(UserIndex)
                 Call CloseSocket(UserIndex)

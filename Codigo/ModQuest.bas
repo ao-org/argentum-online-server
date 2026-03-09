@@ -617,7 +617,7 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
     On Error GoTo ErrHandler
     CanUserAcceptQuest = False
     If tmpQuest.Trabajador And UserList(UserIndex).clase <> e_Class.Trabajador Then
-        Call WriteLocaleMsg(UserIndex, MSG_ID_1262, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_QUEST_ONLY_FOR_WORKERS, e_FontTypeNames.FONTTYPE_INFO)
         Exit Function
     End If
     If NpcIndex > 0 Then
@@ -628,30 +628,30 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
         End If
     End If
     If TieneQuest(UserIndex, QuestIndex) Then
-        Call WriteLocaleMsg(UserIndex, MSG_ID_1263, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_QUEST_ALREADY_IN_PROGRESS, e_FontTypeNames.FONTTYPE_INFO)
         Exit Function
     End If
     If tmpQuest.RequiredQuest > 0 Then
         If Not UserDoneQuest(UserIndex, tmpQuest.RequiredQuest) Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_1424, e_FontTypeNames.FONTTYPE_INFO, QuestList(tmpQuest.RequiredQuest).nombre)
+            Call WriteLocaleMsg(UserIndex, MSG_MUST_COMPLETE_QUEST_TO_START_MISSION, e_FontTypeNames.FONTTYPE_INFO, QuestList(tmpQuest.RequiredQuest).nombre)
             Exit Function
         End If
     End If
     'El personaje tiene suficiente nivel?
     If UserList(UserIndex).Stats.ELV < tmpQuest.RequiredLevel Then
-        Call WriteLocaleMsg(UserIndex, MSG_ID_1425, e_FontTypeNames.FONTTYPE_INFO, tmpQuest.RequiredLevel)
+        Call WriteLocaleMsg(UserIndex, MSG_MUST_BE_AT_LEAST_LEVEL_TO_START_MISSION, e_FontTypeNames.FONTTYPE_INFO, tmpQuest.RequiredLevel)
         Exit Function
     End If
     'El personaje es nivel muy alto?
     If tmpQuest.LimitLevel > 0 Then 'Si el nivel limite es mayor a 0, por si no esta asignada la propiedad en quest.dat
         If UserList(UserIndex).Stats.ELV > tmpQuest.LimitLevel Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_1416, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_LEVEL_TOO_HIGH_FOR_MISSION, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
     End If
     If tmpQuest.RequiredSkill.SkillType > 0 Then
         If UserList(UserIndex).Stats.UserSkills(tmpQuest.RequiredSkill.SkillType) < tmpQuest.RequiredSkill.RequiredValue Then
-            Call WriteLocaleMsg(UserIndex, MSG_ID_473, e_FontTypeNames.FONTTYPE_INFO, tmpQuest.RequiredSkill.SkillType)
+            Call WriteLocaleMsg(UserIndex, MSG_MUST_INCREASE_SKILL_TO_CONTINUE, e_FontTypeNames.FONTTYPE_INFO, tmpQuest.RequiredSkill.SkillType)
             Exit Function
         End If
     End If
@@ -669,16 +669,16 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
     If tmpQuest.GlobalQuestIndex > 0 Then
         If tmpQuest.GlobalQuestThresholdNeeded > 0 Then
             If tmpQuest.GlobalQuestThresholdNeeded > GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringGlobalCounter Then
-                Call WriteLocaleMsg(UserIndex, MSG_ID_2123, FONTTYPE_WARNING, GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringThreshold & "¬" & tmpQuest.GlobalQuestThresholdNeeded)
+                Call WriteLocaleMsg(UserIndex, MSG_GLOBAL_REWARD_LOCKED_THRESHOLD_NOT_REACHED, FONTTYPE_WARNING, GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringThreshold & "¬" & tmpQuest.GlobalQuestThresholdNeeded)
                 Exit Function
             End If
         Else
             If Not GlobalQuestInfo(tmpQuest.GlobalQuestIndex).IsActive Then
-                Call WriteLocaleMsg(UserIndex, MSG_ID_2124, FONTTYPE_WARNING)
+                Call WriteLocaleMsg(UserIndex, MSG_GLOBAL_EVENT_FINISHED_CANNOT_DELIVER_ITEMS, FONTTYPE_WARNING)
                 Exit Function
             End If
             If GlobalQuestInfo(tmpQuest.GlobalQuestIndex).IsBossAlive Then
-                Call WriteLocaleMsg(UserIndex, MSG_ID_2121, FONTTYPE_WARNING)
+                Call WriteLocaleMsg(UserIndex, MSG_EVENT_BOSS_ALIVE_CANNOT_DELIVER_SEASONAL_ITEMS, FONTTYPE_WARNING)
                 Exit Function
             End If
         End If

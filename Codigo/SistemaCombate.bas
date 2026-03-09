@@ -425,7 +425,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
                 DamageExtra = DamageExtra * NPCs.GetPhysicDamageReduction(NpcList(NpcIndex))
                 ' Mostramos en consola el daño
                 If .ChatCombate = 1 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_383, e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(Damage) & "¬" & (DamageExtra))
+                    Call WriteLocaleMsg(UserIndex, MSG_HIT_AND_CRITICAL_ON_CREATURE, e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(Damage) & "¬" & (DamageExtra))
                 End If
                 ' Color naranja
                 Color = RGB(225, 165, 0)
@@ -442,7 +442,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
                 DamageExtra = Damage * (Rnd * (max_stab_npc - min_stab_npc) + min_stab_npc)
                 ' Mostramos en consola el daño
                 If .ChatCombate = 1 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ID_212, e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(Damage) & "¬" & PonerPuntos(DamageExtra))
+                    Call WriteLocaleMsg(UserIndex, MSG_HIT_AND_STABBED_CREATURE, e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(Damage) & "¬" & PonerPuntos(DamageExtra))
                 End If
                 ' Color amarillo
                 Color = vbYellow
@@ -797,14 +797,14 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
                     NpcList(NpcIndex).flags.Paralizado = 1
                     NpcList(NpcIndex).Contadores.Paralisis = (IntervaloParalizado / 3) * 7
                     If UserList(UserIndex).ChatCombate = 1 Then
-                        Call WriteLocaleMsg(UserIndex, MSG_ID_136, e_FontTypeNames.FONTTYPE_FIGHT)
+                        Call WriteLocaleMsg(UserIndex, MSG_ATTACK_PARALYZED_CREATURE, e_FontTypeNames.FONTTYPE_FIGHT)
                     End If
                     UserList(UserIndex).Counters.timeFx = 3
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.charindex, 8, 0, UserList(UserIndex).pos.x, UserList( _
                             UserIndex).pos.y))
                 Else
                     If UserList(UserIndex).ChatCombate = 1 Then
-                        Call WriteLocaleMsg(UserIndex, MSG_ID_381, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NPC_IMMUNE_TO_THIS_SPELL, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
             End If
@@ -1180,11 +1180,11 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                 DamageStr = PonerPuntos(BonusDamage)
                 ' Mostramos en consola el daño al atacante
                 If UserList(AtacanteIndex).ChatCombate = 1 Then
-                    Call WriteLocaleMsg(AtacanteIndex, MSG_ID_383, e_FontTypeNames.FONTTYPE_INFOBOLD, Damage & "¬" & DamageStr)
+                    Call WriteLocaleMsg(AtacanteIndex, MSG_HIT_AND_CRITICAL_ON_CREATURE, e_FontTypeNames.FONTTYPE_INFOBOLD, Damage & "¬" & DamageStr)
                 End If
                 ' Y a la víctima
                 If .ChatCombate = 1 Then
-                    Call WriteLocaleMsg(VictimaIndex, MSG_ID_385, e_FontTypeNames.FONTTYPE_INFOBOLD, UserList(AtacanteIndex).name & "¬" & DamageStr)
+                    Call WriteLocaleMsg(VictimaIndex, MSG_PLAYER_CRITICALLY_HIT_YOU, e_FontTypeNames.FONTTYPE_INFOBOLD, UserList(AtacanteIndex).name & "¬" & DamageStr)
                 End If
                 Call SendData(SendTarget.ToPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO_CRITICO, UserList(AtacanteIndex).pos.x, UserList(AtacanteIndex).pos.y))
                 ' Color naranja
