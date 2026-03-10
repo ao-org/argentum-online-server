@@ -1944,8 +1944,8 @@ Public Sub FishOrThrowNet(ByVal UserIndex As Integer)
         Dim targetNpcIndex As Integer
         If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
         If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.FishingNet Then
-            targetUserIndex = ResolveUserTargetAtPos(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y)
-            targetNpcIndex = ResolveNpcTargetAtPos(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y)
+            targetUserIndex = ResolveUserTargetAtPos(.pos.Map, .AutomatedAction.x, .AutomatedAction.y)
+            targetNpcIndex = ResolveNpcTargetAtPos(.pos.Map, .AutomatedAction.x, .AutomatedAction.y)
             If targetUserIndex > 0 Then
                 Call SetUserRef(.flags.TargetUser, targetUserIndex)
                 Call ClearNpcRef(.flags.TargetNPC)
@@ -1963,7 +1963,7 @@ Public Sub FishOrThrowNet(ByVal UserIndex As Integer)
                 Call ClearNpcRef(.flags.TargetNPC)
                 Exit Sub
             End If
-            If MapInfo(.pos.Map).Seguro = 1 Or Not ExpectObjectTypeAt(e_OBJType.otFishingPool, .pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y) Then
+            If MapInfo(.pos.Map).Seguro = 1 Or Not ExpectObjectTypeAt(e_OBJType.otFishingPool, .pos.Map, .AutomatedAction.x, .AutomatedAction.y) Then
                 If IsValidUserRef(.flags.TargetUser) Then
                     ThrowNetToTarget (UserIndex)
                     Call WriteWorkRequestTarget(UserIndex, 0)
@@ -1989,9 +1989,9 @@ Sub ThrowNetToTarget(ByVal UserIndex As Integer)
         If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo <> e_WorkingToolSubType.FishingNet Then Exit Sub
         If Not IsValidUserRef(.flags.TargetUser) Then Exit Sub
         'If it's outside range log it and exit
-        If Abs(.pos.x - .Trabajo.Target_X) > RANGO_VISION_X Or Abs(.pos.y - .Trabajo.Target_Y) > RANGO_VISION_Y Then
+        If Abs(.pos.x - .AutomatedAction.x) > RANGO_VISION_X Or Abs(.pos.y - .AutomatedAction.y) > RANGO_VISION_Y Then
             Call LogSecurity("Ataque fuera de rango de " & .name & "(" & .pos.Map & "/" & .pos.x & "/" & .pos.y & ") ip: " & .ConnectionDetails.IP & " a la posicion (" & _
-                    .pos.Map & "/" & .Trabajo.Target_X & "/" & .Trabajo.Target_Y & ")")
+                    .pos.Map & "/" & .AutomatedAction.x & "/" & .AutomatedAction.y & ")")
             Exit Sub
         End If
         'Check bow's interval
@@ -2035,7 +2035,7 @@ Sub ThrowNetToTarget(ByVal UserIndex As Integer)
             Call UpdateCd(UserIndex, ObjData(.invent.EquippedWorkingToolObjIndex).cdType)
             Call QuitarUserInvItem(UserIndex, .invent.EquippedWorkingToolSlot, 1)
             Call UpdateUserInv(True, UserIndex, .invent.EquippedWorkingToolSlot)
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(.pos.x, .pos.y, .Trabajo.Target_X, .Trabajo.Target_Y, 3))
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(.pos.x, .pos.y, .AutomatedAction.x, .AutomatedAction.y, 3))
         End If
     End With
     Exit Sub

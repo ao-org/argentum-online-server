@@ -2477,9 +2477,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         Packet_ID = PacketNames.WorkLeftClick
         If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "WorkLeftClick", PacketTimerThreshold( _
                 Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
-        .Trabajo.Target_X = x
-        .Trabajo.Target_Y = y
-        .Trabajo.TargetSkill = Skill
+        .AutomatedAction.x = x
+        .AutomatedAction.y = y
+        .AutomatedAction.skill = Skill
         If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.pos.Map, x, y) Then Exit Sub
         If UserMod.IsStun(.flags, .Counters) Then Exit Sub
         If Not InRangoVision(UserIndex, x, y) Then
@@ -8099,9 +8099,10 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
                     If ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.FishingNet Then
                         Dim targetUserIndex As Integer
                         Dim targetNpcIndex As Integer
-                        UserList(UserIndex).Trabajo.Target_X = x
-                        UserList(UserIndex).Trabajo.Target_Y = y
+                        UserList(UserIndex).AutomatedAction.x = x
+                        UserList(UserIndex).AutomatedAction.y = y
                         targetUserIndex = ResolveUserTargetAtPos(UserList(UserIndex).pos.Map, x, y)
+                        UserList(UserIndex).AutomatedAction.skill = skill
                         targetNpcIndex = ResolveNpcTargetAtPos(UserList(UserIndex).pos.Map, x, y)
                         If targetUserIndex > 0 Then
                             Call SetUserRef(UserList(UserIndex).flags.TargetUser, targetUserIndex)
