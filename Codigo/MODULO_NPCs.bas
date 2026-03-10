@@ -989,6 +989,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .GlobalQuestBossIndex = val(LeerNPCs.GetValue(SectionName, "GlobalQuestBossIndex"))
         .npcType = Val(LeerNPCs.GetValue(SectionName, "NpcType"))
         .Body = Val(LeerNPCs.GetValue(SectionName, "Body"))
+        .BodyIdle = Val(LeerNPCs.GetValue(SectionName, "BodyIdle", 0))
         .Head = Val(LeerNPCs.GetValue(SectionName, "Head"))
         .Heading = Val(LeerNPCs.GetValue(SectionName, "Heading"))
         .CastAnimation = Val(LeerNPCs.GetValue(SectionName, "CastAnimation"))
@@ -1331,6 +1332,8 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .flags.ElementalTags = Info.ElementalTags
         .npcType = Info.npcType
         .Char.body = Info.Body
+        .BodyNormal = Info.Body
+        .BodyIdle = Info.BodyIdle
         .Char.head = Info.Head
         .Char.Heading = Info.Heading
         .Char.CastAnimation = Info.CastAnimation
@@ -1697,9 +1700,17 @@ End Sub
 
 Sub AnimacionIdle(ByVal NpcIndex As Integer, ByVal Show As Boolean)
     On Error GoTo Handler
+    Dim BodyToUse As Integer
     With NpcList(NpcIndex)
-        If .flags.NPCIdle = Show Then Exit Sub
+        BodyToUse = .BodyNormal
+        If Show And .BodyIdle > 0 Then
+            BodyToUse = .BodyIdle
+        End If
+
+        If .flags.NPCIdle = Show And .Char.body = BodyToUse Then Exit Sub
+
         .flags.NPCIdle = Show
+        .Char.body = BodyToUse
         Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, .Char.Heading)
     End With
     Exit Sub

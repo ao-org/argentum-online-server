@@ -796,6 +796,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
                 If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
                     NpcList(NpcIndex).flags.Paralizado = 1
                     NpcList(NpcIndex).Contadores.Paralisis = (IntervaloParalizado / 3) * 7
+                    Call AnimacionIdle(NpcIndex, True)
                     If UserList(UserIndex).ChatCombate = 1 Then
                         Call WriteLocaleMsg(UserIndex, MSG_ATTACK_PARALYZED_CREATURE, e_FontTypeNames.FONTTYPE_FIGHT)
                     End If

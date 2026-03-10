@@ -2188,7 +2188,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
             NpcList(NpcIndex).Contadores.Paralisis = (Hechizos(hIndex).Duration * 6.5) * 6
             NpcList(NpcIndex).flags.Inmovilizado = 0
             NpcList(NpcIndex).Contadores.Inmovilizado = 0
-            Call AnimacionIdle(NpcIndex, False)
+            Call AnimacionIdle(NpcIndex, True)
             b = True
         Else
             Call WriteLocaleMsg(UserIndex, MSG_NPC_IMMUNE_TO_THIS_SPELL, e_FontTypeNames.FONTTYPE_INFOIAO)

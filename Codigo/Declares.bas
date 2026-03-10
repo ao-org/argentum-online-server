@@ -3210,6 +3210,7 @@ Public Type t_NpcInfoCache
     ElementalTags As Long
     npcType As Integer
     Body As Integer
+    BodyIdle As Integer
     Head As Integer
     Heading As Integer
     CastAnimation As Integer
@@ -3356,6 +3357,8 @@ Public Type t_Npc
     name As String
     SubName As String
     Char As t_Char 'Define como se vera
+    BodyNormal As Integer
+    BodyIdle As Integer
     Desc As String
     DescExtra As String
     showName As Byte
