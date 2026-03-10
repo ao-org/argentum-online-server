@@ -4571,3 +4571,13 @@ WriteShowPickUpObj_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowPickUpObj", Erl)
 End Sub
+Public Function PrepareSummonedInvocationBarFx(ByVal charindex As Integer, ByVal time As Integer)
+    On Error GoTo PrepareSummonedInvocationBarFx_Err
+    Call Writer.WriteInt16(ServerPacketID.eSummonedInvocationBarFx)
+    Call Writer.WriteInt16(charindex)
+    Call Writer.WriteInt16(time)
+    Exit Function
+PrepareSummonedInvocationBarFx_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.SummonedInvocationBar", Erl)
+End Function

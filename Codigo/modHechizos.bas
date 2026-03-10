@@ -779,6 +779,8 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                         .MascotasType(Index) = NpcList(ind).Numero
                         Call SetUserRef(NpcList(ind).MaestroUser, UserIndex)
                         NpcList(ind).Contadores.TiempoExistencia = IntervaloInvocacion
+                        Call SendData(SendTarget.ToIndex, UserIndex, _
+                                PrepareSummonedInvocationBarFx(NpcList(ind).Char.charindex, IntervaloInvocacion / 25))
                         NpcList(ind).GiveGLD = 0
                         If IsFeatureEnabled("addjust-npc-with-caster") And IsSet(Hechizos(h).Effects, AdjustStatsWithCaster) Then
                             Call AdjustNpcStatWithCasterLevel(UserIndex, ind)
