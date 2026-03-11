@@ -126,19 +126,19 @@ Public Function FinishGlobalQuestCheck(ByVal UserIndex As Integer, ByVal GlobalQ
     'boss alive mechanics shoudln't interfer with unique prizes
     If GlobalQuestThresholdNeeded > 0 Then
         If GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter < GlobalQuestThresholdNeeded Then
-            Call WriteLocaleMsg(UserIndex, 2123, FONTTYPE_WARNING, GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold & "¬" & GlobalQuestThresholdNeeded)
+            Call WriteLocaleMsg(UserIndex, MSG_GLOBAL_REWARD_LOCKED_THRESHOLD_NOT_REACHED, FONTTYPE_WARNING, GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold & "¬" & GlobalQuestThresholdNeeded)
             Exit Function
         End If
         'global quest unique prizes should be redeemable even if the event is finished
         GoTo SkipEventIsActive
     Else
         If GlobalQuestInfo(GlobalQuestIndex).IsBossAlive Then
-            Call WriteLocaleMsg(UserIndex, 2121, FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_EVENT_BOSS_ALIVE_CANNOT_DELIVER_SEASONAL_ITEMS, FONTTYPE_WARNING)
             Exit Function
         End If
     End If
     If Not GlobalQuestInfo(GlobalQuestIndex).IsActive Then
-        Call WriteLocaleMsg(UserIndex, 2124, FONTTYPE_WARNING)
+        Call WriteLocaleMsg(UserIndex, MSG_GLOBAL_EVENT_FINISHED_CANNOT_DELIVER_ITEMS, FONTTYPE_WARNING)
         Exit Function
     End If
 SkipEventIsActive:

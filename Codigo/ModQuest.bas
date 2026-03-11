@@ -168,10 +168,10 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + (.RewardEXP * SvrConfig.GetValue("ExpMult"))
                 Call WriteUpdateExp(UserIndex)
                 Call CheckUserLevel(UserIndex)
-                Call WriteLocaleMsg(UserIndex, 140, e_FontTypeNames.FONTTYPE_EXP, (.RewardEXP * SvrConfig.GetValue("ExpMult")))
+                Call WriteLocaleMsg(UserIndex, MSG_GANADO_PUNTOS_EXPERIENCIA, e_FontTypeNames.FONTTYPE_EXP, (.RewardEXP * SvrConfig.GetValue("ExpMult")))
             Else
                 'Msg1314= No se te ha dado experiencia porque eres nivel máximo.
-                Call WriteLocaleMsg(UserIndex, 1314, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_HA_DADO_EXPERIENCIA_PORQUE_ERES_NIVEL_MAXIMO, e_FontTypeNames.FONTTYPE_INFO)
             End If
         End If
         'Se entrega el oro.
@@ -181,12 +181,12 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             If GiveGLD < 100000 Then
                 UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + GiveGLD
                 'Msg1315= Has ganado ¬1 monedas de oro como recompensa.
-                Call WriteLocaleMsg(UserIndex, 1315, e_FontTypeNames.FONTTYPE_INFOIAO, PonerPuntos(GiveGLD))
+                Call WriteLocaleMsg(UserIndex, MSG_GANADO_MONEDAS_ORO_COMO_RECOMPENSA, e_FontTypeNames.FONTTYPE_INFOIAO, PonerPuntos(GiveGLD))
                 Call WriteUpdateGold(UserIndex)
             Else
                 UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco + GiveGLD
                 'Msg1316= Has ganado ¬1 monedas de oro como recompensa. La recompensa ha sido depositada en su cuenta del Banco Goliath.
-                Call WriteLocaleMsg(UserIndex, 1316, e_FontTypeNames.FONTTYPE_INFOIAO, PonerPuntos(GiveGLD))
+                Call WriteLocaleMsg(UserIndex, MSG_GANADO_MONEDAS_ORO_COMO_RECOMPENSA_RECOMPENSA_HA_SIDO, e_FontTypeNames.FONTTYPE_INFOIAO, PonerPuntos(GiveGLD))
             End If
         End If
         'Si hay recompensa de objetos, se entregan.
@@ -195,7 +195,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                 If .RewardOBJ(i).amount Then
                     Call MeterItemEnInventario(UserIndex, .RewardOBJ(i))
                     'Msg1318=Has recibido ¬1 como recompensa.
-                    Call WriteLocaleMsg(UserIndex, 1318, e_FontTypeNames.FONTTYPE_FIGHT, QuestList(QuestIndex).RewardOBJ(i).amount & " " & ObjData(QuestList( _
+                    Call WriteLocaleMsg(UserIndex, MSG_RECIBIDO_COMO_RECOMPENSA, e_FontTypeNames.FONTTYPE_FIGHT, QuestList(QuestIndex).RewardOBJ(i).amount & " " & ObjData(QuestList( _
                             QuestIndex).RewardOBJ(i).ObjIndex).name)
                 End If
             Next i
@@ -209,7 +209,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                     Next j
                     If UserList(UserIndex).Stats.UserHechizos(j) <> 0 Then
                         'Msg1317= No tenes espacio para mas hechizos.
-                        Call WriteLocaleMsg(UserIndex, 1317, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_ESPACIO_MAS_HECHIZOS_1317, e_FontTypeNames.FONTTYPE_INFO)
                     Else
                         UserList(UserIndex).Stats.UserHechizos(j) = .RewardSpellList(i)
                         Call UpdateUserHechizos(False, UserIndex, CByte(j))
@@ -467,7 +467,7 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
     'Esta el personaje en la distancia correcta?
     If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) > 5 Then
         ' Msg8=Estas demasiado lejos.
-        Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
     'El NPC hace quests?
@@ -617,41 +617,41 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
     On Error GoTo ErrHandler
     CanUserAcceptQuest = False
     If tmpQuest.Trabajador And UserList(UserIndex).clase <> e_Class.Trabajador Then
-        Call WriteLocaleMsg(UserIndex, 1262, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_QUEST_ONLY_FOR_WORKERS, e_FontTypeNames.FONTTYPE_INFO)
         Exit Function
     End If
     If NpcIndex > 0 Then
         If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) > 5 Then
             ' Msg8=Estas demasiado lejos.
-            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
     End If
     If TieneQuest(UserIndex, QuestIndex) Then
-        Call WriteLocaleMsg(UserIndex, 1263, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_QUEST_ALREADY_IN_PROGRESS, e_FontTypeNames.FONTTYPE_INFO)
         Exit Function
     End If
     If tmpQuest.RequiredQuest > 0 Then
         If Not UserDoneQuest(UserIndex, tmpQuest.RequiredQuest) Then
-            Call WriteLocaleMsg(UserIndex, 1424, e_FontTypeNames.FONTTYPE_INFO, QuestList(tmpQuest.RequiredQuest).nombre)
+            Call WriteLocaleMsg(UserIndex, MSG_MUST_COMPLETE_QUEST_TO_START_MISSION, e_FontTypeNames.FONTTYPE_INFO, QuestList(tmpQuest.RequiredQuest).nombre)
             Exit Function
         End If
     End If
     'El personaje tiene suficiente nivel?
     If UserList(UserIndex).Stats.ELV < tmpQuest.RequiredLevel Then
-        Call WriteLocaleMsg(UserIndex, 1425, e_FontTypeNames.FONTTYPE_INFO, tmpQuest.RequiredLevel)
+        Call WriteLocaleMsg(UserIndex, MSG_MUST_BE_AT_LEAST_LEVEL_TO_START_MISSION, e_FontTypeNames.FONTTYPE_INFO, tmpQuest.RequiredLevel)
         Exit Function
     End If
     'El personaje es nivel muy alto?
     If tmpQuest.LimitLevel > 0 Then 'Si el nivel limite es mayor a 0, por si no esta asignada la propiedad en quest.dat
         If UserList(UserIndex).Stats.ELV > tmpQuest.LimitLevel Then
-            Call WriteLocaleMsg(UserIndex, 1416, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_LEVEL_TOO_HIGH_FOR_MISSION, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
     End If
     If tmpQuest.RequiredSkill.SkillType > 0 Then
         If UserList(UserIndex).Stats.UserSkills(tmpQuest.RequiredSkill.SkillType) < tmpQuest.RequiredSkill.RequiredValue Then
-            Call WriteLocaleMsg(UserIndex, 473, e_FontTypeNames.FONTTYPE_INFO, tmpQuest.RequiredSkill.SkillType)
+            Call WriteLocaleMsg(UserIndex, MSG_MUST_INCREASE_SKILL_TO_CONTINUE, e_FontTypeNames.FONTTYPE_INFO, tmpQuest.RequiredSkill.SkillType)
             Exit Function
         End If
     End If
@@ -669,16 +669,16 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
     If tmpQuest.GlobalQuestIndex > 0 Then
         If tmpQuest.GlobalQuestThresholdNeeded > 0 Then
             If tmpQuest.GlobalQuestThresholdNeeded > GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringGlobalCounter Then
-                Call WriteLocaleMsg(UserIndex, 2123, FONTTYPE_WARNING, GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringThreshold & "¬" & tmpQuest.GlobalQuestThresholdNeeded)
+                Call WriteLocaleMsg(UserIndex, MSG_GLOBAL_REWARD_LOCKED_THRESHOLD_NOT_REACHED, FONTTYPE_WARNING, GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringThreshold & "¬" & tmpQuest.GlobalQuestThresholdNeeded)
                 Exit Function
             End If
         Else
             If Not GlobalQuestInfo(tmpQuest.GlobalQuestIndex).IsActive Then
-                Call WriteLocaleMsg(UserIndex, 2124, FONTTYPE_WARNING)
+                Call WriteLocaleMsg(UserIndex, MSG_GLOBAL_EVENT_FINISHED_CANNOT_DELIVER_ITEMS, FONTTYPE_WARNING)
                 Exit Function
             End If
             If GlobalQuestInfo(tmpQuest.GlobalQuestIndex).IsBossAlive Then
-                Call WriteLocaleMsg(UserIndex, 2121, FONTTYPE_WARNING)
+                Call WriteLocaleMsg(UserIndex, MSG_EVENT_BOSS_ALIVE_CANNOT_DELIVER_SEASONAL_ITEMS, FONTTYPE_WARNING)
                 Exit Function
             End If
         End If

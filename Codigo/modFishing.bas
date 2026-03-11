@@ -12,7 +12,6 @@ Public Const OBJ_BROKEN_FISHING_ROD_FINE   As Integer = 3459
 Public Const OBJ_BROKEN_FISHING_ROD_ELITE  As Integer = 3458
 Public Const OBJ_FISHING_NET_BASIC         As Integer = 138
 Public Const OBJ_FISHING_NET_ELITE         As Integer = 139
-Public Const OBJ_FISHING_LINE              As Integer = 2183
 Public Const OBJ_FISH_BANK                 As Integer = 1992
 Public Const OBJ_SQUID_BANK                As Integer = 1990
 Public Const OBJ_SHRIMP_BANK               As Integer = 1991
@@ -195,7 +194,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
                         fishingCatch.amount = MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount
                         Call CreateFishingPool(.pos.Map)
                         Call EraseObj(MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount, .pos.Map, TargetX, TargetY)
-                        Call WriteLocaleMsg(UserIndex, 649, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_MORE_FISH_HERE, e_FontTypeNames.FONTTYPE_INFO)
                         .AutomatedAction.IsActive = False
                         .Counters.Trabajando = 0
                     End If
@@ -225,7 +224,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
                     If Not MeterItemEnInventario(UserIndex, fishingCatch) Then
                         Call TirarItemAlPiso(.pos, fishingCatch)
                     End If
-                    Call WriteLocaleMsg(UserIndex, 1457, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_YOU_OBTAINED_ITEM, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Next i
         End If
@@ -387,43 +386,43 @@ Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal Target
         End If
         If (MapData(.pos.Map, TargetX, TargetY).Blocked And FLAG_AGUA) = 0 Then
             ' No water at target position
-            Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)  ' Zona de pesca no Autorizada
+            Call WriteLocaleMsg(UserIndex, MSG_FISHING_AREA_NOT_AUTHORIZED, e_FontTypeNames.FONTTYPE_INFO)  ' Zona de pesca no Autorizada
             Exit Function
         End If
         ' Check for invalid fishing trigger
         If MapData(.pos.Map, .pos.x, .pos.y).trigger = e_Trigger.PESCAINVALIDA Then
-            Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_FISHING_AREA_NOT_AUTHORIZED, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
         Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
             Case e_WorkingToolSubType.FishingRod
                 If IsStandingOnWater(.pos) Then
-                    Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_ONLY_CAN_FISH_FROM_BOAT_WITH_NET, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
                 If Not IsAdjacentToWater(.pos) Then
                     ' Msg1021= Acércate a la costa para pescar.
-                    Call WriteLocaleMsg(UserIndex, 1021, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_ACERCATE_COSTA_PESCAR, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
                 If UserList(UserIndex).flags.Navegando <> 0 Then
-                    Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_ONLY_CAN_FISH_FROM_BOAT_WITH_NET, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case e_WorkingToolSubType.FishingNet
                 If UserList(UserIndex).flags.Navegando = 0 Then
-                    Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_ONLY_CAN_FISH_FROM_BOAT_WITH_NET, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
                 If (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_FISH_AREA) And _
                    (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_SHRIMP_BANK) And _
                    (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_SQUID_BANK) And _
                    (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_FISH_BANK) Then
-                    Call WriteLocaleMsg(UserIndex, 595, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUST_FIND_FISHING_AREA_FOR_NET, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
                 If Not CheckResourceDistance(UserIndex, CLOSE_DISTANCE_EXTRACTION, TargetX, TargetY) Then
-                    Call WriteLocaleMsg(UserIndex, 424, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_TOO_FAR_AWAY, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case Else
@@ -432,7 +431,7 @@ Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal Target
                 Exit Function
         End Select
         If MapInfo(.pos.Map).zone = "DUNGEON" Then
-            Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_FISHING_AREA_NOT_AUTHORIZED, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
         ValidateFishingPosition = True
