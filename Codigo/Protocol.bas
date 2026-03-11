@@ -712,6 +712,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandlePromedio(UserIndex)
         Case ClientPacketID.eGiveItem
             Call HandleGiveItem(UserIndex)
+        Case ClientPacketID.eTakeItem
+            Call HandleTakeItem(UserIndex)
         Case ClientPacketID.eOfertaInicial
             Call HandleOfertaInicial(UserIndex)
         Case ClientPacketID.eOfertaDeSubasta

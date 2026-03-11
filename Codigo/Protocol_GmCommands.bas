@@ -3404,6 +3404,61 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGiveItem", Erl)
 End Sub
 
+Public Sub HandleTakeItem(ByVal UserIndex As Integer)
+    On Error GoTo ErrHandler
+    With UserList(UserIndex)
+        Dim username As String
+        Dim Slot     As Byte
+        Dim Cantidad As Integer
+        Dim Motivo   As String
+        Dim tUser    As t_UserReference
+
+        username = reader.ReadString8()
+        Slot = reader.ReadInt8()
+        Cantidad = reader.ReadInt16()
+        Motivo = reader.ReadString8()
+
+        If (.flags.Privilegios And e_PlayerType.Admin) Then
+            If Cantidad <= 0 Then Exit Sub
+
+            tUser = NameIndex(username)
+            If Not IsValidUserRef(tUser) Then
+                Call WriteLocaleMsg(UserIndex, MSG_NO_USUARIO_CONECTADO, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+
+            If Slot < 1 Or Slot > UserList(tUser.ArrayIndex).CurrentInventorySlots Then
+                Call WriteLocaleMsg(UserIndex, MSG_SLOT_INVILIDO, e_FontTypeNames.FONTTYPE_TALK)
+                Exit Sub
+            End If
+
+            If UserList(tUser.ArrayIndex).invent.Object(Slot).ObjIndex <= 0 Then
+                Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_OBJETO_SLOT_SELECCIONADO, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+
+            If Cantidad > UserList(tUser.ArrayIndex).invent.Object(Slot).amount Then
+                Cantidad = UserList(tUser.ArrayIndex).invent.Object(Slot).amount
+            End If
+
+            Dim objName As String
+            objName = ObjData(UserList(tUser.ArrayIndex).invent.Object(Slot).ObjIndex).name
+
+            Call QuitarUserInvItem(tUser.ArrayIndex, Slot, Cantidad)
+            Call UpdateUserInv(False, tUser.ArrayIndex, Slot)
+
+            Call WriteConsoleMsg(UserIndex, "Quitaste " & Cantidad & " " & objName & " de " & UserList(tUser.ArrayIndex).name & " (slot " & Slot & ").", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(tUser.ArrayIndex, "Un Admin te quitó " & Cantidad & " " & objName & ". Motivo: " & Motivo, e_FontTypeNames.FONTTYPE_INFO)
+            Call LogGM(GetUserRealName(UserIndex), "/QITEM " & username & " SLOT:" & Slot & " ITEM:" & objName & " CANT:" & Cantidad & " MOTIVO:" & Motivo)
+        Else
+            Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_COMANDO_DESHABILITADO_CARGO_DEBES_PEDIR_ADMIN, e_FontTypeNames.FONTTYPE_INFO)
+        End If
+    End With
+    Exit Sub
+ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleTakeItem", Erl)
+End Sub
+
 Public Sub HandleQuestionGM(ByVal UserIndex As Integer)
     Dim nowRaw    As Long
     Dim elapsedMs As Double

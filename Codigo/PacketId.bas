@@ -529,6 +529,7 @@ Public Enum ClientPacketID
     eChangeSkinSlot
     eStartAutomatedAction
     ePetFollowAll
+    eTakeItem                '/QITEM
     eMaxPacket
     [PacketCount]
 End Enum

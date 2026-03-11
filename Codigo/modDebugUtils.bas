@@ -463,6 +463,8 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "ePromedio"
         Case ClientPacketID.eGiveItem
             PacketID_to_string = "eGiveItem"
+        Case ClientPacketID.eTakeItem
+            PacketID_to_string = "eTakeItem"
         Case ClientPacketID.eOfertaInicial
             PacketID_to_string = "eOfertaInicial"
         Case ClientPacketID.eOfertaDeSubasta
