@@ -303,9 +303,11 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
         Dim NearestTargetDistance As Single
         NearestUser = SelectNearestUser(NpcIndex, NearestTargetDistance)
         CurrentTarget = SelectCurrentTarget(NpcIndex, NearestUser)
+        If IsValidRef(CurrentTarget) Then
+            TargetPos = GetPosition(CurrentTarget)
+        End If
         'perform attack
         If IsValidRef(CurrentTarget) And NPCs.CanAttack(.Contadores, .flags) Then
-            TargetPos = GetPosition(CurrentTarget)
             If Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) <= .AttackRange Then
                 If NpcCanAttack(NpcIndex, CurrentTarget) = eCanAttack And CurrentTarget.RefType = eUser Then
                     If NpcAtacaUser(NpcIndex, CurrentTarget.ArrayIndex, .Char.Heading) And .ProjectileType > 0 Then
