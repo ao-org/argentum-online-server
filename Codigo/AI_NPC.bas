@@ -984,13 +984,22 @@ Private Function GetRangedFacingHeading(ByRef currentPos As t_WorldPos, ByRef ta
     dX = targetPos.x - currentPos.x
     dY = targetPos.y - currentPos.y
 
+    ' Preserve current heading if there is no delta or if the delta is a perfect diagonal (tie).
+    If dX = 0 And dY = 0 Then
+        GetRangedFacingHeading = currentHeading
+        Exit Function
+    End If
+
+    If Abs(dY) = Abs(dX) Then
+        GetRangedFacingHeading = currentHeading
+        Exit Function
+    End If
+
     If Abs(dY) > Abs(dX) Then
         If dY < 0 Then
             GetRangedFacingHeading = e_Heading.NORTH
         ElseIf dY > 0 Then
             GetRangedFacingHeading = e_Heading.SOUTH
-        Else
-            GetRangedFacingHeading = currentHeading
         End If
     Else
         If dX < 0 Then
