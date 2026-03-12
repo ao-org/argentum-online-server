@@ -320,7 +320,7 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
         End If
         'perform movement
         If NPCs.CanMove(.Contadores, .flags) Then
-            Call TryFaceRangedTarget(NpcIndex, CurrentTarget, TargetPos)
+            Call TryFaceRangedTarget(NpcIndex, CurrentTarget)
             If NearestUser > 0 And NearestTargetDistance <= .PreferedRange Then
                 Dim retreatTargetPos    As t_WorldPos
                 Dim retreatDestination As t_WorldPos
@@ -821,7 +821,7 @@ Public Sub AI_BGSupportBehavior(ByVal NpcIndex As Integer)
         Dim TargetPos As t_WorldPos
         TargetPos = ModReferenceUtils.GetPosition(CurrentTarget)
         If NPCs.CanMove(.Contadores, .flags) Then
-            Call TryFaceRangedTarget(NpcIndex, CurrentTarget, TargetPos)
+            Call TryFaceRangedTarget(NpcIndex, CurrentTarget)
             If CurrentTarget.ArrayIndex > 0 And NearestTargetDistance <= .PreferedRange Then
                 Dim retreatDestination As t_WorldPos
                 retreatDestination = ComputeNpcRangedRetreatDestination(NpcIndex, TargetPos, .PreferedRange)
@@ -883,7 +883,7 @@ Public Sub AI_BGRangedBehavior(ByVal NpcIndex As Integer)
         End If
         'perform movement
         If NPCs.CanMove(.Contadores, .flags) Then
-            Call TryFaceRangedTarget(NpcIndex, CurrentTarget, TargetPos)
+            Call TryFaceRangedTarget(NpcIndex, CurrentTarget)
             If CurrentTarget.ArrayIndex > 0 And NearestTargetDistance <= .PreferedRange Then
                 Dim retreatDestination As t_WorldPos
                 retreatDestination = ComputeNpcRangedRetreatDestination(NpcIndex, TargetPos, .PreferedRange)
@@ -963,8 +963,11 @@ Private Function DistanciaRadial(OrigenPos As t_WorldPos, DestinoPos As t_WorldP
     DistanciaRadial = max(Abs(OrigenPos.x - DestinoPos.x), Abs(OrigenPos.y - DestinoPos.y))
 End Function
 
-Private Sub TryFaceRangedTarget(ByVal NpcIndex As Integer, ByRef CurrentTarget As t_AnyReference, ByRef TargetPos As t_WorldPos)
+Private Sub TryFaceRangedTarget(ByVal NpcIndex As Integer, ByRef CurrentTarget As t_AnyReference)
     If Not IsValidRef(CurrentTarget) Then Exit Sub
+
+    Dim TargetPos As t_WorldPos
+    TargetPos = ModReferenceUtils.GetPosition(CurrentTarget)
 
     With NpcList(NpcIndex)
         Dim targetHeading As e_Heading
