@@ -1,25 +1,32 @@
 Attribute VB_Name = "modFishing"
 Option Explicit
-Private FishingLevelBonus()                As Double
-Private FishingBonusesInitialized          As Boolean
-Public Const OBJ_FISHING_ROD_BASIC         As Integer = 881
-Public Const OBJ_FISHING_ROD_COMMON        As Integer = 2121
-Public Const OBJ_FISHING_ROD_FINE          As Integer = 2132
-Public Const OBJ_FISHING_ROD_ELITE         As Integer = 2133
-Public Const OBJ_BROKEN_FISHING_ROD_BASIC  As Integer = 3457
-Public Const OBJ_BROKEN_FISHING_ROD_COMMON As Integer = 3456
-Public Const OBJ_BROKEN_FISHING_ROD_FINE   As Integer = 3459
-Public Const OBJ_BROKEN_FISHING_ROD_ELITE  As Integer = 3458
-Public Const OBJ_FISHING_NET_BASIC         As Integer = 138
-Public Const OBJ_FISHING_NET_ELITE         As Integer = 139
-Public Const OBJ_FISH_BANK                 As Integer = 1992
-Public Const OBJ_SQUID_BANK                As Integer = 1990
-Public Const OBJ_SHRIMP_BANK               As Integer = 1991
-Public Const OBJ_FISH_AREA                 As Integer = 3740
+
+Private FishingLevelBonus() As Double
+Private FishingBonusesInitialized As Boolean
+
+Public Const OBJ_FISHING_ROD_BASIC                             As Integer = 881
+Public Const OBJ_FISHING_ROD_COMMON                            As Integer = 2121
+Public Const OBJ_FISHING_ROD_FINE                              As Integer = 2132
+Public Const OBJ_FISHING_ROD_ELITE                             As Integer = 2133
+Public Const OBJ_BROKEN_FISHING_ROD_BASIC                      As Integer = 3457
+Public Const OBJ_BROKEN_FISHING_ROD_COMMON                     As Integer = 3456
+Public Const OBJ_BROKEN_FISHING_ROD_FINE                       As Integer = 3459
+Public Const OBJ_BROKEN_FISHING_ROD_ELITE                      As Integer = 3458
+Public Const OBJ_FISHING_NET_BASIC                             As Integer = 138
+Public Const OBJ_FISHING_NET_ELITE                             As Integer = 139
+Public Const OBJ_FISHING_LINE                                  As Integer = 2183
+Public Const OBJ_FISH_BANK                                     As Integer = 1992
+Public Const OBJ_SQUID_BANK                                    As Integer = 1990
+Public Const OBJ_SHRIMP_BANK                                   As Integer = 1991
+Public Const OBJ_FISH_AREA                                     As Integer = 3740
+
+
 
 Public Sub InitializeFishingBonuses()
     If FishingBonusesInitialized Then Exit Sub
+
     ReDim FishingLevelBonus(1 To 47) As Double
+
     FishingLevelBonus(1) = 0#
     FishingLevelBonus(2) = 0.009
     FishingLevelBonus(3) = 0.015
@@ -67,6 +74,7 @@ Public Sub InitializeFishingBonuses()
     FishingLevelBonus(45) = 1.8
     FishingLevelBonus(46) = 2#
     FishingLevelBonus(47) = 2.5
+
     FishingBonusesInitialized = True
 End Sub
 
@@ -194,7 +202,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
                         fishingCatch.amount = MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount
                         Call CreateFishingPool(.pos.Map)
                         Call EraseObj(MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount, .pos.Map, TargetX, TargetY)
-                        Call WriteLocaleMsg(UserIndex, MSG_NO_MORE_FISH_HERE, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, 649, e_FontTypeNames.FONTTYPE_INFO)
                         .AutomatedAction.IsActive = False
                         .Counters.Trabajando = 0
                     End If
@@ -224,7 +232,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
                     If Not MeterItemEnInventario(UserIndex, fishingCatch) Then
                         Call TirarItemAlPiso(.pos, fishingCatch)
                     End If
-                    Call WriteLocaleMsg(UserIndex, MSG_YOU_OBTAINED_ITEM, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, 1457, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Next i
         End If
@@ -244,9 +252,12 @@ Private Function IsValidUserIndex(ByVal UserIndex As Integer) As Boolean
     On Error GoTo InvalidIndex
     Dim LowerBound As Long
     Dim UpperBound As Long
+
     LowerBound = LBound(UserList)
     UpperBound = UBound(UserList)
+
     If UserIndex < LowerBound Or UserIndex > UpperBound Then Exit Function
+
     IsValidUserIndex = True
     Exit Function
 InvalidIndex:
@@ -254,13 +265,16 @@ InvalidIndex:
     IsValidUserIndex = False
 End Function
 
-Private Function IsValidObjectIndex(ByVal ObjectIndex As Integer) As Boolean
+Private Function IsValidObjectIndex(ByVal objectIndex As Integer) As Boolean
     On Error GoTo InvalidIndex
     Dim LowerBound As Long
     Dim UpperBound As Long
+
     LowerBound = LBound(ObjData)
     UpperBound = UBound(ObjData)
-    If ObjectIndex < LowerBound Or ObjectIndex > UpperBound Then Exit Function
+
+    If objectIndex < LowerBound Or objectIndex > UpperBound Then Exit Function
+
     IsValidObjectIndex = True
     Exit Function
 InvalidIndex:
@@ -268,11 +282,37 @@ InvalidIndex:
     IsValidObjectIndex = False
 End Function
 
+Private Function IsValidMapIndex(ByVal mapIndex As Integer) As Boolean
+    On Error GoTo InvalidIndex
+    Dim LowerBound As Long
+    Dim UpperBound As Long
+
+    LowerBound = LBound(MapInfo)
+    UpperBound = UBound(MapInfo)
+
+    If mapIndex < LowerBound Or mapIndex > UpperBound Then Exit Function
+
+    IsValidMapIndex = True
+    Exit Function
+InvalidIndex:
+    Err.Clear
+    IsValidMapIndex = False
+End Function
+
+Private Function IsValidMapPosition(ByVal mapIndex As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    If Not IsValidMapIndex(mapIndex) Then Exit Function
+    If x < XMinMapSize Or x > XMaxMapSize Then Exit Function
+    If y < YMinMapSize Or y > YMaxMapSize Then Exit Function
+    IsValidMapPosition = True
+End Function
+
 Private Function ClampFishingLevel(ByVal level As Long) As Long
     Dim LowerBound As Long
     Dim UpperBound As Long
+
     LowerBound = LBound(FishingLevelBonus)
     UpperBound = UBound(FishingLevelBonus)
+
     If level < LowerBound Then
         ClampFishingLevel = LowerBound
     ElseIf level > UpperBound Then
@@ -317,36 +357,43 @@ End Function
 
 Public Function ObtenerPezRandom(ByVal PoderCania As Integer) As Long
     On Error GoTo ObtenerPezRandom_Err
-    Dim PesoMinimo    As Long
-    Dim PesoMaximo    As Long
+
+    Dim PesoMinimo As Long
+    Dim PesoMaximo As Long
     Dim ValorGenerado As Long
-    Dim PezIndex      As Long
+    Dim PezIndex As Long
+
     ' Aseguramos que PoderCania esté dentro del rango válido del array.
     PoderCania = Clamp(PoderCania, LBound(PesoPeces), UBound(PesoPeces))
+    
     ' PesoMaximo: suma de pesos acumulados de todos los peces que puede pescar esta caña
     PesoMaximo = PesoPeces(PoderCania)
+    
     ' Esto asegura que el aleatorio solo considere los peces que pertenecen al Power actual
     If PoderCania > LBound(PesoPeces) Then
         PesoMinimo = PesoPeces(PoderCania - 1)
     Else
         PesoMinimo = 0
     End If
+
     ' Generamos un valor aleatorio solo dentro del rango correspondiente
     If PesoMaximo <= PesoMinimo Then
         ValorGenerado = RandomNumber(0, PesoMaximo - 1)
     Else
         ValorGenerado = RandomNumber(PesoMinimo, PesoMaximo - 1)
     End If
+
     ' Obtenemos el pez correspondiente
     PezIndex = BinarySearchPeces(ValorGenerado) ' BinarySearchPeces() espera un valor en el mismo espacio acumulado que PesoPeces().
     ObtenerPezRandom = Peces(PezIndex).ObjIndex
+
     Exit Function
+
 ObtenerPezRandom_Err:
     Call TraceError(Err.Number, Err.Description, "modFishing.ObtenerPezRandom", Erl)
 End Function
-
 Public Function IsUniqueMapFish(ByVal ObjIndex As Long) As Boolean
-    On Error GoTo IsUniqueMapFish_Err
+On Error GoTo IsUniqueMapFish_Err
     Dim i As Long
     For i = 1 To UniqueMapFishCount
         If UniqueMapFishIDs(i) = ObjIndex Then
@@ -386,43 +433,43 @@ Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal Target
         End If
         If (MapData(.pos.Map, TargetX, TargetY).Blocked And FLAG_AGUA) = 0 Then
             ' No water at target position
-            Call WriteLocaleMsg(UserIndex, MSG_FISHING_AREA_NOT_AUTHORIZED, e_FontTypeNames.FONTTYPE_INFO)  ' Zona de pesca no Autorizada
+            Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)  ' Zona de pesca no Autorizada
             Exit Function
         End If
         ' Check for invalid fishing trigger
         If MapData(.pos.Map, .pos.x, .pos.y).trigger = e_Trigger.PESCAINVALIDA Then
-            Call WriteLocaleMsg(UserIndex, MSG_FISHING_AREA_NOT_AUTHORIZED, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
         Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
             Case e_WorkingToolSubType.FishingRod
                 If IsStandingOnWater(.pos) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ONLY_CAN_FISH_FROM_BOAT_WITH_NET, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
                 If Not IsAdjacentToWater(.pos) Then
                     ' Msg1021= Acércate a la costa para pescar.
-                    Call WriteLocaleMsg(UserIndex, MSG_ACERCATE_COSTA_PESCAR, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, 1021, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
                 If UserList(UserIndex).flags.Navegando <> 0 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ONLY_CAN_FISH_FROM_BOAT_WITH_NET, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case e_WorkingToolSubType.FishingNet
                 If UserList(UserIndex).flags.Navegando = 0 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ONLY_CAN_FISH_FROM_BOAT_WITH_NET, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, 1436, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
                 If (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_FISH_AREA) And _
                    (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_SHRIMP_BANK) And _
                    (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_SQUID_BANK) And _
                    (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_FISH_BANK) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_MUST_FIND_FISHING_AREA_FOR_NET, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, 595, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
                 If Not CheckResourceDistance(UserIndex, CLOSE_DISTANCE_EXTRACTION, TargetX, TargetY) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_TOO_FAR_AWAY, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, 424, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case Else
@@ -431,7 +478,7 @@ Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal Target
                 Exit Function
         End Select
         If MapInfo(.pos.Map).zone = "DUNGEON" Then
-            Call WriteLocaleMsg(UserIndex, MSG_FISHING_AREA_NOT_AUTHORIZED, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, 596, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
         ValidateFishingPosition = True
@@ -451,3 +498,4 @@ Private Function IsAdjacentToWater(ByRef pos As t_WorldPos) As Boolean
         (MapData(pos.Map, pos.x, pos.y + 1).Blocked And FLAG_AGUA) <> 0 Or _
         (MapData(pos.Map, pos.x, pos.y - 1).Blocked And FLAG_AGUA) <> 0
 End Function
+

@@ -136,7 +136,7 @@ Public Sub FinalizarEvento()
             Exit Sub
     End Select
     Call AgregarAConsola("Eventos > Evento finalizado.")
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_FINALIZADO, vbNullString, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1563=Eventos > Evento finalizado.
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1563, vbNullString, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1563=Eventos > Evento finalizado.
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(551, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
     Exit Sub
 FinalizarEvento_Err:
@@ -200,23 +200,23 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi 
         Exit Sub
     End If
     If Tipo > 3 Or Tipo < 1 Then
-        Call WriteLocaleMsg(tUser.ArrayIndex, MSG_TIPO_EVENTO_INVALIDO, e_FontTypeNames.FONTTYPE_New_Eventos) ' Msg2071="Tipo de evento invalido."
+        Call WriteLocaleMsg(tUser.ArrayIndex, 2071, e_FontTypeNames.FONTTYPE_New_Eventos) ' Msg2071="Tipo de evento invalido."
         Exit Sub
     End If
     If Duracion > 59 Then
-        Call WriteLocaleMsg(tUser.ArrayIndex, MSG_DURACION_INVALIDA_MAXIMA_MINUTOS, e_FontTypeNames.FONTTYPE_New_Eventos) ' Msg2072="Duracion invalida. maxima 59 minutos."
+        Call WriteLocaleMsg(tUser.ArrayIndex, 2072, e_FontTypeNames.FONTTYPE_New_Eventos) ' Msg2072="Duracion invalida. maxima 59 minutos."
         Exit Sub
     End If
     If (Tipo = 1 And multi > 2) Then
-        Call WriteLocaleMsg(tUser.ArrayIndex, MSG_MULTIPLICACION_INVALIDA_MAXIMA, e_FontTypeNames.FONTTYPE_New_Eventos) ' Msg2073="Multiplicacion invalida. maxima x2."
+        Call WriteLocaleMsg(tUser.ArrayIndex, 2073, e_FontTypeNames.FONTTYPE_New_Eventos) ' Msg2073="Multiplicacion invalida. maxima x2."
         Exit Sub
     End If
     If (Tipo = 2 And multi > 2) Then
-        Call WriteLocaleMsg(tUser.ArrayIndex, MSG_MULTIPLICACION_INVALIDA_MAXIMA_2074, e_FontTypeNames.FONTTYPE_New_Eventos) ' Msg2074="Multiplicacion invalida. maxima x2."
+        Call WriteLocaleMsg(tUser.ArrayIndex, 2074, e_FontTypeNames.FONTTYPE_New_Eventos) ' Msg2074="Multiplicacion invalida. maxima x2."
         Exit Sub
     End If
     If (Tipo = 3 And multi > 5) Then
-        Call WriteLocaleMsg(tUser.ArrayIndex, MSG_MULTIPLICACION_INVALIDA_MAXIMA_2075, e_FontTypeNames.FONTTYPE_New_Eventos) ' Msg2075="Multiplicacion invalida. maxima x5."
+        Call WriteLocaleMsg(tUser.ArrayIndex, 2075, e_FontTypeNames.FONTTYPE_New_Eventos) ' Msg2075="Multiplicacion invalida. maxima x5."
         Exit Sub
     End If
     Dim aviso As String

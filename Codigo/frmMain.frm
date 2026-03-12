@@ -711,7 +711,7 @@ Sub CheckIdleUser()
                 If IsValidUserRef(UserList(iUserIndex).ComUsu.DestUsu) Then
                     If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
                         If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = iUserIndex Then
-                            Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(MSG_COMERCIO_CANCELADO_OTRO_USUARIO, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1844=Comercio cancelado por el otro usuario.
+                            Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(1844, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1844=Comercio cancelado por el otro usuario.
                             Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex)
                         End If
                     End If
@@ -763,7 +763,7 @@ End Sub
 Private Sub CerrarYForzarActualizar_Click()
     On Error GoTo Command4_Click_Err
     If MsgBox("¿Está seguro que desea guardar, forzar actualización a los usuarios y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_CERRANDO_SERVIDOR_LANZANDO_NUEVO_PARCHE, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1659=Servidor » Cerrando servidor y lanzando nuevo parche.
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1659, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1659=Servidor » Cerrando servidor y lanzando nuevo parche.
     Call GuardarUsuarios
     Call EcharPjsNoPrivilegiados
     GuardarYCerrar = True
@@ -985,7 +985,7 @@ End Sub
 
 Private Sub Command2_Click()
     On Error GoTo Command2_Click_Err
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR, BroadMsg.Text, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1660=Servidor » ¬1
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1660, BroadMsg.Text, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1660=Servidor » ¬1
     Exit Sub
 Command2_Click_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Command2_Click", Erl)
@@ -994,7 +994,7 @@ End Sub
 Private Sub Command4_Click()
     On Error GoTo Command4_Click_Err
     If MsgBox("¿Está seguro que desea guardar y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_CERRANDO_SERVIDOR, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1661=Servidor » Cerrando servidor.
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1661, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1661=Servidor » Cerrando servidor.
     Call GuardarUsuarios
     Call EcharPjsNoPrivilegiados
     GuardarYCerrar = True
@@ -1049,7 +1049,7 @@ Private Sub EstadoTimer_Timer()
     Call PerformanceTestStart(PerformanceTimer)
     For i = 1 To Baneos.count
         If Baneos(i).FechaLiberacion <= Now Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_CONCLUIDO_SENTENCIA_BAN, Baneos(i).name, e_FontTypeNames.FONTTYPE_SERVER)) ' Msg1787=Servidor » Se ha concluido la sentencia de ban para ¬1.
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1787, Baneos(i).name, e_FontTypeNames.FONTTYPE_SERVER)) ' Msg1787=Servidor » Se ha concluido la sentencia de ban para ¬1.
             Call UnBan(Baneos(i).name)
             Call Baneos.Remove(i)
             Call SaveBans
@@ -1363,14 +1363,14 @@ Private Sub SubastaTimer_Timer()
     Call PerformanceTestStart(PerformanceTimer)
     'Si ya paso un minuto y todavia no hubo oferta, avisamos que se cancela en un minuto
     If Subasta.TiempoRestanteSubasta = 240 And Subasta.HuboOferta = False Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1662=¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información. La subasta será cancelada si no hay ofertas en el próximo minuto.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1662, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1662=¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información. La subasta será cancelada si no hay ofertas en el próximo minuto.
         Subasta.MinutosDeSubasta = 4
         Subasta.PosibleCancelo = True
     End If
     'Si ya pasaron dos minutos y no hubo ofertas, cancelamos la subasta
     If Subasta.TiempoRestanteSubasta = 180 And Subasta.HuboOferta = False Then
         Subasta.HaySubastaActiva = False
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTA_CANCELADA_FALTA_OFERTAS, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1663=Subasta cancelada por falta de ofertas.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1663, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1663=Subasta cancelada por falta de ofertas.
         'Devolver item antes de resetear datos
         Call DevolverItem
         Exit Sub
@@ -1380,25 +1380,25 @@ Private Sub SubastaTimer_Timer()
     End If
     If Subasta.TiempoRestanteSubasta > 0 And Subasta.PosibleCancelo = False Then
         If Subasta.TiempoRestanteSubasta = 240 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA_1664, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1664=¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1664, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1664=¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
             Subasta.MinutosDeSubasta = "4"
         End If
         If Subasta.TiempoRestanteSubasta = 180 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA_1665, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1665=¡Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1665, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1665=¡Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
             Subasta.MinutosDeSubasta = "3"
         End If
         If Subasta.TiempoRestanteSubasta = 120 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA_1666, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1666=¡Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1666, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1666=¡Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
             Subasta.MinutosDeSubasta = "2"
         End If
         If Subasta.TiempoRestanteSubasta = 60 Then
             Subasta.MinutosDeSubasta = "1"
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA_1667, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1667=¡Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1667, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1667=¡Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
         End If
         Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta - 1
     End If
     If Subasta.TiempoRestanteSubasta = 1 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTA_TERMINADO_GANADOR, Subasta.Comprador, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1668=¡La subasta ha terminado! El ganador fue: ¬1
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1668, Subasta.Comprador, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1668=¡La subasta ha terminado! El ganador fue: ¬1
         Call FinalizarSubasta
     End If
     Call PerformTimeLimitCheck(PerformanceTimer, "SubastaTimer_Timer")
@@ -1409,7 +1409,7 @@ End Sub
 
 
 Private Sub TimerMeteorologia_Timer()
-    'Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_TIMER_LLUVIA, TimerMeteorologico, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1741=Servidor > Timer de lluvia en : ¬1
+    'Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1741, TimerMeteorologico, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1741=Servidor > Timer de lluvia en : ¬1
     On Error GoTo TimerMeteorologia_Timer_Err
     If TimerMeteorologico > 7 Then
         TimerMeteorologico = TimerMeteorologico - 1
@@ -1502,7 +1502,7 @@ Private Sub TimerRespawn_Timer()
             Else
                 RespawnList(NpcIndex).flags.NPCActive = False
                 If RespawnList(NpcIndex).InformarRespawn = 1 Then
-                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_VUELTO_MUNDO, RespawnList(NpcIndex).Numero, e_FontTypeNames.FONTTYPE_EXP)) ' Msg1788=¬1 ha vuelto a este mundo.
+                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1788, RespawnList(NpcIndex).Numero, e_FontTypeNames.FONTTYPE_EXP)) ' Msg1788=¬1 ha vuelto a este mundo.
                     If RespawnList(NpcIndex).flags.SndRespawn > 0 Then
                         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(RespawnList(NpcIndex).flags.SndRespawn, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
                     End If

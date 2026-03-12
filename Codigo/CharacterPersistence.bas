@@ -776,12 +776,6 @@ Private Sub SaveCharacterQuestsDoneDB(ByRef U As t_User, ByRef QueryBreakdown As
     Dim Params() As Variant
     Dim LoopC As Long
     Dim ParamC As Long
-
-    If Not HaveQuestsDoneChanged(U) Then
-        If Len(QueryBreakdown) > 0 Then QueryBreakdown = QueryBreakdown & "; "
-        QueryBreakdown = QueryBreakdown & "quests done skipped"
-        Exit Sub
-    End If
     If U.QuestStats.NumQuestsDone > 0 Then
         SqlBuilder.Append "REPLACE INTO quest_done (user_id, quest_id) VALUES "
         For LoopC = 1 To U.QuestStats.NumQuestsDone
@@ -1250,24 +1244,24 @@ Public Sub UpdateSavedQuests(ByVal UserIndex As Integer)
         Next i
     End With
 End Sub
-Public Function HaveQuestsDoneChanged(ByRef U As t_User) As Boolean
+
+Public Function HaveQuestsDoneChanged(ByVal UserIndex As Integer) As Boolean
     Dim i As Long
     Dim savedCount As Long
-
-    savedCount = GetIntegerArrayLength(U.Persist.LastQuestsDone)
-
-    If U.QuestStats.NumQuestsDone <> savedCount Then
-        HaveQuestsDoneChanged = True
-        Exit Function
-    End If
-
-    For i = 1 To U.QuestStats.NumQuestsDone
-        If GetIntegerArrayValue(U.QuestStats.QuestsDone, i) <> _
-           GetIntegerArrayValue(U.Persist.LastQuestsDone, i) Then
+    With UserList(UserIndex)
+        savedCount = GetIntegerArrayLength(.Persist.LastQuestsDone)
+        If .QuestStats.NumQuestsDone <> savedCount Then
             HaveQuestsDoneChanged = True
             Exit Function
         End If
-    Next i
+
+        For i = 1 To .QuestStats.NumQuestsDone
+            If GetIntegerArrayValue(.QuestStats.QuestsDone, i) <> GetIntegerArrayValue(.Persist.LastQuestsDone, i) Then
+                HaveQuestsDoneChanged = True
+                Exit Function
+            End If
+        Next i
+    End With
 End Function
 
 Public Sub UpdateSavedQuestsDone(ByVal UserIndex As Integer)
@@ -1339,8 +1333,10 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] quests update id:" & .Id, 50)
         End If
 
-        Call SaveCharacterQuestsDoneDB(UserList(UserIndex), QueryBreakdown, Builder)
-        Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] quests done update id:" & .Id, 50)
+        If HaveQuestsDoneChanged(UserIndex) Then
+            Call SaveCharacterQuestsDoneDB(UserList(UserIndex), QueryBreakdown, Builder)
+            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] quests done update id:" & .Id, 50)
+        End If
 
         Call SaveCharacterInventorySkinsDB(UserIndex, QueryBreakdown)
         Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] inventory skins update id:" & .Id, 50)

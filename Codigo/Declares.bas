@@ -41,7 +41,6 @@ Public Enum e_WorkingToolSubType
         SmithHammer = 7
         MinerPickaxe = 8
         TailorSewingbox = 9
-        FishingLine = 10
 End Enum
 
 
@@ -73,6 +72,9 @@ End Enum
 
 Public Enum e_AccionBarra
     Runa = 1
+    Resucitar = 2
+    Intermundia = 3
+    GoToPareja = 5
     Hogar = 6
     CancelarAccion = 99
 End Enum
@@ -1559,8 +1561,8 @@ End Enum
 
 Public Enum e_RuneType
     ReturnHome = 1
-    MesonSafePassage = 2
-    FastTravel = 3
+    Escape = 2
+    MesonSafePassage = 3
 End Enum
 
 Public Enum e_UseOnceSubType
@@ -2400,7 +2402,6 @@ Public Type t_ObjData
     RequiereObjeto                  As Integer
     BowCategory As Byte
     ArrowCategory As Byte
-    RepairTo As Integer ' ObjIndex of the item granted when this object is repaired.
 End Type
 
 '[Pablo ToxicWaste]

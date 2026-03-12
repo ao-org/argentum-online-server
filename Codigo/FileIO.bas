@@ -731,7 +731,7 @@ End Sub
 Sub LoadMotd()
     On Error GoTo LoadMotd_Err
     Dim i As Integer
-    MaxLines = max(1, val(GetVar(DatPath & "Motd.ini", "INIT", "NumLines")))
+    MaxLines = val(GetVar(DatPath & "Motd.ini", "INIT", "NumLines"))
     ReDim MOTD(1 To MaxLines)
     For i = 1 To MaxLines
         MOTD(i).texto = GetVar(DatPath & "Motd.ini", "Motd", "Line" & i)
@@ -1045,7 +1045,6 @@ Sub LoadOBJData()
             .ElementalTags = val(Leer.GetValue(ObjKey, "ElementalTags"))
             .BowCategory = val(Leer.GetValue(ObjKey, "BowCategory"))
             .ArrowCategory = val(Leer.GetValue(ObjKey, "ArrowCategory"))
-            .RepairTo = val(Leer.GetValue(ObjKey, "RepairTo"))
             If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
             If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
             Dim i As Integer
@@ -1205,12 +1204,11 @@ Sub LoadOBJData()
                         .MaxItems = val(Leer.GetValue(ObjKey, "Peces"))
                     End If
                 Case e_OBJType.otRecallStones
-                    .TipoRuna = val(Leer.GetValue(ObjKey, "Runetype"))
+                    .TipoRuna = val(Leer.GetValue(ObjKey, "TipoRuna"))
                     .DesdeMap = val(Leer.GetValue(ObjKey, "DesdeMap"))
-                    .HastaMap = val(Leer.GetValue(ObjKey, "HastaMap"))
-                    .HastaX = val(Leer.GetValue(ObjKey, "HastaX"))
-                    .HastaY = val(Leer.GetValue(ObjKey, "HastaY"))
-                    .Cooldown = val(Leer.GetValue(ObjKey, "Cooldown"))
+                    .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
+                    .HastaX = val(Leer.GetValue(ObjKey, "X"))
+                    .HastaY = val(Leer.GetValue(ObjKey, "Y"))
                 Case e_OBJType.otTeleport
                     .Radio = val(Leer.GetValue(ObjKey, "Radio"))
                 Case e_OBJType.otChest
