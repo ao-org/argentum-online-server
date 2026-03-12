@@ -586,7 +586,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                         End If
                         
                         If UserDoneQuest(sndIndex, .QuestNumber(q)) Or Not UserDoneQuest(sndIndex, QuestList(.QuestNumber(q)).RequiredQuest) Or UserList(sndIndex).Stats.ELV < _
-                                QuestList(.QuestNumber(q)).RequiredLevel Or validClass = True Then
+                                QuestList(.QuestNumber(q)).RequiredLevel Or (QuestList(.QuestNumber(q)).RequiredClassesCount > 0 And Not validClass) Then
                             Simbolo = 2
                         Else
                             Simbolo = 1
