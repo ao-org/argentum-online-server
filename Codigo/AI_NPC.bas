@@ -881,6 +881,9 @@ Public Sub AI_BGRangedBehavior(ByVal NpcIndex As Integer)
                 End If
             End If
         End If
+        If IsValidRef(CurrentTarget) Then
+            TargetPos = ModReferenceUtils.GetPosition(CurrentTarget)
+        End If
         'perform movement
         If NPCs.CanMove(.Contadores, .flags) Then
             Call TryFaceRangedTarget(NpcIndex, CurrentTarget)
