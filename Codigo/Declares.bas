@@ -3210,6 +3210,7 @@ Public Type t_NpcInfoCache
     ElementalTags As Long
     npcType As Integer
     Body As Integer
+    BodyIdle As Integer
     Head As Integer
     Heading As Integer
     CastAnimation As Integer

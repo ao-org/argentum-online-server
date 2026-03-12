@@ -989,6 +989,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .GlobalQuestBossIndex = val(LeerNPCs.GetValue(SectionName, "GlobalQuestBossIndex"))
         .npcType = Val(LeerNPCs.GetValue(SectionName, "NpcType"))
         .Body = Val(LeerNPCs.GetValue(SectionName, "Body"))
+        .BodyIdle = Val(LeerNPCs.GetValue(SectionName, "BodyIdle", .Body))
         .Head = Val(LeerNPCs.GetValue(SectionName, "Head"))
         .Heading = Val(LeerNPCs.GetValue(SectionName, "Heading"))
         .CastAnimation = Val(LeerNPCs.GetValue(SectionName, "CastAnimation"))
@@ -1330,7 +1331,11 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .flags.Faccion = Info.Faccion
         .flags.ElementalTags = Info.ElementalTags
         .npcType = Info.npcType
-        .Char.body = Info.Body
+        If Info.Movement = Estatico And Info.BodyIdle > 0 Then
+            .Char.body = Info.BodyIdle
+        Else
+            .Char.body = Info.Body
+        End If
         .Char.head = Info.Head
         .Char.Heading = Info.Heading
         .Char.CastAnimation = Info.CastAnimation
