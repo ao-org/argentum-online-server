@@ -33,7 +33,7 @@ Option Explicit
 Public Const SEPARATOR As String * 1 = vbNullChar
 Private Const SPELL_UNASSISTED_DARDO = 1
 Private Const SPELL_UNASSISTED_RUGIDO_SALVAJE = 5
-
+Private Const SPELL_UNASSISTED_RUGIDO_ARCANO = 348
 Private Const SPELL_UNASSISTED_FULGOR_IGNEO = 52
 Private Const SPELL_UNASSISTED_LATIDO_IGNEO = 349
 Private Const SPELL_UNASSISTED_ECO_IGNEO = 61
@@ -1483,7 +1483,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
             Call LogGM(GetUserRealName(UserIndex), "Dijo: " & chat)
         End If
         If .flags.Silenciado = 1 Then
-            Call WriteLocaleMsg(UserIndex, 110, e_FontTypeNames.FONTTYPE_INFO, .flags.MinutosRestantes)
+            Call WriteLocaleMsg(UserIndex, MSG_ADMINS_MUTED_YOU, e_FontTypeNames.FONTTYPE_INFO, .flags.MinutosRestantes)
         Else
             If LenB(chat) <> 0 Then
                 '  Foto-denuncias - Push message
@@ -1520,7 +1520,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
         Dim chat As String
         chat = reader.ReadString8()
         If UserList(UserIndex).flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             'Msg77=¡¡Estás muerto!!.
         Else
             '[Consejeros & GMs]
@@ -1537,7 +1537,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
                         ' Pierde la apariencia de fragata fantasmal
                         Call EquiparBarco(UserIndex)
                         ' Msg592=¡Has recuperado tu apariencia normal!
-                        Call WriteLocaleMsg(UserIndex, 592, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_RECUPERADO_APARIENCIA_NORMAL, e_FontTypeNames.FONTTYPE_INFO)
                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
                         Call RefreshCharStatus(UserIndex)
                     End If
@@ -1545,14 +1545,14 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
                     If .flags.invisible = 0 Then
                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
                         'Msg1115= ¡Has vuelto a ser visible!
-                        Call WriteLocaleMsg(UserIndex, 1115, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_VUELTO_VISIBLE_1115, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
             End If
             If .flags.Silenciado = 1 Then
-                Call WriteLocaleMsg(UserIndex, 110, e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
+                Call WriteLocaleMsg(UserIndex, MSG_ADMINS_MUTED_YOU, e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
                 'Msg1116= Los administradores te han impedido hablar durante los proximos ¬1
-                Call WriteLocaleMsg(UserIndex, 1116, e_FontTypeNames.FONTTYPE_INFO, .flags.MinutosRestantes)
+                Call WriteLocaleMsg(UserIndex, MSG_ADMINISTRADORES_IMPEDIDO_HABLAR_DURANTE_PROXIMOS, e_FontTypeNames.FONTTYPE_INFO, .flags.MinutosRestantes)
             Else
                 If LenB(chat) <> 0 Then
                     '  Foto-denuncias - Push message
@@ -1592,18 +1592,18 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
         TargetUser = NameIndex(targetCharIndex)
         If UserList(UserIndex).flags.Muerto = 1 Then
             'Msg1117= No puedes susurrar estando muerto.
-            Call WriteLocaleMsg(UserIndex, 1117, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_SUSURRAR_ESTANDO_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If Not IsValidUserRef(TargetUser) Then
             'Msg1118= El usuario esta muy lejos o desconectado.
-            Call WriteLocaleMsg(UserIndex, 1118, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_USUARIO_MUY_LEJOS_DESCONECTADO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If EstaPCarea(UserIndex, TargetUser.ArrayIndex) Then
             If UserList(TargetUser.ArrayIndex).flags.Muerto = 1 Then
                 'Msg1119= No puedes susurrar a un muerto.
-                Call WriteLocaleMsg(UserIndex, 1119, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_SUSURRAR_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             If LenB(chat) <> 0 Then
@@ -1620,7 +1620,7 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
             End If
         Else
             'Msg1120= El usuario esta muy lejos o desconectado.
-            Call WriteLocaleMsg(UserIndex, 1120, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_USUARIO_MUY_LEJOS_DESCONECTADO_1120, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
@@ -1692,8 +1692,8 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                     .flags.Descansar = False
                     Call WriteRestOK(UserIndex)
                     'Msg1121= Has dejado de descansar.
-                    Call WriteLocaleMsg(UserIndex, 1121, e_FontTypeNames.FONTTYPE_INFO)
-                    Call WriteLocaleMsg(UserIndex, 178, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_DEJADO_DESCANSAR, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_YOU_STAND_UP, e_FontTypeNames.FONTTYPE_INFO)
                 End If
                 Call CancelExit(UserIndex)
                 'Esta usando el /HOGAR, no se puede mover
@@ -1701,7 +1701,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                     .flags.Traveling = 0
                     .Counters.goHome = 0
                     'Msg1122= Has cancelado el viaje a casa.
-                    Call WriteLocaleMsg(UserIndex, 1122, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_CANCELADO_VIAJE_CASA, e_FontTypeNames.FONTTYPE_INFO)
                 End If
                 ' Si no pudo moverse
             Else
@@ -1709,11 +1709,11 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 Call WritePosUpdate(UserIndex)
             End If
         Else    'paralized
-            If Not .flags.UltimoMensaje = MSG_PARALYZED Then
-                .flags.UltimoMensaje = MSG_PARALYZED
+            If Not .flags.UltimoMensaje = MSG_NO_PARALYZED Then
+                .flags.UltimoMensaje = MSG_NO_PARALYZED
                 'Msg1123= No podes moverte porque estas paralizado.
-                Call WriteLocaleMsg(UserIndex, MSG_PARALYZED, e_FontTypeNames.FONTTYPE_INFO)
-                Call WriteLocaleMsg(UserIndex, 54, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PARALYZED, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_CANNOT_MOVE_PARALYZED, e_FontTypeNames.FONTTYPE_INFO)
             End If
             Call WritePosUpdate(UserIndex)
         End If
@@ -1727,7 +1727,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                         ' Pierde la apariencia de fragata fantasmal
                         Call EquiparBarco(UserIndex)
                         ' Msg592=¡Has recuperado tu apariencia normal!
-                        Call WriteLocaleMsg(UserIndex, 592, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_RECUPERADO_APARIENCIA_NORMAL, e_FontTypeNames.FONTTYPE_INFO)
                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
                         Call RefreshCharStatus(UserIndex)
                     End If
@@ -1735,8 +1735,8 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                     'If not under a spell effect, show char
                     If .flags.invisible = 0 Then
                         'Msg1124= Has vuelto a ser visible.
-                        Call WriteLocaleMsg(UserIndex, 1124, e_FontTypeNames.FONTTYPE_INFO)
-                        Call WriteLocaleMsg(UserIndex, 307, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_VUELTO_VISIBLE_1124, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_VUELTO_VISIBLE, e_FontTypeNames.FONTTYPE_INFO)
                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
                     End If
                 End If
@@ -1777,7 +1777,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
                 Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
         'If dead, can't attack
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             'Msg77=¡¡Estás muerto!!.
             Exit Sub
         End If
@@ -1785,7 +1785,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
         If .invent.EquippedWeaponObjIndex > 0 Then
             If ObjData(.invent.EquippedWeaponObjIndex).Proyectil = 1 And ObjData(.invent.EquippedWeaponObjIndex).Municion > 0 Then
                 'Msg1125= No podés usar así esta arma.
-                Call WriteLocaleMsg(UserIndex, 1125, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_ASI_ARMA, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             If IsItemInCooldown(UserList(UserIndex), .invent.Object(.invent.EquippedWeaponSlot)) Then
@@ -1794,7 +1794,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
         End If
         If .invent.EquippedWorkingToolObjIndex > 0 Then
             ' Msg694=Para atacar debes desequipar la herramienta.
-            Call WriteLocaleMsg(UserIndex, 694, e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteLocaleMsg(UserIndex, MSG_ATACAR_DEBES_DESEQUIPAR_HERRAMIENTA, e_FontTypeNames.FONTTYPE_INFOIAO)
             Exit Sub
         End If
         If UserList(UserIndex).flags.Meditando Then
@@ -1822,13 +1822,13 @@ Private Sub HandlePickUp(ByVal UserIndex As Integer)
         'If dead, it can't pick up objects
         If .flags.Muerto = 1 Then
             'Msg77=¡¡Estás muerto!!.
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Lower rank administrators can't pick up items
         If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
             ' Msg695=No podés tomar ningun objeto.
-            Call WriteLocaleMsg(UserIndex, 695, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_TOMAR_NINGUN_OBJETO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         Call PickObj(UserIndex)
@@ -1863,11 +1863,11 @@ Private Sub HandleSafeToggle(ByVal UserIndex As Integer)
                 .flags.Seguro = Not .flags.Seguro
             Else
                 ' Msg696=Solo los ciudadanos pueden cambiar el seguro.
-                Call WriteLocaleMsg(UserIndex, 696, e_FontTypeNames.FONTTYPE_TALK)
+                Call WriteLocaleMsg(UserIndex, MSG_SOLO_CIUDADANOS_PUEDEN_CAMBIAR_SEGURO, e_FontTypeNames.FONTTYPE_TALK)
             End If
         Else
             ' Msg697=Debes abandonar el clan para poder sacar el seguro.
-            Call WriteLocaleMsg(UserIndex, 697, e_FontTypeNames.FONTTYPE_TALK)
+            Call WriteLocaleMsg(UserIndex, MSG_DEBES_ABANDONAR_CLAN_PODER_SACAR_SEGURO, e_FontTypeNames.FONTTYPE_TALK)
         End If
     End With
     Exit Sub
@@ -1981,7 +1981,7 @@ Private Sub HandleUserCommerceEnd(ByVal UserIndex As Integer)
         'Quits commerce mode with user
         If IsValidUserRef(.ComUsu.DestUsu) Then
             If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = UserIndex Then
-                Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(1949, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1949=¬1 ha dejado de comerciar con vos.
+                Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(MSG_DEJADO_COMERCIAR_VOS, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1949=¬1 ha dejado de comerciar con vos.
                 Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
                 'Send data in the outgoing buffer of the other user
             End If
@@ -2036,13 +2036,13 @@ Private Sub HandleUserCommerceReject(ByVal UserIndex As Integer)
         'Offer rejected
         If otherUser > 0 Then
             If UserList(otherUser).flags.UserLogged Then
-                Call WriteConsoleMsg(otherUser, PrepareMessageLocaleMsg(1950, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1950=¬1 ha rechazado tu oferta.
+                Call WriteConsoleMsg(otherUser, PrepareMessageLocaleMsg(MSG_RECHAZADO_OFERTA, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1950=¬1 ha rechazado tu oferta.
                 Call FinComerciarUsu(otherUser)
                 'Send data in the outgoing buffer of the other user
             End If
         End If
         ' Msg698=Has rechazado la oferta del otro usuario.
-        Call WriteLocaleMsg(UserIndex, 698, e_FontTypeNames.FONTTYPE_TALK)
+        Call WriteLocaleMsg(UserIndex, MSG_RECHAZADO_OFERTA_OTRO_USUARIO, e_FontTypeNames.FONTTYPE_TALK)
         Call FinComerciarUsu(UserIndex)
     End With
     Exit Sub
@@ -2084,7 +2084,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
         If .flags.Comerciando Then Exit Sub
         If .flags.Montado = 1 Then
             ' Msg699=Debes descender de tu montura para dejar objetos en el suelo.
-            Call WriteLocaleMsg(UserIndex, 699, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_DEBES_DESCENDER_MONTURA_DEJAR_OBJETOS_SUELO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
        
@@ -2098,12 +2098,12 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
                 If (.flags.Privilegios And e_PlayerType.Admin) <> 16 Then
                     If EsNewbie(UserIndex) And ObjData(.invent.Object(Slot).ObjIndex).Newbie = 1 Then
                         ' Msg701=No se pueden tirar los objetos Newbies.
-                        Call WriteLocaleMsg(UserIndex, 701, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDEN_TIRAR_OBJETOS_NEWBIES, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     If ObjData(.invent.Object(Slot).ObjIndex).Intirable = 1 And Not EsGM(UserIndex) Then
                         ' Msg702=Acción no permitida.
-                        Call WriteLocaleMsg(UserIndex, 702, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_ACCION_PERMITIDA, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     ElseIf ObjData(.invent.Object(Slot).ObjIndex).Intirable = 1 And EsGM(UserIndex) Then
                         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
@@ -2114,13 +2114,13 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
                     End If
                     If ObjData(.invent.Object(Slot).ObjIndex).Instransferible = 1 Then
                         ' Msg702=Acción no permitida.
-                        Call WriteLocaleMsg(UserIndex, 702, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_ACCION_PERMITIDA, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 End If
                 If ObjData(.invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otShips And UserList(UserIndex).flags.Navegando Then
                     ' Msg703=Para tirar la barca deberias estar en tierra firme.
-                    Call WriteLocaleMsg(UserIndex, 703, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_TIRAR_BARCA_DEBERIAS_ESTAR_TIERRA_FIRME, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             Else
@@ -2257,7 +2257,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
         PacketCounter = reader.ReadInt32
         If UserList(UserIndex).flags.Muerto = 1 Then
             'Msg77=¡¡Estás muerto!!.
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'If exiting, cancel
@@ -2270,10 +2270,10 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
                         "Ocultar", PacketTimerThreshold(PacketNames.Hide), MacroIterations(PacketNames.Hide)) Then Exit Sub
                 If .flags.Montado = 1 Then
                     '[CDT 17-02-2004]
-                    If Not .flags.UltimoMensaje = MSG_CANNOT_HIDE_MOUNTED Then
+                    If Not .flags.UltimoMensaje = MSG_NO_CANNOT_HIDE_MOUNTED Then
                         ' Msg704=No podés ocultarte si estás montado.
-                        Call WriteLocaleMsg(UserIndex, MSG_CANNOT_HIDE_MOUNTED, e_FontTypeNames.FONTTYPE_INFO)
-                        .flags.UltimoMensaje = MSG_CANNOT_HIDE_MOUNTED
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_CANNOT_HIDE_MOUNTED, e_FontTypeNames.FONTTYPE_INFO)
+                        .flags.UltimoMensaje = MSG_NO_CANNOT_HIDE_MOUNTED
                     End If
                     '[/CDT]
                     Exit Sub
@@ -2281,7 +2281,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
                 If .flags.Oculto = 1 Then
                     '[CDT 17-02-2004]
                     If Not .flags.UltimoMensaje = MSG_ALREADY_HIDDEN Then
-                        Call WriteLocaleMsg(UserIndex, 55, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_ESCONDIDO_ENTRE_SOMBRAS, e_FontTypeNames.FONTTYPE_INFO)
                         'Msg1127= Ya estás oculto.
                         Call WriteLocaleMsg(UserIndex, MSG_ALREADY_HIDDEN, e_FontTypeNames.FONTTYPE_INFO)
                         .flags.UltimoMensaje = MSG_ALREADY_HIDDEN
@@ -2291,22 +2291,22 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
                 End If
                 If .flags.EnReto Then
                     ' Msg705=No podés ocultarte durante un reto.
-                    Call WriteLocaleMsg(UserIndex, 705, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_OCULTARTE_DURANTE_RETO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If .flags.EnConsulta Then
                     ' Msg706=No podés ocultarte si estas en consulta.
-                    Call WriteLocaleMsg(UserIndex, 706, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_OCULTARTE_SI_CONSULTA, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If .flags.invisible Then
                     ' Msg707=No podés ocultarte si estás invisible.
-                    Call WriteLocaleMsg(UserIndex, 707, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_OCULTARTE_SI_INVISIBLE, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If MapInfo(.pos.Map).SinInviOcul Then
                     ' Msg708=Una fuerza divina te impide ocultarte en esta zona.
-                    Call WriteLocaleMsg(UserIndex, 708, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_FUERZA_DIVINA_IMPIDE_OCULTARTE_ZONA, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 Call DoOcultarse(UserIndex)
@@ -2532,7 +2532,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     If DummyInt <> 0 Then
                         If DummyInt = 1 Then
                             ' Msg709=No tenés municiones.
-                            Call WriteLocaleMsg(UserIndex, 709, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_MUNICIONES, e_FontTypeNames.FONTTYPE_INFO)
                         End If
                         Call Desequipar(UserIndex, .EquippedMunitionSlot)
                         Call WriteWorkRequestTarget(UserIndex, 0)
@@ -2544,9 +2544,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     Call QuitarSta(UserIndex, RandomNumber(1, 10))
                 Else
                     'Msg2129=¡No tengo energía!
-                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
                     'Msg1128= Estás muy cansado para luchar.
-                    Call WriteLocaleMsg(UserIndex, 1128, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUY_CANSADO_LUCHAR, e_FontTypeNames.FONTTYPE_INFO)
                     Call WriteWorkRequestTarget(UserIndex, 0)
                     Exit Sub
                 End If
@@ -2559,14 +2559,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     'Only allow to atack if the other one can retaliate (can see us)
                     If Abs(UserList(tU).pos.y - .pos.y) > RANGO_VISION_Y Then
                         ' Msg8=Estas demasiado lejos.
-                        Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                         Call WriteWorkRequestTarget(UserIndex, 0)
                         Exit Sub
                     End If
                     'Prevent from hitting self
                     If tU = UserIndex Then
                         ' Msg710=¡No podés atacarte a vos mismo!
-                        Call WriteLocaleMsg(UserIndex, 710, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_PODES_ATACARTE_VOS_MISMO, e_FontTypeNames.FONTTYPE_INFO)
                         Call WriteWorkRequestTarget(UserIndex, 0)
                         Exit Sub
                     End If
@@ -2611,7 +2611,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     'Only allow to atack if the other one can retaliate (can see us)
                     If Abs(NpcList(tN).pos.y - .pos.y) > RANGO_VISION_Y And Abs(NpcList(tN).pos.x - .pos.x) > RANGO_VISION_X Then
                         ' Msg8=Estas demasiado lejos.
-                        Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                         Call WriteWorkRequestTarget(UserIndex, 0)
                         Exit Sub
                     End If
@@ -2687,7 +2687,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     .flags.Hechizo = 0
                 Else
                     ' Msg587=¡Primero selecciona el hechizo que quieres lanzar!
-                    Call WriteLocaleMsg(UserIndex, 587, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_SELECCIONA_HECHIZO_QUIERES_LANZAR, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Case e_Skill.Pescar
                 If .Counters.Trabajando = 0 And .Counters.LastTrabajo = 0 Then
@@ -2710,12 +2710,12 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         If MapInfo(UserList(UserIndex).pos.Map).Seguro = 1 Then
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             ' Msg711=Esta prohibido cortar raices en las ciudades.
-                            Call WriteLocaleMsg(UserIndex, 711, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_PROHIBIDO_CORTAR_RAICES_CIUDADES, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         If MapData(.pos.Map, x, y).ObjInfo.amount <= 0 Then
                             ' Msg712=El árbol ya no te puede entregar mas raices.
-                            Call WriteLocaleMsg(UserIndex, 712, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_ARBOL_PUEDE_ENTREGAR_MAS_RAICES, e_FontTypeNames.FONTTYPE_INFO)
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             Call WriteMacroTrabajoToggle(UserIndex, False)
                             Exit Sub
@@ -2723,21 +2723,21 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         DummyInt = MapData(.pos.Map, x, y).ObjInfo.ObjIndex
                         If DummyInt > 0 Then
                             If Abs(.pos.x - x) + Abs(.pos.y - y) > 2 Then
-                                Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                                 'Msg1129= Estas demasiado lejos.
-                                Call WriteLocaleMsg(UserIndex, 1129, e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteLocaleMsg(UserIndex, MSG_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                 Exit Sub
                             End If
                             If .pos.x = x And .pos.y = y Then
                                 ' Msg713=No podés quitar raices allí.
-                                Call WriteLocaleMsg(UserIndex, 713, e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_QUITAR_RAICES_ALLI_713, e_FontTypeNames.FONTTYPE_INFO)
                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                 Exit Sub
                             End If
                         Else
                             ' Msg604=No podés quitar raices allí.
-                            Call WriteLocaleMsg(UserIndex, 604, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_QUITAR_RAICES_ALLI, e_FontTypeNames.FONTTYPE_INFO)
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             Call WriteMacroTrabajoToggle(UserIndex, False)
                         End If
@@ -2765,9 +2765,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                     DistanciaMaxima = 1
                                 End If
                                 If Abs(.pos.x - UserList(tU).pos.x) + Abs(.pos.y - UserList(tU).pos.y) > DistanciaMaxima Then
-                                    Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+                                    Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                                     'Msg1130= Estís demasiado lejos.
-                                    Call WriteLocaleMsg(UserIndex, 1130, e_FontTypeNames.FONTTYPE_INFO)
+                                    Call WriteLocaleMsg(UserIndex, MSG_ESTIS_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
                                 End If
@@ -2775,13 +2775,13 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 'Check the trigger
                                 If MapData(UserList(tU).pos.Map, UserList(tU).pos.x, UserList(tU).pos.y).trigger = e_Trigger.ZonaSegura Then
                                     ' Msg714=No podés robar aquí.
-                                    Call WriteLocaleMsg(UserIndex, 714, e_FontTypeNames.FONTTYPE_WARNING)
+                                    Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ROBAR_AQUI, e_FontTypeNames.FONTTYPE_WARNING)
                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
                                 End If
                                 If MapData(.pos.Map, .pos.x, .pos.y).trigger = e_Trigger.ZonaSegura Then
                                     ' Msg714=No podés robar aquí.
-                                    Call WriteLocaleMsg(UserIndex, 714, e_FontTypeNames.FONTTYPE_WARNING)
+                                    Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ROBAR_AQUI, e_FontTypeNames.FONTTYPE_WARNING)
                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
                                 End If
@@ -2790,12 +2790,12 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         End If
                     Else
                         ' Msg715=No a quien robarle!
-                        Call WriteLocaleMsg(UserIndex, 715, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_QUIEN_ROBARLE, e_FontTypeNames.FONTTYPE_INFO)
                         Call WriteWorkRequestTarget(UserIndex, 0)
                     End If
                 Else
                     ' Msg716=¡No podés robar en zonas seguras!
-                    Call WriteLocaleMsg(UserIndex, 716, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_PODES_ROBAR_ZONAS_SEGURAS, e_FontTypeNames.FONTTYPE_INFO)
                     Call WriteWorkRequestTarget(UserIndex, 0)
                 End If
             Case e_Skill.Domar
@@ -2805,22 +2805,22 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     If NpcList(tN).flags.Domable > 0 Then
                         If Abs(.pos.x - x) + Abs(.pos.y - y) > 4 Then
                             ' Msg8=Estas demasiado lejos.
-                            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         If GetOwnedBy(tN) <> 0 Then
                             ' Msg717=No puedes domar una criatura que esta luchando con un jugador.
-                            Call WriteLocaleMsg(UserIndex, 717, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_DOMAR_CRIATURA_LUCHANDO_JUGADOR, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         Call DoDomar(UserIndex, tN)
                     Else
                         ' Msg718=No puedes domar a esa criatura.
-                        Call WriteLocaleMsg(UserIndex, 718, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_DOMAR_ESA_CRIATURA, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
                     ' Msg719=No hay ninguna criatura alli!
-                    Call WriteLocaleMsg(UserIndex, 719, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_NINGUNA_CRIATURA_ALLI, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Case e_Skill.Grupo
                 Call LookatTile(UserIndex, .pos.Map, x, y)
@@ -2830,7 +2830,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     If UserList(UserIndex).Grupo.EnGrupo = False Then
                         If UserList(tU).flags.Muerto = 0 Then
                             If Abs(.pos.x - x) + Abs(.pos.y - y) > 8 Then
-                                Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                 Exit Sub
                             End If
@@ -2844,7 +2844,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 Call InvitarMiembro(UserIndex, tU)
                             End If
                         Else
-                            Call WriteLocaleMsg(UserIndex, 7, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_USER_IS_DEAD, e_FontTypeNames.FONTTYPE_INFO)
                             Call WriteWorkRequestTarget(UserIndex, 0)
                         End If
                     Else
@@ -2852,25 +2852,25 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             Call InvitarMiembro(UserIndex, tU)
                         Else
                             'Msg1131= Tu no podés invitar usuarios, debe hacerlo ¬1
-                            Call WriteLocaleMsg(UserIndex, 1131, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserList(UserIndex).Grupo.Lider.ArrayIndex))
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_INVITAR_USUARIOS_DEBE_HACERLO, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserList(UserIndex).Grupo.Lider.ArrayIndex))
                             Call WriteWorkRequestTarget(UserIndex, 0)
                         End If
                     End If
                 Else
-                    Call WriteLocaleMsg(UserIndex, 261, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_PICKUP_UNAVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Case e_Skill.MarcaDeClan
                 'Target whatever is in that tile
                 Dim clan_nivel As Byte
                 If UserList(UserIndex).GuildIndex = 0 Then
                     ' Msg720=Servidor » No perteneces a ningún clan.
-                    Call WriteLocaleMsg(UserIndex, 720, e_FontTypeNames.FONTTYPE_INFOIAO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_SERVIDOR_PERTENECES_NINGUN_CLAN, e_FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
                 End If
                 clan_nivel = modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex)
                 If clan_nivel < 3 Then
                     ' Msg721=Servidor » El nivel de tu clan debe ser 3 para utilizar esta opción.
-                    Call WriteLocaleMsg(UserIndex, 721, e_FontTypeNames.FONTTYPE_INFOIAO)
+                    Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_NIVEL_CLAN_DEBE_UTILIZAR_OPCION, e_FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
                 End If
                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, x, y)
@@ -2878,7 +2878,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 tU = .flags.TargetUser.ArrayIndex
                 If UserList(UserIndex).GuildIndex = UserList(tU).GuildIndex Then
                     'Msg1132= Servidor » No podes marcar a un miembro de tu clan.
-                    Call WriteLocaleMsg(UserIndex, 1132, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_SERVIDOR_PODES_MARCAR_MIEMBRO_CLAN, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If tU > 0 And tU <> UserIndex Then
@@ -2895,29 +2895,29 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageParticleFX(UserList(tU).Char.charindex, 210, 150, False, , UserList(UserIndex).pos.x, _
                                     UserList(UserIndex).pos.y))
                         End If
-                        Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageLocaleMsg(1798, GetUserDisplayName(UserIndex) & "¬" & GetUserDisplayName(tU), _
+                        Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageLocaleMsg(MSG_CLAN_MARCO, GetUserDisplayName(UserIndex) & "¬" & GetUserDisplayName(tU), _
                                 e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1798=Clan> [¬1] marcó a ¬2.
                     Else
-                        Call WriteLocaleMsg(UserIndex, 7, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_USER_IS_DEAD, e_FontTypeNames.FONTTYPE_INFO)
                         Call WriteWorkRequestTarget(UserIndex, 0)
                     End If
                 Else
-                    Call WriteLocaleMsg(UserIndex, 261, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_PICKUP_UNAVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Case e_Skill.MarcaDeGM
                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, x, y)
                 tU = .flags.TargetUser.ArrayIndex
                 If IsValidUserRef(.flags.TargetUser) Then
                     'Msg1133= Servidor » [¬1
-                    Call WriteLocaleMsg(UserIndex, 1133, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(tU))
+                    Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_1133, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(tU))
                 Else
-                    Call WriteLocaleMsg(UserIndex, 261, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_PICKUP_UNAVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Case e_Skill.TargetableItem
                 If .Stats.MinSta < ObjData(.invent.Object(.flags.TargetObjInvSlot).ObjIndex).MinSta Then
                     Call WriteLocaleMsg(UserIndex, MsgNotEnoughtStamina, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg2129=¡No tengo energía!
-                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
                     Exit Sub
                 End If
                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, x, y)
@@ -2948,7 +2948,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
             Call QuitarObjetos(408, 1, UserIndex)
             Call QuitarObjetos(409, 1, UserIndex)
             Call QuitarObjetos(412, 1, UserIndex)
-            Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageLocaleMsg(1642, GetUserDisplayName(UserIndex) & "¬" & GuildName & "¬" & GuildAlignment(.GuildIndex), _
+            Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageLocaleMsg(MSG_FUNDADO_CLAN_ALINEACION, GetUserDisplayName(UserIndex) & "¬" & GuildName & "¬" & GuildAlignment(.GuildIndex), _
                     e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1642=¬1 ha fundado el clan <¬2> de alineación ¬3.
             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
             'Update tag
@@ -2975,7 +2975,7 @@ Private Sub HandleSpellInfo(ByVal UserIndex As Integer)
         'Validate slot
         If spellSlot < 1 Or spellSlot > MAXUSERHECHIZOS Then
             'Msg1134= ¡Primero selecciona el hechizo!
-            Call WriteLocaleMsg(UserIndex, 1134, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_SELECCIONA_HECHIZO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Validate spell in the slot
@@ -3021,7 +3021,7 @@ Dim eSkinType                   As e_OBJType
         'Dead users can't equip items
         If .flags.Muerto = 1 Then
             'Msg1136= ¡¡Estás muerto!! Sólo podés usar items cuando estás vivo.
-            Call WriteLocaleMsg(UserIndex, 1136, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO_SOLO_PODES_USAR_ITEMS_CUANDO_VIVO_1136, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
@@ -3156,7 +3156,7 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
                 End If
             End If
         Else
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareLocalizedChatOverHead(2082, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareLocalizedChatOverHead(MSG_CANNOT_SUMMON_MORE_THAN_FIVE_CREATURES, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
         End If
     End With
     Exit Sub
@@ -3177,20 +3177,20 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
         amount = reader.ReadInt16()
         'Dead people can't commerce...
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'El target es un NPC valido?
         If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
         'íEl NPC puede comerciar?
         If NpcList(.flags.TargetNPC.ArrayIndex).Comercia = 0 Then
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareLocalizedChatOverHead(2084, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareLocalizedChatOverHead(MSG_NOT_INTERESTED_IN_TRADING, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
             Exit Sub
         End If
         'Only if in commerce mode....
         If Not .flags.Comerciando Then
             'Msg1137= No estás comerciando
-            Call WriteLocaleMsg(UserIndex, 1137, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_COMERCIANDO_1137, e_FontTypeNames.FONTTYPE_INFO)
             Call WriteCommerceEnd(UserIndex)
             Exit Sub
         End If
@@ -3217,7 +3217,7 @@ Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
         slotdestino = reader.ReadInt8()
         'Dead people can't commerce
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         '¿El target es un NPC valido?
@@ -3245,14 +3245,14 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
         amount = reader.ReadInt16()
         'Dead people can't commerce...
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'íEl target es un NPC valido?
         If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
         'íEl NPC puede comerciar?
         If NpcList(.flags.TargetNPC.ArrayIndex).Comercia = 0 Then
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareLocalizedChatOverHead(2084, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareLocalizedChatOverHead(MSG_NOT_INTERESTED_IN_TRADING, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
             Exit Sub
         End If
         'User compra el item del slot
@@ -3278,7 +3278,7 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
         slotdestino = reader.ReadInt8()
         'Dead people can't commerce...
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'íEl target es un NPC valido?
@@ -3288,7 +3288,7 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
             Exit Sub
         End If
         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).pos, .pos) > 10 Then
-            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'User deposita el item del slot rdata
@@ -3430,25 +3430,25 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 'gold
                 If amount > .Stats.GLD Then
                     'Msg1138= No tienes esa cantidad.
-                    Call WriteLocaleMsg(UserIndex, 1138, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_TIENES_ESA_CANTIDAD, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             Else
                 'inventory
                 If amount > .invent.Object(Slot).amount Then
                     'Msg1139= No tienes esa cantidad.
-                    Call WriteLocaleMsg(UserIndex, 1139, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ESA_CANTIDAD_1139, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If .invent.Object(Slot).ObjIndex > 0 Then
                     If ObjData(.invent.Object(Slot).ObjIndex).Instransferible = 1 Then
                         'Msg1140= Este objeto es intransferible, no podés venderlo.
-                        Call WriteLocaleMsg(UserIndex, 1140, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_OBJETO_INTRANSFERIBLE_PODES_VENDERLO, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     If ObjData(.invent.Object(Slot).ObjIndex).Newbie = 1 Then
                         'Msg1141= No puedes comerciar objetos newbie.
-                        Call WriteLocaleMsg(UserIndex, 1141, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_COMERCIAR_OBJETOS_NEWBIE, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 End If
@@ -3456,20 +3456,20 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             'Prevent offer changes (otherwise people would ripp off other players)
             'If .ComUsu.Objeto > 0 Then
             'Msg1142= No podés cambiar tu oferta.
-            Call WriteLocaleMsg(UserIndex, 1142, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_CAMBIAR_OFERTA, e_FontTypeNames.FONTTYPE_INFO)
             '  End If
             'Don't allow to sell boats if they are equipped (you can't take them off in the water and causes trouble)
             If .flags.Navegando = 1 Then
                 If .invent.EquippedShipSlot = Slot Then
                     'Msg1143= No podés vender tu barco mientras lo estás usando.
-                    Call WriteLocaleMsg(UserIndex, 1143, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_VENDER_BARCO_MIENTRAS_USANDO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             End If
             If .flags.Montado = 1 Then
                 If .invent.EquippedSaddleSlot = Slot Then
                     'Msg1144= No podés vender tu montura mientras la estás usando.
-                    Call WriteLocaleMsg(UserIndex, 1144, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_VENDER_MONTURA_MIENTRAS_USANDO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             End If
@@ -3478,7 +3478,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             'If the other one had accepted, we turn that back and inform of the new offer (just to be cautious).
             If UserList(tUser).ComUsu.Acepto Then
                 UserList(tUser).ComUsu.Acepto = False
-                Call WriteConsoleMsg(tUser, PrepareMessageLocaleMsg(1951, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1951=¬1 ha cambiado su oferta.
+                Call WriteConsoleMsg(tUser, PrepareMessageLocaleMsg(MSG_CAMBIADO_OFERTA, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1951=¬1 ha cambiado su oferta.
             End If
             Dim ObjAEnviar As t_Obj
             ObjAEnviar.amount = amount
@@ -3501,13 +3501,13 @@ Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
         Dim errorStr       As String
         Dim otherClanIndex As String
         guild = reader.ReadString8()
-        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1799, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1799=No se pueden actualizar relaciones.
+        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_NO_PUEDEN_ACTUALIZAR_RELACIONES, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1799=No se pueden actualizar relaciones.
         Exit Sub
         If otherClanIndex = 0 Then
             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
         Else
-            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1800, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1800=Tu clan ha firmado la paz con ¬1
-            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(1800, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1800=Tu clan ha firmado la paz con ¬1
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_FIRMADO_PAZ, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1800=Tu clan ha firmado la paz con ¬1
+            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(MSG_CLAN_FIRMADO_PAZ, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1800=Tu clan ha firmado la paz con ¬1
         End If
     End With
     Exit Sub
@@ -3526,13 +3526,13 @@ Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
         Dim errorStr       As String
         Dim otherClanIndex As String
         guild = reader.ReadString8()
-        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1801, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
+        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_RELACIONES_CLAN_DESACTIVADAS_MOMENTO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
         Exit Sub
         If otherClanIndex = 0 Then
             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
         Else
-            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1802, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1802=Tu clan ha rechazado la propuesta de alianza de ¬1
-            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(1803, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1803=¬1 ha rechazado nuestra propuesta de alianza con su clan.
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_RECHAZADO_PROPUESTA_ALIANZA, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1802=Tu clan ha rechazado la propuesta de alianza de ¬1
+            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(MSG_RECHAZADO_NUESTRA_PROPUESTA_ALIANZA_CLAN, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1803=¬1 ha rechazado nuestra propuesta de alianza con su clan.
         End If
     End With
     Exit Sub
@@ -3551,13 +3551,13 @@ Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
         Dim errorStr       As String
         Dim otherClanIndex As String
         guild = reader.ReadString8()
-        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1801, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
+        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_RELACIONES_CLAN_DESACTIVADAS_MOMENTO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
         Exit Sub
         If otherClanIndex = 0 Then
             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
         Else
-            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1804, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1804=Tu clan ha rechazado la propuesta de paz de ¬1
-            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(1805, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1805=¬1 ha rechazado nuestra propuesta de paz con su clan.
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_RECHAZADO_PROPUESTA_PAZ, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1804=Tu clan ha rechazado la propuesta de paz de ¬1
+            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(MSG_RECHAZADO_NUESTRA_PROPUESTA_PAZ_CLAN, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1805=¬1 ha rechazado nuestra propuesta de paz con su clan.
         End If
     End With
     Exit Sub
@@ -3576,13 +3576,13 @@ Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
         Dim errorStr       As String
         Dim otherClanIndex As String
         guild = reader.ReadString8()
-        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1801, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
+        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_RELACIONES_CLAN_DESACTIVADAS_MOMENTO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
         Exit Sub
         If otherClanIndex = 0 Then
             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
         Else
-            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1806, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1806=Tu clan ha firmado la alianza con ¬1
-            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(1800, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1800=Tu clan ha firmado la paz con ¬1
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_FIRMADO_ALIANZA, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1806=Tu clan ha firmado la alianza con ¬1
+            Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageLocaleMsg(MSG_CLAN_FIRMADO_PAZ, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1800=Tu clan ha firmado la paz con ¬1
         End If
     End With
     Exit Sub
@@ -3602,7 +3602,7 @@ Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
         Dim errorStr As String
         guild = reader.ReadString8()
         proposal = reader.ReadString8()
-        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1801, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
+        Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_RELACIONES_CLAN_DESACTIVADAS_MOMENTO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1801=Relaciones de clan desactivadas por el momento.
         Exit Sub
     End With
     Exit Sub
@@ -3623,7 +3623,7 @@ Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
         guild = reader.ReadString8()
         proposal = reader.ReadString8()
         'Msg1145= Relaciones de clan desactivadas por el momento.
-        Call WriteLocaleMsg(UserIndex, 1145, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_RELACIONES_CLAN_DESACTIVADAS_MOMENTO_1145, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End With
     Exit Sub
@@ -3643,7 +3643,7 @@ Private Sub HandleGuildAllianceDetails(ByVal UserIndex As Integer)
         Dim details  As String
         guild = reader.ReadString8()
         'Msg1146= Relaciones de clan desactivadas por el momento.
-        Call WriteLocaleMsg(UserIndex, 1146, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_RELACIONES_CLAN_DESACTIVADAS_MOMENTO_1146, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
         If LenB(details) = 0 Then
             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
@@ -3668,7 +3668,7 @@ Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
         Dim details  As String
         guild = reader.ReadString8()
         'Msg1147= Relaciones de clan desactivadas por el momento.
-        Call WriteLocaleMsg(UserIndex, 1147, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_RELACIONES_CLAN_DESACTIVADAS_MOMENTO_1147, e_FontTypeNames.FONTTYPE_INFO)
     End With
     Exit Sub
 ErrHandler:
@@ -3688,7 +3688,7 @@ Private Sub HandleGuildRequestJoinerInfo(ByVal UserIndex As Integer)
         details = modGuilds.a_DetallesAspirante(UserIndex, User)
         If LenB(details) = 0 Then
             'Msg1148= El personaje no ha mandado solicitud, o no estás habilitado para verla.
-            Call WriteLocaleMsg(UserIndex, 1148, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PERSONAJE_HA_MANDADO_SOLICITUD_HABILITADO_VERLA, e_FontTypeNames.FONTTYPE_INFO)
         Else
             Call WriteShowUserRequest(UserIndex, details)
         End If
@@ -3705,7 +3705,7 @@ End Sub
 Private Sub HandleGuildAlliancePropList(ByVal UserIndex As Integer)
     On Error GoTo HandleGuildAlliancePropList_Err
     'Msg1149= Relaciones de clan desactivadas por el momento.
-    Call WriteLocaleMsg(UserIndex, 1149, e_FontTypeNames.FONTTYPE_INFO)
+    Call WriteLocaleMsg(UserIndex, MSG_RELACIONES_CLAN_DESACTIVADAS_MOMENTO_1149, e_FontTypeNames.FONTTYPE_INFO)
     Exit Sub
 HandleGuildAlliancePropList_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAlliancePropList", Erl)
@@ -3718,7 +3718,7 @@ End Sub
 Private Sub HandleGuildPeacePropList(ByVal UserIndex As Integer)
     On Error GoTo HandleGuildPeacePropList_Err
     'Msg1150= Relaciones de clan desactivadas por el momento.
-    Call WriteLocaleMsg(UserIndex, 1150, e_FontTypeNames.FONTTYPE_INFO)
+    Call WriteLocaleMsg(UserIndex, MSG_RELACIONES_CLAN_DESACTIVADAS_MOMENTO_1150, e_FontTypeNames.FONTTYPE_INFO)
     Exit Sub
 HandleGuildPeacePropList_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildPeacePropList", Erl)
@@ -3736,14 +3736,14 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
         Dim otherGuildIndex As Integer
         guild = reader.ReadString8()
         'Msg1151= Relaciones de clan desactivadas por el momento.
-        Call WriteLocaleMsg(UserIndex, 1151, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_RELACIONES_CLAN_DESACTIVADAS_MOMENTO_1151, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
         If otherGuildIndex = 0 Then
             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
         Else
             'WAR shall be!
-            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1807, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1807=TU CLAN HA ENTRADO EN GUERRA CON ¬1
-            Call SendData(SendTarget.ToGuildMembers, otherGuildIndex, PrepareMessageLocaleMsg(1808, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1808=¬1 LE DECLARA LA GUERRA A TU CLAN
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_ENTRADO_GUERRA, guild, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1807=TU CLAN HA ENTRADO EN GUERRA CON ¬1
+            Call SendData(SendTarget.ToGuildMembers, otherGuildIndex, PrepareMessageLocaleMsg(MSG_DECLARA_GUERRA_CLAN, modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1808=¬1 LE DECLARA LA GUERRA A TU CLAN
             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
             Call SendData(SendTarget.ToGuildMembers, otherGuildIndex, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
         End If
@@ -3783,14 +3783,14 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
             Else
                 Call modGuilds.m_ConectarMiembroAClan(tUser.ArrayIndex, .GuildIndex)
                 Call RefreshCharStatus(tUser.ArrayIndex)
-                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1809, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1809=[¬1] ha sido aceptado como miembro del clan.
+                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_SIDO_ACEPTADO_MIEMBRO_CLAN, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1809=[¬1] ha sido aceptado como miembro del clan.
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave(43, NO_3D_SOUND, NO_3D_SOUND))
             End If
         Else
             If Not modGuilds.a_AceptarAspirante(UserIndex, username, errorStr) Then
                 Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
             Else
-                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1809, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1809=[¬1] ha sido aceptado como miembro del clan.
+                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_SIDO_ACEPTADO_MIEMBRO_CLAN, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1809=[¬1] ha sido aceptado como miembro del clan.
             End If
         End If
     End With
@@ -3850,11 +3850,11 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
             expulsado = NameIndex(username)
             'Msg1152= Has sido expulsado del clan.
             Call WriteLocaleMsg(expulsado.ArrayIndex, "1152", e_FontTypeNames.FONTTYPE_INFO)
-            Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageLocaleMsg(1810, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1810=¬1 fue expulsado del clan.
+            Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_CLAN, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1810=¬1 fue expulsado del clan.
             Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
         Else
             'Msg1153= No podés expulsar ese personaje del clan.
-            Call WriteLocaleMsg(UserIndex, 1153, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_EXPULSAR_ESE_PERSONAJE_CLAN, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
@@ -3895,7 +3895,7 @@ Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim Error As String
         'Msg1154= Elecciones de clan desactivadas por el momento.
-        Call WriteLocaleMsg(UserIndex, 1154, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_ELECCIONES_CLAN_DESACTIVADAS_MOMENTO, e_FontTypeNames.FONTTYPE_INFO)
     End With
     Exit Sub
 HandleGuildOpenElections_Err:
@@ -3918,7 +3918,7 @@ Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(errorStr, vbNullString, e_FontTypeNames.FONTTYPE_GUILD))
         Else
             'Msg1155= Tu solicitud ha sido enviada. Espera prontas noticias del líder de ¬1
-            Call WriteLocaleMsg(UserIndex, 1155, e_FontTypeNames.FONTTYPE_INFO, guild)
+            Call WriteLocaleMsg(UserIndex, MSG_SOLICITUD_HA_SIDO_ENVIADA_ESPERA_PRONTAS_NOTICIAS_LIDER, e_FontTypeNames.FONTTYPE_INFO, guild)
         End If
     End With
     Exit Sub
@@ -3951,7 +3951,7 @@ Private Sub HandleQuit(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If .flags.Paralizado = 1 Then
             'Msg1156= No podés salir estando paralizado.
-            Call WriteLocaleMsg(UserIndex, 1156, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_SALIR_ESTANDO_PARALIZADO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'exit secure commerce
@@ -3960,12 +3960,12 @@ Private Sub HandleQuit(ByVal UserIndex As Integer)
             If IsValidUserRef(.ComUsu.DestUsu) And UserList(tUser).flags.UserLogged Then
                 If UserList(tUser).ComUsu.DestUsu.ArrayIndex = UserIndex Then
                     'Msg1157= Comercio cancelado por el otro usuario
-                    Call WriteLocaleMsg(tUser, 1157, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(tUser, MSG_COMERCIO_CANCELADO_OTRO_USUARIO_1157, e_FontTypeNames.FONTTYPE_INFO)
                     Call FinComerciarUsu(tUser)
                 End If
             End If
             'Msg1158= Comercio cancelado.
-            Call WriteLocaleMsg(UserIndex, 1158, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_COMERCIO_CANCELADO, e_FontTypeNames.FONTTYPE_INFO)
             Call FinComerciarUsu(UserIndex)
         End If
         Call Cerrar_Usuario(UserIndex)
@@ -3987,11 +3987,11 @@ Private Sub HandleGuildLeave(ByVal UserIndex As Integer)
         GuildIndex = m_EcharMiembroDeClan(UserIndex, .Id)
         If GuildIndex > 0 Then
             'Msg1159= Dejas el clan.
-            Call WriteLocaleMsg(UserIndex, 1159, e_FontTypeNames.FONTTYPE_INFO)
-            Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageLocaleMsg(1811, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1811=¬1 deja el clan.
+            Call WriteLocaleMsg(UserIndex, MSG_DEJAS_CLAN, e_FontTypeNames.FONTTYPE_INFO)
+            Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageLocaleMsg(MSG_DEJA_CLAN, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1811=¬1 deja el clan.
         Else
             'Msg1160= Tu no puedes salir de ningún clan.
-            Call WriteLocaleMsg(UserIndex, 1160, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_SALIR_NINGUN_CLAN, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
@@ -4010,17 +4010,17 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         'Dead people can't check their accounts
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Validate target NPC
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             'Msg1161= Primero tenes que seleccionar un personaje, hace click izquierdo sobre él.
-            Call WriteLocaleMsg(UserIndex, 1161, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_PERSONAJE_HACE_CLICK_IZQUIERDO_SOBRE_1161, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).pos, .pos) > 3 Then
-            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         Select Case NpcList(.flags.TargetNPC.ArrayIndex).npcType
@@ -4036,7 +4036,7 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
                         percentage = Int(earnings * 100 / Apuestas.Perdidas)
                     End If
                     'Msg1162= Entradas: ¬1
-                    Call WriteLocaleMsg(UserIndex, 1162, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Apuestas.Ganancias))
+                    Call WriteLocaleMsg(UserIndex, MSG_ENTRADAS, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Apuestas.Ganancias))
                 End If
         End Select
     End With
@@ -4054,19 +4054,19 @@ Private Sub HandlePetStand(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         'Dead people can't use pets
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Validate target NPC
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             ' Msg757=Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.
-            Call WriteLocaleMsg(UserIndex, 757, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_PERSONAJE_HACE_CLICK_IZQUIERDO_SOBRE, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Make sure it's close enough
         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).pos, .pos) > 10 Then
             'Msg1163= Estás demasiado lejos.
-            Call WriteLocaleMsg(UserIndex, 1163, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_DEMASIADO_LEJOS_1163, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Make sure it's his pet
@@ -4089,19 +4089,19 @@ Private Sub HandlePetFollow(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         'Dead users can't use pets
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Validate target NPC
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             ' Msg757=Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.
-            Call WriteLocaleMsg(UserIndex, 757, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_PERSONAJE_HACE_CLICK_IZQUIERDO_SOBRE, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Make sure it's close enough
         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).pos, .pos) > 10 Then
             'Msg1164= Estás demasiado lejos.
-            Call WriteLocaleMsg(UserIndex, 1164, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_DEMASIADO_LEJOS_1164, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Make usre it's the user's pet
@@ -4119,19 +4119,19 @@ Private Sub HandlePetFollowAll(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         'Dead users can't use pets
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Validate target NPC
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             ' Msg757=Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.
-            Call WriteLocaleMsg(UserIndex, 757, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_PERSONAJE_HACE_CLICK_IZQUIERDO_SOBRE, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Make sure it's close enough
         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).pos, .pos) > 10 Then
             'Msg1164= Estás demasiado lejos.
-            Call WriteLocaleMsg(UserIndex, 1164, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_DEMASIADO_LEJOS_1164, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         Dim i As Integer
@@ -4163,13 +4163,13 @@ Private Sub HandlePetLeave(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         'Dead users can't use pets
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Validate target NPC
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             ' Msg757=Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.
-            Call WriteLocaleMsg(UserIndex, 757, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_PERSONAJE_HACE_CLICK_IZQUIERDO_SOBRE, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Make usre it's the user's pet
@@ -4199,7 +4199,7 @@ Private Sub HandleGrupoMsg(ByVal UserIndex As Integer)
                 Next i
             Else
                 ' Msg758=Grupo> No estas en ningun grupo.
-                Call WriteLocaleMsg(UserIndex, 758, e_FontTypeNames.FONTTYPE_New_GRUPO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_GRUPO_NINGUN_GRUPO, e_FontTypeNames.FONTTYPE_New_GRUPO)
             End If
         End If
     End With
@@ -4213,18 +4213,18 @@ Private Sub HandleTrainList(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         'Dead users can't use pets
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Validate target NPC
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             ' Msg757=Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.
-            Call WriteLocaleMsg(UserIndex, 757, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_PERSONAJE_HACE_CLICK_IZQUIERDO_SOBRE, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Make sure it's close enough
         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).pos, .pos) > 10 Then
-            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Make sure it's the trainer
@@ -4246,29 +4246,29 @@ Private Sub HandleRest(ByVal UserIndex As Integer)
         'Dead users can't use pets
         If .flags.Muerto = 1 Then
             ' Msg752=¡¡Estás muerto!! Solo podés usar items cuando estás vivo.
-            Call WriteLocaleMsg(UserIndex, 752, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO_SOLO_PODES_USAR_ITEMS_CUANDO_VIVO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If HayOBJarea(.pos, FOGATA) Then
             Call WriteRestOK(UserIndex)
             If Not .flags.Descansar Then
                 ' Msg753=Te acomodás junto a la fogata y comenzas a descansar.
-                Call WriteLocaleMsg(UserIndex, 753, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_ACOMODAS_JUNTO_FOGATA_COMENZAS_DESCANSAR, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 ' Msg754=Te levantas.
-                Call WriteLocaleMsg(UserIndex, 754, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_LEVANTAS, e_FontTypeNames.FONTTYPE_INFO)
             End If
             .flags.Descansar = Not .flags.Descansar
         Else
             If .flags.Descansar Then
                 Call WriteRestOK(UserIndex)
                 ' Msg754=Te levantas.
-                Call WriteLocaleMsg(UserIndex, 754, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_LEVANTAS, e_FontTypeNames.FONTTYPE_INFO)
                 .flags.Descansar = False
                 Exit Sub
             End If
             ' Msg755=No hay ninguna fogata junto a la cual descansar.
-            Call WriteLocaleMsg(UserIndex, 755, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_NINGUNA_FOGATA_JUNTO_CUAL_DESCANSAR, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
@@ -4291,12 +4291,12 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
         If .clase = e_Class.Hunter Or .clase = e_Class.Trabajador Or .clase = e_Class.Warrior Or .clase = e_Class.Pirat Or .clase = e_Class.Thief Then Exit Sub
         If .flags.Muerto = 1 Then
             'Msg77=¡¡Estás muerto!!.
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .flags.Montado = 1 Then
             ' Msg756=No podes meditar estando montado.
-            Call WriteLocaleMsg(UserIndex, 756, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MEDITAR_ESTANDO_MONTADO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         .flags.Meditando = Not .flags.Meditando
@@ -4371,7 +4371,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
         'Se asegura que el target es un npc
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             ' Msg757=Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.
-            Call WriteLocaleMsg(UserIndex, 757, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_PERSONAJE_HACE_CLICK_IZQUIERDO_SOBRE, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Validate NPC and make sure player is dead
@@ -4379,7 +4379,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
                 UserIndex))) Or .flags.Muerto = 0 Then Exit Sub
         'Make sure it's close enough
         If Distancia(.pos, NpcList(.flags.TargetNPC.ArrayIndex).pos) > 10 Then
-            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
             'Msg8=Estás muy lejos.
             Exit Sub
         End If
@@ -4389,7 +4389,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
                 UserIndex).pos.x, UserList(UserIndex).pos.y))
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(104, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         ' Msg585=¡Has sido resucitado!
-        Call WriteLocaleMsg(UserIndex, 585, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_SIDO_RESUCITADO_585, e_FontTypeNames.FONTTYPE_INFO)
     End With
     Exit Sub
 HandleResucitate_Err:
@@ -4402,20 +4402,20 @@ Private Sub HandleHeal(ByVal UserIndex As Integer)
         'Se asegura que el target es un npc
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             ' Msg757=Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.
-            Call WriteLocaleMsg(UserIndex, 757, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_PERSONAJE_HACE_CLICK_IZQUIERDO_SOBRE, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If (NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Revividor And NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.ResucitadorNewbie) Or .flags.Muerto _
                 <> 0 Then Exit Sub
         If .pos.Map = MAP_HOME_IN_JAIL And NpcList(.flags.TargetNPC.ArrayIndex).npcType = e_NPCType.Revividor Then Exit Sub
         If Distancia(.pos, NpcList(.flags.TargetNPC.ArrayIndex).pos) > 10 Then
-            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         .Stats.MinHp = .Stats.MaxHp
         Call WriteUpdateHP(UserIndex)
         'Msg496=¡¡Hás sido curado!!
-        Call WriteLocaleMsg(UserIndex, 496, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_SIDO_CURADO, e_FontTypeNames.FONTTYPE_INFO)
     End With
     Exit Sub
 HandleHeal_Err:
@@ -4436,13 +4436,13 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
         'Dead people can't commerce
         If .flags.Muerto = 1 Then
             ''Msg77=¡¡Estás muerto!!.)
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Is it already in commerce mode??
         If .flags.Comerciando Then
             ' Msg759=Ya estás comerciando
-            Call WriteLocaleMsg(UserIndex, 759, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_COMERCIANDO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Validate target NPC
@@ -4450,7 +4450,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
             'VOS, como GM, NO podes COMERCIAR con NPCs. (excepto Admins)
             If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Admin)) = 0 Then
                 ' Msg767=No podés vender items.
-                Call WriteLocaleMsg(UserIndex, 767, e_FontTypeNames.FONTTYPE_WARNING)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_VENDER_ITEMS, e_FontTypeNames.FONTTYPE_WARNING)
                 Exit Sub
             End If
             'Does the NPC want to trade??
@@ -4461,7 +4461,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 Exit Sub
             End If
             If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).pos, .pos) > 3 Then
-                Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             'Start commerce....
@@ -4471,46 +4471,46 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
             'VOS, como GM, NO podes COMERCIAR con usuarios. (excepto  Admins)
             If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Admin)) = 0 Then
                 ' Msg767=No podés vender items.
-                Call WriteLocaleMsg(UserIndex, 767, e_FontTypeNames.FONTTYPE_WARNING)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_VENDER_ITEMS, e_FontTypeNames.FONTTYPE_WARNING)
                 Exit Sub
             End If
             'NO podes COMERCIAR CON un GM. (excepto  Admins)
             If (UserList(.flags.TargetUser.ArrayIndex).flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Admin)) = 0 Then
                 'Msg1165= No podés vender items a este usuario.
-                Call WriteLocaleMsg(UserIndex, 1165, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_VENDER_ITEMS_USUARIO, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             'Is the other one dead??
             If UserList(.flags.TargetUser.ArrayIndex).flags.Muerto = 1 Then
                 Call FinComerciarUsu(.flags.TargetUser.ArrayIndex, True)
                 'Msg1166= ¡¡No podés comerciar con los muertos!!
-                Call WriteLocaleMsg(UserIndex, 1166, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_PODES_COMERCIAR_MUERTOS, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             'Is it me??
             If .flags.TargetUser.ArrayIndex = UserIndex Then
                 'Msg1167= No podés comerciar con vos mismo...
-                Call WriteLocaleMsg(UserIndex, 1167, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_COMERCIAR_VOS_MISMO, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             'Check distance
             If .pos.Map <> UserList(.flags.TargetUser.ArrayIndex).pos.Map Or Distancia(UserList(.flags.TargetUser.ArrayIndex).pos, .pos) > 3 Then
                 Call FinComerciarUsu(.flags.TargetUser.ArrayIndex, True)
-                Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             'Check if map is not safe
             If MapInfo(.pos.Map).Seguro = 0 Then
                 Call FinComerciarUsu(.flags.TargetUser.ArrayIndex, True)
                 'Msg1168= No se puede usar el comercio seguro en zona insegura.
-                Call WriteLocaleMsg(UserIndex, 1168, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDE_USAR_COMERCIO_SEGURO_ZONA_INSEGURA, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             'Is he already trading?? is it with me or someone else??
             If UserList(.flags.TargetUser.ArrayIndex).flags.Comerciando = True Then
                 Call FinComerciarUsu(.flags.TargetUser.ArrayIndex, True)
                 'Msg1169= No podés comerciar con el usuario en este momento.
-                Call WriteLocaleMsg(UserIndex, 1169, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_COMERCIAR_USUARIO_MOMENTO, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             'Initialize some variables...
@@ -4523,7 +4523,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
             Call IniciarComercioConUsuario(UserIndex, .flags.TargetUser.ArrayIndex)
         Else
             ' Msg760=Primero haz click izquierdo sobre el personaje.
-            Call WriteLocaleMsg(UserIndex, 760, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_HAZ_CLICK_IZQUIERDO_SOBRE_PERSONAJE, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
@@ -4536,18 +4536,18 @@ Private Sub HandleBankStart(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         'Dead people can't commerce
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .flags.Comerciando Then
             ' Msg759=Ya estás comerciando
-            Call WriteLocaleMsg(UserIndex, 759, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_COMERCIANDO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Validate target NPC
         If IsValidNpcRef(.flags.TargetNPC) Then
             If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).pos, .pos) > 6 Then
-                Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             'If it's the banker....
@@ -4556,7 +4556,7 @@ Private Sub HandleBankStart(ByVal UserIndex As Integer)
             End If
         Else
             ' Msg760=Primero haz click izquierdo sobre el personaje.
-            Call WriteLocaleMsg(UserIndex, 760, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_HAZ_CLICK_IZQUIERDO_SOBRE_PERSONAJE, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
@@ -4570,12 +4570,12 @@ Private Sub HandleInformation(ByVal UserIndex As Integer)
         'Validate target NPC
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             ' Msg761=Primero tenés que seleccionar un personaje, hacé click izquierdo sobre él.
-            Call WriteLocaleMsg(UserIndex, 761, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_PERSONAJE_HACE_CLICK_IZQUIERDO_SOBRE_761, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Enlistador Or .flags.Muerto <> 0 Then Exit Sub
         If Distancia(.pos, NpcList(.flags.TargetNPC.ArrayIndex).pos) > 4 Then
-            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If NpcList(.flags.TargetNPC.ArrayIndex).flags.Faccion = 0 Then
@@ -4607,12 +4607,12 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
         'Validate target NPC
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             ' Msg761=Primero tenés que seleccionar un personaje, hacé click izquierdo sobre él.
-            Call WriteLocaleMsg(UserIndex, 761, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_PERSONAJE_HACE_CLICK_IZQUIERDO_SOBRE_761, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Enlistador Or .flags.Muerto <> 0 Then Exit Sub
         If Distancia(.pos, NpcList(.flags.TargetNPC.ArrayIndex).pos) > 4 Then
-            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If NpcList(.flags.TargetNPC.ArrayIndex).flags.Faccion = 0 Then
@@ -4686,10 +4686,10 @@ Private Sub HandleGuildOnline(ByVal UserIndex As Integer)
         onlineList = modGuilds.m_ListaDeMiembrosOnline(UserIndex, .GuildIndex)
         If .GuildIndex <> 0 Then
             'Msg1171= Compañeros de tu clan conectados: ¬1
-            Call WriteLocaleMsg(UserIndex, 1171, e_FontTypeNames.FONTTYPE_INFO, onlineList)
+            Call WriteLocaleMsg(UserIndex, MSG_COMPANEROS_CLAN_CONECTADOS, e_FontTypeNames.FONTTYPE_INFO, onlineList)
         Else
             ' Msg762=No pertences a ningún clan.
-            Call WriteLocaleMsg(UserIndex, 762, e_FontTypeNames.FONTTYPE_GUILDMSG)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PERTENCES_NINGUN_CLAN, e_FontTypeNames.FONTTYPE_GUILDMSG)
         End If
     End With
     Exit Sub
@@ -4714,9 +4714,9 @@ Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
             Next
             .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
             If .Faccion.Status = e_Facciones.consejo Then
-                Call SendData(SendTarget.ToConsejo, UserIndex, PrepareMessageLocaleMsg(1812, GetUserDisplayName(UserIndex) & "¬" & chat, e_FontTypeNames.FONTTYPE_CONSEJO)) ' Msg1812=(Consejo) ¬1> ¬2
+                Call SendData(SendTarget.ToConsejo, UserIndex, PrepareMessageLocaleMsg(MSG_CONSEJO, GetUserDisplayName(UserIndex) & "¬" & chat, e_FontTypeNames.FONTTYPE_CONSEJO)) ' Msg1812=(Consejo) ¬1> ¬2
             ElseIf .Faccion.Status = e_Facciones.concilio Then
-                Call SendData(SendTarget.ToConsejoCaos, UserIndex, PrepareMessageLocaleMsg(1813, GetUserDisplayName(UserIndex) & "¬" & chat, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) ' Msg1813=(Concilio) ¬1> ¬2)
+                Call SendData(SendTarget.ToConsejoCaos, UserIndex, PrepareMessageLocaleMsg(MSG_CONCILIO, GetUserDisplayName(UserIndex) & "¬" & chat, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) ' Msg1813=(Concilio) ¬1> ¬2)
             End If
         End If
     End With
@@ -4736,21 +4736,21 @@ Private Sub HandleChangeDescription(ByVal UserIndex As Integer)
         Description = reader.ReadString8()
         If .flags.Muerto = 1 Then
             ' Msg763=No podés cambiar la descripción estando muerto.
-            Call WriteLocaleMsg(UserIndex, 763, e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_CAMBIAR_DESCRIPCION_ESTANDO_MUERTO, e_FontTypeNames.FONTTYPE_INFOIAO)
         Else
             If Len(Description) > 128 Then
                 ' Msg764=La descripción es muy larga.
-                Call WriteLocaleMsg(UserIndex, 764, e_FontTypeNames.FONTTYPE_INFOIAO)
+                Call WriteLocaleMsg(UserIndex, MSG_DESCRIPCION_MUY_LARGA, e_FontTypeNames.FONTTYPE_INFOIAO)
             ElseIf Not ValidDescription(Description) Then
                 ' Msg765=La descripción tiene carácteres inválidos.
-                Call WriteLocaleMsg(UserIndex, 765, e_FontTypeNames.FONTTYPE_INFOIAO)
+                Call WriteLocaleMsg(UserIndex, MSG_DESCRIPCION_TIENE_CARACTERES_INVALIDOS, e_FontTypeNames.FONTTYPE_INFOIAO)
             ElseIf Not ValidWordsDescription(Description) Then
                 'Msg2000=La descripción contiene palabras que no están permitidas.
-                Call WriteLocaleMsg(UserIndex, 2000, e_FontTypeNames.FONTTYPE_INFOIAO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_DESCRIPCION_CONTIENE_PALABRAS_ESTAN_PERMITIDAS, e_FontTypeNames.FONTTYPE_INFOIAO)
             Else
                 .Desc = Trim$(Description)
                 ' Msg766=La descripción a cambiado.
-                Call WriteLocaleMsg(UserIndex, 766, e_FontTypeNames.FONTTYPE_INFOIAO)
+                Call WriteLocaleMsg(UserIndex, MSG_DESCRIPCION_CAMBIADO, e_FontTypeNames.FONTTYPE_INFOIAO)
             End If
         End If
     End With
@@ -4770,7 +4770,7 @@ Private Sub HandleGuildVote(ByVal UserIndex As Integer)
         Dim errorStr As String
         vote = reader.ReadString8()
         'Msg1172= Elecciones de clan desactivadas por el momento.
-        Call WriteLocaleMsg(UserIndex, 1172, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_ELECCIONES_CLAN_DESACTIVADAS_MOMENTO_1172, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End With
     Exit Sub
@@ -4788,18 +4788,18 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
         Dim amount As Long
         amount = reader.ReadInt32()
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Validate target NPC
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             'Msg1173= Primero tenés que seleccionar un personaje, haz click izquierdo sobre él.
-            Call WriteLocaleMsg(UserIndex, 1173, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_PERSONAJE_HAZ_CLICK_IZQUIERDO_SOBRE, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Banquero Then Exit Sub
         If Distancia(.pos, NpcList(.flags.TargetNPC.ArrayIndex).pos) > 10 Then
-            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If amount > 0 And amount <= .Stats.Banco Then
@@ -4822,14 +4822,14 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         'Dead people can't leave a faction.. they can't talk...
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .Faccion.Status = e_Facciones.Ciudadano Then
             If .Faccion.Status = 1 Then
                 Call VolverCriminal(UserIndex)
                 'Msg1174= Ahora sos un criminal.
-                Call WriteLocaleMsg(UserIndex, 1174, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_AHORA_SOS_CRIMINAL, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         End If
@@ -4837,11 +4837,11 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             If .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Then
                 'Msg1175= Para salir del ejercito debes ir a visitar al rey.
-                Call WriteLocaleMsg(UserIndex, 1175, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_SALIR_EJERCITO_DEBES_IR_VISITAR_REY, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             ElseIf .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then
                 'Msg1176= Para salir de la legion debes ir a visitar al diablo.
-                Call WriteLocaleMsg(UserIndex, 1176, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_SALIR_LEGION_DEBES_IR_VISITAR_DIABLO, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             Exit Sub
@@ -4858,7 +4858,7 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
                             If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
                                 Call m_EcharMiembroDeClan(UserIndex, GetUserRealName(UserIndex))
                                 'Msg1177= Has dejado el clan.
-                                Call WriteLocaleMsg(UserIndex, 1177, e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteLocaleMsg(UserIndex, MSG_DEJADO_CLAN, e_FontTypeNames.FONTTYPE_INFO)
                             End If
                         Else
                             'Me fijo si está en un clan armada, en ese caso no lo dejo salir de la facción
@@ -4885,7 +4885,7 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
                             If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
                                 Call m_EcharMiembroDeClan(UserIndex, GetUserRealName(UserIndex))
                                 'Msg1178= Has dejado el clan.
-                                Call WriteLocaleMsg(UserIndex, 1178, e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteLocaleMsg(UserIndex, MSG_DEJADO_CLAN_1178, e_FontTypeNames.FONTTYPE_INFO)
                             End If
                         Else
                             'Me fijo si está en un clan CAOS, en ese caso no lo dejo salir de la facción
@@ -4917,18 +4917,18 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
         amount = reader.ReadInt32()
         'Dead people can't leave a faction.. they can't talk...
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Validate target NPC
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             'Msg1179= Primero tenés que seleccionar un personaje, haz click izquierdo sobre él.
-            Call WriteLocaleMsg(UserIndex, 1179, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_PERSONAJE_HAZ_CLICK_IZQUIERDO_SOBRE_1179, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Banquero Then Exit Sub
         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).pos, .pos) > 10 Then
-            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If amount > 0 And amount <= .Stats.GLD Then
@@ -4965,13 +4965,13 @@ Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
             End If
             If Not modGuilds.YaExiste(guild) Then
                 'Msg1180= No existe el clan: ¬1
-                Call WriteLocaleMsg(UserIndex, 1180, e_FontTypeNames.FONTTYPE_INFO, guild)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_EXISTE_CLAN, e_FontTypeNames.FONTTYPE_INFO, guild)
                 Exit Sub
             End If
             Dim MembersId() As Long
             MembersId = GetGuildMemberList(guild)
             For i = LBound(MembersId) To UBound(MembersId)
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1993, GetUserName(MembersId(i)) & "¬" & guild, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1993=¬1 <¬2>
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_USER_GUILD_TAG, GetUserName(MembersId(i)) & "¬" & guild, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1993=¬1 <¬2>
             Next i
         End If
     End With
@@ -5003,10 +5003,10 @@ Private Sub HandleOnlineRoyalArmy(ByVal UserIndex As Integer)
     End With
     If Len(list) > 0 Then
         'Msg1289= Armadas conectados: ¬1
-        Call WriteLocaleMsg(UserIndex, 1289, e_FontTypeNames.FONTTYPE_INFO, Left$(list, Len(list) - 2))
+        Call WriteLocaleMsg(UserIndex, MSG_ARMADAS_CONECTADOS, e_FontTypeNames.FONTTYPE_INFO, Left$(list, Len(list) - 2))
     Else
         'Msg1182= No hay Armadas conectados
-        Call WriteLocaleMsg(UserIndex, 1182, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_ARMADAS_CONECTADOS, e_FontTypeNames.FONTTYPE_INFO)
     End If
     Exit Sub
 HandleOnlineRoyalArmy_Err:
@@ -5036,10 +5036,10 @@ Private Sub HandleOnlineChaosLegion(ByVal UserIndex As Integer)
     End With
     If Len(list) > 0 Then
         'Msg1290= Caos conectados: ¬1
-        Call WriteLocaleMsg(UserIndex, 1290, e_FontTypeNames.FONTTYPE_INFO, Left$(list, Len(list) - 2))
+        Call WriteLocaleMsg(UserIndex, MSG_CAOS_CONECTADOS, e_FontTypeNames.FONTTYPE_INFO, Left$(list, Len(list) - 2))
     Else
         'Msg1184= No hay Caos conectados
-        Call WriteLocaleMsg(UserIndex, 1184, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_CAOS_CONECTADOS, e_FontTypeNames.FONTTYPE_INFO)
     End If
     Exit Sub
 HandleOnlineChaosLegion_Err:
@@ -5058,7 +5058,7 @@ Private Sub HandleComment(ByVal UserIndex As Integer)
         If Not .flags.Privilegios And e_PlayerType.User Then
             Call LogGM(GetUserRealName(UserIndex), "Comentario: " & comment)
             'Msg1185= Comentario salvado...
-            Call WriteLocaleMsg(UserIndex, 1185, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_COMENTARIO_SALVADO, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
@@ -5089,20 +5089,22 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
         If EsGM(UserIndex) Then
             If LenB(username) = 0 Or LenB(mensaje) = 0 Then
                 'Msg1186= Utilice /MENSAJEINFORMACION nick@mensaje
-                Call WriteLocaleMsg(UserIndex, 1186, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_UTILICE_MENSAJEINFORMACION_NICK_MENSAJE, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 tUser = NameIndex(username)
                 If IsValidUserRef(tUser) Then
                     'Msg1187= Mensaje recibido de ¬1
-                    Call WriteLocaleMsg(tUser.ArrayIndex, 1187, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
+                    Call WriteLocaleMsg(tUser.ArrayIndex, MSG_MESSAGE_RECEIVED, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
                     Call WriteConsoleMsg(tUser.ArrayIndex, mensaje, e_FontTypeNames.FONTTYPE_New_DONADOR)
+                    'Msg2169=¬1 respondió tu consulta: ¬2
+                    Call WriteShowMessageBox(tUser.ArrayIndex, MSG_QUESTION_ANSWERED, GetUserDisplayName(UserIndex) & "¬" & mensaje)
                 Else
                     If PersonajeExiste(username) Then
                         Call SetMessageInfoDatabase(username, "Mensaje recibido de " & GetUserDisplayName(UserIndex) & " [Game Master]: " & vbNewLine & mensaje & vbNewLine)
                     End If
                 End If
                 'Msg1188= Mensaje enviado a ¬1
-                Call WriteLocaleMsg(UserIndex, 1188, e_FontTypeNames.FONTTYPE_INFO, username)
+                Call WriteLocaleMsg(UserIndex, MSG_MESSAGE_SENT, e_FontTypeNames.FONTTYPE_INFO, username)
                 Call LogGM(GetUserRealName(UserIndex), "Envió mensaje como GM a " & username & ": " & mensaje)
             End If
         End If
@@ -5157,10 +5159,10 @@ Private Sub HandleGuildOnlineMembers(ByVal UserIndex As Integer)
             tGuild = GuildIndex(GuildName)
             If tGuild > 0 Then
                 'Msg1196= Clan ¬1
-                Call WriteLocaleMsg(UserIndex, 1196, e_FontTypeNames.FONTTYPE_INFO, UCase$(GuildName))
+                Call WriteLocaleMsg(UserIndex, MSG_CLAN, e_FontTypeNames.FONTTYPE_INFO, UCase$(GuildName))
             End If
         Else
-            Call WriteLocaleMsg(UserIndex, 528, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_COMANDO_DESHABILITADO_CARGO, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
@@ -5179,7 +5181,7 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
         Message = reader.ReadString8()
         'Solo dioses, admins y RMS
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Or .Faccion.Status = e_Facciones.consejo Then
-            Call SendData(SendTarget.ToRealYRMs, 0, PrepareMessageLocaleMsg(1815, GetUserDisplayName(UserIndex) & "¬" & Message, e_FontTypeNames.FONTTYPE_CONSEJO)) ' Msg1815=[ARMADA REAL] ¬1> ¬2
+            Call SendData(SendTarget.ToRealYRMs, 0, PrepareMessageLocaleMsg(MSG_ARMADA_REAL, GetUserDisplayName(UserIndex) & "¬" & Message, e_FontTypeNames.FONTTYPE_CONSEJO)) ' Msg1815=[ARMADA REAL] ¬1> ¬2
         End If
     End With
     Exit Sub
@@ -5198,7 +5200,7 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
         Message = reader.ReadString8()
         'Solo dioses, admins y RMS
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Or .Faccion.Status = e_Facciones.concilio Then
-            Call SendData(SendTarget.ToCaosYRMs, 0, PrepareMessageLocaleMsg(1816, GetUserDisplayName(UserIndex) & "¬" & Message, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) ' Msg1816=[FUERZAS DEL CAOS] ¬1> ¬2
+            Call SendData(SendTarget.ToCaosYRMs, 0, PrepareMessageLocaleMsg(MSG_FUERZAS_CAOS, GetUserDisplayName(UserIndex) & "¬" & Message, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) ' Msg1816=[FUERZAS DEL CAOS] ¬1> ¬2
         End If
     End With
     Exit Sub
@@ -5221,13 +5223,13 @@ Private Sub HandleFactionMessage(ByVal UserIndex As Integer)
         elapsedMs = TicksElapsed(.Counters.MensajeGlobal, currentTime)
         'Si esta silenciado no le deja enviar mensaje
         If .flags.Silenciado = 1 Then
-            Call WriteLocaleMsg(UserIndex, 110, e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
+            Call WriteLocaleMsg(UserIndex, MSG_ADMINS_MUTED_YOU, e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
             Exit Sub
         End If
         'Previene spam de mensajes globales
         If elapsedMs < IntervaloMensajeGlobal Then
             ' Msg548=No puedes escribir mensajes globales tan rápido.
-            Call WriteLocaleMsg(UserIndex, 548, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_ESCRIBIR_MENSAJES_GLOBALES_TAN_RAPIDO, e_FontTypeNames.FONTTYPE_WARNING)
             Exit Sub
         End If
         'Actualiza el tiempo del último mensaje
@@ -5278,16 +5280,16 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
             tUser = NameIndex(username)
             If Not IsValidUserRef(tUser) Then
                 'Msg1197= Usuario offline
-                Call WriteLocaleMsg(UserIndex, 1197, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_1197, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             Else
                 If UserList(tUser.ArrayIndex).GuildIndex > 0 Then
                     If GuildAlignmentIndex(UserList(tUser.ArrayIndex).GuildIndex) <> e_ALINEACION_GUILD.ALINEACION_ARMADA Then
                         'Msg1198= El miembro no puede ingresar al consejo porque forma parte de un clan que no es de la armada.
-                        Call WriteLocaleMsg(UserIndex, 1198, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_MIEMBRO_PUEDE_INGRESAR_CONSEJO_PORQUE_FORMA_PARTE_CLAN, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1643, username, e_FontTypeNames.FONTTYPE_CONSEJO)) 'Msg1643=¬1 fue aceptado en el honorable Consejo Real de Banderbill.
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_ACEPTADO_HONORABLE_CONSEJO_REAL_BANDERBILL, username, e_FontTypeNames.FONTTYPE_CONSEJO)) 'Msg1643=¬1 fue aceptado en el honorable Consejo Real de Banderbill.
                 With UserList(tUser.ArrayIndex)
                     .Faccion.Status = e_Facciones.consejo
                     Call WarpUserChar(tUser.ArrayIndex, .pos.Map, .pos.x, .pos.y, False)
@@ -5315,15 +5317,15 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
             tUser = NameIndex(username)
             If Not IsValidUserRef(tUser) Then
                 'Msg1199= Usuario offline
-                Call WriteLocaleMsg(UserIndex, 1199, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_1199, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 If UserList(tUser.ArrayIndex).GuildIndex > 0 Then
                     If GuildAlignmentIndex(UserList(tUser.ArrayIndex).GuildIndex) <> e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
                         'Msg1200= El miembro no puede ingresar al concilio porque forma parte de un clan que no es caótico.
-                        Call WriteLocaleMsg(UserIndex, 1200, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_MIEMBRO_PUEDE_INGRESAR_CONCILIO_PORQUE_FORMA_PARTE_CLAN, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1644, username, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) 'Msg1644=¬1 fue aceptado en el Consejo de la Legión Oscura.
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_ACEPTADO_CONSEJO_LEGION_OSCURA, username, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) 'Msg1644=¬1 fue aceptado en el Consejo de la Legión Oscura.
                 With UserList(tUser.ArrayIndex)
                     .Faccion.Status = e_Facciones.concilio
                     Call WarpUserChar(tUser.ArrayIndex, .pos.Map, .pos.x, .pos.y, False)
@@ -5351,31 +5353,31 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
             If Not IsValidUserRef(tUser) Then
                 If PersonajeExiste(username) Then
                     'Msg1201= Usuario offline, echando de los consejos
-                    Call WriteLocaleMsg(UserIndex, 1201, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_ECHANDO_CONSEJOS, e_FontTypeNames.FONTTYPE_INFO)
                     Dim Status As Integer
                     Status = GetDBValue("user", "status", "name", username)
                     Call EcharConsejoDatabase(username, IIf(Status = 4, 2, 3))
                     'Msg1202= Usuario ¬1
-                    Call WriteLocaleMsg(UserIndex, 1202, e_FontTypeNames.FONTTYPE_INFO, username)
+                    Call WriteLocaleMsg(UserIndex, MSG_USUARIO, e_FontTypeNames.FONTTYPE_INFO, username)
                 Else
                     'Msg1203= No existe el personaje.
-                    Call WriteLocaleMsg(UserIndex, 1203, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_EXISTE_PERSONAJE, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Else
                 With UserList(tUser.ArrayIndex)
                     If .Faccion.Status = e_Facciones.consejo Then
                         'Msg1204= Has sido echado del consejo de Banderbill
-                        Call WriteLocaleMsg(tUser.ArrayIndex, 1204, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(tUser.ArrayIndex, MSG_SIDO_ECHADO_CONSEJO_BANDERBILL, e_FontTypeNames.FONTTYPE_INFO)
                         .Faccion.Status = e_Facciones.Armada
                         Call WarpUserChar(tUser.ArrayIndex, .pos.Map, .pos.x, .pos.y)
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1645, username, e_FontTypeNames.FONTTYPE_CONSEJO)) 'Msg1645=¬1 fue expulsado del Consejo Real de Banderbill.
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_CONSEJO_REAL_BANDERBILL, username, e_FontTypeNames.FONTTYPE_CONSEJO)) 'Msg1645=¬1 fue expulsado del Consejo Real de Banderbill.
                     End If
                     If .Faccion.Status = e_Facciones.concilio Then
                         'Msg1205= Has sido echado del consejo de la Legión Oscura
-                        Call WriteLocaleMsg(tUser.ArrayIndex, 1205, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(tUser.ArrayIndex, MSG_SIDO_ECHADO_CONSEJO_LEGION_OSCURA, e_FontTypeNames.FONTTYPE_INFO)
                         .Faccion.Status = e_Facciones.Caos
                         Call WarpUserChar(tUser.ArrayIndex, .pos.Map, .pos.x, .pos.y)
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1646, username, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) 'Msg1646=¬1 fue expulsado del Consejo de la Legión Oscura.
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_CONSEJO_LEGION_OSCURA, username, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) 'Msg1646=¬1 fue expulsado del Consejo de la Legión Oscura.
                     End If
                     Call RefreshCharStatus(tUser.ArrayIndex)
                 End With
@@ -5406,9 +5408,9 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
             tFile = App.Path & "\guilds\" & GuildName & "-members.mem"
             If Not FileExist(tFile) Then
                 'Msg1206= No existe el clan: ¬1
-                Call WriteLocaleMsg(UserIndex, 1206, e_FontTypeNames.FONTTYPE_INFO, GuildName)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_EXISTE_CLAN_1206, e_FontTypeNames.FONTTYPE_INFO, GuildName)
             Else
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1647, GetUserDisplayName(UserIndex) & "¬" & UCase$(GuildName), e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1647=¬1 banned al clan ¬2.
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BANNED_CLAN, GetUserDisplayName(UserIndex) & "¬" & UCase$(GuildName), e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1647=¬1 banned al clan ¬2.
                 'baneamos a los miembros
                 Call LogGM(GetUserRealName(UserIndex), "BANCLAN a " & UCase$(GuildName))
                 cantMembers = val(GetVar(tFile, "INIT", "NroMembers"))
@@ -5416,7 +5418,7 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
                     'member es la victima
                     member = GetVar(tFile, "Members", "Member" & LoopC)
                     Call Ban(member, "Administracion del servidor", "Clan Banned")
-                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1648, member & "¬" & GuildName, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1648=¬1<¬2> ha sido expulsado del servidor.
+                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SIDO_EXPULSADO_SERVIDOR, member & "¬" & GuildName, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1648=¬1<¬2> ha sido expulsado del servidor.
                     tUser = NameIndex(member)
                     If IsValidUserRef(tUser) Then
                         'esta online
@@ -5458,25 +5460,25 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                     UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
                     UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Criminal
                     UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
-                    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1992, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1992=¬1 expulsado de las fuerzas del caos y prohibida la reenlistada.
-                    Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1991, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1991=¬1 te ha expulsado en forma definitiva de las fuerzas del caos.
+                    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FUERZAS_CAOS_PROHIBIDA_REENLISTADA, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1992=¬1 expulsado de las fuerzas del caos y prohibida la reenlistada.
+                    Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FORMA_DEFINITIVA_FUERZAS_CAOS, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1991=¬1 te ha expulsado en forma definitiva de las fuerzas del caos.
             Else
                 If PersonajeExiste(username) Then
                     'Msg1208= Usuario offline, echando de la facción
-                    Call WriteLocaleMsg(UserIndex, 1208, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_ECHANDO_FACCION, e_FontTypeNames.FONTTYPE_INFO)
                     Dim Status As Integer
                     Status = GetDBValue("user", "status", "name", username)
                     If Status = e_Facciones.Caos Then
                         Call EcharLegionDatabase(username)
                         'Msg1209= Usuario ¬1
-                        Call WriteLocaleMsg(UserIndex, 1209, e_FontTypeNames.FONTTYPE_INFO, username)
+                        Call WriteLocaleMsg(UserIndex, MSG_USUARIO_1209, e_FontTypeNames.FONTTYPE_INFO, username)
                     Else
                         'Msg1210= El personaje no pertenece a la legión.
-                        Call WriteLocaleMsg(UserIndex, 1210, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_PERSONAJE_PERTENECE_LEGION, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
                     'Msg1211= No existe el personaje.
-                    Call WriteLocaleMsg(UserIndex, 1211, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_EXISTE_PERSONAJE_1211, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             End If
         End If
@@ -5512,21 +5514,21 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                 UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
                 UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Ciudadano
                 UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1990, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1990=¬1 expulsado de las fuerzas reales y prohibida la reenlistada.
-                Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1989, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1989=¬1 te ha expulsado en forma definitiva de las fuerzas reales.
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FUERZAS_REALES_PROHIBIDA_REENLISTADA, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1990=¬1 expulsado de las fuerzas reales y prohibida la reenlistada.
+                Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FORMA_DEFINITIVA_FUERZAS_REALES, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1989=¬1 te ha expulsado en forma definitiva de las fuerzas reales.
             Else
                 If PersonajeExiste(username) Then
                     'Msg1213= Usuario offline, echando de la facción
-                    Call WriteLocaleMsg(UserIndex, 1213, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_ECHANDO_FACCION_1213, e_FontTypeNames.FONTTYPE_INFO)
                     Dim Status As Integer
                     Status = GetDBValue("user", "status", "name", username)
                     If Status = e_Facciones.Armada Then
                         Call EcharArmadaDatabase(username)
                         'Msg1214= Usuario ¬1
-                        Call WriteLocaleMsg(UserIndex, 1214, e_FontTypeNames.FONTTYPE_INFO, username)
+                        Call WriteLocaleMsg(UserIndex, MSG_USUARIO_1214, e_FontTypeNames.FONTTYPE_INFO, username)
                     Else
                         'Msg1215= El personaje no pertenece a la armada.
-                        Call WriteLocaleMsg(UserIndex, 1215, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_PERSONAJE_PERTENECE_ARMADA, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
                     'Msg1216= No existe el personaje.
@@ -5567,7 +5569,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
         'Se asegura que el target es un npc
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             'Msg1217= Primero tenés que seleccionar al sacerdote.
-            Call WriteLocaleMsg(UserIndex, 1217, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_SACERDOTE_1217, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         Dim priest As t_Npc
@@ -5576,7 +5578,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
         If (priest.npcType <> e_NPCType.Revividor And (priest.npcType <> e_NPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 1 Then Exit Sub
         'Make sure it's close enough
         If Distancia(.pos, NpcList(.flags.TargetNPC.ArrayIndex).pos) > 3 Then
-            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .Faccion.Status = e_Facciones.Ciudadano Or .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Or .Faccion.Status = e_Facciones.concilio Or _
@@ -5592,7 +5594,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
         End If
         If .Stats.GLD < Oro Then
             'Msg1218= No tienes suficiente dinero.
-            Call WriteLocaleMsg(UserIndex, 1218, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_DINERO_1218, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         Dim Donacion As Long
@@ -5608,7 +5610,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
         .Stats.GLD = .Stats.GLD - Oro
         Call WriteUpdateGold(UserIndex)
         'Msg1219= Has donado ¬1
-        Call WriteLocaleMsg(UserIndex, 1219, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Oro))
+        Call WriteLocaleMsg(UserIndex, MSG_DONADO, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Oro))
         Call WriteLocaleChatOverHead(UserIndex, 1406, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbYellow)  ' Msg1406=¡Gracias por tu generosa donación! Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, 80, 100, False))
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(100, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
@@ -5622,12 +5624,12 @@ End Sub
 Public Sub HandlePromedio(ByVal UserIndex As Integer)
     On Error GoTo handle
     With UserList(UserIndex)
-        Call WriteLocaleMsg(UserIndex, 1988, e_FontTypeNames.FONTTYPE_INFOBOLD, .clase & "¬" & .raza & "¬" & .Stats.ELV)
+        Call WriteLocaleMsg(UserIndex, MSG_CHARACTER_CLASS_RACE_LEVEL, e_FontTypeNames.FONTTYPE_INFOBOLD, .clase & "¬" & .raza & "¬" & .Stats.ELV)
         Dim Promedio As Double, Vida As Long
         Promedio = ModClase(.clase).Vida - (21 - .Stats.UserAtributos(e_Atributos.Constitucion)) * 0.5
         Vida = 18 + ModRaza(.raza).Constitucion + Promedio * (.Stats.ELV - 1)
         'Msg1220= Vida esperada: ¬1
-        Call WriteLocaleMsg(UserIndex, 1220, e_FontTypeNames.FONTTYPE_INFOBOLD, Vida & "¬" & Promedio)
+        Call WriteLocaleMsg(UserIndex, MSG_VIDA_ESPERADA, e_FontTypeNames.FONTTYPE_INFOBOLD, Vida & "¬" & Promedio)
         Promedio = CalcularPromedioVida(UserIndex)
         Dim Diff As Long, Color As e_FontTypeNames, Signo As String
         Diff = .Stats.MaxHp - Vida
@@ -5642,7 +5644,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
             Signo = "+"
         End If
         'Msg1221= Vida actual: ¬1
-        Call WriteLocaleMsg(UserIndex, 1221, Color, .Stats.MaxHp & " (" & Signo & Abs(Diff) & ")" & "¬" & Round(Promedio, 2))
+        Call WriteLocaleMsg(UserIndex, MSG_VIDA_ACTUAL, Color, .Stats.MaxHp & " (" & Signo & Abs(Diff) & ")" & "¬" & Round(Promedio, 2))
     End With
     Exit Sub
 handle:
@@ -5695,7 +5697,7 @@ Public Sub HandleNavigateToggle(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero)) Then
             'Msg528=Servidor » Comando deshabilitado para tu cargo.
-            Call WriteLocaleMsg(UserIndex, 528, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_COMANDO_DESHABILITADO_CARGO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .flags.Navegando = 1 Then
@@ -5721,11 +5723,11 @@ Public Sub HandleServerOpenToUsersToggle(ByVal UserIndex As Integer)
         If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
         If ServerSoloGMs > 0 Then
             'Msg1222= Servidor habilitado para todos.
-            Call WriteLocaleMsg(UserIndex, 1222, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_HABILITADO_TODOS, e_FontTypeNames.FONTTYPE_INFO)
             ServerSoloGMs = 0
         Else
             'Msg1223= Servidor restringido a administradores.
-            Call WriteLocaleMsg(UserIndex, 1223, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_RESTRINGIDO_ADMINISTRADORES, e_FontTypeNames.FONTTYPE_INFO)
             ServerSoloGMs = 1
         End If
     End With
@@ -5783,11 +5785,11 @@ Public Sub HandleRemoveCharFromGuild(ByVal UserIndex As Integer)
             GuildIndex = modGuilds.m_EcharMiembroDeClan(UserIndex, username)
             If GuildIndex = 0 Then
                 'Msg1224= No pertenece a ningún clan o es fundador.
-                Call WriteLocaleMsg(UserIndex, 1224, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PERTENECE_NINGUN_CLAN_FUNDADOR, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 'Msg1225= Expulsado.
-                Call WriteLocaleMsg(UserIndex, 1225, e_FontTypeNames.FONTTYPE_INFO)
-                Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageLocaleMsg(1817, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1817=¬1 ha sido expulsado del clan por los administradores del servidor.
+                Call WriteLocaleMsg(UserIndex, MSG_EXPULSADO, e_FontTypeNames.FONTTYPE_INFO)
+                Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageLocaleMsg(MSG_SIDO_EXPULSADO_CLAN_ADMINISTRADORES_SERVIDOR, username, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1817=¬1 ha sido expulsado del clan por los administradores del servidor.
             End If
         End If
     End With
@@ -5822,21 +5824,21 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
         Dim Oferta As Long
         Oferta = reader.ReadInt32()
         If UserList(UserIndex).flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             'Msg1226= Primero tenés que hacer click sobre el subastador.
-            Call WriteLocaleMsg(UserIndex, 1226, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_HACER_CLICK_SOBRE_SUBASTADOR, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Subastador Then
             'Msg1227= Primero tenés que hacer click sobre el subastador.
-            Call WriteLocaleMsg(UserIndex, 1227, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_HACER_CLICK_SOBRE_SUBASTADOR_1227, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).pos, .pos) > 2 Then
-            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .flags.Subastando = False Then
@@ -5845,14 +5847,14 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
         End If
         If Subasta.HaySubastaActiva = False And .flags.Subastando = False Then
             'Msg1228= No hay ninguna subasta en curso.
-            Call WriteLocaleMsg(UserIndex, 1228, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_NINGUNA_SUBASTA_CURSO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .flags.Subastando = True Then
             UserList(UserIndex).Counters.TiempoParaSubastar = 0
             Subasta.OfertaInicial = Oferta
             Subasta.MejorOferta = 0
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1649, GetUserDisplayName(UserIndex) & "¬" & ObjData(Subasta.ObjSubastado).name & "¬" & Subasta.ObjSubastadoCantidad & "¬" & _
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTANDO_CANTIDAD_PRECIO_INICIAL_MONEDAS_ESCRIBE_OFERTAR, GetUserDisplayName(UserIndex) & "¬" & ObjData(Subasta.ObjSubastado).name & "¬" & Subasta.ObjSubastadoCantidad & "¬" & _
                     PonerPuntos(Subasta.OfertaInicial), e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1649=¬1 está subastando: ¬2 (Cantidad: ¬3 ) - con un precio inicial de ¬4 monedas. Escribe /OFERTAR (cantidad) para participar.
             .flags.Subastando = False
             Subasta.HaySubastaActiva = True
@@ -5882,17 +5884,17 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
         Oferta = reader.ReadInt32()
         If Subasta.HaySubastaActiva = False Then
             'Msg1229= No hay ninguna subasta en curso.
-            Call WriteLocaleMsg(UserIndex, 1229, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_NINGUNA_SUBASTA_CURSO_1229, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If Oferta < Subasta.MejorOferta + 100 Then
             'Msg1230= Debe haber almenos una diferencia de 100 monedas a la ultima oferta!
-            Call WriteLocaleMsg(UserIndex, 1230, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_DEBE_HABER_ALMENOS_DIFERENCIA_MONEDAS_ULTIMA_OFERTA, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .name = Subasta.Subastador Then
             'Msg1231= No podés auto ofertar en tus subastas. La proxima vez iras a la carcel...
-            Call WriteLocaleMsg(UserIndex, 1231, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_AUTO_OFERTAR_TUS_SUBASTAS_PROXIMA_VEZ_IRAS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .Stats.GLD >= Oferta Then
@@ -5908,7 +5910,7 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
             .Stats.GLD = .Stats.GLD - Oferta
             Call WriteUpdateGold(UserIndex)
             If Subasta.TiempoRestanteSubasta < 60 Then
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1650, GetUserDisplayName(UserIndex) & "¬" & PonerPuntos(Oferta) & "¬", e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1650=Oferta mejorada por: ¬1 (Ofrece ¬2 monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_OFERTA_MEJORADA_OFRECE_MONEDAS_ORO_TIEMPO_EXTENDIDO, GetUserDisplayName(UserIndex) & "¬" & PonerPuntos(Oferta) & "¬", e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1650=Oferta mejorada por: ¬1 (Ofrece ¬2 monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.
                 Call LogearEventoDeSubasta(GetUserRealName(UserIndex) & ": Mejoro la oferta en el ultimo minuto ofreciendo " & PonerPuntos(Oferta) & " monedas.")
                 Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta + 30
             Else
@@ -5918,7 +5920,7 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
             End If
         Else
             'Msg1232= No posees esa cantidad de oro.
-            Call WriteLocaleMsg(UserIndex, 1232, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_POSEES_ESA_CANTIDAD_ORO, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
@@ -5938,7 +5940,7 @@ Public Sub HandleDuel(ByVal UserIndex As Integer)
         PocionesMaximas = reader.ReadInt16
         CaenItems = reader.ReadBool
         'Msg1233= No puedes realizar un reto en este momento.
-        Call WriteLocaleMsg(UserIndex, 1233, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_REALIZAR_RETO_MOMENTO, e_FontTypeNames.FONTTYPE_INFO)
         'Exit Sub
         Call CrearReto(UserIndex, Players, Bet, PocionesMaximas, CaenItems)
     End With
@@ -5993,19 +5995,19 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
         ' Tiene el oro?
         If .Stats.Banco < Cantidad Then Exit Sub
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             ''Msg77=¡¡Estás muerto!!.)
             Exit Sub
         End If
         'Validate target NPC
         If Not IsValidNpcRef(.flags.TargetNPC) Then
             'Msg1234= Primero tenés que seleccionar un personaje, haz click izquierdo sobre él.
-            Call WriteLocaleMsg(UserIndex, 1234, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_PERSONAJE_HAZ_CLICK_IZQUIERDO_SOBRE_1234, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Banquero Then Exit Sub
         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).pos, .pos) > 10 Then
-            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         tUser = NameIndex(username)
@@ -6053,7 +6055,6 @@ ErrHandler:
 End Sub
 
 Private Sub HandleMoveItem(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
     On Error GoTo ErrHandler
     With UserList(UserIndex)
         Dim SlotViejo As Byte
@@ -6066,32 +6067,12 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
         Dim Equipado             As Boolean
         Dim Equipado2            As Boolean
         Dim Equipado3            As Boolean
-        Dim ObjCania             As t_Obj
-        'HarThaoS: Si es un hilo de pesca y lo estoy arrastrando en una caña rota borro del slot viejo y en el nuevo pongo la caña correspondiente
+        
         If SlotViejo > getMaxInventorySlots(UserIndex) Or SlotNuevo > getMaxInventorySlots(UserIndex) Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
-        If .invent.Object(SlotViejo).ObjIndex = OBJ_FISHING_LINE Then
-            Select Case .invent.Object(SlotNuevo).ObjIndex
-                Case OBJ_BROKEN_FISHING_ROD_BASIC
-                    ObjCania.ObjIndex = OBJ_FISHING_ROD_BASIC
-                Case OBJ_BROKEN_FISHING_ROD_COMMON
-                    ObjCania.ObjIndex = OBJ_FISHING_ROD_COMMON
-                Case OBJ_BROKEN_FISHING_ROD_FINE
-                    ObjCania.ObjIndex = OBJ_FISHING_ROD_FINE
-                Case OBJ_BROKEN_FISHING_ROD_ELITE
-                    ObjCania.ObjIndex = OBJ_FISHING_ROD_ELITE
-            End Select
-            ObjCania.amount = 1
-            'si el objeto que estaba pisando era una caña rota.
-            If ObjCania.ObjIndex > 0 Then
-                'Quitamos del inv el item
-                Call QuitarUserInvItem(UserIndex, SlotViejo, 1)
-                Call UpdateUserInv(False, UserIndex, SlotViejo)
-                Call QuitarUserInvItem(UserIndex, SlotNuevo, 1)
-                Call UpdateUserInv(False, UserIndex, SlotNuevo)
-                Call MeterItemEnInventario(UserIndex, ObjCania)
-                Exit Sub
-            End If
-        End If
+        
+        'Reparacion de caña de pescar con hilo
+        If TryRepairFishingRod(UserIndex, SlotViejo, SlotNuevo) Then Exit Sub
+        
         If IsFeatureEnabled("elemental_tags") Then
             AppliedElementalTags = False
             If CanElementalTagBeApplied(UserIndex, SlotNuevo, SlotViejo) Then
@@ -6101,7 +6082,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
         End If
         If (SlotViejo > .CurrentInventorySlots) Or (SlotNuevo > .CurrentInventorySlots) Then
             'Msg1235= Espacio no desbloqueado.
-            Call WriteLocaleMsg(UserIndex, 1235, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_ESPACIO_DESBLOQUEADO, e_FontTypeNames.FONTTYPE_INFO)
         Else
             If .invent.Object(SlotNuevo).ObjIndex = .invent.Object(SlotViejo).ObjIndex And .invent.Object(SlotNuevo).ElementalTags = .invent.Object(SlotViejo).ElementalTags Then
                 .invent.Object(SlotNuevo).amount = .invent.Object(SlotNuevo).amount + .invent.Object(SlotViejo).amount
@@ -6311,21 +6292,21 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
         If UserList(UserIndex).flags.Privilegios And e_PlayerType.Consejero Then Exit Sub
         If UserList(UserIndex).GuildIndex > 0 Then
             'Msg1236= Ya perteneces a un clan, no podés fundar otro.
-            Call WriteLocaleMsg(UserIndex, 1236, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PERTENECES_CLAN_PODES_FUNDAR_OTRO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If UserList(UserIndex).Stats.ELV < 23 Or UserList(UserIndex).Stats.UserSkills(e_Skill.liderazgo) < 50 Then
             'Msg1237= Para fundar un clan debes ser Nivel 23, tener 50 en liderazgo y tener en tu inventario las 4 Gemas de Fundación: Gema Verde, Gema Roja, Gema Azul y Gema Polar.
-            Call WriteLocaleMsg(UserIndex, 1237, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_FUNDAR_CLAN_DEBES_NIVEL_TENER_LIDERAZGO_TENER_INVENTARIO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If Not TieneObjetos(407, 1, UserIndex) Or Not TieneObjetos(408, 1, UserIndex) Or Not TieneObjetos(409, 1, UserIndex) Or Not TieneObjetos(412, 1, UserIndex) Then
             'Msg1238= Para fundar un clan debes tener en tu inventario las 4 Gemas de Fundación: Gema Verde, Gema Roja, Gema Azul y Gema Polar.
-            Call WriteLocaleMsg(UserIndex, 1238, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_FUNDAR_CLAN_DEBES_TENER_INVENTARIO_GEMAS_FUNDACION_GEMA, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Msg1239= Servidor » ¡Comenzamos a fundar el clan! Ingresa todos los datos solicitados.
-        Call WriteLocaleMsg(UserIndex, 1239, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_COMENZAMOS_FUNDAR_CLAN_INGRESA_TODOS_DATOS_SOLICITADOS, e_FontTypeNames.FONTTYPE_INFO)
         Call WriteShowFundarClanForm(UserIndex)
     End With
     Exit Sub
@@ -6342,13 +6323,13 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
         If .GuildIndex <> 0 Then
             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
             If clan_nivel >= RequiredGuildLevelCallSupport Then
-                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(1818, GetUserDisplayName(UserIndex) & "¬" & get_map_name(.pos.Map) & "¬" & .pos.Map & "¬" & .pos.x & "¬" & _
+                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_SOLICITA_APOYO_CLAN_PUEDES_VER_UBICACION, GetUserDisplayName(UserIndex) & "¬" & get_map_name(.pos.Map) & "¬" & .pos.Map & "¬" & .pos.x & "¬" & _
                         .pos.y, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1818=Clan> [¬1] solicita apoyo de su clan en ¬2 (¬3-¬4-¬5). Puedes ver su ubicación en el mapa del mundo.
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.pos.Map, .pos.x, .pos.y))
             Else
                 'Msg1240= Servidor » El nivel de tu clan debe ser ¬ o mayor para utilizar esta opción.
-                Call WriteLocaleMsg(UserIndex, 1240, e_FontTypeNames.FONTTYPE_INFO, RequiredGuildLevelCallSupport)
+                Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_NIVEL_CLAN_DEBE_MAYOR_UTILIZAR_OPCION, e_FontTypeNames.FONTTYPE_INFO, RequiredGuildLevelCallSupport)
             End If
         End If
     End With
@@ -6367,25 +6348,25 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
         tUser = NameIndex(username)
         If Not IsValidUserRef(tUser) Then
             ' Msg743=Usuario offline.
-            Call WriteLocaleMsg(UserIndex, 743, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_743, e_FontTypeNames.FONTTYPE_INFO)
         End If
         If IsValidNpcRef(.flags.TargetNPC) Then
             If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Revividor Then
                 ' Msg744=Primero haz click sobre un sacerdote.
-                Call WriteLocaleMsg(UserIndex, 744, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_HAZ_CLICK_SOBRE_SACERDOTE, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 If Distancia(.pos, NpcList(.flags.TargetNPC.ArrayIndex).pos) > 10 Then
-                    Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                 Else
                     If tUser.ArrayIndex = UserIndex Then
                         ' Msg745=No podés casarte contigo mismo.
-                        Call WriteLocaleMsg(UserIndex, 745, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_CASARTE_CONTIGO_MISMO, e_FontTypeNames.FONTTYPE_INFO)
                     ElseIf .flags.Casado = 1 Then
                         ' Msg746=¡Ya estás casado! Debes divorciarte de tu actual pareja para casarte nuevamente.
-                        Call WriteLocaleMsg(UserIndex, 746, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_CASADO_DEBES_DIVORCIARTE_ACTUAL_PAREJA_CASARTE_NUEVAMENTE, e_FontTypeNames.FONTTYPE_INFO)
                     ElseIf UserList(tUser.ArrayIndex).flags.Casado = 1 Then
                         ' Msg747=Tu pareja debe divorciarse antes de tomar tu mano en matrimonio.
-                        Call WriteLocaleMsg(UserIndex, 747, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_PAREJA_DEBE_DIVORCIARSE_ANTES_TOMAR_MANO_MATRIMONIO, e_FontTypeNames.FONTTYPE_INFO)
                     Else
                         If UserList(tUser.ArrayIndex).flags.Candidato.ArrayIndex = UserIndex Then
                             UserList(tUser.ArrayIndex).flags.Casado = 1
@@ -6393,13 +6374,13 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
                             .flags.Casado = 1
                             .flags.SpouseId = UserList(tUser.ArrayIndex).Id
                             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.Casamiento_sound, NO_3D_SOUND, NO_3D_SOUND))
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1651, get_map_name(.pos.Map) & "¬" & GetUserDisplayName(UserIndex) & "¬" & GetUserDisplayName( _
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SACERDOTE_CELEBRA_CASAMIENTO_ENTRE, get_map_name(.pos.Map) & "¬" & GetUserDisplayName(UserIndex) & "¬" & GetUserDisplayName( _
                                     tUser.ArrayIndex), e_FontTypeNames.FONTTYPE_WARNING)) 'Msg1651=El sacerdote de ¬1 celebra el casamiento entre ¬2 y ¬3.
                             Call WriteLocaleChatOverHead(UserIndex, 1414, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1414=Los declaro unidos en legal matrimonio ¡Felicidades!
                             Call WriteLocaleChatOverHead(tUser.ArrayIndex, 1415, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1415=Los declaro unidos en legal matrimonio ¡Felicidades!
                         Else
                             Call WriteLocaleChatOverHead(UserIndex, 1420, username, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1420=La solicitud de casamiento a sido enviada a ¬1.
-                            Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1956, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1956=¬1 desea casarse contigo, para permitirlo haz click en el sacerdote y escribe /PROPONER ¬1.
+                            Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_DESEA_CASARSE_CONTIGO_PERMITIRLO_HAZ_CLICK_SACERDOTE, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_TALK)) ' Msg1956=¬1 desea casarse contigo, para permitirlo haz click en el sacerdote y escribe /PROPONER ¬1.
                             .flags.Candidato = tUser
                         End If
                     End If
@@ -6407,7 +6388,7 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
             End If
         Else
             ' Msg748=Primero haz click sobre el sacerdote.
-            Call WriteLocaleMsg(UserIndex, 748, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_HAZ_CLICK_SOBRE_SACERDOTE_748, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
@@ -6439,12 +6420,12 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Call PerderTesoro
                     Else
                         If BusquedaTesoroActiva Then
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1652, get_map_name(TesoroNumMapa) & "¬" & TesoroNumMapa, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1652=Eventos> Todavia nadie fue capaz de encontar el tesoro, recorda que se encuentra en ¬1(¬2). ¿Quien sera el valiente que lo encuentre?
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_TODAVIA_NADIE_CAPAZ_ENCONTAR_TESORO_RECORDA, get_map_name(TesoroNumMapa) & "¬" & TesoroNumMapa, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1652=Eventos> Todavia nadie fue capaz de encontar el tesoro, recorda que se encuentra en ¬1(¬2). ¿Quien sera el valiente que lo encuentre?
                             'Msg1241= Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: ¬1
-                            Call WriteLocaleMsg(UserIndex, 1241, e_FontTypeNames.FONTTYPE_INFO, TesoroNumMapa)
+                            Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_TESORO_ACTIVA_TESORO_ENCUENTRA, e_FontTypeNames.FONTTYPE_INFO, TesoroNumMapa)
                         Else
                             ' Msg734=Ya hay una busqueda del tesoro activa.
-                            Call WriteLocaleMsg(UserIndex, 734, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_TESORO_ACTIVA, e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     End If
                 Case 1
@@ -6452,12 +6433,12 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Call PerderRegalo
                     Else
                         If BusquedaRegaloActiva Then
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1653, get_map_name(RegaloNumMapa) & "¬" & RegaloNumMapa, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1653=Eventos> Ningún valiente fue capaz de encontrar el item misterioso, recuerda que se encuentra en ¬1(¬2). ¡Ten cuidado!
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_NINGUN_VALIENTE_CAPAZ_ENCONTRAR_ITEM_MISTERIOSO, get_map_name(RegaloNumMapa) & "¬" & RegaloNumMapa, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1653=Eventos> Ningún valiente fue capaz de encontrar el item misterioso, recuerda que se encuentra en ¬1(¬2). ¡Ten cuidado!
                             'Msg1242= Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: ¬1
-                            Call WriteLocaleMsg(UserIndex, 1242, e_FontTypeNames.FONTTYPE_INFO, RegaloNumMapa)
+                            Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_TESORO_ACTIVA_TESORO_ENCUENTRA_1242, e_FontTypeNames.FONTTYPE_INFO, RegaloNumMapa)
                         Else
                             ' Msg734=Ya hay una busqueda del tesoro activa.
-                            Call WriteLocaleMsg(UserIndex, 734, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_TESORO_ACTIVA, e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     End If
                 Case 2
@@ -6470,18 +6451,18 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         BusquedaNpcActiva = True
                     Else
                         If BusquedaNpcActiva Then
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1654, NpcList(npc_index_evento).pos.Map, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1654=Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa ¬1.
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_TODAVIA_NADIE_LOGRO_MATAR_NPC_ENCUENTRA, NpcList(npc_index_evento).pos.Map, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1654=Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa ¬1.
                             'Msg1243= Ya hay una busqueda de npc activo. El tesoro se encuentra en: ¬1
-                            Call WriteLocaleMsg(UserIndex, 1243, e_FontTypeNames.FONTTYPE_INFO, NpcList(npc_index_evento).pos.Map)
+                            Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_NPC_ACTIVO_TESORO_ENCUENTRA, e_FontTypeNames.FONTTYPE_INFO, NpcList(npc_index_evento).pos.Map)
                         Else
                             ' Msg734=Ya hay una busqueda del tesoro activa.
-                            Call WriteLocaleMsg(UserIndex, 734, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_TESORO_ACTIVA, e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     End If
             End Select
         Else
             ' Msg735=Servidor » No estas habilitado para hacer Eventos.
-            Call WriteLocaleMsg(UserIndex, 735, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_SERVIDOR_HABILITADO_HACER_EVENTOS, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
@@ -6509,14 +6490,14 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
         Accion = reader.ReadInt8()
         If .Accion.AccionPendiente = True Then
             If .Accion.TipoAccion = Accion Then
-                Call CompletarAccionFin(UserIndex)
+                Call EndProgrammedAction(UserIndex)
             Else
                 ' Msg749=Servidor » La acción que solicitas no se corresponde.
-                Call WriteLocaleMsg(UserIndex, 749, e_FontTypeNames.FONTTYPE_SERVER)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_SERVIDOR_ACCION_SOLICITAS_CORRESPONDE, e_FontTypeNames.FONTTYPE_SERVER)
             End If
         Else
             ' Msg750=Servidor » Tu no tenias ninguna acción pendiente.
-            Call WriteLocaleMsg(UserIndex, 750, e_FontTypeNames.FONTTYPE_SERVER)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_SERVIDOR_TENIAS_NINGUNA_ACCION_PENDIENTE, e_FontTypeNames.FONTTYPE_SERVER)
         End If
     End With
     Exit Sub
@@ -6528,13 +6509,13 @@ Private Sub HandleInvitarGrupo(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If .flags.Muerto = 1 Then
             'Msg77=¡¡Estás muerto!!.
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
         Else
             If .Grupo.CantidadMiembros <= UBound(.Grupo.Miembros) Then
                 Call WriteWorkRequestTarget(UserIndex, e_Skill.Grupo)
             Else
                 ' Msg751=¡No podés invitar a más personas!
-                Call WriteLocaleMsg(UserIndex, 751, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_PODES_INVITAR_MAS_PERSONAS, e_FontTypeNames.FONTTYPE_INFO)
             End If
         End If
     End With
@@ -6554,14 +6535,14 @@ Private Sub HandleMarcaDeClan(ByVal UserIndex As Integer)
         End If
         If .flags.Muerto = 1 Then
             ''Msg77=¡¡Estás muerto!!.
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         Dim clan_nivel As Byte
         clan_nivel = modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex)
         If clan_nivel > 20 Then
             ' Msg721=Servidor » El nivel de tu clan debe ser 3 para utilizar esta opción.
-            Call WriteLocaleMsg(UserIndex, 721, e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_NIVEL_CLAN_DEBE_UTILIZAR_OPCION, e_FontTypeNames.FONTTYPE_INFOIAO)
             Exit Sub
         End If
         Call WriteWorkRequestTarget(UserIndex, e_Skill.MarcaDeClan)
@@ -6591,12 +6572,12 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     If IsValidUserRef(UserList(UserIndex).Grupo.PropuestaDe) Then
                         If UserList(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Lider.ArrayIndex <> UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex Then
                             ' Msg722=¡El lider del grupo ha cambiado, imposible unirse!
-                            Call WriteLocaleMsg(UserIndex, 722, e_FontTypeNames.FONTTYPE_INFOIAO)
+                            Call WriteLocaleMsg(UserIndex, MSG_LIDER_GRUPO_HA_CAMBIADO_IMPOSIBLE_UNIRSE, e_FontTypeNames.FONTTYPE_INFOIAO)
                         Else
                             Log = "Repuesta Afirmativa 1-1 "
                             If Not IsValidUserRef(UserList(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Lider) Then
                                 ' Msg723=¡El grupo ya no existe!
-                                Call WriteLocaleMsg(UserIndex, 723, e_FontTypeNames.FONTTYPE_INFOIAO)
+                                Call WriteLocaleMsg(UserIndex, MSG_NO_GRUPO_EXISTE, e_FontTypeNames.FONTTYPE_INFOIAO)
                             Else
                                 Log = "Repuesta Afirmativa 1-2 "
                                 If UserList(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.CantidadMiembros = 1 Then
@@ -6608,13 +6589,13 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         End If
                     Else
                         ' Msg724=Servidor » Solicitud de grupo invalida, reintente...
-                        Call WriteLocaleMsg(UserIndex, 724, e_FontTypeNames.FONTTYPE_SERVER)
+                        Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_SOLICITUD_GRUPO_INVALIDA_REINTENTE, e_FontTypeNames.FONTTYPE_SERVER)
                     End If
                     'unirlo
                 Case 2
                     Log = "Repuesta Afirmativa 2"
                     ' Msg725=¡Ahora sos un ciudadano!
-                    Call WriteLocaleMsg(UserIndex, 725, e_FontTypeNames.FONTTYPE_INFOIAO)
+                    Call WriteLocaleMsg(UserIndex, MSG_AHORA_SOS_CIUDADANO, e_FontTypeNames.FONTTYPE_INFOIAO)
                     Call VolverCiudadano(UserIndex)
                 Case 3
                     Log = "Repuesta Afirmativa 3"
@@ -6646,7 +6627,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                                 UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1421=¡Gracias ¬1! Ahora perteneces a la ciudad de ¬2.
                     Else
                         'Msg1244= ¡Gracias ¬1
-                        Call WriteLocaleMsg(UserIndex, 1244, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
+                        Call WriteLocaleMsg(UserIndex, MSG_GRACIAS, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
                     End If
                 Case 4
                     Log = "Repuesta Afirmativa 4"
@@ -6665,12 +6646,12 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         Else
                             ' Invalid index; send error message
                             ' Msg726=Servidor » Solicitud de comercio invalida, reintente...
-                            Call WriteLocaleMsg(UserIndex, 726, e_FontTypeNames.FONTTYPE_SERVER)
+                            Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_SOLICITUD_COMERCIO_INVALIDA_REINTENTE, e_FontTypeNames.FONTTYPE_SERVER)
                         End If
                     Else
                         ' Invalid reference; send error message
                         ' Msg726=Servidor » Solicitud de comercio invalida, reintente...
-                        Call WriteLocaleMsg(UserIndex, 726, e_FontTypeNames.FONTTYPE_SERVER)
+                        Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_SOLICITUD_COMERCIO_INVALIDA_REINTENTE, e_FontTypeNames.FONTTYPE_SERVER)
                     End If
                 Case 5
                     Dim i As Integer, j As Integer
@@ -6702,7 +6683,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     End With
                 Case Else
                     ' Msg727=No tienes preguntas pendientes.
-                    Call WriteLocaleMsg(UserIndex, 727, e_FontTypeNames.FONTTYPE_INFOIAO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_PREGUNTAS_PENDIENTES, e_FontTypeNames.FONTTYPE_INFOIAO)
             End Select
         Else
             Log = "Repuesta negativa"
@@ -6715,11 +6696,11 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     End If
                     Call SetUserRef(UserList(UserIndex).Grupo.PropuestaDe, 0)
                     'Msg1246= Has rechazado la propuesta.
-                    Call WriteLocaleMsg(UserIndex, 1246, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_RECHAZADO_PROPUESTA, e_FontTypeNames.FONTTYPE_INFO)
                 Case 2
                     Log = "Repuesta negativa 2"
                     'Msg1247= ¡Continuas siendo neutral!
-                    Call WriteLocaleMsg(UserIndex, 1247, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_CONTINUAS_SIENDO_NEUTRAL, e_FontTypeNames.FONTTYPE_INFO)
                     Call VolverCriminal(UserIndex)
                 Case 3
                     Log = "Repuesta negativa 3"
@@ -6760,7 +6741,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     Log = "Repuesta negativa 5"
                 Case Else
                     ' Msg727=No tienes preguntas pendientes.
-                    Call WriteLocaleMsg(UserIndex, 727, e_FontTypeNames.FONTTYPE_INFOIAO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_PREGUNTAS_PENDIENTES, e_FontTypeNames.FONTTYPE_INFOIAO)
             End Select
         End If
     End With
@@ -6825,25 +6806,25 @@ Private Sub HandleSubastaInfo(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If Subasta.HaySubastaActiva Then
             'Msg1249= Subastador: ¬1
-            Call WriteLocaleMsg(UserIndex, 1249, e_FontTypeNames.FONTTYPE_INFO, Subasta.Subastador)
+            Call WriteLocaleMsg(UserIndex, MSG_SUBASTADOR, e_FontTypeNames.FONTTYPE_INFO, Subasta.Subastador)
             'Msg1250= Objeto: ¬1
-            Call WriteLocaleMsg(UserIndex, 1250, e_FontTypeNames.FONTTYPE_INFO, ObjData(Subasta.ObjSubastado).name)
+            Call WriteLocaleMsg(UserIndex, MSG_OBJETO, e_FontTypeNames.FONTTYPE_INFO, ObjData(Subasta.ObjSubastado).name)
             If Subasta.HuboOferta Then
                 'Msg1251= Mejor oferta: ¬1
-                Call WriteLocaleMsg(UserIndex, 1251, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Subasta.MejorOferta))
+                Call WriteLocaleMsg(UserIndex, MSG_MEJOR_OFERTA, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Subasta.MejorOferta))
                 'Msg1252= Podes realizar una oferta escribiendo /OFERTAR ¬1
-                Call WriteLocaleMsg(UserIndex, 1252, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Subasta.MejorOferta + 100))
+                Call WriteLocaleMsg(UserIndex, MSG_PODES_REALIZAR_OFERTA_ESCRIBIENDO_OFERTAR, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Subasta.MejorOferta + 100))
             Else
                 'Msg1253= Oferta inicial: ¬1
-                Call WriteLocaleMsg(UserIndex, 1253, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Subasta.OfertaInicial))
+                Call WriteLocaleMsg(UserIndex, MSG_OFERTA_INICIAL, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Subasta.OfertaInicial))
                 'Msg1254= Podes realizar una oferta escribiendo /OFERTAR ¬1
-                Call WriteLocaleMsg(UserIndex, 1254, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Subasta.OfertaInicial + 100))
+                Call WriteLocaleMsg(UserIndex, MSG_PODES_REALIZAR_OFERTA_ESCRIBIENDO_OFERTAR_1254, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Subasta.OfertaInicial + 100))
             End If
             'Msg1255= Tiempo Restante de subasta:  ¬1
-            Call WriteLocaleMsg(UserIndex, 1255, e_FontTypeNames.FONTTYPE_INFO, SumarTiempo(Subasta.TiempoRestanteSubasta))
+            Call WriteLocaleMsg(UserIndex, MSG_TIEMPO_RESTANTE_SUBASTA, e_FontTypeNames.FONTTYPE_INFO, SumarTiempo(Subasta.TiempoRestanteSubasta))
         Else
             ' Msg728=No hay ninguna subasta activa en este momento.
-            Call WriteLocaleMsg(UserIndex, 728, e_FontTypeNames.FONTTYPE_SUBASTA)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_NINGUNA_SUBASTA_ACTIVA_MOMENTO, e_FontTypeNames.FONTTYPE_SUBASTA)
         End If
     End With
     Exit Sub
@@ -6865,10 +6846,10 @@ Private Sub HandleEventoInfo(ByVal UserIndex As Integer)
     On Error GoTo HandleEventoInfo_Err
     With UserList(UserIndex)
         If EventoActivo Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1957, PublicidadEvento & "¬" & TiempoRestanteEvento, e_FontTypeNames.FONTTYPE_New_Eventos)) ' Msg1957=¬1. Tiempo restante: ¬2 minuto(s).
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_TIEMPO_RESTANTE_MINUTO_S, PublicidadEvento & "¬" & TiempoRestanteEvento, e_FontTypeNames.FONTTYPE_New_Eventos)) ' Msg1957=¬1. Tiempo restante: ¬2 minuto(s).
         Else
             ' Msg729=Eventos> Actualmente no hay ningún evento en curso.
-            Call WriteLocaleMsg(UserIndex, 729, e_FontTypeNames.FONTTYPE_New_Eventos)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_EVENTOS_ACTUALMENTE_HAY_NINGUN_EVENTO_CURSO, e_FontTypeNames.FONTTYPE_New_Eventos)
         End If
         Dim i           As Byte
         Dim encontre    As Boolean
@@ -6893,10 +6874,10 @@ Private Sub HandleEventoInfo(ByVal UserIndex As Integer)
         End If
         If encontre Then
             'Msg1256= Eventos> El proximo evento ¬1
-            Call WriteLocaleMsg(UserIndex, 1256, e_FontTypeNames.FONTTYPE_INFO, DescribirEvento(HoraProximo))
+            Call WriteLocaleMsg(UserIndex, MSG_EVENTOS_PROXIMO_EVENTO, e_FontTypeNames.FONTTYPE_INFO, DescribirEvento(HoraProximo))
         Else
             ' Msg730=Eventos> No hay eventos próximos.
-            Call WriteLocaleMsg(UserIndex, 730, e_FontTypeNames.FONTTYPE_New_Eventos)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_EVENTOS_HAY_EVENTOS_PROXIMOS, e_FontTypeNames.FONTTYPE_New_Eventos)
         End If
     End With
     Exit Sub
@@ -6921,17 +6902,17 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
             If EventoActivo = False Then
                 If LenB(Tipo) = 0 Or LenB(Duracion) = 0 Or LenB(multiplicacion) = 0 Then
                     ' Msg731=Utilice /CREAREVENTO TIPO@DURACION@MULTIPLICACION.
-                    Call WriteLocaleMsg(UserIndex, 731, e_FontTypeNames.FONTTYPE_New_Eventos)
+                    Call WriteLocaleMsg(UserIndex, MSG_UTILICE_CREAREVENTO_TIPO_DURACION_MULTIPLICACION, e_FontTypeNames.FONTTYPE_New_Eventos)
                 Else
                     Call ForzarEvento(Tipo, Duracion, multiplicacion, GetUserRealName(UserIndex))
                 End If
             Else
                 ' Msg732=Ya hay un evento en curso. Finalicelo con /FINEVENTO primero.
-                Call WriteLocaleMsg(UserIndex, 732, e_FontTypeNames.FONTTYPE_New_Eventos)
+                Call WriteLocaleMsg(UserIndex, MSG_HAY_EVENTO_CURSO_FINALICELO_FINEVENTO_PRIMERO, e_FontTypeNames.FONTTYPE_New_Eventos)
             End If
         Else
             ' Msg733=Servidor » Solo Administradores pueder crear estos eventos.
-            Call WriteLocaleMsg(UserIndex, 733, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_SOLO_ADMINISTRADORES_PUEDER_CREAR_EVENTOS, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
@@ -6953,7 +6934,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
         Dim DeDonde As t_CityWorldPos
         If UserList(UserIndex).Stats.GLD < costo Then
             'Msg1257= No tienes suficiente dinero.
-            Call WriteLocaleMsg(UserIndex, 1257, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_DINERO_1257, e_FontTypeNames.FONTTYPE_INFO)
         Else
             Select Case Destino
                 Case e_Ciudad.cUllathorpe
@@ -6980,9 +6961,9 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
             If DeDonde.NecesitaNave > 0 Then
                 If UserList(UserIndex).Stats.UserSkills(e_Skill.Navegacion) < 80 Then
                     'Msg1258= Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.
-                    Call WriteLocaleMsg(UserIndex, 1258, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_DEBIDO_PELIGROSIDAD_VIAJE_PUEDO_LLEVARTE_MENOS_NECESITAS_SABER, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg1259= Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.
-                    Call WriteLocaleMsg(UserIndex, 1259, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_DEBIDO_PELIGROSIDAD_VIAJE_PUEDO_LLEVARTE_MENOS_NECESITAS_SABER_1259, e_FontTypeNames.FONTTYPE_INFO)
                 Else
                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
                         If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose <> 0 Then
@@ -6991,7 +6972,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
                     End If
                     Call WarpToLegalPos(UserIndex, DeDonde.MapaViaje, DeDonde.ViajeX, DeDonde.ViajeY, True)
                     'Msg1260= Has viajado por varios días, te sientes exhausto!
-                    Call WriteLocaleMsg(UserIndex, 1260, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_VIAJADO_VARIOS_DIAS_SIENTES_EXHAUSTO_1260, e_FontTypeNames.FONTTYPE_INFO)
                     UserList(UserIndex).Stats.MinAGU = 0
                     UserList(UserIndex).Stats.MinHam = 0
                     UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - costo
@@ -7012,7 +6993,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
                 End If
                 Call WarpUserChar(UserIndex, Map, x, y, True)
                 'Msg1261= Has viajado por varios días, te sientes exhausto!
-                Call WriteLocaleMsg(UserIndex, 1261, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_VIAJADO_VARIOS_DIAS_SIENTES_EXHAUSTO_1261, e_FontTypeNames.FONTTYPE_INFO)
                 UserList(UserIndex).Stats.MinAGU = 0
                 UserList(UserIndex).Stats.MinHam = 0
                 UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - costo
@@ -7035,15 +7016,15 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
     'Esta el personaje en la distancia correcta?
     If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) > 5 Then
         ' Msg8=Estas demasiado lejos.
-        Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
     'El NPC hace quests?
     If NpcList(NpcIndex).NumQuest = 0 Then
-        Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2085, NpcList(NpcIndex).Char.charindex, vbWhite))
+        Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_MISSION_FOR_YOU, NpcList(NpcIndex).Char.charindex, vbWhite))
         Exit Sub
     End If
-    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2086, NpcList(NpcIndex).Char.charindex, vbWhite))
+    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_TOO_MANY_ACTIVE_MISSIONS, NpcList(NpcIndex).Char.charindex, vbWhite))
     Exit Sub
 HandleQuest_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuest", Erl)
@@ -7095,7 +7076,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         End If
         UserList(UserIndex).flags.ModificoQuests = True
         'Msg1264= Has aceptado la misión ¬1
-        Call WriteLocaleMsg(UserIndex, 1264, e_FontTypeNames.FONTTYPE_INFOIAO, .QuestIndex)
+        Call WriteLocaleMsg(UserIndex, MSG_ACEPTADO_MISION, e_FontTypeNames.FONTTYPE_INFOIAO, .QuestIndex)
         If NpcIndex > 0 Then
             If (FinishQuestCheck(UserIndex, .QuestIndex, QuestSlot)) Then
                 Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 3)
@@ -7166,7 +7147,7 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
         End With
         'Le avisamos que abandono la quest
         'Msg2115=Has abandonado la misión ¬1.
-        Call WriteLocaleMsg(UserIndex, 2115, e_FontTypeNames.FONTTYPE_INFOIAO, QuestList(UserList(UserIndex).QuestStats.Quests(Slot).QuestIndex).nombre)
+        Call WriteLocaleMsg(UserIndex, MSG_ABANDONADO_MISION, e_FontTypeNames.FONTTYPE_INFOIAO, QuestList(UserList(UserIndex).QuestStats.Quests(Slot).QuestIndex).nombre)
         'Borramos la quest.
         Call CleanQuestSlot(UserIndex, Slot)
         'Ordenamos la lista de quests del usuario.
@@ -7210,13 +7191,13 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
             'Se asegura que el target exista
             If Not IsValidUserRef(UserConsulta) Then
                 'Msg1265= El usuario se encuentra offline.
-                Call WriteLocaleMsg(UserIndex, 1265, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_USUARIO_ENCUENTRA_OFFLINE, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             'Si el gm es Consejero y el usuario esta en zona insegura, no puede ir
             If e_PlayerType.Consejero And MapInfo(UserList(UserConsulta.ArrayIndex).pos.Map).Seguro = 0 Then
                 'Msg2165=El usuario ¬1 se encuentra en zona insegura, no puedes acercarte a él.
-                Call WriteLocaleMsg(UserIndex, 2165, e_FontTypeNames.FONTTYPE_INFO, Nick)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_USUARIO_ENCUENTRA_ZONA_INSEGURA_PUEDES_ACERCARTE, e_FontTypeNames.FONTTYPE_INFO, Nick)
                 Exit Sub
             End If
         Else
@@ -7224,7 +7205,7 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
             'Se asegura que el target exista
             If IsValidUserRef(UserConsulta) Then
                 'Msg1266= Primero tienes que seleccionar un usuario, haz click izquierdo sobre el.
-                Call WriteLocaleMsg(UserIndex, 1266, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TIENES_SELECCIONAR_USUARIO_HAZ_CLICK_IZQUIERDO_SOBRE, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         End If
@@ -7233,23 +7214,23 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
         ' No podes estra en consulta con otro gm
         If EsGM(UserConsulta.ArrayIndex) Then
             'Msg1267= No puedes iniciar el modo consulta con otro administrador.
-            Call WriteLocaleMsg(UserIndex, 1267, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_INICIAR_MODO_CONSULTA_OTRO_ADMINISTRADOR, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         ' Si ya estaba en consulta, termina la consulta
         If UserList(UserConsulta.ArrayIndex).flags.EnConsulta Then
             'Msg1268= Has terminado el modo consulta con ¬1
-            Call WriteLocaleMsg(UserIndex, 1268, e_FontTypeNames.FONTTYPE_INFO, GetUserGMName(UserConsulta.ArrayIndex))
+            Call WriteLocaleMsg(UserIndex, MSG_TERMINADO_MODO_CONSULTA, e_FontTypeNames.FONTTYPE_INFO, GetUserGMName(UserConsulta.ArrayIndex))
             'Msg1269= Has terminado el modo consulta.
-            Call WriteLocaleMsg(UserConsulta.ArrayIndex, 1269, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserConsulta.ArrayIndex, MSG_TERMINADO_MODO_CONSULTA_1269, e_FontTypeNames.FONTTYPE_INFO)
             Call LogGM(GetUserRealName(UserIndex), "Termino consulta con " & GetUserRealName(UserConsulta.ArrayIndex))
             UserList(UserConsulta.ArrayIndex).flags.EnConsulta = False
             ' Sino la inicia
         Else
             'Msg1270= Has iniciado el modo consulta con ¬1
-            Call WriteLocaleMsg(UserIndex, 1270, e_FontTypeNames.FONTTYPE_INFO, GetUserGMName(UserConsulta.ArrayIndex))
+            Call WriteLocaleMsg(UserIndex, MSG_INICIADO_MODO_CONSULTA, e_FontTypeNames.FONTTYPE_INFO, GetUserGMName(UserConsulta.ArrayIndex))
             'Msg1271= Has iniciado el modo consulta.
-            Call WriteLocaleMsg(UserConsulta.ArrayIndex, 1271, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserConsulta.ArrayIndex, MSG_INICIADO_MODO_CONSULTA_1271, e_FontTypeNames.FONTTYPE_INFO)
             Call LogGM(GetUserRealName(UserIndex), "Inicio consulta con " & GetUserRealName(UserConsulta.ArrayIndex))
             With UserList(UserConsulta.ArrayIndex)
                 If Not EstaPCarea(UserIndex, UserConsulta.ArrayIndex) Then
@@ -7355,7 +7336,7 @@ Private Sub HandleCuentaDeposit(ByVal UserIndex As Integer)
         slotdestino = reader.ReadInt8()
         'Dead people can't commerce...
         If .flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'íEl target es un NPC valido?
@@ -7365,7 +7346,7 @@ Private Sub HandleCuentaDeposit(ByVal UserIndex As Integer)
             Exit Sub
         End If
         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).pos, .pos) > 10 Then
-            Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
     End With
@@ -7423,8 +7404,7 @@ End Sub
 
 Private Function IsUnassistedSpellAllowed(ByVal spellID As Integer) As Boolean
     Select Case spellID
-        Case SPELL_UNASSISTED_DARDO, SPELL_UNASSISTED_RUGIDO_SALVAJE, SPELL_UNASSISTED_FULGOR_IGNEO, SPELL_UNASSISTED_LATIDO_IGNEO, SPELL_UNASSISTED_ECO_IGNEO, SPELL_UNASSISTED_DESTELLO_MALVA, _
-            SPELL_UNASSISTED_FRACTURA_GLACIAL, SPELL_UNASSISTED_ALIENTO_CARMESI, SPELL_UNASSISTED_ENERGIA_ANCESTRAL
+        Case SPELL_UNASSISTED_DARDO, SPELL_UNASSISTED_RUGIDO_SALVAJE, SPELL_UNASSISTED_RUGIDO_ARCANO, SPELL_UNASSISTED_FULGOR_IGNEO, SPELL_UNASSISTED_LATIDO_IGNEO, SPELL_UNASSISTED_ECO_IGNEO, SPELL_UNASSISTED_DESTELLO_MALVA, SPELL_UNASSISTED_FRACTURA_GLACIAL, SPELL_UNASSISTED_ALIENTO_CARMESI, SPELL_UNASSISTED_ENERGIA_ANCESTRAL
             IsUnassistedSpellAllowed = True
         Case Else
             IsUnassistedSpellAllowed = False
@@ -7441,24 +7421,24 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
         End If
         If .flags.Muerto = 0 Then
             'Msg1272= Debes estar muerto para utilizar este comando.
-            Call WriteLocaleMsg(UserIndex, 1272, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_DEBES_ESTAR_MUERTO_UTILIZAR_COMANDO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
         If MapInfo(.pos.Map).zone = "NEWBIE" Or MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then
             'Msg1273= No pueder viajar a tu hogar desde este mapa.
-            Call WriteLocaleMsg(UserIndex, 1273, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDER_VIAJAR_HOGAR_DESDE_MAPA, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         'Si es un mapa comun y no esta en cana
         If .Counters.Pena <> 0 Then
             'Msg1274= No puedes usar este comando en prisión.
-            Call WriteLocaleMsg(UserIndex, 1274, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_USAR_COMANDO_PRISION, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .flags.EnReto Then
             'Msg1275= No podés regresar desde un reto. Usa /ABANDONAR para admitir la derrota y volver a la ciudad.
-            Call WriteLocaleMsg(UserIndex, 1275, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_REGRESAR_DESDE_RETO_USA_ABANDONAR_ADMITIR_DERROTA, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .flags.Traveling = 0 Then
@@ -7475,7 +7455,7 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
                 
                 If .Stats.GLD < homeCostGLD Then
                     'Msg2164=Para utilizar este comando necesitas ¬1 monedas de oro.
-                    Call WriteLocaleMsg(UserIndex, 2164, e_FontTypeNames.FONTTYPE_INFO, homeCostGLD)
+                    Call WriteLocaleMsg(UserIndex, MSG_UTILIZAR_COMANDO_NECESITAS_MONEDAS_ORO, e_FontTypeNames.FONTTYPE_INFO, homeCostGLD)
                     Exit Sub
                 End If
                 
@@ -7485,13 +7465,13 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
                 Call goHome(UserIndex)
             Else
                 'Msg1276= Ya te encuentras en tu hogar.
-                Call WriteLocaleMsg(UserIndex, 1276, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_ENCUENTRAS_HOGAR, e_FontTypeNames.FONTTYPE_INFO)
             End If
         Else
             .flags.Traveling = 0
             .Counters.goHome = 0
             'Msg1277= Ya hay un viaje en curso.
-            Call WriteLocaleMsg(UserIndex, 1277, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_HAY_VIAJE_CURSO, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
@@ -7694,7 +7674,7 @@ Private Sub HandlePetLeaveAll(ByVal UserIndex As Integer)
         If AlmenosUna Then
             .flags.ModificoMascotas = True
             'Msg1278= Liberaste a tus mascotas.
-            Call WriteLocaleMsg(UserIndex, 1278, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_LIBERASTE_TUS_MASCOTAS, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
@@ -7711,7 +7691,7 @@ Private Sub HandleResetChar(ByVal UserIndex As Integer)
             User = NameIndex(Nick)
             If Not IsValidUserRef(User) Then
                 'Msg1279= Usuario offline o inexistente.
-                Call WriteLocaleMsg(UserIndex, 1279, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_INEXISTENTE, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             With UserList(User.ArrayIndex)
@@ -7740,7 +7720,7 @@ Private Sub HandleResetChar(ByVal UserIndex As Integer)
                 Call WriteLevelUp(User.ArrayIndex, .Stats.SkillPts)
             End With
             'Msg1280= Personaje reseteado a nivel 1.
-            Call WriteLocaleMsg(UserIndex, 1280, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PERSONAJE_RESETEADO_NIVEL, e_FontTypeNames.FONTTYPE_INFO)
         End If
     #End If
     Exit Sub
@@ -7842,7 +7822,7 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
     Valor = reader.ReadInt32
     If Valor <= MinimumPriceMao Then
         'Msg1281= El valor de venta del personaje debe ser mayor que $¬1
-        Call WriteLocaleMsg(UserIndex, 1281, e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMao)
+        Call WriteLocaleMsg(UserIndex, MSG_VALOR_VENTA_PERSONAJE_DEBE_MAYOR, e_FontTypeNames.FONTTYPE_INFO, MinimumPriceMao)
         Exit Sub
     End If
     With UserList(UserIndex)
@@ -7851,22 +7831,22 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
         Set RS = Query("select is_locked_in_mao from user where id = ?;", .Id)
         If EsGM(UserIndex) Then
             'Msg1282= No podes vender un gm.
-            Call WriteLocaleMsg(UserIndex, 1282, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_VENDER_GM, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If CBool(RS!is_locked_in_mao) Then
             'Msg1283= El personaje ya está publicado.
-            Call WriteLocaleMsg(UserIndex, 1283, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PERSONAJE_PUBLICADO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .Stats.ELV < MinimumLevelMao Then
             'Msg1284= No puedes publicar un personaje menor a nivel ¬1
-            Call WriteLocaleMsg(UserIndex, 1284, e_FontTypeNames.FONTTYPE_INFO, MinimumLevelMao)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_PUBLICAR_PERSONAJE_MENOR_NIVEL, e_FontTypeNames.FONTTYPE_INFO, MinimumLevelMao)
             Exit Sub
         End If
         If .Stats.GLD < GoldPriceMao Then
             'Msg1291= El costo para vender tu personajes es de ¬1 monedas de oro, no tienes esa cantidad.
-            Call WriteLocaleMsg(UserIndex, 1291, e_FontTypeNames.FONTTYPE_INFOBOLD, GoldPriceMao)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_COSTO_VENDER_PERSONAJES_MONEDAS_ORO_TIENES_ESA_CANTIDAD, e_FontTypeNames.FONTTYPE_INFOBOLD, GoldPriceMao)
             Exit Sub
         Else
             .Stats.GLD = .Stats.GLD - GoldPriceMao
@@ -7896,12 +7876,12 @@ Dim Slot As Byte
             If Slot > getMaxInventorySlots(UserIndex) Or Slot <= 0 Then Exit Sub
             If MapInfo(.pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
                 'Msg1285= Solo puedes eliminar items en zona segura.
-                Call WriteLocaleMsg(UserIndex, 1285, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_SOLO_PUEDES_ELIMINAR_ITEMS_ZONA_SEGURA, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             If .flags.Muerto = 1 Then
                 'Msg1286= No puede eliminar items cuando estas muerto.
-                Call WriteLocaleMsg(UserIndex, 1286, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDE_ELIMINAR_ITEMS_CUANDO_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             If .invent.Object(Slot).Equipped = 0 Then
@@ -7910,10 +7890,10 @@ Dim Slot As Byte
                 .invent.Object(Slot).ObjIndex = 0
                 Call UpdateUserInv(False, UserIndex, Slot)
                 'Msg1287= Objeto eliminado correctamente.
-                Call WriteLocaleMsg(UserIndex, 1287, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_OBJETO_ELIMINADO_CORRECTAMENTE, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 'Msg1288= No puedes eliminar un objeto estando equipado.
-                Call WriteLocaleMsg(UserIndex, 1288, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_ELIMINAR_OBJETO_ESTANDO_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         Else
@@ -7989,7 +7969,7 @@ Public Sub HandleActionOnGroupFrame(ByVal UserIndex As Integer)
             .flags.Hechizo = 0
         Else
             ' Msg587=¡Primero selecciona el hechizo que quieres lanzar!
-            Call WriteLocaleMsg(UserIndex, 587, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_SELECCIONA_HECHIZO_QUIERES_LANZAR, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub

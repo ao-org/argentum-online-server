@@ -61,9 +61,9 @@ Public Function DecreaseUserStamina(ByVal UserIndex As Integer, ByVal StaminaReq
             DecreaseUserStamina = True
         Else
             'Msg2129=¡No tengo energía!
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
             'Msg93=Estás muy cansado
-            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUY_CANSADO, e_FontTypeNames.FONTTYPE_INFO)
             Call ResetUserAutomatedActions(UserIndex)
             DecreaseUserStamina = False
         End If
@@ -104,7 +104,7 @@ Public Function CanUserExtractResource(ByVal UserIndex As Integer, ByVal Resourc
         Exit Function
     End If
     If Not CheckResourceDistance(UserIndex, CLOSE_DISTANCE_EXTRACTION, TargetX, TargetY) Then
-        Call WriteLocaleMsg(UserIndex, 324, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_PORTAL_TO_DESTINATION, e_FontTypeNames.FONTTYPE_INFO)
         Exit Function
     End If
     CanUserExtractResource = True
