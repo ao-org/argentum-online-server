@@ -39,17 +39,17 @@ Private Function GlobalChecks(ByVal BannerIndex As Integer, ByRef username As St
     tUser = NameIndex(username)
     If IsValidUserRef(tUser) Then
         If tUser.ArrayIndex = BannerIndex Then
-            Call WriteConsoleMsg(BannerIndex, PrepareMessageLocaleMsg(1841, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1841=No podés banearte a vos mismo.
+            Call WriteConsoleMsg(BannerIndex, PrepareMessageLocaleMsg(MSG_NO_PODES_BANEARTE_VOS_MISMO, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1841=No podés banearte a vos mismo.
             Exit Function
         End If
         ' Estas tratando de banear a alguien con mas privilegios que vos, no va a pasar bro.
         If CompararUserPrivilegios(tUser.ArrayIndex, BannerIndex) >= 0 Then
-            Call WriteLocaleMsg(BannerIndex, 2069, e_FontTypeNames.FONTTYPE_INFO) ' Msg2069="No podes banear a al alguien de igual o mayor jerarquia."
+            Call WriteLocaleMsg(BannerIndex, MSG_PODES_BANEAR_ALGUIEN_IGUAL_MAYOR_JERARQUIA, e_FontTypeNames.FONTTYPE_INFO) ' Msg2069="No podes banear a al alguien de igual o mayor jerarquia."
             Exit Function
         End If
     Else
         If CompararPrivilegios(UserDarPrivilegioLevel(username), UserList(BannerIndex).flags.Privilegios) >= 0 Then
-            Call WriteLocaleMsg(BannerIndex, 2070, e_FontTypeNames.FONTTYPE_INFO) ' Msg2070="No podes banear a al alguien de igual o mayor jerarquia."
+            Call WriteLocaleMsg(BannerIndex, MSG_PODES_BANEAR_ALGUIEN_IGUAL_MAYOR_JERARQUIA_2070, e_FontTypeNames.FONTTYPE_INFO) ' Msg2070="No podes banear a al alguien de igual o mayor jerarquia."
             Exit Function
         End If
     End If
@@ -65,11 +65,11 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal username As String, ByRef R
     If Not GlobalChecks(BannerIndex, username) Then Exit Sub
     ' Si no existe el personaje...
     If Not PersonajeExiste(username) Then
-        Call WriteConsoleMsg(BannerIndex, PrepareMessageLocaleMsg(1842, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1842=El personaje no existe.
+        Call WriteConsoleMsg(BannerIndex, PrepareMessageLocaleMsg(MSG_PERSONAJE_NO_EXISTE, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1842=El personaje no existe.
         Exit Sub
     End If
     If BANCheck(username) Then
-        Call WriteConsoleMsg(BannerIndex, PrepareMessageLocaleMsg(1843, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1843=El usuario ya se encuentra baneado.
+        Call WriteConsoleMsg(BannerIndex, PrepareMessageLocaleMsg(MSG_USUARIO_ENCUENTRA_BANEADO, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1843=El usuario ya se encuentra baneado.
         Exit Sub
     End If
     ' Guardamos el estado de baneado en la base de datos.
@@ -77,7 +77,7 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal username As String, ByRef R
     ' Registramos el baneo en los logs.
     Call LogBanFromName(username, BannerIndex, Razon)
     ' Le buchoneamos al mundo.
-    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1699, UserList(BannerIndex).name & "¬" & username & "¬" & LCase$(Razon), _
+    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_BANEADO_DEBIDO_1699, UserList(BannerIndex).name & "¬" & username & "¬" & LCase$(Razon), _
             e_FontTypeNames.FONTTYPE_SERVER))  'Msg1699=Servidor » ¬1 ha baneado a ¬2 debido a: ¬3.
     ' Si estaba online, lo echamos.
     Dim tUser As t_UserReference: tUser = NameIndex(username)
@@ -104,7 +104,7 @@ Public Sub BanPJWithoutGM(ByVal username As String, ByRef Razon As String)
     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", username, "BannedBy", "Ban automático (Posible BOT).")
     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", username, "Reason", Razon)
     ' Le buchoneamos al mundo.
-    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1700, username & "¬" & LCase$(Razon), e_FontTypeNames.FONTTYPE_SERVER))  'Msg1700=Servidor » Ha baneado a ¬1 debido a: ¬2.
+    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_BANEADO_DEBIDO, username & "¬" & LCase$(Razon), e_FontTypeNames.FONTTYPE_SERVER))  'Msg1700=Servidor » Ha baneado a ¬1 debido a: ¬2.
     ' Si estaba online, lo echamos.
     Dim tUser As t_UserReference: tUser = NameIndex(username)
     If IsValidUserRef(tUser) Then
@@ -124,13 +124,13 @@ Public Sub BanearCuenta(ByVal BannerIndex As Integer, ByVal username As String, 
     CuentaID = GetAccountIDDatabase(username)
     ' Me fijo que exista la cuenta.
     If CuentaID <= 0 Then
-        Call WriteConsoleMsg(BannerIndex, PrepareMessageLocaleMsg(1842, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1842=El personaje no existe.
+        Call WriteConsoleMsg(BannerIndex, PrepareMessageLocaleMsg(MSG_PERSONAJE_NO_EXISTE, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1842=El personaje no existe.
         Exit Sub
     End If
     ' Guardamos el estado de baneado en la base de datos.
     Call SaveBanCuentaDatabase(CuentaID, Reason, UserList(BannerIndex).name)
     ' Le buchoneamos al mundo.
-    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1701, UserList(BannerIndex).name & "¬" & username & "¬" & Reason, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1701=Servidor » ¬1 ha baneado la cuenta de ¬2 debido a: ¬3.
+    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_BANEADO_CUENTA_DEBIDO, UserList(BannerIndex).name & "¬" & username & "¬" & Reason, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1701=Servidor » ¬1 ha baneado la cuenta de ¬2 debido a: ¬3.
     ' Registramos el baneo en los logs.
     Call LogGM(UserList(BannerIndex).name, "Baneó la cuenta de " & username & " por: " & Reason)
     ' Echo a todos los logueados en esta cuenta

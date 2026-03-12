@@ -97,7 +97,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
             .Faccion.NivelIngreso = .Stats.ELV
             .Faccion.MatadosIngreso = .Faccion.ciudadanosMatados
         End If
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1932, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1932=¡Ahora perteneces al Ejército Real!
+        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NOW_BELONG_ROYAL_ARMY, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1932=¡Ahora perteneces al Ejército Real!
         Call DarRecompensas(UserIndex)
         Call RefreshCharStatus(UserIndex)
     End With
@@ -146,7 +146,7 @@ Public Sub ExpulsarFaccionReal(ByVal UserIndex As Integer)
     UserList(UserIndex).Faccion.Status = e_Facciones.Ciudadano
     Call RefreshCharStatus(UserIndex)
     Call PerderItemsFaccionarios(UserIndex)
-    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1933, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1933=Has sido expulsado del Ejército Real.
+    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPELLED_FROM_ROYAL_ARMY, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1933=Has sido expulsado del Ejército Real.
     Exit Sub
 ExpulsarFaccionReal_Err:
     Call TraceError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionReal", Erl)
@@ -157,7 +157,7 @@ Public Sub ExpulsarFaccionCaos(ByVal UserIndex As Integer)
     UserList(UserIndex).Faccion.Status = e_Facciones.Criminal
     Call RefreshCharStatus(UserIndex)
     Call PerderItemsFaccionarios(UserIndex)
-    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1934, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1934=Has sido expulsado de la Legión Oscura.
+    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPELLED_FROM_DARK_LEGION, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1934=Has sido expulsado de la Legión Oscura.
     Exit Sub
 ExpulsarFaccionCaos_Err:
     Call TraceError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionCaos", Erl)
@@ -224,7 +224,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
             Call WriteLocaleChatOverHead(UserIndex, 1374, vbNullString, charindexstr, vbWhite)  ' Msg1374=Aquí tienes tu armadura legionario, ve a derramar sangre de los súbditos de Tancredo. Esta guerra será larga y cruel.
             .Faccion.NivelIngreso = .Stats.ELV
         End If
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1935, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1935=¡Ahora perteneces a la Legión Oscura!
+        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NOW_BELONG_DARK_LEGION, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1935=¡Ahora perteneces a la Legión Oscura!
         Call DarRecompensas(UserIndex)
         Call RefreshCharStatus(UserIndex)
     End With
@@ -460,18 +460,18 @@ Public Function ForgiveUserFactionStats(ByVal UserIndex As Integer) As Boolean
     With UserList(UserIndex).Faccion
         Select Case .Status
             Case e_Facciones.Caos, e_Facciones.Armada, e_Facciones.concilio, e_Facciones.consejo
-                Call WriteLocaleMsg(UserIndex, 1189, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_CANNOT_PARDON_FACTION_MEMBER, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             Case e_Facciones.Ciudadano
                 If .ciudadanosMatados = 0 And .Reenlistadas = MAX_FACTION_ENLISTMENTS Then
-                    Call WriteLocaleMsg(UserIndex, 1192, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_YOU_DO_NOT_NEED_PARDON, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 Else
                     .ciudadanosMatados = 0
                 End If
             Case e_Facciones.Criminal
                 If .Reenlistadas = MAX_FACTION_ENLISTMENTS Then
-                    Call WriteLocaleMsg(UserIndex, 1192, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_YOU_DO_NOT_NEED_PARDON, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case Else
@@ -487,7 +487,7 @@ Public Function ForgiveUserFactionStats(ByVal UserIndex As Integer) As Boolean
         .NivelIngreso = 0
         .MatadosIngreso = 0
         ForgiveUserFactionStats = True
-        Call WriteLocaleMsg(UserIndex, 1190, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_YOU_HAVE_BEEN_PARDONED, e_FontTypeNames.FONTTYPE_INFO)
     End With
     Exit Function
 ResetFacciones_Err:

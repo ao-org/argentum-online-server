@@ -848,9 +848,9 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
         Else
             If MapInfo(.pos.Map).terrain = Nieve Then
                 'Msg2130=¡Tengo mucho frío!
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2130, UserList(UserIndex).Char.charindex, vbWhite))
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_TOO_COLD, UserList(UserIndex).Char.charindex, vbWhite))
                 ' Msg512=¡Estás muriendo de frío, abrígate o morirás!
-                Call WriteLocaleMsg(UserIndex, 512, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_MURIENDO_FRIO_ABRIGATE_MORIRAS, e_FontTypeNames.FONTTYPE_INFO)
                 '  Sin ropa perdés vida más rápido que con una ropa no-invernal
                 Dim MinDamage As Integer, MaxDamage As Integer
                 If .flags.Desnudo = 0 Then
@@ -865,7 +865,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
                 Damage = Porcentaje(.Stats.MaxHp, RandomNumber(MinDamage, MaxDamage))
                 If UserMod.ModifyHealth(UserIndex, -Damage, 0) Then
                     ' Msg513=¡Has muerto de frío!
-                    Call WriteLocaleMsg(UserIndex, 513, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO_FRIO, e_FontTypeNames.FONTTYPE_INFO)
                     Call UserMod.UserDie(UserIndex)
                 End If
             End If
@@ -905,7 +905,7 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
             If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
                 Call WriteRestOK(UserIndex)
                 ' Msg514=Has terminado de descansar.
-                Call WriteLocaleMsg(UserIndex, 514, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_TERMINADO_DESCANSAR, e_FontTypeNames.FONTTYPE_INFO)
                 .flags.Descansar = False
             End If
         End If
@@ -926,10 +926,10 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
         Else
             If HayLava(.pos.Map, .pos.x, .pos.y) Then
                 ' Msg515=¡Quítate de la lava, te estás quemando!
-                Call WriteLocaleMsg(UserIndex, 515, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_QUITATE_LAVA_QUEMANDO, e_FontTypeNames.FONTTYPE_INFO)
                 If UserMod.ModifyHealth(UserIndex, -Porcentaje(.Stats.MaxHp, 5)) Then
                     ' Msg516=¡Has muerto quemado!
-                    Call WriteLocaleMsg(UserIndex, 516, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO_QUEMADO, e_FontTypeNames.FONTTYPE_INFO)
                     Call CustomScenarios.UserDie(UserIndex)
                     Call UserMod.UserDie(UserIndex)
                 End If
@@ -956,7 +956,7 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
         Else
             'restore old char
             ' Msg517=Recuperas tu apariencia normal.
-            Call WriteLocaleMsg(UserIndex, 517, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_RECUPERAS_APARIENCIA_NORMAL, e_FontTypeNames.FONTTYPE_INFO)
             If .flags.Navegando Then
                 Call EquiparBarco(UserIndex)
             Else
@@ -998,7 +998,7 @@ Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
             .Counters.DisabledInvisibility = 0
             If .flags.Oculto = 0 Then
                 ' Msg307=Has vuelto a ser visible
-                Call WriteLocaleMsg(UserIndex, 307, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_VUELTO_VISIBLE, e_FontTypeNames.FONTTYPE_INFO)
                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, .pos.x, .pos.y))
                 Call WriteContadores(UserIndex)
             End If
@@ -1102,7 +1102,7 @@ Public Sub EfectoMaldicionUser(ByVal UserIndex As Integer)
     Else
         UserList(UserIndex).flags.Maldicion = 0
         ' Msg518=¡La magia perdió su efecto! Ya puedes atacar.
-        Call WriteLocaleMsg(UserIndex, 518, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+        Call WriteLocaleMsg(UserIndex, MSG_MAGIA_PERDIO_SU_EFECTO_PUEDES_ATACAR, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
     End If
     Exit Sub
 EfectoMaldicionUser_Err:
@@ -1221,7 +1221,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
         Call CancelExit(UserIndex)
         With UserList(UserIndex)
             'Msg47=Estás envenenado, si no te curas morirás.
-            Call WriteLocaleMsg(UserIndex, 47, e_FontTypeNames.FONTTYPE_VENENO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_ENVENENADO_SI_CURAS_MORIRAS, e_FontTypeNames.FONTTYPE_VENENO)
             UserList(UserIndex).Counters.timeFx = 3
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticleEffects.PoisonGas, 30, False, , UserList(UserIndex).pos.x, _
                     UserList(UserIndex).pos.y))
@@ -1231,7 +1231,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
             Damage = (1 + Damage * .Stats.MaxHp \ 100) ' Redondea para arriba
             If .ChatCombate = 1 Then
                 ' "El veneno te ha causado ¬1 puntos de daño."
-                Call WriteLocaleMsg(UserIndex, 390, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
+                Call WriteLocaleMsg(UserIndex, MSG_POISON_DEALT_DAMAGE, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
             End If
             If UserMod.ModifyHealth(UserIndex, -Damage) Then
                 Call CustomScenarios.UserDie(UserIndex)
@@ -1252,12 +1252,12 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
         ' 4 Mini intervalitos, dentro del intervalo total de incineracion
         If .Counters.Incineracion Mod (IntervaloIncineracion \ 4) = 0 Then
             ' "Te estás incinerando, si no te curas morirás.
-            Call WriteLocaleMsg(UserIndex, 392, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_YOU_ARE_BURNING_HEAL_OR_DIE, e_FontTypeNames.FONTTYPE_FIGHT)
             UserList(UserIndex).Counters.timeFx = 3
             Damage = RandomNumber(20, 30)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 73, 0, .pos.x, .pos.y))
             If .ChatCombate = 1 Then
-                Call WriteLocaleMsg(UserIndex, 391, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
+                Call WriteLocaleMsg(UserIndex, MSG_FIRE_DEALT_DAMAGE, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
             End If
             If UserMod.ModifyHealth(UserIndex, -Damage) Then
                 Call CustomScenarios.UserDie(UserIndex)
@@ -1350,7 +1350,7 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         UserList(UserIndex).Counters.HPCounter = 0
         Call UserMod.ModifyHealth(UserIndex, mashit)
         ' Msg519=Has sanado.
-        Call WriteLocaleMsg(UserIndex, 519, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_SANADO, e_FontTypeNames.FONTTYPE_INFO)
         EnviarStats = True
     End If
     Exit Sub
@@ -1391,9 +1391,9 @@ Sub PasarSegundo()
     If TiempoPesca > 0 Then TiempoPesca = TiempoPesca + 1
     If CuentaRegresivaTimer > 0 Then
         If CuentaRegresivaTimer > 1 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1655, CuentaRegresivaTimer - 1, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1655=¬1 segundos...!
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SEGUNDOS, CuentaRegresivaTimer - 1, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1655=¬1 segundos...!
         Else
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1656, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1656=¡Ya!!
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_COUNTDOWN_GO, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1656=¡Ya!!
         End If
         CuentaRegresivaTimer = CuentaRegresivaTimer - 1
     End If
@@ -1448,18 +1448,7 @@ Sub PasarSegundo()
                 If .Counters.TimerBarra > 0 Then
                     .Counters.TimerBarra = .Counters.TimerBarra - 1
                     If .Counters.TimerBarra = 0 Then
-                        Select Case .Accion.TipoAccion
-                            Case e_AccionBarra.Hogar
-                                Call HomeArrival(i)
-                            Case e_AccionBarra.Runa
-                                Call CompletarAccionFin(i)
-                        End Select
-                        .Accion.Particula = 0
-                        .Accion.TipoAccion = e_AccionBarra.CancelarAccion
-                        .Accion.HechizoPendiente = 0
-                        .Accion.RunaObj = 0
-                        .Accion.ObjSlot = 0
-                        .Accion.AccionPendiente = False
+                        Call EndProgrammedAction(i)
                     End If
                 End If
                 If .flags.UltimoMensaje > 0 Then
@@ -1571,7 +1560,7 @@ Sub GuardarUsuarios()
     On Error GoTo GuardarUsuarios_Err
     haciendoBK = True
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1657, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1657=Servidor » Grabando Personajes
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_GRABANDO_PERSONAJES, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1657=Servidor » Grabando Personajes
     Dim i As Long
     For i = 1 To LastUser
         If UserList(i).flags.UserLogged Then
@@ -1583,7 +1572,7 @@ Sub GuardarUsuarios()
             Call SaveUser(i)
         End If
     Next i
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1658, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1658=Servidor » Personajes Grabados
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_PERSONAJES_GRABADOS, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1658=Servidor » Personajes Grabados
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
     haciendoBK = False
     Exit Sub
