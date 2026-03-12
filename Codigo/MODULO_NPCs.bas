@@ -1042,10 +1042,11 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
             ReDim .Drop(1 To .QuantityOfDrops)
             Dim i As Byte
             For i = 1 To .QuantityOfDrops
-                .Drop(i).ItemIndex = val(LeerNPCs.GetValue(SectionName, "Drop" & i & "ItemIndex"))
-                .Drop(i).DropChance = val(LeerNPCs.GetValue(SectionName, "Drop" & i & "DropChance"))
-                .Drop(i).LowQuantityBound = val(LeerNPCs.GetValue(SectionName, "Drop" & i & "LowQuantityBound"))
-                .Drop(i).HighQuantityBound = val(LeerNPCs.GetValue(SectionName, "Drop" & i & "HighQuantityBound"))
+                ln = LeerNPCs.GetValue(SectionName, "Drop" & i)
+                .Drop(i).ItemIndex = val(ReadField(1, ln, Asc("-")))
+                .Drop(i).DropChance = val(ReadField(2, ln, Asc("-")))
+                .Drop(i).LowQuantityBound = val(ReadField(3, ln, Asc("-")))
+                .Drop(i).HighQuantityBound = val(ReadField(4, ln, Asc("-")))
             Next i
         Else
             Erase .Drop
@@ -1393,14 +1394,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         
         .QuantityOfDrops = Info.QuantityOfDrops
         If .QuantityOfDrops > 0 Then
-            ReDim .Drop(1 To .QuantityOfDrops)
-            Dim i As Byte
-            For i = 1 To .QuantityOfDrops
-                .Drop(i).ItemIndex = Info.Drop(i).ItemIndex
-                .Drop(i).DropChance = Info.Drop(i).DropChance
-                .Drop(i).LowQuantityBound = Info.Drop(i).LowQuantityBound
-                .Drop(i).HighQuantityBound = Info.Drop(i).HighQuantityBound
-            Next i
+        .Drop = Info.Drop
         Else
             Erase .Drop
         End If

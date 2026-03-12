@@ -197,7 +197,6 @@ Public Sub NpcDropObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
         Dropeo.Amount = Cantidad 'Cantidad
         Dropeo.ObjIndex = obj 'NUMERO DEL ITEM EN EL OBJ.DAT
         Call TirarItemAlPiso(Npc.pos, Dropeo, Npc.flags.AguaValida = 1)
-        Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
     Else
         Dim i As Byte
         For i = 1 To Npc.QuantityOfDrops
@@ -205,7 +204,6 @@ Public Sub NpcDropObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
                 Dropeo.Amount = RandomNumber(Npc.Drop(i).LowQuantityBound, Npc.Drop(i).HighQuantityBound)
                 Dropeo.ObjIndex = Npc.Drop(i).ItemIndex
                 Call TirarItemAlPiso(Npc.pos, Dropeo, Npc.flags.AguaValida = 1)
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
             End If
         Next i
     End If

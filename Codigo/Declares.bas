@@ -3523,14 +3523,6 @@ Public Type t_IndexHeap
     IndexInfo() As Integer
 End Type
 
-Public Type t_GlobalDrop
-    ObjectNumber As Integer
-    MaxPercent As Single
-    MinPercent As Single
-    RequiredHPForMaxChance As Long
-    amount As Integer
-End Type
-
 '********** V A R I A B L E S     P U B L I C A S ***********
 Public SERVERONLINE                           As Boolean
 Public ULTIMAVERSION                          As String
