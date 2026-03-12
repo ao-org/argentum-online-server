@@ -2805,8 +2805,6 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
         For i = 1 To QuestList(QuestIndex).RequiredClassesCount
             Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClass(i))
         Next i
-    Else
-        Call Writer.WriteInt8(0)
     End If
     Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
     'Enviamos la cantidad de npcs requeridos
@@ -2916,8 +2914,6 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
             For i = 1 To QuestList(QuestIndex).RequiredClassesCount
                 Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClass(i))
             Next i
-        Else
-            Call Writer.WriteInt8(0)
         End If
         Call Writer.WriteInt8(QuestList(QuestIndex).LimitLevel)
         'Enviamos la cantidad de npcs requeridos
