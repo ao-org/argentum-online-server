@@ -3203,6 +3203,7 @@ Public Type t_NpcInfoCache
     SubName As String
     Desc As String
     nivel As Integer
+    OccupiedSpace(1 To 9, 1 To 9) As Byte
     Movement As Integer
     AguaValida As Integer
     GlobalQuestBossIndex As Integer
@@ -3428,6 +3429,7 @@ Public Type t_Npc
     PuedeInvocar As Byte
     Humanoide As Boolean
     DisabledInBattleServer As Byte
+    OccupiedSpace(1 To 9, 1 To 9) As Byte
 End Type
 
 '**********************************************************

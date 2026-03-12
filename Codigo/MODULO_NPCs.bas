@@ -25,11 +25,13 @@ Attribute VB_Name = "NPCs"
 '
 '
 '
+Option Explicit
 Public Const MaxRespawn             As Integer = 255
 Public Const NpcIndexHeapSize       As Integer = 10000
 Public RespawnList(1 To MaxRespawn) As t_Npc
 Private IdNpcLibres                 As t_IndexHeap
-Option Explicit
+
+
 
 Public Sub InitializeNpcIndexHeap(Optional ByVal Size As Integer = NpcIndexHeapSize)
     On Error GoTo ErrHandler_InitizlizeNpcIndex
@@ -1114,6 +1116,22 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Snd2 = Val(LeerNPCs.GetValue(SectionName, "Snd2"))
         .Snd3 = Val(LeerNPCs.GetValue(SectionName, "Snd3"))
         .SndRespawn = val(LeerNPCs.GetValue(SectionName, "SndRespawn"))
+
+        Dim vals() As String
+        Dim row    As String
+        row = (CStr(LeerNPCs.GetValue(SectionName, "OccupiedSpace1", "")))
+        If row = "" Then
+            .OccupiedSpace = Nothing
+            Else
+                For i = 1 To 9
+                    row = (CStr(LeerNPCs.GetValue(SectionName, "OccupiedSpace" & i, "0")))
+                    vals = Split(row, " ")
+                    For j = 1 To 9
+                        ElementalMatrixForNpcs(i, j) = val(vals(j))
+                    Next j
+                Next i
+        End If
+        
         aux = LeerNPCs.GetValue(SectionName, "NROEXP")
         If LenB(aux) = 0 Then
             .NroExp = 0
@@ -1381,6 +1399,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .InformarRespawn = Info.InformarRespawn
         .QuizaProb = Info.QuizaProb
         .MinTameLevel = Info.MinTameLevel
+        .OccupiedSpace = Info.OccupiedSpace
         .OnlyForGuilds = Info.OnlyForGuilds
         .ShowKillerConsole = Info.ShowKillerConsole
         .DisabledInBattleServer = Info.DisabledInBattleServer
