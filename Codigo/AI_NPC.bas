@@ -318,6 +318,9 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
                 Call AI_CaminarConRumbo(NpcIndex, TargetPos)
             End If
         End If
+        If IsValidRef(CurrentTarget) Then
+            TargetPos = ModReferenceUtils.GetPosition(CurrentTarget)
+        End If
         'perform movement
         If NPCs.CanMove(.Contadores, .flags) Then
             Call TryFaceRangedTarget(NpcIndex, CurrentTarget)
