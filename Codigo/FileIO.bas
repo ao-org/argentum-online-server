@@ -1164,8 +1164,6 @@ Sub LoadOBJData()
                 Case e_OBJType.otSaddles
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
-                    .MinDef = val(Leer.GetValue(ObjKey, "MINDEF"))
-                    .MaxDef = val(Leer.GetValue(ObjKey, "MAXDEF"))
                     .Real = val(Leer.GetValue(ObjKey, "Real"))
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0

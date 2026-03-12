@@ -1237,6 +1237,9 @@ Dim Ropaje                      As Integer
                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
                                         .Char.BackpackAnim)
                 End If
+                If obj.ResistenciaMagica > 0 Then
+                    Call WriteUpdateRM(UserIndex)
+                End If
 
             Case e_OBJType.otWorkingTools
                 Dim EquippedWorkingToolObjType As e_WorkingToolSubType
