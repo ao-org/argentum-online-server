@@ -298,6 +298,7 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
     On Error GoTo AI_RangeAttack_Err
     Dim CurrentTarget As t_AnyReference
     Dim TargetPos     As t_WorldPos
+    Dim HasTargetPos  As Boolean
     With NpcList(NpcIndex)
         Dim NearestUser           As Integer
         Dim NearestTargetDistance As Single
@@ -305,9 +306,10 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
         CurrentTarget = SelectCurrentTarget(NpcIndex, NearestUser)
         If IsValidRef(CurrentTarget) Then
             TargetPos = GetPosition(CurrentTarget)
+            HasTargetPos = True
         End If
         'perform attack
-        If IsValidRef(CurrentTarget) And NPCs.CanAttack(.Contadores, .flags) Then
+        If HasTargetPos And NPCs.CanAttack(.Contadores, .flags) Then
             If Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) <= .AttackRange Then
                 If NpcCanAttack(NpcIndex, CurrentTarget) = eCanAttack And CurrentTarget.RefType = eUser Then
                     If NpcAtacaUser(NpcIndex, CurrentTarget.ArrayIndex, .Char.Heading) And .ProjectileType > 0 Then
@@ -317,9 +319,6 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
             Else
                 Call AI_CaminarConRumbo(NpcIndex, TargetPos)
             End If
-        End If
-        If IsValidRef(CurrentTarget) Then
-            TargetPos = ModReferenceUtils.GetPosition(CurrentTarget)
         End If
         'perform movement
         If NPCs.CanMove(.Contadores, .flags) Then
@@ -340,7 +339,7 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
                 End If
             ElseIf Math.Round(NearestTargetDistance) = .PreferedRange Then
                 'do nothing, look at pos?
-            ElseIf IsValidRef(CurrentTarget) And Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) > .PreferedRange Then
+            ElseIf HasTargetPos And Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) > .PreferedRange Then
                 Call AI_CaminarConRumbo(NpcIndex, TargetPos)
             ElseIf Distancia(.pos, .Orig) > 0 Then 'return to origin
                 Call AI_CaminarConRumbo(NpcIndex, .Orig)
