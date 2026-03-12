@@ -3420,11 +3420,14 @@ Public Type t_Npc
     pathFindingInfo As t_NpcPathFindingInfo
     ' Esto es del Areas.bas
     AreasInfo As t_AreaInfo
+    
     NumQuiza As Byte
     QuizaDropea() As String
     QuizaProb As Integer
+    
     QuantityOfDrops As Byte
     Drop() As t_NpcItemDrop
+    
     MinTameLevel As Byte
     OnlyForGuilds As Byte
     ShowKillerConsole As Byte
@@ -3619,7 +3622,6 @@ Public RecompensasFaccion()                   As t_RecompensaFaccion
 Public ModClase(1 To NUMCLASES)               As t_ModClase
 Public ModRaza(1 To NUMRAZAS)                 As t_ModRaza
 Public Crafteos                               As New Dictionary
-Public GlobalDropTable()                      As t_GlobalDrop
 Public PoderCanas()                           As Integer
 Public UniqueMapFishIDs()                     As Long
 Public UniqueMapFishCount                     As Long

@@ -215,13 +215,10 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Call OnNpcKilledUpdateQuest(UserIndex, MiNPC)
         'Tiramos el oro
         Call NPCTirarOro(MiNPC, UserIndex)
-        Call DropObjQuest(MiNPC, UserIndex)
-        'Item Magico!
-        Call NpcDropeo(MiNPC, UserIndex)
-        Call DropFromGlobalDropTable(MiNPC, UserIndex)
-        'Tiramos el inventario
+        Call NpcDropQuestObj(MiNPC, UserIndex)
+        Call NpcDropObj(MiNPC, UserIndex)
         Call NPC_TIRAR_ITEMS(MiNPC)
-    End If ' UserIndex > 0
+    End If
     ' Mascotas y npcs de entrenamiento no respawnean
     If MiNPC.MaestroNPC.ArrayIndex > 0 Or IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
     If NpcIndex = npc_index_evento Then
@@ -836,7 +833,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.charindex, e_GraphicEffects.ModernGmWarp, 0))
     End If
     If Avisar Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_EVENT, NpcList(nIndex).name & "¬" & get_map_name(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_EVENT, NpcList(nIndex).Name & "¬" & get_map_name(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
     End If
     SpawnNpc = nIndex
     Exit Function
@@ -1040,7 +1037,6 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .IntervaloRespawnMax = Val(LeerNPCs.GetValue(SectionName, "IntervaloRespawn"))
         .InformarRespawn = Val(LeerNPCs.GetValue(SectionName, "InformarRespawn"))
         .QuizaProb = Val(LeerNPCs.GetValue(SectionName, "QuizaProb"))
-        Debug.Assert NpcNumber <> 1638
         .QuantityOfDrops = val(LeerNPCs.GetValue(SectionName, "QuantityOfDrops"))
         If .QuantityOfDrops > 0 Then
             ReDim .Drop(1 To .QuantityOfDrops)
@@ -1394,8 +1390,10 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .Contadores.IntervaloRespawn = RandomNumber(Info.IntervaloRespawnMin, Info.IntervaloRespawnMax)
         .InformarRespawn = Info.InformarRespawn
         .QuizaProb = Info.QuizaProb
+        
         .QuantityOfDrops = Info.QuantityOfDrops
         If .QuantityOfDrops > 0 Then
+            ReDim .Drop(1 To .QuantityOfDrops)
             Dim i As Byte
             For i = 1 To .QuantityOfDrops
                 .Drop(i).ItemIndex = Info.Drop(i).ItemIndex
@@ -1406,6 +1404,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         Else
             Erase .Drop
         End If
+        
         .MinTameLevel = Info.MinTameLevel
         .OnlyForGuilds = Info.OnlyForGuilds
         .ShowKillerConsole = Info.ShowKillerConsole
