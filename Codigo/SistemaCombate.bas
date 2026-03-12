@@ -239,7 +239,7 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As In
         Case Else
             PoderAtaque = PoderAtaqueWrestling(UserIndex)
     End Select
-    ProbExito = MaximoInt(10, MinimoInt(90, 50 + ((PoderAtaque - NpcList(NpcIndex).PoderEvasion) * 0.4)))
+    ProbExito = MaximoInt(5, MinimoInt(95, 50 + ((PoderAtaque - NpcList(NpcIndex).PoderEvasion) * 0.4)))
     UserImpactoNpc = (RandomNumber(1, 100) <= ProbExito)
     If UserImpactoNpc Then
         Call SubirSkillDeArmaActual(UserIndex)
@@ -295,10 +295,10 @@ NpcImpacto_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcImpacto", Erl)
 End Function
 
-Private Function GetUserDamage(ByVal UserIndex As Integer) As Long
+Private Function GetUserDamage(ByVal UserIndex As Integer, ByVal TargetType As e_ReferenceType) As Long
     On Error GoTo GetUserDamge_Err
     With UserList(UserIndex)
-        GetUserDamage = GetUserDamageWithItem(UserIndex, .invent.EquippedWeaponObjIndex, .invent.EquippedMunitionObjIndex) + UserMod.GetLinearDamageBonus(UserIndex)
+        GetUserDamage = GetUserDamageWithItem(UserIndex, .invent.EquippedWeaponObjIndex, .invent.EquippedMunitionObjIndex, TargetType) + UserMod.GetLinearDamageBonus(UserIndex)
     End With
     Exit Function
 GetUserDamge_Err:
@@ -315,9 +315,13 @@ Public Function GetClassAttackModifier(ByRef ObjData As t_ObjData, ByVal Class A
     End If
 End Function
 
-Public Function GetUserDamageWithItem(ByVal UserIndex As Integer, ByVal WeaponObjIndex As Integer, ByVal AmunitionObjIndex As Integer) As Long
+Public Function GetUserDamageWithItem(ByVal UserIndex As Integer, ByVal WeaponObjIndex As Integer, ByVal AmunitionObjIndex As Integer, ByVal TargetType As e_ReferenceType) As Long
     On Error GoTo GetUserDamageWithItem_Err
-    Dim UserDamage As Long, WeaponDamage As Long, MaxWeaponDamage As Long, ClassModifier As Single
+    
+    ' Sanitizar tipo de objetivo
+    TargetType = NormalizeTargetType(TargetType)
+    
+    Dim UserDamage As Long, WeaponDamage As Long, MaxWeaponDamage As Long, ClassModifier As Single, MinHit As Integer, MaxHit As Integer
     With UserList(UserIndex)
         ' Daño base del usuario
         UserDamage = RandomNumber(.Stats.MinHIT, .Stats.MaxHit)
@@ -326,10 +330,10 @@ Public Function GetUserDamageWithItem(ByVal UserIndex As Integer, ByVal WeaponOb
             Dim Arma As t_ObjData
             Arma = ObjData(WeaponObjIndex)
             ClassModifier = GetClassAttackModifier(Arma, .clase)
-            ' Calculamos el daño del arma
-            WeaponDamage = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-            ' Daño máximo del arma
-            MaxWeaponDamage = Arma.MaxHit
+            'Daño del arma
+            Call GetHitRangeValues(Arma, TargetType, MinHit, MaxHit)
+            WeaponDamage = RandomNumber(MinHit, MaxHit)
+            MaxWeaponDamage = MaxHit
             ' Si lanza proyectiles
             If Arma.Proyectil > 0 Then
                 ' Si requiere munición
@@ -337,8 +341,9 @@ Public Function GetUserDamageWithItem(ByVal UserIndex As Integer, ByVal WeaponOb
                     Dim Municion As t_ObjData
                     Municion = ObjData(AmunitionObjIndex)
                     ' Agregamos el daño de la munición al daño del arma
-                    WeaponDamage = WeaponDamage + RandomNumber(Municion.MinHIT, Municion.MaxHit)
-                    MaxWeaponDamage = Arma.MaxHit + Municion.MaxHit
+                    Call GetHitRangeValues(Municion, TargetType, MinHit, MaxHit)
+                    WeaponDamage = WeaponDamage + RandomNumber(MinHit, MaxHit)
+                    MaxWeaponDamage = MaxWeaponDamage + MaxHit
                 End If
             End If
             ' Daño con puños
@@ -374,7 +379,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
             Call LogGM(.name, " Mato un Dragon Rojo ")
         Else
             ' Daño normal o elemental
-            DamageBase = GetUserDamage(UserIndex)
+            DamageBase = GetUserDamage(UserIndex, eNpc)
             ' NPC de pruebas
             If NpcList(NpcIndex).npcType = DummyTarget Then
                 Call DummyTargetAttacked(NpcIndex)
@@ -420,7 +425,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
                 DamageExtra = DamageExtra * NPCs.GetPhysicDamageReduction(NpcList(NpcIndex))
                 ' Mostramos en consola el daño
                 If .ChatCombate = 1 Then
-                    Call WriteLocaleMsg(UserIndex, 383, e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(Damage) & "¬" & (DamageExtra))
+                    Call WriteLocaleMsg(UserIndex, MSG_HIT_AND_CRITICAL_ON_CREATURE, e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(Damage) & "¬" & (DamageExtra))
                 End If
                 ' Color naranja
                 Color = RGB(225, 165, 0)
@@ -437,7 +442,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
                 DamageExtra = Damage * (Rnd * (max_stab_npc - min_stab_npc) + min_stab_npc)
                 ' Mostramos en consola el daño
                 If .ChatCombate = 1 Then
-                    Call WriteLocaleMsg(UserIndex, 212, e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(Damage) & "¬" & PonerPuntos(DamageExtra))
+                    Call WriteLocaleMsg(UserIndex, MSG_HIT_AND_STABBED_CREATURE, e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(Damage) & "¬" & PonerPuntos(DamageExtra))
                 End If
                 ' Color amarillo
                 Color = vbYellow
@@ -764,7 +769,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
     'Si el npc es solo atacable para clanes y el usuario no tiene clan, le avisa y sale de la funcion
     If NpcList(NpcIndex).OnlyForGuilds = 1 And UserList(UserIndex).GuildIndex <= 0 Then
         'Msg2001=Debes pertenecer a un clan para atacar a este NPC
-        Call WriteLocaleMsg(UserIndex, 2001, e_FontTypeNames.FONTTYPE_WARNING)
+        Call WriteLocaleMsg(UserIndex, MSG_DEBES_PERTENECER_CLAN_ATACAR_NPC, e_FontTypeNames.FONTTYPE_WARNING)
         Exit Sub
     End If
     Dim UserAttackInteractionResult As t_AttackInteractionResult
@@ -792,14 +797,14 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
                     NpcList(NpcIndex).flags.Paralizado = 1
                     NpcList(NpcIndex).Contadores.Paralisis = (IntervaloParalizado / 3) * 7
                     If UserList(UserIndex).ChatCombate = 1 Then
-                        Call WriteLocaleMsg(UserIndex, 136, e_FontTypeNames.FONTTYPE_FIGHT)
+                        Call WriteLocaleMsg(UserIndex, MSG_ATTACK_PARALYZED_CREATURE, e_FontTypeNames.FONTTYPE_FIGHT)
                     End If
                     UserList(UserIndex).Counters.timeFx = 3
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.charindex, 8, 0, UserList(UserIndex).pos.x, UserList( _
                             UserIndex).pos.y))
                 Else
                     If UserList(UserIndex).ChatCombate = 1 Then
-                        Call WriteLocaleMsg(UserIndex, 381, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NPC_IMMUNE_TO_THIS_SPELL, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
             End If
@@ -864,13 +869,13 @@ Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_W
             If NpcList(Index).Attackable Then
                 If IsValidUserRef(NpcList(Index).MaestroUser) And MapInfo(NpcList(Index).pos.Map).Seguro = 1 Then
                     'Msg1041= No podés atacar mascotas en zonas seguras
-                    Call WriteLocaleMsg(UserIndex, 1041, e_FontTypeNames.FONTTYPE_FIGHT)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_MASCOTAS_ZONAS_SEGURAS, e_FontTypeNames.FONTTYPE_FIGHT)
                     Exit Sub
                 End If
                 Call UsuarioAtacaNpc(UserIndex, Index, Melee)
             Else
                 'Msg1042= No podés atacar a este NPC
-                Call WriteLocaleMsg(UserIndex, 1042, e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_NPC, e_FontTypeNames.FONTTYPE_FIGHT)
             End If
             Exit Sub
         Else
@@ -899,9 +904,9 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
         'Quitamos stamina
         If .Stats.MinSta < 10 Then
             'Msg93=Estás muy cansado
-            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUY_CANSADO, e_FontTypeNames.FONTTYPE_INFO)
             'Msg2129=¡No tengo energía!
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
             Exit Sub
         End If
         Call QuitarSta(UserIndex, RandomNumber(1, 10))
@@ -997,7 +1002,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
             WeaponHitModifier = ObjData(UserList(AtacanteIndex).invent.EquippedWeaponObjIndex).ImprovedRangedHitChance
         End If
     End If
-    ProbExito = Maximo(10, Minimo(90, 50 + ((PoderAtaque - UserPoderEvasion) * 0.4) + WeaponHitModifier))
+    ProbExito = Maximo(5, Minimo(95, 50 + ((PoderAtaque - UserPoderEvasion) * 0.4) + WeaponHitModifier))
     ' Se reduce la evasion un 25%
     If UserList(VictimaIndex).flags.Meditando Then
         ProbEvadir = (100 - ProbExito) * 0.75
@@ -1022,7 +1027,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
                     VictimaIndex).pos.y))
             Call SubirSkill(VictimaIndex, e_Skill.Defensa)
         Else
-            Call WriteConsoleMsg(VictimaIndex, PrepareMessageLocaleMsg(1930, UserList(AtacanteIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1930=¡¬1 te atacó y falló!
+            Call WriteConsoleMsg(VictimaIndex, PrepareMessageLocaleMsg(MSG_ATACO_FALLO, UserList(AtacanteIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1930=¡¬1 te atacó y falló!
             'Msg1043= ¡Has fallado el golpe!
             Call WriteLocaleMsg(AtacanteIndex, "1043", e_FontTypeNames.FONTTYPE_FIGHT)
         End If
@@ -1104,7 +1109,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
     With UserList(VictimaIndex)
         Dim Damage As Long, BaseDamage As Long, BonusDamage As Long, Defensa As Long, Color As Long, DamageStr As String, Lugar As e_PartesCuerpo
         ' Daño normal
-        BaseDamage = GetUserDamage(AtacanteIndex)
+        BaseDamage = GetUserDamage(AtacanteIndex, eUser)
         ' Color por defecto rojo
         Color = vbRed
         ' Elegimos al azar una parte del cuerpo
@@ -1175,11 +1180,11 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                 DamageStr = PonerPuntos(BonusDamage)
                 ' Mostramos en consola el daño al atacante
                 If UserList(AtacanteIndex).ChatCombate = 1 Then
-                    Call WriteLocaleMsg(AtacanteIndex, 383, e_FontTypeNames.FONTTYPE_INFOBOLD, Damage & "¬" & DamageStr)
+                    Call WriteLocaleMsg(AtacanteIndex, MSG_HIT_AND_CRITICAL_ON_CREATURE, e_FontTypeNames.FONTTYPE_INFOBOLD, Damage & "¬" & DamageStr)
                 End If
                 ' Y a la víctima
                 If .ChatCombate = 1 Then
-                    Call WriteLocaleMsg(VictimaIndex, 385, e_FontTypeNames.FONTTYPE_INFOBOLD, UserList(AtacanteIndex).name & "¬" & DamageStr)
+                    Call WriteLocaleMsg(VictimaIndex, MSG_PLAYER_CRITICALLY_HIT_YOU, e_FontTypeNames.FONTTYPE_INFOBOLD, UserList(AtacanteIndex).name & "¬" & DamageStr)
                 End If
                 Call SendData(SendTarget.ToPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO_CRITICO, UserList(AtacanteIndex).pos.x, UserList(AtacanteIndex).pos.y))
                 ' Color naranja
@@ -1360,7 +1365,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
     'MUY importante el orden de estos "IF"...
     'Estas muerto no podes atacar
     If UserList(attackerIndex).flags.Muerto = 1 Then
-        Call WriteLocaleMsg(attackerIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(attackerIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
         PuedeAtacar = False
         Exit Function
     End If
@@ -1589,7 +1594,7 @@ Private Sub GetExpForUser(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
                         Dim PorcentajeFinal As Integer
                         PorcentajeFinal = Penalty * 100
                         'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
-                        Call WriteLocaleMsg(UserIndex, 1467, e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
+                        Call WriteLocaleMsg(UserIndex, MSG_DEBIDO_NIVEL_OBTIENES_EXPERIENCIA, e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
                     End If
                 End If
             End If
@@ -1772,7 +1777,7 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
                     If OroDar > 0 Then
                         UserList(Index).Stats.GLD = UserList(Index).Stats.GLD + OroDar
                         If UserList(Index).ChatCombate = 1 Then
-                            Call WriteConsoleMsg(Index, PrepareMessageLocaleMsg(1980, PonerPuntos(OroDar), e_FontTypeNames.FONTTYPE_New_GRUPO)) ' Msg1780=¡El grupo ha ganado ¬1 monedas de oro!
+                            Call WriteConsoleMsg(Index, PrepareMessageLocaleMsg(MSG_GROUP_GOLD_REWARD, PonerPuntos(OroDar), e_FontTypeNames.FONTTYPE_New_GRUPO)) ' Msg1780=¡El grupo ha ganado ¬1 monedas de oro!
                         End If
                         Call WriteUpdateGold(Index)
                     End If
@@ -2204,7 +2209,7 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
         If AmunitionState <> 0 Then
             If AmunitionState = 1 Then
                 ' Msg709=No tenés municiones.
-                Call WriteLocaleMsg(UserIndex, 709, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_MUNICIONES, e_FontTypeNames.FONTTYPE_INFO)
             End If
             Call Desequipar(UserIndex, .EquippedMunitionSlot)
             Call WriteWorkRequestTarget(UserIndex, 0)
@@ -2392,4 +2397,42 @@ Private Function GetWeaponExtraChance(ByVal UserIndex As Integer) As Single
         If .invent.EquippedWeaponObjIndex = 0 Then Exit Function
         GetWeaponExtraChance = ObjData(.invent.EquippedWeaponObjIndex).ExtraCritAndStabChance
     End With
+End Function
+Public Sub GetHitRangeValues(ByRef Obj As t_ObjData, ByVal TargetType As e_ReferenceType, ByRef MinHit As Integer, ByRef MaxHit As Integer)
+    On Error GoTo GetHitRangeValues_Err
+    If TargetType = eNpc And (Obj.MinHitToNPC > 0 Or Obj.MaxHitToNPC > 0) Then
+        ' Min
+        If Obj.MinHitToNPC > 0 Then
+            MinHit = Obj.MinHitToNPC
+        Else
+            MinHit = Obj.MinHit
+        End If
+
+        ' Max
+        If Obj.MaxHitToNPC > 0 Then
+            MaxHit = Obj.MaxHitToNPC
+        Else
+            MaxHit = Obj.MaxHit
+        End If
+    Else
+        MinHit = Obj.MinHit
+        MaxHit = Obj.MaxHit
+    End If
+
+    If MaxHit < MinHit Then MaxHit = MinHit
+    Exit Sub
+GetHitRangeValues_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetHitRangeValues", Erl)
+End Sub
+Private Function NormalizeTargetType(ByVal TargetType As e_ReferenceType) As e_ReferenceType
+    On Error GoTo NormalizeTargetType_Err
+    Select Case TargetType
+        Case eUser, eNpc
+            NormalizeTargetType = TargetType
+        Case Else
+            NormalizeTargetType = eUser
+    End Select
+    Exit Function
+NormalizeTargetType_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.NormalizeTargetType", Erl)
 End Function

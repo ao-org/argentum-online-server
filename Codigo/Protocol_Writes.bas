@@ -3294,6 +3294,95 @@ PrepareFactionMessageConsole_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareFactionMessageConsole", Erl)
 End Function
 
+'------------------------------------------------------------------------------
+' PrepareMessageLocaleMsg
+'
+' Builds a localized message packet to be interpreted by the client.
+'
+' IMPORTANT: The server does NOT send the final text of the message.
+' Instead it sends:
+'
+'   1) A locale message ID
+'   2) A parameter string
+'   3) A font/style identifier
+'
+' The client then resolves the final message using its own locale files.
+'
+' Packet format written by this function:
+'
+'   [ServerPacketID.eLocaleMsg]
+'   [Int16 MessageID]
+'   [String8 Parameters]
+'   [Int8 FontIndex]
+'
+' Where:
+'
+'   MessageID
+'       Numeric identifier of the localized message template.
+'       The client will look this up in its locale resource file using:
+'
+'           Msg<MessageID>
+'
+'       Example:
+'           MessageID = 1639
+'
+'       Client locale file contains:
+'
+'           Msg1639=Eventos> ¬1 encontró el tesoro ¡Felicitaciones!
+'
+'
+'   Parameters (chat)
+'       String containing the dynamic values that will replace placeholders
+'       in the locale template.
+'
+'       Multiple parameters are concatenated using the separator:
+'
+'           Chr(&HAC)  ' "¬"
+'
+'       Example payload:
+'
+'           "Pablo"                          -> replaces ¬1
+'           "Pablo¬5¬espadas"                 -> replaces ¬1, ¬2, ¬3
+'
+'
+'   Placeholder replacement (client side)
+'
+'       Locale templates can contain placeholders:
+'
+'           ¬1
+'           ¬2
+'           ¬3
+'
+'       The client replaces them with the values sent in the parameter string.
+'
+'
+'   Example flow
+'
+'       Server code:
+'
+'           PrepareMessageLocaleMsg(1639, "Pablo", FONTTYPE_TALK)
+'
+'       Client locale resource:
+'
+'           Msg1639=Eventos> ¬1 encontró el tesoro ¡Felicitaciones!
+'
+'       Final text shown on client:
+'
+'           Eventos> Pablo encontró el tesoro ¡Felicitaciones!
+'
+'
+'   Why this system exists
+'
+'       - Server remains language-independent
+'       - Client performs localization
+'       - Packets remain small (ID + parameters instead of full text)
+'       - Same server works with multiple client languages
+'
+' NOTE:
+'   The meaning of MessageID constants (MSG_*) comes from the client locale
+'   file (e.g. SP_LocalMsg.dat where entries are defined as MsgXXXX=...).
+'
+'------------------------------------------------------------------------------
 Public Function PrepareMessageLocaleMsg(ByVal Id As Integer, ByVal chat As String, ByVal FontIndex As e_FontTypeNames)
     On Error GoTo PrepareMessageLocaleMsg_Err
     Call Writer.WriteInt16(ServerPacketID.eLocaleMsg)

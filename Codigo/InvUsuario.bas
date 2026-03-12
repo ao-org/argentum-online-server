@@ -195,7 +195,7 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
     'Mandamos a la Isla de la Fortuna
     Call WarpUserChar(UserIndex, Renacimiento.Map, Renacimiento.x, Renacimiento.y, True)
     ' Msg671=Has dejado de ser Newbie.
-    Call WriteLocaleMsg(UserIndex, 671, e_FontTypeNames.FONTTYPE_INFO)
+    Call WriteLocaleMsg(UserIndex, MSG_DEJADO_NEWBIE, e_FontTypeNames.FONTTYPE_INFO)
     Exit Sub
 QuitarNewbieObj_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.QuitarNewbieObj", Erl)
@@ -438,7 +438,7 @@ Sub DropObj(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal num As Integer
                         End If
                     End If
                 Else
-                    Call WriteLocaleMsg(UserIndex, 262, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_SPACE_ON_GROUND, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Else
                 Call QuitarUserInvItem(UserIndex, Slot, num)
@@ -597,7 +597,7 @@ Sub PickObj(ByVal UserIndex As Integer)
         If ObjData(MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex).Agarrable <> 1 Then
             If UserList(UserIndex).flags.Montado = 1 Then
                 ' Msg672=Debes descender de tu montura para agarrar objetos del suelo.
-                Call WriteLocaleMsg(UserIndex, 672, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_DEBES_DESCENDER_MONTURA_AGARRAR_OBJETOS_SUELO, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             If Not UserCanPickUpItem(UserIndex) Then
@@ -637,13 +637,13 @@ Sub PickObj(ByVal UserIndex As Integer)
                 End If
                 If BusquedaTesoroActiva Then
                     If UserList(UserIndex).pos.Map = TesoroNumMapa And UserList(UserIndex).pos.x = TesoroX And UserList(UserIndex).pos.y = TesoroY Then
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1639, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1640=Eventos> ¬1 encontró el tesoro ¡Felicitaciones!
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_FOUND_TREASURE, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1640=Eventos> ¬1 encontró el tesoro ¡Felicitaciones!
                         BusquedaTesoroActiva = False
                     End If
                 End If
                 If BusquedaRegaloActiva Then
                     If UserList(UserIndex).pos.Map = RegaloNumMapa And UserList(UserIndex).pos.x = RegaloX And UserList(UserIndex).pos.y = RegaloY Then
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1640, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1640=Eventos> ¬1 fue el valiente que encontró el gran ítem mágico ¡Felicitaciones!
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_FOUND_MAGIC_ITEM, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1640=Eventos> ¬1 fue el valiente que encontró el gran ítem mágico ¡Felicitaciones!
                         BusquedaRegaloActiva = False
                     End If
                 End If
@@ -726,6 +726,7 @@ Dim obj                         As t_ObjData
                         Case e_MagicItemEffect.eModifySkills
                             If obj.Que_Skill <> 0 Then
                                 .Stats.UserSkills(obj.Que_Skill) = .Stats.UserSkills(obj.Que_Skill) - obj.CuantoAumento
+                                .Stats.SkillDirty(obj.Que_Skill) = True
                             End If
                         Case e_MagicItemEffect.eRegenerateHealth
                             .flags.RegeneracionHP = 0
@@ -760,7 +761,7 @@ Dim obj                         As t_ObjData
                         Case e_MagicItemEffect.eTalkToDead
                             Call UnsetMask(.flags.StatusMask, e_StatusMask.eTalkToDead)
                             ' Msg673=Dejas el mundo de los muertos, ya no podrás comunicarte con ellos.
-                            Call WriteLocaleMsg(UserIndex, 673, e_FontTypeNames.FONTTYPE_WARNING)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_DEJAS_MUNDO_MUERTOS_PODRAS_COMUNICARTE_ELLOS, e_FontTypeNames.FONTTYPE_WARNING)
                             Call SendData(SendTarget.ToPCDeadAreaButIndex, UserIndex, PrepareMessageCharacterRemove(4, .Char.charindex, False, True))
                     End Select
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, 0, True, 5))
@@ -907,6 +908,7 @@ Dim eSkinType                   As e_OBJType
                .Invent_Skins.Object(Slot).Equipped = False
 
             Case e_OBJType.otSkinsHelmets
+                If .Invent_Skins.ObjIndexHelmetEquipped < 1 Then Exit Sub
                 If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
                     .Char.head = .OrigChar.head
                 End If
@@ -1120,7 +1122,7 @@ Dim Ropaje                      As Integer
 
         If .flags.Muerto = 1 Then
             'Msg77=¡¡Estás muerto!!.
-            Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
@@ -1165,7 +1167,7 @@ Dim Ropaje                      As Integer
                         If .invent.EquippedShieldObjIndex > 0 Then
                             Call Desequipar(UserIndex, .invent.EquippedShieldSlot)
                             ' Msg674=No puedes usar armas dos manos si tienes un escudo equipado. Tu escudo fue desequipado.
-                            Call WriteLocaleMsg(UserIndex, 674, e_FontTypeNames.FONTTYPE_INFOIAO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_USAR_ARMAS_DOS_MANOS_SI_TIENES_ESCUDO, e_FontTypeNames.FONTTYPE_INFOIAO)
                         End If
                     End If
                     'Sonido
@@ -1216,7 +1218,7 @@ Dim Ropaje                      As Integer
                 Ropaje = ObtenerRopaje(UserIndex, obj)
                 If Ropaje = 0 Then
                     ' Msg676=Hay un error con este objeto. Infórmale a un administrador.
-                    Call WriteLocaleMsg(UserIndex, 676, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_HAY_ERROR_OBJETO_INFORMALE_ADMINISTRADOR, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 'Lo equipa
@@ -1234,6 +1236,8 @@ Dim Ropaje                      As Integer
                 End If
 
             Case e_OBJType.otWorkingTools
+                Dim EquippedWorkingToolObjType As e_WorkingToolSubType
+                
                 If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eTool) Then
                     Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
@@ -1246,6 +1250,11 @@ Dim Ropaje                      As Integer
                 End If
                 'Quitamos el elemento anterior
                 If .invent.EquippedWorkingToolObjIndex > 0 Then
+                    EquippedWorkingToolObjType = ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
+                    If EquippedWorkingToolObjType = e_WorkingToolSubType.FishingRod And obj.Subtipo = e_WorkingToolSubType.FishingNet Then
+                        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_EQUIP_NET_WITH_ROD, "", e_FontTypeNames.FONTTYPE_INFO))
+                        Exit Sub
+                    End If
                     Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
                 End If
                 If .invent.EquippedWeaponObjIndex > 0 Then
@@ -1286,6 +1295,7 @@ Dim Ropaje                      As Integer
                         Call WriteFYA(UserIndex)
                     Case e_MagicItemEffect.eModifySkills
                         .Stats.UserSkills(obj.Que_Skill) = .Stats.UserSkills(obj.Que_Skill) + obj.CuantoAumento
+                        .Stats.SkillDirty(obj.Que_Skill) = True
                     Case e_MagicItemEffect.eRegenerateHealth
                         .flags.RegeneracionHP = 1
                     Case e_MagicItemEffect.eRegenerateMana
@@ -1392,7 +1402,7 @@ Dim Ropaje                      As Integer
                                 .Stats.MinHp < .Stats.MaxHp Or _
                                 .Stats.MinMAN < .Stats.MaxMAN Then
                                 'Msg2091=Solo puedes equipar este objeto si tus estadísticas están al 100%.
-                                Call WriteLocaleMsg(UserIndex, 2091, e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteLocaleMsg(UserIndex, MSG_SOLO_PUEDES_EQUIPAR_OBJETO_SI_TUS_ESTADISTICAS_ESTAN, e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
                             End If
                         End If
@@ -1504,7 +1514,7 @@ Dim Ropaje                      As Integer
                     If ObjData(.invent.EquippedWeaponObjIndex).DosManos = 1 Then
                         Call Desequipar(UserIndex, .invent.EquippedWeaponSlot)
                         ' Msg677=No puedes equipar un escudo si tienes un arma dos manos equipada. Tu arma fue desequipada.
-                        Call WriteLocaleMsg(UserIndex, 677, e_FontTypeNames.FONTTYPE_INFOIAO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_EQUIPAR_ESCUDO_SI_TIENES_ARMA_DOS_MANOS, e_FontTypeNames.FONTTYPE_INFOIAO)
                     End If
                 End If
                 errordesc = "Escudo"
@@ -1666,7 +1676,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     With UserList(UserIndex)
         If .invent.Object(Slot).amount = 0 Then Exit Sub
         If Not CanUseItem(.flags, .Counters) Then
-            Call WriteLocaleMsg(UserIndex, 395, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_USE_ITEMS_STUNNED, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
@@ -1681,7 +1691,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
         If IsSet(obj.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly) Then
             If MapInfo(.pos.Map).Seguro = 0 Then
                 ' Msg678=Solo podes usar este objeto en mapas seguros.
-                Call WriteLocaleMsg(UserIndex, 678, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_OBJETO_MAPAS_SEGUROS, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         End If
@@ -1718,15 +1728,15 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 
         If obj.Newbie = 1 And Not EsNewbie(UserIndex) And Not EsGM(UserIndex) Then
             ' Msg679=Solo los newbies pueden usar estos objetos.
-            Call WriteLocaleMsg(UserIndex, 679, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SOLO_NEWBIES_PUEDEN_USAR_OBJETOS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If .Stats.ELV < obj.MinELV Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1926, obj.MinELV, e_FontTypeNames.FONTTYPE_INFO))    ' Msg1926=Necesitas ser nivel ¬1 para usar este item.
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_ITEM_MIN_LEVEL_REQUIRED, obj.MinELV, e_FontTypeNames.FONTTYPE_INFO))    ' Msg1926=Necesitas ser nivel ¬1 para usar este item.
             Exit Sub
         End If
         If .Stats.ELV > obj.MaxLEV And obj.MaxLEV > 0 Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1982, obj.MaxLEV, e_FontTypeNames.FONTTYPE_INFO))    ' Msg1982=Este objeto no puede ser utilizado por personajes de nivel ¬1 o superior.
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_ITEM_MAX_LEVEL_ALLOWED, obj.MaxLEV, e_FontTypeNames.FONTTYPE_INFO))    ' Msg1982=Este objeto no puede ser utilizado por personajes de nivel ¬1 o superior.
             Exit Sub
         End If
         ObjIndex = .invent.Object(Slot).ObjIndex
@@ -1744,15 +1754,15 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Call UpdateSingleItemInv(UserIndex, Slot, False)
                         End If
                     Else
-                        Call WriteLocaleMsg(UserIndex, 2101, e_FontTypeNames.FONTTYPE_INFO) 'Msg2101=Ya tienes este skin.
+                        Call WriteLocaleMsg(UserIndex, MSG_TIENES_SKIN, e_FontTypeNames.FONTTYPE_INFO) 'Msg2101=Ya tienes este skin.
                     End If
                 Else
-                    Call WriteLocaleMsg(UserIndex, 2101, e_FontTypeNames.FONTTYPE_INFO) 'Msg2101=Tu clase o nivel no te permite usar este skin.
+                    Call WriteLocaleMsg(UserIndex, MSG_TIENES_SKIN, e_FontTypeNames.FONTTYPE_INFO) 'Msg2101=Tu clase o nivel no te permite usar este skin.
                 End If
 
             Case e_OBJType.otUseOnce
                 If .flags.Muerto = 1 Then
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 'Usa el item
@@ -1764,7 +1774,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         .Stats.JineteLevel = obj.JineteLevel
                     Else
                         'Msg2080 = No puedes consumir un nivel de jinete menor al que posees actualmente
-                        Call WriteLocaleMsg(UserIndex, 2079, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_CANNOT_CONSUME_LOWER_MOUNT_LEVEL, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 End If
@@ -1780,7 +1790,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Case e_OBJType.otGoldCoin
                 If .flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 .Stats.GLD = .Stats.GLD + .invent.Object(Slot).amount
@@ -1793,15 +1803,15 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Case e_OBJType.otWeapon
                 If .flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg77=¡¡Estás muerto!!.
                     Exit Sub
                 End If
                 If Not .Stats.MinSta > 0 Then
                     'Msg2129=¡No tengo energía!
-                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
                     'Msg93=Estás muy cansado
-                    Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUY_CANSADO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If ObjData(ObjIndex).Proyectil = 1 Then
@@ -1822,21 +1832,21 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 End If
             Case e_OBJType.otWorkingTools, e_OBJType.otMinerals
                 If .flags.Muerto = 1 Then
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg77=¡¡Estás muerto!!.
                     Exit Sub
                 End If
                 If Not .Stats.MinSta > 0 Then
                     'Msg2129=¡No tengo energía!
-                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
                     'Msg93=Estás muy cansado
-                    Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUY_CANSADO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 'Solo si es herramienta ;) (en realidad si no es ni proyectil ni daga)
                 If ObjData(.invent.Object(Slot).ObjIndex).OBJType <> otMinerals Then
                     If .invent.Object(Slot).Equipped = 0 Then
-                        Call WriteLocaleMsg(UserIndex, 376, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_MUST_EQUIP_TOOL_FIRST, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 End If
@@ -1855,7 +1865,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Call WriteWorkRequestTarget(UserIndex, e_Skill.Talar)
                     Case 7     ' Herramientas de Herrero - Martillo
                         ' Msg680=Debes hacer click derecho sobre el yunque.
-                        Call WriteLocaleMsg(UserIndex, 680, e_FontTypeNames.FONTTYPE_INFOIAO)
+                        Call WriteLocaleMsg(UserIndex, MSG_DEBES_HACER_CLICK_DERECHO_SOBRE_YUNQUE, e_FontTypeNames.FONTTYPE_INFOIAO)
                     Case 8     ' Herramientas de Mineria - Piquete
                         Call WriteWorkRequestTarget(UserIndex, e_Skill.Mineria)
                     Case 9     ' Herramientas de Sastreria - Costurero
@@ -1866,13 +1876,13 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 End Select
             Case e_OBJType.otPotions
                 If .flags.Muerto = 1 Then
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg77=¡¡Estás muerto!!.
                     Exit Sub
                 End If
                 If Not IntervaloPermiteGolpeUsar(UserIndex, False) Then
                     ' Msg681=¡¡Debes esperar unos momentos para tomar otra poción!!
-                    Call WriteLocaleMsg(UserIndex, 681, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_DEBES_ESPERAR_MOMENTOS_TOMAR_OTRA_POCION, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 .flags.TomoPocion = True
@@ -1913,7 +1923,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Case e_PotionType.ModifiesHp     'Poción roja, restaura HP
                         ' Usa el ítem
                         If .flags.DivineBlood > 0 Then
-                            Call WriteLocaleMsg(UserIndex, 2096, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_DIVINE_BLOOD_CANNOT_MIX_WITH_MORTAL_BLOOD, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         Dim HealingAmount As Long
@@ -1954,7 +1964,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         If .flags.Envenenado > 0 Then
                             .flags.Envenenado = 0
                             ' Msg682=Te has curado del envenenamiento.
-                            Call WriteLocaleMsg(UserIndex, 682, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_CURADO_ENVENENAMIENTO, e_FontTypeNames.FONTTYPE_INFO)
                             'Quitamos del inv el item
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                             If obj.Snd1 <> 0 Then
@@ -1964,7 +1974,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             End If
                         Else
                             ' Msg683=¡No te encuentras envenenado!
-                            Call WriteLocaleMsg(UserIndex, 683, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_ENCUENTRAS_ENVENENADO, e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     Case e_PotionType.HealsParalysis     ' Remueve Parálisis
                         If .flags.Paralizado = 1 Or .flags.Inmovilizado = 1 Then
@@ -1984,10 +1994,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(255, .pos.x, .pos.y))
                             End If
                             ' Msg684=Te has removido la paralizis.
-                            Call WriteLocaleMsg(UserIndex, 684, e_FontTypeNames.FONTTYPE_INFOIAO)
+                            Call WriteLocaleMsg(UserIndex, MSG_REMOVIDO_PARALIZIS, e_FontTypeNames.FONTTYPE_INFOIAO)
                         Else
                             ' Msg685=No estas paralizado.
-                            Call WriteLocaleMsg(UserIndex, 685, e_FontTypeNames.FONTTYPE_INFOIAO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_PARALIZADO, e_FontTypeNames.FONTTYPE_INFOIAO)
                         End If
                     Case e_PotionType.ModifiesStamina     ' Pocion Naranja
                         .Stats.MinSta = .Stats.MinSta + RandomNumber(obj.MinModificador, obj.MaxModificador)
@@ -2046,7 +2056,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         Else
                             ' Msg686=¡Rayos! Te tocó la misma cabeza, item no consumido. Tienes otra oportunidad.
-                            Call WriteLocaleMsg(UserIndex, 686, e_FontTypeNames.FONTTYPE_INFOIAO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_RAYOS_TOCO_MISMA_CABEZA_ITEM_CONSUMIDO_TIENES_OTRA, e_FontTypeNames.FONTTYPE_INFOIAO)
                         End If
                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
                     Case e_PotionType.ModifiesSex     ' Pocion sexo
@@ -2104,7 +2114,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         If .flags.invisible = 0 And .Counters.DisabledInvisibility = 0 Then
                             If IsSet(.flags.StatusMask, eTaunting) Then
                                 ' Msg687=No tiene efecto.
-                                Call WriteLocaleMsg(UserIndex, 687, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+                                Call WriteLocaleMsg(UserIndex, MSG_NO_TIENE_EFECTO, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
                                 Exit Sub
                             End If
                             .flags.invisible = 1
@@ -2118,10 +2128,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(123, .pos.x, .pos.y))
                             End If
                             ' Msg688=Te has escondido entre las sombras...
-                            Call WriteLocaleMsg(UserIndex, 688, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+                            Call WriteLocaleMsg(UserIndex, MSG_ESCONDIDO_ENTRE_SOMBRAS_688, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
                         Else
                             ' Msg689=Ya estás invisible.
-                            Call WriteLocaleMsg(UserIndex, 689, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+                            Call WriteLocaleMsg(UserIndex, MSG_INVISIBLE, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
                             Exit Sub
                         End If
                         ' Poción que limpia todo
@@ -2153,7 +2163,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         .Stats.MinHam = .Stats.MaxHam
                         Call WriteUpdateHungerAndThirst(UserIndex)
                         ' Msg690=Donador> Te sentís sano y lleno.
-                        Call WriteLocaleMsg(UserIndex, 690, e_FontTypeNames.FONTTYPE_WARNING)
+                        Call WriteLocaleMsg(UserIndex, MSG_DONADOR_SENTIS_SANO_LLENO, e_FontTypeNames.FONTTYPE_WARNING)
                         If obj.Snd1 <> 0 Then
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
                         Else
@@ -2163,7 +2173,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Case 14
                         If MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then
                             ' Msg691=No podés usar la runa estando en la cárcel.
-                            Call WriteLocaleMsg(UserIndex, 691, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         Dim Map     As Integer
@@ -2199,7 +2209,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Call FindLegalPos(UserIndex, Map, x, y)
                         Call WarpUserChar(UserIndex, Map, x, y, True)
                         'Msg884= Ya estas a salvo...
-                        Call WriteLocaleMsg(UserIndex, 884, e_FontTypeNames.FONTTYPE_WARNING)
+                        Call WriteLocaleMsg(UserIndex, MSG_SALVO, e_FontTypeNames.FONTTYPE_WARNING)
                         If obj.Snd1 <> 0 Then
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
                         Else
@@ -2212,7 +2222,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             tUser = NameIndex(GetUserSpouse(.flags.SpouseId))
                             If Not IsValidUserRef(tUser) Then
                                 'Msg885= Tu pareja deberás estar conectada para divorciarse.
-                                Call WriteLocaleMsg(UserIndex, 885, e_FontTypeNames.FONTTYPE_INFOIAO)
+                                Call WriteLocaleMsg(UserIndex, MSG_PAREJA_DEBERAS_ESTAR_CONECTADA_DIVORCIARSE, e_FontTypeNames.FONTTYPE_INFOIAO)
                             Else
                                 Call QuitarUserInvItem(UserIndex, Slot, 1)
                                 UserList(tUser.ArrayIndex).flags.Casado = 0
@@ -2220,8 +2230,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 .flags.Casado = 0
                                 .flags.SpouseId = 0
                                 'Msg886= Te has divorciado.
-                                Call WriteLocaleMsg(UserIndex, 886, e_FontTypeNames.FONTTYPE_INFOIAO)
-                                Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(1983, .name, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1983=¬1 se ha divorciado de ti.
+                                Call WriteLocaleMsg(UserIndex, MSG_DIVORCIADO, e_FontTypeNames.FONTTYPE_INFOIAO)
+                                Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_DIVORCE_NOTIFICATION, .name, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1983=¬1 se ha divorciado de ti.
                                 If obj.Snd1 <> 0 Then
                                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
                                 Else
@@ -2230,7 +2240,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             End If
                         Else
                             'Msg887= No estas casado.
-                            Call WriteLocaleMsg(UserIndex, 887, e_FontTypeNames.FONTTYPE_INFOIAO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_CASADO, e_FontTypeNames.FONTTYPE_INFOIAO)
                         End If
                     Case e_PotionType.ModifiesHeadRandomLegendary    'Cara legendaria
                         Select Case .genero
@@ -2277,7 +2287,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         Else
                             'Msg888= ¡Rayos! No pude asignarte una cabeza nueva, item no consumido. ¡Proba de nuevo!
-                            Call WriteLocaleMsg(UserIndex, 888, e_FontTypeNames.FONTTYPE_INFOIAO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_RAYOS_PUDE_ASIGNARTE_CABEZA_NUEVA_ITEM_CONSUMIDO_PROBA, e_FontTypeNames.FONTTYPE_INFOIAO)
                         End If
                     Case e_PotionType.ModifiesParticlesTemporary   ' tan solo crea una particula por determinado tiempo
                         Dim Particula           As Integer
@@ -2315,7 +2325,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .pos.x, .pos.y))
                         End If
                         'Msg893= Te has suicidado.
-                        Call WriteLocaleMsg(UserIndex, 893, e_FontTypeNames.FONTTYPE_EJECUCION)
+                        Call WriteLocaleMsg(UserIndex, MSG_SUICIDADO, e_FontTypeNames.FONTTYPE_EJECUCION)
                         Call CustomScenarios.UserDie(UserIndex)
                         Call UserMod.UserDie(UserIndex)
                     Case 23
@@ -2335,7 +2345,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 Call UpdateUserInv(False, UserIndex, Slot)
             Case e_OBJType.otDrinks
                 If .flags.Muerto = 1 Then
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 .Stats.MinAGU = .Stats.MinAGU + obj.MinSed
@@ -2354,14 +2364,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 Call UpdateUserInv(False, UserIndex, Slot)
             Case e_OBJType.otChest
                 If .flags.Muerto = 1 Then
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg77=¡¡Estás muerto!!.
                     Exit Sub
                 End If
                 'Quitamos del inv el item
                 Call QuitarUserInvItem(UserIndex, Slot, 1)
                 Call UpdateUserInv(False, UserIndex, Slot)
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1984, obj.name, e_FontTypeNames.FONTTYPE_New_DONADOR))    ' Msg1984=Has abierto un ¬1 y obtuviste...
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_LOOT_BOX_OPENED, obj.name, e_FontTypeNames.FONTTYPE_New_DONADOR))    ' Msg1984=Has abierto un ¬1 y obtuviste...
                 If obj.Snd1 <> 0 Then
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
                 End If
@@ -2409,7 +2419,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Case e_OBJType.otKeys
                 If .flags.Muerto = 1 Then
                     'Msg895= ¡¡Estas muerto!! Solo podes usar items cuando estas vivo.
-                    Call WriteLocaleMsg(UserIndex, 895, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO_SOLO_PODES_USAR_ITEMS_CUANDO_VIVO_895, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If .flags.TargetObj = 0 Then Exit Sub
@@ -2418,7 +2428,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 If TargObj.OBJType = e_OBJType.otDoors Then
                     If TargObj.clave < 1000 Then
                         'Msg896= Las llaves en el inventario están desactivadas. Sólo se permiten en el llavero.
-                        Call WriteLocaleMsg(UserIndex, 896, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_LLAVES_INVENTARIO_ESTAN_DESACTIVADAS_SOLO_PERMITEN_LLAVERO, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     '¿Esta cerrada?
@@ -2432,13 +2442,13 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, UserList( _
                                    UserIndex).flags.TargetObjY).ObjInfo.ObjIndex
                                 'Msg897= Has abierto la puerta.
-                                Call WriteLocaleMsg(UserIndex, 897, e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteLocaleMsg(UserIndex, MSG_ABIERTO_PUERTA, e_FontTypeNames.FONTTYPE_INFO)
                                 ClaveLlave = obj.clave
                                 Call EliminarLlaves(ClaveLlave, UserIndex)
                                 Exit Sub
                             Else
                                 'Msg898= La llave no sirve.
-                                Call WriteLocaleMsg(UserIndex, 898, e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteLocaleMsg(UserIndex, MSG_NO_LLAVE_SIRVE, e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
                             End If
                         Else
@@ -2447,24 +2457,24 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                    ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, UserList( _
                                    UserIndex).flags.TargetObjY).ObjInfo.ObjIndex).IndexCerradaLlave
                                 'Msg899= Has cerrado con llave la puerta.
-                                Call WriteLocaleMsg(UserIndex, 899, e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteLocaleMsg(UserIndex, MSG_CERRADO_LLAVE_PUERTA, e_FontTypeNames.FONTTYPE_INFO)
                                 .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
                                 Exit Sub
                             Else
                                 'Msg900= La llave no sirve.
-                                Call WriteLocaleMsg(UserIndex, 900, e_FontTypeNames.FONTTYPE_INFO)
+                                Call WriteLocaleMsg(UserIndex, MSG_NO_LLAVE_SIRVE_900, e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
                             End If
                         End If
                     Else
                         'Msg901= No esta cerrada.
-                        Call WriteLocaleMsg(UserIndex, 901, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_CERRADA, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 End If
             Case e_OBJType.otEmptyBottle
                 If .flags.Muerto = 1 Then
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If Not InMapBounds(.flags.TargetMap, .flags.TargetX, .flags.TargetY) Then
@@ -2472,12 +2482,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 End If
                 If (MapData(.pos.Map, .flags.TargetX, .flags.TargetY).Blocked And FLAG_AGUA) = 0 Then
                     'Msg902= No hay agua allí.
-                    Call WriteLocaleMsg(UserIndex, 902, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_AGUA_ALLI, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If Distance(.pos.x, .pos.y, .flags.TargetX, .flags.TargetY) > 2 Then
                     'Msg903= Debes acercarte más al agua.
-                    Call WriteLocaleMsg(UserIndex, 903, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_DEBES_ACERCARTE_MAS_AGUA, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 MiObj.amount = 1
@@ -2489,7 +2499,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 Call UpdateUserInv(False, UserIndex, Slot)
             Case e_OBJType.otFullBottle
                 If .flags.Muerto = 1 Then
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg77=¡¡Estás muerto!!.
                     Exit Sub
                 End If
@@ -2505,7 +2515,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 Call UpdateUserInv(False, UserIndex, Slot)
             Case e_OBJType.otParchment
                 If .flags.Muerto = 1 Then
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg77=¡¡Estás muerto!!.
                     Exit Sub
                 End If
@@ -2516,15 +2526,15 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Call UpdateUserInv(False, UserIndex, Slot)
                     Else
                         'Msg904= Estas demasiado hambriento y sediento.
-                        Call WriteLocaleMsg(UserIndex, 904, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_DEMASIADO_HAMBRIENTO_SEDIENTO, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
                     'Msg906= Por mas que lo intentas, no podés comprender el manuescrito.
-                    Call WriteLocaleMsg(UserIndex, 906, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_MAS_INTENTAS_PODES_COMPRENDER_MANUESCRITO, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Case e_OBJType.otMusicalInstruments
                 If .flags.Muerto = 1 Then
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg77=¡¡Estás muerto!!.
                     Exit Sub
                 End If
@@ -2532,28 +2542,28 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     If FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
                         If MapInfo(.pos.Map).Seguro = 1 Then
                             'Msg907= No hay Peligro aquí. Es Zona Segura
-                            Call WriteLocaleMsg(UserIndex, 907, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_PELIGRO_AQUI_ZONA_SEGURA, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         Call SendData(SendTarget.toMap, .pos.Map, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
                         Exit Sub
                     Else
                         'Msg908= Solo Miembros de la Armada Real pueden usar este cuerno.
-                        Call WriteLocaleMsg(UserIndex, 908, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_SOLO_MIEMBROS_ARMADA_REAL_PUEDEN_USAR_CUERNO, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 ElseIf obj.Caos Then    '¿Es el Cuerno Legión?
                     If FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
                         If MapInfo(.pos.Map).Seguro = 1 Then
                             'Msg909= No hay Peligro aquí. Es Zona Segura
-                            Call WriteLocaleMsg(UserIndex, 909, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_PELIGRO_AQUI_ZONA_SEGURA_909, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         Call SendData(SendTarget.toMap, .pos.Map, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
                         Exit Sub
                     Else
                         'Msg910= Solo Miembros de la Legión Oscura pueden usar este cuerno.
-                        Call WriteLocaleMsg(UserIndex, 910, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_SOLO_MIEMBROS_LEGION_OSCURA_PUEDEN_USAR_CUERNO, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 End If
@@ -2565,13 +2575,13 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     If .clase = e_Class.Trabajador Or .clase = e_Class.Pirat Then
                         If .Stats.ELV < 23 Then
                             'Msg911= Para recorrer los mares debes ser nivel 23 o superior.
-                            Call WriteLocaleMsg(UserIndex, 911, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_RECORRER_MARES_DEBES_NIVEL_SUPERIOR, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         ' Nivel mínimo 25 para navegar, si no sos pirata ni trabajador
                     ElseIf .Stats.ELV < 25 Then
                         'Msg912= Para recorrer los mares debes ser nivel 25 o superior.
-                        Call WriteLocaleMsg(UserIndex, 912, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_RECORRER_MARES_DEBES_NIVEL_SUPERIOR_912, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 ElseIf .invent.Object(Slot).ObjIndex = iObjTrajeAltoNw Or .invent.Object(Slot).ObjIndex = iObjTrajeBajoNw Then
@@ -2579,7 +2589,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                        .pos.x + 1, .pos.y).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.x - 1, .pos.y).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, _
                        .pos.x, .pos.y + 1).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.x, .pos.y - 1).trigger <> e_Trigger.DETALLEAGUA Then
                         'Msg913= Este traje es para aguas contaminadas.
-                        Call WriteLocaleMsg(UserIndex, 913, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_TRAJE_AGUAS_CONTAMINADAS, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 ElseIf .invent.Object(Slot).ObjIndex = iObjTraje Then
@@ -2591,7 +2601,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                        e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.x - 1, .pos.y).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.x, .pos.y + _
                        1).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.x, .pos.y - 1).trigger <> e_Trigger.NADOBAJOTECHO Then
                         'Msg914= Este traje es para zonas poco profundas.
-                        Call WriteLocaleMsg(UserIndex, 914, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_TRAJE_ZONAS_POCO_PROFUNDAS, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 End If
@@ -2601,7 +2611,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Call DoNavega(UserIndex, obj, Slot)
                     Else
                         'Msg915= ¡Debes aproximarte al agua para usar el barco o traje de baño!
-                        Call WriteLocaleMsg(UserIndex, 915, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_DEBES_APROXIMARTE_AGUA_USAR_BARCO_TRAJE_BANO, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
                     If .invent.EquippedShipObjIndex <> .invent.Object(Slot).ObjIndex Then
@@ -2612,25 +2622,25 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Call DoNavega(UserIndex, obj, Slot)
                         Else
                             'Msg916= ¡Debes aproximarte a la costa para dejar la barca!
-                            Call WriteLocaleMsg(UserIndex, 916, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_DEBES_APROXIMARTE_COSTA_DEJAR_BARCA, e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     End If
                 End If
             Case e_OBJType.otSaddles
                 'Verifica todo lo que requiere la montura
                 If .flags.Muerto = 1 Then
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg77=¡¡Estás muerto!!.
                     Exit Sub
                 End If
                 If .flags.Navegando = 1 Then
                     'Msg917= Debes dejar de navegar para poder cabalgar.
-                    Call WriteLocaleMsg(UserIndex, 917, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_DEBES_DEJAR_NAVEGAR_PODER_CABALGAR, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If MapInfo(.pos.Map).zone = "DUNGEON" Then
                     'Msg918= No podes cabalgar dentro de un dungeon.
-                    Call WriteLocaleMsg(UserIndex, 918, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_CABALGAR_DENTRO_DUNGEON, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 Call DoMontar(UserIndex, obj, Slot)
@@ -2639,17 +2649,17 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Case 1
                         If .Counters.Pena <> 0 Then
                             ' Msg691=No podés usar la runa estando en la cárcel.
-                            Call WriteLocaleMsg(UserIndex, 691, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         If MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then
                             ' Msg691=No podés usar la runa estando en la cárcel.
-                            Call WriteLocaleMsg(UserIndex, 691, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
                         'Msg919= Has viajado por el mundo.
-                        Call WriteLocaleMsg(UserIndex, 919, e_FontTypeNames.FONTTYPE_WARNING)
+                        Call WriteLocaleMsg(UserIndex, MSG_VIAJADO_MUNDO, e_FontTypeNames.FONTTYPE_WARNING)
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
                         Call UpdateUserInv(False, UserIndex, Slot)
                     Case 2
@@ -2660,16 +2670,16 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Case e_OBJType.otPassageTicket
                 If .flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If .flags.TargetNpcTipo <> Pirata Then
                     'Msg920= Primero debes hacer click sobre el pirata.
-                    Call WriteLocaleMsg(UserIndex, 920, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_DEBES_HACER_CLICK_SOBRE_PIRATA, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).pos, .pos) > 3 Then
-                    Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If .pos.Map <> obj.DesdeMap Then
@@ -2688,7 +2698,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 End If
                 Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
                 'Msg921= Has viajado por varios días, te sientes exhausto!
-                Call WriteLocaleMsg(UserIndex, 921, e_FontTypeNames.FONTTYPE_WARNING)
+                Call WriteLocaleMsg(UserIndex, MSG_VIAJADO_VARIOS_DIAS_SIENTES_EXHAUSTO, e_FontTypeNames.FONTTYPE_WARNING)
                 .Stats.MinAGU = 0
                 .Stats.MinHam = 0
                 Call WriteUpdateHungerAndThirst(UserIndex)
@@ -2697,30 +2707,27 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Case e_OBJType.otRecallStones
                 If .Counters.Pena <> 0 Then
                     ' Msg691=No podés usar la runa estando en la cárcel.
-                    Call WriteLocaleMsg(UserIndex, 691, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then
                     ' Msg691=No podés usar la runa estando en la cárcel.
-                    Call WriteLocaleMsg(UserIndex, 691, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If MapInfo(.pos.Map).Seguro = 0 And .flags.Muerto = 0 Then
                     ' Msg692=Solo podes usar tu runa en zonas seguras.
-                    Call WriteLocaleMsg(UserIndex, 692, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If .Accion.AccionPendiente Then
                     Exit Sub
                 End If
-                Select Case ObjData(ObjIndex).TipoRuna
-                    Case e_RuneType.ReturnHome
-                        .Counters.TimerBarra = HomeTimer
-                    Case e_RuneType.Escape
-                        .Counters.TimerBarra = HomeTimer
-                    Case e_RuneType.MesonSafePassage
-                        .Counters.TimerBarra = 5
-                End Select
+                If obj.Cooldown > 32766 Then
+                    .Counters.TimerBarra = 32766
+                Else
+                    .Counters.TimerBarra = CInt(obj.Cooldown)
+                End If
                 If Not EsGM(UserIndex) Then
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, 400, False))
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 350, e_AccionBarra.Runa))
@@ -2996,7 +3003,7 @@ Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer
             End If
             If .MinSta > UserList(UserIndex).Stats.MinSta Then
                 'Msg2129=¡No tengo energía!
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
                 'Msg420=Estas muy cansado para realizar esta acción.
                 Call WriteLocaleMsg(UserIndex, MsgTiredToPerformAction, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -3040,8 +3047,8 @@ Public Sub ResurrectWithItem(ByVal UserIndex As Integer)
         CanHelpResult = UserMod.CanHelpUser(UserIndex, TargetUser)
         If UserList(TargetUser).flags.SeguroResu Then
             ' Msg693=El usuario tiene el seguro de resurrección activado.
-            Call WriteLocaleMsg(UserIndex, 693, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(TargetUser, PrepareMessageLocaleMsg(1985, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1985=¬1 está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.
+            Call WriteLocaleMsg(UserIndex, MSG_USUARIO_TIENE_SEGURO_RESURRECCION_ACTIVADO, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(TargetUser, PrepareMessageLocaleMsg(MSG_RESURRECTION_ATTEMPT_NOTIFICATION, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1985=¬1 está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.
             Exit Sub
         End If
         If CanHelpResult <> eInteractionOk Then
@@ -3142,7 +3149,7 @@ Public Sub UseArpon(ByVal UserIndex As Integer)
         ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
         Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
         Dim Damage As Integer
-        Damage = GetUserDamageWithItem(UserIndex, ObjIndex, 0)
+        Damage = GetUserDamageWithItem(UserIndex, ObjIndex, 0, TargetRef.RefType)
         If TargetRef.RefType = eUser Then
             UserList(TargetRef.ArrayIndex).Counters.timeFx = 3
             Call RemoveUserInvisibility(UserIndex)
@@ -3444,15 +3451,15 @@ Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal Targe
         Exit Function
     End If
     If TargetObj.ElementalTags <> e_ElementalTags.Normal Then
-        Call WriteLocaleMsg(UserIndex, 2087, e_FontTypeNames.FONTTYPE_INFOIAO)
+        Call WriteLocaleMsg(UserIndex, MSG_ITEM_ALREADY_HAS_ELEMENTAL_TAG, e_FontTypeNames.FONTTYPE_INFOIAO)
         Exit Function
     End If
     If UserList(UserIndex).invent.Object(TargetSlot).ElementalTags <> e_ElementalTags.Normal Then
-        Call WriteLocaleMsg(UserIndex, 2087, e_FontTypeNames.FONTTYPE_INFOIAO)
+        Call WriteLocaleMsg(UserIndex, MSG_ITEM_ALREADY_HAS_ELEMENTAL_TAG, e_FontTypeNames.FONTTYPE_INFOIAO)
         Exit Function
     End If
     If UserList(UserIndex).invent.Object(TargetSlot).amount > 1 Then
-        Call WriteLocaleMsg(UserIndex, 2088, e_FontTypeNames.FONTTYPE_INFOIAO)
+        Call WriteLocaleMsg(UserIndex, MSG_CANNOT_APPLY_ELEMENT_TO_STACKED_ITEMS, e_FontTypeNames.FONTTYPE_INFOIAO)
         Exit Function
     End If
     Select Case SourceObj.ElementalTags
@@ -3723,7 +3730,7 @@ Dim i                           As Byte
     If SkinIndex = 0 Then Exit Function
     
     If Not IsPatreon(UserIndex) Then
-        Call WriteLocaleMsg(UserIndex, 2103, e_FontTypeNames.FONTTYPE_INFO) 'Msg2103=Necesitas mejorar tu cuenta para poder agregar Skins. Para más información visita: https://www.patreon.com/nolandstudios
+        Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_MEJORAR_CUENTA_PODER_AGREGAR_SKINS_MAS_INFORMACION, e_FontTypeNames.FONTTYPE_INFO) 'Msg2103=Necesitas mejorar tu cuenta para poder agregar Skins. Para más información visita: https://www.patreon.com/nolandstudios
         Exit Function
     End If
     
@@ -3740,7 +3747,7 @@ Dim i                           As Byte
                 If SkinIndex > 0 Then
                     Call WriteChangeSkinSlot(UserIndex, ObjData(SkinIndex).OBJType, i)
                 End If
-                Call WriteLocaleMsg(UserIndex, 2097, e_FontTypeNames.FONTTYPE_INFO, ObjData(SkinIndex).name) 'Msg2097=Has agregado con éxito tu nueva skin (" & ObjData(SkinIndex).name & "). Equipala desde el inventario de skins.
+                Call WriteLocaleMsg(UserIndex, MSG_AGREGADO_EXITO_NUEVA_SKIN_OBJDATA_SKININDEX_NAME_EQUIPALA, e_FontTypeNames.FONTTYPE_INFO, ObjData(SkinIndex).name) 'Msg2097=Has agregado con éxito tu nueva skin (" & ObjData(SkinIndex).name & "). Equipala desde el inventario de skins.
                 AddSkin = True
                 Exit Function
             End If
@@ -3751,7 +3758,7 @@ Dim i                           As Byte
         Next i
 
         AddSkin = False
-        Call WriteLocaleMsg(UserIndex, 2098, e_FontTypeNames.FONTTYPE_INFO) 'Msg2098=Ya no tienes lugar en el inventario de Skins.
+        Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_LUGAR_INVENTARIO_SKINS, e_FontTypeNames.FONTTYPE_INFO) 'Msg2098=Ya no tienes lugar en el inventario de Skins.
     End With
     AddSkin = False
     On Error GoTo 0
@@ -3840,7 +3847,7 @@ Dim eSkinType                   As e_OBJType
                                 CanEquipSkin = True
                                 Exit Function
                             Else
-                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
                                 Exit Function
                             End If
                         Else
@@ -3853,7 +3860,7 @@ Dim eSkinType                   As e_OBJType
                                 CanEquipSkin = True
                                 Exit Function
                             Else
-                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
                                 Exit Function
                             End If
                         Else
@@ -3862,7 +3869,7 @@ Dim eSkinType                   As e_OBJType
                         End If
                     End If
                 Else
-                    Call WriteLocaleMsg(UserIndex, 2100, e_FontTypeNames.FONTTYPE_INFO) 'Msg2100=Para equipar este skin, debes tener equipado un objeto de ese tipo.
+                    Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO_OBJETO_ESE_TIPO, e_FontTypeNames.FONTTYPE_INFO) 'Msg2100=Para equipar este skin, debes tener equipado un objeto de ese tipo.
                     Exit Function
                 End If
 
@@ -3874,7 +3881,7 @@ Dim eSkinType                   As e_OBJType
                             CanEquipSkin = True
                             Exit Function
                         Else
-                            Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                            Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
                             Exit Function
                         End If
                     Else
@@ -3887,7 +3894,7 @@ Dim eSkinType                   As e_OBJType
                             CanEquipSkin = True
                             Exit Function
                         Else
-                           Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                           Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
                             Exit Function
                         End If
                     Else
@@ -3905,7 +3912,7 @@ Dim eSkinType                   As e_OBJType
                                 CanEquipSkin = True
                                 Exit Function
                             Else
-                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
                                 Exit Function
                             End If
                         Else
@@ -3918,7 +3925,7 @@ Dim eSkinType                   As e_OBJType
                                 CanEquipSkin = True
                                 Exit Function
                             Else
-                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
                                 Exit Function
                             End If
                         Else
@@ -3927,7 +3934,7 @@ Dim eSkinType                   As e_OBJType
                         End If
                     End If
                 Else
-                    Call WriteLocaleMsg(UserIndex, 2100, e_FontTypeNames.FONTTYPE_INFO) 'Msg2100=Para equipar este skin, debes tener equipado un objeto de ese tipo.
+                    Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO_OBJETO_ESE_TIPO, e_FontTypeNames.FONTTYPE_INFO) 'Msg2100=Para equipar este skin, debes tener equipado un objeto de ese tipo.
                     Exit Function
                 End If
                 
@@ -3944,7 +3951,7 @@ Dim eSkinType                   As e_OBJType
                                 CanEquipSkin = True
                                 Exit Function
                             Else
-                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
                                 Exit Function
                             End If
                         Else
@@ -3957,7 +3964,7 @@ Dim eSkinType                   As e_OBJType
                                 CanEquipSkin = True
                                 Exit Function
                             Else
-                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
                                 Exit Function
                             End If
                         Else
@@ -3966,7 +3973,7 @@ Dim eSkinType                   As e_OBJType
                         End If
                     End If
                 Else
-                    Call WriteLocaleMsg(UserIndex, 2100, e_FontTypeNames.FONTTYPE_INFO) 'Msg2100=Para equipar este skin, debes tener equipado un objeto de ese tipo.
+                    Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO_OBJETO_ESE_TIPO, e_FontTypeNames.FONTTYPE_INFO) 'Msg2100=Para equipar este skin, debes tener equipado un objeto de ese tipo.
                     Exit Function
                 End If
 
@@ -3978,7 +3985,7 @@ Dim eSkinType                   As e_OBJType
                                 CanEquipSkin = True
                                 Exit Function
                             Else
-                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
                                 Exit Function
                             End If
                         Else
@@ -3991,7 +3998,7 @@ Dim eSkinType                   As e_OBJType
                                 CanEquipSkin = True
                                 Exit Function
                             Else
-                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
                                 Exit Function
                             End If
                         Else
@@ -4000,7 +4007,7 @@ Dim eSkinType                   As e_OBJType
                         End If
                     End If
                 Else
-                    Call WriteLocaleMsg(UserIndex, 2100, e_FontTypeNames.FONTTYPE_INFO) 'Msg2100=Para equipar este skin, debes tener equipado un objeto de ese tipo.
+                    Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO_OBJETO_ESE_TIPO, e_FontTypeNames.FONTTYPE_INFO) 'Msg2100=Para equipar este skin, debes tener equipado un objeto de ese tipo.
                     Exit Function
                 End If
 
@@ -4013,7 +4020,7 @@ Dim eSkinType                   As e_OBJType
                                 CanEquipSkin = True
                                 Exit Function
                             Else
-                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
                                 Exit Function
                             End If
                         Else
@@ -4026,7 +4033,7 @@ Dim eSkinType                   As e_OBJType
                                 CanEquipSkin = True
                                 Exit Function
                             Else
-                                Call WriteLocaleMsg(UserIndex, 2099, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
+                                Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO, ObjData(ObjData(.Invent_Skins.Object(Slot).ObjIndex).RequiereObjeto).name) 'Msg2099=Para equipar este skin, debes tener equipado
                                 Exit Function
                             End If
                         Else
@@ -4035,7 +4042,7 @@ Dim eSkinType                   As e_OBJType
                         End If
                     End If
                 Else
-                    Call WriteLocaleMsg(UserIndex, 2100, e_FontTypeNames.FONTTYPE_INFO) 'Msg2100=Para equipar este skin, debes tener equipado un objeto de ese tipo.
+                    Call WriteLocaleMsg(UserIndex, MSG_EQUIPAR_SKIN_DEBES_TENER_EQUIPADO_OBJETO_ESE_TIPO, e_FontTypeNames.FONTTYPE_INFO) 'Msg2100=Para equipar este skin, debes tener equipado un objeto de ese tipo.
                     Exit Function
                 End If
         End Select
@@ -4116,7 +4123,7 @@ Public Sub EquipArrow(ByVal UserIndex As Integer, ByVal Slot As Integer)
         ' No hay arco equipado
         If bowIndex <= 0 Then
             'Msg2145=Debes equipar un arco para usar flechas.
-            Call WriteLocaleMsg(UserIndex, 2145, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_DEBES_EQUIPAR_ARCO_USAR_FLECHAS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
@@ -4130,14 +4137,14 @@ Public Sub EquipArrow(ByVal UserIndex As Integer, ByVal Slot As Integer)
         ' El arma equipada no es un arco
         If ObjData(bowIndex).WeaponType <> eBow Then
             'Msg2146=El arma equipada no permite usar flechas.
-            Call WriteLocaleMsg(UserIndex, 2146, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_ARMA_EQUIPADA_PERMITE_USAR_FLECHAS, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
         ' No se permite flecha de mayor categoria que el arco
         If ArrowCategory > BowCategory Then
             'Msg2147=No podés equipar esta flecha con el arco actual.
-            Call WriteLocaleMsg(UserIndex, 2147, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_EQUIPAR_FLECHA_ARCO_ACTUAL, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
@@ -4177,10 +4184,79 @@ Public Sub ValidateEquippedArrow(ByVal UserIndex As Integer)
         If ObjData(bowIndex).BowCategory < ObjData(arrowIndex).ArrowCategory Then
             Call Desequipar(UserIndex, .EquippedMunitionSlot)
             'Msg2148=La flecha fue desequipada porque no es compatible con el arco actual.
-            Call WriteLocaleMsg(UserIndex, 2148, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_FLECHA_FUE_DESEQUIPADA_PORQUE_COMPATIBLE_ARCO_ACTUAL, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
 ValidateEquippedArrow_Error:
     Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.ValidateEquippedArrow", Erl())
 End Sub
+Public Function TryRepairFishingRod(ByVal UserIndex As Integer, ByVal oldSlot As Byte, ByVal newSlot As Byte) As Boolean
+    On Error GoTo TryRepairFishingRod_Error
+    Dim objRod As t_Obj
+    Dim rodObjIndex As Integer
+    Dim powerLine As Integer
+    Dim powerRod As Integer
+    Dim repairedObjIndex As Integer
+    Dim lineSlot As Byte
+    Dim rodSlot As Byte
+    
+    With UserList(UserIndex)
+    
+        'Validar que ambos slots tengan un objeto
+        If .invent.Object(oldSlot).ObjIndex <= 0 Then Exit Function
+        If .invent.Object(newSlot).ObjIndex <= 0 Then Exit Function
+    
+        'Determinar qué slot es hilo y cuál es caña (permitir ambas direcciones de arrastre)
+        If ObjData(.invent.Object(oldSlot).ObjIndex).Subtipo = FishingLine Then
+            lineSlot = oldSlot
+            rodSlot = newSlot
+        ElseIf ObjData(.invent.Object(newSlot).ObjIndex).Subtipo = FishingLine Then
+            lineSlot = newSlot
+            rodSlot = oldSlot
+        Else
+            Exit Function
+        End If
+    
+        'Validar que el hilo sea una herramienta de trabajo
+        If ObjData(.invent.Object(lineSlot).ObjIndex).OBJType <> otWorkingTools Then Exit Function
+                
+        'Debe ser caña rota reparable
+        rodObjIndex = .invent.Object(rodSlot).ObjIndex
+        If rodObjIndex > UBound(ObjData) Then Exit Function
+        
+        repairedObjIndex = ObjData(rodObjIndex).RepairTo
+        If repairedObjIndex <= 0 Then Exit Function
+        If repairedObjIndex > UBound(ObjData) Then Exit Function
+                
+        powerLine = ObjData(.invent.Object(lineSlot).ObjIndex).Power
+        powerRod = ObjData(repairedObjIndex).Power
+        
+        'El hilo no puede reparar una caña con mayor power
+        If powerRod > powerLine Then
+            'Msg2170= El hilo no es lo suficientemente fuerte para reparar esta caña.
+            Call WriteLocaleMsg(UserIndex, MSG_THREAD_NOT_STRONG_ENOUGH, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+        
+        'Objeto reparado
+        objRod.ObjIndex = repairedObjIndex
+        objRod.Amount = 1
+        
+        'Quitamos hilo
+        Call QuitarUserInvItem(UserIndex, lineSlot, 1)
+        Call UpdateUserInv(False, UserIndex, lineSlot)
+        
+        'Quitamos caña rota
+        Call QuitarUserInvItem(UserIndex, rodSlot, 1)
+        Call UpdateUserInv(False, UserIndex, rodSlot)
+        
+        'Agregamos caña reparada, MeterItemEnInventario se encarga de actualizar el inventario del cliente
+        Call MeterItemEnInventario(UserIndex, objRod)
+        
+        TryRepairFishingRod = True
+    End With
+    Exit Function
+TryRepairFishingRod_Error:
+    Call Logging.TraceError(Err.Number, Err.Description, "InvUsuario.TryRepairFishingRod", Erl())
+End Function

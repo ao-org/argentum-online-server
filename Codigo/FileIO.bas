@@ -731,7 +731,7 @@ End Sub
 Sub LoadMotd()
     On Error GoTo LoadMotd_Err
     Dim i As Integer
-    MaxLines = val(GetVar(DatPath & "Motd.ini", "INIT", "NumLines"))
+    MaxLines = max(1, val(GetVar(DatPath & "Motd.ini", "INIT", "NumLines")))
     ReDim MOTD(1 To MaxLines)
     For i = 1 To MaxLines
         MOTD(i).texto = GetVar(DatPath & "Motd.ini", "Motd", "Line" & i)
@@ -1045,6 +1045,7 @@ Sub LoadOBJData()
             .ElementalTags = val(Leer.GetValue(ObjKey, "ElementalTags"))
             .BowCategory = val(Leer.GetValue(ObjKey, "BowCategory"))
             .ArrowCategory = val(Leer.GetValue(ObjKey, "ArrowCategory"))
+            .RepairTo = val(Leer.GetValue(ObjKey, "RepairTo"))
             If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
             If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
             Dim i As Integer
@@ -1095,6 +1096,8 @@ Sub LoadOBJData()
                     .incinera = val(Leer.GetValue(ObjKey, "Incinera"))
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
+                    .MaxHitToNPC = val(Leer.GetValue(ObjKey, "MaxHitToNPC"))
+                    .MinHitToNPC = val(Leer.GetValue(ObjKey, "MinHitToNPC"))
                     .MinArmorPenetrationFlat = val(Leer.GetValue(ObjKey, "MinArmorPenetrationFlat"))
                     .MaxArmorPenetrationFlat = val(Leer.GetValue(ObjKey, "MaxArmorPenetrationFlat"))
                     .ArmorPenetrationPercent = val(Leer.GetValue(ObjKey, "ArmorPenetrationPercent"))
@@ -1165,6 +1168,8 @@ Sub LoadOBJData()
                 Case e_OBJType.otArrows
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
+                    .MaxHitToNPC = val(Leer.GetValue(ObjKey, "MaxHitToNPC"))
+                    .MinHitToNPC = val(Leer.GetValue(ObjKey, "MinHitToNPC"))
                     .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
                     .Paraliza = val(Leer.GetValue(ObjKey, "Paraliza"))
                     .Estupidiza = val(Leer.GetValue(ObjKey, "Estupidiza"))
@@ -1195,11 +1200,12 @@ Sub LoadOBJData()
                         .MaxItems = val(Leer.GetValue(ObjKey, "Peces"))
                     End If
                 Case e_OBJType.otRecallStones
-                    .TipoRuna = val(Leer.GetValue(ObjKey, "TipoRuna"))
+                    .TipoRuna = val(Leer.GetValue(ObjKey, "Runetype"))
                     .DesdeMap = val(Leer.GetValue(ObjKey, "DesdeMap"))
-                    .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
-                    .HastaX = val(Leer.GetValue(ObjKey, "X"))
-                    .HastaY = val(Leer.GetValue(ObjKey, "Y"))
+                    .HastaMap = val(Leer.GetValue(ObjKey, "HastaMap"))
+                    .HastaX = val(Leer.GetValue(ObjKey, "HastaX"))
+                    .HastaY = val(Leer.GetValue(ObjKey, "HastaY"))
+                    .Cooldown = val(Leer.GetValue(ObjKey, "Cooldown"))
                 Case e_OBJType.otTeleport
                     .Radio = val(Leer.GetValue(ObjKey, "Radio"))
                 Case e_OBJType.otChest

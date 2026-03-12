@@ -41,6 +41,7 @@ Public Enum e_WorkingToolSubType
         SmithHammer = 7
         MinerPickaxe = 8
         TailorSewingbox = 9
+        FishingLine = 10
 End Enum
 
 
@@ -72,9 +73,6 @@ End Enum
 
 Public Enum e_AccionBarra
     Runa = 1
-    Resucitar = 2
-    Intermundia = 3
-    GoToPareja = 5
     Hogar = 6
     CancelarAccion = 99
 End Enum
@@ -1561,8 +1559,8 @@ End Enum
 
 Public Enum e_RuneType
     ReturnHome = 1
-    Escape = 2
-    MesonSafePassage = 3
+    MesonSafePassage = 2
+    FastTravel = 3
 End Enum
 
 Public Enum e_UseOnceSubType
@@ -2278,6 +2276,8 @@ Public Type t_ObjData
     LingoteIndex As Integer
     MinHIT As Integer 'Minimo golpe
     MaxHit As Integer 'Maximo golpe
+    MinHitToNPC As Integer
+    MaxHitToNPC As Integer
     MinArmorPenetrationFlat As Integer
     MaxArmorPenetrationFlat As Integer
     ArmorPenetrationPercent As Integer
@@ -2401,6 +2401,7 @@ Public Type t_ObjData
     RequiereObjeto                  As Integer
     BowCategory As Byte
     ArrowCategory As Byte
+    RepairTo As Integer ' ObjIndex of the item granted when this object is repaired.
 End Type
 
 '[Pablo ToxicWaste]
@@ -2507,6 +2508,7 @@ Public Type t_UserStats
     ELV As Byte
     ELO As Long
     UserSkills(1 To NUMSKILLS) As Byte
+    SkillDirty(1 To NUMSKILLS) As Boolean
     UserAtributos(1 To NUMATRIBUTOS) As Byte
     UserAtributosBackUP(1 To NUMATRIBUTOS) As Byte
     UserHechizos(1 To MAXUSERHECHIZOS) As Integer
@@ -3194,6 +3196,7 @@ End Type
 Public Type t_NpcInfoCache
     Exists As Boolean
     TestOnly As Integer
+    DisabledInBattleServer As Integer
     RequireToggle As String
     name As String
     SubName As String
@@ -3423,6 +3426,7 @@ Public Type t_Npc
     CaminataActual As Byte
     PuedeInvocar As Byte
     Humanoide As Boolean
+    DisabledInBattleServer As Byte
 End Type
 
 '**********************************************************

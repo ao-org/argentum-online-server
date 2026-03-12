@@ -497,7 +497,7 @@ Public Sub IBaseScenario_Update()
                 If CountdownTimer.Occurrences >= 10 Then
                     Call StartGame
                 Else
-                    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(1880, 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1880=El abordaje iniciará en ¬1
+                    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MSG_ABORDAJE_INICIARA, 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1880=El abordaje iniciará en ¬1
                 End If
             End If
             Exit Sub
@@ -510,8 +510,8 @@ Public Sub IBaseScenario_Update()
             ElapsedResapwnTime = 0
         End If
         If ElapsedTime > MaxTime Then
-            Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(1881, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1881=¡Se acabó el tiempo!
-            Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(1881, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1881=¡Se acabó el tiempo!
+            Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MSG_ACABO_TIEMPO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1881=¡Se acabó el tiempo!
+            Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MSG_ACABO_TIEMPO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1881=¡Se acabó el tiempo!
             Call CheckWinner
             Call MatchCompleted
         Else
@@ -525,8 +525,8 @@ Public Sub IBaseScenario_Update()
                 If CountdownTimer.Occurrences >= 10 Then
                     Call CloseScenario
                 Else
-                    Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(1882, 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1882=El mapa se cerrará en ¬1
-                    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(1882, 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1882=El mapa se cerrará en ¬1
+                    Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MSG_MAPA_CERRARA, 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1882=El mapa se cerrará en ¬1
+                    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MSG_MAPA_CERRARA, 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1882=El mapa se cerrará en ¬1
                 End If
             End If
             Exit Sub
@@ -561,7 +561,7 @@ Private Sub StartGame()
     Call SetTimer(BroadCastTimer, 60000)
     Call SetTimer(ScoreBroadcastTimer, 20000)
     LastFrameTime = GetTickCountRaw()
-    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(1883, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1883=¡Marineros al abordaje!
+    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MSG_MARINEROS_ABORDAJE, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1883=¡Marineros al abordaje!
     ElapsedTime = 0
     Call ConfigMapEvent
 End Sub
@@ -628,8 +628,8 @@ Private Sub BroadcastPendingTime(ByVal frametime As Long)
         Exit Sub
     ElseIf pendingTime >= 60 Then
         pendingTime = pendingTime / 60
-        Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(1884, pendingTime, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1884=Quedan ¬1 minutos.
-        Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(1884, pendingTime, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1884=Quedan ¬1 minutos.
+        Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTOS_1884, pendingTime, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1884=Quedan ¬1 minutos.
+        Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTOS_1884, pendingTime, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1884=Quedan ¬1 minutos.
     ElseIf pendingTime <= 10 Then
         Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageConsoleMsg(pendingTime, e_FontTypeNames.FONTTYPE_GUILD))
         Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageConsoleMsg(pendingTime, e_FontTypeNames.FONTTYPE_GUILD))
@@ -705,7 +705,7 @@ Private Sub SpawnNpc(ByRef NpcInfo As t_NpcSpawnInfo, ByRef Waypoints() As t_Way
         NpcList(NpcId).flags.Respawn = 1
         NpcList(NpcId).flags.team = team
     Else
-        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(1786, NpcInfo.NpcId, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1792=No se pudo spawnear el npc ¬1, revisar.
+        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_FAILED, NpcInfo.NpcId, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1792=No se pudo spawnear el npc ¬1, revisar.
         Call TraceError(Err.Number, "failed to spawn Npc " & NpcInfo.NpcId, "NavalBoarding.SpawnNpc ", Erl)
     End If
 End Sub

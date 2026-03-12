@@ -25,11 +25,13 @@ Create a new folder named `C:\AO20` and navigate to it. Follow these steps:
 
 4. Rename the file `Empty_db.db` to `Database.db`
 
-5. Clone `Recursos` (https://github.com/ao-org/Recursos)
+5. Rename the file `../Recursos/Dat/Example.Motd.ini` to `Motd.ini`
 
-6. Open Visual Basic 6 as an administrator
+6. Clone `Recursos` (https://github.com/ao-org/Recursos)
 
-7. Open the file `Server.VBP`
+7. Open Visual Basic 6 as an administrator
+
+8. Open the file `Server.VBP`
 
 # 🔛 Feature Toggle/Flag (Turn ON/OFF features)
 

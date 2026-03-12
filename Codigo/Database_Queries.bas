@@ -242,12 +242,8 @@ End Sub
 Private Sub ConstruirQuery_GuardarPersonaje()
     Dim LoopC As Long
     QueryBuilder.Append "UPDATE user SET "
-    QueryBuilder.Append "name = ?, "
     QueryBuilder.Append "level = ?, "
     QueryBuilder.Append "exp = ?, "
-    QueryBuilder.Append "genre_id = ?, "
-    QueryBuilder.Append "race_id = ?, "
-    QueryBuilder.Append "class_id = ?, "
     QueryBuilder.Append "home_id = ?, "
     QueryBuilder.Append "description = ?, "
     QueryBuilder.Append "gold = ?, "

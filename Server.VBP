@@ -163,12 +163,12 @@ Description="Argentum20Server"
 CompatibleMode="0"
 MajorVer=5
 MinorVer=6
-RevisionVer=23
+RevisionVer=29
 AutoIncrementVer=0
 ServerSupportFiles=0
 VersionCompanyName="Argentum20 Staff"
 VersionProductName="Argentum20 Server"
-CondComp="DEBUGGING = 1 : UNLOCK_CPU = 1 : UNIT_TEST = 0 : PYMMO = 0"
+CondComp="DEBUGGING = 1 : UNLOCK_CPU = 1 : UNIT_TEST = 0 : PYMMO = 0 : BATTLESERVER = 0"
 CompilationType=0
 OptimizationType=2
 FavorPentiumPro(tm)=0

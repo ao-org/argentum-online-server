@@ -412,7 +412,10 @@ Function Validate_Skills(ByVal UserIndex As Integer) As Boolean
     For LoopC = 1 To NUMSKILLS
         If UserList(UserIndex).Stats.UserSkills(LoopC) < 0 Then
             Exit Function
-            If UserList(UserIndex).Stats.UserSkills(LoopC) > 100 Then UserList(UserIndex).Stats.UserSkills(LoopC) = 100
+        End If
+        If UserList(UserIndex).Stats.UserSkills(LoopC) > 100 Then
+            UserList(UserIndex).Stats.UserSkills(LoopC) = 100
+            UserList(UserIndex).Stats.SkillDirty(LoopC) = True
         End If
     Next LoopC
     Validate_Skills = True
@@ -591,7 +594,7 @@ Sub CloseSocket(ByVal UserIndex As Integer)
         If IsValidUserRef(.ComUsu.DestUsu) Then
             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = UserIndex Then
-                    Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(1844, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1844=Comercio cancelado por el otro usuario.
+                    Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(MSG_COMERCIO_CANCELADO_OTRO_USUARIO, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1844=Comercio cancelado por el otro usuario.
                     Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
                 End If
             End If
@@ -1237,6 +1240,7 @@ Sub ResetUserSkills(ByVal UserIndex As Integer)
     Dim LoopC As Long
     For LoopC = 1 To NUMSKILLS
         UserList(UserIndex).Stats.UserSkills(LoopC) = 0
+        UserList(UserIndex).Stats.SkillDirty(LoopC) = True
     Next LoopC
     Exit Sub
 ResetUserSkills_Err:
