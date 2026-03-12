@@ -3271,6 +3271,9 @@ Public Function GetUserMRForNpc(ByVal UserIndex As Integer) As Integer
         If .invent.EquippedHelmetObjIndex > 0 Then
             MR = MR + ObjData(.invent.EquippedHelmetObjIndex).ResistenciaMagica
         End If
+        If .invent.EquippedBackpackObjIndex > 0 Then
+            MR = MR + ObjData(.invent.EquippedBackpackObjIndex).ResistenciaMagica
+        End If
         If IsFeatureEnabled("mr-magic-bonus-damage") Then
             MR = MR + .Stats.UserSkills(Resistencia) * MRSkillNpcProtectionModifier
         End If
@@ -3296,6 +3299,9 @@ Public Function GetUserMR(ByVal UserIndex As Integer) As Integer
         ' Resistencia mágica casco
         If .invent.EquippedHelmetObjIndex > 0 Then
             MR = MR + ObjData(.invent.EquippedHelmetObjIndex).ResistenciaMagica
+        End If
+        If .invent.EquippedBackpackObjIndex > 0 Then
+            MR = MR + ObjData(.invent.EquippedBackpackObjIndex).ResistenciaMagica
         End If
         If IsFeatureEnabled("mr-magic-bonus-damage") Then
             MR = MR + .Stats.UserSkills(Resistencia) * MRSkillProtectionModifier
