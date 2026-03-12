@@ -3424,7 +3424,7 @@ Public Type t_Npc
     QuizaDropea() As String
     QuizaProb As Integer
     QuantityOfDrops As Byte
-    Drops() As t_NpcItemDrop
+    Drop() As t_NpcItemDrop
     MinTameLevel As Byte
     OnlyForGuilds As Byte
     ShowKillerConsole As Byte

@@ -1040,10 +1040,10 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .IntervaloRespawnMax = Val(LeerNPCs.GetValue(SectionName, "IntervaloRespawn"))
         .InformarRespawn = Val(LeerNPCs.GetValue(SectionName, "InformarRespawn"))
         .QuizaProb = Val(LeerNPCs.GetValue(SectionName, "QuizaProb"))
-        
+        Debug.Assert NpcNumber <> 1638
         .QuantityOfDrops = val(LeerNPCs.GetValue(SectionName, "QuantityOfDrops"))
         If .QuantityOfDrops > 0 Then
-            ReDim .Drops(1 To .QuantityOfDrops)
+            ReDim .Drop(1 To .QuantityOfDrops)
             Dim i As Byte
             For i = 1 To .QuantityOfDrops
                 .Drop(i).ItemIndex = val(LeerNPCs.GetValue(SectionName, "Drop" & i & "ItemIndex"))
@@ -1054,7 +1054,6 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         Else
             Erase .Drop
         End If
-        
         .MinTameLevel = Val(LeerNPCs.GetValue(SectionName, "MinTameLevel", 1))
         .OnlyForGuilds = Val(LeerNPCs.GetValue(SectionName, "OnlyForGuilds", 0))
         .ShowKillerConsole = Val(LeerNPCs.GetValue(SectionName, "ShowKillerConsole", 0))
