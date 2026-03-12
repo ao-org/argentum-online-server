@@ -31,6 +31,12 @@ Option Explicit
 ' Modulo de declaraciones. Aca hay de todo.
 '
 
+Public Type t_NpcItemDrop
+    ItemIndex As Integer
+    LowQuantityBound As Integer
+    DropChance As Integer
+End Type
+
 Public Enum e_WorkingToolSubType
         FishingRod = 1
         FishingNet = 2
@@ -3252,6 +3258,8 @@ Public Type t_NpcInfoCache
     IntervaloRespawnMax As Long
     InformarRespawn As Integer
     QuizaProb As Integer
+    QuantityOfDrops As Byte
+    Drop() As t_NpcItemDrop
     MinTameLevel As Integer
     OnlyForGuilds As Integer
     ShowKillerConsole As Integer
@@ -3414,6 +3422,8 @@ Public Type t_Npc
     NumQuiza As Byte
     QuizaDropea() As String
     QuizaProb As Integer
+    QuantityOfDrops As Byte
+    Drops() As t_NpcItemDrop
     MinTameLevel As Byte
     OnlyForGuilds As Byte
     ShowKillerConsole As Byte
