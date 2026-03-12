@@ -40,7 +40,7 @@ Public Sub MineMinerals(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, 651, e_FontTypeNames.FONTTYPE_INFO)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.OldMiningPickaxeHit, .pos.x, .pos.y))
             If IsFeatureEnabled("gain_exp_while_working") Then
-                Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Miner)
+                Call GiveExpWhileWorking(UserIndex, MiObj, e_JobsTypes.Miner)
                 Call WriteUpdateExp(UserIndex)
                 Call CheckUserLevel(UserIndex)
             End If
