@@ -174,9 +174,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
     #End If
     On Error Resume Next
     Dim UserIndex As Integer
-    Dim has_user_index As Boolean
-    has_user_index = Not IsMissing(optional_user_index)
-    If has_user_index Then
+    If Not IsMissing(optional_user_index) Then
         UserIndex = CInt(optional_user_index)
     Else
         UserIndex = 0
@@ -201,7 +199,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         If Mapping(ConnectionID).PacketCount > 100 Then
             'Lo kickeo
             If UserIndex > 0 Then
-                If has_user_index Then ' userindex may be invalid here
+                If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
                     Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & GetUserGMName(UserIndex) & _
                             " | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
                 End If
@@ -210,7 +208,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                     Call KickConnection(ConnectionID)
                 End If
             Else
-                If has_user_index Then ' userindex may be invalid here
+                If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
                     Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg( _
                             "Control Paquetes---> Usuario desconocido | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
                 End If
@@ -223,7 +221,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         End If
     #End If
     If PacketId < ClientPacketID.eMinPacket Or PacketId >= ClientPacketID.PacketCount Then
-        If has_user_index Then ' userindex may be invalid here
+        If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
             Call LogEdicionPaquete("El usuario " & UserList(UserIndex).ConnectionDetails.IP & " mando fake paquet " & PacketId)
             Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & GetUserGMName(UserIndex) & " | IP: " & UserList( _
                     UserIndex).ConnectionDetails.IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
@@ -235,8 +233,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         'Does the packet requires a logged user??
         If Not (PacketId = ClientPacketID.eLoginExistingChar Or PacketId = ClientPacketID.eLoginNewChar) Then
             ' All these packets require a logged user with a valid user_index
-            Debug.Assert has_user_index
-            If has_user_index Then ' userindex may be invalid here
+            Debug.Assert Not IsMissing(optional_user_index)
+            If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
                 'Is the user actually logged?
                 If Not UserList(UserIndex).flags.UserLogged Then
                     Call CloseSocket(UserIndex)
@@ -252,8 +250,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             End If
         Else
             'Got eLoginExistingChar/eLoginNewChar, here UserIndex must not be assigned
-            Debug.Assert Not has_user_index
-            If has_user_index Then
+            Debug.Assert IsMissing(optional_user_index)
+            If Not IsMissing(optional_user_index) Then
                 'If UserIndex is not missing then kick out
                 Call KickConnection(ConnectionID)
                 Exit Function ' Don't process incoming data
@@ -279,34 +277,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             End If
         End If
     #End If
-    If Not DispatchIncomingPacket(PacketId, ConnectionID, UserIndex, has_user_index) Then
-        Call TraceError(&HDEAD0001, "Invalid or unhandled message ID: " & PacketId, "Protocol.HandleIncomingData", Erl)
-        If has_user_index Then
-            Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("[Error] Paquete desconocido: " & PacketId, e_FontTypeNames.FONTTYPE_GUILD))
-        End If
-        Call KickConnection(ConnectionID)
-        HandleIncomingData = False
-        Exit Function
-    End If
-    If (reader.GetAvailable() > 0) Then
-        Dim errMsg As String
-        errMsg = "Server message ID: " & PacketId & " has too many bytes; " & reader.GetAvailable() & " extra bytes found"
-        If has_user_index Then
-            errMsg = errMsg & " from user: " & GetUserGMName(UserIndex)
-        End If
-        Call TraceError(&HDEADBEEF, errMsg, "Protocol.HandleIncomingData", Erl)
-        If has_user_index Then
-            Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("[Warning] " & errMsg, e_FontTypeNames.FONTTYPE_GUILD))
-        End If
-        Call KickConnection(ConnectionID)
-        HandleIncomingData = False
-        Exit Function
-    End If
-    Call PerformTimeLimitCheck(performance_timer, "Protocol handling message " & PacketID_to_string(PacketId), 100)
-    HandleIncomingData = True
-End Function
-
-Private Function DispatchIncomingPacket(ByVal PacketId As Long, ByVal ConnectionID As Long, ByVal UserIndex As Integer, ByVal has_user_index As Boolean) As Boolean
     Select Case PacketId
         Case ClientPacketID.eLoginExistingChar
             Call HandleLoginExistingChar(ConnectionID)
@@ -927,15 +897,31 @@ Private Function DispatchIncomingPacket(ByVal PacketId As Long, ByVal Connection
                 Call HandleDeleteCharacter(ConnectionID)
             #End If
         Case Else
-            GoTo invalid_packet
+            Call TraceError(&HDEAD0001, "Invalid or unhandled message ID: " & PacketId, "Protocol.HandleIncomingData", Erl)
+            If Not IsMissing(optional_user_index) Then
+                Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("[Error] Paquete desconocido: " & PacketId, e_FontTypeNames.FONTTYPE_GUILD))
+            End If
+            Call KickConnection(ConnectionID)
+            HandleIncomingData = False
+            Exit Function
     End Select
-    DispatchIncomingPacket = True
-    Exit Function
-
-invalid_packet:
-    DispatchIncomingPacket = False
+    If (reader.GetAvailable() > 0) Then
+        Dim errMsg As String
+        errMsg = "Server message ID: " & PacketId & " has too many bytes; " & reader.GetAvailable() & " extra bytes found"
+        If Not IsMissing(optional_user_index) Then
+            errMsg = errMsg & " from user: " & GetUserGMName(UserIndex)
+        End If
+        Call TraceError(&HDEADBEEF, errMsg, "Protocol.HandleIncomingData", Erl)
+        If Not IsMissing(optional_user_index) Then
+            Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("[Warning] " & errMsg, e_FontTypeNames.FONTTYPE_GUILD))
+        End If
+        Call KickConnection(ConnectionID)
+        HandleIncomingData = False
+        Exit Function
+    End If
+    Call PerformTimeLimitCheck(performance_timer, "Protocol handling message " & PacketID_to_string(PacketId), 100)
+    HandleIncomingData = True
 End Function
-
 
 #If PYMMO = 0 Then
     Private Sub HandleCreateAccount(ByVal ConnectionID As Long)
