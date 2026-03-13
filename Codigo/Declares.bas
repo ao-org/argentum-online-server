@@ -1904,7 +1904,7 @@ End Enum
 
 Public Type t_UserOBJ
     ObjIndex As Integer
-    Amount As Integer
+    amount As Integer
     Equipped As Byte
     ElementalTags As Long
 End Type
