@@ -637,6 +637,8 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eAntiCheatMessage"
         Case ClientPacketID.eFactionMessage
             PacketID_to_string = "eFactionMessage"
+        Case ClientPacketID.eAntiMacroMessage
+            PacketID_to_string = "eAntiMacroMessage"
         Case Else
             PacketID_to_string = "Unknown ClientPacketID (" & CStr(PacketId) & ")"
     End Select
