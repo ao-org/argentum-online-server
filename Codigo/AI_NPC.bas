@@ -301,11 +301,15 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)
         Dim NearestUser           As Integer
         Dim NearestTargetDistance As Single
+        Dim HasTargetPos  As Boolean
         NearestUser = SelectNearestUser(NpcIndex, NearestTargetDistance)
         CurrentTarget = SelectCurrentTarget(NpcIndex, NearestUser)
-        'perform attack
-        If IsValidRef(CurrentTarget) And NPCs.CanAttack(.Contadores, .flags) Then
+        If IsValidRef(CurrentTarget) Then
             TargetPos = GetPosition(CurrentTarget)
+            HasTargetPos = True
+        End If
+        'perform attack
+        If HasTargetPos And NPCs.CanAttack(.Contadores, .flags) Then
             If Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) <= .AttackRange Then
                 If NpcCanAttack(NpcIndex, CurrentTarget) = eCanAttack And CurrentTarget.RefType = eUser Then
                     If NpcAtacaUser(NpcIndex, CurrentTarget.ArrayIndex, .Char.Heading) And .ProjectileType > 0 Then
@@ -318,7 +322,8 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
         End If
         'perform movement
         If NPCs.CanMove(.Contadores, .flags) Then
-            If NearestUser > 0 And NearestTargetDistance < .PreferedRange Then
+            Call TryFaceRangedTarget(NpcIndex, CurrentTarget)
+            If NearestUser > 0 And NearestTargetDistance <= .preferedRange Then
                 Dim retreatTargetPos    As t_WorldPos
                 Dim retreatDestination As t_WorldPos
                 retreatTargetPos = UserList(NearestUser).pos
@@ -334,7 +339,7 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
                 End If
             ElseIf Math.Round(NearestTargetDistance) = .PreferedRange Then
                 'do nothing, look at pos?
-            ElseIf IsValidRef(CurrentTarget) And Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) > .PreferedRange Then
+            ElseIf HasTargetPos And Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) > .preferedRange Then
                 Call AI_CaminarConRumbo(NpcIndex, TargetPos)
             ElseIf Distancia(.pos, .Orig) > 0 Then 'return to origin
                 Call AI_CaminarConRumbo(NpcIndex, .Orig)
@@ -818,7 +823,8 @@ Public Sub AI_BGSupportBehavior(ByVal NpcIndex As Integer)
         Dim TargetPos As t_WorldPos
         TargetPos = ModReferenceUtils.GetPosition(CurrentTarget)
         If NPCs.CanMove(.Contadores, .flags) Then
-            If CurrentTarget.ArrayIndex > 0 And NearestTargetDistance < .PreferedRange Then
+            Call TryFaceRangedTarget(NpcIndex, CurrentTarget)
+            If CurrentTarget.ArrayIndex > 0 And NearestTargetDistance <= .preferedRange Then
                 Dim retreatDestination As t_WorldPos
                 retreatDestination = ComputeNpcRangedRetreatDestination(NpcIndex, TargetPos, .PreferedRange)
                 If retreatDestination.x <> .pos.x Or retreatDestination.y <> .pos.y Then
@@ -877,9 +883,13 @@ Public Sub AI_BGRangedBehavior(ByVal NpcIndex As Integer)
                 End If
             End If
         End If
+        If IsValidRef(CurrentTarget) Then
+            TargetPos = ModReferenceUtils.GetPosition(CurrentTarget)
+        End If
         'perform movement
         If NPCs.CanMove(.Contadores, .flags) Then
-            If CurrentTarget.ArrayIndex > 0 And NearestTargetDistance < .PreferedRange Then
+            Call TryFaceRangedTarget(NpcIndex, CurrentTarget)
+            If CurrentTarget.ArrayIndex > 0 And NearestTargetDistance <= .preferedRange Then
                 Dim retreatDestination As t_WorldPos
                 retreatDestination = ComputeNpcRangedRetreatDestination(NpcIndex, TargetPos, .PreferedRange)
                 If retreatDestination.x <> .pos.x Or retreatDestination.y <> .pos.y Then
@@ -956,6 +966,59 @@ End Sub
 
 Private Function DistanciaRadial(OrigenPos As t_WorldPos, DestinoPos As t_WorldPos) As Long
     DistanciaRadial = max(Abs(OrigenPos.x - DestinoPos.x), Abs(OrigenPos.y - DestinoPos.y))
+End Function
+
+Private Sub TryFaceRangedTarget(ByVal NpcIndex As Integer, ByRef CurrentTarget As t_AnyReference)
+    If Not IsValidRef(CurrentTarget) Then Exit Sub
+
+    Dim TargetPos As t_WorldPos
+    TargetPos = ModReferenceUtils.GetPosition(CurrentTarget)
+
+    With NpcList(NpcIndex)
+        Dim targetHeading As e_Heading
+        targetHeading = GetRangedFacingHeading(.pos, TargetPos, .Char.Heading)
+        If .Char.Heading <> targetHeading Then
+            Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, targetHeading)
+        End If
+    End With
+End Sub
+
+Private Function GetRangedFacingHeading(ByRef currentPos As t_WorldPos, ByRef TargetPos As t_WorldPos, ByVal currentHeading As e_Heading) As e_Heading
+    Dim dx As Integer
+    Dim dY As Integer
+    dx = TargetPos.x - currentPos.x
+    dY = TargetPos.y - currentPos.y
+
+    ' Preserve current heading if there is no delta or if the delta is a perfect diagonal (tie).
+    If dx = 0 And dY = 0 Then
+        GetRangedFacingHeading = currentHeading
+        Exit Function
+    End If
+
+    If Abs(dY) = Abs(dx) Then
+        GetRangedFacingHeading = currentHeading
+        Exit Function
+    End If
+
+    If Abs(dY) > Abs(dx) Then
+        If dY < 0 Then
+            GetRangedFacingHeading = e_Heading.NORTH
+        ElseIf dY > 0 Then
+            GetRangedFacingHeading = e_Heading.SOUTH
+        End If
+    Else
+        If dx < 0 Then
+            GetRangedFacingHeading = e_Heading.WEST
+        ElseIf dx > 0 Then
+            GetRangedFacingHeading = e_Heading.EAST
+        ElseIf dY < 0 Then
+            GetRangedFacingHeading = e_Heading.NORTH
+        ElseIf dY > 0 Then
+            GetRangedFacingHeading = e_Heading.SOUTH
+        Else
+            GetRangedFacingHeading = currentHeading
+        End If
+    End If
 End Function
 
 Private Function BuscarNpcEnArea(ByVal NpcIndex As Integer) As Integer
