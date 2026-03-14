@@ -679,7 +679,7 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
         Next j
         If Not meetRequirement Then
             'Msg2167=Esta misión no está disponible para tu clase.
-            Call WriteLocaleMsg(UserIndex, 2167, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
     End If
