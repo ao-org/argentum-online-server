@@ -2479,9 +2479,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         Packet_ID = PacketNames.WorkLeftClick
         If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "WorkLeftClick", PacketTimerThreshold( _
                 Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
-        .Trabajo.Target_X = x
-        .Trabajo.Target_Y = y
-        .Trabajo.TargetSkill = Skill
+        .AutomatedAction.x = x
+        .AutomatedAction.y = y
+        .AutomatedAction.skill = Skill
         If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.pos.Map, x, y) Then Exit Sub
         If UserMod.IsStun(.flags, .Counters) Then Exit Sub
         If Not InRangoVision(UserIndex, x, y) Then
@@ -8071,8 +8071,40 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
     x = reader.ReadInt8()
     y = reader.ReadInt8()
     skill = reader.ReadInt8()
+    If Not InMapBounds(UserList(UserIndex).pos.Map, x, y) Then Exit Function
+
+    ' If exiting, cancel
+    Call CancelExit(UserIndex)
     Select Case skill
         Case e_Skill.Pescar
+            If UserList(UserIndex).invent.EquippedWorkingToolObjIndex > 0 Then
+                If ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).OBJType = e_OBJType.otWorkingTools Then
+                    If ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.FishingNet Then
+                        Dim targetUserIndex As Integer
+                        Dim targetNpcIndex As Integer
+                        UserList(UserIndex).AutomatedAction.x = x
+                        UserList(UserIndex).AutomatedAction.y = y
+                        targetUserIndex = ResolveUserTargetAtPos(UserList(UserIndex).pos.Map, x, y)
+                        UserList(UserIndex).AutomatedAction.skill = skill
+                        targetNpcIndex = ResolveNpcTargetAtPos(UserList(UserIndex).pos.Map, x, y)
+                        If targetUserIndex > 0 Then
+                            Call SetUserRef(UserList(UserIndex).flags.TargetUser, targetUserIndex)
+                            Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
+                            Call ThrowNetToTarget(UserIndex)
+                            Call WriteWorkRequestTarget(UserIndex, 0)
+                            Exit Function
+                        End If
+                        If targetNpcIndex > 0 Then
+                            Call SetUserRef(UserList(UserIndex).flags.TargetUser, 0)
+                            Call SetNpcRef(UserList(UserIndex).flags.TargetNPC, targetNpcIndex)
+                            Call WriteLocaleMsg(UserIndex, MsgNetOnlyUsers, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteWorkRequestTarget(UserIndex, 0)
+                            Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
+                            Exit Function
+                        End If
+                    End If
+                End If
+            End If
             If Not CanUserFish(UserIndex, x, y) Then
                 Exit Function
             End If
