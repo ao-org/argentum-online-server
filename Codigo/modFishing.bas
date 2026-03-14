@@ -146,7 +146,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
             End If
             ' Award experience if enabled
             If IsFeatureEnabled("gain_exp_while_working") Then
-                Call GiveExpWhileWorking(UserIndex, WorkingToolIndex, e_JobsTypes.Fisherman)
+                Call GiveExpWhileWorking(UserIndex, fishingCatch, e_JobsTypes.Fisherman)
                 Call WriteUpdateExp(UserIndex)
                 Call CheckUserLevel(UserIndex)
             End If

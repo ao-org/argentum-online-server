@@ -401,7 +401,7 @@ HerreroQuitarMateriales_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.HerreroQuitarMateriales", Erl)
 End Sub
 
-Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal Cantidad As Integer, ByVal CantidadElfica As Integer, ByVal CantidadPino As Integer)
+Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal Cantidad As Long, ByVal CantidadElfica As Integer, ByVal CantidadPino As Integer)
     On Error GoTo CarpinteroQuitarMateriales_Err
     If ObjData(ItemIndex).Madera > 0 Then Call QuitarObjetos(Wood, Cantidad, UserIndex)
     If ObjData(ItemIndex).MaderaElfica > 0 Then Call QuitarObjetos(ElvenWood, CantidadElfica, UserIndex)
@@ -927,7 +927,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
         If IsFeatureEnabled("gain_exp_while_working") Then
-            Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Blacksmith)
+            Call GiveExpWhileWorking(UserIndex, MiObj, e_JobsTypes.Blacksmith)
             Call WriteUpdateExp(UserIndex)
             Call CheckUserLevel(UserIndex)
         End If
@@ -1035,7 +1035,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         End If
         Call SubirSkill(UserIndex, e_Skill.Carpinteria)
         If IsFeatureEnabled("gain_exp_while_working") Then
-            Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Carpenter)
+            Call GiveExpWhileWorking(UserIndex, MiObj, e_JobsTypes.Carpenter)
             Call WriteUpdateExp(UserIndex)
             Call CheckUserLevel(UserIndex)
         End If
@@ -1093,7 +1093,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         Call SubirSkill(UserIndex, e_Skill.Alquimia)
         Call UpdateUserInv(True, UserIndex, 0)
         If IsFeatureEnabled("gain_exp_while_working") Then
-            Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Alchemist)
+            Call GiveExpWhileWorking(UserIndex, MiObj, e_JobsTypes.Alchemist)
             Call WriteUpdateExp(UserIndex)
             Call CheckUserLevel(UserIndex)
         End If
@@ -2051,29 +2051,66 @@ Public Function GetExtractResourceForLevel(ByVal level As Integer) As Integer
     GetExtractResourceForLevel = RandomNumber(lower, upper)
 End Function
 
-Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal JobType As Byte)
+Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_Obj, ByVal JobType As Byte)
     On Error GoTo GiveExpWhileWorking_Err:
-    Dim tmpExp As Byte
+    Dim tmpExp As Long
+    With ObjData(Item.ObjIndex)
     Select Case JobType
         Case e_JobsTypes.Miner
             tmpExp = SvrConfig.GetValue("MiningExp")
         Case e_JobsTypes.Woodcutter
             tmpExp = SvrConfig.GetValue("FellingExp")
         Case e_JobsTypes.Blacksmith
-            tmpExp = SvrConfig.GetValue("ForgingExp")
+            If .LingH > 0 Then
+                tmpExp = tmpExp + .LingH * SvrConfig.GetValue("IronForgingExp") * Item.Amount
+            End If
+            If .LingP > 0 Then
+                tmpExp = tmpExp + .LingP * SvrConfig.GetValue("SilverForgingExp") * Item.Amount
+            End If
+            If .LingO > 0 Then
+                tmpExp = tmpExp + .LingO * SvrConfig.GetValue("GoldForgingExp") * Item.Amount
+            End If
+            If .Blodium > 0 Then
+                tmpExp = tmpExp + .Blodium * SvrConfig.GetValue("BlodiumForgingExp") * Item.Amount
+            End If
         Case e_JobsTypes.Carpenter
-            tmpExp = SvrConfig.GetValue("CarpentryExp")
-        Case e_JobsTypes.Woodcutter
-            tmpExp = SvrConfig.GetValue("FellingExp")
+            If .Madera > 0 Then
+                tmpExp = tmpExp + .Madera * SvrConfig.GetValue("WoodCarpentryExp") * Item.Amount
+            End If
+            If .MaderaElfica > 0 Then
+                tmpExp = tmpExp + .MaderaElfica * SvrConfig.GetValue("ElvenWoodCarpentryExp") * Item.Amount
+            End If
+
         Case e_JobsTypes.Fisherman
-            If ObjData(ItemIndex).Power >= 2 Then
+            If .Power >= 2 Then
                 tmpExp = SvrConfig.GetValue("FishingExp")
             End If
         Case e_JobsTypes.Alchemist
-            tmpExp = SvrConfig.GetValue("MixingExp")
+            If .FlorRoja > 0 Then
+                tmpExp = tmpExp + .FlorRoja * SvrConfig.GetValue("MixingExp")
+            End If
+            If .FlorOceano > 0 Then
+                tmpExp = tmpExp + .FlorOceano * SvrConfig.GetValue("MixingExp")
+            End If
+            If .ColaDeZorro > 0 Then
+                tmpExp = tmpExp + .ColaDeZorro * SvrConfig.GetValue("MixingExp")
+            End If
+            If .Tuna > 0 Then
+                tmpExp = tmpExp + .Tuna * SvrConfig.GetValue("MixingExp")
+            End If
+            If .HongoDeLuz > 0 Then
+                tmpExp = tmpExp + .HongoDeLuz * SvrConfig.GetValue("MixingExp")
+            End If
+            If .SemillasPros > 0 Then
+                tmpExp = tmpExp + .SemillasPros * SvrConfig.GetValue("MixingExp")
+            End If
+            If .Cala > 0 Then
+                tmpExp = tmpExp + .Cala * SvrConfig.GetValue("MixingExp")
+            End If
         Case Else
             tmpExp = SvrConfig.GetValue("ElseExp")
     End Select
+    End With
     UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + tmpExp
     Exit Function
 GiveExpWhileWorking_Err:
