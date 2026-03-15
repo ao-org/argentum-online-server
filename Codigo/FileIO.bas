@@ -1141,6 +1141,7 @@ Sub LoadOBJData()
                     .ColaDeZorro = val(Leer.GetValue(ObjKey, "ColaDeZorro"))
                     .FlorOceano = val(Leer.GetValue(ObjKey, "FlorOceano"))
                     .FlorRoja = val(Leer.GetValue(ObjKey, "FlorRoja"))
+                    .SemillasPros = val(Leer.GetValue(ObjKey, "SemillasPros"))
                     .SkPociones = val(Leer.GetValue(ObjKey, "SkPociones"))
                     .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
                 Case e_OBJType.otShips, e_OBJType.otSkinsBoats
