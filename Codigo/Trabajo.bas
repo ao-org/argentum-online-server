@@ -408,9 +408,9 @@ Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByRef Item As t_Obj)
     On Error GoTo CarpinteroQuitarMateriales_Err
     If Item.ObjIndex = 0 Then Exit Sub
     With ObjData(Item.ObjIndex)
-        If .Madera > 0 Then Call QuitarObjetos(Wood, .Madera, UserIndex)
-        If .MaderaElfica > 0 Then Call QuitarObjetos(ElvenWood, .MaderaElfica, UserIndex)
-        If .MaderaPino > 0 Then Call QuitarObjetos(PinoWood, .MaderaPino, UserIndex)
+        If .Madera > 0 Then Call QuitarObjetos(Wood, .Madera * Item.amount, UserIndex)
+        If .MaderaElfica > 0 Then Call QuitarObjetos(ElvenWood, .MaderaElfica * Item.amount, UserIndex)
+        If .MaderaPino > 0 Then Call QuitarObjetos(PinoWood, .MaderaPino * Item.amount, UserIndex)
     End With
     Exit Sub
 CarpinteroQuitarMateriales_Err:
