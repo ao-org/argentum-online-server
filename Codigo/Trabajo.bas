@@ -2027,9 +2027,6 @@ Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_
             If .HongoDeLuz > 0 Then
                 tmpExp = tmpExp + .HongoDeLuz * SvrConfig.GetValue("MixingExp") * Item.Amount
             End If
-            If .SemillasPros > 0 Then
-                tmpExp = tmpExp + .SemillasPros * SvrConfig.GetValue("MixingExp") * Item.Amount
-            End If
             If .Cala > 0 Then
                 tmpExp = tmpExp + .Cala * SvrConfig.GetValue("MixingExp") * Item.Amount
             End If
