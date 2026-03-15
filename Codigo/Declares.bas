@@ -2099,7 +2099,8 @@ Public Type t_Quest
     NextQuest As String
     DescFinal As String
     RequiredLevel As Byte
-    RequiredClass As Byte
+    RequiredClass() As Byte
+    RequiredClassesCount As Byte
     LimitLevel As Byte
     RequiredQuest As Integer 'Changed in order to develop more than 255 quests
     Trabajador As Boolean
