@@ -246,6 +246,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Else
                 'If UserIndex is missing then kick out
                 Call KickConnection(ConnectionID)
+                Exit Function ' Don't process incoming data
             End If
         Else
             'Got eLoginExistingChar/eLoginNewChar, here UserIndex must not be assigned
@@ -253,6 +254,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             If Not IsMissing(optional_user_index) Then
                 'If UserIndex is not missing then kick out
                 Call KickConnection(ConnectionID)
+                Exit Function ' Don't process incoming data
             End If
         End If
     #ElseIf PYMMO = 0 Then
