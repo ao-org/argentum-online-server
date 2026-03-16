@@ -523,14 +523,70 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
                     End If
                 End If
             End If
-            'asignamos las nuevas coordenas
-            Map = .pos.Map
-            x = .pos.x
-            y = .pos.y
-            'Y tambien asignamos su posicion original, para tener una posicion de retorno.
-            .Orig.Map = .pos.Map
-            .Orig.x = .pos.x
-            .Orig.y = .pos.y
+            
+            
+            If .IsMultiTiled Then
+            
+         Dim tileX As Integer, tileY As Integer
+            Dim occupiedCount As Integer
+            
+            occupiedCount = 0
+            ReDim .OccupiedTiles(1 To .TileWidth * .TileHeight)
+            
+            ' Mark all tiles as occupied
+            For tileX = 0 To .TileWidth - 1
+                For tileY = 0 To .TileHeight - 1
+                    Dim checkX As Integer, checkY As Integer
+                    checkX = .pos.x + tileX
+                    checkY = .pos.y + tileY
+                    
+                    ' Verify tile is valid and walkable
+                    If Not InMapBounds(Mapa, checkX, checkY) Then
+                        ' Spawn failed - cleanup and exit
+                        Call QuitarNPC(NpcIndex, eFailToFindSpawnPos)
+                        CrearNPC = 0
+                        Exit Function
+                    End If
+                    
+                    ' Check if tile is free
+                    If MapData(Mapa, checkX, checkY).NpcIndex <> 0 Or _
+                       MapData(Mapa, checkX, checkY).UserIndex <> 0 Then
+                        Call QuitarNPC(NpcIndex, eFailToFindSpawnPos)
+                        CrearNPC = 0
+                        Exit Function
+                    End If
+                    
+                    ' Mark tile as occupied
+                    occupiedCount = occupiedCount + 1
+                    .OccupiedTiles(occupiedCount).x = checkX
+                    .OccupiedTiles(occupiedCount).y = checkY
+                    
+                    If tileX = 0 And tileY = 0 Then
+                        ' Base tile gets the NpcIndex
+                        MapData(Mapa, checkX, checkY).NpcIndex = NpcIndex
+                        MapData(Mapa, checkX, checkY).IsNpcReferenceTile = False
+                    Else
+                        ' Reference tiles point to main NPC
+                        MapData(Mapa, checkX, checkY).NpcIndex = NpcIndex
+                        MapData(Mapa, checkX, checkY).IsNpcReferenceTile = True
+                    End If
+                Next tileY
+            Next tileX
+            
+            Else
+            
+                'asignamos las nuevas coordenas
+                Map = .pos.Map
+                x = .pos.x
+                y = .pos.y
+                
+                'Y tambien asignamos su posicion original, para tener una posicion de retorno.
+                .Orig.Map = .pos.Map
+                .Orig.x = .pos.x
+                .Orig.y = .pos.y
+            
+            End If
+            
         End If
     End With
     'Crea el NPC

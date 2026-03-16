@@ -3428,6 +3428,13 @@ Public Type t_Npc
     PuedeInvocar As Byte
     Humanoide As Boolean
     DisabledInBattleServer As Byte
+    
+    IsMultiTiled As Boolean
+    TileWidth   As Byte
+    TileHeight  As Byte
+    BaseTile As t_Position
+    OccupiedTiles() As t_Position
+    
 End Type
 
 '**********************************************************
@@ -3451,6 +3458,7 @@ Public Type t_MapBlock
     Graphic(1 To 4) As Long
     UserIndex As Integer
     NpcIndex As Integer
+    IsNpcReferenceTile As Boolean
     Particula As Byte
     TimeParticula As Integer
     ObjInfo As t_Obj
