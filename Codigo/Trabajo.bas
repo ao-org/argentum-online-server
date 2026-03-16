@@ -421,12 +421,8 @@ Sub AlquimistaQuitarMateriales(ByVal UserIndex As Integer, ByRef Item As t_Obj)
     On Error GoTo AlquimistaQuitarMateriales_Err
     If Item.ObjIndex = 0 Then Exit Sub
     With ObjData(Item.ObjIndex)
-        If .Botella > 0 Then Call QuitarObjetos(Botella, .Botella, UserIndex)
-        If .Cuchara > 0 Then Call QuitarObjetos(Cuchara, .Cuchara, UserIndex)
         If .Mortero > 0 Then Call QuitarObjetos(Mortero, .Mortero, UserIndex)
         If .FrascoAlq > 0 Then Call QuitarObjetos(FrascoAlq, .FrascoAlq, UserIndex)
-        If .FrascoElixir > 0 Then Call QuitarObjetos(FrascoElixir, .FrascoElixir, UserIndex)
-        If .Dosificador > 0 Then Call QuitarObjetos(Dosificador, .Dosificador, UserIndex)
         If .HongoDeLuz > 0 Then Call QuitarObjetos(HongoDeLuz, .HongoDeLuz, UserIndex)
         If .Esporas > 0 Then Call QuitarObjetos(Esporas, .Esporas, UserIndex)
         If .Tuna > 0 Then Call QuitarObjetos(Tuna, .Tuna, UserIndex)
@@ -434,6 +430,7 @@ Sub AlquimistaQuitarMateriales(ByVal UserIndex As Integer, ByRef Item As t_Obj)
         If .ColaDeZorro > 0 Then Call QuitarObjetos(ColaDeZorro, .ColaDeZorro, UserIndex)
         If .FlorOceano > 0 Then Call QuitarObjetos(FlorOceano, .FlorOceano, UserIndex)
         If .FlorRoja > 0 Then Call QuitarObjetos(FlorRoja, .FlorRoja, UserIndex)
+        If .SemillasProsperas > 0 Then Call QuitarObjetos(SemillasProsperas, .SemillasProsperas, UserIndex)
     End With
     Exit Sub
 AlquimistaQuitarMateriales_Err:
@@ -493,24 +490,6 @@ End Function
 
 Function AlquimistaTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
     On Error GoTo AlquimistaTieneMateriales_Err
-    If ObjData(ItemIndex).Botella > 0 Then
-        If Not TieneObjetos(Botella, ObjData(ItemIndex).Botella, UserIndex) Then
-            ' Msg613=No tenés suficientes botellas.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_BOTELLAS, e_FontTypeNames.FONTTYPE_INFO)
-            AlquimistaTieneMateriales = False
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Function
-        End If
-    End If
-    If ObjData(ItemIndex).Cuchara > 0 Then
-        If Not TieneObjetos(Cuchara, ObjData(ItemIndex).Cuchara, UserIndex) Then
-            ' Msg614=No tenés suficientes cucharas.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_CUCHARAS, e_FontTypeNames.FONTTYPE_INFO)
-            AlquimistaTieneMateriales = False
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Function
-        End If
-    End If
     If ObjData(ItemIndex).Mortero > 0 Then
         If Not TieneObjetos(Mortero, ObjData(ItemIndex).Mortero, UserIndex) Then
             ' Msg615=No tenés suficientes morteros.
@@ -524,24 +503,6 @@ Function AlquimistaTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
         If Not TieneObjetos(FrascoAlq, ObjData(ItemIndex).FrascoAlq, UserIndex) Then
             ' Msg616=No tenés suficientes frascos de alquimistas.
             Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_FRASCOS_ALQUIMISTAS, e_FontTypeNames.FONTTYPE_INFO)
-            AlquimistaTieneMateriales = False
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Function
-        End If
-    End If
-    If ObjData(ItemIndex).FrascoElixir > 0 Then
-        If Not TieneObjetos(FrascoElixir, ObjData(ItemIndex).FrascoElixir, UserIndex) Then
-            ' Msg617=No tenés suficientes frascos de elixir superior.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_FRASCOS_ELIXIR_SUPERIOR, e_FontTypeNames.FONTTYPE_INFO)
-            AlquimistaTieneMateriales = False
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Function
-        End If
-    End If
-    If ObjData(ItemIndex).Dosificador > 0 Then
-        If Not TieneObjetos(Dosificador, ObjData(ItemIndex).Dosificador, UserIndex) Then
-            ' Msg618=No tenés suficientes dosificadores.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_DOSIFICADORES, e_FontTypeNames.FONTTYPE_INFO)
             AlquimistaTieneMateriales = False
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
@@ -605,6 +566,15 @@ Function AlquimistaTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
         If Not TieneObjetos(FlorRoja, ObjData(ItemIndex).FlorRoja, UserIndex) Then
             ' Msg627=No tenés suficientes flores rojas.
             Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_FLORES_ROJAS, e_FontTypeNames.FONTTYPE_INFO)
+            AlquimistaTieneMateriales = False
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Exit Function
+        End If
+    End If
+    If ObjData(ItemIndex).SemillasProsperas > 0 Then
+        If Not TieneObjetos(SemillasProsperas, ObjData(ItemIndex).SemillasProsperas, UserIndex) Then
+            ' Msg627=No tenés suficientes flores rojas.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_SEMILLAS_PROSPERAS, e_FontTypeNames.FONTTYPE_INFO)
             AlquimistaTieneMateriales = False
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
