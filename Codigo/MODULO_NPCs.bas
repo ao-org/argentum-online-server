@@ -787,97 +787,99 @@ TranslateNpcChar_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.TranslateNpcChar", Erl)
 End Sub
 
-Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) As Boolean
-    On Error GoTo errh
-    Dim nPos      As t_WorldPos
-    Dim UserIndex As Integer
-    Dim esGuardia As Boolean
+Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As e_Heading) As Boolean
+    On Error GoTo MoveNPCChar_Err
+    
+    Dim nPos As t_WorldPos
+    
     With NpcList(NpcIndex)
-        If Not NPCs.CanMove(.Contadores, .flags) Then Exit Function
         nPos = .pos
         Call HeadtoPos(nHeading, nPos)
+        
+        ' For multi-tile NPCs, check if ALL destination tiles are valid
         If .IsMultiTile Then
-             ' Check if ALL tiles in new position are valid
             Dim tileX As Integer, tileY As Integer
+            Dim canMove As Boolean
+            canMove = True
+            
+            ' Check all destination tiles
             For tileX = 0 To .TileWidth - 1
                 For tileY = 0 To .TileHeight - 1
                     Dim checkX As Integer, checkY As Integer
                     checkX = nPos.x + tileX
                     checkY = nPos.y + tileY
                     
-                    If Not LegalPos(nPos.Map, checkX, checkY, _
-                                   .flags.AguaValida = 1, _
-                                   .flags.TierraInvalida = 0) Then
-                        MoveNPCChar = False
-                        Exit Function
+                    ' Check bounds
+                    If Not InMapBounds(.pos.Map, checkX, checkY) Then
+                        canMove = False
+                        Exit For
                     End If
                     
-                    ' Check for blocking entities
-                    If MapData(nPos.Map, checkX, checkY).UserIndex <> 0 Or _
-                       (MapData(nPos.Map, checkX, checkY).NpcIndex <> 0 And _
-                        MapData(nPos.Map, checkX, checkY).NpcIndex <> NpcIndex) Then
-                        MoveNPCChar = False
-                        Exit Function
+                    ' Check if legal for NPC
+                    If Not LegalPos(.pos.Map, checkX, checkY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, , False) Then
+                        canMove = False
+                        Exit For
+                    End If
+                    
+                    ' Check for blocking entities (users/other NPCs)
+                    If MapData(.pos.Map, checkX, checkY).UserIndex <> 0 Then
+                        canMove = False
+                        Exit For
+                    End If
+                    
+                    ' Check for other NPCs (allow our own tiles)
+                    If MapData(.pos.Map, checkX, checkY).NpcIndex <> 0 And _
+                       MapData(.pos.Map, checkX, checkY).NpcIndex <> NpcIndex Then
+                        canMove = False
+                        Exit For
                     End If
                 Next tileY
+                
+                If Not canMove Then Exit For
             Next tileX
-            ' Clear old tiles
+            
+            If Not canMove Then
+                MoveNPCChar = False
+                Exit Function
+            End If
+            
+            ' Clear old position
             Call ClearNpcFromMap(NpcIndex)
+            
             ' Update position
             .pos = nPos
-            ' Set new tiles
+            
+            ' Place at new position
             Call PlaceNpcOnMap(NpcIndex)
+            
+            ' Send to clients
+            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, _
+                         PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y))
+            
             MoveNPCChar = True
         Else
-            esGuardia = .npcType = e_NPCType.GuardiaReal Or .npcType = e_NPCType.GuardiasCaos
-            ' es una posicion legal
-            If LegalWalkNPC(nPos.Map, nPos.x, nPos.y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IsValidUserRef(.MaestroUser), , esGuardia) Then
-                UserIndex = MapData(.pos.Map, nPos.x, nPos.y).UserIndex
-                ' Si hay un usuario a donde se mueve el npc, entonces esta muerto o es un gm invisible
-                If UserIndex > 0 Then
-                    With UserList(UserIndex)
-                        ' Actualizamos posicion y mapa
-                        Call ClearNpcFromMap(NpcIndex)
-                        .pos.x = NpcList(NpcIndex).pos.x
-                        .pos.y = NpcList(NpcIndex).pos.y
-                        MapData(.pos.Map, .pos.x, .pos.y).UserIndex = UserIndex
-                        ' Avisamos a los usuarios del area, y al propio usuario lo forzamos a moverse
-                        Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(UserList(UserIndex).Char.charindex, .pos.x, .pos.y))
-                        Call WriteForceCharMove(UserIndex, InvertHeading(nHeading))
-                    End With
+            ' Original single-tile movement code
+            If LegalPos(.pos.Map, nPos.x, nPos.y, .flags.AguaValida = 1, .flags.TierraInvalida = 0) Then
+                If MapData(.pos.Map, .pos.x, .pos.y).NpcIndex = NpcIndex Then
+                    MapData(.pos.Map, .pos.x, .pos.y).NpcIndex = 0
                 End If
-                ' Solo NPCs hum
-                If NpcList(NpcIndex).Humanoide Or NpcList(NpcIndex).npcType = e_NPCType.GuardiaReal Or NpcList(NpcIndex).npcType = e_NPCType.GuardiasCaos Or NpcList( _
-                        NpcIndex).npcType = e_NPCType.GuardiaNpc Then
-                    If HayPuerta(nPos.Map, nPos.x, nPos.y) Then
-                        Call AccionParaPuertaNpc(nPos.Map, nPos.x, nPos.y, NpcIndex)
-                    ElseIf HayPuerta(nPos.Map, nPos.x + 1, nPos.y) Then
-                        Call AccionParaPuertaNpc(nPos.Map, nPos.x + 1, nPos.y, NpcIndex)
-                    ElseIf HayPuerta(nPos.Map, nPos.x + 1, nPos.y - 1) Then
-                        Call AccionParaPuertaNpc(nPos.Map, nPos.x + 1, nPos.y - 1, NpcIndex)
-                    ElseIf HayPuerta(nPos.Map, nPos.x, nPos.y - 1) Then
-                        Call AccionParaPuertaNpc(nPos.Map, nPos.x, nPos.y - 1, NpcIndex)
-                    End If
-                End If
-                Call AnimacionIdle(NpcIndex, False)
-                Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y))
-                'Update map and user pos
-                MapData(.pos.Map, .pos.x, .pos.y).NpcIndex = 0
+                
                 .pos = nPos
-                .Char.Heading = nHeading
                 MapData(.pos.Map, nPos.x, nPos.y).NpcIndex = NpcIndex
-                Call CheckUpdateNeededNpc(NpcIndex, nHeading)
-                If Not MapData(.pos.Map, nPos.x, nPos.y).Trap Is Nothing Then
-                    Call ModMap.ActivateTrap(NpcIndex, eNpc, .pos.Map, nPos.x, nPos.y)
-                End If
-                ' Npc has moved
+                
+                Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, _
+                             PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y))
+                
                 MoveNPCChar = True
+            Else
+                MoveNPCChar = False
             End If
         End If
     End With
+    
     Exit Function
-errh:
-    LogError ("Error en move npc " & NpcIndex & ". Error: " & Err.Number & " - " & Err.Description)
+MoveNPCChar_Err:
+    Call TraceError(Err.Number, Err.Description, "NPCs.MoveNPCChar", Erl)
 End Function
 
 Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
@@ -1229,8 +1231,8 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Snd1 = Val(LeerNPCs.GetValue(SectionName, "Snd1"))
         .Snd2 = Val(LeerNPCs.GetValue(SectionName, "Snd2"))
         .Snd3 = Val(LeerNPCs.GetValue(SectionName, "Snd3"))
-        .IsMultiTiled = (val(LeerNPCs.GetValue(SectionName, "MultiTile")) = 1)
-        If .IsMultiTiled Then
+        .IsMultiTile = (val(LeerNPCs.GetValue(SectionName, "MultiTile")) = 1)
+        If .IsMultiTile Then
             .TileWidth = val(LeerNPCs.GetValue(SectionName, "TileWidth"))
             .TileHeight = val(LeerNPCs.GetValue(SectionName, "TileHeight"))
         Else
