@@ -7747,7 +7747,7 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
         obj.ObjIndex = .invent.EquippedWorkingToolObjIndex
         caniaOld = .invent.EquippedWorkingToolObjIndex
         obj.amount = 1
-        shouldBreak = (RandomNumber(1, 3) = 1)
+        shouldBreak = 1
         For LoopC = 1 To MAX_INVENTORY_SLOTS
             'Rastreo la caña que está usando en el inventario y se la rompo
             If .invent.Object(LoopC).ObjIndex = .invent.EquippedWorkingToolObjIndex Then
