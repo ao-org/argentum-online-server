@@ -188,6 +188,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
                     If .Char.Heading <> e_Heading.SOUTH Then
                         Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, e_Heading.SOUTH)
                     End If
+                    Call AnimacionIdle(NpcIndex, True)
                 End If
             End If
         End If
