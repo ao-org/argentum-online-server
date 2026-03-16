@@ -391,8 +391,6 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eKillNPCNoRespawn"
         Case ClientPacketID.eKillAllNearbyNPCs
             PacketID_to_string = "eKillAllNearbyNPCs"
-        Case ClientPacketID.eLastIP
-            PacketID_to_string = "eLastIP"
         Case ClientPacketID.eChangeMOTD
             PacketID_to_string = "eChangeMOTD"
         Case ClientPacketID.eSetMOTD
