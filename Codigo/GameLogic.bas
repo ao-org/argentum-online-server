@@ -503,7 +503,7 @@ Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, _
     
     With NpcList(NpcIndex)
         ' Get NPC dimensions
-        If .IsMultiTiled Then
+        If .IsMultiTile Then
             NpcWidth = .TileWidth
             NpcHeight = .TileHeight
         Else

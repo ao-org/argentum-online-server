@@ -108,7 +108,7 @@ Private Function IsWalkable(ByVal NpcIndex As Integer, _
     Map = NpcList(NpcIndex).pos.Map
     
     With NpcList(NpcIndex)
-        If .IsMultiTiled Then
+        If .IsMultiTile Then
             ' For multi-tile NPCs, check all destination tiles
             Dim tileX As Integer, tileY As Integer
             For tileX = 0 To .TileWidth - 1

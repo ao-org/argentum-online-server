@@ -525,7 +525,7 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
             End If
             
             
-            If .IsMultiTiled Then
+            If .IsMultiTile Then
             
          Dim tileX As Integer, tileY As Integer
             Dim occupiedCount As Integer
@@ -626,7 +626,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, _
         Dim ShouldSendToClient As Boolean
         ShouldSendToClient = False
         
-        If .IsMultiTiled Then
+        If .IsMultiTile Then
             ' Only send if this is the BASE tile (bottom-left corner)
             If x = .pos.x And y = .pos.y Then
                 ShouldSendToClient = True
@@ -702,7 +702,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, _
             
             ' **FOR MULTI-TILE: Send size information**
             ' The client needs to know this NPC occupies multiple tiles
-            If .IsMultiTiled Then
+            If .IsMultiTile Then
                 Call SendNpcMultiTileInfo(sndIndex, .Char.charindex, _
                                          .TileWidth, .TileHeight)
             End If
@@ -796,7 +796,7 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
         If Not NPCs.CanMove(.Contadores, .flags) Then Exit Function
         nPos = .pos
         Call HeadtoPos(nHeading, nPos)
-        If .IsMultiTiled Then
+        If .IsMultiTile Then
              ' Check if ALL tiles in new position are valid
             Dim tileX As Integer, tileY As Integer
             For tileX = 0 To .TileWidth - 1
@@ -1614,7 +1614,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .flags.ImmuneToSpells = Info.ImmuneToSpells
         .flags.GolpeExacto = Info.GolpeExacto
         If Info.TranslationInmune > 0 Then Call SetMask(.flags.EffectInmunity, e_Inmunities.eTranslation)
-        .IsMultiTiled = Info.IsMultiTiled
+        .IsMultiTile = Info.IsMultiTile
         .TileWidth = Info.TileWidth
         .TileHeight = Info.TileHeight
         .flags.Snd1 = Info.Snd1
@@ -2435,7 +2435,7 @@ End Sub
 
 Private Sub ClearNpcFromMap(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)
-        If .IsMultiTiled Then
+        If .IsMultiTile Then
             Dim i As Integer
             For i = 1 To UBound(.OccupiedTiles)
                 MapData(.pos.Map, .OccupiedTiles(i).x, .OccupiedTiles(i).y).NpcIndex = 0
@@ -2449,7 +2449,7 @@ End Sub
 
 Private Sub PlaceNpcOnMap(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)
-        If .IsMultiTiled Then
+        If .IsMultiTile Then
             Dim i As Integer
             For i = 1 To UBound(.OccupiedTiles)
                 MapData(.pos.Map, .OccupiedTiles(i).x, .OccupiedTiles(i).y).NpcIndex = NpcIndex

@@ -3309,7 +3309,7 @@ Public Type t_NpcInfoCache
     CaminataLen As Integer
     Caminata() As t_NpcCaminataCache
     
-    IsMultiTiled As Boolean
+    IsMultiTile As Boolean
     TileWidth As Byte      ' Width in tiles (default 1)
     TileHeight As Byte     ' Height in tiles (default 1)
     BaseTile As t_Position ' The "anchor" tile (usually bottom-left or center)
@@ -3435,7 +3435,7 @@ Public Type t_Npc
     Humanoide As Boolean
     DisabledInBattleServer As Byte
     
-    IsMultiTiled As Boolean
+    IsMultiTile As Boolean
     TileWidth   As Byte
     TileHeight  As Byte
     BaseTile As t_Position
