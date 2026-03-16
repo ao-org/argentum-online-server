@@ -851,45 +851,55 @@ UsuarioAtacaNpc_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaNpc", Erl)
 End Sub
 
-Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos, Optional ByVal IsExtraHit As Boolean = False)
+Public Sub UserAttackPosition(ByVal UserIndex As Integer, _
+                             ByRef TargetPos As t_WorldPos, _
+                             Optional ByVal IsExtraHit As Boolean = False)
+    On Error GoTo UserAttackPosition_Err
+    
     'Exit if not legal
-    If TargetPos.x >= XMinMapSize And TargetPos.x <= XMaxMapSize And TargetPos.y >= YMinMapSize And TargetPos.y <= YMaxMapSize Then
-        If ((MapData(TargetPos.Map, TargetPos.x, TargetPos.y).Blocked And 2 ^ (UserList(UserIndex).Char.Heading - 1)) <> 0) Then
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
+    If TargetPos.x >= XMinMapSize And TargetPos.x <= XMaxMapSize And _
+       TargetPos.y >= YMinMapSize And TargetPos.y <= YMaxMapSize Then
+        
+        ' Check blocking
+        If ((MapData(TargetPos.Map, TargetPos.x, TargetPos.y).Blocked And _
+            2 ^ (UserList(UserIndex).Char.Heading - 1)) <> 0) Then
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, _
+                         PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
             Exit Sub
         End If
+        
         Dim Index As Integer
+        
+        ' Check for user first
         Index = MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex
-        'Look for user
         If Index > 0 Then
             Call UsuarioAtacaUsuario(UserIndex, Index, Melee)
-            'Look for NPC
-        ElseIf MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex > 0 Then
-            Index = MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex
+            Exit Sub
+        End If
+        
+        ' Check for NPC
+        Index = MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex
+        If Index > 0 Then
+            ' For multi-tile NPCs, we get the same index regardless of which tile was clicked
             If NpcList(Index).Attackable Then
-                If IsValidUserRef(NpcList(Index).MaestroUser) And MapInfo(NpcList(Index).pos.Map).Seguro = 1 Then
-                    'Msg1041= No podés atacar mascotas en zonas seguras
-                    Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_MASCOTAS_ZONAS_SEGURAS, e_FontTypeNames.FONTTYPE_FIGHT)
+                If IsValidUserRef(NpcList(Index).MaestroUser) And _
+                   MapInfo(NpcList(Index).pos.Map).Seguro = 1 Then
+                    Call WriteLocaleMsg(UserIndex, _
+                         MSG_NO_PODES_ATACAR_MASCOTAS_ZONAS_SEGURAS, _
+                         e_FontTypeNames.FONTTYPE_FIGHT)
                     Exit Sub
                 End If
                 Call UsuarioAtacaNpc(UserIndex, Index, Melee)
             Else
-                'Msg1042= No podés atacar a este NPC
-                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_NPC, e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_NPC, _
+                                   e_FontTypeNames.FONTTYPE_FIGHT)
             End If
-            Exit Sub
-        Else
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
-            With UserList(UserIndex)
-                If Not IsExtraHit And .flags.Inmovilizado + .flags.Paralizado > 0 Then
-                    .Counters.Inmovilizado = max(0, .Counters.Inmovilizado - AirHitReductParalisisTime)
-                    .Counters.Paralisis = max(0, .Counters.Paralisis - AirHitReductParalisisTime)
-                End If
-            End With
         End If
-    Else
-        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
     End If
+    
+    Exit Sub
+UserAttackPosition_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserAttackPosition", Erl)
 End Sub
 
 Public Sub UsuarioAtaca(ByVal UserIndex As Integer)

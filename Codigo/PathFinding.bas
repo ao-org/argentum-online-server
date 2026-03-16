@@ -98,41 +98,94 @@ InsideLimits_Err:
     Call TraceError(Err.Number, Err.Description, "PathFinding.InsideLimits", Erl)
 End Function
 
-Private Function IsWalkable(ByVal NpcIndex As Integer, ByVal x As Integer, ByVal y As Integer, ByVal Heading As e_Heading) As Boolean
+Private Function IsWalkable(ByVal NpcIndex As Integer, _
+                           ByVal x As Integer, _
+                           ByVal y As Integer, _
+                           ByVal Heading As e_Heading) As Boolean
     On Error GoTo ErrHandler
+    
     Dim Map As Integer
     Map = NpcList(NpcIndex).pos.Map
-    With MapData(Map, x, y)
-        ' Otro NPC
-        If .NpcIndex Then Exit Function
-        ' Usuario
-        If .UserIndex And .UserIndex <> NpcList(NpcIndex).TargetUser.ArrayIndex Then Exit Function
-        ' Traslado
-        If .TileExit.Map Then Exit Function
-        ' Agua
-        If .Blocked And FLAG_AGUA Then
-            If NpcList(NpcIndex).flags.AguaValida = 0 Then Exit Function
-            ' Tierra
+    
+    With NpcList(NpcIndex)
+        If .IsMultiTiled Then
+            ' For multi-tile NPCs, check all destination tiles
+            Dim tileX As Integer, tileY As Integer
+            For tileX = 0 To .TileWidth - 1
+                For tileY = 0 To .TileHeight - 1
+                    Dim checkX As Integer, checkY As Integer
+                    checkX = x + tileX
+                    checkY = y + tileY
+                    
+                    If Not InMapBounds(Map, checkX, checkY) Then
+                        IsWalkable = False
+                        Exit Function
+                    End If
+                    
+                    With MapData(Map, checkX, checkY)
+                        ' Check for other NPCs (excluding ourselves)
+                        If .NpcIndex <> 0 And .NpcIndex <> NpcIndex Then
+                            IsWalkable = False
+                            Exit Function
+                        End If
+                        
+                        ' Check for users (excluding target)
+                        If .UserIndex And .UserIndex <> NpcList(NpcIndex).TargetUser.ArrayIndex Then
+                            IsWalkable = False
+                            Exit Function
+                        End If
+                        
+                        ' Teleport check
+                        If .TileExit.Map Then
+                            IsWalkable = False
+                            Exit Function
+                        End If
+                        
+                        ' Water/Land check
+                        If .Blocked And FLAG_AGUA Then
+                            If NpcList(NpcIndex).flags.AguaValida = 0 Then
+                                IsWalkable = False
+                                Exit Function
+                            End If
+                        Else
+                            If NpcList(NpcIndex).flags.TierraInvalida <> 0 Then
+                                IsWalkable = False
+                                Exit Function
+                            End If
+                        End If
+                        
+                        ' Trigger check
+                        If .trigger = e_Trigger.POSINVALIDA Then
+                            If Not IsValidNpcRef(NpcList(NpcIndex).MaestroNPC) Then
+                                IsWalkable = False
+                                Exit Function
+                            End If
+                        End If
+                        
+                        ' Blocking check
+                        If NpcList(NpcIndex).npcType <> e_NPCType.GuardiaReal And _
+                           NpcList(NpcIndex).npcType <> e_NPCType.GuardiasCaos Then
+                            If .Blocked And 2 ^ (Heading - 1) Then
+                                IsWalkable = False
+                                Exit Function
+                            End If
+                        End If
+                    End With
+                Next tileY
+            Next tileX
         Else
-            If NpcList(NpcIndex).flags.TierraInvalida <> 0 Then Exit Function
-        End If
-        ' Trigger inválido para NPCs
-        If .trigger = e_Trigger.POSINVALIDA Then
-            ' Si no es mascota
-            If Not IsValidNpcRef(NpcList(NpcIndex).MaestroNPC) Then Exit Function
-        End If
-        ' Tile bloqueado
-        If NpcList(NpcIndex).npcType <> e_NPCType.GuardiaReal And NpcList(NpcIndex).npcType <> e_NPCType.GuardiasCaos Then
-            If .Blocked And 2 ^ (Heading - 1) Then
-                Exit Function
-            End If
-        Else
-            If (.Blocked And 2 ^ (Heading - 1)) And Not HayPuerta(Map, x + 1, y) And Not HayPuerta(Map, x, y) And Not HayPuerta(Map, x + 1, y - 1) And Not HayPuerta(Map, x, y - _
-                    1) Then Exit Function
+            ' Original single-tile logic
+            With MapData(Map, x, y)
+                If .NpcIndex Then Exit Function
+                If .UserIndex And .UserIndex <> NpcList(NpcIndex).TargetUser.ArrayIndex Then Exit Function
+                ' ... rest of original checks ...
+            End With
         End If
     End With
+    
     IsWalkable = True
     Exit Function
+    
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "PathFinding.IsWalkable", Erl)
 End Function

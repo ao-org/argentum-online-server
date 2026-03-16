@@ -27,6 +27,57 @@ Attribute VB_Name = "Acciones"
 '
 Option Explicit
 
+' Helper function to get NPC at position (handles multi-tile)
+Function GetNpcAtPosition(ByVal Map As Integer, _
+                         ByVal x As Integer, _
+                         ByVal y As Integer) As Integer
+    On Error GoTo GetNpcAtPosition_Err
+    
+    Dim NpcIndex As Integer
+    NpcIndex = MapData(Map, x, y).NpcIndex
+    
+    If NpcIndex = 0 Then
+        GetNpcAtPosition = 0
+        Exit Function
+    End If
+    
+    ' Return the NPC index whether it's a base tile or reference tile
+    GetNpcAtPosition = NpcIndex
+    
+    Exit Function
+GetNpcAtPosition_Err:
+    Call TraceError(Err.Number, Err.Description, "Acciones.GetNpcAtPosition", Erl)
+End Function
+
+' Check if user can interact with NPC at position
+Function CanInteractWithNpcAt(ByVal UserIndex As Integer, _
+                              ByVal Map As Integer, _
+                              ByVal x As Integer, _
+                              ByVal y As Integer) As Boolean
+    On Error GoTo CanInteractWithNpcAt_Err
+    
+    Dim NpcIndex As Integer
+    NpcIndex = GetNpcAtPosition(Map, x, y)
+    
+    If NpcIndex = 0 Then
+        CanInteractWithNpcAt = False
+        Exit Function
+    End If
+    
+    ' Check range
+    If Abs(UserList(UserIndex).pos.x - x) > RANGO_VISION_X Or _
+       Abs(UserList(UserIndex).pos.y - y) > RANGO_VISION_Y Then
+        CanInteractWithNpcAt = False
+        Exit Function
+    End If
+    
+    CanInteractWithNpcAt = True
+    Exit Function
+    
+CanInteractWithNpcAt_Err:
+    Call TraceError(Err.Number, Err.Description, "Acciones.CanInteractWithNpcAt", Erl)
+End Function
+
 Public Function get_map_name(ByVal Map As Long) As String
     On Error GoTo get_map_name_Err
     get_map_name = MapInfo(Map).map_name

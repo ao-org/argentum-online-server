@@ -489,42 +489,55 @@ TileRequiresPatreon_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.TileRequiresPatreon", Erl)
 End Function
 
-Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, ByVal MaxRange As Integer, Optional ByVal IgnoreUsers As Boolean, Optional ByVal IgnoreDeadUsers As Boolean) As t_WorldPos
-    On Error GoTo ErrHandler
+Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, _
+                           ByVal MaxDist As Integer, _
+                           Optional ByVal IgnoreUsers As Boolean = False, _
+                           Optional ByVal ExhaustiveSearch As Boolean = False) As t_WorldPos
+    On Error GoTo ClosestLegalPosNPC_Err
+    
+    Dim NpcWidth As Byte, NpcHeight As Byte
+    Dim AguaValida As Boolean, TierraValida As Boolean
+    Dim OutPos As t_WorldPos
     Dim LoopC As Integer
-    Dim tX    As Integer
-    Dim tY    As Integer
+    Dim tX As Integer, tY As Integer
+    
     With NpcList(NpcIndex)
-        Do
-            tY = .pos.y - LoopC
-            For tX = .pos.x - LoopC To .pos.x + LoopC
-                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
-                    Exit Function
-                End If
-            Next
-            tX = .pos.x - LoopC
-            For tY = .pos.y - LoopC + 1 To .pos.y + LoopC - 1
-                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
-                    Exit Function
-                End If
-            Next
-            tX = .pos.x + LoopC
-            For tY = .pos.y - LoopC + 1 To .pos.y + LoopC - 1
-                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
-                    Exit Function
-                End If
-            Next
-            tY = .pos.y + LoopC
-            For tX = .pos.x - LoopC To .pos.x + LoopC
-                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
-                    Exit Function
-                End If
-            Next
-            LoopC = LoopC + 1
-        Loop While LoopC <= MaxRange
+        ' Get NPC dimensions
+        If .IsMultiTiled Then
+            NpcWidth = .TileWidth
+            NpcHeight = .TileHeight
+        Else
+            NpcWidth = 1
+            NpcHeight = 1
+        End If
+        
+        AguaValida = (.flags.AguaValida = 1)
+        TierraValida = (.flags.TierraInvalida = 0)
+        
+        ' Search in expanding circles
+        For LoopC = 0 To MaxDist
+            For tY = .pos.y - LoopC To .pos.y + LoopC
+                For tX = .pos.x - LoopC To .pos.x + LoopC
+                    ' Check if all tiles for this multi-tile NPC are valid
+                    If ValidNPCSpawnPosMultiTile(.pos.Map, tX, tY, _
+                                                 NpcWidth, NpcHeight, _
+                                                 AguaValida, TierraValida, _
+                                                 IgnoreUsers, OutPos) Then
+                        ClosestLegalPosNPC = OutPos
+                        Exit Function
+                    End If
+                Next tX
+            Next tY
+        Next LoopC
     End With
+    
+    ' Return 0,0 if no legal position found
+    OutPos.x = 0
+    OutPos.y = 0
+    ClosestLegalPosNPC = OutPos
+    
     Exit Function
-ErrHandler:
+ClosestLegalPosNPC_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.ClosestLegalPosNPC")
 End Function
 
@@ -548,6 +561,62 @@ Private Function ValidNPCSpawnPos(OutPos As t_WorldPos, _
         End If
     End If
 End Function
+
+Private Function ValidNPCSpawnPosMultiTile(ByVal Map As Integer, _
+                                           ByVal x As Integer, _
+                                           ByVal y As Integer, _
+                                           ByVal NpcWidth As Byte, _
+                                           ByVal NpcHeight As Byte, _
+                                           ByVal AguaValida As Boolean, _
+                                           ByVal TierraValida As Boolean, _
+                                           ByVal IgnoreUsers As Boolean, _
+                                           ByRef OutPos As t_WorldPos) As Boolean
+    Dim tileX As Integer, tileY As Integer
+    
+    ' Check every tile the NPC would occupy
+    For tileX = 0 To NpcWidth - 1
+        For tileY = 0 To NpcHeight - 1
+            Dim checkX As Integer, checkY As Integer
+            checkX = x + tileX
+            checkY = y + tileY
+            
+            If Not LegalPos(Map, checkX, checkY, AguaValida, TierraValida, , False) Then
+                ValidNPCSpawnPosMultiTile = False
+                Exit Function
+            End If
+            
+            If Not TestSpawnTrigger(Map, checkX, checkY) Then
+                ValidNPCSpawnPosMultiTile = False
+                Exit Function
+            End If
+            
+            ' Check for users unless ignoring
+            If Not IgnoreUsers Then
+                If MapData(Map, checkX, checkY).UserIndex <> 0 Then
+                    ValidNPCSpawnPosMultiTile = False
+                    Exit Function
+                End If
+            End If
+            
+            ' Always check for other NPCs
+            If MapData(Map, checkX, checkY).NpcIndex <> 0 Then
+                ValidNPCSpawnPosMultiTile = False
+                Exit Function
+            End If
+        Next tileY
+    Next tileX
+    
+    ' All tiles are valid - set output position
+    OutPos.Map = Map
+    OutPos.x = x
+    OutPos.y = y
+    ValidNPCSpawnPosMultiTile = True
+End Function
+
+
+
+
+
 
 Sub ClosestLegalPos(pos As t_WorldPos, ByRef nPos As t_WorldPos, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True)
     '*****************************************************************
@@ -781,6 +850,65 @@ Function LegalPos(ByVal Map As Integer, _
 LegalPos_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.LegalPos", Erl)
 End Function
+
+' Enhanced LegalPos wrapper for multi-tile NPCs
+Function LegalPosMultiTile(ByVal Map As Integer, _
+                           ByVal x As Integer, _
+                           ByVal y As Integer, _
+                           ByVal NpcWidth As Byte, _
+                           ByVal NpcHeight As Byte, _
+                           Optional ByVal PuedeAgua As Boolean = False, _
+                           Optional ByVal PuedeTierra As Boolean = True) As Boolean
+    On Error GoTo LegalPosMultiTile_Err
+    
+    Dim tileX As Integer, tileY As Integer
+    
+    ' Check all tiles the NPC would occupy
+    For tileX = 0 To NpcWidth - 1
+        For tileY = 0 To NpcHeight - 1
+            Dim checkX As Integer, checkY As Integer
+            checkX = x + tileX
+            checkY = y + tileY
+            
+            ' Out of bounds check
+            If Not InMapBounds(Map, checkX, checkY) Then
+                LegalPosMultiTile = False
+                Exit Function
+            End If
+            
+            ' Check basic legality (water/land)
+            If Not LegalPos(Map, checkX, checkY, PuedeAgua, PuedeTierra) Then
+                LegalPosMultiTile = False
+                Exit Function
+            End If
+            
+            ' Check for blocking entities
+            If MapData(Map, checkX, checkY).UserIndex <> 0 Then
+                LegalPosMultiTile = False
+                Exit Function
+            End If
+            
+            If MapData(Map, checkX, checkY).NpcIndex <> 0 Then
+                LegalPosMultiTile = False
+                Exit Function
+            End If
+            
+            ' Check for tile exits
+            If MapData(Map, checkX, checkY).TileExit.Map <> 0 Then
+                LegalPosMultiTile = False
+                Exit Function
+            End If
+        Next tileY
+    Next tileX
+    
+    LegalPosMultiTile = True
+    Exit Function
+    
+LegalPosMultiTile_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.LegalPosMultiTile", Erl)
+End Function
+
+
 
 Function LegalPosDestrabar(ByVal Map As Integer, _
                            ByVal x As Integer, _
