@@ -3308,6 +3308,12 @@ Public Type t_NpcInfoCache
     PuedeInvocar As Integer
     CaminataLen As Integer
     Caminata() As t_NpcCaminataCache
+    
+    IsMultiTiled As Boolean
+    TileWidth As Byte      ' Width in tiles (default 1)
+    TileHeight As Byte     ' Height in tiles (default 1)
+    BaseTile As t_Position ' The "anchor" tile (usually bottom-left or center)
+    OccupiedTiles() As t_Position ' Array of all tiles this NPC occupies
 End Type
 
 Public Enum e_TipoAI

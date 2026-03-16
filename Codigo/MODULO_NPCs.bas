@@ -1216,6 +1216,14 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Snd1 = Val(LeerNPCs.GetValue(SectionName, "Snd1"))
         .Snd2 = Val(LeerNPCs.GetValue(SectionName, "Snd2"))
         .Snd3 = Val(LeerNPCs.GetValue(SectionName, "Snd3"))
+        .IsMultiTiled = (val(LeerNPCs.GetValue(SectionName, "MultiTile")) = 1)
+        If .IsMultiTiled Then
+            .TileWidth = val(LeerNPCs.GetValue(SectionName, "TileWidth"))
+            .TileHeight = val(LeerNPCs.GetValue(SectionName, "TileHeight"))
+        Else
+            .TileWidth = 1
+            .TileHeight = 1
+        End If
         .SndRespawn = val(LeerNPCs.GetValue(SectionName, "SndRespawn"))
         aux = LeerNPCs.GetValue(SectionName, "NROEXP")
         If LenB(aux) = 0 Then
@@ -1593,6 +1601,9 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .flags.ImmuneToSpells = Info.ImmuneToSpells
         .flags.GolpeExacto = Info.GolpeExacto
         If Info.TranslationInmune > 0 Then Call SetMask(.flags.EffectInmunity, e_Inmunities.eTranslation)
+        .IsMultiTiled = Info.IsMultiTiled
+        .TileWidth = Info.TileWidth
+        .TileHeight = Info.TileHeight
         .flags.Snd1 = Info.Snd1
         .flags.Snd2 = Info.Snd2
         .flags.Snd3 = Info.Snd3
