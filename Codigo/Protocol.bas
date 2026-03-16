@@ -642,8 +642,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleKillNPCNoRespawn(UserIndex)
         Case ClientPacketID.eKillAllNearbyNPCs
             Call HandleKillAllNearbyNPCs(UserIndex)
-        Case ClientPacketID.eLastIP
-            Call HandleLastIP(UserIndex)
         Case ClientPacketID.eChangeMOTD
             Call HandleChangeMOTD(UserIndex)
         Case ClientPacketID.eSetMOTD
