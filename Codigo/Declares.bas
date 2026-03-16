@@ -2324,12 +2324,8 @@ Public Type t_ObjData
     MaderaElfica As Long
     MaderaPino As Integer
     Hechizo As Integer
-    Cuchara As Integer
-    Botella As Integer
     Mortero As Integer
     FrascoAlq As Integer
-    FrascoElixir As Integer
-    Dosificador As Integer
     HongoDeLuz As Integer
     Esporas As Integer
     Tuna As Integer
@@ -2337,7 +2333,7 @@ Public Type t_ObjData
     ColaDeZorro As Integer
     FlorOceano As Integer
     FlorRoja As Integer
-    SemillasPros As Integer
+    SemillasProsperas As Integer
     SkPociones As Byte
     PielLobo As Integer
     PielOsoPardo As Integer
