@@ -521,6 +521,7 @@ Public Enum ClientPacketID
     eUseHKeySlot
     eAntiCheatMessage
     eRequestLobbyList
+    eNpcMultiTileInfo
     #If PYMMO = 0 Then
         eCreateAccount
         eLoginAccount

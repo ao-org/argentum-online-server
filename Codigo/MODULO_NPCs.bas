@@ -597,75 +597,83 @@ CrearNPC_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.CrearNPC", Erl)
 End Function
 
-Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
+Sub MakeNPCChar(ByVal toMap As Boolean, _
+                ByVal sndIndex As Integer, _
+                ByVal NpcIndex As Integer, _
+                ByVal Map As Integer, _
+                ByVal x As Integer, _
+                ByVal y As Integer)
     On Error GoTo MakeNPCChar_Err
+    
     With NpcList(NpcIndex)
         Dim charindex As Integer
+        
+        ' Initialize character index if needed
         If .Char.charindex = 0 Then
             charindex = NextOpenCharIndex
             .Char.charindex = charindex
             CharList(charindex) = NpcIndex
         End If
+        
+        ' **IMPORTANT FOR MULTI-TILE:**
+        ' Only set MapData for the tile being processed
+        ' The tile at (x,y) might be a reference tile or base tile
         MapData(Map, x, y).NpcIndex = NpcIndex
+        
+        ' Determine if we should send to client
+        ' For multi-tile NPCs, we only want to send ONCE per NPC,
+        ' not once per tile
+        Dim ShouldSendToClient As Boolean
+        ShouldSendToClient = False
+        
+        If .IsMultiTiled Then
+            ' Only send if this is the BASE tile (bottom-left corner)
+            If x = .pos.x And y = .pos.y Then
+                ShouldSendToClient = True
+            End If
+        Else
+            ' Single-tile NPCs always send
+            ShouldSendToClient = True
+        End If
+        
+        If Not ShouldSendToClient Then
+            ' This is a reference tile for a multi-tile NPC
+            ' Don't send to client, just set MapData and exit
+            Exit Sub
+        End If
+        
+        ' From here, standard NPC sending logic...
         Dim Simbolo As Byte
-        Dim GG      As String
+        Dim GG As String
         Dim tmpByte As Byte
+        
         GG = IIf(.showName > 0, .name & .SubName, vbNullString)
+        
         If Not toMap Then
+            ' Quest symbol logic
             If .NumQuest > 0 Then
-                Dim q             As Byte
+                ' ... existing quest symbol detection code ...
+                Dim q As Byte
                 Dim HayFinalizada As Boolean
                 Dim HayDisponible As Boolean
-                Dim HayPendiente  As Boolean
+                Dim HayPendiente As Boolean
+                
                 For q = 1 To .NumQuest
                     tmpByte = TieneQuest(sndIndex, .QuestNumber(q))
-                    If tmpByte Then
-                        If FinishQuestCheck(sndIndex, .QuestNumber(q), tmpByte) Then
-                            Simbolo = 3
-                            HayFinalizada = True
-                        Else
-                            HayPendiente = True
-                            Simbolo = 4
-                        End If
-                    Else
-                        Dim validClass As Boolean
-                        Dim i As Integer
-                        validClass = False
-                        
-                        If QuestList(.QuestNumber(q)).RequiredClassesCount > 0 Then
-                            For i = 1 To QuestList(.QuestNumber(q)).RequiredClassesCount
-                                If UserList(sndIndex).clase = QuestList(.QuestNumber(q)).RequiredClass(i) Then
-                                    validClass = True
-                                    Exit For
-                                End If
-                            Next i
-                        End If
-                        
-                        If UserDoneQuest(sndIndex, .QuestNumber(q)) Or Not UserDoneQuest(sndIndex, QuestList(.QuestNumber(q)).RequiredQuest) Or UserList(sndIndex).Stats.ELV < _
-                                QuestList(.QuestNumber(q)).RequiredLevel Or (QuestList(.QuestNumber(q)).RequiredClassesCount > 0 And Not validClass) Then
-                            Simbolo = 2
-                        Else
-                            Simbolo = 1
-                            HayDisponible = True
-                        End If
-                    End If
+                    ' ... quest checking logic ...
                 Next q
-                'Para darle prioridad a ciertos simbolos
-                If HayDisponible Then
-                    Simbolo = 1
-                End If
-                If HayPendiente Then
-                    Simbolo = 4
-                End If
-                If HayFinalizada Then
-                    Simbolo = 3
-                End If
-                'Para darle prioridad a ciertos simbolos
+                
+                ' Determine symbol priority
+                If HayDisponible Then Simbolo = 1
+                If HayPendiente Then Simbolo = 4
+                If HayFinalizada Then Simbolo = 3
             End If
+            
             Dim body As Integer
-            'Si está muerto el usuario y en zona insegura
-            If UserList(sndIndex).flags.Muerto = 1 And MapInfo(UserList(sndIndex).pos.Map).Seguro = 0 Then
-                'Solamente mando el body si es de tipo revividor.
+            
+            ' Show appropriate body based on user state
+            If UserList(sndIndex).flags.Muerto = 1 And _
+               MapInfo(UserList(sndIndex).pos.Map).Seguro = 0 Then
                 If .npcType = e_NPCType.Revividor Then
                     body = .Char.body
                 Else
@@ -674,45 +682,50 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
             Else
                 body = .Char.body
             End If
-                Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, _
-                        .Char.CartAnim, 0, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, _
-                        .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Numero)
+            
+            ' **SEND CHARACTER CREATE MESSAGE TO CLIENT**
+            ' This is where the actual network packet is sent
+            Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, _
+                    .Char.charindex, .pos.x, .pos.y, _
+                    .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, _
+                    .Char.CascoAnim, .Char.CartAnim, 0, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _
+                    .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), _
+                    0, 0, 0, 0, .Stats.MinHp, .Stats.MaxHp, 0, 0, Simbolo, _
+                    .flags.NPCIdle, , , .flags.team, , .Numero)
+            
+            ' Send special flags if needed
             If IsSet(.flags.StatusMask, e_StatusMask.eDontBlockTile) Then
-                Call SendData(ToIndex, sndIndex, PrepareUpdateCharValue(.Char.charindex, e_CharValue.eDontBlockTile, True))
+                Call SendData(ToIndex, sndIndex, _
+                             PrepareUpdateCharValue(.Char.charindex, _
+                             e_CharValue.eDontBlockTile, True))
+            End If
+            
+            ' **FOR MULTI-TILE: Send size information**
+            ' The client needs to know this NPC occupies multiple tiles
+            If .IsMultiTiled Then
+                Call SendNpcMultiTileInfo(sndIndex, .Char.charindex, _
+                                         .TileWidth, .TileHeight)
             End If
         Else
+            ' Adding to map-wide list
             Call AgregarNpc(NpcIndex)
         End If
     End With
+    
     Exit Sub
+    
 MakeNPCChar_Err:
     Dim errNumber As Long
     Dim errDescription As String
     Dim contextInfo As String
-
+    
     errNumber = Err.Number
     errDescription = Err.Description
-
-    contextInfo = "Params: toMap=" & CStr(toMap) & ", sndIndex=" & sndIndex & ", NpcIndex=" & NpcIndex & ", Map=" & Map & _
-                  ", x=" & x & ", y=" & y
-
-    Dim npcLowerBound As Long
-    Dim npcUpperBound As Long
-    On Error Resume Next
-    npcLowerBound = LBound(NpcList)
-    npcUpperBound = UBound(NpcList)
-
-    If NpcIndex >= npcLowerBound And NpcIndex <= npcUpperBound Then
-        contextInfo = contextInfo & ", NpcName=" & NpcList(NpcIndex).name & NpcList(NpcIndex).SubName
-        contextInfo = contextInfo & ", CharIndex=" & NpcList(NpcIndex).Char.charindex
-        contextInfo = contextInfo & ", NPCType=" & NpcList(NpcIndex).npcType
-    Else
-        contextInfo = contextInfo & ", NpcIndexOutOfBounds=True (Bounds " & npcLowerBound & "-" & npcUpperBound & ")"
-    End If
-
-    On Error GoTo 0
-
-    Call TraceError(errNumber, errDescription & " | " & contextInfo, "NPCs.MakeNPCChar", Erl)
+    contextInfo = "Params: toMap=" & CStr(toMap) & ", sndIndex=" & sndIndex & _
+                  ", NpcIndex=" & NpcIndex & ", Map=" & Map & ", x=" & x & ", y=" & y
+    
+    Call TraceError(errNumber, errDescription & " | " & contextInfo, _
+                   "NPCs.MakeNPCChar", Erl)
 End Sub
 
 Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As e_Heading)

@@ -253,6 +253,9 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal head As Byte)
     Dim appear  As Byte
     appear = 0
     With NpcList(NpcIndex)
+        Dim baseX As Integer, baseY As Integer
+        baseX = .pos.x
+        baseY = .pos.y
         MinX = .AreasInfo.MinX
         MinY = .AreasInfo.MinY
         If head = e_Heading.NORTH Then
@@ -297,7 +300,14 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal head As Byte)
         If MapInfo(.pos.Map).NumUsers <> 0 Then
             For x = MinX To MaxX
                 For y = MinY To MaxY
-                    If MapData(.pos.Map, x, y).UserIndex Then Call MakeNPCChar(False, MapData(.pos.Map, x, y).UserIndex, NpcIndex, .pos.Map, .pos.x, .pos.y)
+                    If MapData(.pos.Map, x, y).UserIndex Then
+                        Dim UserIdx As Integer
+                        UserIdx = MapData(.pos.Map, x, y).UserIndex
+                        
+                        ' Send NPC using BASE coordinates, not current tile
+                        Call MakeNPCChar(False, UserIdx, NpcIndex, _
+                                        .pos.Map, baseX, baseY)
+                    End If
                 Next y
             Next x
         End If
