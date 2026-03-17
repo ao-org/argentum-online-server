@@ -2194,7 +2194,11 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Bool
         End If
         If .flags.UserLogged And Not .Counters.Saliendo Then
             .Counters.Saliendo = True
-            .Counters.Salir = IntervaloCerrarConexion
+            If MapInfo(.pos.Map).zone = "DUNGEON" Then
+                .Counters.Salir = IntervaloCerrarConexionEnDungeon
+            Else
+                .Counters.Salir = IntervaloCerrarConexion
+            End If
             If .flags.Traveling = 1 Then
                 ' Msg576=Se ha cancelado el viaje a casa
                 Call WriteLocaleMsg(UserIndex, MSG_HA_CANCELADO_VIAJE_CASA, e_FontTypeNames.FONTTYPE_INFO)
