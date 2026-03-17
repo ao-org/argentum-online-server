@@ -2231,17 +2231,8 @@ Cerrar_Usuario_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.Cerrar_Usuario", Erl)
 End Sub
 
-''
-' Cancels the exit of a user. If it's disconnected it's reset.
-'
-' @param    UserIndex   The index of the user whose exit is being reset.
 Public Sub CancelExit(ByVal UserIndex As Integer)
     On Error GoTo CancelExit_Err
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 04/02/08
-    '
-    '***************************************************
     If UserList(UserIndex).Counters.Saliendo And UserList(UserIndex).ConnectionDetails.ConnIDValida Then
         ' Is the user still connected?
         If UserList(UserIndex).ConnectionDetails.ConnIDValida Then
@@ -2259,7 +2250,6 @@ Public Sub CancelExit(ByVal UserIndex As Integer)
                 Call WriteDisconnect(UserIndex)
                 Call CloseSocket(UserIndex)
             End If
-            'UserList(UserIndex).Counters.Salir = IIf((UserList(UserIndex).flags.Privilegios And e_PlayerType.User) And MapInfo(UserList(UserIndex).Pos.Map).Seguro = 0, IntervaloCerrarConexion, 0)
         End If
     End If
     Exit Sub
