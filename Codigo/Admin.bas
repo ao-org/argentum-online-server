@@ -79,6 +79,7 @@ Public IntervaloTrabajarExtraer      As Long
 Public IntervaloNpcOwner             As Long
 Public IntervaloTrabajarConstruir    As Long
 Public IntervaloCerrarConexion       As Long '[Gonzalo]
+Public IntervaloCerrarConexionEnDungeon As Long
 Public IntervaloUserPuedeUsarU       As Long
 Public IntervaloUserPuedeUsarClic    As Long
 Public IntervaloGolpeUsar            As Long

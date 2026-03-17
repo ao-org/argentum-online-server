@@ -2294,6 +2294,7 @@ Sub LoadIntervalos()
     MinutosWs = val(Lector.GetValue("INTERVALOS", "IntervaloWS"))
     If MinutosWs < 1 Then MinutosWs = 10
     IntervaloCerrarConexion = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexion"))
+    IntervaloCerrarConexionEnDungeon = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexionEnDungeon"))
     IntervaloUserPuedeUsarU = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarU"))
     IntervaloUserPuedeUsarClic = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarClic"))
     IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
