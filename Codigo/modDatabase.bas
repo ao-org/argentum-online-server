@@ -31,6 +31,9 @@ Public Const DatabaseFileName = "Database.db"
 Private BankSaveCmdInit As Boolean
 Private BankSaveCmd()   As ADODB.Command
 
+' Opens the async ADO connection pool used by non-blocking Execute operations.
+' These are real ADODB connections (Connection_async), not VB6-managed worker threads/queues.
+' Execute dispatches work to this pool with adAsyncExecute so the caller can avoid blocking.
 Public Sub Database_Connect_Async()
     On Error GoTo Database_Connect_AsyncErr
     Dim ConnectionID As String
@@ -53,6 +56,8 @@ Database_Connect_AsyncErr:
     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - Database_Connect_Async")
 End Sub
 
+' Opens the main synchronous ADO connection used by blocking query helpers.
+' Query/Invoke run on this single Connection and the caller waits for provider completion.
 Public Sub Database_Connect()
     On Error GoTo Database_Connect_Err
     Dim ConnectionID As String
@@ -82,6 +87,9 @@ Database_Close_Err:
     Call LogDatabaseError("Unable to close Mysql Database: " & Err.Number & " - " & Err.Description)
 End Sub
 
+' Blocking SQL text interface.
+' Uses the main synchronous Connection and does not return until ADO/provider finishes the call.
+' Use for immediate-result flows (reads/lookups/load-time validations) where completion is required now.
 Public Function Query(ByVal Text As String, ParamArray Arguments() As Variant) As ADODB.Recordset
     On Error GoTo Query_Err
     Dim Command  As New ADODB.Command
@@ -116,6 +124,11 @@ Query_Err:
     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - " & vbCrLf & Text)
 End Function
 
+' Non-blocking SQL text interface for write-style persistence paths.
+' Uses Command.Execute(, , adAsyncExecute) over Connection_async(Current_async) and rotates pool slots.
+' IMPORTANT: this is ADO/provider async execution, not a custom VB6 worker queue with completion tracking.
+' When Execute returns, SQL submission/setup has completed, but final DB completion is not guaranteed yet.
+' Performance timings around Execute mostly reflect dispatch cost, which helps avoid game-thread stalls.
 Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant) As Boolean
     On Error GoTo Execute_Err
     Dim Command  As New ADODB.Command
@@ -228,6 +241,9 @@ ExecutePreparedBankSaveErr:
     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - ExecutePreparedBankSave")
 End Function
 
+' Blocking stored-procedure interface.
+' Like Query, this uses the main synchronous Connection and waits for DB/provider completion.
+' Use when the caller needs returned data or immediate completion guarantees before continuing.
 Public Function Invoke(ByVal Procedure As String, ParamArray Arguments() As Variant) As ADODB.Recordset
     Dim Command  As New ADODB.Command
     Dim Argument As Variant
