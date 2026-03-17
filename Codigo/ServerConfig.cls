@@ -174,21 +174,14 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "AUTONAVALBATTLE_RoundNumber", CInt(val(reader.GetValue("AUTONAVALBATTLE", "RoundNumber")))
     mSettings.Add "AUTONAVALBATTLE_InscriptionFee", CInt(val(reader.GetValue("AUTONAVALBATTLE", "InscriptionFee")))
     mSettings.Add "AUTONAVALBATTLE_Description", reader.GetValue("AUTONAVALBATTLE", "Description")
-
-    Dim forgingExpDefault As Long
-    Dim carpentryExpDefault As Long
-
-    forgingExpDefault = CLng(val(reader.GetValue("JOBEXP", "ForgingExp", 1)))
-    carpentryExpDefault = CLng(val(reader.GetValue("JOBEXP", "CarpentryExp", 1)))
-
     mSettings.Add "MiningExp", CLng(val(reader.GetValue("JOBEXP", "MiningExp", 1)))
     mSettings.Add "FellingExp", CLng(val(reader.GetValue("JOBEXP", "FellingExp", 1)))
-    mSettings.Add "IronForgingExp", CLng(val(reader.GetValue("JOBEXP", "IronForgingExp", forgingExpDefault)))
-    mSettings.Add "SilverForgingExp", CLng(val(reader.GetValue("JOBEXP", "SilverForgingExp", forgingExpDefault)))
-    mSettings.Add "GoldForgingExp", CLng(val(reader.GetValue("JOBEXP", "GoldForgingExp", forgingExpDefault)))
-    mSettings.Add "BlodiumForgingExp", CLng(val(reader.GetValue("JOBEXP", "BlodiumForgingExp", forgingExpDefault)))
-    mSettings.Add "WoodCarpentryExp", CLng(val(reader.GetValue("JOBEXP", "WoodCarpentryExp", carpentryExpDefault)))
-    mSettings.Add "ElvenWoodCarpentryExp", CLng(val(reader.GetValue("JOBEXP", "ElvenWoodCarpentryExp", carpentryExpDefault)))
+    mSettings.Add "IronForgingExp", CLng(val(reader.GetValue("JOBEXP", "IronForgingExp", 1)))
+    mSettings.Add "SilverForgingExp", CLng(val(reader.GetValue("JOBEXP", "SilverForgingExp", 1)))
+    mSettings.Add "GoldForgingExp", CLng(val(reader.GetValue("JOBEXP", "GoldForgingExp", 1)))
+    mSettings.Add "BlodiumForgingExp", CLng(val(reader.GetValue("JOBEXP", "BlodiumForgingExp", 1)))
+    mSettings.Add "WoodCarpentryExp", CLng(val(reader.GetValue("JOBEXP", "WoodCarpentryExp", 1)))
+    mSettings.Add "ElvenWoodCarpentryExp", CLng(val(reader.GetValue("JOBEXP", "ElvenWoodCarpentryExp", 1)))
     mSettings.Add "FishingExp", CLng(val(reader.GetValue("JOBEXP", "FishingExp", 1)))
     mSettings.Add "MixingExp", CLng(val(reader.GetValue("JOBEXP", "MixingExp", 1)))
     mSettings.Add "ElseExp", CLng(val(reader.GetValue("JOBEXP", "ElseExp", 1)))
