@@ -34,6 +34,10 @@ Public Database_Host                    As String
 Public Database_Name                    As String
 Public Database_Username                As String
 Public Database_Password                As String
+' DB execution model:
+' - One main synchronous connection (`Connection`) for blocking calls.
+' - A pool of async connections (`Connection_async(1 To MAX_ASYNC)`) used by non-blocking Execute paths.
+' - `Current_async` rotates through that pool to spread async submissions.
 Public Const MAX_ASYNC                  As Byte = 20
 Public Current_async                    As Byte
 Public Connection                       As ADODB.Connection
