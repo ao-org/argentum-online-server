@@ -219,10 +219,106 @@ PurgarPenas_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.PurgarPenas", Erl)
 End Sub
 
+Private Function CargarObjetosConfiscadosCarcel() As Dictionary
+    On Error GoTo CargarObjetosConfiscadosCarcel_Err
+    Dim ArchivoConfiguracion As String
+    Dim Configuracion As clsIniManager
+    Dim Objetos As Dictionary
+    Dim ObjetosConfigurados() As String
+    Dim i As Long
+    Dim ObjIndex As Integer
+    Dim ValorObjetos As String
+
+    Set Objetos = New Dictionary
+    ArchivoConfiguracion = App.path & "\ConfiscarCarcel.ini"
+
+    If Not FileExist(ArchivoConfiguracion) Then
+        Set CargarObjetosConfiscadosCarcel = Objetos
+        Exit Function
+    End If
+
+    Set Configuracion = New clsIniManager
+    Call Configuracion.Initialize(ArchivoConfiguracion)
+    ValorObjetos = Trim$(Configuracion.GetValue("CARCEL", "Objetos"))
+
+    If LenB(ValorObjetos) = 0 Then
+        Set CargarObjetosConfiscadosCarcel = Objetos
+        Exit Function
+    End If
+
+    ObjetosConfigurados = Split(ValorObjetos, ",")
+    For i = LBound(ObjetosConfigurados) To UBound(ObjetosConfigurados)
+        ObjIndex = val(Trim$(ObjetosConfigurados(i)))
+        If ObjIndex > 0 Then
+            If Not Objetos.Exists(CStr(ObjIndex)) Then
+                Call Objetos.Add(CStr(ObjIndex), True)
+            End If
+        End If
+    Next i
+
+    Set CargarObjetosConfiscadosCarcel = Objetos
+    Exit Function
+CargarObjetosConfiscadosCarcel_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.CargarObjetosConfiscadosCarcel", Erl)
+    Set CargarObjetosConfiscadosCarcel = New Dictionary
+End Function
+
+Private Sub DetenerTrabajoPorCarcel(ByVal UserIndex As Integer)
+    On Error GoTo DetenerTrabajoPorCarcel_Err
+
+    With UserList(UserIndex)
+        If .Counters.Trabajando > 0 Or .Counters.LastTrabajo > 0 Or .flags.UsandoMacro Or .AutomatedAction.IsActive Then
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Call WriteWorkRequestTarget(UserIndex, 0)
+            Call ResetUserAutomatedActions(UserIndex)
+        End If
+
+        .Counters.LastTrabajo = 0
+        .flags.TargetObj = 0
+        .flags.TargetObjMap = 0
+        .flags.TargetObjX = 0
+        .flags.TargetObjY = 0
+        .flags.TargetObjInvIndex = 0
+        .flags.TargetObjInvSlot = 0
+    End With
+
+    Exit Sub
+DetenerTrabajoPorCarcel_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.DetenerTrabajoPorCarcel", Erl)
+End Sub
+
+Private Sub ConfiscarObjetosDeCarcel(ByVal UserIndex As Integer)
+    On Error GoTo ConfiscarObjetosDeCarcel_Err
+    Dim ObjetosConfiscados As Dictionary
+    Dim Slot As Integer
+
+    Set ObjetosConfiscados = CargarObjetosConfiscadosCarcel()
+    If ObjetosConfiscados Is Nothing Then Exit Sub
+    If ObjetosConfiscados.Count = 0 Then Exit Sub
+
+    With UserList(UserIndex)
+        For Slot = 1 To .CurrentInventorySlots
+            If ObjetosConfiscados.Exists(CStr(.invent.Object(Slot).ObjIndex)) Then
+                Call QuitarUserInvItem(UserIndex, CByte(Slot), .invent.Object(Slot).amount)
+            End If
+        Next Slot
+
+        If .flags.ModificoInventario Then
+            Call UpdateUserInv(True, UserIndex, 0)
+        End If
+    End With
+
+    Exit Sub
+ConfiscarObjetosDeCarcel_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.ConfiscarObjetosDeCarcel", Erl)
+End Sub
+
 Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optional ByVal GmName As String = vbNullString)
     On Error GoTo Encarcelar_Err
     If EsGM(UserIndex) Then Exit Sub
     UserList(UserIndex).Counters.Pena = minutos
+    Call DetenerTrabajoPorCarcel(UserIndex)
+    Call ConfiscarObjetosDeCarcel(UserIndex)
     Call WarpUserChar(UserIndex, Prision.Map, Prision.x, Prision.y, True)
     If LenB(GmName) = 0 Then
         'Msg1107= Has sido encarcelado, deberas permanecer en la carcel  ¬1 minutos.
