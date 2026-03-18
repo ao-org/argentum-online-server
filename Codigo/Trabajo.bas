@@ -1954,51 +1954,51 @@ Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_
     With ObjData(Item.ObjIndex)
     Select Case JobType
         Case e_JobsTypes.Miner
-            tmpExp = SvrConfig.GetValue("MiningExp")
+            tmpExp = ComputeWorkingExp(1, SvrConfig.GetValue("MiningExp"), 1)
         Case e_JobsTypes.Woodcutter
-            tmpExp = SvrConfig.GetValue("FellingExp")
+            tmpExp = ComputeWorkingExp(1, SvrConfig.GetValue("FellingExp"), 1)
         Case e_JobsTypes.Blacksmith
             If .LingH > 0 Then
-                tmpExp = tmpExp + .LingH * SvrConfig.GetValue("IronForgingExp") * Item.Amount
+                tmpExp = tmpExp + ComputeWorkingExp(.LingH, SvrConfig.GetValue("IronForgingExp"), Item.Amount)
             End If
             If .LingP > 0 Then
-                tmpExp = tmpExp + .LingP * SvrConfig.GetValue("SilverForgingExp") * Item.Amount
+                tmpExp = tmpExp + ComputeWorkingExp(.LingP, SvrConfig.GetValue("SilverForgingExp"), Item.Amount)
             End If
             If .LingO > 0 Then
-                tmpExp = tmpExp + .LingO * SvrConfig.GetValue("GoldForgingExp") * Item.Amount
+                tmpExp = tmpExp + ComputeWorkingExp(.LingO, SvrConfig.GetValue("GoldForgingExp"), Item.Amount)
             End If
             If .Blodium > 0 Then
-                tmpExp = tmpExp + .Blodium * SvrConfig.GetValue("BlodiumForgingExp") * Item.Amount
+                tmpExp = tmpExp + ComputeWorkingExp(.Blodium, SvrConfig.GetValue("BlodiumForgingExp"), Item.Amount)
             End If
         Case e_JobsTypes.Carpenter
             If .Madera > 0 Then
-                tmpExp = tmpExp + .Madera * SvrConfig.GetValue("WoodCarpentryExp") * Item.Amount
+                tmpExp = tmpExp + ComputeWorkingExp(.Madera, SvrConfig.GetValue("WoodCarpentryExp"), Item.Amount)
             End If
             If .MaderaElfica > 0 Then
-                tmpExp = tmpExp + .MaderaElfica * SvrConfig.GetValue("ElvenWoodCarpentryExp") * Item.Amount
+                tmpExp = tmpExp + ComputeWorkingExp(.MaderaElfica, SvrConfig.GetValue("ElvenWoodCarpentryExp"), Item.Amount)
             End If
         Case e_JobsTypes.Fisherman
             If .Power >= 2 Then
-                tmpExp = SvrConfig.GetValue("FishingExp")
+                tmpExp = ComputeWorkingExp(1, SvrConfig.GetValue("FishingExp"), 1)
             End If
         Case e_JobsTypes.Alchemist
             If .FlorRoja > 0 Then
-                tmpExp = tmpExp + .FlorRoja * SvrConfig.GetValue("MixingExp") * Item.Amount
+                tmpExp = tmpExp + ComputeWorkingExp(.FlorRoja, SvrConfig.GetValue("MixingExp"), Item.Amount)
             End If
             If .FlorOceano > 0 Then
-                tmpExp = tmpExp + .FlorOceano * SvrConfig.GetValue("MixingExp") * Item.Amount
+                tmpExp = tmpExp + ComputeWorkingExp(.FlorOceano, SvrConfig.GetValue("MixingExp"), Item.Amount)
             End If
             If .ColaDeZorro > 0 Then
-                tmpExp = tmpExp + .ColaDeZorro * SvrConfig.GetValue("MixingExp") * Item.Amount
+                tmpExp = tmpExp + ComputeWorkingExp(.ColaDeZorro, SvrConfig.GetValue("MixingExp"), Item.Amount)
             End If
             If .Tuna > 0 Then
-                tmpExp = tmpExp + .Tuna * SvrConfig.GetValue("MixingExp") * Item.Amount
+                tmpExp = tmpExp + ComputeWorkingExp(.Tuna, SvrConfig.GetValue("MixingExp"), Item.Amount)
             End If
             If .HongoDeLuz > 0 Then
-                tmpExp = tmpExp + .HongoDeLuz * SvrConfig.GetValue("MixingExp") * Item.Amount
+                tmpExp = tmpExp + ComputeWorkingExp(.HongoDeLuz, SvrConfig.GetValue("MixingExp"), Item.Amount)
             End If
             If .Cala > 0 Then
-                tmpExp = tmpExp + .Cala * SvrConfig.GetValue("MixingExp") * Item.Amount
+                tmpExp = tmpExp + ComputeWorkingExp(.Cala, SvrConfig.GetValue("MixingExp"), Item.Amount)
             End If
         Case Else
             tmpExp = SvrConfig.GetValue("ElseExp")
@@ -2008,6 +2008,11 @@ Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_
     Exit Function
 GiveExpWhileWorking_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.GiveExpWhileWorking", Erl)
+End Function
+
+Private Function ComputeWorkingExp(ByVal ItemMaterialProperty As Integer, ByVal ExpMultiplier As Long, ByVal ItemAmount As Long)
+    'as of 18/03/26 MaterialProperties are integers, not planned to get changed to long
+    ComputeWorkingExp = ItemMaterialProperty * ExpMultiplier * ItemAmount
 End Function
 
 Public Function KnowsCraftingRecipe(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
