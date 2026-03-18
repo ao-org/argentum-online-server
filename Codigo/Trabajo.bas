@@ -1954,8 +1954,10 @@ Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_
     With ObjData(Item.ObjIndex)
     Select Case JobType
         Case e_JobsTypes.Miner
+            'mining action should only be awarded when succesfull, not based on the material as 18/03/26
             tmpExp = ComputeWorkingExp(1, SvrConfig.GetValue("MiningExp"), 1)
         Case e_JobsTypes.Woodcutter
+            'wood cutting action should only be awarded when succesfull, not based on the material as 18/03/26
             tmpExp = ComputeWorkingExp(1, SvrConfig.GetValue("FellingExp"), 1)
         Case e_JobsTypes.Blacksmith
             If .LingH > 0 Then
@@ -1979,6 +1981,7 @@ Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_
             End If
         Case e_JobsTypes.Fisherman
             If .Power >= 2 Then
+                'fishing action should only be awarded when succesfull, not based on the material but based on the rod's power as of 18/03/26
                 tmpExp = ComputeWorkingExp(1, SvrConfig.GetValue("FishingExp"), 1)
             End If
         Case e_JobsTypes.Alchemist
