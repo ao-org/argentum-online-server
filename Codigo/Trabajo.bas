@@ -2015,7 +2015,27 @@ End Function
 
 Private Function ComputeWorkingExp(ByVal ItemMaterialProperty As Integer, ByVal ExpMultiplier As Long, ByVal ItemAmount As Long)
     'as of 18/03/26 MaterialProperties are integers, not planned to get changed to long
-    ComputeWorkingExp = ItemMaterialProperty * ExpMultiplier * ItemAmount
+    If ItemMaterialProperty = 0 Then
+        Exit Function
+    End If
+    If ExpMultiplier = 0 Then
+        Exit Function
+    End If
+    If ItemAmount = 0 Then
+        Exit Function
+    End If
+    
+    Dim acumulator As Currency
+    
+    acumulator = CCur(ItemMaterialProperty) * ccir(ExpMultiplier) * CCur(ItemAmount)
+    
+    If acumulator > MAX_LONG Then
+        ComputeWorkingExp = MAX_LONG
+    ElseIf acumulator < 0 Then
+        ComputeWorkingExp = 0
+    Else
+        ComputeWorkingExp = CLng(acumulator)
+    End If
 End Function
 
 Public Function KnowsCraftingRecipe(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
