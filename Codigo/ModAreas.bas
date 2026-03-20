@@ -243,8 +243,7 @@ Private Sub NotifyUser(ByVal UserNotificado As Integer, ByVal UserIngresante As 
         End If
     End With
 End Sub
-
-Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal head As Byte)
+Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal head As Byte)
     On Error GoTo CheckUpdateNeededNpc_Err
     
     Dim x As Integer
