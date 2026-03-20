@@ -946,6 +946,26 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
     Call SetUserRef(NpcList(nIndex).MaestroUser, MaestroUser)
     NpcList(nIndex).Orig = NpcList(nIndex).pos
     'Crea el NPC
+    
+    If NpcList(nIndex).IsMultiTile Then
+        Dim mtX As Integer, mtY As Integer
+        Dim mtCount As Integer
+        
+        ReDim NpcList(nIndex).OccupiedTiles(1 To NpcList(nIndex).TileWidth * NpcList(nIndex).TileHeight)
+        
+        mtCount = 0
+        For mtX = 0 To NpcList(nIndex).TileWidth - 1
+            For mtY = 0 To NpcList(nIndex).TileHeight - 1
+                mtCount = mtCount + 1
+                NpcList(nIndex).OccupiedTiles(mtCount).x = NewPos.x + mtX
+                NpcList(nIndex).OccupiedTiles(mtCount).y = NewPos.y + mtY
+            Next mtY
+        Next mtX
+    End If
+    
+    Call SetUserRef(NpcList(nIndex).MaestroUser, MaestroUser)
+    NpcList(nIndex).Orig = NpcList(nIndex).pos
+    
     Call MakeNPCChar(True, Map, nIndex, Map, x, y)
     If FX And SpellWav = SND_WARP Then
         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessagePlayWave(SND_WARP, x, y))
@@ -1619,6 +1639,10 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .IsMultiTile = Info.IsMultiTile
         .TileWidth = Info.TileWidth
         .TileHeight = Info.TileHeight
+
+        If .IsMultiTile Then
+            ReDim .OccupiedTiles(1 To .TileWidth * .TileHeight)
+        End If
         .flags.Snd1 = Info.Snd1
         .flags.Snd2 = Info.Snd2
         .flags.Snd3 = Info.Snd3
