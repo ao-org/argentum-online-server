@@ -2516,3 +2516,48 @@ Private Sub InitializeOccupiedTiles(ByVal NpcIndex As Integer)
 InitializeOccupiedTiles_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.InitializeOccupiedTiles", Erl)
 End Sub
+
+
+Public Function CanNpcReachTarget(ByVal NpcIndex As Integer, _
+                                  ByVal TargetMap As Integer, _
+                                  ByVal TargetX As Integer, _
+                                  ByVal TargetY As Integer) As Boolean
+    On Error GoTo CanNpcReachTarget_Err
+    
+    With NpcList(NpcIndex)
+        ' Different map = can't reach
+        If .pos.Map <> TargetMap Then
+            CanNpcReachTarget = False
+            Exit Function
+        End If
+        
+        If .IsMultiTile Then
+            ' For multi-tile NPCs, check if ANY occupied tile is adjacent to target
+            Dim i As Integer
+            For i = 1 To UBound(.OccupiedTiles)
+                Dim dx As Integer, dy As Integer
+                dx = Abs(.OccupiedTiles(i).x - TargetX)
+                dy = Abs(.OccupiedTiles(i).y - TargetY)
+                
+                ' Adjacent if within 1 tile (including diagonals)
+                If dx <= 1 And dy <= 1 And (dx + dy > 0) Then
+                    CanNpcReachTarget = True
+                    Exit Function
+                End If
+            Next i
+            
+            CanNpcReachTarget = False
+        Else
+            ' Single-tile NPC - use standard distance check
+            Dim dx As Integer, dy As Integer
+            dx = Abs(.pos.x - TargetX)
+            dy = Abs(.pos.y - TargetY)
+            
+            CanNpcReachTarget = (dx <= 1 And dy <= 1 And (dx + dy > 0))
+        End If
+    End With
+    
+    Exit Function
+CanNpcReachTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "NPCs.CanNpcReachTarget", Erl)
+End Function
