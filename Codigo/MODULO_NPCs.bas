@@ -527,51 +527,7 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
             
             If .IsMultiTile Then
             
-         Dim tileX As Integer, tileY As Integer
-            Dim occupiedCount As Integer
-            
-            occupiedCount = 0
-            ReDim .OccupiedTiles(1 To .TileWidth * .TileHeight)
-            
-            ' Mark all tiles as occupied
-            For tileX = 0 To .TileWidth - 1
-                For tileY = 0 To .TileHeight - 1
-                    Dim checkX As Integer, checkY As Integer
-                    checkX = .pos.x + tileX
-                    checkY = .pos.y + tileY
-                    
-                    ' Verify tile is valid and walkable
-                    If Not InMapBounds(Mapa, checkX, checkY) Then
-                        ' Spawn failed - cleanup and exit
-                        Call QuitarNPC(NpcIndex, eFailToFindSpawnPos)
-                        CrearNPC = 0
-                        Exit Function
-                    End If
-                    
-                    ' Check if tile is free
-                    If MapData(Mapa, checkX, checkY).NpcIndex <> 0 Or _
-                       MapData(Mapa, checkX, checkY).UserIndex <> 0 Then
-                        Call QuitarNPC(NpcIndex, eFailToFindSpawnPos)
-                        CrearNPC = 0
-                        Exit Function
-                    End If
-                    
-                    ' Mark tile as occupied
-                    occupiedCount = occupiedCount + 1
-                    .OccupiedTiles(occupiedCount).x = checkX
-                    .OccupiedTiles(occupiedCount).y = checkY
-                    
-                    If tileX = 0 And tileY = 0 Then
-                        ' Base tile gets the NpcIndex
-                        MapData(Mapa, checkX, checkY).NpcIndex = NpcIndex
-                        MapData(Mapa, checkX, checkY).IsNpcReferenceTile = False
-                    Else
-                        ' Reference tiles point to main NPC
-                        MapData(Mapa, checkX, checkY).NpcIndex = NpcIndex
-                        MapData(Mapa, checkX, checkY).IsNpcReferenceTile = True
-                    End If
-                Next tileY
-            Next tileX
+                Call InitializeOccupiedTiles(NpcIndex)
             
             Else
             
@@ -796,10 +752,10 @@ Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As e_Heading) As 
         nPos = .pos
         Call HeadtoPos(nHeading, nPos)
         
-        ' For multi-tile NPCs, check if ALL destination tiles are valid
         If .IsMultiTile Then
             Dim tileX As Integer, tileY As Integer
             Dim canMove As Boolean
+            Dim i As Integer
             canMove = True
             
             ' Check all destination tiles
@@ -809,30 +765,72 @@ Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As e_Heading) As 
                     checkX = nPos.x + tileX
                     checkY = nPos.y + tileY
                     
+                    ' Skip if this tile is already occupied by us
+                    Dim alreadyOurs As Boolean
+                    alreadyOurs = False
+                    For i = 1 To UBound(.OccupiedTiles)
+                        If .OccupiedTiles(i).x = checkX And .OccupiedTiles(i).y = checkY Then
+                            alreadyOurs = True
+                            Exit For
+                        End If
+                    Next i
+                    
+                    If alreadyOurs Then
+                        ' This tile is already ours, no need to validate
+                        GoTo NextTile
+                    End If
+                    
                     ' Check bounds
                     If Not InMapBounds(.pos.Map, checkX, checkY) Then
                         canMove = False
                         Exit For
                     End If
                     
-                    ' Check if legal for NPC
-                    If Not LegalPos(.pos.Map, checkX, checkY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, , False) Then
+                    ' Check terrain type (water/land) without entity checks
+                    Dim tileBlocked As Integer
+                    tileBlocked = MapData(.pos.Map, checkX, checkY).Blocked
+                    
+                    ' Check water/land compatibility
+                    If (tileBlocked And FLAG_AGUA) <> 0 Then
+                        ' It's water
+                        If .flags.AguaValida = 0 Then
+                            canMove = False
+                            Exit For
+                        End If
+                    Else
+                        ' It's land
+                        If .flags.TierraInvalida <> 0 Then
+                            canMove = False
+                            Exit For
+                        End If
+                    End If
+                    
+                    ' Check tile blocking (walls, etc)
+                    If (tileBlocked And Not FLAG_AGUA) <> 0 Then
                         canMove = False
                         Exit For
                     End If
                     
-                    ' Check for blocking entities (users/other NPCs)
+                    ' Check for teleports
+                    If MapData(.pos.Map, checkX, checkY).TileExit.Map <> 0 Then
+                        canMove = False
+                        Exit For
+                    End If
+                    
+                    ' Check for users
                     If MapData(.pos.Map, checkX, checkY).UserIndex <> 0 Then
                         canMove = False
                         Exit For
                     End If
                     
-                    ' Check for other NPCs (allow our own tiles)
+                    ' Check for other NPCs (not ourselves)
                     If MapData(.pos.Map, checkX, checkY).NpcIndex <> 0 And _
                        MapData(.pos.Map, checkX, checkY).NpcIndex <> NpcIndex Then
                         canMove = False
                         Exit For
                     End If
+                    
+NextTile:
                 Next tileY
                 
                 If Not canMove Then Exit For
@@ -843,13 +841,16 @@ Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As e_Heading) As 
                 Exit Function
             End If
             
-            ' Clear old position
+            ' Clear old position from map
             Call ClearNpcFromMap(NpcIndex)
             
             ' Update position
             .pos = nPos
             
-            ' Place at new position
+            ' Recalculate occupied tiles with new position
+            Call InitializeOccupiedTiles(NpcIndex)
+            
+            ' Place at new position on map
             Call PlaceNpcOnMap(NpcIndex)
             
             ' Send to clients
@@ -881,7 +882,6 @@ Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As e_Heading) As 
 MoveNPCChar_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.MoveNPCChar", Erl)
 End Function
-
 Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
     On Error GoTo NpcEnvenenarUser_Err
     Dim n As Integer
@@ -948,19 +948,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
     'Crea el NPC
     
     If NpcList(nIndex).IsMultiTile Then
-        Dim mtX As Integer, mtY As Integer
-        Dim mtCount As Integer
-        
-        ReDim NpcList(nIndex).OccupiedTiles(1 To NpcList(nIndex).TileWidth * NpcList(nIndex).TileHeight)
-        
-        mtCount = 0
-        For mtX = 0 To NpcList(nIndex).TileWidth - 1
-            For mtY = 0 To NpcList(nIndex).TileHeight - 1
-                mtCount = mtCount + 1
-                NpcList(nIndex).OccupiedTiles(mtCount).x = NewPos.x + mtX
-                NpcList(nIndex).OccupiedTiles(mtCount).y = NewPos.y + mtY
-            Next mtY
-        Next mtX
+        Call InitializeOccupiedTiles(nIndex)
     End If
     
     Call SetUserRef(NpcList(nIndex).MaestroUser, MaestroUser)
@@ -974,7 +962,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.charindex, e_GraphicEffects.ModernGmWarp, 0))
     End If
     If Avisar Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_EVENT, NpcList(nIndex).name & "¬" & get_map_name(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_EVENT, NpcList(nIndex).Name & "¬" & get_map_name(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
     End If
     SpawnNpc = nIndex
     Exit Function
@@ -1642,6 +1630,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
 
         If .IsMultiTile Then
             ReDim .OccupiedTiles(1 To .TileWidth * .TileHeight)
+            ' Note: Actual tile positions will be set when NPC is placed on map
         End If
         .flags.Snd1 = Info.Snd1
         .flags.Snd2 = Info.Snd2
@@ -2474,15 +2463,56 @@ Private Sub ClearNpcFromMap(ByVal NpcIndex As Integer)
 End Sub
 
 Private Sub PlaceNpcOnMap(ByVal NpcIndex As Integer)
+    On Error GoTo PlaceNpcOnMap_Err
+    
     With NpcList(NpcIndex)
         If .IsMultiTile Then
             Dim i As Integer
             For i = 1 To UBound(.OccupiedTiles)
                 MapData(.pos.Map, .OccupiedTiles(i).x, .OccupiedTiles(i).y).NpcIndex = NpcIndex
-                MapData(.pos.Map, .OccupiedTiles(i).x, .OccupiedTiles(i).y).IsNpcReferenceTile = True
+                
+                ' First tile is the base, rest are references
+                If i = 1 Then
+                    MapData(.pos.Map, .OccupiedTiles(i).x, .OccupiedTiles(i).y).IsNpcReferenceTile = False
+                Else
+                    MapData(.pos.Map, .OccupiedTiles(i).x, .OccupiedTiles(i).y).IsNpcReferenceTile = True
+                End If
             Next i
         Else
             MapData(.pos.Map, .pos.x, .pos.y).NpcIndex = NpcIndex
         End If
     End With
+    
+    Exit Sub
+PlaceNpcOnMap_Err:
+    Call TraceError(Err.Number, Err.Description, "NPCs.PlaceNpcOnMap", Erl)
+End Sub
+
+
+Private Sub InitializeOccupiedTiles(ByVal NpcIndex As Integer)
+    On Error GoTo InitializeOccupiedTiles_Err
+    
+    With NpcList(NpcIndex)
+        If .IsMultiTile Then
+            Dim tileX As Integer, tileY As Integer
+            Dim count As Integer
+            
+            ' Redimension the array
+            ReDim .OccupiedTiles(1 To .TileWidth * .TileHeight)
+            
+            ' Populate with coordinates based on current position
+            count = 0
+            For tileX = 0 To .TileWidth - 1
+                For tileY = 0 To .TileHeight - 1
+                    count = count + 1
+                    .OccupiedTiles(count).x = .pos.x + tileX
+                    .OccupiedTiles(count).y = .pos.y + tileY
+                Next tileY
+            Next tileX
+        End If
+    End With
+    
+    Exit Sub
+InitializeOccupiedTiles_Err:
+    Call TraceError(Err.Number, Err.Description, "NPCs.InitializeOccupiedTiles", Erl)
 End Sub
