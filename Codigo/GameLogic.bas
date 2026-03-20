@@ -350,7 +350,15 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                         .LastTransportNetwork.Map = Map
                         .LastTransportNetwork.StartIdex = StartTransportIndex
                         .LastTransportNetwork.ExitIndex = ExitPortal
-                        Call WarpUserChar(UserIndex, destPos.Map, destPos.x, destPos.y, EsTeleport)
+                        If .flags.Navegando Then
+                            If LegalPos(destPos.Map, destPos.x, destPos.y, True, True, , False) Then
+                                Call WarpUserChar(UserIndex, destPos.Map, destPos.x, destPos.y, EsTeleport)
+                            End If
+                        Else
+                            If LegalPos(destPos.Map, destPos.x, destPos.y, False, True, , False) Then
+                                Call WarpUserChar(UserIndex, destPos.Map, destPos.x, destPos.y, EsTeleport)
+                            End If
+                        End If
                     Else
                         Call LogError("Invalid teleport at map: " & Map & "(" & x & ", " & y & ")")
                     End If
@@ -374,12 +382,13 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                         destPos.y = MapData(Map, x, y).TileExit.y
                     End If
                     If .flags.Navegando Then
-                        Call ClosestLegalPos(destPos, nPos, True)
+                        If LegalPos(destPos.Map, destPos.x, destPos.y, True, True, , False) Then
+                            Call WarpUserChar(UserIndex, destPos.Map, destPos.x, destPos.y, EsTeleport)
+                        End If
                     Else
-                        Call ClosestLegalPos(destPos, nPos)
-                    End If
-                    If nPos.x <> 0 And nPos.y <> 0 Then
-                        Call WarpUserChar(UserIndex, nPos.Map, nPos.x, nPos.y, EsTeleport)
+                        If LegalPos(destPos.Map, destPos.x, destPos.y, False, True, , False) Then
+                            Call WarpUserChar(UserIndex, destPos.Map, destPos.x, destPos.y, EsTeleport)
+                        End If
                     End If
                 End If
                 'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
@@ -388,11 +397,6 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                 If .flags.ReturnPos.Map <> 0 Then
                     If LegalPos(.flags.ReturnPos.Map, .flags.ReturnPos.x, .flags.ReturnPos.y, .flags.Navegando = 1, , , False) Then
                         Call WarpUserChar(UserIndex, .flags.ReturnPos.Map, .flags.ReturnPos.x, .flags.ReturnPos.y, False)
-                    Else
-                        Call ClosestLegalPos(.flags.ReturnPos, nPos)
-                        If nPos.x <> 0 And nPos.y <> 0 Then
-                            Call WarpUserChar(UserIndex, nPos.Map, nPos.x, nPos.y, EsTeleport)
-                        End If
                     End If
                     'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
                     Call ClearAttackerNpc(UserIndex)
