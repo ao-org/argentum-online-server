@@ -1,7 +1,7 @@
 Attribute VB_Name = "Admin"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -79,6 +79,7 @@ Public IntervaloTrabajarExtraer      As Long
 Public IntervaloNpcOwner             As Long
 Public IntervaloTrabajarConstruir    As Long
 Public IntervaloCerrarConexion       As Long '[Gonzalo]
+Public IntervaloCerrarConexionEnDungeon As Long
 Public IntervaloUserPuedeUsarU       As Long
 Public IntervaloUserPuedeUsarClic    As Long
 Public IntervaloGolpeUsar            As Long

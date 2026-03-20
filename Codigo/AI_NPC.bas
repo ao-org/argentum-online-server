@@ -1,7 +1,7 @@
 Attribute VB_Name = "AI"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -188,6 +188,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
                     If .Char.Heading <> e_Heading.SOUTH Then
                         Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, e_Heading.SOUTH)
                     End If
+                    Call AnimacionIdle(NpcIndex, True)
                 End If
             End If
         End If

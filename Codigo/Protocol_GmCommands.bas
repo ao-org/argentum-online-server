@@ -1,7 +1,7 @@
 Attribute VB_Name = "Protocol_GmCommands"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -2731,71 +2731,6 @@ Public Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
     Exit Sub
 HandleKillAllNearbyNPCs_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleKillAllNearbyNPCs", Erl)
-End Sub
-
-Public Sub HandleLastIP(ByVal UserIndex As Integer)
-    'Author: Martín Trionfetti (HarThaoS) - Fernando Quinteros (Lord Fers)
-    On Error GoTo ErrHandler
-    With UserList(UserIndex)
-        Dim username As String
-        Dim LoopC    As Byte
-        username = reader.ReadString8()
-        If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
-            'Handle special chars
-            If (InStrB(username, "\") <> 0) Then
-                username = Replace(username, "\", "")
-            End If
-            If (InStrB(username, "\") <> 0) Then
-                username = Replace(username, "/", "")
-            End If
-            If (InStrB(username, "+") <> 0) Then
-                username = Replace(username, "+", " ")
-            End If
-            Dim tUser As t_UserReference
-            tUser = NameIndex(username)
-            Dim RS    As ADODB.Recordset
-            Dim ipStr As String
-            If IsValidUserRef(tUser) Then
-                Call LogGM(GetUserRealName(UserIndex), "/LASTIP " & username)
-                Set RS = Query("SELECT last_ip FROM account WHERE id = ?", UserList(tUser.ArrayIndex).AccountID)
-                'Revisamos si recibio un resultado
-                If RS Is Nothing Then Exit Sub
-                If RS.BOF Or RS.EOF Then Exit Sub
-                'Obtenemos la variable
-                ipStr = RS.Fields(0).value
-            Else
-                Dim account_id As String
-                Set RS = Query("SELECT u.account_id FROM user u WHERE LOWER(u.name) = LOWER(?)", username)
-                'Revisamos si recibio un resultado
-                If RS Is Nothing Then Exit Sub
-                If RS.BOF Or RS.EOF Then Exit Sub
-                'Obtenemos la variable
-                account_id = RS.Fields(0).value
-                Set RS = Query("SELECT last_ip FROM account WHERE id = ?", account_id)
-                'Revisamos si recibio un resultado
-                If RS Is Nothing Then Exit Sub
-                If RS.BOF Or RS.EOF Then Exit Sub
-                'Obtenemos la variable
-                ipStr = RS.Fields(0).value
-            End If
-            Dim countIps As Long
-            countIps = UBound(Split(ipStr, ";"))
-            If countIps <= 0 Then Exit Sub
-            ReDim ip_list(0 To (countIps - 1)) As String
-            ip_list = Split(ipStr, ";")
-            'Msg983= Las últimas ips para el personaje son:
-            Call WriteLocaleMsg(UserIndex, MSG_ULTIMAS_IPS_PERSONAJE, e_FontTypeNames.FONTTYPE_INFO)
-            For LoopC = 0 To (countIps - 1)
-                Call WriteConsoleMsg(UserIndex, ip_list(LoopC), e_FontTypeNames.FONTTYPE_INFO)
-            Next LoopC
-        Else
-            'Msg528=Servidor » Comando deshabilitado para tu cargo.
-            Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_COMANDO_DESHABILITADO_CARGO, e_FontTypeNames.FONTTYPE_INFO)
-        End If
-    End With
-    Exit Sub
-ErrHandler:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleLastIP", Erl)
 End Sub
 
 Public Sub HandleChangeMOTD(ByVal UserIndex As Integer)

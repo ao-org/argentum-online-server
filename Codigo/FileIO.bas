@@ -1,7 +1,7 @@
 Attribute VB_Name = "ES"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -2294,6 +2294,7 @@ Sub LoadIntervalos()
     MinutosWs = val(Lector.GetValue("INTERVALOS", "IntervaloWS"))
     If MinutosWs < 1 Then MinutosWs = 10
     IntervaloCerrarConexion = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexion"))
+    IntervaloCerrarConexionEnDungeon = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexionEnDungeon"))
     IntervaloUserPuedeUsarU = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarU"))
     IntervaloUserPuedeUsarClic = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarClic"))
     IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
