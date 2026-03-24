@@ -219,10 +219,74 @@ PurgarPenas_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.PurgarPenas", Erl)
 End Sub
 
+
+Private Sub DetenerTrabajoPorCarcel(ByVal UserIndex As Integer)
+    On Error GoTo DetenerTrabajoPorCarcel_Err
+
+    With UserList(UserIndex)
+        If .Counters.Trabajando > 0 Or .Counters.LastTrabajo > 0 Or .flags.UsandoMacro Or .AutomatedAction.IsActive Then
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Call WriteWorkRequestTarget(UserIndex, 0)
+            Call ResetUserAutomatedActions(UserIndex)
+        End If
+
+        .Counters.LastTrabajo = 0
+        .flags.TargetObj = 0
+        .flags.TargetObjMap = 0
+        .flags.TargetObjX = 0
+        .flags.TargetObjY = 0
+        .flags.TargetObjInvIndex = 0
+        .flags.TargetObjInvSlot = 0
+    End With
+
+    Exit Sub
+DetenerTrabajoPorCarcel_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.DetenerTrabajoPorCarcel", Erl)
+End Sub
+
+
+Private Function IsRemovableInventoryItemInJail(ByVal ObjIndex As Integer) As Boolean
+    With ObjData(ObjIndex)
+        'fish
+        If .OBJType = otUseOnce And .Subtipo = 1 Then
+            IsRemovableInventoryItemInJail = True
+            Exit Function
+        End If
+        If .OBJType = otWood Then
+            IsRemovableInventoryItemInJail = True
+            Exit Function
+        End If
+        If .OBJType = otMinerals Then
+            IsRemovableInventoryItemInJail = True
+            Exit Function
+        End If
+    End With
+End Function
+
+Private Sub RemoveCriticalObjectsWhileEnteringJail(ByVal UserIndex As Integer)
+    On Error GoTo RemoveCriticalObjectsWhileEnteringJail_Err
+    Dim Slot As Integer
+    With UserList(UserIndex)
+        For Slot = 1 To .CurrentInventorySlots
+                If .invent.Object(Slot).ObjIndex > 0 Then
+                    If IsRemovableInventoryItemInJail(.invent.Object(Slot).ObjIndex) Then
+                        Call QuitarUserInvItem(UserIndex, CByte(Slot), .invent.Object(Slot).Amount)
+                    End If
+                End If
+        Next Slot
+        Call UpdateUserInv(True, UserIndex, 0)
+    End With
+    Exit Sub
+RemoveCriticalObjectsWhileEnteringJail_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.RemoveCriticalObjectsWhileEnteringJail", Erl)
+End Sub
+
 Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optional ByVal GmName As String = vbNullString)
     On Error GoTo Encarcelar_Err
     If EsGM(UserIndex) Then Exit Sub
     UserList(UserIndex).Counters.Pena = minutos
+    Call DetenerTrabajoPorCarcel(UserIndex)
+    Call RemoveCriticalObjectsWhileEnteringJail(UserIndex)
     Call WarpUserChar(UserIndex, Prision.Map, Prision.x, Prision.y, True)
     If LenB(GmName) = 0 Then
         'Msg1107= Has sido encarcelado, deberas permanecer en la carcel  ¬1 minutos.
