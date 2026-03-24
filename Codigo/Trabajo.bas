@@ -385,68 +385,69 @@ QuitarObjetos_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.QuitarObjetos", Erl)
 End Function
 
-Sub HerreroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+Sub HerreroQuitarMateriales(ByVal UserIndex As Integer, ByRef Item As t_Obj)
     On Error GoTo HerreroQuitarMateriales_Err
-    If ObjData(ItemIndex).LingH > 0 Then Call QuitarObjetos(e_Minerales.LingoteDeHierro, ObjData(ItemIndex).LingH, UserIndex)
-    If ObjData(ItemIndex).LingP > 0 Then Call QuitarObjetos(e_Minerales.LingoteDePlata, ObjData(ItemIndex).LingP, UserIndex)
-    If ObjData(ItemIndex).LingO > 0 Then Call QuitarObjetos(e_Minerales.LingoteDeOro, ObjData(ItemIndex).LingO, UserIndex)
-    If ObjData(ItemIndex).Coal > 0 Then Call QuitarObjetos(e_Minerales.Coal, ObjData(ItemIndex).Coal, UserIndex)
-    If ObjData(ItemIndex).Blodium > 0 Then Call QuitarObjetos(e_Minerales.Blodium, ObjData(ItemIndex).Blodium, UserIndex)
-    If ObjData(ItemIndex).FireEssence > 0 Then Call QuitarObjetos(e_Minerales.FireEssence, ObjData(ItemIndex).FireEssence, UserIndex)
-    If ObjData(ItemIndex).WaterEssence > 0 Then Call QuitarObjetos(e_Minerales.WaterEssence, ObjData(ItemIndex).WaterEssence, UserIndex)
-    If ObjData(ItemIndex).EarthEssence > 0 Then Call QuitarObjetos(e_Minerales.EarthEssence, ObjData(ItemIndex).EarthEssence, UserIndex)
-    If ObjData(ItemIndex).WindEssence > 0 Then Call QuitarObjetos(e_Minerales.WindEssence, ObjData(ItemIndex).WindEssence, UserIndex)
+    If Item.ObjIndex = 0 Then Exit Sub
+    With ObjData(Item.ObjIndex)
+        If .LingH > 0 Then Call QuitarObjetos(e_Minerales.LingoteDeHierro, .LingH, UserIndex)
+        If .LingP > 0 Then Call QuitarObjetos(e_Minerales.LingoteDePlata, .LingP, UserIndex)
+        If .LingO > 0 Then Call QuitarObjetos(e_Minerales.LingoteDeOro, .LingO, UserIndex)
+        If .Coal > 0 Then Call QuitarObjetos(e_Minerales.Coal, .Coal, UserIndex)
+        If .Blodium > 0 Then Call QuitarObjetos(e_Minerales.Blodium, .Blodium, UserIndex)
+        If .FireEssence > 0 Then Call QuitarObjetos(e_Minerales.FireEssence, .FireEssence, UserIndex)
+        If .WaterEssence > 0 Then Call QuitarObjetos(e_Minerales.WaterEssence, .WaterEssence, UserIndex)
+        If .EarthEssence > 0 Then Call QuitarObjetos(e_Minerales.EarthEssence, .EarthEssence, UserIndex)
+        If .WindEssence > 0 Then Call QuitarObjetos(e_Minerales.WindEssence, .WindEssence, UserIndex)
+    End With
     Exit Sub
 HerreroQuitarMateriales_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.HerreroQuitarMateriales", Erl)
 End Sub
 
-Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal Cantidad As Integer, ByVal CantidadElfica As Integer, ByVal CantidadPino As Integer)
+Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByRef Item As t_Obj)
     On Error GoTo CarpinteroQuitarMateriales_Err
-    If ObjData(ItemIndex).Madera > 0 Then Call QuitarObjetos(Wood, Cantidad, UserIndex)
-    If ObjData(ItemIndex).MaderaElfica > 0 Then Call QuitarObjetos(ElvenWood, CantidadElfica, UserIndex)
-    If ObjData(ItemIndex).MaderaPino > 0 Then Call QuitarObjetos(PinoWood, CantidadPino, UserIndex)
+    If Item.ObjIndex = 0 Then Exit Sub
+    With ObjData(Item.ObjIndex)
+        If .Madera > 0 Then Call QuitarObjetos(Wood, .Madera * Item.amount, UserIndex)
+        If .MaderaElfica > 0 Then Call QuitarObjetos(ElvenWood, .MaderaElfica * Item.amount, UserIndex)
+        If .MaderaPino > 0 Then Call QuitarObjetos(PinoWood, .MaderaPino * Item.amount, UserIndex)
+    End With
     Exit Sub
 CarpinteroQuitarMateriales_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.CarpinteroQuitarMateriales", Erl)
 End Sub
 
-Sub AlquimistaQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+Sub AlquimistaQuitarMateriales(ByVal UserIndex As Integer, ByRef Item As t_Obj)
     On Error GoTo AlquimistaQuitarMateriales_Err
-    If ObjData(ItemIndex).Raices > 0 Then Call QuitarObjetos(Raices, ObjData(ItemIndex).Raices, UserIndex)
-    If ObjData(ItemIndex).Botella > 0 Then Call QuitarObjetos(Botella, ObjData(ItemIndex).Botella, UserIndex)
-    If ObjData(ItemIndex).Cuchara > 0 Then Call QuitarObjetos(Cuchara, ObjData(ItemIndex).Cuchara, UserIndex)
-    If ObjData(ItemIndex).Mortero > 0 Then Call QuitarObjetos(Mortero, ObjData(ItemIndex).Mortero, UserIndex)
-    If ObjData(ItemIndex).FrascoAlq > 0 Then Call QuitarObjetos(FrascoAlq, ObjData(ItemIndex).FrascoAlq, UserIndex)
-    If ObjData(ItemIndex).FrascoElixir > 0 Then Call QuitarObjetos(FrascoElixir, ObjData(ItemIndex).FrascoElixir, UserIndex)
-    If ObjData(ItemIndex).Dosificador > 0 Then Call QuitarObjetos(Dosificador, ObjData(ItemIndex).Dosificador, UserIndex)
-    If ObjData(ItemIndex).Orquidea > 0 Then Call QuitarObjetos(Orquidea, ObjData(ItemIndex).Orquidea, UserIndex)
-    If ObjData(ItemIndex).Carmesi > 0 Then Call QuitarObjetos(Carmesi, ObjData(ItemIndex).Carmesi, UserIndex)
-    If ObjData(ItemIndex).HongoDeLuz > 0 Then Call QuitarObjetos(HongoDeLuz, ObjData(ItemIndex).HongoDeLuz, UserIndex)
-    If ObjData(ItemIndex).Esporas > 0 Then Call QuitarObjetos(Esporas, ObjData(ItemIndex).Esporas, UserIndex)
-    If ObjData(ItemIndex).Tuna > 0 Then Call QuitarObjetos(Tuna, ObjData(ItemIndex).Tuna, UserIndex)
-    If ObjData(ItemIndex).Cala > 0 Then Call QuitarObjetos(Cala, ObjData(ItemIndex).Cala, UserIndex)
-    If ObjData(ItemIndex).ColaDeZorro > 0 Then Call QuitarObjetos(ColaDeZorro, ObjData(ItemIndex).ColaDeZorro, UserIndex)
-    If ObjData(ItemIndex).FlorOceano > 0 Then Call QuitarObjetos(FlorOceano, ObjData(ItemIndex).FlorOceano, UserIndex)
-    If ObjData(ItemIndex).FlorRoja > 0 Then Call QuitarObjetos(FlorRoja, ObjData(ItemIndex).FlorRoja, UserIndex)
-    If ObjData(ItemIndex).Hierva > 0 Then Call QuitarObjetos(Hierva, ObjData(ItemIndex).Hierva, UserIndex)
-    If ObjData(ItemIndex).HojasDeRin > 0 Then Call QuitarObjetos(HojasDeRin, ObjData(ItemIndex).HojasDeRin, UserIndex)
-    If ObjData(ItemIndex).HojasRojas > 0 Then Call QuitarObjetos(HojasRojas, ObjData(ItemIndex).HojasRojas, UserIndex)
-    If ObjData(ItemIndex).SemillasPros > 0 Then Call QuitarObjetos(SemillasPros, ObjData(ItemIndex).SemillasPros, UserIndex)
-    If ObjData(ItemIndex).Pimiento > 0 Then Call QuitarObjetos(Pimiento, ObjData(ItemIndex).Pimiento, UserIndex)
+    If Item.ObjIndex = 0 Then Exit Sub
+    With ObjData(Item.ObjIndex)
+        If .Mortero > 0 Then Call QuitarObjetos(Mortero, .Mortero, UserIndex)
+        If .FrascoAlq > 0 Then Call QuitarObjetos(FrascoAlq, .FrascoAlq, UserIndex)
+        If .HongoDeLuz > 0 Then Call QuitarObjetos(HongoDeLuz, .HongoDeLuz, UserIndex)
+        If .Esporas > 0 Then Call QuitarObjetos(Esporas, .Esporas, UserIndex)
+        If .Tuna > 0 Then Call QuitarObjetos(Tuna, .Tuna, UserIndex)
+        If .Cala > 0 Then Call QuitarObjetos(Cala, .Cala, UserIndex)
+        If .ColaDeZorro > 0 Then Call QuitarObjetos(ColaDeZorro, .ColaDeZorro, UserIndex)
+        If .FlorOceano > 0 Then Call QuitarObjetos(FlorOceano, .FlorOceano, UserIndex)
+        If .FlorRoja > 0 Then Call QuitarObjetos(FlorRoja, .FlorRoja, UserIndex)
+        If .SemillasProsperas > 0 Then Call QuitarObjetos(SemillasProsperas, .SemillasProsperas, UserIndex)
+    End With
     Exit Sub
 AlquimistaQuitarMateriales_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.AlquimistaQuitarMateriales", Erl)
 End Sub
 
-Sub SastreQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+Sub SastreQuitarMateriales(ByVal UserIndex As Integer, ByRef Item As t_Obj)
     On Error GoTo SastreQuitarMateriales_Err
-    If ObjData(ItemIndex).PielLobo > 0 Then Call QuitarObjetos(PieldeLobo, ObjData(ItemIndex).PielLobo, UserIndex)
-    If ObjData(ItemIndex).PielOsoPardo > 0 Then Call QuitarObjetos(PieldeOsoPardo, ObjData(ItemIndex).PielOsoPardo, UserIndex)
-    If ObjData(ItemIndex).PielOsoPolaR > 0 Then Call QuitarObjetos(PieldeOsoPolar, ObjData(ItemIndex).PielOsoPolaR, UserIndex)
-    If ObjData(ItemIndex).PielLoboNegro > 0 Then Call QuitarObjetos(PielLoboNegro, ObjData(ItemIndex).PielLoboNegro, UserIndex)
-    If ObjData(ItemIndex).PielTigre > 0 Then Call QuitarObjetos(PielTigre, ObjData(ItemIndex).PielTigre, UserIndex)
-    If ObjData(ItemIndex).PielTigreBengala > 0 Then Call QuitarObjetos(PielTigreBengala, ObjData(ItemIndex).PielTigreBengala, UserIndex)
+    If Item.ObjIndex = 0 Then Exit Sub
+    With ObjData(Item.ObjIndex)
+        If .PielLobo > 0 Then Call QuitarObjetos(PieldeLobo, .PielLobo, UserIndex)
+        If .PielOsoPardo > 0 Then Call QuitarObjetos(PieldeOsoPardo, .PielOsoPardo, UserIndex)
+        If .PielOsoPolaR > 0 Then Call QuitarObjetos(PieldeOsoPolar, .PielOsoPolaR, UserIndex)
+        If .PielLoboNegro > 0 Then Call QuitarObjetos(PielLoboNegro, .PielLoboNegro, UserIndex)
+        If .PielTigre > 0 Then Call QuitarObjetos(PielTigre, .PielTigre, UserIndex)
+        If .PielTigreBengala > 0 Then Call QuitarObjetos(PielTigreBengala, .PielTigreBengala, UserIndex)
+    End With
     Exit Sub
 SastreQuitarMateriales_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.SastreQuitarMateriales", Erl)
@@ -489,33 +490,6 @@ End Function
 
 Function AlquimistaTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
     On Error GoTo AlquimistaTieneMateriales_Err
-    If ObjData(ItemIndex).Raices > 0 Then
-        If Not TieneObjetos(Raices, ObjData(ItemIndex).Raices, UserIndex) Then
-            ' Msg612=No tenés suficientes raíces.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_RAICES, e_FontTypeNames.FONTTYPE_INFO)
-            AlquimistaTieneMateriales = False
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Function
-        End If
-    End If
-    If ObjData(ItemIndex).Botella > 0 Then
-        If Not TieneObjetos(Botella, ObjData(ItemIndex).Botella, UserIndex) Then
-            ' Msg613=No tenés suficientes botellas.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_BOTELLAS, e_FontTypeNames.FONTTYPE_INFO)
-            AlquimistaTieneMateriales = False
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Function
-        End If
-    End If
-    If ObjData(ItemIndex).Cuchara > 0 Then
-        If Not TieneObjetos(Cuchara, ObjData(ItemIndex).Cuchara, UserIndex) Then
-            ' Msg614=No tenés suficientes cucharas.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_CUCHARAS, e_FontTypeNames.FONTTYPE_INFO)
-            AlquimistaTieneMateriales = False
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Function
-        End If
-    End If
     If ObjData(ItemIndex).Mortero > 0 Then
         If Not TieneObjetos(Mortero, ObjData(ItemIndex).Mortero, UserIndex) Then
             ' Msg615=No tenés suficientes morteros.
@@ -529,42 +503,6 @@ Function AlquimistaTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
         If Not TieneObjetos(FrascoAlq, ObjData(ItemIndex).FrascoAlq, UserIndex) Then
             ' Msg616=No tenés suficientes frascos de alquimistas.
             Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_FRASCOS_ALQUIMISTAS, e_FontTypeNames.FONTTYPE_INFO)
-            AlquimistaTieneMateriales = False
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Function
-        End If
-    End If
-    If ObjData(ItemIndex).FrascoElixir > 0 Then
-        If Not TieneObjetos(FrascoElixir, ObjData(ItemIndex).FrascoElixir, UserIndex) Then
-            ' Msg617=No tenés suficientes frascos de elixir superior.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_FRASCOS_ELIXIR_SUPERIOR, e_FontTypeNames.FONTTYPE_INFO)
-            AlquimistaTieneMateriales = False
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Function
-        End If
-    End If
-    If ObjData(ItemIndex).Dosificador > 0 Then
-        If Not TieneObjetos(Dosificador, ObjData(ItemIndex).Dosificador, UserIndex) Then
-            ' Msg618=No tenés suficientes dosificadores.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_DOSIFICADORES, e_FontTypeNames.FONTTYPE_INFO)
-            AlquimistaTieneMateriales = False
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Function
-        End If
-    End If
-    If ObjData(ItemIndex).Orquidea > 0 Then
-        If Not TieneObjetos(Orquidea, ObjData(ItemIndex).Orquidea, UserIndex) Then
-            ' Msg619=No tenés suficientes orquídeas silvestres.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_ORQUIDEAS_SILVESTRES, e_FontTypeNames.FONTTYPE_INFO)
-            AlquimistaTieneMateriales = False
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Function
-        End If
-    End If
-    If ObjData(ItemIndex).Carmesi > 0 Then
-        If Not TieneObjetos(Carmesi, ObjData(ItemIndex).Carmesi, UserIndex) Then
-            ' Msg620=No tenés suficientes raíces carmesí.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_RAICES_CARMESI, e_FontTypeNames.FONTTYPE_INFO)
             AlquimistaTieneMateriales = False
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
@@ -633,46 +571,10 @@ Function AlquimistaTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
             Exit Function
         End If
     End If
-    If ObjData(ItemIndex).Hierva > 0 Then
-        If Not TieneObjetos(Hierva, ObjData(ItemIndex).Hierva, UserIndex) Then
-            ' Msg628=No tenés suficientes hierbas de sangre.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_HIERBAS_SANGRE, e_FontTypeNames.FONTTYPE_INFO)
-            AlquimistaTieneMateriales = False
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Function
-        End If
-    End If
-    If ObjData(ItemIndex).HojasDeRin > 0 Then
-        If Not TieneObjetos(HojasDeRin, ObjData(ItemIndex).HojasDeRin, UserIndex) Then
-            ' Msg629=No tenés suficientes hojas de rin.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_HOJAS_RIN, e_FontTypeNames.FONTTYPE_INFO)
-            AlquimistaTieneMateriales = False
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Function
-        End If
-    End If
-    If ObjData(ItemIndex).HojasRojas > 0 Then
-        If Not TieneObjetos(HojasRojas, ObjData(ItemIndex).HojasRojas, UserIndex) Then
-            ' Msg630=No tenés suficientes hojas rojas.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_HOJAS_ROJAS, e_FontTypeNames.FONTTYPE_INFO)
-            AlquimistaTieneMateriales = False
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Function
-        End If
-    End If
-    If ObjData(ItemIndex).SemillasPros > 0 Then
-        If Not TieneObjetos(SemillasPros, ObjData(ItemIndex).SemillasPros, UserIndex) Then
-            ' Msg631=No tenés suficientes semillas prósperas.
+    If ObjData(ItemIndex).SemillasProsperas > 0 Then
+        If Not TieneObjetos(SemillasProsperas, ObjData(ItemIndex).SemillasProsperas, UserIndex) Then
+            ' Msg627=No tenés suficientes flores rojas.
             Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_SEMILLAS_PROSPERAS, e_FontTypeNames.FONTTYPE_INFO)
-            AlquimistaTieneMateriales = False
-            Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Function
-        End If
-    End If
-    If ObjData(ItemIndex).Pimiento > 0 Then
-        If Not TieneObjetos(Pimiento, ObjData(ItemIndex).Pimiento, UserIndex) Then
-            ' Msg632=No tenés suficientes Pimientos Muerte.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_SUFICIENTES_PIMIENTOS_MUERTE, e_FontTypeNames.FONTTYPE_INFO)
             AlquimistaTieneMateriales = False
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
@@ -897,7 +799,11 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
         Exit Sub
     End If
     If PuedeConstruir(UserIndex, ItemIndex) And PuedeConstruirHerreria(ItemIndex) And KnowsCraftingRecipe(UserIndex, ItemIndex) Then
-        Call HerreroQuitarMateriales(UserIndex, ItemIndex)
+        Dim MiObj As t_Obj
+        MiObj.Amount = 1
+        MiObj.ObjIndex = ItemIndex
+        MiObj.ElementalTags = ObjData(ItemIndex).ElementalTags
+        Call HerreroQuitarMateriales(UserIndex, MiObj)
         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
         Call WriteUpdateSta(UserIndex)
         ' AGREGAR FX
@@ -915,10 +821,6 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
                 Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
             Case Else
         End Select
-        Dim MiObj As t_Obj
-        MiObj.amount = 1
-        MiObj.ObjIndex = ItemIndex
-        MiObj.ElementalTags = ObjData(ItemIndex).ElementalTags
         If Not MeterItemEnInventario(UserIndex, MiObj) Then
             Call TirarItemAlPiso(UserList(UserIndex).pos, MiObj)
         End If
@@ -927,7 +829,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
         If IsFeatureEnabled("gain_exp_while_working") Then
-            Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Blacksmith)
+            Call GiveExpWhileWorking(UserIndex, MiObj, e_JobsTypes.Blacksmith)
             Call WriteUpdateExp(UserIndex)
             Call CheckUserLevel(UserIndex)
         End If
@@ -997,9 +899,6 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         Exit Sub
     End If
     Dim cantidad_a_construir    As Long
-    Dim madera_requerida        As Long
-    Dim madera_elfica_requerida As Long
-    Dim madera_pino_requerida   As Long
     cantidad_a_construir = IIf(UserList(UserIndex).Trabajo.Cantidad >= cantidad_maxima, cantidad_maxima, UserList(UserIndex).Trabajo.Cantidad)
     If cantidad_a_construir <= 0 Then
         Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -1018,16 +917,14 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Sub
         End If
-        If ObjData(ItemIndex).Madera > 0 Then madera_requerida = ObjData(ItemIndex).Madera * cantidad_a_construir
-        If ObjData(ItemIndex).MaderaElfica > 0 Then madera_elfica_requerida = ObjData(ItemIndex).MaderaElfica * cantidad_a_construir
-        If ObjData(ItemIndex).MaderaPino > 0 Then madera_pino_requerida = ObjData(ItemIndex).MaderaPino * cantidad_a_construir
-        Call CarpinteroQuitarMateriales(UserIndex, ItemIndex, madera_requerida, madera_elfica_requerida, madera_pino_requerida)
-        UserList(UserIndex).Trabajo.Cantidad = UserList(UserIndex).Trabajo.Cantidad - cantidad_a_construir
-        Call WriteTextCharDrop(UserIndex, "+" & cantidad_a_construir, UserList(UserIndex).Char.charindex, vbWhite)
         Dim MiObj As t_Obj
         MiObj.amount = cantidad_a_construir
         MiObj.ObjIndex = ItemIndex
         MiObj.ElementalTags = ObjData(ItemIndex).ElementalTags
+        Call CarpinteroQuitarMateriales(UserIndex, MiObj)
+        UserList(UserIndex).Trabajo.Cantidad = UserList(UserIndex).Trabajo.Cantidad - cantidad_a_construir
+        Call WriteTextCharDrop(UserIndex, "+" & cantidad_a_construir, UserList(UserIndex).Char.charindex, vbWhite)
+
         ' AGREGAR FX
         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
         If Not MeterItemEnInventario(UserIndex, MiObj) Then
@@ -1035,7 +932,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         End If
         Call SubirSkill(UserIndex, e_Skill.Carpinteria)
         If IsFeatureEnabled("gain_exp_while_working") Then
-            Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Carpenter)
+            Call GiveExpWhileWorking(UserIndex, MiObj, e_JobsTypes.Carpenter)
             Call WriteUpdateExp(UserIndex)
             Call CheckUserLevel(UserIndex)
         End If
@@ -1081,19 +978,19 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         Call WriteUpdateSta(UserIndex)
         ' AGREGAR FX
         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
-        Call AlquimistaQuitarMateriales(UserIndex, ItemIndex)
-        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(1152, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         Dim MiObj As t_Obj
         MiObj.amount = 1
         MiObj.ObjIndex = ItemIndex
         MiObj.ElementalTags = ObjData(ItemIndex).ElementalTags
+        Call AlquimistaQuitarMateriales(UserIndex, MiObj)
+        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(1152, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         If Not MeterItemEnInventario(UserIndex, MiObj) Then
             Call TirarItemAlPiso(UserList(UserIndex).pos, MiObj)
         End If
         Call SubirSkill(UserIndex, e_Skill.Alquimia)
         Call UpdateUserInv(True, UserIndex, 0)
         If IsFeatureEnabled("gain_exp_while_working") Then
-            Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Alchemist)
+            Call GiveExpWhileWorking(UserIndex, MiObj, e_JobsTypes.Alchemist)
             Call WriteUpdateExp(UserIndex)
             Call CheckUserLevel(UserIndex)
         End If
@@ -1124,13 +1021,13 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
             UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.TailorSewingbox Then
         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
         Call WriteUpdateSta(UserIndex)
-        Call SastreQuitarMateriales(UserIndex, ItemIndex)
-        Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
-        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(63, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         Dim MiObj As t_Obj
         MiObj.amount = 1
         MiObj.ObjIndex = ItemIndex
         MiObj.ElementalTags = ObjData(ItemIndex).ElementalTags
+        Call SastreQuitarMateriales(UserIndex, MiObj)
+        Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
+        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(63, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         If Not MeterItemEnInventario(UserIndex, MiObj) Then
             Call TirarItemAlPiso(UserList(UserIndex).pos, MiObj)
         End If
@@ -2051,33 +1948,94 @@ Public Function GetExtractResourceForLevel(ByVal level As Integer) As Integer
     GetExtractResourceForLevel = RandomNumber(lower, upper)
 End Function
 
-Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal JobType As Byte)
+Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_Obj, ByVal JobType As Byte)
     On Error GoTo GiveExpWhileWorking_Err:
-    Dim tmpExp As Byte
+    Dim tmpExp As Long
+    With ObjData(Item.ObjIndex)
     Select Case JobType
         Case e_JobsTypes.Miner
-            tmpExp = SvrConfig.GetValue("MiningExp")
+            'mining action should only be awarded when succesfull, not based on the material as 18/03/26
+            tmpExp = ComputeWorkingExp(1, SvrConfig.GetValue("MiningExp"), 1)
         Case e_JobsTypes.Woodcutter
-            tmpExp = SvrConfig.GetValue("FellingExp")
+            'wood cutting action should only be awarded when succesfull, not based on the material as 18/03/26
+            tmpExp = ComputeWorkingExp(1, SvrConfig.GetValue("FellingExp"), 1)
         Case e_JobsTypes.Blacksmith
-            tmpExp = SvrConfig.GetValue("ForgingExp")
+            If .LingH > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.LingH, SvrConfig.GetValue("IronForgingExp"), Item.Amount)
+            End If
+            If .LingP > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.LingP, SvrConfig.GetValue("SilverForgingExp"), Item.Amount)
+            End If
+            If .LingO > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.LingO, SvrConfig.GetValue("GoldForgingExp"), Item.Amount)
+            End If
+            If .Blodium > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.Blodium, SvrConfig.GetValue("BlodiumForgingExp"), Item.Amount)
+            End If
         Case e_JobsTypes.Carpenter
-            tmpExp = SvrConfig.GetValue("CarpentryExp")
-        Case e_JobsTypes.Woodcutter
-            tmpExp = SvrConfig.GetValue("FellingExp")
+            If .Madera > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.Madera, SvrConfig.GetValue("WoodCarpentryExp"), Item.Amount)
+            End If
+            If .MaderaElfica > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.MaderaElfica, SvrConfig.GetValue("ElvenWoodCarpentryExp"), Item.Amount)
+            End If
         Case e_JobsTypes.Fisherman
-            If ObjData(ItemIndex).Power >= 2 Then
-                tmpExp = SvrConfig.GetValue("FishingExp")
+            If .Power >= 2 Then
+                'fishing action should only be awarded when succesfull, not based on the material but based on the rod's power as of 18/03/26
+                tmpExp = ComputeWorkingExp(1, SvrConfig.GetValue("FishingExp"), 1)
             End If
         Case e_JobsTypes.Alchemist
-            tmpExp = SvrConfig.GetValue("MixingExp")
+            If .FlorRoja > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.FlorRoja, SvrConfig.GetValue("MixingExp"), Item.Amount)
+            End If
+            If .FlorOceano > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.FlorOceano, SvrConfig.GetValue("MixingExp"), Item.Amount)
+            End If
+            If .ColaDeZorro > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.ColaDeZorro, SvrConfig.GetValue("MixingExp"), Item.Amount)
+            End If
+            If .Tuna > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.Tuna, SvrConfig.GetValue("MixingExp"), Item.Amount)
+            End If
+            If .HongoDeLuz > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.HongoDeLuz, SvrConfig.GetValue("MixingExp"), Item.Amount)
+            End If
+            If .Cala > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.Cala, SvrConfig.GetValue("MixingExp"), Item.Amount)
+            End If
         Case Else
             tmpExp = SvrConfig.GetValue("ElseExp")
     End Select
+    End With
     UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + tmpExp
     Exit Function
 GiveExpWhileWorking_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.GiveExpWhileWorking", Erl)
+End Function
+
+Private Function ComputeWorkingExp(ByVal ItemMaterialProperty As Integer, ByVal ExpMultiplier As Long, ByVal ItemAmount As Long)
+    'as of 18/03/26 MaterialProperties are integers, not planned to get changed to long
+    If ItemMaterialProperty = 0 Then
+        Exit Function
+    End If
+    If ExpMultiplier = 0 Then
+        Exit Function
+    End If
+    If ItemAmount = 0 Then
+        Exit Function
+    End If
+    
+    Dim acumulator As Currency
+    
+    acumulator = CCur(ItemMaterialProperty) * CCur(ExpMultiplier) * CCur(ItemAmount)
+    
+    If acumulator > MAX_LONG Then
+        ComputeWorkingExp = MAX_LONG
+    ElseIf acumulator < 0 Then
+        ComputeWorkingExp = 0
+    Else
+        ComputeWorkingExp = CLng(acumulator)
+    End If
 End Function
 
 Public Function KnowsCraftingRecipe(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
