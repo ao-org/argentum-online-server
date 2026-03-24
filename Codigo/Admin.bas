@@ -264,7 +264,7 @@ Private Function IsRemovableInventoryItemInJail(ByVal ObjIndex As Integer) As Bo
 End Function
 
 Private Sub RemoveCriticalObjectsWhileEnteringJail(ByVal UserIndex As Integer)
-    On Error GoTo ConfiscarObjetosDeCarcel_Err
+    On Error GoTo RemoveCriticalObjectsWhileEnteringJail_Err
     Dim Slot As Integer
     With UserList(UserIndex)
         For Slot = 1 To .CurrentInventorySlots
@@ -278,7 +278,7 @@ Private Sub RemoveCriticalObjectsWhileEnteringJail(ByVal UserIndex As Integer)
     End With
     Exit Sub
 RemoveCriticalObjectsWhileEnteringJail_Err:
-    Call TraceError(Err.Number, Err.Description, "Admin.ConfiscarObjetosDeCarcel", Erl)
+    Call TraceError(Err.Number, Err.Description, "Admin.RemoveCriticalObjectsWhileEnteringJail", Erl)
 End Sub
 
 Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optional ByVal GmName As String = vbNullString)
