@@ -2027,7 +2027,7 @@ Private Function ComputeWorkingExp(ByVal ItemMaterialProperty As Integer, ByVal 
     
     Dim acumulator As Currency
     
-    acumulator = CCur(ItemMaterialProperty) * ccir(ExpMultiplier) * CCur(ItemAmount)
+    acumulator = CCur(ItemMaterialProperty) * CCur(ExpMultiplier) * CCur(ItemAmount)
     
     If acumulator > MAX_LONG Then
         ComputeWorkingExp = MAX_LONG
