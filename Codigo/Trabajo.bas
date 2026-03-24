@@ -1948,7 +1948,7 @@ Public Function GetExtractResourceForLevel(ByVal level As Integer) As Integer
     GetExtractResourceForLevel = RandomNumber(lower, upper)
 End Function
 
-Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_Obj, ByVal JobType As Byte)
+Public Sub GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_Obj, ByVal JobType As Byte)
     On Error GoTo GiveExpWhileWorking_Err:
     Dim tmpExp As Long
     With ObjData(Item.ObjIndex)
@@ -2008,12 +2008,12 @@ Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_
     End Select
     End With
     UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + tmpExp
-    Exit Function
+    Exit Sub
 GiveExpWhileWorking_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.GiveExpWhileWorking", Erl)
-End Function
+End Sub
 
-Private Function ComputeWorkingExp(ByVal ItemMaterialProperty As Integer, ByVal ExpMultiplier As Long, ByVal ItemAmount As Long)
+Private Function ComputeWorkingExp(ByVal ItemMaterialProperty As Integer, ByVal ExpMultiplier As Long, ByVal ItemAmount As Long) As Long
     'as of 18/03/26 MaterialProperties are integers, not planned to get changed to long
     If ItemMaterialProperty = 0 Then
         Exit Function
