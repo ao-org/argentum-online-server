@@ -219,49 +219,6 @@ PurgarPenas_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.PurgarPenas", Erl)
 End Sub
 
-Private Function CargarObjetosConfiscadosCarcel() As Dictionary
-    On Error GoTo CargarObjetosConfiscadosCarcel_Err
-    Dim ArchivoConfiguracion As String
-    Dim Configuracion As clsIniManager
-    Dim Objetos As Dictionary
-    Dim ObjetosConfigurados() As String
-    Dim i As Long
-    Dim ObjIndex As Integer
-    Dim ValorObjetos As String
-
-    Set Objetos = New Dictionary
-    ArchivoConfiguracion = App.path & "\ConfiscarCarcel.ini"
-
-    If Not FileExist(ArchivoConfiguracion) Then
-        Set CargarObjetosConfiscadosCarcel = Objetos
-        Exit Function
-    End If
-
-    Set Configuracion = New clsIniManager
-    Call Configuracion.Initialize(ArchivoConfiguracion)
-    ValorObjetos = Trim$(Configuracion.GetValue("CARCEL", "Objetos"))
-
-    If LenB(ValorObjetos) = 0 Then
-        Set CargarObjetosConfiscadosCarcel = Objetos
-        Exit Function
-    End If
-
-    ObjetosConfigurados = Split(ValorObjetos, ",")
-    For i = LBound(ObjetosConfigurados) To UBound(ObjetosConfigurados)
-        ObjIndex = val(Trim$(ObjetosConfigurados(i)))
-        If ObjIndex > 0 Then
-            If Not Objetos.Exists(CStr(ObjIndex)) Then
-                Call Objetos.Add(CStr(ObjIndex), True)
-            End If
-        End If
-    Next i
-
-    Set CargarObjetosConfiscadosCarcel = Objetos
-    Exit Function
-CargarObjetosConfiscadosCarcel_Err:
-    Call TraceError(Err.Number, Err.Description, "Admin.CargarObjetosConfiscadosCarcel", Erl)
-    Set CargarObjetosConfiscadosCarcel = New Dictionary
-End Function
 
 Private Sub DetenerTrabajoPorCarcel(ByVal UserIndex As Integer)
     On Error GoTo DetenerTrabajoPorCarcel_Err
@@ -287,29 +244,40 @@ DetenerTrabajoPorCarcel_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.DetenerTrabajoPorCarcel", Erl)
 End Sub
 
-Private Sub ConfiscarObjetosDeCarcel(ByVal UserIndex As Integer)
-    On Error GoTo ConfiscarObjetosDeCarcel_Err
-    Dim ObjetosConfiscados As Dictionary
-    Dim Slot As Integer
 
-    Set ObjetosConfiscados = CargarObjetosConfiscadosCarcel()
-    If ObjetosConfiscados Is Nothing Then Exit Sub
-    If ObjetosConfiscados.Count = 0 Then Exit Sub
-
-    With UserList(UserIndex)
-        For Slot = 1 To .CurrentInventorySlots
-            If ObjetosConfiscados.Exists(CStr(.invent.Object(Slot).ObjIndex)) Then
-                Call QuitarUserInvItem(UserIndex, CByte(Slot), .invent.Object(Slot).amount)
-            End If
-        Next Slot
-
-        If .flags.ModificoInventario Then
-            Call UpdateUserInv(True, UserIndex, 0)
+Private Function IsRemovableInventoryItemInJail(ByVal ObjIndex As Integer) As Boolean
+    With ObjData(ObjIndex)
+        'fish
+        If .OBJType = otUseOnce And .Subtipo = 1 Then
+            IsRemovableInventoryItemInJail = True
+            Exit Function
+        End If
+        If .OBJType = otWood Then
+            IsRemovableInventoryItemInJail = True
+            Exit Function
+        End If
+        If .OBJType = otMinerals Then
+            IsRemovableInventoryItemInJail = True
+            Exit Function
         End If
     End With
+End Function
 
+Private Sub RemoveCriticalObjectsWhileEnteringJail(ByVal UserIndex As Integer)
+    On Error GoTo ConfiscarObjetosDeCarcel_Err
+    Dim Slot As Integer
+    With UserList(UserIndex)
+        For Slot = 1 To .CurrentInventorySlots
+                If .invent.Object(Slot).ObjIndex > 0 Then
+                    If IsRemovableInventoryItemInJail(.invent.Object(Slot).ObjIndex) Then
+                        Call QuitarUserInvItem(UserIndex, CByte(Slot), .invent.Object(Slot).Amount)
+                    End If
+                End If
+        Next Slot
+        Call UpdateUserInv(True, UserIndex, 0)
+    End With
     Exit Sub
-ConfiscarObjetosDeCarcel_Err:
+RemoveCriticalObjectsWhileEnteringJail_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.ConfiscarObjetosDeCarcel", Erl)
 End Sub
 
