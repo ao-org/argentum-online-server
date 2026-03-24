@@ -286,7 +286,7 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
     If EsGM(UserIndex) Then Exit Sub
     UserList(UserIndex).Counters.Pena = minutos
     Call DetenerTrabajoPorCarcel(UserIndex)
-    Call ConfiscarObjetosDeCarcel(UserIndex)
+    Call RemoveCriticalObjectsWhileEnteringJail(UserIndex)
     Call WarpUserChar(UserIndex, Prision.Map, Prision.x, Prision.y, True)
     If LenB(GmName) = 0 Then
         'Msg1107= Has sido encarcelado, deberas permanecer en la carcel  ¬1 minutos.
