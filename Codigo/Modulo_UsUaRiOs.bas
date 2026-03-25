@@ -482,7 +482,6 @@ Dim tStr                        As String
         .flags.LegionarySecure = True
         .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
         Call WriteInventoryUnlockSlots(UserIndex)
-        Call LoadUserIntervals(UserIndex)
         Call WriteIntervals(UserIndex)
         Call UpdateUserInv(True, UserIndex, 0)
         Call UpdateUserHechizos(True, UserIndex, 0)

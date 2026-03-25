@@ -2973,7 +2973,6 @@ Public Type t_User
     CurrentInventorySlots As Byte
     BancoInvent As t_BancoInventario
     Counters As t_UserCounters
-    Intervals As t_UserIntervals
     Stats As t_UserStats
     Stats_bk As t_UserStats
     Modifiers As t_ActiveModifiers

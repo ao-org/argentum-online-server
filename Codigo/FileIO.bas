@@ -2764,27 +2764,6 @@ LoadRecompensasFaccion_Err:
     Call TraceError(Err.Number, Err.Description, "ES.LoadRecompensasFaccion", Erl)
 End Sub
 
-Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
-    On Error GoTo LoadUserIntervals_Err
-    With UserList(UserIndex)
-        .Intervals.Hit = IntervaloUserPuedeAtacar
-        .Intervals.Bow = IntervaloFlechasCazadores
-        .Intervals.Magic = IntervaloUserPuedeCastear
-        .Intervals.ExtractWork = IntervaloTrabajarExtraer
-        .Intervals.BuildWork = IntervaloTrabajarConstruir
-        .Intervals.Walk = IntervaloCaminar
-        .Intervals.DropItem = IntervaloTirar
-        .Intervals.UseItemKey = IntervaloUserPuedeUsarU
-        .Intervals.UseItemClick = IntervaloUserPuedeUsarClic
-        .Intervals.HitMagic = IntervaloGolpeMagia
-        .Intervals.MagicHit = IntervaloMagiaGolpe
-        .Intervals.HitUseItem = IntervaloGolpeUsar
-        .Intervals.Hide = IntervaloOculto
-    End With
-    Exit Sub
-LoadUserIntervals_Err:
-    Call TraceError(Err.Number, Err.Description, "ES.LoadUserIntervals", Erl)
-End Sub
 
 Function CountFiles(strFolder As String, strPattern As String) As Integer
     On Error GoTo CountFiles_Err
