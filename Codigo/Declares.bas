@@ -2783,22 +2783,6 @@ Public Type t_UserCounters
     LastTransferGold As Long
 End Type
 
-Public Type t_UserIntervals
-    Hit As Long
-    Bow As Long
-    Magic As Long
-    ExtractWork As Long
-    BuildWork As Long
-    Walk As Long
-    DropItem As Long
-    UseItemKey As Long
-    UseItemClick As Long
-    HitMagic As Long
-    MagicHit As Long
-    HitUseItem As Long
-    Hide As Long
-End Type
-
 Public Type t_QuestStats
     Quests(1 To MAXUSERQUESTS) As t_UserQuest
     NumQuestsDone As Integer
