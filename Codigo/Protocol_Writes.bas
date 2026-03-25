@@ -1446,6 +1446,7 @@ Public Sub WriteIntervals(ByVal UserIndex As Integer)
         Call Writer.WriteInt32(IntervaloOculto)
         Call Writer.WriteInt32(IntervaloTalk)
         Call Writer.WriteInt32(IntervaloLeftClick)
+        Call Writer.WriteInt32(IntervaloMeditar)
     End With
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
