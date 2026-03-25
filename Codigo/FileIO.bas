@@ -1941,6 +1941,9 @@ Sub LoadPacketRatePolicy()
         MacroIterations(i) = val(Lector.GetValue(PacketName, "Iterations"))
         PacketTimerThreshold(i) = val(Lector.GetValue(PacketName, "Limit"))
     Next i
+
+    IntervaloTalk = PacketTimerThreshold(PacketNames.Talk)
+    IntervaloLeftClick = PacketTimerThreshold(PacketNames.LeftClick)
     Set Lector = Nothing
     Exit Sub
 LoadPacketRatePolicy_Err:
