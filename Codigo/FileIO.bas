@@ -2767,31 +2767,19 @@ End Sub
 Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
     On Error GoTo LoadUserIntervals_Err
     With UserList(UserIndex)
-        If False Then '.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios) Then
-            .Intervals.Arco = 50
-            .Intervals.Caminar = IntervaloCaminar
-            .Intervals.Golpe = 50
-            .Intervals.Magia = 50
-            .Intervals.GolpeMagia = 50
-            .Intervals.MagiaGolpe = 50
-            .Intervals.GolpeUsar = 0
-            .Intervals.TrabajarExtraer = IntervaloTrabajarExtraer
-            .Intervals.TrabajarConstruir = IntervaloTrabajarConstruir
-            .Intervals.UsarU = 50
-            .Intervals.UsarClic = 50
-        Else
-            .Intervals.Arco = IntervaloFlechasCazadores
-            .Intervals.Caminar = IntervaloCaminar
-            .Intervals.Golpe = IntervaloUserPuedeAtacar
-            .Intervals.Magia = IntervaloUserPuedeCastear
-            .Intervals.GolpeMagia = IntervaloGolpeMagia
-            .Intervals.MagiaGolpe = IntervaloMagiaGolpe
-            .Intervals.GolpeUsar = IntervaloGolpeUsar
-            .Intervals.TrabajarExtraer = IntervaloTrabajarExtraer
-            .Intervals.TrabajarConstruir = IntervaloTrabajarConstruir
-            .Intervals.UsarU = IntervaloUserPuedeUsarU
-            .Intervals.UsarClic = IntervaloUserPuedeUsarClic
-        End If
+        .Intervals.Hit = IntervaloUserPuedeAtacar
+        .Intervals.Bow = IntervaloFlechasCazadores
+        .Intervals.Magic = IntervaloUserPuedeCastear
+        .Intervals.ExtractWork = IntervaloTrabajarExtraer
+        .Intervals.BuildWork = IntervaloTrabajarConstruir
+        .Intervals.Walk = IntervaloCaminar
+        .Intervals.DropItem = IntervaloTirar
+        .Intervals.UseItemKey = IntervaloUserPuedeUsarU
+        .Intervals.UseItemClick = IntervaloUserPuedeUsarClic
+        .Intervals.HitMagic = IntervaloGolpeMagia
+        .Intervals.MagicHit = IntervaloMagiaGolpe
+        .Intervals.HitUseItem = IntervaloGolpeUsar
+        .Intervals.Hide = IntervaloOculto
     End With
     Exit Sub
 LoadUserIntervals_Err:

@@ -1666,7 +1666,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
             If Not EsGM(UserIndex) And .Char.speeding > 0 Then
                 Dim ElapsedTimeStep As Double, MinTimeStep As Long, DeltaStep As Single
                 ElapsedTimeStep = TicksElapsed(.Counters.LastStep, currentTick)
-                MinTimeStep = .Intervals.Caminar / .Char.speeding
+                MinTimeStep = .Intervals.Walk / .Char.speeding
                 DeltaStep = (MinTimeStep - ElapsedTimeStep) / MinTimeStep
                 If DeltaStep > 0 Then
                     .Counters.SpeedHackCounter = .Counters.SpeedHackCounter + DeltaStep

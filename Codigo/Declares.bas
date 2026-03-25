@@ -2784,17 +2784,19 @@ Public Type t_UserCounters
 End Type
 
 Public Type t_UserIntervals
-    Magia As Long
-    Golpe As Long
-    Arco As Long
-    UsarU As Long
-    UsarClic As Long
-    Caminar As Long
-    GolpeMagia As Long
-    MagiaGolpe As Long
-    GolpeUsar As Long
-    TrabajarExtraer As Long
-    TrabajarConstruir As Long
+    Hit As Long
+    Bow As Long
+    Magic As Long
+    ExtractWork As Long
+    BuildWork As Long
+    Walk As Long
+    DropItem As Long
+    UseItemKey As Long
+    UseItemClick As Long
+    HitMagic As Long
+    MagicHit As Long
+    HitUseItem As Long
+    Hide As Long
 End Type
 
 Public Type t_QuestStats

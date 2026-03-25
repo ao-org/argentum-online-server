@@ -38,7 +38,7 @@ Public Function IntervaloPermiteLanzarSpell(ByVal UserIndex As Integer, Optional
     On Error GoTo IntervaloPermiteLanzarSpell_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
     With UserList(UserIndex)
-        If TicksElapsed(.Counters.TimerLanzarSpell, nowRaw) >= .Intervals.Magia Then
+        If TicksElapsed(.Counters.TimerLanzarSpell, nowRaw) >= .Intervals.Magic Then
             If Actualizar Then
                 .Counters.TimerLanzarSpell = nowRaw
                 ' Actualizo spell-attack
@@ -56,7 +56,7 @@ Public Function IntervaloPermiteAtacar(ByVal UserIndex As Integer, Optional ByVa
     On Error GoTo IntervaloPermiteAtacar_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
     With UserList(UserIndex)
-        If TicksElapsed(.Counters.TimerPuedeAtacar, nowRaw) >= .Intervals.Golpe Then
+        If TicksElapsed(.Counters.TimerPuedeAtacar, nowRaw) >= .Intervals.Hit Then
             If Actualizar Then
                 .Counters.TimerPuedeAtacar = nowRaw
                 .Counters.TimerGolpeMagia = nowRaw
