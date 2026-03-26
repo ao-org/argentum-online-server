@@ -1,7 +1,7 @@
 Attribute VB_Name = "Protocol"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -246,6 +246,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Else
                 'If UserIndex is missing then kick out
                 Call KickConnection(ConnectionID)
+                Exit Function ' Don't process incoming data
             End If
         Else
             'Got eLoginExistingChar/eLoginNewChar, here UserIndex must not be assigned
@@ -253,6 +254,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             If Not IsMissing(optional_user_index) Then
                 'If UserIndex is not missing then kick out
                 Call KickConnection(ConnectionID)
+                Exit Function ' Don't process incoming data
             End If
         End If
     #ElseIf PYMMO = 0 Then
@@ -640,8 +642,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleKillNPCNoRespawn(UserIndex)
         Case ClientPacketID.eKillAllNearbyNPCs
             Call HandleKillAllNearbyNPCs(UserIndex)
-        Case ClientPacketID.eLastIP
-            Call HandleLastIP(UserIndex)
         Case ClientPacketID.eChangeMOTD
             Call HandleChangeMOTD(UserIndex)
         Case ClientPacketID.eSetMOTD
@@ -7747,7 +7747,7 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
         obj.ObjIndex = .invent.EquippedWorkingToolObjIndex
         caniaOld = .invent.EquippedWorkingToolObjIndex
         obj.amount = 1
-        shouldBreak = (RandomNumber(1, 3) = 1)
+        shouldBreak = 1
         For LoopC = 1 To MAX_INVENTORY_SLOTS
             'Rastreo la caña que está usando en el inventario y se la rompo
             If .invent.Object(LoopC).ObjIndex = .invent.EquippedWorkingToolObjIndex Then

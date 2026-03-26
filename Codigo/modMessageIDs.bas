@@ -1,7 +1,7 @@
 Attribute VB_Name = "modMessageIDs"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2025 Noland Studios LTD
+'    Copyright (C) 2025-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -1214,5 +1214,6 @@ Public Const MSG_MATADO_TODAS_CRIATURAS_MISION_REQUERIA As Integer = 2160
 Public Const MSG_ACEPTAR_NUEVO_MIEMBRO_NECESITAS_MONEDAS_ORO As Integer = 2163
 Public Const MSG_UTILIZAR_COMANDO_NECESITAS_MONEDAS_ORO As Integer = 2164
 Public Const MSG_NO_USUARIO_ENCUENTRA_ZONA_INSEGURA_PUEDES_ACERCARTE As Integer = 2165
+Public Const MSG_MISSION_CLASS_NOT_AVAILABLE = 2167
 Public Const MSG_SOLO_TRABAJADORES_PUEDEN_REGISTRAR_PECES_ESPECIALES As Integer = 2168
 Public Const MSG_THREAD_NOT_STRONG_ENOUGH = 2170

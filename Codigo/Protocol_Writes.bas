@@ -1,7 +1,7 @@
 Attribute VB_Name = "Protocol_Writes"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -2799,7 +2799,13 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
     Call Writer.WriteInt16(QuestIndex)
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
     Call Writer.WriteInt8(QuestList(QuestIndex).LimitLevel)
-    Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClass)
+    'Enviamos clases requeridas
+    Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClassesCount)
+    If QuestList(QuestIndex).RequiredClassesCount > 0 Then
+        For i = 1 To QuestList(QuestIndex).RequiredClassesCount
+            Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClass(i))
+        Next i
+    End If
     Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
     'Enviamos la cantidad de npcs requeridos
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredNPCs)
@@ -2902,7 +2908,13 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
         Call Writer.WriteInt16(QuestIndex)
         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
         Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
-        Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClass)
+        'Enviamos clases requeridas
+        Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClassesCount)
+        If QuestList(QuestIndex).RequiredClassesCount > 0 Then
+            For i = 1 To QuestList(QuestIndex).RequiredClassesCount
+                Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClass(i))
+            Next i
+        End If
         Call Writer.WriteInt8(QuestList(QuestIndex).LimitLevel)
         'Enviamos la cantidad de npcs requeridos
         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredNPCs)

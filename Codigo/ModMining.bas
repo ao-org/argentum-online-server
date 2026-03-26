@@ -1,4 +1,21 @@
 Attribute VB_Name = "ModMining"
+' Argentum 20 Game Server
+'
+'    Copyright (C) 2026 Noland Studios LTD
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
+'
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'
 Option Explicit
 
 Public Sub MineMinerals(ByVal UserIndex As Integer)
@@ -40,7 +57,7 @@ Public Sub MineMinerals(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, MSG_EXTRACTED_SOME_MINERALS, e_FontTypeNames.FONTTYPE_INFO)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.OldMiningPickaxeHit, .pos.x, .pos.y))
             If IsFeatureEnabled("gain_exp_while_working") Then
-                Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Miner)
+                Call GiveExpWhileWorking(UserIndex, MiObj, e_JobsTypes.Miner)
                 Call WriteUpdateExp(UserIndex)
                 Call CheckUserLevel(UserIndex)
             End If
