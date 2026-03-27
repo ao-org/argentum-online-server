@@ -1,0 +1,14 @@
+﻿name: AI Fix Issue
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  ai-fix:
+    if: >
+      github.event.label.name == 'ai-fix' &&
+      github.event.issue.author_association != 'NONE'
+    uses: ao-org/.github/workflows/ai-fix-reusable.yml@master
+    secrets:
+      DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
