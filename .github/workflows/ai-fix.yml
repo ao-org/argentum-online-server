@@ -9,6 +9,6 @@ jobs:
     if: >
       github.event.label.name == 'ai-fix' &&
       github.event.issue.author_association != 'NONE'
-    uses: ao-org/.github/.github/workflows/ai-fix-reusable.yml@main
+    uses: ao-org/.github/.github/workflows/ai-fix-reusable.yml@master
     secrets:
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}

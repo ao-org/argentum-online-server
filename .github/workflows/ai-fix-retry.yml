@@ -5,7 +5,7 @@ on:
 
 jobs:
   ai-retry:
-    uses: ao-org/.github/.github/workflows/ai-fix-retry-reusable.yml@main
+    uses: ao-org/.github/.github/workflows/ai-fix-retry-reusable.yml@master
     secrets:
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
       JENKINS_USER: ${{ secrets.JENKINS_USER }}
