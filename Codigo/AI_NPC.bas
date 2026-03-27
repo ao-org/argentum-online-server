@@ -653,15 +653,31 @@ Public Function ComputeNextHeadingPos(ByVal NpcIndex As Integer) As t_WorldPos
 End Function
 
 Public Function NPCHasAUserInFront(ByVal NpcIndex As Integer, ByRef UserIndex As Integer) As Boolean
-    On Error Resume Next
+    On Error GoTo NPCHasAUserInFront_Err
     Dim NextPosNPC As t_WorldPos
+    If UserIndex <= 0 Or UserIndex > LastUser Then
+        NPCHasAUserInFront = False
+        Exit Function
+    End If
     If UserList(UserIndex).flags.Muerto = 1 Then
         NPCHasAUserInFront = False
         Exit Function
     End If
     NextPosNPC = ComputeNextHeadingPos(NpcIndex)
+    If NextPosNPC.Map <= 0 Or NextPosNPC.Map > NumMaps Then
+        NPCHasAUserInFront = False
+        Exit Function
+    End If
+    If Not InMapBounds(NextPosNPC.Map, NextPosNPC.x, NextPosNPC.y) Then
+        NPCHasAUserInFront = False
+        Exit Function
+    End If
     UserIndex = MapData(NextPosNPC.Map, NextPosNPC.x, NextPosNPC.y).UserIndex
     NPCHasAUserInFront = (UserIndex > 0)
+    Exit Function
+NPCHasAUserInFront_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.NPCHasAUserInFront", Erl)
+    NPCHasAUserInFront = False
 End Function
 
 Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
