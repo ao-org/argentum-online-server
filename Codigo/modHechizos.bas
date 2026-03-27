@@ -729,7 +729,17 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
         TargetPos.Map = .flags.TargetMap
         TargetPos.x = .flags.TargetX
         TargetPos.y = .flags.TargetY
-        h = .Stats.UserHechizos(.flags.Hechizo)
+        Dim spellSlot As Integer
+        spellSlot = .flags.Hechizo
+        If spellSlot < 1 Or spellSlot > MAXUSERHECHIZOS Then
+            Call TraceError(9, "Invalid spell slot=" & spellSlot, "modHechizos.HechizoInvocacion", Erl)
+            Exit Sub
+        End If
+        h = .Stats.UserHechizos(spellSlot)
+        If h < LBound(Hechizos) Or h > UBound(Hechizos) Then
+            Call TraceError(9, "Invalid Hechizo id=" & h & " (slot=" & spellSlot & ")", "modHechizos.HechizoInvocacion", Erl)
+            Exit Sub
+        End If
         If Hechizos(h).Invoca = 1 Then
             ' No puede invocar en este mapa
             If MapInfo(.pos.Map).NoMascotas Then
@@ -847,7 +857,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
     End With
     Exit Sub
 HechizoInvocacion_Err:
-    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoInvocacion")
+    Call TraceError(Err.Number, Err.Description & " (h=" & h & ", slot=" & spellSlot & ")", "modHechizos.HechizoInvocacion", Erl)
 End Sub
 
 Sub HechizoTerrenoEstado(ByVal UserIndex As Integer, ByRef b As Boolean)
