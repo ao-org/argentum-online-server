@@ -17,7 +17,7 @@ Attribute VB_Name = "AI"
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'    Copyright (C) 2002 Márquez Pablo Ignacio
+'    Copyright (C) 2002 Mï¿½rquez Pablo Ignacio
 '
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
@@ -171,7 +171,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
         End If
         ' Si el NPC tiene un objetivo
         If IsValidUserRef(.TargetUser) Then
-            'asignamos heading nuevo al NPC según el Target del nuevo usuario: .Char.Heading, si la distancia es <= 1
+            'asignamos heading nuevo al NPC segï¿½n el Target del nuevo usuario: .Char.Heading, si la distancia es <= 1
             If NPCs.CanMove(.Contadores, .flags) Then
                 Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, GetHeadingFromWorldPos(.pos, UserList(.TargetUser.ArrayIndex).pos))
             End If
@@ -1180,8 +1180,8 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
             End If
             ' Sonido de impacto
             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_IMPACTO, .pos.x, .pos.y))
-            ' Dañamos la muralla
-            Call HacerDañoMuralla(.flags.InvasionIndex, RandomNumber(.Stats.MinHIT, .Stats.MaxHit))  ' TODO: Defensa de la muralla? No hace falta creo...
+            ' Daï¿½amos la muralla
+            Call HacerDaï¿½oMuralla(.flags.InvasionIndex, RandomNumber(.Stats.MinHIT, .Stats.MaxHit))  ' TODO: Defensa de la muralla? No hace falta creo...
         End If
     End With
     Exit Sub
