@@ -23,15 +23,17 @@ Create a new folder named `C:\AO20` and navigate to it. Follow these steps:
 
 3. Rename the file `Example.feature_toggle.ini` to `feature_toggle.ini`
 
-4. Rename the file `Empty_db.db` to `Database.db`
+4. Rename the file `Example.Configuracion.ini` to `Configuracion.ini`
 
-5. Rename the file `../Recursos/Dat/Example.Motd.ini` to `Motd.ini`
+5. Rename the file `Empty_db.db` to `Database.db`
 
-6. Clone `Recursos` (https://github.com/ao-org/Recursos)
+6. Rename the file `../Recursos/Dat/Example.Motd.ini` to `Motd.ini`
 
-7. Open Visual Basic 6 as an administrator
+7. Clone `Recursos` (https://github.com/ao-org/Recursos)
 
-8. Open the file `Server.VBP`
+8. Open Visual Basic 6 as an administrator
+
+9. Open the file `Server.VBP`
 
 # 🔛 Feature Toggle/Flag (Turn ON/OFF features)
 
