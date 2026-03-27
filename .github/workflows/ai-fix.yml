@@ -12,3 +12,4 @@ jobs:
     uses: ao-org/.github/.github/workflows/ai-fix-reusable.yml@master
     secrets:
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}

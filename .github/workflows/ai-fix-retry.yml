@@ -8,5 +8,6 @@ jobs:
     uses: ao-org/.github/.github/workflows/ai-fix-retry-reusable.yml@master
     secrets:
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
       JENKINS_USER: ${{ secrets.JENKINS_USER }}
       JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
