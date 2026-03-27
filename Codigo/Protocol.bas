@@ -7032,10 +7032,10 @@ End Sub
 
 Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
     On Error GoTo HandleQuestAccept_Err
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     'Maneja el evento de aceptar una quest.
     'Last modified: 31/01/2010 by Amraphen
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     Dim NpcIndex  As Integer
     Dim QuestSlot As Byte
     Dim Indice    As Byte
@@ -7047,11 +7047,23 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
     'npc or item quest
     If NpcIndex > 0 Then
         'npc handled quest
-        tmpQuest = QuestList(NpcList(NpcIndex).QuestNumber(Indice))
+        If Indice < 1 Or Indice > UBound(NpcList(NpcIndex).QuestNumber) Then
+            Call TraceError(9, "Subscript out of range in NpcList(NpcIndex).QuestNumber", "Protocol.HandleQuestAccept", Erl)
+            Exit Sub
+        End If
         tmpIndex = NpcList(NpcIndex).QuestNumber(Indice)
+        If tmpIndex < 1 Or tmpIndex > UBound(QuestList) Then
+            Call TraceError(9, "Subscript out of range in QuestList", "Protocol.HandleQuestAccept", Erl)
+            Exit Sub
+        End If
+        tmpQuest = QuestList(tmpIndex)
     Else
         'item handled quest
         tmpIndex = UserList(UserIndex).flags.QuestNumber
+        If tmpIndex < 1 Or tmpIndex > UBound(QuestList) Then
+            Call TraceError(9, "Subscript out of range in QuestList", "Protocol.HandleQuestAccept", Erl)
+            Exit Sub
+        End If
         tmpQuest = QuestList(tmpIndex)
     End If
     If Not ModQuest.CanUserAcceptQuest(UserIndex, NpcIndex, tmpIndex, tmpQuest) Then
