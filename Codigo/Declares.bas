@@ -35,7 +35,7 @@ Public Type t_NpcItemDrop
     ItemIndex As Integer
     LowQuantityBound As Integer
     HighQuantityBound As Integer
-    DropChance As Integer
+    DropChance As Long
 End Type
 
 Public Enum e_WorkingToolSubType
