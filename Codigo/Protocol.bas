@@ -7781,6 +7781,7 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
                         Call WriteLocaleMsg(UserIndex, MSG_REMOVE_ALMOST_YOUR_FISHING, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
+                Call ResetUserAutomatedActions(UserIndex)
                 Exit Sub
             End If
         Next LoopC
