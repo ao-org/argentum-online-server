@@ -1,4 +1,4 @@
-﻿name: AI Fix Issue
+name: AI Fix Issue
 
 on:
   issues:
@@ -9,6 +9,6 @@ jobs:
     if: >
       github.event.label.name == 'ai-fix' &&
       github.event.issue.author_association != 'NONE'
-    uses: ao-org/.github/workflows/ai-fix-reusable.yml@master
+    uses: ao-org/.github/.github/workflows/ai-fix-reusable.yml@main
     secrets:
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}

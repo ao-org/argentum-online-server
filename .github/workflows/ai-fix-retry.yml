@@ -1,11 +1,11 @@
-﻿name: AI Fix Build Errors
+name: AI Fix Build Errors
 
 on:
   status:
 
 jobs:
   ai-retry:
-    uses: ao-org/.github/workflows/ai-fix-retry-reusable.yml@master
+    uses: ao-org/.github/.github/workflows/ai-fix-retry-reusable.yml@main
     secrets:
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
       JENKINS_USER: ${{ secrets.JENKINS_USER }}
