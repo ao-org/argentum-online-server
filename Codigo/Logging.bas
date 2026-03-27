@@ -197,10 +197,11 @@ ErrHandler:
 End Sub
 
 Public Sub LogError(Desc As String)
-    On Error GoTo ErrHandler
+    On Error GoTo LogError_Err
     Call LogThis(eType_Log.Error, "[Errores.log] " & Desc, vbLogEventTypeError)
     Exit Sub
-ErrHandler:
+LogError_Err:
+    Call TraceError(Err.Number, Err.Description, "Logging.LogError", Erl)
 End Sub
 
 Public Sub LogPerformance(Desc As String)
