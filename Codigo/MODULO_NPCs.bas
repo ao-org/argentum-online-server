@@ -1050,16 +1050,23 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .IntervaloRespawnMax = Val(LeerNPCs.GetValue(SectionName, "IntervaloRespawn"))
         .InformarRespawn = Val(LeerNPCs.GetValue(SectionName, "InformarRespawn"))
         .QuizaProb = Val(LeerNPCs.GetValue(SectionName, "QuizaProb"))
-        .QuantityOfDrops = val(LeerNPCs.GetValue(SectionName, "QuantityOfDrops"))
+        Dim dropsCount As Long
+        dropsCount = Val(LeerNPCs.GetValue(SectionName, "QuantityOfDrops"))
+        If dropsCount < 0 Then
+            dropsCount = 0
+        ElseIf dropsCount > 255 Then
+            dropsCount = 255
+        End If
+        .QuantityOfDrops = dropsCount
         If .QuantityOfDrops > 0 Then
             ReDim .Drop(1 To .QuantityOfDrops)
             Dim i As Byte
             For i = 1 To .QuantityOfDrops
                 ln = LeerNPCs.GetValue(SectionName, "Drop" & i)
-                .Drop(i).ItemIndex = val(ReadField(1, ln, Asc("-")))
-                .Drop(i).DropChance = val(ReadField(2, ln, Asc("-")))
-                .Drop(i).LowQuantityBound = val(ReadField(3, ln, Asc("-")))
-                .Drop(i).HighQuantityBound = val(ReadField(4, ln, Asc("-")))
+                .Drop(i).ItemIndex = Val(ReadField(1, ln, Asc("-")))
+                .Drop(i).DropChance = Val(ReadField(2, ln, Asc("-")))
+                .Drop(i).LowQuantityBound = Val(ReadField(3, ln, Asc("-")))
+                .Drop(i).HighQuantityBound = Val(ReadField(4, ln, Asc("-")))
             Next i
         Else
             Erase .Drop
