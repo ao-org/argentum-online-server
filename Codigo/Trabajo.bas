@@ -69,12 +69,24 @@ End Sub
 
 Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
     On Error GoTo DoPermanecerOculto_Err
+    If UserIndex < LBound(UserList) Or UserIndex > UBound(UserList) Then
+        Call TraceError(9, "UserIndex out of range: " & UserIndex, "Trabajo.DoPermanecerOculto", Erl)
+        Exit Sub
+    End If
     With UserList(UserIndex)
         Dim velocidadOcultarse As Integer
         velocidadOcultarse = 1
         If .clase = e_Class.Hunter Then
-            If ObjData(.invent.EquippedArmorObjIndex).Camouflage And .Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
-                Exit Sub
+            Dim armorObjIndex As Integer
+            armorObjIndex = .invent.EquippedArmorObjIndex
+            If armorObjIndex > 0 Then
+                If armorObjIndex < LBound(ObjData) Or armorObjIndex > UBound(ObjData) Then
+                    Call TraceError(9, "EquippedArmorObjIndex out of range: " & armorObjIndex, "Trabajo.DoPermanecerOculto", Erl)
+                    Exit Sub
+                End If
+                If ObjData(armorObjIndex).Camouflage And .Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+                    Exit Sub
+                End If
             End If
         End If
         .Counters.TiempoOculto = .Counters.TiempoOculto - velocidadOcultarse
