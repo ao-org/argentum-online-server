@@ -7737,7 +7737,7 @@ HandleResetearPersonaje_Err:
 End Sub
 
 Private Sub HandleRomperCania(ByVal UserIndex As Integer)
-    On Error GoTo HandleRomperCania_Err:
+    On Error GoTo HandleRomperCania_Err
     Dim LoopC    As Integer
     Dim obj      As t_Obj
     Dim caniaOld As Integer
@@ -7747,7 +7747,7 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
         obj.ObjIndex = .invent.EquippedWorkingToolObjIndex
         caniaOld = .invent.EquippedWorkingToolObjIndex
         obj.amount = 1
-        shouldBreak = 1
+        shouldBreak = True
         For LoopC = 1 To MAX_INVENTORY_SLOTS
             'Rastreo la caña que está usando en el inventario y se la rompo
             If .invent.Object(LoopC).ObjIndex = .invent.EquippedWorkingToolObjIndex Then
@@ -7786,6 +7786,7 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
         Next LoopC
     End With
     'UserList(UserIndex).Invent.EquippedWorkingToolObjIndex
+    Exit Sub
 HandleRomperCania_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRomperCania", Erl)
 End Sub
