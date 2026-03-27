@@ -107,12 +107,14 @@ Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbN
         End If
     End If
     Dim UserRef As t_UserReference
-    UserRef = Mapping(Connection).UserRef
-    If (Message <> vbNullString) Then
-        If UserRef.ArrayIndex > 0 Then
-            Call Protocol_Writes.WriteErrorMsg(UserRef.ArrayIndex, Message)
-            If UserList(UserRef.ArrayIndex).flags.UserLogged Then
-                Call Cerrar_Usuario(UserRef.ArrayIndex)
+    If Connection >= LBound(Mapping) And Connection <= UBound(Mapping) Then
+        UserRef = Mapping(Connection).UserRef
+        If (Message <> vbNullString) Then
+            If UserRef.ArrayIndex > 0 Then
+                Call Protocol_Writes.WriteErrorMsg(UserRef.ArrayIndex, Message)
+                If UserList(UserRef.ArrayIndex).flags.UserLogged Then
+                    Call Cerrar_Usuario(UserRef.ArrayIndex)
+                End If
             End If
         End If
     End If
