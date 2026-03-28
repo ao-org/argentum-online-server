@@ -334,6 +334,7 @@ Private Sub SetupUserSpells(ByRef User As t_User)
 End Sub
 
 Private Sub SetupUserPets(ByRef User As t_User)
+    On Error GoTo SetupUserPets_Err
     Dim RS As ADODB.Recordset
     Set RS = Query("SELECT number, pet_id FROM pet WHERE user_id = ?;", User.Id)
     If Not RS Is Nothing Then
@@ -345,6 +346,9 @@ Private Sub SetupUserPets(ByRef User As t_User)
             RS.MoveNext
         Wend
     End If
+    Exit Sub
+SetupUserPets_Err:
+    Call LogDatabaseError("Error en SetupUserPets: " & User.Id & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 End Sub
 
 Private Sub SetupUserBankInventory(ByRef User As t_User)
@@ -732,6 +736,7 @@ Private Sub SaveCharacterSkillsDB(ByRef U As t_User, ByRef QueryBreakdown As Str
 End Sub
 
 Private Sub SaveCharacterPetsDB(ByRef U As t_User, ByRef QueryBreakdown As String)
+    On Error GoTo SaveCharacterPetsDB_Err
     Dim QueryTimer As Long
     Dim Params() As Variant
     Dim LoopC As Long
@@ -769,6 +774,9 @@ Private Sub SaveCharacterPetsDB(ByRef U As t_User, ByRef QueryBreakdown As Strin
         End If
         U.Persist.LastPetType(LoopC) = petType
     Next LoopC
+    Exit Sub
+SaveCharacterPetsDB_Err:
+    Call LogDatabaseError("Error en SaveCharacterPetsDB: " & U.Id & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 End Sub
 
 Private Sub SaveCharacterQuestsDoneDB(ByRef U As t_User, ByRef QueryBreakdown As String, ByRef SqlBuilder As cStringBuilder)
