@@ -655,6 +655,12 @@ End Function
 Public Function NPCHasAUserInFront(ByVal NpcIndex As Integer, ByRef UserIndex As Integer) As Boolean
     On Error GoTo NPCHasAUserInFront_Err
     Dim NextPosNPC As t_WorldPos
+    NextPosNPC = ComputeNextHeadingPos(NpcIndex)
+    If Not InMapBounds(NextPosNPC.Map, NextPosNPC.x, NextPosNPC.y) Then
+        NPCHasAUserInFront = False
+        Exit Function
+    End If
+    UserIndex = MapData(NextPosNPC.Map, NextPosNPC.x, NextPosNPC.y).UserIndex
     If UserIndex < LBound(UserList) Or UserIndex > LastUser Then
         NPCHasAUserInFront = False
         Exit Function
@@ -663,12 +669,6 @@ Public Function NPCHasAUserInFront(ByVal NpcIndex As Integer, ByRef UserIndex As
         NPCHasAUserInFront = False
         Exit Function
     End If
-    NextPosNPC = ComputeNextHeadingPos(NpcIndex)
-    If Not InMapBounds(NextPosNPC.Map, NextPosNPC.x, NextPosNPC.y) Then
-        NPCHasAUserInFront = False
-        Exit Function
-    End If
-    UserIndex = MapData(NextPosNPC.Map, NextPosNPC.x, NextPosNPC.y).UserIndex
     NPCHasAUserInFront = (UserIndex > 0)
     Exit Function
 NPCHasAUserInFront_Err:
