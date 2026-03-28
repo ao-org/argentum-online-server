@@ -2905,6 +2905,11 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
     Call Writer.WriteInt8(NpcList(NpcIndex).NumQuest) 'Escribimos primero cuantas quest tiene el NPC
     For j = 1 To NpcList(NpcIndex).NumQuest
         QuestIndex = NpcList(NpcIndex).QuestNumber(j)
+        If QuestIndex <= 0 Or QuestIndex > UBound(QuestList) Then
+            Call Writer.Clear
+            Call TraceError(9, "Subscript out of range in WriteNpcQuestListSend: QuestIndex = " & QuestIndex, "Argentum20Server.Protocol_Writes.WriteNpcQuestListSend", Erl)
+            Exit Sub
+        End If
         Call Writer.WriteInt16(QuestIndex)
         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
         Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
