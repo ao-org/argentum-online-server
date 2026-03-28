@@ -1158,6 +1158,7 @@ Dim Ropaje                      As Integer
                     End If
                     If .invent.EquippedWorkingToolObjIndex > 0 Then
                         Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
+                        Call ResetUserAutomatedActions(UserIndex)
                     End If
                     .invent.Object(Slot).Equipped = 1
                     .invent.EquippedWeaponObjIndex = .invent.Object(Slot).ObjIndex
@@ -1251,10 +1252,7 @@ Dim Ropaje                      As Integer
                 'Quitamos el elemento anterior
                 If .invent.EquippedWorkingToolObjIndex > 0 Then
                     EquippedWorkingToolObjType = ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
-                    If EquippedWorkingToolObjType = e_WorkingToolSubType.FishingRod And obj.Subtipo = e_WorkingToolSubType.FishingNet Then
-                        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_EQUIP_NET_WITH_ROD, "", e_FontTypeNames.FONTTYPE_INFO))
-                        Exit Sub
-                    End If
+                    Call ResetUserAutomatedActions(UserIndex)
                     Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
                 End If
                 If .invent.EquippedWeaponObjIndex > 0 Then
