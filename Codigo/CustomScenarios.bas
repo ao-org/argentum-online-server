@@ -62,13 +62,13 @@ Private Sub InitializeUpdateStacks()
     ActiveUpdateSlots.currentIndex = 0
 End Sub
 
-Private Sub IncreaseArraySize(ByVal ExtraSlots As Integer)
-    Dim NewSize As Integer
+Private Sub IncreaseArraySize(ByVal ExtraSlots As Long)
+    Dim NewSize As Long
     NewSize = UBound(ScenarioUpdateList) + ExtraSlots
     ReDim Preserve ScenarioUpdateList(NewSize) As IBaseScenario
     ReDim Preserve AvailableUpdateSlots.IndexInfo(NewSize)
     ReDim Preserve ActiveUpdateSlots.IndexInfo(NewSize)
-    Dim i As Integer
+    Dim i As Long
     For i = 1 To ExtraSlots
         AvailableUpdateSlots.IndexInfo(i) = NewSize - (i - 1)
     Next i
@@ -94,9 +94,9 @@ Public Sub RemoveCustomScenario(ByVal mapIndex As Integer)
     Call CustomScenarioList.Remove(mapIndex)
 End Sub
 
-Public Function AddUpdateScenario(ByRef Scenario As IBaseScenario) As Integer
+Public Function AddUpdateScenario(ByRef Scenario As IBaseScenario) As Long
     On Error GoTo AddUpdateScenario_Err:
-    Dim pos As Integer
+    Dim pos As Long
     If AvailableUpdateSlots.currentIndex = 0 And ActiveUpdateSlots.currentIndex = 0 Then
         Call InitializeUpdateStacks
     End If
@@ -117,7 +117,7 @@ End Function
 Public Sub RemoveUpdateScenario(ByRef Index As Integer)
     Debug.Assert Index < UBound(ScenarioUpdateList)
     Set ScenarioUpdateList(Index) = Nothing
-    Dim i As Integer
+    Dim i As Long
     For i = 0 To ActiveUpdateSlots.currentIndex - 1
         If ActiveUpdateSlots.IndexInfo(i) = Index Then
             ActiveUpdateSlots.IndexInfo(i) = ActiveUpdateSlots.IndexInfo(ActiveUpdateSlots.currentIndex - 1)
@@ -130,7 +130,7 @@ End Sub
 
 Public Sub UpdateAll()
     On Error GoTo UpdateAll_Err:
-    Dim i As Integer
+    Dim i As Long
     For i = 0 To ActiveUpdateSlots.currentIndex - 1
         If Not ScenarioUpdateList(ActiveUpdateSlots.IndexInfo(i)) Is Nothing Then
             Call ScenarioUpdateList(ActiveUpdateSlots.IndexInfo(i)).Update
