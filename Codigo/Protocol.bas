@@ -1,7 +1,7 @@
 Attribute VB_Name = "Protocol"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -642,8 +642,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleKillNPCNoRespawn(UserIndex)
         Case ClientPacketID.eKillAllNearbyNPCs
             Call HandleKillAllNearbyNPCs(UserIndex)
-        Case ClientPacketID.eLastIP
-            Call HandleLastIP(UserIndex)
         Case ClientPacketID.eChangeMOTD
             Call HandleChangeMOTD(UserIndex)
         Case ClientPacketID.eSetMOTD
@@ -7739,7 +7737,7 @@ HandleResetearPersonaje_Err:
 End Sub
 
 Private Sub HandleRomperCania(ByVal UserIndex As Integer)
-    On Error GoTo HandleRomperCania_Err:
+    On Error GoTo HandleRomperCania_Err
     Dim LoopC    As Integer
     Dim obj      As t_Obj
     Dim caniaOld As Integer
@@ -7749,7 +7747,7 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
         obj.ObjIndex = .invent.EquippedWorkingToolObjIndex
         caniaOld = .invent.EquippedWorkingToolObjIndex
         obj.amount = 1
-        shouldBreak = (RandomNumber(1, 3) = 1)
+        shouldBreak = True
         For LoopC = 1 To MAX_INVENTORY_SLOTS
             'Rastreo la caña que está usando en el inventario y se la rompo
             If .invent.Object(LoopC).ObjIndex = .invent.EquippedWorkingToolObjIndex Then
@@ -7783,11 +7781,13 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
                         Call WriteLocaleMsg(UserIndex, MSG_REMOVE_ALMOST_YOUR_FISHING, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
+                Call ResetUserAutomatedActions(UserIndex)
                 Exit Sub
             End If
         Next LoopC
     End With
     'UserList(UserIndex).Invent.EquippedWorkingToolObjIndex
+    Exit Sub
 HandleRomperCania_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRomperCania", Erl)
 End Sub
