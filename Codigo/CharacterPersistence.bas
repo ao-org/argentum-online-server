@@ -54,7 +54,13 @@ Public Function GetCharacterName(ByVal UserId As Long) As String
     Dim RS As ADODB.Recordset
     Set RS = Query("select name from user where id=?", UserId)
     If RS Is Nothing Then Exit Function
+    If RS.EOF Or RS.BOF Then
+        GetCharacterName = vbNullString
+        Call RS.Close
+        Exit Function
+    End If
     GetCharacterName = RS!name
+    Call RS.Close
     Exit Function
 GetCharacterName_Err:
     Call LogDatabaseError("Error en GetCharacterName: " & UserId & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
