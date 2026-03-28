@@ -672,7 +672,7 @@ Private Sub SaveCharacterBankInventoryDB(ByRef U As t_User, ByRef QueryBreakdown
         ParamC = ParamC + 5
     Next LoopC
     QueryTimer = GetTickCountRaw()
-    Call ExecutePreparedBankSave(Params)
+    Call Execute(QUERY_UPSERT_BANK, Params)
     Call AppendQueryDuration(QueryBreakdown, "save bank inventory", QueryTimer)
     For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
         U.Persist.LastBank(LoopC) = U.BancoInvent.Object(LoopC)
