@@ -3093,6 +3093,7 @@ Public Type t_NPCFlags
     StatusMask As Long 'use the values from e_StatusMask to set this flags
     ExpCount As Long '[ALEJO]
     OldMovement As e_TipoAI
+    MappedHeading As e_Heading
     OldHostil As Byte
     AguaValida As Byte
     TierraInvalida As Byte

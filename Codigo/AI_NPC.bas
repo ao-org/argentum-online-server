@@ -67,7 +67,15 @@ Public Sub NpcAI(ByVal NpcIndex As Integer)
                 End If
             Case e_TipoAI.FixedInPos
                 If .Hostile = 1 Then
-                    Call AttackFromPos(NpcIndex)
+                    If .npcType = e_NPCType.GuardiaReal Or .npcType = e_NPCType.GuardiasCaos Then
+                        If .AttackRange <= 1 Then
+                            Call PerseguirUsuarioCercano(NpcIndex)
+                        Else
+                            Call AI_RangeAttack(NpcIndex)
+                        End If
+                    Else
+                        Call AttackFromPos(NpcIndex)
+                    End If
                 End If
             Case e_TipoAI.NpcDefensa
                 Call SeguirAgresor(NpcIndex)
@@ -116,6 +124,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
     Dim minDistanciaAtacable      As Integer
     Dim enemigoCercano            As Integer
     Dim enemigoAtacableMasCercano As Integer
+    Dim hayEnemigoAlFrente        As Boolean
     minDistancia = MAX_INTEGER
     minDistanciaAtacable = MAX_INTEGER
     With NpcList(NpcIndex)
@@ -126,13 +135,13 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
             If .flags.AttackedBy <> vbNullString Then
                 agresor = NameIndex(.flags.AttackedBy)
             End If
-            If UserIndex > 0 And UserIndexFront > 0 Then
-                If NPCHasAUserInFront(NpcIndex, UserIndexFront) And EsEnemigo(NpcIndex, UserIndexFront) Then
-                    enemigoAtacableMasCercano = UserIndexFront
-                    minDistanciaAtacable = 1
-                    minDistancia = 1
-                End If
-            Else
+            If NPCHasAUserInFront(NpcIndex, UserIndexFront) And UserIndexFront > 0 And EsEnemigo(NpcIndex, UserIndexFront) Then
+                enemigoAtacableMasCercano = UserIndexFront
+                minDistanciaAtacable = 1
+                minDistancia = 1
+                hayEnemigoAlFrente = True
+            End If
+            If Not hayEnemigoAlFrente Then
                 ' Busco algun objetivo en el area.
                 For i = 1 To ModAreas.ConnGroups(.pos.Map).CountEntrys
                     UserIndex = ModAreas.ConnGroups(.pos.Map).UserEntrys(i)
@@ -185,8 +194,8 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
                 If Distancia(.pos, .Orig) > 0 Then
                     Call AI_CaminarConRumbo(NpcIndex, .Orig)
                 Else
-                    If .Char.Heading <> e_Heading.SOUTH Then
-                        Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, e_Heading.SOUTH)
+                    If .flags.MappedHeading > 0 And .Char.Heading <> .flags.MappedHeading Then
+                        Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, .flags.MappedHeading)
                     End If
                     Call AnimacionIdle(NpcIndex, True)
                 End If
@@ -339,8 +348,15 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
                 Call AI_CaminarConRumbo(NpcIndex, TargetPos)
             ElseIf Distancia(.pos, .Orig) > 0 Then 'return to origin
                 Call AI_CaminarConRumbo(NpcIndex, .Orig)
-            ElseIf .Char.Heading <> e_Heading.SOUTH Then
-                Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, e_Heading.SOUTH)
+            Else
+                If (.npcType = e_NPCType.GuardiaReal Or .npcType = e_NPCType.GuardiasCaos) Then
+                    If .flags.MappedHeading > 0 And .Char.Heading <> .flags.MappedHeading Then
+                        Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, .flags.MappedHeading)
+                    End If
+                    Call AnimacionIdle(NpcIndex, True)
+                ElseIf .Char.Heading <> e_Heading.SOUTH Then
+                    Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, e_Heading.SOUTH)
+                End If
             End If
         End If
     End With
