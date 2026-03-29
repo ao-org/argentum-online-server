@@ -2087,7 +2087,9 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, MSG_DEBES_DESCENDER_MONTURA_DEJAR_OBJETOS_SUELO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-       
+
+        Call ResetUserAutomatedActions(UserIndex)
+
         'Are we dropping gold or other items??
         If Slot = FLAGORO Then
             If amount > 100000 Then amount = 100000
