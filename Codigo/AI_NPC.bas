@@ -135,11 +135,13 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
             If .flags.AttackedBy <> vbNullString Then
                 agresor = NameIndex(.flags.AttackedBy)
             End If
-            If NPCHasAUserInFront(NpcIndex, UserIndexFront) And UserIndexFront > 0 And EsEnemigo(NpcIndex, UserIndexFront) Then
-                enemigoAtacableMasCercano = UserIndexFront
-                minDistanciaAtacable = 1
-                minDistancia = 1
-                hayEnemigoAlFrente = True
+            If NPCHasAUserInFront(NpcIndex, UserIndexFront) And UserIndexFront > 0 Then
+                If EsEnemigo(NpcIndex, UserIndexFront) Then
+                    enemigoAtacableMasCercano = UserIndexFront
+                    minDistanciaAtacable = 1
+                    minDistancia = 1
+                    hayEnemigoAlFrente = True
+                End If
             End If
             If Not hayEnemigoAlFrente Then
                 ' Busco algun objetivo en el area.
