@@ -110,16 +110,25 @@ End Function
 
 Public Function GetUserName(ByVal UserId As Long) As String
     On Error GoTo GetUserName_Err
+
     If UserId <= 0 Then
-        GetUserName = ""
+        GetUserName = vbNullString
         Exit Function
     End If
+
     If UserNameCache.Exists(UserId) Then
         GetUserName = UserNameCache.Item(UserId)
         Exit Function
     End If
+
     Dim username As String
     username = GetCharacterName(UserId)
+
+    If LenB(username) = 0 Then
+        Call LogDatabaseError("GetUserName: no character name for UserId=" & UserId)
+        Exit Function
+    End If
+
     Call RegisterUserName(UserId, username)
     GetUserName = username
     Exit Function
