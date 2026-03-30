@@ -196,6 +196,7 @@ Public Sub NpcDropObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
         Cantidad = val(ReadField(2, Npc.QuizaDropea(objRandom), Asc("-")))
         Dropeo.Amount = Cantidad 'Cantidad
         Dropeo.ObjIndex = obj 'NUMERO DEL ITEM EN EL OBJ.DAT
+        Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
         Call TirarItemAlPiso(Npc.pos, Dropeo, Npc.flags.AguaValida = 1)
     Else
         Dim i As Byte
@@ -203,6 +204,7 @@ Public Sub NpcDropObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
             If RandomNumber(1, Npc.Drop(i).DropChance) = 1 Then
                 Dropeo.Amount = RandomNumber(Npc.Drop(i).LowQuantityBound, Npc.Drop(i).HighQuantityBound)
                 Dropeo.ObjIndex = Npc.Drop(i).ItemIndex
+                Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
                 Call TirarItemAlPiso(Npc.pos, Dropeo, Npc.flags.AguaValida = 1)
             End If
         Next i
