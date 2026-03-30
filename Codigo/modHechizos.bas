@@ -2100,16 +2100,18 @@ End Sub
 
 Sub checkHechizosEfectividad(ByVal UserIndex As Integer, ByVal TargetUser As Integer)
     With UserList(UserIndex)
-        If UserList(TargetUser).flags.Inmovilizado + UserList(TargetUser).flags.Paralizado = 0 Then
+        If UserIndex <> TargetUser And UserList(TargetUser).flags.Inmovilizado + UserList(TargetUser).flags.Paralizado = 0 Then
             .Counters.controlHechizos.HechizosCasteados = .Counters.controlHechizos.HechizosCasteados + 1
             Dim efectividad As Double
+            Dim targetInvisible As String
             efectividad = (100 * .Counters.controlHechizos.HechizosCasteados) / .Counters.controlHechizos.HechizosTotales
-            If efectividad >= 50 And .Counters.controlHechizos.HechizosTotales >= 6 Then
-                Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(MSG_USUARIO_LANZANDO_HECHIZOS_EFECTIVIDAD_CASTEADOS_REVISAR, .name & "¬" & efectividad & "¬" & .Counters.controlHechizos.HechizosCasteados & "¬" & _
-                        .Counters.controlHechizos.HechizosTotales, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1638=El usuario ¬1 está lanzando hechizos con una efectividad de ¬2% (Casteados: ¬3/¬4), revisar.
+            targetInvisible = IIf(UserList(TargetUser).flags.invisible + UserList(TargetUser).flags.Oculto > 0, "SI", "NO")
+            If efectividad >= 50 And .Counters.controlHechizos.HechizosTotales >= 3 Then
+                Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("El usuario " & .name & " esta lanzando hechizos al Usuario " & UserList(TargetUser).name & _
+                        " (invisible: " & targetInvisible & ") (Casteados: " & .Counters.controlHechizos.HechizosCasteados & "/" & .Counters.controlHechizos.HechizosTotales & "), controlar.", e_FontTypeNames.FONTTYPE_TALK))
             End If
-            Debug.Print "El usuario " & .name & " está lanzando hechizos con una efectividad de " & efectividad & "% (Casteados: " & .Counters.controlHechizos.HechizosCasteados _
-                    & "/" & .Counters.controlHechizos.HechizosTotales & "), revisar."
+            Debug.Print "El usuario " & .name & " esta lanzando hechizos al Usuario " & UserList(TargetUser).name & " (invisible: " & targetInvisible & ") (Casteados: " & _
+                    .Counters.controlHechizos.HechizosCasteados & "/" & .Counters.controlHechizos.HechizosTotales & "), controlar."
         Else
             .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales - 1
         End If
