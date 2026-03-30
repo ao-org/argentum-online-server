@@ -229,7 +229,7 @@ Public Sub NpcDropQuestObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
                 Next i
             End If
             If Not FaltanItemsQuest(UserIndex, .QuestIndex, .ObjIndex) Then
-                Exit Sub
+                Next i
             End If
             Probabilidad = RandomNumber(1, .Probabilidad) 'Tiro Item?
             If Probabilidad = 1 Then
