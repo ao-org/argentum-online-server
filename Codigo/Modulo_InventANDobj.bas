@@ -222,15 +222,21 @@ Public Sub NpcDropQuestObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
     Dim i            As Byte
     For i = 1 To Npc.NumDropQuest
         With Npc.DropQuest(i)
+        
             If .QuestIndex = 0 Then
                 Exit Sub
             End If
+            
             If TieneQuest(UserIndex, .QuestIndex) = 0 Then
-                Next i
+                'next i  or continue not working
+                GoTo NextQuest
             End If
+            
             If Not FaltanItemsQuest(UserIndex, .QuestIndex, .ObjIndex) Then
-                Next i
+                'next i  or continue not working
+                GoTo NextQuest
             End If
+            
             Probabilidad = RandomNumber(1, .Probabilidad) 'Tiro Item?
             If Probabilidad = 1 Then
                 Dropeo.Amount = .Amount
@@ -238,7 +244,9 @@ Public Sub NpcDropQuestObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
                 Call MeterItemEnInventario(UserIndex, Dropeo)
                 Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
             End If
+            
         End With
+NextQuest:
     Next i
     Exit Sub
 ErrHandler:
