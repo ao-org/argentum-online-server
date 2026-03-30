@@ -1415,6 +1415,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .QuantityOfDrops = Info.QuantityOfDrops
         If .QuantityOfDrops > 0 Then
             ReDim .Drop(1 To .QuantityOfDrops)
+            Dim i As Byte
             For i = 1 To .QuantityOfDrops
                 .Drop(i) = Info.Drop(i)
             Next i
