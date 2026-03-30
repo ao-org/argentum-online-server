@@ -1364,6 +1364,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .Char.body = Info.Body
         .Char.head = Info.Head
         .Char.Heading = Info.Heading
+        .flags.MappedHeading = Info.Heading
         .Char.CastAnimation = Info.CastAnimation
         If Info.AnimacionesCount > 0 Then
             ReDim .Char.Animation(1 To Info.AnimacionesCount)
