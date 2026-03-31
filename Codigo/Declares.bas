@@ -291,6 +291,7 @@ Public Enum e_JobsTypes
     Woodcutter = 4
     Fisherman = 5
     Alchemist = 6
+    Tailor = 7
 End Enum
 
 Public Type t_LlamadaGM
