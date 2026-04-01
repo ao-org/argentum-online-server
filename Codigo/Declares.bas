@@ -3243,7 +3243,7 @@ Public Type t_NpcInfoCache
     IntervaloRespawnMax As Long
     InformarRespawn As Integer
     QuizaProb As Integer
-    QuantityOfDrops As Byte
+    DropCount As Byte
     Drop() As t_NpcItemDrop
     MinTameLevel As Integer
     OnlyForGuilds As Integer
@@ -3409,7 +3409,7 @@ Public Type t_Npc
     QuizaDropea() As String
     QuizaProb As Integer
     
-    QuantityOfDrops As Byte
+    DropCount As Byte
     Drop() As t_NpcItemDrop
     
     MinTameLevel As Byte

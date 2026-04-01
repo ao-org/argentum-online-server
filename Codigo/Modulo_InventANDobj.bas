@@ -27,6 +27,8 @@ Attribute VB_Name = "InvNpc"
 '
 Option Explicit
 
+Public Const MaxDropCount As Byte = 12
+
 Public Function TirarItemAlPiso(pos As t_WorldPos, obj As t_Obj, Optional PuedeAgua As Boolean = True) As t_WorldPos
     On Error GoTo ErrHandler
     Dim NuevaPos As t_WorldPos
@@ -44,7 +46,7 @@ End Function
 Public Sub NPC_TIRAR_ITEMS(ByRef Npc As t_Npc)
 'This function should be deleted after translating all 100% drops to the new system 12/03/26
     On Error GoTo NPC_TIRAR_ITEMS_Err
-    If Npc.QuantityOfDrops = 0 Then
+    If Npc.DropCount = 0 Then
         If Npc.invent.NroItems > 0 Then
             Dim i     As Byte
             Dim MiObj As t_Obj
@@ -181,7 +183,7 @@ Public Sub NpcDropObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
     Dim Dropeo       As t_Obj
     Dim Probabilidad As Long
     Dim objRandom    As Byte
-    If Npc.QuantityOfDrops = 0 Then
+    If Npc.DropCount = 0 Then
         If Npc.NumQuiza = 0 Then Exit Sub
         If Npc.QuizaProb = 0 Then
             Probabilidad = RandomNumber(1, SvrConfig.GetValue("DropMult"))
@@ -200,7 +202,7 @@ Public Sub NpcDropObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
         Call TirarItemAlPiso(Npc.pos, Dropeo, Npc.flags.AguaValida = 1)
     Else
         Dim i As Byte
-        For i = 1 To Npc.QuantityOfDrops
+        For i = 1 To Npc.DropCount
             If RandomNumber(1, Npc.Drop(i).DropChance) = 1 Then
                 Dropeo.Amount = RandomNumber(Npc.Drop(i).LowQuantityBound, Npc.Drop(i).HighQuantityBound)
                 Dropeo.ObjIndex = Npc.Drop(i).ItemIndex
@@ -224,7 +226,8 @@ Public Sub NpcDropQuestObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
         With Npc.DropQuest(i)
         
             If .QuestIndex = 0 Then
-                Exit Sub
+                'next i  or continue not working
+                GoTo NextQuest
             End If
             
             If TieneQuest(UserIndex, .QuestIndex) = 0 Then

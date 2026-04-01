@@ -1051,17 +1051,17 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .InformarRespawn = Val(LeerNPCs.GetValue(SectionName, "InformarRespawn"))
         .QuizaProb = Val(LeerNPCs.GetValue(SectionName, "QuizaProb"))
         Dim dropsCount As Long
-        dropsCount = Val(LeerNPCs.GetValue(SectionName, "QuantityOfDrops"))
+        dropsCount = val(LeerNPCs.GetValue(SectionName, "DropCount"))
         If dropsCount < 0 Then
             dropsCount = 0
-        ElseIf dropsCount > 255 Then
-            dropsCount = 255
+        ElseIf dropsCount > MaxDropCount Then
+            dropsCount = MaxDropCount
         End If
-        .QuantityOfDrops = dropsCount
-        If .QuantityOfDrops > 0 Then
-            ReDim .Drop(1 To .QuantityOfDrops)
+        .DropCount = dropsCount
+        If .DropCount > 0 Then
+            ReDim .Drop(1 To .DropCount)
             Dim i As Byte
-            For i = 1 To .QuantityOfDrops
+            For i = 1 To .DropCount
                 ln = LeerNPCs.GetValue(SectionName, "Drop" & i)
                 .Drop(i).ItemIndex = Val(ReadField(1, ln, Asc("-")))
                 .Drop(i).DropChance = Val(ReadField(2, ln, Asc("-")))
@@ -1413,11 +1413,11 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .InformarRespawn = Info.InformarRespawn
         .QuizaProb = Info.QuizaProb
         
-        .QuantityOfDrops = Info.QuantityOfDrops
-        If .QuantityOfDrops > 0 Then
-            ReDim .Drop(1 To .QuantityOfDrops)
+        .DropCount = Info.DropCount
+        If .DropCount > 0 Then
+            ReDim .Drop(1 To .DropCount)
             Dim i As Byte
-            For i = 1 To .QuantityOfDrops
+            For i = 1 To .DropCount
                 .Drop(i) = Info.Drop(i)
             Next i
         Else
