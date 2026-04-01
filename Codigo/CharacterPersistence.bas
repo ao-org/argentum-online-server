@@ -49,73 +49,56 @@ Private Function db_load_house_key(ByRef User As t_User) As Boolean
     End With
 End Function
 
-Private Function BuildUserLogContext(ByVal UserIndex As Integer) As String
-    If UserIndex <= 0 Or UserIndex > LastUser Then
-        BuildUserLogContext = "UI=" & UserIndex & " InvalidUserIndex=1"
-        Exit Function
-    End If
 
-    With UserList(UserIndex)
-        If .flags.UserLogged Then
-            BuildUserLogContext = "UI=" & UserIndex & _
-                                  " Logged=1" & _
-                                  " Account=" & .Email & _
-                                  " Char=" & .Name & _
-                                  " UID=" & .Id
-        Else
-            BuildUserLogContext = "UI=" & UserIndex & " Logged=0"
-        End If
-    End With
-End Function
-
-Public Function GetCharacterName(ByVal UserIndex As Integer) As String
-    On Error GoTo GetCharacterName_Err
+Public Function GetCharacterNameByUserId(ByVal UserId As Long) As String
+    On Error GoTo GetCharacterNameByUserId_Err
 
     Dim RS As ADODB.Recordset
-    Dim UserId As Long
 
-    GetCharacterName = vbNullString
+    '------------------------------------------------------------------------------
+    ' Returns the character name for a given UserId by querying the database.
+    '
+    ' IMPORTANT:
+    ' - This is a DB lookup function (offline-safe).
+    ' - The user does NOT need to be logged in.
+    ' - The UserId may be stale or invalid (e.g. guild data, spouse links).
+    ' - In those cases, this function returns vbNullString and logs the issue.
+    '
+    ' DO NOT use this function when you already have a logged UserIndex.
+    ' In that case, prefer accessing UserList(UserIndex).Name directly.
+    '------------------------------------------------------------------------------
 
-    If UserIndex <= 0 Or UserIndex > LastUser Then
-        Call LogDatabaseError("GetCharacterName: invalid UserIndex=" & UserIndex)
-        Exit Function
-    End If
+    GetCharacterNameByUserId = vbNullString
 
-    If Not UserList(UserIndex).flags.UserLogged Then
-        Call LogDatabaseError("GetCharacterName: user not logged. UI=" & UserIndex & " Logged=0")
-        Exit Function
-    End If
-
-    UserId = UserList(UserIndex).Id
     If UserId <= 0 Then
-        Call LogDatabaseError("GetCharacterName: invalid UserId. " & BuildUserLogContext(UserIndex))
+        Call LogDatabaseError("GetCharacterNameByUserId: invalid UserId=" & UserId)
         Exit Function
     End If
 
     Set RS = Query("SELECT name FROM user WHERE id = ? LIMIT 1;", UserId)
     If RS Is Nothing Then
-        Call LogDatabaseError("GetCharacterName: Query returned Nothing. " & BuildUserLogContext(UserIndex))
+        Call LogDatabaseError("GetCharacterNameByUserId: Query returned Nothing. UserId=" & UserId)
         Exit Function
     End If
 
+    ' IMPORTANT: recordset may be empty if UserId does not exist
     If RS.EOF Or RS.BOF Then
-        Call LogDatabaseError("GetCharacterName: no DB row. " & BuildUserLogContext(UserIndex))
+        Call LogDatabaseError("GetCharacterNameByUserId: no DB row for UserId=" & UserId)
         Exit Function
     End If
 
     If IsNull(RS!Name) Then
-        GetCharacterName = vbNullString
+        GetCharacterNameByUserId = vbNullString
     Else
-        GetCharacterName = CStr(RS!Name)
+        GetCharacterNameByUserId = CStr(RS!Name)
     End If
 
     Exit Function
 
-GetCharacterName_Err:
-    Call LogDatabaseError("Error en GetCharacterName: " & BuildUserLogContext(UserIndex) & _
-                          " Err=" & Err.Number & _
-                          " Desc=" & Err.Description & _
-                          " Line=" & Erl)
+GetCharacterNameByUserId_Err:
+    Call LogDatabaseError("Error en GetCharacterNameByUserId: UserId=" & UserId & _
+                          ". " & Err.Number & " - " & Err.Description & _
+                          ". Línea: " & Erl)
 End Function
 
 Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean

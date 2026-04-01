@@ -122,7 +122,7 @@ Public Function GetUserName(ByVal UserId As Long) As String
     End If
 
     Dim username As String
-    username = GetCharacterName(UserId)
+    username = GetCharacterNameByUserId(UserId)
 
     If LenB(username) = 0 Then
         Call LogDatabaseError("GetUserName: no character name for UserId=" & UserId)
