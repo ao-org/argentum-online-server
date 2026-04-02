@@ -974,6 +974,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
     Dim charindex As Integer
     Dim TempName  As String
     Dim displayName As String
+    Dim aliasValue As String
     If InMapBounds(Map, x, y) Then
         With UserList(UserIndex)
             'If needed make a new character in list
@@ -994,17 +995,22 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                 displayName = GetUserDisplayNameOrReal(UserIndex)
                 If .showName Then
                     If .flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
+                        If IsFeatureEnabled("EnablePatreonAlias") Then
+                            If IsPatreon(UserIndex) Then
+                                aliasValue = Trim$(UserList(UserIndex).Alias)
+                            End If
+                        End If
                         If .GuildIndex > 0 Then
                             klan = modGuilds.GuildName(.GuildIndex)
                             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
-                            TempName = displayName & " <" & klan & ">"
+                            TempName = displayName & " {" & aliasValue & "}" & " <" & klan & ">"
                         Else
                             klan = vbNullString
                             clan_nivel = 0
                             If .flags.EnConsulta Then
-                                TempName = displayName & " [CONSULTA]"
+                                TempName = displayName & " [CONSULTA]" & " {" & aliasValue & "}"
                             Else
-                                TempName = displayName
+                                TempName = displayName & " {" & aliasValue & "}"
                             End If
                         End If
                     Else
