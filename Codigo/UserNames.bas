@@ -1,4 +1,21 @@
 Attribute VB_Name = "UserNames"
+' Argentum 20 Game Server
+'
+'    Copyright (C) 2026 Noland Studios LTD
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
+'
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'
 Option Explicit
 
 Public Const MAX_ALIAS_LEN As Integer = 30
@@ -7,18 +24,6 @@ Public Function GetUserDisplayName(ByVal UserIndex As Integer) As String
     On Error GoTo GetUserDisplayName_Err
     If UserIndex < LBound(UserList) Or UserIndex > UBound(UserList) Then Exit Function
     If Not UserList(UserIndex).flags.UserLogged Then Exit Function
-    If Not IsFeatureEnabled("EnablePatreonAlias") Then
-        GetUserDisplayName = UserList(UserIndex).name
-        Exit Function
-    End If
-    If IsPatreon(UserIndex) Then
-        Dim aliasValue As String
-        aliasValue = Trim$(UserList(UserIndex).Alias)
-        If LenB(aliasValue) <> 0 Then
-            GetUserDisplayName = aliasValue
-            Exit Function
-        End If
-    End If
     GetUserDisplayName = UserList(UserIndex).name
     Exit Function
 GetUserDisplayName_Err:
@@ -35,6 +40,13 @@ GetUserRealName_Err:
     Call TraceError(Err.Number, Err.Description, "UserNames.GetUserRealName", Erl)
 End Function
 
+Public Function GetCharacterAlias(ByVal UserIndex As Integer) As String
+    Dim displayAlias As String
+    If Not IsFeatureEnabled("EnablePatreonAlias") Then Exit Function
+    If Not IsPatreon(UserIndex) Then Exit Function
+    displayAlias = Trim$(UserList(UserIndex).Alias)
+    GetCharacterAlias = displayAlias
+End Function
 
 Public Function GetUserDisplayNameOrReal(ByVal UserIndex As Integer) As String
     Dim displayName As String

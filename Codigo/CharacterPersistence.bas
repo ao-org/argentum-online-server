@@ -1,7 +1,7 @@
 Attribute VB_Name = "CharacterPersistence"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -49,15 +49,56 @@ Private Function db_load_house_key(ByRef User As t_User) As Boolean
     End With
 End Function
 
-Public Function GetCharacterName(ByVal UserId As Long) As String
-    On Error GoTo GetCharacterName_Err
+
+Public Function GetCharacterNameByUserId(ByVal UserId As Long) As String
+    On Error GoTo GetCharacterNameByUserId_Err
+
     Dim RS As ADODB.Recordset
-    Set RS = Query("select name from user where id=?", UserId)
-    If RS Is Nothing Then Exit Function
-    GetCharacterName = RS!name
+
+    '------------------------------------------------------------------------------
+    ' Returns the character name for a given UserId by querying the database.
+    '
+    ' IMPORTANT:
+    ' - This is a DB lookup function (offline-safe).
+    ' - The user does NOT need to be logged in.
+    ' - The UserId may be stale or invalid (e.g. guild data, spouse links).
+    ' - In those cases, this function returns vbNullString and logs the issue.
+    '
+    ' DO NOT use this function when you already have a logged UserIndex.
+    ' In that case, prefer accessing UserList(UserIndex).Name directly.
+    '------------------------------------------------------------------------------
+
+    GetCharacterNameByUserId = vbNullString
+
+    If UserId <= 0 Then
+        Call LogDatabaseError("GetCharacterNameByUserId: invalid UserId=" & UserId)
+        Exit Function
+    End If
+
+    Set RS = Query("SELECT name FROM user WHERE id = ? LIMIT 1;", UserId)
+    If RS Is Nothing Then
+        Call LogDatabaseError("GetCharacterNameByUserId: Query returned Nothing. UserId=" & UserId)
+        Exit Function
+    End If
+
+    ' IMPORTANT: recordset may be empty if UserId does not exist
+    If RS.EOF Or RS.BOF Then
+        Call LogDatabaseError("GetCharacterNameByUserId: no DB row for UserId=" & UserId)
+        Exit Function
+    End If
+
+    If IsNull(RS!Name) Then
+        GetCharacterNameByUserId = vbNullString
+    Else
+        GetCharacterNameByUserId = CStr(RS!Name)
+    End If
+
     Exit Function
-GetCharacterName_Err:
-    Call LogDatabaseError("Error en GetCharacterName: " & UserId & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+
+GetCharacterNameByUserId_Err:
+    Call LogDatabaseError("Error en GetCharacterNameByUserId: UserId=" & UserId & _
+                          ". " & Err.Number & " - " & Err.Description & _
+                          ". Línea: " & Erl)
 End Function
 
 Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean

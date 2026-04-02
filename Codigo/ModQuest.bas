@@ -1,7 +1,7 @@
 Attribute VB_Name = "ModQuest"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -354,11 +354,20 @@ Public Sub LoadQuests()
             .nombre = reader.GetValue("QUEST" & i, "Nombre")
             .Desc = reader.GetValue("QUEST" & i, "Desc")
             .RequiredLevel = val(reader.GetValue("QUEST" & i, "RequiredLevel"))
-            .RequiredClass = val(reader.GetValue("QUEST" & i, "RequiredClass"))
             .RequiredQuest = val(reader.GetValue("QUEST" & i, "RequiredQuest"))
             .LimitLevel = val(reader.GetValue("QUEST" & i, "LimitLevel"))
             .DescFinal = reader.GetValue("QUEST" & i, "DescFinal")
             .NextQuest = reader.GetValue("QUEST" & i, "NextQuest")
+            
+            'CARGAMOS CLASES REQUERIDAS
+            .RequiredClassesCount = val(reader.GetValue("QUEST" & i, "RequiredClassesCount"))
+            If .RequiredClassesCount > 0 Then
+                ReDim .RequiredClass(1 To .RequiredClassesCount)
+                For j = 1 To .RequiredClassesCount
+                    .RequiredClass(j) = CByte(val(reader.GetValue("QUEST" & i, "RequiredClass" & j)))
+                Next j
+            End If
+            
             'CARGAMOS OBJETOS REQUERIDOS
             .RequiredOBJs = val(reader.GetValue("QUEST" & i, "RequiredOBJs"))
             .Trabajador = IIf(val(reader.GetValue("QUEST" & i, "Trabajador")) = 1, True, False)
@@ -655,17 +664,33 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
             Exit Function
         End If
     End If
-    If UserList(UserIndex).clase <> tmpQuest.RequiredClass And tmpQuest.RequiredClass > 0 Then
-        'Msg1426=Debes ser ¬1 para emprender esta misión.
-        Call WriteLocaleMsg(UserIndex, MSG_QUEST_LEVEL_REQUIREMENT, e_FontTypeNames.FONTTYPE_INFO, tmpQuest.RequiredClass)
-        Exit Function
+    
+    'Requiere clase?
+    If tmpQuest.RequiredClassesCount > 0 Then
+        Dim meetRequirement As Boolean
+        meetRequirement = False
+        Dim j As Byte
+        
+        For j = 1 To tmpQuest.RequiredClassesCount
+            If UserList(UserIndex).clase = tmpQuest.RequiredClass(j) Then
+                meetRequirement = True
+                Exit For
+            End If
+        Next j
+        If Not meetRequirement Then
+            'Msg2167=Esta misión no está disponible para tu clase.
+            Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
     End If
+    
     If tmpQuest.Repetible = 0 Then
         If UserDoneQuest(UserIndex, QuestIndex) Then
             Call WriteLocaleMsg(UserIndex, MSG_QUEST_ALREADY_COMPLETED, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
     End If
+    
     If tmpQuest.GlobalQuestIndex > 0 Then
         If tmpQuest.GlobalQuestThresholdNeeded > 0 Then
             If tmpQuest.GlobalQuestThresholdNeeded > GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringGlobalCounter Then
