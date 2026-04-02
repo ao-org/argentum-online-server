@@ -1748,6 +1748,11 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal targetUserIndex As I
     Dim extraStrings As String
     With UserList(targetUserIndex)
         extraStrings = extraStrings & .name & "-"
+        If Len(.Alias) > 0 Then
+            extraStrings = extraStrings & GetCharacterAlias(targetUserIndex) & "-"
+        Else
+            extraStrings = extraStrings & "-"
+        End If
         If Len(.Desc) > 0 Then
             extraStrings = extraStrings & .Desc & "-"
         Else

@@ -45,6 +45,7 @@ Public Function GetCharacterAlias(ByVal UserIndex As Integer) As String
     If Not IsFeatureEnabled("EnablePatreonAlias") Then Exit Function
     If Not IsPatreon(UserIndex) Then Exit Function
     displayAlias = Trim$(UserList(UserIndex).Alias)
+    GetCharacterAlias = displayAlias
 End Function
 
 Public Function GetUserDisplayNameOrReal(ByVal UserIndex As Integer) As String
