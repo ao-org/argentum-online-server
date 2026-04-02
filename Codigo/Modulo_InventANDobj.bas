@@ -213,7 +213,7 @@ Public Sub NpcDropObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
     End If
     Exit Sub
 ErrHandler:
-    Call LogError("Error al dropear el item " & ObjData(Dropeo.ObjIndex).Name & ", al usuario " & UserList(UserIndex).Name & ". " & Err.Description & ".")
+    Call LogError("Error al dropear el item del npc " & Npc.Name & ", al usuario " & UserList(UserIndex).Name & ". " & Err.Description & ".")
 End Sub
 
 Public Sub NpcDropQuestObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
