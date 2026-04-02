@@ -995,11 +995,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                 displayName = GetUserDisplayNameOrReal(UserIndex)
                 If .showName Then
                     If .flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
-                        If IsFeatureEnabled("EnablePatreonAlias") Then
-                            If IsPatreon(UserIndex) Then
-                                aliasValue = Trim$(UserList(UserIndex).Alias)
-                            End If
-                        End If
+                        aliasValue = GetCharacterAlias(UserIndex)
                         If .GuildIndex > 0 Then
                             klan = modGuilds.GuildName(.GuildIndex)
                             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
