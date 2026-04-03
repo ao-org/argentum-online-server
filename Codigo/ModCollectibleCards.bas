@@ -13,7 +13,7 @@ Public Sub AddCollectibleCardToUser(ByVal UserIndex As Integer, ByRef ObjCard As
         Dim Index As Integer
         For i = 1 To UBound(.CollectibleCards)
             If .CollectibleCards(i).Id = ObjCard.ObjIndex Then
-                If .CollectibleCards(i).Rarity = ObjData(ObjCard.ObjIndex).Rarity Then
+                If .CollectibleCards(i).Rarity = ObjData(ObjCard.ObjIndex).CollectibleCardRarity Then
                     Hit = True
                     Index = i
                     Exit For
@@ -27,7 +27,8 @@ Public Sub AddCollectibleCardToUser(ByVal UserIndex As Integer, ByRef ObjCard As
             ReDim Preserve .CollectibleCards(1 To (UBound(.CollectibleCards) + 1))
             .CollectibleCards(UBound(.CollectibleCards)).Amount = 1
             .CollectibleCards(UBound(.CollectibleCards)).Id = ObjCard.ObjIndex
-            .CollectibleCards(UBound(.CollectibleCards)).Rarity = ObjData(ObjCard.ObjIndex).Rarity
+            .CollectibleCards(UBound(.CollectibleCards)).Rarity = ObjData(ObjCard.ObjIndex).CollectibleCardRarity
+            .CollectibleCards(UBound(.CollectibleCards)).Tags = ObjData(ObjCard.ObjIndex).CollectibleCardTags
         End If
         '////////////////////////////////////////////////////////////////////////////////////////////////////
         

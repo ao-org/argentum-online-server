@@ -2378,7 +2378,8 @@ Public Type t_ObjData
     PielTigreBengala As Integer
     SkSastreria As Byte
     Radio As Byte
-    Rarity As Integer
+    CollectibleCardRarity As Integer
+    CollectibleCardTags As Long
     SkHerreria As Integer
     SkCarpinteria As Integer
     texto As String
@@ -2973,6 +2974,7 @@ Public Type t_UserCollectibleCards
     Id As Long
     Rarity As Long
     Amount As Long
+    Tags As Long
 End Type
 
 Public Const HotKeyCount As Integer = 10
