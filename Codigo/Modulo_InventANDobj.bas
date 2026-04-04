@@ -179,7 +179,6 @@ End Sub
 
 Public Sub NpcDropObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
     On Error GoTo ErrHandler
-    If SvrConfig.GetValue("DropActive") = 0 Then Exit Sub 'Esta el Dropeo activado?
     Dim Dropeo       As t_Obj
     Dim Probabilidad As Long
     Dim objRandom    As Byte
@@ -203,7 +202,7 @@ Public Sub NpcDropObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
     Else
         Dim i As Byte
         For i = 1 To Npc.DropCount
-            If RandomNumber(1, Npc.Drop(i).DropChance) = 1 Then
+            If RandomNumber(1, (Npc.Drop(i).DropChance / SvrConfig.GetValue("DropMult"))) = 1 Then
                 Dropeo.Amount = RandomNumber(Npc.Drop(i).LowQuantityBound, Npc.Drop(i).HighQuantityBound)
                 Dropeo.ObjIndex = Npc.Drop(i).ItemIndex
                 Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
