@@ -1,6 +1,5 @@
 ### ⚔️ Please consider supporting us at [https://www.patreon.com/nolandstudios](https://www.patreon.com/nolandstudios) ⚔️ 
 
-
 ![ao logo](https://www.argentumonline.com.ar/_nuxt/img/argentum20_logo.562a0aa.png)
 
 # 🛡️ Argentum Online Server

@@ -886,6 +886,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleAntiCheatMessage(UserIndex)
         Case ClientPacketID.eFactionMessage
             Call HandleFactionMessage(UserIndex)
+        Case ClientPacketID.eAntiMacroMessage
+            Call HandleAntiMacroMessage(UserIndex)
             #If PYMMO = 0 Then
             Case ClientPacketID.eCreateAccount
                 Call HandleCreateAccount(ConnectionID)
@@ -1356,12 +1358,6 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
 
     username = AO20CryptoSysWrapper.DECRYPT(cnvHexStrFromString(UserList(UserIndex).public_key), encrypted_username)
 
-    If PuedeCrearPersonajes = 0 Then
-        Call WriteShowMessageBox(UserIndex, MSG_DISABLED_NEW_CHARACTERS, vbNullString)
-        Call CloseSocket(UserIndex)
-        Exit Sub
-    End If
-
     If aClon.MaxPersonajes(UserList(UserIndex).ConnectionDetails.IP) Then
         Call WriteShowMessageBox(UserIndex, MSG_YOU_HAVE_TOO_MANY_CHARS, vbNullString)
         Call CloseSocket(UserIndex)
@@ -1428,12 +1424,6 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 116     head = reader.ReadInt()
 118     Hogar = reader.ReadInt()
 
-126     If PuedeCrearPersonajes = 0 Then
-128         Call WriteShowMessageBox(UserIndex, 1780, vbNullString) 'Msg1780=La creación de personajes en este servidor se ha deshabilitado.
-130         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
 
 132     If aClon.MaxPersonajes(UserList(UserIndex).ConnectionDetails.IP) Then
 134         Call WriteShowMessageBox(UserIndex, 1781, vbNullString) 'Msg1781=Has creado demasiados personajes.
@@ -5114,6 +5104,35 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
     Exit Sub
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMensajeUser", Erl)
+End Sub
+Private Sub HandleAntiMacroMessage(ByVal UserIndex As Integer)
+    On Error GoTo ErrHandler
+    With UserList(UserIndex)
+        Dim username As String
+        Dim mensaje  As String
+        Dim tUser    As t_UserReference
+        username = reader.ReadString8()
+        mensaje = reader.ReadString8()
+        If EsGM(UserIndex) Then
+            If LenB(username) = 0 Or LenB(mensaje) = 0 Then
+                'Msg2173= Utilice /MENSAJEANTIMACRO nick@mensaje
+                Call WriteLocaleMsg(UserIndex, MSG_USE_MESSAGE_ANTI_MACRO, e_FontTypeNames.FONTTYPE_INFO)
+            Else
+                tUser = NameIndex(username)
+                If IsValidUserRef(tUser) Then
+                    'Msg2172=Control anti-macro: ¬1
+                    Call WriteLocaleMsg(tUser.ArrayIndex, MSG_ANTI_MACRO_CONTROL, e_FontTypeNames.FONTTYPE_New_DONADOR, mensaje)
+                    Call WriteShowMessageBox(tUser.ArrayIndex, MSG_ANTI_MACRO_CONTROL, mensaje)
+                    Call LogGM(GetUserRealName(UserIndex), "Envió mensaje anti-macro a " & username & ": " & mensaje)
+                Else
+                    Call LogGM(GetUserRealName(UserIndex), "Intentó enviar mensaje anti-macro a " & username & " pero el usuario no está conectado o no es válido. Mensaje: " & mensaje)
+                End If
+            End If
+        End If
+    End With
+    Exit Sub
+ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleAntiMacroMessage", Erl)
 End Sub
 
 Private Sub HandleTraerBoveda(ByVal UserIndex As Integer)
