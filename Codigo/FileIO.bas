@@ -1836,7 +1836,6 @@ Sub LoadSini()
     IdleLimit = val(Lector.GetValue("INIT", "IdleLimit"))
     'Lee la version correcta del cliente
     ULTIMAVERSION = Lector.GetValue("INIT", "Version")
-    PuedeCrearPersonajes = val(Lector.GetValue("INIT", "PuedeCrearPersonajes"))
     MinimumPriceMao = val(Lector.GetValue("INIT", "MinimumPriceMao"))
     GoldPriceMao = val(Lector.GetValue("INIT", "GoldPriceMao"))
     MinimumLevelMao = val(Lector.GetValue("INIT", "MinimumLevelMao"))

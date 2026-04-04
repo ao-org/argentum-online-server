@@ -3597,7 +3597,6 @@ Public MaxRangoFaccion                        As Byte ' El rango maximo que se p
 Public LastBackup                             As String
 Public minutos                                As String
 Public haciendoBK                             As Boolean
-Public PuedeCrearPersonajes                   As Integer
 Public MinimumPriceMao                        As Long
 Public GoldPriceMao                           As Long
 Public MinimumLevelMao                        As Integer
