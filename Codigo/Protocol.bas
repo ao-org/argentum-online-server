@@ -1358,12 +1358,6 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
 
     username = AO20CryptoSysWrapper.DECRYPT(cnvHexStrFromString(UserList(UserIndex).public_key), encrypted_username)
 
-    If PuedeCrearPersonajes = 0 Then
-        Call WriteShowMessageBox(UserIndex, MSG_DISABLED_NEW_CHARACTERS, vbNullString)
-        Call CloseSocket(UserIndex)
-        Exit Sub
-    End If
-
     If aClon.MaxPersonajes(UserList(UserIndex).ConnectionDetails.IP) Then
         Call WriteShowMessageBox(UserIndex, MSG_YOU_HAVE_TOO_MANY_CHARS, vbNullString)
         Call CloseSocket(UserIndex)
@@ -1430,12 +1424,6 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 116     head = reader.ReadInt()
 118     Hogar = reader.ReadInt()
 
-126     If PuedeCrearPersonajes = 0 Then
-128         Call WriteShowMessageBox(UserIndex, 1780, vbNullString) 'Msg1780=La creación de personajes en este servidor se ha deshabilitado.
-130         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
 
 132     If aClon.MaxPersonajes(UserList(UserIndex).ConnectionDetails.IP) Then
 134         Call WriteShowMessageBox(UserIndex, 1781, vbNullString) 'Msg1781=Has creado demasiados personajes.
