@@ -200,9 +200,17 @@ Public Sub NpcDropObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
         Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
         Call TirarItemAlPiso(Npc.pos, Dropeo, Npc.flags.AguaValida = 1)
     Else
+        Dim DropMultiplier As Integer
+        DropMultiplier = SvrConfig.GetValue("DropMult")
+        'out of bounds and data type check
+        If DropMultiplier <= 0 Then
+            DropMultiplier = 1
+        End If
+        
         Dim i As Byte
         For i = 1 To Npc.DropCount
-            If RandomNumber(1, (Npc.Drop(i).DropChance / SvrConfig.GetValue("DropMult"))) = 1 Then
+        
+            If RandomNumber(1, (Npc.Drop(i).DropChance / DropMultiplier)) = 1 Then
                 Dropeo.Amount = RandomNumber(Npc.Drop(i).LowQuantityBound, Npc.Drop(i).HighQuantityBound)
                 Dropeo.ObjIndex = Npc.Drop(i).ItemIndex
                 Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
