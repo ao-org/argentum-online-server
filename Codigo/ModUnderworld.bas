@@ -29,12 +29,12 @@ Public Sub MaybeSpawnUnderworldPortals()
         For i = 1 To UBound(UnderworldMapPool)
             Dim SourcePosition As t_WorldPos
             Dim DestinationPosition As t_WorldPos
-            SourcePosition.Map = UnderworldMapPool(i).Map
-            SourcePosition.x = UnderworldMapPool(i).x
-            SourcePosition.y = UnderworldMapPool(i).y
-            DestinationPosition.Map = OverworldPortalPool(i).Map
-            DestinationPosition.x = OverworldPortalPool(i).x
-            DestinationPosition.y = OverworldPortalPool(i).y
+            SourcePosition.Map = OverworldPortalPool(i).Map
+            SourcePosition.x = OverworldPortalPool(i).x
+            SourcePosition.y = OverworldPortalPool(i).y
+            DestinationPosition.Map = UnderworldMapPool(i).Map
+            DestinationPosition.x = UnderworldMapPool(i).x
+            DestinationPosition.y = UnderworldMapPool(i).y
            Call CreateUnderworldTp(SourcePosition, DestinationPosition)
         Next i
         Call modSendData.SendData(ToAll, 0, PrepareMessageLocaleMsg(UNDERWORLD_BROADCAST_MSG_ID, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN))
