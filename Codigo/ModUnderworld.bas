@@ -8,6 +8,7 @@ Public UnderworldMinSpawnThreshold As Byte
 Public UnderworldMaxSpawnThreshold As Byte
 Private m_UnderworldLastSpawnTimestamp As Long
 Private Const UNDERWORLD_BROADCAST_MSG_ID As Integer = 1
+Private Const UNDERWORLD_PORTAL_OBJ_IDX As Integer = 1
 
 Public Sub MaybeSpawnUnderworldPortals()
     On Error GoTo MaybeSpawnUnderworldPortals_Err
@@ -65,3 +66,37 @@ Public Sub LoadUnderworldModule()
         UnderworldMapPool(i).y = CInt(val(IniFile.GetValue("Portal" & i, "y")))
     Next i
 End Sub
+
+
+Public Sub DestroyUnderworldTps()
+
+End Sub
+
+Public Sub CreateUnderworldTp(ByRef Source As t_WorldPos, ByRef Destiny As t_WorldPos)
+    If Not MapaValido(Source.Map) Or Not InMapBounds(Source.Map, Source.x, Source.y) Then Exit Sub
+    If Not MapaValido(Destiny.Map) Or Not InMapBounds(Destiny.Map, Destiny.x, Destiny.y) Then Exit Sub
+    
+    
+    With MapData(Source.Map, Source.x, Source.y)
+        If .ObjInfo.ObjIndex = UNDERWORLD_PORTAL_OBJ_IDX Then Exit Sub
+        If .ObjInfo.ObjIndex > 0 Then
+            Call EraseObj(.ObjInfo.ObjIndex, Source.Map, Source.x, Source.y)
+        End If
+        Dim Objeto As t_Obj
+        Objeto.Amount = 1
+        Objeto.ObjIndex = UNDERWORLD_PORTAL_OBJ_IDX
+        Call MakeObj(Objeto, Source.Map, Source.x, Source.y)
+        .TileExit.Map = Map
+        .TileExit.x = x
+        .TileExit.y = y - 1
+    End With
+    
+        
+End Sub
+
+Public Function IsPlayerInsideTheUnderworld(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+    End With
+End Function
+
+
