@@ -8,7 +8,7 @@ Public OverworldPortalPool() As t_WorldPos
 Public UnderworldMinSpawnThreshold As Byte
 Public UnderworldMaxSpawnThreshold As Byte
 Private m_UnderworldLastSpawnTimestamp As Long
-Private Const UNDERWORLD_BROADCAST_MSG_ID As Integer = 1
+Private Const UNDERWORLD_BROADCAST_MSG_ID As Integer = 2174
 Private Const UNDERWORLD_PORTAL_OBJ_IDX As Integer = 6355
 Private ALREADY_OPENED_PORTALS As Boolean
 
