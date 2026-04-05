@@ -104,7 +104,7 @@ End Sub
 Public Sub CreateUnderworldTp(ByRef Source As t_WorldPos, ByRef Dest As t_WorldPos)
     If Not MapaValido(Source.Map) Or Not InMapBounds(Source.Map, Source.x, Source.y) Then Exit Sub
     If Not MapaValido(Dest.Map) Or Not InMapBounds(Dest.Map, Dest.x, Dest.y) Then Exit Sub
-        If .ObjInfo.ObjIndex > 0 Then
+        If MapData(Source.Map, Source.x, Source.y).ObjInfo.ObjIndex > 0 Then
             Call EraseObj(MapData(Source.Map, Source.x, Source.y).ObjInfo.ObjIndex, Source.Map, Source.x, Source.y)
         End If
         Dim Objeto As t_Obj
