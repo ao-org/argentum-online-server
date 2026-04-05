@@ -86,9 +86,9 @@ Public Sub CreateUnderworldTp(ByRef Source As t_WorldPos, ByRef Destiny As t_Wor
         Objeto.Amount = 1
         Objeto.ObjIndex = UNDERWORLD_PORTAL_OBJ_IDX
         Call MakeObj(Objeto, Source.Map, Source.x, Source.y)
-        .TileExit.Map = Map
-        .TileExit.x = x
-        .TileExit.y = y - 1
+        .TileExit.Map = Source.Map
+        .TileExit.x = Source.x
+        .TileExit.y = Source.y - 1
     End With
     
         
