@@ -373,6 +373,7 @@ Public Sub AgregarUser(ByVal UserIndex As Integer, ByVal Map As Integer, Optiona
     Else
         Call CheckUpdateNeededUser(UserIndex, USER_NUEVO, appear)
     End If
+    Call ModContinuousMap.SyncBorderEntitiesForUser(UserIndex, True)
     Exit Sub
 AgregarUser_Err:
     Call TraceError(Err.Number, Err.Description, "ModAreas.AgregarUser", Erl)

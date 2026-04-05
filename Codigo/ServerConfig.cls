@@ -42,8 +42,7 @@ Option Base 0
 Private mSettings As Dictionary
 
 Public Function GetValue(ByVal key As String) As Variant
-    Debug.Assert Not mSettings Is Nothing
-    Debug.Assert mSettings.Exists(key)
+    If mSettings Is Nothing Then Exit Function
     If mSettings.Exists(key) Then
         GetValue = mSettings.Item(key)
     End If
@@ -96,6 +95,7 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "PenaltyExpUserPerLevel", CSng(val(reader.GetValue("CONFIGURACIONES", "PenaltyExpUserPerLevel", "0.05")))
     mSettings.Add "NpcDeltaLevelPenalties", CInt(val(reader.GetValue("CONFIGURACIONES", "NpcDeltaLevelPenalties", "4")))
     mSettings.Add "NpcDeltaLevelCloseRange", CInt(val(reader.GetValue("CONFIGURACIONES", "NpcDeltaLevelCloseRange", "3")))
+    mSettings.Add "ContinuousMapBorderStrip", CInt(val(reader.GetValue("CONFIGURACIONES", "ContinuousMapBorderStrip", "8")))
     mSettings.Add "LeadershipExpPartyBonus", CDbl(val(reader.GetValue("CONFIGURACIONES", "LeadershipExpPartyBonus", "1.01")))
     mSettings.Add "JineteLevel1Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel1Speed", "1.05")))
     mSettings.Add "JineteLevel2Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel2Speed", "1.07")))

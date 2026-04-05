@@ -4241,6 +4241,32 @@ PrepareMessageCharacterMove_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharacterMove", Erl)
 End Function
 
+Public Function PrepareMessageBorderEntitiesReset()
+    On Error GoTo PrepareMessageBorderEntitiesReset_Err
+    Call Writer.WriteInt16(ServerPacketID.eBorderEntitiesReset)
+    Exit Function
+PrepareMessageBorderEntitiesReset_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageBorderEntitiesReset", Erl)
+End Function
+
+Public Function PrepareMessageBorderCharacterCreate(ByVal OriginMap As Integer, ByVal charindex As Integer, ByVal x As Integer, ByVal y As Integer, ByVal Heading As e_Heading, _
+                                                    ByVal IsNpc As Boolean, ByVal Name As String)
+    On Error GoTo PrepareMessageBorderCharacterCreate_Err
+    Call Writer.WriteInt16(ServerPacketID.eBorderCharacterCreate)
+    Call Writer.WriteInt16(OriginMap)
+    Call Writer.WriteInt16(charindex)
+    Call Writer.WriteInt16(x)
+    Call Writer.WriteInt16(y)
+    Call Writer.WriteInt8(Heading)
+    Call Writer.WriteBool(IsNpc)
+    Call Writer.WriteString8(Name)
+    Exit Function
+PrepareMessageBorderCharacterCreate_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageBorderCharacterCreate", Erl)
+End Function
+
 Public Function PrepareCharacterTranslate(ByVal CharIndexm As Integer, ByVal NewX As Byte, ByVal NewY As Byte, ByVal TranslationTime As Long)
     On Error GoTo PrepareMessageCharacterMove_Err
     Call Writer.WriteInt16(ServerPacketID.eCharacterTranslate)

@@ -2778,6 +2778,7 @@ Public Type t_UserCounters
     Ocultando As Long   ' Unico trabajo no revisado por el centinela
     goHome As Long
     LastSave As Long
+    LastBorderMirrorSync As Long
     CuentaRegresiva As Integer
     TimerBarra As Integer
     LastResetTick As Long

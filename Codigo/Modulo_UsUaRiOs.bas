@@ -1214,6 +1214,7 @@ Function TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos
         Call WritePosUpdate(UserIndex)
         'Actualizamos las áreas de ser necesario
         Call ModAreas.CheckUpdateNeededUser(UserIndex, .Char.Heading, 0)
+        Call ModContinuousMap.NotifyMapBorderViewers(.pos.Map)
         If .Counters.Trabajando Then
             Call WriteMacroTrabajoToggle(UserIndex, False)
         End If
@@ -1355,6 +1356,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
         MapData(.pos.Map, .pos.x, .pos.y).UserIndex = UserIndex
         'Actualizamos las áreas de ser necesario
         Call ModAreas.CheckUpdateNeededUser(UserIndex, nHeading, 0)
+        Call ModContinuousMap.NotifyMapBorderViewers(.pos.Map)
         If .Counters.Trabajando Then
             Call WriteMacroTrabajoToggle(UserIndex, False)
         End If

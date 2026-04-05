@@ -712,6 +712,7 @@ Public Sub TranslateNpcChar(ByVal NpcIndex As Integer, ByRef NewPos As t_WorldPo
         MapData(.pos.Map, NewPos.x, NewPos.y).NpcIndex = NpcIndex
         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareCharacterTranslate(.Char.charindex, NewPos.x, NewPos.y, Speed))
         Call CheckUpdateNeededNpc(NpcIndex, GetHeadingFromWorldPos(PrevPos, NewPos))
+        Call ModContinuousMap.NotifyMapBorderViewers(.pos.Map)
     End With
     Exit Sub
 TranslateNpcChar_Err:
@@ -765,6 +766,7 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
             .Char.Heading = nHeading
             MapData(.pos.Map, nPos.x, nPos.y).NpcIndex = NpcIndex
             Call CheckUpdateNeededNpc(NpcIndex, nHeading)
+            Call ModContinuousMap.NotifyMapBorderViewers(.pos.Map)
             If Not MapData(.pos.Map, nPos.x, nPos.y).Trap Is Nothing Then
                 Call ModMap.ActivateTrap(NpcIndex, eNpc, .pos.Map, nPos.x, nPos.y)
             End If

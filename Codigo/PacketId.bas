@@ -225,6 +225,8 @@ Public Enum ServerPacketID
     eChangeSkinSlot
     eGuildConfig
     eShowPickUpObj
+    eBorderEntitiesReset = 228
+    eBorderCharacterCreate = 229
     eMaxPacket
     [PacketCount]
 End Enum
