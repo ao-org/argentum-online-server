@@ -14,6 +14,7 @@ Private ALREADY_OPENED_PORTALS As Boolean
 
 Public Sub MaybeSpawnUnderworldPortals()
     On Error GoTo MaybeSpawnUnderworldPortals_Err
+    If Not IsFeatureEnabled("underworld") Then Exit Sub
     If UBound(UnderworldMapPool) < 1 Then Exit Sub
     Dim nowRaw As Long
     nowRaw = GetTickCountRaw()
