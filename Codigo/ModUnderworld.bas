@@ -87,8 +87,15 @@ Public Sub CreateUnderworldTp(ByRef Source As t_WorldPos, ByRef Dest As t_WorldP
         MapData(Source.Map, Source.x, Source.y - 4).TileExit.y = Dest.y
 End Sub
 
-Public Function IsPlayerInsideTheUnderworld(ByVal UserIndex As Integer)
+Public Function IsUserIndexInsideTheUnderworld(ByVal UserIndex As Integer)
     With UserList(UserIndex)
+        Dim i As Integer
+        For i = 1 To UBound(UnderworldMapPool)
+            If UserList(UserIndex).pos.Map = UnderworldMapPool(i).Map Then
+                IsUserIndexInsideTheUnderworld = True
+                Exit Function
+            End If
+        Next i
     End With
 End Function
 
