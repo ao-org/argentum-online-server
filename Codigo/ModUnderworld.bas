@@ -23,12 +23,12 @@ Public Sub MaybeSpawnUnderworldPortals()
     Call PerformanceTestStart(PerformanceTimer)
     Dim currentHour As Integer
     currentHour = Hour(Now)
+    Dim i As Integer
+    Dim SourcePosition As t_WorldPos
+    Dim DestinationPosition As t_WorldPos
     If currentHour >= UnderworldMinSpawnThreshold And currentHour < UnderworldMaxSpawnThreshold Then
         If Not ALREADY_OPENED_PORTALS Then
-            Dim i As Integer
             For i = 1 To UBound(UnderworldMapPool)
-                Dim SourcePosition As t_WorldPos
-                Dim DestinationPosition As t_WorldPos
                 SourcePosition.Map = OverworldPortalPool(i).Map
                 SourcePosition.x = OverworldPortalPool(i).x
                 SourcePosition.y = OverworldPortalPool(i).y
@@ -43,10 +43,7 @@ Public Sub MaybeSpawnUnderworldPortals()
         End If
     Else
         If ALREADY_OPENED_PORTALS Then
-            Dim i As Integer
             For i = 1 To UBound(UnderworldMapPool)
-                Dim SourcePosition As t_WorldPos
-                Dim DestinationPosition As t_WorldPos
                 SourcePosition.Map = OverworldPortalPool(i).Map
                 SourcePosition.x = OverworldPortalPool(i).x
                 SourcePosition.y = OverworldPortalPool(i).y
