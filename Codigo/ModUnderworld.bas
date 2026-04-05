@@ -4,6 +4,7 @@ Option Explicit
 
 Public UnderworldLastSpawnTimestamp As Long
 Public UnderworldMapPool() As t_WorldPos
+Public OverworldPortalPool() As t_WorldPos
 Public UnderworldMinSpawnThreshold As Byte
 Public UnderworldMaxSpawnThreshold As Byte
 Private m_UnderworldLastSpawnTimestamp As Long
@@ -26,7 +27,12 @@ Public Sub MaybeSpawnUnderworldPortals()
     If currentHour >= UnderworldMinSpawnThreshold And currentHour < UnderworldMaxSpawnThreshold Then
         Dim i As Integer
         For i = 1 To UBound(UnderworldMapPool)
-            'Call SpawnTp?
+            Dim SourcePosition As t_WorldPos
+            Dim DestinationPosition As t_WorldPos
+            SourcePosition.Map = UnderworldMapPool(i).Map
+            SourcePosition.x = UnderworldMapPool(i).x
+            SourcePosition.y = UnderworldMapPool(i).y
+           Call CreateUnderworldTp(SourcePosition, DestinationPosition)
         Next i
         Call modSendData.SendData(ToAll, 0, PrepareMessageLocaleMsg(UNDERWORLD_BROADCAST_MSG_ID, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN))
     
@@ -58,12 +64,31 @@ Public Sub LoadUnderworldModule()
     MaxUnderworldMaps = val(IniFile.GetValue("INIT", "UnderworldMapPool"))
     UnderworldMaxSpawnThreshold = val(IniFile.GetValue("INIT", "UnderworldMaxSpawnThreshold"))
     UnderworldMinSpawnThreshold = val(IniFile.GetValue("INIT", "UnderworldMinSpawnThreshold"))
+    If MaxUnderworldMaps <= 0 Then
+        Debug.Assert False
+        MaxUnderworldMaps = 0
+        Exit Sub
+    End If
+
+    If UnderworldMaxSpawnThreshold < 0 Or UnderworldMaxSpawnThreshold > 23 Then
+        Debug.Assert False
+        UnderworldMaxSpawnThreshold = -1
+        Exit Sub
+    End If
+    If UnderworldMinSpawnThreshold < 0 Or UnderworldMinSpawnThreshold > 23 Then
+        Debug.Assert False
+        UnderworldMaxSpawnThreshold = -1
+        Exit Sub
+    End If
     ReDim Preserve UnderworldMapPool(1 To MaxUnderworldMaps)
     Dim i As Integer
     For i = 1 To MaxUnderworldMaps
-        UnderworldMapPool(i).Map = CInt(val(IniFile.GetValue("Portal" & i, "Map")))
-        UnderworldMapPool(i).x = CInt(val(IniFile.GetValue("Portal" & i, "x")))
-        UnderworldMapPool(i).y = CInt(val(IniFile.GetValue("Portal" & i, "y")))
+        UnderworldMapPool(i).Map = CInt(val(IniFile.GetValue("Portal" & i, "DestinationMap")))
+        UnderworldMapPool(i).x = CInt(val(IniFile.GetValue("Portal" & i, "DestinationX")))
+        UnderworldMapPool(i).y = CInt(val(IniFile.GetValue("Portal" & i, "DestinationY")))
+        OverworldPortalPool(i).Map = CInt(val(IniFile.GetValue("Portal" & i, "SourceMap")))
+        OverworldPortalPool(i).x = CInt(val(IniFile.GetValue("Portal" & i, "SourceX")))
+        OverworldPortalPool(i).y = CInt(val(IniFile.GetValue("Portal" & i, "SourceY")))
     Next i
 End Sub
 
@@ -72,9 +97,9 @@ Public Sub DestroyUnderworldTps()
 
 End Sub
 
-Public Sub CreateUnderworldTp(ByRef Source As t_WorldPos, ByRef Destiny As t_WorldPos)
+Public Sub CreateUnderworldTp(ByRef Source As t_WorldPos, ByRef Dest As t_WorldPos)
     If Not MapaValido(Source.Map) Or Not InMapBounds(Source.Map, Source.x, Source.y) Then Exit Sub
-    If Not MapaValido(Destiny.Map) Or Not InMapBounds(Destiny.Map, Destiny.x, Destiny.y) Then Exit Sub
+    If Not MapaValido(Dest.Map) Or Not InMapBounds(Dest.Map, Dest.x, Dest.y) Then Exit Sub
     
     
     With MapData(Source.Map, Source.x, Source.y)
@@ -88,7 +113,7 @@ Public Sub CreateUnderworldTp(ByRef Source As t_WorldPos, ByRef Destiny As t_Wor
         Call MakeObj(Objeto, Source.Map, Source.x, Source.y)
         .TileExit.Map = Source.Map
         .TileExit.x = Source.x
-        .TileExit.y = Source.y - 1
+        .TileExit.y = Source.y
     End With
     
         
