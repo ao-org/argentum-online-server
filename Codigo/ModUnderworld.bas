@@ -104,21 +104,22 @@ End Sub
 Public Sub CreateUnderworldTp(ByRef Source As t_WorldPos, ByRef Dest As t_WorldPos)
     If Not MapaValido(Source.Map) Or Not InMapBounds(Source.Map, Source.x, Source.y) Then Exit Sub
     If Not MapaValido(Dest.Map) Or Not InMapBounds(Dest.Map, Dest.x, Dest.y) Then Exit Sub
-    With MapData(Source.Map, Source.x, Source.y)
-        If .ObjInfo.ObjIndex = UNDERWORLD_PORTAL_OBJ_IDX Then Exit Sub
         If .ObjInfo.ObjIndex > 0 Then
-            Call EraseObj(.ObjInfo.ObjIndex, Source.Map, Source.x, Source.y)
+            Call EraseObj(MapData(Source.Map, Source.x, Source.y).ObjInfo.ObjIndex, Source.Map, Source.x, Source.y)
         End If
         Dim Objeto As t_Obj
         Objeto.Amount = 1
         Objeto.ObjIndex = UNDERWORLD_PORTAL_OBJ_IDX
         Call MakeObj(Objeto, Source.Map, Source.x, Source.y)
-        .TileExit.Map = Dest.Map
-        .TileExit.x = Dest.x
-        .TileExit.y = Dest.y
-    End With
-    
-        
+        Dim i As Integer
+        Dim j As Integer
+        For i = Source.y - 6 To Source.y
+            For j = Source.x - 4 To Source.x + 4
+                MapData(Source.Map, j, i).TileExit.Map = Dest.Map
+                MapData(Source.Map, j, i).TileExit.x = Dest.x
+                MapData(Source.Map, j, i).TileExit.y = Dest.y
+            Next j
+        Next i
 End Sub
 
 Public Function IsPlayerInsideTheUnderworld(ByVal UserIndex As Integer)
