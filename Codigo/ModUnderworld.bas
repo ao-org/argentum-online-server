@@ -81,6 +81,7 @@ Public Sub LoadUnderworldModule()
         Exit Sub
     End If
     ReDim Preserve UnderworldMapPool(1 To MaxUnderworldMaps)
+    ReDim Preserve OverworldPortalPool(1 To MaxUnderworldMaps)
     Dim i As Integer
     For i = 1 To MaxUnderworldMaps
         UnderworldMapPool(i).Map = CInt(val(IniFile.GetValue("Portal" & i, "DestinationMap")))
