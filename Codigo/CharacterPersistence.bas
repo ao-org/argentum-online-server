@@ -221,6 +221,10 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
 
         ' Set up the Patreon tier early (needed by subsequent initialization).
         .Stats.tipoUsuario = GetPatronTierFromAccountID(.AccountID)
+        .flags.is_donor = GetUserContributionStatusFromAccountID(.AccountID)
+        If .flags.is_donor > 0 Then
+            .Stats.tipoUsuario = e_TipoUsuario.tLeyenda
+        End If
         ' Check for ban status.
         If RS!is_banned Then
             Dim BanNick As String, BaneoMotivo As String
@@ -529,6 +533,18 @@ Public Function GetPatronTierFromAccountID(ByVal account_id) As e_TipoUsuario
     Exit Function
 ErrorHandler_GetPatronTierFromAccountID:
     Call LogDatabaseError("Error en GetPatronTierFromAccountID: " & account_id & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+End Function
+
+Public Function GetUserContributionStatusFromAccountID(ByVal account_id) As Byte
+    On Error GoTo ErrorHandler_GetUserContributionStatusFromAccountID
+    Dim RS As ADODB.Recordset
+    Set RS = Query("Select is_donor from account where id = ?", account_id)
+    If Not RS Is Nothing Then
+        GetUserContributionStatusFromAccountID = RS!is_donor
+    End If
+    Exit Function
+ErrorHandler_GetUserContributionStatusFromAccountID:
+    Call LogDatabaseError("Error en GetUserContributionStatusFromAccountID: " & account_id & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 End Function
 
 Public Sub LoadPatronCreditsFromDB(ByVal UserIndex As Integer)

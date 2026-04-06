@@ -2557,6 +2557,7 @@ Public Type t_UserFlags
     Casado As Byte
     Candidato As t_UserReference
     pregunta As Byte
+    is_donor As Byte
     ' 0: no esta hechizada;
     'Cualquier otro valor si lo esta: 0.8 -> reduce un 20% de velocidad; 1.3 -> Aumenta un 30%
     VelocidadHechizada As Single

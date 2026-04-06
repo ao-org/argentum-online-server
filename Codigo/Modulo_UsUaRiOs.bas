@@ -78,7 +78,7 @@ Public Function IsPatreon(ByVal UserIndex As Integer) As Boolean
    On Error GoTo IsPatreon_Error
 
     With UserList(UserIndex).Stats
-        IsPatreon = .tipoUsuario = e_TipoUsuario.tAventurero Or .tipoUsuario = e_TipoUsuario.tHeroe Or .tipoUsuario = e_TipoUsuario.tLeyenda
+        IsPatreon = .tipoUsuario = e_TipoUsuario.tAventurero Or .tipoUsuario = e_TipoUsuario.tHeroe Or .tipoUsuario = e_TipoUsuario.tLeyenda Or UserList(UserIndex).flags.is_donor > 0
     End With
 
    On Error GoTo 0
