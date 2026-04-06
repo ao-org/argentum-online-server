@@ -1,7 +1,7 @@
 Attribute VB_Name = "Protocol_Writes"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -1466,7 +1466,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As By
     Call Writer.WriteInt16(ObjIndex)
     Call Writer.WriteInt16(UserList(UserIndex).invent.Object(Slot).amount)
     Call Writer.WriteBool(UserList(UserIndex).invent.Object(Slot).Equipped)
-    Call Writer.WriteReal32(SalePrice(ObjIndex,UserIndex))
+    Call Writer.WriteReal32(SalePrice(ObjIndex, UserIndex))
     Call Writer.WriteInt8(PodraUsarlo)
     Call Writer.WriteInt32(UserList(UserIndex).invent.Object(Slot).ElementalTags Or NaturalElementalTags)
     If ObjIndex > 0 Then
@@ -2895,128 +2895,224 @@ WriteQuestListSend_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteQuestListSend", Erl)
 End Sub
+Private Sub GetSafeRequiredClasses(ByVal QuestIndex As Integer, ByRef safeClasses() As Byte, ByRef safeCount As Byte)
+    On Error GoTo ErrHandler
+
+    Dim i As Integer
+    Dim classId As Byte
+    Dim declaredCount As Integer
+
+    safeCount = 0
+
+    declaredCount = QuestList(QuestIndex).RequiredClassesCount
+    If declaredCount <= 0 Then Exit Sub
+    If declaredCount > 255 Then declaredCount = 255
+
+    ReDim safeClasses(1 To declaredCount)
+
+    For i = 1 To declaredCount
+        classId = QuestList(QuestIndex).RequiredClass(i)
+
+        If classId >= 1 And classId <= NUMCLASES Then
+            safeCount = safeCount + 1
+            safeClasses(safeCount) = classId
+        End If
+    Next i
+
+    If safeCount = 0 Then
+        Erase safeClasses
+    ElseIf safeCount < declaredCount Then
+        ReDim Preserve safeClasses(1 To safeCount)
+    End If
+
+    Exit Sub
+
+ErrHandler:
+    safeCount = 0
+    Erase safeClasses
+End Sub
 
 Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     On Error GoTo WriteNpcQuestListSend_Err
-    Dim i          As Integer
-    Dim j          As Integer
+
+    Dim i As Integer
+    Dim j As Integer
     Dim QuestIndex As Integer
+    Dim validQuestCount As Integer
+    Dim validQuestIndexes() As Integer
+
+    Dim safeClasses() As Byte
+    Dim safeClassesCount As Byte
+    Dim safeCount As Byte
+
+    Dim PuedeHacerla As Boolean
+    Dim globalQuestIndex As Integer
+
+    If UserIndex < 1 Or UserIndex > LastUser Then Exit Sub
+    If NpcIndex < 1 Then Exit Sub
+
+    ' ===== Build valid quest list =====
+    validQuestCount = 0
+
+    If NpcList(NpcIndex).NumQuest > 0 Then
+        ReDim validQuestIndexes(1 To NpcList(NpcIndex).NumQuest)
+
+        For j = 1 To NpcList(NpcIndex).NumQuest
+            QuestIndex = NpcList(NpcIndex).QuestNumber(j)
+
+            If IsQuestIndexValid(QuestIndex) Then
+                validQuestCount = validQuestCount + 1
+                validQuestIndexes(validQuestCount) = QuestIndex
+            End If
+        Next j
+    End If
+
+    ' ===== Packet header =====
     Call Writer.WriteInt16(ServerPacketID.eNpcQuestListSend)
-    Call Writer.WriteInt8(NpcList(NpcIndex).NumQuest) 'Escribimos primero cuantas quest tiene el NPC
-    For j = 1 To NpcList(NpcIndex).NumQuest
-        QuestIndex = NpcList(NpcIndex).QuestNumber(j)
+    Call Writer.WriteInt8(validQuestCount)
+
+    ' ===== Serialize quests =====
+    For j = 1 To validQuestCount
+        QuestIndex = validQuestIndexes(j)
+
         Call Writer.WriteInt16(QuestIndex)
         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
         Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
-        'Enviamos clases requeridas
-        Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClassesCount)
-        If QuestList(QuestIndex).RequiredClassesCount > 0 Then
-            For i = 1 To QuestList(QuestIndex).RequiredClassesCount
-                Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClass(i))
+
+        ' ===== Required Classes (FIXED) =====
+        Call GetSafeRequiredClasses(QuestIndex, safeClasses, safeClassesCount)
+
+        Call Writer.WriteInt8(safeClassesCount)
+        If safeClassesCount > 0 Then
+            For i = 1 To safeClassesCount
+                Call Writer.WriteInt8(safeClasses(i))
             Next i
         End If
+
         Call Writer.WriteInt8(QuestList(QuestIndex).LimitLevel)
-        'Enviamos la cantidad de npcs requeridos
+
+        ' ===== Required NPC =====
         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredNPCs)
-        If QuestList(QuestIndex).RequiredNPCs Then
-            'Si hay npcs entonces enviamos la lista
+        If QuestList(QuestIndex).RequiredNPCs > 0 Then
             For i = 1 To QuestList(QuestIndex).RequiredNPCs
                 Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(i).amount)
                 Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(i).NpcIndex)
-                'Si es una quest ya empezada, entonces mandamos los NPCs que matí.
-                'If QuestSlot Then
-                ' Call Writer.WriteInt16(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i))
-                ' End If
             Next i
         End If
-        'Enviamos la cantidad de objs requeridos
+
+        ' ===== Required OBJ =====
         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredOBJs)
-        If QuestList(QuestIndex).RequiredOBJs Then
-            'Si hay objs entonces enviamos la lista
+        If QuestList(QuestIndex).RequiredOBJs > 0 Then
             For i = 1 To QuestList(QuestIndex).RequiredOBJs
                 Call Writer.WriteInt16(QuestList(QuestIndex).RequiredOBJ(i).amount)
                 Call Writer.WriteInt16(QuestList(QuestIndex).RequiredOBJ(i).ObjIndex)
             Next i
         End If
+
+        ' ===== Required Spells =====
         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSpellCount)
         If QuestList(QuestIndex).RequiredSpellCount > 0 Then
             For i = 1 To QuestList(QuestIndex).RequiredSpellCount
                 Call Writer.WriteInt16(QuestList(QuestIndex).RequiredSpellList(i))
             Next i
         End If
+
+        ' ===== Required Skill =====
         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.SkillType)
         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.RequiredValue)
-        'Enviamos la recompensa de oro y experiencia.
+
+        ' ===== Rewards =====
         Call Writer.WriteInt32(QuestList(QuestIndex).RewardGLD * SvrConfig.GetValue("GoldMult"))
         Call Writer.WriteInt32(QuestList(QuestIndex).RewardEXP * SvrConfig.GetValue("ExpMult"))
-        'Enviamos la cantidad de objs de recompensa
+
+        ' Reward OBJ
         Call Writer.WriteInt8(QuestList(QuestIndex).RewardOBJs)
-        If QuestList(QuestIndex).RewardOBJs Then
-            'si hay objs entonces enviamos la lista
+        If QuestList(QuestIndex).RewardOBJs > 0 Then
             For i = 1 To QuestList(QuestIndex).RewardOBJs
                 Call Writer.WriteInt16(QuestList(QuestIndex).RewardOBJ(i).amount)
                 Call Writer.WriteInt16(QuestList(QuestIndex).RewardOBJ(i).ObjIndex)
             Next i
         End If
+
+        ' Reward Spells
         Call Writer.WriteInt8(QuestList(QuestIndex).RewardSpellCount)
-        For i = 1 To QuestList(QuestIndex).RewardSpellCount
-            Call Writer.WriteInt16(QuestList(QuestIndex).RewardSpellList(i))
-        Next i
-        'Enviamos el estado de la QUEST
-        '0 Disponible
-        '1 EN CURSO
-        '2 REALIZADA
-        '3 no puede hacerla
-        Dim PuedeHacerla As Boolean
-        'La tiene aceptada el usuario?
+        If QuestList(QuestIndex).RewardSpellCount > 0 Then
+            For i = 1 To QuestList(QuestIndex).RewardSpellCount
+                Call Writer.WriteInt16(QuestList(QuestIndex).RewardSpellList(i))
+            Next i
+        End If
+
+        ' ===== State =====
         If TieneQuest(UserIndex, QuestIndex) Then
             Call Writer.WriteInt8(1)
+
+        ElseIf UserDoneQuest(UserIndex, QuestIndex) Then
+            Call Writer.WriteInt8(2)
+
         Else
-            If UserDoneQuest(UserIndex, QuestIndex) Then
-                Call Writer.WriteInt8(2)
+            PuedeHacerla = True
+
+            If QuestList(QuestIndex).RequiredQuest > 0 Then
+                If Not UserDoneQuest(UserIndex, QuestList(QuestIndex).RequiredQuest) Then
+                    PuedeHacerla = False
+                End If
+            End If
+
+            If QuestList(QuestIndex).RequiredLevel > 0 Then
+                If UserList(UserIndex).Stats.ELV < QuestList(QuestIndex).RequiredLevel Then
+                    PuedeHacerla = False
+                End If
+            End If
+
+            If QuestList(QuestIndex).LimitLevel > 0 Then
+                If UserList(UserIndex).Stats.ELV > QuestList(QuestIndex).LimitLevel Then
+                    PuedeHacerla = False
+                End If
+            End If
+
+            globalQuestIndex = QuestList(QuestIndex).globalQuestIndex
+            If globalQuestIndex > 0 Then
+                If Not GlobalQuestInfo(globalQuestIndex).IsActive Then
+                    PuedeHacerla = False
+                End If
+
+                If GlobalQuestInfo(globalQuestIndex).IsBossAlive Then
+                    PuedeHacerla = False
+                End If
+
+                If QuestList(QuestIndex).GlobalQuestThresholdNeeded > GlobalQuestInfo(globalQuestIndex).GatheringGlobalCounter Then
+                    PuedeHacerla = False
+                End If
+            End If
+
+            If PuedeHacerla Then
+                Call Writer.WriteInt8(0)
             Else
-                PuedeHacerla = True
-                If QuestList(QuestIndex).RequiredQuest > 0 Then
-                    If Not UserDoneQuest(UserIndex, QuestList(QuestIndex).RequiredQuest) Then
-                        PuedeHacerla = False
-                    End If
-                End If
-                If QuestList(QuestIndex).RequiredLevel > 0 Then
-                    If UserList(UserIndex).Stats.ELV < QuestList(QuestIndex).RequiredLevel Then
-                        PuedeHacerla = False
-                    End If
-                End If
-                'Si el personaje es nivel mayor al limite no puede hacerla
-                If QuestList(QuestIndex).LimitLevel > 0 Then
-                    If UserList(UserIndex).Stats.ELV > QuestList(QuestIndex).LimitLevel Then
-                        PuedeHacerla = False
-                    End If
-                End If
-                If QuestList(QuestIndex).GlobalQuestIndex > 0 Then
-                    If Not GlobalQuestInfo(QuestList(QuestIndex).GlobalQuestIndex).IsActive Then
-                        PuedeHacerla = False
-                    End If
-                    If GlobalQuestInfo(QuestList(QuestIndex).GlobalQuestIndex).IsBossAlive Then
-                        PuedeHacerla = False
-                    End If
-                    If QuestList(QuestIndex).GlobalQuestThresholdNeeded > GlobalQuestInfo(QuestList(QuestIndex).GlobalQuestIndex).GatheringGlobalCounter Then
-                        PuedeHacerla = False
-                    End If
-                End If
-                If PuedeHacerla Then
-                    Call Writer.WriteInt8(0)
-                Else
-                    Call Writer.WriteInt8(3)
-                End If
+                Call Writer.WriteInt8(3)
             End If
         End If
     Next j
+
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
+
 WriteNpcQuestListSend_Err:
     Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcQuestListSend", Erl)
+    Call TraceError(Err.Number, Err.Description, "Protocol_Writes.WriteNpcQuestListSend", Erl)
 End Sub
+
+Private Function IsQuestIndexValid(ByVal QuestIndex As Integer) As Boolean
+    On Error GoTo ErrHandler
+
+    If QuestIndex < LBound(QuestList) Then Exit Function
+    If QuestIndex > UBound(QuestList) Then Exit Function
+
+    IsQuestIndexValid = True
+    Exit Function
+
+ErrHandler:
+    IsQuestIndexValid = False
+End Function
 
 Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal Message As String)
     On Error GoTo WriteCommerceRecieveChatMessage_Err

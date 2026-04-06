@@ -1,7 +1,7 @@
 Attribute VB_Name = "ES"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -1133,15 +1133,8 @@ Sub LoadOBJData()
                     .MinModificador = val(Leer.GetValue(ObjKey, "MinModificador"))
                     .DuracionEfecto = val(Leer.GetValue(ObjKey, "DuracionEfecto"))
                     .Hechizo = val(Leer.GetValue(ObjKey, "Hechizo"))
-                    .Raices = val(Leer.GetValue(ObjKey, "Raices"))
-                    .Cuchara = val(Leer.GetValue(ObjKey, "Cuchara"))
-                    .Botella = val(Leer.GetValue(ObjKey, "Botella"))
                     .Mortero = val(Leer.GetValue(ObjKey, "Mortero"))
                     .FrascoAlq = val(Leer.GetValue(ObjKey, "FrascoAlq"))
-                    .FrascoElixir = val(Leer.GetValue(ObjKey, "FrascoElixir"))
-                    .Dosificador = val(Leer.GetValue(ObjKey, "Dosificador"))
-                    .Orquidea = val(Leer.GetValue(ObjKey, "Orquidea"))
-                    .Carmesi = val(Leer.GetValue(ObjKey, "Carmesi"))
                     .HongoDeLuz = val(Leer.GetValue(ObjKey, "HongoDeLuz"))
                     .Esporas = val(Leer.GetValue(ObjKey, "Esporas"))
                     .Tuna = val(Leer.GetValue(ObjKey, "Tuna"))
@@ -1149,11 +1142,7 @@ Sub LoadOBJData()
                     .ColaDeZorro = val(Leer.GetValue(ObjKey, "ColaDeZorro"))
                     .FlorOceano = val(Leer.GetValue(ObjKey, "FlorOceano"))
                     .FlorRoja = val(Leer.GetValue(ObjKey, "FlorRoja"))
-                    .Hierva = val(Leer.GetValue(ObjKey, "Hierva"))
-                    .HojasDeRin = val(Leer.GetValue(ObjKey, "HojasDeRin"))
-                    .HojasRojas = val(Leer.GetValue(ObjKey, "HojasRojas"))
-                    .SemillasPros = val(Leer.GetValue(ObjKey, "SemillasPros"))
-                    .Pimiento = val(Leer.GetValue(ObjKey, "Pimiento"))
+                    .SemillasProsperas = val(Leer.GetValue(ObjKey, "SemillasProsperas"))
                     .SkPociones = val(Leer.GetValue(ObjKey, "SkPociones"))
                     .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
                 Case e_OBJType.otShips, e_OBJType.otSkinsBoats
@@ -1847,7 +1836,6 @@ Sub LoadSini()
     IdleLimit = val(Lector.GetValue("INIT", "IdleLimit"))
     'Lee la version correcta del cliente
     ULTIMAVERSION = Lector.GetValue("INIT", "Version")
-    PuedeCrearPersonajes = val(Lector.GetValue("INIT", "PuedeCrearPersonajes"))
     MinimumPriceMao = val(Lector.GetValue("INIT", "MinimumPriceMao"))
     GoldPriceMao = val(Lector.GetValue("INIT", "GoldPriceMao"))
     MinimumLevelMao = val(Lector.GetValue("INIT", "MinimumLevelMao"))
@@ -2297,6 +2285,7 @@ Sub LoadIntervalos()
     MinutosWs = val(Lector.GetValue("INTERVALOS", "IntervaloWS"))
     If MinutosWs < 1 Then MinutosWs = 10
     IntervaloCerrarConexion = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexion"))
+    IntervaloCerrarConexionEnDungeon = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexionEnDungeon"))
     IntervaloUserPuedeUsarU = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarU"))
     IntervaloUserPuedeUsarClic = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarClic"))
     IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
@@ -2454,6 +2443,7 @@ Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
     NpcList(NpcIndex).Char.body = val(GetVar(npcfile, "NPC" & NpcNumber, "Body"))
     NpcList(NpcIndex).Char.head = val(GetVar(npcfile, "NPC" & NpcNumber, "Head"))
     NpcList(NpcIndex).Char.Heading = val(GetVar(npcfile, "NPC" & NpcNumber, "Heading"))
+    NpcList(NpcIndex).flags.MappedHeading = NpcList(NpcIndex).Char.Heading
     NpcList(NpcIndex).Attackable = val(GetVar(npcfile, "NPC" & NpcNumber, "Attackable"))
     NpcList(NpcIndex).Comercia = val(GetVar(npcfile, "NPC" & NpcNumber, "Comercia"))
     NpcList(NpcIndex).Craftea = val(GetVar(npcfile, "NPC" & NpcNumber, "Craftea"))

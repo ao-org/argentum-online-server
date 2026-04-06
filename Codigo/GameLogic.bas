@@ -1,7 +1,7 @@
 Attribute VB_Name = "Extra"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -1748,6 +1748,11 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal targetUserIndex As I
     Dim extraStrings As String
     With UserList(targetUserIndex)
         extraStrings = extraStrings & .name & "-"
+        If Len(.Alias) > 0 Then
+            extraStrings = extraStrings & GetCharacterAlias(targetUserIndex) & "-"
+        Else
+            extraStrings = extraStrings & "-"
+        End If
         If Len(.Desc) > 0 Then
             extraStrings = extraStrings & .Desc & "-"
         Else

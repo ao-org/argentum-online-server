@@ -1,4 +1,21 @@
 Attribute VB_Name = "modFishing"
+' Argentum 20 Game Server
+'
+'    Copyright (C) 2026 Noland Studios LTD
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
+'
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'
 Option Explicit
 Private FishingLevelBonus()                As Double
 Private FishingBonusesInitialized          As Boolean
@@ -95,22 +112,22 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
         sendTarget = IIf(MapInfo(.pos.Map).Seguro = 1, ToIndex, ToPCAliveArea)
         Call SendData(sendTarget, UserIndex, PrepareMessageArmaMov(.Char.charindex, 0))
         ' Validate fishing tool
-        Dim WorkingToolIndex As Integer
-        WorkingToolIndex = .invent.EquippedWorkingToolObjIndex
-        If Not IsValidObjectIndex(WorkingToolIndex) Then
-            Call TraceError(1004, "Invalid fishing tool index: " & WorkingToolIndex, "modFishing.PerformFishing", Erl)
+        Dim WorkingTool As t_Obj
+        WorkingTool.ObjIndex = .invent.EquippedWorkingToolObjIndex
+        If Not IsValidObjectIndex(WorkingTool.ObjIndex) Then
+            Call TraceError(1004, "Invalid fishing tool index: " & WorkingTool.ObjIndex, "modFishing.PerformFishing", Erl)
             Call ResetUserAutomatedActions(UserIndex)
             Exit Sub
         End If
         ' Determine tool type
         Dim IsUsingFishingNet As Boolean
-        Select Case ObjData(WorkingToolIndex).Subtipo
+        Select Case ObjData(WorkingTool.ObjIndex).Subtipo
             Case e_WorkingToolSubType.FishingRod
                 IsUsingFishingNet = False
             Case e_WorkingToolSubType.FishingNet
                 IsUsingFishingNet = True
             Case Else
-                Call TraceError(1004, "Invalid fishing tool index: " & WorkingToolIndex, "modFishing.PerformFishing", Erl)
+                Call TraceError(1004, "Invalid fishing tool index: " & WorkingTool.ObjIndex, "modFishing.PerformFishing", Erl)
                 Call ResetUserAutomatedActions(UserIndex)
                 Exit Sub
         End Select
@@ -121,7 +138,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
         Dim totalBonus      As Double
         fishingLevel = ClampFishingLevel(.Stats.ELV)
         levelBonus = 1 + FishingLevelBonus(fishingLevel)
-        fishingRodBonus = PoderCanas(ObjData(WorkingToolIndex).Power) / 10
+        fishingRodBonus = PoderCanas(ObjData(WorkingTool.ObjIndex).Power) / 10
         totalBonus = fishingRodBonus * levelBonus * SvrConfig.GetValue("RecoleccionMult")
         If MapInfo(.pos.Map).Seguro <> 0 Then
             totalBonus = totalBonus * PorcentajePescaSegura / 100
@@ -137,7 +154,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
         End If
         ' Determine what fish was caught
         Dim fishingCatch As t_Obj
-        fishingCatch.ObjIndex = ObtenerPezRandom(ObjData(WorkingToolIndex).Power)
+        fishingCatch.ObjIndex = ObtenerPezRandom(ObjData(WorkingTool.ObjIndex).Power)
         If .clase = e_Class.Trabajador Then
             If IsUsingFishingNet Then
                 fishingCatch.amount = RandomNumber(2, 6)
@@ -146,7 +163,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
             End If
             ' Award experience if enabled
             If IsFeatureEnabled("gain_exp_while_working") Then
-                Call GiveExpWhileWorking(UserIndex, WorkingToolIndex, e_JobsTypes.Fisherman)
+                Call GiveExpWhileWorking(UserIndex, WorkingTool, e_JobsTypes.Fisherman)
                 Call WriteUpdateExp(UserIndex)
                 Call CheckUserLevel(UserIndex)
             End If

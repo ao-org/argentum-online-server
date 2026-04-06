@@ -1,7 +1,7 @@
 Attribute VB_Name = "NPCs"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -1346,6 +1346,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .Char.body = Info.Body
         .Char.head = Info.Head
         .Char.Heading = Info.Heading
+        .flags.MappedHeading = Info.Heading
         .Char.CastAnimation = Info.CastAnimation
         If Info.AnimacionesCount > 0 Then
             ReDim .Char.Animation(1 To Info.AnimacionesCount)

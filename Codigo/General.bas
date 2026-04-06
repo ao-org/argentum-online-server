@@ -1,7 +1,7 @@
 Attribute VB_Name = "General"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -1514,9 +1514,7 @@ Sub PasarSegundo()
                 End If
                 'Cerrar usuario
                 If .Counters.Saliendo Then
-                    '  If .flags.Muerto = 1 Then .Counters.Salir = 0
                     .Counters.Salir = .Counters.Salir - 1
-                    ' Call WriteConsoleMsg(i, "Se saldrá del juego en " & .Counters.Salir & " segundos...", e_FontTypeNames.FONTTYPE_INFO)
                     Call WriteLocaleMsg(i, "203", e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
                     If .Counters.Salir <= 0 Then
                         'Msg1020= Gracias por jugar Argentum 20.

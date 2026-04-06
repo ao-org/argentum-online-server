@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2025 Noland Studios LTD
+'    Copyright (C) 2025-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -174,13 +174,23 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "AUTONAVALBATTLE_RoundNumber", CInt(val(reader.GetValue("AUTONAVALBATTLE", "RoundNumber")))
     mSettings.Add "AUTONAVALBATTLE_InscriptionFee", CInt(val(reader.GetValue("AUTONAVALBATTLE", "InscriptionFee")))
     mSettings.Add "AUTONAVALBATTLE_Description", reader.GetValue("AUTONAVALBATTLE", "Description")
-    mSettings.Add "MiningExp", CByte(val(reader.GetValue("JOBEXP", "MiningExp", 1)))
-    mSettings.Add "FellingExp", CByte(val(reader.GetValue("JOBEXP", "FellingExp", 1)))
-    mSettings.Add "ForgingExp", CByte(val(reader.GetValue("JOBEXP", "ForgingExp", 1)))
-    mSettings.Add "CarpentryExp", CByte(val(reader.GetValue("JOBEXP", "CarpentryExp", 1)))
-    mSettings.Add "FishingExp", CByte(val(reader.GetValue("JOBEXP", "FishingExp", 1)))
-    mSettings.Add "MixingExp", CByte(val(reader.GetValue("JOBEXP", "MixingExp", 1)))
-    mSettings.Add "ElseExp", CByte(val(reader.GetValue("JOBEXP", "ElseExp", 1)))
+    mSettings.Add "MiningExp", CLng(val(reader.GetValue("JOBEXP", "MiningExp", 1)))
+    mSettings.Add "FellingExp", CLng(val(reader.GetValue("JOBEXP", "FellingExp", 1)))
+    mSettings.Add "IronForgingExp", CLng(val(reader.GetValue("JOBEXP", "IronForgingExp", 1)))
+    mSettings.Add "SilverForgingExp", CLng(val(reader.GetValue("JOBEXP", "SilverForgingExp", 1)))
+    mSettings.Add "GoldForgingExp", CLng(val(reader.GetValue("JOBEXP", "GoldForgingExp", 1)))
+    mSettings.Add "BlodiumForgingExp", CLng(val(reader.GetValue("JOBEXP", "BlodiumForgingExp", 1)))
+    mSettings.Add "WoodCarpentryExp", CLng(val(reader.GetValue("JOBEXP", "WoodCarpentryExp", 1)))
+    mSettings.Add "ElvenWoodCarpentryExp", CLng(val(reader.GetValue("JOBEXP", "ElvenWoodCarpentryExp", 1)))
+    mSettings.Add "WolfPeltExp", CLng(val(reader.GetValue("JOBEXP", "WolfPeltExp", 1)))
+    mSettings.Add "BlackWolfPeltExp", CLng(val(reader.GetValue("JOBEXP", "BlackWolfPeltExp", 1)))
+    mSettings.Add "BearPeltExp", CLng(val(reader.GetValue("JOBEXP", "BearPeltExp", 1)))
+    mSettings.Add "TigerPeltExp", CLng(val(reader.GetValue("JOBEXP", "TigerPeltExp", 1)))
+    mSettings.Add "PolarBearPeltExp", CLng(val(reader.GetValue("JOBEXP", "PolarBearPeltExp", 1)))
+    mSettings.Add "BengalTigerPeltExp", CLng(val(reader.GetValue("JOBEXP", "BengalTigerPeltExp", 1)))
+    mSettings.Add "FishingExp", CLng(val(reader.GetValue("JOBEXP", "FishingExp", 1)))
+    mSettings.Add "MixingExp", CLng(val(reader.GetValue("JOBEXP", "MixingExp", 1)))
+    mSettings.Add "ElseExp", CLng(val(reader.GetValue("JOBEXP", "ElseExp", 1)))
     mSettings.Add "SpecialFishGoldMultiplier", CLng(val(reader.GetValue("JOBEXP", "SpecialFishGoldMultiplier", 1.2)))
     mSettings.Add "SpecialFishExpMultiplier", CLng(val(reader.GetValue("JOBEXP", "SpecialFishExpMultiplier", 1)))
     Set reader = Nothing

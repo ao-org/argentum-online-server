@@ -1,7 +1,7 @@
 Attribute VB_Name = "UserMod"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -110,16 +110,25 @@ End Function
 
 Public Function GetUserName(ByVal UserId As Long) As String
     On Error GoTo GetUserName_Err
+
     If UserId <= 0 Then
-        GetUserName = ""
+        GetUserName = vbNullString
         Exit Function
     End If
+
     If UserNameCache.Exists(UserId) Then
         GetUserName = UserNameCache.Item(UserId)
         Exit Function
     End If
+
     Dim username As String
-    username = GetCharacterName(UserId)
+    username = GetCharacterNameByUserId(UserId)
+
+    If LenB(username) = 0 Then
+        Call LogDatabaseError("GetUserName: no character name for UserId=" & UserId)
+        Exit Function
+    End If
+
     Call RegisterUserName(UserId, username)
     GetUserName = username
     Exit Function
@@ -965,6 +974,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
     Dim charindex As Integer
     Dim TempName  As String
     Dim displayName As String
+    Dim aliasValue As String
     If InMapBounds(Map, x, y) Then
         With UserList(UserIndex)
             'If needed make a new character in list
@@ -985,17 +995,18 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                 displayName = GetUserDisplayNameOrReal(UserIndex)
                 If .showName Then
                     If .flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
+                        aliasValue = GetCharacterAlias(UserIndex)
                         If .GuildIndex > 0 Then
                             klan = modGuilds.GuildName(.GuildIndex)
                             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
-                            TempName = displayName & " <" & klan & ">"
+                            TempName = displayName & " {" & aliasValue & "}" & " <" & klan & ">"
                         Else
                             klan = vbNullString
                             clan_nivel = 0
                             If .flags.EnConsulta Then
-                                TempName = displayName & " [CONSULTA]"
+                                TempName = displayName & " [CONSULTA]" & " {" & aliasValue & "}"
                             Else
-                                TempName = displayName
+                                TempName = displayName & " {" & aliasValue & "}"
                             End If
                         End If
                     Else
@@ -2205,7 +2216,11 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Bool
         End If
         If .flags.UserLogged And Not .Counters.Saliendo Then
             .Counters.Saliendo = True
-            .Counters.Salir = IntervaloCerrarConexion
+            If MapInfo(.pos.Map).zone = "DUNGEON" Then
+                .Counters.Salir = IntervaloCerrarConexionEnDungeon
+            Else
+                .Counters.Salir = IntervaloCerrarConexion
+            End If
             If .flags.Traveling = 1 Then
                 ' Msg576=Se ha cancelado el viaje a casa
                 Call WriteLocaleMsg(UserIndex, MSG_HA_CANCELADO_VIAJE_CASA, e_FontTypeNames.FONTTYPE_INFO)
@@ -2238,17 +2253,8 @@ Cerrar_Usuario_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.Cerrar_Usuario", Erl)
 End Sub
 
-''
-' Cancels the exit of a user. If it's disconnected it's reset.
-'
-' @param    UserIndex   The index of the user whose exit is being reset.
 Public Sub CancelExit(ByVal UserIndex As Integer)
     On Error GoTo CancelExit_Err
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 04/02/08
-    '
-    '***************************************************
     If UserList(UserIndex).Counters.Saliendo And UserList(UserIndex).ConnectionDetails.ConnIDValida Then
         ' Is the user still connected?
         If UserList(UserIndex).ConnectionDetails.ConnIDValida Then
@@ -2266,7 +2272,6 @@ Public Sub CancelExit(ByVal UserIndex As Integer)
                 Call WriteDisconnect(UserIndex)
                 Call CloseSocket(UserIndex)
             End If
-            'UserList(UserIndex).Counters.Salir = IIf((UserList(UserIndex).flags.Privilegios And e_PlayerType.User) And MapInfo(UserList(UserIndex).Pos.Map).Seguro = 0, IntervaloCerrarConexion, 0)
         End If
     End If
     Exit Sub

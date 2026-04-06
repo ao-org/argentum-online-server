@@ -1,7 +1,7 @@
 Attribute VB_Name = "modDebugUtils"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2025 Noland Studios LTD
+'    Copyright (C) 2025-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -391,8 +391,6 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eKillNPCNoRespawn"
         Case ClientPacketID.eKillAllNearbyNPCs
             PacketID_to_string = "eKillAllNearbyNPCs"
-        Case ClientPacketID.eLastIP
-            PacketID_to_string = "eLastIP"
         Case ClientPacketID.eChangeMOTD
             PacketID_to_string = "eChangeMOTD"
         Case ClientPacketID.eSetMOTD
@@ -637,6 +635,8 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eAntiCheatMessage"
         Case ClientPacketID.eFactionMessage
             PacketID_to_string = "eFactionMessage"
+        Case ClientPacketID.eAntiMacroMessage
+            PacketID_to_string = "eAntiMacroMessage"
         Case Else
             PacketID_to_string = "Unknown ClientPacketID (" & CStr(PacketId) & ")"
     End Select
