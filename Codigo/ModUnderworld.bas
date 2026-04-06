@@ -27,7 +27,7 @@ Public Sub MaybeSpawnUnderworldPortals()
     Dim i As Integer
     Dim SourcePosition As t_WorldPos
     Dim DestinationPosition As t_WorldPos
-    If currentHour >= UnderworldMinSpawnThreshold And currentHour < UnderworldMaxSpawnThreshold Then
+    If IsUnderworldOpen Then
         If Not ALREADY_OPENED_PORTALS Then
             For i = 1 To UBound(UnderworldMapPool)
                 SourcePosition.Map = OverworldPortalPool(i).Map
@@ -72,9 +72,7 @@ Public Sub KickUsersFromUnderworld()
             For y = MinYBorder To MaxYBorder
                 If MapData(UnderworldMapPool(i).map, x, y).UserIndex > 0 Then
                     With UserList(MapData(UnderworldMapPool(i).map, x, y).UserIndex)
-                        .pos.map = Ciudades(.Hogar).map
-                        .pos.x = Ciudades(.Hogar).x
-                        .pos.y = Ciudades(.Hogar).y
+                        Call WarpUserChar(MapData(UnderworldMapPool(i).map, x, y).UserIndex, Ciudades(.Hogar).map, Ciudades(.Hogar).x, Ciudades(.Hogar).y, True)
                     End With
                 End If
             Next y
@@ -119,6 +117,13 @@ Public Function IsUserIndexInsideTheUnderworld(ByVal UserIndex As Integer)
     End With
 End Function
 
+Public Function IsUnderworldOpen() As Boolean
+    If currentHour >= UnderworldMinSpawnThreshold And currentHour < UnderworldMaxSpawnThreshold Then
+        IsUnderworldOpen = True
+    Else
+        IsUnderworldOpen = False
+    End If
+End Function
 
 Public Sub LoadUnderworldModule()
     m_UnderworldLastSpawnTimestamp = GetTickCountRaw()
