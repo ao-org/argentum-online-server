@@ -1,8 +1,6 @@
 Attribute VB_Name = "ModUnderworld"
 Option Explicit
 
-
-Public UnderworldLastSpawnTimestamp As Long
 Public UnderworldMapPool() As t_WorldPos
 Public OverworldPortalPool() As t_WorldPos
 Public UnderworldMinSpawnThreshold As Byte
