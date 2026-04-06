@@ -309,7 +309,7 @@ End Function
 
 Public Function PersonajeExiste(ByVal name As String) As Boolean
     On Error GoTo PersonajeExiste_Err
-    PersonajeExiste = GetUserValue(LCase$(Name), "COUNT(*)") > 0 And GetUserValue(LCase$(Alias), "COUNT(*)") > 0
+    PersonajeExiste = GetUserValue(LCase$(Name), "COUNT(*)") > 0 Or GetDBValue("user", "COUNT(*)", "alias", LCase$(Name)) > 0
     Exit Function
 PersonajeExiste_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.PersonajeExiste", Erl)
