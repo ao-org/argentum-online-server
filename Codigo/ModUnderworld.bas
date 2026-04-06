@@ -160,13 +160,11 @@ Public Sub LoadUnderworldModule()
     End If
     If UnderworldMaxSpawnThreshold < 0 Or UnderworldMaxSpawnThreshold > 23 Then
         Debug.Assert False
-        UnderworldMaxSpawnThreshold = -1
-        Exit Sub
+        UnderworldMaxSpawnThreshold = 24
     End If
     If UnderworldMinSpawnThreshold < 0 Or UnderworldMinSpawnThreshold > 23 Then
         Debug.Assert False
-        UnderworldMaxSpawnThreshold = -1
-        Exit Sub
+        UnderworldMaxSpawnThreshold = 24
     End If
     ReDim Preserve UnderworldMapPool(1 To MaxUnderworldMaps)
     ReDim Preserve OverworldPortalPool(1 To MaxUnderworldMaps)
