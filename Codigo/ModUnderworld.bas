@@ -11,6 +11,7 @@ Private m_UnderworldLastSpawnTimestamp As Long
 Private Const UNDERWORLD_BROADCAST_MSG_ID As Integer = 2174
 Private Const UNDERWORLD_PORTAL_OBJ_IDX As Integer = 6355
 Private ALREADY_OPENED_PORTALS As Boolean
+Private Const UNDERWORLD_CENTER_MAP_NUMBER As Integer = 127
 
 Public Sub MaybeSpawnUnderworldPortals()
     On Error GoTo MaybeSpawnUnderworldPortals_Err
@@ -76,6 +77,15 @@ Public Sub KickUsersFromUnderworld()
             Next y
         Next x
     Next i
+    For x = MinXBorder To MaxXBorder
+        For y = MinYBorder To MaxYBorder
+            If MapData(UNDERWORLD_CENTER_MAP_NUMBER, x, y).UserIndex > 0 Then
+                With UserList(MapData(UNDERWORLD_CENTER_MAP_NUMBER, x, y).UserIndex)
+                    Call WarpUserChar(MapData(UNDERWORLD_CENTER_MAP_NUMBER, x, y).UserIndex, Ciudades(.Hogar).map, Ciudades(.Hogar).x, Ciudades(.Hogar).y, True)
+                End With
+            End If
+        Next y
+    Next x
 End Sub
 
 Public Sub DestroyUnderworldTp(ByRef Source As t_WorldPos, ByRef Dest As t_WorldPos)
@@ -107,11 +117,15 @@ Public Function IsUserIndexInsideTheUnderworld(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim i As Integer
         For i = 1 To UBound(UnderworldMapPool)
-            If UserList(UserIndex).pos.Map = UnderworldMapPool(i).Map Then
+            If .pos.map = UnderworldMapPool(i).map Then
                 IsUserIndexInsideTheUnderworld = True
                 Exit Function
             End If
         Next i
+            If .pos.map = UNDERWORLD_CENTER_MAP_NUMBER Then
+                IsUserIndexInsideTheUnderworld = True
+                Exit Function
+            End If
     End With
 End Function
 
