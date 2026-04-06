@@ -22,8 +22,6 @@ Public Sub MaybeSpawnUnderworldPortals()
     m_UnderworldLastSpawnTimestamp = nowRaw
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
-    Dim currentHour As Integer
-    currentHour = Hour(Now)
     Dim i As Integer
     Dim SourcePosition As t_WorldPos
     Dim DestinationPosition As t_WorldPos
@@ -118,6 +116,8 @@ Public Function IsUserIndexInsideTheUnderworld(ByVal UserIndex As Integer)
 End Function
 
 Public Function IsUnderworldOpen() As Boolean
+    Dim currentHour As Integer
+    currentHour = Hour(Now)
     If currentHour >= UnderworldMinSpawnThreshold And currentHour < UnderworldMaxSpawnThreshold Then
         IsUnderworldOpen = True
     Else
