@@ -39,7 +39,7 @@ End Sub
 Public Sub InsertCollectibleCardIntoDatabase(ByVal Acount_Id As Integer, ByRef ObjCard As t_Obj)
     On Error GoTo InsertCollectibleCardIntoDatabase_Err
     Dim RS As ADODB.Recordset
-    Set RS = Query(INSER_NEW_COLLECTIBLE_CARD, Acount_Id, ObjCard.ObjIndex, ObjData(ObjCard.ObjIndex).Rarity, CStr(DateTime.Now))
+    Set RS = Query(INSER_NEW_COLLECTIBLE_CARD, Acount_Id, ObjCard.ObjIndex, ObjData(ObjCard.ObjIndex).CollectibleCardRarity, CStr(DateTime.Now))
     Exit Sub
 InsertCollectibleCardIntoDatabase_Err:
     Call TraceError(Err.Number, Err.Description, "ModCollectibleCards.InsertCollectibleCardIntoDatabase", Erl)
