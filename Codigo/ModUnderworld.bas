@@ -53,6 +53,7 @@ Public Sub MaybeSpawnUnderworldPortals()
                 DestinationPosition.y = UnderworldMapPool(i).y
                 Call DestroyUnderworldTp(SourcePosition, DestinationPosition)
             Next i
+            Call KickUsersFromUnderworld
         End If
         ALREADY_OPENED_PORTALS = False
     End If
@@ -60,6 +61,25 @@ Public Sub MaybeSpawnUnderworldPortals()
     Exit Sub
 MaybeSpawnUnderworldPortals_Err:
     Call TraceError(Err.Number, Err.Description, "ModUnderworld.MaybeSpawnUnderworldPortals", Erl)
+End Sub
+
+Public Sub KickUsersFromUnderworld()
+    Dim i As Integer
+    Dim x As Byte
+    Dim y As Byte
+    For i = 1 To UBound(UnderworldMapPool)
+        For x = MinXBorder To MaxXBorder
+            For y = MinYBorder To MaxYBorder
+                If MapData(UnderworldMapPool(i).map, x, y).UserIndex > 0 Then
+                    With UserList(MapData(UnderworldMapPool(i).map, x, y).UserIndex)
+                        .pos.map = Ciudades(.Hogar).map
+                        .pos.x = Ciudades(.Hogar).x
+                        .pos.y = Ciudades(.Hogar).y
+                    End With
+                End If
+            Next y
+        Next x
+    Next i
 End Sub
 
 Public Sub DestroyUnderworldTp(ByRef Source As t_WorldPos, ByRef Dest As t_WorldPos)
