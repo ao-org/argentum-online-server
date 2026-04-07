@@ -705,149 +705,307 @@ PuedeLanzar_Err:
     Call TraceError(Err.Number, Err.Description, "modHechizos.PuedeLanzar", Erl)
 End Function
 
-''
-' Le da propiedades al nuevo npc
-'
-' @param UserIndex  Indice del usuario que invoca.
-' @param b  Indica si se termino la operación.
 Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
-    '***************************************************
-    'Author: Uknown
-    'Modification: 06/15/2008 (NicoNZ)
-    'Last modification: 01/12/2020 (WyroX)
-    'Sale del sub si no hay una posición valida.
-    '***************************************************
     On Error GoTo HechizoInvocacion_Err
     With UserList(UserIndex)
         If .flags.EnReto Then
-            'Msg784= No podés invocar criaturas durante un reto.
             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_INVOCAR_CRIATURAS_DURANTE_RETO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        Dim h         As Integer, j As Integer, ind As Integer, Index As Integer
+        
+        ' Early validation: Check spell index bounds
+        If .flags.Hechizo < 1 Or .flags.Hechizo > UBound(.Stats.UserHechizos) Then
+            Call WriteConsoleMsg(UserIndex, "Error: Índice de hechizo inválido.", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
+        Dim h As Integer
+        h = .Stats.UserHechizos(.flags.Hechizo)
+        
+        ' Early validation: Check Hechizos array bounds
+        If h < LBound(Hechizos) Or h > UBound(Hechizos) Then
+            Call WriteConsoleMsg(UserIndex, "Error: Hechizo no válido.", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
+        ' Prepare target position
         Dim TargetPos As t_WorldPos
         TargetPos.Map = .flags.TargetMap
         TargetPos.x = .flags.TargetX
         TargetPos.y = .flags.TargetY
-        h = .Stats.UserHechizos(.flags.Hechizo)
+        
+        ' Route to appropriate invocation type
         If Hechizos(h).Invoca = 1 Then
-            ' No puede invocar en este mapa
-            If MapInfo(.pos.Map).NoMascotas Then
-                'Msg785= Un gran poder te impide invocar criaturas en este mapa.
-                Call WriteLocaleMsg(UserIndex, MSG_GRAN_PODER_IMPIDE_INVOCAR_CRIATURAS_MAPA, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            Dim MinTiempo As Integer
-            Dim i         As Integer
-            For i = 1 To Hechizos(h).cant
-                Index = -1
-                MinTiempo = IntervaloInvocacion
-                For j = 1 To MAXMASCOTAS
-                    If .MascotasIndex(j).ArrayIndex > 0 Then
-                        If IsValidNpcRef(.MascotasIndex(j)) Then
-                            If NpcList(.MascotasIndex(j).ArrayIndex).flags.NPCActive Then
-                                If NpcList(.MascotasIndex(j).ArrayIndex).Contadores.TiempoExistencia > 0 And NpcList(.MascotasIndex(j).ArrayIndex).Contadores.TiempoExistencia < _
-                                        MinTiempo Then
-                                    Index = j
-                                    MinTiempo = NpcList(.MascotasIndex(j).ArrayIndex).Contadores.TiempoExistencia
-                                End If
-                            Else
-                                Call ClearNpcRef(.MascotasIndex(j))
-                                Index = -1
-                                Exit For
-                            End If
-                        Else
-                            Index = -1
-                            MinTiempo = 0
-                        End If
-                    ElseIf .MascotasType(j) = 0 Then
-                        Index = -1
-                        MinTiempo = 0
-                    End If
-                Next j
-                If Index > -1 Then
-                    If IsValidNpcRef(.MascotasIndex(Index)) Then
-                        Call QuitarNPC(.MascotasIndex(Index).ArrayIndex, eSummonNew)
-                    End If
-                End If
-                If .NroMascotas < MAXMASCOTAS Then
-                    ind = SpawnNpc(Hechizos(h).NumNpc, TargetPos, False, False, False, UserIndex, Hechizos(h).wav)
-                    If ind > 0 Then
-                        .NroMascotas = .NroMascotas + 1
-                        Index = FreeMascotaIndex(UserIndex)
-                        Call SetNpcRef(.MascotasIndex(Index), ind)
-                        .MascotasType(Index) = NpcList(ind).Numero
-                        Call SetUserRef(NpcList(ind).MaestroUser, UserIndex)
-                        NpcList(ind).Contadores.TiempoExistencia = IntervaloInvocacion
-                        NpcList(ind).GiveGLD = 0
-                        If IsFeatureEnabled("addjust-npc-with-caster") And IsSet(Hechizos(h).Effects, AdjustStatsWithCaster) Then
-                            Call AdjustNpcStatWithCasterLevel(UserIndex, ind)
-                        End If
-                        Call FollowAmo(ind)
-                    Else
-                        Exit Sub
-                    End If
-                Else
-                    Exit For
-                End If
-            Next i
-            Call InfoHechizo(UserIndex)
-            b = True
+            Call HandleSummonNewCreature(UserIndex, h, TargetPos, b)
         ElseIf Hechizos(h).Invoca = 2 Then
-            ' Si tiene mascotas
-            If .NroMascotas > 0 Then
-                ' Tiene que estar en zona insegura
-                ' No puede invocar en este mapa
-                If MapInfo(.pos.Map).NoMascotas Then
-                    Call WriteLocaleMsg(UserIndex, MSG_GRAN_PODER_IMPIDE_INVOCAR_CRIATURAS_MAPA_786, e_FontTypeNames.FONTTYPE_INFO) 'Msg786= Un gran poder te impide invocar criaturas en este mapa.
-                    Exit Sub
-                End If
-                ' Si no están guardadas las mascotas
-                If .flags.MascotasGuardadas = 0 Then
-                    For i = 1 To MAXMASCOTAS
-                        If IsValidNpcRef(.MascotasIndex(i)) Then
-                            ' Si no es un elemental, lo "guardamos"... lo matamos
-                            If NpcList(.MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia = 0 Then
-                                ' Le saco el maestro, para que no me lo quite de mis mascotas
-                                Call SetUserRef(NpcList(.MascotasIndex(i).ArrayIndex).MaestroUser, 0)
-                                ' Lo borro
-                                Call QuitarNPC(.MascotasIndex(i).ArrayIndex, eStorePets)
-                                ' Saco el índice
-                                Call ClearNpcRef(.MascotasIndex(i))
-                                b = True
-                            End If
-                        Else
-                            Call ClearNpcRef(.MascotasIndex(i))
-                        End If
-                    Next
-                    .flags.MascotasGuardadas = 1
-                    ' Ya están guardadas, así que las invocamos
-                Else
-                    For i = 1 To MAXMASCOTAS
-                        ' Si está guardada y no está ya en el mapa
-                        If .MascotasType(i) > 0 And .MascotasIndex(i).ArrayIndex = 0 Then
-                            Call SetNpcRef(.MascotasIndex(i), SpawnNpc(.MascotasType(i), TargetPos, True, True, False, UserIndex))
-                            Call SetUserRef(NpcList(.MascotasIndex(i).ArrayIndex).MaestroUser, UserIndex)
-                            Call FollowAmo(.MascotasIndex(i).ArrayIndex)
-                            If IsFeatureEnabled("addjust-npc-with-caster") And IsSet(Hechizos(h).Effects, AdjustStatsWithCaster) Then
-                                Call AdjustNpcStatWithCasterLevel(UserIndex, .MascotasIndex(i).ArrayIndex)
-                            End If
-                            b = True
-                        End If
-                    Next
-                    .flags.MascotasGuardadas = 0
-                End If
-            Else
-                'Msg787= No tienes mascotas.
-                Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_MASCOTAS, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            If b Then Call InfoHechizo(UserIndex)
+            Call HandleTogglePetStorage(UserIndex, h, TargetPos, b)
         End If
     End With
+    
     Exit Sub
+    
 HechizoInvocacion_Err:
-    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoInvocacion")
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoInvocacion", "UserIndex=" & UserIndex)
+End Sub
+
+''
+' Handles summoning new creatures (Invoca = 1)
+Private Sub HandleSummonNewCreature(ByVal UserIndex As Integer, ByVal h As Integer, ByRef TargetPos As t_WorldPos, ByRef b As Boolean)
+    On Error GoTo HandleSummonNewCreature_Err
+    
+    With UserList(UserIndex)
+        ' Check if map allows pets
+        If MapInfo(.pos.Map).NoMascotas Then
+            Call WriteLocaleMsg(UserIndex, MSG_GRAN_PODER_IMPIDE_INVOCAR_CRIATURAS_MAPA, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
+        Dim i As Integer
+        Dim SummonedCount As Integer
+        SummonedCount = 0
+        
+        For i = 1 To Hechizos(h).cant
+            ' Try to find slot for new creature
+            Dim SlotIndex As Integer
+            SlotIndex = FindOrFreePetSlot(UserIndex)
+            
+            If SlotIndex = -1 Then
+                ' No more slots available
+                Exit For
+            End If
+            
+            ' Spawn the creature
+            Dim ind As Integer
+            ind = SpawnNpc(Hechizos(h).NumNpc, TargetPos, False, False, False, UserIndex, Hechizos(h).wav)
+            
+            If ind <= 0 Then
+                Exit For
+            End If
+            
+            ' Register the pet
+            .NroMascotas = .NroMascotas + 1
+            Call SetNpcRef(.MascotasIndex(SlotIndex), ind)
+            .MascotasType(SlotIndex) = NpcList(ind).Numero
+            Call SetUserRef(NpcList(ind).MaestroUser, UserIndex)
+            
+            NpcList(ind).Contadores.TiempoExistencia = IntervaloInvocacion
+            NpcList(ind).GiveGLD = 0
+            
+            ' Adjust stats if feature enabled
+            If IsFeatureEnabled("addjust-npc-with-caster") And IsSet(Hechizos(h).Effects, AdjustStatsWithCaster) Then
+                Call AdjustNpcStatWithCasterLevel(UserIndex, ind)
+            End If
+            
+            Call FollowAmo(ind)
+            SummonedCount = SummonedCount + 1
+        Next i
+        
+        ' Only mark as successful if at least one creature was summoned
+        If SummonedCount > 0 Then
+            Call InfoHechizo(UserIndex)
+            b = True
+        End If
+    End With
+    
+    Exit Sub
+    
+HandleSummonNewCreature_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HandleSummonNewCreature", "UserIndex=" & UserIndex)
+End Sub
+
+''
+' Finds a free pet slot or removes oldest temporary pet
+' Returns slot index or -1 if no slots available
+Private Function FindOrFreePetSlot(ByVal UserIndex As Integer) As Integer
+    On Error GoTo FindOrFreePetSlot_Err
+    
+    With UserList(UserIndex)
+        ' First, try to find an empty slot
+        Dim j As Integer
+        For j = 1 To MAXMASCOTAS
+            If Not IsValidNpcRef(.MascotasIndex(j)) And .MascotasType(j) = 0 Then
+                FindOrFreePetSlot = j
+                Exit Function
+            End If
+        Next j
+        
+        ' Check if user has reached max pets
+        If .NroMascotas >= MAXMASCOTAS Then
+            ' Find oldest temporary pet to replace
+            Dim OldestIndex As Integer
+            Dim MinTiempo As Integer
+            
+            OldestIndex = -1
+            MinTiempo = IntervaloInvocacion
+            
+            For j = 1 To MAXMASCOTAS
+                If Not IsValidNpcRef(.MascotasIndex(j)) Then
+                    ' Clean up invalid reference
+                    Call ClearNpcRef(.MascotasIndex(j))
+                    FindOrFreePetSlot = j
+                    Exit Function
+                End If
+                
+                Dim NpcIndex As Integer
+                NpcIndex = .MascotasIndex(j).ArrayIndex
+                
+                If NpcIndex > 0 And NpcIndex <= UBound(NpcList) Then
+                    If NpcList(NpcIndex).flags.NPCActive Then
+                        ' Only consider temporary pets (with TiempoExistencia > 0)
+                        If NpcList(NpcIndex).Contadores.TiempoExistencia > 0 And _
+                           NpcList(NpcIndex).Contadores.TiempoExistencia < MinTiempo Then
+                            OldestIndex = j
+                            MinTiempo = NpcList(NpcIndex).Contadores.TiempoExistencia
+                        End If
+                    Else
+                        ' Inactive NPC, clean up
+                        Call ClearNpcRef(.MascotasIndex(j))
+                        FindOrFreePetSlot = j
+                        Exit Function
+                    End If
+                End If
+            Next j
+            
+            ' Remove oldest temporary pet if found
+            If OldestIndex > -1 Then
+                If IsValidNpcRef(.MascotasIndex(OldestIndex)) Then
+                    Call QuitarNPC(.MascotasIndex(OldestIndex).ArrayIndex, eSummonNew)
+                End If
+                FindOrFreePetSlot = OldestIndex
+                Exit Function
+            End If
+        End If
+        
+        ' No slot available
+        FindOrFreePetSlot = -1
+    End With
+    
+    Exit Function
+    
+FindOrFreePetSlot_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.FindOrFreePetSlot")
+    FindOrFreePetSlot = -1
+End Function
+
+''
+' Handles toggling pet storage (Invoca = 2)
+Private Sub HandleTogglePetStorage(ByVal UserIndex As Integer, ByVal h As Integer, ByRef TargetPos As t_WorldPos, ByRef b As Boolean)
+    On Error GoTo HandleTogglePetStorage_Err
+    
+    With UserList(UserIndex)
+        ' Check if user has pets
+        If .NroMascotas = 0 Then
+            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_MASCOTAS, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
+        ' Check if map allows pets (only when summoning)
+        If .flags.MascotasGuardadas = 1 And MapInfo(.pos.Map).NoMascotas Then
+            Call WriteLocaleMsg(UserIndex, MSG_GRAN_PODER_IMPIDE_INVOCAR_CRIATURAS_MAPA_786, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
+        If .flags.MascotasGuardadas = 0 Then
+            Call StorePets(UserIndex, b)
+        Else
+            Call SummonStoredPets(UserIndex, h, TargetPos, b)
+        End If
+        
+        If b Then
+            Call InfoHechizo(UserIndex)
+        End If
+    End With
+    
+    Exit Sub
+    
+HandleTogglePetStorage_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HandleTogglePetStorage")
+End Sub
+
+''
+' Stores permanent pets (removes temporaries)
+Private Sub StorePets(ByVal UserIndex As Integer, ByRef b As Boolean)
+    On Error GoTo StorePets_Err
+    
+    With UserList(UserIndex)
+        Dim i As Integer
+        
+        For i = 1 To MAXMASCOTAS
+            If Not IsValidNpcRef(.MascotasIndex(i)) Then
+                Call ClearNpcRef(.MascotasIndex(i))
+                GoTo NextPet
+            End If
+            
+            Dim NpcIndex As Integer
+            NpcIndex = .MascotasIndex(i).ArrayIndex
+            
+            ' Validate NPC index bounds
+            If NpcIndex < 1 Or NpcIndex > UBound(NpcList) Then
+                Call ClearNpcRef(.MascotasIndex(i))
+                GoTo NextPet
+            End If
+            
+            ' Only store permanent pets (TiempoExistencia = 0)
+            If NpcList(NpcIndex).Contadores.TiempoExistencia = 0 Then
+                ' Remove master reference to prevent cleanup
+                Call SetUserRef(NpcList(NpcIndex).MaestroUser, 0)
+                Call QuitarNPC(NpcIndex, eStorePets)
+                Call ClearNpcRef(.MascotasIndex(i))
+                b = True
+            End If
+            
+NextPet:
+        Next i
+        
+        .flags.MascotasGuardadas = 1
+    End With
+    
+    Exit Sub
+    
+StorePets_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.StorePets")
+End Sub
+
+''
+' Summons previously stored pets
+Private Sub SummonStoredPets(ByVal UserIndex As Integer, ByVal h As Integer, ByRef TargetPos As t_WorldPos, ByRef b As Boolean)
+    On Error GoTo SummonStoredPets_Err
+    
+    With UserList(UserIndex)
+        Dim i As Integer
+        
+        For i = 1 To MAXMASCOTAS
+            ' Check if pet is stored and not already summoned
+            If .MascotasType(i) <= 0 Or .MascotasIndex(i).ArrayIndex <> 0 Then
+                GoTo NextStoredPet
+            End If
+            
+            ' Spawn the stored pet
+            Dim ind As Integer
+            ind = SpawnNpc(.MascotasType(i), TargetPos, True, True, False, UserIndex)
+            
+            If ind <= 0 Then
+                GoTo NextStoredPet
+            End If
+            
+            ' Register the pet
+            Call SetNpcRef(.MascotasIndex(i), ind)
+            Call SetUserRef(NpcList(ind).MaestroUser, UserIndex)
+            Call FollowAmo(ind)
+            
+            ' Adjust stats if feature enabled
+            If IsFeatureEnabled("addjust-npc-with-caster") And IsSet(Hechizos(h).Effects, AdjustStatsWithCaster) Then
+                Call AdjustNpcStatWithCasterLevel(UserIndex, ind)
+            End If
+            
+            b = True
+NextStoredPet:
+        Next i
+        .flags.MascotasGuardadas = 0
+    End With
+    Exit Sub
+SummonStoredPets_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.SummonStoredPets")
 End Sub
 
 Sub HechizoTerrenoEstado(ByVal UserIndex As Integer, ByRef b As Boolean)
