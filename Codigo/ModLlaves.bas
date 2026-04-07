@@ -67,45 +67,50 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
     Dim TargObj  As t_ObjData
     Dim LlaveObj As t_ObjData
     With UserList(UserIndex)
-        If Slot > MAXKEYS Then
-            'Call BanearIP(0, UserList(UserIndex).name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
-            Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el slot del llavero | Valor: " & Slot & ".")
+        If Slot < 1 Or Slot > MAXKEYS Then
+            Call LogEdicionPaquete("El usuario " & UserList(UserIndex).Name & " editó el slot del llavero | Valor: " & Slot & ".")
             Exit Sub
         End If
-        If .Keys(Slot) <> 0 Then
-            If .flags.TargetObj = 0 Then Exit Sub
-            TargObj = ObjData(.flags.TargetObj)
-            LlaveObj = ObjData(.Keys(Slot))
-            '¿El objeto clickeado es una puerta?
-            If TargObj.OBJType = e_OBJType.otDoors Then
-                '¿Esta cerrada?
-                If TargObj.Cerrada = 1 Then
-                    '¿Cerrada con llave?
-                    If TargObj.Llave > 0 Then
-                        If TargObj.clave = LlaveObj.clave Then 'Or LlaveObj.clave = "3450" Then
-                            MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, _
-                                    .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
-                            .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
-                            Call WriteLocaleMsg(UserIndex, MSG_ABIERTO_PUERTA, e_FontTypeNames.FONTTYPE_INFO)
-                        Else
-                            Call WriteLocaleMsg(UserIndex, MSG_NO_LLAVE_SIRVE, e_FontTypeNames.FONTTYPE_INFO)
-                        End If
-                    Else
-                        If TargObj.clave = LlaveObj.clave Then
-                            MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, _
-                                    .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerradaLlave
-                            .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
-                            'Msg899= Has cerrado con llave la puerta.
-                            Call WriteLocaleMsg(UserIndex, MSG_CERRADO_LLAVE_PUERTA, e_FontTypeNames.FONTTYPE_INFO)
-                        Else
-                            Call WriteLocaleMsg(UserIndex, MSG_NO_LLAVE_SIRVE, e_FontTypeNames.FONTTYPE_INFO)
-                        End If
-                    End If
+        
+        If .Keys(Slot) = 0 Then Exit Sub
+        If .flags.TargetObj = 0 Then Exit Sub
+            
+        If .flags.TargetObj < LBound(ObjData) Or .flags.TargetObj > UBound(ObjData) Then
+            Exit Sub
+        End If
+        
+        If .Keys(Slot) < LBound(ObjData) Or .Keys(Slot) > UBound(ObjData) Then
+            Exit Sub
+        End If
+            
+        TargObj = ObjData(.flags.TargetObj)
+        LlaveObj = ObjData(.Keys(Slot))
+        '¿El objeto clickeado es una puerta?
+        If TargObj.OBJType <> e_OBJType.otDoors Then Exit Sub
+            '¿Esta cerrada?
+        If TargObj.Cerrada = 1 Then
+            '¿Cerrada con llave?
+            If TargObj.Llave > 0 Then
+                If TargObj.clave = LlaveObj.clave Then
+                    MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, _
+                            .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
+                    .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
+                    Call WriteLocaleMsg(UserIndex, MSG_ABIERTO_PUERTA, e_FontTypeNames.FONTTYPE_INFO)
                 Else
-                    'Msg901= No esta cerrada.
-                    Call WriteLocaleMsg(UserIndex, MSG_NO_CERRADA, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_LLAVE_SIRVE, e_FontTypeNames.FONTTYPE_INFO)
+                End If
+            Else
+                If TargObj.clave = LlaveObj.clave Then
+                    MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, _
+                            .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerradaLlave
+                    .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
+                    Call WriteLocaleMsg(UserIndex, MSG_CERRADO_LLAVE_PUERTA, e_FontTypeNames.FONTTYPE_INFO)
+                Else
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_LLAVE_SIRVE, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             End If
+        Else
+            Call WriteLocaleMsg(UserIndex, MSG_NO_CERRADA, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
