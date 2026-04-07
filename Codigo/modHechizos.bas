@@ -707,7 +707,9 @@ End Function
 
 Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
     On Error GoTo HechizoInvocacion_Err
+    
     With UserList(UserIndex)
+        ' Early validation: Check if in reto
         If .flags.EnReto Then
             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_INVOCAR_CRIATURAS_DURANTE_RETO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
@@ -715,7 +717,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
         
         ' Early validation: Check spell index bounds
         If .flags.Hechizo < 1 Or .flags.Hechizo > UBound(.Stats.UserHechizos) Then
-            Call WriteConsoleMsg(UserIndex, "Error: Índice de hechizo inválido.", e_FontTypeNames.FONTTYPE_INFO)
+            Call TraceError(1004, "Invalid spell slot index: " & .flags.Hechizo, "modHechizos.HechizoInvocacion", Erl)
             Exit Sub
         End If
         
@@ -724,7 +726,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
         
         ' Early validation: Check Hechizos array bounds
         If h < LBound(Hechizos) Or h > UBound(Hechizos) Then
-            Call WriteConsoleMsg(UserIndex, "Error: Hechizo no válido.", e_FontTypeNames.FONTTYPE_INFO)
+            Call TraceError(1004, "Invalid spell ID: " & h & " from slot: " & .flags.Hechizo, "modHechizos.HechizoInvocacion", Erl)
             Exit Sub
         End If
         
@@ -745,7 +747,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
     Exit Sub
     
 HechizoInvocacion_Err:
-    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoInvocacion", "UserIndex=" & UserIndex)
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoInvocacion", Erl)
 End Sub
 
 ''
@@ -810,7 +812,7 @@ Private Sub HandleSummonNewCreature(ByVal UserIndex As Integer, ByVal h As Integ
     Exit Sub
     
 HandleSummonNewCreature_Err:
-    Call TraceError(Err.Number, Err.Description, "modHechizos.HandleSummonNewCreature", "UserIndex=" & UserIndex)
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HandleSummonNewCreature", Erl)
 End Sub
 
 ''
@@ -863,6 +865,12 @@ Private Function FindOrFreePetSlot(ByVal UserIndex As Integer) As Integer
                         FindOrFreePetSlot = j
                         Exit Function
                     End If
+                Else
+                    ' Invalid NpcIndex detected
+                    Call TraceError(1004, "Invalid NpcIndex in MascotasIndex: " & NpcIndex & " for UserIndex: " & UserIndex & " slot: " & j, "modHechizos.FindOrFreePetSlot", Erl)
+                    Call ClearNpcRef(.MascotasIndex(j))
+                    FindOrFreePetSlot = j
+                    Exit Function
                 End If
             Next j
             
@@ -883,7 +891,7 @@ Private Function FindOrFreePetSlot(ByVal UserIndex As Integer) As Integer
     Exit Function
     
 FindOrFreePetSlot_Err:
-    Call TraceError(Err.Number, Err.Description, "modHechizos.FindOrFreePetSlot")
+    Call TraceError(Err.Number, Err.Description, "modHechizos.FindOrFreePetSlot", Erl)
     FindOrFreePetSlot = -1
 End Function
 
@@ -919,7 +927,7 @@ Private Sub HandleTogglePetStorage(ByVal UserIndex As Integer, ByVal h As Intege
     Exit Sub
     
 HandleTogglePetStorage_Err:
-    Call TraceError(Err.Number, Err.Description, "modHechizos.HandleTogglePetStorage")
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HandleTogglePetStorage", Erl)
 End Sub
 
 ''
@@ -941,6 +949,7 @@ Private Sub StorePets(ByVal UserIndex As Integer, ByRef b As Boolean)
             
             ' Validate NPC index bounds
             If NpcIndex < 1 Or NpcIndex > UBound(NpcList) Then
+                Call TraceError(1004, "Invalid NpcIndex in StorePets: " & NpcIndex & " for UserIndex: " & UserIndex & " slot: " & i, "modHechizos.StorePets", Erl)
                 Call ClearNpcRef(.MascotasIndex(i))
                 GoTo NextPet
             End If
@@ -963,7 +972,7 @@ NextPet:
     Exit Sub
     
 StorePets_Err:
-    Call TraceError(Err.Number, Err.Description, "modHechizos.StorePets")
+    Call TraceError(Err.Number, Err.Description, "modHechizos.StorePets", Erl)
 End Sub
 
 ''
@@ -985,6 +994,7 @@ Private Sub SummonStoredPets(ByVal UserIndex As Integer, ByVal h As Integer, ByR
             ind = SpawnNpc(.MascotasType(i), TargetPos, True, True, False, UserIndex)
             
             If ind <= 0 Then
+                Call TraceError(1004, "Failed to spawn stored pet. MascotasType: " & .MascotasType(i) & " UserIndex: " & UserIndex & " slot: " & i, "modHechizos.SummonStoredPets", Erl)
                 GoTo NextStoredPet
             End If
             
@@ -1005,7 +1015,7 @@ NextStoredPet:
     End With
     Exit Sub
 SummonStoredPets_Err:
-    Call TraceError(Err.Number, Err.Description, "modHechizos.SummonStoredPets")
+    Call TraceError(Err.Number, Err.Description, "modHechizos.SummonStoredPets", Erl)
 End Sub
 
 Sub HechizoTerrenoEstado(ByVal UserIndex As Integer, ByRef b As Boolean)
