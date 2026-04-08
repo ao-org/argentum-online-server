@@ -17,7 +17,7 @@ Attribute VB_Name = "Logging"
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'    Copyright (C) 2002 Mï¿½rquez Pablo Ignacio
+'    Copyright (C) 2002 Márquez Pablo Ignacio
 '
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
@@ -271,11 +271,11 @@ Public Sub LogBankTransfer(ByVal originUser As String, ByVal targetUser As Strin
     On Error GoTo ErrHandler
     Dim transferContext As String
     If receiverOnline Then
-        transferContext = "destinatario en lï¿½nea"
+        transferContext = "destinatario en línea"
     Else
-        transferContext = "destinatario fuera de lï¿½nea"
+        transferContext = "destinatario fuera de línea"
     End If
-    Call LogThis(eType_Log.BankTransfer, "[BankTransfer] " & originUser & " transfiriï¿½ " & amount & " monedas a " & targetUser & " (" & transferContext & ")", vbLogEventTypeInformation)
+    Call LogThis(eType_Log.BankTransfer, "[BankTransfer] " & originUser & " transfirió " & amount & " monedas a " & targetUser & " (" & transferContext & ")", vbLogEventTypeInformation)
     Exit Sub
 ErrHandler:
 End Sub
