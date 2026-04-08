@@ -291,6 +291,7 @@ Public Enum e_JobsTypes
     Woodcutter = 4
     Fisherman = 5
     Alchemist = 6
+    Tailor = 7
 End Enum
 
 Public Type t_LlamadaGM
@@ -3093,6 +3094,7 @@ Public Type t_NPCFlags
     StatusMask As Long 'use the values from e_StatusMask to set this flags
     ExpCount As Long '[ALEJO]
     OldMovement As e_TipoAI
+    MappedHeading As e_Heading
     OldHostil As Byte
     AguaValida As Byte
     TierraInvalida As Byte
@@ -3551,7 +3553,6 @@ Public MaxRangoFaccion                        As Byte ' El rango maximo que se p
 Public LastBackup                             As String
 Public minutos                                As String
 Public haciendoBK                             As Boolean
-Public PuedeCrearPersonajes                   As Integer
 Public MinimumPriceMao                        As Long
 Public GoldPriceMao                           As Long
 Public MinimumLevelMao                        As Integer

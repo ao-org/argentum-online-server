@@ -24,18 +24,6 @@ Public Function GetUserDisplayName(ByVal UserIndex As Integer) As String
     On Error GoTo GetUserDisplayName_Err
     If UserIndex < LBound(UserList) Or UserIndex > UBound(UserList) Then Exit Function
     If Not UserList(UserIndex).flags.UserLogged Then Exit Function
-    If Not IsFeatureEnabled("EnablePatreonAlias") Then
-        GetUserDisplayName = UserList(UserIndex).name
-        Exit Function
-    End If
-    If IsPatreon(UserIndex) Then
-        Dim aliasValue As String
-        aliasValue = Trim$(UserList(UserIndex).Alias)
-        If LenB(aliasValue) <> 0 Then
-            GetUserDisplayName = aliasValue
-            Exit Function
-        End If
-    End If
     GetUserDisplayName = UserList(UserIndex).name
     Exit Function
 GetUserDisplayName_Err:
@@ -52,6 +40,13 @@ GetUserRealName_Err:
     Call TraceError(Err.Number, Err.Description, "UserNames.GetUserRealName", Erl)
 End Function
 
+Public Function GetCharacterAlias(ByVal UserIndex As Integer) As String
+    Dim displayAlias As String
+    If Not IsFeatureEnabled("EnablePatreonAlias") Then Exit Function
+    If Not IsPatreon(UserIndex) Then Exit Function
+    displayAlias = Trim$(UserList(UserIndex).Alias)
+    GetCharacterAlias = displayAlias
+End Function
 
 Public Function GetUserDisplayNameOrReal(ByVal UserIndex As Integer) As String
     Dim displayName As String

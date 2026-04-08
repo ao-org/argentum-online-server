@@ -1025,6 +1025,11 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
         MiObj.amount = 1
         MiObj.ObjIndex = ItemIndex
         MiObj.ElementalTags = ObjData(ItemIndex).ElementalTags
+        If IsFeatureEnabled("gain_exp_while_working") Then
+            Call GiveExpWhileWorking(UserIndex, MiObj, e_JobsTypes.Tailor)
+            Call WriteUpdateExp(UserIndex)
+            Call CheckUserLevel(UserIndex)
+        End If
         Call SastreQuitarMateriales(UserIndex, MiObj)
         Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(63, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
@@ -1948,7 +1953,7 @@ Public Function GetExtractResourceForLevel(ByVal level As Integer) As Integer
     GetExtractResourceForLevel = RandomNumber(lower, upper)
 End Function
 
-Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_Obj, ByVal JobType As Byte)
+Public Sub GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_Obj, ByVal JobType As Byte)
     On Error GoTo GiveExpWhileWorking_Err:
     Dim tmpExp As Long
     With ObjData(Item.ObjIndex)
@@ -2003,17 +2008,39 @@ Public Function GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_
             If .Cala > 0 Then
                 tmpExp = tmpExp + ComputeWorkingExp(.Cala, SvrConfig.GetValue("MixingExp"), Item.Amount)
             End If
+            If .SemillasProsperas > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.SemillasProsperas, SvrConfig.GetValue("MixingExp"), Item.Amount)
+            End If
+        Case e_JobsTypes.Tailor
+            If .PielLobo > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.PielLobo , SvrConfig.GetValue("TailoringExp"), Item.Amount)
+            End If
+            If .PielOsoPardo > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPardo , SvrConfig.GetValue("TailoringExp"), Item.Amount)
+            End If
+            If .PielOsoPolar > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPolar , SvrConfig.GetValue("TailoringExp"), Item.Amount)
+            End If
+            If .PielLoboNegro > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.PielLoboNegro, SvrConfig.GetValue("TailoringExp"), Item.Amount)
+            End If
+            If .PielTigre > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.PielTigre, SvrConfig.GetValue("TailoringExp"), Item.Amount)
+            End If
+            If .PielTigreBengala > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.PielTigreBengala, SvrConfig.GetValue("TailoringExp"), Item.Amount)
+            End If
         Case Else
             tmpExp = SvrConfig.GetValue("ElseExp")
     End Select
     End With
     UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + tmpExp
-    Exit Function
+    Exit Sub
 GiveExpWhileWorking_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.GiveExpWhileWorking", Erl)
-End Function
+End Sub
 
-Private Function ComputeWorkingExp(ByVal ItemMaterialProperty As Integer, ByVal ExpMultiplier As Long, ByVal ItemAmount As Long)
+Private Function ComputeWorkingExp(ByVal ItemMaterialProperty As Integer, ByVal ExpMultiplier As Long, ByVal ItemAmount As Long) As Long
     'as of 18/03/26 MaterialProperties are integers, not planned to get changed to long
     If ItemMaterialProperty = 0 Then
         Exit Function
