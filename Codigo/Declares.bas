@@ -3292,6 +3292,12 @@ Public Type t_NpcInfoCache
     PuedeInvocar As Integer
     CaminataLen As Integer
     Caminata() As t_NpcCaminataCache
+    
+    IsMultiTile As Boolean
+    TileWidth As Byte      ' Width in tiles (default 1)
+    TileHeight As Byte     ' Height in tiles (default 1)
+    BaseTile As t_Position ' The "anchor" tile (usually bottom-left or center)
+    OccupiedTiles() As t_Position ' Array of all tiles this NPC occupies
 End Type
 
 Public Enum e_TipoAI
@@ -3412,6 +3418,13 @@ Public Type t_Npc
     PuedeInvocar As Byte
     Humanoide As Boolean
     DisabledInBattleServer As Byte
+    
+    IsMultiTile As Boolean
+    TileWidth   As Byte
+    TileHeight  As Byte
+    BaseTile As t_Position
+    OccupiedTiles() As t_Position
+    
 End Type
 
 '**********************************************************
@@ -3435,6 +3448,7 @@ Public Type t_MapBlock
     Graphic(1 To 4) As Long
     UserIndex As Integer
     NpcIndex As Integer
+    IsNpcReferenceTile As Boolean
     Particula As Byte
     TimeParticula As Integer
     ObjInfo As t_Obj

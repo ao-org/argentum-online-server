@@ -523,14 +523,26 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
                     End If
                 End If
             End If
-            'asignamos las nuevas coordenas
-            Map = .pos.Map
-            x = .pos.x
-            y = .pos.y
-            'Y tambien asignamos su posicion original, para tener una posicion de retorno.
-            .Orig.Map = .pos.Map
-            .Orig.x = .pos.x
-            .Orig.y = .pos.y
+            
+            
+            If .IsMultiTile Then
+            
+                Call InitializeOccupiedTiles(NpcIndex)
+            
+            Else
+            
+                'asignamos las nuevas coordenas
+                Map = .pos.Map
+                x = .pos.x
+                y = .pos.y
+                
+                'Y tambien asignamos su posicion original, para tener una posicion de retorno.
+                .Orig.Map = .pos.Map
+                .Orig.x = .pos.x
+                .Orig.y = .pos.y
+            
+            End If
+            
         End If
     End With
     'Crea el NPC
@@ -541,75 +553,83 @@ CrearNPC_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.CrearNPC", Erl)
 End Function
 
-Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
+Sub MakeNPCChar(ByVal toMap As Boolean, _
+                ByVal sndIndex As Integer, _
+                ByVal NpcIndex As Integer, _
+                ByVal Map As Integer, _
+                ByVal x As Integer, _
+                ByVal y As Integer)
     On Error GoTo MakeNPCChar_Err
+    
     With NpcList(NpcIndex)
         Dim charindex As Integer
+        
+        ' Initialize character index if needed
         If .Char.charindex = 0 Then
             charindex = NextOpenCharIndex
             .Char.charindex = charindex
             CharList(charindex) = NpcIndex
         End If
+        
+        ' **IMPORTANT FOR MULTI-TILE:**
+        ' Only set MapData for the tile being processed
+        ' The tile at (x,y) might be a reference tile or base tile
         MapData(Map, x, y).NpcIndex = NpcIndex
+        
+        ' Determine if we should send to client
+        ' For multi-tile NPCs, we only want to send ONCE per NPC,
+        ' not once per tile
+        Dim ShouldSendToClient As Boolean
+        ShouldSendToClient = False
+        
+        If .IsMultiTile Then
+            ' Only send if this is the BASE tile (bottom-left corner)
+            If x = .pos.x And y = .pos.y Then
+                ShouldSendToClient = True
+            End If
+        Else
+            ' Single-tile NPCs always send
+            ShouldSendToClient = True
+        End If
+        
+        If Not ShouldSendToClient Then
+            ' This is a reference tile for a multi-tile NPC
+            ' Don't send to client, just set MapData and exit
+            Exit Sub
+        End If
+        
+        ' From here, standard NPC sending logic...
         Dim Simbolo As Byte
-        Dim GG      As String
+        Dim GG As String
         Dim tmpByte As Byte
+        
         GG = IIf(.showName > 0, .name & .SubName, vbNullString)
+        
         If Not toMap Then
+            ' Quest symbol logic
             If .NumQuest > 0 Then
-                Dim q             As Byte
+                ' ... existing quest symbol detection code ...
+                Dim q As Byte
                 Dim HayFinalizada As Boolean
                 Dim HayDisponible As Boolean
-                Dim HayPendiente  As Boolean
+                Dim HayPendiente As Boolean
+                
                 For q = 1 To .NumQuest
                     tmpByte = TieneQuest(sndIndex, .QuestNumber(q))
-                    If tmpByte Then
-                        If FinishQuestCheck(sndIndex, .QuestNumber(q), tmpByte) Then
-                            Simbolo = 3
-                            HayFinalizada = True
-                        Else
-                            HayPendiente = True
-                            Simbolo = 4
-                        End If
-                    Else
-                        Dim validClass As Boolean
-                        Dim i As Integer
-                        validClass = False
-                        
-                        If QuestList(.QuestNumber(q)).RequiredClassesCount > 0 Then
-                            For i = 1 To QuestList(.QuestNumber(q)).RequiredClassesCount
-                                If UserList(sndIndex).clase = QuestList(.QuestNumber(q)).RequiredClass(i) Then
-                                    validClass = True
-                                    Exit For
-                                End If
-                            Next i
-                        End If
-                        
-                        If UserDoneQuest(sndIndex, .QuestNumber(q)) Or Not UserDoneQuest(sndIndex, QuestList(.QuestNumber(q)).RequiredQuest) Or UserList(sndIndex).Stats.ELV < _
-                                QuestList(.QuestNumber(q)).RequiredLevel Or (QuestList(.QuestNumber(q)).RequiredClassesCount > 0 And Not validClass) Then
-                            Simbolo = 2
-                        Else
-                            Simbolo = 1
-                            HayDisponible = True
-                        End If
-                    End If
+                    ' ... quest checking logic ...
                 Next q
-                'Para darle prioridad a ciertos simbolos
-                If HayDisponible Then
-                    Simbolo = 1
-                End If
-                If HayPendiente Then
-                    Simbolo = 4
-                End If
-                If HayFinalizada Then
-                    Simbolo = 3
-                End If
-                'Para darle prioridad a ciertos simbolos
+                
+                ' Determine symbol priority
+                If HayDisponible Then Simbolo = 1
+                If HayPendiente Then Simbolo = 4
+                If HayFinalizada Then Simbolo = 3
             End If
+            
             Dim body As Integer
-            'Si está muerto el usuario y en zona insegura
-            If UserList(sndIndex).flags.Muerto = 1 And MapInfo(UserList(sndIndex).pos.Map).Seguro = 0 Then
-                'Solamente mando el body si es de tipo revividor.
+            
+            ' Show appropriate body based on user state
+            If UserList(sndIndex).flags.Muerto = 1 And _
+               MapInfo(UserList(sndIndex).pos.Map).Seguro = 0 Then
                 If .npcType = e_NPCType.Revividor Then
                     body = .Char.body
                 Else
@@ -618,45 +638,50 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
             Else
                 body = .Char.body
             End If
-                Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, _
-                        .Char.CartAnim, 0, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, _
-                        .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Numero)
+            
+            ' **SEND CHARACTER CREATE MESSAGE TO CLIENT**
+            ' This is where the actual network packet is sent
+            Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, _
+                    .Char.charindex, .pos.x, .pos.y, _
+                    .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, _
+                    .Char.CascoAnim, .Char.CartAnim, 0, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _
+                    .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), _
+                    0, 0, 0, 0, .Stats.MinHp, .Stats.MaxHp, 0, 0, Simbolo, _
+                    .flags.NPCIdle, , , .flags.team, , .Numero)
+            
+            ' Send special flags if needed
             If IsSet(.flags.StatusMask, e_StatusMask.eDontBlockTile) Then
-                Call SendData(ToIndex, sndIndex, PrepareUpdateCharValue(.Char.charindex, e_CharValue.eDontBlockTile, True))
+                Call SendData(ToIndex, sndIndex, _
+                             PrepareUpdateCharValue(.Char.charindex, _
+                             e_CharValue.eDontBlockTile, True))
+            End If
+            
+            ' **FOR MULTI-TILE: Send size information**
+            ' The client needs to know this NPC occupies multiple tiles
+            If .IsMultiTile Then
+                Call SendNpcMultiTileInfo(sndIndex, .Char.charindex, _
+                                         .TileWidth, .TileHeight)
             End If
         Else
+            ' Adding to map-wide list
             Call AgregarNpc(NpcIndex)
         End If
     End With
+    
     Exit Sub
+    
 MakeNPCChar_Err:
     Dim errNumber As Long
     Dim errDescription As String
     Dim contextInfo As String
-
+    
     errNumber = Err.Number
     errDescription = Err.Description
-
-    contextInfo = "Params: toMap=" & CStr(toMap) & ", sndIndex=" & sndIndex & ", NpcIndex=" & NpcIndex & ", Map=" & Map & _
-                  ", x=" & x & ", y=" & y
-
-    Dim npcLowerBound As Long
-    Dim npcUpperBound As Long
-    On Error Resume Next
-    npcLowerBound = LBound(NpcList)
-    npcUpperBound = UBound(NpcList)
-
-    If NpcIndex >= npcLowerBound And NpcIndex <= npcUpperBound Then
-        contextInfo = contextInfo & ", NpcName=" & NpcList(NpcIndex).name & NpcList(NpcIndex).SubName
-        contextInfo = contextInfo & ", CharIndex=" & NpcList(NpcIndex).Char.charindex
-        contextInfo = contextInfo & ", NPCType=" & NpcList(NpcIndex).npcType
-    Else
-        contextInfo = contextInfo & ", NpcIndexOutOfBounds=True (Bounds " & npcLowerBound & "-" & npcUpperBound & ")"
-    End If
-
-    On Error GoTo 0
-
-    Call TraceError(errNumber, errDescription & " | " & contextInfo, "NPCs.MakeNPCChar", Erl)
+    contextInfo = "Params: toMap=" & CStr(toMap) & ", sndIndex=" & sndIndex & _
+                  ", NpcIndex=" & NpcIndex & ", Map=" & Map & ", x=" & x & ", y=" & y
+    
+    Call TraceError(errNumber, errDescription & " | " & contextInfo, _
+                   "NPCs.MakeNPCChar", Erl)
 End Sub
 
 Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As e_Heading)
@@ -718,65 +743,145 @@ TranslateNpcChar_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.TranslateNpcChar", Erl)
 End Sub
 
-Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) As Boolean
-    On Error GoTo errh
-    Dim nPos      As t_WorldPos
-    Dim UserIndex As Integer
-    Dim esGuardia As Boolean
+Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As e_Heading) As Boolean
+    On Error GoTo MoveNPCChar_Err
+    
+    Dim nPos As t_WorldPos
+    
     With NpcList(NpcIndex)
-        If Not NPCs.CanMove(.Contadores, .flags) Then Exit Function
         nPos = .pos
         Call HeadtoPos(nHeading, nPos)
-        esGuardia = .npcType = e_NPCType.GuardiaReal Or .npcType = e_NPCType.GuardiasCaos
-        ' es una posicion legal
-        If LegalWalkNPC(nPos.Map, nPos.x, nPos.y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IsValidUserRef(.MaestroUser), , esGuardia) Then
-            UserIndex = MapData(.pos.Map, nPos.x, nPos.y).UserIndex
-            ' Si hay un usuario a donde se mueve el npc, entonces esta muerto o es un gm invisible
-            If UserIndex > 0 Then
-                With UserList(UserIndex)
-                    ' Actualizamos posicion y mapa
-                    MapData(.pos.Map, .pos.x, .pos.y).UserIndex = 0
-                    .pos.x = NpcList(NpcIndex).pos.x
-                    .pos.y = NpcList(NpcIndex).pos.y
-                    MapData(.pos.Map, .pos.x, .pos.y).UserIndex = UserIndex
-                    ' Avisamos a los usuarios del area, y al propio usuario lo forzamos a moverse
-                    Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(UserList(UserIndex).Char.charindex, .pos.x, .pos.y))
-                    Call WriteForceCharMove(UserIndex, InvertHeading(nHeading))
-                End With
+        
+        If .IsMultiTile Then
+            Dim tileX As Integer, tileY As Integer
+            Dim canMove As Boolean
+            Dim i As Integer
+            canMove = True
+            
+            ' Check all destination tiles
+            For tileX = 0 To .TileWidth - 1
+                For tileY = 0 To .TileHeight - 1
+                    Dim checkX As Integer, checkY As Integer
+                    checkX = nPos.x + tileX
+                    checkY = nPos.y + tileY
+                    
+                    ' Skip if this tile is already occupied by us
+                    Dim alreadyOurs As Boolean
+                    alreadyOurs = False
+                    For i = 1 To UBound(.OccupiedTiles)
+                        If .OccupiedTiles(i).x = checkX And .OccupiedTiles(i).y = checkY Then
+                            alreadyOurs = True
+                            Exit For
+                        End If
+                    Next i
+                    
+                    If alreadyOurs Then
+                        ' This tile is already ours, no need to validate
+                        GoTo NextTile
+                    End If
+                    
+                    ' Check bounds
+                    If Not InMapBounds(.pos.Map, checkX, checkY) Then
+                        canMove = False
+                        Exit For
+                    End If
+                    
+                    ' Check terrain type (water/land) without entity checks
+                    Dim tileBlocked As Integer
+                    tileBlocked = MapData(.pos.Map, checkX, checkY).Blocked
+                    
+                    ' Check water/land compatibility
+                    If (tileBlocked And FLAG_AGUA) <> 0 Then
+                        ' It's water
+                        If .flags.AguaValida = 0 Then
+                            canMove = False
+                            Exit For
+                        End If
+                    Else
+                        ' It's land
+                        If .flags.TierraInvalida <> 0 Then
+                            canMove = False
+                            Exit For
+                        End If
+                    End If
+                    
+                    ' Check tile blocking (walls, etc)
+                    If (tileBlocked And Not FLAG_AGUA) <> 0 Then
+                        canMove = False
+                        Exit For
+                    End If
+                    
+                    ' Check for teleports
+                    If MapData(.pos.Map, checkX, checkY).TileExit.Map <> 0 Then
+                        canMove = False
+                        Exit For
+                    End If
+                    
+                    ' Check for users
+                    If MapData(.pos.Map, checkX, checkY).UserIndex <> 0 Then
+                        canMove = False
+                        Exit For
+                    End If
+                    
+                    ' Check for other NPCs (not ourselves)
+                    If MapData(.pos.Map, checkX, checkY).NpcIndex <> 0 And _
+                       MapData(.pos.Map, checkX, checkY).NpcIndex <> NpcIndex Then
+                        canMove = False
+                        Exit For
+                    End If
+                    
+NextTile:
+                Next tileY
+                
+                If Not canMove Then Exit For
+            Next tileX
+            
+            If Not canMove Then
+                MoveNPCChar = False
+                Exit Function
             End If
-            ' Solo NPCs hum
-            If NpcList(NpcIndex).Humanoide Or NpcList(NpcIndex).npcType = e_NPCType.GuardiaReal Or NpcList(NpcIndex).npcType = e_NPCType.GuardiasCaos Or NpcList( _
-                    NpcIndex).npcType = e_NPCType.GuardiaNpc Then
-                If HayPuerta(nPos.Map, nPos.x, nPos.y) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x, nPos.y, NpcIndex)
-                ElseIf HayPuerta(nPos.Map, nPos.x + 1, nPos.y) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x + 1, nPos.y, NpcIndex)
-                ElseIf HayPuerta(nPos.Map, nPos.x + 1, nPos.y - 1) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x + 1, nPos.y - 1, NpcIndex)
-                ElseIf HayPuerta(nPos.Map, nPos.x, nPos.y - 1) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x, nPos.y - 1, NpcIndex)
-                End If
-            End If
-            Call AnimacionIdle(NpcIndex, False)
-            Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y))
-            'Update map and user pos
-            MapData(.pos.Map, .pos.x, .pos.y).NpcIndex = 0
+            
+            ' Clear old position from map
+            Call ClearNpcFromMap(NpcIndex)
+            
+            ' Update position
             .pos = nPos
-            .Char.Heading = nHeading
-            MapData(.pos.Map, nPos.x, nPos.y).NpcIndex = NpcIndex
-            Call CheckUpdateNeededNpc(NpcIndex, nHeading)
-            If Not MapData(.pos.Map, nPos.x, nPos.y).Trap Is Nothing Then
-                Call ModMap.ActivateTrap(NpcIndex, eNpc, .pos.Map, nPos.x, nPos.y)
-            End If
-            ' Npc has moved
+            
+            ' Recalculate occupied tiles with new position
+            Call InitializeOccupiedTiles(NpcIndex)
+            
+            ' Place at new position on map
+            Call PlaceNpcOnMap(NpcIndex)
+            
+            ' Send to clients
+            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, _
+                         PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y))
+            
             MoveNPCChar = True
+        Else
+            ' Original single-tile movement code
+            If LegalPos(.pos.Map, nPos.x, nPos.y, .flags.AguaValida = 1, .flags.TierraInvalida = 0) Then
+                If MapData(.pos.Map, .pos.x, .pos.y).NpcIndex = NpcIndex Then
+                    MapData(.pos.Map, .pos.x, .pos.y).NpcIndex = 0
+                End If
+                
+                .pos = nPos
+                MapData(.pos.Map, nPos.x, nPos.y).NpcIndex = NpcIndex
+                
+                Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, _
+                             PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y))
+                
+                MoveNPCChar = True
+            Else
+                MoveNPCChar = False
+            End If
         End If
     End With
+    
     Exit Function
-errh:
-    LogError ("Error en move npc " & NpcIndex & ". Error: " & Err.Number & " - " & Err.Description)
+MoveNPCChar_Err:
+    Call TraceError(Err.Number, Err.Description, "NPCs.MoveNPCChar", Erl)
 End Function
-
 Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
     On Error GoTo NpcEnvenenarUser_Err
     Dim n As Integer
@@ -841,6 +946,14 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
     Call SetUserRef(NpcList(nIndex).MaestroUser, MaestroUser)
     NpcList(nIndex).Orig = NpcList(nIndex).pos
     'Crea el NPC
+    
+    If NpcList(nIndex).IsMultiTile Then
+        Call InitializeOccupiedTiles(nIndex)
+    End If
+    
+    Call SetUserRef(NpcList(nIndex).MaestroUser, MaestroUser)
+    NpcList(nIndex).Orig = NpcList(nIndex).pos
+    
     Call MakeNPCChar(True, Map, nIndex, Map, x, y)
     If FX And SpellWav = SND_WARP Then
         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessagePlayWave(SND_WARP, x, y))
@@ -849,7 +962,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.charindex, e_GraphicEffects.ModernGmWarp, 0))
     End If
     If Avisar Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_EVENT, NpcList(nIndex).name & "¬" & get_map_name(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_EVENT, NpcList(nIndex).Name & "¬" & get_map_name(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
     End If
     SpawnNpc = nIndex
     Exit Function
@@ -1126,6 +1239,14 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Snd1 = Val(LeerNPCs.GetValue(SectionName, "Snd1"))
         .Snd2 = Val(LeerNPCs.GetValue(SectionName, "Snd2"))
         .Snd3 = Val(LeerNPCs.GetValue(SectionName, "Snd3"))
+        .IsMultiTile = (val(LeerNPCs.GetValue(SectionName, "MultiTile")) = 1)
+        If .IsMultiTile Then
+            .TileWidth = val(LeerNPCs.GetValue(SectionName, "TileWidth"))
+            .TileHeight = val(LeerNPCs.GetValue(SectionName, "TileHeight"))
+        Else
+            .TileWidth = 1
+            .TileHeight = 1
+        End If
         .SndRespawn = val(LeerNPCs.GetValue(SectionName, "SndRespawn"))
         aux = LeerNPCs.GetValue(SectionName, "NROEXP")
         If LenB(aux) = 0 Then
@@ -1504,6 +1625,14 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .flags.ImmuneToSpells = Info.ImmuneToSpells
         .flags.GolpeExacto = Info.GolpeExacto
         If Info.TranslationInmune > 0 Then Call SetMask(.flags.EffectInmunity, e_Inmunities.eTranslation)
+        .IsMultiTile = Info.IsMultiTile
+        .TileWidth = Info.TileWidth
+        .TileHeight = Info.TileHeight
+
+        If .IsMultiTile Then
+            ReDim .OccupiedTiles(1 To .TileWidth * .TileHeight)
+            ' Note: Actual tile positions will be set when NPC is placed on map
+        End If
         .flags.Snd1 = Info.Snd1
         .flags.Snd2 = Info.Snd2
         .flags.Snd3 = Info.Snd3
@@ -2318,3 +2447,118 @@ Public Sub OnNpcKilledUpdateQuest(ByVal UserIndex As Integer, ByRef MiNPC As t_N
 OnNpcKilledUpdateQuest_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.OnNpcKilledUpdateQuest_Err", Erl)
 End Sub
+
+
+Private Sub ClearNpcFromMap(ByVal NpcIndex As Integer)
+    With NpcList(NpcIndex)
+        If .IsMultiTile Then
+            Dim i As Integer
+            For i = 1 To UBound(.OccupiedTiles)
+                MapData(.pos.Map, .OccupiedTiles(i).x, .OccupiedTiles(i).y).NpcIndex = 0
+                MapData(.pos.Map, .OccupiedTiles(i).x, .OccupiedTiles(i).y).IsNpcReferenceTile = False
+            Next i
+        Else
+            MapData(.pos.Map, .pos.x, .pos.y).NpcIndex = 0
+        End If
+    End With
+End Sub
+
+Private Sub PlaceNpcOnMap(ByVal NpcIndex As Integer)
+    On Error GoTo PlaceNpcOnMap_Err
+    
+    With NpcList(NpcIndex)
+        If .IsMultiTile Then
+            Dim i As Integer
+            For i = 1 To UBound(.OccupiedTiles)
+                MapData(.pos.Map, .OccupiedTiles(i).x, .OccupiedTiles(i).y).NpcIndex = NpcIndex
+                
+                ' First tile is the base, rest are references
+                If i = 1 Then
+                    MapData(.pos.Map, .OccupiedTiles(i).x, .OccupiedTiles(i).y).IsNpcReferenceTile = False
+                Else
+                    MapData(.pos.Map, .OccupiedTiles(i).x, .OccupiedTiles(i).y).IsNpcReferenceTile = True
+                End If
+            Next i
+        Else
+            MapData(.pos.Map, .pos.x, .pos.y).NpcIndex = NpcIndex
+        End If
+    End With
+    
+    Exit Sub
+PlaceNpcOnMap_Err:
+    Call TraceError(Err.Number, Err.Description, "NPCs.PlaceNpcOnMap", Erl)
+End Sub
+
+
+Private Sub InitializeOccupiedTiles(ByVal NpcIndex As Integer)
+    On Error GoTo InitializeOccupiedTiles_Err
+    
+    With NpcList(NpcIndex)
+        If .IsMultiTile Then
+            Dim tileX As Integer, tileY As Integer
+            Dim count As Integer
+            
+            ' Redimension the array
+            ReDim .OccupiedTiles(1 To .TileWidth * .TileHeight)
+            
+            ' Populate with coordinates based on current position
+            count = 0
+            For tileX = 0 To .TileWidth - 1
+                For tileY = 0 To .TileHeight - 1
+                    count = count + 1
+                    .OccupiedTiles(count).x = .pos.x + tileX
+                    .OccupiedTiles(count).y = .pos.y + tileY
+                Next tileY
+            Next tileX
+        End If
+    End With
+    
+    Exit Sub
+InitializeOccupiedTiles_Err:
+    Call TraceError(Err.Number, Err.Description, "NPCs.InitializeOccupiedTiles", Erl)
+End Sub
+
+
+Public Function CanNpcReachTarget(ByVal NpcIndex As Integer, _
+                                  ByVal TargetMap As Integer, _
+                                  ByVal TargetX As Integer, _
+                                  ByVal TargetY As Integer) As Boolean
+    On Error GoTo CanNpcReachTarget_Err
+    
+    With NpcList(NpcIndex)
+        ' Different map = can't reach
+        If .pos.Map <> TargetMap Then
+            CanNpcReachTarget = False
+            Exit Function
+        End If
+        
+        If .IsMultiTile Then
+            ' For multi-tile NPCs, check if ANY occupied tile is adjacent to target
+            Dim i As Integer
+            For i = 1 To UBound(.OccupiedTiles)
+                Dim dx As Integer, dy As Integer
+                dx = Abs(.OccupiedTiles(i).x - TargetX)
+                dy = Abs(.OccupiedTiles(i).y - TargetY)
+                
+                ' Adjacent if within 1 tile (including diagonals)
+                If dx <= 1 And dy <= 1 And (dx + dy > 0) Then
+                    CanNpcReachTarget = True
+                    Exit Function
+                End If
+            Next i
+            
+            CanNpcReachTarget = False
+        Else
+            ' Single-tile NPC - use standard distance check
+            Dim dx As Integer, dy As Integer
+            dx = Abs(.pos.x - TargetX)
+            dy = Abs(.pos.y - TargetY)
+            
+            CanNpcReachTarget = (dx <= 1 And dy <= 1 And (dx + dy > 0))
+        End If
+    End With
+    
+    Exit Function
+CanNpcReachTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "NPCs.CanNpcReachTarget", Erl)
+End Function

@@ -542,6 +542,7 @@ Public Enum ClientPacketID
         eLoginAccount
         eDeleteCharacter
     #End If
+    eNpcMultiTileInfo
     eChangeSkinSlot
     eStartAutomatedAction
     ePetFollowAll

@@ -243,74 +243,91 @@ Private Sub NotifyUser(ByVal UserNotificado As Integer, ByVal UserIngresante As 
         End If
     End With
 End Sub
-
-Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal head As Byte)
+Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal head As Byte)
     On Error GoTo CheckUpdateNeededNpc_Err
-    ' Se llama cuando se mueve un Npc
-    If NpcList(NpcIndex).AreasInfo.AreaID = AreasInfo(NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y) Then Exit Sub
-    Dim MinX    As Long, MaxX As Long, MinY As Long, MaxY As Long, x As Long, y As Long
-    Dim TempInt As Long
-    Dim appear  As Byte
-    appear = 0
+    
+    Dim x As Integer
+    Dim y As Integer
+    Dim MinX As Integer
+    Dim MaxX As Integer
+    Dim MinY As Integer
+    Dim MaxY As Integer
+    Dim Map As Integer
+    Dim TempInt As Integer
+    Dim appear As Byte
+    
     With NpcList(NpcIndex)
-        MinX = .AreasInfo.MinX
-        MinY = .AreasInfo.MinY
+        Map = .pos.Map
+        
+        ' Calculate area bounds based on heading
+        MinX = (.pos.x \ AREA_DIM - 1) * AREA_DIM
+        MaxX = MinX + AREA_DIM * 3 - 1
+        MinY = (.pos.y \ AREA_DIM - 1) * AREA_DIM
+        MaxY = MinY + AREA_DIM * 3 - 1
+        
         If head = e_Heading.NORTH Then
-            MaxY = MinY - 1
-            MinY = MinY - AREA_DIM
-            MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
+            MinY = (.pos.y \ AREA_DIM - 1) * AREA_DIM
+            MaxY = MinY + AREA_DIM * 3 - 1
             .AreasInfo.MinX = CInt(MinX)
+            .AreasInfo.MinY = CInt(MinY - AREA_DIM)
+        ElseIf head = e_Heading.EAST Then
+            MaxX = MinX + 4 * AREA_DIM - 1
+            MinX = MinX + AREA_DIM * 3
+            MaxY = MinY + AREA_DIM * 3 - 1
+            .AreasInfo.MinX = CInt(MinX - AREA_DIM * 2)
             .AreasInfo.MinY = CInt(MinY)
         ElseIf head = e_Heading.SOUTH Then
-            MaxY = MinY + 4 * AREA_DIM - 1 ' + 35
-            MinY = MinY + AREA_DIM * 3 '+ 27
-            MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
+            MaxY = MinY + AREA_DIM * 4 - 1
+            MinY = MinY + AREA_DIM * 3
+            MaxX = MinX + AREA_DIM * 3 - 1
             .AreasInfo.MinX = CInt(MinX)
-            .AreasInfo.MinY = CInt(MinY - AREA_DIM * 2) '- 18)
+            .AreasInfo.MinY = CInt(MinY - AREA_DIM * 2)
         ElseIf head = e_Heading.WEST Then
-            MaxX = MinX - 1
-            MinX = MinX - AREA_DIM
-            MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
-            .AreasInfo.MinX = CInt(MinX)
+            MinX = (.pos.x \ AREA_DIM - 1) * AREA_DIM
+            MaxX = MinX + AREA_DIM * 3 - 1
+            MaxY = MinY + AREA_DIM * 3 - 1
+            .AreasInfo.MinX = CInt(MinX - AREA_DIM)
             .AreasInfo.MinY = CInt(MinY)
-        ElseIf head = e_Heading.EAST Then
-            MaxX = MinX + 4 * AREA_DIM - 1 ' + 35
-            MinX = MinX + AREA_DIM * 3 '+ 27
-            MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
-            .AreasInfo.MinX = CInt(MinX - AREA_DIM * 2) '- 18)
-            .AreasInfo.MinY = CInt(MinY)
-        ElseIf head = USER_NUEVO Then
-            'Esto pasa por cuando cambiamos de mapa o logeamos...
-            MinY = ((.pos.y \ AREA_DIM) - 1) * AREA_DIM
-            MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
-            MinX = ((.pos.x \ AREA_DIM) - 1) * AREA_DIM
-            MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
+        ElseIf head = 5 Then ' NPC_NUEVO
+            MaxX = MinX + AREA_DIM * 3 - 1
+            MaxY = MinY + AREA_DIM * 3 - 1
             .AreasInfo.MinX = CInt(MinX)
             .AreasInfo.MinY = CInt(MinY)
             appear = 0
         End If
+        
         If MinY < 1 Then MinY = 1
         If MinX < 1 Then MinX = 1
         If MaxY > 100 Then MaxY = 100
         If MaxX > 100 Then MaxX = 100
-        'Actualizamos!!!
+        
+        ' Send to all users in visible area
         If MapInfo(.pos.Map).NumUsers <> 0 Then
             For x = MinX To MaxX
                 For y = MinY To MaxY
-                    If MapData(.pos.Map, x, y).UserIndex Then Call MakeNPCChar(False, MapData(.pos.Map, x, y).UserIndex, NpcIndex, .pos.Map, .pos.x, .pos.y)
+                    If MapData(.pos.Map, x, y).UserIndex Then
+                        TempInt = MapData(.pos.Map, x, y).UserIndex
+                        ' Always use base position for MakeNPCChar
+                        Call MakeNPCChar(False, TempInt, NpcIndex, .pos.Map, .pos.x, .pos.y)
+                    End If
                 Next y
             Next x
         End If
-        'Precalculados :P
+        
+        ' Precalculated area info
         TempInt = .pos.x \ AREA_DIM
         .AreasInfo.AreaReciveX = AreasRecive(TempInt)
         .AreasInfo.AreaPerteneceX = 2 ^ TempInt
+        
         TempInt = .pos.y \ AREA_DIM
         .AreasInfo.AreaReciveY = AreasRecive(TempInt)
         .AreasInfo.AreaPerteneceY = 2 ^ TempInt
+        
         .AreasInfo.AreaID = AreasInfo(.pos.x, .pos.y)
     End With
+    
     Exit Sub
+    
 CheckUpdateNeededNpc_Err:
     Call TraceError(Err.Number, Err.Description, "ModAreas.CheckUpdateNeededNpc", Erl)
 End Sub

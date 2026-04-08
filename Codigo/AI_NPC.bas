@@ -705,7 +705,7 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
     AtacaAlDelFrente = False
     With NpcList(AtackerNpcIndex)
         If Not IsValidUserRef(.TargetUser) Then Exit Sub
-        EstaPegadoAlUsuario = (Distancia(.pos, UserList(.TargetUser.ArrayIndex).pos) <= 1)
+        EstaPegadoAlUsuario = CanNpcReachTarget(AtackerNpcIndex, UserList(.TargetUser.ArrayIndex).pos.Map, UserList(.TargetUser.ArrayIndex).pos.x, UserList(.TargetUser.ArrayIndex).pos.y)
         AtacaConMagia = .flags.LanzaSpells And IntervaloPermiteLanzarHechizo(AtackerNpcIndex)
         AtacaMelee = EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .TargetUser.ArrayIndex)
         AtacaMelee = AtacaMelee And (.flags.LanzaSpells > 0 And ((UserList(.TargetUser.ArrayIndex).flags.invisible > 0 Or UserList(.TargetUser.ArrayIndex).flags.Oculto > 0)) Or ( _
@@ -1025,7 +1025,7 @@ Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer, Optional ByVal ChangeTarget
             TargetPos = NpcList(.TargetNPC.ArrayIndex).pos
             If InRangoVisionNPC(NpcIndex, TargetPos.x, TargetPos.y) Then
                 ' Me fijo si el NPC esta al lado del Objetivo
-                If Distancia(.pos, TargetPos) = 1 And NPCs.CanAttack(.Contadores, .flags) Then
+                If CanNpcReachTarget(NpcIndex, TargetPos.Map, TargetPos.x, TargetPos.y) And NPCs.CanAttack(.Contadores, .flags) Then
                     Call SistemaCombate.NpcAtacaNpc(NpcIndex, .TargetNPC.ArrayIndex, ChangeTargetMovement)
                 End If
                 If IsValidNpcRef(.TargetNPC) Then

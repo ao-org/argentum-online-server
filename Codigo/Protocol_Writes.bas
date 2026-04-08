@@ -4679,3 +4679,29 @@ WriteShowPickUpObj_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowPickUpObj", Erl)
 End Sub
+
+Public Sub SendNpcMultiTileInfo(ByVal UserIndex As Integer, _
+                                ByVal charindex As Integer, _
+                                ByVal TileWidth As Byte, _
+                                ByVal TileHeight As Byte)
+    On Error GoTo SendNpcMultiTileInfo_Err
+    
+    ' Send packet to client indicating this NPC uses multiple tiles
+    ' Client needs to:
+    ' 1. Block all tiles visually
+    ' 2. Handle click detection on any tile
+    ' 3. Render sprite at correct position (usually centered or bottom-left)
+    
+    With Writer
+        Call .WriteInt(ClientPacketID.eNpcMultiTileInfo)  ' New packet ID
+        Call .WriteInt(charindex)
+        Call .WriteInt8(TileWidth)
+        Call .WriteInt8(TileHeight)
+    End With
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+SendNpcMultiTileInfo_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, _
+                   "Protocol_Writes.SendNpcMultiTileInfo", Erl)
+End Sub
