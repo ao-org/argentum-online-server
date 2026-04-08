@@ -17,7 +17,7 @@ Attribute VB_Name = "Logging"
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'    Copyright (C) 2002 Márquez Pablo Ignacio
+'    Copyright (C) 2002 Mï¿½rquez Pablo Ignacio
 '
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
@@ -70,11 +70,26 @@ End Type
 
 Public CircularLogBuffer As t_CircularBuffer
 Private Declare Function RegisterEventSource Lib "advapi32.dll" Alias "RegisterEventSourceA" (ByVal lpUNCServerName As String, ByVal lpSourceName As String) As Long
+Private Declare Function DeregisterEventSource Lib "advapi32.dll" (ByVal hEventLog As Long) As Long
+
+Private m_hEventLog As Long
 
 Public Sub InitializeCircularLogBuffer(Optional ByVal size As Integer = 30)
     CircularLogBuffer.size = size
     CircularLogBuffer.currentIndex = 0
     ReDim CircularLogBuffer.Messages(0 To size)
+End Sub
+
+Public Sub InitializeLogging()
+    m_hEventLog = RegisterEventSource("", "Argentum20")
+    Call InitializeCircularLogBuffer(30)
+End Sub
+
+Public Sub ShutdownLogging()
+    If m_hEventLog <> 0 Then
+        DeregisterEventSource m_hEventLog
+        m_hEventLog = 0
+    End If
 End Sub
 
 Public Sub AddLogToCircularBuffer(Message As String)
@@ -96,17 +111,16 @@ Public Function GetLastMessages() As String()
 End Function
 
 Public Sub LogThis(nErrNo As Long, sLogMsg As String, eventType As LogEventTypeConstants)
-    Dim hEvent As Long
-    hEvent = RegisterEventSource("", "Argentum20")
+    If m_hEventLog = 0 Then Call InitializeLogging
     If eventType = vbLogEventTypeWarning Or eventType = vbLogEventTypeError Then
         Call AddLogToCircularBuffer(sLogMsg)
     End If
-    Call ReportEvent(hEvent, eventType, 0, 20, 0, 1, Len(sLogMsg), nErrNo & " - " & sLogMsg, 0)
+    Call ReportEvent(m_hEventLog, eventType, 0, nErrNo, 0, 1, Len(sLogMsg), sLogMsg, 0)
 End Sub
 
 Public Sub LogearEventoDeSubasta(s As String)
     On Error GoTo ErrHandler
-    Call LogThis(eType_Log.EventoDeSubasta, "[Subastas.log] " & s, vbLogEventTypeInformation)
+    Call LogThis(eType_Log.EventoDeSubasta, "[Subastas] " & s, vbLogEventTypeInformation)
     Exit Sub
 ErrHandler:
 End Sub
@@ -115,35 +129,35 @@ Sub LogBan(ByVal BannedIndex As Integer, ByVal UserIndex As Integer, ByVal Motiv
     On Error GoTo ErrHandler
     Dim s As String
     s = UserList(BannedIndex).name & " BannedBy " & UserList(UserIndex).name & " Reason " & Motivo
-    Call LogThis(eType_Log.Ban, "[Bans] " & s, vbLogEventTypeInformation)
+    Call LogThis(eType_Log.Ban, "[Bans] " & s, vbLogEventTypeWarning)
     Exit Sub
 ErrHandler:
 End Sub
 
 Public Sub LogCreditosPatreon(Desc As String)
     On Error GoTo ErrHandler
-    Call LogThis(eType_Log.CreditosPatreon, "[MonetizationCreditosPatreon.log] " & Desc, vbLogEventTypeInformation)
+    Call LogThis(eType_Log.CreditosPatreon, "[CreditosPatreon] " & Desc, vbLogEventTypeInformation)
     Exit Sub
 ErrHandler:
 End Sub
 
 Public Sub LogShopTransactions(Desc As String)
     On Error GoTo ErrHandler
-    Call LogThis(eType_Log.ShopTransactions, "[MonetizationShopTransactions.log] " & Desc, vbLogEventTypeInformation)
+    Call LogThis(eType_Log.ShopTransactions, "[ShopTransactions] " & Desc, vbLogEventTypeInformation)
     Exit Sub
 ErrHandler:
 End Sub
 
 Public Sub LogShopErrors(Desc As String)
     On Error GoTo ErrHandler
-    Call LogThis(eType_Log.ShopErrors, "[MonetizationShopErrors.log] " & Desc, vbLogEventTypeError)
+    Call LogThis(eType_Log.ShopErrors, "[ShopErrors] " & Desc, vbLogEventTypeError)
     Exit Sub
 ErrHandler:
 End Sub
 
 Public Sub LogEdicionPaquete(texto As String)
     On Error GoTo ErrHandler
-    Call LogThis(eType_Log.EdicionPaquete, "[EdicionPaquete.log] " & texto, vbLogEventTypeWarning)
+    Call LogThis(eType_Log.EdicionPaquete, "[EdicionPaquete] " & texto, vbLogEventTypeWarning)
     Exit Sub
 ErrHandler:
 End Sub
@@ -177,49 +191,49 @@ End Sub
 
 Public Sub LogCriticEvent(Desc As String)
     On Error GoTo ErrHandler
-    Call LogThis(eType_Log.CriticEvent, "[Eventos.log] " & Desc, vbLogEventTypeWarning)
+    Call LogThis(eType_Log.CriticEvent, "[CriticEvent] " & Desc, vbLogEventTypeError)
     Exit Sub
 ErrHandler:
 End Sub
 
 Public Sub LogEjercitoReal(Desc As String)
     On Error GoTo ErrHandler
-    Call LogThis(eType_Log.EjercitoReal, "[EjercitoReal.log] " & Desc, vbLogEventTypeInformation)
+    Call LogThis(eType_Log.EjercitoReal, "[EjercitoReal] " & Desc, vbLogEventTypeInformation)
     Exit Sub
 ErrHandler:
 End Sub
 
 Public Sub LogEjercitoCaos(Desc As String)
     On Error GoTo ErrHandler
-    Call LogThis(eType_Log.EjercitoCaos, "[EjercitoCaos.log] " & Desc, vbLogEventTypeInformation)
+    Call LogThis(eType_Log.EjercitoCaos, "[EjercitoCaos] " & Desc, vbLogEventTypeInformation)
     Exit Sub
 ErrHandler:
 End Sub
 
 Public Sub LogError(Desc As String)
     On Error GoTo ErrHandler
-    Call LogThis(eType_Log.Error, "[Errores.log] " & Desc, vbLogEventTypeError)
+    Call LogThis(eType_Log.Error, "[Error] " & Desc, vbLogEventTypeError)
     Exit Sub
 ErrHandler:
 End Sub
 
 Public Sub LogPerformance(Desc As String)
     On Error GoTo ErrHandler
-    Call LogThis(eType_Log.Performance, "[Performance.log] " & Desc, vbLogEventTypeInformation)
+    Call LogThis(eType_Log.Performance, "[Performance] " & Desc, vbLogEventTypeInformation)
     Exit Sub
 ErrHandler:
 End Sub
 
 Public Sub LogConsulta(Desc As String)
     On Error GoTo ErrHandler
-    Call LogThis(eType_Log.Consulta, "[obtenemos.log] " & Desc, vbLogEventTypeInformation)
+    Call LogThis(eType_Log.Consulta, "[Consulta] " & Desc, vbLogEventTypeInformation)
     Exit Sub
 ErrHandler:
 End Sub
 
 Public Sub LogClanes(ByVal str As String)
     On Error GoTo ErrHandler
-    Call LogThis(eType_Log.Clanes, "[Clans.log] " & str, vbLogEventTypeInformation)
+    Call LogThis(eType_Log.Clanes, "[Clanes] " & str, vbLogEventTypeInformation)
     Exit Sub
 ErrHandler:
 End Sub
@@ -242,14 +256,14 @@ End Sub
 
 Public Sub LogDatabaseError(Desc As String)
     On Error GoTo ErrHandler
-    Call LogThis(eType_Log.DatabaseError, "[Database.log] " & Desc, vbLogEventTypeError)
+    Call LogThis(eType_Log.DatabaseError, "[Database] " & Desc, vbLogEventTypeError)
     Exit Sub
 ErrHandler:
 End Sub
 
 Public Sub LogSecurity(str As String)
     On Error GoTo ErrHandler
-    Call LogThis(eType_Log.Security, "[Cheating.log] " & str, vbLogEventTypeWarning)
+    Call LogThis(eType_Log.Security, "[Security] " & str, vbLogEventTypeWarning)
     Exit Sub
 ErrHandler:
 End Sub
@@ -257,11 +271,11 @@ Public Sub LogBankTransfer(ByVal originUser As String, ByVal targetUser As Strin
     On Error GoTo ErrHandler
     Dim transferContext As String
     If receiverOnline Then
-        transferContext = "destinatario en línea"
+        transferContext = "destinatario en lï¿½nea"
     Else
-        transferContext = "destinatario fuera de línea"
+        transferContext = "destinatario fuera de lï¿½nea"
     End If
-    Call LogThis(eType_Log.BankTransfer, "[BankTransfers.log] " & originUser & " transfirió " & amount & " monedas a " & targetUser & " (" & transferContext & ")", vbLogEventTypeInformation)
+    Call LogThis(eType_Log.BankTransfer, "[BankTransfer] " & originUser & " transfiriï¿½ " & amount & " monedas a " & targetUser & " (" & transferContext & ")", vbLogEventTypeInformation)
     Exit Sub
 ErrHandler:
 End Sub

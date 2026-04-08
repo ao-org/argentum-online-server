@@ -17,7 +17,7 @@ Attribute VB_Name = "General"
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'    Copyright (C) 2002 Márquez Pablo Ignacio
+'    Copyright (C) 2002 Mï¿½rquez Pablo Ignacio
 '
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
@@ -97,7 +97,7 @@ Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal x As Integ
     'Puede llegar a ser, que se quiera mandar el mapa, habria que agregar un nuevo parametro y modificar.. lo quite porque no se usaba ni aca ni en el cliente :s
     '  Uso bloqueo parcial
     On Error GoTo Bloquear_Err
-    ' Envío sólo los flags de bloq
+    ' Envï¿½o sï¿½lo los flags de bloq
     b = b And e_Block.ALL_SIDES
     If toMap Then
         Call SendData(SendTarget.toMap, sndIndex, PrepareMessage_BlockPosition(x, y, b))
@@ -415,23 +415,23 @@ Private Sub InicializarConstantes()
     ListaRazas(e_Raza.Enano) = "Enano"
     ListaRazas(e_Raza.Orco) = "Orco"
     ListaClases(e_Class.Mage) = "Mago"
-    ListaClases(e_Class.Cleric) = "Clérigo"
+    ListaClases(e_Class.Cleric) = "Clï¿½rigo"
     ListaClases(e_Class.Warrior) = "Guerrero"
     ListaClases(e_Class.Assasin) = "Asesino"
     ListaClases(e_Class.Bard) = "Bardo"
     ListaClases(e_Class.Druid) = "Druida"
-    ListaClases(e_Class.Paladin) = "Paladín"
+    ListaClases(e_Class.Paladin) = "Paladï¿½n"
     ListaClases(e_Class.Hunter) = "Cazador"
     ListaClases(e_Class.Trabajador) = "Trabajador"
     ListaClases(e_Class.Pirat) = "Pirata"
-    ListaClases(e_Class.Thief) = "Ladrón"
+    ListaClases(e_Class.Thief) = "Ladrï¿½n"
     ListaClases(e_Class.Bandit) = "Bandido"
     SkillsNames(e_Skill.Magia) = "Magia"
     SkillsNames(e_Skill.Robar) = "Robar"
     SkillsNames(e_Skill.Tacticas) = "Destreza en combate"
     SkillsNames(e_Skill.Armas) = "Combate con armas"
     SkillsNames(e_Skill.Meditar) = "Meditar"
-    SkillsNames(e_Skill.Apuñalar) = "Apuñalar"
+    SkillsNames(e_Skill.Apuï¿½alar) = "Apuï¿½alar"
     SkillsNames(e_Skill.Ocultarse) = "Ocultarse"
     SkillsNames(e_Skill.Supervivencia) = "Supervivencia"
     SkillsNames(e_Skill.Comerciar) = "Comercio"
@@ -439,21 +439,21 @@ Private Sub InicializarConstantes()
     SkillsNames(e_Skill.liderazgo) = "Liderazgo"
     SkillsNames(e_Skill.Proyectiles) = "Armas a distancia"
     SkillsNames(e_Skill.Wrestling) = "Combate sin armas"
-    SkillsNames(e_Skill.Navegacion) = "Navegación"
-    SkillsNames(e_Skill.equitacion) = "Equitación"
-    SkillsNames(e_Skill.Resistencia) = "Resistencia mágica"
+    SkillsNames(e_Skill.Navegacion) = "Navegaciï¿½n"
+    SkillsNames(e_Skill.equitacion) = "Equitaciï¿½n"
+    SkillsNames(e_Skill.Resistencia) = "Resistencia mï¿½gica"
     SkillsNames(e_Skill.Talar) = "Tala"
     SkillsNames(e_Skill.Pescar) = "Pesca"
-    SkillsNames(e_Skill.Mineria) = "Minería"
-    SkillsNames(e_Skill.Herreria) = "Herrería"
-    SkillsNames(e_Skill.Carpinteria) = "Carpintería"
+    SkillsNames(e_Skill.Mineria) = "Minerï¿½a"
+    SkillsNames(e_Skill.Herreria) = "Herrerï¿½a"
+    SkillsNames(e_Skill.Carpinteria) = "Carpinterï¿½a"
     SkillsNames(e_Skill.Alquimia) = "Alquimia"
-    SkillsNames(e_Skill.Sastreria) = "Sastrería"
+    SkillsNames(e_Skill.Sastreria) = "Sastrerï¿½a"
     SkillsNames(e_Skill.Domar) = "Domar"
     ListaAtributos(e_Atributos.Fuerza) = "Fuerza"
     ListaAtributos(e_Atributos.Agilidad) = "Agilidad"
     ListaAtributos(e_Atributos.Inteligencia) = "Inteligencia"
-    ListaAtributos(e_Atributos.Constitucion) = "Constitución"
+    ListaAtributos(e_Atributos.Constitucion) = "Constituciï¿½n"
     ListaAtributos(e_Atributos.Carisma) = "Carisma"
     IniPath = App.Path & "\"
     'Bordes del mapa
@@ -492,14 +492,14 @@ Sub Main()
     #If DIRECT_PLAY = 1 Then
         InitDPlay
     #End If
-    Call InitializeCircularLogBuffer
+    Call InitializeLogging
     Call LogThis(0, "Starting the server " & Now, vbLogEventTypeInformation)
     Call load_stats
     
     If Not IsShardingEnabled() Then
         If GetProcessCount(App.EXEName & ".exe") > 1 Then
             ' Si lo hay, pregunto si lo queremos cerrar.
-            If MsgBox("Se ha encontrado mas de 1 instancia abierta de esta aplicación, ¿Desea continuar?", vbYesNo) = vbNo Then
+            If MsgBox("Se ha encontrado mas de 1 instancia abierta de esta aplicaciï¿½n, ï¿½Desea continuar?", vbYesNo) = vbNo Then
                 End
             End If
         End If
@@ -517,7 +517,7 @@ Sub Main()
     Call InitializeNpcIndexHeap
     Call InitializeLobbyList
     Call loadAdministrativeUsers
-    '¿?¿?¿?¿?¿?¿?¿?¿ CARGAMOS DATOS DESDE ARCHIVOS ¿??¿?¿?¿?¿?¿?¿?¿
+    'ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½ CARGAMOS DATOS DESDE ARCHIVOS ï¿½??ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½
     frmCargando.Label1(2).Caption = "Cargando Server.ini"
     MaxUsers = 0
     Call LoadSini
@@ -558,11 +558,11 @@ Sub Main()
     Call CargarHechizos
     frmCargando.Label1(2).Caption = "Cargando EffectsOverTime.Dat"
     Call LoadEffectOverTime
-    frmCargando.Label1(2).Caption = "Cargando Objetos de Herrería"
+    frmCargando.Label1(2).Caption = "Cargando Objetos de Herrerï¿½a"
     Call LoadArmasHerreria
     Call LoadArmadurasHerreria
     Call LoadBlackSmithElementalRunes
-    frmCargando.Label1(2).Caption = "Cargando Objetos de Carpintería"
+    frmCargando.Label1(2).Caption = "Cargando Objetos de Carpinterï¿½a"
     Call LoadObjCarpintero
     frmCargando.Label1(2).Caption = "Cargando Objetos de Alquimista"
     Call LoadObjAlquimista
@@ -575,7 +575,7 @@ Sub Main()
     Call LoadRecursosEspeciales
     frmCargando.Label1(2).Caption = "Cargando Eventos Estacionales"
     Call LoadGlobalQuests
-    frmCargando.Label1(2).Caption = "Cargando definiciones de árboles"
+    frmCargando.Label1(2).Caption = "Cargando definiciones de ï¿½rboles"
     Call LoadTreeGraphics
     frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
     Call LoadRangosFaccion
@@ -845,11 +845,11 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
             .Counters.Frio = .Counters.Frio + 1
         Else
             If MapInfo(.pos.Map).terrain = Nieve Then
-                'Msg2130=¡Tengo mucho frío!
+                'Msg2130=ï¿½Tengo mucho frï¿½o!
                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_TOO_COLD, UserList(UserIndex).Char.charindex, vbWhite))
-                ' Msg512=¡Estás muriendo de frío, abrígate o morirás!
+                ' Msg512=ï¿½Estï¿½s muriendo de frï¿½o, abrï¿½gate o morirï¿½s!
                 Call WriteLocaleMsg(UserIndex, MSG_MURIENDO_FRIO_ABRIGATE_MORIRAS, e_FontTypeNames.FONTTYPE_INFO)
-                '  Sin ropa perdés vida más rápido que con una ropa no-invernal
+                '  Sin ropa perdï¿½s vida mï¿½s rï¿½pido que con una ropa no-invernal
                 Dim MinDamage As Integer, MaxDamage As Integer
                 If .flags.Desnudo = 0 Then
                     MinDamage = 17
@@ -862,7 +862,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
                 Dim Damage As Integer
                 Damage = Porcentaje(.Stats.MaxHp, RandomNumber(MinDamage, MaxDamage))
                 If UserMod.ModifyHealth(UserIndex, -Damage, 0) Then
-                    ' Msg513=¡Has muerto de frío!
+                    ' Msg513=ï¿½Has muerto de frï¿½o!
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO_FRIO, e_FontTypeNames.FONTTYPE_INFO)
                     Call UserMod.UserDie(UserIndex)
                 End If
@@ -923,10 +923,10 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
             .Counters.Lava = .Counters.Lava + 1
         Else
             If HayLava(.pos.Map, .pos.x, .pos.y) Then
-                ' Msg515=¡Quítate de la lava, te estás quemando!
+                ' Msg515=ï¿½Quï¿½tate de la lava, te estï¿½s quemando!
                 Call WriteLocaleMsg(UserIndex, MSG_QUITATE_LAVA_QUEMANDO, e_FontTypeNames.FONTTYPE_INFO)
                 If UserMod.ModifyHealth(UserIndex, -Porcentaje(.Stats.MaxHp, 5)) Then
-                    ' Msg516=¡Has muerto quemado!
+                    ' Msg516=ï¿½Has muerto quemado!
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO_QUEMADO, e_FontTypeNames.FONTTYPE_INFO)
                     Call CustomScenarios.UserDie(UserIndex)
                     Call UserMod.UserDie(UserIndex)
@@ -1099,7 +1099,7 @@ Public Sub EfectoMaldicionUser(ByVal UserIndex As Integer)
         UserList(UserIndex).Counters.Maldicion = UserList(UserIndex).Counters.Maldicion - 1
     Else
         UserList(UserIndex).flags.Maldicion = 0
-        ' Msg518=¡La magia perdió su efecto! Ya puedes atacar.
+        ' Msg518=ï¿½La magia perdiï¿½ su efecto! Ya puedes atacar.
         Call WriteLocaleMsg(UserIndex, MSG_MAGIA_PERDIO_SU_EFECTO_PUEDES_ATACAR, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
     End If
     Exit Sub
@@ -1138,7 +1138,7 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
                 Exit Sub
             End If
             .Counters.STACounter = 0
-            If .Counters.Trabajando > 0 Or IsSet(.flags.StatusMask, ePreventEnergyRestore) Then Exit Sub  'Trabajando no sube energía. (ToxicWaste)
+            If .Counters.Trabajando > 0 Or IsSet(.flags.StatusMask, ePreventEnergyRestore) Then Exit Sub  'Trabajando no sube energï¿½a. (ToxicWaste)
             EnviarStats = True
             Select Case .Stats.UserSkills(e_Skill.Supervivencia)
                 Case 0 To 10
@@ -1218,7 +1218,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
     Else
         Call CancelExit(UserIndex)
         With UserList(UserIndex)
-            'Msg47=Estás envenenado, si no te curas morirás.
+            'Msg47=Estï¿½s envenenado, si no te curas morirï¿½s.
             Call WriteLocaleMsg(UserIndex, MSG_NO_ENVENENADO_SI_CURAS_MORIRAS, e_FontTypeNames.FONTTYPE_VENENO)
             UserList(UserIndex).Counters.timeFx = 3
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticleEffects.PoisonGas, 30, False, , UserList(UserIndex).pos.x, _
@@ -1228,7 +1228,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
             Damage = RandomNumber(3, 5)
             Damage = (1 + Damage * .Stats.MaxHp \ 100) ' Redondea para arriba
             If .ChatCombate = 1 Then
-                ' "El veneno te ha causado ¬1 puntos de daño."
+                ' "El veneno te ha causado ï¿½1 puntos de daï¿½o."
                 Call WriteLocaleMsg(UserIndex, MSG_POISON_DEALT_DAMAGE, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
             End If
             If UserMod.ModifyHealth(UserIndex, -Damage) Then
@@ -1242,14 +1242,14 @@ EfectoVeneno_Err:
     Call TraceError(Err.Number, Err.Description, "General.EfectoVeneno", Erl)
 End Sub
 
-' El incineramiento tiene una logica particular, que es hacer daño sostenido en el tiempo.
+' El incineramiento tiene una logica particular, que es hacer daï¿½o sostenido en el tiempo.
 Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
     On Error GoTo EfectoIncineramiento_Err
     Dim Damage As Integer
     With UserList(UserIndex)
         ' 4 Mini intervalitos, dentro del intervalo total de incineracion
         If .Counters.Incineracion Mod (IntervaloIncineracion \ 4) = 0 Then
-            ' "Te estás incinerando, si no te curas morirás.
+            ' "Te estï¿½s incinerando, si no te curas morirï¿½s.
             Call WriteLocaleMsg(UserIndex, MSG_YOU_ARE_BURNING_HEAL_OR_DIE, e_FontTypeNames.FONTTYPE_FIGHT)
             UserList(UserIndex).Counters.timeFx = 3
             Damage = RandomNumber(20, 30)
@@ -1389,9 +1389,9 @@ Sub PasarSegundo()
     If TiempoPesca > 0 Then TiempoPesca = TiempoPesca + 1
     If CuentaRegresivaTimer > 0 Then
         If CuentaRegresivaTimer > 1 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SEGUNDOS, CuentaRegresivaTimer - 1, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1655=¬1 segundos...!
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SEGUNDOS, CuentaRegresivaTimer - 1, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1655=ï¿½1 segundos...!
         Else
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_COUNTDOWN_GO, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1656=¡Ya!!
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_COUNTDOWN_GO, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1656=ï¿½Ya!!
         End If
         CuentaRegresivaTimer = CuentaRegresivaTimer - 1
     End If
@@ -1529,7 +1529,7 @@ Sub PasarSegundo()
     ' **********************************
     For i = 1 To UBound(Invasiones)
         With Invasiones(i)
-            ' Si la invasión está activa
+            ' Si la invasiï¿½n estï¿½ activa
             If .Activa Then
                 .TimerSpawn = .TimerSpawn + 1
                 ' Comprobamos si hay que spawnear NPCs
@@ -1556,7 +1556,7 @@ Sub GuardarUsuarios()
     On Error GoTo GuardarUsuarios_Err
     haciendoBK = True
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_GRABANDO_PERSONAJES, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1657=Servidor » Grabando Personajes
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_GRABANDO_PERSONAJES, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1657=Servidor ï¿½ Grabando Personajes
     Dim i As Long
     For i = 1 To LastUser
         If UserList(i).flags.UserLogged Then
@@ -1568,7 +1568,7 @@ Sub GuardarUsuarios()
             Call SaveUser(i)
         End If
     Next i
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_PERSONAJES_GRABADOS, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1658=Servidor » Personajes Grabados
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_PERSONAJES_GRABADOS, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1658=Servidor ï¿½ Personajes Grabados
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
     haciendoBK = False
     Exit Sub
@@ -1639,9 +1639,9 @@ RandomString_Err:
 End Function
 
 '
-'  Función para chequear el email
+'  Funciï¿½n para chequear el email
 '
-'  Corregida por Maraxus para que reconozca como válidas casillas con puntos antes de la arroba y evitar un chequeo innecesario
+'  Corregida por Maraxus para que reconozca como vï¿½lidas casillas con puntos antes de la arroba y evitar un chequeo innecesario
 Public Function CheckMailString(ByVal sString As String) As Boolean
     On Error GoTo errHnd
     Dim lPos As Long
@@ -1650,9 +1650,9 @@ Public Function CheckMailString(ByVal sString As String) As Boolean
     '1er test: Busca un simbolo @
     lPos = InStr(sString, "@")
     If (lPos <> 0) Then
-        '2do test: Busca un simbolo . después de @ + 1
+        '2do test: Busca un simbolo . despuï¿½s de @ + 1
         If Not (InStr(lPos, sString, ".", vbBinaryCompare) > lPos + 1) Then Exit Function
-        '3er test: Recorre todos los caracteres y los valída
+        '3er test: Recorre todos los caracteres y los valï¿½da
         For lX = 0 To Len(sString) - 1
             If Not (lX = (lPos - 1)) Then   'No chequeamos la '@'
                 iAsc = Asc(mid$(sString, (lX + 1), 1))
@@ -1665,7 +1665,7 @@ Public Function CheckMailString(ByVal sString As String) As Boolean
 errHnd:
 End Function
 
-'  Corregida por Maraxus para que reconozca como válidas casillas con puntos antes de la arroba
+'  Corregida por Maraxus para que reconozca como vï¿½lidas casillas con puntos antes de la arroba
 Private Function CMSValidateChar_(ByVal iAsc As Integer) As Boolean
     On Error GoTo CMSValidateChar__Err
     CMSValidateChar_ = (iAsc >= 48 And iAsc <= 57) Or (iAsc >= 65 And iAsc <= 90) Or (iAsc >= 97 And iAsc <= 122) Or (iAsc = 95) Or (iAsc = 45) Or (iAsc = 46)
@@ -1677,11 +1677,11 @@ End Function
 Public Function Tilde(ByRef data As String) As String
     On Error GoTo Tilde_Err
     Tilde = UCase$(data)
-    Tilde = Replace$(Tilde, "Á", "A")
-    Tilde = Replace$(Tilde, "É", "E")
-    Tilde = Replace$(Tilde, "Í", "I")
-    Tilde = Replace$(Tilde, "Ó", "O")
-    Tilde = Replace$(Tilde, "Ú", "U")
+    Tilde = Replace$(Tilde, "ï¿½", "A")
+    Tilde = Replace$(Tilde, "ï¿½", "E")
+    Tilde = Replace$(Tilde, "ï¿½", "I")
+    Tilde = Replace$(Tilde, "ï¿½", "O")
+    Tilde = Replace$(Tilde, "ï¿½", "U")
     Exit Function
 Tilde_Err:
     Call TraceError(Err.Number, Err.Description, "Mod_General.Tilde", Erl)
@@ -1699,6 +1699,7 @@ Public Sub CerrarServidor()
         End If
     Next
     Call UnloadAntiCheat
+    Call ShutdownLogging
     If Database_Enabled Then Database_Close
     End
 End Sub
@@ -1744,10 +1745,10 @@ End Function
 Function RandomIntBiased(ByVal Min As Double, ByVal max As Double, ByVal Bias As Double, ByVal Influence As Double) As Double
     On Error GoTo handle
     Dim RandomRango As Double, Mix As Double
-    ' Rnd: número pseudo-aleatorio entre 0 y 1
+    ' Rnd: nï¿½mero pseudo-aleatorio entre 0 y 1
     ' RandomRango: Nuevo aumento de vida
     RandomRango = Rnd * (max - Min) + Min
-    ' Mix: Qué tanto afectamos a la vida random que salió con el sesgo Bias
+    ' Mix: Quï¿½ tanto afectamos a la vida random que saliï¿½ con el sesgo Bias
     ' El bias hace tender el promedio actual del personaje al promedio de manual
     Mix = Rnd * Influence
     ' RandomIntBiased: Valor final de vida
@@ -1772,7 +1773,7 @@ Public Sub MensajeGlobal(texto As String, Fuente As e_FontTypeNames)
     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(texto, Fuente))
 End Sub
 
-'  Devuelve si X e Y están dentro del Rectangle
+'  Devuelve si X e Y estï¿½n dentro del Rectangle
 Public Function InsideRectangle(r As t_Rectangle, ByVal x As Integer, ByVal y As Integer) As Boolean
     If x < r.X1 Then Exit Function
     If x > r.X2 Then Exit Function
