@@ -1530,7 +1530,7 @@ Public Enum e_OBJType
     otRingAccesory = 35
     otPassageTicket = 36
     otMap = 37
-    otSkinsWings = 38          'Skins de Alas
+    otSkinBackpack = 38          'Skins de Alas
     otSkinsArmours = 39         'Skins de Armaduras
     otSkinsShields = 40         'Skins de Escudos
     otSkinsHelmets = 41         'Skins de Cascos o Sombreros, o todo lo que vaya en la cabeza
