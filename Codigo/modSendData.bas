@@ -161,6 +161,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Opt
     Dim Map   As Integer
     Select Case sndRoute
         Case SendTarget.ToIndex
+            Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
             If sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList) Then
                 With UserList(sndIndex)
                     If (.ConnectionDetails.ConnIDValida) Then
