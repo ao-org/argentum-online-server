@@ -63,52 +63,116 @@ End Sub
 
 Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
     On Error GoTo UsarLlave_Err
-    If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
-    Dim TargObj  As t_ObjData
+
+    ' Índices y coordenadas copiadas localmente para evitar re-leer estructuras mutables
+    Dim targetObjIndex As Integer
+    Dim keyObjIndex As Integer
+    Dim targetMap As Integer
+    Dim targetX As Integer
+    Dim targetY As Integer
+
+    ' Índices derivados del tile actual
+    Dim currentTileObjIndex As Integer
+    Dim newDoorObjIndex As Integer
+
+    ' Copias locales de los objetos (más seguro y más claro)
+    Dim TargObj As t_ObjData
     Dim LlaveObj As t_ObjData
+
+    ' Anti-spam / cooldown de uso
+    If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
+
+    ' Validación defensiva del UserIndex
+    If UserIndex < LBound(UserList) Or UserIndex > UBound(UserList) Then Exit Sub
+
     With UserList(UserIndex)
-        If Slot > MAXKEYS Then
-            'Call BanearIP(0, UserList(UserIndex).name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
-            Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el slot del llavero | Valor: " & Slot & ".")
+
+        ' Validar que el slot esté dentro de rango permitido
+        If Slot < 1 Or Slot > MAXKEYS Then
+            Call LogEdicionPaquete("El usuario " & .Name & " editó el slot del llavero | Valor: " & Slot & ".")
             Exit Sub
         End If
-        If .Keys(Slot) <> 0 Then
-            If .flags.TargetObj = 0 Then Exit Sub
-            TargObj = ObjData(.flags.TargetObj)
-            LlaveObj = ObjData(.Keys(Slot))
-            '¿El objeto clickeado es una puerta?
-            If TargObj.OBJType = e_OBJType.otDoors Then
-                '¿Esta cerrada?
-                If TargObj.Cerrada = 1 Then
-                    '¿Cerrada con llave?
-                    If TargObj.Llave > 0 Then
-                        If TargObj.clave = LlaveObj.clave Then 'Or LlaveObj.clave = "3450" Then
-                            MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, _
-                                    .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
-                            .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
-                            Call WriteLocaleMsg(UserIndex, MSG_ABIERTO_PUERTA, e_FontTypeNames.FONTTYPE_INFO)
-                        Else
-                            Call WriteLocaleMsg(UserIndex, MSG_NO_LLAVE_SIRVE, e_FontTypeNames.FONTTYPE_INFO)
-                        End If
-                    Else
-                        If TargObj.clave = LlaveObj.clave Then
-                            MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, _
-                                    .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerradaLlave
-                            .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
-                            'Msg899= Has cerrado con llave la puerta.
-                            Call WriteLocaleMsg(UserIndex, MSG_CERRADO_LLAVE_PUERTA, e_FontTypeNames.FONTTYPE_INFO)
-                        Else
-                            Call WriteLocaleMsg(UserIndex, MSG_NO_LLAVE_SIRVE, e_FontTypeNames.FONTTYPE_INFO)
-                        End If
-                    End If
-                Else
-                    'Msg901= No esta cerrada.
-                    Call WriteLocaleMsg(UserIndex, MSG_NO_CERRADA, e_FontTypeNames.FONTTYPE_INFO)
-                End If
-            End If
-        End If
+
+        ' Obtener índice del objeto llave
+        keyObjIndex = .Keys(Slot)
+        If keyObjIndex = 0 Then Exit Sub   ' Slot vacío
+
+        ' Obtener índice del objeto target (puerta)
+        targetObjIndex = .flags.TargetObj
+        If targetObjIndex = 0 Then Exit Sub   ' No hay target
+
+        ' Copiar coordenadas del target (evita inconsistencias si cambian durante ejecución)
+        targetMap = .flags.TargetObjMap
+        targetX = .flags.TargetObjX
+        targetY = .flags.TargetObjY
     End With
+
+    ' Validar índices de objetos antes de indexar ObjData
+    If keyObjIndex < LBound(ObjData) Or keyObjIndex > UBound(ObjData) Then Exit Sub
+    If targetObjIndex < LBound(ObjData) Or targetObjIndex > UBound(ObjData) Then Exit Sub
+
+    ' Validar posición del mapa ANTES de acceder a MapData (crítico para evitar crash)
+    If Not LegalPos(targetMap, targetX, targetY) Then Exit Sub
+
+    ' Leer UNA sola vez el objeto del tile
+    currentTileObjIndex = MapData(targetMap, targetX, targetY).ObjInfo.ObjIndex
+
+    ' Validar índice del tile
+    If currentTileObjIndex <= 0 Then Exit Sub
+    If currentTileObjIndex < LBound(ObjData) Or currentTileObjIndex > UBound(ObjData) Then Exit Sub
+
+    ' Copiar datos de los objetos (evita múltiples accesos a arrays globales)
+    TargObj = ObjData(targetObjIndex)
+    LlaveObj = ObjData(keyObjIndex)
+
+    ' Validar que el target sea una puerta
+    If TargObj.OBJType <> e_OBJType.otDoors Then Exit Sub
+
+    ' Si no está cerrada, no hay nada que hacer
+    If TargObj.Cerrada <> 1 Then
+        Call WriteLocaleMsg(UserIndex, MSG_NO_CERRADA, e_FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    End If
+
+    ' Validar que la llave coincida
+    If TargObj.clave <> LlaveObj.clave Then
+        Call WriteLocaleMsg(UserIndex, MSG_NO_LLAVE_SIRVE, e_FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    End If
+
+    ' Determinar el nuevo estado de la puerta (índice destino)
+    ' IMPORTANTE: siempre validar antes de usar como índice
+    If TargObj.Llave > 0 Then
+        ' Caso: puerta cerrada con llave ? abrir
+        newDoorObjIndex = ObjData(currentTileObjIndex).IndexCerrada
+
+        If newDoorObjIndex <= 0 Then Exit Sub
+        If newDoorObjIndex < LBound(ObjData) Or newDoorObjIndex > UBound(ObjData) Then Exit Sub
+
+        ' Aplicar cambio en el mapa
+        MapData(targetMap, targetX, targetY).ObjInfo.ObjIndex = newDoorObjIndex
+
+        ' Actualizar target del usuario para reflejar el nuevo estado
+        UserList(UserIndex).flags.TargetObj = newDoorObjIndex
+
+        Call WriteLocaleMsg(UserIndex, MSG_ABIERTO_PUERTA, e_FontTypeNames.FONTTYPE_INFO)
+
+    Else
+        ' Caso: puerta que pasa a estado "cerrada con llave"
+        newDoorObjIndex = ObjData(currentTileObjIndex).IndexCerradaLlave
+
+        If newDoorObjIndex <= 0 Then Exit Sub
+        If newDoorObjIndex < LBound(ObjData) Or newDoorObjIndex > UBound(ObjData) Then Exit Sub
+
+        MapData(targetMap, targetX, targetY).ObjInfo.ObjIndex = newDoorObjIndex
+        UserList(UserIndex).flags.TargetObj = newDoorObjIndex
+
+        Call WriteLocaleMsg(UserIndex, MSG_CERRADO_LLAVE_PUERTA, e_FontTypeNames.FONTTYPE_INFO)
+    End If
+
     Exit Sub
+
 UsarLlave_Err:
+    ' Log centralizado de errores para debugging
     Call TraceError(Err.Number, Err.Description, "ModLlaves.UsarLlave", Erl)
 End Sub
