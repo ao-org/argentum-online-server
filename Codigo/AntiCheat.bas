@@ -89,7 +89,7 @@ Private Function FARPROC(pfn As Long) As Long
     FARPROC = pfn
 End Function
 
-Public Sub InitializeAntiCheat()
+Public Sub InitializeAntiCheata()
     On Error GoTo InitializeAC_Err
     EnableAnticheat = IsFeatureEnabled("anti-cheat")
     If EnableAnticheat Then
