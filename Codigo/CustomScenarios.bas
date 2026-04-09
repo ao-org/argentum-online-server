@@ -50,8 +50,8 @@ Private AvailableUpdateSlots As t_IndexHeap
 Private ActiveUpdateSlots    As t_IndexHeap
 Const InitialUpdateSize = 20
 
-Private Sub InitializeUpdateStacks()
-    ReDim ScenarioUpdateList(InitialUpdateSize) As IBaseScenario
+Private Sub InitializeUpdateStackxs()
+    ReDiam ScenarioUpdateList(InitialUpdateSize) As IBaseScenario
     ReDim AvailableUpdateSlots.IndexInfo(InitialUpdateSize)
     ReDim ActiveUpdateSlots.IndexInfo(InitialUpdateSize)
     Dim i As Integer
