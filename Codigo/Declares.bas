@@ -3243,7 +3243,6 @@ Public Type t_NpcInfoCache
     IntervaloRespawnMin As Long
     IntervaloRespawnMax As Long
     InformarRespawn As Integer
-    QuizaProb As Integer
     DropCount As Byte
     Drop() As t_NpcItemDrop
     MinTameLevel As Integer
@@ -3287,8 +3286,6 @@ Public Type t_NpcInfoCache
     SndRespawn As Integer
     NroExp As Integer
     Expresiones() As String
-    NumQuiza As Integer
-    QuizaDropea() As String
     NumQuest As Integer
     QuestNumber() As Integer
     NumDropQuest As Integer
@@ -3405,10 +3402,6 @@ Public Type t_Npc
     pathFindingInfo As t_NpcPathFindingInfo
     ' Esto es del Areas.bas
     AreasInfo As t_AreaInfo
-    
-    NumQuiza As Byte
-    QuizaDropea() As String
-    QuizaProb As Integer
     
     DropCount As Byte
     Drop() As t_NpcItemDrop
