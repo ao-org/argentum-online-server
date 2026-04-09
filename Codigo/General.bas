@@ -1929,18 +1929,4 @@ Public Function IsArrayInitialized(ByRef arr) As Boolean
     rv = UBound(arr)
     IsArrayInitialized = (Err.Number = 0) And rv >= 0
 End Function
-Public Function FontTypeToColor(ByVal fontType As e_FontTypeNames) As Long
-    On Error GoTo FontTypeToColor_Err
-    If fontType < 0 Or fontType > MAX_FONTTYPES Then
-        FontTypeToColor = RGB(255, 255, 255)
-        Exit Function
-    End If
-
-    With FontTypeColors(fontType)
-        FontTypeToColor = RGB(.r, .g, .b)
-    End With
-    Exit Function
-FontTypeToColor_Err:
-    Call TraceError(Err.Number, Err.Description, "General.FontTypeToColor", Erl)
-End Function
 

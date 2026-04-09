@@ -158,14 +158,6 @@ Private Type t_MapDat
     niebla As Byte
 End Type
 
-Type t_FontTypeColor
-    r As Byte
-    g As Byte
-    b As Byte
-End Type
-Public Const MAX_FONTTYPES As Byte = 100
-Public FontTypeColors(0 To MAX_FONTTYPES) As t_FontTypeColor
-
 Private MapSize        As t_MapSize
 Private MapDat         As t_MapDat
 Private FeatureToggles As Dictionary
@@ -2935,34 +2927,4 @@ Sub LoadMeditations()
     
 LoadMeditations_Err:
     Call TraceError(Err.Number, Err.Description, "ES.LoadMeditations", Erl)
-End Sub
-
-Public Sub InitFontTypeColors()
-    On Error GoTo InitFontTypeColors_Err
-    With FontTypeColors(e_FontTypeNames.FONTTYPE_CITIZEN)
-        .r = 6: .g = 128: .b = 255
-    End With
-
-    With FontTypeColors(e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA)
-        .r = 60: .g = 163: .b = 255
-    End With
-
-    With FontTypeColors(e_FontTypeNames.FONTTYPE_CRIMINAL)
-        .r = 255: .g = 0: .b = 0
-    End With
-
-    With FontTypeColors(e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS)
-        .r = 255: .g = 51: .b = 51
-    End With
-
-    With FontTypeColors(e_FontTypeNames.FONTTYPE_CONSEJO)
-        .r = 66: .g = 201: .b = 255
-    End With
-
-    With FontTypeColors(e_FontTypeNames.FONTTYPE_CONSEJOCAOS)
-        .r = 255: .g = 102: .b = 102
-    End With
-    Exit Sub
-InitFontTypeColors_Err:
-    Call TraceError(Err.Number, Err.Description, "ES.InitFontTypeColors", Erl)
 End Sub
