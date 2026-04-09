@@ -1943,29 +1943,4 @@ Public Function FontTypeToColor(ByVal fontType As e_FontTypeNames) As Long
 FontTypeToColor_Err:
     Call TraceError(Err.Number, Err.Description, "General.FontTypeToColor", Erl)
 End Function
-Public Function GetFontTypeByFactionStatus(ByVal status As e_Facciones) As e_FontTypeNames
-    On Error GoTo GetFontTypeByFactionStatus_Err
-    Select Case status
-        Case e_Facciones.Criminal
-            GetFontTypeByFactionStatus = e_FontTypeNames.FONTTYPE_CRIMINAL
-
-        Case e_Facciones.Caos
-            GetFontTypeByFactionStatus = e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS
-
-        Case e_Facciones.concilio
-            GetFontTypeByFactionStatus = e_FontTypeNames.FONTTYPE_CONSEJOCAOS
-
-        Case e_Facciones.Ciudadano
-            GetFontTypeByFactionStatus = e_FontTypeNames.FONTTYPE_CITIZEN
-
-        Case e_Facciones.Armada
-            GetFontTypeByFactionStatus = e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA
-
-        Case e_Facciones.consejo
-            GetFontTypeByFactionStatus = e_FontTypeNames.FONTTYPE_CONSEJO
-    End Select
-    Exit Function
-GetFontTypeByFactionStatus_Err:
-    Call TraceError(Err.Number, Err.Description, "General.GetFontTypeByFactionStatus", Erl)
-End Function
 
