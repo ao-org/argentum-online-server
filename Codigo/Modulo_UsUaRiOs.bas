@@ -508,6 +508,16 @@ Dim tStr                        As String
             .pos.x = Ciudades(.Hogar).x
             .pos.y = Ciudades(.Hogar).y
         End If
+        
+        If IsFeatureEnabled("underworld") Then
+            If Not IsUnderworldOpen And IsUserIndexInsideTheUnderworld(UserIndex) Then
+                Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
+                .pos.map = Ciudades(.Hogar).map
+                .pos.x = Ciudades(.Hogar).x
+                .pos.y = Ciudades(.Hogar).y
+            End If
+        End If
+        
         If MapInfo(.pos.Map).MapResource = 0 Then
             Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
             .pos.Map = Ciudades(.Hogar).Map
