@@ -813,29 +813,43 @@ Public Function HandleRemoteLobbyCommand(ByVal Command, ByVal Params As String, 
             Case e_LobbyCommandId.eReturnAllSummoned
                 Call ModLobby.ReturnAllPlayers(LobbyList(LobbyIndex))
             Case e_LobbyCommandId.eReturnSinglePlayer
-                Call ModLobby.ReturnPlayer(LobbyList(LobbyIndex), Arguments(0))
+                If UBound(Arguments) >= 0 Then
+                    Call ModLobby.ReturnPlayer(LobbyList(LobbyIndex), Arguments(0))
+                End If
             Case e_LobbyCommandId.eSetClassLimit
-                Call ModLobby.SetClassFilter(LobbyList(LobbyIndex), Arguments(0))
+                If UBound(Arguments) >= 0 Then
+                    Call ModLobby.SetClassFilter(LobbyList(LobbyIndex), Arguments(0))
+                End If
             Case e_LobbyCommandId.eSetMaxLevel
-                Call ModLobby.SetMaxLevel(LobbyList(LobbyIndex), Arguments(0))
+                If UBound(Arguments) >= 0 Then
+                    Call ModLobby.SetMaxLevel(LobbyList(LobbyIndex), Arguments(0))
+                End If
             Case e_LobbyCommandId.eSetMinLevel
-                Call ModLobby.SetMinLevel(LobbyList(LobbyIndex), Arguments(0))
+                If UBound(Arguments) >= 0 Then
+                    Call ModLobby.SetMinLevel(LobbyList(LobbyIndex), Arguments(0))
+                End If
             Case e_LobbyCommandId.eOpenLobby
-                RetValue = ModLobby.OpenLobby(LobbyList(LobbyIndex), Arguments(0))
+                If UBound(Arguments) >= 0 Then
+                    RetValue = ModLobby.OpenLobby(LobbyList(LobbyIndex), Arguments(0))
+                End If
             Case e_LobbyCommandId.eStartEvent
                 Call StartLobby(LobbyList(LobbyIndex), UserIndex)
             Case e_LobbyCommandId.eSummonAll
                 Call ModLobby.SummonAll(LobbyList(LobbyIndex))
             Case e_LobbyCommandId.eSummonSinglePlayer
-                Call ModLobby.SummonPlayer(LobbyList(LobbyIndex), Arguments(0))
+                If UBound(Arguments) >= 0 Then
+                    Call ModLobby.SummonPlayer(LobbyList(LobbyIndex), Arguments(0))
+                End If
             Case e_LobbyCommandId.eListPlayers
                 Call ModLobby.ListPlayers(LobbyList(LobbyIndex), UserIndex)
             Case e_LobbyCommandId.eForceReset
                 Call ModLobby.ForceReset(LobbyList(LobbyIndex))
                 Call WriteConsoleMsg(UserIndex, "Reset done.", e_FontTypeNames.FONTTYPE_INFO)
             Case e_LobbyCommandId.eSetTeamSize
-                Call ModLobby.SetTeamSize(LobbyList(LobbyIndex), Arguments(0), Arguments(1))
-                Call WriteConsoleMsg(UserIndex, "Team size set.", e_FontTypeNames.FONTTYPE_INFO)
+                If UBound(Arguments) >= 1 Then
+                    Call ModLobby.SetTeamSize(LobbyList(LobbyIndex), Arguments(0), Arguments(1))
+                    Call WriteConsoleMsg(UserIndex, "Team size set.", e_FontTypeNames.FONTTYPE_INFO)
+                End If
             Case e_LobbyCommandId.eAddPlayer
                 tUser = NameIndex(Params)
                 If Not IsValidUserRef(tUser) Then
@@ -852,10 +866,12 @@ Public Function HandleRemoteLobbyCommand(ByVal Command, ByVal Params As String, 
                 End If
                 Call WriteLocaleMsg(tUser.ArrayIndex, RetValue.Message, e_FontTypeNames.FONTTYPE_INFO)
             Case e_LobbyCommandId.eSetInscriptionPrice
-                If SetIncriptionPrice(LobbyList(LobbyIndex), Arguments(0)) Then
-                    Call WriteConsoleMsg(UserIndex, "Inscription Price updated", e_FontTypeNames.FONTTYPE_INFO)
-                Else
-                    Call WriteConsoleMsg(UserIndex, "Failed to update insription price", e_FontTypeNames.FONTTYPE_INFO)
+                If UBound(Arguments) >= 0 Then
+                    If SetIncriptionPrice(LobbyList(LobbyIndex), Arguments(0)) Then
+                        Call WriteConsoleMsg(UserIndex, "Inscription Price updated", e_FontTypeNames.FONTTYPE_INFO)
+                    Else
+                        Call WriteConsoleMsg(UserIndex, "Failed to update insription price", e_FontTypeNames.FONTTYPE_INFO)
+                    End If
                 End If
             Case Else
                 HandleRemoteLobbyCommand = False
