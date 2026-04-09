@@ -27,7 +27,7 @@ Attribute VB_Name = "Acciones"
 '
 Option Explicit
 
-Public Function get_map_name(ByVal Map As Long) As String
+Public Function notestget_map_name(ByVal Map As Long) As String
     On Error GoTo get_map_name_Err
     get_map_name = MapInfo(Map).map_name
     Exit Function
