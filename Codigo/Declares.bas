@@ -31,6 +31,13 @@ Option Explicit
 ' Modulo de declaraciones. Aca hay de todo.
 '
 
+Public Type t_NpcItemDrop
+    ItemIndex As Integer
+    LowQuantityBound As Integer
+    HighQuantityBound As Integer
+    DropChance As Long
+End Type
+
 Public Enum e_WorkingToolSubType
         FishingRod = 1
         FishingNet = 2
@@ -3237,6 +3244,8 @@ Public Type t_NpcInfoCache
     IntervaloRespawnMax As Long
     InformarRespawn As Integer
     QuizaProb As Integer
+    DropCount As Byte
+    Drop() As t_NpcItemDrop
     MinTameLevel As Integer
     OnlyForGuilds As Integer
     ShowKillerConsole As Integer
@@ -3396,9 +3405,14 @@ Public Type t_Npc
     pathFindingInfo As t_NpcPathFindingInfo
     ' Esto es del Areas.bas
     AreasInfo As t_AreaInfo
+    
     NumQuiza As Byte
     QuizaDropea() As String
     QuizaProb As Integer
+    
+    DropCount As Byte
+    Drop() As t_NpcItemDrop
+    
     MinTameLevel As Byte
     OnlyForGuilds As Byte
     ShowKillerConsole As Byte
@@ -3494,14 +3508,6 @@ Public Type t_IndexHeap
     IndexInfo() As Integer
 End Type
 
-Public Type t_GlobalDrop
-    ObjectNumber As Integer
-    MaxPercent As Single
-    MinPercent As Single
-    RequiredHPForMaxChance As Long
-    amount As Integer
-End Type
-
 '********** V A R I A B L E S     P U B L I C A S ***********
 Public SERVERONLINE                           As Boolean
 Public ULTIMAVERSION                          As String
@@ -3592,7 +3598,6 @@ Public RecompensasFaccion()                   As t_RecompensaFaccion
 Public ModClase(1 To NUMCLASES)               As t_ModClase
 Public ModRaza(1 To NUMRAZAS)                 As t_ModRaza
 Public Crafteos                               As New Dictionary
-Public GlobalDropTable()                      As t_GlobalDrop
 Public PoderCanas()                           As Integer
 Public UniqueMapFishIDs()                     As Long
 Public UniqueMapFishCount                     As Long
