@@ -215,13 +215,10 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Call OnNpcKilledUpdateQuest(UserIndex, MiNPC)
         'Tiramos el oro
         Call NPCTirarOro(MiNPC, UserIndex)
-        Call DropObjQuest(MiNPC, UserIndex)
-        'Item Magico!
-        Call NpcDropeo(MiNPC, UserIndex)
-        Call DropFromGlobalDropTable(MiNPC, UserIndex)
-        'Tiramos el inventario
+        Call NpcDropQuestObj(MiNPC, UserIndex)
+        Call NpcDropObj(MiNPC, UserIndex)
         Call NPC_TIRAR_ITEMS(MiNPC)
-    End If ' UserIndex > 0
+    End If
     ' Mascotas y npcs de entrenamiento no respawnean
     If MiNPC.MaestroNPC.ArrayIndex > 0 Or IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
     If NpcIndex = npc_index_evento Then
@@ -849,7 +846,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.charindex, e_GraphicEffects.ModernGmWarp, 0))
     End If
     If Avisar Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_EVENT, NpcList(nIndex).name & "¬" & get_map_name(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_EVENT, NpcList(nIndex).Name & "¬" & get_map_name(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
     End If
     SpawnNpc = nIndex
     Exit Function
@@ -1053,6 +1050,27 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .IntervaloRespawnMax = Val(LeerNPCs.GetValue(SectionName, "IntervaloRespawn"))
         .InformarRespawn = Val(LeerNPCs.GetValue(SectionName, "InformarRespawn"))
         .QuizaProb = Val(LeerNPCs.GetValue(SectionName, "QuizaProb"))
+        Dim dropsCount As Long
+        dropsCount = val(LeerNPCs.GetValue(SectionName, "DropCount"))
+        If dropsCount < 0 Then
+            dropsCount = 0
+        ElseIf dropsCount > MaxDropCount Then
+            dropsCount = MaxDropCount
+        End If
+        .DropCount = dropsCount
+        If .DropCount > 0 Then
+            ReDim .Drop(1 To .DropCount)
+            Dim i As Byte
+            For i = 1 To .DropCount
+                ln = LeerNPCs.GetValue(SectionName, "Drop" & i)
+                .Drop(i).ItemIndex = Val(ReadField(1, ln, Asc("-")))
+                .Drop(i).DropChance = Val(ReadField(2, ln, Asc("-")))
+                .Drop(i).LowQuantityBound = Val(ReadField(3, ln, Asc("-")))
+                .Drop(i).HighQuantityBound = Val(ReadField(4, ln, Asc("-")))
+            Next i
+        Else
+            Erase .Drop
+        End If
         .MinTameLevel = Val(LeerNPCs.GetValue(SectionName, "MinTameLevel", 1))
         .OnlyForGuilds = Val(LeerNPCs.GetValue(SectionName, "OnlyForGuilds", 0))
         .ShowKillerConsole = Val(LeerNPCs.GetValue(SectionName, "ShowKillerConsole", 0))
@@ -1346,6 +1364,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .Char.body = Info.Body
         .Char.head = Info.Head
         .Char.Heading = Info.Heading
+        .flags.MappedHeading = Info.Heading
         .Char.CastAnimation = Info.CastAnimation
         If Info.AnimacionesCount > 0 Then
             ReDim .Char.Animation(1 To Info.AnimacionesCount)
@@ -1393,6 +1412,18 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .Contadores.IntervaloRespawn = RandomNumber(Info.IntervaloRespawnMin, Info.IntervaloRespawnMax)
         .InformarRespawn = Info.InformarRespawn
         .QuizaProb = Info.QuizaProb
+        
+        .DropCount = Info.DropCount
+        If .DropCount > 0 Then
+            ReDim .Drop(1 To .DropCount)
+            Dim i As Byte
+            For i = 1 To .DropCount
+                .Drop(i) = Info.Drop(i)
+            Next i
+        Else
+            Erase .Drop
+        End If
+        
         .MinTameLevel = Info.MinTameLevel
         .OnlyForGuilds = Info.OnlyForGuilds
         .ShowKillerConsole = Info.ShowKillerConsole

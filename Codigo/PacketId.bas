@@ -545,6 +545,7 @@ Public Enum ClientPacketID
     eChangeSkinSlot
     eStartAutomatedAction
     ePetFollowAll
+    eAntiMacroMessage
     eMaxPacket
     [PacketCount]
 End Enum

@@ -1748,6 +1748,11 @@ Public Function PrepareUserStatusEffectMsgsForPlayers(ByVal targetUserIndex As I
     Dim extraStrings As String
     With UserList(targetUserIndex)
         extraStrings = extraStrings & .name & "-"
+        If Len(.Alias) > 0 Then
+            extraStrings = extraStrings & GetCharacterAlias(targetUserIndex) & "-"
+        Else
+            extraStrings = extraStrings & "-"
+        End If
         If Len(.Desc) > 0 Then
             extraStrings = extraStrings & .Desc & "-"
         Else
@@ -1969,7 +1974,7 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, ByVal 
         End If
         If .flags.Paralizado = 1 Then
             If UserSurvivalSkill >= 100 Then
-                extraStrings = extraStrings & CInt(.Contadores.Paralisis / 6.5)
+                extraStrings = extraStrings & CLng(.Contadores.Paralisis / 6.5)
             End If
             Call SetMask(NpcStatusMask, e_NpcInfoMask.Paralized)
             extraStrings = extraStrings & "-"
@@ -1978,7 +1983,7 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, ByVal 
         End If
         If .flags.Inmovilizado = 1 Then
             If UserSurvivalSkill >= 100 Then
-                extraStrings = extraStrings & CInt(.Contadores.Inmovilizado / 6.5)
+                extraStrings = extraStrings & CLng(.Contadores.Inmovilizado / 6.5)
             End If
             Call SetMask(NpcStatusMask, e_NpcInfoMask.Inmovilized)
             extraStrings = extraStrings & "-"
@@ -1988,7 +1993,7 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, ByVal 
         If GetOwnedBy(TargetNpcIndex) <> 0 Then
             Call SetMask(NpcStatusMask, e_NpcInfoMask.Fighting)
             extraStrings = extraStrings & .flags.AttackedBy & "|"
-            extraStrings = extraStrings & CInt((IntervaloNpcOwner - (GlobalFrameTime - .flags.AttackedTime)) / 1000) & "-"
+            extraStrings = extraStrings & CLng((IntervaloNpcOwner - (GlobalFrameTime - .flags.AttackedTime)) / 1000) & "-"
         Else
             extraStrings = extraStrings & "-"
         End If
