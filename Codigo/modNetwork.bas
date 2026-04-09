@@ -106,6 +106,10 @@ Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbN
             Call AddLogToCircularBuffer("Kick connection: " & Connection)
         End If
     End If
+    If Connection < 1 Or Connection > MaxActiveConnections Then
+        Call TraceError(0, "Kick called with out-of-range connection: " & Connection, "modNetwork.Kick", 0)
+        Exit Sub
+    End If
     Dim UserRef As t_UserReference
     UserRef = Mapping(Connection).UserRef
     If (Message <> vbNullString) Then
