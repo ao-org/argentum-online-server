@@ -696,10 +696,6 @@ Dim obj                         As t_ObjData
                     .invent.Object(Slot).Equipped = 0
                     .invent.EquippedMunitionObjIndex = 0
                     .invent.EquippedMunitionSlot = 0
-                    ' Case e_OBJType.otAnillos
-                    '    .Invent.Object(slot).Equipped = 0
-                    '    .Invent.AnilloEqpObjIndex = 0
-                    ' .Invent.AnilloEqpSlot = 0
                 Case e_OBJType.otWorkingTools
                     If .flags.PescandoEspecial = False Then
                         .invent.Object(Slot).Equipped = 0
@@ -708,6 +704,7 @@ Dim obj                         As t_ObjData
                         If .flags.UsandoMacro = True Then
                             Call WriteMacroTrabajoToggle(UserIndex, False)
                         End If
+                        Call ResetUserAutomatedActions(UserIndex)
                         .Char.WeaponAnim = NingunArma
                         If .flags.Montado = 0 Then
                             Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
