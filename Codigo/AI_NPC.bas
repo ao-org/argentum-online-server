@@ -35,7 +35,7 @@ Public Const RANGO_VISION_X   As Byte = DEFAULT_NPC_VISION_RANGE_X
 Public Const RANGO_VISION_Y   As Byte = DEFAULT_NPC_VISION_RANGE_Y
 
 
-Public Sub NpcDummyUpdate(ByVal NpcIndex As Integer)
+Public Sub NpcDummyUpdate2(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)
         Debug.Assert .npcType = DummyTarget
         If .Stats.MinHp < .Stats.MaxHp Then
