@@ -20,7 +20,7 @@ Option Explicit
 
 Public packetResend As New CColaArray
 
-Public Sub HandleIncomingAPIData(ByRef data As String)
+Public Sub HandleIncomingAPIDa2ta(ByRef data As String)
     
     With frmAPISocket
     
