@@ -1025,6 +1025,11 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
         MiObj.amount = 1
         MiObj.ObjIndex = ItemIndex
         MiObj.ElementalTags = ObjData(ItemIndex).ElementalTags
+        If IsFeatureEnabled("gain_exp_while_working") Then
+            Call GiveExpWhileWorking(UserIndex, MiObj, e_JobsTypes.Tailor)
+            Call WriteUpdateExp(UserIndex)
+            Call CheckUserLevel(UserIndex)
+        End If
         Call SastreQuitarMateriales(UserIndex, MiObj)
         Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(63, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
@@ -2002,6 +2007,28 @@ Public Sub GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_Obj, 
             End If
             If .Cala > 0 Then
                 tmpExp = tmpExp + ComputeWorkingExp(.Cala, SvrConfig.GetValue("MixingExp"), Item.Amount)
+            End If
+            If .SemillasProsperas > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.SemillasProsperas, SvrConfig.GetValue("MixingExp"), Item.Amount)
+            End If
+        Case e_JobsTypes.Tailor
+            If .PielLobo > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.PielLobo , SvrConfig.GetValue("TailoringExp"), Item.Amount)
+            End If
+            If .PielOsoPardo > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPardo , SvrConfig.GetValue("TailoringExp"), Item.Amount)
+            End If
+            If .PielOsoPolar > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPolar , SvrConfig.GetValue("TailoringExp"), Item.Amount)
+            End If
+            If .PielLoboNegro > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.PielLoboNegro, SvrConfig.GetValue("TailoringExp"), Item.Amount)
+            End If
+            If .PielTigre > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.PielTigre, SvrConfig.GetValue("TailoringExp"), Item.Amount)
+            End If
+            If .PielTigreBengala > 0 Then
+                tmpExp = tmpExp + ComputeWorkingExp(.PielTigreBengala, SvrConfig.GetValue("TailoringExp"), Item.Amount)
             End If
         Case Else
             tmpExp = SvrConfig.GetValue("ElseExp")
