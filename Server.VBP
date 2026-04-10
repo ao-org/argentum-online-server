@@ -89,6 +89,7 @@ Module=UnitClient; Codigo\UnitClient.bas
 Module=Unit_Bitmask; Codigo\Unit_Bitmask.bas
 Module=Unit_StringValidation; Codigo\Unit_StringValidation.bas
 Module=Unit_Pathfinding; Codigo\Unit_Pathfinding.bas
+Module=Unit_Characters; Codigo\Unit_Characters.bas
 Module=Unit_Bitmask; Codigo\Unit_Math.bas
 Module=Unit_Protocol_Writes; Codigo\Unit_Protocol_Writes.bas
 Module=ModCaptura; Codigo\ModCaptura.bas

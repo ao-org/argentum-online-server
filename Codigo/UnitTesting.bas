@@ -41,7 +41,7 @@ Option Explicit
     Private FailedTestCount As Integer
     Private TotalElapsed   As Double
 
-    Private Const SUITE_COUNT As Integer = 4
+    Private Const SUITE_COUNT As Integer = 5
 
 Public Sub Init()
     'We can mock the key value to test errors...
@@ -246,6 +246,7 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 2: RunSuite = Unit_Bitmask.test_suite_bitmask()
         Case 3: RunSuite = Unit_StringValidation.test_suite_strings()
         Case 4: RunSuite = Unit_Pathfinding.test_suite_pathfinding()
+        Case 5: RunSuite = Unit_Characters.test_suite_characters()
         Case Else
             RunSuite = False
     End Selectt "[ERROR] Suite " & suiteIndex & " raised error: " & Err.Description

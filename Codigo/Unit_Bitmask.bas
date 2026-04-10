@@ -12,6 +12,7 @@ Public Function test_suite_bitmask() As Boolean
     Call UnitTesting.RunTest("test_unset_mask", test_unset_mask())
     Call UnitTesting.RunTest("test_reset_mask", test_reset_mask())
     Call UnitTesting.RunTest("test_shift_left_right", test_shift_left_right())
+    Call UnitTesting.RunTest("test_int_mask_ops", test_int_mask_ops())
     
     Debug.Print "Bitmask suite took " & sw.ElapsedMilliseconds & " ms"
     test_suite_bitmask = True
@@ -120,6 +121,39 @@ Private Function test_shift_left_right() As Boolean
     Exit Function
 test_shift_left_right_Err:
     test_shift_left_right = False
+End Function
+
+Private Function test_int_mask_ops() As Boolean
+    On Error GoTo test_int_mask_ops_Err
+    test_int_mask_ops = True
+    
+    Dim mask As Integer
+    mask = 0
+    
+    ' SetIntMask
+    Call SetIntMask(mask, 1)
+    If mask <> 1 Then test_int_mask_ops = False: Exit Function
+    
+    ' IsIntSet
+    If Not IsIntSet(mask, 1) Then test_int_mask_ops = False: Exit Function
+    If IsIntSet(mask, 2) Then test_int_mask_ops = False: Exit Function
+    
+    ' Set another bit
+    Call SetIntMask(mask, 4)
+    If Not IsIntSet(mask, 4) Then test_int_mask_ops = False: Exit Function
+    If Not IsIntSet(mask, 1) Then test_int_mask_ops = False: Exit Function
+    
+    ' UnsetIntMask
+    Call UnsetIntMask(mask, 1)
+    If IsIntSet(mask, 1) Then test_int_mask_ops = False: Exit Function
+    If Not IsIntSet(mask, 4) Then test_int_mask_ops = False: Exit Function
+    
+    ' ResetIntMask
+    Call ResetIntMask(mask)
+    If mask <> 0 Then test_int_mask_ops = False: Exit Function
+    Exit Function
+test_int_mask_ops_Err:
+    test_int_mask_ops = False
 End Function
 
 #End If
