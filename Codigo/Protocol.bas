@@ -1656,8 +1656,10 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
             If Not EsGM(UserIndex) And .Char.speeding > 0 Then
                 Dim ElapsedTimeStep As Double, MinTimeStep As Long, DeltaStep As Single
                 ElapsedTimeStep = TicksElapsed(.Counters.LastStep, currentTick)
-                MinTimeStep = .Intervals.Caminar / .Char.speeding
-                DeltaStep = (MinTimeStep - ElapsedTimeStep) / MinTimeStep
+                ' Minimum expected time between steps, adjusted by current speed.
+                ' Uses the walk packet interval so units match ElapsedTimeStep and MaximoSpeedHack.
+                MinTimeStep = CLng(PacketTimerThreshold(PacketNames.Walk) / .Char.speeding)
+                DeltaStep = (MinTimeStep - ElapsedTimeStep)
                 If DeltaStep > 0 Then
                     .Counters.SpeedHackCounter = .Counters.SpeedHackCounter + DeltaStep
                     If .Counters.SpeedHackCounter > SvrConfig.GetValue("MaximoSpeedHack") Then
