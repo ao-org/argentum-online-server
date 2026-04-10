@@ -1950,6 +1950,7 @@ Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As I
             Call PenalizeFactionScoreLegionAndCouncil(UserIndex, TargetIndex)
         Else
             'Mantener comportamiento original
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("+" & max(Score, 0), UserList(TargetIndex).Char.charindex, FontTypeToColor(GetFontTypeByFactionStatus(.Faccion.status))))
             .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
         End If
     End With
@@ -1969,6 +1970,7 @@ Sub HandleFactionScoreForAssist(ByVal UserIndex As Integer, ByVal TargetIndex As
             .Faccion.FactionScore = newScore
         Else
             'Mantener comportamiento original
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("+" & max(Score, 0), UserList(TargetIndex).Char.charindex, FontTypeToColor(GetFontTypeByFactionStatus(.Faccion.status))))
             .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
         End If
     End With
@@ -1993,6 +1995,7 @@ Sub PenalizeFactionScoreLegionAndCouncil(ByVal Attacker As Integer, ByVal Target
         newScore = .Faccion.FactionScore + Score
         If newScore < 0 Then newScore = 0
         .Faccion.FactionScore = newScore
+        Call SendData(SendTarget.ToIndex, Attacker, PrepareMessageChatOverHead(CStr(Score), UserList(Target).Char.charindex, FontTypeToColor(GetFontTypeByFactionStatus(.Faccion.status))))
     End With
     Exit Sub
 PenalizeFactionScoreLegionAndCouncil_Err:
