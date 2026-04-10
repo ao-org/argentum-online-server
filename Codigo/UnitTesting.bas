@@ -249,7 +249,11 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 5: RunSuite = Unit_Characters.test_suite_characters()
         Case Else
             RunSuite = False
-    End Selectt "[ERROR] Suite " & suiteIndex & " raised error: " & Err.Description
+    End Select
+    Exit Function
+    
+RunSuite_Err:
+    Debug.Print "[ERROR] Suite " & suiteIndex & " raised error: " & Err.Description
     RunSuite = False
 End Function
 
@@ -293,11 +297,6 @@ Public Sub PrintTestReport()
     Else
         Debug.Print "TESTS FAILED"
     End If
-    Debug.Print "========================="
-    Debug.Print ""
-End Sub
-
-#End If
     Debug.Print "========================="
     Debug.Print ""
 End Sub
