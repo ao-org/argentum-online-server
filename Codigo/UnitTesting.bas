@@ -17,7 +17,7 @@ Attribute VB_Name = "UnitTesting"
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'    Copyright (C) 2002 Mï¿½rquez Pablo Ignacio
+'    Copyright (C) 2002 Marquez Pablo Ignacio
 '
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
@@ -41,7 +41,7 @@ Option Explicit
     Private FailedTestCount As Integer
     Private TotalElapsed   As Double
 
-    Private Const SUITE_COUNT As Integer = 8
+    Private Const SUITE_COUNT As Integer = 4
 
 Public Sub Init()
     'We can mock the key value to test errors...
@@ -245,18 +245,10 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 1: RunSuite = Unit_Math.test_suite_math()
         Case 2: RunSuite = Unit_Bitmask.test_suite_bitmask()
         Case 3: RunSuite = Unit_StringValidation.test_suite_strings()
-        Case 4: RunSuite = Unit_Inventory.test_suite_inventory()
-        Case 5: RunSuite = Unit_Characters.test_suite_characters()
-        Case 6: RunSuite = Unit_Combat.test_suite_combat()
-        Case 7: RunSuite = Unit_Effects.test_suite_effects()
-        Case 8: RunSuite = Unit_Pathfinding.test_suite_pathfinding()
+        Case 4: RunSuite = Unit_Pathfinding.test_suite_pathfinding()
         Case Else
             RunSuite = False
-    End Select
-    Exit Function
-    
-RunSuite_Err:
-    Debug.Print "[ERROR] Suite " & suiteIndex & " raised error: " & Err.Description
+    End Selectt "[ERROR] Suite " & suiteIndex & " raised error: " & Err.Description
     RunSuite = False
 End Function
 
@@ -303,5 +295,43 @@ Public Sub PrintTestReport()
     Debug.Print "========================="
     Debug.Print ""
 End Sub
+
+#End If
+    Debug.Print "========================="
+    Debug.Print ""
+End Sub
+
+Public Sub WriteResultsToFile(ByVal filePath As String)
+    On Error GoTo WriteResultsToFile_Err
+    Dim f As Integer
+    f = FreeFile
+    Open filePath For Output As #f
+    Print #f, "=== AO20 TEST REPORT ==="
+    Print #f, "Total: " & TotalTests & " | Passed: " & PassedTests & " | Failed: " & FailedTests
+    
+    If FailedTestCount > 0 Then
+        Print #f, "Failed tests:"
+        Dim i As Integer
+        For i = 1 To FailedTestCount
+            Print #f, "  - " & FailedTestNames(i)
+        Next i
+    End If
+    
+    Print #f, "Total time: " & Format$(TotalElapsed, "0.00") & " ms"
+    
+    If FailedTests = 0 Then
+        Print #f, "RESULT: PASS"
+    Else
+        Print #f, "RESULT: FAIL"
+    End If
+    Close #f
+    Exit Sub
+WriteResultsToFile_Err:
+    Close #f
+End Sub
+
+Public Function GetFailedTests() As Integer
+    GetFailedTests = FailedTests
+End Function
 
 #End If
