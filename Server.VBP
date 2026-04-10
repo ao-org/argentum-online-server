@@ -149,6 +149,7 @@ Module=ModMining; Codigo\ModMining.bas
 Module=ModGlobalQuests; Codigo\ModGlobalQuests.bas
 Module=ModPhoenix; Codigo\ModPhoenix.bas
 Module=ModSmelting; Codigo\ModSmelting.bas
+Module=modFontManager; Codigo\modFontManager.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
