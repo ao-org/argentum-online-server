@@ -485,6 +485,19 @@ End Sub
 
 Sub Main()
     On Error GoTo Handler
+    
+    #If UNIT_TEST = 1 Then
+        ' Headless test mode: run pure tests without server initialization
+        If Not RunningInVB() Then
+            Call Randomize
+            Call InitializeCircularLogBuffer
+            Call UnitTesting.Init
+            Dim suite_passed As Boolean
+            suite_passed = UnitTesting.test_suite()
+            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
+            End
+        End If
+    #End If
         
     Call TryInitShard
     

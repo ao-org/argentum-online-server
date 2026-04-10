@@ -133,7 +133,7 @@ Private Function test_increment_counter_overflow() As Boolean
     
     Dim counter As Long
     counter = &H7FFFFFFF
-    Call IncrementLongCounter(counter, "test")
+    Call IncrementLongCounter(counter, "")
     If counter <> 0 Then test_increment_counter_overflow = False: Exit Function
     Exit Function
 test_increment_counter_overflow_Err:
@@ -146,11 +146,11 @@ Private Function test_increment_counter_negative() As Boolean
     
     Dim counter As Long
     counter = -5
-    Call IncrementLongCounter(counter, "test")
+    Call IncrementLongCounter(counter, "")
     If counter <> 0 Then test_increment_counter_negative = False: Exit Function
     
     counter = -1
-    Call IncrementLongCounter(counter, "test")
+    Call IncrementLongCounter(counter, "")
     If counter <> 0 Then test_increment_counter_negative = False: Exit Function
     Exit Function
 test_increment_counter_negative_Err:

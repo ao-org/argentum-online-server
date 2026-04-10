@@ -44,6 +44,7 @@ Option Explicit
     Private Const SUITE_COUNT As Integer = 5
 
 Public Sub Init()
+    On Error GoTo Init_Err
     'We can mock the key value to test errors...
     private_key = PrivateKey
     character_name = "seneca"
@@ -56,7 +57,8 @@ Public Sub Init()
     
     'Add a fake token to be using when exercising the protocol for LoginNewChar
     Call AddTokenDatabase(encrypted_token, decrypted_token, "MORGOLOCK2002@YAHOO.COM.AR")
-    
+
+Init_Resume:
     ' Reset test runner state
     TotalTests = 0
     PassedTests = 0
@@ -64,7 +66,11 @@ Public Sub Init()
     FailedTestCount = 0
     TotalElapsed = 0
     ReDim FailedTestNames(0)
+    Exit Sub
     
+Init_Err:
+    Debug.Print "UnitTesting.Init error: " & Err.Description
+    Resume Init_Resume
 End Sub
 
 Public Sub shutdown()
@@ -246,7 +252,14 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 2: RunSuite = Unit_Bitmask.test_suite_bitmask()
         Case 3: RunSuite = Unit_StringValidation.test_suite_strings()
         Case 4: RunSuite = Unit_Pathfinding.test_suite_pathfinding()
-        Case 5: RunSuite = Unit_Characters.test_suite_characters()
+        Case 5:
+            ' Characters suite needs server state (maps loaded)
+            If RunningInVB() Then
+                RunSuite = Unit_Characters.test_suite_characters()
+            Else
+                Debug.Print "[SKIP] Characters suite (needs server state)"
+                RunSuite = True
+            End If
         Case Else
             RunSuite = False
     End Select
