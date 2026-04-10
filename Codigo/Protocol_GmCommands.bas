@@ -2046,7 +2046,9 @@ Public Sub HandleServerMessage(ByVal UserIndex As Integer)
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero)) Then
             If LenB(Message) <> 0 Then
                 Call LogGM(GetUserRealName(UserIndex), "Mensaje Broadcast:" & Message)
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & "> " & Message, e_FontTypeNames.FONTTYPE_CENTINELA))
+                ' Antes: .Name & "> " & Message
+                ' Ahora: Servidor> Mensaje
+               Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_SERVER_SENDER, Message, e_FontTypeNames.FONTTYPE_CENTINELA))
             End If
         Else
             'Msg528=Servidor » Comando deshabilitado para tu cargo.

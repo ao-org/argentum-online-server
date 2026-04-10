@@ -68,6 +68,8 @@ Public Const MSG_NO_MISSION_FOR_YOU                            As Integer = 2085
 Public Const MSG_TOO_MANY_ACTIVE_MISSIONS                      As Integer = 2086
 Public Const MSG_NO_ENERGY                                     As Integer = 2129
 Public Const MSG_TOO_COLD                                      As Integer = 2130
+Public Const MSG_BROADCAST_SERVER_SENDER                       As Integer = 1660
+
 
 
 
