@@ -763,6 +763,7 @@ Public Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                     minTiempo = IntervaloInvocacion
 
                     For j = 1 To MAXMASCOTAS
+                        If j < LBound(.MascotasIndex) Or j > UBound(.MascotasIndex) Then Exit For
                         If .MascotasIndex(j).ArrayIndex > 0 Then
                             If IsValidNpcRef(.MascotasIndex(j)) Then
                                 If NpcList(.MascotasIndex(j).ArrayIndex).flags.NPCActive Then
@@ -782,7 +783,7 @@ Public Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                             End If
                         ElseIf .MascotasType(j) = 0 Then
                             petSlot = -1
-                            MinTiempo = 0
+                            minTiempo = 0
                         End If
                     Next j
 
@@ -800,6 +801,12 @@ Public Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                     .NroMascotas = .NroMascotas + 1
 
                     petSlot = FreeMascotaIndex(UserIndex)
+                    If petSlot < 1 Or petSlot > MAXMASCOTAS Then
+                        Call TraceError(9, "FreeMascotaIndex returned invalid slot=" & petSlot & " for UserIndex=" & UserIndex, "modHechizos.HechizoInvocacion", Erl)
+                        .NroMascotas = .NroMascotas - 1
+                        Call QuitarNPC(npcIndex, eSummonNew)
+                        Exit Sub
+                    End If
                     Call SetNpcRef(.MascotasIndex(petSlot), npcIndex)
                     .MascotasType(petSlot) = NpcList(npcIndex).Numero
 
@@ -831,6 +838,7 @@ Public Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
 
                 If .flags.MascotasGuardadas = 0 Then
                     For i = 1 To MAXMASCOTAS
+                        If i < LBound(.MascotasIndex) Or i > UBound(.MascotasIndex) Then Exit For
                         If IsValidNpcRef(.MascotasIndex(i)) Then
                             If NpcList(.MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia = 0 Then
                                 Call SetUserRef(NpcList(.MascotasIndex(i).ArrayIndex).MaestroUser, 0)
@@ -846,6 +854,7 @@ Public Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                     .flags.MascotasGuardadas = 1
                 Else
                     For i = 1 To MAXMASCOTAS
+                        If i < LBound(.MascotasIndex) Or i > UBound(.MascotasIndex) Then Exit For
                         If .MascotasType(i) > 0 And .MascotasIndex(i).ArrayIndex = 0 Then
                             npcIndex = SpawnNpc(.MascotasType(i), TargetPos, True, True, False, UserIndex)
 
