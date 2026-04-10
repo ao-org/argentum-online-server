@@ -2048,7 +2048,7 @@ Public Sub HandleServerMessage(ByVal UserIndex As Integer)
                 Call LogGM(GetUserRealName(UserIndex), "Mensaje Broadcast:" & Message)
                 ' Antes: .Name & "> " & Message
                 ' Ahora: Servidor> Mensaje
-               Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR, Message, e_FontTypeNames.FONTTYPE_CENTINELA))
+               Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_SERVER_SENDER, Message, e_FontTypeNames.FONTTYPE_CENTINELA))
             End If
         Else
             'Msg528=Servidor » Comando deshabilitado para tu cargo.
