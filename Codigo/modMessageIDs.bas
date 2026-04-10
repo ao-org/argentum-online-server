@@ -68,6 +68,8 @@ Public Const MSG_NO_MISSION_FOR_YOU                            As Integer = 2085
 Public Const MSG_TOO_MANY_ACTIVE_MISSIONS                      As Integer = 2086
 Public Const MSG_NO_ENERGY                                     As Integer = 2129
 Public Const MSG_TOO_COLD                                      As Integer = 2130
+Public Const MSG_BROADCAST_SERVER_SENDER                       As Integer = 1660
+
 
 
 
@@ -1217,3 +1219,6 @@ Public Const MSG_NO_USUARIO_ENCUENTRA_ZONA_INSEGURA_PUEDES_ACERCARTE As Integer 
 Public Const MSG_MISSION_CLASS_NOT_AVAILABLE = 2167
 Public Const MSG_SOLO_TRABAJADORES_PUEDEN_REGISTRAR_PECES_ESPECIALES As Integer = 2168
 Public Const MSG_THREAD_NOT_STRONG_ENOUGH = 2170
+Public Const MSG_ANTI_MACRO_CONTROL = 2172
+Public Const MSG_USE_MESSAGE_ANTI_MACRO = 2173
+

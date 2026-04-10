@@ -589,6 +589,8 @@ Sub Main()
     Call LoadMeditations
     frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
     Call CargarCiudades
+    frmCargando.Label1(2).Caption = "Cargando Fuentes"
+    Call InitFontTypeColors
     If BootDelBackUp Then
         frmCargando.Label1(2).Caption = "Cargando WorldBackup"
         Call CargarBackUp
@@ -1927,3 +1929,4 @@ Public Function IsArrayInitialized(ByRef arr) As Boolean
     rv = UBound(arr)
     IsArrayInitialized = (Err.Number = 0) And rv >= 0
 End Function
+

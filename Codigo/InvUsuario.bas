@@ -696,10 +696,6 @@ Dim obj                         As t_ObjData
                     .invent.Object(Slot).Equipped = 0
                     .invent.EquippedMunitionObjIndex = 0
                     .invent.EquippedMunitionSlot = 0
-                    ' Case e_OBJType.otAnillos
-                    '    .Invent.Object(slot).Equipped = 0
-                    '    .Invent.AnilloEqpObjIndex = 0
-                    ' .Invent.AnilloEqpSlot = 0
                 Case e_OBJType.otWorkingTools
                     If .flags.PescandoEspecial = False Then
                         .invent.Object(Slot).Equipped = 0
@@ -708,6 +704,7 @@ Dim obj                         As t_ObjData
                         If .flags.UsandoMacro = True Then
                             Call WriteMacroTrabajoToggle(UserIndex, False)
                         End If
+                        Call ResetUserAutomatedActions(UserIndex)
                         .Char.WeaponAnim = NingunArma
                         If .flags.Montado = 0 Then
                             Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
@@ -1158,6 +1155,7 @@ Dim Ropaje                      As Integer
                     End If
                     If .invent.EquippedWorkingToolObjIndex > 0 Then
                         Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
+                        Call ResetUserAutomatedActions(UserIndex)
                     End If
                     .invent.Object(Slot).Equipped = 1
                     .invent.EquippedWeaponObjIndex = .invent.Object(Slot).ObjIndex
@@ -1251,10 +1249,7 @@ Dim Ropaje                      As Integer
                 'Quitamos el elemento anterior
                 If .invent.EquippedWorkingToolObjIndex > 0 Then
                     EquippedWorkingToolObjType = ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
-                    If EquippedWorkingToolObjType = e_WorkingToolSubType.FishingRod And obj.Subtipo = e_WorkingToolSubType.FishingNet Then
-                        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_EQUIP_NET_WITH_ROD, "", e_FontTypeNames.FONTTYPE_INFO))
-                        Exit Sub
-                    End If
+                    Call ResetUserAutomatedActions(UserIndex)
                     Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
                 End If
                 If .invent.EquippedWeaponObjIndex > 0 Then

@@ -110,16 +110,25 @@ End Function
 
 Public Function GetUserName(ByVal UserId As Long) As String
     On Error GoTo GetUserName_Err
+
     If UserId <= 0 Then
-        GetUserName = ""
+        GetUserName = vbNullString
         Exit Function
     End If
+
     If UserNameCache.Exists(UserId) Then
         GetUserName = UserNameCache.Item(UserId)
         Exit Function
     End If
+
     Dim username As String
-    username = GetCharacterName(UserId)
+    username = GetCharacterNameByUserId(UserId)
+
+    If LenB(username) = 0 Then
+        Call LogDatabaseError("GetUserName: no character name for UserId=" & UserId)
+        Exit Function
+    End If
+
     Call RegisterUserName(UserId, username)
     GetUserName = username
     Exit Function
@@ -964,6 +973,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
     Dim charindex As Integer
     Dim TempName  As String
     Dim displayName As String
+    Dim aliasValue As String
     If InMapBounds(Map, x, y) Then
         With UserList(UserIndex)
             'If needed make a new character in list
@@ -984,17 +994,18 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                 displayName = GetUserDisplayNameOrReal(UserIndex)
                 If .showName Then
                     If .flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
+                        aliasValue = GetCharacterAlias(UserIndex)
                         If .GuildIndex > 0 Then
                             klan = modGuilds.GuildName(.GuildIndex)
                             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
-                            TempName = displayName & " <" & klan & ">"
+                            TempName = displayName & " {" & aliasValue & "}" & " <" & klan & ">"
                         Else
                             klan = vbNullString
                             clan_nivel = 0
                             If .flags.EnConsulta Then
-                                TempName = displayName & " [CONSULTA]"
+                                TempName = displayName & " [CONSULTA]" & " {" & aliasValue & "}"
                             Else
-                                TempName = displayName
+                                TempName = displayName & " {" & aliasValue & "}"
                             End If
                         End If
                     Else
@@ -1938,6 +1949,7 @@ Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As I
             Call PenalizeFactionScoreLegionAndCouncil(UserIndex, TargetIndex)
         Else
             'Mantener comportamiento original
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("+" & max(Score, 0), UserList(TargetIndex).Char.charindex, FontTypeToColor(GetFontTypeByFactionStatus(.Faccion.status))))
             .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
         End If
     End With
@@ -1957,6 +1969,7 @@ Sub HandleFactionScoreForAssist(ByVal UserIndex As Integer, ByVal TargetIndex As
             .Faccion.FactionScore = newScore
         Else
             'Mantener comportamiento original
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("+" & max(Score, 0), UserList(TargetIndex).Char.charindex, FontTypeToColor(GetFontTypeByFactionStatus(.Faccion.status))))
             .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
         End If
     End With
@@ -1981,6 +1994,7 @@ Sub PenalizeFactionScoreLegionAndCouncil(ByVal Attacker As Integer, ByVal Target
         newScore = .Faccion.FactionScore + Score
         If newScore < 0 Then newScore = 0
         .Faccion.FactionScore = newScore
+        Call SendData(SendTarget.ToIndex, Attacker, PrepareMessageChatOverHead(CStr(Score), UserList(Target).Char.charindex, FontTypeToColor(GetFontTypeByFactionStatus(.Faccion.status))))
     End With
     Exit Sub
 PenalizeFactionScoreLegionAndCouncil_Err:
