@@ -782,7 +782,7 @@ Public Sub HandleRequestUserList(ByVal UserIndex As Integer)
     Dim names() As String
     Dim count   As Long
     With UserList(UserIndex)
-        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.RoleMaster)) Then
+        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster Or e_PlayerType.SemiDios)) Then
             'Msg528=Servidor » Comando deshabilitado para tu cargo.
             Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_COMANDO_DESHABILITADO_CARGO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
