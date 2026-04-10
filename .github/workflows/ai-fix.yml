@@ -10,6 +10,10 @@ jobs:
       github.event.label.name == 'ai-fix' &&
       github.event.issue.author_association != 'NONE'
     uses: ao-org/.github/.github/workflows/ai-fix-reusable.yml@master
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
     secrets:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
