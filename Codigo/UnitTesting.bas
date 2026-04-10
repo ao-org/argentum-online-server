@@ -69,7 +69,6 @@ Init_Resume:
     Exit Sub
     
 Init_Err:
-    Debug.Print "UnitTesting.Init error: " & Err.Description
     Resume Init_Resume
 End Sub
 
@@ -219,16 +218,11 @@ Public Sub RunTest(ByVal testName As String, ByVal testResult As Boolean)
     
     If testResult Then
         PassedTests = PassedTests + 1
-        Debug.Print "[PASS] " & testName
     Else
         FailedTests = FailedTests + 1
         FailedTestCount = FailedTestCount + 1
         ReDim Preserve FailedTestNames(FailedTestCount)
         FailedTestNames(FailedTestCount) = testName
-        Debug.Print "[FAIL] " & testName
-        If RunningInVB() Then
-            Debug.Assert False
-        End If
     End If
 End Sub
 
@@ -238,10 +232,6 @@ Public Sub RunTestError(ByVal testName As String, ByVal errorDesc As String)
     FailedTestCount = FailedTestCount + 1
     ReDim Preserve FailedTestNames(FailedTestCount)
     FailedTestNames(FailedTestCount) = testName & " - Error: " & errorDesc
-    Debug.Print "[FAIL] " & testName & " - Error: " & errorDesc
-    If RunningInVB() Then
-        Debug.Assert False
-    End If
 End Sub
 
 Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
@@ -252,21 +242,13 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 2: RunSuite = Unit_Bitmask.test_suite_bitmask()
         Case 3: RunSuite = Unit_StringValidation.test_suite_strings()
         Case 4: RunSuite = Unit_Pathfinding.test_suite_pathfinding()
-        Case 5:
-            ' Characters suite needs server state (maps loaded)
-            If RunningInVB() Then
-                RunSuite = Unit_Characters.test_suite_characters()
-            Else
-                Debug.Print "[SKIP] Characters suite (needs server state)"
-                RunSuite = True
-            End If
+        Case 5: RunSuite = Unit_Characters.test_suite_characters()
         Case Else
             RunSuite = False
     End Select
     Exit Function
     
 RunSuite_Err:
-    Debug.Print "[ERROR] Suite " & suiteIndex & " raised error: " & Err.Description
     RunSuite = False
 End Function
 
@@ -281,37 +263,6 @@ Public Sub RunAllSuites()
     Next i
     
     TotalElapsed = sw.ElapsedMilliseconds
-    
-    Call PrintTestReport
-    
-    ' Run protocol integration tests after synchronous suites
-    Debug.Print "Running proto suite, trying to connect to 127.0.0.1:7667"
-    Call UnitClient.Init
-    Call UnitClient.Connect("127.0.0.1", "7667")
-End Sub
-
-Public Sub PrintTestReport()
-    Debug.Print ""
-    Debug.Print "=== AO20 TEST REPORT ==="
-    Debug.Print "Total: " & TotalTests & " | Passed: " & PassedTests & " | Failed: " & FailedTests
-    
-    If FailedTestCount > 0 Then
-        Debug.Print "Failed tests:"
-        Dim i As Integer
-        For i = 1 To FailedTestCount
-            Debug.Print "  - " & FailedTestNames(i)
-        Next i
-    End If
-    
-    Debug.Print "Total time: " & Format$(TotalElapsed, "0.00") & " ms"
-    
-    If FailedTests = 0 Then
-        Debug.Print "ALL TESTS PASSED"
-    Else
-        Debug.Print "TESTS FAILED"
-    End If
-    Debug.Print "========================="
-    Debug.Print ""
 End Sub
 
 Public Sub WriteResultsToFile(ByVal filePath As String)

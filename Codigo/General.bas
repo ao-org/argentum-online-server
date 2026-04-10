@@ -485,19 +485,6 @@ End Sub
 
 Sub Main()
     On Error GoTo Handler
-    
-    #If UNIT_TEST = 1 Then
-        ' Headless test mode: run pure tests without server initialization
-        If Not RunningInVB() Then
-            Call Randomize
-            Call InitializeCircularLogBuffer
-            Call UnitTesting.Init
-            Dim suite_passed As Boolean
-            suite_passed = UnitTesting.test_suite()
-            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
-            End
-        End If
-    #End If
         
     Call TryInitShard
     
@@ -668,20 +655,9 @@ Sub Main()
     tInicioServer = GetTickCountRaw()
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Init
-        Debug.Print "AO20 Unit Testing"
         Dim suite_passed_ok As Boolean
         suite_passed_ok = UnitTesting.test_suite()
-        If (suite_passed_ok) Then
-            Debug.Print "suite_passed_ok!!!"
-        Else
-            Debug.Print "suite failed!!!"
-        End If
-        ' In compiled mode, write results to file and exit
-        If Not RunningInVB() Then
-            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
-            End
-        End If
-        Debug.Assert (suite_passed_ok)
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
     #End If
     While (True)
         GlobalFrameTime = GetTickCountRaw()

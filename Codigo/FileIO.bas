@@ -1479,11 +1479,7 @@ Sub LoadMapData()
     Dim Map     As Integer
     Dim TempInt As Integer
     Dim npcfile As String
-    #If UNIT_TEST = 1 Then
-        'We only need 50 maps for unit testing
-        NumMaps = 50
-        Debug.Print "UNIT_TEST Enabled Loading just " & NumMaps & " maps"
-    #ElseIf LOGIN_STRESS_TEST = 1 Then
+    #If LOGIN_STRESS_TEST = 1 Then
         NumMaps = 100
     #Else
         If RunningInVB() Then
