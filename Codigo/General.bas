@@ -663,6 +663,11 @@ Sub Main()
         Else
             Debug.Print "suite failed!!!"
         End If
+        ' In compiled mode, write results to file and exit
+        If Not RunningInVB() Then
+            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
+            End
+        End If
         Debug.Assert (suite_passed_ok)
     #End If
     While (True)
