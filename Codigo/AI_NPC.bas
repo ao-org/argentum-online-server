@@ -318,7 +318,7 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
         'perform attack
         If IsValidRef(CurrentTarget) And NPCs.CanAttack(.Contadores, .flags) Then
             TargetPos = GetPosition(CurrentTarget)
-            If Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) <= .AttackRange Then
+            If Distance(CLng(.pos.x), CLng(.pos.y), CLng(TargetPos.x), CLng(TargetPos.y)) <= CLng(.AttackRange) Then
                 If NpcCanAttack(NpcIndex, CurrentTarget) = eCanAttack And CurrentTarget.RefType = eUser Then
                     If NpcAtacaUser(NpcIndex, CurrentTarget.ArrayIndex, .Char.Heading) And .ProjectileType > 0 Then
                         Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareCreateProjectile(.pos.x, .pos.y, TargetPos.x, TargetPos.y, .ProjectileType))
@@ -330,7 +330,7 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
         End If
         'perform movement
         If NPCs.CanMove(.Contadores, .flags) Then
-            If NearestUser > 0 And NearestTargetDistance < .PreferedRange Then
+            If NearestUser > 0 And CDbl(NearestTargetDistance) < CDbl(.PreferedRange) Then
                 Dim retreatTargetPos    As t_WorldPos
                 Dim retreatDestination As t_WorldPos
                 retreatTargetPos = UserList(NearestUser).pos
@@ -344,9 +344,9 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
                     fallbackTarget = PreferedTileForDirection(fallbackDirection, .pos)
                     Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, fallbackTarget))
                 End If
-            ElseIf Math.Round(NearestTargetDistance) = .PreferedRange Then
+            ElseIf CLng(Math.Round(CDbl(NearestTargetDistance))) = CLng(.PreferedRange) Then
                 'do nothing, look at pos?
-            ElseIf IsValidRef(CurrentTarget) And Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) > .PreferedRange Then
+            ElseIf IsValidRef(CurrentTarget) And Distance(CLng(.pos.x), CLng(.pos.y), CLng(TargetPos.x), CLng(TargetPos.y)) > CDbl(.PreferedRange) Then
                 Call AI_CaminarConRumbo(NpcIndex, TargetPos)
             ElseIf Distancia(.pos, .Orig) > 0 Then 'return to origin
                 Call AI_CaminarConRumbo(NpcIndex, .Orig)
@@ -540,7 +540,7 @@ Private Function ComputeNpcRangedRetreatDestination(ByVal NpcIndex As Integer, B
     Dim normalized As t_Vector
     normalized = GetNormal(baseVector)
     Dim distanceToTarget As Double
-    distanceToTarget = Distance(npcPos.x, npcPos.y, targetPos.x, targetPos.y)
+    distanceToTarget = Distance(CLng(npcPos.x), CLng(npcPos.y), CLng(targetPos.x), CLng(targetPos.y))
 
     Dim attempt As Integer
     For attempt = 1 To 2
@@ -567,9 +567,17 @@ Private Function ComputeNpcRangedRetreatDestination(ByVal NpcIndex As Integer, B
         End If
 
         Dim candidate As t_WorldPos
+        Dim candidateX As Long
+        Dim candidateY As Long
         candidate.Map = npcPos.Map
-        candidate.x = targetPos.x + CInt(offset.x * preferedRange)
-        candidate.y = targetPos.y + CInt(offset.y * preferedRange)
+        candidateX = CLng(targetPos.x) + CLng(Int(offset.x * CDbl(preferedRange)))
+        candidateY = CLng(targetPos.y) + CLng(Int(offset.y * CDbl(preferedRange)))
+        If candidateX < 1 Then candidateX = 1
+        If candidateX > XMaxMapSize Then candidateX = XMaxMapSize
+        If candidateY < 1 Then candidateY = 1
+        If candidateY > YMaxMapSize Then candidateY = YMaxMapSize
+        candidate.x = CInt(candidateX)
+        candidate.y = CInt(candidateY)
 
         If Not LegalPos(candidate.Map, candidate.x, candidate.y, False, True) Then
             Dim stabilized As t_WorldPos
