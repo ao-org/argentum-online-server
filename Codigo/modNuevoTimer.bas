@@ -38,7 +38,7 @@ Public Function IntervaloPermiteLanzarSpell(ByVal UserIndex As Integer, Optional
     On Error GoTo IntervaloPermiteLanzarSpell_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
     With UserList(UserIndex)
-        If TicksElapsed(.Counters.TimerLanzarSpell, nowRaw) >= .Intervals.Magia Then
+        If TicksElapsed(.Counters.TimerLanzarSpell, nowRaw) >= IntervaloUserPuedeCastear Then
             If Actualizar Then
                 .Counters.TimerLanzarSpell = nowRaw
                 ' Actualizo spell-attack
@@ -56,7 +56,7 @@ Public Function IntervaloPermiteAtacar(ByVal UserIndex As Integer, Optional ByVa
     On Error GoTo IntervaloPermiteAtacar_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
     With UserList(UserIndex)
-        If TicksElapsed(.Counters.TimerPuedeAtacar, nowRaw) >= .Intervals.Golpe Then
+        If TicksElapsed(.Counters.TimerPuedeAtacar, nowRaw) >= IntervaloUserPuedeAtacar Then
             If Actualizar Then
                 .Counters.TimerPuedeAtacar = nowRaw
                 .Counters.TimerGolpeMagia = nowRaw
@@ -89,7 +89,7 @@ Public Function IntervaloPermiteMagiaGolpe(ByVal UserIndex As Integer, Optional 
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
     With UserList(UserIndex)
         ' NOTE: original logic compared against TimerLanzarSpell; we preserve that.
-        If TicksElapsed(.Counters.TimerLanzarSpell, nowRaw) >= .Intervals.MagiaGolpe Then
+        If TicksElapsed(.Counters.TimerLanzarSpell, nowRaw) >= IntervaloMagiaGolpe Then
             If Actualizar Then .Counters.TimerMagiaGolpe = nowRaw
             IntervaloPermiteMagiaGolpe = True
         End If
@@ -103,7 +103,7 @@ Public Function IntervaloPermiteGolpeMagia(ByVal UserIndex As Integer, Optional 
     On Error GoTo IntervaloPermiteGolpeMagia_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
     With UserList(UserIndex)
-        If TicksElapsed(.Counters.TimerGolpeMagia, nowRaw) >= .Intervals.GolpeMagia Then
+        If TicksElapsed(.Counters.TimerGolpeMagia, nowRaw) >= IntervaloGolpeMagia Then
             If Actualizar Then .Counters.TimerGolpeMagia = nowRaw
             IntervaloPermiteGolpeMagia = True
         End If
@@ -117,7 +117,7 @@ Public Function IntervaloPermiteGolpeUsar(ByVal UserIndex As Integer, Optional B
     On Error GoTo IntervaloPermiteGolpeUsar_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
     With UserList(UserIndex)
-        If TicksElapsed(.Counters.TimerGolpeUsar, nowRaw) >= .Intervals.GolpeUsar Then
+        If TicksElapsed(.Counters.TimerGolpeUsar, nowRaw) >= IntervaloGolpeUsar Then
             If Actualizar Then .Counters.TimerGolpeUsar = nowRaw
             IntervaloPermiteGolpeUsar = True
         End If
@@ -131,7 +131,7 @@ Public Function IntervaloPermiteTrabajarExtraer(ByVal UserIndex As Integer, Opti
     On Error GoTo IntervaloPermiteTrabajar_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
     With UserList(UserIndex)
-        If TicksElapsed(.Counters.TimerPuedeTrabajar, nowRaw) >= .Intervals.TrabajarExtraer Then
+        If TicksElapsed(.Counters.TimerPuedeTrabajar, nowRaw) >= IntervaloTrabajarExtraer Then
             If Actualizar Then .Counters.TimerPuedeTrabajar = nowRaw
             IntervaloPermiteTrabajarExtraer = True
         End If
@@ -145,7 +145,7 @@ Public Function IntervaloPermiteTrabajarConstruir(ByVal UserIndex As Integer, Op
     On Error GoTo IntervaloPermiteTrabajar_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
     With UserList(UserIndex)
-        If TicksElapsed(.Counters.TimerPuedeTrabajar, nowRaw) >= .Intervals.TrabajarConstruir Then
+        If TicksElapsed(.Counters.TimerPuedeTrabajar, nowRaw) >= IntervaloTrabajarConstruir Then
             If Actualizar Then .Counters.TimerPuedeTrabajar = nowRaw
             IntervaloPermiteTrabajarConstruir = True
         End If
@@ -159,7 +159,7 @@ Public Function IntervaloPermiteUsar(ByVal UserIndex As Integer, Optional ByVal 
     On Error GoTo IntervaloPermiteUsar_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
     With UserList(UserIndex)
-        If TicksElapsed(.Counters.TimerUsar, nowRaw) >= .Intervals.UsarU Then
+        If TicksElapsed(.Counters.TimerUsar, nowRaw) >= IntervaloUserPuedeUsarU Then
             If Actualizar Then .Counters.TimerUsar = nowRaw
             IntervaloPermiteUsar = True
         End If
@@ -172,7 +172,7 @@ End Function
 Public Function IntervaloPermiteUsarClick(ByVal UserIndex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
     With UserList(UserIndex)
-        If TicksElapsed(.Counters.TimerUsarClick, nowRaw) >= .Intervals.UsarClic Then
+        If TicksElapsed(.Counters.TimerUsarClick, nowRaw) >= IntervaloUserPuedeUsarClic Then
             If Actualizar Then .Counters.TimerUsarClick = nowRaw
             IntervaloPermiteUsarClick = True
         End If
@@ -183,7 +183,7 @@ Public Function IntervaloPermiteUsarArcos(ByVal UserIndex As Integer, Optional B
     On Error GoTo IntervaloPermiteUsarArcos_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
     With UserList(UserIndex)
-        If TicksElapsed(.Counters.TimerPuedeUsarArco, nowRaw) >= .Intervals.Arco Then
+        If TicksElapsed(.Counters.TimerPuedeUsarArco, nowRaw) >= IntervaloFlechasCazadores Then
             If Actualizar Then
                 .Counters.TimerPuedeUsarArco = nowRaw
                 ' También actualizo los otros
@@ -202,7 +202,7 @@ Public Function IntervaloPermiteCaminar(ByVal UserIndex As Integer) As Boolean
     On Error GoTo IntervaloPermiteCaminar_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()
     With UserList(UserIndex)
-        If TicksElapsed(.Counters.TimerCaminar, nowRaw) >= .Intervals.Caminar Then
+        If TicksElapsed(.Counters.TimerCaminar, nowRaw) >= IntervaloCaminar Then
             .Counters.TimerCaminar = nowRaw
             IntervaloPermiteCaminar = True
         End If

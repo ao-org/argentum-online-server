@@ -70,7 +70,9 @@ Public IntervaloFrio                 As Integer
 Public IntervaloWavFx                As Integer
 Public IntervaloNPCPuedeAtacar       As Integer
 Public IntervaloInvocacion           As Integer
-Public IntervaloOculto               As Integer '[Nacho]
+Public IntervaloOculto               As Long
+Public IntervaloTalk                 As Long
+Public IntervaloLeftClick            As Long
 Public IntervaloUserPuedeAtacar      As Long
 Public IntervaloMagiaGolpe           As Long
 Public IntervaloGolpeMagia           As Long
