@@ -1,4 +1,4 @@
-Attribute VB_Name = "Acciones"
+Attribute VB_Name = "WorldActions"
 ' Argentum 20 Game Server
 '
 '    Copyright (C) 2023-2026 Noland Studios LTD
@@ -27,15 +27,15 @@ Attribute VB_Name = "Acciones"
 '
 Option Explicit
 
-Public Function get_map_name(ByVal Map As Long) As String
+Public Function GetMapName(ByVal Map As Long) As String
     On Error GoTo get_map_name_Err
-    get_map_name = MapInfo(Map).map_name
+    GetMapName = MapInfo(Map).map_name
     Exit Function
 get_map_name_Err:
-    Call TraceError(Err.Number, Err.Description, "Acciones.get_map_name", Erl)
+    Call TraceError(Err.Number, Err.Description, "WorldActions.GetMapName", Erl)
 End Function
 
-Public Function PuedeUsarObjeto(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional ByVal writeInConsole As Boolean = False) As Byte
+Public Function CanUseObject(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional ByVal writeInConsole As Boolean = False) As Byte
     On Error GoTo PuedeUsarObjeto_Err
     Dim Objeto As t_ObjData
     Dim msg    As String
@@ -44,45 +44,45 @@ Public Function PuedeUsarObjeto(ByVal UserIndex As Integer, ByVal ObjIndex As In
     Objeto = ObjData(ObjIndex)
     With UserList(UserIndex)
         If EsGM(UserIndex) Then
-            PuedeUsarObjeto = 0
+            CanUseObject = 0
             msg = vbNullString
             Exit Function
         End If
         ' Keep the original priority: first match wins
         If Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
-            PuedeUsarObjeto = 7
+            CanUseObject = 7
             msg = "679" ' Only newbies can use this item.
         ElseIf .Stats.ELV < Objeto.MinELV Then
-            PuedeUsarObjeto = 6
+            CanUseObject = 6
             msg = "1926" ' Need level {0}
             Extra = CStr(Objeto.MinELV)
         ElseIf .Stats.ELV > Objeto.MaxLEV And Objeto.MaxLEV > 0 Then
-            PuedeUsarObjeto = 6
+            CanUseObject = 6
             msg = "1982" ' Not for level {0} or higher
             Extra = CStr(Objeto.MaxLEV)
         ElseIf Not FaccionPuedeUsarItem(UserIndex, ObjIndex) And JerarquiaPuedeUsarItem(UserIndex, ObjIndex) Then
-            PuedeUsarObjeto = 3
+            CanUseObject = 3
             msg = "416"  ' Faction doesn't allow it.
         ElseIf Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-            PuedeUsarObjeto = 2
+            CanUseObject = 2
             msg = "265"  ' Class cannot use this item.
         ElseIf Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
-            PuedeUsarObjeto = 1
+            CanUseObject = 1
             msg = "267"  ' Sex cannot use this item.
         ElseIf Not RazaPuedeUsarItem(UserIndex, ObjIndex) Then
-            PuedeUsarObjeto = 5
+            CanUseObject = 5
             msg = "266"  ' Race cannot use this item.
         ElseIf (Objeto.SkillIndex > 0) Then
             If (.Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
-                PuedeUsarObjeto = 4
+                CanUseObject = 4
                 msg = "NEED_SKILL_POINTS" ' e.g. "Necesitas {0} puntos en {1}..."
                 Extra = CStr(Objeto.SkillRequerido) & "¬" & SkillsNames(Objeto.SkillIndex)
             Else
-                PuedeUsarObjeto = 0
+                CanUseObject = 0
                 msg = vbNullString
             End If
         Else
-            PuedeUsarObjeto = 0
+            CanUseObject = 0
             msg = vbNullString
         End If
         ' Only emit when we actually have a message
@@ -94,10 +94,10 @@ Public Function PuedeUsarObjeto(ByVal UserIndex As Integer, ByVal ObjIndex As In
     End With
     Exit Function
 PuedeUsarObjeto_Err:
-    Call TraceError(Err.Number, Err.Description, "Acciones.PuedeUsarObjeto", Erl)
+    Call TraceError(Err.Number, Err.Description, "WorldActions.CanUseObject", Erl)
 End Function
 
-Public Sub EndProgrammedAction(ByVal UserIndex As Integer)
+Public Sub CompletePendingAction(ByVal UserIndex As Integer)
     On Error GoTo EndProgrammedAction_Err
     Dim obj  As t_ObjData
     Dim Slot As Byte
@@ -150,10 +150,10 @@ Public Sub EndProgrammedAction(ByVal UserIndex As Integer)
     End With
     Exit Sub
 EndProgrammedAction_Err:
-    Call TraceError(Err.Number, Err.Description, "Acciones.EndProgrammedAction", Erl)
+    Call TraceError(Err.Number, Err.Description, "WorldActions.CompletePendingAction", Erl)
 End Sub
 
-Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
+Sub HandleWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo Accion_Err
     '¿Rango Visión? (ToxicWaste)
     If (Abs(UserList(UserIndex).pos.y - y) > RANGO_VISION_Y) Or (Abs(UserList(UserIndex).pos.x - x) > RANGO_VISION_X) Then
@@ -438,18 +438,18 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer,
             UserList(UserIndex).flags.TargetObj = MapData(Map, x, y).ObjInfo.ObjIndex
             Select Case ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).OBJType
                 Case e_OBJType.otDoors 'Es una puerta
-                    Call AccionParaPuerta(Map, x, y, UserIndex)
+                    Call HandleDoorAction(Map, x, y, UserIndex)
                 Case e_OBJType.otSignBoards 'Es un cartel
-                    Call AccionParaCartel(Map, x, y, UserIndex)
+                    Call HandleSignAction(Map, x, y, UserIndex)
                 Case e_OBJType.otMail 'Es un cartel
                     'Call AccionParaCorreo(Map, x, Y, UserIndex)
                     ' Msg586=El correo está temporalmente deshabilitado.
                     Call WriteLocaleMsg(UserIndex, MSG_CORREO_TEMPORALMENTE_DESHABILITADO, e_FontTypeNames.FONTTYPE_EJECUCION)
                 Case e_OBJType.otAnvil 'Pozos
-                    Call AccionParaYunque(Map, x, y, UserIndex)
+                    Call HandleAnvilAction(Map, x, y, UserIndex)
                 Case e_OBJType.otWood    'Leña
                     If MapData(Map, x, y).ObjInfo.ObjIndex = FOGATA_APAG And UserList(UserIndex).flags.Muerto = 0 Then
-                        Call AccionParaRamita(Map, x, y, UserIndex)
+                        Call HandleCampfireTwigAction(Map, x, y, UserIndex)
                     End If
                 Case Else
                     Exit Sub
@@ -459,28 +459,28 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer,
             UserList(UserIndex).flags.TargetObj = MapData(Map, x + 1, y).ObjInfo.ObjIndex
             Select Case ObjData(MapData(Map, x + 1, y).ObjInfo.ObjIndex).OBJType
                 Case e_OBJType.otDoors 'Es una puerta
-                    Call AccionParaPuerta(Map, x + 1, y, UserIndex)
+                    Call HandleDoorAction(Map, x + 1, y, UserIndex)
             End Select
         ElseIf MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex > 0 Then
             UserList(UserIndex).flags.TargetObj = MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex
             Select Case ObjData(MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex).OBJType
                 Case e_OBJType.otDoors 'Es una puerta
-                    Call AccionParaPuerta(Map, x + 1, y + 1, UserIndex)
+                    Call HandleDoorAction(Map, x + 1, y + 1, UserIndex)
             End Select
         ElseIf MapData(Map, x, y + 1).ObjInfo.ObjIndex > 0 Then
             UserList(UserIndex).flags.TargetObj = MapData(Map, x, y + 1).ObjInfo.ObjIndex
             Select Case ObjData(MapData(Map, x, y + 1).ObjInfo.ObjIndex).OBJType
                 Case e_OBJType.otDoors 'Es una puerta
-                    Call AccionParaPuerta(Map, x, y + 1, UserIndex)
+                    Call HandleDoorAction(Map, x, y + 1, UserIndex)
             End Select
         End If
     End If
     Exit Sub
 Accion_Err:
-    Call TraceError(Err.Number, Err.Description, "Acciones.Accion", Erl)
+    Call TraceError(Err.Number, Err.Description, "WorldActions.HandleWorldAction", Erl)
 End Sub
 
-Sub AccionParaYunque(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal UserIndex As Integer)
+Sub HandleAnvilAction(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal UserIndex As Integer)
     On Error GoTo AccionParaYunque_Err
     Dim pos As t_WorldPos
     pos.Map = Map
@@ -510,10 +510,10 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal x As Integer, ByVal y As Intege
     Call WriteShowBlacksmithForm(UserIndex)
     Exit Sub
 AccionParaYunque_Err:
-    Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaYunque", Erl)
+    Call TraceError(Err.Number, Err.Description, "WorldActions.HandleAnvilAction", Erl)
 End Sub
 
-Sub AccionParaPuerta(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByVal UserIndex As Integer, Optional ByVal SinDistancia As Boolean = False)
+Sub HandleDoorAction(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByVal UserIndex As Integer, Optional ByVal SinDistancia As Boolean = False)
     On Error GoTo Handler
     Dim puerta As t_ObjData 'ver ReyarB
     If Distance(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, x, y) > 2 And Not SinDistancia Then
@@ -543,7 +543,7 @@ Sub AccionParaPuerta(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByV
         Call BloquearPuerta(Map, x, y, True)
     End If
     If ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Subtipo = 1 Then
-        Call AccionParaPuerta(Map, x - 3, y + 1, UserIndex, True)
+        Call HandleDoorAction(Map, x - 3, y + 1, UserIndex, True)
     End If
     Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(Map, x, y).ObjInfo.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y))
     If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = 59878 Or puerta.GrhIndex = 59877 Then
@@ -554,10 +554,10 @@ Sub AccionParaPuerta(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByV
     UserList(UserIndex).flags.TargetObj = MapData(Map, x, y).ObjInfo.ObjIndex
     Exit Sub
 Handler:
-    Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaPuerta", Erl)
+    Call TraceError(Err.Number, Err.Description, "WorldActions.HandleDoorAction", Erl)
 End Sub
 
-Sub AccionParaPuertaNpc(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByVal NpcIndex As Integer)
+Sub HandleNpcDoorAction(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByVal NpcIndex As Integer)
     On Error GoTo Handler
     Dim puerta As t_ObjData 'ver ReyarB
     puerta = ObjData(MapData(Map, x, y).ObjInfo.ObjIndex)
@@ -572,10 +572,10 @@ Sub AccionParaPuertaNpc(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, 
     Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_PUERTA, x, y))
     Exit Sub
 Handler:
-    Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaPuertaNpc", Erl)
+    Call TraceError(Err.Number, Err.Description, "WorldActions.HandleNpcDoorAction", Erl)
 End Sub
 
-Sub AccionParaCartel(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal UserIndex As Integer)
+Sub HandleSignAction(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal UserIndex As Integer)
     On Error GoTo Handler
     If Len(ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).texto) > 0 Then
         Call WriteShowSignal(UserIndex, MapData(Map, x, y).ObjInfo.ObjIndex)
@@ -584,10 +584,10 @@ Sub AccionParaCartel(ByVal Map As Integer, ByVal x As Integer, ByVal y As Intege
     End If
     Exit Sub
 Handler:
-    Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaCartel", Erl)
+    Call TraceError(Err.Number, Err.Description, "WorldActions.HandleSignAction", Erl)
 End Sub
 
-Sub AccionParaRamita(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal UserIndex As Integer)
+Sub HandleCampfireTwigAction(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal UserIndex As Integer)
     On Error GoTo Handler
     Dim Suerte As Byte
     Dim exito  As Byte
@@ -647,5 +647,5 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal x As Integer, ByVal y As Intege
     Call SubirSkill(UserIndex, Supervivencia)
     Exit Sub
 Handler:
-    Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaRamita", Erl)
+    Call TraceError(Err.Number, Err.Description, "WorldActions.HandleCampfireTwigAction", Erl)
 End Sub

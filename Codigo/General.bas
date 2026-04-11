@@ -1439,7 +1439,7 @@ Sub PasarSegundo()
                 If .Counters.TimerBarra > 0 Then
                     .Counters.TimerBarra = .Counters.TimerBarra - 1
                     If .Counters.TimerBarra = 0 Then
-                        Call EndProgrammedAction(i)
+                        Call CompletePendingAction(i)
                     End If
                 End If
                 If .flags.UltimoMensaje > 0 Then

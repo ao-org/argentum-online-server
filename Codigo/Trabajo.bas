@@ -1529,7 +1529,7 @@ End Sub
 Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVal Slot As Integer)
     On Error GoTo DoMontar_Err
     With UserList(UserIndex)
-        If PuedeUsarObjeto(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
+        If CanUseObject(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
             Exit Sub
         End If
         If .flags.Montado = 0 And .Counters.EnCombate > 0 Then
