@@ -215,11 +215,11 @@ Private Function test_byte_arr_to_string() As Boolean
     arr(1) = 66  ' B
     arr(2) = 67  ' C
     ' The function should concatenate them into "ABC"
-    If ByteArr2String(arr) <> "ABC" Then test_byte_arr_to_string = False: Exit Function
+    If Extra.ByteArr2String(arr) <> "ABC" Then test_byte_arr_to_string = False: Exit Function
     ' Single byte array for "X" (code 88)
     Dim arr2(0 To 0) As Byte
     arr2(0) = 88  ' X
-    If ByteArr2String(arr2) <> "X" Then test_byte_arr_to_string = False: Exit Function
+    If Extra.ByteArr2String(arr2) <> "X" Then test_byte_arr_to_string = False: Exit Function
     Exit Function
 Err_Handler:
     test_byte_arr_to_string = False
