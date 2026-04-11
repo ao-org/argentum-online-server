@@ -6593,22 +6593,24 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         Exit Sub
                     End If
                     If IsValidUserRef(UserList(UserIndex).Grupo.PropuestaDe) Then
-                        If UserList(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Lider.ArrayIndex <> UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex Then
+                        Dim propuestaIndex As Integer
+                        propuestaIndex = UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex
+                        If propuestaIndex < 1 Or propuestaIndex > UBound(UserList) Then
+                            Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_SOLICITUD_GRUPO_INVALIDA_REINTENTE, e_FontTypeNames.FONTTYPE_SERVER)
+                        ElseIf Not IsValidUserRef(UserList(propuestaIndex).Grupo.Lider) Then
+                            ' Msg723=¡El grupo ya no existe!
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_GRUPO_EXISTE, e_FontTypeNames.FONTTYPE_INFOIAO)
+                        ElseIf UserList(propuestaIndex).Grupo.Lider.ArrayIndex <> propuestaIndex Then
                             ' Msg722=¡El lider del grupo ha cambiado, imposible unirse!
                             Call WriteLocaleMsg(UserIndex, MSG_LIDER_GRUPO_HA_CAMBIADO_IMPOSIBLE_UNIRSE, e_FontTypeNames.FONTTYPE_INFOIAO)
                         Else
                             Log = "Repuesta Afirmativa 1-1 "
-                            If Not IsValidUserRef(UserList(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Lider) Then
-                                ' Msg723=¡El grupo ya no existe!
-                                Call WriteLocaleMsg(UserIndex, MSG_NO_GRUPO_EXISTE, e_FontTypeNames.FONTTYPE_INFOIAO)
-                            Else
-                                Log = "Repuesta Afirmativa 1-2 "
-                                If UserList(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.CantidadMiembros = 1 Then
-                                    Call GroupCreateSuccess(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex)
-                                    Log = "Repuesta Afirmativa 1-3 "
-                                End If
-                                Call AddUserToGRoup(UserIndex, UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex)
+                            Log = "Repuesta Afirmativa 1-2 "
+                            If UserList(propuestaIndex).Grupo.CantidadMiembros = 1 Then
+                                Call GroupCreateSuccess(propuestaIndex)
+                                Log = "Repuesta Afirmativa 1-3 "
                             End If
+                            Call AddUserToGRoup(UserIndex, propuestaIndex)
                         End If
                     Else
                         ' Msg724=Servidor » Solicitud de grupo invalida, reintente...
@@ -6679,28 +6681,34 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                 Case 5
                     Dim i As Integer, j As Integer
                     With UserList(UserIndex)
-                        For i = 1 To MAX_INVENTORY_SLOTS
-                            For j = 1 To UBound(PecesEspeciales)
-                                If .invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
-                                    .Stats.PuntosPesca = .Stats.PuntosPesca + (ObjData(.invent.Object(i).ObjIndex).PuntosPesca * .invent.Object(i).amount)
-                                    .Stats.GLD = .Stats.GLD + (ObjData(.invent.Object(i).ObjIndex).Valor * .invent.Object(i).amount * SvrConfig.GetValue( _
-                                            "SpecialFishGoldMultiplier"))
-                                    Call WriteUpdateGold(UserIndex)
-                                    If IsFeatureEnabled("gain_exp_while_working") Then
-                                        .Stats.Exp = .Stats.Exp + (ObjData(.invent.Object(i).ObjIndex).Valor * .invent.Object(i).amount * SvrConfig.GetValue( _
-                                                "SpecialFishExpMultiplier"))
-                                        Call WriteUpdateExp(UserIndex)
-                                        Call CheckUserLevel(UserIndex)
-                                    End If
-                                    Call QuitarUserInvItem(UserIndex, i, .invent.Object(i).amount)
-                                    Call UpdateUserInv(False, UserIndex, i)
+                        If Not Not PecesEspeciales Then
+                            For i = 1 To MAX_INVENTORY_SLOTS
+                                If .invent.Object(i).ObjIndex > 0 Then
+                                    For j = 1 To UBound(PecesEspeciales)
+                                        If .invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
+                                            .Stats.PuntosPesca = .Stats.PuntosPesca + (ObjData(.invent.Object(i).ObjIndex).PuntosPesca * .invent.Object(i).amount)
+                                            .Stats.GLD = .Stats.GLD + (ObjData(.invent.Object(i).ObjIndex).Valor * .invent.Object(i).amount * SvrConfig.GetValue( _
+                                                    "SpecialFishGoldMultiplier"))
+                                            Call WriteUpdateGold(UserIndex)
+                                            If IsFeatureEnabled("gain_exp_while_working") Then
+                                                .Stats.Exp = .Stats.Exp + (ObjData(.invent.Object(i).ObjIndex).Valor * .invent.Object(i).amount * SvrConfig.GetValue( _
+                                                        "SpecialFishExpMultiplier"))
+                                                Call WriteUpdateExp(UserIndex)
+                                                Call CheckUserLevel(UserIndex)
+                                            End If
+                                            Call QuitarUserInvItem(UserIndex, i, .invent.Object(i).amount)
+                                            Call UpdateUserInv(False, UserIndex, i)
+                                        End If
+                                    Next j
                                 End If
-                            Next j
-                        Next i
+                            Next i
+                        End If
                         Dim charindexstr As Integer
-                        charindexstr = str(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex)
-                        If charindexstr > 0 Then
-                            Call WriteLocaleChatOverHead(UserIndex, 1422, .Stats.PuntosPesca, charindexstr, &HFFFF00) ' Msg1422=¡Felicitaciones! Ahora tienes un total de ¬1 puntos de pesca.
+                        If IsValidNpcRef(.flags.TargetNPC) Then
+                            charindexstr = str(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
+                            If charindexstr > 0 Then
+                                Call WriteLocaleChatOverHead(UserIndex, 1422, .Stats.PuntosPesca, charindexstr, &HFFFF00) ' Msg1422=¡Felicitaciones! Ahora tienes un total de ¬1 puntos de pesca.
+                            End If
                         End If
                         .flags.pregunta = 0
                     End With
@@ -6714,8 +6722,12 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                 Case 1
                     Log = "Repuesta negativa 1"
                     If IsValidUserRef(UserList(UserIndex).Grupo.PropuestaDe) Then
-                        'Msg1245= El usuario no esta interesado en formar parte del grupo.
-                        Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex, "1245", e_FontTypeNames.FONTTYPE_INFO)
+                        Dim propuestaDeIndex As Integer
+                        propuestaDeIndex = UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex
+                        If propuestaDeIndex >= 1 And propuestaDeIndex <= UBound(UserList) Then
+                            'Msg1245= El usuario no esta interesado en formar parte del grupo.
+                            Call WriteLocaleMsg(propuestaDeIndex, "1245", e_FontTypeNames.FONTTYPE_INFO)
+                        End If
                     End If
                     Call SetUserRef(UserList(UserIndex).Grupo.PropuestaDe, 0)
                     'Msg1246= Has rechazado la propuesta.
@@ -6757,8 +6769,12 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                 Case 4
                     Log = "Repuesta negativa 4"
                     If IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then
-                        'Msg1248= El usuario no desea comerciar en este momento.
-                        Call WriteLocaleMsg(UserList(UserIndex).flags.TargetUser.ArrayIndex, "1248", e_FontTypeNames.FONTTYPE_INFO)
+                        Dim targetNegIndex As Integer
+                        targetNegIndex = UserList(UserIndex).flags.TargetUser.ArrayIndex
+                        If targetNegIndex >= 1 And targetNegIndex <= UBound(UserList) Then
+                            'Msg1248= El usuario no desea comerciar en este momento.
+                            Call WriteLocaleMsg(targetNegIndex, "1248", e_FontTypeNames.FONTTYPE_INFO)
+                        End If
                     End If
                 Case 5
                     Log = "Repuesta negativa 5"
