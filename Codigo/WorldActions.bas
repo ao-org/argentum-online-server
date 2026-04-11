@@ -153,35 +153,58 @@ EndProgrammedAction_Err:
     Call TraceError(Err.Number, Err.Description, "WorldActions.CompletePendingAction", Erl)
 End Sub
 
-Sub HandleWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
-    On Error GoTo Accion_Err
-    '¿Rango Visión? (ToxicWaste)
+Public Sub HandleWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
+    On Error GoTo HandleWorldAction_Err
+
+    If Not IsWorldActionRequestValid(UserIndex, Map, x, y) Then Exit Sub
+
+    If TryHandleNpcWorldAction(UserIndex, Map, x, y) Then Exit Sub
+    If TryHandleObjectWorldAction(UserIndex, Map, x, y) Then Exit Sub
+    If TryHandleMultiTileObjectWorldAction(UserIndex, Map, x, y) Then Exit Sub
+
+    Exit Sub
+
+HandleWorldAction_Err:
+    Call TraceError(Err.Number, Err.Description, "WorldActions.HandleWorldAction", Erl)
+End Sub
+
+Private Function IsWorldActionRequestValid(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    If UserIndex <= 0 Then Exit Function
+
+    'Range validation (ToxicWaste)
     If (Abs(UserList(UserIndex).pos.y - y) > RANGO_VISION_Y) Or (Abs(UserList(UserIndex).pos.x - x) > RANGO_VISION_X) Then
-        Exit Sub
+        Exit Function
     End If
-    If UserIndex <= 0 Then Exit Sub
-    '¿Posicion valida?
-    If InMapBounds(Map, x, y) Then
-        Dim TempCharIndex As Integer
-        If MapData(Map, x, y).NpcIndex > 0 Then     'Acciones NPCs
-            TempCharIndex = MapData(Map, x, y).NpcIndex
-            'Set the target NPC
-            Call SetNpcRef(UserList(UserIndex).flags.TargetNPC, TempCharIndex)
-            UserList(UserIndex).flags.TargetNpcTipo = NpcList(TempCharIndex).npcType
+
+    'Valid position?
+    If Not InMapBounds(Map, x, y) Then Exit Function
+
+    IsWorldActionRequestValid = True
+End Function
+
+Private Function TryHandleNpcWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    Dim TempCharIndex As Integer
+
+    If MapData(Map, x, y).NpcIndex <= 0 Then Exit Function
+
+    TempCharIndex = MapData(Map, x, y).NpcIndex
+    'Set the target NPC
+    Call SetNpcRef(UserList(UserIndex).flags.TargetNPC, TempCharIndex)
+    UserList(UserIndex).flags.TargetNpcTipo = NpcList(TempCharIndex).npcType
             If NpcList(TempCharIndex).Comercia = 1 Then
                 '¿Esta el user muerto? Si es asi no puede comerciar
                 If UserList(UserIndex).flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 'Is it already in commerce mode??
                 If UserList(UserIndex).flags.Comerciando Then
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 4 Then
                     Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 If NpcList(TempCharIndex).Movement = e_TipoAI.Caminata Then
                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), 15000)
@@ -193,15 +216,15 @@ Sub HandleWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x 
                 If UserList(UserIndex).flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 'Is it already in commerce mode??
                 If UserList(UserIndex).flags.Comerciando Then
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 4 Then
                     Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 'A depositar de una
                 Call IniciarBanco(UserIndex)
@@ -210,29 +233,29 @@ Sub HandleWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x 
                 If UserList(UserIndex).flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 'Is it already in commerce mode??
                 If UserList(UserIndex).flags.Comerciando Then
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 4 Then
                     Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg1070= Estas demasiado lejos del vendedor de pasajes.
                     Call WriteLocaleMsg(UserIndex, MSG_DEMASIADO_LEJOS_VENDEDOR_PASAJES, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 If NpcList(TempCharIndex).SoundOpen <> 0 Then
                     Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND, , 1)
                 End If
                 'A depositar de unaIniciarTransporte
                 Call WriteViajarForm(UserIndex, TempCharIndex)
-                Exit Sub
+                GoTo TryHandleNpcWorldAction_Handled
             ElseIf NpcList(TempCharIndex).npcType = e_NPCType.Revividor Or NpcList(TempCharIndex).npcType = e_NPCType.ResucitadorNewbie Then
                 If Distancia(UserList(UserIndex).pos, NpcList(TempCharIndex).pos) > 5 Then
                     'Msg8=El sacerdote no puede curarte debido a que estas demasiado lejos.
                     Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 '  No frenamos la caminata al curar/revivir para evitar que puedan dejar al NPC quieto a base de clicks.
                 If UserList(UserIndex).pos.Map <> MAP_HOME_IN_JAIL Then
@@ -248,7 +271,7 @@ Sub HandleWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x 
                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
                 Else
                     If UserList(UserIndex).pos.Map = MAP_HOME_IN_JAIL And NpcList(TempCharIndex).npcType = e_NPCType.Revividor Then
-                        Exit Sub
+                        GoTo TryHandleNpcWorldAction_Handled
                     End If
                     'curamos totalmente
                     If UserList(UserIndex).Stats.MinHp <> UserList(UserIndex).Stats.MaxHp Then
@@ -268,11 +291,11 @@ Sub HandleWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x 
                 If UserList(UserIndex).flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 1 Then
                     Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 If NpcList(TempCharIndex).Movement = Caminata Then
                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), 20000)
@@ -282,7 +305,7 @@ Sub HandleWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x 
                 If UserList(UserIndex).flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NpcList(TempCharIndex).pos.x, NpcList(TempCharIndex).pos.y, 2, 1)
                 Call EnviarQuest(UserIndex)
@@ -290,11 +313,11 @@ Sub HandleWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x 
                 If UserList(UserIndex).flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 3 Then
                     Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 If NpcList(TempCharIndex).flags.Faccion = 0 Then
                     If UserList(UserIndex).Faccion.Status <> e_Facciones.Armada And UserList(UserIndex).Faccion.Status <> e_Facciones.consejo Then
@@ -313,30 +336,30 @@ Sub HandleWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x 
                 If UserList(UserIndex).flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFOIAO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 3 Then
                     Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg8=Estas demasiado lejos del gobernador.
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 Dim DeDonde    As String
                 Dim Gobernador As t_Npc
                 Gobernador = NpcList(TempCharIndex)
                 If UserList(UserIndex).Hogar = Gobernador.GobernadorDe Then
                     Call WriteLocaleChatOverHead(UserIndex, 1349, "", Gobernador.Char.charindex, vbWhite) ' Msg1349=Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 If UserList(UserIndex).Faccion.Status = 0 Or UserList(UserIndex).Faccion.Status = 2 Then
                     If Gobernador.GobernadorDe = e_Ciudad.cBanderbill Then
                         Call WriteLocaleChatOverHead(UserIndex, "1350", "", Gobernador.Char.charindex, vbWhite) ' Msg1350=Aquí no aceptamos criminales.
-                        Exit Sub
+                        GoTo TryHandleNpcWorldAction_Handled
                     End If
                 End If
                 If UserList(UserIndex).Faccion.Status = 3 Or UserList(UserIndex).Faccion.Status = 1 Then
                     If Gobernador.GobernadorDe = e_Ciudad.cArkhein Then
                         Call WriteLocaleChatOverHead(UserIndex, "1351", "", Gobernador.Char.charindex, vbWhite) ' Msg1351=¡¡Sal de aquí ciudadano asqueroso!!
-                        Exit Sub
+                        GoTo TryHandleNpcWorldAction_Handled
                     End If
                 End If
                 If UserList(UserIndex).Hogar <> Gobernador.GobernadorDe Then
@@ -370,7 +393,7 @@ Sub HandleWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x 
                 If UserList(UserIndex).clase <> Trabajador Then
                     'Msg2168=Solo los trabajadores pueden registrar los peces especiales.
                     Call WriteLocaleMsg(UserIndex, MSG_SOLO_TRABAJADORES_PUEDEN_REGISTRAR_PECES_ESPECIALES, e_FontTypeNames.FONTTYPE_INFOIAO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 Dim i                   As Integer, j As Integer
                 Dim PuntosTotales       As Long
@@ -399,42 +422,47 @@ Sub HandleWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x 
                 If UserList(UserIndex).flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFOIAO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 Call WriteShopInit(UserIndex)
             ElseIf NpcList(TempCharIndex).npcType = e_NPCType.AO20ShopPjs Then
                 If UserList(UserIndex).flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFOIAO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 Call WriteShopPjsInit(UserIndex)
             ElseIf NpcList(TempCharIndex).npcType = e_NPCType.EventMaster Then
                 If UserList(UserIndex).flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 4 Then
                     Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 Call WriteUpdateLobbyList(UserIndex)
             ElseIf NpcList(TempCharIndex).Craftea > 0 Then
                 If UserList(UserIndex).flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFOIAO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 3 Then
                     Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
+                    GoTo TryHandleNpcWorldAction_Handled
                 End If
                 UserList(UserIndex).flags.Crafteando = NpcList(TempCharIndex).Craftea
                 Call WriteOpenCrafting(UserIndex, NpcList(TempCharIndex).Craftea)
             End If
-            '¿Es un obj?
-        ElseIf MapData(Map, x, y).ObjInfo.ObjIndex > 0 Then
+TryHandleNpcWorldAction_Handled:
+    TryHandleNpcWorldAction = True
+End Function
+
+Private Function TryHandleObjectWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    If MapData(Map, x, y).ObjInfo.ObjIndex <= 0 Then Exit Function
+
             UserList(UserIndex).flags.TargetObj = MapData(Map, x, y).ObjInfo.ObjIndex
             Select Case ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).OBJType
                 Case e_OBJType.otDoors 'Es una puerta
@@ -452,34 +480,41 @@ Sub HandleWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x 
                         Call HandleCampfireTwigAction(Map, x, y, UserIndex)
                     End If
                 Case Else
-                    Exit Sub
+                    GoTo TryHandleObjectWorldAction_Handled
             End Select
-            '>>>>>>>>>>>OBJETOS QUE OCUPAM MAS DE UN TILE<<<<<<<<<<<<<
-        ElseIf MapData(Map, x + 1, y).ObjInfo.ObjIndex > 0 Then
-            UserList(UserIndex).flags.TargetObj = MapData(Map, x + 1, y).ObjInfo.ObjIndex
-            Select Case ObjData(MapData(Map, x + 1, y).ObjInfo.ObjIndex).OBJType
-                Case e_OBJType.otDoors 'Es una puerta
-                    Call HandleDoorAction(Map, x + 1, y, UserIndex)
-            End Select
-        ElseIf MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex > 0 Then
-            UserList(UserIndex).flags.TargetObj = MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex
-            Select Case ObjData(MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex).OBJType
-                Case e_OBJType.otDoors 'Es una puerta
-                    Call HandleDoorAction(Map, x + 1, y + 1, UserIndex)
-            End Select
-        ElseIf MapData(Map, x, y + 1).ObjInfo.ObjIndex > 0 Then
-            UserList(UserIndex).flags.TargetObj = MapData(Map, x, y + 1).ObjInfo.ObjIndex
-            Select Case ObjData(MapData(Map, x, y + 1).ObjInfo.ObjIndex).OBJType
-                Case e_OBJType.otDoors 'Es una puerta
-                    Call HandleDoorAction(Map, x, y + 1, UserIndex)
-            End Select
-        End If
-    End If
-    Exit Sub
-Accion_Err:
-    Call TraceError(Err.Number, Err.Description, "WorldActions.HandleWorldAction", Erl)
-End Sub
+TryHandleObjectWorldAction_Handled:
+    TryHandleObjectWorldAction = True
+End Function
 
+Private Function TryHandleMultiTileObjectWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    '>>>>>>>>>>>OBJETOS QUE OCUPAM MAS DE UN TILE<<<<<<<<<<<<<
+    If TryHandleObjectAtOffset(UserIndex, Map, x + 1, y) Then
+        TryHandleMultiTileObjectWorldAction = True
+        Exit Function
+    End If
+
+    If TryHandleObjectAtOffset(UserIndex, Map, x + 1, y + 1) Then
+        TryHandleMultiTileObjectWorldAction = True
+        Exit Function
+    End If
+
+    If TryHandleObjectAtOffset(UserIndex, Map, x, y + 1) Then
+        TryHandleMultiTileObjectWorldAction = True
+        Exit Function
+    End If
+End Function
+
+Private Function TryHandleObjectAtOffset(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    If Not InMapBounds(Map, x, y) Then Exit Function
+    If MapData(Map, x, y).ObjInfo.ObjIndex <= 0 Then Exit Function
+
+    UserList(UserIndex).flags.TargetObj = MapData(Map, x, y).ObjInfo.ObjIndex
+    Select Case ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).OBJType
+        Case e_OBJType.otDoors 'Es una puerta
+            Call HandleDoorAction(Map, x, y, UserIndex)
+            TryHandleObjectAtOffset = True
+    End Select
+End Function
 Sub HandleAnvilAction(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal UserIndex As Integer)
     On Error GoTo AccionParaYunque_Err
     Dim pos As t_WorldPos
