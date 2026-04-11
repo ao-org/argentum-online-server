@@ -17,7 +17,7 @@ Attribute VB_Name = "UnitTesting"
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'    Copyright (C) 2002 Márquez Pablo Ignacio
+'    Copyright (C) 2002 Marquez Pablo Ignacio
 '
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
@@ -33,7 +33,18 @@ Option Explicit
     Public decrypted_token As String
     Public character_name  As String
 
+    ' Test runner result tracking state
+    Private TotalTests     As Integer
+    Private PassedTests    As Integer
+    Private FailedTests    As Integer
+    Private FailedTestNames() As String
+    Private FailedTestCount As Integer
+    Private TotalElapsed   As Double
+
+    Private Const SUITE_COUNT As Integer = 9
+
 Public Sub Init()
+    On Error GoTo Init_Err
     'We can mock the key value to test errors...
     private_key = PrivateKey
     character_name = "seneca"
@@ -46,7 +57,19 @@ Public Sub Init()
     
     'Add a fake token to be using when exercising the protocol for LoginNewChar
     Call AddTokenDatabase(encrypted_token, decrypted_token, "MORGOLOCK2002@YAHOO.COM.AR")
+
+Init_Resume:
+    ' Reset test runner state
+    TotalTests = 0
+    PassedTests = 0
+    FailedTests = 0
+    FailedTestCount = 0
+    TotalElapsed = 0
+    ReDim FailedTestNames(0)
+    Exit Sub
     
+Init_Err:
+    Resume Init_Resume
 End Sub
 
 Public Sub shutdown()
@@ -182,10 +205,101 @@ End Function
 
 
 Function test_suite() As Boolean
-    Dim Result As Boolean
-    Result = test_make_user_char()
-    Result = Result And test_maths()
-    test_suite = Result
+    Call RunAllSuites
+    test_suite = (FailedTests = 0)
+End Function
+
+' ============================================================
+' Test Runner Core
+' ============================================================
+
+Public Sub RunTest(ByVal testName As String, ByVal testResult As Boolean)
+    TotalTests = TotalTests + 1
+    
+    If testResult Then
+        PassedTests = PassedTests + 1
+    Else
+        FailedTests = FailedTests + 1
+        FailedTestCount = FailedTestCount + 1
+        ReDim Preserve FailedTestNames(FailedTestCount)
+        FailedTestNames(FailedTestCount) = testName
+    End If
+End Sub
+
+Public Sub RunTestError(ByVal testName As String, ByVal errorDesc As String)
+    TotalTests = TotalTests + 1
+    FailedTests = FailedTests + 1
+    FailedTestCount = FailedTestCount + 1
+    ReDim Preserve FailedTestNames(FailedTestCount)
+    FailedTestNames(FailedTestCount) = testName & " - Error: " & errorDesc
+End Sub
+
+Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
+    On Error GoTo RunSuite_Err
+    
+    Select Case suiteIndex
+        Case 1: RunSuite = Unit_Math.test_suite_math()
+        Case 2: RunSuite = Unit_Bitmask.test_suite_bitmask()
+        Case 3: RunSuite = Unit_StringValidation.test_suite_strings()
+        Case 4: RunSuite = Unit_Pathfinding.test_suite_pathfinding()
+        Case 5: RunSuite = Unit_Characters.test_suite_characters()
+        Case 6: RunSuite = Unit_ElapsedTime.test_suite_elapsed_time()
+        Case 7: RunSuite = Unit_Timer.test_suite_timer()
+        Case 8: RunSuite = Unit_Queue.test_suite_queue()
+        Case 9: RunSuite = Unit_UserNames.test_suite_usernames()
+        Case Else
+            RunSuite = False
+    End Select
+    Exit Function
+    
+RunSuite_Err:
+    RunSuite = False
+End Function
+
+Public Sub RunAllSuites()
+    Dim sw As Instruments
+    Set sw = New Instruments
+    sw.start
+    
+    Dim i As Integer
+    For i = 1 To SUITE_COUNT
+        Call RunSuite(i)
+    Next i
+    
+    TotalElapsed = sw.ElapsedMilliseconds
+End Sub
+
+Public Sub WriteResultsToFile(ByVal filePath As String)
+    On Error GoTo WriteResultsToFile_Err
+    Dim f As Integer
+    f = FreeFile
+    Open filePath For Output As #f
+    Print #f, "=== AO20 TEST REPORT ==="
+    Print #f, "Total: " & TotalTests & " | Passed: " & PassedTests & " | Failed: " & FailedTests
+    
+    If FailedTestCount > 0 Then
+        Print #f, "Failed tests:"
+        Dim i As Integer
+        For i = 1 To FailedTestCount
+            Print #f, "  - " & FailedTestNames(i)
+        Next i
+    End If
+    
+    Print #f, "Total time: " & Format$(TotalElapsed, "0.00") & " ms"
+    
+    If FailedTests = 0 Then
+        Print #f, "RESULT: PASS"
+    Else
+        Print #f, "RESULT: FAIL"
+    End If
+    Close #f
+    Exit Sub
+WriteResultsToFile_Err:
+    Close #f
+End Sub
+
+Public Function GetFailedTests() As Integer
+    GetFailedTests = FailedTests
 End Function
 
 #End If

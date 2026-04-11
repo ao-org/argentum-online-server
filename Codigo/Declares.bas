@@ -2791,20 +2791,6 @@ Public Type t_UserCounters
     LastTransferGold As Long
 End Type
 
-Public Type t_UserIntervals
-    Magia As Long
-    Golpe As Long
-    Arco As Long
-    UsarU As Long
-    UsarClic As Long
-    Caminar As Long
-    GolpeMagia As Long
-    MagiaGolpe As Long
-    GolpeUsar As Long
-    TrabajarExtraer As Long
-    TrabajarConstruir As Long
-End Type
-
 Public Type t_QuestStats
     Quests(1 To MAXUSERQUESTS) As t_UserQuest
     NumQuestsDone As Integer
@@ -2979,7 +2965,6 @@ Public Type t_User
     CurrentInventorySlots As Byte
     BancoInvent As t_BancoInventario
     Counters As t_UserCounters
-    Intervals As t_UserIntervals
     Stats As t_UserStats
     Stats_bk As t_UserStats
     Modifiers As t_ActiveModifiers
@@ -3243,7 +3228,6 @@ Public Type t_NpcInfoCache
     IntervaloRespawnMin As Long
     IntervaloRespawnMax As Long
     InformarRespawn As Integer
-    QuizaProb As Integer
     DropCount As Byte
     Drop() As t_NpcItemDrop
     MinTameLevel As Integer
@@ -3287,8 +3271,6 @@ Public Type t_NpcInfoCache
     SndRespawn As Integer
     NroExp As Integer
     Expresiones() As String
-    NumQuiza As Integer
-    QuizaDropea() As String
     NumQuest As Integer
     QuestNumber() As Integer
     NumDropQuest As Integer
@@ -3405,10 +3387,6 @@ Public Type t_Npc
     pathFindingInfo As t_NpcPathFindingInfo
     ' Esto es del Areas.bas
     AreasInfo As t_AreaInfo
-    
-    NumQuiza As Byte
-    QuizaDropea() As String
-    QuizaProb As Integer
     
     DropCount As Byte
     Drop() As t_NpcItemDrop

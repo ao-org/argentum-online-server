@@ -43,28 +43,6 @@ Public Function TirarItemAlPiso(pos As t_WorldPos, obj As t_Obj, Optional PuedeA
 ErrHandler:
 End Function
 
-Public Sub NPC_TIRAR_ITEMS(ByRef Npc As t_Npc)
-'This function should be deleted after translating all 100% drops to the new system 12/03/26
-    On Error GoTo NPC_TIRAR_ITEMS_Err
-    If Npc.DropCount = 0 Then
-        If Npc.invent.NroItems > 0 Then
-            Dim i     As Byte
-            Dim MiObj As t_Obj
-            For i = 1 To MAX_INVENTORY_SLOTS
-                If Npc.invent.Object(i).ObjIndex > 0 Then
-                    MiObj.Amount = Npc.invent.Object(i).Amount
-                    MiObj.ObjIndex = Npc.invent.Object(i).ObjIndex
-                    Call TirarItemAlPiso(Npc.pos, MiObj, Npc.flags.AguaValida = 1)
-                End If
-            Next i
-        End If
-    End If
-    
-    Exit Sub
-NPC_TIRAR_ITEMS_Err:
-    Call TraceError(Err.Number, Err.Description, "InvNpc.NPC_TIRAR_ITEMS", Erl)
-End Sub
-
 Function QuedanItems(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Boolean
     On Error GoTo QuedanItems_Err
     Dim i As Integer
@@ -181,44 +159,25 @@ Public Sub NpcDropObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
     On Error GoTo ErrHandler
     Dim Dropeo       As t_Obj
     Dim Probabilidad As Long
-    Dim objRandom    As Byte
-    If Npc.DropCount = 0 Then
-        If Npc.NumQuiza = 0 Then Exit Sub
-        If Npc.QuizaProb = 0 Then
-            Probabilidad = RandomNumber(1, SvrConfig.GetValue("DropMult"))
-        Else
-            Probabilidad = RandomNumber(1, Npc.QuizaProb) 'Tiro Item?
-        End If
-        If Probabilidad <> 1 Then Exit Sub
-        objRandom = RandomNumber(1, Npc.NumQuiza) 'Que item puede ser que tire?
-        Dim obj      As Integer
-        Dim Cantidad As Integer
-        obj = val(ReadField(1, Npc.QuizaDropea(objRandom), Asc("-")))
-        Cantidad = val(ReadField(2, Npc.QuizaDropea(objRandom), Asc("-")))
-        Dropeo.Amount = Cantidad 'Cantidad
-        Dropeo.ObjIndex = obj 'NUMERO DEL ITEM EN EL OBJ.DAT
-        Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
-        Call TirarItemAlPiso(Npc.pos, Dropeo, Npc.flags.AguaValida = 1)
-    Else
-        Dim DropMultiplier As Integer
-        DropMultiplier = SvrConfig.GetValue("DropMult")
-        'out of bounds and data type check
-        If DropMultiplier <= 0 Then
-            DropMultiplier = 1
-        End If
-        
-        Dim i As Byte
-        For i = 1 To Npc.DropCount
-        
-            If RandomNumber(1, (Npc.Drop(i).DropChance / DropMultiplier)) = 1 Then
-                Dropeo.Amount = RandomNumber(Npc.Drop(i).LowQuantityBound, Npc.Drop(i).HighQuantityBound)
-                Dropeo.ObjIndex = Npc.Drop(i).ItemIndex
-                Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
-                Call TirarItemAlPiso(Npc.pos, Dropeo, Npc.flags.AguaValida = 1)
-            End If
-        Next i
+    Dim DropMultiplier As Integer
+    If Npc.DropCount = 0 Then Exit Sub
+    DropMultiplier = SvrConfig.GetValue("DropMult")
+    'out of bounds and data type check
+    If DropMultiplier <= 0 Then
+        DropMultiplier = 1
     End If
-    Exit Sub
+    Dim i As Byte
+    For i = 1 To Npc.DropCount
+        'long cast on division truncates decimals 5/2 = 2
+        Probabilidad = Npc.Drop(i).DropChance / DropMultiplier
+        If RandomNumber(1, Probabilidad) = 1 Then
+            Dropeo.Amount = RandomNumber(Npc.Drop(i).LowQuantityBound, Npc.Drop(i).HighQuantityBound)
+            Dropeo.ObjIndex = Npc.Drop(i).ItemIndex
+            Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
+            Call TirarItemAlPiso(Npc.pos, Dropeo, Npc.flags.AguaValida = 1)
+        End If
+    Next i
+Exit Sub
 ErrHandler:
     Call LogError("Error al dropear el item del npc numero:" & Npc.Numero & ", al usuario " & UserList(UserIndex).Name & ". " & Err.Description & ".")
 End Sub
