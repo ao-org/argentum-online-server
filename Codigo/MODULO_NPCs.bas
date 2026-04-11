@@ -217,7 +217,6 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Call NPCTirarOro(MiNPC, UserIndex)
         Call NpcDropQuestObj(MiNPC, UserIndex)
         Call NpcDropObj(MiNPC, UserIndex)
-        Call NPC_TIRAR_ITEMS(MiNPC)
     End If
     ' Mascotas y npcs de entrenamiento no respawnean
     If MiNPC.MaestroNPC.ArrayIndex > 0 Or IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
@@ -335,18 +334,6 @@ ResetExpresiones_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.ResetExpresiones", Erl)
 End Sub
 
-Sub ResetDrop(ByVal NpcIndex As Integer)
-    On Error GoTo ResetDrop_Err
-    Dim j As Integer
-    For j = 1 To NpcList(NpcIndex).NumQuiza
-        NpcList(NpcIndex).QuizaDropea(j) = 0
-    Next j
-    NpcList(NpcIndex).NumQuiza = 0
-    Exit Sub
-ResetDrop_Err:
-    Call TraceError(Err.Number, Err.Description, "NPCs.ResetDrop", Erl)
-End Sub
-
 Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
     On Error GoTo ResetNpcMainInfo_Err
     With (NpcList(NpcIndex))
@@ -402,7 +389,6 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
     Call ResetNpcCharInfo(NpcIndex)
     Call ResetNpcCriatures(NpcIndex)
     Call ResetExpresiones(NpcIndex)
-    Call ResetDrop(NpcIndex)
     Exit Sub
 ResetNpcMainInfo_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcMainInfo", Erl)
@@ -1049,7 +1035,6 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .IntervaloRespawnMin = Val(LeerNPCs.GetValue(SectionName, "IntervaloRespawnMin"))
         .IntervaloRespawnMax = Val(LeerNPCs.GetValue(SectionName, "IntervaloRespawn"))
         .InformarRespawn = Val(LeerNPCs.GetValue(SectionName, "InformarRespawn"))
-        .QuizaProb = Val(LeerNPCs.GetValue(SectionName, "QuizaProb"))
         Dim dropsCount As Long
         dropsCount = val(LeerNPCs.GetValue(SectionName, "DropCount"))
         If dropsCount < 0 Then
@@ -1159,15 +1144,6 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
             Else
                 Erase .Expresiones
             End If
-        End If
-        .NumQuiza = Val(LeerNPCs.GetValue(SectionName, "NumQuiza"))
-        If .NumQuiza > 0 Then
-            ReDim .QuizaDropea(1 To .NumQuiza)
-            For LoopC = 1 To .NumQuiza
-                .QuizaDropea(LoopC) = LeerNPCs.GetValue(SectionName, "QuizaDropea" & LoopC)
-            Next LoopC
-        Else
-            Erase .QuizaDropea
         End If
         aux = LeerNPCs.GetValue(SectionName, "NumQuest")
         If LenB(aux) = 0 Then
@@ -1411,8 +1387,6 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .IntervaloLanzarHechizo = Info.IntervaloLanzarHechizo
         .Contadores.IntervaloRespawn = RandomNumber(Info.IntervaloRespawnMin, Info.IntervaloRespawnMax)
         .InformarRespawn = Info.InformarRespawn
-        .QuizaProb = Info.QuizaProb
-        
         .DropCount = Info.DropCount
         If .DropCount > 0 Then
             ReDim .Drop(1 To .DropCount)
@@ -1546,15 +1520,6 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
             Next LoopC
         Else
             Erase .Expresiones
-        End If
-        .NumQuiza = Info.NumQuiza
-        If .NumQuiza > 0 Then
-            ReDim .QuizaDropea(1 To .NumQuiza)
-            For LoopC = 1 To .NumQuiza
-                .QuizaDropea(LoopC) = Info.QuizaDropea(LoopC)
-            Next LoopC
-        Else
-            Erase .QuizaDropea
         End If
         .NumQuest = Info.NumQuest
         If .NumQuest > 0 Then
