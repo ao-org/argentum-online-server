@@ -1127,7 +1127,7 @@ Dim Ropaje                      As Integer
             ObjIndex = .invent.Object(Slot).ObjIndex
             obj = ObjData(ObjIndex)
 
-            If PuedeUsarObjeto(UserIndex, ObjIndex, True) > 0 Then
+            If CanUseObject(UserIndex, ObjIndex, True) > 0 Then
                 Exit Sub
             End If
 
@@ -1675,7 +1675,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Exit Sub
         End If
 
-        If PuedeUsarObjeto(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
+        If CanUseObject(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
             Exit Sub
         End If
 
