@@ -226,6 +226,161 @@ Private Sub PauseWalkingNpcForInteraction(ByVal NpcIndex As Integer, ByVal inter
         NpcList(NpcIndex).Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), intervalMs)
     End If
 End Sub
+
+
+Private Sub HandleReviverNpcInteraction(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+    If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) > 5 Then
+        'Msg8=El sacerdote no puede curarte debido a que estas demasiado lejos.
+        Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    End If
+    '  No frenamos la caminata al curar/revivir para evitar que puedan dejar al NPC quieto a base de clicks.
+    If UserList(UserIndex).pos.Map <> MAP_HOME_IN_JAIL Then
+        UserList(UserIndex).flags.Envenenado = 0
+        UserList(UserIndex).flags.Incinerado = 0
+    End If
+    'Revivimos si es necesario
+    If UserList(UserIndex).flags.Muerto = 1 And (NpcList(NpcIndex).npcType = e_NPCType.Revividor Or EsNewbie(UserIndex)) Then
+        ' Msg585=¿Has sido resucitado!
+        Call WriteLocaleMsg(UserIndex, MSG_SIDO_RESUCITADO_585, e_FontTypeNames.FONTTYPE_INFO)
+        Call RevivirUsuario(UserIndex)
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Resucitar, 30, False))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+    Else
+        If UserList(UserIndex).pos.Map = MAP_HOME_IN_JAIL And NpcList(NpcIndex).npcType = e_NPCType.Revividor Then
+            Exit Sub
+        End If
+        'curamos totalmente
+        If UserList(UserIndex).Stats.MinHp <> UserList(UserIndex).Stats.MaxHp Then
+            UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
+            Call WritePlayWave(UserIndex, 117, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y)
+            'Msg83=El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...¿Has sido curado!
+            Call WriteLocaleMsg(UserIndex, MSG_CURA_LANZA_PALABRAS_AIRE_COMIENZAS_SENTIR_COMO_CUERPO, e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteUpdateUserStats(UserIndex)
+            If Status(UserIndex) = 4 Or Status(UserIndex) = 2 Or Status(UserIndex) = 0 Then
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.CurarCrimi, 100, False))
+            Else
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.CurarCrimi, 100, False))
+            End If
+        End If
+    End If
+End Sub
+
+Private Sub HandleFactionRecruiterNpcInteraction(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+    If UserList(UserIndex).flags.Muerto = 1 Then
+        'Msg77=¡¡Estás muerto!!.
+        Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    End If
+    If Distancia(NpcList(NpcIndex).pos, UserList(UserIndex).pos) > 3 Then
+        Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    End If
+    If NpcList(NpcIndex).flags.Faccion = 0 Then
+        If UserList(UserIndex).Faccion.Status <> e_Facciones.Armada And UserList(UserIndex).Faccion.Status <> e_Facciones.consejo Then
+            Call EnlistarArmadaReal(UserIndex)
+        Else
+            Call RecompensaArmadaReal(UserIndex)
+        End If
+    Else
+        If UserList(UserIndex).Faccion.Status <> e_Facciones.Caos And UserList(UserIndex).Faccion.Status <> e_Facciones.concilio Then
+            Call EnlistarCaos(UserIndex)
+        Else
+            Call RecompensaCaos(UserIndex)
+        End If
+    End If
+End Sub
+
+Private Sub HandleGovernorNpcInteraction(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+    If UserList(UserIndex).flags.Muerto = 1 Then
+        'Msg77=¡¡Estás muerto!!.
+        Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFOIAO)
+        Exit Sub
+    End If
+    If Distancia(NpcList(NpcIndex).pos, UserList(UserIndex).pos) > 3 Then
+        Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
+        'Msg8=Estas demasiado lejos del gobernador.
+        Exit Sub
+    End If
+    Dim DeDonde    As String
+    Dim Gobernador As t_Npc
+    Gobernador = NpcList(NpcIndex)
+    If UserList(UserIndex).Hogar = Gobernador.GobernadorDe Then
+        Call WriteLocaleChatOverHead(UserIndex, 1349, "", Gobernador.Char.charindex, vbWhite) ' Msg1349=Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.
+        Exit Sub
+    End If
+    If UserList(UserIndex).Faccion.Status = 0 Or UserList(UserIndex).Faccion.Status = 2 Then
+        If Gobernador.GobernadorDe = e_Ciudad.cBanderbill Then
+            Call WriteLocaleChatOverHead(UserIndex, "1350", "", Gobernador.Char.charindex, vbWhite) ' Msg1350=Aquí no aceptamos criminales.
+            Exit Sub
+        End If
+    End If
+    If UserList(UserIndex).Faccion.Status = 3 Or UserList(UserIndex).Faccion.Status = 1 Then
+        If Gobernador.GobernadorDe = e_Ciudad.cArkhein Then
+            Call WriteLocaleChatOverHead(UserIndex, "1351", "", Gobernador.Char.charindex, vbWhite) ' Msg1351=¡¡Sal de aquí ciudadano asqueroso!!
+            Exit Sub
+        End If
+    End If
+    If UserList(UserIndex).Hogar <> Gobernador.GobernadorDe Then
+        UserList(UserIndex).PosibleHogar = Gobernador.GobernadorDe
+        Select Case UserList(UserIndex).PosibleHogar
+            Case e_Ciudad.cUllathorpe
+                DeDonde = "Ullathorpe"
+            Case e_Ciudad.cNix
+                DeDonde = "Nix"
+            Case e_Ciudad.cBanderbill
+                DeDonde = "Banderbill"
+            Case e_Ciudad.cLindos
+                DeDonde = "Lindos"
+            Case e_Ciudad.cArghal
+                DeDonde = "Arghal"
+            Case e_Ciudad.cForgat
+                DeDonde = "Forgat"
+            Case e_Ciudad.cEldoria
+                DeDonde = "Eldoria"
+            Case e_Ciudad.cArkhein
+                DeDonde = "Arkhein"
+            Case e_Ciudad.cPenthar
+                DeDonde = "Penthar"
+            Case Else
+                DeDonde = "Ullathorpe"
+        End Select
+        UserList(UserIndex).flags.pregunta = 3
+        Call WritePreguntaBox(UserIndex, 1592, DeDonde)
+    End If
+End Sub
+
+Private Sub HandleFishingDeliveryNpcInteraction(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+    If UserList(UserIndex).clase <> Trabajador Then
+        'Msg2168=Solo los trabajadores pueden registrar los peces especiales.
+        Call WriteLocaleMsg(UserIndex, MSG_SOLO_TRABAJADORES_PUEDEN_REGISTRAR_PECES_ESPECIALES, e_FontTypeNames.FONTTYPE_INFOIAO)
+        Exit Sub
+    End If
+    Dim i                   As Integer, j As Integer
+    Dim PuntosTotales       As Long
+    Dim CantPecesEspeciales As Long
+    Dim OroTotal            As Long
+    CantPecesEspeciales = UBound(PecesEspeciales)
+    If CantPecesEspeciales > 0 Then
+        For i = 1 To MAX_INVENTORY_SLOTS
+            For j = 1 To CantPecesEspeciales
+                If UserList(UserIndex).invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
+                    PuntosTotales = PuntosTotales + (ObjData(UserList(UserIndex).invent.Object(i).ObjIndex).PuntosPesca * UserList(UserIndex).invent.Object(i).amount)
+                    OroTotal = OroTotal + (ObjData(UserList(UserIndex).invent.Object(i).ObjIndex).Valor * UserList(UserIndex).invent.Object(i).amount)
+                End If
+            Next j
+        Next i
+    End If
+    If PuntosTotales > 0 Then
+        UserList(UserIndex).flags.pregunta = 5
+        Call WritePreguntaBox(UserIndex, 1593, PuntosTotales & "¿" & PonerPuntos(OroTotal * 1.2)) 'Msg1593= Tienes un total de ¿1 puntos y ¿2 monedas de oro para reclamar, ¿Deseas aceptar?
+    Else
+        Dim charindexstr As Integer
+        charindexstr = str$(NpcList(NpcIndex).Char.charindex)
+        Call WriteLocaleChatOverHead(UserIndex, "1352", "", charindexstr, &HFFFF00) ' Msg1352=No tienes ningún trofeo de pesca para entregar.
+    End If
+End Sub
+
 Private Sub HandleNpcInteractionByType(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
             If NpcList(NpcIndex).Comercia = 1 Then
                 If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
@@ -255,41 +410,7 @@ Private Sub HandleNpcInteractionByType(ByVal UserIndex As Integer, ByVal NpcInde
                 Call WriteViajarForm(UserIndex, NpcIndex)
                 GoTo HandleNpcInteractionByType_Handled
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Revividor Or NpcList(NpcIndex).npcType = e_NPCType.ResucitadorNewbie Then
-                If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) > 5 Then
-                    'Msg8=El sacerdote no puede curarte debido a que estas demasiado lejos.
-                    Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                '  No frenamos la caminata al curar/revivir para evitar que puedan dejar al NPC quieto a base de clicks.
-                If UserList(UserIndex).pos.Map <> MAP_HOME_IN_JAIL Then
-                    UserList(UserIndex).flags.Envenenado = 0
-                    UserList(UserIndex).flags.Incinerado = 0
-                End If
-                'Revivimos si es necesario
-                If UserList(UserIndex).flags.Muerto = 1 And (NpcList(NpcIndex).npcType = e_NPCType.Revividor Or EsNewbie(UserIndex)) Then
-                    ' Msg585=¡Has sido resucitado!
-                    Call WriteLocaleMsg(UserIndex, MSG_SIDO_RESUCITADO_585, e_FontTypeNames.FONTTYPE_INFO)
-                    Call RevivirUsuario(UserIndex)
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.Resucitar, 30, False))
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
-                Else
-                    If UserList(UserIndex).pos.Map = MAP_HOME_IN_JAIL And NpcList(NpcIndex).npcType = e_NPCType.Revividor Then
-                        GoTo HandleNpcInteractionByType_Handled
-                    End If
-                    'curamos totalmente
-                    If UserList(UserIndex).Stats.MinHp <> UserList(UserIndex).Stats.MaxHp Then
-                        UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
-                        Call WritePlayWave(UserIndex, 117, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y)
-                        'Msg83=El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...¡Has sido curado!
-                        Call WriteLocaleMsg(UserIndex, MSG_CURA_LANZA_PALABRAS_AIRE_COMIENZAS_SENTIR_COMO_CUERPO, e_FontTypeNames.FONTTYPE_INFOIAO)
-                        Call WriteUpdateUserStats(UserIndex)
-                        If Status(UserIndex) = 4 Or Status(UserIndex) = 2 Or Status(UserIndex) = 0 Then
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.CurarCrimi, 100, False))
-                        Else
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticleEffects.CurarCrimi, 100, False))
-                        End If
-                    End If
-                End If
+                Call HandleReviverNpcInteraction(UserIndex, NpcIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Subastador Then
                 If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
                 If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 1, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
@@ -304,114 +425,11 @@ Private Sub HandleNpcInteractionByType(ByVal UserIndex As Integer, ByVal NpcInde
                 Call WritePlayWave(UserIndex, NpcList(NpcIndex).SoundOpen, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y, 2, 1)
                 Call EnviarQuest(UserIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Enlistador Then
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                If Distancia(NpcList(NpcIndex).pos, UserList(UserIndex).pos) > 3 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                If NpcList(NpcIndex).flags.Faccion = 0 Then
-                    If UserList(UserIndex).Faccion.Status <> e_Facciones.Armada And UserList(UserIndex).Faccion.Status <> e_Facciones.consejo Then
-                        Call EnlistarArmadaReal(UserIndex)
-                    Else
-                        Call RecompensaArmadaReal(UserIndex)
-                    End If
-                Else
-                    If UserList(UserIndex).Faccion.Status <> e_Facciones.Caos And UserList(UserIndex).Faccion.Status <> e_Facciones.concilio Then
-                        Call EnlistarCaos(UserIndex)
-                    Else
-                        Call RecompensaCaos(UserIndex)
-                    End If
-                End If
+                Call HandleFactionRecruiterNpcInteraction(UserIndex, NpcIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Gobernador Then
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFOIAO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                If Distancia(NpcList(NpcIndex).pos, UserList(UserIndex).pos) > 3 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
-                    'Msg8=Estas demasiado lejos del gobernador.
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                Dim DeDonde    As String
-                Dim Gobernador As t_Npc
-                Gobernador = NpcList(NpcIndex)
-                If UserList(UserIndex).Hogar = Gobernador.GobernadorDe Then
-                    Call WriteLocaleChatOverHead(UserIndex, 1349, "", Gobernador.Char.charindex, vbWhite) ' Msg1349=Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                If UserList(UserIndex).Faccion.Status = 0 Or UserList(UserIndex).Faccion.Status = 2 Then
-                    If Gobernador.GobernadorDe = e_Ciudad.cBanderbill Then
-                        Call WriteLocaleChatOverHead(UserIndex, "1350", "", Gobernador.Char.charindex, vbWhite) ' Msg1350=Aquí no aceptamos criminales.
-                        GoTo HandleNpcInteractionByType_Handled
-                    End If
-                End If
-                If UserList(UserIndex).Faccion.Status = 3 Or UserList(UserIndex).Faccion.Status = 1 Then
-                    If Gobernador.GobernadorDe = e_Ciudad.cArkhein Then
-                        Call WriteLocaleChatOverHead(UserIndex, "1351", "", Gobernador.Char.charindex, vbWhite) ' Msg1351=¡¡Sal de aquí ciudadano asqueroso!!
-                        GoTo HandleNpcInteractionByType_Handled
-                    End If
-                End If
-                If UserList(UserIndex).Hogar <> Gobernador.GobernadorDe Then
-                    UserList(UserIndex).PosibleHogar = Gobernador.GobernadorDe
-                    Select Case UserList(UserIndex).PosibleHogar
-                        Case e_Ciudad.cUllathorpe
-                            DeDonde = "Ullathorpe"
-                        Case e_Ciudad.cNix
-                            DeDonde = "Nix"
-                        Case e_Ciudad.cBanderbill
-                            DeDonde = "Banderbill"
-                        Case e_Ciudad.cLindos
-                            DeDonde = "Lindos"
-                        Case e_Ciudad.cArghal
-                            DeDonde = "Arghal"
-                        Case e_Ciudad.cForgat
-                            DeDonde = "Forgat"
-                        Case e_Ciudad.cEldoria
-                            DeDonde = "Eldoria"
-                        Case e_Ciudad.cArkhein
-                            DeDonde = "Arkhein"
-                        Case e_Ciudad.cPenthar
-                            DeDonde = "Penthar"
-                        Case Else
-                            DeDonde = "Ullathorpe"
-                    End Select
-                    UserList(UserIndex).flags.pregunta = 3
-                    Call WritePreguntaBox(UserIndex, 1592, DeDonde)
-                End If
+                Call HandleGovernorNpcInteraction(UserIndex, NpcIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.EntregaPesca Then
-                If UserList(UserIndex).clase <> Trabajador Then
-                    'Msg2168=Solo los trabajadores pueden registrar los peces especiales.
-                    Call WriteLocaleMsg(UserIndex, MSG_SOLO_TRABAJADORES_PUEDEN_REGISTRAR_PECES_ESPECIALES, e_FontTypeNames.FONTTYPE_INFOIAO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                Dim i                   As Integer, j As Integer
-                Dim PuntosTotales       As Long
-                Dim CantPecesEspeciales As Long
-                Dim OroTotal            As Long
-                CantPecesEspeciales = UBound(PecesEspeciales)
-                If CantPecesEspeciales > 0 Then
-                    For i = 1 To MAX_INVENTORY_SLOTS
-                        For j = 1 To CantPecesEspeciales
-                            If UserList(UserIndex).invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
-                                PuntosTotales = PuntosTotales + (ObjData(UserList(UserIndex).invent.Object(i).ObjIndex).PuntosPesca * UserList(UserIndex).invent.Object(i).amount)
-                                OroTotal = OroTotal + (ObjData(UserList(UserIndex).invent.Object(i).ObjIndex).Valor * UserList(UserIndex).invent.Object(i).amount)
-                            End If
-                        Next j
-                    Next i
-                End If
-                If PuntosTotales > 0 Then
-                    UserList(UserIndex).flags.pregunta = 5
-                    Call WritePreguntaBox(UserIndex, 1593, PuntosTotales & "¬" & PonerPuntos(OroTotal * 1.2)) 'Msg1593= Tienes un total de ¬1 puntos y ¬2 monedas de oro para reclamar, ¿Deseas aceptar?
-                Else
-                    Dim charindexstr As Integer
-                    charindexstr = str$(NpcList(NpcIndex).Char.charindex)
-                    Call WriteLocaleChatOverHead(UserIndex, "1352", "", charindexstr, &HFFFF00) ' Msg1352=No tienes ningún trofeo de pesca para entregar.
-                End If
+                Call HandleFishingDeliveryNpcInteraction(UserIndex, NpcIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.AO20Shop Then
                 If UserList(UserIndex).flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
