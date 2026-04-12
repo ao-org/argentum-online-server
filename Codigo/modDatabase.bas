@@ -214,12 +214,19 @@ Public Function ExecutePreparedBankSave(ByRef Params() As Variant) As Boolean
     Dim connIdx As Byte
     Dim i       As Long
     Dim cmd     As ADODB.Command
+    Dim conn    As ADODB.Connection
 
     connIdx = Current_async
     Set cmd = BankSaveCmd(connIdx)
+    Set conn = Connection_async(connIdx)
+
+    ' If the connection is still executing asynchronously, cancel before reusing.
+    If (conn.State And adStateExecuting) <> 0 Then
+        Call conn.Cancel
+    End If
 
     If cmd.ActiveConnection Is Nothing Then
-        Set cmd.ActiveConnection = Connection_async(connIdx)
+        Set cmd.ActiveConnection = conn
     End If
 
     For i = 0 To UBound(Params)
