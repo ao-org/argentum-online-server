@@ -383,44 +383,43 @@ End Sub
 
 Private Sub HandleNpcInteractionByType(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
             If NpcList(NpcIndex).Comercia = 1 Then
-                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
-                If Not EnsureUserNotTrading(UserIndex) Then GoTo HandleNpcInteractionByType_Handled
-                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 4, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
+                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
+                If Not EnsureUserNotTrading(UserIndex) Then Exit Sub
+                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 4, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
                 Call PauseWalkingNpcForInteraction(NpcIndex, 15000)
                 'Iniciamos la rutina pa' comerciar.
                 Call IniciarComercioNPC(UserIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Banquero Then
-                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
-                If Not EnsureUserNotTrading(UserIndex) Then GoTo HandleNpcInteractionByType_Handled
-                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 4, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
+                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
+                If Not EnsureUserNotTrading(UserIndex) Then Exit Sub
+                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 4, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
                 'A depositar de una
                 Call IniciarBanco(UserIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Pirata Then  'VIAJES
-                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
-                If Not EnsureUserNotTrading(UserIndex) Then GoTo HandleNpcInteractionByType_Handled
+                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
+                If Not EnsureUserNotTrading(UserIndex) Then Exit Sub
                 If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 4, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then
                     'Msg1070= Estas demasiado lejos del vendedor de pasajes.
                     Call WriteLocaleMsg(UserIndex, MSG_DEMASIADO_LEJOS_VENDEDOR_PASAJES, e_FontTypeNames.FONTTYPE_INFO)
-                    GoTo HandleNpcInteractionByType_Handled
+                    Exit Sub
                 End If
                 If NpcList(NpcIndex).SoundOpen <> 0 Then
                     Call WritePlayWave(UserIndex, NpcList(NpcIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND, , 1)
                 End If
                 'A depositar de unaIniciarTransporte
                 Call WriteViajarForm(UserIndex, NpcIndex)
-                GoTo HandleNpcInteractionByType_Handled
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Revividor Or NpcList(NpcIndex).npcType = e_NPCType.ResucitadorNewbie Then
                 Call HandleReviverNpcInteraction(UserIndex, NpcIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Subastador Then
-                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
-                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 1, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
+                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
+                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 1, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
                 Call PauseWalkingNpcForInteraction(NpcIndex, 20000)
                 Call IniciarSubasta(UserIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Quest Then
                 If UserList(UserIndex).flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                    GoTo HandleNpcInteractionByType_Handled
+                    Exit Sub
                 End If
                 Call WritePlayWave(UserIndex, NpcList(NpcIndex).SoundOpen, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y, 2, 1)
                 Call EnviarQuest(UserIndex)
@@ -434,27 +433,26 @@ Private Sub HandleNpcInteractionByType(ByVal UserIndex As Integer, ByVal NpcInde
                 If UserList(UserIndex).flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFOIAO)
-                    GoTo HandleNpcInteractionByType_Handled
+                    Exit Sub
                 End If
                 Call WriteShopInit(UserIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.AO20ShopPjs Then
                 If UserList(UserIndex).flags.Muerto = 1 Then
                     'Msg77=¡¡Estás muerto!!.
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFOIAO)
-                    GoTo HandleNpcInteractionByType_Handled
+                    Exit Sub
                 End If
                 Call WriteShopPjsInit(UserIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.EventMaster Then
-                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
-                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 4, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
+                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
+                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 4, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
                 Call WriteUpdateLobbyList(UserIndex)
             ElseIf NpcList(NpcIndex).Craftea > 0 Then
-                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFOIAO) Then GoTo HandleNpcInteractionByType_Handled
-                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 3, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
+                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFOIAO) Then Exit Sub
+                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 3, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
                 UserList(UserIndex).flags.Crafteando = NpcList(NpcIndex).Craftea
                 Call WriteOpenCrafting(UserIndex, NpcList(NpcIndex).Craftea)
             End If
-HandleNpcInteractionByType_Handled:
 End Sub
 
 Private Function TryHandleObjectWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
