@@ -31,6 +31,9 @@ Database.db
 AoServerTools.dll
 AOACServer.pdb
 .aider*
+.kiro/
+test_results.txt
+vb6build.log
 *.pdb
 /dumps
 _assets
