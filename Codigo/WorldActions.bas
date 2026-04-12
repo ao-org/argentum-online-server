@@ -197,57 +197,53 @@ Private Function TryHandleNpcWorldAction(ByVal UserIndex As Integer, ByVal Map A
     TryHandleNpcWorldAction = True
 End Function
 
+Private Function EnsureUserAliveForNpcInteraction(ByVal UserIndex As Integer, Optional ByVal fontType As e_FontTypeNames = e_FontTypeNames.FONTTYPE_INFO) As Boolean
+    If UserList(UserIndex).flags.Muerto = 1 Then
+        Call WriteLocaleMsg(UserIndex, MSG_MUERTO, fontType)
+        Exit Function
+    End If
+
+    EnsureUserAliveForNpcInteraction = True
+End Function
+
+Private Function EnsureUserNotTrading(ByVal UserIndex As Integer) As Boolean
+    If UserList(UserIndex).flags.Comerciando Then Exit Function
+
+    EnsureUserNotTrading = True
+End Function
+
+Private Function EnsureNpcWithinDistance(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal maxDistance As Integer, Optional ByVal tooFarMsgId As Long = MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, Optional ByVal fontType As e_FontTypeNames = e_FontTypeNames.FONTTYPE_INFO) As Boolean
+    If Distancia(NpcList(NpcIndex).pos, UserList(UserIndex).pos) > maxDistance Then
+        Call WriteLocaleMsg(UserIndex, tooFarMsgId, fontType)
+        Exit Function
+    End If
+
+    EnsureNpcWithinDistance = True
+End Function
+
+Private Sub PauseWalkingNpcForInteraction(ByVal NpcIndex As Integer, ByVal intervalMs As Long)
+    If NpcList(NpcIndex).Movement = e_TipoAI.Caminata Then
+        NpcList(NpcIndex).Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), intervalMs)
+    End If
+End Sub
 Private Sub HandleNpcInteractionByType(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
             If NpcList(NpcIndex).Comercia = 1 Then
-                '¿Esta el user muerto? Si es asi no puede comerciar
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                'Is it already in commerce mode??
-                If UserList(UserIndex).flags.Comerciando Then
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                If Distancia(NpcList(NpcIndex).pos, UserList(UserIndex).pos) > 4 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                If NpcList(NpcIndex).Movement = e_TipoAI.Caminata Then
-                    NpcList(NpcIndex).Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), 15000)
-                End If
+                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
+                If Not EnsureUserNotTrading(UserIndex) Then GoTo HandleNpcInteractionByType_Handled
+                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 4, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
+                Call PauseWalkingNpcForInteraction(NpcIndex, 15000)
                 'Iniciamos la rutina pa' comerciar.
                 Call IniciarComercioNPC(UserIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Banquero Then
-                '¿Esta el user muerto? Si es asi no puede comerciar
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                'Is it already in commerce mode??
-                If UserList(UserIndex).flags.Comerciando Then
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                If Distancia(NpcList(NpcIndex).pos, UserList(UserIndex).pos) > 4 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
+                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
+                If Not EnsureUserNotTrading(UserIndex) Then GoTo HandleNpcInteractionByType_Handled
+                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 4, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
                 'A depositar de una
                 Call IniciarBanco(UserIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Pirata Then  'VIAJES
-                '¿Esta el user muerto? Si es asi no puede comerciar
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                'Is it already in commerce mode??
-                If UserList(UserIndex).flags.Comerciando Then
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                If Distancia(NpcList(NpcIndex).pos, UserList(UserIndex).pos) > 4 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
+                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
+                If Not EnsureUserNotTrading(UserIndex) Then GoTo HandleNpcInteractionByType_Handled
+                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 4, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then
                     'Msg1070= Estas demasiado lejos del vendedor de pasajes.
                     Call WriteLocaleMsg(UserIndex, MSG_DEMASIADO_LEJOS_VENDEDOR_PASAJES, e_FontTypeNames.FONTTYPE_INFO)
                     GoTo HandleNpcInteractionByType_Handled
@@ -295,18 +291,9 @@ Private Sub HandleNpcInteractionByType(ByVal UserIndex As Integer, ByVal NpcInde
                     End If
                 End If
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Subastador Then
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                If Distancia(NpcList(NpcIndex).pos, UserList(UserIndex).pos) > 1 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                If NpcList(NpcIndex).Movement = Caminata Then
-                    NpcList(NpcIndex).Contadores.IntervaloMovimiento = AddMod32(GetTickCountRaw(), 20000)
-                End If
+                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
+                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 1, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
+                Call PauseWalkingNpcForInteraction(NpcIndex, 20000)
                 Call IniciarSubasta(UserIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Quest Then
                 If UserList(UserIndex).flags.Muerto = 1 Then
@@ -440,26 +427,12 @@ Private Sub HandleNpcInteractionByType(ByVal UserIndex As Integer, ByVal NpcInde
                 End If
                 Call WriteShopPjsInit(UserIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.EventMaster Then
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                If Distancia(NpcList(NpcIndex).pos, UserList(UserIndex).pos) > 4 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
+                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
+                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 4, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
                 Call WriteUpdateLobbyList(UserIndex)
             ElseIf NpcList(NpcIndex).Craftea > 0 Then
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFOIAO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
-                If Distancia(NpcList(NpcIndex).pos, UserList(UserIndex).pos) > 3 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
-                    GoTo HandleNpcInteractionByType_Handled
-                End If
+                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFOIAO) Then GoTo HandleNpcInteractionByType_Handled
+                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 3, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then GoTo HandleNpcInteractionByType_Handled
                 UserList(UserIndex).flags.Crafteando = NpcList(NpcIndex).Craftea
                 Call WriteOpenCrafting(UserIndex, NpcList(NpcIndex).Craftea)
             End If
