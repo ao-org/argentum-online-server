@@ -41,7 +41,7 @@ Option Explicit
     Private FailedTestCount As Integer
     Private TotalElapsed   As Double
 
-    Private Const SUITE_COUNT As Integer = 11
+    Private Const SUITE_COUNT As Integer = 14
 
 Public Sub Init()
     On Error GoTo Init_Err
@@ -249,6 +249,9 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 9: RunSuite = Unit_UserNames.test_suite_usernames()
         Case 10: RunSuite = Unit_General.test_suite_general()
         Case 11: RunSuite = Unit_Factions.test_suite_factions()
+        Case 12: RunSuite = Unit_Commerce.test_suite_commerce()
+        Case 13: RunSuite = Unit_MapBounds.test_suite_mapbounds()
+        Case 14: RunSuite = Unit_StringBuilder.test_suite_stringbuilder()
         Case Else
             RunSuite = False
     End Select

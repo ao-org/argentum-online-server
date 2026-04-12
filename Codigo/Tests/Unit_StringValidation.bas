@@ -16,6 +16,9 @@ Public Function test_suite_strings() As Boolean
     Call UnitTesting.RunTest("test_valid_description_control_chars", test_valid_description_control_chars())
     Call UnitTesting.RunTest("test_valid_words_blocked", test_valid_words_blocked())
     Call UnitTesting.RunTest("test_valid_words_clean", test_valid_words_clean())
+    Call UnitTesting.RunTest("test_blocked_word_dots", test_blocked_word_dots())
+    Call UnitTesting.RunTest("test_blocked_word_hyphens", test_blocked_word_hyphens())
+    Call UnitTesting.RunTest("test_blocked_word_mixed_punct", test_blocked_word_mixed_punct())
     
     Debug.Print "StringValidation suite took " & sw.ElapsedMilliseconds & " ms"
     test_suite_strings = True
@@ -153,6 +156,112 @@ Private Function test_valid_words_clean() As Boolean
     Exit Function
 test_valid_words_clean_Err:
     test_valid_words_clean = False
+End Function
+
+' Verifies that a blocked word with dots between characters is still caught.
+Private Function test_blocked_word_dots() As Boolean
+    On Error GoTo Err_Handler
+    test_blocked_word_dots = True
+    
+    If Not IsArrayInitialized(BlockedWordsDescription) Then
+        Debug.Print "  [SKIP] BlockedWordsDescription not loaded"
+        Exit Function
+    End If
+    If UBound(BlockedWordsDescription) < 1 Then
+        Debug.Print "  [SKIP] BlockedWordsDescription is empty"
+        Exit Function
+    End If
+    
+    Dim blockedWord As String
+    blockedWord = BlockedWordsDescription(LBound(BlockedWordsDescription))
+    
+    ' Insert dots between each character: "abc" -> "a.b.c"
+    Dim obfuscated As String
+    Dim i As Integer
+    obfuscated = ""
+    For i = 1 To Len(blockedWord)
+        If i > 1 Then obfuscated = obfuscated & "."
+        obfuscated = obfuscated & Mid$(blockedWord, i, 1)
+    Next i
+    
+    If ValidWordsDescription(obfuscated) Then
+        test_blocked_word_dots = False
+    End If
+    Exit Function
+Err_Handler:
+    test_blocked_word_dots = False
+End Function
+
+' Verifies that a blocked word with hyphens between characters is still caught.
+Private Function test_blocked_word_hyphens() As Boolean
+    On Error GoTo Err_Handler
+    test_blocked_word_hyphens = True
+    
+    If Not IsArrayInitialized(BlockedWordsDescription) Then
+        Debug.Print "  [SKIP] BlockedWordsDescription not loaded"
+        Exit Function
+    End If
+    If UBound(BlockedWordsDescription) < 1 Then
+        Debug.Print "  [SKIP] BlockedWordsDescription is empty"
+        Exit Function
+    End If
+    
+    Dim blockedWord As String
+    blockedWord = BlockedWordsDescription(LBound(BlockedWordsDescription))
+    
+    ' Insert hyphens between each character: "abc" -> "a-b-c"
+    Dim obfuscated As String
+    Dim i As Integer
+    obfuscated = ""
+    For i = 1 To Len(blockedWord)
+        If i > 1 Then obfuscated = obfuscated & "-"
+        obfuscated = obfuscated & Mid$(blockedWord, i, 1)
+    Next i
+    
+    If ValidWordsDescription(obfuscated) Then
+        test_blocked_word_hyphens = False
+    End If
+    Exit Function
+Err_Handler:
+    test_blocked_word_hyphens = False
+End Function
+
+' Verifies that a blocked word with mixed punctuation separators is still caught.
+Private Function test_blocked_word_mixed_punct() As Boolean
+    On Error GoTo Err_Handler
+    test_blocked_word_mixed_punct = True
+    
+    If Not IsArrayInitialized(BlockedWordsDescription) Then
+        Debug.Print "  [SKIP] BlockedWordsDescription not loaded"
+        Exit Function
+    End If
+    If UBound(BlockedWordsDescription) < 1 Then
+        Debug.Print "  [SKIP] BlockedWordsDescription is empty"
+        Exit Function
+    End If
+    
+    Dim blockedWord As String
+    blockedWord = BlockedWordsDescription(LBound(BlockedWordsDescription))
+    
+    ' Insert mixed punctuation between characters: "abcdef" -> "a.b-c_d/e\f"
+    Dim separators As String
+    separators = ".-_/\,"
+    Dim obfuscated As String
+    Dim i As Integer
+    obfuscated = ""
+    For i = 1 To Len(blockedWord)
+        If i > 1 Then
+            obfuscated = obfuscated & Mid$(separators, ((i - 2) Mod Len(separators)) + 1, 1)
+        End If
+        obfuscated = obfuscated & Mid$(blockedWord, i, 1)
+    Next i
+    
+    If ValidWordsDescription(obfuscated) Then
+        test_blocked_word_mixed_punct = False
+    End If
+    Exit Function
+Err_Handler:
+    test_blocked_word_mixed_punct = False
 End Function
 
 #End If
