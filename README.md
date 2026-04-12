@@ -147,6 +147,33 @@ Please note this is not free software and you will have to buy your own license 
     ```
 
 
+
+# 🔤 File Encoding: Windows-1252 (Latin)
+
+**All VB6 source files (`.bas`, `.cls`, `.frm`, `.vbp`) in this repository use Windows-1252 encoding**, not UTF-8. This is configured in `.gitattributes` via `working-tree-encoding=windows-1252`.
+
+When editing these files — whether manually, with scripts, or with AI tools — you **must** read and write them using `windows-1252` (or `latin1`) encoding. Writing UTF-8 will corrupt Spanish characters (á, é, í, ó, ú, ñ, etc.) and break the VB6 IDE.
+
+### Examples
+
+**Node.js:**
+```js
+const content = fs.readFileSync('Codigo/Module.bas', 'latin1');
+// ... modify content ...
+fs.writeFileSync('Codigo/Module.bas', content, 'latin1');
+```
+
+**Python:**
+```python
+with open('Codigo/Module.bas', 'r', encoding='windows-1252') as f:
+    content = f.read()
+# ... modify content ...
+with open('Codigo/Module.bas', 'w', encoding='windows-1252') as f:
+    f.write(content)
+```
+
+> ⚠️ **AI agents and automated tools:** Never use the default UTF-8 encoding when reading or writing `.bas`, `.cls`, `.frm`, or `.vbp` files. Always specify `latin1` or `windows-1252`.
+
 ## Repo Activity
 ![Alt](https://repobeats.axiom.co/api/embed/f0d51db011fb97750321324a10936f4f7bcf2b87.svg "Repobeats analytics image")
 
