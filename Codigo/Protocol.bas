@@ -8103,6 +8103,9 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
             If Not CanUserExtractResource(UserIndex, e_OBJType.otTrees, x, y) Then
                 Exit Function
             End If
+            If Not CanUserExtractWood(UserIndex, x, y) Then
+                Exit Function
+            End If
         Case e_Skill.Mineria
             If Not CanUserExtractResource(UserIndex, e_OBJType.otOreDeposit, x, y) Then
                 Exit Function
