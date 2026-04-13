@@ -757,21 +757,34 @@ End Sub
 
 Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
     On Error GoTo ErrorHandler
-    Dim TargetPos As t_WorldPos
+    Dim TargetPos       As t_WorldPos
+    Dim targetNpcIndex  As Integer
+    Dim targetUserIndex As Integer
     With NpcList(NpcIndex)
         If IsValidNpcRef(.TargetNPC) Then
-            TargetPos = NpcList(.TargetNPC.ArrayIndex).pos
+            targetNpcIndex = .TargetNPC.ArrayIndex
+            TargetPos = NpcList(targetNpcIndex).pos
             If Distancia(.pos, TargetPos) <= 1 Then
-                Call SistemaCombate.NpcAtacaNpc(NpcIndex, .TargetNPC.ArrayIndex, False)
+                Call SistemaCombate.NpcAtacaNpc(NpcIndex, targetNpcIndex, False)
+            End If
+            If Not IsValidNpcRef(.TargetNPC) Then
+                Call AI_CaminarConRumbo(NpcIndex, .Orig)
+                Exit Sub
             End If
             If DistanciaRadial(.Orig, TargetPos) <= (DIAMETRO_VISION_GUARDIAS_NPCS \ 2) Then
-                If Not IsValidUserRef(NpcList(.TargetNPC.ArrayIndex).TargetUser) Then
-                    Call AI_CaminarConRumbo(NpcIndex, TargetPos)
-                ElseIf UserList(NpcList(.TargetNPC.ArrayIndex).TargetUser.ArrayIndex).flags.NPCAtacado.ArrayIndex <> .TargetNPC.ArrayIndex Then
+                If Not IsValidUserRef(NpcList(targetNpcIndex).TargetUser) Then
                     Call AI_CaminarConRumbo(NpcIndex, TargetPos)
                 Else
-                    Call ClearNpcRef(.TargetNPC)
-                    Call AI_CaminarConRumbo(NpcIndex, .Orig)
+                    targetUserIndex = NpcList(targetNpcIndex).TargetUser.ArrayIndex
+                    If targetUserIndex < LBound(UserList) Or targetUserIndex > UBound(UserList) Then
+                        Call ClearNpcRef(.TargetNPC)
+                        Call AI_CaminarConRumbo(NpcIndex, .Orig)
+                    ElseIf UserList(targetUserIndex).flags.NPCAtacado.ArrayIndex <> targetNpcIndex Then
+                        Call AI_CaminarConRumbo(NpcIndex, TargetPos)
+                    Else
+                        Call ClearNpcRef(.TargetNPC)
+                        Call AI_CaminarConRumbo(NpcIndex, .Orig)
+                    End If
                 End If
             Else
                 Call ClearNpcRef(.TargetNPC)
@@ -788,7 +801,7 @@ Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
     End With
     Exit Sub
 ErrorHandler:
-    Call TraceError(Err.Number, Err.Description, "AIv2.AI_GuardiaAtacaNpc", Erl)
+    Call TraceError(Err.Number, Err.Description, "AIv2.AI_GuardiaPersigueNpc", Erl)
 End Sub
 
 Public Sub AI_SupportAndAttackNpc(ByVal NpcIndex As Integer)
