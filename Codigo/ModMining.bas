@@ -25,12 +25,12 @@ Public Function CanUserExtractMinerals(ByVal UserIndex As Integer, ByVal TargetX
         If .invent.EquippedWeaponObjIndex <= 0 Then Exit Function
         If ObjData(MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex).Blodium Then
             If Not ObjData(.invent.EquippedWeaponObjIndex).Blodium Then
-                CanUserExtractMinerals = False
                 Call WriteLocaleMsg(UserIndex, BLODIUM_PICKAXE_REQUIRED_MSG, FONTTYPE_INFO)
                 Exit Function
             End If
         End If
     End With
+    CanUserExtractMinerals = True
 End Function
 
 
