@@ -658,6 +658,9 @@ Sub Main()
         Dim suite_passed_ok As Boolean
         suite_passed_ok = UnitTesting.test_suite()
         Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
+        frmMain.GuardarYCerrar = True
+        Unload frmMain
+        Exit Sub
     #End If
     While (True)
         GlobalFrameTime = GetTickCountRaw()
