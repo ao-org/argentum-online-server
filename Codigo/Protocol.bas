@@ -4019,7 +4019,7 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
         End If
         Select Case NpcList(.flags.TargetNPC.ArrayIndex).npcType
             Case e_NPCType.Banquero
-                Call WriteLocaleChatOverHead(UserIndex, 1433, "", str$(PonerPuntos(.Stats.Banco)), vbWhite) ' Msg1433=Tenes ¬1 monedas de oro en tu cuenta.
+                Call WriteLocaleChatOverHead(UserIndex, 1433, "", CStr(PonerPuntos(.Stats.Banco)), vbWhite) ' Msg1433=Tenes ¬1 monedas de oro en tu cuenta.
             Case e_NPCType.Timbero
                 If Not .flags.Privilegios And e_PlayerType.User Then
                     earnings = Apuestas.Ganancias - Apuestas.Perdidas
@@ -4030,7 +4030,7 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
                         percentage = Int(earnings * 100 / Apuestas.Perdidas)
                     End If
                     'Msg1162= Entradas: ¬1
-                    Call WriteLocaleMsg(UserIndex, MSG_ENTRADAS, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Apuestas.Ganancias))
+                    Call WriteLocaleMsg(UserIndex, MSG_ENTRADAS, e_FontTypeNames.FONTTYPE_INFO, CStr(PonerPuntos(Apuestas.Ganancias)))
                 End If
         End Select
     End With
