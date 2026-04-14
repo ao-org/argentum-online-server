@@ -77,7 +77,7 @@ End Sub
 
 Public Function CanUserExtractWood(ByVal UserIndex As Integer, ByVal TargetX As Byte, ByVal TargetY As Byte) As Boolean
     With UserList(UserIndex)
-        If .invent.EquippedWeaponObjIndex <= 0 Then Exit Function
+        If .invent.EquippedWorkingToolObjIndex <= 0 Then Exit Function
         If ObjData(MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex).Elfico > 0 Then
             If Not ObjData(.invent.EquippedWeaponObjIndex).Elfico > 0 Then
                 Call WriteLocaleMsg(UserIndex, MSG_ONLY_ELVISH_AXE_ALLOWED, FONTTYPE_INFO)
