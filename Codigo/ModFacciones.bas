@@ -331,7 +331,7 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
             ' entregamos TODAS las recompensas hasta el rango actual desde la ultima recompensa.
             If recompensa.rank <= rank And recompensa.rank > ultimaRecompensa Then
                 ' Por alguna razon, PuedeUsarObjeto devuelve 0 cuando el usuario SI puede usarlo.
-                If PuedeUsarObjeto(UserIndex, recompensa.ObjIndex, False) = 0 Then
+                If CanUseObject(UserIndex, recompensa.ObjIndex, False) = 0 Then
                     objetoRecompensa.amount = 1
                     objetoRecompensa.ObjIndex = recompensa.ObjIndex
                     objetoRecompensa.ElementalTags = e_ElementalTags.Normal

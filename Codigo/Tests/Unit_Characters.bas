@@ -2,6 +2,11 @@ Attribute VB_Name = "Unit_Characters"
 Option Explicit
 #If UNIT_TEST = 1 Then
 
+' ==========================================================================
+' Characters Test Suite
+' Tests character creation and deletion on the game map: verifying that
+' MapData and UserList are updated correctly when spawning/erasing chars.
+' ==========================================================================
 Public Function test_suite_characters() As Boolean
     Dim sw As Instruments
     Set sw = New Instruments
@@ -20,6 +25,7 @@ Public Function test_suite_characters() As Boolean
     test_suite_characters = True
 End Function
 
+' Helper: places a user at the given map position and creates their character.
 Private Sub SetupChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     UserList(UserIndex).pos.Map = Map
     UserList(UserIndex).pos.x = x
@@ -27,6 +33,7 @@ Private Sub SetupChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x 
     Call MakeUserChar(True, 17, UserIndex, Map, x, y, 1)
 End Sub
 
+' Helper: removes all active characters from the map to ensure a clean state.
 Private Sub CleanupAllChars()
     Dim i As Integer
     For i = 1 To UBound(UserList)
@@ -36,10 +43,15 @@ Private Sub CleanupAllChars()
     Next i
 End Sub
 
+' Verifies that creating a character correctly registers the UserIndex
+' in the MapData tile at the character's position.
 Private Function test_create_char_map() As Boolean
     On Error GoTo test_create_char_map_Err
+    ' Start clean so no leftover chars interfere
     Call CleanupAllChars
+    ' Place user 1 at map 1, position (54, 51)
     Call SetupChar(1, 1, 54, 51)
+    ' The map tile at (54, 51) should now record UserIndex = 1
     test_create_char_map = (MapData(1, 54, 51).UserIndex = 1)
     Call CleanupAllChars
     Exit Function
@@ -48,10 +60,15 @@ test_create_char_map_Err:
     test_create_char_map = False
 End Function
 
+' Verifies that creating a character assigns a non-zero charindex,
+' which is the unique visual identifier for the character on the map.
 Private Function test_create_char_index() As Boolean
     On Error GoTo test_create_char_index_Err
     Call CleanupAllChars
+    ' Place user 1 on the map
     Call SetupChar(1, 1, 54, 51)
+    ' charindex is the visual ID used by the client to render the character;
+    ' it must be non-zero after creation
     test_create_char_index = (UserList(1).Char.charindex <> 0)
     Call CleanupAllChars
     Exit Function
@@ -60,11 +77,15 @@ test_create_char_index_Err:
     test_create_char_index = False
 End Function
 
+' Verifies that erasing a character clears the UserIndex from the MapData tile,
+' so the tile is no longer occupied.
 Private Function test_erase_char_map() As Boolean
     On Error GoTo test_erase_char_map_Err
     Call CleanupAllChars
+    ' Create then immediately erase user 1
     Call SetupChar(1, 1, 54, 51)
     Call EraseUserChar(1, False, False)
+    ' After erasing, the map tile should have UserIndex = 0 (unoccupied)
     test_erase_char_map = (MapData(1, 54, 51).UserIndex = 0)
     Call CleanupAllChars
     Exit Function
@@ -73,11 +94,15 @@ test_erase_char_map_Err:
     test_erase_char_map = False
 End Function
 
+' Verifies that erasing a character resets its charindex to 0,
+' freeing the visual slot for reuse.
 Private Function test_erase_char_index() As Boolean
     On Error GoTo test_erase_char_index_Err
     Call CleanupAllChars
+    ' Create then erase user 1
     Call SetupChar(1, 1, 54, 51)
     Call EraseUserChar(1, False, False)
+    ' After erasing, charindex should be reset to 0 (visual slot freed)
     test_erase_char_index = (UserList(1).Char.charindex = 0)
     Call CleanupAllChars
     Exit Function
@@ -86,11 +111,15 @@ test_erase_char_index_Err:
     test_erase_char_index = False
 End Function
 
+' Verifies that two characters created simultaneously receive different
+' charindex values, ensuring no visual ID collisions on the map.
 Private Function test_distinct_charindex() As Boolean
     On Error GoTo test_distinct_charindex_Err
     Call CleanupAllChars
+    ' Create two users at different positions on the same map
     Call SetupChar(1, 1, 50, 46)
     Call SetupChar(2, 1, 54, 56)
+    ' Each user must get a unique charindex so the client can tell them apart
     test_distinct_charindex = (UserList(1).Char.charindex <> UserList(2).Char.charindex)
     Call CleanupAllChars
     Exit Function

@@ -2,6 +2,11 @@ Attribute VB_Name = "Unit_Math"
 Option Explicit
 #If UNIT_TEST = 1 Then
 
+' ==========================================================================
+' Math Test Suite
+' Tests core math utilities: percentage calculation, distance, random numbers,
+' min/max, counter overflow, world-position distance, trigonometry, vectors.
+' ==========================================================================
 Public Function test_suite_math() As Boolean
     Dim sw As Instruments
     Set sw = New Instruments
@@ -28,6 +33,9 @@ Public Function test_suite_math() As Boolean
     test_suite_math = True
 End Function
 
+' Verifies Porcentaje() correctly computes (value * percent / 100).
+' Checks known values (1% of 100 = 1, etc.) and iterates 1..100 and 1..1000
+' to confirm linear scaling holds for all integer percentages.
 Private Function test_percentage() As Boolean
     On Error GoTo test_percentage_Err
     test_percentage = True
@@ -54,6 +62,7 @@ test_percentage_Err:
     test_percentage = False
 End Function
 
+' Verifies that the distance between the origin and itself is zero.
 Private Function test_distance_zero() As Boolean
     On Error GoTo test_distance_zero_Err
     test_distance_zero = (Distance(0, 0, 0, 0) = 0)
@@ -62,6 +71,8 @@ test_distance_zero_Err:
     test_distance_zero = False
 End Function
 
+' Verifies that Distance() always returns a positive value for non-zero inputs,
+' including cases with negative coordinates.
 Private Function test_distance_positive() As Boolean
     On Error GoTo test_distance_positive_Err
     test_distance_positive = True
@@ -82,6 +93,9 @@ test_distance_positive_Err:
     test_distance_positive = False
 End Function
 
+' Verifies RandomNumber() always returns a value within [min, max].
+' Tests degenerate cases (min=max) and iterates 1000 times each for
+' positive and negative ranges to confirm bounds are never violated.
 Private Function test_random_number_bounds() As Boolean
     On Error GoTo test_random_number_bounds_Err
     test_random_number_bounds = True
@@ -109,6 +123,8 @@ test_random_number_bounds_Err:
     test_random_number_bounds = False
 End Function
 
+' Verifies Max() and Min() return the correct value for normal, equal,
+' and mixed-sign inputs.
 Private Function test_max_min() As Boolean
     On Error GoTo test_max_min_Err
     test_max_min = True
@@ -127,6 +143,8 @@ test_max_min_Err:
     test_max_min = False
 End Function
 
+' Verifies that IncrementLongCounter resets to 0 when the counter is at
+' Long.MaxValue (0x7FFFFFFF), preventing overflow errors.
 Private Function test_increment_counter_overflow() As Boolean
     On Error GoTo test_increment_counter_overflow_Err
     test_increment_counter_overflow = True
@@ -140,6 +158,8 @@ test_increment_counter_overflow_Err:
     test_increment_counter_overflow = False
 End Function
 
+' Verifies that IncrementLongCounter resets negative counters to 0
+' instead of incrementing them, treating negative values as invalid state.
 Private Function test_increment_counter_negative() As Boolean
     On Error GoTo test_increment_counter_negative_Err
     test_increment_counter_negative = True
@@ -157,6 +177,9 @@ test_increment_counter_negative_Err:
     test_increment_counter_negative = False
 End Function
 
+' Verifies Distancia() (world-position distance) on the same map.
+' Uses Manhattan distance: |x1-x2| + |y1-y2| + |map1-map2|*100.
+' Same position should be 0; (50,50)->(53,54) on map 1 should be 7.
 Private Function test_distancia_same_map() As Boolean
     On Error GoTo test_distancia_same_map_Err
     test_distancia_same_map = True
@@ -176,6 +199,9 @@ test_distancia_same_map_Err:
     test_distancia_same_map = False
 End Function
 
+' Verifies Distancia() adds a 100-unit penalty per map difference.
+' Same coords on maps 1 vs 3 = |1-3|*100 = 200.
+' With offset coords: 2 + 5 + 200 = 207.
 Private Function test_distancia_diff_map() As Boolean
     On Error GoTo test_distancia_diff_map_Err
     test_distancia_diff_map = True
@@ -194,6 +220,8 @@ test_distancia_diff_map_Err:
     test_distancia_diff_map = False
 End Function
 
+' Verifies ToRadians() converts degrees to radians correctly.
+' 0° -> 0, 180° -> PI, 90° -> PI/2 (within floating-point tolerance).
 Private Function test_to_radians() As Boolean
     On Error GoTo test_to_radians_Err
     test_to_radians = True
@@ -209,6 +237,8 @@ test_to_radians_Err:
     test_to_radians = False
 End Function
 
+' Verifies GetDirection() returns the vector from p1 to p2.
+' (10,20)->(15,25) should give (5,5); reversed should give (-5,-5).
 Private Function test_get_direction() As Boolean
     On Error GoTo test_get_direction_Err
     test_get_direction = True
@@ -230,6 +260,8 @@ test_get_direction_Err:
     test_get_direction = False
 End Function
 
+' Verifies TickAfter(a, b) returns True when a >= b (tick a is at or after b).
+' 100 >= 50 -> True, 100 >= 100 -> True, 50 >= 100 -> False, 0 >= 0 -> True.
 Private Function test_tick_after() As Boolean
     On Error GoTo test_tick_after_Err
     test_tick_after = True
@@ -246,6 +278,9 @@ test_tick_after_Err:
     test_tick_after = False
 End Function
 
+' Verifies PosMod() always returns a non-negative remainder.
+' Negative inputs wrap correctly (-1 mod 3 = 2).
+' Zero or negative modulus returns 0 as a safe fallback.
 Private Function test_pos_mod() As Boolean
     On Error GoTo test_pos_mod_Err
     test_pos_mod = True
@@ -266,6 +301,8 @@ test_pos_mod_Err:
     test_pos_mod = False
 End Function
 
+' Verifies AddMod32() performs addition with 32-bit modular arithmetic.
+' Basic cases: 10+20=30, 0+0=0, identity (100+0=100).
 Private Function test_add_mod32() As Boolean
     On Error GoTo test_add_mod32_Err
     test_add_mod32 = True
@@ -281,6 +318,8 @@ test_add_mod32_Err:
     test_add_mod32 = False
 End Function
 
+' Verifies RotateVector() rotates a 2D vector by the given angle in radians.
+' (1,0) rotated 0° stays (1,0); rotated 90° becomes (0,1); rotated 180° becomes (-1,0).
 Private Function test_rotate_vector() As Boolean
     On Error GoTo test_rotate_vector_Err
     test_rotate_vector = True
@@ -308,6 +347,8 @@ test_rotate_vector_Err:
     test_rotate_vector = False
 End Function
 
+' Verifies GetNormal() returns a unit-length vector in the same direction.
+' (3,4) has length 5, so normalized = (0.6, 0.8). (1,0) is already unit length.
 Private Function test_get_normal() As Boolean
     On Error GoTo test_get_normal_Err
     test_get_normal = True

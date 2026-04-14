@@ -1464,7 +1464,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As By
     Call Writer.WriteInt8(Slot)
     ObjIndex = UserList(UserIndex).invent.Object(Slot).ObjIndex
     If ObjIndex > 0 Then
-        PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
+        PodraUsarlo = CanUseObject(UserIndex, ObjIndex)
         NaturalElementalTags = ObjData(UserList(UserIndex).invent.Object(Slot).ObjIndex).ElementalTags
     End If
     Call Writer.WriteInt16(ObjIndex)
@@ -1502,7 +1502,7 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
     ObjIndex = UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex
     If ObjIndex > 0 Then
         Valor = ObjData(ObjIndex).Valor
-        PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
+        PodraUsarlo = CanUseObject(UserIndex, ObjIndex)
         NaturalElementalTags = ObjData(ObjIndex).ElementalTags
     Else
     End If
@@ -1836,7 +1836,7 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, ByVal Slot As
     On Error GoTo WriteChangeNPCInventorySlot_Err
     Dim PodraUsarlo As Byte
     If obj.ObjIndex >= LBound(ObjData()) And obj.ObjIndex <= UBound(ObjData()) Then
-        PodraUsarlo = PuedeUsarObjeto(UserIndex, obj.ObjIndex)
+        PodraUsarlo = CanUseObject(UserIndex, obj.ObjIndex)
     End If
     Call Writer.WriteInt16(ServerPacketID.eChangeNPCInventorySlot)
     Call Writer.WriteInt8(Slot)

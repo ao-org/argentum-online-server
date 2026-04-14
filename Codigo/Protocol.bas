@@ -2235,7 +2235,7 @@ Private Sub HandleDoubleClick(ByVal UserIndex As Integer)
         Dim y As Byte
         x = reader.ReadInt8()
         y = reader.ReadInt8()
-        Call Accion(UserIndex, .pos.Map, x, y)
+        Call HandleWorldAction(UserIndex, .pos.Map, x, y)
     End With
     Exit Sub
 HandleDoubleClick_Err:
@@ -6346,7 +6346,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
         If .GuildIndex <> 0 Then
             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
             If clan_nivel >= RequiredGuildLevelCallSupport Then
-                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_SOLICITA_APOYO_CLAN_PUEDES_VER_UBICACION, GetUserDisplayName(UserIndex) & "¬" & get_map_name(.pos.Map) & "¬" & .pos.Map & "¬" & .pos.x & "¬" & _
+                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_SOLICITA_APOYO_CLAN_PUEDES_VER_UBICACION, GetUserDisplayName(UserIndex) & "¬" & GetMapName(.pos.Map) & "¬" & .pos.Map & "¬" & .pos.x & "¬" & _
                         .pos.y, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1818=Clan> [¬1] solicita apoyo de su clan en ¬2 (¬3-¬4-¬5). Puedes ver su ubicación en el mapa del mundo.
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.pos.Map, .pos.x, .pos.y))
@@ -6397,7 +6397,7 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
                             .flags.Casado = 1
                             .flags.SpouseId = UserList(tUser.ArrayIndex).Id
                             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.Casamiento_sound, NO_3D_SOUND, NO_3D_SOUND))
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SACERDOTE_CELEBRA_CASAMIENTO_ENTRE, get_map_name(.pos.Map) & "¬" & GetUserDisplayName(UserIndex) & "¬" & GetUserDisplayName( _
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SACERDOTE_CELEBRA_CASAMIENTO_ENTRE, GetMapName(.pos.Map) & "¬" & GetUserDisplayName(UserIndex) & "¬" & GetUserDisplayName( _
                                     tUser.ArrayIndex), e_FontTypeNames.FONTTYPE_WARNING)) 'Msg1651=El sacerdote de ¬1 celebra el casamiento entre ¬2 y ¬3.
                             Call WriteLocaleChatOverHead(UserIndex, 1414, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1414=Los declaro unidos en legal matrimonio ¡Felicidades!
                             Call WriteLocaleChatOverHead(tUser.ArrayIndex, 1415, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1415=Los declaro unidos en legal matrimonio ¡Felicidades!
@@ -6443,7 +6443,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Call PerderTesoro
                     Else
                         If BusquedaTesoroActiva Then
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_TODAVIA_NADIE_CAPAZ_ENCONTAR_TESORO_RECORDA, get_map_name(TesoroNumMapa) & "¬" & TesoroNumMapa, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1652=Eventos> Todavia nadie fue capaz de encontar el tesoro, recorda que se encuentra en ¬1(¬2). ¿Quien sera el valiente que lo encuentre?
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_TODAVIA_NADIE_CAPAZ_ENCONTAR_TESORO_RECORDA, GetMapName(TesoroNumMapa) & "¬" & TesoroNumMapa, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1652=Eventos> Todavia nadie fue capaz de encontar el tesoro, recorda que se encuentra en ¬1(¬2). ¿Quien sera el valiente que lo encuentre?
                             'Msg1241= Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: ¬1
                             Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_TESORO_ACTIVA_TESORO_ENCUENTRA, e_FontTypeNames.FONTTYPE_INFO, TesoroNumMapa)
                         Else
@@ -6456,7 +6456,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Call PerderRegalo
                     Else
                         If BusquedaRegaloActiva Then
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_NINGUN_VALIENTE_CAPAZ_ENCONTRAR_ITEM_MISTERIOSO, get_map_name(RegaloNumMapa) & "¬" & RegaloNumMapa, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1653=Eventos> Ningún valiente fue capaz de encontrar el item misterioso, recuerda que se encuentra en ¬1(¬2). ¡Ten cuidado!
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_NINGUN_VALIENTE_CAPAZ_ENCONTRAR_ITEM_MISTERIOSO, GetMapName(RegaloNumMapa) & "¬" & RegaloNumMapa, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1653=Eventos> Ningún valiente fue capaz de encontrar el item misterioso, recuerda que se encuentra en ¬1(¬2). ¡Ten cuidado!
                             'Msg1242= Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: ¬1
                             Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_TESORO_ACTIVA_TESORO_ENCUENTRA_1242, e_FontTypeNames.FONTTYPE_INFO, RegaloNumMapa)
                         Else
@@ -6513,7 +6513,7 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
         Accion = reader.ReadInt8()
         If .Accion.AccionPendiente = True Then
             If .Accion.TipoAccion = Accion Then
-                Call EndProgrammedAction(UserIndex)
+                Call CompletePendingAction(UserIndex)
             Else
                 ' Msg749=Servidor » La acción que solicitas no se corresponde.
                 Call WriteLocaleMsg(UserIndex, MSG_NO_SERVIDOR_ACCION_SOLICITAS_CORRESPONDE, e_FontTypeNames.FONTTYPE_SERVER)
@@ -8101,6 +8101,9 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
             End If
         Case e_Skill.Talar
             If Not CanUserExtractResource(UserIndex, e_OBJType.otTrees, x, y) Then
+                Exit Function
+            End If
+            If Not CanUserExtractWood(UserIndex, x, y) Then
                 Exit Function
             End If
         Case e_Skill.Mineria

@@ -658,6 +658,9 @@ Sub Main()
         Dim suite_passed_ok As Boolean
         suite_passed_ok = UnitTesting.test_suite()
         Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
+        frmMain.GuardarYCerrar = True
+        Unload frmMain
+        Exit Sub
     #End If
     While (True)
         GlobalFrameTime = GetTickCountRaw()
@@ -1439,7 +1442,7 @@ Sub PasarSegundo()
                 If .Counters.TimerBarra > 0 Then
                     .Counters.TimerBarra = .Counters.TimerBarra - 1
                     If .Counters.TimerBarra = 0 Then
-                        Call EndProgrammedAction(i)
+                        Call CompletePendingAction(i)
                     End If
                 End If
                 If .flags.UltimoMensaje > 0 Then

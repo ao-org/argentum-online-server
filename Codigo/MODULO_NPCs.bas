@@ -731,13 +731,13 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
             If NpcList(NpcIndex).Humanoide Or NpcList(NpcIndex).npcType = e_NPCType.GuardiaReal Or NpcList(NpcIndex).npcType = e_NPCType.GuardiasCaos Or NpcList( _
                     NpcIndex).npcType = e_NPCType.GuardiaNpc Then
                 If HayPuerta(nPos.Map, nPos.x, nPos.y) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x, nPos.y, NpcIndex)
+                    Call HandleNpcDoorAction(nPos.Map, nPos.x, nPos.y, NpcIndex)
                 ElseIf HayPuerta(nPos.Map, nPos.x + 1, nPos.y) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x + 1, nPos.y, NpcIndex)
+                    Call HandleNpcDoorAction(nPos.Map, nPos.x + 1, nPos.y, NpcIndex)
                 ElseIf HayPuerta(nPos.Map, nPos.x + 1, nPos.y - 1) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x + 1, nPos.y - 1, NpcIndex)
+                    Call HandleNpcDoorAction(nPos.Map, nPos.x + 1, nPos.y - 1, NpcIndex)
                 ElseIf HayPuerta(nPos.Map, nPos.x, nPos.y - 1) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x, nPos.y - 1, NpcIndex)
+                    Call HandleNpcDoorAction(nPos.Map, nPos.x, nPos.y - 1, NpcIndex)
                 End If
             End If
             Call AnimacionIdle(NpcIndex, False)
@@ -832,7 +832,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.charindex, e_GraphicEffects.ModernGmWarp, 0))
     End If
     If Avisar Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_EVENT, NpcList(nIndex).Name & "¬" & get_map_name(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_EVENT, NpcList(nIndex).Name & "¬" & GetMapName(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
     End If
     SpawnNpc = nIndex
     Exit Function

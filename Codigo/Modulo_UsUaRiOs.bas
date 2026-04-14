@@ -706,7 +706,7 @@ Dim tStr                        As String
         If .Stats.ELV = 1 Then
             Call WriteLocaleMsg(UserIndex, MSG_BIENVENIDO_TIERRAS_ARGENTUM_ONLINE_NOMBRE_TENGAS_BUEN_VIAJE, e_FontTypeNames.FONTTYPE_GUILD, GetUserDisplayName(UserIndex)) ' Msg522=¡Bienvenido a las tierras de Argentum Online! ¡<nombre> que tengas buen viaje y mucha suerte!
         Else
-            Call WriteLocaleMsg(UserIndex, MSG_BIENVENIDO_NUEVO_ACTUALMENTE_NIVEL_BUEN_VIAJE_MUCHA_SUERTE, e_FontTypeNames.FONTTYPE_GUILD, .name & "¬" & .Stats.ELV & "¬" & get_map_name(.pos.Map)) ' Msg1439=¡Bienvenido de nuevo ¬1! Actualmente estas en el nivel ¬2 en ¬3, ¡buen viaje y mucha suerte!
+            Call WriteLocaleMsg(UserIndex, MSG_BIENVENIDO_NUEVO_ACTUALMENTE_NIVEL_BUEN_VIAJE_MUCHA_SUERTE, e_FontTypeNames.FONTTYPE_GUILD, .name & "¬" & .Stats.ELV & "¬" & GetMapName(.pos.Map)) ' Msg1439=¡Bienvenido de nuevo ¬1! Actualmente estas en el nivel ¬2 en ¬3, ¡buen viaje y mucha suerte!
         End If
         If Status(UserIndex) = e_Facciones.Criminal Or Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio Then
             Call WriteSafeModeOff(UserIndex)
@@ -1924,6 +1924,7 @@ Private Function ShouldApplyFactionBonus(ByVal attackerIndex As Integer, ByVal T
 End Function
 
 Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As Integer)
+    On Error GoTo HandleFactionScoreForKill_Err
     Dim Score As Integer
     With UserList(UserIndex)
         Score = CalculateBaseFactionScore(UserIndex, TargetIndex)
@@ -1949,13 +1950,18 @@ Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As I
             Call PenalizeFactionScoreLegionAndCouncil(UserIndex, TargetIndex)
         Else
             'Mantener comportamiento original
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("+" & max(Score, 0), UserList(TargetIndex).Char.charindex, FontTypeToColor(GetFontTypeByFactionStatus(.Faccion.status))))
+            Call WriteTextOverTile(UserIndex, "+" & max(Score, 0), UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y, FontTypeToColor(GetFontTypeByFactionStatus(.Faccion.Status)))
+            Call WriteLocaleMsg(UserIndex, MSG_FACTION_POINTS_GAINED, GetFontTypeByFactionStatus(.Faccion.Status), max(Score, 0) & "¬" & UserList(TargetIndex).Name)
             .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
         End If
     End With
+    Exit Sub
+HandleFactionScoreForKill_Err:
+    Call TraceError(Err.Number, Err.Description, "UsUaRiOs.HandleFactionScoreForKill", Erl)
 End Sub
 
 Sub HandleFactionScoreForAssist(ByVal UserIndex As Integer, ByVal TargetIndex As Integer)
+    On Error GoTo HandleFactionScoreForAssist_Err
     Dim Score As Integer
     With UserList(UserIndex)
         'Calcular el puntaje base de asistencia
@@ -1969,10 +1975,14 @@ Sub HandleFactionScoreForAssist(ByVal UserIndex As Integer, ByVal TargetIndex As
             .Faccion.FactionScore = newScore
         Else
             'Mantener comportamiento original
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("+" & max(Score, 0), UserList(TargetIndex).Char.charindex, FontTypeToColor(GetFontTypeByFactionStatus(.Faccion.status))))
+            Call WriteTextOverTile(UserIndex, "+" & max(Score, 0), UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y, FontTypeToColor(GetFontTypeByFactionStatus(.Faccion.Status)))
+            Call WriteLocaleMsg(UserIndex, MSG_FACTION_POINTS_GAINED, GetFontTypeByFactionStatus(.Faccion.Status), max(Score, 0) & "¬" & UserList(TargetIndex).Name)
             .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
         End If
     End With
+    Exit Sub
+HandleFactionScoreForAssist_Err:
+    Call TraceError(Err.Number, Err.Description, "UsUaRiOs.HandleFactionScoreForAssist", Erl)
 End Sub
 
 Sub PenalizeFactionScoreLegionAndCouncil(ByVal Attacker As Integer, ByVal Target As Integer)
@@ -1994,7 +2004,7 @@ Sub PenalizeFactionScoreLegionAndCouncil(ByVal Attacker As Integer, ByVal Target
         newScore = .Faccion.FactionScore + Score
         If newScore < 0 Then newScore = 0
         .Faccion.FactionScore = newScore
-        Call SendData(SendTarget.ToIndex, Attacker, PrepareMessageChatOverHead(CStr(Score), UserList(Target).Char.charindex, FontTypeToColor(GetFontTypeByFactionStatus(.Faccion.status))))
+        Call WriteTextOverTile(Attacker, CStr(Score), UserList(Target).pos.x, UserList(Target).pos.y, FontTypeToColor(GetFontTypeByFactionStatus(.Faccion.Status)))
     End With
     Exit Sub
 PenalizeFactionScoreLegionAndCouncil_Err:

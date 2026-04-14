@@ -2,6 +2,11 @@ Attribute VB_Name = "Unit_StringValidation"
 Option Explicit
 #If UNIT_TEST = 1 Then
 
+' ==========================================================================
+' String Validation Test Suite
+' Tests character-level validation (printable ASCII range) and
+' blocked-word filtering for user-facing descriptions.
+' ==========================================================================
 Public Function test_suite_strings() As Boolean
     Dim sw As Instruments
     Set sw = New Instruments
@@ -16,25 +21,31 @@ Public Function test_suite_strings() As Boolean
     test_suite_strings = True
 End Function
 
+' Verifies ValidDescription() accepts strings made entirely of printable
+' ASCII characters (codes 32-125). Tests simple phrases, spaces, and a
+' full sweep of every printable character.
 Private Function test_valid_description_printable() As Boolean
     On Error GoTo test_valid_description_printable_Err
     test_valid_description_printable = True
     
-    ' All printable ASCII (32-125) should pass
+    ' All printable ASCII characters (codes 32-125) should be accepted
     If Not ValidDescription("hello world") Then
         test_valid_description_printable = False: Exit Function
     End If
+    ' Numbers mixed with letters and spaces are fine
     If Not ValidDescription("test 123 abc") Then
         test_valid_description_printable = False: Exit Function
     End If
+    ' Multiple spaces between letters are valid
     If Not ValidDescription("a b c d e f") Then
         test_valid_description_printable = False: Exit Function
     End If
-    ' Space (32) is valid
+    ' A single space character (code 32) is the lowest valid printable char
     If Not ValidDescription(" ") Then
         test_valid_description_printable = False: Exit Function
     End If
-    ' Build a string of all printable chars 32-125
+    ' Build a string containing every printable char from 32 to 125
+    ' and verify the entire range passes validation
     Dim s As String
     Dim i As Integer
     s = ""
@@ -49,27 +60,30 @@ test_valid_description_printable_Err:
     test_valid_description_printable = False
 End Function
 
+' Verifies ValidDescription() rejects strings containing control characters
+' (code < 32), tilde (code 126), DEL (code 127), and null (code 0).
+' These are outside the allowed printable range.
 Private Function test_valid_description_control_chars() As Boolean
     On Error GoTo test_valid_description_control_chars_Err
     test_valid_description_control_chars = True
     
-    ' Control char (code 1) should fail
+    ' Control char (code 1, SOH) at the start should be rejected
     If ValidDescription(Chr$(1) & "hello") Then
         test_valid_description_control_chars = False: Exit Function
     End If
-    ' Tab (code 9) should fail
+    ' Tab character (code 9) embedded in the middle should be rejected
     If ValidDescription("hello" & Chr$(9) & "world") Then
         test_valid_description_control_chars = False: Exit Function
     End If
-    ' Char 126 (tilde ~) should fail per the implementation (car >= 126)
+    ' Tilde (code 126) is the first char outside the valid range (>= 126 fails)
     If ValidDescription(Chr$(126)) Then
         test_valid_description_control_chars = False: Exit Function
     End If
-    ' Char 127 (DEL) should fail
+    ' DEL character (code 127) is a control char, should be rejected
     If ValidDescription(Chr$(127)) Then
         test_valid_description_control_chars = False: Exit Function
     End If
-    ' Null char should fail
+    ' Null character (code 0) at the start should be rejected
     If ValidDescription(Chr$(0) & "test") Then
         test_valid_description_control_chars = False: Exit Function
     End If
@@ -78,12 +92,14 @@ test_valid_description_control_chars_Err:
     test_valid_description_control_chars = False
 End Function
 
+' Verifies ValidWordsDescription() rejects strings that contain a blocked word,
+' both standalone and embedded in a sentence. Skips if the blocked-word list
+' is not loaded (e.g. in minimal test environments).
 Private Function test_valid_words_blocked() As Boolean
     On Error GoTo test_valid_words_blocked_Err
     test_valid_words_blocked = True
     
-    ' Ensure BlockedWordsDescription is loaded
-    ' If array is not initialized, skip this test (return True)
+    ' If the blocked words list isn't loaded, we can't test this; skip gracefully
     If Not IsArrayInitialized(BlockedWordsDescription) Then
         Debug.Print "  [SKIP] BlockedWordsDescription not loaded"
         Exit Function
@@ -93,14 +109,15 @@ Private Function test_valid_words_blocked() As Boolean
         Exit Function
     End If
     
-    ' Test with the first blocked word
+    ' Grab the first blocked word from the list to use as test input
     Dim blockedWord As String
     blockedWord = BlockedWordsDescription(LBound(BlockedWordsDescription))
     
+    ' The blocked word alone should be rejected
     If ValidWordsDescription(blockedWord) Then
         test_valid_words_blocked = False: Exit Function
     End If
-    ' Blocked word embedded in a sentence
+    ' The blocked word embedded inside a longer sentence should also be caught
     If ValidWordsDescription("this is " & blockedWord & " in a sentence") Then
         test_valid_words_blocked = False: Exit Function
     End If
@@ -109,23 +126,27 @@ test_valid_words_blocked_Err:
     test_valid_words_blocked = False
 End Function
 
+' Verifies ValidWordsDescription() accepts normal, clean strings that
+' don't contain any blocked words.
 Private Function test_valid_words_clean() As Boolean
     On Error GoTo test_valid_words_clean_Err
     test_valid_words_clean = True
     
-    ' Ensure BlockedWordsDescription is loaded
+    ' If the blocked words list isn't loaded, we can't test this; skip gracefully
     If Not IsArrayInitialized(BlockedWordsDescription) Then
         Debug.Print "  [SKIP] BlockedWordsDescription not loaded"
         Exit Function
     End If
     
-    ' Clean strings should pass
+    ' Normal everyday phrases should pass (no blocked words in them)
     If Not ValidWordsDescription("hello world") Then
         test_valid_words_clean = False: Exit Function
     End If
+    ' A longer clean sentence
     If Not ValidWordsDescription("this is a normal description") Then
         test_valid_words_clean = False: Exit Function
     End If
+    ' A fantasy-style name that shouldn't trigger any filters
     If Not ValidWordsDescription("warrior of the north") Then
         test_valid_words_clean = False: Exit Function
     End If
