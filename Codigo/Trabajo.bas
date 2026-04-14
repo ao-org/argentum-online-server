@@ -206,6 +206,12 @@ End Sub
 Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal Slot As Integer)
     On Error GoTo DoNavega_Err
     With UserList(UserIndex)
+        If Slot < 1 Or Slot > .CurrentInventorySlots Then
+            Exit Sub
+        End If
+        If .invent.Object(Slot).ObjIndex <= 0 Then
+            Exit Sub
+        End If
         If .invent.EquippedShipObjIndex <> .invent.Object(Slot).ObjIndex Then
             If Not EsGM(UserIndex) Then
                 Select Case Barco.Subtipo
@@ -238,7 +244,11 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
             .invent.EquippedShipObjIndex = .invent.Object(Slot).ObjIndex
             .invent.EquippedShipSlot = Slot
             If .flags.Montado > 0 Then
-                Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
+                If .invent.EquippedSaddleObjIndex > 0 And .invent.EquippedSaddleObjIndex <= UBound(ObjData) Then
+                    If .invent.EquippedSaddleSlot >= 1 And .invent.EquippedSaddleSlot <= .CurrentInventorySlots Then
+                        Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
+                    End If
+                End If
             End If
             If .flags.Mimetizado <> e_EstadoMimetismo.Desactivado Then
                 'Msg1027= Pierdes el efecto del mimetismo.
@@ -257,17 +267,17 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
             .invent.EquippedShipSlot = 0
             If .flags.Muerto = 0 Then
                 .Char.head = .OrigChar.head
-                If .invent.EquippedArmorObjIndex > 0 Then
+                If .invent.EquippedArmorObjIndex > 0 And .invent.EquippedArmorObjIndex <= UBound(ObjData) Then
                     .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
-                    If .Invent_Skins.ObjIndexArmourEquipped > 0 Then
+                    If .Invent_Skins.ObjIndexArmourEquipped > 0 And .Invent_Skins.ObjIndexArmourEquipped <= UBound(ObjData) Then
                         .Char.body = ObtenerRopaje(UserIndex, ObjData(.Invent_Skins.ObjIndexArmourEquipped))
                     End If
                 Else
                     Call SetNakedBody(UserList(UserIndex))
                 End If
-                If .invent.EquippedHelmetObjIndex > 0 Then
+                If .invent.EquippedHelmetObjIndex > 0 And .invent.EquippedHelmetObjIndex <= UBound(ObjData) Then
                     .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
-                    If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
+                    If .Invent_Skins.ObjIndexHelmetEquipped > 0 And .Invent_Skins.ObjIndexHelmetEquipped <= UBound(ObjData) Then
                         If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
                             .Char.head = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
                             .Char.CascoAnim = NingunCasco
@@ -279,23 +289,23 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
                 Else
                     .Char.CascoAnim = NingunCasco
                 End If
-                If .invent.EquippedShieldObjIndex > 0 Then
+                If .invent.EquippedShieldObjIndex > 0 And .invent.EquippedShieldObjIndex <= UBound(ObjData) Then
                     .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
-                    If .Invent_Skins.ObjIndexShieldEquipped > 0 Then
+                    If .Invent_Skins.ObjIndexShieldEquipped > 0 And .Invent_Skins.ObjIndexShieldEquipped <= UBound(ObjData) Then
                         .Char.ShieldAnim = ObjData(.Invent_Skins.ObjIndexShieldEquipped).ShieldAnim
                     End If
                 Else
                     .Char.ShieldAnim = NingunEscudo
                 End If
-                If .invent.EquippedWeaponObjIndex > 0 Then
+                If .invent.EquippedWeaponObjIndex > 0 And .invent.EquippedWeaponObjIndex <= UBound(ObjData) Then
                     .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
-                    If .Invent_Skins.ObjIndexWeaponEquipped > 0 Then
+                    If .Invent_Skins.ObjIndexWeaponEquipped > 0 And .Invent_Skins.ObjIndexWeaponEquipped <= UBound(ObjData) Then
                         .Char.WeaponAnim = ObjData(.Invent_Skins.ObjIndexWeaponEquipped).WeaponAnim
                     End If
                 Else
                     .Char.WeaponAnim = NingunArma
                 End If
-                If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
+                If .invent.EquippedAmuletAccesoryObjIndex > 0 And .invent.EquippedAmuletAccesoryObjIndex <= UBound(ObjData) Then
                     If ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
                 End If
             Else
