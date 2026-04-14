@@ -782,7 +782,7 @@ Public Sub HandleRequestUserList(ByVal UserIndex As Integer)
     Dim names() As String
     Dim count   As Long
     With UserList(UserIndex)
-        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.RoleMaster)) Then
+        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster Or e_PlayerType.SemiDios)) Then
             'Msg528=Servidor » Comando deshabilitado para tu cargo.
             Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_COMANDO_DESHABILITADO_CARGO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
@@ -1252,46 +1252,6 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
                 Else
                     ' Msg545=Caracteres inválidos en la descripción.
                     Call WriteLocaleMsg(UserIndex, MSG_CARACTERES_INVALIDOS_DESCRIPCION, e_FontTypeNames.FONTTYPE_INFO)
-                End If
-            Case e_EditOptions.eo_Intervalo
-                If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-                Arg1 = UCase$(Arg1)
-                tmpLong = val(Arg2)
-                If tmpLong >= 0 Then
-                    Select Case Arg1
-                        Case "USAR"
-                            UserList(tUser.ArrayIndex).Intervals.UsarClic = tmpLong
-                            UserList(tUser.ArrayIndex).Intervals.UsarU = tmpLong
-                        Case "USAR_U", "USAR+U", "USAR-U"
-                            UserList(tUser.ArrayIndex).Intervals.UsarU = tmpLong
-                        Case "USAR_CLIC", "USAR+CLIC", "USAR-CLIC", "USAR_CLICK", "USAR+CLICK", "USAR-CLICK"
-                            UserList(tUser.ArrayIndex).Intervals.UsarClic = tmpLong
-                        Case "ARCO", "PROYECTILES"
-                            UserList(tUser.ArrayIndex).Intervals.Arco = tmpLong
-                        Case "GOLPE", "GOLPES", "GOLPEAR"
-                            UserList(tUser.ArrayIndex).Intervals.Golpe = tmpLong
-                        Case "MAGIA", "HECHIZO", "HECHIZOS", "LANZAR"
-                            UserList(tUser.ArrayIndex).Intervals.Magia = tmpLong
-                        Case "COMBO"
-                            UserList(tUser.ArrayIndex).Intervals.GolpeMagia = tmpLong
-                            UserList(tUser.ArrayIndex).Intervals.MagiaGolpe = tmpLong
-                        Case "GOLPE-MAGIA", "GOLPE-HECHIZO"
-                            UserList(tUser.ArrayIndex).Intervals.GolpeMagia = tmpLong
-                        Case "MAGIA-GOLPE", "HECHIZO-GOLPE"
-                            UserList(tUser.ArrayIndex).Intervals.MagiaGolpe = tmpLong
-                        Case "GOLPE-USAR"
-                            UserList(tUser.ArrayIndex).Intervals.GolpeUsar = tmpLong
-                        Case "TRABAJAR", "WORK", "TRABAJO"
-                            UserList(tUser.ArrayIndex).Intervals.TrabajarConstruir = tmpLong
-                            UserList(tUser.ArrayIndex).Intervals.TrabajarExtraer = tmpLong
-                        Case "TRABAJAR_EXTRAER", "EXTRAER", "TRABAJO_EXTRAER"
-                            UserList(tUser.ArrayIndex).Intervals.TrabajarExtraer = tmpLong
-                        Case "TRABAJAR_CONSTRUIR", "CONSTRUIR", "TRABAJO_CONSTRUIR"
-                            UserList(tUser.ArrayIndex).Intervals.TrabajarConstruir = tmpLong
-                        Case Else
-                            Exit Sub
-                    End Select
-                    Call WriteIntervals(tUser.ArrayIndex)
                 End If
             Case e_EditOptions.eo_Hogar
                 Arg1 = UCase$(Arg1)
@@ -2046,7 +2006,9 @@ Public Sub HandleServerMessage(ByVal UserIndex As Integer)
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero)) Then
             If LenB(Message) <> 0 Then
                 Call LogGM(GetUserRealName(UserIndex), "Mensaje Broadcast:" & Message)
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & "> " & Message, e_FontTypeNames.FONTTYPE_CENTINELA))
+                ' Antes: .Name & "> " & Message
+                ' Ahora: Servidor> Mensaje
+               Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_SERVER_SENDER, Message, e_FontTypeNames.FONTTYPE_CENTINELA))
             End If
         Else
             'Msg528=Servidor » Comando deshabilitado para tu cargo.
@@ -3804,7 +3766,7 @@ Public Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Call PerderTesoro
                     Else
                         If BusquedaTesoroActiva Then
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_TREASURE_EVENT_ALREADY_ACTIVE_MAP_HINT, get_map_name(TesoroNumMapa) & "¬" & TesoroNumMapa, e_FontTypeNames.FONTTYPE_TALK))
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_TREASURE_EVENT_ALREADY_ACTIVE_MAP_HINT, GetMapName(TesoroNumMapa) & "¬" & TesoroNumMapa, e_FontTypeNames.FONTTYPE_TALK))
                             Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_TESORO_ACTIVA_TESORO_ENCUENTRA_1519, e_FontTypeNames.FONTTYPE_INFO)  ' Msg1519=Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: ¬1-¬2-¬3
                         Else
                             Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_TESORO_ACTIVA, e_FontTypeNames.FONTTYPE_INFO) ' Msg734=Ya hay una busqueda del tesoro activa.
@@ -3815,7 +3777,7 @@ Public Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Call PerderRegalo
                     Else
                         If BusquedaRegaloActiva Then
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_MAGIC_ITEM_EVENT_ALREADY_ACTIVE_MAP_HINT, get_map_name(RegaloNumMapa) & "¬" & RegaloNumMapa, e_FontTypeNames.FONTTYPE_TALK))
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_MAGIC_ITEM_EVENT_ALREADY_ACTIVE_MAP_HINT, GetMapName(RegaloNumMapa) & "¬" & RegaloNumMapa, e_FontTypeNames.FONTTYPE_TALK))
                             Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_TESORO_ACTIVA_TESORO_ENCUENTRA_1520, e_FontTypeNames.FONTTYPE_INFO)  ' Msg1520=Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: ¬1-¬2-¬3
                         Else
                             Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_TESORO_ACTIVA, e_FontTypeNames.FONTTYPE_INFO) ' Msg734=Ya hay una busqueda del tesoro activa.

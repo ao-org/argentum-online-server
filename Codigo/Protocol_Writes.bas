@@ -1431,18 +1431,22 @@ Public Sub WriteIntervals(ByVal UserIndex As Integer)
     On Error GoTo WriteIntervals_Err
     With UserList(UserIndex)
         Call Writer.WriteInt16(ServerPacketID.eIntervals)
-        Call Writer.WriteInt32(.Intervals.Arco)
-        Call Writer.WriteInt32(.Intervals.Caminar)
-        Call Writer.WriteInt32(.Intervals.Golpe)
-        Call Writer.WriteInt32(.Intervals.GolpeMagia)
-        Call Writer.WriteInt32(.Intervals.Magia)
-        Call Writer.WriteInt32(.Intervals.MagiaGolpe)
-        Call Writer.WriteInt32(.Intervals.GolpeUsar)
-        Call Writer.WriteInt32(.Intervals.TrabajarExtraer)
-        Call Writer.WriteInt32(.Intervals.TrabajarConstruir)
-        Call Writer.WriteInt32(.Intervals.UsarU)
-        Call Writer.WriteInt32(.Intervals.UsarClic)
+        Call Writer.WriteInt32(IntervaloUserPuedeAtacar)
+        Call Writer.WriteInt32(IntervaloFlechasCazadores)
+        Call Writer.WriteInt32(IntervaloUserPuedeCastear)
+        Call Writer.WriteInt32(IntervaloTrabajarExtraer)
+        Call Writer.WriteInt32(IntervaloTrabajarConstruir)
+        Call Writer.WriteInt32(IntervaloCaminar)
         Call Writer.WriteInt32(IntervaloTirar)
+        Call Writer.WriteInt32(IntervaloUserPuedeUsarU)
+        Call Writer.WriteInt32(IntervaloUserPuedeUsarClic)
+        Call Writer.WriteInt32(IntervaloGolpeMagia)
+        Call Writer.WriteInt32(IntervaloMagiaGolpe)
+        Call Writer.WriteInt32(IntervaloGolpeUsar)
+        Call Writer.WriteInt32(IntervaloOculto)
+        Call Writer.WriteInt32(IntervaloTalk)
+        Call Writer.WriteInt32(IntervaloLeftClick)
+        Call Writer.WriteInt32(IntervaloMeditar)
     End With
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
@@ -1460,7 +1464,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As By
     Call Writer.WriteInt8(Slot)
     ObjIndex = UserList(UserIndex).invent.Object(Slot).ObjIndex
     If ObjIndex > 0 Then
-        PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
+        PodraUsarlo = CanUseObject(UserIndex, ObjIndex)
         NaturalElementalTags = ObjData(UserList(UserIndex).invent.Object(Slot).ObjIndex).ElementalTags
     End If
     Call Writer.WriteInt16(ObjIndex)
@@ -1498,7 +1502,7 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
     ObjIndex = UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex
     If ObjIndex > 0 Then
         Valor = ObjData(ObjIndex).Valor
-        PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
+        PodraUsarlo = CanUseObject(UserIndex, ObjIndex)
         NaturalElementalTags = ObjData(ObjIndex).ElementalTags
     Else
     End If
@@ -1832,7 +1836,7 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, ByVal Slot As
     On Error GoTo WriteChangeNPCInventorySlot_Err
     Dim PodraUsarlo As Byte
     If obj.ObjIndex >= LBound(ObjData()) And obj.ObjIndex <= UBound(ObjData()) Then
-        PodraUsarlo = PuedeUsarObjeto(UserIndex, obj.ObjIndex)
+        PodraUsarlo = CanUseObject(UserIndex, obj.ObjIndex)
     End If
     Call Writer.WriteInt16(ServerPacketID.eChangeNPCInventorySlot)
     Call Writer.WriteInt8(Slot)
