@@ -74,8 +74,8 @@ End Function
 
 Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As Integer, ByRef ObjAEnviar As t_Obj)
     On Error GoTo EnviarObjetoTransaccion_Err
-    Dim FirstEmptyPos     As Byte
-    Dim FoundPos          As Byte
+    Dim FirstEmptyPos     As Long
+    Dim FoundPos          As Long
     Dim nada              As Boolean
     Dim cantidadTotalItem As Long
     'Me fijo si recibe oro
@@ -108,7 +108,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
             If UserList(UserIndex).ComUsu.itemsAenviar(i).ObjIndex = ObjAEnviar.ObjIndex And UserList(UserIndex).ComUsu.itemsAenviar(i).ElementalTags = ObjAEnviar.ElementalTags _
                     And UserList(UserIndex).ComUsu.itemsAenviar(i).amount <= 10000 Then
                 'Me fijo si le va a entrar el objeto con las cantidades en el slot que encontró
-                If UserList(UserIndex).ComUsu.itemsAenviar(i).amount + ObjAEnviar.amount <= GetMaxInvOBJ() Then
+                If CLng(UserList(UserIndex).ComUsu.itemsAenviar(i).amount) + CLng(ObjAEnviar.amount) <= GetMaxInvOBJ() Then
                     'Si le entra simplemente le agrego las cantidades
                     UserList(UserIndex).ComUsu.itemsAenviar(i).amount = UserList(UserIndex).ComUsu.itemsAenviar(i).amount + ObjAEnviar.amount
                     nada = True
@@ -126,7 +126,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
             'Si tengo una posición encontrada con un item y a su ves 1 slot vacío para agregar los restantes de ese item
             If FoundPos > 0 And FirstEmptyPos > 0 Then
                 Dim restante As Long
-                restante = .itemsAenviar(FoundPos).amount + ObjAEnviar.amount - 10000
+                restante = CLng(.itemsAenviar(FoundPos).amount) + CLng(ObjAEnviar.amount) - 10000
                 If FoundPos > FirstEmptyPos Then
                     .itemsAenviar(FoundPos).amount = restante
                     .itemsAenviar(FirstEmptyPos).amount = 10000
@@ -135,6 +135,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
                     .itemsAenviar(FirstEmptyPos).amount = restante
                 End If
                 .itemsAenviar(FirstEmptyPos).ObjIndex = ObjAEnviar.ObjIndex
+                .itemsAenviar(FirstEmptyPos).ElementalTags = ObjAEnviar.ElementalTags
             ElseIf FoundPos = 0 And FirstEmptyPos <> 0 Then
                 'Si entré aca es porque tengo que guardar el item en la pos vacía que encontré
                 .itemsAenviar(FirstEmptyPos).ObjIndex = ObjAEnviar.ObjIndex
