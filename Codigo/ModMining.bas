@@ -24,7 +24,7 @@ Public Function CanUserExtractMinerals(ByVal UserIndex As Integer, ByVal TargetX
     With UserList(UserIndex)
         If .invent.EquippedWorkingToolObjIndex <= 0 Then Exit Function
         If ObjData(MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex).Blodium Then
-            If Not ObjData(.invent.EquippedWeaponObjIndex).Blodium Then
+            If Not ObjData(.invent.EquippedWorkingToolObjIndex).Blodium Then
                 Call WriteLocaleMsg(UserIndex, BLODIUM_PICKAXE_REQUIRED_MSG, FONTTYPE_INFO)
                 Exit Function
             End If
