@@ -2327,6 +2327,18 @@ HandleUseSpellMacro_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseSpellMacro", Erl)
 End Sub
 
+Private Function IsProjectileTargetRequest(ByVal UserIndex As Integer, ByVal Slot As Byte) As Boolean
+    If Slot <= 0 Or Slot > UserList(UserIndex).CurrentInventorySlots Then Exit Function
+
+    With UserList(UserIndex).invent.Object(Slot)
+        If .ObjIndex <= 0 Then Exit Function
+        If .Equipped = 0 Then Exit Function
+        If ObjData(.ObjIndex).OBJType <> e_OBJType.otWeapon Then Exit Function
+
+        IsProjectileTargetRequest = (ObjData(.ObjIndex).Proyectil = 1)
+    End With
+End Function
+
 ''
 ' Handles the "UseItem" message.
 '
@@ -2347,8 +2359,10 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
         PacketCounter = reader.ReadInt32
         Dim Packet_ID As Long
         Packet_ID = PacketNames.UseItem
-        If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItem", PacketTimerThreshold( _
-                Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+        If Not IsProjectileTargetRequest(UserIndex, Slot) Then
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItem", PacketTimerThreshold( _
+                    Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+        End If
         '  Debug.Print "LLEGA PAQUETE"
         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
             If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
@@ -2373,8 +2387,10 @@ Private Sub HandleUseItemU(ByVal UserIndex As Integer)
         PacketCounter = reader.ReadInt32
         Dim Packet_ID As Long
         Packet_ID = PacketNames.UseItemU
-        If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItemU", PacketTimerThreshold( _
-                Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+        If Not IsProjectileTargetRequest(UserIndex, Slot) Then
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItemU", PacketTimerThreshold( _
+                    Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+        End If
         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
             If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
             Call UseInvItem(UserIndex, Slot, 0)
