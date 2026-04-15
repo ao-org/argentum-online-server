@@ -1692,14 +1692,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
         End If
 
         If obj.OBJType = e_OBJType.otWeapon Then
-            If obj.Proyectil = 1 Then
-                'valido para evitar el flood pero no bloqueo. El bloqueo se hace en WLC con proyectiles.
-                If ByClick <> 0 Then
-                    If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
-                Else
-                    If Not IntervaloPermiteUsarClick(UserIndex) Then Exit Sub
-                End If
-            Else
+            If obj.Proyectil <> 1 Then
                 'dagas
                 If ByClick <> 0 Then
                     If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
@@ -1810,6 +1803,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Exit Sub
                 End If
                 If ObjData(ObjIndex).Proyectil = 1 Then
+                    If .invent.Object(Slot).Equipped = 0 Then Exit Sub
                     If IsSet(.flags.StatusMask, e_StatusMask.eTransformed) Then
                         Call WriteLocaleMsg(UserIndex, MsgCantUseBowTransformed, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
