@@ -1081,9 +1081,14 @@ Sub LoadOBJData()
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
-                Case e_OBJType.otBackpack, e_OBJType.otSkinsWings
+                Case e_OBJType.otBackpack, e_OBJType.otSkinBackpack
                     .RequiereObjeto = val(Leer.GetValue(ObjKey, "RequiereObjeto"))
-                    '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
+                    .Real = val(Leer.GetValue(ObjKey, "Real"))
+                    .Caos = val(Leer.GetValue(ObjKey, "Caos"))
+                    .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
+                    .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+                    .Invernal = val(Leer.GetValue(ObjKey, "Invernal")) > 0
+                    .Camouflage = val(Leer.GetValue(ObjKey, "Camouflage")) > 0
                 Case e_OBJType.otMagicalInstrument
                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
                 Case e_OBJType.otWeapon, e_OBJType.otSkinsWeapons
@@ -1148,8 +1153,6 @@ Sub LoadOBJData()
                 Case e_OBJType.otSaddles
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
-                    .MinDef = val(Leer.GetValue(ObjKey, "MINDEF"))
-                    .MaxDef = val(Leer.GetValue(ObjKey, "MAXDEF"))
                     .Real = val(Leer.GetValue(ObjKey, "Real"))
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
