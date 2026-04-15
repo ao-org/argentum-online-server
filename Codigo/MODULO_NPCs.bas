@@ -1831,6 +1831,29 @@ Public Function DoDamageOrHeal(ByVal NpcIndex As Integer, _
     On Error GoTo DoDamageOrHeal_Err
     Dim DamageStr As String
     Dim Color     As Long
+    If NpcIndex < LBound(NpcList) Or NpcIndex > UBound(NpcList) Then
+        DoDamageOrHeal = eStillAlive
+        Exit Function
+    End If
+    If Not NpcList(NpcIndex).flags.NPCActive Then
+        DoDamageOrHeal = eStillAlive
+        Exit Function
+    End If
+    If SourceType = eNpc Then
+        If SourceIndex < LBound(NpcList) Or SourceIndex > UBound(NpcList) Then
+            DoDamageOrHeal = eStillAlive
+            Exit Function
+        End If
+        If Not NpcList(SourceIndex).flags.NPCActive Then
+            DoDamageOrHeal = eStillAlive
+            Exit Function
+        End If
+    ElseIf SourceType = eUser Then
+        If SourceIndex < LBound(UserList) Or SourceIndex > UBound(UserList) Then
+            DoDamageOrHeal = eStillAlive
+            Exit Function
+        End If
+    End If
     If amount > 0 Then
         Color = vbGreen
     Else
@@ -1868,15 +1891,21 @@ Public Function DoDamageOrHeal(ByVal NpcIndex As Integer, _
         End If
         If NPCs.ModifyHealth(NpcIndex, amount) Then
             DoDamageOrHeal = eDead
-            CustomScenarios.NpcDie (NpcIndex)
+            Call CustomScenarios.NpcDie(NpcIndex)
             If SourceType = eUser Then
                 Call CustomScenarios.PlayerKillNpc(.pos.Map, NpcIndex, SourceIndex, DamageSourceType, DamageSourceIndex)
                 Call MuereNpc(NpcIndex, SourceIndex)
             Else
                 If IsValidUserRef(NpcList(SourceIndex).MaestroUser) Then
-                    Call PlayerKillNpc(NpcList(NpcIndex).pos.Map, NpcIndex, NpcList(SourceIndex).MaestroUser.ArrayIndex, e_pet, DamageSourceIndex)
-                    Call FollowAmo(SourceIndex)
-                    Call MuereNpc(NpcIndex, NpcList(SourceIndex).MaestroUser.ArrayIndex)
+                    Dim maestroUserIndex As Integer
+                    maestroUserIndex = NpcList(SourceIndex).MaestroUser.ArrayIndex
+                    Call PlayerKillNpc(NpcList(NpcIndex).pos.Map, NpcIndex, maestroUserIndex, e_pet, DamageSourceIndex)
+                    Call MuereNpc(NpcIndex, maestroUserIndex)
+                    If SourceIndex >= LBound(NpcList) And SourceIndex <= UBound(NpcList) Then
+                        If NpcList(SourceIndex).flags.NPCActive Then
+                            Call FollowAmo(SourceIndex)
+                        End If
+                    End If
                 Else
                     Call MuereNpc(NpcIndex, -1)
                 End If
@@ -1887,7 +1916,7 @@ Public Function DoDamageOrHeal(ByVal NpcIndex As Integer, _
     DoDamageOrHeal = eStillAlive
     Exit Function
 DoDamageOrHeal_Err:
-    Call TraceError(Err.Number, Err.Description, "UsUaRiOs.DoDamageOrHeal_Err", Erl)
+    Call TraceError(Err.Number, Err.Description, "NPCs.DoDamageOrHeal", Erl)
 End Function
 
 Public Function UserCanAttackNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As t_AttackInteractionResult
