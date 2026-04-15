@@ -2218,6 +2218,23 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
         If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "LeftClick", PacketTimerThreshold( _
                 Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
         Call LookatTile(UserIndex, .pos.Map, x, y)
+        Dim ClickedUserIndex As Integer
+        Dim ClickedNpcIndex As Integer
+        ClickedUserIndex = MapData(.pos.Map, x, y).UserIndex
+        ClickedNpcIndex = MapData(.pos.Map, x, y).NpcIndex
+        If y < YMaxMapSize Then
+            If ClickedUserIndex = 0 Then
+                ClickedUserIndex = MapData(.pos.Map, x, y + 1).UserIndex
+            End If
+            If ClickedNpcIndex = 0 Then
+                ClickedNpcIndex = MapData(.pos.Map, x, y + 1).NpcIndex
+            End If
+        End If
+        If ClickedUserIndex = 0 Then
+            If ClickedNpcIndex = 0 Or IsNpcWorldInteractable(ClickedNpcIndex) Then
+                Call HandleWorldAction(UserIndex, .pos.Map, x, y)
+            End If
+        End If
     End With
     Exit Sub
 HandleLeftClick_Err:
