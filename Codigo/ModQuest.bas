@@ -70,7 +70,24 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
     Dim NpcIndex       As Integer
     NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
     With QuestList(QuestIndex)
-                'Comprobamos que tenga los objetos.
+        'Comprobamos que sea la clase correcta
+        If .RequiredClassesCount > 0 Then
+            Dim meetRequirement As Boolean
+            meetRequirement = False
+            For i = 1 To .RequiredClassesCount
+                If UserList(UserIndex).clase = .RequiredClass(i) Then
+                    meetRequirement = True
+                    Exit For
+                End If
+            Next i
+            If Not meetRequirement Then
+                'Msg2167=Esta misión no está disponible para tu clase.
+                Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+        End If
+    
+        'Comprobamos que tenga los objetos.
         If .RequiredOBJs > 0 Then
             For i = 1 To .RequiredOBJs
                 If TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).Amount, UserIndex) = False Then
