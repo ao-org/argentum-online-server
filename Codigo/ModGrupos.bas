@@ -107,46 +107,68 @@ End Sub
 
 Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
     On Error GoTo EcharMiembro_Err
-    Dim i              As Long ' Iterar con long es MAS RAPIDO que otro tipo
+    Dim i              As Long
     Dim LoopC          As Long
     Dim indexviejo     As Byte
     Dim UserIndexEchar As Integer
     Dim GroupLider     As Integer
+    Dim upperBound     As Long
     With UserList(UserIndex).Grupo
         GroupLider = .Lider.ArrayIndex
         If Not .EnGrupo Then
-            Call WriteLocaleMsg(UserIndex, MSG_NINGUN_GRUPO, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2051="No estás en ningun grupo"
+            Call WriteLocaleMsg(UserIndex, MSG_NINGUN_GRUPO, e_FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub
         End If
         If .Lider.ArrayIndex <> UserIndex Then
-            Call WriteLocaleMsg(UserIndex, MSG_PODES_ECHAR_USUARIOS_GRUPO, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2052="No podés echar a usuarios del grupo"
+            Call WriteLocaleMsg(UserIndex, MSG_PODES_ECHAR_USUARIOS_GRUPO, e_FontTypeNames.FONTTYPE_New_GRUPO)
+            Exit Sub
+        End If
+        upperBound = UBound(.Miembros)
+        ' Validate Indice is within bounds (Indice is 0-based from client, +1 for 1-based array)
+        If (Indice + 1) < 1 Or (Indice + 1) > upperBound Then
+            Exit Sub
+        End If
+        If (Indice + 1) > .CantidadMiembros Then
             Exit Sub
         End If
         UserIndexEchar = UserList(.Lider.ArrayIndex).Grupo.Miembros(Indice + 1).ArrayIndex
-        If UserIndexEchar = UserIndex Then
-            Call WriteLocaleMsg(UserIndex, MSG_PODES_EXPULSARTE_TI_MISMO, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2053="No podés expulsarte a ti mismo."
+        ' Validate the resolved user index
+        If UserIndexEchar <= 0 Then
             Exit Sub
         End If
-        For i = 1 To UBound(.Miembros)
-            If UserIndexEchar = .Miembros(i).ArrayIndex Then
-                Call ClearUserRef(.Miembros(i))
-                indexviejo = i
-                For LoopC = indexviejo To 5
-                    .Miembros(LoopC) = .Miembros(LoopC + 1)
-                Next LoopC
-                i = UBound(.Miembros)
-                Call ClearUserRef(.Miembros(i))
-                Exit For
+        If UserIndexEchar = UserIndex Then
+            Call WriteLocaleMsg(UserIndex, MSG_PODES_EXPULSARTE_TI_MISMO, e_FontTypeNames.FONTTYPE_New_GRUPO)
+            Exit Sub
+        End If
+        Dim found As Boolean
+        found = False
+        For i = 1 To upperBound
+            If .Miembros(i).ArrayIndex <> 0 Then
+                If UserIndexEchar = .Miembros(i).ArrayIndex Then
+                    Call ClearUserRef(.Miembros(i))
+                    indexviejo = CByte(i)
+                    For LoopC = CLng(indexviejo) To upperBound - 1
+                        .Miembros(LoopC) = .Miembros(LoopC + 1)
+                    Next LoopC
+                    Call ClearUserRef(.Miembros(upperBound))
+                    found = True
+                    Exit For
+                End If
             End If
         Next i
+        If Not found Then
+            Exit Sub
+        End If
         .CantidadMiembros = .CantidadMiembros - 1
         Dim a As Long
         For a = 1 To .CantidadMiembros
-            Call WriteUbicacion(.Miembros(a).ArrayIndex, indexviejo, 0)
+            If .Miembros(a).ArrayIndex <> 0 Then
+                Call WriteUbicacion(.Miembros(a).ArrayIndex, indexviejo, 0)
+            End If
         Next a
     End With
     With UserList(UserIndexEchar)
-        Call WriteLocaleMsg(UserIndex, MSG_FUE_EXPULSADO_GRUPO, e_FontTypeNames.FONTTYPE_New_GRUPO, .name) ' Msg2054="¬1 fue expulsado del grupo."
+        Call WriteLocaleMsg(UserIndex, MSG_FUE_EXPULSADO_GRUPO, e_FontTypeNames.FONTTYPE_New_GRUPO, .name)
         Call WriteLocaleMsg(UserIndexEchar, "37", e_FontTypeNames.FONTTYPE_New_GRUPO)
         .Grupo.EnGrupo = False
         Call SetUserRef(.Grupo.Lider, 0)
@@ -156,7 +178,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
         Call RefreshCharStatus(UserIndexEchar)
         .Grupo.Id = -1
         If MapInfo(.pos.Map).OnlyGroups And MapInfo(.pos.Map).Salida.Map <> 0 Then
-            Call WriteLocaleMsg(UserIndexEchar, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA, e_FontTypeNames.FONTTYPE_INFO) ' Msg2055="Debes estar en un grupo para permanecer en este mapa."
+            Call WriteLocaleMsg(UserIndexEchar, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA, e_FontTypeNames.FONTTYPE_INFO)
             Call WarpUserChar(UserIndexEchar, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
         End If
     End With
@@ -172,7 +194,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
             Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
             Dim LiderMap As Integer: LiderMap = UserList(UserIndex).pos.Map
             If MapInfo(LiderMap).OnlyGroups And MapInfo(LiderMap).Salida.Map <> 0 Then
-                Call WriteLocaleMsg(UserIndex, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA_2056, e_FontTypeNames.FONTTYPE_INFO) ' Msg2056="Debes estar en un grupo para permanecer en este mapa."
+                Call WriteLocaleMsg(UserIndex, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA_2056, e_FontTypeNames.FONTTYPE_INFO)
                 Call WarpUserChar(UserIndex, MapInfo(LiderMap).Salida.Map, MapInfo(LiderMap).Salida.x, MapInfo(LiderMap).Salida.y, True)
             End If
         End If
