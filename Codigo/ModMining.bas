@@ -22,9 +22,9 @@ Public Const BLODIUM_PICKAXE_REQUIRED_MSG As Integer = 597
 
 Public Function CanUserExtractMinerals(ByVal UserIndex As Integer, ByVal TargetX As Byte, ByVal TargetY As Byte) As Boolean
     With UserList(UserIndex)
-        If .invent.EquippedWeaponObjIndex <= 0 Then Exit Function
-        If ObjData(MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex).Blodium Then
-            If Not ObjData(.invent.EquippedWeaponObjIndex).Blodium Then
+        If .invent.EquippedWorkingToolObjIndex <= 0 Then Exit Function
+        If ObjData(MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex).Blodium > 0 Then
+            If Not ObjData(.invent.EquippedWorkingToolObjIndex).Blodium > 0 Then
                 Call WriteLocaleMsg(UserIndex, BLODIUM_PICKAXE_REQUIRED_MSG, FONTTYPE_INFO)
                 Exit Function
             End If
