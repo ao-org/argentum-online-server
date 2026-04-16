@@ -255,44 +255,90 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
     Dim indexviejo As Byte
     Dim GroupLider As Integer
     With UserList(UserIndex)
+        ' Save the leader index before clearing group state
+        GroupLider = .Grupo.Lider.ArrayIndex
+        
+        ' Validate GroupLider is a valid index
+        If GroupLider <= 0 Or GroupLider > UBound(UserList) Then
+            .Grupo.EnGrupo = False
+            .Grupo.Id = -1
+            Call SetUserRef(.Grupo.Lider, 0)
+            Call SetUserRef(.Grupo.PropuestaDe, 0)
+            .Grupo.CantidadMiembros = 0
+            Exit Sub
+        End If
+        
         .Grupo.EnGrupo = False
         .Grupo.Id = -1
-        For i = 1 To 6
-            If .name = UserList(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name Then
-                Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i), 0)
+        
+        ' Find and remove this user from the leader's member list
+        For i = 1 To UserList(GroupLider).Grupo.CantidadMiembros
+            If i > UBound(UserList(GroupLider).Grupo.Miembros) Then Exit For
+            
+            If UserList(GroupLider).Grupo.Miembros(i).ArrayIndex = UserIndex Then
+                Call ClearUserRef(UserList(GroupLider).Grupo.Miembros(i))
                 indexviejo = i
-                For LoopC = indexviejo To 5
-                    UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(LoopC) = UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(LoopC + 1)
+                
+                For LoopC = indexviejo To UserList(GroupLider).Grupo.CantidadMiembros - 1
+                    If LoopC + 1 <= UBound(UserList(GroupLider).Grupo.Miembros) Then
+                        UserList(GroupLider).Grupo.Miembros(LoopC) = UserList(GroupLider).Grupo.Miembros(LoopC + 1)
+                    End If
                 Next LoopC
+                
+                ' Clear the last slot after shifting
+                If UserList(GroupLider).Grupo.CantidadMiembros <= UBound(UserList(GroupLider).Grupo.Miembros) Then
+                    Call ClearUserRef(UserList(GroupLider).Grupo.Miembros(UserList(GroupLider).Grupo.CantidadMiembros))
+                End If
+                
                 Exit For
             End If
         Next i
-        UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros - 1
-        Call modSendData.SendData(ToGroup, .Grupo.Lider.ArrayIndex, PrepareUpdateGroupInfo(.Grupo.Lider.ArrayIndex))
+        
+        UserList(GroupLider).Grupo.CantidadMiembros = UserList(GroupLider).Grupo.CantidadMiembros - 1
+        
+        If UserList(GroupLider).Grupo.CantidadMiembros < 0 Then
+            UserList(GroupLider).Grupo.CantidadMiembros = 0
+        End If
+        
+        Call modSendData.SendData(ToGroup, GroupLider, PrepareUpdateGroupInfo(GroupLider))
         Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
+        
         Dim a As Long
-        For a = 1 To UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros
-            Call WriteUbicacion(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(a).ArrayIndex, indexviejo, 0)
+        For a = 1 To UserList(GroupLider).Grupo.CantidadMiembros
+            If a <= UBound(UserList(GroupLider).Grupo.Miembros) Then
+                If UserList(GroupLider).Grupo.Miembros(a).ArrayIndex > 0 Then
+                    Call WriteUbicacion(UserList(GroupLider).Grupo.Miembros(a).ArrayIndex, indexviejo, 0)
+                End If
+            End If
         Next a
-        Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, "202", e_FontTypeNames.FONTTYPE_New_GRUPO, .name)
-        If UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = 1 Then
-            Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, "35", e_FontTypeNames.FONTTYPE_New_GRUPO)
-            Call WriteUbicacion(.Grupo.Lider.ArrayIndex, 1, 0)
-            UserList(.Grupo.Lider.ArrayIndex).Grupo.EnGrupo = False
-            Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Lider, 0)
-            Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.PropuestaDe, 0)
-            UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = 0
-            Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(1), 0)
-            UserList(.Grupo.Lider.ArrayIndex).Grupo.Id = -1
-            Call RefreshCharStatus(.Grupo.Lider.ArrayIndex)
-            Dim LiderMap As Integer: LiderMap = UserList(.Grupo.Lider.ArrayIndex).pos.Map
+        
+        Call WriteLocaleMsg(GroupLider, "202", e_FontTypeNames.FONTTYPE_New_GRUPO, .name)
+        
+        If UserList(GroupLider).Grupo.CantidadMiembros = 1 Then
+            Call WriteLocaleMsg(GroupLider, "35", e_FontTypeNames.FONTTYPE_New_GRUPO)
+            Call WriteUbicacion(GroupLider, 1, 0)
+            UserList(GroupLider).Grupo.EnGrupo = False
+            Call SetUserRef(UserList(GroupLider).Grupo.Lider, 0)
+            Call SetUserRef(UserList(GroupLider).Grupo.PropuestaDe, 0)
+            UserList(GroupLider).Grupo.CantidadMiembros = 0
+            Call SetUserRef(UserList(GroupLider).Grupo.Miembros(1), 0)
+            UserList(GroupLider).Grupo.Id = -1
+            Call RefreshCharStatus(GroupLider)
+            
+            Dim LiderMap As Integer: LiderMap = UserList(GroupLider).pos.Map
             If MapInfo(LiderMap).OnlyGroups And MapInfo(LiderMap).Salida.Map <> 0 Then
-                Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA_2061, e_FontTypeNames.FONTTYPE_INFO) ' Msg2061="Debes estar en un grupo para permanecer en este mapa."
-                Call WarpUserChar(.Grupo.Lider.ArrayIndex, MapInfo(LiderMap).Salida.Map, MapInfo(LiderMap).Salida.x, MapInfo(LiderMap).Salida.y, True)
+                Call WriteLocaleMsg(GroupLider, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA_2061, e_FontTypeNames.FONTTYPE_INFO)
+                Call WarpUserChar(GroupLider, MapInfo(LiderMap).Salida.Map, MapInfo(LiderMap).Salida.x, MapInfo(LiderMap).Salida.y, True)
             End If
         End If
+        
+        ' Clean up the departing user's group references
+        Call SetUserRef(.Grupo.Lider, 0)
+        Call SetUserRef(.Grupo.PropuestaDe, 0)
+        .Grupo.CantidadMiembros = 0
+        
         If MapInfo(.pos.Map).OnlyGroups And MapInfo(.pos.Map).Salida.Map <> 0 Then
-            Call WriteLocaleMsg(UserIndex, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA_2062, e_FontTypeNames.FONTTYPE_INFO) ' Msg2062="Debes estar en un grupo para permanecer en este mapa."
+            Call WriteLocaleMsg(UserIndex, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA_2062, e_FontTypeNames.FONTTYPE_INFO)
             Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
         End If
     End With
