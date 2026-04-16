@@ -1744,10 +1744,14 @@ Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As e_Heading)
     On Error GoTo Handler
     With NpcList(NpcIndex)
         ' Elegimos un lado al azar
-        Dim r As Integer
-        r = RandomNumber(0, 1) * 2 - 1 ' -1 o 1
+        Dim r As Long
+        If RandomNumber(0, 1) = 0 Then
+            r = -1
+        Else
+            r = 1
+        End If
         ' Roto el heading original hacia ese lado
-        Heading = Rotate_Heading(Heading, r)
+        Heading = Rotate_Heading(Heading, CInt(r))
         ' Intento moverlo para ese lado
         If MoveNPCChar(NpcIndex, Heading) Then Exit Sub
         ' Si falló, intento moverlo para el lado opuesto
