@@ -884,13 +884,17 @@ PuedeConstruirSastre_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.PuedeConstruirSastre", Erl)
 End Function
 
-Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal Cantidad As Long, ByVal cantidad_maxima As Integer)
+Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Long, ByVal Cantidad As Long, ByVal cantidad_maxima As Integer)
     On Error GoTo CarpinteroConstruirItem_Err
     If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
     If UserList(UserIndex).flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios) Then
         Exit Sub
     End If
     If ItemIndex = 0 Then Exit Sub
+    If ItemIndex < LBound(ObjData) Or ItemIndex > UBound(ObjData) Then
+        Call WriteMacroTrabajoToggle(UserIndex, False)
+        Exit Sub
+    End If
     'Si no tiene equipado el serrucho
     If UserList(UserIndex).invent.EquippedWorkingToolObjIndex = 0 Then
         ' Antes de usar la herramienta deberias equipartela.
@@ -904,8 +908,8 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         Call WriteMacroTrabajoToggle(UserIndex, False)
         Exit Sub
     End If
-    If CarpinteroTieneMateriales(UserIndex, ItemIndex, cantidad_a_construir) And UserList(UserIndex).Stats.UserSkills(e_Skill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria _
-            And PuedeConstruirCarpintero(ItemIndex) And ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).OBJType = e_OBJType.otWorkingTools And ObjData(UserList( _
+    If CarpinteroTieneMateriales(UserIndex, CInt(ItemIndex), cantidad_a_construir) And UserList(UserIndex).Stats.UserSkills(e_Skill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria _
+            And PuedeConstruirCarpintero(CInt(ItemIndex)) And ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).OBJType = e_OBJType.otWorkingTools And ObjData(UserList( _
             UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.CarpentryHacksaw Then
         If UserList(UserIndex).Stats.MinSta > 2 Then
             Call QuitarSta(UserIndex, 2)
@@ -919,7 +923,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         End If
         Dim MiObj As t_Obj
         MiObj.amount = cantidad_a_construir
-        MiObj.ObjIndex = ItemIndex
+        MiObj.ObjIndex = CInt(ItemIndex)
         MiObj.ElementalTags = ObjData(ItemIndex).ElementalTags
         Call CarpinteroQuitarMateriales(UserIndex, MiObj)
         UserList(UserIndex).Trabajo.Cantidad = UserList(UserIndex).Trabajo.Cantidad - cantidad_a_construir
