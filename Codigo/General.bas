@@ -1345,6 +1345,7 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         Call UserMod.ModifyHealth(UserIndex, mashit)
         ' Msg519=Has sanado.
         Call WriteLocaleMsg(UserIndex, MSG_SANADO, e_FontTypeNames.FONTTYPE_INFO)
+        Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageTextOverChar(mashit, UserList(UserIndex).Char.charindex, vbGreen))
         EnviarStats = True
     End If
     Exit Sub
