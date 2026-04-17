@@ -1780,8 +1780,10 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
                 Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_ASI_ARMA, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-            If IsItemInCooldown(UserList(UserIndex), .invent.Object(.invent.EquippedWeaponSlot)) Then
-                Exit Sub
+            If .invent.EquippedWeaponSlot > 0 And .invent.EquippedWeaponSlot <= UserList(UserIndex).CurrentInventorySlots Then
+                If IsItemInCooldown(UserList(UserIndex), .invent.Object(.invent.EquippedWeaponSlot)) Then
+                    Exit Sub
+                End If
             End If
         End If
         If .invent.EquippedWorkingToolObjIndex > 0 Then
