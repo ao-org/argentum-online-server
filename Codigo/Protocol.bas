@@ -3069,8 +3069,13 @@ Private Sub HandleChange_Heading(ByVal UserIndex As Integer)
         'Validate heading (VB won't say invalid cast if not a valid index like .Net languages would do... *sigh*)
         If Heading > 0 And Heading < 5 Then
             .Char.Heading = Heading
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(.Char.body, .Char.head, .Char.Heading, .Char.charindex, .Char.WeaponAnim, _
-                    .Char.ShieldAnim, .Char.CartAnim, .Char.BackpackAnim, .Char.FX, .Char.loops, .Char.CascoAnim, False, .flags.Navegando))
+            If .flags.AdminInvisible = 0 Then
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(.Char.body, .Char.head, .Char.Heading, .Char.charindex, .Char.WeaponAnim, _
+                        .Char.ShieldAnim, .Char.CartAnim, .Char.BackpackAnim, .Char.FX, .Char.loops, .Char.CascoAnim, False, .flags.Navegando))
+            Else
+                Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageCharacterChange(.Char.body, .Char.head, .Char.Heading, .Char.charindex, .Char.WeaponAnim, _
+                        .Char.ShieldAnim, .Char.CartAnim, .Char.BackpackAnim, .Char.FX, .Char.loops, .Char.CascoAnim, False, .flags.Navegando))
+            End If
         End If
     End With
     Exit Sub
