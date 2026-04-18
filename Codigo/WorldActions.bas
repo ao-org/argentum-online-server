@@ -361,21 +361,11 @@ Private Sub HandleFishingDeliveryNpcInteraction(ByVal UserIndex As Integer, ByVa
         Call WriteLocaleMsg(UserIndex, MSG_SOLO_TRABAJADORES_PUEDEN_REGISTRAR_PECES_ESPECIALES, e_FontTypeNames.FONTTYPE_INFOIAO)
         Exit Sub
     End If
-    Dim i                   As Integer, j As Integer
     Dim PuntosTotales       As Long
-    Dim CantPecesEspeciales As Long
     Dim OroTotal            As Long
-    CantPecesEspeciales = UBound(PecesEspeciales)
-    If CantPecesEspeciales > 0 Then
-        For i = 1 To MAX_INVENTORY_SLOTS
-            For j = 1 To CantPecesEspeciales
-                If UserList(UserIndex).invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
-                    PuntosTotales = PuntosTotales + (ObjData(UserList(UserIndex).invent.Object(i).ObjIndex).PuntosPesca * UserList(UserIndex).invent.Object(i).amount)
-                    OroTotal = OroTotal + (ObjData(UserList(UserIndex).invent.Object(i).ObjIndex).Valor * UserList(UserIndex).invent.Object(i).amount)
-                End If
-            Next j
-        Next i
-    End If
+
+    Call CalculateSpecialFishingRewards(UserIndex, PuntosTotales, OroTotal)
+
     If PuntosTotales > 0 Then
         UserList(UserIndex).flags.pregunta = 5
         Call WritePreguntaBox(UserIndex, 1593, PuntosTotales & "¿" & PonerPuntos(OroTotal * 1.2)) 'Msg1593= Tienes un total de ¿1 puntos y ¿2 monedas de oro para reclamar, ¿Deseas aceptar?
@@ -383,6 +373,23 @@ Private Sub HandleFishingDeliveryNpcInteraction(ByVal UserIndex As Integer, ByVa
         Dim charindexstr As Integer
         charindexstr = str$(NpcList(NpcIndex).Char.charindex)
         Call WriteLocaleChatOverHead(UserIndex, "1352", "", charindexstr, &HFFFF00) ' Msg1352=No tienes ningún trofeo de pesca para entregar.
+    End If
+End Sub
+
+Private Sub CalculateSpecialFishingRewards(ByVal UserIndex As Integer, ByRef totalPoints As Long, ByRef totalGold As Long)
+    Dim i                   As Integer, j As Integer
+    Dim CantPecesEspeciales As Long
+
+    CantPecesEspeciales = UBound(PecesEspeciales)
+    If CantPecesEspeciales > 0 Then
+        For i = 1 To MAX_INVENTORY_SLOTS
+            For j = 1 To CantPecesEspeciales
+                If UserList(UserIndex).invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
+                    totalPoints = totalPoints + (ObjData(UserList(UserIndex).invent.Object(i).ObjIndex).PuntosPesca * UserList(UserIndex).invent.Object(i).amount)
+                    totalGold = totalGold + (ObjData(UserList(UserIndex).invent.Object(i).ObjIndex).Valor * UserList(UserIndex).invent.Object(i).amount)
+                End If
+            Next j
+        Next i
     End If
 End Sub
 
