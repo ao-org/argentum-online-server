@@ -409,7 +409,6 @@ End Function
 
 ' Property 5: EsNewbie threshold
 ' For any level 1 through 50, EsNewbie returns True iff level <= 12.
-' Validates: Requirements 3.1, 3.2, 3.3
 Private Function test_esnewbie_threshold_property() As Boolean
     On Error GoTo Err_Handler
     test_esnewbie_threshold_property = True
