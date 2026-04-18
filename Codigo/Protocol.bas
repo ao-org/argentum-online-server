@@ -2087,45 +2087,44 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             If amount > 100000 Then amount = 100000
             Call TirarOro(amount, UserIndex)
         Else
-            If Slot <= getMaxInventorySlots(UserIndex) Then
-                '04-05-08 Ladder
-                If (.flags.Privilegios And e_PlayerType.Admin) <> 16 Then
-                    If EsNewbie(UserIndex) And ObjData(.invent.Object(Slot).ObjIndex).Newbie = 1 Then
-                        ' Msg701=No se pueden tirar los objetos Newbies.
-                        Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDEN_TIRAR_OBJETOS_NEWBIES, e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-                    If ObjData(.invent.Object(Slot).ObjIndex).Intirable = 1 And Not EsGM(UserIndex) Then
-                        ' Msg702=Acción no permitida.
-                        Call WriteLocaleMsg(UserIndex, MSG_NO_ACCION_PERMITIDA, e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    ElseIf ObjData(.invent.Object(Slot).ObjIndex).Intirable = 1 And EsGM(UserIndex) Then
-                        If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
-                            If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-                            Call DropObj(UserIndex, Slot, amount, .pos.Map, .pos.x, .pos.y)
-                        End If
-                        Exit Sub
-                    End If
-                    If ObjData(.invent.Object(Slot).ObjIndex).Instransferible = 1 Then
-                        ' Msg702=Acción no permitida.
-                        Call WriteLocaleMsg(UserIndex, MSG_NO_ACCION_PERMITIDA, e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-                End If
-                If ObjData(.invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otShips And UserList(UserIndex).flags.Navegando Then
-                    ' Msg703=Para tirar la barca deberias estar en tierra firme.
-                    Call WriteLocaleMsg(UserIndex, MSG_TIRAR_BARCA_DEBERIAS_ESTAR_TIERRA_FIRME, e_FontTypeNames.FONTTYPE_INFO)
+            If Slot < 1 Or Slot > getMaxInventorySlots(UserIndex) Then
+                Call LogEdicionPaquete("El usuario " & GetUserRealName(UserIndex) & " editó el slot del inventario | Valor: " & Slot & ".")
+                Exit Sub
+            End If
+            
+            If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
+            
+            '04-05-08 Ladder
+            If (.flags.Privilegios And e_PlayerType.Admin) <> 16 Then
+                If EsNewbie(UserIndex) And ObjData(.invent.Object(Slot).ObjIndex).Newbie = 1 Then
+                    ' Msg701=No se pueden tirar los objetos Newbies.
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDEN_TIRAR_OBJETOS_NEWBIES, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
-            Else
-                'ver de banear al usuario
-                'Call BanearIP(0, GetUserDisplayName(UserIndex), UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
-                Call LogEdicionPaquete("El usuario " & GetUserRealName(UserIndex) & " editó el slot del inventario | Valor: " & Slot & ".")
+                If ObjData(.invent.Object(Slot).ObjIndex).Intirable = 1 And Not EsGM(UserIndex) Then
+                    ' Msg702=Acción no permitida.
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_ACCION_PERMITIDA, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                ElseIf ObjData(.invent.Object(Slot).ObjIndex).Intirable = 1 And EsGM(UserIndex) Then
+                    If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
+                        Call DropObj(UserIndex, Slot, amount, .pos.Map, .pos.x, .pos.y)
+                    End If
+                    Exit Sub
+                End If
+                If ObjData(.invent.Object(Slot).ObjIndex).Instransferible = 1 Then
+                    ' Msg702=Acción no permitida.
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_ACCION_PERMITIDA, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+            End If
+            If ObjData(.invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otShips And UserList(UserIndex).flags.Navegando Then
+                ' Msg703=Para tirar la barca deberias estar en tierra firme.
+                Call WriteLocaleMsg(UserIndex, MSG_TIRAR_BARCA_DEBERIAS_ESTAR_TIERRA_FIRME, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
             End If
             '04-05-08 Ladder
             'Only drop valid slots
             If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
-                If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
                 Call DropObj(UserIndex, Slot, amount, .pos.Map, .pos.x, .pos.y)
             End If
         End If
