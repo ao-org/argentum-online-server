@@ -110,7 +110,6 @@ Err_Handler:
 End Function
 
 ' Feature: unit-test-coverage, Property 7: WorldTime millisecond range invariant
-' **Validates: Requirements 7.1, 7.6, 7.7**
 Private Function test_prop_ms_range_invariant() As Boolean
     On Error GoTo Err_Handler
     
@@ -156,7 +155,6 @@ Err_Handler:
 End Function
 
 ' Feature: unit-test-coverage, Property 8: WorldTime second consistency invariant
-' **Validates: Requirements 7.5**
 Private Function test_prop_sec_consistency() As Boolean
     On Error GoTo Err_Handler
     
@@ -187,7 +185,6 @@ Err_Handler:
 End Function
 
 ' Feature: unit-test-coverage, Property 9: WorldTime DayLenMs get/set round-trip
-' **Validates: Requirements 7.3**
 Private Function test_prop_daylenms_roundtrip() As Boolean
     On Error GoTo Err_Handler
     

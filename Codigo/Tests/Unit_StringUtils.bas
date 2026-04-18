@@ -202,7 +202,6 @@ End Function
 ' --------------------------------------------------------------------------
 
 ' Feature: unit-test-coverage, Property 11: ValidDescription accepts printable ASCII
-' **Validates: Requirements 9.1**
 Private Function test_prop_valid_desc_printable_ascii() As Boolean
     On Error GoTo Err_Handler
     
@@ -242,7 +241,6 @@ Err_Handler:
 End Function
 
 ' Feature: unit-test-coverage, Property 12: ValidDescription rejects invalid characters
-' **Validates: Requirements 9.2**
 Private Function test_prop_valid_desc_rejects_invalid() As Boolean
     On Error GoTo Err_Handler
     

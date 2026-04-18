@@ -115,7 +115,6 @@ Err_Handler:
 End Function
 
 ' Feature: unit-test-coverage, Property 10: GetTimeString format correctness
-' **Validates: Requirements 8.1, 8.2, 8.3**
 Private Function test_prop_gettimestring_format() As Boolean
     On Error GoTo Err_Handler
     

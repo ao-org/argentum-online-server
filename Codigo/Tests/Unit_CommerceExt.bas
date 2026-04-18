@@ -150,7 +150,6 @@ End Function
 ' --------------------------------------------------------------------------
 
 ' Feature: unit-test-coverage, Property 13: SalePrice base formula
-' **Validates: Requirements 11.2**
 '
 ' Loop over 100+ valid non-newbie items with positive Valor, verify
 ' SalePrice(ObjIndex, 0) = Valor / REDUCTOR_PRECIOVENTA.
@@ -217,7 +216,6 @@ Err_Handler:
 End Function
 
 ' Feature: unit-test-coverage, Property 14: SalePrice non-negative invariant
-' **Validates: Requirements 11.3**
 '
 ' Loop over 100+ valid ObjIndex values, verify SalePrice >= 0.
 Private Function test_prop_sale_price_non_negative() As Boolean

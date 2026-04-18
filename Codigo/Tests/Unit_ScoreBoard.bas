@@ -129,7 +129,6 @@ End Function
 ' --------------------------------------------------------------------------
 
 ' Feature: unit-test-coverage, Property 15: ScoreBoard ranking order
-' **Validates: Requirements 12.3**
 '
 ' Loop over 100+ sets of random scores, add to ScoreBoard, verify
 ' GetRanking returns entries sorted in descending order by score.

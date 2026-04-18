@@ -6,7 +6,6 @@ Option Explicit
 ' Tests AO20CryptoSysWrapper.bas: HiByte, LoByte, MakeInt, Str2ByteArr,
 ' ByteArr2String, CopyBytes, ByteArrayToHex, IsBase64.
 '
-' Requirements: 10.1, 10.2, 10.3, 10.4, 10.5
 ' ==========================================================================
 
 #If UNIT_TEST = 1 Then
@@ -44,7 +43,7 @@ End Function
 ' Example-based tests
 ' --------------------------------------------------------------------------
 
-' Requirement 10.1: HiByte(256) = 1
+' HiByte(256) = 1
 Private Function test_hibyte_256() As Boolean
     On Error GoTo Fail
     test_hibyte_256 = (AO20CryptoSysWrapper.hiByte(256) = 1)
@@ -53,7 +52,7 @@ Fail:
     test_hibyte_256 = False
 End Function
 
-' Requirement 10.1: HiByte(0) = 0
+' HiByte(0) = 0
 Private Function test_hibyte_0() As Boolean
     On Error GoTo Fail
     test_hibyte_0 = (AO20CryptoSysWrapper.hiByte(0) = 0)
@@ -62,7 +61,7 @@ Fail:
     test_hibyte_0 = False
 End Function
 
-' Requirement 10.1: LoByte(258) = 2
+' LoByte(258) = 2
 Private Function test_lobyte_258() As Boolean
     On Error GoTo Fail
     test_lobyte_258 = (AO20CryptoSysWrapper.LoByte(258) = 2)
@@ -71,7 +70,7 @@ Fail:
     test_lobyte_258 = False
 End Function
 
-' Requirement 10.1: LoByte(255) = 255
+' LoByte(255) = 255
 Private Function test_lobyte_255() As Boolean
     On Error GoTo Fail
     test_lobyte_255 = (AO20CryptoSysWrapper.LoByte(255) = 255)
@@ -80,7 +79,7 @@ Fail:
     test_lobyte_255 = False
 End Function
 
-' Requirement 10.1: Str2ByteArr produces correct length and ASCII byte values
+' Str2ByteArr produces correct length and ASCII byte values
 Private Function test_str2bytearr() As Boolean
     On Error GoTo Fail
     Dim arr() As Byte
@@ -97,7 +96,7 @@ Fail:
     test_str2bytearr = False
 End Function
 
-' Requirement 10.1: ByteArr2String returns correct ASCII string
+' ByteArr2String returns correct ASCII string
 Private Function test_bytearr2string() As Boolean
     On Error GoTo Fail
     Dim arr(0 To 2) As Byte
@@ -110,7 +109,7 @@ Fail:
     test_bytearr2string = False
 End Function
 
-' Requirement 10.1: CopyBytes copies at offset, other bytes unchanged
+' CopyBytes copies at offset, other bytes unchanged
 Private Function test_copybytes() As Boolean
     On Error GoTo Fail
     Dim src(0 To 1) As Byte
@@ -136,7 +135,7 @@ Fail:
     test_copybytes = False
 End Function
 
-' Requirement 10.1: ByteArrayToHex produces hex representation
+' ByteArrayToHex produces hex representation
 ' VB6 Hex$() does not zero-pad, so &H0A becomes "A" not "0A"
 Private Function test_bytearraytohex() As Boolean
     On Error GoTo Fail
@@ -149,7 +148,7 @@ Fail:
     test_bytearraytohex = False
 End Function
 
-' Requirement 10.2: IsBase64 with valid Base64 string returns True
+' IsBase64 with valid Base64 string returns True
 Private Function test_isbase64_valid() As Boolean
     On Error GoTo Fail
     test_isbase64_valid = (IsBase64("SGVsbG8=") = True)
@@ -158,7 +157,7 @@ Fail:
     test_isbase64_valid = False
 End Function
 
-' Requirement 10.3: IsBase64 with invalid characters returns False
+' IsBase64 with invalid characters returns False
 Private Function test_isbase64_invalid() As Boolean
     On Error GoTo Fail
     test_isbase64_invalid = (IsBase64("!@#") = False)
@@ -167,7 +166,7 @@ Fail:
     test_isbase64_invalid = False
 End Function
 
-' Requirement 10.4: IsBase64 with empty string - verify behavior
+' IsBase64 with empty string - verify behavior
 Private Function test_isbase64_empty() As Boolean
     On Error GoTo Fail
     ' Empty string has no invalid chars, so IsBase64 returns True
@@ -182,7 +181,6 @@ End Function
 ' --------------------------------------------------------------------------
 
 ' Feature: unit-test-coverage-tier4, Property 4: HiByte/LoByte/MakeInt round-trip (server copy)
-' Validates: Requirements 10.1
 Private Function test_pbt_makeint_roundtrip() As Boolean
     On Error GoTo Fail
     
@@ -202,7 +200,6 @@ Fail:
 End Function
 
 ' Feature: unit-test-coverage-tier4, Property 5: Str2ByteArr/ByteArr2String round-trip (server copy)
-' Validates: Requirements 10.1
 Private Function test_pbt_str2bytearr_roundtrip() As Boolean
     On Error GoTo Fail
     
@@ -239,7 +236,6 @@ Fail:
 End Function
 
 ' Feature: unit-test-coverage-tier4, Property 6: CopyBytes correctness (server copy)
-' Validates: Requirements 10.1
 Private Function test_pbt_copybytes_correctness() As Boolean
     On Error GoTo Fail
     
@@ -301,7 +297,6 @@ Fail:
 End Function
 
 ' Feature: unit-test-coverage-tier4, Property 7: Byte array to string representation (server copy)
-' Validates: Requirements 10.1
 ' Note: Server does not have ByteArrayToDecimalString, only ByteArrayToHex
 Private Function test_pbt_byte_to_string_repr() As Boolean
     On Error GoTo Fail
@@ -351,7 +346,6 @@ Fail:
 End Function
 
 ' Feature: unit-test-coverage-tier4, Property 11: IsBase64 character membership
-' Validates: Requirements 10.2, 10.3
 ' For any string composed exclusively of Base64 alphabet chars (A-Z, a-z, 0-9, +, /, =),
 ' IsBase64 should return True. For any string containing at least one non-Base64 char,
 ' IsBase64 should return False.

@@ -222,7 +222,6 @@ End Function
 ' --------------------------------------------------------------------------
 
 ' Feature: unit-test-coverage, Property 17: Spawn output within map bounds
-' **Validates: Requirements 10.4**
 '
 ' Loop over 100+ calls to FindNearestFreeTile that return True, verify
 ' outX and outY are within valid map boundary range.

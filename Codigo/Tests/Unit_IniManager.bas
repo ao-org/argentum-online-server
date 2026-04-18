@@ -169,7 +169,6 @@ Err_Handler:
 End Function
 
 ' Feature: unit-test-coverage, Property 5: IniManager dump round-trip
-' **Validates: Requirements 6.8**
 ' Generates 100+ INI contents with varying sections/keys, loads each into
 ' a clsIniManager, dumps via DumpFile, reloads the dump, and verifies all
 ' values match (case-insensitive).
@@ -262,7 +261,6 @@ Fail:
 End Function
 
 ' Feature: unit-test-coverage, Property 6: IniManager ChangeValue/GetValue round-trip
-' **Validates: Requirements 6.4**
 ' Creates a single clsIniManager instance, then loops 110+ times calling
 ' ChangeValue with unique (section, key, value) triples and immediately
 ' verifying via GetValue that the returned value matches.
