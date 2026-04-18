@@ -7055,10 +7055,10 @@ End Sub
 
 Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
     On Error GoTo HandleQuestAccept_Err
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     'Maneja el evento de aceptar una quest.
     'Last modified: 31/01/2010 by Amraphen
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     Dim NpcIndex  As Integer
     Dim QuestSlot As Byte
     Dim Indice    As Byte
@@ -7070,11 +7070,14 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
     'npc or item quest
     If NpcIndex > 0 Then
         'npc handled quest
-        tmpQuest = QuestList(NpcList(NpcIndex).QuestNumber(Indice))
+        If Indice < 1 Or Indice > NpcList(NpcIndex).NumQuest Then Exit Sub
         tmpIndex = NpcList(NpcIndex).QuestNumber(Indice)
+        If tmpIndex < 1 Or tmpIndex > UBound(QuestList) Then Exit Sub
+        tmpQuest = QuestList(tmpIndex)
     Else
         'item handled quest
         tmpIndex = UserList(UserIndex).flags.QuestNumber
+        If tmpIndex < 1 Or tmpIndex > UBound(QuestList) Then Exit Sub
         tmpQuest = QuestList(tmpIndex)
     End If
     If Not ModQuest.CanUserAcceptQuest(UserIndex, NpcIndex, tmpIndex, tmpQuest) Then
@@ -7082,7 +7085,11 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
     End If
     QuestSlot = FreeQuestSlot(UserIndex)
     If QuestSlot = 0 Then
-        Call WriteLocaleChatOverHead(UserIndex, 1417, vbNullString, NpcList(NpcIndex).Char.charindex, vbYellow)  ' Msg1417=Debes completar las misiones en curso para poder aceptar más misiones.
+        If NpcIndex > 0 Then
+            Call WriteLocaleChatOverHead(UserIndex, 1417, vbNullString, NpcList(NpcIndex).Char.charindex, vbYellow)  ' Msg1417=Debes completar las misiones en curso para poder aceptar más misiones.
+        Else
+            Call WriteLocaleMsg(UserIndex, "1417", e_FontTypeNames.FONTTYPE_INFO)
+        End If
         Exit Sub
     End If
     'Agregamos la quest.
