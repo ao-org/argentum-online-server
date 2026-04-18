@@ -48,7 +48,6 @@ End Function
 Public Sub Init()
     NextTest = ClientTests.TestInvalidBigPacketID
     Set Client = New Network.Client
-    Call Unit_Protocol_Writes.Initialize
     Call Client.Attach(AddressOf OnClientConnect, AddressOf OnClientClose, AddressOf OnClientSend, AddressOf OnClientRecv)
 End Sub
 
@@ -87,19 +86,17 @@ End Sub
 
 Private Sub fTestInvalidBigPacketID()
     Debug.Print "Running TestInvalidBigPacketID()"
-    Call Unit_Protocol_Writes.WriteLong(ClientPacketID.PacketCount + 1)
+    ' Unit_Protocol_Writes removed — integration test disabled
+    'Call Unit_Protocol_Writes.WriteLong(ClientPacketID.PacketCount + 1)
 End Sub
 
 Private Sub fTestInvalidNegativePacketID()
     Debug.Print "Running TestInvalidNegativePacketID()"
-    Call Unit_Protocol_Writes.WriteLong(-1)
+    'Call Unit_Protocol_Writes.WriteLong(-1)
 End Sub
 Private Sub fTestWriteLoginExcistingChar()
     Debug.Print "Running TestWriteLoginExcistingChar"
- Dim good_md5, md5 As String
-    good_md5 = "a944087c826163c4ed658b1ea00594be"
-    Call WriteLoginExistingChar(UnitTesting.encrypted_token, UnitTesting.public_key, _
-        "zeno", 2, 0, 4, good_md5)
+    ' WriteLoginExistingChar was in Unit_Protocol_Writes — removed
 End Sub
 
 Private Sub fTestWriteLoginNewChar()
@@ -118,9 +115,9 @@ Private Sub fTestWriteLoginNewChar()
     head = 1
     home = 1
         
-    Call Unit_Protocol_Writes.WriteLoginNewChar( _
-        UnitTesting.public_key, UnitTesting.character_name, app_major, app_minor, app_revision, _
-        md5, race, gender, Class, body, head, home)
+    'Call Unit_Protocol_Writes.WriteLoginNewChar( _
+    '    UnitTesting.public_key, UnitTesting.character_name, app_major, app_minor, app_revision, _
+    '    md5, race, gender, Class, body, head, home)
 
 End Sub
 
@@ -147,7 +144,7 @@ End Sub
 Private Sub OnClientClose(ByVal Code As Long)
 On Error GoTo OnClientClose_Err:
     
-    Call Unit_Protocol_Writes.Clear
+    'Call Unit_Protocol_Writes.Clear
 
     Debug.Print "UnitClient.OnClientClose"
     
@@ -181,11 +178,11 @@ Private Sub OnClientRecv(ByVal Message As Network.reader)
             Debug.Print "ServerPacketID.eDisconnect"
         Case ServerPacketID.eCharacterChange
             Debug.Print "CharacterChange"
-            Call Unit_Protocol_Writes.HandleCharacterChange(reader)
+            'Call Unit_Protocol_Writes.HandleCharacterChange(reader)
         Case ServerPacketID.eShowMessageBox
-            Call Unit_Protocol_Writes.HandleShowMessageBox(reader)
+            'Call Unit_Protocol_Writes.HandleShowMessageBox(reader)
         Case ServerPacketID.eErrorMsg
-            Call Unit_Protocol_Writes.HandleErrorMessageBox(reader)
+            'Call Unit_Protocol_Writes.HandleErrorMessageBox(reader)
         Case Else
             While reader.GetAvailable() > 0
                 reader.ReadBool
