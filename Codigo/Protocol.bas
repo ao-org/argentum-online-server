@@ -2217,6 +2217,7 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
         Packet_ID = PacketNames.LeftClick
         If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "LeftClick", PacketTimerThreshold( _
                 Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+        If Not InMapBounds(.pos.Map, x, y) Then Exit Sub
         Call LookatTile(UserIndex, .pos.Map, x, y)
         Dim ClickedUserIndex As Integer
         Dim ClickedNpcIndex As Integer
@@ -2247,13 +2248,11 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleDoubleClick(ByVal UserIndex As Integer)
     On Error GoTo HandleDoubleClick_Err
-    With UserList(UserIndex)
-        Dim x As Byte
-        Dim y As Byte
-        x = reader.ReadInt8()
-        y = reader.ReadInt8()
-        Call HandleWorldAction(UserIndex, .pos.Map, x, y)
-    End With
+    Dim x As Byte
+    Dim y As Byte
+    x = reader.ReadInt8()
+    y = reader.ReadInt8()
+    ' World interactions are handled on left click. Double click is consumed only to avoid duplicate execution.
     Exit Sub
 HandleDoubleClick_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDoubleClick", Erl)
