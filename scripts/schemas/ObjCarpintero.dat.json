@@ -1,0 +1,17 @@
+{
+  "file": "ObjCarpintero.dat",
+  "description": "",
+  "sections": {
+    "INIT": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "NUMOBJS": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  },
+  "rules": []
+}

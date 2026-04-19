@@ -1,0 +1,327 @@
+{
+  "file": "Server.ini",
+  "description": "Main server configuration — network, directories, admin accounts, and game init settings",
+  "sections": {
+    "DIRECTORIOS": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "DATPATH": {
+          "type": "string",
+          "required": true,
+          "description": "Path to data files directory"
+        },
+        "MAPPATH": {
+          "type": "string",
+          "required": true,
+          "description": "Path to map files directory"
+        },
+        "CHARPATH": {
+          "type": "string",
+          "required": true,
+          "description": "Path to character files directory"
+        },
+        "DELETEPATH": {
+          "type": "string",
+          "required": true,
+          "description": "Path to deleted character files directory"
+        },
+        "CUENTASPATH": {
+          "type": "string",
+          "required": true,
+          "description": "Path to account files directory"
+        },
+        "DELETECUENTASPATH": {
+          "type": "string",
+          "required": true,
+          "description": "Path to deleted account files directory"
+        }
+      }
+    },
+    "INIT": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "NUMCUENTAS": {
+          "type": "long",
+          "required": false,
+          "description": "Number of accounts"
+        },
+        "STARTPORT": {
+          "type": "long",
+          "required": true,
+          "min": 1,
+          "max": 65535,
+          "description": "Server listening port"
+        },
+        "LISTENIP": {
+          "type": "string",
+          "required": false,
+          "default": "0.0.0.0",
+          "description": "IP address to listen on"
+        },
+        "HIDE": {
+          "type": "boolean",
+          "required": false,
+          "default": "0",
+          "description": "Hide server window"
+        },
+        "MAXCONEXIONESIP": {
+          "type": "long",
+          "required": true,
+          "min": 1,
+          "description": "Maximum connections per IP"
+        },
+        "MAXUSERSPORCUENTA": {
+          "type": "long",
+          "required": true,
+          "min": 1,
+          "description": "Maximum users per account"
+        },
+        "IDLELIMIT": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Idle timeout in minutes"
+        },
+        "INICIARDESDEBACKUP": {
+          "type": "boolean",
+          "required": false,
+          "default": "0",
+          "description": "Boot from backup"
+        },
+        "PUEDECREARPERSONAJES": {
+          "type": "boolean",
+          "required": false,
+          "default": "1",
+          "description": "Allow character creation"
+        },
+        "SERVERSOLOGMS": {
+          "type": "boolean",
+          "required": false,
+          "default": "0",
+          "description": "Server restricted to GMs only"
+        },
+        "TESTING": {
+          "type": "boolean",
+          "required": false,
+          "default": "0",
+          "description": "Testing mode flag"
+        },
+        "CENTINELAACTIVADO": {
+          "type": "boolean",
+          "required": false,
+          "default": "1",
+          "description": "Sentinel system enabled"
+        },
+        "VERSION": {
+          "type": "string",
+          "required": false,
+          "description": "Required client version"
+        },
+        "MINIMUMPRICEMAO": {
+          "type": "long",
+          "required": false,
+          "min": 0,
+          "description": "Minimum price for MAO listings"
+        },
+        "GOLDPRICEMAO": {
+          "type": "long",
+          "required": false,
+          "min": 0,
+          "description": "Gold price for MAO"
+        },
+        "MINIMUMLEVELMAO": {
+          "type": "long",
+          "required": false,
+          "min": 0,
+          "description": "Minimum level for MAO"
+        },
+        "DISCONNECTTIMEOUT": {
+          "type": "long",
+          "required": false,
+          "min": 0,
+          "description": "Disconnect timeout in ms"
+        },
+        "INSTANCEMAPS": {
+          "type": "long",
+          "required": false,
+          "min": 0,
+          "description": "Number of instanced maps"
+        },
+        "PENDINGCONNECTIONTIMEOUT": {
+          "type": "long",
+          "required": false,
+          "default": "1000",
+          "min": 0,
+          "description": "Pending connection timeout in ms"
+        },
+        "RESPOS": {
+          "type": "string",
+          "required": false,
+          "description": "Resurrect position (Map-X-Y format)"
+        },
+        "MAXUSERS": {
+          "type": "long",
+          "required": true,
+          "min": 1,
+          "description": "Maximum concurrent users"
+        },
+        "MINDADOS": {
+          "type": "long",
+          "required": false,
+          "min": 1,
+          "description": "Minimum dice roll for character creation"
+        },
+        "MAXDADOS": {
+          "type": "long",
+          "required": false,
+          "min": 1,
+          "description": "Maximum dice roll for character creation"
+        },
+        "ADMINES": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Number of admin entries"
+        },
+        "DIOSES": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Number of god-level admin entries"
+        },
+        "SEMIDIOSES": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Number of semi-god admin entries"
+        },
+        "CONSEJEROS": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Number of counselor entries"
+        },
+        "ROLESMASTERS": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Number of role master entries"
+        }
+      }
+    },
+    "ADMINES": {
+      "required": false,
+      "strict": false,
+      "keys": {}
+    },
+    "DIOSES": {
+      "required": false,
+      "strict": false,
+      "keys": {}
+    },
+    "SEMIDIOSES": {
+      "required": false,
+      "strict": false,
+      "keys": {}
+    },
+    "CONSEJEROS": {
+      "required": false,
+      "strict": false,
+      "keys": {}
+    },
+    "ROLESMASTERS": {
+      "required": false,
+      "strict": false,
+      "keys": {}
+    },
+    "AI": {
+      "required": false,
+      "strict": true,
+      "keys": {
+        "NPCPATHFINDINGNOISE": {
+          "type": "single",
+          "required": false,
+          "description": "NPC pathfinding noise factor"
+        },
+        "NPC_ORBIT_REEVALUATE_MS": {
+          "type": "long",
+          "required": false,
+          "min": 0,
+          "description": "NPC orbit reevaluation interval in ms"
+        },
+        "PATH_RECOMPUTE_COOLDOWN_MS": {
+          "type": "long",
+          "required": false,
+          "min": 0,
+          "description": "Path recompute cooldown in ms"
+        },
+        "NPC_ORBIT_TANGENT_WEIGHT": {
+          "type": "double",
+          "required": false,
+          "description": "NPC orbit tangent weight"
+        },
+        "NPC_RETREAT_DISTANCE_BUFFER": {
+          "type": "double",
+          "required": false,
+          "description": "NPC retreat distance buffer"
+        },
+        "NPC_ORBIT_STEP_DEGREES": {
+          "type": "double",
+          "required": false,
+          "description": "NPC orbit step in degrees"
+        },
+        "NPC_STRAFE_DURATION_MS": {
+          "type": "long",
+          "required": false,
+          "min": 0,
+          "description": "NPC strafe duration in ms"
+        }
+      }
+    }
+  },
+  "rules": [
+    {
+      "type": "min_max",
+      "section": "INIT",
+      "minKey": "MINDADOS",
+      "maxKey": "MAXDADOS"
+    },
+    {
+      "type": "count_sections",
+      "countSection": "INIT",
+      "countKey": "ADMINES",
+      "targetSectionPrefix": "ADMINES",
+      "entryPrefix": "ADMIN"
+    },
+    {
+      "type": "count_sections",
+      "countSection": "INIT",
+      "countKey": "DIOSES",
+      "targetSectionPrefix": "DIOSES",
+      "entryPrefix": "DIOS"
+    },
+    {
+      "type": "count_sections",
+      "countSection": "INIT",
+      "countKey": "SEMIDIOSES",
+      "targetSectionPrefix": "SEMIDIOSES",
+      "entryPrefix": "SEMIDIOS"
+    },
+    {
+      "type": "count_sections",
+      "countSection": "INIT",
+      "countKey": "CONSEJEROS",
+      "targetSectionPrefix": "CONSEJEROS",
+      "entryPrefix": "CONSEJERO"
+    },
+    {
+      "type": "count_sections",
+      "countSection": "INIT",
+      "countKey": "ROLESMASTERS",
+      "targetSectionPrefix": "ROLESMASTERS",
+      "entryPrefix": "RM"
+    }
+  ]
+}

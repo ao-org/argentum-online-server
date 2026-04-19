@@ -1,0 +1,27 @@
+{
+  "file": "EffectsOverTime.dat",
+  "description": "Effects over time definitions — indexed sections with count in [INIT].EffectCount",
+  "sections": {
+    "INIT": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "EFFECTCOUNT": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Total number of effect-over-time definitions"
+        }
+      }
+    }
+  },
+  "rules": [
+    {
+      "type": "count_sections",
+      "countSection": "INIT",
+      "countKey": "EFFECTCOUNT",
+      "targetSectionPrefix": "EFFECT",
+      "entryPrefix": "EFFECT"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "file": "ArmadurasHerrero.dat",
+  "description": "",
+  "sections": {
+    "INIT": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "NUMARMADURAS": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  },
+  "rules": []
+}

@@ -1,0 +1,17 @@
+{
+  "file": "baneos.dat",
+  "description": "",
+  "sections": {
+    "INIT": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "NUMEROBANS": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  },
+  "rules": []
+}

@@ -1,0 +1,17 @@
+{
+  "file": "BlackSmithElementalRunes.dat",
+  "description": "",
+  "sections": {
+    "INIT": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "NUMRUNAS": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  },
+  "rules": []
+}

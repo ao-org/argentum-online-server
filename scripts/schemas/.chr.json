@@ -1,0 +1,17 @@
+{
+  "file": ".chr",
+  "description": "",
+  "sections": {
+    "GUILD": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "ASPIRANTEA": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  },
+  "rules": []
+}

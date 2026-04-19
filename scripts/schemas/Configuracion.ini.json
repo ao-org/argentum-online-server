@@ -1,0 +1,688 @@
+{
+  "file": "Configuracion.ini",
+  "description": "Main game configuration loaded by ServerConfig.cls via clsIniManager",
+  "sections": {
+    "DIRECTPLAY": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "BUFFERSPERTHREAD": {
+          "type": "long",
+          "required": false,
+          "default": "5"
+        },
+        "DEFAULTENUMCOUNT": {
+          "type": "long",
+          "required": false,
+          "default": "5"
+        },
+        "DEFAULTENUMRETRYINTERVAL": {
+          "type": "long",
+          "required": false,
+          "default": "100"
+        },
+        "DEFAULTENUMTIMEOUT": {
+          "type": "long",
+          "required": false,
+          "default": "500"
+        },
+        "MAXENUMPAYLOADSIZE": {
+          "type": "long",
+          "required": false,
+          "default": "1024"
+        },
+        "NUMTHREADS": {
+          "type": "long",
+          "required": false,
+          "default": "48"
+        },
+        "SYSTEMBUFFERSIZEAS": {
+          "type": "long",
+          "required": false,
+          "default": "65536"
+        },
+        "TIMEOUTUNTILKEEPALIVE": {
+          "type": "long",
+          "required": false,
+          "default": "500"
+        },
+        "CONNECTRETRIES": {
+          "type": "long",
+          "required": false,
+          "default": "20"
+        },
+        "CONNECTTIMEOUT": {
+          "type": "long",
+          "required": false,
+          "default": "500"
+        }
+      }
+    },
+    "CONFIGURACIONES": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "EXPMULT": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Experience multiplier"
+        },
+        "OROMULT": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Gold multiplier"
+        },
+        "RECOLECCIONMULT": {
+          "type": "double",
+          "required": true
+        },
+        "OROPORNIVELBILLETERA": {
+          "type": "long",
+          "required": true
+        },
+        "MAXINVENTORYOBJS": {
+          "type": "integer",
+          "required": false,
+          "default": "DEFAULT_MAX_INVENTORY_OBJS"
+        },
+        "DURACIONDIA": {
+          "type": "long",
+          "required": true
+        },
+        "COSTOPERDONPORCIUDADANO": {
+          "type": "long",
+          "required": true
+        },
+        "CHATGLOBAL": {
+          "type": "integer",
+          "required": false,
+          "default": "\"1\""
+        },
+        "PARTYELV": {
+          "type": "integer",
+          "required": false,
+          "default": "\"4\""
+        },
+        "PARTYELVWLEADERSHIP": {
+          "type": "integer",
+          "required": false,
+          "default": "\"5\""
+        },
+        "PENALTYEXPUSERPERLEVEL": {
+          "type": "single",
+          "required": false,
+          "default": "\"0.05\""
+        },
+        "NPCDELTALEVELPENALTIES": {
+          "type": "integer",
+          "required": false,
+          "default": "\"4\""
+        },
+        "NPCDELTALEVELCLOSERANGE": {
+          "type": "integer",
+          "required": false,
+          "default": "\"3\""
+        },
+        "LEADERSHIPEXPPARTYBONUS": {
+          "type": "double",
+          "required": false,
+          "default": "\"1.01\""
+        },
+        "JINETELEVEL1SPEED": {
+          "type": "single",
+          "required": false,
+          "default": "\"1.05\""
+        },
+        "JINETELEVEL2SPEED": {
+          "type": "single",
+          "required": false,
+          "default": "\"1.07\""
+        },
+        "JINETELEVEL3SPEED": {
+          "type": "single",
+          "required": false,
+          "default": "\"1.10\""
+        },
+        "JINETELEVEL4SPEED": {
+          "type": "single",
+          "required": false,
+          "default": "\"1.15\""
+        },
+        "JINETELEVEL5SPEED": {
+          "type": "single",
+          "required": false,
+          "default": "\"1.20\""
+        },
+        "JINETELEVEL6SPEED": {
+          "type": "single",
+          "required": false,
+          "default": "\"1.25\""
+        },
+        "JINETELEVEL7SPEED": {
+          "type": "single",
+          "required": false,
+          "default": "\"1.30\""
+        },
+        "JINETELEVEL8SPEED": {
+          "type": "single",
+          "required": false,
+          "default": "\"1.45\""
+        },
+        "JINETELEVEL9SPEED": {
+          "type": "single",
+          "required": false,
+          "default": "\"1.50\""
+        },
+        "MAXJAILTIME": {
+          "type": "long",
+          "required": false,
+          "default": "\"8640\""
+        },
+        "DROPMULT": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Drop rate multiplier"
+        }
+      }
+    },
+    "ANTICHEAT": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "MAXIMOSPEEDHACK": {
+          "type": "integer",
+          "required": true
+        }
+      }
+    },
+    "PESCA": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "MINAGUA": {
+          "type": "integer",
+          "required": true
+        },
+        "MAXZONAS": {
+          "type": "integer",
+          "required": true
+        },
+        "FISHINGID": {
+          "type": "integer",
+          "required": true
+        },
+        "FISHINGMAPSPECIALFISHID": {
+          "type": "integer",
+          "required": true
+        },
+        "REPLACEMENTSPECIALFISH": {
+          "type": "integer",
+          "required": true
+        },
+        "NPCFISHINGWATCHER": {
+          "type": "integer",
+          "required": true
+        }
+      }
+    },
+    "AI": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "NPCSPELLRANGEX": {
+          "type": "integer",
+          "required": false,
+          "default": "DEFAULT_NPC_SPELL_RANGE_X"
+        },
+        "NPCSPELLRANGEY": {
+          "type": "integer",
+          "required": false,
+          "default": "DEFAULT_NPC_SPELL_RANGE_Y"
+        },
+        "NPCVISIONRANGEX": {
+          "type": "integer",
+          "required": false,
+          "default": "DEFAULT_NPC_VISION_RANGE_X"
+        },
+        "NPCVISIONRANGEY": {
+          "type": "integer",
+          "required": false,
+          "default": "DEFAULT_NPC_VISION_RANGE_Y"
+        },
+        "NPCPATHFINDINGNOISE": {
+          "type": "single",
+          "required": false,
+          "default": "0.75"
+        },
+        "NPC_ORBIT_REEVALUATE_MS": {
+          "type": "long",
+          "required": false,
+          "default": "DEFAULT_ORBIT_REEVALUATE_MS"
+        },
+        "PATH_RECOMPUTE_COOLDOWN_MS": {
+          "type": "long",
+          "required": false,
+          "default": "DEFAULT_PATH_RECOMPUTE_COOLDOWN_MS"
+        },
+        "NPC_ORBIT_TANGENT_WEIGHT": {
+          "type": "double",
+          "required": false,
+          "default": "DEFAULT_NPC_ORBIT_TANGENT_WEIGHT"
+        },
+        "NPC_RETREAT_DISTANCE_BUFFER": {
+          "type": "double",
+          "required": false,
+          "default": "DEFAULT_NPC_RETREAT_DISTANCE_BUFFER"
+        },
+        "NPC_ORBIT_STEP_DEGREES": {
+          "type": "double",
+          "required": false,
+          "default": "DEFAULT_NPC_ORBIT_STEP_DEGREES"
+        },
+        "NPC_STRAFE_DURATION_MS": {
+          "type": "long",
+          "required": false,
+          "default": "DEFAULT_NPC_STRAFE_DURATION_MS"
+        }
+      }
+    },
+    "AUTOEVENTDAYCALENDAR": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "DOMINGO": {
+          "type": "integer",
+          "required": true
+        },
+        "LUNES": {
+          "type": "integer",
+          "required": true
+        },
+        "MARTES": {
+          "type": "integer",
+          "required": true
+        },
+        "MIERCOLES": {
+          "type": "integer",
+          "required": true
+        },
+        "JUEVES": {
+          "type": "integer",
+          "required": true
+        },
+        "VIERNES": {
+          "type": "integer",
+          "required": true
+        },
+        "SABADO": {
+          "type": "integer",
+          "required": true
+        }
+      }
+    },
+    "AUTOEVENTHOURCALENDAR": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "HORARIOS": {
+          "type": "integer",
+          "required": true
+        }
+      }
+    },
+    "AUTOCAPTURETHEFLAG": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "MINLEVEL": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Minimum player level for Capture the Flag"
+        },
+        "MAXLEVEL": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Maximum player level for Capture the Flag"
+        },
+        "MINPLAYERS": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Minimum players for Capture the Flag"
+        },
+        "MAXPLAYERS": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Maximum players for Capture the Flag"
+        },
+        "TEAMSIZE": {
+          "type": "integer",
+          "required": true
+        },
+        "TEAMTYPE": {
+          "type": "integer",
+          "required": true
+        },
+        "ROUNDNUMBER": {
+          "type": "integer",
+          "required": true
+        },
+        "INSCRIPTIONFEE": {
+          "type": "integer",
+          "required": true
+        },
+        "DESCRIPTION": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    "AUTONPCHUNT": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "MINLEVEL": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Minimum player level for NPC Hunt"
+        },
+        "MAXLEVEL": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Maximum player level for NPC Hunt"
+        },
+        "MINPLAYERS": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Minimum players for NPC Hunt"
+        },
+        "MAXPLAYERS": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Maximum players for NPC Hunt"
+        },
+        "TEAMSIZE": {
+          "type": "integer",
+          "required": true
+        },
+        "TEAMTYPE": {
+          "type": "integer",
+          "required": true
+        },
+        "ROUNDNUMBER": {
+          "type": "integer",
+          "required": true
+        },
+        "INSCRIPTIONFEE": {
+          "type": "integer",
+          "required": true
+        },
+        "DESCRIPTION": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    "AUTODEATHMATCH": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "MINLEVEL": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Minimum player level for Deathmatch"
+        },
+        "MAXLEVEL": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Maximum player level for Deathmatch"
+        },
+        "MINPLAYERS": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Minimum players for Deathmatch"
+        },
+        "MAXPLAYERS": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Maximum players for Deathmatch"
+        },
+        "TEAMSIZE": {
+          "type": "integer",
+          "required": true
+        },
+        "TEAMTYPE": {
+          "type": "integer",
+          "required": true
+        },
+        "ROUNDNUMBER": {
+          "type": "integer",
+          "required": true
+        },
+        "INSCRIPTIONFEE": {
+          "type": "integer",
+          "required": true
+        },
+        "DESCRIPTION": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    "AUTONAVALBATTLE": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "MINLEVEL": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Minimum player level for Naval Battle"
+        },
+        "MAXLEVEL": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Maximum player level for Naval Battle"
+        },
+        "MINPLAYERS": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Minimum players for Naval Battle"
+        },
+        "MAXPLAYERS": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "description": "Maximum players for Naval Battle"
+        },
+        "TEAMSIZE": {
+          "type": "integer",
+          "required": true
+        },
+        "TEAMTYPE": {
+          "type": "integer",
+          "required": true
+        },
+        "ROUNDNUMBER": {
+          "type": "integer",
+          "required": true
+        },
+        "INSCRIPTIONFEE": {
+          "type": "integer",
+          "required": true
+        },
+        "DESCRIPTION": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    "JOBEXP": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "MININGEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "FELLINGEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "IRONFORGINGEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "SILVERFORGINGEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "GOLDFORGINGEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "BLODIUMFORGINGEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "WOODCARPENTRYEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "ELVENWOODCARPENTRYEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "WOLFPELTEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "BLACKWOLFPELTEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "BEARPELTEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "TIGERPELTEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "POLARBEARPELTEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "BENGALTIGERPELTEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "FISHINGEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "MIXINGEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "ELSEEXP": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        },
+        "SPECIALFISHGOLDMULTIPLIER": {
+          "type": "double",
+          "required": false,
+          "default": "1.2"
+        },
+        "SPECIALFISHEXPMULTIPLIER": {
+          "type": "long",
+          "required": false,
+          "default": "1"
+        }
+      }
+    }
+  },
+  "rules": [
+    {
+      "type": "min_max",
+      "section": "AUTOCAPTURETHEFLAG",
+      "minKey": "MINLEVEL",
+      "maxKey": "MAXLEVEL"
+    },
+    {
+      "type": "min_max",
+      "section": "AUTOCAPTURETHEFLAG",
+      "minKey": "MINPLAYERS",
+      "maxKey": "MAXPLAYERS"
+    },
+    {
+      "type": "min_max",
+      "section": "AUTONPCHUNT",
+      "minKey": "MINLEVEL",
+      "maxKey": "MAXLEVEL"
+    },
+    {
+      "type": "min_max",
+      "section": "AUTONPCHUNT",
+      "minKey": "MINPLAYERS",
+      "maxKey": "MAXPLAYERS"
+    },
+    {
+      "type": "min_max",
+      "section": "AUTODEATHMATCH",
+      "minKey": "MINLEVEL",
+      "maxKey": "MAXLEVEL"
+    },
+    {
+      "type": "min_max",
+      "section": "AUTODEATHMATCH",
+      "minKey": "MINPLAYERS",
+      "maxKey": "MAXPLAYERS"
+    },
+    {
+      "type": "min_max",
+      "section": "AUTONAVALBATTLE",
+      "minKey": "MINLEVEL",
+      "maxKey": "MAXLEVEL"
+    },
+    {
+      "type": "min_max",
+      "section": "AUTONAVALBATTLE",
+      "minKey": "MINPLAYERS",
+      "maxKey": "MAXPLAYERS"
+    }
+  ]
+}

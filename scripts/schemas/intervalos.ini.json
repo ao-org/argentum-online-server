@@ -1,0 +1,254 @@
+{
+  "file": "intervalos.ini",
+  "description": "Game timing intervals — controls cooldowns, timers, and action intervals in milliseconds",
+  "sections": {
+    "INTERVALOS": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "SANAINTERVALOSINDESCANSAR": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Heal interval without resting (ms)"
+        },
+        "STAMINAINTERVALOSINDESCANSAR": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Stamina regen interval without resting (ms)"
+        },
+        "SANAINTERVALODESCANSAR": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Heal interval while resting (ms)"
+        },
+        "STAMINAINTERVALODESCANSAR": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Stamina regen interval while resting (ms)"
+        },
+        "INTERVALOPERDERSTAMINA": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Stamina loss interval (ms)"
+        },
+        "INTERVALOSED": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Thirst interval"
+        },
+        "INTERVALOHAMBRE": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Hunger interval"
+        },
+        "INTERVALOVENENO": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Poison tick interval (ms)"
+        },
+        "INTERVALOPARALIZADO": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Paralysis duration (ms)"
+        },
+        "INTERVALOINMOVILIZADO": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Immobilize duration (ms)"
+        },
+        "INTERVALOINVISIBLE": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Invisibility duration (ms)"
+        },
+        "INTERVALOFRIO": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Cold effect interval (ms)"
+        },
+        "INTERVALOWAVFX": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "WAV sound effect interval (ms)"
+        },
+        "INTERVALOINVOCACION": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Summon interval (ms)"
+        },
+        "TIMEOUTPRIMERPAQUETE": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "First packet timeout"
+        },
+        "TIMEOUTESPERANDOLOGGEAR": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Login wait timeout"
+        },
+        "INTERVALOFUEGO": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Fire/incineration interval (ms)"
+        },
+        "INTERVALOTIRAR": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Drop item interval (ms)"
+        },
+        "INTERVALOMEDITAR": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Meditation interval (ms)"
+        },
+        "INTERVALOCAMINAR": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Walk interval (ms)"
+        },
+        "INTERVALOENCOMBATE": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "In-combat interval (ms)"
+        },
+        "INTERVALOLANZAHECHIZO": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Spell cast interval (ms)"
+        },
+        "INTERVALONPCAI": {
+          "type": "long",
+          "required": false,
+          "min": 0,
+          "description": "NPC AI tick interval (ms)"
+        },
+        "INTERVALOTRABAJAREXTRAER": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Resource extraction work interval (ms)"
+        },
+        "INTERVALOTRABAJARCONSTRUIR": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Construction work interval (ms)"
+        },
+        "INTERVALOUSERPUEDEATACAR": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "User attack interval (ms)"
+        },
+        "INTERVALOMAGIAGOLPE": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Magic-then-hit interval (ms)"
+        },
+        "INTERVALOGOLPEMAGIA": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Hit-then-magic interval (ms)"
+        },
+        "INTERVALONPCOWNER": {
+          "type": "long",
+          "required": false,
+          "default": "10000",
+          "min": 0,
+          "description": "NPC owner timeout (ms)"
+        },
+        "INTERVALOWS": {
+          "type": "long",
+          "required": true,
+          "min": 1,
+          "description": "Winsock interval in minutes"
+        },
+        "INTERVALOCERRARCONEXION": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Connection close interval (ms)"
+        },
+        "INTERVALOCERRARCONEXIONENDUNGEON": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Connection close interval in dungeon (ms)"
+        },
+        "INTERVALOUSERPUEDEUSARU": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "User use-item interval (ms)"
+        },
+        "INTERVALOUSERPUEDEUSARCLIC": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "User click interval (ms)"
+        },
+        "INTERVALOFLECHASCAZADORES": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Hunter arrow interval (ms)"
+        },
+        "INTERVALOGOLPEUSAR": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Hit-then-use interval (ms)"
+        },
+        "INTERVALOOCULTO": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Hide interval (ms)"
+        },
+        "INTERVALOPUEDESERATACADO": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Can-be-attacked interval (ms)"
+        },
+        "INTERVALOGUARDARUSUARIOS": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "User save interval (ms)"
+        },
+        "INTERVALOTIMERGUARDARUSUARIOS": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "User save timer interval (ms)"
+        }
+      }
+    }
+  },
+  "rules": []
+}

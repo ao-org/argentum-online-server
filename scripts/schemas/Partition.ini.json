@@ -1,0 +1,12 @@
+{
+  "file": "Partition.ini",
+  "description": "Server partition/sharding configuration — map ownership and server endpoints",
+  "sections": {
+    "OWNERSHIP": {
+      "required": true,
+      "strict": false,
+      "keys": {}
+    }
+  },
+  "rules": []
+}

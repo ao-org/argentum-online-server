@@ -1,0 +1,27 @@
+{
+  "file": "feature_toggle.ini",
+  "description": "Feature toggle configuration — enables/disables server features dynamically",
+  "sections": {
+    "INIT": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "TOGGLECOUNT": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Number of feature toggle sections"
+        }
+      }
+    }
+  },
+  "rules": [
+    {
+      "type": "count_indexed",
+      "countSection": "INIT",
+      "countKey": "TOGGLECOUNT",
+      "targetSectionPrefix": "TOGGLE",
+      "requiredKeys": ["NAME", "VALUE"]
+    }
+  ]
+}

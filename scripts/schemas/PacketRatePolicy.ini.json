@@ -1,0 +1,6 @@
+{
+  "file": "PacketRatePolicy.ini",
+  "description": "Packet rate limiting policy — defines rate limits and iteration counts per packet type",
+  "sections": {},
+  "rules": []
+}

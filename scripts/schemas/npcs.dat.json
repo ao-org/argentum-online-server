@@ -1,0 +1,27 @@
+{
+  "file": "npcs.dat",
+  "description": "NPC definitions - indexed sections [NPC1]..[NPCN] with count in [INIT].NumNPCs",
+  "sections": {
+    "INIT": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "NUMNPCS": {
+          "type": "string",
+          "required": true,
+          "min": 0,
+          "description": "Total number of NPC definitions"
+        }
+      }
+    }
+  },
+  "rules": [
+    {
+      "type": "count_sections",
+      "countSection": "INIT",
+      "countKey": "NUMNPCS",
+      "targetSectionPrefix": "NPC",
+      "entryPrefix": "NPC"
+    }
+  ]
+}

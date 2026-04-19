@@ -1,0 +1,27 @@
+{
+  "file": "Quests.DAT",
+  "description": "Quest definitions — indexed sections [QUEST1]..[QUESTN] with count in [INIT].NumQuests",
+  "sections": {
+    "INIT": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "NUMQUESTS": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Total number of quest definitions"
+        }
+      }
+    }
+  },
+  "rules": [
+    {
+      "type": "count_sections",
+      "countSection": "INIT",
+      "countKey": "NUMQUESTS",
+      "targetSectionPrefix": "QUEST",
+      "entryPrefix": "QUEST"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "file": "apuestas.dat",
+  "description": "",
+  "sections": {
+    "MAIN": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "GANANCIAS": {
+          "type": "string",
+          "required": true
+        },
+        "PERDIDAS": {
+          "type": "string",
+          "required": true
+        },
+        "JUGADAS": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  },
+  "rules": []
+}

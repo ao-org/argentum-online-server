@@ -33,6 +33,8 @@ AOACServer.pdb
 .aider*
 .kiro/
 test_results.txt
+node_modules/
+package-lock.json
 vb6build.log
 *.pdb
 /dumps

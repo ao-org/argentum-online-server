@@ -1,0 +1,27 @@
+{
+  "file": "Obj.dat",
+  "description": "Object/item definitions — indexed sections [OBJ1]..[OBJN] with count in [INIT].NumObjs",
+  "sections": {
+    "INIT": {
+      "required": true,
+      "strict": true,
+      "keys": {
+        "NUMOBJS": {
+          "type": "long",
+          "required": true,
+          "min": 0,
+          "description": "Total number of object definitions"
+        }
+      }
+    }
+  },
+  "rules": [
+    {
+      "type": "count_sections",
+      "countSection": "INIT",
+      "countKey": "NUMOBJS",
+      "targetSectionPrefix": "OBJ",
+      "entryPrefix": "OBJ"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "argentum-online-server",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test scripts/tests/**/*.test.js"
+  },
+  "devDependencies": {
+    "fast-check": "^3.0.0"
+  }
+}
