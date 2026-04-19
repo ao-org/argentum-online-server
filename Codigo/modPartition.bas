@@ -27,21 +27,6 @@ Private Declare Function GetPrivateProfileStringA Lib "kernel32" ( _
     ByVal nSize As Long, _
     ByVal lpFileName As String) As Long
     
-' Public API:
-'   Call Partitions_Load(700)                             ' parse App.Path & "\Partitions.ini"
-'   s = OwnerForMap(101)                                  ' -> "S2" (example)
-'   ok = GetEndpoint("S2", host$, port&)                  ' -> True, "10.0.0.4", 6503
-'   shard$ = GetShardIdFromCmdline()                      ' -> "S1" or "" if not present
-'
-' Ownership syntax (in Partitions.ini, section [ownership]):
-'   1-18 = S1
-'   19-26,101 = S2
-'   default = S1   ' optional fallback for unassigned maps
-'
-' Endpoints (in Partitions.ini, sections [servers.<ID>]):
-'   [servers.S1]
-'   host = 10.0.0.4
-'   port = 6501
 
 
 Public ShardID As String

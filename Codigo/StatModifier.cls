@@ -117,25 +117,6 @@ Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
     IBaseEffectOverTime_EffectType = EffectOverTime(DotInfo.EotId).buffType
 End Property
 
-Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
-    TimeSinceLastTick = TimeSinceLastTick + DeltaTime
-    If TimeSinceLastTick >= TickTime Or Not IsValidRef(DotInfo.TargetRef) Then
-        DotInfo.RemoveEffect = True
-        Exit Sub
-    End If
-    If DotInfo.TargetRef.RefType = eUser Then
-        If TestRequiredEquipedItem(UserList(DotInfo.TargetRef.ArrayIndex).invent, EffectOverTime(DotInfo.EotId).SpellRequirementMask, EffectOverTime( _
-                DotInfo.EotId).RequireWeaponType) <> e_SpellRequirementMask.eNone Then
-            DotInfo.RemoveEffect = True
-            Exit Sub
-        End If
-        If RequireTransform > 0 Then
-            If RequireTransform <> UserList(DotInfo.TargetRef.ArrayIndex).flags.ActiveTransform Then
-                DotInfo.RemoveEffect = True
-            End If
-        End If
-    End If
-End Sub
 
 Public Property Get IBaseEffectOverTime_RemoveMe() As Boolean
     IBaseEffectOverTime_RemoveMe = DotInfo.RemoveEffect
@@ -165,20 +146,10 @@ Public Sub IBaseEffectOverTime_OnRemove()
             DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
 End Sub
 
-Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetWillAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetFailedAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
-End Sub
 
 Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
     If DotInfo.TargetRef.RefType = eUser Then
@@ -203,17 +174,6 @@ Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
     IBaseEffectOverTime_KeepAfterDead = False
 End Property
 
-Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-    If EffectOverTime(DotInfo.EotId).OnHitFx > 0 Then
-        If IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) Then
-            Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
-                    DotInfo.EotId).OnHitFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
-        Else
-            Call SendData(SendTarget.ToIndex, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime( _
-                    DotInfo.EotId).OnHitFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
-        End If
-    End If
-End Sub
 
 Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
                                                          ByVal SourceUserId As Integer, _
@@ -222,5 +182,3 @@ Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
     IBaseEffectOverTime_ApplyDamageReduction = Damage
 End Function
 
-Public Sub IBaseEffectOverTime_TargetChangeTerrain()
-End Sub

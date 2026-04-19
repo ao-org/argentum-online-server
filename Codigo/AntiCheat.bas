@@ -36,34 +36,8 @@ Public Type t_AntiCheatCallbacks
     ActionRequired As Long
 End Type
 
-Public Enum e_ActionRequiredType
-    eEOS_ACCCA_Invalid = 0
-    eEOS_ACCCA_RemovePlayer = 1
-End Enum
 
-Public Enum e_ActionRequiredReason
-    eEOS_ACCCAR_Invalid = 0
-    eEOS_ACCCAR_InternalError = 1
-    eEOS_ACCCAR_InvalidMessage = 2
-    eEOS_ACCCAR_AuthenticationFailed = 3
-    eEOS_ACCCAR_NullClient = 4
-    eEOS_ACCCAR_HeartbeatTimeout = 5
-    eEOS_ACCCAR_ClientViolation = 6
-    eEOS_ACCCAR_BackendViolation = 7
-    eEOS_ACCCAR_TemporaryCooldown = 8
-    eEOS_ACCCAR_TemporaryBanned = 9
-    eEOS_ACCCAR_PermanentBanned = 10
-End Enum
 
-Public Enum EOS_ELogLevel
-    EOS_LOG_Off = 0
-    EOS_LOG_Fatal = 100
-    EOS_LOG_Error = 200
-    EOS_LOG_Warning = 300
-    EOS_LOG_Info = 400
-    EOS_LOG_Verbose = 500
-    EOS_LOG_VeryVerbose = 600
-End Enum
 
 Private Declare Function InitializeAC Lib "AOACServer.dll" (ByRef Callbacks As t_AntiCheatCallbacks) As Long
 Private Declare Sub UnloadAC Lib "AOACServer.dll" ()

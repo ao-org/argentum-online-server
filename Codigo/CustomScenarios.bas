@@ -35,9 +35,6 @@ Public Enum e_DamageSourceType
     e_trap
 End Enum
 
-Public Enum e_ScenarioInterfaces
-    eInventoryInterface = 1
-End Enum
 
 Public Type e_Rank
     PlayerIndex As Integer

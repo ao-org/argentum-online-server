@@ -31,7 +31,6 @@ Option Explicit
     Public private_key     As String
     Public encrypted_token As String
     Public decrypted_token As String
-    Public character_name  As String
 
     ' Test runner result tracking state
     Private TotalTests     As Integer
@@ -72,9 +71,6 @@ Init_Err:
     Resume Init_Resume
 End Sub
 
-Public Sub shutdown()
-    Call UnitClient.Disconnect
-End Sub
 
 Sub test_make_user(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     UserList(UserIndex).pos.Map = Map

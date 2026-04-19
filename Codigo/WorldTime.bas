@@ -28,12 +28,6 @@ Private WT_DayLenMs As Long     ' ms per in-game day (>=1)
 Private WT_BaseTick As Long     ' synthetic base tick (raw tick) so elapsed = TicksElapsed(Base, NowRaw)
 Private WT_Inited   As Boolean
 
-' ============================
-' Public API
-' ============================
-' Init / reset.
-' Server: pass startElapsedMs:=0 at day start (or a saved offset if resuming).
-' Client: usually not needed; clients call WorldTime_HandleHora from the packet.
 Public Sub WorldTime_Init(ByVal dayLenMs As Long, Optional ByVal startElapsedMs As Long = 0)
     If dayLenMs <= 0 Then dayLenMs = 1
     WT_DayLenMs = dayLenMs
@@ -44,14 +38,6 @@ End Sub
 ' Client/Server: apply the server's HORA payload.
 ' elapsedFromServerMs = ms into the current day (server view).
 ' dayLenMs           = ms per in-game day.
-Public Sub WorldTime_HandleHora(ByVal elapsedFromServerMs As Long, ByVal dayLenMs As Long)
-    If dayLenMs <= 0 Then dayLenMs = 1
-    WT_DayLenMs = dayLenMs
-    Dim elapsedNorm As Long
-    elapsedNorm = PosMod(CDbl(elapsedFromServerMs), WT_DayLenMs)
-    WT_BaseTick = WorldTime_NowRaw() - elapsedNorm   ' base is raw; only compare via TicksElapsed()
-    WT_Inited = True
-End Sub
 
 ' Current in-game time in milliseconds within the day [0 .. DayLen-1]
 Public Function WorldTime_Ms() As Long
@@ -70,19 +56,8 @@ Public Function WorldTime_DayLenMs() As Long
     WorldTime_DayLenMs = WT_DayLenMs
 End Function
 
-Public Sub WorldTime_SetDayLenMs(ByVal dayLenMs As Long)
-    If dayLenMs <= 0 Then dayLenMs = 1
-    WT_DayLenMs = dayLenMs
-End Sub
 
 ' Optional: quick re-anchor using a fresh server elapsed (no dayLen change)
-Public Sub WorldTime_Resync(ByVal serverElapsedMs As Long)
-    If WT_DayLenMs <= 0 Then WT_DayLenMs = 1
-    Dim elapsedNorm As Long
-    elapsedNorm = PosMod(CDbl(serverElapsedMs), WT_DayLenMs)
-    WT_BaseTick = WorldTime_NowRaw() - elapsedNorm
-    WT_Inited = True
-End Sub
 
 ' SERVER helper: compute payload (elapsed, dayLen) for the HORA packet.
 ' Returns normalized elapsed in [0 .. DayLen-1] based on current WT_BaseTick.

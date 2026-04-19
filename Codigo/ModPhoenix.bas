@@ -18,7 +18,6 @@ Attribute VB_Name = "ModPhoenix"
 '
 Option Explicit
 
-Public PhoenixLastSpawnTimestamp As Long
 Public PhoenixMapPool() As Integer
 Private m_LastPhoenixSpawnAttempt As Long
 Public IsPhoenixAlive As Boolean

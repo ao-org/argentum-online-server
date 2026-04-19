@@ -34,10 +34,6 @@ Private Type t_Position
 End Type
 
 'Item type
-Private Type t_Item
-    ObjIndex As Integer
-    amount As Integer
-End Type
 
 Private Type t_WorldPos
     Map As Integer
@@ -45,28 +41,7 @@ Private Type t_WorldPos
     y As Byte
 End Type
 
-Private Type t_Grh
-    GrhIndex As Long
-    FrameCounter As Single
-    Speed As Single
-    Started As Byte
-    alpha_blend As Boolean
-    angle As Single
-End Type
 
-Private Type t_GrhData
-    sX As Integer
-    sY As Integer
-    filenum As Integer
-    pixelWidth As Integer
-    pixelHeight As Integer
-    TileWidth As Single
-    TileHeight As Single
-    NumFrames As Integer
-    Frames() As Integer
-    Speed As Integer
-    mini_map_color As Long
-End Type
 
 Private Type t_MapHeader
     NumeroBloqueados As Long
@@ -167,7 +142,6 @@ Public Sub load_stats()
     Dim n       As Integer
     Dim strFile As String
     strFile = App.Path & "\logs\recordusers.log"
-    Dim str As String
     If Not FileExist(strFile) Then
         n = FreeFile()
         Open strFile For Append As #n
@@ -322,7 +296,6 @@ Public Sub loadAdministrativeUsers()
     'Si esta mierda tuviese array asociativos el codigo seria tan lindo.
     Dim buf  As Integer
     Dim i    As Long
-    Dim name As String
     ' Anti-choreo de GM's
     Set AdministratorAccounts = New Dictionary
     Dim TempName() As String
@@ -986,7 +959,6 @@ Sub LoadOBJData()
     '*****************************************************************
     'Carga la lista de objetos
     '*****************************************************************
-    Dim Object As Integer
     Dim Leer   As clsIniManager
     Set Leer = New clsIniManager
     Call Leer.Initialize(DatPath & "Obj.dat")
@@ -1000,7 +972,6 @@ Sub LoadOBJData()
     ReDim Preserve ObjData(1 To NumObjDatas) As t_ObjData
     ReDim ObjShop(1 To 1) As t_ObjData
     Dim ObjKey  As String
-    Dim str     As String, Field() As String
     Dim Crafteo As clsCrafteo
     Dim NFT     As Boolean
     'Llena la lista
@@ -1786,7 +1757,6 @@ Public Sub CreateFishingPool(ByVal Map As Integer)
 End Sub
 
 Sub LoadPrivateKey()
-    Dim MyLine As String
     Open App.Path & "\..\ao20-ComputePK\crypto-hex.txt" For Input As #1
     Line Input #1, PrivateKey
     Close #1
@@ -2337,116 +2307,7 @@ Status_Err:
     Call TraceError(Err.Number, Err.Description, "ES.Status", Erl)
 End Function
 
-Sub BackUPnPc(NpcIndex As Integer)
-    On Error GoTo BackUPnPc_Err
-    Dim NpcNumero As Integer
-    Dim npcfile   As String
-    Dim LoopC     As Integer
-    NpcNumero = NpcList(NpcIndex).Numero
-    'If NpcNumero > 499 Then
-    '    npcfile = DatPath & "bkNPCs-HOSTILES.dat"
-    'Else
-    npcfile = DatPath & "bkNPCs.dat"
-    'End If
-    'General
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Name", NpcList(NpcIndex).name)
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Desc", NpcList(NpcIndex).Desc)
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Head", val(NpcList(NpcIndex).Char.head))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Body", val(NpcList(NpcIndex).Char.body))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Heading", val(NpcList(NpcIndex).Char.Heading))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Movement", val(NpcList(NpcIndex).Movement))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Attackable", val(NpcList(NpcIndex).Attackable))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Comercia", val(NpcList(NpcIndex).Comercia))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Craftea", val(NpcList(NpcIndex).Craftea))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "TipoItems", val(NpcList(NpcIndex).TipoItems))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Hostil", val(NpcList(NpcIndex).Hostile))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "GiveEXP", val(NpcList(NpcIndex).GiveEXP))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "GiveGLD", val(NpcList(NpcIndex).GiveGLD))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Hostil", val(NpcList(NpcIndex).Hostile))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "InvReSpawn", val(NpcList(NpcIndex).InvReSpawn))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "NpcType", val(NpcList(NpcIndex).npcType))
-    'Stats
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Alineacion", val(NpcList(NpcIndex).flags.AIAlineacion))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "DEF", val(NpcList(NpcIndex).Stats.def))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "MaxHit", val(NpcList(NpcIndex).Stats.MaxHit))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "MaxHp", val(NpcList(NpcIndex).Stats.MaxHp))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "MinHit", val(NpcList(NpcIndex).Stats.MinHIT))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "MinHp", val(NpcList(NpcIndex).Stats.MinHp))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "DEF", val(NpcList(NpcIndex).Stats.UsuariosMatados)) 'Que es ESTO?!!
-    'Flags
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "ReSpawn", val(NpcList(NpcIndex).flags.Respawn))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "BackUp", val(NpcList(NpcIndex).flags.backup))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Domable", val(NpcList(NpcIndex).flags.Domable))
-    'Inventario
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "NroItems", val(NpcList(NpcIndex).invent.NroItems))
-    If NpcList(NpcIndex).invent.NroItems > 0 Then
-        For LoopC = 1 To MAX_INVENTORY_SLOTS
-            Call WriteVar(npcfile, "NPC" & NpcNumero, "Obj" & LoopC, NpcList(NpcIndex).invent.Object(LoopC).ObjIndex & "-" & NpcList(NpcIndex).invent.Object(LoopC).amount)
-        Next
-    End If
-    Exit Sub
-BackUPnPc_Err:
-    Call TraceError(Err.Number, Err.Description, "ES.BackUPnPc", Erl)
-End Sub
 
-Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
-    On Error GoTo CargarNpcBackUp_Err
-    'Status
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando backup Npc"
-    Dim npcfile As String
-    'If NpcNumber > 499 Then
-    '    npcfile = DatPath & "bkNPCs-HOSTILES.dat"
-    'Else
-    npcfile = DatPath & "bkNPCs.dat"
-    'End If
-    NpcList(NpcIndex).Numero = NpcNumber
-    NpcList(NpcIndex).name = GetVar(npcfile, "NPC" & NpcNumber, "Name")
-    NpcList(NpcIndex).Desc = GetVar(npcfile, "NPC" & NpcNumber, "Desc")
-    Call SetMovement(NpcIndex, val(GetVar(npcfile, "NPC" & NpcNumber, "Movement")))
-    NpcList(NpcIndex).npcType = val(GetVar(npcfile, "NPC" & NpcNumber, "NpcType"))
-    NpcList(NpcIndex).Char.body = val(GetVar(npcfile, "NPC" & NpcNumber, "Body"))
-    NpcList(NpcIndex).Char.head = val(GetVar(npcfile, "NPC" & NpcNumber, "Head"))
-    NpcList(NpcIndex).Char.Heading = val(GetVar(npcfile, "NPC" & NpcNumber, "Heading"))
-    NpcList(NpcIndex).flags.MappedHeading = NpcList(NpcIndex).Char.Heading
-    NpcList(NpcIndex).Attackable = val(GetVar(npcfile, "NPC" & NpcNumber, "Attackable"))
-    NpcList(NpcIndex).Comercia = val(GetVar(npcfile, "NPC" & NpcNumber, "Comercia"))
-    NpcList(NpcIndex).Craftea = val(GetVar(npcfile, "NPC" & NpcNumber, "Craftea"))
-    NpcList(NpcIndex).Hostile = val(GetVar(npcfile, "NPC" & NpcNumber, "Hostile"))
-    NpcList(NpcIndex).GiveEXP = val(GetVar(npcfile, "NPC" & NpcNumber, "GiveEXP"))
-    NpcList(NpcIndex).GiveGLD = val(GetVar(npcfile, "NPC" & NpcNumber, "GiveGLD"))
-    NpcList(NpcIndex).InvReSpawn = val(GetVar(npcfile, "NPC" & NpcNumber, "InvReSpawn"))
-    NpcList(NpcIndex).Stats.MaxHp = val(GetVar(npcfile, "NPC" & NpcNumber, "MaxHP"))
-    NpcList(NpcIndex).Stats.MinHp = val(GetVar(npcfile, "NPC" & NpcNumber, "MinHP"))
-    NpcList(NpcIndex).Stats.MaxHit = val(GetVar(npcfile, "NPC" & NpcNumber, "MaxHIT"))
-    NpcList(NpcIndex).Stats.MinHIT = val(GetVar(npcfile, "NPC" & NpcNumber, "MinHIT"))
-    NpcList(NpcIndex).Stats.def = val(GetVar(npcfile, "NPC" & NpcNumber, "DEF"))
-    NpcList(NpcIndex).flags.AIAlineacion = val(GetVar(npcfile, "NPC" & NpcNumber, "Alineacion"))
-    Dim LoopC As Integer
-    Dim ln    As String
-    NpcList(NpcIndex).invent.NroItems = val(GetVar(npcfile, "NPC" & NpcNumber, "NROITEMS"))
-    If NpcList(NpcIndex).invent.NroItems > 0 Then
-        For LoopC = 1 To MAX_INVENTORY_SLOTS
-            ln = GetVar(npcfile, "NPC" & NpcNumber, "Obj" & LoopC)
-            NpcList(NpcIndex).invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))
-            NpcList(NpcIndex).invent.Object(LoopC).amount = val(ReadField(2, ln, 45))
-        Next LoopC
-    Else
-        For LoopC = 1 To MAX_INVENTORY_SLOTS
-            NpcList(NpcIndex).invent.Object(LoopC).ObjIndex = 0
-            NpcList(NpcIndex).invent.Object(LoopC).amount = 0
-        Next LoopC
-    End If
-    NpcList(NpcIndex).flags.NPCActive = True
-    NpcList(NpcIndex).flags.Respawn = val(GetVar(npcfile, "NPC" & NpcNumber, "ReSpawn"))
-    NpcList(NpcIndex).flags.backup = val(GetVar(npcfile, "NPC" & NpcNumber, "BackUp"))
-    NpcList(NpcIndex).flags.Domable = val(GetVar(npcfile, "NPC" & NpcNumber, "Domable"))
-    NpcList(NpcIndex).flags.RespawnOrigPos = val(GetVar(npcfile, "NPC" & NpcNumber, "OrigPos"))
-    'Tipo de items con los que comercia
-    NpcList(NpcIndex).TipoItems = val(GetVar(npcfile, "NPC" & NpcNumber, "TipoItems"))
-    Exit Sub
-CargarNpcBackUp_Err:
-    Call TraceError(Err.Number, Err.Description, "ES.CargarNpcBackUp", Erl)
-End Sub
 
 Sub LogBanFromName(ByVal BannedName As String, ByVal UserIndex As Integer, ByVal Motivo As String)
     On Error GoTo LogBanFromName_Err
@@ -2498,7 +2359,6 @@ Public Sub LoadRecursosEspeciales()
     Dim IniFile As clsIniManager
     Set IniFile = New clsIniManager
     Call IniFile.Initialize(DatPath & "RecursosEspeciales.dat")
-    Dim count As Long, i As Long, str As String, Field() As String
     ' Tala
     count = val(IniFile.GetValue("Tala", "Items"))
     If count > 0 Then
@@ -2543,7 +2403,6 @@ Public Sub LoadPesca()
     Dim IniFile As clsIniManager
     Set IniFile = New clsIniManager
     Call IniFile.Initialize(DatPath & "pesca.dat")
-    Dim count As Long, CountEspecial As Long, i As Long, j As Long, str As String, Field() As String, nivel As Integer, MaxLvlCania As Long
     count = val(IniFile.GetValue("PECES", "NumPeces"))
     MaxLvlCania = val(IniFile.GetValue("PECES", "Maxlvlcaña"))
     CountEspecial = 1

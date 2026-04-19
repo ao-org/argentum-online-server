@@ -109,17 +109,6 @@ Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
     IBaseEffectOverTime_EffectType = EffectOverTime(DotInfo.EotId).buffType
 End Property
 
-Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
-    TimeSinceLastTick = TimeSinceLastTick + DeltaTime
-    If TimeSinceLastTick >= TickTime Or Not IsValidRef(DotInfo.TargetRef) Then
-        DotInfo.RemoveEffect = True
-    End If
-    If RequireTransform > 0 And DotInfo.TargetRef.RefType = eUser Then
-        If RequireTransform <> UserList(DotInfo.TargetRef.ArrayIndex).flags.ActiveTransform Then
-            DotInfo.RemoveEffect = True
-        End If
-    End If
-End Sub
 
 Public Property Get IBaseEffectOverTime_RemoveMe() As Boolean
     IBaseEffectOverTime_RemoveMe = DotInfo.RemoveEffect
@@ -170,52 +159,10 @@ Public Sub IBaseEffectOverTime_OnRemove()
     End If
 End Sub
 
-Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetWillAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-    If SourceType = eNpc Then
-        AttackedNpcVersion = NpcList(TargetUserId).VersionId
-    End If
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-    Dim Effect As IBaseEffectOverTime
-    If AttackType <> e_phisical Then
-        Exit Sub
-    End If
-    If SourceType = eUser Then
-        If UserList(TargetUserId).Stats.MinHp > 0 Then
-            Set Effect = FindEffectOnTarget(DotInfo.TargetRef.ArrayIndex, UserList(TargetUserId).EffectOverTime, ApplyEffectId)
-            If Effect Is Nothing Then
-                Call CreateEffect(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, TargetUserId, SourceType, ApplyEffectId)
-            ElseIf EffectOverTime(DotInfo.EotId).Override Then
-                Call Effect.Reset(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, ApplyEffectId)
-            End If
-        End If
-    Else
-        If AttackedNpcVersion = NpcList(TargetUserId).VersionId Then
-            Set Effect = FindEffectOnTarget(DotInfo.TargetRef.ArrayIndex, NpcList(TargetUserId).EffectOverTime, ApplyEffectId)
-            If Effect Is Nothing Then
-                Call CreateEffect(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, TargetUserId, SourceType, ApplyEffectId)
-            ElseIf EffectOverTime(DotInfo.EotId).Override Then
-                Call Effect.Reset(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, ApplyEffectId)
-            End If
-        End If
-    End If
-    If HitLimit > 0 Then
-        HitLimit = HitLimit - 1
-        If HitLimit = 0 Then
-            DotInfo.RemoveEffect = True
-        End If
-    End If
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetFailedAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
 Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
                                                          ByVal SourceUserId As Integer, _
@@ -224,8 +171,6 @@ Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
     IBaseEffectOverTime_ApplyDamageReduction = Damage
 End Function
 
-Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
-End Sub
 
 Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
     If DotInfo.TargetRef.RefType = eUser Then
@@ -251,5 +196,3 @@ Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
     IBaseEffectOverTime_KeepAfterDead = False
 End Property
 
-Public Sub IBaseEffectOverTime_TargetChangeTerrain()
-End Sub

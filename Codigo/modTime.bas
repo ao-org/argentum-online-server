@@ -115,7 +115,6 @@ Public Function UpdateTime(ByRef timer As t_Timer, ByVal DeltaTime As Long) As B
 End Function
 
 Public Function GetTimeString(ByVal Minutes As Integer, ByVal Seconds As Integer)
-    Dim Output As String
     If Minutes > 1 Then
         Output = Minutes & " minutos"
     ElseIf Minutes = 1 Then

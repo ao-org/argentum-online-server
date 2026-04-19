@@ -45,7 +45,6 @@ Private Type t_diccElem
     def As Variant
 End Type
 
-Private p_elementos(1 To MAX_ELEM) As t_diccElem 'visual basic es una mierda para usar memoria dinamica, asi que uso esto
 Private p_cant                     As Integer
 
 Public Sub Class_Initialize()
@@ -145,15 +144,3 @@ MayorValor_Err:
     Call TraceError(Err.Number, Err.Description, "diccionario.MayorValor", Erl)
 End Function
 
-Public Sub DumpAll()
-    On Error GoTo DumpAll_Err
-    Dim i As Integer
-    For i = 1 To MAX_ELEM
-        p_elementos(i).clave = vbNullString
-        p_elementos(i).def = Null
-    Next i
-    p_cant = 0
-    Exit Sub
-DumpAll_Err:
-    Call TraceError(Err.Number, Err.Description, "diccionario.DumpAll", Erl)
-End Sub

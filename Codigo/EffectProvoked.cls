@@ -125,12 +125,6 @@ Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
     IBaseEffectOverTime_EffectType = EffectOverTime(DotInfo.EotId).buffType
 End Property
 
-Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
-    TimeSinceLastTick = TimeSinceLastTick + DeltaTime
-    If TimeSinceLastTick >= TickTime Or Not IsValidRef(DotInfo.TargetRef) Or Not IsValidRef(Source) Then
-        DotInfo.RemoveEffect = True
-    End If
-End Sub
 
 Public Property Get IBaseEffectOverTime_RemoveMe() As Boolean
     IBaseEffectOverTime_RemoveMe = DotInfo.RemoveEffect
@@ -157,23 +151,10 @@ Public Sub IBaseEffectOverTime_OnRemove()
     End If
 End Sub
 
-Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetWillAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-    Call ApplyReduction(TargetUserId)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-    Call RestoreDamage(TargetUserId)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetFailedAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-    Call RestoreDamage(TargetUserId)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
 Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
                                                          ByVal SourceUserId As Integer, _
@@ -182,8 +163,6 @@ Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
     IBaseEffectOverTime_ApplyDamageReduction = Damage
 End Function
 
-Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
-End Sub
 
 Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
     IBaseEffectOverTime_ChangeTarget = False
@@ -213,5 +192,3 @@ Private Sub RestoreDamage(ByVal TargetUserId As Integer)
     End If
 End Sub
 
-Public Sub IBaseEffectOverTime_TargetChangeTerrain()
-End Sub

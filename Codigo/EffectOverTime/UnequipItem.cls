@@ -115,20 +115,11 @@ Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
     IBaseEffectOverTime_EffectType = EffectOverTime(mDotInfo.EotId).buffType
 End Property
 
-Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
-End Sub
 
 Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
     IBaseEffectOverTime_CallBacksMask = 0
 End Property
 
-Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
-    mElapsedTime = mElapsedTime + DeltaTime
-    If mElapsedTime >= mTimeLimit Or Not IsValidRef(mDotInfo.TargetRef) Then
-        mDotInfo.RemoveEffect = True
-        Exit Sub
-    End If
-End Sub
 
 Public Property Get IBaseEffectOverTime_RemoveMe() As Boolean
     IBaseEffectOverTime_RemoveMe = mDotInfo.RemoveEffect
@@ -156,24 +147,14 @@ Public Sub IBaseEffectOverTime_OnRemove()
     End If
 End Sub
 
-Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetWillAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
 Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
     IBaseEffectOverTime_ChangeTarget = False
 End Function
 
-Public Sub IBaseEffectOverTime_TargetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetFailedAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
 Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
                                                          ByVal SourceUserId As Integer, _
@@ -186,5 +167,3 @@ Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
     IBaseEffectOverTime_KeepAfterDead = False
 End Property
 
-Public Sub IBaseEffectOverTime_TargetChangeTerrain()
-End Sub

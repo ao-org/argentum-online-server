@@ -795,7 +795,6 @@ Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long
         Exit Function
     End If
 
-    Dim name As String
     name = CStr(RS!name)
 
     ' Run the existing checks/prep using authoritative name

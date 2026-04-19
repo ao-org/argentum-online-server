@@ -307,30 +307,17 @@ Private Function IsForbidden(ByVal ItemId As Integer) As Boolean
     IsForbidden = False
 End Function
 
-Public Sub IBaseScenario_SetLobbyIndex(ByVal value As Integer)
-    LobbyIndex = value
-    Call ConfigMapLobby
-End Sub
 
 Public Function IBaseScenario_GetScenarioName() As String
     IBaseScenario_GetScenarioName = "DeathMatch"
 End Function
 
-Public Sub IBaseScenario_BroadcastOpenScenario()
-    'queda pendiente hacer un mensaje de broadcast de deathmatch
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgDeathMatchInstructions, "", e_FontTypeNames.FONTTYPE_GUILD))
-End Sub
 
-Public Sub IBaseScenario_SendRules(ByVal UserIndex As Integer)
-    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgDeathMathInstructions, "", e_FontTypeNames.FONTTYPE_GUILD))
-End Sub
 
 Public Function IBaseScenario_GetExtraInterfaces() As Long
     IBaseScenario_GetExtraInterfaces = 0
 End Function
 
-Public Sub IBaseScenario_Reset()
-End Sub
 
 Public Function IBaseScenario_RequiresSpawn() As Boolean
     IBaseScenario_RequiresSpawn = False
@@ -339,135 +326,13 @@ End Function
 Public Function IBaseScenario_ValidateUser(ByVal UserIndex As Integer) As Integer
 End Function
 
-Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
-    Dim SpawnPos As t_WorldPos
-    SpawnPos.Map = MapNumber
-    SpawnPos.x = RandomNumber(50 - MinArenaSize, 50 - MinArenaSize)
-    SpawnPos.y = RandomNumber(50 - MinArenaSize, 50 - MinArenaSize)
-    LobbyList(LobbyIndex).SummonCoordinates = SpawnPos
-    Call Board.AddPlayer(UserIndex)
-    Dim UserItemInfo As t_UserItemInfo
-    Dim i            As Integer
-    With UserList(UserIndex)
-        For i = 0 To SpawnedUserList.RegisteredUserCount - 1
-            If SpawnedUserList.UserList(i).UserId = .Id Then
-                Exit For
-            End If
-        Next i
-        If i >= SpawnedUserList.RegisteredUserCount Then
-            For i = 1 To UBound(.invent.Object)
-                If IsForbidden(.invent.Object(i).ObjIndex) Then
-                    UserItemInfo.RemovedItems(UserItemInfo.RemovedItemCount).ItemId = .invent.Object(i).ObjIndex
-                    UserItemInfo.RemovedItems(UserItemInfo.RemovedItemCount).ItemCount = .invent.Object(i).amount
-                    UserItemInfo.RemovedItemCount = UserItemInfo.RemovedItemCount + 1
-                    .invent.Object(i).ObjIndex = 0
-                    .invent.Object(i).amount = 0
-                    .invent.Object(i).Equipped = 0
-                End If
-            Next i
-            If UserItemInfo.RemovedItemCount > 0 Then
-                SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount) = UserItemInfo
-                SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount).UserId = .Id
-                SpawnedUserList.RegisteredUserCount = SpawnedUserList.RegisteredUserCount + 1
-                Call UpdateUserInv(True, UserIndex, 0)
-            End If
-        End If
-    End With
-End Sub
 
-Public Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef NewState As e_LobbyState)
-    If oldState = NewState Then
-        Exit Sub
-    End If
-    If NewState = InProgress Then
-        Call SetTimer(CountdownTimer, 1000)
-    End If
-    If NewState = Closed Then
-        Call MatchCompleted
-    End If
-End Sub
 
-Public Sub IBaseScenario_PlayerKillNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
-End Sub
 
-Public Sub IBaseScenario_NPcKillPlayer(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
-End Sub
 
-Public Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal deadIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
-    Call Board.UpdatePlayerScore(deadIndex, -1)
-    If killerIndex <> deadIndex Then
-        If Board.UpdatePlayerScore(killerIndex, 3) >= TargetScore Then
-            Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_TENEMOS_GANADOR_1889, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1889=¡Tenemos un ganador!
-            Call MatchCompleted
-        End If
-        If GlobalFrameTime - UserList(deadIndex).flags.LastAttackedByUserTime < AssistDamageValidTime Then
-            If IsValidUserRef(UserList(deadIndex).flags.LastAttacker) And UserList(deadIndex).flags.LastAttacker.ArrayIndex <> killerIndex Then
-                If Board.UpdatePlayerScore(UserList(deadIndex).flags.LastAttacker.ArrayIndex, 1) >= TargetScore Then
-                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_TENEMOS_GANADOR_1889, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1889=¡Tenemos un ganador!
-                    Call MatchCompleted
-                End If
-            End If
-        End If
-    End If
-End Sub
 
-Public Sub IBaseScenario_Update()
-    Dim nowRaw    As Long
-    Dim frametime As Long
-    nowRaw = GetTickCountRaw()
-    frametime = CLng(TicksElapsed(LastFrameTime, nowRaw))
-    LastFrameTime = nowRaw
-    If LobbyList(LobbyIndex).State = e_LobbyState.InProgress Then
-        If CountdownTimer.Occurrences < 10 Then
-            If UpdateTime(CountdownTimer, frametime) Then
-                If CountdownTimer.Occurrences >= 10 Then
-                    Call StartGame
-                Else
-                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_MATANZA_INICIARA_MINUTOS, (10 - CountdownTimer.Occurrences), e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1890=La matanza iniciará en ¬1 minutos.
-                End If
-            End If
-            Exit Sub
-        End If
-        Call RespawnPlayers
-        Call RespawnItems(frametime)
-        ElapsedTime = ElapsedTime + frametime
-        If ElapsedTime > MaxTime Then
-            Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_ACABO_TIEMPO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1881=¡Se acabó el tiempo!
-            Call MatchCompleted
-        Else
-            If UpdateTime(BroadCastTimer, frametime) Then
-                Call BroadcastPendingTime(frametime)
-            End If
-            If UpdateTime(ScoreBroadcastTimer, frametime) Then
-                Call Board.PublishScoreboard(SendTarget.toMap, MapNumber, LobbyList(LobbyIndex), False)
-            End If
-        End If
-    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.Completed Then
-        If CountdownTimer.Occurrences < 10 Then
-            If UpdateTime(CountdownTimer, frametime) Then
-                If CountdownTimer.Occurrences >= 10 Then
-                    Call CloseScenario
-                Else
-                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_MAPA_CERRARA, 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1882=El mapa se cerrará en ¬1
-                End If
-            End If
-            Exit Sub
-        End If
-    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.AcceptingPlayers Then
-        Call UpdateWaitingForPlayers(frametime, LobbyList(LobbyIndex))
-    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.Closed Then
-        Call CloseScenario
-    End If
-End Sub
 
-Public Sub IBaseScenario_OnUserDisconnected(ByVal UserIndex As Integer)
-    Call Board.DisconnectUser(UserIndex, UserList(UserIndex).Id)
-    Call RemoveForbiddenItems(UserIndex)
-End Sub
 
-Public Sub IBaseScenario_OnUserReconnect(ByVal UserIndex As Integer)
-    Call Board.RestoreDisconnectUser(UserIndex, UserList(UserIndex).Id)
-End Sub
 
 Private Sub StartGame()
     Call SetTimer(BroadCastTimer, 60000)
@@ -620,32 +485,8 @@ Private Sub ConfigMapLobby()
     MapInfo(MapNumber).DropItems = False
 End Sub
 
-Public Sub IBaseScenario_GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)
-End Sub
 
-Public Sub IBaseScenario_NpcDie(ByVal NpcIndex)
-End Sub
 
-Public Sub IBaseScenario_UserDie(ByVal UserIndex)
-    Dim RespawnInfo As clsRespawnInfo
-    Set RespawnInfo = New clsRespawnInfo
-    RespawnInfo.RespawnTime = GetTickCountRaw()
-    With UserList(UserIndex)
-        Dim i As Integer
-        For i = LBound(.invent.Object) To UBound(.invent.Object)
-            If .invent.Object(i).Equipped Then
-                Call RespawnInfo.AddEquipedElement(i)
-            End If
-        Next i
-        If .flags.TomoPocion Then
-            RespawnInfo.HasPowerUp = True
-            RespawnInfo.PowerUpTime = .flags.DuracionEfecto
-            RespawnInfo.Strength = .Stats.UserAtributos(1)
-            RespawnInfo.Agility = .Stats.UserAtributos(2)
-        End If
-    End With
-    Call PlayerRespawn.Add(UserIndex, RespawnInfo)
-End Sub
 
 Sub GiveRewards()
     On Error GoTo GiveRewards_Err:

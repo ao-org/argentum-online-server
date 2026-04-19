@@ -66,7 +66,6 @@ Public Sub InitTesoro()
         Exit Sub
     End If
     ReDim TesoroRegalo(1 To TiposDeTesoros)
-    Dim Fields() As String, str As String
     For i = 1 To TiposDeTesoros
         str = Lector.GetValue("Tesoros", "Tesoro" & i)
         If LenB(str) Then
@@ -119,7 +118,6 @@ Public Sub InitRegalo()
         Exit Sub
     End If
     ReDim RegaloRegalo(1 To TiposDeRegalos)
-    Dim Fields() As String, str As String
     For i = 1 To TiposDeRegalos
         str = Lector.GetValue("Regalos", "Regalo" & i)
         If LenB(str) Then

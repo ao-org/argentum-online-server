@@ -41,7 +41,6 @@ Public Sub MineMinerals(ByVal UserIndex As Integer)
         End If
         Dim Suerte     As Integer
         Dim res        As Integer
-        Dim Metal      As Integer
         Dim Yacimiento As t_ObjData
         Dim skill      As Integer
         skill = .Stats.UserSkills(e_Skill.Mineria)

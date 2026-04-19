@@ -16,12 +16,6 @@ Public Function test_suite_strings() As Boolean
     Call UnitTesting.RunTest("test_valid_description_control_chars", test_valid_description_control_chars())
     Call UnitTesting.RunTest("test_valid_words_blocked", test_valid_words_blocked())
     Call UnitTesting.RunTest("test_valid_words_clean", test_valid_words_clean())
-    ' TODO: Enable these tests after fixing NormalizeText to strip punctuation instead of replacing with spaces.
-    ' Currently NormalizeText replaces "." "-" etc with spaces, so "b.a.d" becomes "b a d" instead of "bad",
-    ' allowing blocked words to bypass the filter.
-    'Call UnitTesting.RunTest("test_blocked_word_dots", test_blocked_word_dots())
-    'Call UnitTesting.RunTest("test_blocked_word_hyphens", test_blocked_word_hyphens())
-    'Call UnitTesting.RunTest("test_blocked_word_mixed_punct", test_blocked_word_mixed_punct())
     
     Debug.Print "StringValidation suite took " & sw.ElapsedMilliseconds & " ms"
     test_suite_strings = True

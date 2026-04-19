@@ -315,7 +315,6 @@ Private Function FindKey(ByRef Node As MainNode, ByVal key As String) As Long
     'or the negation of the position were it should be if not found
     Dim Min As Long
     Dim max As Long
-    Dim mid As Long
     Min = 0
     max = Node.numValues - 1
     Do While Min <= max
@@ -349,7 +348,6 @@ Private Function FindMain(ByVal name As String) As Long
     'or the negation of the position were it should be if not found
     Dim Min As Long
     Dim max As Long
-    Dim mid As Long
     Min = 0
     max = MainNodes - 1
     Do While Min <= max
@@ -441,27 +439,6 @@ AddKey_Err:
     Call TraceError(Err.Number, Err.Description, "clsIniManager.AddKey", Erl)
 End Function
 
-Public Sub DumpFile(ByRef File As String)
-    On Error GoTo DumpFile_Err
-    Dim hFile As Integer
-    Dim i     As Long
-    Dim j     As Long
-    hFile = FreeFile()
-    Open File For Output As hFile
-    For i = 0 To MainNodes - 1
-        With fileData(i)
-            Print #hFile, "[" & .name & "]"
-            For j = 0 To .numValues - 1
-                Print #hFile, .values(j).key & "=" & .values(j).value
-            Next j
-            Print #hFile, ""
-        End With
-    Next i
-    Close hFile
-    Exit Sub
-DumpFile_Err:
-    Call TraceError(Err.Number, Err.Description, "clsIniManager.DumpFile", Erl)
-End Sub
 
 Public Function GetKey(ByVal Main As String, ByVal Index As Long) As String
     On Error GoTo ErrHandler
@@ -489,21 +466,6 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "clsIniManager.GetKey", Erl)
 End Property
 
-Public Sub GetPair(ByVal Main As String, ByVal Index As Long, ByRef key As String, ByRef value As String)
-    On Error GoTo ErrHandler
-    Dim i As Long
-    'Search for the main node
-    i = FindMain(UCase$(Main))
-    If i >= 0 Then
-        With fileData(i).values(Index)
-            key = .key
-            value = .value
-        End With
-    End If
-    Exit Sub
-ErrHandler:
-    Call TraceError(Err.Number, Err.Description, "clsIniManager.GetPair", Erl)
-End Sub
 
 Public Function GetNode(ByVal i As Long) As String
     GetNode = fileData(i).name

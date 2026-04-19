@@ -475,7 +475,6 @@ Public Sub CreatePlayer(ByVal lPlayerID As Long, fRejectMsg As Boolean)
 On Error GoTo create_player_err
     Debug.Print "DPLAY > CreatePlayer ID:" & lPlayerID
     Err.Clear
-    Dim dpPeer As DPN_PLAYER_INFO
     'Try to get player info, note this will fail if this is LOCAL_PLAYER aka server and that's okay
     dpPeer = dps.GetClientInfo(lPlayerID, 0)
     Dim addr As DirectPlay8Address

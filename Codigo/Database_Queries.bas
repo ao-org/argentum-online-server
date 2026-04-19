@@ -41,7 +41,6 @@ Public QUERY_SAVE_PETS        As String
 Public QUERY_UPDATE_MAINPJ    As String
 Public QUERY_UPSERT_SPELLS    As String
 Public QUERY_UPSERT_INVENTORY As String
-Public QUERY_UPSERT_SKILLS    As String
 Public QUERY_UPSERT_PETS      As String
 
 Public Sub Contruir_Querys()

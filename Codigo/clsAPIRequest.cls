@@ -36,17 +36,3 @@ Public Sub Initialize(ByRef xmlHttpRequest As MSXML2.ServerXMLHTTP60)
    Set m_xmlHttp = xmlHttpRequest
 End Sub
  
-Sub OnReadyStateChange()
-Attribute OnReadyStateChange.VB_UserMemId = 0
-   
-   If m_xmlHttp.readyState = 4 Then
-    
-        If m_xmlHttp.Status <> 200 Then
-        
-            Call TraceErrorAPI(m_xmlHttp.Status, m_xmlHttp.statusText, m_xmlHttp.ResponseText)
-        
-        End If
-     
-   End If
-   
-End Sub

@@ -39,7 +39,6 @@ Attribute VB_Exposed = False
 '
 Option Explicit
 Implements IBaseEffectOverTime
-Private mid                 As Long
 Private mDotInfo            As t_BaseDotInfo
 Private mElapsedTime        As Long
 Private mTimeLimit          As Long
@@ -112,23 +111,6 @@ Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
     IBaseEffectOverTime_EffectType = EffectOverTime(mDotInfo.EotId).buffType
 End Property
 
-Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
-    mElapsedTime = mElapsedTime + DeltaTime
-    If mElapsedTime >= mTimeLimit Or Not IsValidRef(mDotInfo.TargetRef) Then
-        mDotInfo.RemoveEffect = True
-        Exit Sub
-    End If
-    If mPendingBlow > 0 Then
-        mPendingBlowTime = mPendingBlowTime + DeltaTime
-        If mPendingBlowTime > 100 Then
-            Call UserAttackPosition(mDotInfo.TargetRef.ArrayIndex, mPendingBlowPos, True)
-            mPendingBlow = mPendingBlow - 1
-            If mPendingBlow = 0 And mTicks = 0 Then
-                mDotInfo.RemoveEffect = True
-            End If
-        End If
-    End If
-End Sub
 
 Public Property Get IBaseEffectOverTime_RemoveMe() As Boolean
     IBaseEffectOverTime_RemoveMe = mDotInfo.RemoveEffect
@@ -159,24 +141,14 @@ Public Sub IBaseEffectOverTime_OnRemove()
     End If
 End Sub
 
-Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetWillAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetFailedAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
 Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
     IBaseEffectOverTime_ChangeTarget = False
 End Function
 
-Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
 Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
                                                          ByVal SourceUserId As Integer, _
@@ -185,25 +157,6 @@ Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
     IBaseEffectOverTime_ApplyDamageReduction = Damage
 End Function
 
-Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
-    If UserList(mDotInfo.TargetRef.ArrayIndex).invent.EquippedWeaponObjIndex > 0 Then
-        If ObjData(UserList(mDotInfo.TargetRef.ArrayIndex).invent.EquippedWeaponObjIndex).WeaponType <> eKnuckle Then
-            mDotInfo.RemoveEffect = True
-            Exit Sub
-        End If
-    End If
-    Dim i As Integer
-    mPendingBlowPos.Map = Map
-    mPendingBlowPos.x = PosX
-    mPendingBlowPos.y = PosY
-    mPendingBlow = mBlowCount
-    mPendingBlowTime = 0
-    mTicks = mTicks - 1
-    If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
-        Call WriteSendSkillCdUpdate(mDotInfo.TargetRef.ArrayIndex, EffectOverTime(mDotInfo.EotId).ClientEffectTypeId, mDotInfo.UniqueId, mTimeLimit - mElapsedTime, mTimeLimit, _
-                EffectOverTime(mDotInfo.EotId).buffType, mTicks)
-    End If
-End Sub
 
 Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
     IBaseEffectOverTime_CallBacksMask = e_EffectCallbackMask.eTargetWillAttackPosition
@@ -213,5 +166,3 @@ Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
     IBaseEffectOverTime_KeepAfterDead = False
 End Property
 
-Public Sub IBaseEffectOverTime_TargetChangeTerrain()
-End Sub

@@ -28,12 +28,7 @@ Attribute VB_Name = "DatabaseGlobals"
 Option Explicit
 Option Base 0
 Public Database_Enabled                 As Boolean
-Public Database_Driver                  As String
 Public Database_Source                  As String
-Public Database_Host                    As String
-Public Database_Name                    As String
-Public Database_Username                As String
-Public Database_Password                As String
 ' DB execution model:
 ' - One main synchronous connection (`Connection`) for blocking calls.
 ' - A pool of async connections (`Connection_async(1 To MAX_ASYNC)`) used by non-blocking Execute paths.

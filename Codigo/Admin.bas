@@ -44,11 +44,9 @@ End Type
 
 Public Apuestas                      As tAPuestas
 Public NPCs                          As Long
-Public DebugSocket                   As Boolean
 Public horas                         As Long
 Public dias                          As Long
 Public MinsRunning                   As Long
-Public ReiniciarServer               As Long
 Public tInicioServer                 As Long
 'INTERVALOS
 Public SanaIntervaloSinDescansar     As Integer
@@ -62,13 +60,11 @@ Public IntervaloVeneno               As Integer
 'Ladder
 Public IntervaloIncineracion         As Integer
 Public IntervaloInmovilizado         As Integer
-Public IntervaloMaldicion            As Integer
 'Ladder
 Public IntervaloParalizado           As Integer
 Public IntervaloInvisible            As Integer
 Public IntervaloFrio                 As Integer
 Public IntervaloWavFx                As Integer
-Public IntervaloNPCPuedeAtacar       As Integer
 Public IntervaloInvocacion           As Integer
 Public IntervaloOculto               As Long
 Public IntervaloTalk                 As Long
@@ -94,7 +90,6 @@ Public IntervaloCaminar              As Long
 Public IntervaloEnCombate            As Long
 Public IntervaloPuedeSerAtacado      As Long
 Public IntervaloGuardarUsuarios      As Long
-Public LimiteGuardarUsuarios         As Integer
 Public IntervaloTimerGuardarUsuarios As Long
 Public IntervaloMensajeGlobal        As Long
 Public Const IntervaloConsultaGM     As Long = 300000
@@ -134,7 +129,6 @@ Public HomeTimer                         As Integer
 Public HomeTimerAdventurer               As Integer
 Public HomeTimerHero                     As Integer
 Public HomeTimerLegend                   As Integer
-Public MagicSkillBonusDamageModifier     As Single
 Public MRSkillProtectionModifier         As Single
 Public MRSkillNpcProtectionModifier      As Single
 Public AssistDamageValidTime             As Long 'valid time for damage to count as assit
@@ -148,12 +142,9 @@ Public DivineBloodManaCostMultiplier     As Single
 Public WarriorLifeStealOnHitMultiplier   As Single
 Public Puerto                            As Long
 Public ListenIp                          As String
-Public MAXPASOS                          As Long
 Public BootDelBackUp                     As Byte
 Public Lloviendo                         As Boolean
 Public Nebando                           As Boolean
-Public Nieblando                         As Boolean
-Public IpList                            As New Collection
 Public Baneos                            As New Collection
 
 Sub ReSpawnOrigPosNpcs()
@@ -313,23 +304,6 @@ End Function
 Public Function PersonajeExiste(ByVal name As String) As Boolean
     On Error GoTo PersonajeExiste_Err
 
-    ' ------------------------------------------------------------------
-    ' Purpose:
-    '   Check if a character with the given name exists in the database.
-    '
-    ' Why this implementation:
-    '   - Uses SELECT 1 ... LIMIT 1 instead of COUNT(*)
-    '   - This allows SQLite to stop at the FIRST match (much faster)
-    '   - Avoids scanning all matching rows unnecessarily
-    '
-    ' Case-insensitive comparison:
-    '   - Uses "COLLATE NOCASE" so we don't rely on LCase$()
-    '   - This preserves index usage and avoids string allocations
-    '
-    ' Expected behavior:
-    '   - Returns True if at least one row exists
-    '   - Returns False if no rows match
-    ' ------------------------------------------------------------------
 
     Dim RS As ADODB.Recordset
 

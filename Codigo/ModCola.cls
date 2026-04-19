@@ -38,22 +38,6 @@ Attribute VB_Exposed = False
 '
 '
 Option Explicit
-'                    Metodos publicos
-'
-' Public sub Push(byval i as variant) mete el elemento i
-' al final de la cola.
-'
-' Public Function Pop As Variant: quita de la cola el primer elem
-' y lo devuelve
-'
-' Public Function VerElemento(ByVal Index As Integer) As Variant
-' muestra el elemento numero Index de la cola sin quitarlo
-'
-' Public Function PopByVal() As Variant: muestra el primer
-' elemento de la cola sin quitarlo
-'
-' Public Property Get Longitud() As Integer: devuelve la
-' cantidad de elementos que tiene la cola.
 Private Const FRENTE = 1
 Private Cola As Collection
 
@@ -181,13 +165,6 @@ Quitar_Err:
     Call TraceError(Err.Number, Err.Description, "cCola.Quitar", Erl)
 End Sub
 
-Public Sub QuitarIndex(ByVal Index As Integer)
-    On Error GoTo QuitarIndex_Err
-    If IndexValido(Index) Then Call Cola.Remove(Index)
-    Exit Sub
-QuitarIndex_Err:
-    Call TraceError(Err.Number, Err.Description, "cCola.QuitarIndex", Erl)
-End Sub
 
 Private Sub Class_Terminate()
     'Destruimos el objeto Cola

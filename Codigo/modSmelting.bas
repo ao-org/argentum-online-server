@@ -79,7 +79,6 @@ Public Sub CraftIngots(ByVal UserIndex As Integer)
     Dim Slot       As Integer
     Dim obji       As Integer
     Dim cant       As Byte
-    Dim necesarios As Integer
     If UserList(UserIndex).Stats.MinSta > 2 Then
         Call QuitarSta(UserIndex, 2)
     Else

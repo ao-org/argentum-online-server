@@ -59,13 +59,3 @@ MaxPersonajes_Err:
     Call TraceError(Err.Number, Err.Description, "clsAntiMassClon.MaxPersonajes", Erl)
 End Function
 
-Public Function VaciarColeccion()
-    On Error GoTo ErrHandler
-    Dim i As Integer
-    For i = 1 To m_coleccion.count
-        Call m_coleccion.Remove(1)
-    Next
-    Exit Function
-ErrHandler:
-    Call LogError("Error en RestarConexion " & Err.Description)
-End Function

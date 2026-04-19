@@ -44,9 +44,6 @@ Private m_lastelem  As Integer
 Private m_firstelem As Integer
 Private m_size      As Integer
 
-Public Function IsEmpty() As Boolean
-    IsEmpty = m_size = 0
-End Function
 
 Public Property Get count() As Integer
     count = m_size

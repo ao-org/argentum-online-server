@@ -27,13 +27,6 @@ Attribute VB_Name = "modNuevoTimer"
 '
 Option Explicit
 
-' All timers now use raw ticks (2^32 ring) + wrap-safe elapsed comparisons.
-' Pattern:
-'   nowRaw = GetTickCountRaw()
-'   If TicksElapsed(lastTick, nowRaw) >= interval Then
-'       If Actualizar Then lastTick = nowRaw
-'       result = True
-'   End If
 Public Function IntervaloPermiteLanzarSpell(ByVal UserIndex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
     On Error GoTo IntervaloPermiteLanzarSpell_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()

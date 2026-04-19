@@ -123,18 +123,6 @@ Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
     IBaseEffectOverTime_EffectType = EffectOverTime(DotInfo.EotId).buffType
 End Property
 
-Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
-    If TickCount >= TargetTicks Or Not IsValidRef(DotInfo.TargetRef) Then
-        DotInfo.RemoveEffect = True
-        Exit Sub
-    End If
-    TimeSinceLastTick = TimeSinceLastTick + DeltaTime
-    If TimeSinceLastTick >= TickTime Then
-        TimeSinceLastTick = 0
-        TickCount = TickCount + 1
-        Call PerformAction
-    End If
-End Sub
 
 Public Property Get IBaseEffectOverTime_RemoveMe() As Boolean
     IBaseEffectOverTime_RemoveMe = DotInfo.RemoveEffect
@@ -175,20 +163,10 @@ Public Sub IBaseEffectOverTime_OnRemove()
     End If
 End Sub
 
-Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetWillAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetFailedAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
-Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-End Sub
 
 Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
                                                          ByVal SourceUserId As Integer, _
@@ -197,8 +175,6 @@ Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, _
     IBaseEffectOverTime_ApplyDamageReduction = Damage
 End Function
 
-Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
-End Sub
 
 Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
     If DotInfo.TargetRef.RefType = eUser Then
@@ -246,5 +222,3 @@ Public Sub PerformAction()
     End If
 End Sub
 
-Public Sub IBaseEffectOverTime_TargetChangeTerrain()
-End Sub

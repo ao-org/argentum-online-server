@@ -48,9 +48,6 @@ Public Sub SetItems(data() As Integer)
     m_Items = data
 End Sub
 
-Public Property Get Tamaño() As Integer
-    Tamaño = UBound(m_Items)
-End Property
 
 Public Property Get Items(ByVal Index As Integer) As Integer
     Items = m_Items(Index)

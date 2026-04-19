@@ -2,23 +2,6 @@ Attribute VB_Name = "Unit_Factions"
 Option Explicit
 #If UNIT_TEST = 1 Then
 
-' ==========================================================================
-' Factions Test Suite
-' Tests the faction interaction rules from GameLogic.bas:
-' - FactionCanAttackFaction: determines if one faction can attack another
-' - FactionCanHelpFaction: determines if one faction can help another
-' - ClampChance: constrains a percentage value to [0..100]
-' - ByteArr2String: converts a byte array to a VB string
-'
-' Faction values (e_Facciones):
-'   Criminal=0, Ciudadano=1, Caos=2, Armada=3, concilio=4, consejo=5
-'
-' Rule summary:
-'   Ciudadano/Armada/consejo are allies (cannot attack each other)
-'   Caos/concilio are allies (cannot attack each other)
-'   Cross-group attacks are allowed
-'   Helping a criminal is forbidden for Ciudadano/Armada/consejo
-' ==========================================================================
 Public Function test_suite_factions() As Boolean
     Call UnitTesting.RunTest("test_same_faction_no_attack", test_same_faction_no_attack())
     Call UnitTesting.RunTest("test_allied_faction_no_attack", test_allied_faction_no_attack())

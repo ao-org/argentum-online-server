@@ -27,10 +27,7 @@ Attribute VB_Name = "ModClimas"
 '
 '
 Public IntensidadDeNubes   As Byte
-Public IntensidadDeLluvias As Byte
-Public CapasLlueveEn       As Integer
 Public TimerMeteorologico  As Byte
-Public DuracionDeLLuvia    As Integer
 Public ServidorNublado     As Boolean
 Public ProbabilidadNublar  As Byte
 Public ProbabilidadLLuvia  As Byte

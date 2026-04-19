@@ -45,11 +45,9 @@ Const RequireItemMessage = 403
 Const MillisecondInSecond = 1000
 Implements IBaseScenario
 Dim MatchNpc           As New Dictionary
-Dim SpawnCreatureCount As Integer
 Dim ElapsedTime        As Long
 Dim LastFrameTime      As Long
 Dim LastScoreUpdate    As Long
-Dim ActiveNpc          As Integer
 Dim SpawnedCreaturesId As New Dictionary
 Dim MapNumber          As Integer
 Dim UpdateIndex        As Integer
@@ -140,30 +138,17 @@ ClearMap_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ClearMap", Erl)
 End Sub
 
-Public Sub IBaseScenario_SetLobbyIndex(ByVal value As Integer)
-    LobbyIndex = value
-    Call ConfigMapLobby
-End Sub
 
 Public Function IBaseScenario_GetScenarioName() As String
     IBaseScenario_GetScenarioName = "Caceria"
 End Function
 
-Public Sub IBaseScenario_BroadcastOpenScenario()
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgHuntScenearioIntro, "", e_FontTypeNames.FONTTYPE_GUILD))
-End Sub
 
-Public Sub IBaseScenario_SendRules(ByVal UserIndex As Integer)
-    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgHuntScenarioInstructions, "", e_FontTypeNames.FONTTYPE_GUILD))
-End Sub
 
 Public Function IBaseScenario_GetExtraInterfaces() As Long
     IBaseScenario_GetExtraInterfaces = 0
 End Function
 
-Public Sub IBaseScenario_Reset()
-    Call ClearMap
-End Sub
 
 Private Function IBaseScenario_RequiresSpawn() As Boolean
     IBaseScenario_RequiresSpawn = False
@@ -186,26 +171,7 @@ ValidateUser_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ValidateUser userIndex: " & UserIndex, Erl)
 End Function
 
-Private Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
-    Dim SpawnPos As t_WorldPos
-    SpawnPos.Map = MapNumber
-    SpawnPos.x = RandomNumber(12, 85)
-    SpawnPos.y = RandomNumber(12, 85)
-    LobbyList(LobbyIndex).SummonCoordinates = SpawnPos
-    Call Board.AddPlayer(UserIndex)
-End Sub
 
-Private Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef NewState As e_LobbyState)
-    If oldState = NewState Then
-        Exit Sub
-    End If
-    If NewState = InProgress Then
-        Call SetTimer(StartTimer, MillisecondInSecond)
-    End If
-    If NewState = Closed Then
-        Call MatchComplete
-    End If
-End Sub
 
 Private Sub StartGame()
     Dim key As Variant
@@ -231,84 +197,11 @@ Private Sub StartGame()
     Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_INICIE_CACERA, "", e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1730=Â¡Que inicie la cacerÃ­a!
 End Sub
 
-Private Sub IBaseScenario_PlayerKillNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
-    If LobbyList(LobbyIndex).State <> e_LobbyState.InProgress Then
-        Exit Sub
-    End If
-    Dim npcType As Integer
-    npcType = NpcList(NpcIndex).Numero
-    If SourceType = e_phisical And SourceIndex = RequiredWeaponId Then
-        If MatchNpc.Exists(npcType) Then
-            If Board.UpdatePlayerScore(UserIndex, MatchNpc.Item(npcType).Score) >= TargetScore Then
-                LobbyList(LobbyIndex).State = Completed
-                Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_TENEMOS_GANADOR, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1731=Â¡Tenemos un ganador!
-                Call MatchComplete
-                Exit Sub
-            End If
-        End If
-    Else
-        Call WriteLocaleMsg(UserIndex, MSG_MUST_HIT_WITH_WEAPON_TO_SCORE_POINTS, FONTTYPE_INFO, ObjData(RequiredWeaponId).name)
-    End If
-    Call SpawnedCreaturesId.Remove(NpcIndex)
-    Call SpawnNpc(npcType)
-End Sub
 
-Private Sub IBaseScenario_NPcKillPlayer(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
-    'implements interface
-End Sub
 
-Private Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal deadIndex As Integer, ByVal SourceType As e_DamageSourceType, ByVal SourceIndex As Integer)
-    'implements interface
-End Sub
 
-Private Sub IBaseScenario_Update()
-    Dim nowRaw    As Long
-    Dim frametime As Long
-    nowRaw = GetTickCountRaw()
-    frametime = CLng(TicksElapsed(LastFrameTime, nowRaw))
-    LastFrameTime = nowRaw
-    If LobbyList(LobbyIndex).State = e_LobbyState.InProgress Then
-        If StartTimer.Occurrences < 10 Then
-            If UpdateTime(StartTimer, frametime) Then
-                If StartTimer.Occurrences >= 10 Then
-                    Call StartGame
-                Else
-                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_CACERA_INICIARA, 10 - StartTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1819=La cacerÃ­a iniciarÃ¡ en Â¬1
-                End If
-            End If
-            Exit Sub
-        End If
-        ElapsedTime = ElapsedTime + frametime
-        If ElapsedTime - LastScoreUpdate > 30000 Then
-            LastScoreUpdate = ElapsedTime
-            Call Board.PublishScoreboard(SendTarget.toMap, MapNumber, LobbyList(LobbyIndex), False)
-        End If
-        If ElapsedTime > MaxTime Then
-            Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_ACABA_TIEMPO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1820=Â¡Se acabÃ³ el tiempo!
-            Call MatchComplete
-        End If
-        Call RespawnPlayers
-        Call BroadCastTimeUpdate
-    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.Completed Then
-        ElapsedTime = ElapsedTime + frametime
-        If ElapsedTime - LastScoreUpdate > 1000 Then
-            LastScoreUpdate = ElapsedTime
-            Call CloseCountDown
-        End If
-    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.AcceptingPlayers Then
-        Call UpdateWaitingForPlayers(frametime, LobbyList(LobbyIndex))
-    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.Closed Then
-        Call CloseScenario
-    End If
-End Sub
 
-Public Sub IBaseScenario_OnUserDisconnected(ByVal UserIndex As Integer)
-    Call Board.DisconnectUser(UserIndex, UserList(UserIndex).Id)
-End Sub
 
-Public Sub IBaseScenario_OnUserReconnect(ByVal UserIndex As Integer)
-    Call Board.RestoreDisconnectUser(UserIndex, UserList(UserIndex).Id)
-End Sub
 
 Private Sub MatchComplete()
     On Error GoTo MatchComplete_Err:
@@ -379,32 +272,8 @@ Private Sub BroadCastTimeUpdate()
     End If
 End Sub
 
-Public Sub IBaseScenario_GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)
-End Sub
 
-Public Sub IBaseScenario_NpcDie(ByVal NpcIndex)
-End Sub
 
-Public Sub IBaseScenario_UserDie(ByVal UserIndex)
-    Dim RespawnInfo As clsRespawnInfo
-    Set RespawnInfo = New clsRespawnInfo
-    RespawnInfo.RespawnTime = GetTickCountRaw()
-    With UserList(UserIndex)
-        Dim i As Integer
-        For i = LBound(.invent.Object) To UBound(.invent.Object)
-            If .invent.Object(i).Equipped Then
-                Call RespawnInfo.AddEquipedElement(i)
-            End If
-        Next i
-        If .flags.TomoPocion Then
-            RespawnInfo.HasPowerUp = True
-            RespawnInfo.PowerUpTime = .flags.DuracionEfecto
-            RespawnInfo.Strength = .Stats.UserAtributos(1)
-            RespawnInfo.Agility = .Stats.UserAtributos(2)
-        End If
-    End With
-    Call PlayerRespawn.Add(UserIndex, RespawnInfo)
-End Sub
 
 Private Sub Respawn(ByVal player As Integer)
     Dim SpawnPos As t_WorldPos

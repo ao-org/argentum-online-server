@@ -310,14 +310,6 @@ Public Sub EnviarInfoInvasion(ByVal Index As Integer)
     End With
 End Sub
 
-Public Sub HacerDañoMuralla(ByVal Index As Integer, ByVal Daño As Long)
-    With Invasiones(Index)
-        .VidaMuralla = .VidaMuralla - Daño
-        If .VidaMuralla <= 0 Then
-            Call FinalizarInvasion(Index)
-        End If
-    End With
-End Sub
 
 Public Sub SumarScoreInvasion(ByVal Index As Integer, ByVal UserIndex As Integer, ByVal Score As Long)
     With Invasiones(Index)
