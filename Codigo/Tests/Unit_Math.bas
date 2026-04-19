@@ -28,6 +28,10 @@ Public Function test_suite_math() As Boolean
     Call UnitTesting.RunTest("test_add_mod32", test_add_mod32())
     Call UnitTesting.RunTest("test_rotate_vector", test_rotate_vector())
     Call UnitTesting.RunTest("test_get_normal", test_get_normal())
+    Call UnitTesting.RunTest("test_random_range_bounds", test_random_range_bounds())
+    Call UnitTesting.RunTest("test_random_range_equal", test_random_range_equal())
+    Call UnitTesting.RunTest("test_random_range_negative", test_random_range_negative())
+    Call UnitTesting.RunTest("test_random_range_bounds_invariant", test_random_range_bounds_invariant())
     
     Debug.Print "Math suite took " & sw.ElapsedMilliseconds & " ms"
     test_suite_math = True
@@ -370,6 +374,98 @@ Private Function test_get_normal() As Boolean
     Exit Function
 test_get_normal_Err:
     test_get_normal = False
+End Function
+
+' Verifies RandomRange() stays within [LowerBound, UpperBound] across 1000
+' iterations for positive, mixed, and wide ranges.
+Private Function test_random_range_bounds() As Boolean
+    On Error GoTo Err_Handler
+    test_random_range_bounds = True
+    
+    Dim i As Long
+    Dim result As Single
+    
+    ' Range [0, 10]
+    For i = 1 To 1000
+        result = RandomRange(0, 10)
+        If result < 0 Or result > 10 Then
+            test_random_range_bounds = False: Exit Function
+        End If
+    Next i
+    
+    ' Range [1, 100]
+    For i = 1 To 1000
+        result = RandomRange(1, 100)
+        If result < 1 Or result > 100 Then
+            test_random_range_bounds = False: Exit Function
+        End If
+    Next i
+    
+    ' Range [-50, 50]
+    For i = 1 To 1000
+        result = RandomRange(-50, 50)
+        If result < -50 Or result > 50 Then
+            test_random_range_bounds = False: Exit Function
+        End If
+    Next i
+    Exit Function
+Err_Handler:
+    test_random_range_bounds = False
+End Function
+
+' Verifies RandomRange(5, 5) returns exactly 5 (degenerate range).
+Private Function test_random_range_equal() As Boolean
+    On Error GoTo Err_Handler
+    test_random_range_equal = (RandomRange(5, 5) = 5)
+    Exit Function
+Err_Handler:
+    test_random_range_equal = False
+End Function
+
+' Verifies RandomRange() stays within bounds for a fully negative range.
+Private Function test_random_range_negative() As Boolean
+    On Error GoTo Err_Handler
+    test_random_range_negative = True
+    
+    Dim i As Long
+    Dim result As Single
+    
+    For i = 1 To 1000
+        result = RandomRange(-100, -1)
+        If result < -100 Or result > -1 Then
+            test_random_range_negative = False: Exit Function
+        End If
+    Next i
+    Exit Function
+Err_Handler:
+    test_random_range_negative = False
+End Function
+
+' Property: FOR ALL RandomRange(LB, UB) where LB <= UB, result satisfies LB <= result <= UB.
+' Uses randomized bounds across 500 trials to approximate universal quantification.
+Private Function test_random_range_bounds_invariant() As Boolean
+    On Error GoTo Err_Handler
+    test_random_range_bounds_invariant = True
+    
+    Dim i As Long
+    Dim lb As Single
+    Dim ub As Single
+    Dim result As Single
+    
+    For i = 1 To 500
+        ' Generate random bounds in [-1000, 1000] with LB <= UB
+        lb = CSng(Int(Rnd * 2001) - 1000)
+        ub = lb + CSng(Int(Rnd * 500))
+        
+        result = RandomRange(lb, ub)
+        
+        If result < lb Or result > ub Then
+            test_random_range_bounds_invariant = False: Exit Function
+        End If
+    Next i
+    Exit Function
+Err_Handler:
+    test_random_range_bounds_invariant = False
 End Function
 
 #End If
