@@ -1562,6 +1562,7 @@ Public Enum e_RuneType
     ReturnHome = 1
     MesonSafePassage = 2
     FastTravel = 3
+    FactionHub = 4
 End Enum
 
 Public Enum e_UseOnceSubType

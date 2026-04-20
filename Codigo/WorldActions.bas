@@ -106,6 +106,18 @@ Public Sub CompletePendingAction(ByVal UserIndex As Integer)
             Case e_AccionBarra.Runa
                 obj = ObjData(.Accion.RunaObj)
                 Slot = .Accion.ObjSlot
+                If obj.Caos > 0 Then
+                    If Not esCaos(UserIndex) Then
+                        Call WriteLocaleMsg(UserIndex, MSG_SOLO_MIEMBROS_LEGION_OSCURA_PUEDEN_USAR_ITEM, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                End If
+                If obj.Real > 0 Then
+                    If Not esArmada(UserIndex) Then
+                        Call WriteLocaleMsg(UserIndex, MSG_SOLO_MIEMBROS_ARMADA_REAL_PUEDEN_USAR_ITEM, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                End If
                 Select Case obj.TipoRuna
                     Case e_RuneType.ReturnHome
                         Call HomeArrival(UserIndex)
@@ -137,6 +149,18 @@ Public Sub CompletePendingAction(ByVal UserIndex As Integer)
                         Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_FontTypeNames.FONTTYPE_WARNING)
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
                         Call UpdateUserInv(False, UserIndex, Slot)
+                    Case e_RuneType.FactionHub
+                         If obj.DesdeMap <> 0 Then
+                            If .pos.Map <> obj.DesdeMap Then
+                                Call WriteLocaleMsg(UserIndex, MSG_INVALID_FAST_TRAVEL_MAP_ORIGIN, e_FontTypeNames.FONTTYPE_WARNING)
+                            End If
+                        End If
+                        If Not IsValidMapPosition(obj.HastaMap, obj.HastaX, obj.HastaY) Then
+                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
+                        Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
+                        Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_FontTypeNames.FONTTYPE_WARNING)
                 End Select
             Case e_AccionBarra.Hogar
                 Call HomeArrival(UserIndex)

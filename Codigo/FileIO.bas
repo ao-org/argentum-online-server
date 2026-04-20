@@ -1195,6 +1195,8 @@ Sub LoadOBJData()
                     .HastaX = val(Leer.GetValue(ObjKey, "HastaX"))
                     .HastaY = val(Leer.GetValue(ObjKey, "HastaY"))
                     .Cooldown = val(Leer.GetValue(ObjKey, "Cooldown"))
+                    .Real = val(Leer.GetValue(ObjKey, "Real"))
+                    .Caos = val(Leer.GetValue(ObjKey, "Caos"))
                 Case e_OBJType.otTeleport
                     .Radio = val(Leer.GetValue(ObjKey, "Radio"))
                 Case e_OBJType.otChest
