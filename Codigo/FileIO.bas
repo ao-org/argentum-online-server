@@ -1222,7 +1222,7 @@ Sub LoadOBJData()
                             Next i
                     End Select
                 Case e_OBJType.otCollectibleCard
-                    .CollectibleCardRarity = val(Leer.GetValue(ObjKey, "CollectibleCardRarity"))
+                    .CollectibleCardId = val(Leer.GetValue(ObjKey, "CollectibleCardId"))
                     .CollectibleCardTags = val(Leer.GetValue(ObjKey, "CollectibleCardTags"))
                 Case e_OBJType.otOreDeposit
                     .MineralIndex = val(Leer.GetValue(ObjKey, "MineralIndex"))

@@ -2970,13 +2970,6 @@ Public Type t_ConnectionInfo
     OnConnectTimestamp As Long
 End Type
 
-Public Type t_UserCollectibleCards
-    Id As Long
-    Rarity As Long
-    Amount As Long
-    Tags As Long
-End Type
-
 Public Const HotKeyCount As Integer = 10
 
 'Tipo de los Usuarios
@@ -2995,7 +2988,6 @@ Public Type t_User
     Grupo As Tgrupo
     showName As Boolean 'Permite que los GMs oculten su nick con el comando /SHOWNAME
     Char As t_Char 'Define la apariencia
-    CollectibleCards() As t_UserCollectibleCards 'should it be array or map ????
     CharMimetizado As t_Char
     NameMimetizado As String
     OrigChar As t_Char
