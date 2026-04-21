@@ -2378,8 +2378,8 @@ Public Type t_ObjData
     PielTigreBengala As Integer
     SkSastreria As Byte
     Radio As Byte
-    CollectibleCardRarity As Integer
     CollectibleCardTags As Long
+    CollectibleCardId As Integer
     SkHerreria As Integer
     SkCarpinteria As Integer
     texto As String
