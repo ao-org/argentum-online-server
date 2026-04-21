@@ -7962,17 +7962,34 @@ Dim Slot As Byte
                 Exit Sub
             End If
             
+            If .Stats.Creditos < 100 Then
+                Call WriteLocaleMsg(UserIndex, MSG_INSUFICIENT_PATREON_CREDITS, FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
             If .Invent_Skins.Object(Slot).Equipped = 0 Then
-                Call LogShopTransactions("PJ ID: " & .id & " Nick: " & GetUserRealName(UserIndex) & " -> Borró el Skin: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).name & " Tipo: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType & " Valor: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Valor)
+            
+                Dim SkinObj As t_Obj
+                SkinObj.ObjIndex = .Invent_Skins.Object(Slot).ObjIndex
+                SkinObj.Amount = 1
+                SkinObj.ElementalTags = 0
+                If Not MeterItemEnInventario(UserIndex, SkinObj) Then
+                    Call WriteLocaleMsg(UserIndex, MsgInventoryIsFull, FONTTYPE_INFO)
+                    Exit Sub
+                End If
+                .Stats.Creditos = .Stats.Creditos - 100
+
+                Call LogShopTransactions("PJ ID: " & .Id & " Nick: " & GetUserRealName(UserIndex) & " -> Borró el Skin: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Name & " Tipo: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType & " Valor: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Valor)
                 Call DesequiparSkin(UserIndex, Slot)
-                'Msg1287= Objeto eliminado correctamente.
                 .Invent_Skins.Object(Slot).Deleted = True
                 Call SaveUser(UserIndex, False)
                 Call WriteChangeSkinSlot(UserIndex, 0, Slot)
-                Call WriteLocaleMsg(UserIndex, "1287", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_OBJETO_ELIMINADO_CORRECTAMENTE, e_FontTypeNames.FONTTYPE_INFO)
+
+                
+                
             Else
-                'Msg1288= No puedes eliminar un objeto estando equipado.
-                Call WriteLocaleMsg(UserIndex, "1288", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_ELIMINAR_OBJETO_ESTANDO_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         End If
