@@ -3955,29 +3955,43 @@ PrepareTrapUpdate_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareTrapUpdate", Erl)
 End Function
-
 Public Function PrepareUpdateGroupInfo(ByVal UserIndex As Integer)
-    On Error GoTo PrepareTrapUpdate_Err
+    On Error GoTo PrepareUpdateGroupInfo_Err
     Call Writer.WriteInt16(ServerPacketID.eUpdateGroupInfo)
-    If IsValidUserRef(UserList(UserIndex).Grupo.Lider) Then
-        With UserList(UserList(UserIndex).Grupo.Lider.ArrayIndex).Grupo
-            Dim i As Integer
-            Writer.WriteInt8 (.CantidadMiembros)
-            For i = 1 To .CantidadMiembros
-                Writer.WriteString8 (GetUserDisplayName(.Miembros(i).ArrayIndex))
-                Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Char.charindex)
-                Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Char.head)
-                Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Stats.MinHp)
-                Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Stats.MaxHp)
-            Next i
-        End With
-    Else
+    
+    ' Si el usuario no está en grupo, enviar 0
+    If Not UserList(UserIndex).Grupo.EnGrupo Then
         Writer.WriteInt8 (0)
+        Exit Function
     End If
+    
+    ' Obtener el índice del líder real del grupo
+    Dim LeaderIndex As Integer
+    LeaderIndex = UserList(UserIndex).Grupo.Lider.ArrayIndex
+    
+    ' Si el líder no es válido, enviar 0
+    If Not IsValidUserRef(UserList(LeaderIndex).Grupo.Lider) Then
+        Writer.WriteInt8 (0)
+        Exit Function
+    End If
+    
+    ' Enviar información del grupo
+    With UserList(LeaderIndex).Grupo
+        Dim i As Integer
+        Writer.WriteInt8 (.CantidadMiembros)
+        For i = 1 To .CantidadMiembros
+            Writer.WriteString8 (GetUserDisplayName(.Miembros(i).ArrayIndex))
+            Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Char.charindex)
+            Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Char.head)
+            Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Stats.MinHp)
+            Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Stats.MaxHp)
+        Next i
+    End With
+    
     Exit Function
-PrepareTrapUpdate_Err:
+PrepareUpdateGroupInfo_Err:
     Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareTrapUpdate", Erl)
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareUpdateGroupInfo", Erl)
 End Function
 
 ''
