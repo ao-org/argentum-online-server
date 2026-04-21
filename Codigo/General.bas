@@ -654,13 +654,19 @@ Sub Main()
     Call InitializeAntiCheat
     tInicioServer = GetTickCountRaw()
     #If UNIT_TEST = 1 Then
+        On Error GoTo UnitTest_Err
         Call UnitTesting.Init
         Dim suite_passed_ok As Boolean
         suite_passed_ok = UnitTesting.test_suite()
+UnitTest_Done:
+        On Error GoTo Handler
         Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
         frmMain.GuardarYCerrar = True
         Unload frmMain
         Exit Sub
+UnitTest_Err:
+        Call UnitTesting.RunTestError("FATAL", Err.Description)
+        Resume UnitTest_Done
     #End If
     While (True)
         GlobalFrameTime = GetTickCountRaw()
