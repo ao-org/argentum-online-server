@@ -224,6 +224,7 @@ End Sub
 Public Function GetMemberList() As Long()
     On Error GoTo GetMemberList_Err
     Call ReloadMemberList
+    If memberCount = 0 Then Exit Function
     If memberCount < (UBound(MemberList) + 1) Then
         Dim Members() As Long
         ReDim Members(memberCount - 1) As Long
