@@ -210,8 +210,10 @@ Private Sub ReloadMemberList()
             i = i + 1
             RS.MoveNext
         Wend
+        memberCount = UBound(MemberList) + 1
+    Else
+        memberCount = 0
     End If
-    memberCount = UBound(MemberList) + 1
     MemberListLoaded = True
     Exit Sub
 ReloadMemberList_Err:
@@ -221,7 +223,11 @@ End Sub
 Public Function GetMemberList() As Long()
     On Error GoTo GetMemberList_Err
     Call ReloadMemberList
-    If memberCount = 0 Then Exit Function
+    If memberCount = 0 Then
+        Dim empty() As Long
+        GetMemberList = empty
+        Exit Function
+    End If
     If memberCount < (UBound(MemberList) + 1) Then
         Dim Members() As Long
         ReDim Members(memberCount - 1) As Long
