@@ -294,17 +294,22 @@ End Sub
 Public Sub ExpulsarMiembro(ByVal CharId As Long)
     On Error GoTo ExpulsarMiembro_Err
     Call Execute("DELETE FROM guild_members WHERE user_id = ? AND guild_id = ?;", CharId, p_GuildId)
+    If memberCount = 0 Then GoTo ExpulsarMiembro_Save
     Dim i As Integer
+    Dim found As Boolean
     For i = 0 To UBound(MemberList)
         If MemberList(i) = CharId Then
-            MemberList(i) = 0
+            found = True
             Exit For
         End If
     Next i
-    For i = i To UBound(MemberList) - 1
-        MemberList(i) = MemberList(i + 1)
-    Next i
-    memberCount = memberCount - 1
+    If found Then
+        For i = i To UBound(MemberList) - 1
+            MemberList(i) = MemberList(i + 1)
+        Next i
+        memberCount = memberCount - 1
+    End If
+ExpulsarMiembro_Save:
     Call SaveUserGuildMember(CharId, p_GuildName)
     Call SaveUserGuildIndex(CharId, 0)
     Exit Sub
