@@ -1100,38 +1100,6 @@ Public Enum e_ElementalTags
     'cant have more than 32 elements, so the last one is 2^31
 End Enum
 
-Public Enum e_CollectibleCardTags
-    Hostile = 1
-    Friendly = 2
-    Fire = 4
-    Water = 8
-    Earth = 16
-    Wind = 32
-    Normal = 64
-    Citizen = 128
-    Draconic = 256
-    Aberration = 512
-    WildLife = 1024
-    Forest = 2048
-    Desert = 4096
-    Dungeon = 8192
-    Ocean = 16384
-    Undead = 32768
-    Mythologic = 65536
-    Critter = 131072
-    Humanoid = 262144
-    NonHumanoid = 524288
-    Boss = 1048576
-End Enum
-
-Public Enum e_CollectibleCardRarity
-    Normal = 1
-    Silver = 2
-    gold = 4
-End Enum
-
-
-
 Public Const MAX_ELEMENT_TAGS = 4 'the maximum suported is 32
 Public ElementalMatrixForNpcs(1 To MAX_ELEMENT_TAGS, 1 To MAX_ELEMENT_TAGS) As Single
 
@@ -2984,6 +2952,7 @@ Public Type t_User
     InUse As Boolean 'Mark if the slot is un use, should be set when players connect and clear on dc, used for debug and error handling
     Id As Long
     Trabajo As t_UserTrabajo
+    CollectibleCardAchievements(1 To 4) As Long
     AccountID As Long
     Grupo As Tgrupo
     showName As Boolean 'Permite que los GMs oculten su nick con el comando /SHOWNAME
