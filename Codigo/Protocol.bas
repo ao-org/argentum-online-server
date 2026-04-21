@@ -7988,7 +7988,6 @@ Dim Slot As Byte
                 Call LogShopTransactions("PJ ID: " & .Id & " Nick: " & GetUserRealName(UserIndex) & " -> Borró el Skin: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Name & " Tipo: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType & " Valor: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Valor)
                 Call DesequiparSkin(UserIndex, Slot)
                 .Invent_Skins.Object(Slot).Deleted = True
-                Call SaveUser(UserIndex, False)
                 Call WriteChangeSkinSlot(UserIndex, 0, Slot)
                 Call WriteLocaleMsg(UserIndex, MSG_OBJETO_ELIMINADO_CORRECTAMENTE, e_FontTypeNames.FONTTYPE_INFO)
             Else
