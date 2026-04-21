@@ -2135,6 +2135,23 @@ HandleDrop_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDrop", Erl)
 End Sub
 
+Private Function VerifyPacketSequence(ByVal ActualCount As Long, _
+                                      ByRef LastCount As Long, _
+                                      ByVal UserIndex As Integer, _
+                                      ByVal PacketName As String) As Boolean
+    If ActualCount <= LastCount Then
+        Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & _
+                UserList(UserIndex).ConnectionDetails.IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
+        Call LogEdicionPaquete("El usuario " & GetUserRealName(UserIndex) & " editó el paquete " & PacketName & ".")
+        LastCount = ActualCount
+        Call CloseSocket(UserIndex)
+        Exit Function
+    End If
+
+    LastCount = ActualCount
+    VerifyPacketSequence = True
+End Function
+
 Public Function verifyTimeStamp(ByVal ActualCount As Long, _
                                 ByRef LastCount As Long, _
                                 ByRef LastTick As Long, _
@@ -2148,18 +2165,7 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, _
     Ticks = GetTickCountRaw()
     Delta = TicksElapsed(LastTick, Ticks)
     LastTick = Ticks
-    'Controlamos secuencia para ver que no haya paquetes duplicados.
-    If ActualCount <= LastCount Then
-        Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & _
-                UserList(UserIndex).ConnectionDetails.IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
-        Call LogEdicionPaquete("El usuario " & GetUserRealName(UserIndex) & " editó el paquete " & PacketName & ".")
-        Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & _
-                UserList(UserIndex).ConnectionDetails.IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
-        Call LogEdicionPaquete("El usuario " & GetUserRealName(UserIndex) & " editó el paquete " & PacketName & ".")
-        LastCount = ActualCount
-        Call CloseSocket(UserIndex)
-        Exit Function
-    End If
+    If Not VerifyPacketSequence(ActualCount, LastCount, UserIndex, PacketName) Then Exit Function
     'controlamos speedhack/macro
     If Delta < DeltaThreshold Then
         Iterations = Iterations + 1
@@ -2343,6 +2349,18 @@ HandleUseSpellMacro_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseSpellMacro", Erl)
 End Sub
 
+Private Function IsProjectileTargetRequest(ByVal UserIndex As Integer, ByVal Slot As Byte) As Boolean
+    If Slot <= 0 Or Slot > UserList(UserIndex).CurrentInventorySlots Then Exit Function
+
+    With UserList(UserIndex).invent.Object(Slot)
+        If .ObjIndex <= 0 Then Exit Function
+        If .Equipped = 0 Then Exit Function
+        If ObjData(.ObjIndex).OBJType <> e_OBJType.otWeapon Then Exit Function
+
+        IsProjectileTargetRequest = (ObjData(.ObjIndex).Proyectil = 1)
+    End With
+End Function
+
 ''
 ' Handles the "UseItem" message.
 '
@@ -2363,8 +2381,12 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
         PacketCounter = reader.ReadInt32
         Dim Packet_ID As Long
         Packet_ID = PacketNames.UseItem
-        If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItem", PacketTimerThreshold( _
-                Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+        If IsProjectileTargetRequest(UserIndex, Slot) Then
+            If Not VerifyPacketSequence(PacketCounter, .PacketCounters(Packet_ID), UserIndex, "UseItem") Then Exit Sub
+        Else
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItem", PacketTimerThreshold( _
+                    Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+        End If
         '  Debug.Print "LLEGA PAQUETE"
         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
             If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
@@ -2389,8 +2411,12 @@ Private Sub HandleUseItemU(ByVal UserIndex As Integer)
         PacketCounter = reader.ReadInt32
         Dim Packet_ID As Long
         Packet_ID = PacketNames.UseItemU
-        If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItemU", PacketTimerThreshold( _
-                Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+        If IsProjectileTargetRequest(UserIndex, Slot) Then
+            If Not VerifyPacketSequence(PacketCounter, .PacketCounters(Packet_ID), UserIndex, "UseItemU") Then Exit Sub
+        Else
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItemU", PacketTimerThreshold( _
+                    Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+        End If
         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
             If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
             Call UseInvItem(UserIndex, Slot, 0)
