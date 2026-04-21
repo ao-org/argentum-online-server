@@ -29,7 +29,7 @@ Attribute VB_Exposed = False
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'    Copyright (C) 2002 Márquez Pablo Ignacio
+'    Copyright (C) 2002 Mï¿½rquez Pablo Ignacio
 '
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
@@ -210,8 +210,11 @@ Private Sub ReloadMemberList()
             i = i + 1
             RS.MoveNext
         Wend
+        memberCount = RS.RecordCount
+    Else
+        ReDim MemberList(0) As Long
+        memberCount = 0
     End If
-    memberCount = UBound(MemberList) + 1
     MemberListLoaded = True
     Exit Sub
 ReloadMemberList_Err:
@@ -243,7 +246,7 @@ Public Sub ConectarMiembro(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         ' No avisa cuando loguea un dios
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-            Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat("Msg2037¬" & .name, 9)) 'Msg2037=¬1 se ha conectado.
+            Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat("Msg2037ï¿½" & .name, 9)) 'Msg2037=ï¿½1 se ha conectado.
         End If
     End With
     Exit Sub
@@ -260,7 +263,7 @@ Public Sub DesConectarMiembro(ByVal UserIndex As Integer)
             With UserList(UserIndex)
                 ' No avisa cuando se desconecta un dios
                 If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-                    Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat("Msg2038¬" & .name, 8)) 'Msg2038=¬1 se ha desconectado.
+                    Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat("Msg2038ï¿½" & .name, 8)) 'Msg2038=ï¿½1 se ha desconectado.
                 End If
             End With
             Exit Sub
@@ -281,7 +284,11 @@ Public Sub AceptarNuevoMiembro(ByRef UserId As Long)
             Call ReloadMemberList
         Else
             memberCount = memberCount + 1
-            ReDim Preserve MemberList(memberCount - 1) As Long
+            If memberCount = 1 Then
+                ReDim MemberList(0) As Long
+            Else
+                ReDim Preserve MemberList(memberCount - 1) As Long
+            End If
             MemberList(memberCount - 1) = UserId
         End If
     End If
@@ -293,6 +300,10 @@ End Sub
 Public Sub ExpulsarMiembro(ByVal CharId As Long)
     On Error GoTo ExpulsarMiembro_Err
     Call Execute("DELETE FROM guild_members WHERE user_id = ? AND guild_id = ?;", CharId, p_GuildId)
+    If Not MemberListLoaded Then
+        Call ReloadMemberList
+    End If
+    If memberCount = 0 Then Exit Sub
     Dim i As Integer
     For i = 0 To UBound(MemberList)
         If MemberList(i) = CharId Then
@@ -304,6 +315,11 @@ Public Sub ExpulsarMiembro(ByVal CharId As Long)
         MemberList(i) = MemberList(i + 1)
     Next i
     memberCount = memberCount - 1
+    If memberCount = 0 Then
+        ReDim MemberList(0) As Long
+    Else
+        ReDim Preserve MemberList(memberCount - 1) As Long
+    End If
     Call SaveUserGuildMember(CharId, p_GuildName)
     Call SaveUserGuildIndex(CharId, 0)
     Exit Sub
@@ -593,8 +609,8 @@ Private Sub ReplaceInvalidChars(ByRef s As String)
     If InStrB(s, Chr$(10)) <> 0 Then
         s = Replace(s, Chr$(10), vbNullString)
     End If
-    If InStrB(s, "¬") <> 0 Then
-        s = Replace(s, "¬", vbNullString)   'morgo usaba esto como "separador"
+    If InStrB(s, "ï¿½") <> 0 Then
+        s = Replace(s, "ï¿½", vbNullString)   'morgo usaba esto como "separador"
     End If
     Exit Sub
 ReplaceInvalidChars_Err:
