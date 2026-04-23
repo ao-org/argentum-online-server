@@ -41,6 +41,13 @@ Public Function CanUseObject(ByVal UserIndex As Integer, ByVal ObjIndex As Integ
     Dim msg    As String
     Dim Extra  As String
     Extra = vbNullString
+
+    ' Validate ObjIndex is within the ObjData array bounds
+    If ObjIndex < 1 Or ObjIndex > UBound(ObjData) Then
+        CanUseObject = 0
+        Exit Function
+    End If
+
     Objeto = ObjData(ObjIndex)
     With UserList(UserIndex)
         If EsGM(UserIndex) Then
@@ -73,10 +80,18 @@ Public Function CanUseObject(ByVal UserIndex As Integer, ByVal ObjIndex As Integ
             CanUseObject = 5
             msg = "266"  ' Race cannot use this item.
         ElseIf (Objeto.SkillIndex > 0) Then
-            If (.Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
+            ' Validate SkillIndex is within valid bounds before accessing arrays
+            If Objeto.SkillIndex < LBound(.Stats.UserSkills) Or Objeto.SkillIndex > UBound(.Stats.UserSkills) Then
+                CanUseObject = 4
+                msg = vbNullString
+            ElseIf (.Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
                 CanUseObject = 4
                 msg = "NEED_SKILL_POINTS" ' e.g. "Necesitas {0} puntos en {1}..."
-                Extra = CStr(Objeto.SkillRequerido) & "¬" & SkillsNames(Objeto.SkillIndex)
+                If Objeto.SkillIndex >= LBound(SkillsNames) And Objeto.SkillIndex <= UBound(SkillsNames) Then
+                    Extra = CStr(Objeto.SkillRequerido) & "¬" & SkillsNames(Objeto.SkillIndex)
+                Else
+                    Extra = CStr(Objeto.SkillRequerido)
+                End If
             Else
                 CanUseObject = 0
                 msg = vbNullString
