@@ -492,7 +492,7 @@ Sub Main()
     #If DIRECT_PLAY = 1 Then
         InitDPlay
     #End If
-    Call InitializeCircularLogBuffer
+    Call InitializeLogging
     Call LogThis(0, "Starting the server " & Now, vbLogEventTypeInformation)
     Call load_stats
     
@@ -1702,6 +1702,7 @@ Public Sub CerrarServidor()
         End If
     Next
     Call UnloadAntiCheat
+    Call ShutdownLogging
     If Database_Enabled Then Database_Close
     End
 End Sub
