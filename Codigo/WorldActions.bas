@@ -182,6 +182,22 @@ Private Function IsWorldActionRequestValid(ByVal UserIndex As Integer, ByVal Map
     IsWorldActionRequestValid = True
 End Function
 
+Public Function IsNpcWorldInteractable(ByVal NpcIndex As Integer) As Boolean
+    If NpcIndex <= 0 Then Exit Function
+
+    With NpcList(NpcIndex)
+        If .Comercia = 1 Or .Craftea > 0 Then
+            IsNpcWorldInteractable = True
+            Exit Function
+        End If
+
+        Select Case .npcType
+            Case e_NPCType.Banquero, e_NPCType.Pirata, e_NPCType.Revividor, e_NPCType.ResucitadorNewbie, e_NPCType.Subastador, e_NPCType.Quest, e_NPCType.Enlistador, e_NPCType.Gobernador, e_NPCType.EntregaPesca, e_NPCType.AO20Shop, e_NPCType.AO20ShopPjs, e_NPCType.EventMaster
+                IsNpcWorldInteractable = True
+        End Select
+    End With
+End Function
+
 Private Function TryHandleNpcWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     Dim TempCharIndex As Integer
 

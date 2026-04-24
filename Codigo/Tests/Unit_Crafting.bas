@@ -127,7 +127,6 @@ Err_Handler:
 End Function
 
 ' Property 2: SortIntegerArray produces ascending order.
-' Validates: Requirements 2.1, 2.2, 2.3
 ' For any random integer array of length 1-5, after sorting,
 ' data(i) <= data(i+1) for all adjacent pairs.
 ' Uses 150 randomized trials to approximate universal quantification.

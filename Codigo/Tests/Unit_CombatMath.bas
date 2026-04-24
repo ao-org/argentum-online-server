@@ -93,7 +93,6 @@ End Function
 ' For any two Integer values a and b, MinimoInt(a,b) <= a, MinimoInt(a,b) <= b,
 ' MaximoInt(a,b) >= a, MaximoInt(a,b) >= b, and one of {a, b} equals the min and max.
 ' Uses 200 randomized trials to approximate universal quantification.
-' **Validates: Requirements 1.1, 1.2, 1.3, 1.4, 1.5**
 Private Function test_minmax_int_property() As Boolean
     On Error GoTo Err_Handler
     test_minmax_int_property = True
