@@ -7948,12 +7948,12 @@ Dim Slot As Byte
                 Exit Sub
             End If
         Else
+            If Slot > MAX_SKINSINVENTORY_SLOTS Or Slot <= 0 Then Exit Sub
             Dim SkinObj As t_Obj
             SkinObj.ObjIndex = .Invent_Skins.Object(Slot).ObjIndex
             SkinObj.Amount = 1
             SkinObj.ElementalTags = 0
-            If Slot > MAX_SKINSINVENTORY_SLOTS Or Slot <= 0 Then Exit Sub
-            
+
             If MapInfo(.pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
                 Call WriteLocaleMsg(UserIndex, MSG_SOLO_PUEDES_ELIMINAR_ITEMS_ZONA_SEGURA, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -7964,13 +7964,13 @@ Dim Slot As Byte
                 Exit Sub
             End If
             
-            If .Stats.Creditos < 50 Then
-                Call WriteLocaleMsg(UserIndex, MSG_INSUFICIENT_PATREON_CREDITS, FONTTYPE_INFO)
+            If Not IsPatreon(UserIndex) Then
+                Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_MEJORAR_CUENTA_PODER_AGREGAR_SKINS_MAS_INFORMACION, FONTTYPE_INFO)
                 Exit Sub
             End If
             
-            If Not IsPatreon(UserIndex) Then
-                Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_MEJORAR_CUENTA_PODER_AGREGAR_SKINS_MAS_INFORMACION, FONTTYPE_INFO)
+            If .Stats.Creditos < 50 Then
+                Call WriteLocaleMsg(UserIndex, MSG_INSUFICIENT_PATREON_CREDITS, FONTTYPE_INFO)
                 Exit Sub
             End If
             
@@ -7981,7 +7981,6 @@ Dim Slot As Byte
             
             If .Invent_Skins.Object(Slot).Equipped = 0 Then
                 If Not MeterItemEnInventario(UserIndex, SkinObj) Then
-                    Call WriteLocaleMsg(UserIndex, MsgInventoryIsFull, FONTTYPE_INFO)
                     Exit Sub
                 End If
                 .Stats.Creditos = .Stats.Creditos - 50
