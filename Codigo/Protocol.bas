@@ -8073,6 +8073,7 @@ Public Sub HandleSetHotkeySlot(ByVal UserIndex As Integer)
         TargetIndex = reader.ReadInt16
         LastKnownSlot = reader.ReadInt16
         HkType = reader.ReadInt8
+        If SlotIndex < LBound(.HotkeyList) Or SlotIndex > UBound(.HotkeyList) Then Exit Sub
         .HotkeyList(SlotIndex).Index = TargetIndex
         .HotkeyList(SlotIndex).LastKnownSlot = LastKnownSlot
         .HotkeyList(SlotIndex).Type = HkType
