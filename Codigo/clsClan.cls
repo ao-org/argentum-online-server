@@ -224,8 +224,8 @@ Public Function GetMemberList() As Long()
     On Error GoTo GetMemberList_Err
     Call ReloadMemberList
     If memberCount = 0 Then
-        Dim empty() As Long
-        GetMemberList = empty
+        Dim emptyArr() As Long
+        GetMemberList = emptyArr
         Exit Function
     End If
     If memberCount < (UBound(MemberList) + 1) Then
