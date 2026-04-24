@@ -2135,6 +2135,23 @@ HandleDrop_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDrop", Erl)
 End Sub
 
+Private Function VerifyPacketSequence(ByVal ActualCount As Long, _
+                                      ByRef LastCount As Long, _
+                                      ByVal UserIndex As Integer, _
+                                      ByVal PacketName As String) As Boolean
+    If ActualCount <= LastCount Then
+        Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & _
+                UserList(UserIndex).ConnectionDetails.IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
+        Call LogEdicionPaquete("El usuario " & GetUserRealName(UserIndex) & " editó el paquete " & PacketName & ".")
+        LastCount = ActualCount
+        Call CloseSocket(UserIndex)
+        Exit Function
+    End If
+
+    LastCount = ActualCount
+    VerifyPacketSequence = True
+End Function
+
 Public Function verifyTimeStamp(ByVal ActualCount As Long, _
                                 ByRef LastCount As Long, _
                                 ByRef LastTick As Long, _
@@ -2148,18 +2165,7 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, _
     Ticks = GetTickCountRaw()
     Delta = TicksElapsed(LastTick, Ticks)
     LastTick = Ticks
-    'Controlamos secuencia para ver que no haya paquetes duplicados.
-    If ActualCount <= LastCount Then
-        Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & _
-                UserList(UserIndex).ConnectionDetails.IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
-        Call LogEdicionPaquete("El usuario " & GetUserRealName(UserIndex) & " editó el paquete " & PacketName & ".")
-        Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & _
-                UserList(UserIndex).ConnectionDetails.IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
-        Call LogEdicionPaquete("El usuario " & GetUserRealName(UserIndex) & " editó el paquete " & PacketName & ".")
-        LastCount = ActualCount
-        Call CloseSocket(UserIndex)
-        Exit Function
-    End If
+    If Not VerifyPacketSequence(ActualCount, LastCount, UserIndex, PacketName) Then Exit Function
     'controlamos speedhack/macro
     If Delta < DeltaThreshold Then
         Iterations = Iterations + 1
@@ -2217,7 +2223,25 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
         Packet_ID = PacketNames.LeftClick
         If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "LeftClick", PacketTimerThreshold( _
                 Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+        If Not InMapBounds(.pos.Map, x, y) Then Exit Sub
         Call LookatTile(UserIndex, .pos.Map, x, y)
+        Dim ClickedUserIndex As Integer
+        Dim ClickedNpcIndex As Integer
+        ClickedUserIndex = MapData(.pos.Map, x, y).UserIndex
+        ClickedNpcIndex = MapData(.pos.Map, x, y).NpcIndex
+        If y < YMaxMapSize Then
+            If ClickedUserIndex = 0 Then
+                ClickedUserIndex = MapData(.pos.Map, x, y + 1).UserIndex
+            End If
+            If ClickedNpcIndex = 0 Then
+                ClickedNpcIndex = MapData(.pos.Map, x, y + 1).NpcIndex
+            End If
+        End If
+        If ClickedUserIndex = 0 Then
+            If ClickedNpcIndex = 0 Or IsNpcWorldInteractable(ClickedNpcIndex) Then
+                Call HandleWorldAction(UserIndex, .pos.Map, x, y)
+            End If
+        End If
     End With
     Exit Sub
 HandleLeftClick_Err:
@@ -2230,13 +2254,11 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleDoubleClick(ByVal UserIndex As Integer)
     On Error GoTo HandleDoubleClick_Err
-    With UserList(UserIndex)
-        Dim x As Byte
-        Dim y As Byte
-        x = reader.ReadInt8()
-        y = reader.ReadInt8()
-        Call HandleWorldAction(UserIndex, .pos.Map, x, y)
-    End With
+    Dim x As Byte
+    Dim y As Byte
+    x = reader.ReadInt8()
+    y = reader.ReadInt8()
+    ' World interactions are handled on left click. Double click is consumed only to avoid duplicate execution.
     Exit Sub
 HandleDoubleClick_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDoubleClick", Erl)
@@ -2327,6 +2349,18 @@ HandleUseSpellMacro_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseSpellMacro", Erl)
 End Sub
 
+Private Function IsProjectileTargetRequest(ByVal UserIndex As Integer, ByVal Slot As Byte) As Boolean
+    If Slot <= 0 Or Slot > UserList(UserIndex).CurrentInventorySlots Then Exit Function
+
+    With UserList(UserIndex).invent.Object(Slot)
+        If .ObjIndex <= 0 Then Exit Function
+        If .Equipped = 0 Then Exit Function
+        If ObjData(.ObjIndex).OBJType <> e_OBJType.otWeapon Then Exit Function
+
+        IsProjectileTargetRequest = (ObjData(.ObjIndex).Proyectil = 1)
+    End With
+End Function
+
 ''
 ' Handles the "UseItem" message.
 '
@@ -2347,8 +2381,12 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
         PacketCounter = reader.ReadInt32
         Dim Packet_ID As Long
         Packet_ID = PacketNames.UseItem
-        If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItem", PacketTimerThreshold( _
-                Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+        If IsProjectileTargetRequest(UserIndex, Slot) Then
+            If Not VerifyPacketSequence(PacketCounter, .PacketCounters(Packet_ID), UserIndex, "UseItem") Then Exit Sub
+        Else
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItem", PacketTimerThreshold( _
+                    Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+        End If
         '  Debug.Print "LLEGA PAQUETE"
         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
             If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
@@ -2373,8 +2411,12 @@ Private Sub HandleUseItemU(ByVal UserIndex As Integer)
         PacketCounter = reader.ReadInt32
         Dim Packet_ID As Long
         Packet_ID = PacketNames.UseItemU
-        If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItemU", PacketTimerThreshold( _
-                Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+        If IsProjectileTargetRequest(UserIndex, Slot) Then
+            If Not VerifyPacketSequence(PacketCounter, .PacketCounters(Packet_ID), UserIndex, "UseItemU") Then Exit Sub
+        Else
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItemU", PacketTimerThreshold( _
+                    Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+        End If
         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
             If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
             Call UseInvItem(UserIndex, Slot, 0)
@@ -7928,30 +7970,48 @@ Dim Slot As Byte
             End If
         Else
             If Slot > MAX_SKINSINVENTORY_SLOTS Or Slot <= 0 Then Exit Sub
-            
+            Dim SkinObj As t_Obj
+            SkinObj.ObjIndex = .Invent_Skins.Object(Slot).ObjIndex
+            SkinObj.Amount = 1
+            SkinObj.ElementalTags = 0
+
             If MapInfo(.pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
-                'Msg1285= Solo puedes eliminar items en zona segura.
-                Call WriteLocaleMsg(UserIndex, "1285", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_SOLO_PUEDES_ELIMINAR_ITEMS_ZONA_SEGURA, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             
             If .flags.Muerto = 1 Then
-                'Msg1286= No puede eliminar items cuando estas muerto.
-                Call WriteLocaleMsg(UserIndex, "1286", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDE_ELIMINAR_ITEMS_CUANDO_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If Not IsPatreon(UserIndex) Then
+                Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_MEJORAR_CUENTA_PODER_AGREGAR_SKINS_MAS_INFORMACION, FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If .Stats.Creditos < 50 Then
+                Call WriteLocaleMsg(UserIndex, MSG_INSUFICIENT_PATREON_CREDITS, FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If ObjData(SkinObj.ObjIndex).Instransferible > 0 Then
+                Call WriteLocaleMsg(UserIndex, MSG_NO_OBJETO_INTRANSFERIBLE_PODES_VENDERLO, FONTTYPE_INFO)
                 Exit Sub
             End If
             
             If .Invent_Skins.Object(Slot).Equipped = 0 Then
-                Call LogShopTransactions("PJ ID: " & .id & " Nick: " & GetUserRealName(UserIndex) & " -> Borró el Skin: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).name & " Tipo: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType & " Valor: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Valor)
+                If Not MeterItemEnInventario(UserIndex, SkinObj) Then
+                    Exit Sub
+                End If
+                .Stats.Creditos = .Stats.Creditos - 50
+                Call LogShopTransactions("PJ ID: " & .Id & " Nick: " & GetUserRealName(UserIndex) & " -> Borró el Skin: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Name & " Tipo: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType & " Valor: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Valor)
                 Call DesequiparSkin(UserIndex, Slot)
-                'Msg1287= Objeto eliminado correctamente.
                 .Invent_Skins.Object(Slot).Deleted = True
-                Call SaveUser(UserIndex, False)
                 Call WriteChangeSkinSlot(UserIndex, 0, Slot)
-                Call WriteLocaleMsg(UserIndex, "1287", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_OBJETO_ELIMINADO_CORRECTAMENTE, e_FontTypeNames.FONTTYPE_INFO)
             Else
-                'Msg1288= No puedes eliminar un objeto estando equipado.
-                Call WriteLocaleMsg(UserIndex, "1288", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_ELIMINAR_OBJETO_ESTANDO_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         End If

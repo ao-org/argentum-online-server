@@ -41,6 +41,7 @@ Public Const MSG_MAP_MIN_LEVEL                              As Integer = 1108
 Public Const MSG_MAP_MAX_LEVEL                              As Integer = 1109
 Public Const MSG_MAP_REQUIRES_GROUP                         As Integer = 775
 Public Const MSG_MAP_REQUIRES_PATREON                       As Integer = 776
+Public Const MSG_INSUFICIENT_PATREON_CREDITS                As Integer = 2176
 Public Const MSG_TILE_REQUIRES_PATREON                      As Integer = 776
 Public Const MSG_PICKUP_UNAVAILABLE                         As Integer = 261
 

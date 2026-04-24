@@ -17,6 +17,7 @@ Public Function test_suite_pathfinding() As Boolean
     Call UnitTesting.RunTest("test_heading_east", test_heading_east())
     Call UnitTesting.RunTest("test_heading_west", test_heading_west())
     Call UnitTesting.RunTest("test_heading_priority", test_heading_priority())
+    Call UnitTesting.RunTest("test_heading_same_position", test_heading_same_position())
     
     Debug.Print "Pathfinding suite took " & sw.ElapsedMilliseconds & " ms"
     test_suite_pathfinding = True
@@ -107,6 +108,19 @@ Private Function test_heading_priority() As Boolean
     Exit Function
 test_heading_priority_Err:
     test_heading_priority = False
+End Function
+
+' Verifies that identical positions (dx=0, dy=0) fall through to SOUTH.
+Private Function test_heading_same_position() As Boolean
+    On Error GoTo Err_Handler
+    Dim current As t_WorldPos
+    Dim nextP As t_WorldPos
+    current.Map = 1: current.x = 50: current.y = 50
+    nextP.Map = 1: nextP.x = 50: nextP.y = 50
+    test_heading_same_position = (GetHeadingFromWorldPos(current, nextP) = e_Heading.SOUTH)
+    Exit Function
+Err_Handler:
+    test_heading_same_position = False
 End Function
 
 #End If

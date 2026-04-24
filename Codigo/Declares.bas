@@ -3174,6 +3174,7 @@ Public Type t_NpcInfoCache
     Exists As Boolean
     TestOnly As Integer
     DisabledInBattleServer As Integer
+    OnlyEnabledInBattleServer As Integer
     RequireToggle As String
     name As String
     SubName As String
@@ -3404,6 +3405,7 @@ Public Type t_Npc
     PuedeInvocar As Byte
     Humanoide As Boolean
     DisabledInBattleServer As Byte
+    OnlyEnabledInBattleServer As Byte
 End Type
 
 '**********************************************************
