@@ -17,7 +17,6 @@ Attribute VB_Name = "CharacterPersistence"
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'    Copyright (C) 2002 MÃ¡rquez Pablo Ignacio
 '
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
@@ -98,7 +97,7 @@ Public Function GetCharacterNameByUserId(ByVal UserId As Long) As String
 GetCharacterNameByUserId_Err:
     Call LogDatabaseError("Error en GetCharacterNameByUserId: UserId=" & UserId & _
                           ". " & Err.Number & " - " & Err.Description & _
-                          ". LÃ­nea: " & Erl)
+                          ". Linea: " & Erl)
 End Function
 
 Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
@@ -130,7 +129,7 @@ Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
     LoadCharacterBank = True
     Exit Function
 LoadCharacterBank_Err:
-    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterBank: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". LÃ­nea: " & Erl)
+    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterBank: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Linea: " & Erl)
 End Function
 
 Public Function get_num_inv_slots_from_tier(ByVal t As e_TipoUsuario) As Integer
@@ -193,7 +192,7 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
     LoadCharacterInventory = True
     Exit Function
 LoadCharacterInventory_Err:
-    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterInventory: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". LÃ­nea: " & Erl)
+    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterInventory: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Linea: " & Erl)
 End Function
 
 Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
@@ -228,13 +227,13 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
             BaneoMotivo = RS!ban_reason
             If LenB(BanNick) = 0 Then BanNick = "*Error en la base de datos*"
             If LenB(BaneoMotivo) = 0 Then BaneoMotivo = "*No se registra el motivo del baneo.*"
-            Call WriteShowMessageBox(UserIndex, 1755, BaneoMotivo & "Â¬" & BanNick) ' Msg1755=Se te ha prohibido la entrada al juego debido a Â¬1. Esta decisiÃ³n fue tomada por Â¬2.
+            Call WriteShowMessageBox(UserIndex, 1755, BaneoMotivo & "~" & BanNick)
             Call CloseSocket(UserIndex)
             Exit Function
         End If
         ' Check if the character is locked/in a sale state.
         If RS!is_locked_in_mao Then
-            Call WriteShowMessageBox(UserIndex, 1756, vbNullString) 'Msg1756=El personaje que estÃ¡s intentando loguear se encuentra en venta, para desbloquearlo deberÃ¡s hacerlo desde la pÃ¡gina web.
+            Call WriteShowMessageBox(UserIndex, 1756, vbNullString)
             Call CloseSocket(UserIndex)
             Exit Function
         End If
@@ -267,7 +266,7 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
     LoadCharacterFromDB = True
     Exit Function
 ErrorHandler:
-    Call LogDatabaseError("Error en LoadCharacterFromDB: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". LÃ­nea: " & Erl)
+    Call LogDatabaseError("Error en LoadCharacterFromDB: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Linea: " & Erl)
 End Function
 
 Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset)
@@ -535,7 +534,7 @@ Public Function GetPatronTierFromAccountID(ByVal account_id) As e_TipoUsuario
     End If
     Exit Function
 ErrorHandler_GetPatronTierFromAccountID:
-    Call LogDatabaseError("Error en GetPatronTierFromAccountID: " & account_id & ". " & Err.Number & " - " & Err.Description & ". LÃ­nea: " & Erl)
+    Call LogDatabaseError("Error en GetPatronTierFromAccountID: " & account_id & ". " & Err.Number & " - " & Err.Description & ". Linea: " & Erl)
 End Function
 
 Public Sub LoadPatronCreditsFromDB(ByVal UserIndex As Integer)
@@ -1579,7 +1578,7 @@ ErrHandler:
 
     Set RS = Nothing
     LoadSkinsInventory = False
-    Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.LoadSkinsInventory of MÃ³dulo Nick: " & UserList(UserIndex).name, Erl())
+    Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.LoadSkinsInventory of Modulo Nick: " & UserList(UserIndex).name, Erl())
 
 End Function
 
