@@ -1974,7 +1974,7 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, ByVal 
         End If
         If .flags.Paralizado = 1 Then
             If UserSurvivalSkill >= 100 Then
-                extraStrings = extraStrings & CLng(.Contadores.Paralisis / 6.5)
+                extraStrings = extraStrings & Format$((.Contadores.Paralisis / 6.5), "0")
             End If
             Call SetMask(NpcStatusMask, e_NpcInfoMask.Paralized)
             extraStrings = extraStrings & "-"
@@ -1983,7 +1983,7 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, ByVal 
         End If
         If .flags.Inmovilizado = 1 Then
             If UserSurvivalSkill >= 100 Then
-                extraStrings = extraStrings & CLng(.Contadores.Inmovilizado / 6.5)
+                extraStrings = extraStrings & Format$((.Contadores.Inmovilizado / 6.5), "0")
             End If
             Call SetMask(NpcStatusMask, e_NpcInfoMask.Inmovilized)
             extraStrings = extraStrings & "-"
@@ -1993,7 +1993,7 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, ByVal 
         If GetOwnedBy(TargetNpcIndex) <> 0 Then
             Call SetMask(NpcStatusMask, e_NpcInfoMask.Fighting)
             extraStrings = extraStrings & .flags.AttackedBy & "|"
-            extraStrings = extraStrings & CLng((IntervaloNpcOwner - (GlobalFrameTime - .flags.AttackedTime)) / 1000) & "-"
+            extraStrings = extraStrings & Format$(((IntervaloNpcOwner - (GlobalFrameTime - .flags.AttackedTime)) / 1000), "0") & "-"
         Else
             extraStrings = extraStrings & "-"
         End If
