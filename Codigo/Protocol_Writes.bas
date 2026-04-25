@@ -3965,15 +3965,15 @@ Public Function PrepareUpdateGroupInfo(ByVal UserIndex As Integer)
         Exit Function
     End If
     
-    ' Obtener el índice del líder real del grupo
-    Dim LeaderIndex As Integer
-    LeaderIndex = UserList(UserIndex).Grupo.Lider.ArrayIndex
-    
-    ' Si el líder no es válido, enviar 0
-    If Not IsValidUserRef(UserList(LeaderIndex).Grupo.Lider) Then
+    ' Si la referencia al líder no es válida, enviar 0
+    If Not IsValidUserRef(UserList(UserIndex).Grupo.Lider) Then
         Writer.WriteInt8 (0)
         Exit Function
     End If
+    
+    ' Obtener el índice del líder real del grupo
+    Dim LeaderIndex As Integer
+    LeaderIndex = UserList(UserIndex).Grupo.Lider.ArrayIndex
     
     ' Enviar información del grupo
     With UserList(LeaderIndex).Grupo
