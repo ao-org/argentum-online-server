@@ -17,7 +17,7 @@ Attribute VB_Name = "CharacterPersistence"
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'
+'    Copyright (C) 2002 Márquez Pablo Ignacio
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
 '    for more information about ORE please visit http://www.baronsoft.com/
@@ -227,13 +227,13 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
             BaneoMotivo = RS!ban_reason
             If LenB(BanNick) = 0 Then BanNick = "*Error en la base de datos*"
             If LenB(BaneoMotivo) = 0 Then BaneoMotivo = "*No se registra el motivo del baneo.*"
-            Call WriteShowMessageBox(UserIndex, 1755, BaneoMotivo & "~" & BanNick)
+            Call WriteShowMessageBox(UserIndex, 1755, BaneoMotivo & "¬" & BanNick) ' Msg1755=Se te ha prohibido la entrada al juego debido a ¬1. Esta decisión fue tomada por ¬2.
             Call CloseSocket(UserIndex)
             Exit Function
         End If
         ' Check if the character is locked/in a sale state.
         If RS!is_locked_in_mao Then
-            Call WriteShowMessageBox(UserIndex, 1756, vbNullString)
+            Call WriteShowMessageBox(UserIndex, 1756, vbNullString) 'Msg1756=El personaje que estás intentando loguear se encuentra en venta, para desbloquearlo deberás hacerlo desde la página web.
             Call CloseSocket(UserIndex)
             Exit Function
         End If
