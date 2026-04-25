@@ -781,7 +781,7 @@ End Sub
 
 Private Sub SaveCharacterPetsDB(ByRef U As t_User, ByRef QueryBreakdown As String)
     Dim QueryTimer As Long
-    Dim Params(3) As Variant
+    Dim Params(MAXMASCOTAS) As Variant
     Dim LoopC As Long
     Dim petType As Integer
     Params(0) = U.Id
@@ -1494,7 +1494,7 @@ Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)
         Next LoopC
         Call Execute(QUERY_SAVE_QUESTS, Params)
         ' ******************* PETS ********************
-        Dim PetParams(3) As Variant
+        Dim PetParams(MAXMASCOTAS) As Variant
         PetParams(0) = .Id
         For LoopC = 1 To MAXMASCOTAS
             PetParams(LoopC) = 0
