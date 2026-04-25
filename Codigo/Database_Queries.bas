@@ -17,7 +17,7 @@ Attribute VB_Name = "Database_Queries"
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'    Copyright (C) 2002 Mï¿½rquez Pablo Ignacio
+'    Copyright (C) 2002 MÃ¡rquez Pablo Ignacio
 '
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
