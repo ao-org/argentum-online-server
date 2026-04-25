@@ -186,9 +186,15 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
                 Dim SourceMemberIndex As Integer
                 SourceMemberIndex = .Miembros(b).ArrayIndex
                 
-                ' NO enviar la posición de un miembro a sí mismo
+                ' NO enviar la posición de un miembro a sí mismo.
+                ' Solo compartir ubicación si ambos miembros están en el mismo mapa;
+                ' en caso contrario, mantener el marcador limpio.
                 If TargetMemberIndex <> SourceMemberIndex Then
-                    Call WriteUbicacion(TargetMemberIndex, b, SourceMemberIndex)
+                    If UserList(TargetMemberIndex).Pos.Map = UserList(SourceMemberIndex).Pos.Map Then
+                        Call WriteUbicacion(TargetMemberIndex, b, SourceMemberIndex)
+                    Else
+                        Call WriteUbicacion(TargetMemberIndex, b, 0)
+                    End If
                 End If
             Next b
         Next a
