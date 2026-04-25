@@ -280,7 +280,11 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
                 
                 ' NO enviar la posición de un miembro a sí mismo
                 If TargetMemberIndex <> SourceMemberIndex Then
-                    Call WriteUbicacion(TargetMemberIndex, b, SourceMemberIndex)
+                    ' Solo compartir ubicación entre miembros que estén en el mismo mapa.
+                    ' Si están en mapas distintos, el marcador ya quedó limpio en el paso anterior.
+                    If UserList(TargetMemberIndex).pos.Map = UserList(SourceMemberIndex).pos.Map Then
+                        Call WriteUbicacion(TargetMemberIndex, b, SourceMemberIndex)
+                    End If
                 End If
             Next b
         Next a
