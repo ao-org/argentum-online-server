@@ -1365,6 +1365,7 @@ Public Const MAXSKILLPOINTS As Byte = 100
 ' Cantidad maxima de mascotas
 Public Const MAXMASCOTAS    As Byte = 3
 
+Public Const MAXCOLLECTIBLECARDS As Integer = 1000
 
 ''
 'Direccion
@@ -1555,6 +1556,7 @@ Public Enum e_OBJType
     otPlants = 54
     otElementalRune = 55
     otFactionForgiveness = 56
+    otCollectibleCard = 57
     otElse = 100
 End Enum
 
@@ -2351,6 +2353,7 @@ Public Type t_ObjData
     PielTigreBengala As Integer
     SkSastreria As Byte
     Radio As Byte
+    CollectibleCardId As Integer
     SkHerreria As Integer
     SkCarpinteria As Integer
     texto As String
@@ -2941,6 +2944,7 @@ Public Type t_User
     InUse As Boolean 'Mark if the slot is un use, should be set when players connect and clear on dc, used for debug and error handling
     Id As Long
     Trabajo As t_UserTrabajo
+    CollectibleCardAchievements(1 To 4) As Long
     AccountID As Long
     Grupo As Tgrupo
     showName As Boolean 'Permite que los GMs oculten su nick con el comando /SHOWNAME
