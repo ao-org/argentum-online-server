@@ -162,11 +162,13 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Opt
     Select Case sndRoute
         Case SendTarget.ToIndex
             Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
-            With UserList(sndIndex)
-                If (.ConnectionDetails.ConnIDValida) Then
-                    Call modNetwork.Send(sndIndex, Buffer)
-                End If
-            End With
+            If sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList) Then
+                With UserList(sndIndex)
+                    If (.ConnectionDetails.ConnIDValida) Then
+                        Call modNetwork.Send(sndIndex, Buffer)
+                    End If
+                End With
+            End If
         Case SendTarget.ToPCArea
             Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
             Call SendToUserArea(sndIndex, Buffer, ValidateInvi)

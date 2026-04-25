@@ -1529,7 +1529,7 @@ End Sub
 Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVal Slot As Integer)
     On Error GoTo DoMontar_Err
     With UserList(UserIndex)
-        If PuedeUsarObjeto(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
+        If CanUseObject(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
             Exit Sub
         End If
         If .flags.Montado = 0 And .Counters.EnCombate > 0 Then
@@ -2013,22 +2013,22 @@ Public Sub GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_Obj, 
             End If
         Case e_JobsTypes.Tailor
             If .PielLobo > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielLobo , SvrConfig.GetValue("TailoringExp"), Item.Amount)
+                tmpExp = tmpExp + ComputeWorkingExp(.PielLobo, SvrConfig.GetValue("WolfPeltExp"), Item.Amount)
             End If
             If .PielOsoPardo > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPardo , SvrConfig.GetValue("TailoringExp"), Item.Amount)
+                tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPardo, SvrConfig.GetValue("BearPeltExp"), Item.Amount)
             End If
             If .PielOsoPolar > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPolar , SvrConfig.GetValue("TailoringExp"), Item.Amount)
+                tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPolaR, SvrConfig.GetValue("PolarBearPeltExp"), Item.Amount)
             End If
             If .PielLoboNegro > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielLoboNegro, SvrConfig.GetValue("TailoringExp"), Item.Amount)
+                tmpExp = tmpExp + ComputeWorkingExp(.PielLoboNegro, SvrConfig.GetValue("BlackWolfPeltExp"), Item.Amount)
             End If
             If .PielTigre > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielTigre, SvrConfig.GetValue("TailoringExp"), Item.Amount)
+                tmpExp = tmpExp + ComputeWorkingExp(.PielTigre, SvrConfig.GetValue("TigerPeltExp"), Item.Amount)
             End If
             If .PielTigreBengala > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielTigreBengala, SvrConfig.GetValue("TailoringExp"), Item.Amount)
+                tmpExp = tmpExp + ComputeWorkingExp(.PielTigreBengala, SvrConfig.GetValue("BengalTigerPeltExp"), Item.Amount)
             End If
         Case Else
             tmpExp = SvrConfig.GetValue("ElseExp")

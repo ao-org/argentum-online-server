@@ -1481,11 +1481,7 @@ Sub LoadMapData()
     Dim Map     As Integer
     Dim TempInt As Integer
     Dim npcfile As String
-    #If UNIT_TEST = 1 Then
-        'We only need 50 maps for unit testing
-        NumMaps = 50
-        Debug.Print "UNIT_TEST Enabled Loading just " & NumMaps & " maps"
-    #ElseIf LOGIN_STRESS_TEST = 1 Then
+    #If LOGIN_STRESS_TEST = 1 Then
         NumMaps = 100
     #Else
         If RunningInVB() Then
@@ -1859,43 +1855,11 @@ Sub LoadSini()
     End If
     Call CargarCiudades
     Call LoadFeatureToggles
-    Call LoadGlobalDropTable
     Set Lector = Nothing
     Exit Sub
 LoadSini_Err:
     Set Lector = Nothing
     Call TraceError(Err.Number, Err.Description, "ES.LoadSini", Erl)
-End Sub
-
-Sub LoadGlobalDropTable()
-    Dim Lector   As clsIniManager
-    Dim Temporal As Long
-    If Not FileExist(DatPath & "GlobalDropTable.dat") Then
-        Exit Sub
-    End If
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando tabla de drop globales."
-    Set Lector = New clsIniManager
-    Call Lector.Initialize(DatPath & "GlobalDropTable.dat")
-    If Lector.NodesCount = 0 Then
-        Set Lector = Nothing
-        Exit Sub
-    End If
-    Dim DropCount, i As Integer
-    DropCount = val(Lector.GetValue("INIT", "DROPCOUNT"))
-    If DropCount = 0 Then
-        ReDim GlobalDropTable(0) As t_GlobalDrop
-        Set Lector = Nothing
-        Exit Sub
-    End If
-    ReDim GlobalDropTable(1 To DropCount) As t_GlobalDrop
-    For i = 1 To DropCount
-        GlobalDropTable(i).MaxPercent = val(Lector.GetValue("DROP" & i, "MAXPERCENT"))
-        GlobalDropTable(i).MinPercent = val(Lector.GetValue("DROP" & i, "MINPERCENT"))
-        GlobalDropTable(i).ObjectNumber = val(Lector.GetValue("DROP" & i, "OBJECTNUMBER"))
-        GlobalDropTable(i).RequiredHPForMaxChance = val(Lector.GetValue("DROP" & i, "HPFORMAXCHANCE"))
-        GlobalDropTable(i).amount = val(Lector.GetValue("DROP" & i, "AMOUNT"))
-    Next i
-    Set Lector = Nothing
 End Sub
 
 Sub LoadFeatureToggles()
@@ -1942,6 +1906,9 @@ Sub LoadPacketRatePolicy()
         MacroIterations(i) = val(Lector.GetValue(PacketName, "Iterations"))
         PacketTimerThreshold(i) = val(Lector.GetValue(PacketName, "Limit"))
     Next i
+
+    IntervaloTalk = PacketTimerThreshold(PacketNames.Talk)
+    IntervaloLeftClick = PacketTimerThreshold(PacketNames.LeftClick)
     Set Lector = Nothing
     Exit Sub
 LoadPacketRatePolicy_Err:
@@ -2766,39 +2733,6 @@ LoadRecompensasFaccion_Err:
     Call TraceError(Err.Number, Err.Description, "ES.LoadRecompensasFaccion", Erl)
 End Sub
 
-Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
-    On Error GoTo LoadUserIntervals_Err
-    With UserList(UserIndex)
-        If False Then '.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios) Then
-            .Intervals.Arco = 50
-            .Intervals.Caminar = IntervaloCaminar
-            .Intervals.Golpe = 50
-            .Intervals.Magia = 50
-            .Intervals.GolpeMagia = 50
-            .Intervals.MagiaGolpe = 50
-            .Intervals.GolpeUsar = 0
-            .Intervals.TrabajarExtraer = IntervaloTrabajarExtraer
-            .Intervals.TrabajarConstruir = IntervaloTrabajarConstruir
-            .Intervals.UsarU = 50
-            .Intervals.UsarClic = 50
-        Else
-            .Intervals.Arco = IntervaloFlechasCazadores
-            .Intervals.Caminar = IntervaloCaminar
-            .Intervals.Golpe = IntervaloUserPuedeAtacar
-            .Intervals.Magia = IntervaloUserPuedeCastear
-            .Intervals.GolpeMagia = IntervaloGolpeMagia
-            .Intervals.MagiaGolpe = IntervaloMagiaGolpe
-            .Intervals.GolpeUsar = IntervaloGolpeUsar
-            .Intervals.TrabajarExtraer = IntervaloTrabajarExtraer
-            .Intervals.TrabajarConstruir = IntervaloTrabajarConstruir
-            .Intervals.UsarU = IntervaloUserPuedeUsarU
-            .Intervals.UsarClic = IntervaloUserPuedeUsarClic
-        End If
-    End With
-    Exit Sub
-LoadUserIntervals_Err:
-    Call TraceError(Err.Number, Err.Description, "ES.LoadUserIntervals", Erl)
-End Sub
 
 Function CountFiles(strFolder As String, strPattern As String) As Integer
     On Error GoTo CountFiles_Err

@@ -386,6 +386,12 @@ Public Function CanUserFish(ByVal UserIndex As Integer, ByVal TargetX As Integer
         If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then
             Exit Function
         End If
+        ' Verify the equipped tool is actually a fishing tool (rod or net)
+        Dim toolSubtipo As Long
+        toolSubtipo = ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
+        If toolSubtipo <> e_WorkingToolSubType.FishingRod And toolSubtipo <> e_WorkingToolSubType.FishingNet Then
+            Exit Function
+        End If
         If Not ValidateFishingPosition(UserIndex, TargetX, TargetY) Then
             Exit Function
         End If
@@ -444,7 +450,7 @@ Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal Target
                 End If
             Case Else
                 Debug.Assert False
-                Call TraceError(0, "Invalid fishing tool: " & UserIndex, "modFishing.ValidateFishingPosition", Erl)
+                Call TraceError(0, "Invalid fishing tool subtipo: " & ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo & " (ObjIndex: " & .invent.EquippedWorkingToolObjIndex & ", UserIndex: " & UserIndex & ")", "modFishing.ValidateFishingPosition", Erl)
                 Exit Function
         End Select
         If MapInfo(.pos.Map).zone = "DUNGEON" Then

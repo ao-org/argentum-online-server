@@ -67,6 +67,57 @@ In case you have problems setting locally your pre-commit hook you can run the f
 
 There is a limitation when running and debugging the game within Visual Basic 6. Due to VB6's constraints, it cannot load more than 512 maps during debugging. As a result, maps such as Dungeon Dinosaurios (Map 577) will not function properly and it will throw overflow error
 
+# 🧪 Unit Testing
+
+The project includes a built-in unit test suite that validates core server modules. There are currently **24 registered suites**.
+When compiled with `UNIT_TEST = 1`, the server runs all test suites on startup, writes results to `test_results.txt`, and exits immediately.
+
+#### Test suites
+
+| # | Suite | Module under test | Notes |
+|---|-------|-------------------|-------|
+| 1 | Unit_Math | Matematicas.bas | |
+| 2 | Unit_Bitmask | Bitmask helpers | |
+| 3 | Unit_StringValidation | String validation | |
+| 4 | Unit_Pathfinding | PathFinding.bas | |
+| 5 | Unit_Characters | Character management | |
+| 6 | Unit_ElapsedTime | modElapsedTime.bas | |
+| 7 | Unit_Timer | modNuevoTimer.bas | |
+| 8 | Unit_Queue | cColaArray.cls | |
+| 9 | Unit_UserNames | UserNames.bas | |
+| 10 | Unit_General | General.bas | |
+| 11 | Unit_Factions | ModFacciones.bas | |
+| 12 | Unit_Commerce | Comercio.bas | |
+| 13 | Unit_MapBounds | ModMap.bas | |
+| 14 | Unit_StringBuilder | cStringBuilder.cls | |
+| 15 | Unit_CombatMath | SistemaCombate.bas | |
+| 16 | Unit_Crafting | modCrafteos.bas | |
+| 17 | Unit_GameStatus | Game status helpers | |
+| 18 | Unit_IniManager | clsIniManager.cls | Property tests: dump round-trip, ChangeValue/GetValue round-trip |
+| 19 | Unit_WorldTime | WorldTime.bas | Property tests: ms range invariant, sec consistency, DayLenMs round-trip |
+| 20 | Unit_TimeFormat | modTime.bas | Property test: GetTimeString format correctness |
+| 21 | Unit_StringUtils | StringUtils.bas | Property tests: printable ASCII acceptance, invalid char rejection |
+| 22 | Unit_Spawn | modSpawn.bas | Property test: output within map bounds |
+| 23 | Unit_CommerceExt | Comercio.bas (SalePrice) | Property tests: base formula, non-negative invariant |
+| 24 | Unit_ScoreBoard | ScoreBoard.cls | Property test: ranking descending order |
+
+#### Compile and run tests from CLI
+
+```bash
+# Compile with tests enabled
+"C:\Program Files (x86)\Microsoft Visual Studio\VB98\vb6.exe" /make Server.VBP /out vb6build.log /d DEBUGGING=1:PYMMO=0:UNIT_TEST=1
+
+# Run tests (writes test_results.txt and exits)
+.\Server.exe
+
+# Check results
+type test_results.txt
+```
+
+The `/d UNIT_TEST=1` flag overrides the project setting at compile time — no need to edit the `.vbp` file.
+
+Test suites live in `Codigo/Tests/`. The runner is `Codigo/UnitTesting.bas`.
+
 # 🛡️ Requirements
 
 ## Database SQLite

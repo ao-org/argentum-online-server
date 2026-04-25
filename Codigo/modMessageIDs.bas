@@ -41,6 +41,7 @@ Public Const MSG_MAP_MIN_LEVEL                              As Integer = 1108
 Public Const MSG_MAP_MAX_LEVEL                              As Integer = 1109
 Public Const MSG_MAP_REQUIRES_GROUP                         As Integer = 775
 Public Const MSG_MAP_REQUIRES_PATREON                       As Integer = 776
+Public Const MSG_INSUFICIENT_PATREON_CREDITS                As Integer = 2176
 Public Const MSG_TILE_REQUIRES_PATREON                      As Integer = 776
 Public Const MSG_PICKUP_UNAVAILABLE                         As Integer = 261
 
@@ -68,6 +69,8 @@ Public Const MSG_NO_MISSION_FOR_YOU                            As Integer = 2085
 Public Const MSG_TOO_MANY_ACTIVE_MISSIONS                      As Integer = 2086
 Public Const MSG_NO_ENERGY                                     As Integer = 2129
 Public Const MSG_TOO_COLD                                      As Integer = 2130
+Public Const MSG_BROADCAST_SERVER_SENDER                       As Integer = 1660
+
 
 
 
@@ -1219,4 +1222,5 @@ Public Const MSG_SOLO_TRABAJADORES_PUEDEN_REGISTRAR_PECES_ESPECIALES As Integer 
 Public Const MSG_THREAD_NOT_STRONG_ENOUGH = 2170
 Public Const MSG_ANTI_MACRO_CONTROL = 2172
 Public Const MSG_USE_MESSAGE_ANTI_MACRO = 2173
+Public Const MSG_FACTION_POINTS_GAINED = 2175
 
