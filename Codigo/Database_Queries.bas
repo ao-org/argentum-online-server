@@ -18,7 +18,6 @@ Attribute VB_Name = "Database_Queries"
 '
 '    This program was based on Argentum Online 0.11.6
 '    Copyright (C) 2002 Márquez Pablo Ignacio
-'
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
 '    for more information about ORE please visit http://www.baronsoft.com/
@@ -226,13 +225,7 @@ Private Sub ConstruirQuery_CrearPersonaje()
     ' Limpio el constructor de querys
     Call QueryBuilder.Clear
     ' ************************** User pets **************************************
-    QueryBuilder.Append "INSERT INTO pet (user_id, number, pet_id) VALUES "
-    For LoopC = 1 To MAXMASCOTAS
-        QueryBuilder.Append "(?, ?, ?)"
-        If LoopC < MAXMASCOTAS Then
-            QueryBuilder.Append ", "
-        End If
-    Next LoopC
+    QueryBuilder.Append "INSERT INTO pet (user_id, pet_id1, pet_id2, pet_id3) VALUES (?, ?, ?, ?)"
     ' Guardo la query ensamblada
     QUERY_SAVE_PETS = QueryBuilder.ToString
     ' Limpio el constructor de querys
@@ -357,13 +350,7 @@ Private Sub ConstruirQuery_GuardarPersonaje()
     ' Limpio el constructor de querys
     Call QueryBuilder.Clear
     ' ************************** User pets **************************************
-    QueryBuilder.Append "REPLACE INTO pet (user_id, number, pet_id) VALUES "
-    For LoopC = 1 To MAXMASCOTAS
-        QueryBuilder.Append "(?, ?, ?)"
-        If LoopC < MAXMASCOTAS Then
-            QueryBuilder.Append ", "
-        End If
-    Next LoopC
+    QueryBuilder.Append "REPLACE INTO pet (user_id, pet_id1, pet_id2, pet_id3) VALUES (?, ?, ?, ?)"
     ' Guardo la query ensamblada
     QUERY_UPSERT_PETS = QueryBuilder.ToString
     ' Limpio el constructor de querys

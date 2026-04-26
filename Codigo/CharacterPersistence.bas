@@ -18,7 +18,6 @@ Attribute VB_Name = "CharacterPersistence"
 '
 '    This program was based on Argentum Online 0.11.6
 '    Copyright (C) 2002 Márquez Pablo Ignacio
-'
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
 '    for more information about ORE please visit http://www.baronsoft.com/
@@ -98,7 +97,7 @@ Public Function GetCharacterNameByUserId(ByVal UserId As Long) As String
 GetCharacterNameByUserId_Err:
     Call LogDatabaseError("Error en GetCharacterNameByUserId: UserId=" & UserId & _
                           ". " & Err.Number & " - " & Err.Description & _
-                          ". Línea: " & Erl)
+                          ". Linea: " & Erl)
 End Function
 
 Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
@@ -130,7 +129,7 @@ Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
     LoadCharacterBank = True
     Exit Function
 LoadCharacterBank_Err:
-    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterBank: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterBank: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Linea: " & Erl)
 End Function
 
 Public Function get_num_inv_slots_from_tier(ByVal t As e_TipoUsuario) As Integer
@@ -193,7 +192,7 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
     LoadCharacterInventory = True
     Exit Function
 LoadCharacterInventory_Err:
-    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterInventory: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterInventory: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Linea: " & Erl)
 End Function
 
 Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
@@ -267,7 +266,7 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
     LoadCharacterFromDB = True
     Exit Function
 ErrorHandler:
-    Call LogDatabaseError("Error en LoadCharacterFromDB: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+    Call LogDatabaseError("Error en LoadCharacterFromDB: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Linea: " & Erl)
 End Function
 
 Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset)
@@ -376,15 +375,22 @@ End Sub
 
 Private Sub SetupUserPets(ByRef User As t_User)
     Dim RS As ADODB.Recordset
-    Set RS = Query("SELECT number, pet_id FROM pet WHERE user_id = ?;", User.Id)
+    Set RS = Query("SELECT pet_id1, pet_id2, pet_id3 FROM pet WHERE user_id = ?;", User.Id)
     If Not RS Is Nothing Then
-        While Not RS.EOF
-            User.MascotasType(RS!Number) = RS!pet_id
-            If val(RS!pet_id) <> 0 Then
+        If Not RS.EOF Then
+            User.MascotasType(1) = SanitizeNullValue(RS!pet_id1, 0)
+            If User.MascotasType(1) <> 0 Then
                 User.NroMascotas = User.NroMascotas + 1
             End If
-            RS.MoveNext
-        Wend
+            User.MascotasType(2) = SanitizeNullValue(RS!pet_id2, 0)
+            If User.MascotasType(2) <> 0 Then
+                User.NroMascotas = User.NroMascotas + 1
+            End If
+            User.MascotasType(3) = SanitizeNullValue(RS!pet_id3, 0)
+            If User.MascotasType(3) <> 0 Then
+                User.NroMascotas = User.NroMascotas + 1
+            End If
+        End If
     End If
 End Sub
 
@@ -528,7 +534,7 @@ Public Function GetPatronTierFromAccountID(ByVal account_id) As e_TipoUsuario
     End If
     Exit Function
 ErrorHandler_GetPatronTierFromAccountID:
-    Call LogDatabaseError("Error en GetPatronTierFromAccountID: " & account_id & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+    Call LogDatabaseError("Error en GetPatronTierFromAccountID: " & account_id & ". " & Err.Number & " - " & Err.Description & ". Linea: " & Erl)
 End Function
 
 Public Sub LoadPatronCreditsFromDB(ByVal UserIndex As Integer)
@@ -774,15 +780,11 @@ End Sub
 
 Private Sub SaveCharacterPetsDB(ByRef U As t_User, ByRef QueryBreakdown As String)
     Dim QueryTimer As Long
-    Dim Params() As Variant
+    Dim Params(MAXMASCOTAS) As Variant
     Dim LoopC As Long
-    Dim ParamC As Long
     Dim petType As Integer
-    ReDim Params(MAXMASCOTAS * 3 - 1)
-    ParamC = 0
+    Params(0) = U.Id
     For LoopC = 1 To MAXMASCOTAS
-        Params(ParamC) = U.Id
-        Params(ParamC + 1) = LoopC
         If IsValidNpcRef(U.MascotasIndex(LoopC)) Then
             If NpcList(U.MascotasIndex(LoopC).ArrayIndex).Contadores.TiempoExistencia = 0 Then
                 petType = U.MascotasType(LoopC)
@@ -792,8 +794,7 @@ Private Sub SaveCharacterPetsDB(ByRef U As t_User, ByRef QueryBreakdown As Strin
         Else
             petType = U.MascotasType(LoopC)
         End If
-        Params(ParamC + 2) = petType
-        ParamC = ParamC + 3
+        Params(LoopC) = petType
     Next LoopC
     QueryTimer = GetTickCountRaw()
     Call Execute(QUERY_UPSERT_PETS, Params)
@@ -1492,15 +1493,12 @@ Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)
         Next LoopC
         Call Execute(QUERY_SAVE_QUESTS, Params)
         ' ******************* PETS ********************
-        ReDim Params(MAXMASCOTAS * 3 - 1)
-        ParamC = 0
+        Dim PetParams(MAXMASCOTAS) As Variant
+        PetParams(0) = .Id
         For LoopC = 1 To MAXMASCOTAS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            Params(ParamC + 2) = 0
-            ParamC = ParamC + 3
+            PetParams(LoopC) = 0
         Next LoopC
-        Call Execute(QUERY_SAVE_PETS, Params)
+        Call Execute(QUERY_SAVE_PETS, PetParams)
     End With
     Exit Sub
 ErrorHandler:
@@ -1580,7 +1578,7 @@ ErrHandler:
 
     Set RS = Nothing
     LoadSkinsInventory = False
-    Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.LoadSkinsInventory of Módulo Nick: " & UserList(UserIndex).name, Erl())
+    Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.LoadSkinsInventory of Modulo Nick: " & UserList(UserIndex).name, Erl())
 
 End Function
 
