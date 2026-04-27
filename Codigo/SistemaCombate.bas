@@ -405,11 +405,12 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
         End If
         If Damage < 0 Then Damage = 0
         If IsFeatureEnabled("healers_and_tanks") And .clase = e_Class.Warrior Then
-            Dim Calc As Integer
+            Dim Calc As Long
             Calc = Damage * WarriorLifeStealOnHitMultiplier
-            .Stats.MinHp = .Stats.MinHp + Calc
-            If .Stats.MinHp > .Stats.MaxHp Then
+            If Calc >= .Stats.MaxHp Then
                 .Stats.MinHp = .Stats.MaxHp
+            Else
+                .Stats.MinHp = .Stats.MinHp + Calc
             End If
             Call WriteUpdateHP(UserIndex)
             'no wrapper senddata because of extra params
