@@ -692,7 +692,7 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
     End If
     
     If tmpQuest.PermittedFactions > 0 Then
-        Select Case UserList(UserIndex).Faccion
+        Select Case UserList(UserIndex).Faccion.Status
             Case e_Facciones.Ciudadano
                 If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.Citizen) Then
                     Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
