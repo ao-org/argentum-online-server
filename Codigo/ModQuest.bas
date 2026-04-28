@@ -27,7 +27,7 @@ Attribute VB_Name = "ModQuest"
 '
 Option Explicit
  
-Public Enum e_PermittedFactions
+Public Enum e_QuestPermittedFactions
     None = 0
     Citizen = 1
     RoyalArmy = 2
@@ -694,32 +694,32 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
     If tmpQuest.PermittedFactions > 0 Then
         Select Case UserList(UserIndex).Faccion
             Case e_Facciones.Ciudadano
-                If Not IsSet(tmpQuest.PermittedFactions, e_PermittedFactions.Citizen) Then
+                If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.Citizen) Then
                     Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case e_Facciones.Armada
-                If Not IsSet(tmpQuest.PermittedFactions, e_PermittedFactions.RoyalArmy) Then
+                If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.RoyalArmy) Then
                     Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case e_Facciones.consejo
-                If Not IsSet(tmpQuest.PermittedFactions, e_PermittedFactions.RoyalCouncil) Then
+                If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.RoyalCouncil) Then
                     Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case e_Facciones.Criminal
-                If Not IsSet(tmpQuest.PermittedFactions, e_PermittedFactions.Criminal) Then
+                If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.Criminal) Then
                     Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case e_Facciones.Caos
-                If Not IsSet(tmpQuest.PermittedFactions, e_PermittedFactions.ChaosLegion) Then
+                If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.ChaosLegion) Then
                     Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case e_Facciones.concilio
-                If Not IsSet(tmpQuest.PermittedFactions, e_PermittedFactions.ChaosCouncil) Then
+                If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.ChaosCouncil) Then
                     Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
