@@ -408,13 +408,9 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
             Dim Calc As Long
             Calc = Damage * WarriorLifeStealOnHitMultiplier
             If Calc >= .Stats.MaxHp Then
-                .Stats.MinHp = .Stats.MaxHp
-            Else
-                .Stats.MinHp = .Stats.MinHp + Calc
+                Calc = .Stats.MaxHp´
             End If
-            Call WriteUpdateHP(UserIndex)
-            'no wrapper senddata because of extra params
-            Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageTextOverTile(Calc, .pos.x, .pos.y, vbGreen, 1300, -10, True))
+            Call UserMod.DoDamageOrHeal(UserIndex, UserIndex, eUser, Calc, e_phisical, UserIndex)
         End If
         ' Golpe crítico
         If PuedeGolpeCritico(UserIndex) Then
