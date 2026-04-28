@@ -408,7 +408,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
             Dim Calc As Long
             Calc = Damage * WarriorLifeStealOnHitMultiplier
             If Calc >= .Stats.MaxHp Then
-                Calc = .Stats.MaxHp´
+                Calc = .Stats.MaxHp
             End If
             Call UserMod.DoDamageOrHeal(UserIndex, UserIndex, eUser, Calc, e_phisical, UserIndex)
         End If
