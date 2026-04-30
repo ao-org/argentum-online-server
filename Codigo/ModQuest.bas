@@ -725,8 +725,7 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
                 End If
             Case Else
                 Call WriteLocaleMsg(UserIndex, MSG_HAY_ERROR_OBJETO_INFORMALE_ADMINISTRADOR, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Function
-                End If
+                Exit Function
         End Select
     End If
     
