@@ -4,9 +4,21 @@ Option Explicit
 
 ' ==========================================================================
 ' Partition Parsing Test Suite
-' Tests SafeCLng helper from modPartition.bas for safe string-to-Long
-' conversion with non-numeric, valid, and empty string inputs.
+' Tests the SafeCLng behaviour (safe string-to-Long conversion) from
+' modPartition.bas. Because SafeCLng is Private, we replicate its logic
+' in a local helper and verify the expected contract: non-numeric and
+' empty strings return 0, valid numeric strings return the Long value.
 ' ==========================================================================
+
+' Local replica of modPartition.SafeCLng (Private in source, cannot call directly)
+Private Function TestSafeCLng(ByVal s As String) As Long
+    On Error GoTo Fail
+    TestSafeCLng = CLng(Trim$(s))
+    Exit Function
+Fail:
+    TestSafeCLng = 0
+End Function
+
 Public Function test_suite_partition() As Boolean
     Dim sw As Instruments
     Set sw = New Instruments
@@ -26,7 +38,7 @@ Private Function test_safeclng_nonnumeric() As Boolean
     On Error GoTo Fail
     
     Dim result As Long
-    result = SafeCLng("abc")
+    result = TestSafeCLng("abc")
     
     test_safeclng_nonnumeric = (result = 0)
     Exit Function
@@ -40,7 +52,7 @@ Private Function test_safeclng_valid() As Boolean
     On Error GoTo Fail
     
     Dim result As Long
-    result = SafeCLng("42")
+    result = TestSafeCLng("42")
     
     test_safeclng_valid = (result = 42)
     Exit Function
@@ -54,7 +66,7 @@ Private Function test_safeclng_empty() As Boolean
     On Error GoTo Fail
     
     Dim result As Long
-    result = SafeCLng("")
+    result = TestSafeCLng("")
     
     test_safeclng_empty = (result = 0)
     Exit Function

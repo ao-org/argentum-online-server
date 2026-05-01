@@ -138,15 +138,19 @@ End Function
 ' Validates: Requirements 8.5
 Private Function test_prop_printable_accepted() As Boolean
     On Error GoTo Fail
-    Dim iterations As Long: iterations = 0
+    Dim iterations As Long
     Dim i As Long
+    Dim s As String
+    Dim strLen As Long
+    Dim j As Long
+    Dim charCode As Integer
+    iterations = 0
     For i = 1 To 120
-        Dim s As String: s = ""
-        Dim strLen As Long: strLen = (i Mod 20) + 1  ' 1 to 20 chars
-        Dim j As Long
+        s = ""
+        strLen = (i Mod 20) + 1  ' 1 to 20 chars
         For j = 1 To strLen
             ' Generate char code in [32, 125] range deterministically
-            Dim charCode As Integer: charCode = 32 + ((i * 7 + j * 13) Mod 94)
+            charCode = 32 + ((i * 7 + j * 13) Mod 94)
             s = s & Chr$(charCode)
         Next j
         If Not ValidDescription(s) Then

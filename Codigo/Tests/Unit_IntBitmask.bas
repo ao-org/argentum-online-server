@@ -119,10 +119,13 @@ End Function
 Private Function test_prop_int_set_unset_roundtrip() As Boolean
     On Error GoTo Fail
     Dim i As Long
+    Dim bitPos As Long
+    Dim v As Integer
+    Dim Mask As Integer
     For i = 1 To 120
-        Dim bitPos As Long: bitPos = (i - 1) Mod 15  ' 0 to 14
-        Dim v As Integer: v = CInt(2 ^ bitPos)  ' single-bit power-of-2 Integer
-        Dim Mask As Integer: Mask = 0
+        bitPos = (i - 1) Mod 15  ' 0 to 14
+        v = CInt(2 ^ bitPos)  ' single-bit power-of-2 Integer
+        Mask = 0
         Call SetIntMask(Mask, v)
         Call UnsetIntMask(Mask, v)
         If IsIntSet(Mask, v) Then

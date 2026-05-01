@@ -104,12 +104,15 @@ End Function
 ' **Validates: Requirements 5.5**
 Private Function test_prop_shift_roundtrip() As Boolean
     On Error GoTo Fail
-    Dim iterations As Long: iterations = 0
+    Dim iterations As Long
     Dim i As Long
+    Dim b As Byte
+    Dim maxBits As Long
+    Dim n As Long
+    iterations = 0
     For i = 1 To 120
-        Dim b As Byte: b = CByte(i Mod 31)  ' 0 to 30
-        Dim maxBits As Long: maxBits = 31 - CLng(b)
-        Dim n As Long
+        b = CByte(i Mod 31)  ' 0 to 30
+        maxBits = 31 - CLng(b)
         If maxBits > 0 Then
             n = (CLng(i) * 7) Mod (2 ^ maxBits)  ' fits in maxBits bits
         Else
