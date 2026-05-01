@@ -111,10 +111,14 @@ Private Function test_prop_shift_roundtrip() As Boolean
     Dim n As Long
     iterations = 0
     For i = 1 To 120
-        b = CByte(i Mod 31)  ' 0 to 30
+        ' Use bit counts 1 to 30 (skip 0 which is trivial, skip 31 which is special-cased)
+        b = CByte((i Mod 30) + 1)  ' 1 to 30
         maxBits = 31 - CLng(b)
+        ' Keep n small enough that n * 2^b fits in a positive Long (< 2^31)
+        ' maxBits is 1..30, so 2^maxBits is safe (max 2^30 = 1073741824)
         If maxBits > 0 Then
-            n = (CLng(i) * 7) Mod (2 ^ maxBits)  ' fits in maxBits bits
+            n = CLng(((CLng(i) * 7) Mod (2 ^ maxBits)))
+            If n < 0 Then n = -n  ' ensure non-negative
         Else
             n = 0
         End If
