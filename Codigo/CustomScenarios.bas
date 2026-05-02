@@ -130,7 +130,7 @@ End Sub
 
 Public Sub UpdateAll()
     On Error GoTo UpdateAll_Err:
-    Dim i As Integer
+    Dim i As Long
     For i = 0 To ActiveUpdateSlots.currentIndex - 1
         If Not ScenarioUpdateList(ActiveUpdateSlots.IndexInfo(i)) Is Nothing Then
             Call ScenarioUpdateList(ActiveUpdateSlots.IndexInfo(i)).Update
