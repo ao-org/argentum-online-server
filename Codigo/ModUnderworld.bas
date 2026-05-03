@@ -175,7 +175,7 @@ Public Sub LoadUnderworldModule()
     End If
     If UnderworldMinSpawnThreshold < DAY_START Or UnderworldMinSpawnThreshold > DAY_END Then
         Debug.Assert False
-        UnderworldMaxSpawnThreshold = DAY_OUT_OF_BOUNDS
+        UnderworldMinSpawnThreshold = DAY_OUT_OF_BOUNDS
     End If
     ReDim Preserve UnderworldMapPool(1 To MaxUnderworldMaps)
     ReDim Preserve OverworldPortalPool(1 To MaxUnderworldMaps)
