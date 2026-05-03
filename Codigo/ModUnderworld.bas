@@ -10,7 +10,8 @@ Private Const UNDERWORLD_BROADCAST_MSG_ID As Integer = 2174
 Private Const UNDERWORLD_PORTAL_OBJ_IDX As Integer = 6355
 Private ALREADY_OPENED_PORTALS As Boolean
 Private Const UNDERWORLD_CENTER_MAP_NUMBER As Integer = 127
-Private Const DAY_OUT_OF_BOUNDS As Byte = 24
+Private Const DAY_MIN_OUT_OF_BOUNDS As Integer = 24
+Private Const DAY_MAX_OUT_OF_BOUNDS As Integer = -1
 Private Const DAY_START As Byte = 0
 Private Const DAY_END As Byte = 23
 
@@ -171,11 +172,11 @@ Public Sub LoadUnderworldModule()
     End If
     If UnderworldMaxSpawnThreshold < DAY_START Or UnderworldMaxSpawnThreshold > DAY_END Then
         Debug.Assert False
-        UnderworldMaxSpawnThreshold = DAY_OUT_OF_BOUNDS
+        UnderworldMaxSpawnThreshold = DAY_MAX_OUT_OF_BOUNDS
     End If
     If UnderworldMinSpawnThreshold < DAY_START Or UnderworldMinSpawnThreshold > DAY_END Then
         Debug.Assert False
-        UnderworldMinSpawnThreshold = DAY_OUT_OF_BOUNDS
+        UnderworldMinSpawnThreshold = DAY_MIN_OUT_OF_BOUNDS
     End If
     ReDim Preserve UnderworldMapPool(1 To MaxUnderworldMaps)
     ReDim Preserve OverworldPortalPool(1 To MaxUnderworldMaps)
