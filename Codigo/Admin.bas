@@ -100,6 +100,7 @@ Public IntervaloMensajeGlobal        As Long
 Public Const IntervaloConsultaGM     As Long = 300000
 Public IntervalAutomatedAction       As Long
 Public IntervalPhoenixSpawn          As Long
+Public IntervalUnderworldSpawn       As Long
 Public IntervalChangeGlobalQuestsState       As Long
 'BALANCE
 Public PorcentajeRecuperoMana        As Integer
