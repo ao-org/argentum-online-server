@@ -27,6 +27,17 @@ Attribute VB_Name = "ModQuest"
 '
 Option Explicit
  
+Public Enum e_QuestPermittedFactions
+    None = 0
+    Citizen = 1
+    RoyalArmy = 2
+    RoyalCouncil = 4
+    Criminal = 8
+    ChaosLegion = 16
+    ChaosCouncil = 32
+End Enum
+ 
+
 'Constantes de las quests
 Public Function TieneQuest(ByVal UserIndex As Integer, ByVal QuestNumber As Integer) As Byte
     On Error GoTo TieneQuest_Err
@@ -70,7 +81,14 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
     Dim NpcIndex       As Integer
     NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
     With QuestList(QuestIndex)
-                'Comprobamos que tenga los objetos.
+        'Comprobamos que sea la clase correcta
+        If Not HasUserRequiredClassForQuest(UserIndex, QuestList(QuestIndex)) Then
+            'Msg2167=Esta misión no está disponible para tu clase.
+            Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+    
+        'Comprobamos que tenga los objetos.
         If .RequiredOBJs > 0 Then
             For i = 1 To .RequiredOBJs
                 If TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).Amount, UserIndex) = False Then
@@ -412,6 +430,7 @@ Public Sub LoadQuests()
             .RewardGLD = val(reader.GetValue("QUEST" & i, "RewardGLD"))
             .RewardEXP = val(reader.GetValue("QUEST" & i, "RewardEXP"))
             .Repetible = val(reader.GetValue("QUEST" & i, "Repetible"))
+            .PermittedFactions = val(reader.GetValue("QUEST" & i, "PermittedFactions"))
             .GlobalQuestIndex = val(reader.GetValue("QUEST" & i, "GlobalQuestIndex"))
             .GlobalQuestThresholdNeeded = val(reader.GetValue("QUEST" & i, "GlobalQuestThresholdNeeded"))
             'CARGAMOS OBJETOS DE RECOMPENSA
@@ -666,22 +685,48 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
     End If
     
     'Requiere clase?
-    If tmpQuest.RequiredClassesCount > 0 Then
-        Dim meetRequirement As Boolean
-        meetRequirement = False
-        Dim j As Byte
-        
-        For j = 1 To tmpQuest.RequiredClassesCount
-            If UserList(UserIndex).clase = tmpQuest.RequiredClass(j) Then
-                meetRequirement = True
-                Exit For
-            End If
-        Next j
-        If Not meetRequirement Then
-            'Msg2167=Esta misión no está disponible para tu clase.
-            Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Function
-        End If
+    If Not HasUserRequiredClassForQuest(UserIndex, tmpQuest) Then
+        'Msg2167=Esta misión no está disponible para tu clase.
+        Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
+        Exit Function
+    End If
+    
+    If tmpQuest.PermittedFactions > 0 Then
+        Select Case UserList(UserIndex).Faccion.Status
+            Case e_Facciones.Ciudadano
+                If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.Citizen) Then
+                    Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            Case e_Facciones.Armada
+                If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.RoyalArmy) Then
+                    Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            Case e_Facciones.consejo
+                If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.RoyalCouncil) Then
+                    Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            Case e_Facciones.Criminal
+                If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.Criminal) Then
+                    Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            Case e_Facciones.Caos
+                If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.ChaosLegion) Then
+                    Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            Case e_Facciones.concilio
+                If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.ChaosCouncil) Then
+                    Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            Case Else
+                Call WriteLocaleMsg(UserIndex, MSG_HAY_ERROR_OBJETO_INFORMALE_ADMINISTRADOR, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Function
+        End Select
     End If
     
     If tmpQuest.Repetible = 0 Then
@@ -783,4 +828,30 @@ Public Function GetNPCProgressColor(ByVal Killed As Integer, _
 
 GetNPCProgressColor_Err:
     Call TraceError(Err.Number, Err.Description, "ModQuest.GetNPCProgressColor", Erl)
+End Function
+Private Function HasUserRequiredClassForQuest(ByVal UserIndex As Integer, ByRef Quest As t_Quest) As Boolean
+    On Error GoTo HasUserRequiredClassForQuest_Err
+    
+    Dim i As Integer
+    
+    With Quest
+        'Si no hay clases requeridas, cualquier clase es válida
+        If .RequiredClassesCount = 0 Then
+            HasUserRequiredClassForQuest = True
+            Exit Function
+        End If
+        
+        For i = 1 To .RequiredClassesCount
+            If UserList(UserIndex).clase = .RequiredClass(i) Then
+                HasUserRequiredClassForQuest = True
+                Exit Function
+            End If
+        Next i
+    End With
+    
+    HasUserRequiredClassForQuest = False
+    Exit Function
+
+HasUserRequiredClassForQuest_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.HasUserRequiredClassForQuest", Erl)
 End Function

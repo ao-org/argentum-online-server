@@ -972,6 +972,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Exists = True
         .TestOnly = Val(LeerNPCs.GetValue(SectionName, "TESTONLY"))
         .DisabledInBattleServer = val(LeerNPCs.GetValue(SectionName, "DISABLEDINBATTLESERVER"))
+        .OnlyEnabledInBattleServer = val(LeerNPCs.GetValue(SectionName, "ONLYENABLEDINBATTLESERVER"))
         .RequireToggle = LeerNPCs.GetValue(SectionName, "REQUIRETOGGLE")
         .name = LeerNPCs.GetValue(SectionName, "Name")
         .SubName = LeerNPCs.GetValue(SectionName, "SubName")
@@ -1275,6 +1276,13 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
     End If
 #End If
 
+#If BATTLESERVER = 0 Then
+    If Info.OnlyEnabledInBattleServer > 0 Then
+        FailReason = "NPC only enabled in battle server: " & NpcNumber
+        GoTo fail
+    End If
+#End If
+
     If Info.RequireToggle <> "" Then
         If Not IsFeatureEnabled(Info.RequireToggle) Then
             FailReason = "Feature toggle disabled: " & Info.RequireToggle & " for NPC " & NpcNumber
@@ -1402,6 +1410,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .OnlyForGuilds = Info.OnlyForGuilds
         .ShowKillerConsole = Info.ShowKillerConsole
         .DisabledInBattleServer = Info.DisabledInBattleServer
+        .OnlyEnabledInBattleServer = Info.OnlyEnabledInBattleServer
         If .IntervaloMovimiento = 0 Then
             .IntervaloMovimiento = 380
             .Char.speeding = IntervaloNPCAI / 330
@@ -1737,22 +1746,35 @@ Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Byte, ByVal x As Integer
     End If
 End Sub
 
-' Autor: WyroX - 20/01/2021
-' Intenta moverlo hacia un "costado" según el heading indicado. Se usa para mover NPCs del camino de otro char.
-' Si no hay un lugar válido a los lados, lo mueve a la posición válida más cercana.
 Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As e_Heading)
     On Error GoTo Handler
     With NpcList(NpcIndex)
+        ' Validate heading parameter
+        If Heading < e_Heading.NORTH Or Heading > e_Heading.WEST Then
+            Call LogError("MoveNpcToSide: Invalid heading " & Heading & " for NPC " & NpcIndex)
+            Exit Sub
+        End If
+        
         ' Elegimos un lado al azar
         Dim r As Integer
         r = RandomNumber(0, 1) * 2 - 1 ' -1 o 1
+        
         ' Roto el heading original hacia ese lado
         Heading = Rotate_Heading(Heading, r)
+        
         ' Intento moverlo para ese lado
         If MoveNPCChar(NpcIndex, Heading) Then Exit Sub
+        
         ' Si falló, intento moverlo para el lado opuesto
         Heading = InvertHeading(Heading)
+        
+        ' Validate after invert
+        If Heading < e_Heading.NORTH Or Heading > e_Heading.WEST Then
+            Heading = e_Heading.NORTH ' Fallback to default
+        End If
+        
         If MoveNPCChar(NpcIndex, Heading) Then Exit Sub
+        
         ' Si ambos fallan, entonces lo dejo en la posición válida más cercana
         Dim NuevaPos As t_WorldPos
         Call ClosestLegalPos(.pos, NuevaPos, .flags.AguaValida, .flags.TierraInvalida = 0)
@@ -1760,7 +1782,7 @@ Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As e_Heading)
     End With
     Exit Sub
 Handler:
-    Call TraceError(Err.Number, Err.Description, "NPCs.MoveNpcToSide", Erl)
+    Call TraceError(Err.Number, Err.Description, "NPCs.MoveNpcToSide [Heading=" & Heading & "]", Erl)
 End Sub
 
 Public Sub DummyTargetAttacked(ByVal NpcIndex As Integer)
