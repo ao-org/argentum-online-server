@@ -10,6 +10,9 @@ Private Const UNDERWORLD_BROADCAST_MSG_ID As Integer = 2174
 Private Const UNDERWORLD_PORTAL_OBJ_IDX As Integer = 6355
 Private ALREADY_OPENED_PORTALS As Boolean
 Private Const UNDERWORLD_CENTER_MAP_NUMBER As Integer = 127
+Private Const DAY_OUT_OF_BOUNDS As Byte = 24
+Private Const DAY_START As Byte = 0
+Private Const DAY_END As Byte = 23
 
 Public Sub MaybeSpawnUnderworldPortals()
     On Error GoTo MaybeSpawnUnderworldPortals_Err
@@ -64,26 +67,36 @@ Public Sub KickUsersFromUnderworld()
     Dim i As Integer
     Dim x As Byte
     Dim y As Byte
+    Dim LoopC     As Long
+    Dim tempIndex As Integer
     For i = 1 To UBound(UnderworldMapPool)
-        For x = MinXBorder To MaxXBorder
-            For y = MinYBorder To MaxYBorder
-                If MapData(UnderworldMapPool(i).map, x, y).UserIndex > 0 Then
-                    With UserList(MapData(UnderworldMapPool(i).map, x, y).UserIndex)
-                        Call WarpUserChar(MapData(UnderworldMapPool(i).map, x, y).UserIndex, Ciudades(.Hogar).map, Ciudades(.Hogar).x, Ciudades(.Hogar).y, True)
-                    End With
+        If Not MapaValido(UnderworldMapPool(i).Map) Then
+            Debug.Assert False 'invalid map shouldn't happen
+            Exit Sub
+        End If
+        For LoopC = 1 To ConnGroups(UnderworldMapPool(i).Map).CountEntrys
+            tempIndex = ConnGroups(UnderworldMapPool(i).Map).UserEntrys(LoopC)
+            With UserList(tempIndex)
+                If .ConnectionDetails.ConnIDValida Then
+                    Call WarpUserChar(tempIndex, Ciudades(.Hogar).Map, Ciudades(.Hogar).x, Ciudades(.Hogar).y, True)
                 End If
-            Next y
-        Next x
+            End With
+        Next LoopC
     Next i
-    For x = MinXBorder To MaxXBorder
-        For y = MinYBorder To MaxYBorder
-            If MapData(UNDERWORLD_CENTER_MAP_NUMBER, x, y).UserIndex > 0 Then
-                With UserList(MapData(UNDERWORLD_CENTER_MAP_NUMBER, x, y).UserIndex)
-                    Call WarpUserChar(MapData(UNDERWORLD_CENTER_MAP_NUMBER, x, y).UserIndex, Ciudades(.Hogar).map, Ciudades(.Hogar).x, Ciudades(.Hogar).y, True)
-                End With
+    
+    If Not MapaValido(UNDERWORLD_CENTER_MAP_NUMBER) Then
+        Debug.Assert False 'invalid map shouldn't happen
+        Exit Sub
+    End If
+    
+    For LoopC = 1 To ConnGroups(UNDERWORLD_CENTER_MAP_NUMBER).CountEntrys
+        tempIndex = ConnGroups(UNDERWORLD_CENTER_MAP_NUMBER).UserEntrys(LoopC)
+        With UserList(tempIndex)
+            If .ConnectionDetails.ConnIDValida Then
+                Call WarpUserChar(tempIndex, Ciudades(.Hogar).Map, Ciudades(.Hogar).x, Ciudades(.Hogar).y, True)
             End If
-        Next y
-    Next x
+        End With
+    Next LoopC
 End Sub
 
 Public Sub DestroyUnderworldTp(ByRef Source As t_WorldPos, ByRef Dest As t_WorldPos)
@@ -156,13 +169,13 @@ Public Sub LoadUnderworldModule()
         MaxUnderworldMaps = 0
         Exit Sub
     End If
-    If UnderworldMaxSpawnThreshold < 0 Or UnderworldMaxSpawnThreshold > 23 Then
+    If UnderworldMaxSpawnThreshold < DAY_START Or UnderworldMaxSpawnThreshold > DAY_END Then
         Debug.Assert False
-        UnderworldMaxSpawnThreshold = 24
+        UnderworldMaxSpawnThreshold = DAY_OUT_OF_BOUNDS
     End If
-    If UnderworldMinSpawnThreshold < 0 Or UnderworldMinSpawnThreshold > 23 Then
+    If UnderworldMinSpawnThreshold < DAY_START Or UnderworldMinSpawnThreshold > DAY_END Then
         Debug.Assert False
-        UnderworldMaxSpawnThreshold = 24
+        UnderworldMaxSpawnThreshold = DAY_OUT_OF_BOUNDS
     End If
     ReDim Preserve UnderworldMapPool(1 To MaxUnderworldMaps)
     ReDim Preserve OverworldPortalPool(1 To MaxUnderworldMaps)
