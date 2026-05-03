@@ -1440,80 +1440,91 @@ End Function
 Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     On Error GoTo SendUserStatsTxt_Err
     Dim GuildI As Integer
-    'Msg1295= Estadisticas de: ¬1
-    Call WriteLocaleMsg(sendIndex, "1295", e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
-    Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_LEVEL_EXP, UserList(UserIndex).Stats.ELV & "¬" & UserList(UserIndex).Stats.Exp & "¬" & ExpLevelUp(UserList( _
-            UserIndex).Stats.ELV), e_FontTypeNames.FONTTYPE_INFO)) ' Msg1857=Nivel: ¬1  EXP: ¬2/¬3
-    Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_HEALTH_MANA_STAMINA, UserList(UserIndex).Stats.MinHp & "¬" & UserList(UserIndex).Stats.MaxHp & "¬" & UserList( _
-            UserIndex).Stats.MinMAN & "¬" & UserList(UserIndex).Stats.MaxMAN & "¬" & UserList(UserIndex).Stats.MinSta & "¬" & UserList(UserIndex).Stats.MaxSta, _
-            e_FontTypeNames.FONTTYPE_INFO)) ' Msg1858=Salud: ¬1/¬2  Mana: ¬3/¬4  Vitalidad: ¬5/¬6
-    If UserList(UserIndex).invent.EquippedWeaponObjIndex > 0 Then
-        Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_DAMAGE_WITH_WEAPON, UserList(UserIndex).Stats.MinHIT & "¬" & UserList(UserIndex).Stats.MaxHit & "¬" & ObjData(UserList( _
-                UserIndex).invent.EquippedWeaponObjIndex).MinHIT & "¬" & ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MaxHit, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1859=Menor Golpe/Mayor Golpe: ¬1/¬2 (¬3/¬4)
-    Else
-        Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_DAMAGE, UserList(UserIndex).Stats.MinHIT & "¬" & UserList(UserIndex).Stats.MaxHit, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1860=Menor Golpe/Mayor Golpe: ¬1/¬2
-    End If
-    If UserList(UserIndex).invent.EquippedArmorObjIndex > 0 Then
-        If UserList(UserIndex).invent.EquippedShieldObjIndex > 0 Then
-            Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_BODY_DEFENSE, ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).MinDef + ObjData(UserList( _
-                    UserIndex).invent.EquippedShieldObjIndex).MinDef & "¬" & ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).MaxDef + ObjData(UserList( _
-                    UserIndex).invent.EquippedShieldObjIndex).MaxDef, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1861=(CUERPO) Min Def/Max Def: ¬1/¬2
+    With UserList(UserIndex)
+        'Msg1295= Estadisticas de: ¬1
+        Call WriteLocaleMsg(sendIndex, "1295", e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
+        Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_LEVEL_EXP, .Stats.ELV & "¬" & .Stats.Exp & "¬" & ExpLevelUp(UserList( _
+                UserIndex).Stats.ELV), e_FontTypeNames.FONTTYPE_INFO)) ' Msg1857=Nivel: ¬1  EXP: ¬2/¬3
+        Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_HEALTH_MANA_STAMINA, .Stats.MinHp & "¬" & .Stats.MaxHp & "¬" & UserList( _
+                UserIndex).Stats.MinMAN & "¬" & .Stats.MaxMAN & "¬" & .Stats.MinSta & "¬" & .Stats.MaxSta, _
+                e_FontTypeNames.FONTTYPE_INFO)) ' Msg1858=Salud: ¬1/¬2  Mana: ¬3/¬4  Vitalidad: ¬5/¬6
+        If .invent.EquippedWeaponObjIndex > 0 Then
+            Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_DAMAGE_WITH_WEAPON, .Stats.MinHit & "¬" & .Stats.MaxHit & "¬" & ObjData(UserList( _
+                    UserIndex).invent.EquippedWeaponObjIndex).MinHit & "¬" & ObjData(.invent.EquippedWeaponObjIndex).MaxHit, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1859=Menor Golpe/Mayor Golpe: ¬1/¬2 (¬3/¬4)
         Else
-            Call WriteConsoleMsg(sendIndex, "(CUERPO) Min Def/Max Def: " & ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).MinDef & "/" & ObjData(UserList( _
-                    UserIndex).invent.EquippedArmorObjIndex).MaxDef, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_DAMAGE, .Stats.MinHit & "¬" & .Stats.MaxHit, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1860=Menor Golpe/Mayor Golpe: ¬1/¬2
         End If
-    Else
-        'Msg1098= (CUERPO) Min Def/Max Def: 0
-        Call WriteLocaleMsg(sendIndex, "1098", e_FontTypeNames.FONTTYPE_INFO)
-    End If
-    If UserList(UserIndex).invent.EquippedHelmetObjIndex > 0 Then
-        Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_HEAD_DEFENSE, ObjData(UserList(UserIndex).invent.EquippedHelmetObjIndex).MinDef & "¬" & ObjData(UserList( _
-                UserIndex).invent.EquippedHelmetObjIndex).MaxDef, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1862=(CABEZA) Min Def/Max Def: ¬1/¬2
-    Else
-        'Msg1099= (CABEZA) Min Def/Max Def: 0
-        Call WriteLocaleMsg(sendIndex, "1099", e_FontTypeNames.FONTTYPE_INFO)
-    End If
-    GuildI = UserList(UserIndex).GuildIndex
-    If GuildI > 0 Then
-        'Msg1296= Clan: ¬1
-        Call WriteLocaleMsg(sendIndex, "1296", e_FontTypeNames.FONTTYPE_INFO, modGuilds.GuildName(GuildI))
-        If UCase$(modGuilds.GuildLeader(GuildI)) = UCase$(UserList(sendIndex).name) Then
-            'Msg1100= Status: Líder
-            Call WriteLocaleMsg(sendIndex, "1100", e_FontTypeNames.FONTTYPE_INFO)
+        
+        Dim TotalMinDef As Integer
+        Dim TotalMaxDef As Integer
+        
+        If .invent.EquippedArmorObjIndex > 0 Then
+            TotalMinDef = TotalMinDef + ObjData(.invent.EquippedArmorObjIndex).MinDef
+            TotalMaxDef = TotalMaxDef + ObjData(.invent.EquippedArmorObjIndex).MaxDef
         End If
-        'guildpts no tienen objeto
-    End If
-    Call LoadPatronCreditsFromDB(UserIndex)
-    'Msg1298= Oro: ¬1
-    Call WriteLocaleMsg(sendIndex, "1298", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.GLD)
-    'Msg1299= Veces que Moriste: ¬1
-    Call WriteLocaleMsg(sendIndex, "1299", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).flags.VecesQueMoriste)
-    Call WriteLocaleMsg(sendIndex, MsgFactionScore, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Faccion.FactionScore)
-    'Msg1300= Creditos Patreon: ¬1
-    Call WriteLocaleMsg(sendIndex, "1300", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.Creditos)
-    'Msg2078 = Nivel de Jinete:¬1
-    Call WriteLocaleMsg(sendIndex, MSG_RIDER_LEVEL_REQUIREMENT, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.JineteLevel)
-
-' ========================
-' Show current home
-' ========================
-Dim char_home As String
-Select Case UserList(UserIndex).Hogar
-    Case e_Ciudad.cUllathorpe: char_home = CIUDAD_ULLATHORPE
-    Case e_Ciudad.cNix: char_home = CIUDAD_NIX
-    Case e_Ciudad.cBanderbill: char_home = CIUDAD_BANDERBILL
-    Case e_Ciudad.cLindos: char_home = CIUDAD_LINDOS
-    Case e_Ciudad.cArghal: char_home = CIUDAD_ARGHAL
-    Case e_Ciudad.cForgat: char_home = CIUDAD_FORGAT
-    Case e_Ciudad.cArkhein: char_home = CIUDAD_ARKHEIN
-    Case e_Ciudad.cEldoria: char_home = CIUDAD_ELDORIA
-    Case e_Ciudad.cPenthar: char_home = CIUDAD_PENTHAR
-    Case Else: char_home = CIUDAD_ULLATHORPE
-End Select
-    Call WriteLocaleMsg(sendIndex, MSG_CHARACTER_HOME, e_FontTypeNames.FONTTYPE_INFO, char_home)
-
-
-
+        
+        If .invent.EquippedShieldObjIndex > 0 Then
+            TotalMinDef = TotalMinDef + ObjData(.invent.EquippedShieldObjIndex).MinDef
+            TotalMaxDef = TotalMaxDef + ObjData(.invent.EquippedShieldObjIndex).MaxDef
+        End If
+        
+        If .invent.EquippedBackpackObjIndex > 0 Then
+            TotalMinDef = TotalMinDef + ObjData(.invent.EquippedBackpackObjIndex).MinDef
+            TotalMaxDef = TotalMaxDef + ObjData(.invent.EquippedBackpackObjIndex).MaxDef
+        End If
+        
+        If TotalMinDef > 0 And TotalMaxDef > 0 Then
+            Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_BODY_DEFENSE, TotalMinDef & "¬" & TotalMaxDef, FONTTYPE_INFO))
+        Else
+            Call WriteLocaleMsg(sendIndex, "1098", e_FontTypeNames.FONTTYPE_INFO)
+        End If
+        
+        If .invent.EquippedHelmetObjIndex > 0 Then
+            Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_HEAD_DEFENSE, ObjData(.invent.EquippedHelmetObjIndex).MinDef & "¬" & ObjData(UserList( _
+                    UserIndex).invent.EquippedHelmetObjIndex).MaxDef, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1862=(CABEZA) Min Def/Max Def: ¬1/¬2
+        Else
+            'Msg1099= (CABEZA) Min Def/Max Def: 0
+            Call WriteLocaleMsg(sendIndex, "1099", e_FontTypeNames.FONTTYPE_INFO)
+        End If
+        GuildI = .GuildIndex
+        If GuildI > 0 Then
+            'Msg1296= Clan: ¬1
+            Call WriteLocaleMsg(sendIndex, "1296", e_FontTypeNames.FONTTYPE_INFO, modGuilds.GuildName(GuildI))
+            If UCase$(modGuilds.GuildLeader(GuildI)) = UCase$(UserList(sendIndex).Name) Then
+                'Msg1100= Status: Líder
+                Call WriteLocaleMsg(sendIndex, "1100", e_FontTypeNames.FONTTYPE_INFO)
+            End If
+            'guildpts no tienen objeto
+        End If
+        Call LoadPatronCreditsFromDB(UserIndex)
+        'Msg1298= Oro: ¬1
+        Call WriteLocaleMsg(sendIndex, "1298", e_FontTypeNames.FONTTYPE_INFO, .Stats.GLD)
+        'Msg1299= Veces que Moriste: ¬1
+        Call WriteLocaleMsg(sendIndex, "1299", e_FontTypeNames.FONTTYPE_INFO, .flags.VecesQueMoriste)
+        Call WriteLocaleMsg(sendIndex, MsgFactionScore, e_FontTypeNames.FONTTYPE_INFO, .Faccion.FactionScore)
+        'Msg1300= Creditos Patreon: ¬1
+        Call WriteLocaleMsg(sendIndex, "1300", e_FontTypeNames.FONTTYPE_INFO, .Stats.Creditos)
+        'Msg2078 = Nivel de Jinete:¬1
+        Call WriteLocaleMsg(sendIndex, MSG_RIDER_LEVEL_REQUIREMENT, e_FontTypeNames.FONTTYPE_INFO, .Stats.JineteLevel)
+    
+    ' ========================
+    ' Show current home
+    ' ========================
+    Dim char_home As String
+    Select Case .Hogar
+        Case e_Ciudad.cUllathorpe: char_home = CIUDAD_ULLATHORPE
+        Case e_Ciudad.cNix: char_home = CIUDAD_NIX
+        Case e_Ciudad.cBanderbill: char_home = CIUDAD_BANDERBILL
+        Case e_Ciudad.cLindos: char_home = CIUDAD_LINDOS
+        Case e_Ciudad.cArghal: char_home = CIUDAD_ARGHAL
+        Case e_Ciudad.cForgat: char_home = CIUDAD_FORGAT
+        Case e_Ciudad.cArkhein: char_home = CIUDAD_ARKHEIN
+        Case e_Ciudad.cEldoria: char_home = CIUDAD_ELDORIA
+        Case e_Ciudad.cPenthar: char_home = CIUDAD_PENTHAR
+        Case Else: char_home = CIUDAD_ULLATHORPE
+    End Select
+        Call WriteLocaleMsg(sendIndex, MSG_CHARACTER_HOME, e_FontTypeNames.FONTTYPE_INFO, char_home)
+End With
 Exit Sub
 SendUserStatsTxt_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxt", Erl)
@@ -3296,6 +3307,9 @@ Public Function GetUserMRForNpc(ByVal UserIndex As Integer) As Integer
         If .invent.EquippedHelmetObjIndex > 0 Then
             MR = MR + ObjData(.invent.EquippedHelmetObjIndex).ResistenciaMagica
         End If
+        If .invent.EquippedBackpackObjIndex > 0 Then
+            MR = MR + ObjData(.invent.EquippedBackpackObjIndex).ResistenciaMagica
+        End If
         If IsFeatureEnabled("mr-magic-bonus-damage") Then
             MR = MR + .Stats.UserSkills(Resistencia) * MRSkillNpcProtectionModifier
         End If
@@ -3321,6 +3335,9 @@ Public Function GetUserMR(ByVal UserIndex As Integer) As Integer
         ' Resistencia mágica casco
         If .invent.EquippedHelmetObjIndex > 0 Then
             MR = MR + ObjData(.invent.EquippedHelmetObjIndex).ResistenciaMagica
+        End If
+        If .invent.EquippedBackpackObjIndex > 0 Then
+            MR = MR + ObjData(.invent.EquippedBackpackObjIndex).ResistenciaMagica
         End If
         If IsFeatureEnabled("mr-magic-bonus-damage") Then
             MR = MR + .Stats.UserSkills(Resistencia) * MRSkillProtectionModifier

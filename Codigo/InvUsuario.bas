@@ -920,13 +920,16 @@ Dim eSkinType                   As e_OBJType
                     End If
                 End If
                 
-            Case e_OBJType.otSkinsWings
-                If .Invent_Skins.ObjIndexBackpackEquipped > 0 Then
-                    .Char.BackpackAnim = NoBackPack
-                End If
-                'Ojo acá!
+            Case e_OBJType.otSkinBackpack
                 .Invent_Skins.ObjIndexBackpackEquipped = 0
-                .Invent_Skins.SlotWindsEquipped = 0
+                .Invent_Skins.SlotBackpackEquipped = 0
+                If .invent.EquippedBackpackObjIndex > 0 Then
+                    .Char.BackpackAnim = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedBackpackObjIndex))
+                Else
+                    If SkinRequireObject(UserIndex, Slot) Then
+                        .Char.BackpackAnim = 0
+                    End If
+                End If
                 
             Case e_OBJType.otSkinsBoats
                     .Invent_Skins.ObjIndexBoatEquipped = 0
@@ -1231,6 +1234,9 @@ Dim Ropaje                      As Integer
                     .Char.BackpackAnim = Ropaje
                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, _
                                         .Char.BackpackAnim)
+                End If
+                If obj.ResistenciaMagica > 0 Then
+                    Call WriteUpdateRM(UserIndex)
                 End If
 
             Case e_OBJType.otWorkingTools
@@ -1574,24 +1580,12 @@ Dim Ropaje                      As Integer
         ObjIndex = .Invent_Skins.Object(Slot).ObjIndex
         obj = ObjData(ObjIndex)
         Select Case obj.OBJType
-            Case e_OBJType.otSkinsArmours, e_OBJType.otSkinsSpells, e_OBJType.otSkinsWeapons, e_OBJType.otSkinsShields, e_OBJType.otSkinsHelmets, e_OBJType.otSkinsBoats, e_OBJType.otSkinsWings
+            Case e_OBJType.otSkinsArmours, e_OBJType.otSkinsSpells, e_OBJType.otSkinsWeapons, e_OBJType.otSkinsShields, e_OBJType.otSkinsHelmets, e_OBJType.otSkinsBoats, e_OBJType.otSkinBackpack
                 'Si esta equipado lo quita
                 If .Invent_Skins.Object(Slot).Equipped And Not UserIsLoggingIn Then
-                    'Sonido
-                    'Feat para implementar más adelante.
-                    'tmpSoundItem = ObjData(.Invent_Skins.Object(Slot).ObjIndex).Snd2
-                    'If tmpSoundItem > 0 Then
-                    '    Call SendData(SendTarget.ToPCAreaWithSound, UserIndex, PrepareMessagePlayWave(tmpSoundItem, .pos.x, .pos.y))
-                    'End If
                     Call Desequipar(UserIndex, Slot, True, ObjData(ObjIndex).OBJType)
                     Exit Sub   'Revisar este EXIT SUB
                 End If
-
-                'Feat para implementar más adelante.
-                'tmpSoundItem = ObjData(.Invent_Skins.Object(Slot).ObjIndex).Snd1
-                'If tmpSoundItem > 0 Then
-                '    Call SendData(SendTarget.ToPCAreaWithSound, UserIndex, PrepareMessagePlayWave(tmpSoundItem, .pos.x, .pos.y))
-                'End If
                 If CanEquipSkin(UserIndex, Slot, True) Then
                     Call SkinEquip(UserIndex, Slot, ObjIndex)
                 End If
@@ -1732,7 +1726,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
         .flags.TargetObjInvSlot = Slot
 
         Select Case obj.OBJType
-            Case e_OBJType.otSkinsArmours, e_OBJType.otSkinsSpells, e_OBJType.otSkinsBoats, e_OBJType.otSkinsHelmets, e_OBJType.otSkinsShields, e_OBJType.otSkinsWeapons, e_OBJType.otSkinsWings
+            Case e_OBJType.otSkinsArmours, e_OBJType.otSkinsSpells, e_OBJType.otSkinsBoats, e_OBJType.otSkinsHelmets, e_OBJType.otSkinsShields, e_OBJType.otSkinsWeapons, e_OBJType.otSkinBackpack
 
                 If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
                 If ClasePuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And SexoPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And FaccionPuedeUsarItem(UserIndex, .invent.Object(Slot).ObjIndex) And LevelCanUseItem(UserIndex, ObjData(.invent.Object(Slot).ObjIndex)) Then
@@ -3586,7 +3580,7 @@ Dim eSkinType                   As e_OBJType
                     End If
                 'End If
                 
-            Case e_OBJType.otSkinsWings
+            Case e_OBJType.otSkinBackpack
 
                 For i = 1 To MAX_SKINSINVENTORY_SLOTS
                     If .Invent_Skins.Object(i).Equipped And .Invent_Skins.Object(i).ObjIndex = .Invent_Skins.ObjIndexWindsEquipped Then
@@ -3604,7 +3598,7 @@ Dim eSkinType                   As e_OBJType
                 .Invent_Skins.Object(Slot).Equipped = True
                 .Invent_Skins.ObjIndexBackpackEquipped = .Invent_Skins.Object(Slot).ObjIndex
                 .Invent_Skins.SlotBackpackEquipped = Slot
-                .Invent_Skins.Object(Slot).Type = e_OBJType.otSkinsWings
+                .Invent_Skins.Object(Slot).Type = e_OBJType.otSkinBackpack
 
                 If .flags.Montado = 0 And .flags.Navegando = 0 Then
                     If ObtenerRopaje(UserIndex, obj) > 0 Then ' ;)
@@ -3862,7 +3856,7 @@ Dim eSkinType                   As e_OBJType
                     Exit Function
                 End If
 
-            Case e_OBJType.otSkinsWings
+            Case e_OBJType.otSkinBackpack
 
                 If bFromInvent Then
                     If SkinRequireObject(UserIndex, Slot) Then
