@@ -70,7 +70,9 @@ Public IntervaloFrio                 As Integer
 Public IntervaloWavFx                As Integer
 Public IntervaloNPCPuedeAtacar       As Integer
 Public IntervaloInvocacion           As Integer
-Public IntervaloOculto               As Integer '[Nacho]
+Public IntervaloOculto               As Long
+Public IntervaloTalk                 As Long
+Public IntervaloLeftClick            As Long
 Public IntervaloUserPuedeAtacar      As Long
 Public IntervaloMagiaGolpe           As Long
 Public IntervaloGolpeMagia           As Long
@@ -307,12 +309,50 @@ BANCheck_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.BANCheck", Erl)
 End Function
 
+
 Public Function PersonajeExiste(ByVal name As String) As Boolean
     On Error GoTo PersonajeExiste_Err
-    PersonajeExiste = GetUserValue(LCase$(name), "COUNT(*)") > 0
+
+    ' ------------------------------------------------------------------
+    ' Purpose:
+    '   Check if a character with the given name exists in the database.
+    '
+    ' Why this implementation:
+    '   - Uses SELECT 1 ... LIMIT 1 instead of COUNT(*)
+    '   - This allows SQLite to stop at the FIRST match (much faster)
+    '   - Avoids scanning all matching rows unnecessarily
+    '
+    ' Case-insensitive comparison:
+    '   - Uses "COLLATE NOCASE" so we don't rely on LCase$()
+    '   - This preserves index usage and avoids string allocations
+    '
+    ' Expected behavior:
+    '   - Returns True if at least one row exists
+    '   - Returns False if no rows match
+    ' ------------------------------------------------------------------
+
+    Dim RS As ADODB.Recordset
+
+    Set RS = Query( _
+        "SELECT 1 FROM user WHERE name = ? COLLATE NOCASE LIMIT 1;", _
+        Name _
+    )
+
+    ' If the recordset is valid and not empty, at least one match exists
+    If Not RS Is Nothing Then
+        PersonajeExiste = Not RS.EOF
+    Else
+        PersonajeExiste = False
+    End If
+
     Exit Function
+
 PersonajeExiste_Err:
+    ' Log error with full context for debugging
     Call TraceError(Err.Number, Err.Description, "Admin.PersonajeExiste", Erl)
+
+    ' Safe fallback
+    PersonajeExiste = False
 End Function
 
 Public Function IsValidUserId(ByVal UserId As Long) As Boolean

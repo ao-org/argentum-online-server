@@ -733,11 +733,19 @@ Sub GetHeadingRight(ByVal head As e_Heading, ByRef pos As t_WorldPos)
     pos.y = nY
 End Sub
 
-' Autor: WyroX - 20/01/2021
-' Retorna el heading recibo como parámetro pero rotado, según el valor R.
-' Si R es 1, rota en sentido horario. Si R es -1, en sentido antihorario.
 Function Rotate_Heading(ByVal Heading As e_Heading, ByVal r As Integer) As e_Heading
-    Rotate_Heading = (Heading + r + 3) Mod 4 + 1
+    ' Validate input to prevent overflow
+    If Heading < 1 Then Heading = 1
+    If Heading > 4 Then Heading = 4
+    
+    ' Normalize r to -1, 0, or 1
+    If r > 0 Then r = 1
+    If r < 0 Then r = -1
+    
+    ' Calculate new heading (1-4 range)
+    Dim result As Integer
+    result = ((Heading - 1 + r + 4) Mod 4) + 1
+    Rotate_Heading = result
 End Function
 
 Function LegalPos(ByVal Map As Integer, _
@@ -1974,7 +1982,7 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, ByVal 
         End If
         If .flags.Paralizado = 1 Then
             If UserSurvivalSkill >= 100 Then
-                extraStrings = extraStrings & CInt(.Contadores.Paralisis / 6.5)
+                extraStrings = extraStrings & CLng(.Contadores.Paralisis / 6.5)
             End If
             Call SetMask(NpcStatusMask, e_NpcInfoMask.Paralized)
             extraStrings = extraStrings & "-"
@@ -1983,7 +1991,7 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, ByVal 
         End If
         If .flags.Inmovilizado = 1 Then
             If UserSurvivalSkill >= 100 Then
-                extraStrings = extraStrings & CInt(.Contadores.Inmovilizado / 6.5)
+                extraStrings = extraStrings & CLng(.Contadores.Inmovilizado / 6.5)
             End If
             Call SetMask(NpcStatusMask, e_NpcInfoMask.Inmovilized)
             extraStrings = extraStrings & "-"
@@ -1993,7 +2001,7 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, ByVal 
         If GetOwnedBy(TargetNpcIndex) <> 0 Then
             Call SetMask(NpcStatusMask, e_NpcInfoMask.Fighting)
             extraStrings = extraStrings & .flags.AttackedBy & "|"
-            extraStrings = extraStrings & CInt((IntervaloNpcOwner - (GlobalFrameTime - .flags.AttackedTime)) / 1000) & "-"
+            extraStrings = extraStrings & CLng((IntervaloNpcOwner - (GlobalFrameTime - .flags.AttackedTime)) / 1000) & "-"
         Else
             extraStrings = extraStrings & "-"
         End If

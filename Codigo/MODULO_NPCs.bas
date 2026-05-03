@@ -215,13 +215,9 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Call OnNpcKilledUpdateQuest(UserIndex, MiNPC)
         'Tiramos el oro
         Call NPCTirarOro(MiNPC, UserIndex)
-        Call DropObjQuest(MiNPC, UserIndex)
-        'Item Magico!
-        Call NpcDropeo(MiNPC, UserIndex)
-        Call DropFromGlobalDropTable(MiNPC, UserIndex)
-        'Tiramos el inventario
-        Call NPC_TIRAR_ITEMS(MiNPC)
-    End If ' UserIndex > 0
+        Call NpcDropQuestObj(MiNPC, UserIndex)
+        Call NpcDropObj(MiNPC, UserIndex)
+    End If
     ' Mascotas y npcs de entrenamiento no respawnean
     If MiNPC.MaestroNPC.ArrayIndex > 0 Or IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
     If NpcIndex = npc_index_evento Then
@@ -338,18 +334,6 @@ ResetExpresiones_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.ResetExpresiones", Erl)
 End Sub
 
-Sub ResetDrop(ByVal NpcIndex As Integer)
-    On Error GoTo ResetDrop_Err
-    Dim j As Integer
-    For j = 1 To NpcList(NpcIndex).NumQuiza
-        NpcList(NpcIndex).QuizaDropea(j) = 0
-    Next j
-    NpcList(NpcIndex).NumQuiza = 0
-    Exit Sub
-ResetDrop_Err:
-    Call TraceError(Err.Number, Err.Description, "NPCs.ResetDrop", Erl)
-End Sub
-
 Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
     On Error GoTo ResetNpcMainInfo_Err
     With (NpcList(NpcIndex))
@@ -405,7 +389,6 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
     Call ResetNpcCharInfo(NpcIndex)
     Call ResetNpcCriatures(NpcIndex)
     Call ResetExpresiones(NpcIndex)
-    Call ResetDrop(NpcIndex)
     Exit Sub
 ResetNpcMainInfo_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcMainInfo", Erl)
@@ -748,13 +731,13 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
             If NpcList(NpcIndex).Humanoide Or NpcList(NpcIndex).npcType = e_NPCType.GuardiaReal Or NpcList(NpcIndex).npcType = e_NPCType.GuardiasCaos Or NpcList( _
                     NpcIndex).npcType = e_NPCType.GuardiaNpc Then
                 If HayPuerta(nPos.Map, nPos.x, nPos.y) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x, nPos.y, NpcIndex)
+                    Call HandleNpcDoorAction(nPos.Map, nPos.x, nPos.y, NpcIndex)
                 ElseIf HayPuerta(nPos.Map, nPos.x + 1, nPos.y) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x + 1, nPos.y, NpcIndex)
+                    Call HandleNpcDoorAction(nPos.Map, nPos.x + 1, nPos.y, NpcIndex)
                 ElseIf HayPuerta(nPos.Map, nPos.x + 1, nPos.y - 1) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x + 1, nPos.y - 1, NpcIndex)
+                    Call HandleNpcDoorAction(nPos.Map, nPos.x + 1, nPos.y - 1, NpcIndex)
                 ElseIf HayPuerta(nPos.Map, nPos.x, nPos.y - 1) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x, nPos.y - 1, NpcIndex)
+                    Call HandleNpcDoorAction(nPos.Map, nPos.x, nPos.y - 1, NpcIndex)
                 End If
             End If
             Call AnimacionIdle(NpcIndex, False)
@@ -849,7 +832,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.charindex, e_GraphicEffects.ModernGmWarp, 0))
     End If
     If Avisar Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_EVENT, NpcList(nIndex).name & "¬" & get_map_name(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_EVENT, NpcList(nIndex).Name & "¬" & GetMapName(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
     End If
     SpawnNpc = nIndex
     Exit Function
@@ -989,6 +972,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Exists = True
         .TestOnly = Val(LeerNPCs.GetValue(SectionName, "TESTONLY"))
         .DisabledInBattleServer = val(LeerNPCs.GetValue(SectionName, "DISABLEDINBATTLESERVER"))
+        .OnlyEnabledInBattleServer = val(LeerNPCs.GetValue(SectionName, "ONLYENABLEDINBATTLESERVER"))
         .RequireToggle = LeerNPCs.GetValue(SectionName, "REQUIRETOGGLE")
         .name = LeerNPCs.GetValue(SectionName, "Name")
         .SubName = LeerNPCs.GetValue(SectionName, "SubName")
@@ -1052,7 +1036,27 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .IntervaloRespawnMin = Val(LeerNPCs.GetValue(SectionName, "IntervaloRespawnMin"))
         .IntervaloRespawnMax = Val(LeerNPCs.GetValue(SectionName, "IntervaloRespawn"))
         .InformarRespawn = Val(LeerNPCs.GetValue(SectionName, "InformarRespawn"))
-        .QuizaProb = Val(LeerNPCs.GetValue(SectionName, "QuizaProb"))
+        Dim dropsCount As Long
+        dropsCount = val(LeerNPCs.GetValue(SectionName, "DropCount"))
+        If dropsCount < 0 Then
+            dropsCount = 0
+        ElseIf dropsCount > MaxDropCount Then
+            dropsCount = MaxDropCount
+        End If
+        .DropCount = dropsCount
+        If .DropCount > 0 Then
+            ReDim .Drop(1 To .DropCount)
+            Dim i As Byte
+            For i = 1 To .DropCount
+                ln = LeerNPCs.GetValue(SectionName, "Drop" & i)
+                .Drop(i).ItemIndex = Val(ReadField(1, ln, Asc("-")))
+                .Drop(i).DropChance = Val(ReadField(2, ln, Asc("-")))
+                .Drop(i).LowQuantityBound = Val(ReadField(3, ln, Asc("-")))
+                .Drop(i).HighQuantityBound = Val(ReadField(4, ln, Asc("-")))
+            Next i
+        Else
+            Erase .Drop
+        End If
         .MinTameLevel = Val(LeerNPCs.GetValue(SectionName, "MinTameLevel", 1))
         .OnlyForGuilds = Val(LeerNPCs.GetValue(SectionName, "OnlyForGuilds", 0))
         .ShowKillerConsole = Val(LeerNPCs.GetValue(SectionName, "ShowKillerConsole", 0))
@@ -1141,15 +1145,6 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
             Else
                 Erase .Expresiones
             End If
-        End If
-        .NumQuiza = Val(LeerNPCs.GetValue(SectionName, "NumQuiza"))
-        If .NumQuiza > 0 Then
-            ReDim .QuizaDropea(1 To .NumQuiza)
-            For LoopC = 1 To .NumQuiza
-                .QuizaDropea(LoopC) = LeerNPCs.GetValue(SectionName, "QuizaDropea" & LoopC)
-            Next LoopC
-        Else
-            Erase .QuizaDropea
         End If
         aux = LeerNPCs.GetValue(SectionName, "NumQuest")
         If LenB(aux) = 0 Then
@@ -1281,6 +1276,13 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
     End If
 #End If
 
+#If BATTLESERVER = 0 Then
+    If Info.OnlyEnabledInBattleServer > 0 Then
+        FailReason = "NPC only enabled in battle server: " & NpcNumber
+        GoTo fail
+    End If
+#End If
+
     If Info.RequireToggle <> "" Then
         If Not IsFeatureEnabled(Info.RequireToggle) Then
             FailReason = "Feature toggle disabled: " & Info.RequireToggle & " for NPC " & NpcNumber
@@ -1393,11 +1395,22 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .IntervaloLanzarHechizo = Info.IntervaloLanzarHechizo
         .Contadores.IntervaloRespawn = RandomNumber(Info.IntervaloRespawnMin, Info.IntervaloRespawnMax)
         .InformarRespawn = Info.InformarRespawn
-        .QuizaProb = Info.QuizaProb
+        .DropCount = Info.DropCount
+        If .DropCount > 0 Then
+            ReDim .Drop(1 To .DropCount)
+            Dim i As Byte
+            For i = 1 To .DropCount
+                .Drop(i) = Info.Drop(i)
+            Next i
+        Else
+            Erase .Drop
+        End If
+        
         .MinTameLevel = Info.MinTameLevel
         .OnlyForGuilds = Info.OnlyForGuilds
         .ShowKillerConsole = Info.ShowKillerConsole
         .DisabledInBattleServer = Info.DisabledInBattleServer
+        .OnlyEnabledInBattleServer = Info.OnlyEnabledInBattleServer
         If .IntervaloMovimiento = 0 Then
             .IntervaloMovimiento = 380
             .Char.speeding = IntervaloNPCAI / 330
@@ -1516,15 +1529,6 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
             Next LoopC
         Else
             Erase .Expresiones
-        End If
-        .NumQuiza = Info.NumQuiza
-        If .NumQuiza > 0 Then
-            ReDim .QuizaDropea(1 To .NumQuiza)
-            For LoopC = 1 To .NumQuiza
-                .QuizaDropea(LoopC) = Info.QuizaDropea(LoopC)
-            Next LoopC
-        Else
-            Erase .QuizaDropea
         End If
         .NumQuest = Info.NumQuest
         If .NumQuest > 0 Then
@@ -1742,22 +1746,35 @@ Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Byte, ByVal x As Integer
     End If
 End Sub
 
-' Autor: WyroX - 20/01/2021
-' Intenta moverlo hacia un "costado" según el heading indicado. Se usa para mover NPCs del camino de otro char.
-' Si no hay un lugar válido a los lados, lo mueve a la posición válida más cercana.
 Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As e_Heading)
     On Error GoTo Handler
     With NpcList(NpcIndex)
+        ' Validate heading parameter
+        If Heading < e_Heading.NORTH Or Heading > e_Heading.WEST Then
+            Call LogError("MoveNpcToSide: Invalid heading " & Heading & " for NPC " & NpcIndex)
+            Exit Sub
+        End If
+        
         ' Elegimos un lado al azar
         Dim r As Integer
         r = RandomNumber(0, 1) * 2 - 1 ' -1 o 1
+        
         ' Roto el heading original hacia ese lado
         Heading = Rotate_Heading(Heading, r)
+        
         ' Intento moverlo para ese lado
         If MoveNPCChar(NpcIndex, Heading) Then Exit Sub
+        
         ' Si falló, intento moverlo para el lado opuesto
         Heading = InvertHeading(Heading)
+        
+        ' Validate after invert
+        If Heading < e_Heading.NORTH Or Heading > e_Heading.WEST Then
+            Heading = e_Heading.NORTH ' Fallback to default
+        End If
+        
         If MoveNPCChar(NpcIndex, Heading) Then Exit Sub
+        
         ' Si ambos fallan, entonces lo dejo en la posición válida más cercana
         Dim NuevaPos As t_WorldPos
         Call ClosestLegalPos(.pos, NuevaPos, .flags.AguaValida, .flags.TierraInvalida = 0)
@@ -1765,7 +1782,7 @@ Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As e_Heading)
     End With
     Exit Sub
 Handler:
-    Call TraceError(Err.Number, Err.Description, "NPCs.MoveNpcToSide", Erl)
+    Call TraceError(Err.Number, Err.Description, "NPCs.MoveNpcToSide [Heading=" & Heading & "]", Erl)
 End Sub
 
 Public Sub DummyTargetAttacked(ByVal NpcIndex As Integer)

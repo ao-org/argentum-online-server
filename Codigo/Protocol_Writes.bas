@@ -1431,18 +1431,22 @@ Public Sub WriteIntervals(ByVal UserIndex As Integer)
     On Error GoTo WriteIntervals_Err
     With UserList(UserIndex)
         Call Writer.WriteInt16(ServerPacketID.eIntervals)
-        Call Writer.WriteInt32(.Intervals.Arco)
-        Call Writer.WriteInt32(.Intervals.Caminar)
-        Call Writer.WriteInt32(.Intervals.Golpe)
-        Call Writer.WriteInt32(.Intervals.GolpeMagia)
-        Call Writer.WriteInt32(.Intervals.Magia)
-        Call Writer.WriteInt32(.Intervals.MagiaGolpe)
-        Call Writer.WriteInt32(.Intervals.GolpeUsar)
-        Call Writer.WriteInt32(.Intervals.TrabajarExtraer)
-        Call Writer.WriteInt32(.Intervals.TrabajarConstruir)
-        Call Writer.WriteInt32(.Intervals.UsarU)
-        Call Writer.WriteInt32(.Intervals.UsarClic)
+        Call Writer.WriteInt32(IntervaloUserPuedeAtacar)
+        Call Writer.WriteInt32(IntervaloFlechasCazadores)
+        Call Writer.WriteInt32(IntervaloUserPuedeCastear)
+        Call Writer.WriteInt32(IntervaloTrabajarExtraer)
+        Call Writer.WriteInt32(IntervaloTrabajarConstruir)
+        Call Writer.WriteInt32(IntervaloCaminar)
         Call Writer.WriteInt32(IntervaloTirar)
+        Call Writer.WriteInt32(IntervaloUserPuedeUsarU)
+        Call Writer.WriteInt32(IntervaloUserPuedeUsarClic)
+        Call Writer.WriteInt32(IntervaloGolpeMagia)
+        Call Writer.WriteInt32(IntervaloMagiaGolpe)
+        Call Writer.WriteInt32(IntervaloGolpeUsar)
+        Call Writer.WriteInt32(IntervaloOculto)
+        Call Writer.WriteInt32(IntervaloTalk)
+        Call Writer.WriteInt32(IntervaloLeftClick)
+        Call Writer.WriteInt32(IntervaloMeditar)
     End With
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
@@ -1460,7 +1464,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As By
     Call Writer.WriteInt8(Slot)
     ObjIndex = UserList(UserIndex).invent.Object(Slot).ObjIndex
     If ObjIndex > 0 Then
-        PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
+        PodraUsarlo = CanUseObject(UserIndex, ObjIndex)
         NaturalElementalTags = ObjData(UserList(UserIndex).invent.Object(Slot).ObjIndex).ElementalTags
     End If
     Call Writer.WriteInt16(ObjIndex)
@@ -1498,7 +1502,7 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
     ObjIndex = UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex
     If ObjIndex > 0 Then
         Valor = ObjData(ObjIndex).Valor
-        PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
+        PodraUsarlo = CanUseObject(UserIndex, ObjIndex)
         NaturalElementalTags = ObjData(ObjIndex).ElementalTags
     Else
     End If
@@ -1832,7 +1836,7 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, ByVal Slot As
     On Error GoTo WriteChangeNPCInventorySlot_Err
     Dim PodraUsarlo As Byte
     If obj.ObjIndex >= LBound(ObjData()) And obj.ObjIndex <= UBound(ObjData()) Then
-        PodraUsarlo = PuedeUsarObjeto(UserIndex, obj.ObjIndex)
+        PodraUsarlo = CanUseObject(UserIndex, obj.ObjIndex)
     End If
     Call Writer.WriteInt16(ServerPacketID.eChangeNPCInventorySlot)
     Call Writer.WriteInt8(Slot)
@@ -3951,29 +3955,43 @@ PrepareTrapUpdate_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareTrapUpdate", Erl)
 End Function
-
 Public Function PrepareUpdateGroupInfo(ByVal UserIndex As Integer)
-    On Error GoTo PrepareTrapUpdate_Err
+    On Error GoTo PrepareUpdateGroupInfo_Err
     Call Writer.WriteInt16(ServerPacketID.eUpdateGroupInfo)
-    If IsValidUserRef(UserList(UserIndex).Grupo.Lider) Then
-        With UserList(UserList(UserIndex).Grupo.Lider.ArrayIndex).Grupo
-            Dim i As Integer
-            Writer.WriteInt8 (.CantidadMiembros)
-            For i = 1 To .CantidadMiembros
-                Writer.WriteString8 (GetUserDisplayName(.Miembros(i).ArrayIndex))
-                Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Char.charindex)
-                Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Char.head)
-                Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Stats.MinHp)
-                Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Stats.MaxHp)
-            Next i
-        End With
-    Else
+    
+    ' Si el usuario no está en grupo, enviar 0
+    If Not UserList(UserIndex).Grupo.EnGrupo Then
         Writer.WriteInt8 (0)
+        Exit Function
     End If
+    
+    ' Si la referencia al líder no es válida, enviar 0
+    If Not IsValidUserRef(UserList(UserIndex).Grupo.Lider) Then
+        Writer.WriteInt8 (0)
+        Exit Function
+    End If
+    
+    ' Obtener el índice del líder real del grupo
+    Dim LeaderIndex As Integer
+    LeaderIndex = UserList(UserIndex).Grupo.Lider.ArrayIndex
+    
+    ' Enviar información del grupo
+    With UserList(LeaderIndex).Grupo
+        Dim i As Integer
+        Writer.WriteInt8 (.CantidadMiembros)
+        For i = 1 To .CantidadMiembros
+            Writer.WriteString8 (GetUserDisplayName(.Miembros(i).ArrayIndex))
+            Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Char.charindex)
+            Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Char.head)
+            Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Stats.MinHp)
+            Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Stats.MaxHp)
+        Next i
+    End With
+    
     Exit Function
-PrepareTrapUpdate_Err:
+PrepareUpdateGroupInfo_Err:
     Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareTrapUpdate", Erl)
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareUpdateGroupInfo", Erl)
 End Function
 
 ''

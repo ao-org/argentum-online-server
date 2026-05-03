@@ -18,6 +18,8 @@ Attribute VB_Name = "ModLumberjack"
 '
 Option Explicit
 
+Public Const MSG_ONLY_ELVISH_AXE_ALLOWED As Integer = 601
+
 Public Sub ChopWood(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If Not DecreaseUserStamina(UserIndex, ModAutomatedActions.MIN_STA_REQUIRED) Then
@@ -72,3 +74,16 @@ Public Sub ChopWood(ByVal UserIndex As Integer)
         Call SubirSkill(UserIndex, e_Skill.Talar)
     End With
 End Sub
+
+Public Function CanUserExtractWood(ByVal UserIndex As Integer, ByVal TargetX As Byte, ByVal TargetY As Byte) As Boolean
+    With UserList(UserIndex)
+        If .invent.EquippedWorkingToolObjIndex <= 0 Then Exit Function
+        If ObjData(MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex).Elfico > 0 Then
+            If Not ObjData(.invent.EquippedWorkingToolObjIndex).Elfico > 0 Then
+                Call WriteLocaleMsg(UserIndex, MSG_ONLY_ELVISH_AXE_ALLOWED, FONTTYPE_INFO)
+                Exit Function
+            End If
+        End If
+    End With
+    CanUserExtractWood = True
+End Function

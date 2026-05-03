@@ -696,10 +696,6 @@ Dim obj                         As t_ObjData
                     .invent.Object(Slot).Equipped = 0
                     .invent.EquippedMunitionObjIndex = 0
                     .invent.EquippedMunitionSlot = 0
-                    ' Case e_OBJType.otAnillos
-                    '    .Invent.Object(slot).Equipped = 0
-                    '    .Invent.AnilloEqpObjIndex = 0
-                    ' .Invent.AnilloEqpSlot = 0
                 Case e_OBJType.otWorkingTools
                     If .flags.PescandoEspecial = False Then
                         .invent.Object(Slot).Equipped = 0
@@ -708,6 +704,7 @@ Dim obj                         As t_ObjData
                         If .flags.UsandoMacro = True Then
                             Call WriteMacroTrabajoToggle(UserIndex, False)
                         End If
+                        Call ResetUserAutomatedActions(UserIndex)
                         .Char.WeaponAnim = NingunArma
                         If .flags.Montado = 0 Then
                             Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
@@ -1133,7 +1130,7 @@ Dim Ropaje                      As Integer
             ObjIndex = .invent.Object(Slot).ObjIndex
             obj = ObjData(ObjIndex)
 
-            If PuedeUsarObjeto(UserIndex, ObjIndex, True) > 0 Then
+            If CanUseObject(UserIndex, ObjIndex, True) > 0 Then
                 Exit Sub
             End If
 
@@ -1672,7 +1669,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Exit Sub
         End If
 
-        If PuedeUsarObjeto(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
+        If CanUseObject(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
             Exit Sub
         End If
 
@@ -1689,14 +1686,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
         End If
 
         If obj.OBJType = e_OBJType.otWeapon Then
-            If obj.Proyectil = 1 Then
-                'valido para evitar el flood pero no bloqueo. El bloqueo se hace en WLC con proyectiles.
-                If ByClick <> 0 Then
-                    If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
-                Else
-                    If Not IntervaloPermiteUsarClick(UserIndex) Then Exit Sub
-                End If
-            Else
+            If obj.Proyectil <> 1 Then
                 'dagas
                 If ByClick <> 0 Then
                     If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
@@ -1807,6 +1797,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Exit Sub
                 End If
                 If ObjData(ObjIndex).Proyectil = 1 Then
+                    If .invent.Object(Slot).Equipped = 0 Then Exit Sub
                     If IsSet(.flags.StatusMask, e_StatusMask.eTransformed) Then
                         Call WriteLocaleMsg(UserIndex, MsgCantUseBowTransformed, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub

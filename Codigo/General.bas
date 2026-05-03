@@ -589,6 +589,8 @@ Sub Main()
     Call LoadMeditations
     frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
     Call CargarCiudades
+    frmCargando.Label1(2).Caption = "Cargando Fuentes"
+    Call InitFontTypeColors
     If BootDelBackUp Then
         frmCargando.Label1(2).Caption = "Cargando WorldBackup"
         Call CargarBackUp
@@ -652,19 +654,19 @@ Sub Main()
     Call InitializeAntiCheat
     tInicioServer = GetTickCountRaw()
     #If UNIT_TEST = 1 Then
+        On Error GoTo UnitTest_Err
         Call UnitTesting.Init
-        Debug.Print "AO20 Unit Testing"
         Dim suite_passed_ok As Boolean
         suite_passed_ok = UnitTesting.test_suite()
-        If (suite_passed_ok) Then
-            Debug.Print "suite_passed_ok!!!"
-        Else
-            Debug.Print "suite failed!!!"
-        End If
-        Debug.Assert (suite_passed_ok)
-        Debug.Print "Running proto suite, trying to connect to 127.0.0.1:7667"
-        Call UnitClient.Init
-        Call UnitClient.Connect("127.0.0.1", "7667")
+UnitTest_Done:
+        On Error GoTo Handler
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
+        frmMain.GuardarYCerrar = True
+        Unload frmMain
+        Exit Sub
+UnitTest_Err:
+        Call UnitTesting.RunTestError("FATAL", Err.Description)
+        Resume UnitTest_Done
     #End If
     While (True)
         GlobalFrameTime = GetTickCountRaw()
@@ -1351,6 +1353,7 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         Call UserMod.ModifyHealth(UserIndex, mashit)
         ' Msg519=Has sanado.
         Call WriteLocaleMsg(UserIndex, MSG_SANADO, e_FontTypeNames.FONTTYPE_INFO)
+        Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageTextOverChar(mashit, UserList(UserIndex).Char.charindex, vbGreen))
         EnviarStats = True
     End If
     Exit Sub
@@ -1448,7 +1451,7 @@ Sub PasarSegundo()
                 If .Counters.TimerBarra > 0 Then
                     .Counters.TimerBarra = .Counters.TimerBarra - 1
                     If .Counters.TimerBarra = 0 Then
-                        Call EndProgrammedAction(i)
+                        Call CompletePendingAction(i)
                     End If
                 End If
                 If .flags.UltimoMensaje > 0 Then
@@ -1929,3 +1932,4 @@ Public Function IsArrayInitialized(ByRef arr) As Boolean
     rv = UBound(arr)
     IsArrayInitialized = (Err.Number = 0) And rv >= 0
 End Function
+

@@ -31,6 +31,13 @@ Option Explicit
 ' Modulo de declaraciones. Aca hay de todo.
 '
 
+Public Type t_NpcItemDrop
+    ItemIndex As Integer
+    LowQuantityBound As Integer
+    HighQuantityBound As Integer
+    DropChance As Long
+End Type
+
 Public Enum e_WorkingToolSubType
         FishingRod = 1
         FishingNet = 2
@@ -2108,6 +2115,7 @@ Public Type t_Quest
     RewardSpellCount As Byte
     RewardSpellList() As Integer
     Repetible As Byte
+    PermittedFactions As Integer
     GlobalQuestIndex As Integer
     GlobalQuestThresholdNeeded As Long
 End Type
@@ -2784,20 +2792,6 @@ Public Type t_UserCounters
     LastTransferGold As Long
 End Type
 
-Public Type t_UserIntervals
-    Magia As Long
-    Golpe As Long
-    Arco As Long
-    UsarU As Long
-    UsarClic As Long
-    Caminar As Long
-    GolpeMagia As Long
-    MagiaGolpe As Long
-    GolpeUsar As Long
-    TrabajarExtraer As Long
-    TrabajarConstruir As Long
-End Type
-
 Public Type t_QuestStats
     Quests(1 To MAXUSERQUESTS) As t_UserQuest
     NumQuestsDone As Integer
@@ -2972,7 +2966,6 @@ Public Type t_User
     CurrentInventorySlots As Byte
     BancoInvent As t_BancoInventario
     Counters As t_UserCounters
-    Intervals As t_UserIntervals
     Stats As t_UserStats
     Stats_bk As t_UserStats
     Modifiers As t_ActiveModifiers
@@ -3182,6 +3175,7 @@ Public Type t_NpcInfoCache
     Exists As Boolean
     TestOnly As Integer
     DisabledInBattleServer As Integer
+    OnlyEnabledInBattleServer As Integer
     RequireToggle As String
     name As String
     SubName As String
@@ -3236,7 +3230,8 @@ Public Type t_NpcInfoCache
     IntervaloRespawnMin As Long
     IntervaloRespawnMax As Long
     InformarRespawn As Integer
-    QuizaProb As Integer
+    DropCount As Byte
+    Drop() As t_NpcItemDrop
     MinTameLevel As Integer
     OnlyForGuilds As Integer
     ShowKillerConsole As Integer
@@ -3278,8 +3273,6 @@ Public Type t_NpcInfoCache
     SndRespawn As Integer
     NroExp As Integer
     Expresiones() As String
-    NumQuiza As Integer
-    QuizaDropea() As String
     NumQuest As Integer
     QuestNumber() As Integer
     NumDropQuest As Integer
@@ -3396,9 +3389,10 @@ Public Type t_Npc
     pathFindingInfo As t_NpcPathFindingInfo
     ' Esto es del Areas.bas
     AreasInfo As t_AreaInfo
-    NumQuiza As Byte
-    QuizaDropea() As String
-    QuizaProb As Integer
+    
+    DropCount As Byte
+    Drop() As t_NpcItemDrop
+    
     MinTameLevel As Byte
     OnlyForGuilds As Byte
     ShowKillerConsole As Byte
@@ -3412,6 +3406,7 @@ Public Type t_Npc
     PuedeInvocar As Byte
     Humanoide As Boolean
     DisabledInBattleServer As Byte
+    OnlyEnabledInBattleServer As Byte
 End Type
 
 '**********************************************************
@@ -3492,14 +3487,6 @@ End Type
 Public Type t_IndexHeap
     currentIndex As Integer
     IndexInfo() As Integer
-End Type
-
-Public Type t_GlobalDrop
-    ObjectNumber As Integer
-    MaxPercent As Single
-    MinPercent As Single
-    RequiredHPForMaxChance As Long
-    amount As Integer
 End Type
 
 '********** V A R I A B L E S     P U B L I C A S ***********
@@ -3592,7 +3579,6 @@ Public RecompensasFaccion()                   As t_RecompensaFaccion
 Public ModClase(1 To NUMCLASES)               As t_ModClase
 Public ModRaza(1 To NUMRAZAS)                 As t_ModRaza
 Public Crafteos                               As New Dictionary
-Public GlobalDropTable()                      As t_GlobalDrop
 Public PoderCanas()                           As Integer
 Public UniqueMapFishIDs()                     As Long
 Public UniqueMapFishCount                     As Long
