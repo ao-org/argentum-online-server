@@ -6689,6 +6689,8 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                             DeDonde = " Eldoria"
                         Case e_Ciudad.cPenthar
                             DeDonde = " Penthar"
+                        Case e_Ciudad.cMorgrim
+                            DeDonde = " Morgrim"
                         Case Else
                             DeDonde = "Ullathorpe"
                     End Select
@@ -6793,6 +6795,8 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                             DeDonde = " Eldoria"
                         Case e_Ciudad.cPenthar
                             DeDonde = " Penthar"
+                        Case e_Ciudad.cMorgrim
+                            DeDonde = " Morgrim"
                         Case Else
                             DeDonde = "Ullathorpe"
                     End Select
@@ -7025,6 +7029,8 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
                     DeDonde = CityEldoria
                 Case e_Ciudad.cPenthar
                     DeDonde = CityPenthar
+                Case e_Ciudad.cMorgrim
+                    DeDonde = CityMorgrim
                 Case Else
                     DeDonde = CityUllathorpe
             End Select

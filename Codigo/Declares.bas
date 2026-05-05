@@ -346,6 +346,7 @@ Public Enum e_Ciudad
     cForgat
     cEldoria
     cPenthar
+    cMorgrim
 End Enum
 
 Public Enum e_Raza
@@ -3593,12 +3594,14 @@ Public Forgat                                 As t_WorldPos
 Public Arkhein                                As t_WorldPos
 Public Eldoria                                As t_WorldPos
 Public Penthar                                As t_WorldPos
+Public Morgrim                                As t_WorldPos
 Public CityNix                                As t_CityWorldPos
 Public CityUllathorpe                         As t_CityWorldPos
 Public CityBanderbill                         As t_CityWorldPos
 Public CityArghal                             As t_CityWorldPos
 Public CityForgat                             As t_CityWorldPos
 Public CityPenthar                            As t_CityWorldPos
+Public CityMorgrim                            As t_CityWorldPos
 Public CityLindos                             As t_CityWorldPos
 Public CityEleusis                            As t_CityWorldPos
 Public CityArkhein                            As t_CityWorldPos

@@ -565,6 +565,10 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
                 .pos.Map = 560
                 .pos.x = 40
                 .pos.y = 69
+            Case e_Ciudad.cMorgrim
+                .pos.Map = 591
+                .pos.x = 50
+                .pos.y = 50
         End Select
         UltimoChar = UCase$(name)
         Call SaveNewUser(UserIndex)
