@@ -2051,6 +2051,19 @@ Sub CargarCiudades()
         .NecesitaNave = val(Lector.GetValue("Penthar", "NecesitaNave"))
         MapasCiudades = MapasCiudades & Lector.GetValue("Penthar", "Mapas")
     End With
+        With CityMorgrim
+        .Map = val(Lector.GetValue("Morgrim", "Mapa"))
+        .x = val(Lector.GetValue("Morgrim", "X"))
+        .y = val(Lector.GetValue("Morgrim", "Y"))
+        .MapaViaje = val(Lector.GetValue("Penthar", "MapaViaje"))
+        .ViajeX = val(Lector.GetValue("Morgrim", "ViajeX"))
+        .ViajeY = val(Lector.GetValue("Morgrim", "ViajeY"))
+        .MapaResu = val(Lector.GetValue("Mogrim", "MapaResu"))
+        .ResuX = val(Lector.GetValue("Mogrim", "ResuX"))
+        .ResuY = val(Lector.GetValue("Morgrim", "ResuY"))
+        .NecesitaNave = val(Lector.GetValue("Morgrim", "NecesitaNave"))
+        MapasCiudades = MapasCiudades & Lector.GetValue("Morgrim", "Mapas")
+    End With
     With Prision
         .Map = val(Lector.GetValue("Prision", "Mapa"))
         .x = val(Lector.GetValue("Prision", "X"))
@@ -2167,6 +2180,9 @@ Sub CargarCiudades()
     Penthar.Map = CityPenthar.Map
     Penthar.x = CityPenthar.x
     Penthar.y = CityPenthar.y
+    Morgrim.Map = CityMorgrim.Map
+    Morgrim.x = CityMorgrim.x
+    Morgrim.y = CityMorgrim.y
     'Esto es para el /HOGAR
     Ciudades(e_Ciudad.cNix) = Nix
     Ciudades(e_Ciudad.cUllathorpe) = Ullathorpe
@@ -2177,6 +2193,7 @@ Sub CargarCiudades()
     Ciudades(e_Ciudad.cArkhein) = Arkhein
     Ciudades(e_Ciudad.cEldoria) = Eldoria
     Ciudades(e_Ciudad.cPenthar) = Penthar
+    Ciudades(e_Ciudad.cMorgrim) = Morgrim
     Exit Sub
 CargarCiudades_Err:
     Call TraceError(Err.Number, Err.Description, "ES.CargarCiudades", Erl)
