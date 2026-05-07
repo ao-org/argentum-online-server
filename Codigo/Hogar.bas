@@ -27,9 +27,9 @@ Attribute VB_Name = "Hogar"
 '
 '
 Option Explicit
-' NUMCIUDADES se deriva de e_Ciudad; no actualizar manualmente.
-Public Const NUMCIUDADES          As Byte = cCiudadCount - 1
-Public Ciudades(1 To NUMCIUDADES) As t_WorldPos
+' CITY_COUNT is derived from e_Ciudad; do not update manually.
+Public Const CITY_COUNT As Byte = cCiudadCount - 1
+Public Ciudades(1 To CITY_COUNT) As t_WorldPos
 
 Public Sub goHome(ByVal UserIndex As Integer)
     On Error GoTo goHome_Err

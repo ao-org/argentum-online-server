@@ -463,7 +463,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
         ' Género válido
         If UserSexo < Hombre Or UserSexo > Mujer Then Exit Function
         ' Ciudad válida
-        If Hogar <= 0 Or Hogar > NUMCIUDADES Then Exit Function
+        If Hogar <= 0 Or Hogar > CITY_COUNT Then Exit Function
         ' Cabeza válida
 #If LOGIN_STRESS_TEST = 0 Then
         If Not ValidarCabeza(UserRaza, UserSexo, head) Then Exit Function
