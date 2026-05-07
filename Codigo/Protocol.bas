@@ -8103,10 +8103,11 @@ Public Sub HandleUseHKeySlot(ByVal UserIndex As Integer)
     Dim CurrentSlotIndex As Integer
     Dim i                As Integer
     With UserList(UserIndex)
+        If SlotIndex < LBound(.HotkeyList) Or SlotIndex > UBound(.HotkeyList) Then Exit Sub
         If .HotkeyList(SlotIndex).Index > 0 Then
             If .HotkeyList(SlotIndex).Type = Item Then
             ElseIf .HotkeyList(SlotIndex).Type = Spell Then
-                If .HotkeyList(SlotIndex).LastKnownSlot > 0 And .HotkeyList(SlotIndex).LastKnownSlot < UBound(.Stats.UserHechizos) Then
+                If .HotkeyList(SlotIndex).LastKnownSlot > 0 And .HotkeyList(SlotIndex).LastKnownSlot <= UBound(.Stats.UserHechizos) Then
                     If .Stats.UserHechizos(.HotkeyList(SlotIndex).LastKnownSlot) = .HotkeyList(SlotIndex).Index Then
                         CurrentSlotIndex = .HotkeyList(SlotIndex).LastKnownSlot
                     End If
@@ -8120,9 +8121,11 @@ Public Sub HandleUseHKeySlot(ByVal UserIndex As Integer)
                     Next i
                 End If
                 If CurrentSlotIndex > 0 Then
-                    If .Stats.UserHechizos(CurrentSlotIndex) > 0 Then
-                        If IsSet(Hechizos(UserList(UserIndex).Stats.UserHechizos(CurrentSlotIndex)).SpellRequirementMask, e_SpellRequirementMask.eIsBindable) Then
-                            Call UseSpellSlot(UserIndex, CurrentSlotIndex)
+                    If CurrentSlotIndex <= UBound(.Stats.UserHechizos) Then
+                        If .Stats.UserHechizos(CurrentSlotIndex) > 0 Then
+                            If IsSet(Hechizos(UserList(UserIndex).Stats.UserHechizos(CurrentSlotIndex)).SpellRequirementMask, e_SpellRequirementMask.eIsBindable) Then
+                                Call UseSpellSlot(UserIndex, CurrentSlotIndex)
+                            End If
                         End If
                     End If
                 End If
