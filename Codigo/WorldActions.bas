@@ -327,6 +327,8 @@ Private Function GetCityName(ByVal city As e_Ciudad) As String
             GetCityName = "Arkhein"
         Case e_Ciudad.cPenthar
             GetCityName = "Penthar"
+             Case e_Ciudad.cMorgrim
+            GetCityName = "Morgrim"
         Case Else
             GetCityName = "Ullathorpe"
     End Select

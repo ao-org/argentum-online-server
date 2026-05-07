@@ -27,7 +27,7 @@ Attribute VB_Name = "Hogar"
 '
 '
 Option Explicit
-Public Const NUMCIUDADES          As Byte = 9
+Public Const NUMCIUDADES          As Byte = 10
 Public Ciudades(1 To NUMCIUDADES) As t_WorldPos
 
 Public Sub goHome(ByVal UserIndex As Integer)
