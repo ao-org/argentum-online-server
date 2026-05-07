@@ -27,7 +27,8 @@ Attribute VB_Name = "Hogar"
 '
 '
 Option Explicit
-Public Const NUMCIUDADES          As Byte = 10
+' NUMCIUDADES se deriva de e_Ciudad; no actualizar manualmente.
+Public Const NUMCIUDADES          As Byte = cCiudadCount - 1
 Public Ciudades(1 To NUMCIUDADES) As t_WorldPos
 
 Public Sub goHome(ByVal UserIndex As Integer)

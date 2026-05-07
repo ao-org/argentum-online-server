@@ -347,6 +347,7 @@ Public Enum e_Ciudad
     cEldoria
     cPenthar
     cMorgrim
+    cCiudadCount
 End Enum
 
 Public Enum e_Raza
