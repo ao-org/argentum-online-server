@@ -6523,9 +6523,12 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         If FindNearestFreeTile(pos.Map, pos.x, pos.y, False, 30, nX, nY) Then
                             pos.x = nX
                             pos.y = nY
+                            npc_index_evento = SpawnNpc(TesoroNPC(RandomNumber(1, UBound(TesoroNPC))), pos, True, False, True)
+                            BusquedaNpcActiva = True
+                        Else
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_POSICION_TESORO_VALIDA, e_FontTypeNames.FONTTYPE_INFO)
+                            BusquedaNpcActiva = False
                         End If
-                        npc_index_evento = SpawnNpc(TesoroNPC(RandomNumber(1, UBound(TesoroNPC))), pos, True, False, True)
-                        BusquedaNpcActiva = True
                     Else
                         If BusquedaNpcActiva Then
                             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_TODAVIA_NADIE_LOGRO_MATAR_NPC_ENCUENTRA, NpcList(npc_index_evento).pos.Map, e_FontTypeNames.FONTTYPE_TALK))
