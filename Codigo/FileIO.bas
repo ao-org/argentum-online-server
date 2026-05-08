@@ -1914,6 +1914,26 @@ LoadPacketRatePolicy_Err:
     Call TraceError(Err.Number, Err.Description, "ES.LoadPacketRatePolicy", Erl)
 End Sub
 
+' Centralizes city INI parsing and keeps Ciudades() synchronized for legacy callers.
+Private Sub LoadCityData(ByRef Lector As clsIniManager, ByVal CityId As e_Ciudad, ByVal SectionName As String)
+    With CityData(CityId)
+        .Map = val(Lector.GetValue(SectionName, "Mapa"))
+        .X = val(Lector.GetValue(SectionName, "X"))
+        .Y = val(Lector.GetValue(SectionName, "Y"))
+        .MapaViaje = val(Lector.GetValue(SectionName, "MapaViaje"))
+        .ViajeX = val(Lector.GetValue(SectionName, "ViajeX"))
+        .ViajeY = val(Lector.GetValue(SectionName, "ViajeY"))
+        .MapaResu = val(Lector.GetValue(SectionName, "MapaResu"))
+        .ResuX = val(Lector.GetValue(SectionName, "ResuX"))
+        .ResuY = val(Lector.GetValue(SectionName, "ResuY"))
+        .NecesitaNave = val(Lector.GetValue(SectionName, "NecesitaNave"))
+    End With
+
+    Ciudades(CityId).Map = CityData(CityId).Map
+    Ciudades(CityId).X = CityData(CityId).X
+    Ciudades(CityId).Y = CityData(CityId).Y
+End Sub
+
 Sub CargarCiudades()
     On Error GoTo CargarCiudades_Err
     Dim i      As Long
@@ -1921,110 +1941,25 @@ Sub CargarCiudades()
     Set Lector = New clsIniManager
     Call Lector.Initialize(DatPath & "Ciudades.dat")
     Dim MapasCiudades As String
-    With CityData(e_Ciudad.cNix)
-        .Map = val(Lector.GetValue("NIX", "Mapa"))
-        .x = val(Lector.GetValue("NIX", "X"))
-        .y = val(Lector.GetValue("NIX", "Y"))
-        .MapaViaje = val(Lector.GetValue("NIX", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("NIX", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("NIX", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("NIX", "MapaResu"))
-        .ResuX = val(Lector.GetValue("NIX", "ResuX"))
-        .ResuY = val(Lector.GetValue("NIX", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("NIX", "NecesitaNave"))
-        MapasCiudades = Lector.GetValue("NIX", "Mapas") & ","
-    End With
-    With CityData(e_Ciudad.cUllathorpe)
-        .Map = val(Lector.GetValue("Ullathorpe", "Mapa"))
-        .x = val(Lector.GetValue("Ullathorpe", "X"))
-        .y = val(Lector.GetValue("Ullathorpe", "Y"))
-        .MapaViaje = val(Lector.GetValue("Ullathorpe", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Ullathorpe", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Ullathorpe", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Ullathorpe", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Ullathorpe", "ResuX"))
-        .ResuY = val(Lector.GetValue("Ullathorpe", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Ullathorpe", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Ullathorpe", "Mapas") & ","
-    End With
-    With CityData(e_Ciudad.cBanderbill)
-        .Map = val(Lector.GetValue("Banderbill", "Mapa"))
-        .x = val(Lector.GetValue("Banderbill", "X"))
-        .y = val(Lector.GetValue("Banderbill", "Y"))
-        .MapaViaje = val(Lector.GetValue("Banderbill", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Banderbill", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Banderbill", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Banderbill", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Banderbill", "ResuX"))
-        .ResuY = val(Lector.GetValue("Banderbill", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Banderbill", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Banderbill", "Mapas") & ","
-    End With
-    With CityData(e_Ciudad.cLindos)
-        .Map = val(Lector.GetValue("Lindos", "Mapa"))
-        .x = val(Lector.GetValue("Lindos", "X"))
-        .y = val(Lector.GetValue("Lindos", "Y"))
-        .MapaViaje = val(Lector.GetValue("Lindos", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Lindos", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Lindos", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Lindos", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Lindos", "ResuX"))
-        .ResuY = val(Lector.GetValue("Lindos", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Lindos", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Lindos", "Mapas") & ","
-    End With
-    With CityData(e_Ciudad.cArghal)
-        .Map = val(Lector.GetValue("Arghal", "Mapa"))
-        .x = val(Lector.GetValue("Arghal", "X"))
-        .y = val(Lector.GetValue("Arghal", "Y"))
-        .MapaViaje = val(Lector.GetValue("Arghal", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Arghal", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Arghal", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Arghal", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Arghal", "ResuX"))
-        .ResuY = val(Lector.GetValue("Arghal", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Arghal", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Arghal", "Mapas") & ","
-    End With
-    With CityData(e_Ciudad.cForgat)
-        .Map = val(Lector.GetValue("Forgat", "Mapa"))
-        .x = val(Lector.GetValue("Forgat", "X"))
-        .y = val(Lector.GetValue("Forgat", "Y"))
-        .MapaViaje = val(Lector.GetValue("Forgat", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Forgat", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Forgat", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Forgat", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Forgat", "ResuX"))
-        .ResuY = val(Lector.GetValue("Forgat", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Forgat", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Forgat", "Mapas") & ","
-    End With
-    With CityData(e_Ciudad.cEldoria)
-        .Map = val(Lector.GetValue("Eldoria", "Mapa"))
-        .x = val(Lector.GetValue("Eldoria", "X"))
-        .y = val(Lector.GetValue("Eldoria", "Y"))
-        .MapaViaje = val(Lector.GetValue("Eldoria", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Eldoria", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Eldoria", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Eldoria", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Eldoria", "ResuX"))
-        .ResuY = val(Lector.GetValue("Eldoria", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Eldoria", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Eldoria", "Mapas") & ","
-    End With
-    With CityData(e_Ciudad.cArkhein)
-        .Map = val(Lector.GetValue("Arkhein", "Mapa"))
-        .x = val(Lector.GetValue("Arkhein", "X"))
-        .y = val(Lector.GetValue("Arkhein", "Y"))
-        .MapaViaje = val(Lector.GetValue("Arkhein", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Arkhein", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Arkhein", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Arkhein", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Arkhein", "ResuX"))
-        .ResuY = val(Lector.GetValue("Arkhein", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Arkhein", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Arkhein", "Mapas") & ","
-    End With
+    Call LoadCityData(Lector, e_Ciudad.cUllathorpe, "Ullathorpe")
+    Call LoadCityData(Lector, e_Ciudad.cNix, "NIX")
+    Call LoadCityData(Lector, e_Ciudad.cBanderbill, "Banderbill")
+    Call LoadCityData(Lector, e_Ciudad.cLindos, "Lindos")
+    Call LoadCityData(Lector, e_Ciudad.cArghal, "Arghal")
+    Call LoadCityData(Lector, e_Ciudad.cArkhein, "Arkhein")
+    Call LoadCityData(Lector, e_Ciudad.cForgat, "Forgat")
+    Call LoadCityData(Lector, e_Ciudad.cEldoria, "Eldoria")
+    Call LoadCityData(Lector, e_Ciudad.cPenthar, "Penthar")
+    Call LoadCityData(Lector, e_Ciudad.cMorgrim, "Morgrim")
+
+    MapasCiudades = Lector.GetValue("NIX", "Mapas") & "," _
+        & Lector.GetValue("Ullathorpe", "Mapas") & "," _
+        & Lector.GetValue("Banderbill", "Mapas") & "," _
+        & Lector.GetValue("Lindos", "Mapas") & "," _
+        & Lector.GetValue("Arghal", "Mapas") & "," _
+        & Lector.GetValue("Forgat", "Mapas") & "," _
+        & Lector.GetValue("Eldoria", "Mapas") & "," _
+        & Lector.GetValue("Arkhein", "Mapas") & ","
     With CityEleusis
         .Map = val(Lector.GetValue("Eleusis", "Mapa"))
         .x = val(Lector.GetValue("Eleusis", "X"))
@@ -2038,32 +1973,8 @@ Sub CargarCiudades()
         .NecesitaNave = val(Lector.GetValue("Eleusis", "NecesitaNave"))
         MapasCiudades = MapasCiudades & Lector.GetValue("Eleusis", "Mapas") & ","
     End With
-    With CityData(e_Ciudad.cPenthar)
-        .Map = val(Lector.GetValue("Penthar", "Mapa"))
-        .x = val(Lector.GetValue("Penthar", "X"))
-        .y = val(Lector.GetValue("Penthar", "Y"))
-        .MapaViaje = val(Lector.GetValue("Penthar", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Penthar", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Penthar", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Penthar", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Penthar", "ResuX"))
-        .ResuY = val(Lector.GetValue("Penthar", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Penthar", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Penthar", "Mapas")
-    End With
-        With CityData(e_Ciudad.cMorgrim)
-        .Map = val(Lector.GetValue("Morgrim", "Mapa"))
-        .x = val(Lector.GetValue("Morgrim", "X"))
-        .y = val(Lector.GetValue("Morgrim", "Y"))
-        .MapaViaje = val(Lector.GetValue("Penthar", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Morgrim", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Morgrim", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Mogrim", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Mogrim", "ResuX"))
-        .ResuY = val(Lector.GetValue("Morgrim", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Morgrim", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Morgrim", "Mapas")
-    End With
+    MapasCiudades = MapasCiudades & Lector.GetValue("Penthar", "Mapas")
+    MapasCiudades = MapasCiudades & Lector.GetValue("Morgrim", "Mapas")
     With Prision
         .Map = val(Lector.GetValue("Prision", "Mapa"))
         .x = val(Lector.GetValue("Prision", "X"))
@@ -2283,37 +2194,6 @@ Sub CargarCiudades()
     Morgrim.Map = CityData(e_Ciudad.cMorgrim).Map
     Morgrim.x = CityData(e_Ciudad.cMorgrim).X
     Morgrim.y = CityData(e_Ciudad.cMorgrim).Y
-    'Esto es para el /HOGAR
-    Ciudades(e_Ciudad.cNix).Map = CityData(e_Ciudad.cNix).Map
-    Ciudades(e_Ciudad.cNix).x = CityData(e_Ciudad.cNix).X
-    Ciudades(e_Ciudad.cNix).y = CityData(e_Ciudad.cNix).Y
-    Ciudades(e_Ciudad.cUllathorpe).Map = CityData(e_Ciudad.cUllathorpe).Map
-    Ciudades(e_Ciudad.cUllathorpe).x = CityData(e_Ciudad.cUllathorpe).X
-    Ciudades(e_Ciudad.cUllathorpe).y = CityData(e_Ciudad.cUllathorpe).Y
-    Ciudades(e_Ciudad.cBanderbill).Map = CityData(e_Ciudad.cBanderbill).Map
-    Ciudades(e_Ciudad.cBanderbill).x = CityData(e_Ciudad.cBanderbill).X
-    Ciudades(e_Ciudad.cBanderbill).y = CityData(e_Ciudad.cBanderbill).Y
-    Ciudades(e_Ciudad.cLindos).Map = CityData(e_Ciudad.cLindos).Map
-    Ciudades(e_Ciudad.cLindos).x = CityData(e_Ciudad.cLindos).X
-    Ciudades(e_Ciudad.cLindos).y = CityData(e_Ciudad.cLindos).Y
-    Ciudades(e_Ciudad.cArghal).Map = CityData(e_Ciudad.cArghal).Map
-    Ciudades(e_Ciudad.cArghal).x = CityData(e_Ciudad.cArghal).X
-    Ciudades(e_Ciudad.cArghal).y = CityData(e_Ciudad.cArghal).Y
-    Ciudades(e_Ciudad.cForgat).Map = CityData(e_Ciudad.cForgat).Map
-    Ciudades(e_Ciudad.cForgat).x = CityData(e_Ciudad.cForgat).X
-    Ciudades(e_Ciudad.cForgat).y = CityData(e_Ciudad.cForgat).Y
-    Ciudades(e_Ciudad.cArkhein).Map = CityData(e_Ciudad.cArkhein).Map
-    Ciudades(e_Ciudad.cArkhein).x = CityData(e_Ciudad.cArkhein).X
-    Ciudades(e_Ciudad.cArkhein).y = CityData(e_Ciudad.cArkhein).Y
-    Ciudades(e_Ciudad.cEldoria).Map = CityData(e_Ciudad.cEldoria).Map
-    Ciudades(e_Ciudad.cEldoria).x = CityData(e_Ciudad.cEldoria).X
-    Ciudades(e_Ciudad.cEldoria).y = CityData(e_Ciudad.cEldoria).Y
-    Ciudades(e_Ciudad.cPenthar).Map = CityData(e_Ciudad.cPenthar).Map
-    Ciudades(e_Ciudad.cPenthar).x = CityData(e_Ciudad.cPenthar).X
-    Ciudades(e_Ciudad.cPenthar).y = CityData(e_Ciudad.cPenthar).Y
-    Ciudades(e_Ciudad.cMorgrim).Map = CityData(e_Ciudad.cMorgrim).Map
-    Ciudades(e_Ciudad.cMorgrim).x = CityData(e_Ciudad.cMorgrim).X
-    Ciudades(e_Ciudad.cMorgrim).y = CityData(e_Ciudad.cMorgrim).Y
     Exit Sub
 CargarCiudades_Err:
     Call TraceError(Err.Number, Err.Description, "ES.CargarCiudades", Erl)
