@@ -2017,6 +2017,22 @@ Public Type t_CityWorldPos
     Mapas() As String
 End Type
 
+Public Type t_CityData
+    Map As Integer
+    X As Integer
+    Y As Integer
+
+    MapaViaje As Integer
+    ViajeX As Integer
+    ViajeY As Integer
+
+    MapaResu As Integer
+    ResuX As Integer
+    ResuY As Integer
+
+    NecesitaNave As Byte
+End Type
+
 Public Type t_FXdata
     nombre As String
     GrhIndex As Long

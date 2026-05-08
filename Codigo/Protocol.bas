@@ -6516,21 +6516,36 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                 Case 2
                     If Not BusquedaNpcActiva And BusquedaTesoroActiva = False And BusquedaRegaloActiva = False Then
                         Dim pos As t_WorldPos
+                        Dim nX As Long, nY As Long
                         pos.Map = TesoroNPCMapa(RandomNumber(1, UBound(TesoroNPCMapa)))
-                        pos.y = 50
-                        pos.x = 50
-                        npc_index_evento = SpawnNpc(TesoroNPC(RandomNumber(1, UBound(TesoroNPC))), pos, True, False, True)
-                        BusquedaNpcActiva = True
+                        pos.x = RandomNumber(20, 80)
+                        pos.y = RandomNumber(20, 80)
+                        If FindNearestFreeTile(pos.Map, pos.x, pos.y, False, 30, nX, nY) Then
+                            pos.x = nX
+                            pos.y = nY
+                            npc_index_evento = SpawnNpc(TesoroNPC(RandomNumber(1, UBound(TesoroNPC))), pos, True, False, True)
+                            BusquedaNpcActiva = True
+                        Else
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_POSICION_TESORO_VALIDA, e_FontTypeNames.FONTTYPE_INFO)
+                            BusquedaNpcActiva = False
+                        End If
                     Else
                         If BusquedaNpcActiva Then
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_TODAVIA_NADIE_LOGRO_MATAR_NPC_ENCUENTRA, NpcList(npc_index_evento).pos.Map, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1654=Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa ¬1.
-                            'Msg1243= Ya hay una busqueda de npc activo. El tesoro se encuentra en: ¬1
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_TODAVIA_NADIE_LOGRO_MATAR_NPC_ENCUENTRA, NpcList(npc_index_evento).pos.Map, e_FontTypeNames.FONTTYPE_TALK))
                             Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_NPC_ACTIVO_TESORO_ENCUENTRA, e_FontTypeNames.FONTTYPE_INFO, NpcList(npc_index_evento).pos.Map)
                         Else
-                            ' Msg734=Ya hay una busqueda del tesoro activa.
                             Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_TESORO_ACTIVA, e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     End If
+                Case 3
+                    If BusquedaNpcActiva Then
+                        Call QuitarNPC(npc_index_evento, eClearHunt)
+                        BusquedaNpcActiva = False
+                        npc_index_evento = 0
+                    End If
+                    BusquedaTesoroActiva = False
+                    BusquedaRegaloActiva = False
+                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_FINALIZADO_1677, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN))
             End Select
         Else
             ' Msg735=Servidor » No estas habilitado para hacer Eventos.
