@@ -6516,29 +6516,14 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                 Case 2
                     If Not BusquedaNpcActiva And BusquedaTesoroActiva = False And BusquedaRegaloActiva = False Then
                         Dim pos As t_WorldPos
-                        Dim EncontreLugar As Boolean
-                        Dim iterations As Integer
+                        Dim nX As Long, nY As Long
                         pos.Map = TesoroNPCMapa(RandomNumber(1, UBound(TesoroNPCMapa)))
                         pos.x = RandomNumber(20, 80)
                         pos.y = RandomNumber(20, 80)
-                        iterations = 0
-                        Do While Not EncontreLugar
-                            iterations = iterations + 1
-                            If (MapData(pos.Map, pos.x, pos.y).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Then
-                                If (MapData(pos.Map, pos.x, pos.y).Blocked And FLAG_AGUA) = 0 Then
-                                    EncontreLugar = True
-                                Else
-                                pos.x = RandomNumber(20, 80)
-                                pos.y = RandomNumber(20, 80)
-                            End If
-                        Else
-                            pos.x = RandomNumber(20, 80)
-                            pos.y = RandomNumber(20, 80)
+                        If FindNearestFreeTile(pos.Map, pos.x, pos.y, False, 30, nX, nY) Then
+                            pos.x = nX
+                            pos.y = nY
                         End If
-                        If iterations >= 20 Then
-                            pos.Map = TesoroNPCMapa(RandomNumber(1, UBound(TesoroNPCMapa)))
-                        End If
-                        Loop
                         npc_index_evento = SpawnNpc(TesoroNPC(RandomNumber(1, UBound(TesoroNPC))), pos, True, False, True)
                         BusquedaNpcActiva = True
                     Else
