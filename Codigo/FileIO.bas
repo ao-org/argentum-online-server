@@ -1921,7 +1921,7 @@ Sub CargarCiudades()
     Set Lector = New clsIniManager
     Call Lector.Initialize(DatPath & "Ciudades.dat")
     Dim MapasCiudades As String
-    With CityNix
+    With CityData(e_Ciudad.cNix)
         .Map = val(Lector.GetValue("NIX", "Mapa"))
         .x = val(Lector.GetValue("NIX", "X"))
         .y = val(Lector.GetValue("NIX", "Y"))
@@ -1934,7 +1934,7 @@ Sub CargarCiudades()
         .NecesitaNave = val(Lector.GetValue("NIX", "NecesitaNave"))
         MapasCiudades = Lector.GetValue("NIX", "Mapas") & ","
     End With
-    With CityUllathorpe
+    With CityData(e_Ciudad.cUllathorpe)
         .Map = val(Lector.GetValue("Ullathorpe", "Mapa"))
         .x = val(Lector.GetValue("Ullathorpe", "X"))
         .y = val(Lector.GetValue("Ullathorpe", "Y"))
@@ -1947,7 +1947,7 @@ Sub CargarCiudades()
         .NecesitaNave = val(Lector.GetValue("Ullathorpe", "NecesitaNave"))
         MapasCiudades = MapasCiudades & Lector.GetValue("Ullathorpe", "Mapas") & ","
     End With
-    With CityBanderbill
+    With CityData(e_Ciudad.cBanderbill)
         .Map = val(Lector.GetValue("Banderbill", "Mapa"))
         .x = val(Lector.GetValue("Banderbill", "X"))
         .y = val(Lector.GetValue("Banderbill", "Y"))
@@ -1960,7 +1960,7 @@ Sub CargarCiudades()
         .NecesitaNave = val(Lector.GetValue("Banderbill", "NecesitaNave"))
         MapasCiudades = MapasCiudades & Lector.GetValue("Banderbill", "Mapas") & ","
     End With
-    With CityLindos
+    With CityData(e_Ciudad.cLindos)
         .Map = val(Lector.GetValue("Lindos", "Mapa"))
         .x = val(Lector.GetValue("Lindos", "X"))
         .y = val(Lector.GetValue("Lindos", "Y"))
@@ -1973,7 +1973,7 @@ Sub CargarCiudades()
         .NecesitaNave = val(Lector.GetValue("Lindos", "NecesitaNave"))
         MapasCiudades = MapasCiudades & Lector.GetValue("Lindos", "Mapas") & ","
     End With
-    With CityArghal
+    With CityData(e_Ciudad.cArghal)
         .Map = val(Lector.GetValue("Arghal", "Mapa"))
         .x = val(Lector.GetValue("Arghal", "X"))
         .y = val(Lector.GetValue("Arghal", "Y"))
@@ -1986,7 +1986,7 @@ Sub CargarCiudades()
         .NecesitaNave = val(Lector.GetValue("Arghal", "NecesitaNave"))
         MapasCiudades = MapasCiudades & Lector.GetValue("Arghal", "Mapas") & ","
     End With
-    With CityForgat
+    With CityData(e_Ciudad.cForgat)
         .Map = val(Lector.GetValue("Forgat", "Mapa"))
         .x = val(Lector.GetValue("Forgat", "X"))
         .y = val(Lector.GetValue("Forgat", "Y"))
@@ -1999,7 +1999,7 @@ Sub CargarCiudades()
         .NecesitaNave = val(Lector.GetValue("Forgat", "NecesitaNave"))
         MapasCiudades = MapasCiudades & Lector.GetValue("Forgat", "Mapas") & ","
     End With
-    With CityEldoria
+    With CityData(e_Ciudad.cEldoria)
         .Map = val(Lector.GetValue("Eldoria", "Mapa"))
         .x = val(Lector.GetValue("Eldoria", "X"))
         .y = val(Lector.GetValue("Eldoria", "Y"))
@@ -2012,7 +2012,7 @@ Sub CargarCiudades()
         .NecesitaNave = val(Lector.GetValue("Eldoria", "NecesitaNave"))
         MapasCiudades = MapasCiudades & Lector.GetValue("Eldoria", "Mapas") & ","
     End With
-    With CityArkhein
+    With CityData(e_Ciudad.cArkhein)
         .Map = val(Lector.GetValue("Arkhein", "Mapa"))
         .x = val(Lector.GetValue("Arkhein", "X"))
         .y = val(Lector.GetValue("Arkhein", "Y"))
@@ -2038,7 +2038,7 @@ Sub CargarCiudades()
         .NecesitaNave = val(Lector.GetValue("Eleusis", "NecesitaNave"))
         MapasCiudades = MapasCiudades & Lector.GetValue("Eleusis", "Mapas") & ","
     End With
-    With CityPenthar
+    With CityData(e_Ciudad.cPenthar)
         .Map = val(Lector.GetValue("Penthar", "Mapa"))
         .x = val(Lector.GetValue("Penthar", "X"))
         .y = val(Lector.GetValue("Penthar", "Y"))
@@ -2051,7 +2051,7 @@ Sub CargarCiudades()
         .NecesitaNave = val(Lector.GetValue("Penthar", "NecesitaNave"))
         MapasCiudades = MapasCiudades & Lector.GetValue("Penthar", "Mapas")
     End With
-        With CityMorgrim
+        With CityData(e_Ciudad.cMorgrim)
         .Map = val(Lector.GetValue("Morgrim", "Mapa"))
         .x = val(Lector.GetValue("Morgrim", "X"))
         .y = val(Lector.GetValue("Morgrim", "Y"))
@@ -2153,47 +2153,167 @@ Sub CargarCiudades()
     End With
     TotalMapasCiudades = Split(MapasCiudades, ",")
     Set Lector = Nothing
-    Nix.Map = CityNix.Map
-    Nix.x = CityNix.x
-    Nix.y = CityNix.y
-    Ullathorpe.Map = CityUllathorpe.Map
-    Ullathorpe.x = CityUllathorpe.x
-    Ullathorpe.y = CityUllathorpe.y
-    Banderbill.Map = CityBanderbill.Map
-    Banderbill.x = CityBanderbill.x
-    Banderbill.y = CityBanderbill.y
-    Lindos.Map = CityLindos.Map
-    Lindos.x = CityLindos.x
-    Lindos.y = CityLindos.y
-    Arghal.Map = CityArghal.Map
-    Arghal.x = CityArghal.x
-    Arghal.y = CityArghal.y
-    Forgat.Map = CityForgat.Map
-    Forgat.x = CityForgat.x
-    Forgat.y = CityForgat.y
-    Eldoria.Map = CityEldoria.Map
-    Eldoria.x = CityEldoria.x
-    Eldoria.y = CityEldoria.y
-    Arkhein.Map = CityArkhein.Map
-    Arkhein.x = CityArkhein.x
-    Arkhein.y = CityArkhein.y
-    Penthar.Map = CityPenthar.Map
-    Penthar.x = CityPenthar.x
-    Penthar.y = CityPenthar.y
-    Morgrim.Map = CityMorgrim.Map
-    Morgrim.x = CityMorgrim.x
-    Morgrim.y = CityMorgrim.y
+    CityNix.Map = CityData(e_Ciudad.cNix).Map
+    CityNix.x = CityData(e_Ciudad.cNix).X
+    CityNix.y = CityData(e_Ciudad.cNix).Y
+    CityNix.MapaViaje = CityData(e_Ciudad.cNix).MapaViaje
+    CityNix.ViajeX = CityData(e_Ciudad.cNix).ViajeX
+    CityNix.ViajeY = CityData(e_Ciudad.cNix).ViajeY
+    CityNix.MapaResu = CityData(e_Ciudad.cNix).MapaResu
+    CityNix.ResuX = CityData(e_Ciudad.cNix).ResuX
+    CityNix.ResuY = CityData(e_Ciudad.cNix).ResuY
+    CityNix.NecesitaNave = CityData(e_Ciudad.cNix).NecesitaNave
+    CityUllathorpe.Map = CityData(e_Ciudad.cUllathorpe).Map
+    CityUllathorpe.x = CityData(e_Ciudad.cUllathorpe).X
+    CityUllathorpe.y = CityData(e_Ciudad.cUllathorpe).Y
+    CityUllathorpe.MapaViaje = CityData(e_Ciudad.cUllathorpe).MapaViaje
+    CityUllathorpe.ViajeX = CityData(e_Ciudad.cUllathorpe).ViajeX
+    CityUllathorpe.ViajeY = CityData(e_Ciudad.cUllathorpe).ViajeY
+    CityUllathorpe.MapaResu = CityData(e_Ciudad.cUllathorpe).MapaResu
+    CityUllathorpe.ResuX = CityData(e_Ciudad.cUllathorpe).ResuX
+    CityUllathorpe.ResuY = CityData(e_Ciudad.cUllathorpe).ResuY
+    CityUllathorpe.NecesitaNave = CityData(e_Ciudad.cUllathorpe).NecesitaNave
+    CityBanderbill.Map = CityData(e_Ciudad.cBanderbill).Map
+    CityBanderbill.x = CityData(e_Ciudad.cBanderbill).X
+    CityBanderbill.y = CityData(e_Ciudad.cBanderbill).Y
+    CityBanderbill.MapaViaje = CityData(e_Ciudad.cBanderbill).MapaViaje
+    CityBanderbill.ViajeX = CityData(e_Ciudad.cBanderbill).ViajeX
+    CityBanderbill.ViajeY = CityData(e_Ciudad.cBanderbill).ViajeY
+    CityBanderbill.MapaResu = CityData(e_Ciudad.cBanderbill).MapaResu
+    CityBanderbill.ResuX = CityData(e_Ciudad.cBanderbill).ResuX
+    CityBanderbill.ResuY = CityData(e_Ciudad.cBanderbill).ResuY
+    CityBanderbill.NecesitaNave = CityData(e_Ciudad.cBanderbill).NecesitaNave
+    CityLindos.Map = CityData(e_Ciudad.cLindos).Map
+    CityLindos.x = CityData(e_Ciudad.cLindos).X
+    CityLindos.y = CityData(e_Ciudad.cLindos).Y
+    CityLindos.MapaViaje = CityData(e_Ciudad.cLindos).MapaViaje
+    CityLindos.ViajeX = CityData(e_Ciudad.cLindos).ViajeX
+    CityLindos.ViajeY = CityData(e_Ciudad.cLindos).ViajeY
+    CityLindos.MapaResu = CityData(e_Ciudad.cLindos).MapaResu
+    CityLindos.ResuX = CityData(e_Ciudad.cLindos).ResuX
+    CityLindos.ResuY = CityData(e_Ciudad.cLindos).ResuY
+    CityLindos.NecesitaNave = CityData(e_Ciudad.cLindos).NecesitaNave
+    CityArghal.Map = CityData(e_Ciudad.cArghal).Map
+    CityArghal.x = CityData(e_Ciudad.cArghal).X
+    CityArghal.y = CityData(e_Ciudad.cArghal).Y
+    CityArghal.MapaViaje = CityData(e_Ciudad.cArghal).MapaViaje
+    CityArghal.ViajeX = CityData(e_Ciudad.cArghal).ViajeX
+    CityArghal.ViajeY = CityData(e_Ciudad.cArghal).ViajeY
+    CityArghal.MapaResu = CityData(e_Ciudad.cArghal).MapaResu
+    CityArghal.ResuX = CityData(e_Ciudad.cArghal).ResuX
+    CityArghal.ResuY = CityData(e_Ciudad.cArghal).ResuY
+    CityArghal.NecesitaNave = CityData(e_Ciudad.cArghal).NecesitaNave
+    CityForgat.Map = CityData(e_Ciudad.cForgat).Map
+    CityForgat.x = CityData(e_Ciudad.cForgat).X
+    CityForgat.y = CityData(e_Ciudad.cForgat).Y
+    CityForgat.MapaViaje = CityData(e_Ciudad.cForgat).MapaViaje
+    CityForgat.ViajeX = CityData(e_Ciudad.cForgat).ViajeX
+    CityForgat.ViajeY = CityData(e_Ciudad.cForgat).ViajeY
+    CityForgat.MapaResu = CityData(e_Ciudad.cForgat).MapaResu
+    CityForgat.ResuX = CityData(e_Ciudad.cForgat).ResuX
+    CityForgat.ResuY = CityData(e_Ciudad.cForgat).ResuY
+    CityForgat.NecesitaNave = CityData(e_Ciudad.cForgat).NecesitaNave
+    CityEldoria.Map = CityData(e_Ciudad.cEldoria).Map
+    CityEldoria.x = CityData(e_Ciudad.cEldoria).X
+    CityEldoria.y = CityData(e_Ciudad.cEldoria).Y
+    CityEldoria.MapaViaje = CityData(e_Ciudad.cEldoria).MapaViaje
+    CityEldoria.ViajeX = CityData(e_Ciudad.cEldoria).ViajeX
+    CityEldoria.ViajeY = CityData(e_Ciudad.cEldoria).ViajeY
+    CityEldoria.MapaResu = CityData(e_Ciudad.cEldoria).MapaResu
+    CityEldoria.ResuX = CityData(e_Ciudad.cEldoria).ResuX
+    CityEldoria.ResuY = CityData(e_Ciudad.cEldoria).ResuY
+    CityEldoria.NecesitaNave = CityData(e_Ciudad.cEldoria).NecesitaNave
+    CityArkhein.Map = CityData(e_Ciudad.cArkhein).Map
+    CityArkhein.x = CityData(e_Ciudad.cArkhein).X
+    CityArkhein.y = CityData(e_Ciudad.cArkhein).Y
+    CityArkhein.MapaViaje = CityData(e_Ciudad.cArkhein).MapaViaje
+    CityArkhein.ViajeX = CityData(e_Ciudad.cArkhein).ViajeX
+    CityArkhein.ViajeY = CityData(e_Ciudad.cArkhein).ViajeY
+    CityArkhein.MapaResu = CityData(e_Ciudad.cArkhein).MapaResu
+    CityArkhein.ResuX = CityData(e_Ciudad.cArkhein).ResuX
+    CityArkhein.ResuY = CityData(e_Ciudad.cArkhein).ResuY
+    CityArkhein.NecesitaNave = CityData(e_Ciudad.cArkhein).NecesitaNave
+    CityPenthar.Map = CityData(e_Ciudad.cPenthar).Map
+    CityPenthar.x = CityData(e_Ciudad.cPenthar).X
+    CityPenthar.y = CityData(e_Ciudad.cPenthar).Y
+    CityPenthar.MapaViaje = CityData(e_Ciudad.cPenthar).MapaViaje
+    CityPenthar.ViajeX = CityData(e_Ciudad.cPenthar).ViajeX
+    CityPenthar.ViajeY = CityData(e_Ciudad.cPenthar).ViajeY
+    CityPenthar.MapaResu = CityData(e_Ciudad.cPenthar).MapaResu
+    CityPenthar.ResuX = CityData(e_Ciudad.cPenthar).ResuX
+    CityPenthar.ResuY = CityData(e_Ciudad.cPenthar).ResuY
+    CityPenthar.NecesitaNave = CityData(e_Ciudad.cPenthar).NecesitaNave
+    CityMorgrim.Map = CityData(e_Ciudad.cMorgrim).Map
+    CityMorgrim.x = CityData(e_Ciudad.cMorgrim).X
+    CityMorgrim.y = CityData(e_Ciudad.cMorgrim).Y
+    CityMorgrim.MapaViaje = CityData(e_Ciudad.cMorgrim).MapaViaje
+    CityMorgrim.ViajeX = CityData(e_Ciudad.cMorgrim).ViajeX
+    CityMorgrim.ViajeY = CityData(e_Ciudad.cMorgrim).ViajeY
+    CityMorgrim.MapaResu = CityData(e_Ciudad.cMorgrim).MapaResu
+    CityMorgrim.ResuX = CityData(e_Ciudad.cMorgrim).ResuX
+    CityMorgrim.ResuY = CityData(e_Ciudad.cMorgrim).ResuY
+    CityMorgrim.NecesitaNave = CityData(e_Ciudad.cMorgrim).NecesitaNave
+    Nix.Map = CityData(e_Ciudad.cNix).Map
+    Nix.x = CityData(e_Ciudad.cNix).X
+    Nix.y = CityData(e_Ciudad.cNix).Y
+    Ullathorpe.Map = CityData(e_Ciudad.cUllathorpe).Map
+    Ullathorpe.x = CityData(e_Ciudad.cUllathorpe).X
+    Ullathorpe.y = CityData(e_Ciudad.cUllathorpe).Y
+    Banderbill.Map = CityData(e_Ciudad.cBanderbill).Map
+    Banderbill.x = CityData(e_Ciudad.cBanderbill).X
+    Banderbill.y = CityData(e_Ciudad.cBanderbill).Y
+    Lindos.Map = CityData(e_Ciudad.cLindos).Map
+    Lindos.x = CityData(e_Ciudad.cLindos).X
+    Lindos.y = CityData(e_Ciudad.cLindos).Y
+    Arghal.Map = CityData(e_Ciudad.cArghal).Map
+    Arghal.x = CityData(e_Ciudad.cArghal).X
+    Arghal.y = CityData(e_Ciudad.cArghal).Y
+    Forgat.Map = CityData(e_Ciudad.cForgat).Map
+    Forgat.x = CityData(e_Ciudad.cForgat).X
+    Forgat.y = CityData(e_Ciudad.cForgat).Y
+    Eldoria.Map = CityData(e_Ciudad.cEldoria).Map
+    Eldoria.x = CityData(e_Ciudad.cEldoria).X
+    Eldoria.y = CityData(e_Ciudad.cEldoria).Y
+    Arkhein.Map = CityData(e_Ciudad.cArkhein).Map
+    Arkhein.x = CityData(e_Ciudad.cArkhein).X
+    Arkhein.y = CityData(e_Ciudad.cArkhein).Y
+    Penthar.Map = CityData(e_Ciudad.cPenthar).Map
+    Penthar.x = CityData(e_Ciudad.cPenthar).X
+    Penthar.y = CityData(e_Ciudad.cPenthar).Y
+    Morgrim.Map = CityData(e_Ciudad.cMorgrim).Map
+    Morgrim.x = CityData(e_Ciudad.cMorgrim).X
+    Morgrim.y = CityData(e_Ciudad.cMorgrim).Y
     'Esto es para el /HOGAR
-    Ciudades(e_Ciudad.cNix) = Nix
-    Ciudades(e_Ciudad.cUllathorpe) = Ullathorpe
-    Ciudades(e_Ciudad.cBanderbill) = Banderbill
-    Ciudades(e_Ciudad.cLindos) = Lindos
-    Ciudades(e_Ciudad.cArghal) = Arghal
-    Ciudades(e_Ciudad.cForgat) = Forgat
-    Ciudades(e_Ciudad.cArkhein) = Arkhein
-    Ciudades(e_Ciudad.cEldoria) = Eldoria
-    Ciudades(e_Ciudad.cPenthar) = Penthar
-    Ciudades(e_Ciudad.cMorgrim) = Morgrim
+    Ciudades(e_Ciudad.cNix).Map = CityData(e_Ciudad.cNix).Map
+    Ciudades(e_Ciudad.cNix).x = CityData(e_Ciudad.cNix).X
+    Ciudades(e_Ciudad.cNix).y = CityData(e_Ciudad.cNix).Y
+    Ciudades(e_Ciudad.cUllathorpe).Map = CityData(e_Ciudad.cUllathorpe).Map
+    Ciudades(e_Ciudad.cUllathorpe).x = CityData(e_Ciudad.cUllathorpe).X
+    Ciudades(e_Ciudad.cUllathorpe).y = CityData(e_Ciudad.cUllathorpe).Y
+    Ciudades(e_Ciudad.cBanderbill).Map = CityData(e_Ciudad.cBanderbill).Map
+    Ciudades(e_Ciudad.cBanderbill).x = CityData(e_Ciudad.cBanderbill).X
+    Ciudades(e_Ciudad.cBanderbill).y = CityData(e_Ciudad.cBanderbill).Y
+    Ciudades(e_Ciudad.cLindos).Map = CityData(e_Ciudad.cLindos).Map
+    Ciudades(e_Ciudad.cLindos).x = CityData(e_Ciudad.cLindos).X
+    Ciudades(e_Ciudad.cLindos).y = CityData(e_Ciudad.cLindos).Y
+    Ciudades(e_Ciudad.cArghal).Map = CityData(e_Ciudad.cArghal).Map
+    Ciudades(e_Ciudad.cArghal).x = CityData(e_Ciudad.cArghal).X
+    Ciudades(e_Ciudad.cArghal).y = CityData(e_Ciudad.cArghal).Y
+    Ciudades(e_Ciudad.cForgat).Map = CityData(e_Ciudad.cForgat).Map
+    Ciudades(e_Ciudad.cForgat).x = CityData(e_Ciudad.cForgat).X
+    Ciudades(e_Ciudad.cForgat).y = CityData(e_Ciudad.cForgat).Y
+    Ciudades(e_Ciudad.cArkhein).Map = CityData(e_Ciudad.cArkhein).Map
+    Ciudades(e_Ciudad.cArkhein).x = CityData(e_Ciudad.cArkhein).X
+    Ciudades(e_Ciudad.cArkhein).y = CityData(e_Ciudad.cArkhein).Y
+    Ciudades(e_Ciudad.cEldoria).Map = CityData(e_Ciudad.cEldoria).Map
+    Ciudades(e_Ciudad.cEldoria).x = CityData(e_Ciudad.cEldoria).X
+    Ciudades(e_Ciudad.cEldoria).y = CityData(e_Ciudad.cEldoria).Y
+    Ciudades(e_Ciudad.cPenthar).Map = CityData(e_Ciudad.cPenthar).Map
+    Ciudades(e_Ciudad.cPenthar).x = CityData(e_Ciudad.cPenthar).X
+    Ciudades(e_Ciudad.cPenthar).y = CityData(e_Ciudad.cPenthar).Y
+    Ciudades(e_Ciudad.cMorgrim).Map = CityData(e_Ciudad.cMorgrim).Map
+    Ciudades(e_Ciudad.cMorgrim).x = CityData(e_Ciudad.cMorgrim).X
+    Ciudades(e_Ciudad.cMorgrim).y = CityData(e_Ciudad.cMorgrim).Y
     Exit Sub
 CargarCiudades_Err:
     Call TraceError(Err.Number, Err.Description, "ES.CargarCiudades", Erl)
