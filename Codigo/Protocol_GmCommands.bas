@@ -3219,6 +3219,7 @@ Public Sub HandleGlobalMessage(ByVal UserIndex As Integer)
                     ' Verificar oro suficiente
                     Dim chatCosto As Long
                     chatCosto = SvrConfig.GetValue("ChatGlobalCosto")
+                    If chatCosto < 0 Then chatCosto = 0
                     If .Stats.GLD < chatCosto Then
                         Call WriteLocaleMsg(UserIndex, MSG_UTILIZAR_COMANDO_NECESITAS_MONEDAS_ORO, e_FontTypeNames.FONTTYPE_GLOBAL, chatCosto)
                         Exit Sub
