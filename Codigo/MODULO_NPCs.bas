@@ -2081,6 +2081,19 @@ Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As In
     End With
 End Function
 
+Public Function Paralice(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer, ByVal Time As Integer, ByVal FX As Integer) As Boolean
+    With NpcList(TargetIndex)
+        Call NPCAtacado(TargetIndex, SourceIndex)
+        .flags.Paralizado = 1
+        .Contadores.Paralisis = Time
+        .flags.Inmovilizado = 0
+        .Contadores.Inmovilizado = 0
+        Call AnimacionIdle(TargetIndex, False)
+        Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(.Char.charindex, FX, 0, .pos.x, .pos.y))
+        Paralice = True
+    End With
+End Function
+
 Public Function GetPhysicalDamageModifier(ByRef Npc As t_Npc) As Single
     GetPhysicalDamageModifier = max(1 + Npc.Modifiers.PhysicalDamageBonus, 0)
 End Function
