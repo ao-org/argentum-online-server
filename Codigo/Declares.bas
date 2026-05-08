@@ -347,6 +347,7 @@ Public Enum e_Ciudad
     cEldoria
     cPenthar
     cMorgrim
+    cCiudadCount
 End Enum
 
 Public Enum e_Raza
@@ -2014,6 +2015,22 @@ Public Type t_CityWorldPos
     ResuY As Byte
     NecesitaNave As Byte
     Mapas() As String
+End Type
+
+Public Type t_CityData
+    Map As Integer
+    X As Integer
+    Y As Integer
+
+    MapaViaje As Integer
+    ViajeX As Integer
+    ViajeY As Integer
+
+    MapaResu As Integer
+    ResuX As Integer
+    ResuY As Integer
+
+    NecesitaNave As Byte
 End Type
 
 Public Type t_FXdata

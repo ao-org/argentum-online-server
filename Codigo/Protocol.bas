@@ -5530,6 +5530,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                     UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
                     UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Criminal
                     UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
+                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_LEGION_OSCURA_GLOBAL, username, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS))
                     Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FUERZAS_CAOS_PROHIBIDA_REENLISTADA, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1992=¬1 expulsado de las fuerzas del caos y prohibida la reenlistada.
                     Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FORMA_DEFINITIVA_FUERZAS_CAOS, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1991=¬1 te ha expulsado en forma definitiva de las fuerzas del caos.
             Else
@@ -5584,6 +5585,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                 UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
                 UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Ciudadano
                 UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_ARMADA_REAL_GLOBAL, username, e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA))
                 Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FUERZAS_REALES_PROHIBIDA_REENLISTADA, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1990=¬1 expulsado de las fuerzas reales y prohibida la reenlistada.
                 Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FORMA_DEFINITIVA_FUERZAS_REALES, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1989=¬1 te ha expulsado en forma definitiva de las fuerzas reales.
             Else
@@ -6517,21 +6519,36 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                 Case 2
                     If Not BusquedaNpcActiva And BusquedaTesoroActiva = False And BusquedaRegaloActiva = False Then
                         Dim pos As t_WorldPos
+                        Dim nX As Long, nY As Long
                         pos.Map = TesoroNPCMapa(RandomNumber(1, UBound(TesoroNPCMapa)))
-                        pos.y = 50
-                        pos.x = 50
-                        npc_index_evento = SpawnNpc(TesoroNPC(RandomNumber(1, UBound(TesoroNPC))), pos, True, False, True)
-                        BusquedaNpcActiva = True
+                        pos.x = RandomNumber(20, 80)
+                        pos.y = RandomNumber(20, 80)
+                        If FindNearestFreeTile(pos.Map, pos.x, pos.y, False, 30, nX, nY) Then
+                            pos.x = nX
+                            pos.y = nY
+                            npc_index_evento = SpawnNpc(TesoroNPC(RandomNumber(1, UBound(TesoroNPC))), pos, True, False, True)
+                            BusquedaNpcActiva = True
+                        Else
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_POSICION_TESORO_VALIDA, e_FontTypeNames.FONTTYPE_INFO)
+                            BusquedaNpcActiva = False
+                        End If
                     Else
                         If BusquedaNpcActiva Then
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_TODAVIA_NADIE_LOGRO_MATAR_NPC_ENCUENTRA, NpcList(npc_index_evento).pos.Map, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1654=Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa ¬1.
-                            'Msg1243= Ya hay una busqueda de npc activo. El tesoro se encuentra en: ¬1
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_TODAVIA_NADIE_LOGRO_MATAR_NPC_ENCUENTRA, NpcList(npc_index_evento).pos.Map, e_FontTypeNames.FONTTYPE_TALK))
                             Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_NPC_ACTIVO_TESORO_ENCUENTRA, e_FontTypeNames.FONTTYPE_INFO, NpcList(npc_index_evento).pos.Map)
                         Else
-                            ' Msg734=Ya hay una busqueda del tesoro activa.
                             Call WriteLocaleMsg(UserIndex, MSG_HAY_BUSQUEDA_TESORO_ACTIVA, e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     End If
+                Case 3
+                    If BusquedaNpcActiva Then
+                        Call QuitarNPC(npc_index_evento, eClearHunt)
+                        BusquedaNpcActiva = False
+                        npc_index_evento = 0
+                    End If
+                    BusquedaTesoroActiva = False
+                    BusquedaRegaloActiva = False
+                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_FINALIZADO_1677, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN))
             End Select
         Else
             ' Msg735=Servidor » No estas habilitado para hacer Eventos.
