@@ -633,9 +633,17 @@ End Sub
 Public Function GetUserCurrentJailMinutesDatabase(ByVal username As String) As Long
     On Error GoTo ErrorHandler
     Dim RS As ADODB.Recordset
+    Dim TargetUser As t_UserReference
 
-    ' Leemos counter_pena desde user porque representa el tiempo de carcel
-    ' pendiente real al momento de consultar el informe.
+    ' Si el usuario esta online, usamos el contador en memoria porque es el valor
+    ' mas actualizado (la DB puede quedar atrasada hasta el proximo guardado).
+    TargetUser = NameIndex(username)
+    If IsValidUserRef(TargetUser) Then
+        GetUserCurrentJailMinutesDatabase = UserList(TargetUser.ArrayIndex).Counters.Pena
+        Exit Function
+    End If
+
+    ' Para usuarios offline, usamos el valor persistido en DB.
     Set RS = Query("SELECT counter_pena FROM `user` WHERE UPPER(name) = ?;", UCase$(username))
     If RS Is Nothing Then Exit Function
     If RS.RecordCount = 0 Then Exit Function
