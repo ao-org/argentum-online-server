@@ -601,11 +601,27 @@ End Function
 Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal username As String)
     On Error GoTo ErrorHandler
     Dim RS As ADODB.Recordset
+    Dim JailMinutes As Long
+    Dim Reason As String
+
+    ' Obtenemos la pena activa actual para mostrar en el informe
+    ' cuanto tiempo de carcel le queda cumplir al usuario.
+    JailMinutes = GetUserCurrentJailMinutesDatabase(username)
+
     Set RS = Query("SELECT user_id, number, reason FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", UCase$(username))
     If RS Is Nothing Then Exit Sub
+
     If Not RS.RecordCount = 0 Then
         While Not RS.EOF
-            Call WriteConsoleMsg(UserIndex, RS!Number & " - " & RS!Reason, e_FontTypeNames.FONTTYPE_INFO)
+            Reason = RS!Reason
+
+            ' Solo anexamos el tiempo restante cuando la pena es de carcel y
+            ' todavia hay minutos por cumplir, para no ensuciar otras sanciones.
+            If JailMinutes > 0 And InStr(1, UCase$(Reason), "CARCEL", vbTextCompare) > 0 Then
+                Reason = Reason & " | TIEMPO RESTANTE: " & JailMinutes & " minutos"
+            End If
+
+            Call WriteConsoleMsg(UserIndex, RS!Number & " - " & Reason, e_FontTypeNames.FONTTYPE_INFO)
             RS.MoveNext
         Wend
     End If
@@ -613,6 +629,22 @@ Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal usernam
 ErrorHandler:
     Call LogDatabaseError("Error in SendUserPunishmentsDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 End Sub
+
+Public Function GetUserCurrentJailMinutesDatabase(ByVal username As String) As Long
+    On Error GoTo ErrorHandler
+    Dim RS As ADODB.Recordset
+
+    ' Leemos counter_pena desde user porque representa el tiempo de carcel
+    ' pendiente real al momento de consultar el informe.
+    Set RS = Query("SELECT counter_pena FROM `user` WHERE UPPER(name) = ?;", UCase$(username))
+    If RS Is Nothing Then Exit Function
+    If RS.RecordCount = 0 Then Exit Function
+
+    GetUserCurrentJailMinutesDatabase = SanitizeNullValue(RS!counter_pena, 0)
+    Exit Function
+ErrorHandler:
+    Call LogDatabaseError("Error in GetUserCurrentJailMinutesDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+End Function
 
 Public Function GetUserGuildIndexDatabase(ByVal CharId As Long) As Integer
     On Error GoTo ErrorHandler
