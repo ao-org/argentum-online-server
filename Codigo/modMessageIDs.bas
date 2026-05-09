@@ -41,6 +41,7 @@ Public Const MSG_MAP_MIN_LEVEL                              As Integer = 1108
 Public Const MSG_MAP_MAX_LEVEL                              As Integer = 1109
 Public Const MSG_MAP_REQUIRES_GROUP                         As Integer = 775
 Public Const MSG_MAP_REQUIRES_PATREON                       As Integer = 776
+Public Const MSG_INSUFICIENT_PATREON_CREDITS                As Integer = 2176
 Public Const MSG_TILE_REQUIRES_PATREON                      As Integer = 776
 Public Const MSG_PICKUP_UNAVAILABLE                         As Integer = 261
 
@@ -104,6 +105,10 @@ Public Const MSG_CONNECTION_DARK_LEGION_7 As Integer = 2155
 Public Const MSG_CONNECTION_DARK_LEGION_8 As Integer = 2156
 Public Const MSG_CONNECTION_DARK_LEGION_9 As Integer = 2157
 Public Const MSG_CONNECTION_DARK_LEGION_10 As Integer = 2158
+
+Public Const MSG_EXPULSADO_ARMADA_REAL_GLOBAL As Integer = 2178
+Public Const MSG_EXPULSADO_LEGION_OSCURA_GLOBAL As Integer = 2179
+
 Public Const MSG_PERFORATED_ARMOR As Integer = 2161
 Public Const MSG_NPC_SPAWN_EVENT As Integer = 1548
 Public Const MSG_NPC_EVENT_KILLED As Integer = 1549
@@ -1222,4 +1227,6 @@ Public Const MSG_THREAD_NOT_STRONG_ENOUGH = 2170
 Public Const MSG_ANTI_MACRO_CONTROL = 2172
 Public Const MSG_USE_MESSAGE_ANTI_MACRO = 2173
 Public Const MSG_FACTION_POINTS_GAINED = 2175
+Public Const MSG_PROHIBITED_ACTION_FOR_YOUR_FACTION = 2177
+Public Const MSG_NO_HAY_POSICION_TESORO_VALIDA As Integer = 2181
 

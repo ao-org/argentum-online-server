@@ -463,7 +463,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
         ' Género válido
         If UserSexo < Hombre Or UserSexo > Mujer Then Exit Function
         ' Ciudad válida
-        If Hogar <= 0 Or Hogar > NUMCIUDADES Then Exit Function
+        If Hogar <= 0 Or Hogar > CITY_COUNT Then Exit Function
         ' Cabeza válida
 #If LOGIN_STRESS_TEST = 0 Then
         If Not ValidarCabeza(UserRaza, UserSexo, head) Then Exit Function
@@ -565,6 +565,10 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
                 .pos.Map = 560
                 .pos.x = 40
                 .pos.y = 69
+            Case e_Ciudad.cMorgrim
+                .pos.Map = 591
+                .pos.x = 50
+                .pos.y = 50
         End Select
         UltimoChar = UCase$(name)
         Call SaveNewUser(UserIndex)

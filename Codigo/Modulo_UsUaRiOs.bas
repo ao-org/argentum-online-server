@@ -890,7 +890,11 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, _
         .BackpackAnim = BackPack
     
         If .charindex > 0 Then
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, .charindex, Arma, Escudo, Cart, BackPack, .FX, .loops, Casco, False, UserList(UserIndex).flags.Navegando))
+            If UserList(UserIndex).flags.AdminInvisible = 0 Then
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, .charindex, Arma, Escudo, Cart, BackPack, .FX, .loops, Casco, False, UserList(UserIndex).flags.Navegando))
+            Else
+                Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageCharacterChange(body, head, Heading, .charindex, Arma, Escudo, Cart, BackPack, .FX, .loops, Casco, False, UserList(UserIndex).flags.Navegando))
+            End If
         End If
     End With
     
@@ -956,7 +960,11 @@ Sub RefreshCharStatus(ByVal UserIndex As Integer)
             End If
         End If
     End If
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserList(UserIndex).Faccion.Status, name))
+    If UserList(UserIndex).flags.AdminInvisible = 0 Then
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserList(UserIndex).Faccion.Status, name))
+    Else
+        Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserList(UserIndex).Faccion.Status, name))
+    End If
     Exit Sub
 RefreshCharStatus_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.RefreshCharStatus", Erl)
@@ -1500,6 +1508,7 @@ Select Case UserList(UserIndex).Hogar
     Case e_Ciudad.cArkhein: char_home = CIUDAD_ARKHEIN
     Case e_Ciudad.cEldoria: char_home = CIUDAD_ELDORIA
     Case e_Ciudad.cPenthar: char_home = CIUDAD_PENTHAR
+    Case e_Ciudad.cMorgrim: char_home = CIUDAD_MORGRIM
     Case Else: char_home = CIUDAD_ULLATHORPE
 End Select
     Call WriteLocaleMsg(sendIndex, MSG_CHARACTER_HOME, e_FontTypeNames.FONTTYPE_INFO, char_home)

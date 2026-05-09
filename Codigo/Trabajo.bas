@@ -73,8 +73,10 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
         Dim velocidadOcultarse As Integer
         velocidadOcultarse = 1
         If .clase = e_Class.Hunter Then
-            If ObjData(.invent.EquippedArmorObjIndex).Camouflage And .Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
-                Exit Sub
+            If .invent.EquippedArmorObjIndex > 0 Then
+                If ObjData(.invent.EquippedArmorObjIndex).Camouflage And .Stats.UserSkills(e_Skill.Ocultarse) = 100 Then
+                    Exit Sub
+                End If
             End If
         End If
         .Counters.TiempoOculto = .Counters.TiempoOculto - velocidadOcultarse
@@ -2013,22 +2015,22 @@ Public Sub GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_Obj, 
             End If
         Case e_JobsTypes.Tailor
             If .PielLobo > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielLobo , SvrConfig.GetValue("TailoringExp"), Item.Amount)
+                tmpExp = tmpExp + ComputeWorkingExp(.PielLobo, SvrConfig.GetValue("WolfPeltExp"), Item.Amount)
             End If
             If .PielOsoPardo > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPardo , SvrConfig.GetValue("TailoringExp"), Item.Amount)
+                tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPardo, SvrConfig.GetValue("BearPeltExp"), Item.Amount)
             End If
             If .PielOsoPolar > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPolar , SvrConfig.GetValue("TailoringExp"), Item.Amount)
+                tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPolaR, SvrConfig.GetValue("PolarBearPeltExp"), Item.Amount)
             End If
             If .PielLoboNegro > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielLoboNegro, SvrConfig.GetValue("TailoringExp"), Item.Amount)
+                tmpExp = tmpExp + ComputeWorkingExp(.PielLoboNegro, SvrConfig.GetValue("BlackWolfPeltExp"), Item.Amount)
             End If
             If .PielTigre > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielTigre, SvrConfig.GetValue("TailoringExp"), Item.Amount)
+                tmpExp = tmpExp + ComputeWorkingExp(.PielTigre, SvrConfig.GetValue("TigerPeltExp"), Item.Amount)
             End If
             If .PielTigreBengala > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielTigreBengala, SvrConfig.GetValue("TailoringExp"), Item.Amount)
+                tmpExp = tmpExp + ComputeWorkingExp(.PielTigreBengala, SvrConfig.GetValue("BengalTigerPeltExp"), Item.Amount)
             End If
         Case Else
             tmpExp = SvrConfig.GetValue("ElseExp")

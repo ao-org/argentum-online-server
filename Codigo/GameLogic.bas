@@ -733,11 +733,19 @@ Sub GetHeadingRight(ByVal head As e_Heading, ByRef pos As t_WorldPos)
     pos.y = nY
 End Sub
 
-' Autor: WyroX - 20/01/2021
-' Retorna el heading recibo como parámetro pero rotado, según el valor R.
-' Si R es 1, rota en sentido horario. Si R es -1, en sentido antihorario.
 Function Rotate_Heading(ByVal Heading As e_Heading, ByVal r As Integer) As e_Heading
-    Rotate_Heading = (Heading + r + 3) Mod 4 + 1
+    ' Validate input to prevent overflow
+    If Heading < 1 Then Heading = 1
+    If Heading > 4 Then Heading = 4
+    
+    ' Normalize r to -1, 0, or 1
+    If r > 0 Then r = 1
+    If r < 0 Then r = -1
+    
+    ' Calculate new heading (1-4 range)
+    Dim result As Integer
+    result = ((Heading - 1 + r + 4) Mod 4) + 1
+    Rotate_Heading = result
 End Function
 
 Function LegalPos(ByVal Map As Integer, _

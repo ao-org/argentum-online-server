@@ -210,8 +210,10 @@ Private Sub ReloadMemberList()
             i = i + 1
             RS.MoveNext
         Wend
+        memberCount = UBound(MemberList) + 1
+    Else
+        memberCount = 0
     End If
-    memberCount = UBound(MemberList) + 1
     MemberListLoaded = True
     Exit Sub
 ReloadMemberList_Err:
@@ -221,6 +223,11 @@ End Sub
 Public Function GetMemberList() As Long()
     On Error GoTo GetMemberList_Err
     Call ReloadMemberList
+    If memberCount = 0 Then
+        Dim emptyArr() As Long
+        GetMemberList = emptyArr
+        Exit Function
+    End If
     If memberCount < (UBound(MemberList) + 1) Then
         Dim Members() As Long
         ReDim Members(memberCount - 1) As Long
@@ -293,17 +300,23 @@ End Sub
 Public Sub ExpulsarMiembro(ByVal CharId As Long)
     On Error GoTo ExpulsarMiembro_Err
     Call Execute("DELETE FROM guild_members WHERE user_id = ? AND guild_id = ?;", CharId, p_GuildId)
-    Dim i As Integer
-    For i = 0 To UBound(MemberList)
-        If MemberList(i) = CharId Then
-            MemberList(i) = 0
-            Exit For
+    If memberCount > 0 Then
+        Dim i As Integer
+        Dim found As Boolean
+        found = False
+        For i = 0 To UBound(MemberList)
+            If MemberList(i) = CharId Then
+                found = True
+                Exit For
+            End If
+        Next i
+        If found Then
+            For i = i To UBound(MemberList) - 1
+                MemberList(i) = MemberList(i + 1)
+            Next i
+            memberCount = memberCount - 1
         End If
-    Next i
-    For i = i To UBound(MemberList) - 1
-        MemberList(i) = MemberList(i + 1)
-    Next i
-    memberCount = memberCount - 1
+    End If
     Call SaveUserGuildMember(CharId, p_GuildName)
     Call SaveUserGuildIndex(CharId, 0)
     Exit Sub
