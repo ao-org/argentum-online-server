@@ -589,7 +589,7 @@ Public Sub CargarHechizos()
         Hechizos(Hechizo).Duration = val(Leer.GetValue("Hechizo" & Hechizo, "Duration"))
         'Barrin 30/9/03
         Hechizos(Hechizo).StaRequerido = val(Leer.GetValue("Hechizo" & Hechizo, "StaRequerido"))
-        Hechizos(Hechizo).StaPercentRequerido = val(Leer.GetValue("Hechizo" & Hechizo, "StaPercentRequerido"))
+        Hechizos(Hechizo).StaPercentRequired = val(Leer.GetValue("Hechizo" & Hechizo, "StaPercentRequired"))
         Hechizos(Hechizo).Target = val(Leer.GetValue("Hechizo" & Hechizo, "Target"))
         Hechizos(Hechizo).RequireTransform = val(Leer.GetValue("Hechizo" & Hechizo, "RequireTransform"))
         frmCargando.cargar.value = frmCargando.cargar.value + 1

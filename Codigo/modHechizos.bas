@@ -1247,8 +1247,8 @@ End Function
 Public Function GetSpellStaminaCost(ByVal UserIndex As Integer, Hechizo As t_Hechizo) As Integer
     GetSpellStaminaCost = Hechizo.StaRequerido
 
-    If Hechizo.StaPercentRequerido > 0 Then
-        GetSpellStaminaCost = MaximoInt(1, CInt(Ceil(Porcentaje(UserList(UserIndex).Stats.MaxSta, Hechizo.StaPercentRequerido))))
+    If Hechizo.StaPercentRequired > 0 Then
+        GetSpellStaminaCost = MaximoInt(1, CInt(Ceil(Porcentaje(UserList(UserIndex).Stats.MaxSta, Hechizo.StaPercentRequired))))
     End If
 End Function
 
