@@ -859,6 +859,9 @@ Function LegalWalk(ByVal Map As Integer, _
         If .trigger = WORKERONLY Then
             If Not UserList(WalkerIndex).clase = Trabajador Then Exit Function
         End If
+        ' Proxy trigger 201 is explicitly non-walkable: reject in LegalWalk so
+        ' movement is blocked at the canonical movement gate (avoids bounce effect).
+        If .trigger = NPC_PROXY_BLOCKED_TRIGGER Then Exit Function
         If WalkerIndex <> 0 Then
             If TileRequiresPatreon(Map, x, y) Then
                 If Not EsGM(WalkerIndex) And Not IsPatreon(WalkerIndex) Then

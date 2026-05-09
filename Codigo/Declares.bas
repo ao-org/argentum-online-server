@@ -1145,6 +1145,10 @@ Public Enum e_Trigger
     ONLY_PATREON_TILE = 20
 End Enum
 
+
+' Reserved trigger range start for server-managed NPC proxy hitboxes.
+Public Const NPC_PROXY_TRIGGER_MIN As Integer = 200
+Public Const NPC_PROXY_BLOCKED_TRIGGER As Integer = 201
 Public Enum e_NpcInfoMask
     AlmostDead = 1
     SeriouslyWounded = 2
@@ -2895,6 +2899,10 @@ Public Type t_LastNetworkUssage
     ExitIndex As Integer
 End Type
 
+
+' Shared attack-kind constants used by combat/protocol modules.
+Public Const Ranged As Byte = 0
+Public Const Melee As Byte = 1
 Public Enum e_CdTypes
     e_magic = 1
     e_Melee = 2

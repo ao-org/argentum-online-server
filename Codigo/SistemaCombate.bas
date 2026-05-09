@@ -26,13 +26,59 @@ Attribute VB_Name = "SistemaCombate"
 '
 '
 Option Explicit
+
 Public Const MAXDISTANCIAARCO  As Byte = 18
 
 
-Public Enum AttackType
-    Ranged
-    Melee
-End Enum
+' Trigger base reserved for NPC proxy hitboxes configured from mapping files.
+' We intentionally reserve a high range (>= 200) to avoid collisions with
+' existing gameplay triggers used by maps/content.
+Private Const NPC_PROXY_TRIGGER_DAMAGE_REDUCTION_PER_TILE As Integer = 5
+Private Const NPC_PROXY_TRIGGER_MIN_DAMAGE_PERCENT As Integer = 60
+Private Const NPC_PROXY_MODULE_BUILD_TAG As String = "npc-proxy-2026-05-09b"
+Private Const NPC_PROXY_SCAN_RADIUS As Integer = 8
+
+' Keeps the last proxy-distance context per attacker so physical/melee/ranged
+' damage can apply a clear and deterministic falloff when the hit came from a
+' proxy trigger tile instead of the NPC's real tile.
+Private LastProxyDistanceByUser() As Integer
+
+Private Function ResolveStaticNpcFromProxyTrigger(ByVal mapIndex As Integer, ByVal x As Integer, ByVal y As Integer, ByRef outNpcIndex As Integer, ByRef outDistance As Integer) As Boolean
+    Dim scanX As Integer
+    Dim scanY As Integer
+    Dim npcIdx As Integer
+    Dim d As Integer
+    Dim bestD As Integer
+
+    bestD = 9999
+    outNpcIndex = 0
+    outDistance = 0
+
+    ' We only scan a small ring around the trigger tile because this system is
+    ' intended for mapped proxy hitboxes around large NPCs.
+    For scanX = MaximoInt(XMinMapSize, x - NPC_PROXY_SCAN_RADIUS) To MinimoInt(XMaxMapSize, x + NPC_PROXY_SCAN_RADIUS)
+        For scanY = MaximoInt(YMinMapSize, y - NPC_PROXY_SCAN_RADIUS) To MinimoInt(YMaxMapSize, y + NPC_PROXY_SCAN_RADIUS)
+            npcIdx = MapData(mapIndex, scanX, scanY).NpcIndex
+            If npcIdx > 0 Then
+                ' We prioritize practical gameplay behavior: resolve to the nearest
+                ' attackable NPC around the proxy tile regardless of movement mode.
+                ' (Static-only filtering caused valid mapped proxy tiles to be ignored.)
+                If NpcList(npcIdx).Attackable Then
+                    d = Abs(scanX - x) + Abs(scanY - y) ' Manhattan distance
+                    If d < bestD Then
+                        bestD = d
+                        outNpcIndex = npcIdx
+                    End If
+                End If
+            End If
+        Next scanY
+    Next scanX
+
+    If outNpcIndex > 0 Then
+        outDistance = bestD
+        ResolveStaticNpcFromProxyTrigger = True
+    End If
+End Function
 
 Private Function ModificadorPoderAtaqueArmas(ByVal clase As e_Class) As Single
     On Error GoTo ModificadorPoderAtaqueArmas_Err
@@ -219,7 +265,7 @@ PoderAtaqueWrestling_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueWrestling", Erl)
 End Function
 
-Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal aType As AttackType) As Boolean
+Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal aType As Byte) As Boolean
     On Error GoTo UserImpactoNpc_Err
     Dim PoderAtaque As Long
     Dim Arma        As Integer
@@ -366,7 +412,61 @@ GetUserDamageWithItem_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetUserDamageWithItem", Erl)
 End Function
 
-Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal aType As AttackType)
+
+
+Public Function ResolveProxyNpcFromTile(ByVal mapIndex As Integer, ByVal x As Integer, ByVal y As Integer, ByRef outNpcIndex As Integer, ByRef outDistance As Integer) As Boolean
+    If MapData(mapIndex, x, y).trigger < NPC_PROXY_TRIGGER_MIN Then Exit Function
+    ResolveProxyNpcFromTile = ResolveStaticNpcFromProxyTrigger(mapIndex, x, y, outNpcIndex, outDistance)
+End Function
+
+Private Sub EnsureProxyDistanceCapacity()
+    Static LoggedProxyModuleBuild As Boolean
+    If (Not Not LastProxyDistanceByUser) = 0 Then
+        ReDim LastProxyDistanceByUser(1 To UBound(UserList)) As Integer
+    End If
+    If Not LoggedProxyModuleBuild Then
+        LoggedProxyModuleBuild = True
+        LogInfoServidor "[NPC_PROXY] Module build=" & NPC_PROXY_MODULE_BUILD_TAG & " TriggerMin=" & CStr(NPC_PROXY_TRIGGER_MIN)
+    End If
+End Sub
+
+
+
+Public Function ApplyProxyPercent(ByVal baseDamage As Long, ByVal percent As Integer) As Long
+    Dim scaled As Long
+    ' Keep arithmetic primitive and step-based to avoid VB6 "expression too complex"
+    ' runtime failures seen with explicit conversion chains.
+    scaled = (baseDamage * percent) \ 100
+    ApplyProxyPercent = scaled
+End Function
+
+Private Function HasProxyDistanceForUser(ByVal UserIndex As Integer) As Boolean
+    Call EnsureProxyDistanceCapacity
+    If UserIndex < LBound(LastProxyDistanceByUser) Or UserIndex > UBound(LastProxyDistanceByUser) Then Exit Function
+    HasProxyDistanceForUser = LastProxyDistanceByUser(UserIndex) > 0
+End Function
+
+Public Sub RegisterProxyDistanceForUser(ByVal UserIndex As Integer, ByVal Distance As Integer)
+    Call EnsureProxyDistanceCapacity
+    If UserIndex < LBound(LastProxyDistanceByUser) Or UserIndex > UBound(LastProxyDistanceByUser) Then Exit Sub
+    LastProxyDistanceByUser(UserIndex) = MaximoInt(0, Distance)
+End Sub
+
+Public Function ConsumeProxyDamagePercent(ByVal UserIndex As Integer) As Integer
+    Dim proxyPenaltyPercent As Integer
+    Dim proxyFinalPercent   As Integer
+    Call EnsureProxyDistanceCapacity
+    If UserIndex < LBound(LastProxyDistanceByUser) Or UserIndex > UBound(LastProxyDistanceByUser) Then
+        ConsumeProxyDamagePercent = 100
+        Exit Function
+    End If
+    proxyPenaltyPercent = LastProxyDistanceByUser(UserIndex) * NPC_PROXY_TRIGGER_DAMAGE_REDUCTION_PER_TILE
+    proxyFinalPercent = MaximoInt(NPC_PROXY_TRIGGER_MIN_DAMAGE_PERCENT, 100 - proxyPenaltyPercent)
+    ConsumeProxyDamagePercent = proxyFinalPercent
+    LastProxyDistanceByUser(UserIndex) = 0
+End Function
+
+Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal aType As Byte)
     On Error GoTo UserDamageNpc_Err
     With UserList(UserIndex)
         Dim Damage As Long, DamageBase As Long, DamageExtra As Long, Color As Long, DamageStr As String
@@ -449,6 +549,13 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
         End If
         If DamageExtra > 0 Then
             Damage = Damage + DamageExtra
+        End If
+        If HasProxyDistanceForUser(UserIndex) Then
+            ' Damage falloff for proxy-trigger hits:
+            ' 5% less per Manhattan tile from the NPC original tile.
+            Dim proxyDamagePercent As Integer
+            proxyDamagePercent = ConsumeProxyDamagePercent(UserIndex)
+            Damage = ApplyProxyPercent(Damage, proxyDamagePercent)
         End If
         ' Restamos el daño al NPC
         If NPCs.DoDamageOrHeal(NpcIndex, UserIndex, eUser, -Damage, e_phisical, .invent.EquippedWeaponObjIndex, Color) = eStillAlive Then
@@ -761,7 +868,7 @@ NpcAtacaNpc_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaNpc", Erl)
 End Sub
 
-Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal aType As AttackType)
+Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal aType As Byte)
     On Error GoTo UsuarioAtacaNpc_Err
     'Si el npc es solo atacable para clanes y el usuario no tiene clan, le avisa y sale de la funcion
     If NpcList(NpcIndex).OnlyForGuilds = 1 And UserList(UserIndex).GuildIndex <= 0 Then
@@ -875,6 +982,19 @@ Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_W
                 Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_NPC, e_FontTypeNames.FONTTYPE_FIGHT)
             End If
             Exit Sub
+        ElseIf MapData(TargetPos.Map, TargetPos.x, TargetPos.y).trigger >= NPC_PROXY_TRIGGER_MIN Then
+            ' Proxy-trigger hitbox for static NPCs.
+            ' If the attacked tile has a reserved proxy trigger, we resolve the
+            ' nearest static NPC and redirect the hit as if it was targeted directly.
+            Dim proxyNpcIndex As Integer
+            Dim proxyDistance As Integer
+            If ResolveStaticNpcFromProxyTrigger(TargetPos.Map, TargetPos.x, TargetPos.y, proxyNpcIndex, proxyDistance) Then
+                If NpcList(proxyNpcIndex).Attackable Then
+                    Call RegisterProxyDistanceForUser(UserIndex, proxyDistance)
+                    Call UsuarioAtacaNpc(UserIndex, proxyNpcIndex, Melee)
+                    Exit Sub
+                End If
+            End If
         Else
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
             With UserList(UserIndex)
@@ -939,7 +1059,7 @@ UsuarioAtaca_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtaca", Erl)
 End Sub
 
-Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType) As Boolean
+Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As Byte) As Boolean
     On Error GoTo UsuarioImpacto_Err
     Dim ProbRechazo            As Long
     Dim Rechazo                As Boolean
@@ -1034,7 +1154,7 @@ UsuarioImpacto_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioImpacto", Erl)
 End Function
 
-Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType)
+Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As Byte)
     On Error GoTo UsuarioAtacaUsuario_Err
     Dim sendto As SendTarget
     If Not PuedeAtacar(AtacanteIndex, VictimaIndex) Then Exit Sub
@@ -1101,7 +1221,7 @@ UsuarioAtacaUsuario_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaUsuario", Erl)
 End Sub
 
-Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType)
+Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As Byte)
     On Error GoTo UserDañoUser_Err
     With UserList(VictimaIndex)
         Dim Damage As Long, BaseDamage As Long, BonusDamage As Long, Defensa As Long, Color As Long, DamageStr As String, Lugar As e_PartesCuerpo
@@ -1816,7 +1936,7 @@ Public Function PeleaSegura(ByVal Source As Integer, ByVal dest As Integer) As B
     End If
 End Function
 
-Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType)
+Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As Byte)
     On Error GoTo UserDañoEspecial_Err
     Dim ArmaObjInd As Integer, ObjInd As Integer
     ArmaObjInd = UserList(AtacanteIndex).invent.EquippedWeaponObjIndex

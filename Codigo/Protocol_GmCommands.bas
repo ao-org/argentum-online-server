@@ -2448,6 +2448,13 @@ Public Sub HandleSetTrigger(ByVal UserIndex As Integer)
         tTrigger = reader.ReadInt8()
         If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
         If tTrigger >= 0 Then
+            ' Reserved range for server-side systems (NPC proxy hitboxes, etc.).
+            ' Prevent online editing via /trigger for values >= 200 to avoid accidental
+            ' map edits colliding with combat proxy logic.
+            If tTrigger >= NPC_PROXY_TRIGGER_MIN Then
+                Call WriteConsoleMsg(UserIndex, "Trigger reservado (>=" & CStr(NPC_PROXY_TRIGGER_MIN) & "). Usa mapeo offline.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
             MapData(.pos.Map, .pos.x, .pos.y).trigger = tTrigger
             tLog = "Trigger " & tTrigger & " on the map " & .pos.Map & " " & .pos.x & "," & .pos.y
             Call LogGM(GetUserRealName(UserIndex), tLog)

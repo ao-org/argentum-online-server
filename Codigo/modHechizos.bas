@@ -1249,7 +1249,21 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
     Dim b       As Boolean
     Dim Effect  As IBaseEffectOverTime
     Dim IsAlive As Boolean
+    Dim restoredProxyTarget As Boolean
+    Dim oldTargetNpc As t_NpcReference
     With UserList(UserIndex)
+        ' If no direct NPC target is selected but the spell cursor is on a proxy
+        ' trigger tile, resolve the nearest proxy NPC and cast against it.
+        If Not IsValidNpcRef(.flags.TargetNPC) Then
+            Dim proxyNpcIndex As Integer
+            Dim proxyDistance As Integer
+            If ResolveProxyNpcFromTile(.pos.Map, .flags.TargetX, .flags.TargetY, proxyNpcIndex, proxyDistance) Then
+                oldTargetNpc = .flags.TargetNPC
+                Call SetNpcRef(.flags.TargetNPC, proxyNpcIndex)
+                Call RegisterProxyDistanceForUser(UserIndex, proxyDistance)
+                restoredProxyTarget = True
+            End If
+        End If
         IsAlive = True
         If Hechizos(uh).EotId > 0 And IsValidNpcRef(.flags.TargetNPC) Then
             Set Effect = FindEffectOnTarget(UserIndex, NpcList(.flags.TargetNPC.ArrayIndex).EffectOverTime, Hechizos(uh).EotId)
@@ -1265,6 +1279,11 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
             Case e_TipoHechizo.uEstado ' Afectan estados (por ejem : Envenenamiento)
                 Call HechizoEstadoNPC(.flags.TargetNPC.ArrayIndex, uh, b, UserIndex)
             Case e_TipoHechizo.uPropiedades ' Afectan HP,MANA,STAMINA,ETC
+                ' If the spell target tile is a proxy trigger tile, we keep the tile-to-NPC
+                ' Manhattan distance so magical damage can use the same falloff model.
+                If MapData(.pos.Map, .flags.TargetX, .flags.TargetY).trigger >= NPC_PROXY_TRIGGER_MIN Then
+                    Call RegisterProxyDistanceForUser(UserIndex, Abs(.flags.TargetX - NpcList(.flags.TargetNPC.ArrayIndex).pos.x) + Abs(.flags.TargetY - NpcList(.flags.TargetNPC.ArrayIndex).pos.y))
+                End If
                 Call HechizoPropNPC(uh, .flags.TargetNPC.ArrayIndex, UserIndex, b, IsAlive)
             Case e_TipoHechizo.uPhysicalSkill
                 b = HandlePhysicalSkill(UserIndex, eUser, .flags.TargetNPC.ArrayIndex, eNpc, .Stats.UserHechizos(.flags.Hechizo), IsAlive)
@@ -1291,6 +1310,9 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
             If .Stats.MinSta < 0 Then .Stats.MinSta = 0
             Call WriteUpdateMana(UserIndex)
             Call WriteUpdateSta(UserIndex)
+        End If
+        If restoredProxyTarget Then
+            .flags.TargetNPC = oldTargetNpc
         End If
     End With
     Exit Sub
@@ -1326,8 +1348,16 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
                         Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
-                    'Msg791= Este hechizo solo afecta a los npcs.
-                    Call WriteLocaleMsg(UserIndex, MSG_HECHIZO_SOLO_AFECTA_NPCS, e_FontTypeNames.FONTTYPE_INFO)
+                    ' No direct target NPC selected: allow casting on proxy trigger tiles.
+                    Dim proxyNpcIndex As Integer
+                    Dim proxyDistance As Integer
+                    If ResolveProxyNpcFromTile(UserList(UserIndex).pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, proxyNpcIndex, proxyDistance) Then
+                        Call HandleHechizoNPC(UserIndex, uh)
+                        SpellCastSuccess = True
+                    Else
+                        'Msg791= Este hechizo solo afecta a los npcs.
+                        Call WriteLocaleMsg(UserIndex, MSG_HECHIZO_SOLO_AFECTA_NPCS, e_FontTypeNames.FONTTYPE_INFO)
+                    End If
                 End If
             Case e_TargetType.uUsuariosYnpc
                 If IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then
@@ -1345,8 +1375,16 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
                         Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
-                    'Msg792= Target invalido.
-                    Call WriteLocaleMsg(UserIndex, MSG_TARGET_INVALIDO_792, e_FontTypeNames.FONTTYPE_INFO)
+                    ' If nothing is selected, still allow proxy tile -> NPC resolution.
+                    Dim proxyNpcIndexAny As Integer
+                    Dim proxyDistanceAny As Integer
+                    If ResolveProxyNpcFromTile(UserList(UserIndex).pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, proxyNpcIndexAny, proxyDistanceAny) Then
+                        SpellCastSuccess = True
+                        Call HandleHechizoNPC(UserIndex, uh)
+                    Else
+                        'Msg792= Target invalido.
+                        Call WriteLocaleMsg(UserIndex, MSG_TARGET_INVALIDO_792, e_FontTypeNames.FONTTYPE_INFO)
+                    End If
                 End If
             Case e_TargetType.uTerreno
                 SpellCastSuccess = True
@@ -2420,6 +2458,13 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
             Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, Damage)
         End If
         Call InfoHechizo(UserIndex)
+        If Damage > 0 Then
+            ' Reuse proxy-trigger falloff so magic/ranged/melee are consistent when
+            ' hitting a static NPC through surrounding proxy tiles.
+            Dim proxyDamagePercent As Integer
+            proxyDamagePercent = ConsumeProxyDamagePercent(UserIndex)
+            Damage = ApplyProxyPercent(Damage, proxyDamagePercent)
+        End If
         IsAlive = NPCs.DoDamageOrHeal(NpcIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, hIndex) = eStillAlive
         If NpcList(NpcIndex).npcType = DummyTarget Then
             Call DummyTargetAttacked(NpcIndex)

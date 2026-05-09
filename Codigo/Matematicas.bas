@@ -166,7 +166,7 @@ End Function
 
 Public Function RandomNumber(ByVal LowerBound As Long, ByVal UpperBound As Long) As Long
     On Error GoTo RandomNumber_Err
-    RandomNumber = Fix(Rnd * (UpperBound - LowerBound + 1)) + LowerBound
+    RandomNumber = Int(Rnd * (UpperBound - LowerBound + 1)) + LowerBound
     Exit Function
 RandomNumber_Err:
     Call TraceError(Err.Number, Err.Description, "Matematicas.RandomNumber", Erl)
