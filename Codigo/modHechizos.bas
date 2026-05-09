@@ -1265,6 +1265,11 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
             Case e_TipoHechizo.uEstado ' Afectan estados (por ejem : Envenenamiento)
                 Call HechizoEstadoNPC(.flags.TargetNPC.ArrayIndex, uh, b, UserIndex)
             Case e_TipoHechizo.uPropiedades ' Afectan HP,MANA,STAMINA,ETC
+                ' If the spell target tile is a proxy trigger tile, we keep the tile-to-NPC
+                ' Manhattan distance so magical damage can use the same falloff model.
+                If MapData(.pos.Map, .flags.TargetX, .flags.TargetY).trigger >= NPC_PROXY_TRIGGER_MIN Then
+                    Call RegisterProxyDistanceForUser(UserIndex, Abs(.flags.TargetX - NpcList(.flags.TargetNPC.ArrayIndex).pos.x) + Abs(.flags.TargetY - NpcList(.flags.TargetNPC.ArrayIndex).pos.y))
+                End If
                 Call HechizoPropNPC(uh, .flags.TargetNPC.ArrayIndex, UserIndex, b, IsAlive)
             Case e_TipoHechizo.uPhysicalSkill
                 b = HandlePhysicalSkill(UserIndex, eUser, .flags.TargetNPC.ArrayIndex, eNpc, .Stats.UserHechizos(.flags.Hechizo), IsAlive)
@@ -2420,6 +2425,13 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
             Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, Damage)
         End If
         Call InfoHechizo(UserIndex)
+        If Damage > 0 Then
+            ' Reuse proxy-trigger falloff so magic/ranged/melee are consistent when
+            ' hitting a static NPC through surrounding proxy tiles.
+            Dim proxyDamagePercent As Integer
+            proxyDamagePercent = ConsumeProxyDamagePercent(UserIndex)
+            Damage = CLng((CDbl(Damage) * CDbl(proxyDamagePercent)) / 100#)
+        End If
         IsAlive = NPCs.DoDamageOrHeal(NpcIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, hIndex) = eStillAlive
         If NpcList(NpcIndex).npcType = DummyTarget Then
             Call DummyTargetAttacked(NpcIndex)
