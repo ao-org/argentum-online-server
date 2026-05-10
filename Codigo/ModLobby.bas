@@ -95,6 +95,7 @@ Type t_Lobby
     IsGlobal As Boolean
     MapOpenTime As Long
     BroadOpenEvent As t_Timer
+    FullLobby As Boolean
 End Type
 
 Public Type t_response
@@ -629,6 +630,8 @@ Public Sub UpdateWaitingForPlayers(ByVal frametime As Long, ByRef instance As t_
         End If
     Else
         If instance.RegisteredPlayers >= instance.MaxPlayers Then
+            instance.FullLobby = True
+            Call SendData(sendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_LOBBY_CUPOS_COMPLETOS, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN))
             Call StartLobby(instance, -1)
         End If
     End If
