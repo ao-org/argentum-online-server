@@ -1916,6 +1916,8 @@ End Sub
 
 ' Centralizes city INI parsing and keeps Ciudades() synchronized for legacy callers.
 Private Sub LoadCityData(ByRef Lector As clsIniManager, ByVal CityId As e_Ciudad, ByVal SectionName As String)
+    Dim ErrorMessage As String
+
     With CityData(CityId)
         .Map = val(Lector.GetValue(SectionName, "Mapa"))
         .X = val(Lector.GetValue(SectionName, "X"))
@@ -1929,9 +1931,59 @@ Private Sub LoadCityData(ByRef Lector As clsIniManager, ByVal CityId As e_Ciudad
         .NecesitaNave = val(Lector.GetValue(SectionName, "NecesitaNave"))
     End With
 
+    CityNames(CityId) = SectionName
+
+    ' LoadCityData performs early diagnostics for easier debugging;
+    ' ValidateCities remains the authoritative startup validation pass.
+    With CityData(CityId)
+        If .Map <= 0 Or .X <= 0 Or .Y <= 0 Then
+            ErrorMessage = "Failed to load city data. CityId=" & CityId & _
+                " Name=" & SectionName & _
+                " Map=" & .Map & _
+                " X=" & .X & _
+                " Y=" & .Y
+
+            Call LogError(ErrorMessage)
+            Debug.Print ErrorMessage
+        End If
+    End With
+
     Ciudades(CityId).Map = CityData(CityId).Map
     Ciudades(CityId).X = CityData(CityId).X
     Ciudades(CityId).Y = CityData(CityId).Y
+End Sub
+
+Private Function IsValidCity(ByVal CityId As e_Ciudad) As Boolean
+    If CityId < 1 Or CityId > CITY_COUNT Then Exit Function
+
+    With CityData(CityId)
+        IsValidCity = .Map > 0 And .X > 0 And .Y > 0
+    End With
+End Function
+
+Private Sub ValidateCities()
+    Dim CityIndex    As Byte
+    Dim ErrorMessage As String
+
+    ' Defensive startup validation: missing CityData entries are logged and
+    ' surfaced in the IDE via Debug.Assert instead of causing silent gameplay
+    ' failures when new cities are added. Validation is intentionally non-fatal
+    ' so startup/CI can continue and report all invalid city entries.
+    ' CITY_COUNT is derived from e_Ciudad, so every enum city must have a
+    ' synchronized CityData entry loaded with valid Map/X/Y coordinates.
+    For CityIndex = 1 To CITY_COUNT
+        If Not IsValidCity(CityIndex) Then
+            ErrorMessage = "Configuracion invalida de ciudad. CityId=" & CityIndex & _
+                " Name=" & CityNames(CityIndex) & _
+                " Map=" & CityData(CityIndex).Map & _
+                " X=" & CityData(CityIndex).X & _
+                " Y=" & CityData(CityIndex).Y
+
+            Call LogError(ErrorMessage)
+            Debug.Print ErrorMessage
+            Debug.Assert False
+        End If
+    Next CityIndex
 End Sub
 
 Sub CargarCiudades()
@@ -2194,6 +2246,8 @@ Sub CargarCiudades()
     Morgrim.Map = CityData(e_Ciudad.cMorgrim).Map
     Morgrim.x = CityData(e_Ciudad.cMorgrim).X
     Morgrim.y = CityData(e_Ciudad.cMorgrim).Y
+
+    Call ValidateCities
     Exit Sub
 CargarCiudades_Err:
     Call TraceError(Err.Number, Err.Description, "ES.CargarCiudades", Erl)
