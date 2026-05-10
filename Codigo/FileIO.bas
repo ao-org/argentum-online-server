@@ -1953,14 +1953,6 @@ Private Sub LoadCityData(ByRef Lector As clsIniManager, ByVal CityId As e_Ciudad
     Ciudades(CityId).Y = CityData(CityId).Y
 End Sub
 
-Private Function IsValidCity(ByVal CityId As e_Ciudad) As Boolean
-    If CityId < 1 Or CityId > CITY_COUNT Then Exit Function
-
-    With CityData(CityId)
-        IsValidCity = .Map > 0 And .X > 0 And .Y > 0
-    End With
-End Function
-
 Private Sub ValidateCities()
     Dim CityIndex    As Byte
     Dim ErrorMessage As String

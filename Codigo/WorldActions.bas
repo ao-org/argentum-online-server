@@ -341,8 +341,10 @@ Private Sub HandleGovernorNpcInteraction(ByVal UserIndex As Integer, ByVal NpcIn
     End If
 
     UserList(UserIndex).PosibleHogar = Gobernador.GobernadorDe
-    If UserList(UserIndex).PosibleHogar >= 1 And UserList(UserIndex).PosibleHogar <= CITY_COUNT Then
+    If IsValidCity(UserList(UserIndex).PosibleHogar) Then
         DeDonde = CityNames(UserList(UserIndex).PosibleHogar)
+    Else
+        Call LogError("Invalid possible home city from governor. UserIndex=" & UserIndex & " PosibleHogar=" & UserList(UserIndex).PosibleHogar)
     End If
     If LenB(DeDonde) = 0 Then DeDonde = CityNames(e_Ciudad.cUllathorpe)
     If LenB(DeDonde) = 0 Then DeDonde = "Ullathorpe"
