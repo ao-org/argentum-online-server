@@ -1726,8 +1726,6 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 Else
                     'If not under a spell effect, show char
                     If .flags.invisible = 0 Then
-                        'Msg1124= Has vuelto a ser visible.
-                        Call WriteLocaleMsg(UserIndex, MSG_VUELTO_VISIBLE_1124, e_FontTypeNames.FONTTYPE_INFO)
                         Call WriteLocaleMsg(UserIndex, MSG_VUELTO_VISIBLE, e_FontTypeNames.FONTTYPE_INFO)
                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
                     End If
@@ -2297,7 +2295,6 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
                 If .flags.Oculto = 1 Then
                     '[CDT 17-02-2004]
                     If Not .flags.UltimoMensaje = MSG_ALREADY_HIDDEN Then
-                        Call WriteLocaleMsg(UserIndex, MSG_ESCONDIDO_ENTRE_SOMBRAS, e_FontTypeNames.FONTTYPE_INFO)
                         'Msg1127= Ya estás oculto.
                         Call WriteLocaleMsg(UserIndex, MSG_ALREADY_HIDDEN, e_FontTypeNames.FONTTYPE_INFO)
                         .flags.UltimoMensaje = MSG_ALREADY_HIDDEN
