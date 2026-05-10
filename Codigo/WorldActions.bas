@@ -330,12 +330,12 @@ Private Sub HandleGovernorNpcInteraction(ByVal UserIndex As Integer, ByVal NpcIn
         Exit Sub
     End If
 
-    If (UserList(UserIndex).Faccion.Status = 0 Or UserList(UserIndex).Faccion.Status = 2) And Gobernador.GobernadorDe = e_Ciudad.cBanderbill Then
+    If (UserList(UserIndex).Faccion.Status = 0 Or UserList(UserIndex).Faccion.Status = 2) And Gobernador.GobernadorDe = e_City.cBanderbill Then
         Call WriteLocaleChatOverHead(UserIndex, "1350", "", Gobernador.Char.charindex, vbWhite) ' Msg1350=Aquí no aceptamos criminales.
         Exit Sub
     End If
 
-    If (UserList(UserIndex).Faccion.Status = 3 Or UserList(UserIndex).Faccion.Status = 1) And Gobernador.GobernadorDe = e_Ciudad.cArkhein Then
+    If (UserList(UserIndex).Faccion.Status = 3 Or UserList(UserIndex).Faccion.Status = 1) And Gobernador.GobernadorDe = e_City.cArkhein Then
         Call WriteLocaleChatOverHead(UserIndex, "1351", "", Gobernador.Char.charindex, vbWhite) ' Msg1351=¡¡Sal de aquí ciudadano asqueroso!!
         Exit Sub
     End If
@@ -346,7 +346,7 @@ Private Sub HandleGovernorNpcInteraction(ByVal UserIndex As Integer, ByVal NpcIn
     Else
         Call LogError("Invalid possible home city from governor. UserIndex=" & UserIndex & " PosibleHogar=" & UserList(UserIndex).PosibleHogar)
     End If
-    If LenB(DeDonde) = 0 Then DeDonde = CityNames(e_Ciudad.cUllathorpe)
+    If LenB(DeDonde) = 0 Then DeDonde = CityNames(e_City.cUllathorpe)
     If LenB(DeDonde) = 0 Then DeDonde = "Ullathorpe"
     UserList(UserIndex).flags.pregunta = 3
     Call WritePreguntaBox(UserIndex, 1592, DeDonde)
