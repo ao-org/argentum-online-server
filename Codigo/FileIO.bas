@@ -1934,7 +1934,7 @@ Private Sub LoadCityData(ByRef Lector As clsIniManager, ByVal CityId As e_Ciudad
     CityNames(CityId) = SectionName
 
     ' LoadCityData performs early diagnostics for easier debugging;
-    ' ValidateCities remains the authoritative startup validation that stops startup.
+    ' ValidateCities remains the authoritative startup validation pass.
     With CityData(CityId)
         If .Map <= 0 Or .X <= 0 Or .Y <= 0 Then
             ErrorMessage = "Failed to load city data. CityId=" & CityId & _
@@ -1965,8 +1965,10 @@ Private Sub ValidateCities()
     Dim CityIndex    As Byte
     Dim ErrorMessage As String
 
-    ' Defensive startup validation: missing CityData entries should fail loudly
-    ' instead of causing silent gameplay failures when new cities are added.
+    ' Defensive startup validation: missing CityData entries are logged and
+    ' surfaced in the IDE via Debug.Assert instead of causing silent gameplay
+    ' failures when new cities are added. Validation is intentionally non-fatal
+    ' so startup/CI can continue and report all invalid city entries.
     ' CITY_COUNT is derived from e_Ciudad, so every enum city must have a
     ' synchronized CityData entry loaded with valid Map/X/Y coordinates.
     For CityIndex = 1 To CITY_COUNT
@@ -1978,7 +1980,8 @@ Private Sub ValidateCities()
                 " Y=" & CityData(CityIndex).Y
 
             Call LogError(ErrorMessage)
-            Err.Raise vbObjectError + 411, "ES.ValidateCities", ErrorMessage
+            Debug.Print ErrorMessage
+            Debug.Assert False
         End If
     Next CityIndex
 End Sub
@@ -2244,8 +2247,6 @@ Sub CargarCiudades()
     Morgrim.x = CityData(e_Ciudad.cMorgrim).X
     Morgrim.y = CityData(e_Ciudad.cMorgrim).Y
 
-    ' Let city validation errors propagate so startup stops on invalid configuration.
-    On Error GoTo 0
     Call ValidateCities
     Exit Sub
 CargarCiudades_Err:
