@@ -604,8 +604,36 @@ Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal usernam
     Set RS = Query("SELECT user_id, number, reason FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", UCase$(username))
     If RS Is Nothing Then Exit Sub
     If Not RS.RecordCount = 0 Then
+        ' Buscamos al usuario en memoria para poder calcular y mostrar el tiempo
+        ' restante real de carcel sin modificar lo guardado en la base de datos.
+        Dim tUser As t_UserReference
+        tUser = NameIndex(username)
+
+        ' Identificamos solo la carcel mas reciente para no mostrar el mismo
+        ' "RESTAN CUMPLIR" en penas historicas antiguas.
+        Dim latestJailNumber As Long
+        latestJailNumber = -1
+        Dim rsLatestJail As ADODB.Recordset
+        Set rsLatestJail = Query("SELECT MAX(number) as latest_jail FROM punishment INNER JOIN user ON punishment.user_id = user.id WHERE UPPER(user.name) = ? AND UPPER(reason) LIKE '%CARCEL%';", UCase$(username))
+        If Not rsLatestJail Is Nothing Then
+            If Not rsLatestJail.EOF Then latestJailNumber = SanitizeNullValue(rsLatestJail!latest_jail, -1)
+        End If
+
         While Not RS.EOF
-            Call WriteConsoleMsg(UserIndex, RS!Number & " - " & RS!Reason, e_FontTypeNames.FONTTYPE_INFO)
+            Dim punishmentLine As String
+            ' Se muestra primero exactamente el texto historico persistido en DB.
+            punishmentLine = RS!Number & " - " & RS!Reason
+            If IsValidUserRef(tUser) Then
+                ' Solo agregamos el sufijo dinamico para la carcel activa actual:
+                ' 1) usuario online, 2) pena activa, 3) fila de carcel,
+                ' 4) y que sea la ultima carcel registrada.
+                If UserList(tUser.ArrayIndex).Counters.Pena > 0 _
+                   And InStr(1, UCase$(punishmentLine), "CARCEL", vbTextCompare) > 0 _
+                   And CLng(RS!Number) = latestJailNumber Then
+                    punishmentLine = punishmentLine & ": RESTAN CUMPLIR: " & UserList(tUser.ArrayIndex).Counters.Pena & "m"
+                End If
+            End If
+            Call WriteConsoleMsg(UserIndex, punishmentLine, e_FontTypeNames.FONTTYPE_INFO)
             RS.MoveNext
         Wend
     End If
