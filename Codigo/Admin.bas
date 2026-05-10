@@ -71,6 +71,7 @@ Public IntervaloWavFx                As Integer
 Public IntervaloNPCPuedeAtacar       As Integer
 Public IntervaloInvocacion           As Integer
 Public IntervaloOculto               As Long
+Public IntervaloUserPuedeOcultarse   As Long
 Public IntervaloTalk                 As Long
 Public IntervaloLeftClick            As Long
 Public IntervaloUserPuedeAtacar      As Long
