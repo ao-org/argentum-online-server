@@ -307,33 +307,6 @@ Private Sub HandleFactionRecruiterNpcInteraction(ByVal UserIndex As Integer, ByV
     End If
 End Sub
 
-Private Function GetCityName(ByVal city As e_Ciudad) As String
-    Select Case city
-        Case e_Ciudad.cUllathorpe
-            GetCityName = "Ullathorpe"
-        Case e_Ciudad.cNix
-            GetCityName = "Nix"
-        Case e_Ciudad.cBanderbill
-            GetCityName = "Banderbill"
-        Case e_Ciudad.cLindos
-            GetCityName = "Lindos"
-        Case e_Ciudad.cArghal
-            GetCityName = "Arghal"
-        Case e_Ciudad.cForgat
-            GetCityName = "Forgat"
-        Case e_Ciudad.cEldoria
-            GetCityName = "Eldoria"
-        Case e_Ciudad.cArkhein
-            GetCityName = "Arkhein"
-        Case e_Ciudad.cPenthar
-            GetCityName = "Penthar"
-             Case e_Ciudad.cMorgrim
-            GetCityName = "Morgrim"
-        Case Else
-            GetCityName = "Ullathorpe"
-    End Select
-End Function
-
 Private Sub HandleGovernorNpcInteraction(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     If UserList(UserIndex).flags.Muerto = 1 Then
         'Msg77=¡¡Estás muerto!!.
@@ -368,7 +341,11 @@ Private Sub HandleGovernorNpcInteraction(ByVal UserIndex As Integer, ByVal NpcIn
     End If
 
     UserList(UserIndex).PosibleHogar = Gobernador.GobernadorDe
-    DeDonde = GetCityName(UserList(UserIndex).PosibleHogar)
+    If UserList(UserIndex).PosibleHogar >= 1 And UserList(UserIndex).PosibleHogar <= CITY_COUNT Then
+        DeDonde = CityNames(UserList(UserIndex).PosibleHogar)
+    End If
+    If LenB(DeDonde) = 0 Then DeDonde = CityNames(e_Ciudad.cUllathorpe)
+    If LenB(DeDonde) = 0 Then DeDonde = "Ullathorpe"
     UserList(UserIndex).flags.pregunta = 3
     Call WritePreguntaBox(UserIndex, 1592, DeDonde)
 End Sub
