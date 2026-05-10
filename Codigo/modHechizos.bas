@@ -1244,11 +1244,14 @@ Public Function GetSpellManaCostModifierByClass(ByVal UserIndex As Integer, Hech
     End With
 End Function
 
-Public Function GetSpellStaminaCost(ByVal UserIndex As Integer, Hechizo As t_Hechizo) As Integer
+Public Function GetSpellStaminaCost(ByVal UserIndex As Integer, ByRef Hechizo As t_Hechizo) As Integer
+    Dim calculatedPercentCost As Integer
+
     GetSpellStaminaCost = Hechizo.StaRequerido
 
     If Hechizo.StaPercentRequired > 0 Then
-        GetSpellStaminaCost = MaximoInt(1, CInt(Ceil(Porcentaje(UserList(UserIndex).Stats.MaxSta, Hechizo.StaPercentRequired))))
+        calculatedPercentCost = MaximoInt(1, CInt(Ceil(Porcentaje(UserList(UserIndex).Stats.MaxSta, Hechizo.StaPercentRequired))))
+        GetSpellStaminaCost = MaximoInt(GetSpellStaminaCost, calculatedPercentCost)
     End If
 End Function
 
