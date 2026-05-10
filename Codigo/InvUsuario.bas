@@ -2189,6 +2189,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 DeDonde = Eldoria
                             Case e_Ciudad.cPenthar
                                 DeDonde = Penthar
+                            Case e_Ciudad.cMorgrim
+                                DeDonde = Morgrim
                             Case Else
                                 DeDonde = Ullathorpe
                         End Select

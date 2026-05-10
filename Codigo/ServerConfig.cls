@@ -91,6 +91,7 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "DayLength", CLng(val(reader.GetValue("CONFIGURACIONES", "DuracionDia"))) * 60 * 1000
     mSettings.Add "CostoPerdonPorCiudadano", CLng(val(reader.GetValue("CONFIGURACIONES", "CostoPerdonPorCiudadano")))
     mSettings.Add "ChatGlobal", CInt(val(reader.GetValue("CONFIGURACIONES", "ChatGlobal", "1")))
+    mSettings.Add "ChatGlobalCosto", CLng(val(reader.GetValue("CONFIGURACIONES", "ChatGlobalCosto", "2500")))
     mSettings.Add "PartyELV", CInt(val(reader.GetValue("CONFIGURACIONES", "PartyELV", "4")))
     mSettings.Add "PartyELVwLeadership", CInt(val(reader.GetValue("CONFIGURACIONES", "PartyELVwLeadership", "5")))
     mSettings.Add "PenaltyExpUserPerLevel", CSng(val(reader.GetValue("CONFIGURACIONES", "PenaltyExpUserPerLevel", "0.05")))

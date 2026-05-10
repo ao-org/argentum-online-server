@@ -1508,6 +1508,7 @@ Select Case UserList(UserIndex).Hogar
     Case e_Ciudad.cArkhein: char_home = CIUDAD_ARKHEIN
     Case e_Ciudad.cEldoria: char_home = CIUDAD_ELDORIA
     Case e_Ciudad.cPenthar: char_home = CIUDAD_PENTHAR
+    Case e_Ciudad.cMorgrim: char_home = CIUDAD_MORGRIM
     Case Else: char_home = CIUDAD_ULLATHORPE
 End Select
     Call WriteLocaleMsg(sendIndex, MSG_CHARACTER_HOME, e_FontTypeNames.FONTTYPE_INFO, char_home)
