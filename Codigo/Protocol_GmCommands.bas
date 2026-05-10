@@ -899,10 +899,13 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
                         If (InStrB(username, "/") <> 0) Then
                             username = Replace(username, "/", "")
                         End If
+                        Call Encarcelar(tUser.ArrayIndex, jailTime, .name)
                         If PersonajeExiste(username) Then
+                            ' Se conserva el formato historico de la pena en DB.
+                            ' El tiempo restante se calcula y agrega solo al mostrar /penas,
+                            ' para evitar persistir un valor que cambia minuto a minuto.
                             Call SavePenaDatabase(username, .name & ": CARCEL " & jailTime & "m, MOTIVO: " & Reason & " " & Date & " " & Time)
                         End If
-                        Call Encarcelar(tUser.ArrayIndex, jailTime, .name)
                         Call LogGM(GetUserRealName(UserIndex), " encarceló a " & username)
                     End If
                 End If

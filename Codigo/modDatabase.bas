@@ -604,8 +604,23 @@ Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal usernam
     Set RS = Query("SELECT user_id, number, reason FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", UCase$(username))
     If RS Is Nothing Then Exit Sub
     If Not RS.RecordCount = 0 Then
+        ' Buscamos al usuario en memoria para poder calcular y mostrar el tiempo
+        ' restante real de carcel sin modificar lo guardado en la base de datos.
+        Dim tUser As t_UserReference
+        tUser = NameIndex(username)
         While Not RS.EOF
-            Call WriteConsoleMsg(UserIndex, RS!Number & " - " & RS!Reason, e_FontTypeNames.FONTTYPE_INFO)
+            Dim punishmentLine As String
+            ' Se muestra primero exactamente el texto historico persistido en DB.
+            punishmentLine = RS!Number & " - " & RS!Reason
+            If IsValidUserRef(tUser) Then
+                ' Solo agregamos el sufijo dinamico si:
+                ' 1) el usuario esta online, 2) sigue cumpliendo pena, y
+                ' 3) la entrada corresponde a una carcel.
+                If UserList(tUser.ArrayIndex).Counters.Pena > 0 And InStr(1, UCase$(punishmentLine), "CARCEL", vbTextCompare) > 0 Then
+                    punishmentLine = punishmentLine & ": RESTAN CUMPLIR: " & UserList(tUser.ArrayIndex).Counters.Pena & "m"
+                End If
+            End If
+            Call WriteConsoleMsg(UserIndex, punishmentLine, e_FontTypeNames.FONTTYPE_INFO)
             RS.MoveNext
         Wend
     End If
