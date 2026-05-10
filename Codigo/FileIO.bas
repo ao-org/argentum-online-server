@@ -1916,6 +1916,8 @@ End Sub
 
 ' Centralizes city INI parsing and keeps Ciudades() synchronized for legacy callers.
 Private Sub LoadCityData(ByRef Lector As clsIniManager, ByVal CityId As e_Ciudad, ByVal SectionName As String)
+    Dim ErrorMessage As String
+
     With CityData(CityId)
         .Map = val(Lector.GetValue(SectionName, "Mapa"))
         .X = val(Lector.GetValue(SectionName, "X"))
@@ -1930,6 +1932,22 @@ Private Sub LoadCityData(ByRef Lector As clsIniManager, ByVal CityId As e_Ciudad
     End With
 
     CityNames(CityId) = SectionName
+
+    ' LoadCityData performs early diagnostics for easier debugging;
+    ' ValidateCities remains the authoritative startup validation that stops startup.
+    With CityData(CityId)
+        If .Map <= 0 Or .X <= 0 Or .Y <= 0 Then
+            ErrorMessage = "Failed to load city data. CityId=" & CityId & _
+                " Name=" & SectionName & _
+                " Map=" & .Map & _
+                " X=" & .X & _
+                " Y=" & .Y
+
+            Call LogError(ErrorMessage)
+            Debug.Print ErrorMessage
+        End If
+    End With
+
     Ciudades(CityId).Map = CityData(CityId).Map
     Ciudades(CityId).X = CityData(CityId).X
     Ciudades(CityId).Y = CityData(CityId).Y
