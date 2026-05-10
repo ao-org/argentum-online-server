@@ -1929,6 +1929,7 @@ Private Sub LoadCityData(ByRef Lector As clsIniManager, ByVal CityId As e_Ciudad
         .NecesitaNave = val(Lector.GetValue(SectionName, "NecesitaNave"))
     End With
 
+    CityNames(CityId) = SectionName
     Ciudades(CityId).Map = CityData(CityId).Map
     Ciudades(CityId).X = CityData(CityId).X
     Ciudades(CityId).Y = CityData(CityId).Y
@@ -1953,6 +1954,7 @@ Private Sub ValidateCities()
     For CityIndex = 1 To CITY_COUNT
         If Not IsValidCity(CityIndex) Then
             ErrorMessage = "Configuracion invalida de ciudad. CityId=" & CityIndex & _
+                " Name=" & CityNames(CityIndex) & _
                 " Map=" & CityData(CityIndex).Map & _
                 " X=" & CityData(CityIndex).X & _
                 " Y=" & CityData(CityIndex).Y

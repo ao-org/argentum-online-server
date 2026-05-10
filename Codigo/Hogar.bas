@@ -30,8 +30,11 @@ Option Explicit
 ' CITY_COUNT is derived from e_Ciudad; do not update manually.
 Public Const CITY_COUNT As Byte = cCiudadCount - 1
 ' CityData is the canonical storage for city configuration.
+' CityNames() is populated from LoadCityData and should be used by validation/logging
+' instead of duplicated hardcoded city-name mappings.
 ' Ciudades() is kept for compatibility (Map/X/Y only).
 Public CityData(1 To CITY_COUNT) As t_CityData
+Public CityNames(1 To CITY_COUNT) As String
 Public Ciudades(1 To CITY_COUNT) As t_WorldPos
 
 Public Sub goHome(ByVal UserIndex As Integer)
