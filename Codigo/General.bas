@@ -1859,18 +1859,56 @@ Private Function GetElapsed() As Single
 End Function
 
 Public Function RunScriptInFile(ByVal FilePath As String) As Boolean
+    On Error GoTo RunScriptInFile_Err
+    
     Dim script As String
-    script = FileText(FilePath)
-    script = Replace(Replace(script, Chr(10), ""), Chr(13), "")
+    Dim statements() As String
+    Dim i As Long
     Dim RS As Recordset
-    If script <> vbNullString Then
-        Set RS = Query(script)
-        If RS Is Nothing Then
-            RunScriptInFile = False
-            Exit Function
-        End If
+    Dim statement As String
+    
+    script = FileText(filePath)
+    
+    If script = vbNullString Then
+        RunScriptInFile = False
+        Exit Function
     End If
+    
+    ' Split by semicolon to get individual statements
+    statements = Split(script, ";")
+    
+    For i = LBound(statements) To UBound(statements)
+        statement = Trim(statements(i))
+        
+        ' Remove carriage returns and line feeds
+        statement = Replace(Replace(statement, Chr(10), " "), Chr(13), " ")
+        
+        ' Skip empty statements, comments, and COMMIT/BEGIN TRANSACTION
+        If Len(statement) > 0 And _
+           Left(statement, 2) <> "--" And _
+           UCase(statement) <> "BEGIN TRANSACTION" And _
+           UCase(statement) <> "COMMIT" And _
+           Left(UCase(statement), 6) <> "PRAGMA" Then
+            
+            ' Execute the statement
+            Set RS = Query(statement)
+            
+            If RS Is Nothing And Err.Number <> 0 Then
+                RunScriptInFile = False
+                Exit Function
+            End If
+        ElseIf Left(UCase(statement), 6) = "PRAGMA" Then
+            ' Execute PRAGMA statements separately
+            Set RS = Query(statement)
+        End If
+    Next i
+    
     RunScriptInFile = True
+    Exit Function
+    
+RunScriptInFile_Err:
+    Call TraceError(Err.Number, Err.Description, "RunScriptInFile", Erl)
+    RunScriptInFile = False
 End Function
 
 'Reads the files inside the ScriptsDB folder, it can be a create table, alter, etc.

@@ -1,0 +1,14 @@
+DROP TABLE IF EXISTS "bank_item_backup";
+DROP TABLE IF EXISTS "global_quest_user_contribution_backup";
+DROP TABLE IF EXISTS "guild_member_history_backup";
+DROP TABLE IF EXISTS "guild_members_backup";
+DROP TABLE IF EXISTS "guild_request_backup";
+DROP TABLE IF EXISTS "guild_request_history_backup";
+DROP TABLE IF EXISTS "inventory_item_backup";
+DROP TABLE IF EXISTS "inventory_item_skins_backup";
+DROP TABLE IF EXISTS "punishment_backup";
+DROP TABLE IF EXISTS "quest_backup";
+DROP TABLE IF EXISTS "quest_done_backup";
+DROP TABLE IF EXISTS "skillpoint_backup";
+DROP TABLE IF EXISTS "spell_backup";
+DROP TABLE IF EXISTS "epic_id_mapping_backup";
