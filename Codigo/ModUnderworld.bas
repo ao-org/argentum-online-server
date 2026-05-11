@@ -3,8 +3,8 @@ Option Explicit
 
 Public UnderworldMapPool() As t_WorldPos
 Public OverworldPortalPool() As t_WorldPos
-Public UnderworldMinSpawnThreshold As Byte
-Public UnderworldMaxSpawnThreshold As Byte
+Public UnderworldLowerLimitOfTime As Byte
+Public UnderworldUpperLimitOfTime As Byte
 Private m_UnderworldLastSpawnTimestamp As Long
 Private Const UNDERWORLD_BROADCAST_MSG_ID As Integer = 2174
 Private Const UNDERWORLD_PORTAL_OBJ_IDX As Integer = 6355
@@ -150,7 +150,7 @@ End Function
 Public Function IsUnderworldOpen() As Boolean
     Dim currentHour As Integer
     currentHour = Hour(Now)
-    If currentHour >= UnderworldMinSpawnThreshold And currentHour < UnderworldMaxSpawnThreshold Then
+    If currentHour >= UnderworldLowerLimitOfTime And currentHour < UnderworldUpperLimitOfTime Then
         IsUnderworldOpen = True
     Else
         IsUnderworldOpen = False
@@ -169,20 +169,20 @@ Public Sub LoadUnderworldModule()
     Call IniFile.Initialize(DatPath & "UnderworldMapPool.dat")
     Dim MaxUnderworldMaps
     MaxUnderworldMaps = val(IniFile.GetValue("INIT", "UnderworldMapPool"))
-    UnderworldMaxSpawnThreshold = val(IniFile.GetValue("INIT", "UnderworldMaxSpawnThreshold"))
-    UnderworldMinSpawnThreshold = val(IniFile.GetValue("INIT", "UnderworldMinSpawnThreshold"))
+    UnderworldUpperLimitOfTime = val(IniFile.GetValue("INIT", "UnderworldUpperLimitOfTime"))
+    UnderworldLowerLimitOfTime = val(IniFile.GetValue("INIT", "UnderworldLowerLimitOfTime"))
     If MaxUnderworldMaps <= 0 Then
         Debug.Assert False
         MaxUnderworldMaps = 0
         Exit Sub
     End If
-    If UnderworldMaxSpawnThreshold < DAY_START Or UnderworldMaxSpawnThreshold > DAY_END Then
+    If UnderworldUpperLimitOfTime < DAY_START Or UnderworldUpperLimitOfTime > DAY_END Then
         Debug.Assert False
-        UnderworldMaxSpawnThreshold = DAY_MAX_OUT_OF_BOUNDS
+        UnderworldUpperLimitOfTime = DAY_MAX_OUT_OF_BOUNDS
     End If
-    If UnderworldMinSpawnThreshold < DAY_START Or UnderworldMinSpawnThreshold > DAY_END Then
+    If UnderworldLowerLimitOfTime < DAY_START Or UnderworldLowerLimitOfTime > DAY_END Then
         Debug.Assert False
-        UnderworldMinSpawnThreshold = DAY_MIN_OUT_OF_BOUNDS
+        UnderworldLowerLimitOfTime = DAY_MIN_OUT_OF_BOUNDS
     End If
     ReDim Preserve UnderworldMapPool(1 To MaxUnderworldMaps)
     ReDim Preserve OverworldPortalPool(1 To MaxUnderworldMaps)
