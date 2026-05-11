@@ -1257,17 +1257,17 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
                 Arg1 = UCase$(Arg1)
                 Select Case Arg1
                     Case "NIX"
-                        UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cNix
+                        UserList(tUser.ArrayIndex).Hogar = e_City.cNix
                     Case "ULLA", "ULLATHORPE"
-                        UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cUllathorpe
+                        UserList(tUser.ArrayIndex).Hogar = e_City.cUllathorpe
                     Case "BANDER", "BANDERBILL"
-                        UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cBanderbill
+                        UserList(tUser.ArrayIndex).Hogar = e_City.cBanderbill
                     Case "LINDOS"
-                        UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cLindos
+                        UserList(tUser.ArrayIndex).Hogar = e_City.cLindos
                     Case "ARGHAL"
-                        UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cArghal
+                        UserList(tUser.ArrayIndex).Hogar = e_City.cArghal
                     Case "ARKHEIN"
-                        UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cArkhein
+                        UserList(tUser.ArrayIndex).Hogar = e_City.cArkhein
                 End Select
             Case e_EditOptions.eo_Alias
                 If Not IsUserAdmin(UserIndex) Then Exit Sub
@@ -3215,6 +3215,19 @@ Public Sub HandleGlobalMessage(ByVal UserIndex As Integer)
             UserList(UserIndex).Counters.MensajeGlobal = nowRaw
             If SvrConfig.GetValue("ChatGlobal") = 1 Then
                 If LenB(chat) <> 0 Then
+                    
+                    ' Verificar oro suficiente
+                    Dim chatCosto As Long
+                    chatCosto = SvrConfig.GetValue("ChatGlobalCosto")
+                    If chatCosto < 0 Then chatCosto = 0
+                    If .Stats.GLD < chatCosto Then
+                        Call WriteLocaleMsg(UserIndex, MSG_UTILIZAR_COMANDO_NECESITAS_MONEDAS_ORO, e_FontTypeNames.FONTTYPE_GLOBAL, chatCosto)
+                        Exit Sub
+                    End If
+                    ' Cobrar mensaje
+                    .Stats.GLD = .Stats.GLD - chatCosto
+                    Call WriteUpdateGold(UserIndex)
+                    
                     Dim i As Integer
                     For i = 1 To UBound(.flags.ChatHistory) - 1
                         .flags.ChatHistory(i) = .flags.ChatHistory(i + 1)
@@ -3224,7 +3237,6 @@ Public Sub HandleGlobalMessage(ByVal UserIndex As Integer)
                     MessageChat = "[" & .name & "] " & chat
                     Call modSendData.SendData(SendTarget.ToAll, 0, MessageChat, PrepareMessageConsoleMsg(MessageChat, e_FontTypeNames.FONTTYPE_GLOBAL))
                     Call LogThis(0, MessageChat, vbLogEventTypeInformation)
-                    'TODO : Con la 0.12.1 se debe definir si esto vuelve o se borra (/CMSG overhead)
                 End If
             Else
                 ' Msg549=El global se encuentra Desactivado.

@@ -2170,30 +2170,13 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Dim y       As Byte
                         Dim DeDonde As t_WorldPos
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
-                        Select Case .Hogar
-                            Case e_Ciudad.cUllathorpe
-                                DeDonde = Ullathorpe
-                            Case e_Ciudad.cNix
-                                DeDonde = Nix
-                            Case e_Ciudad.cBanderbill
-                                DeDonde = Banderbill
-                            Case e_Ciudad.cLindos
-                                DeDonde = Lindos
-                            Case e_Ciudad.cArghal
-                                DeDonde = Arghal
-                            Case e_Ciudad.cArkhein
-                                DeDonde = Arkhein
-                            Case e_Ciudad.cForgat
-                                DeDonde = Forgat
-                            Case e_Ciudad.cEldoria
-                                DeDonde = Eldoria
-                            Case e_Ciudad.cPenthar
-                                DeDonde = Penthar
-                            Case e_Ciudad.cMorgrim
-                                DeDonde = Morgrim
-                            Case Else
-                                DeDonde = Ullathorpe
-                        End Select
+                        If IsValidCity(.Hogar) Then
+                            ' Cities() centralizes city Map/X/Y lookup; avoid duplicated enum mappings.
+                            DeDonde = Cities(.Hogar)
+                        Else
+                            Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & .Hogar)
+                            DeDonde = Cities(e_City.cUllathorpe)
+                        End If
                         Map = DeDonde.Map
                         x = DeDonde.x
                         y = DeDonde.y
