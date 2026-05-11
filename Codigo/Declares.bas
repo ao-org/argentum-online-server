@@ -336,7 +336,7 @@ Public Enum e_Class
     Bandit      'Bandido
 End Enum
 
-Public Enum e_Ciudad
+Public Enum e_City
     cUllathorpe = 1
     cNix
     cBanderbill
@@ -1796,6 +1796,7 @@ Public Type t_Hechizo
     ManaRequerido As Integer
     'Barrin 29/9/03
     StaRequerido As Integer
+    StaPercentRequired As Single
     Target As e_TargetType
     RequireTransform As Integer
     NeedStaff As Integer
@@ -2003,18 +2004,20 @@ Public Type t_Transport
     CurrenDest As e_TripState
 End Type
 
-Public Type t_CityWorldPos
+Public Type t_CityData
     Map As Integer
-    x As Integer
-    y As Integer
+    X As Integer
+    Y As Integer
+
     MapaViaje As Integer
-    ViajeX As Byte
-    ViajeY As Byte
+    ViajeX As Integer
+    ViajeY As Integer
+
     MapaResu As Integer
-    ResuX As Byte
-    ResuY As Byte
+    ResuX As Integer
+    ResuY As Integer
+
     NecesitaNave As Byte
-    Mapas() As String
 End Type
 
 Public Type t_FXdata
@@ -2957,8 +2960,8 @@ Public Type t_User
     raza As e_Raza
     genero As e_Genero
     Email As String
-    Hogar As e_Ciudad
-    PosibleHogar As e_Ciudad
+    Hogar As e_City
+    PosibleHogar As e_City
     MENSAJEINFORMACION As String
     invent As t_Inventario
     Invent_bk As t_Inventario
@@ -3586,27 +3589,6 @@ Public UniqueMapFishIDs()                     As Long
 Public UniqueMapFishCount                     As Long
 
 '*********************************************************
-Public Nix                                    As t_WorldPos
-Public Ullathorpe                             As t_WorldPos
-Public Banderbill                             As t_WorldPos
-Public Lindos                                 As t_WorldPos
-Public Arghal                                 As t_WorldPos
-Public Forgat                                 As t_WorldPos
-Public Arkhein                                As t_WorldPos
-Public Eldoria                                As t_WorldPos
-Public Penthar                                As t_WorldPos
-Public Morgrim                                As t_WorldPos
-Public CityNix                                As t_CityWorldPos
-Public CityUllathorpe                         As t_CityWorldPos
-Public CityBanderbill                         As t_CityWorldPos
-Public CityArghal                             As t_CityWorldPos
-Public CityForgat                             As t_CityWorldPos
-Public CityPenthar                            As t_CityWorldPos
-Public CityMorgrim                            As t_CityWorldPos
-Public CityLindos                             As t_CityWorldPos
-Public CityEleusis                            As t_CityWorldPos
-Public CityArkhein                            As t_CityWorldPos
-Public CityEldoria                            As t_CityWorldPos
 Public Prision                                As t_WorldPos
 Public Libertad                               As t_WorldPos
 Public Renacimiento                           As t_WorldPos
