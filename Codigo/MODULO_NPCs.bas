@@ -2068,7 +2068,7 @@ UserCanAttackNpc_Err:
     Call TraceError(Err.Number, Err.Description, "Npcs.UserCanAttackNpc", Erl)
 End Function
 
-Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer, ByVal Time As Integer, ByVal FX As Integer) As Boolean
+Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer, ByVal Time As Long, ByVal FX As Integer) As Boolean
     With NpcList(TargetIndex)
         Call NPCAtacado(TargetIndex, SourceIndex)
         .flags.Inmovilizado = 1
@@ -2078,6 +2078,19 @@ Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As In
         Call AnimacionIdle(TargetIndex, True)
         Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(.Char.charindex, FX, 0, .pos.x, .pos.y))
         Inmovilize = True
+    End With
+End Function
+
+Public Function Paralice(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer, ByVal Time As Long, ByVal FX As Integer) As Boolean
+    With NpcList(TargetIndex)
+        Call NPCAtacado(TargetIndex, SourceIndex)
+        .flags.Paralizado = 1
+        .Contadores.Paralisis = Time
+        .flags.Inmovilizado = 0
+        .Contadores.Inmovilizado = 0
+        Call AnimacionIdle(TargetIndex, False)
+        Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(.Char.charindex, FX, 0, .pos.x, .pos.y))
+        Paralice = True
     End With
 End Function
 
