@@ -28,7 +28,7 @@ Attribute VB_Name = "Trabajo"
 Option Explicit
 Public Const GOLD_OBJ_INDEX As Long = 12
 Public Const FISHING_NET_FX As Long = 12
-Public Const NET_INMO_DURATION = 10
+Public Const NET_INMO_DURATION As Long = 10
 
 Function ExpectObjectTypeAt(ByVal objectType As Integer, ByVal Map As Integer, ByVal MapX As Byte, ByVal MapY As Byte) As Boolean
     Dim ObjIndex As Integer

@@ -3037,7 +3037,7 @@ Public Sub RemoveInvisibility(ByVal UserIndex As Integer)
     End With
 End Sub
 
-Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer, ByVal Time As Integer, ByVal FX As Integer) As Boolean
+Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer, ByVal Time As Long, ByVal FX As Integer) As Boolean
     Call UsuarioAtacadoPorUsuario(SourceIndex, TargetIndex)
     If IsSet(UserList(TargetIndex).flags.StatusMask, eCCInmunity) Then
         Call WriteLocaleMsg(SourceIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
