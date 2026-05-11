@@ -1621,6 +1621,7 @@ Public Sub SendrequiredItemMessage(ByVal UserIndex As Integer, ByVal itemMask As
     Select Case itemMask
         Case e_SpellRequirementMask.eArmor
             ' Msg497=Necesitás una armadura
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ARMADURA, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eHelm
             ' Msg564=Necesitás un casco
             Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_CASCO, e_FontTypeNames.FONTTYPE_INFO)
