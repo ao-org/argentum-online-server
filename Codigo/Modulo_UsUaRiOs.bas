@@ -500,18 +500,25 @@ Dim tStr                        As String
         .flags.Inmunidad = 1
         .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
         .Counters.TiempoDeInmunidadParalisisNoMagicas = 0
+
+        Dim HomeCityId As e_City
+        HomeCityId = .Hogar
+        If Not IsValidCity(HomeCityId) Then
+            Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & .Hogar)
+            HomeCityId = e_City.cUllathorpe
+        End If
   
         If Not MapaValido(.pos.Map) Then
             Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
-            .pos.Map = Ciudades(.Hogar).Map
-            .pos.x = Ciudades(.Hogar).x
-            .pos.y = Ciudades(.Hogar).y
+            .pos.Map = Cities(HomeCityId).Map
+            .pos.x = Cities(HomeCityId).x
+            .pos.y = Cities(HomeCityId).y
         End If
         If MapInfo(.pos.Map).MapResource = 0 Then
             Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
-            .pos.Map = Ciudades(.Hogar).Map
-            .pos.x = Ciudades(.Hogar).x
-            .pos.y = Ciudades(.Hogar).y
+            .pos.Map = Cities(HomeCityId).Map
+            .pos.x = Cities(HomeCityId).x
+            .pos.y = Cities(HomeCityId).y
         End If
         If MapData(.pos.Map, .pos.x, .pos.y).UserIndex <> 0 Or MapData(.pos.Map, .pos.x, .pos.y).NpcIndex <> 0 Then
             Dim FoundPlace As Boolean
@@ -638,7 +645,7 @@ Dim tStr                        As String
                     Then
                 Call WarpToLegalPos(UserIndex, .flags.ReturnPos.Map, .flags.ReturnPos.x, .flags.ReturnPos.y, True)
             Else ' Lo mando a su hogar
-                Call WarpToLegalPos(UserIndex, Ciudades(.Hogar).Map, Ciudades(.Hogar).x, Ciudades(.Hogar).y, True)
+                Call WarpToLegalPos(UserIndex, Cities(HomeCityId).Map, Cities(HomeCityId).x, Cities(HomeCityId).y, True)
             End If
         End If
         .flags.UserLogged = True
@@ -1525,6 +1532,53 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     End Select
         Call WriteLocaleMsg(sendIndex, MSG_CHARACTER_HOME, e_FontTypeNames.FONTTYPE_INFO, char_home)
 End With
+    Else
+        'Msg1098= (CUERPO) Min Def/Max Def: 0
+        Call WriteLocaleMsg(sendIndex, "1098", e_FontTypeNames.FONTTYPE_INFO)
+    End If
+    If UserList(UserIndex).invent.EquippedHelmetObjIndex > 0 Then
+        Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_HEAD_DEFENSE, ObjData(UserList(UserIndex).invent.EquippedHelmetObjIndex).MinDef & "¬" & ObjData(UserList( _
+                UserIndex).invent.EquippedHelmetObjIndex).MaxDef, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1862=(CABEZA) Min Def/Max Def: ¬1/¬2
+    Else
+        'Msg1099= (CABEZA) Min Def/Max Def: 0
+        Call WriteLocaleMsg(sendIndex, "1099", e_FontTypeNames.FONTTYPE_INFO)
+    End If
+    GuildI = UserList(UserIndex).GuildIndex
+    If GuildI > 0 Then
+        'Msg1296= Clan: ¬1
+        Call WriteLocaleMsg(sendIndex, "1296", e_FontTypeNames.FONTTYPE_INFO, modGuilds.GuildName(GuildI))
+        If UCase$(modGuilds.GuildLeader(GuildI)) = UCase$(UserList(sendIndex).name) Then
+            'Msg1100= Status: Líder
+            Call WriteLocaleMsg(sendIndex, "1100", e_FontTypeNames.FONTTYPE_INFO)
+        End If
+        'guildpts no tienen objeto
+    End If
+    Call LoadPatronCreditsFromDB(UserIndex)
+    'Msg1298= Oro: ¬1
+    Call WriteLocaleMsg(sendIndex, "1298", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.GLD)
+    'Msg1299= Veces que Moriste: ¬1
+    Call WriteLocaleMsg(sendIndex, "1299", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).flags.VecesQueMoriste)
+    Call WriteLocaleMsg(sendIndex, MsgFactionScore, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Faccion.FactionScore)
+    'Msg1300= Creditos Patreon: ¬1
+    Call WriteLocaleMsg(sendIndex, "1300", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.Creditos)
+    'Msg2078 = Nivel de Jinete:¬1
+    Call WriteLocaleMsg(sendIndex, MSG_RIDER_LEVEL_REQUIREMENT, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.JineteLevel)
+
+' ========================
+' Show current home
+' ========================
+Dim char_home As String
+If IsValidCity(UserList(UserIndex).Hogar) Then
+    ' CityNames() centralizes city diagnostics/display names and removes duplicated mappings.
+    char_home = CityNames(UserList(UserIndex).Hogar)
+Else
+    Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & UserList(UserIndex).Hogar)
+    char_home = CityNames(e_City.cUllathorpe)
+End If
+    Call WriteLocaleMsg(sendIndex, MSG_CHARACTER_HOME, e_FontTypeNames.FONTTYPE_INFO, char_home)
+
+
+
 Exit Sub
 SendUserStatsTxt_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxt", Erl)
