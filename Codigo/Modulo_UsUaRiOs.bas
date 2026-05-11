@@ -501,24 +501,24 @@ Dim tStr                        As String
         .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
         .Counters.TiempoDeInmunidadParalisisNoMagicas = 0
 
-        Dim HomeCityId As e_Ciudad
+        Dim HomeCityId As e_City
         HomeCityId = .Hogar
         If Not IsValidCity(HomeCityId) Then
             Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & .Hogar)
-            HomeCityId = e_Ciudad.cUllathorpe
+            HomeCityId = e_City.cUllathorpe
         End If
   
         If Not MapaValido(.pos.Map) Then
             Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
-            .pos.Map = Ciudades(HomeCityId).Map
-            .pos.x = Ciudades(HomeCityId).x
-            .pos.y = Ciudades(HomeCityId).y
+            .pos.Map = Cities(HomeCityId).Map
+            .pos.x = Cities(HomeCityId).x
+            .pos.y = Cities(HomeCityId).y
         End If
         If MapInfo(.pos.Map).MapResource = 0 Then
             Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
-            .pos.Map = Ciudades(HomeCityId).Map
-            .pos.x = Ciudades(HomeCityId).x
-            .pos.y = Ciudades(HomeCityId).y
+            .pos.Map = Cities(HomeCityId).Map
+            .pos.x = Cities(HomeCityId).x
+            .pos.y = Cities(HomeCityId).y
         End If
         If MapData(.pos.Map, .pos.x, .pos.y).UserIndex <> 0 Or MapData(.pos.Map, .pos.x, .pos.y).NpcIndex <> 0 Then
             Dim FoundPlace As Boolean
@@ -645,7 +645,7 @@ Dim tStr                        As String
                     Then
                 Call WarpToLegalPos(UserIndex, .flags.ReturnPos.Map, .flags.ReturnPos.x, .flags.ReturnPos.y, True)
             Else ' Lo mando a su hogar
-                Call WarpToLegalPos(UserIndex, Ciudades(HomeCityId).Map, Ciudades(HomeCityId).x, Ciudades(HomeCityId).y, True)
+                Call WarpToLegalPos(UserIndex, Cities(HomeCityId).Map, Cities(HomeCityId).x, Cities(HomeCityId).y, True)
             End If
         End If
         .flags.UserLogged = True
@@ -1510,7 +1510,7 @@ If IsValidCity(UserList(UserIndex).Hogar) Then
     char_home = CityNames(UserList(UserIndex).Hogar)
 Else
     Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & UserList(UserIndex).Hogar)
-    char_home = CityNames(e_Ciudad.cUllathorpe)
+    char_home = CityNames(e_City.cUllathorpe)
 End If
     Call WriteLocaleMsg(sendIndex, MSG_CHARACTER_HOME, e_FontTypeNames.FONTTYPE_INFO, char_home)
 
