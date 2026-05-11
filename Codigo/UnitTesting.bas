@@ -271,7 +271,9 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 31: RunSuite = Unit_StringValid.test_suite_string_valid()
         Case 32: RunSuite = Unit_SumarTiempo.test_suite_sumar_tiempo()
         Case 33: RunSuite = Unit_Partition.test_suite_partition()
+#If DIRECT_PLAY = 1 Then
         Case 34: RunSuite = Unit_Network.test_suite_network()
+#End If
 #If DIRECT_PLAY = 0 Then
         Case 35: RunSuite = Unit_Network_Aurora.test_suite_network_aurora()
 #End If
