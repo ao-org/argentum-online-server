@@ -91,6 +91,7 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "DayLength", CLng(val(reader.GetValue("CONFIGURACIONES", "DuracionDia"))) * 60 * 1000
     mSettings.Add "CostoPerdonPorCiudadano", CLng(val(reader.GetValue("CONFIGURACIONES", "CostoPerdonPorCiudadano")))
     mSettings.Add "ChatGlobal", CInt(val(reader.GetValue("CONFIGURACIONES", "ChatGlobal", "1")))
+    mSettings.Add "ChatGlobalCosto", CLng(val(reader.GetValue("CONFIGURACIONES", "ChatGlobalCosto", "2500")))
     mSettings.Add "PartyELV", CInt(val(reader.GetValue("CONFIGURACIONES", "PartyELV", "4")))
     mSettings.Add "PartyELVwLeadership", CInt(val(reader.GetValue("CONFIGURACIONES", "PartyELVwLeadership", "5")))
     mSettings.Add "PenaltyExpUserPerLevel", CSng(val(reader.GetValue("CONFIGURACIONES", "PenaltyExpUserPerLevel", "0.05")))
@@ -107,7 +108,8 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "JineteLevel8Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel8Speed", "1.45")))
     mSettings.Add "JineteLevel9Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel9Speed", "1.50")))
     mSettings.Add "MaxJailTime", CLng(val(reader.GetValue("CONFIGURACIONES", "MaxJailTime", "8640")))
-    mSettings.Add "DropMult", CInt(val(reader.GetValue("CONFIGURACIONES", "DropMult")))
+    mSettings.Add "DropMult", CInt(val(reader.GetValue("CONFIGURACIONES", "DropMult", 1)))
+    mSettings.Add "TrapParaliceDuration", CLng(val(reader.GetValue("CONFIGURACIONES", "TrapParaliceDuration", "10")))
     mSettings.Add "MaximoSpeedHack", CInt(val(reader.GetValue("ANTICHEAT", "MaximoSpeedHack")))
     mSettings.Add "FISHING_REQUIRED_PERCENT", CInt(val(reader.GetValue("PESCA", "MinAgua")))
     mSettings.Add "FISHING_TILES_ON_MAP", CInt(val(reader.GetValue("PESCA", "MaxZonas")))
