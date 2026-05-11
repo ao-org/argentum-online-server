@@ -336,7 +336,7 @@ Public Enum e_Class
     Bandit      'Bandido
 End Enum
 
-Public Enum e_Ciudad
+Public Enum e_City
     cUllathorpe = 1
     cNix
     cBanderbill
@@ -2959,8 +2959,8 @@ Public Type t_User
     raza As e_Raza
     genero As e_Genero
     Email As String
-    Hogar As e_Ciudad
-    PosibleHogar As e_Ciudad
+    Hogar As e_City
+    PosibleHogar As e_City
     MENSAJEINFORMACION As String
     invent As t_Inventario
     Invent_bk As t_Inventario

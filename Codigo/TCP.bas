@@ -430,7 +430,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
                         ByVal UserSexo As e_Genero, _
                         ByVal UserClase As e_Class, _
                         ByVal head As Integer, _
-                        ByVal Hogar As e_Ciudad) As Boolean
+                        ByVal Hogar As e_City) As Boolean
     On Error GoTo ConnectNewUser_Err
     With UserList(UserIndex)
         Dim LoopC As Long
@@ -529,15 +529,15 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
         .ChatCombate = 1
         .ChatGlobal = 1
         If IsValidCity(.Hogar) Then
-            ' Ciudades() centralizes city Map/X/Y lookup; avoid duplicated enum mappings.
-            .pos.Map = Ciudades(.Hogar).Map
-            .pos.x = Ciudades(.Hogar).x
-            .pos.y = Ciudades(.Hogar).y
+            ' Cities() centralizes city Map/X/Y lookup; avoid duplicated enum mappings.
+            .pos.Map = Cities(.Hogar).Map
+            .pos.x = Cities(.Hogar).x
+            .pos.y = Cities(.Hogar).y
         Else
             Call LogError("Invalid home city while creating user. UserIndex=" & UserIndex & " Hogar=" & .Hogar)
-            .pos.Map = Ciudades(e_Ciudad.cUllathorpe).Map
-            .pos.x = Ciudades(e_Ciudad.cUllathorpe).x
-            .pos.y = Ciudades(e_Ciudad.cUllathorpe).y
+            .pos.Map = Cities(e_City.cUllathorpe).Map
+            .pos.x = Cities(e_City.cUllathorpe).x
+            .pos.y = Cities(e_City.cUllathorpe).y
         End If
         UltimoChar = UCase$(name)
         Call SaveNewUser(UserIndex)
