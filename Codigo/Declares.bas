@@ -1796,6 +1796,7 @@ Public Type t_Hechizo
     ManaRequerido As Integer
     'Barrin 29/9/03
     StaRequerido As Integer
+    StaPercentRequired As Single
     Target As e_TargetType
     RequireTransform As Integer
     NeedStaff As Integer
