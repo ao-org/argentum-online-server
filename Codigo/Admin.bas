@@ -1,7 +1,7 @@
 Attribute VB_Name = "Admin"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -70,7 +70,10 @@ Public IntervaloFrio                 As Integer
 Public IntervaloWavFx                As Integer
 Public IntervaloNPCPuedeAtacar       As Integer
 Public IntervaloInvocacion           As Integer
-Public IntervaloOculto               As Integer '[Nacho]
+Public IntervaloOculto               As Long
+Public IntervaloUserPuedeOcultarse   As Long
+Public IntervaloTalk                 As Long
+Public IntervaloLeftClick            As Long
 Public IntervaloUserPuedeAtacar      As Long
 Public IntervaloMagiaGolpe           As Long
 Public IntervaloGolpeMagia           As Long
@@ -79,6 +82,7 @@ Public IntervaloTrabajarExtraer      As Long
 Public IntervaloNpcOwner             As Long
 Public IntervaloTrabajarConstruir    As Long
 Public IntervaloCerrarConexion       As Long '[Gonzalo]
+Public IntervaloCerrarConexionEnDungeon As Long
 Public IntervaloUserPuedeUsarU       As Long
 Public IntervaloUserPuedeUsarClic    As Long
 Public IntervaloGolpeUsar            As Long
@@ -191,7 +195,7 @@ Sub WorldSave()
         End If
     Next LoopX
     FrmStat.Visible = False
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1733, vbNullString, e_FontTypeNames.FONTTYPE_SERVER))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_WORLD_SAVE_NOTIFICATION, vbNullString, e_FontTypeNames.FONTTYPE_SERVER))
     Exit Sub
 Handler:
     Call TraceError(Err.Number, Err.Description, "Admin.WorldSave", Erl)
@@ -218,16 +222,80 @@ PurgarPenas_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.PurgarPenas", Erl)
 End Sub
 
+
+Private Sub DetenerTrabajoPorCarcel(ByVal UserIndex As Integer)
+    On Error GoTo DetenerTrabajoPorCarcel_Err
+
+    With UserList(UserIndex)
+        If .Counters.Trabajando > 0 Or .Counters.LastTrabajo > 0 Or .flags.UsandoMacro Or .AutomatedAction.IsActive Then
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Call WriteWorkRequestTarget(UserIndex, 0)
+            Call ResetUserAutomatedActions(UserIndex)
+        End If
+
+        .Counters.LastTrabajo = 0
+        .flags.TargetObj = 0
+        .flags.TargetObjMap = 0
+        .flags.TargetObjX = 0
+        .flags.TargetObjY = 0
+        .flags.TargetObjInvIndex = 0
+        .flags.TargetObjInvSlot = 0
+    End With
+
+    Exit Sub
+DetenerTrabajoPorCarcel_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.DetenerTrabajoPorCarcel", Erl)
+End Sub
+
+
+Private Function IsRemovableInventoryItemInJail(ByVal ObjIndex As Integer) As Boolean
+    With ObjData(ObjIndex)
+        'fish
+        If .OBJType = otUseOnce And .Subtipo = 1 Then
+            IsRemovableInventoryItemInJail = True
+            Exit Function
+        End If
+        If .OBJType = otWood Then
+            IsRemovableInventoryItemInJail = True
+            Exit Function
+        End If
+        If .OBJType = otMinerals Then
+            IsRemovableInventoryItemInJail = True
+            Exit Function
+        End If
+    End With
+End Function
+
+Private Sub RemoveCriticalObjectsWhileEnteringJail(ByVal UserIndex As Integer)
+    On Error GoTo RemoveCriticalObjectsWhileEnteringJail_Err
+    Dim Slot As Integer
+    With UserList(UserIndex)
+        For Slot = 1 To .CurrentInventorySlots
+                If .invent.Object(Slot).ObjIndex > 0 Then
+                    If IsRemovableInventoryItemInJail(.invent.Object(Slot).ObjIndex) Then
+                        Call QuitarUserInvItem(UserIndex, CByte(Slot), .invent.Object(Slot).Amount)
+                    End If
+                End If
+        Next Slot
+        Call UpdateUserInv(True, UserIndex, 0)
+    End With
+    Exit Sub
+RemoveCriticalObjectsWhileEnteringJail_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.RemoveCriticalObjectsWhileEnteringJail", Erl)
+End Sub
+
 Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optional ByVal GmName As String = vbNullString)
     On Error GoTo Encarcelar_Err
     If EsGM(UserIndex) Then Exit Sub
     UserList(UserIndex).Counters.Pena = minutos
+    Call DetenerTrabajoPorCarcel(UserIndex)
+    Call RemoveCriticalObjectsWhileEnteringJail(UserIndex)
     Call WarpUserChar(UserIndex, Prision.Map, Prision.x, Prision.y, True)
     If LenB(GmName) = 0 Then
         'Msg1107= Has sido encarcelado, deberas permanecer en la carcel  ¬1 minutos.
-        Call WriteLocaleMsg(UserIndex, 1107, e_FontTypeNames.FONTTYPE_INFO, minutos)
+        Call WriteLocaleMsg(UserIndex, MSG_SIDO_ENCARCELADO_DEBERAS_PERMANECER_CARCEL_MINUTOS, e_FontTypeNames.FONTTYPE_INFO, minutos)
     Else
-        Call WriteLocaleMsg(UserIndex, 1617, e_FontTypeNames.FONTTYPE_INFO, GmName & "¬" & minutos) 'Msg1617=¬1 te ha encarcelado, deberás permanecer en la cárcel ¬2 minutos.
+        Call WriteLocaleMsg(UserIndex, MSG_HA_ENCARCELADO_DEBERAS_PERMANECER_CARCEL_MINUTOS, e_FontTypeNames.FONTTYPE_INFO, GmName & "¬" & minutos) 'Msg1617=¬1 te ha encarcelado, deberás permanecer en la cárcel ¬2 minutos.
     End If
     Exit Sub
 Encarcelar_Err:
@@ -242,12 +310,50 @@ BANCheck_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.BANCheck", Erl)
 End Function
 
+
 Public Function PersonajeExiste(ByVal name As String) As Boolean
     On Error GoTo PersonajeExiste_Err
-    PersonajeExiste = GetUserValue(LCase$(name), "COUNT(*)") > 0
+
+    ' ------------------------------------------------------------------
+    ' Purpose:
+    '   Check if a character with the given name exists in the database.
+    '
+    ' Why this implementation:
+    '   - Uses SELECT 1 ... LIMIT 1 instead of COUNT(*)
+    '   - This allows SQLite to stop at the FIRST match (much faster)
+    '   - Avoids scanning all matching rows unnecessarily
+    '
+    ' Case-insensitive comparison:
+    '   - Uses "COLLATE NOCASE" so we don't rely on LCase$()
+    '   - This preserves index usage and avoids string allocations
+    '
+    ' Expected behavior:
+    '   - Returns True if at least one row exists
+    '   - Returns False if no rows match
+    ' ------------------------------------------------------------------
+
+    Dim RS As ADODB.Recordset
+
+    Set RS = Query( _
+        "SELECT 1 FROM user WHERE name = ? COLLATE NOCASE LIMIT 1;", _
+        Name _
+    )
+
+    ' If the recordset is valid and not empty, at least one match exists
+    If Not RS Is Nothing Then
+        PersonajeExiste = Not RS.EOF
+    Else
+        PersonajeExiste = False
+    End If
+
     Exit Function
+
 PersonajeExiste_Err:
+    ' Log error with full context for debugging
     Call TraceError(Err.Number, Err.Description, "Admin.PersonajeExiste", Erl)
+
+    ' Safe fallback
+    PersonajeExiste = False
 End Function
 
 Public Function IsValidUserId(ByVal UserId As Long) As Boolean
@@ -298,7 +404,7 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
     tBan.Baneador = Baneador
     Call Baneos.Add(tBan)
     Call SaveBan(Baneos.count)
-    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(1705, nombre & "¬" & Causa & "¬" & dias & "¬" & Baneador, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1705=¬1 fue baneado por ¬2 durante los próximos ¬3 días. La medida fue tomada por: ¬4.
+    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_BANEADO_DURANTE_PROXIMOS_DIAS_MEDIDA_TOMADA, nombre & "¬" & Causa & "¬" & dias & "¬" & Baneador, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1705=¬1 fue baneado por ¬2 durante los próximos ¬3 días. La medida fue tomada por: ¬4.
     Exit Sub
 BanTemporal_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.BanTemporal", Erl)

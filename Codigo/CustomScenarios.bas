@@ -1,7 +1,7 @@
 Attribute VB_Name = "CustomScenarios"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -349,11 +349,11 @@ Public Function IsEventActive() As Boolean
     End If
 End Function
 
-Public Sub UserDisconnected(ByVal MapNumber As Integer, ByVal UserIndex As Integer)
+Public Sub UserDisconnected(ByVal UserIndex As Integer)
     Call RegisterDisconnectedUser(UserIndex)
 End Sub
 
-Public Sub UserConnected(ByVal UserIndex)
+Public Sub UserConnected(ByVal UserIndex As Integer)
     Call RegisterReconnectedUser(UserIndex)
 End Sub
 

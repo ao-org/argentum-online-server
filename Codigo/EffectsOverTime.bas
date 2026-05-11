@@ -1,7 +1,7 @@
 Attribute VB_Name = "EffectsOverTime"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -28,7 +28,7 @@ Attribute VB_Name = "EffectsOverTime"
 Option Explicit
 Private LastUpdateTime        As Long
 Private UniqueIdCounter       As Long
-Const ACTIVE_EFFECTS_MIN_SIZE As Integer = 500
+
 Private ActiveEffects         As t_EffectOverTimeList
 Const UnequipEffectId = 23
 Const INITIAL_POOL_SIZE = 200

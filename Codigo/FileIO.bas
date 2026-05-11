@@ -1,7 +1,7 @@
 Attribute VB_Name = "ES"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -589,6 +589,7 @@ Public Sub CargarHechizos()
         Hechizos(Hechizo).Duration = val(Leer.GetValue("Hechizo" & Hechizo, "Duration"))
         'Barrin 30/9/03
         Hechizos(Hechizo).StaRequerido = val(Leer.GetValue("Hechizo" & Hechizo, "StaRequerido"))
+        Hechizos(Hechizo).StaPercentRequired = val(Leer.GetValue("Hechizo" & Hechizo, "StaPercentRequired"))
         Hechizos(Hechizo).Target = val(Leer.GetValue("Hechizo" & Hechizo, "Target"))
         Hechizos(Hechizo).RequireTransform = val(Leer.GetValue("Hechizo" & Hechizo, "RequireTransform"))
         frmCargando.cargar.value = frmCargando.cargar.value + 1
@@ -736,7 +737,7 @@ End Sub
 Sub LoadMotd()
     On Error GoTo LoadMotd_Err
     Dim i As Integer
-    MaxLines = val(GetVar(DatPath & "Motd.ini", "INIT", "NumLines"))
+    MaxLines = max(1, val(GetVar(DatPath & "Motd.ini", "INIT", "NumLines")))
     ReDim MOTD(1 To MaxLines)
     For i = 1 To MaxLines
         MOTD(i).texto = GetVar(DatPath & "Motd.ini", "Motd", "Line" & i)
@@ -1050,6 +1051,7 @@ Sub LoadOBJData()
             .ElementalTags = val(Leer.GetValue(ObjKey, "ElementalTags"))
             .BowCategory = val(Leer.GetValue(ObjKey, "BowCategory"))
             .ArrowCategory = val(Leer.GetValue(ObjKey, "ArrowCategory"))
+            .RepairTo = val(Leer.GetValue(ObjKey, "RepairTo"))
             If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
             If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
             Dim i As Integer
@@ -1100,6 +1102,8 @@ Sub LoadOBJData()
                     .incinera = val(Leer.GetValue(ObjKey, "Incinera"))
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
+                    .MaxHitToNPC = val(Leer.GetValue(ObjKey, "MaxHitToNPC"))
+                    .MinHitToNPC = val(Leer.GetValue(ObjKey, "MinHitToNPC"))
                     .MinArmorPenetrationFlat = val(Leer.GetValue(ObjKey, "MinArmorPenetrationFlat"))
                     .MaxArmorPenetrationFlat = val(Leer.GetValue(ObjKey, "MaxArmorPenetrationFlat"))
                     .ArmorPenetrationPercent = val(Leer.GetValue(ObjKey, "ArmorPenetrationPercent"))
@@ -1130,15 +1134,8 @@ Sub LoadOBJData()
                     .MinModificador = val(Leer.GetValue(ObjKey, "MinModificador"))
                     .DuracionEfecto = val(Leer.GetValue(ObjKey, "DuracionEfecto"))
                     .Hechizo = val(Leer.GetValue(ObjKey, "Hechizo"))
-                    .Raices = val(Leer.GetValue(ObjKey, "Raices"))
-                    .Cuchara = val(Leer.GetValue(ObjKey, "Cuchara"))
-                    .Botella = val(Leer.GetValue(ObjKey, "Botella"))
                     .Mortero = val(Leer.GetValue(ObjKey, "Mortero"))
                     .FrascoAlq = val(Leer.GetValue(ObjKey, "FrascoAlq"))
-                    .FrascoElixir = val(Leer.GetValue(ObjKey, "FrascoElixir"))
-                    .Dosificador = val(Leer.GetValue(ObjKey, "Dosificador"))
-                    .Orquidea = val(Leer.GetValue(ObjKey, "Orquidea"))
-                    .Carmesi = val(Leer.GetValue(ObjKey, "Carmesi"))
                     .HongoDeLuz = val(Leer.GetValue(ObjKey, "HongoDeLuz"))
                     .Esporas = val(Leer.GetValue(ObjKey, "Esporas"))
                     .Tuna = val(Leer.GetValue(ObjKey, "Tuna"))
@@ -1146,11 +1143,7 @@ Sub LoadOBJData()
                     .ColaDeZorro = val(Leer.GetValue(ObjKey, "ColaDeZorro"))
                     .FlorOceano = val(Leer.GetValue(ObjKey, "FlorOceano"))
                     .FlorRoja = val(Leer.GetValue(ObjKey, "FlorRoja"))
-                    .Hierva = val(Leer.GetValue(ObjKey, "Hierva"))
-                    .HojasDeRin = val(Leer.GetValue(ObjKey, "HojasDeRin"))
-                    .HojasRojas = val(Leer.GetValue(ObjKey, "HojasRojas"))
-                    .SemillasPros = val(Leer.GetValue(ObjKey, "SemillasPros"))
-                    .Pimiento = val(Leer.GetValue(ObjKey, "Pimiento"))
+                    .SemillasProsperas = val(Leer.GetValue(ObjKey, "SemillasProsperas"))
                     .SkPociones = val(Leer.GetValue(ObjKey, "SkPociones"))
                     .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
                 Case e_OBJType.otShips, e_OBJType.otSkinsBoats
@@ -1170,6 +1163,8 @@ Sub LoadOBJData()
                 Case e_OBJType.otArrows
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
+                    .MaxHitToNPC = val(Leer.GetValue(ObjKey, "MaxHitToNPC"))
+                    .MinHitToNPC = val(Leer.GetValue(ObjKey, "MinHitToNPC"))
                     .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
                     .Paraliza = val(Leer.GetValue(ObjKey, "Paraliza"))
                     .Estupidiza = val(Leer.GetValue(ObjKey, "Estupidiza"))
@@ -1200,11 +1195,12 @@ Sub LoadOBJData()
                         .MaxItems = val(Leer.GetValue(ObjKey, "Peces"))
                     End If
                 Case e_OBJType.otRecallStones
-                    .TipoRuna = val(Leer.GetValue(ObjKey, "TipoRuna"))
+                    .TipoRuna = val(Leer.GetValue(ObjKey, "Runetype"))
                     .DesdeMap = val(Leer.GetValue(ObjKey, "DesdeMap"))
-                    .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
-                    .HastaX = val(Leer.GetValue(ObjKey, "X"))
-                    .HastaY = val(Leer.GetValue(ObjKey, "Y"))
+                    .HastaMap = val(Leer.GetValue(ObjKey, "HastaMap"))
+                    .HastaX = val(Leer.GetValue(ObjKey, "HastaX"))
+                    .HastaY = val(Leer.GetValue(ObjKey, "HastaY"))
+                    .Cooldown = val(Leer.GetValue(ObjKey, "Cooldown"))
                 Case e_OBJType.otTeleport
                     .Radio = val(Leer.GetValue(ObjKey, "Radio"))
                 Case e_OBJType.otChest
@@ -1489,11 +1485,7 @@ Sub LoadMapData()
     Dim Map     As Integer
     Dim TempInt As Integer
     Dim npcfile As String
-    #If UNIT_TEST = 1 Then
-        'We only need 50 maps for unit testing
-        NumMaps = 50
-        Debug.Print "UNIT_TEST Enabled Loading just " & NumMaps & " maps"
-    #ElseIf LOGIN_STRESS_TEST = 1 Then
+    #If LOGIN_STRESS_TEST = 1 Then
         NumMaps = 100
     #Else
         If RunningInVB() Then
@@ -1843,7 +1835,6 @@ Sub LoadSini()
     IdleLimit = val(Lector.GetValue("INIT", "IdleLimit"))
     'Lee la version correcta del cliente
     ULTIMAVERSION = Lector.GetValue("INIT", "Version")
-    PuedeCrearPersonajes = val(Lector.GetValue("INIT", "PuedeCrearPersonajes"))
     MinimumPriceMao = val(Lector.GetValue("INIT", "MinimumPriceMao"))
     GoldPriceMao = val(Lector.GetValue("INIT", "GoldPriceMao"))
     MinimumLevelMao = val(Lector.GetValue("INIT", "MinimumLevelMao"))
@@ -1868,43 +1859,11 @@ Sub LoadSini()
     End If
     Call CargarCiudades
     Call LoadFeatureToggles
-    Call LoadGlobalDropTable
     Set Lector = Nothing
     Exit Sub
 LoadSini_Err:
     Set Lector = Nothing
     Call TraceError(Err.Number, Err.Description, "ES.LoadSini", Erl)
-End Sub
-
-Sub LoadGlobalDropTable()
-    Dim Lector   As clsIniManager
-    Dim Temporal As Long
-    If Not FileExist(DatPath & "GlobalDropTable.dat") Then
-        Exit Sub
-    End If
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando tabla de drop globales."
-    Set Lector = New clsIniManager
-    Call Lector.Initialize(DatPath & "GlobalDropTable.dat")
-    If Lector.NodesCount = 0 Then
-        Set Lector = Nothing
-        Exit Sub
-    End If
-    Dim DropCount, i As Integer
-    DropCount = val(Lector.GetValue("INIT", "DROPCOUNT"))
-    If DropCount = 0 Then
-        ReDim GlobalDropTable(0) As t_GlobalDrop
-        Set Lector = Nothing
-        Exit Sub
-    End If
-    ReDim GlobalDropTable(1 To DropCount) As t_GlobalDrop
-    For i = 1 To DropCount
-        GlobalDropTable(i).MaxPercent = val(Lector.GetValue("DROP" & i, "MAXPERCENT"))
-        GlobalDropTable(i).MinPercent = val(Lector.GetValue("DROP" & i, "MINPERCENT"))
-        GlobalDropTable(i).ObjectNumber = val(Lector.GetValue("DROP" & i, "OBJECTNUMBER"))
-        GlobalDropTable(i).RequiredHPForMaxChance = val(Lector.GetValue("DROP" & i, "HPFORMAXCHANCE"))
-        GlobalDropTable(i).amount = val(Lector.GetValue("DROP" & i, "AMOUNT"))
-    Next i
-    Set Lector = Nothing
 End Sub
 
 Sub LoadFeatureToggles()
@@ -1951,11 +1910,78 @@ Sub LoadPacketRatePolicy()
         MacroIterations(i) = val(Lector.GetValue(PacketName, "Iterations"))
         PacketTimerThreshold(i) = val(Lector.GetValue(PacketName, "Limit"))
     Next i
+
+    IntervaloTalk = PacketTimerThreshold(PacketNames.Talk)
+    IntervaloLeftClick = PacketTimerThreshold(PacketNames.LeftClick)
     Set Lector = Nothing
     Exit Sub
 LoadPacketRatePolicy_Err:
     Set Lector = Nothing
     Call TraceError(Err.Number, Err.Description, "ES.LoadPacketRatePolicy", Erl)
+End Sub
+
+' Centralizes city INI parsing and keeps Cities() synchronized for legacy callers.
+Private Sub LoadCityData(ByRef Lector As clsIniManager, ByVal CityId As e_City, ByVal SectionName As String)
+    Dim ErrorMessage As String
+
+    With CityData(CityId)
+        .Map = val(Lector.GetValue(SectionName, "Mapa"))
+        .X = val(Lector.GetValue(SectionName, "X"))
+        .Y = val(Lector.GetValue(SectionName, "Y"))
+        .MapaViaje = val(Lector.GetValue(SectionName, "MapaViaje"))
+        .ViajeX = val(Lector.GetValue(SectionName, "ViajeX"))
+        .ViajeY = val(Lector.GetValue(SectionName, "ViajeY"))
+        .MapaResu = val(Lector.GetValue(SectionName, "MapaResu"))
+        .ResuX = val(Lector.GetValue(SectionName, "ResuX"))
+        .ResuY = val(Lector.GetValue(SectionName, "ResuY"))
+        .NecesitaNave = val(Lector.GetValue(SectionName, "NecesitaNave"))
+    End With
+
+    CityNames(CityId) = SectionName
+
+    ' LoadCityData performs early diagnostics for easier debugging;
+    ' ValidateCities remains the authoritative startup validation pass.
+    With CityData(CityId)
+        If .Map <= 0 Or .X <= 0 Or .Y <= 0 Then
+            ErrorMessage = "Failed to load city data. CityId=" & CityId & _
+                " Name=" & SectionName & _
+                " Map=" & .Map & _
+                " X=" & .X & _
+                " Y=" & .Y
+
+            Call LogError(ErrorMessage)
+            Debug.Print ErrorMessage
+        End If
+    End With
+
+    Cities(CityId).Map = CityData(CityId).Map
+    Cities(CityId).X = CityData(CityId).X
+    Cities(CityId).Y = CityData(CityId).Y
+End Sub
+
+Private Sub ValidateCities()
+    Dim CityIndex    As Byte
+    Dim ErrorMessage As String
+
+    ' Defensive startup validation: missing CityData entries are logged and
+    ' surfaced in the IDE via Debug.Assert instead of causing silent gameplay
+    ' failures when new cities are added. Validation is intentionally non-fatal
+    ' so startup/CI can continue and report all invalid city entries.
+    ' CITY_COUNT is derived from e_City, so every enum city must have a
+    ' synchronized CityData entry loaded with valid Map/X/Y coordinates.
+    For CityIndex = 1 To CITY_COUNT
+        If Not IsValidCity(CityIndex) Then
+            ErrorMessage = "Configuracion invalida de ciudad. CityId=" & CityIndex & _
+                " Name=" & CityNames(CityIndex) & _
+                " Map=" & CityData(CityIndex).Map & _
+                " X=" & CityData(CityIndex).X & _
+                " Y=" & CityData(CityIndex).Y
+
+            Call LogError(ErrorMessage)
+            Debug.Print ErrorMessage
+            Debug.Assert False
+        End If
+    Next CityIndex
 End Sub
 
 Sub CargarCiudades()
@@ -1965,136 +1991,28 @@ Sub CargarCiudades()
     Set Lector = New clsIniManager
     Call Lector.Initialize(DatPath & "Ciudades.dat")
     Dim MapasCiudades As String
-    With CityNix
-        .Map = val(Lector.GetValue("NIX", "Mapa"))
-        .x = val(Lector.GetValue("NIX", "X"))
-        .y = val(Lector.GetValue("NIX", "Y"))
-        .MapaViaje = val(Lector.GetValue("NIX", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("NIX", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("NIX", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("NIX", "MapaResu"))
-        .ResuX = val(Lector.GetValue("NIX", "ResuX"))
-        .ResuY = val(Lector.GetValue("NIX", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("NIX", "NecesitaNave"))
-        MapasCiudades = Lector.GetValue("NIX", "Mapas") & ","
-    End With
-    With CityUllathorpe
-        .Map = val(Lector.GetValue("Ullathorpe", "Mapa"))
-        .x = val(Lector.GetValue("Ullathorpe", "X"))
-        .y = val(Lector.GetValue("Ullathorpe", "Y"))
-        .MapaViaje = val(Lector.GetValue("Ullathorpe", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Ullathorpe", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Ullathorpe", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Ullathorpe", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Ullathorpe", "ResuX"))
-        .ResuY = val(Lector.GetValue("Ullathorpe", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Ullathorpe", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Ullathorpe", "Mapas") & ","
-    End With
-    With CityBanderbill
-        .Map = val(Lector.GetValue("Banderbill", "Mapa"))
-        .x = val(Lector.GetValue("Banderbill", "X"))
-        .y = val(Lector.GetValue("Banderbill", "Y"))
-        .MapaViaje = val(Lector.GetValue("Banderbill", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Banderbill", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Banderbill", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Banderbill", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Banderbill", "ResuX"))
-        .ResuY = val(Lector.GetValue("Banderbill", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Banderbill", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Banderbill", "Mapas") & ","
-    End With
-    With CityLindos
-        .Map = val(Lector.GetValue("Lindos", "Mapa"))
-        .x = val(Lector.GetValue("Lindos", "X"))
-        .y = val(Lector.GetValue("Lindos", "Y"))
-        .MapaViaje = val(Lector.GetValue("Lindos", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Lindos", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Lindos", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Lindos", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Lindos", "ResuX"))
-        .ResuY = val(Lector.GetValue("Lindos", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Lindos", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Lindos", "Mapas") & ","
-    End With
-    With CityArghal
-        .Map = val(Lector.GetValue("Arghal", "Mapa"))
-        .x = val(Lector.GetValue("Arghal", "X"))
-        .y = val(Lector.GetValue("Arghal", "Y"))
-        .MapaViaje = val(Lector.GetValue("Arghal", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Arghal", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Arghal", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Arghal", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Arghal", "ResuX"))
-        .ResuY = val(Lector.GetValue("Arghal", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Arghal", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Arghal", "Mapas") & ","
-    End With
-    With CityForgat
-        .Map = val(Lector.GetValue("Forgat", "Mapa"))
-        .x = val(Lector.GetValue("Forgat", "X"))
-        .y = val(Lector.GetValue("Forgat", "Y"))
-        .MapaViaje = val(Lector.GetValue("Forgat", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Forgat", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Forgat", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Forgat", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Forgat", "ResuX"))
-        .ResuY = val(Lector.GetValue("Forgat", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Forgat", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Forgat", "Mapas") & ","
-    End With
-    With CityEldoria
-        .Map = val(Lector.GetValue("Eldoria", "Mapa"))
-        .x = val(Lector.GetValue("Eldoria", "X"))
-        .y = val(Lector.GetValue("Eldoria", "Y"))
-        .MapaViaje = val(Lector.GetValue("Eldoria", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Eldoria", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Eldoria", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Eldoria", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Eldoria", "ResuX"))
-        .ResuY = val(Lector.GetValue("Eldoria", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Eldoria", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Eldoria", "Mapas") & ","
-    End With
-    With CityArkhein
-        .Map = val(Lector.GetValue("Arkhein", "Mapa"))
-        .x = val(Lector.GetValue("Arkhein", "X"))
-        .y = val(Lector.GetValue("Arkhein", "Y"))
-        .MapaViaje = val(Lector.GetValue("Arkhein", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Arkhein", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Arkhein", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Arkhein", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Arkhein", "ResuX"))
-        .ResuY = val(Lector.GetValue("Arkhein", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Arkhein", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Arkhein", "Mapas") & ","
-    End With
-    With CityEleusis
-        .Map = val(Lector.GetValue("Eleusis", "Mapa"))
-        .x = val(Lector.GetValue("Eleusis", "X"))
-        .y = val(Lector.GetValue("Eleusis", "Y"))
-        .MapaViaje = val(Lector.GetValue("Eleusis", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Eleusis", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Eleusis", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Eleusis", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Eleusis", "ResuX"))
-        .ResuY = val(Lector.GetValue("Eleusis", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Eleusis", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Eleusis", "Mapas") & ","
-    End With
-    With CityPenthar
-        .Map = val(Lector.GetValue("Penthar", "Mapa"))
-        .x = val(Lector.GetValue("Penthar", "X"))
-        .y = val(Lector.GetValue("Penthar", "Y"))
-        .MapaViaje = val(Lector.GetValue("Penthar", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Penthar", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Penthar", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Penthar", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Penthar", "ResuX"))
-        .ResuY = val(Lector.GetValue("Penthar", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Penthar", "NecesitaNave"))
-        MapasCiudades = MapasCiudades & Lector.GetValue("Penthar", "Mapas")
-    End With
+    Call LoadCityData(Lector, e_City.cUllathorpe, "Ullathorpe")
+    Call LoadCityData(Lector, e_City.cNix, "NIX")
+    Call LoadCityData(Lector, e_City.cBanderbill, "Banderbill")
+    Call LoadCityData(Lector, e_City.cLindos, "Lindos")
+    Call LoadCityData(Lector, e_City.cArghal, "Arghal")
+    Call LoadCityData(Lector, e_City.cArkhein, "Arkhein")
+    Call LoadCityData(Lector, e_City.cForgat, "Forgat")
+    Call LoadCityData(Lector, e_City.cEldoria, "Eldoria")
+    Call LoadCityData(Lector, e_City.cPenthar, "Penthar")
+    Call LoadCityData(Lector, e_City.cMorgrim, "Morgrim")
+
+    MapasCiudades = Lector.GetValue("NIX", "Mapas") & "," _
+        & Lector.GetValue("Ullathorpe", "Mapas") & "," _
+        & Lector.GetValue("Banderbill", "Mapas") & "," _
+        & Lector.GetValue("Lindos", "Mapas") & "," _
+        & Lector.GetValue("Arghal", "Mapas") & "," _
+        & Lector.GetValue("Forgat", "Mapas") & "," _
+        & Lector.GetValue("Eldoria", "Mapas") & "," _
+        & Lector.GetValue("Arkhein", "Mapas") & ","
+    MapasCiudades = MapasCiudades & Lector.GetValue("Eleusis", "Mapas") & ","
+    MapasCiudades = MapasCiudades & Lector.GetValue("Penthar", "Mapas")
+    MapasCiudades = MapasCiudades & Lector.GetValue("Morgrim", "Mapas")
     With Prision
         .Map = val(Lector.GetValue("Prision", "Mapa"))
         .x = val(Lector.GetValue("Prision", "X"))
@@ -2184,43 +2102,8 @@ Sub CargarCiudades()
     End With
     TotalMapasCiudades = Split(MapasCiudades, ",")
     Set Lector = Nothing
-    Nix.Map = CityNix.Map
-    Nix.x = CityNix.x
-    Nix.y = CityNix.y
-    Ullathorpe.Map = CityUllathorpe.Map
-    Ullathorpe.x = CityUllathorpe.x
-    Ullathorpe.y = CityUllathorpe.y
-    Banderbill.Map = CityBanderbill.Map
-    Banderbill.x = CityBanderbill.x
-    Banderbill.y = CityBanderbill.y
-    Lindos.Map = CityLindos.Map
-    Lindos.x = CityLindos.x
-    Lindos.y = CityLindos.y
-    Arghal.Map = CityArghal.Map
-    Arghal.x = CityArghal.x
-    Arghal.y = CityArghal.y
-    Forgat.Map = CityForgat.Map
-    Forgat.x = CityForgat.x
-    Forgat.y = CityForgat.y
-    Eldoria.Map = CityEldoria.Map
-    Eldoria.x = CityEldoria.x
-    Eldoria.y = CityEldoria.y
-    Arkhein.Map = CityArkhein.Map
-    Arkhein.x = CityArkhein.x
-    Arkhein.y = CityArkhein.y
-    Penthar.Map = CityPenthar.Map
-    Penthar.x = CityPenthar.x
-    Penthar.y = CityPenthar.y
-    'Esto es para el /HOGAR
-    Ciudades(e_Ciudad.cNix) = Nix
-    Ciudades(e_Ciudad.cUllathorpe) = Ullathorpe
-    Ciudades(e_Ciudad.cBanderbill) = Banderbill
-    Ciudades(e_Ciudad.cLindos) = Lindos
-    Ciudades(e_Ciudad.cArghal) = Arghal
-    Ciudades(e_Ciudad.cForgat) = Forgat
-    Ciudades(e_Ciudad.cArkhein) = Arkhein
-    Ciudades(e_Ciudad.cEldoria) = Eldoria
-    Ciudades(e_Ciudad.cPenthar) = Penthar
+
+    Call ValidateCities
     Exit Sub
 CargarCiudades_Err:
     Call TraceError(Err.Number, Err.Description, "ES.CargarCiudades", Erl)
@@ -2293,11 +2176,13 @@ Sub LoadIntervalos()
     MinutosWs = val(Lector.GetValue("INTERVALOS", "IntervaloWS"))
     If MinutosWs < 1 Then MinutosWs = 10
     IntervaloCerrarConexion = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexion"))
+    IntervaloCerrarConexionEnDungeon = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexionEnDungeon"))
     IntervaloUserPuedeUsarU = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarU"))
     IntervaloUserPuedeUsarClic = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarClic"))
     IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
     IntervaloGolpeUsar = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeUsar"))
     IntervaloOculto = val(Lector.GetValue("INTERVALOS", "IntervaloOculto"))
+    IntervaloUserPuedeOcultarse = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeOcultarse"))
     IntervaloPuedeSerAtacado = val(Lector.GetValue("INTERVALOS", "IntervaloPuedeSerAtacado"))
     IntervaloGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloGuardarUsuarios"))
     IntervaloTimerGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloTimerGuardarUsuarios"))
@@ -2339,7 +2224,7 @@ End Sub
 Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
     On Error GoTo SaveUser_Err
     If Logout Then
-        Call UserDisconnected(UserList(UserIndex).pos.Map, UserIndex)
+        Call UserDisconnected(UserIndex)
     End If
     Call SaveCharacterDB(UserIndex)
     If Logout Then
@@ -2450,6 +2335,7 @@ Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
     NpcList(NpcIndex).Char.body = val(GetVar(npcfile, "NPC" & NpcNumber, "Body"))
     NpcList(NpcIndex).Char.head = val(GetVar(npcfile, "NPC" & NpcNumber, "Head"))
     NpcList(NpcIndex).Char.Heading = val(GetVar(npcfile, "NPC" & NpcNumber, "Heading"))
+    NpcList(NpcIndex).flags.MappedHeading = NpcList(NpcIndex).Char.Heading
     NpcList(NpcIndex).Attackable = val(GetVar(npcfile, "NPC" & NpcNumber, "Attackable"))
     NpcList(NpcIndex).Comercia = val(GetVar(npcfile, "NPC" & NpcNumber, "Comercia"))
     NpcList(NpcIndex).Craftea = val(GetVar(npcfile, "NPC" & NpcNumber, "Craftea"))
@@ -2773,39 +2659,6 @@ LoadRecompensasFaccion_Err:
     Call TraceError(Err.Number, Err.Description, "ES.LoadRecompensasFaccion", Erl)
 End Sub
 
-Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
-    On Error GoTo LoadUserIntervals_Err
-    With UserList(UserIndex)
-        If False Then '.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios) Then
-            .Intervals.Arco = 50
-            .Intervals.Caminar = IntervaloCaminar
-            .Intervals.Golpe = 50
-            .Intervals.Magia = 50
-            .Intervals.GolpeMagia = 50
-            .Intervals.MagiaGolpe = 50
-            .Intervals.GolpeUsar = 0
-            .Intervals.TrabajarExtraer = IntervaloTrabajarExtraer
-            .Intervals.TrabajarConstruir = IntervaloTrabajarConstruir
-            .Intervals.UsarU = 50
-            .Intervals.UsarClic = 50
-        Else
-            .Intervals.Arco = IntervaloFlechasCazadores
-            .Intervals.Caminar = IntervaloCaminar
-            .Intervals.Golpe = IntervaloUserPuedeAtacar
-            .Intervals.Magia = IntervaloUserPuedeCastear
-            .Intervals.GolpeMagia = IntervaloGolpeMagia
-            .Intervals.MagiaGolpe = IntervaloMagiaGolpe
-            .Intervals.GolpeUsar = IntervaloGolpeUsar
-            .Intervals.TrabajarExtraer = IntervaloTrabajarExtraer
-            .Intervals.TrabajarConstruir = IntervaloTrabajarConstruir
-            .Intervals.UsarU = IntervaloUserPuedeUsarU
-            .Intervals.UsarClic = IntervaloUserPuedeUsarClic
-        End If
-    End With
-    Exit Sub
-LoadUserIntervals_Err:
-    Call TraceError(Err.Number, Err.Description, "ES.LoadUserIntervals", Erl)
-End Sub
 
 Function CountFiles(strFolder As String, strPattern As String) As Integer
     On Error GoTo CountFiles_Err
@@ -2917,6 +2770,11 @@ Sub LoadGuildsConfig()
     
     'Requisito para ver barra de vida
     RequiredGuildLevelShowHPBar = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "ShowHPBarRequiredLevel", "6")))
+    
+    'Precio para aceptar un nuevo miembro según el nivel del clan
+    For i = 1 To MAX_LEVEL_GUILD
+        PriceAcceptMemberGuild(i) = CInt(val(GuildsIni.GetValue("GUILDPRICEACCEPTMEMBER", "PriceAcceptMemberGuildLevel" & CStr(i), "0")))
+    Next i
     
     Set GuildsIni = Nothing
     AgregarAConsola "Se cargó la configuración de clanes (Clanes.dat)"

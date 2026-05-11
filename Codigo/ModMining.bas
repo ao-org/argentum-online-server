@@ -1,5 +1,38 @@
 Attribute VB_Name = "ModMining"
+' Argentum 20 Game Server
+'
+'    Copyright (C) 2026 Noland Studios LTD
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
+'
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'
 Option Explicit
+
+Public Const BLODIUM_PICKAXE_REQUIRED_MSG As Integer = 597
+
+Public Function CanUserExtractMinerals(ByVal UserIndex As Integer, ByVal TargetX As Byte, ByVal TargetY As Byte) As Boolean
+    With UserList(UserIndex)
+        If .invent.EquippedWorkingToolObjIndex <= 0 Then Exit Function
+        If ObjData(MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex).Blodium > 0 Then
+            If Not ObjData(.invent.EquippedWorkingToolObjIndex).Blodium > 0 Then
+                Call WriteLocaleMsg(UserIndex, BLODIUM_PICKAXE_REQUIRED_MSG, FONTTYPE_INFO)
+                Exit Function
+            End If
+        End If
+    End With
+    CanUserExtractMinerals = True
+End Function
+
 
 Public Sub MineMinerals(ByVal UserIndex As Integer)
     With UserList(UserIndex)
@@ -37,10 +70,10 @@ Public Sub MineMinerals(ByVal UserIndex As Integer)
             If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)
-            Call WriteLocaleMsg(UserIndex, 651, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_EXTRACTED_SOME_MINERALS, e_FontTypeNames.FONTTYPE_INFO)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(e_SoundEffects.OldMiningPickaxeHit, .pos.x, .pos.y))
             If IsFeatureEnabled("gain_exp_while_working") Then
-                Call GiveExpWhileWorking(UserIndex, UserList(UserIndex).invent.EquippedWorkingToolObjIndex, e_JobsTypes.Miner)
+                Call GiveExpWhileWorking(UserIndex, MiObj, e_JobsTypes.Miner)
                 Call WriteUpdateExp(UserIndex)
                 Call CheckUserLevel(UserIndex)
             End If

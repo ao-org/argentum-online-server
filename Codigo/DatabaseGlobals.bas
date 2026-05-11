@@ -1,7 +1,7 @@
 Attribute VB_Name = "DatabaseGlobals"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -34,6 +34,10 @@ Public Database_Host                    As String
 Public Database_Name                    As String
 Public Database_Username                As String
 Public Database_Password                As String
+' DB execution model:
+' - One main synchronous connection (`Connection`) for blocking calls.
+' - A pool of async connections (`Connection_async(1 To MAX_ASYNC)`) used by non-blocking Execute paths.
+' - `Current_async` rotates through that pool to spread async submissions.
 Public Const MAX_ASYNC                  As Byte = 20
 Public Current_async                    As Byte
 Public Connection                       As ADODB.Connection

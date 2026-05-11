@@ -1,7 +1,7 @@
 Attribute VB_Name = "modSendData"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -162,11 +162,13 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Opt
     Select Case sndRoute
         Case SendTarget.ToIndex
             Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
-            With UserList(sndIndex)
-                If (.ConnectionDetails.ConnIDValida) Then
-                    Call modNetwork.Send(sndIndex, Buffer)
-                End If
-            End With
+            If sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList) Then
+                With UserList(sndIndex)
+                    If (.ConnectionDetails.ConnIDValida) Then
+                        Call modNetwork.Send(sndIndex, Buffer)
+                    End If
+                End With
+            End If
         Case SendTarget.ToPCArea
             Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
             Call SendToUserArea(sndIndex, Buffer, ValidateInvi)

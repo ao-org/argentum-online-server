@@ -1,7 +1,7 @@
 Attribute VB_Name = "Consts"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2025 Noland Studios LTD
+'    Copyright (C) 2025-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -39,7 +39,7 @@ Public Const DEFAULT_NPC_ORBIT_TANGENT_WEIGHT       As Double = 0.35
 Public Const DEFAULT_NPC_RETREAT_DISTANCE_BUFFER    As Double = 0.75
 Public Const DEFAULT_NPC_ORBIT_STEP_DEGREES         As Double = 55
 Public Const DEFAULT_NPC_STRAFE_DURATION_MS         As Long = 900
-Public Const DEFAULT_NPC_HOSTILE_DELTA              As Byte = 5
+
 
 
 'General consts
@@ -62,3 +62,4 @@ Public Const CIUDAD_FORGAT                          As String = "Forgat"
 Public Const CIUDAD_ARKHEIN                         As String = "Arkhein"
 Public Const CIUDAD_ELDORIA                         As String = "Eldoria"
 Public Const CIUDAD_PENTHAR                         As String = "Penthar"
+Public Const CIUDAD_MORGRIM                         As String = "Morgrim"

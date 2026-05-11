@@ -1,7 +1,7 @@
 Attribute VB_Name = "NPCs"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -160,7 +160,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     End If
     If NpcList(NpcIndex).ShowKillerConsole > 0 Then
         'Msg1986=¬1 ha muerto en manos de ¬2
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1986", NpcList(NpcIndex).Name & "¬" & UserList(UserIndex).Name, e_FontTypeNames.FONTTYPE_GLOBAL))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_KILLED_BY_USER, NpcList(NpcIndex).Name & "¬" & UserList(UserIndex).Name, e_FontTypeNames.FONTTYPE_GLOBAL))
     End If
     'Quitamos el npc
     If MiNPC.flags.GlobalQuestBossIndex Then
@@ -191,7 +191,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             Next
         End If
         If UserList(UserIndex).ChatCombate = 1 Then
-            Call WriteLocaleMsg(UserIndex, 184, e_FontTypeNames.FONTTYPE_DIOS)
+            Call WriteLocaleMsg(UserIndex, MSG_YOU_KILLED_CREATURE, e_FontTypeNames.FONTTYPE_DIOS)
         End If
         Call IncrementLongCounter(UserList(UserIndex).Stats.NPCsMuertos, "NPCsMuertos")
         If IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
@@ -215,18 +215,14 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Call OnNpcKilledUpdateQuest(UserIndex, MiNPC)
         'Tiramos el oro
         Call NPCTirarOro(MiNPC, UserIndex)
-        Call DropObjQuest(MiNPC, UserIndex)
-        'Item Magico!
-        Call NpcDropeo(MiNPC, UserIndex)
-        Call DropFromGlobalDropTable(MiNPC, UserIndex)
-        'Tiramos el inventario
-        Call NPC_TIRAR_ITEMS(MiNPC)
-    End If ' UserIndex > 0
+        Call NpcDropQuestObj(MiNPC, UserIndex)
+        Call NpcDropObj(MiNPC, UserIndex)
+    End If
     ' Mascotas y npcs de entrenamiento no respawnean
     If MiNPC.MaestroNPC.ArrayIndex > 0 Or IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
     If NpcIndex = npc_index_evento Then
         BusquedaNpcActiva = False
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1549", vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN)) ' Msg1549=Evento> El NPC ha sido asesinado.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_EVENT_KILLED, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN)) ' Msg1549=Evento> El NPC ha sido asesinado.
         npc_index_evento = 0
     End If
     'ReSpawn o no
@@ -338,18 +334,6 @@ ResetExpresiones_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.ResetExpresiones", Erl)
 End Sub
 
-Sub ResetDrop(ByVal NpcIndex As Integer)
-    On Error GoTo ResetDrop_Err
-    Dim j As Integer
-    For j = 1 To NpcList(NpcIndex).NumQuiza
-        NpcList(NpcIndex).QuizaDropea(j) = 0
-    Next j
-    NpcList(NpcIndex).NumQuiza = 0
-    Exit Sub
-ResetDrop_Err:
-    Call TraceError(Err.Number, Err.Description, "NPCs.ResetDrop", Erl)
-End Sub
-
 Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
     On Error GoTo ResetNpcMainInfo_Err
     With (NpcList(NpcIndex))
@@ -405,7 +389,6 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
     Call ResetNpcCharInfo(NpcIndex)
     Call ResetNpcCriatures(NpcIndex)
     Call ResetExpresiones(NpcIndex)
-    Call ResetDrop(NpcIndex)
     Exit Sub
 ResetNpcMainInfo_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcMainInfo", Erl)
@@ -572,8 +555,21 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                             Simbolo = 4
                         End If
                     Else
+                        Dim validClass As Boolean
+                        Dim i As Integer
+                        validClass = False
+                        
+                        If QuestList(.QuestNumber(q)).RequiredClassesCount > 0 Then
+                            For i = 1 To QuestList(.QuestNumber(q)).RequiredClassesCount
+                                If UserList(sndIndex).clase = QuestList(.QuestNumber(q)).RequiredClass(i) Then
+                                    validClass = True
+                                    Exit For
+                                End If
+                            Next i
+                        End If
+                        
                         If UserDoneQuest(sndIndex, .QuestNumber(q)) Or Not UserDoneQuest(sndIndex, QuestList(.QuestNumber(q)).RequiredQuest) Or UserList(sndIndex).Stats.ELV < _
-                                QuestList(.QuestNumber(q)).RequiredLevel Or UserList(sndIndex).clase = QuestList(.QuestNumber(q)).RequiredClass Then
+                                QuestList(.QuestNumber(q)).RequiredLevel Or (QuestList(.QuestNumber(q)).RequiredClassesCount > 0 And Not validClass) Then
                             Simbolo = 2
                         Else
                             Simbolo = 1
@@ -735,13 +731,13 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
             If NpcList(NpcIndex).Humanoide Or NpcList(NpcIndex).npcType = e_NPCType.GuardiaReal Or NpcList(NpcIndex).npcType = e_NPCType.GuardiasCaos Or NpcList( _
                     NpcIndex).npcType = e_NPCType.GuardiaNpc Then
                 If HayPuerta(nPos.Map, nPos.x, nPos.y) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x, nPos.y, NpcIndex)
+                    Call HandleNpcDoorAction(nPos.Map, nPos.x, nPos.y, NpcIndex)
                 ElseIf HayPuerta(nPos.Map, nPos.x + 1, nPos.y) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x + 1, nPos.y, NpcIndex)
+                    Call HandleNpcDoorAction(nPos.Map, nPos.x + 1, nPos.y, NpcIndex)
                 ElseIf HayPuerta(nPos.Map, nPos.x + 1, nPos.y - 1) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x + 1, nPos.y - 1, NpcIndex)
+                    Call HandleNpcDoorAction(nPos.Map, nPos.x + 1, nPos.y - 1, NpcIndex)
                 ElseIf HayPuerta(nPos.Map, nPos.x, nPos.y - 1) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.x, nPos.y - 1, NpcIndex)
+                    Call HandleNpcDoorAction(nPos.Map, nPos.x, nPos.y - 1, NpcIndex)
                 End If
             End If
             Call AnimacionIdle(NpcIndex, False)
@@ -772,7 +768,7 @@ Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
         UserList(UserIndex).flags.Envenenado = VenenoNivel
         'Msg182=¡¡La criatura te ha envenenado!!
         If UserList(UserIndex).ChatCombate = 1 Then
-            Call WriteLocaleMsg(UserIndex, 182, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CRIATURA_HA_ENVENENADO, e_FontTypeNames.FONTTYPE_FIGHT)
         End If
     End If
     Exit Sub
@@ -836,7 +832,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.charindex, e_GraphicEffects.ModernGmWarp, 0))
     End If
     If Avisar Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1548", NpcList(nIndex).name & "¬" & get_map_name(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_EVENT, NpcList(nIndex).Name & "¬" & GetMapName(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
     End If
     SpawnNpc = nIndex
     Exit Function
@@ -975,6 +971,8 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
     With NpcInfoCache(NpcNumber)
         .Exists = True
         .TestOnly = Val(LeerNPCs.GetValue(SectionName, "TESTONLY"))
+        .DisabledInBattleServer = val(LeerNPCs.GetValue(SectionName, "DISABLEDINBATTLESERVER"))
+        .OnlyEnabledInBattleServer = val(LeerNPCs.GetValue(SectionName, "ONLYENABLEDINBATTLESERVER"))
         .RequireToggle = LeerNPCs.GetValue(SectionName, "REQUIRETOGGLE")
         .name = LeerNPCs.GetValue(SectionName, "Name")
         .SubName = LeerNPCs.GetValue(SectionName, "SubName")
@@ -1038,7 +1036,27 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .IntervaloRespawnMin = Val(LeerNPCs.GetValue(SectionName, "IntervaloRespawnMin"))
         .IntervaloRespawnMax = Val(LeerNPCs.GetValue(SectionName, "IntervaloRespawn"))
         .InformarRespawn = Val(LeerNPCs.GetValue(SectionName, "InformarRespawn"))
-        .QuizaProb = Val(LeerNPCs.GetValue(SectionName, "QuizaProb"))
+        Dim dropsCount As Long
+        dropsCount = val(LeerNPCs.GetValue(SectionName, "DropCount"))
+        If dropsCount < 0 Then
+            dropsCount = 0
+        ElseIf dropsCount > MaxDropCount Then
+            dropsCount = MaxDropCount
+        End If
+        .DropCount = dropsCount
+        If .DropCount > 0 Then
+            ReDim .Drop(1 To .DropCount)
+            Dim i As Byte
+            For i = 1 To .DropCount
+                ln = LeerNPCs.GetValue(SectionName, "Drop" & i)
+                .Drop(i).ItemIndex = Val(ReadField(1, ln, Asc("-")))
+                .Drop(i).DropChance = Val(ReadField(2, ln, Asc("-")))
+                .Drop(i).LowQuantityBound = Val(ReadField(3, ln, Asc("-")))
+                .Drop(i).HighQuantityBound = Val(ReadField(4, ln, Asc("-")))
+            Next i
+        Else
+            Erase .Drop
+        End If
         .MinTameLevel = Val(LeerNPCs.GetValue(SectionName, "MinTameLevel", 1))
         .OnlyForGuilds = Val(LeerNPCs.GetValue(SectionName, "OnlyForGuilds", 0))
         .ShowKillerConsole = Val(LeerNPCs.GetValue(SectionName, "ShowKillerConsole", 0))
@@ -1128,15 +1146,6 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
                 Erase .Expresiones
             End If
         End If
-        .NumQuiza = Val(LeerNPCs.GetValue(SectionName, "NumQuiza"))
-        If .NumQuiza > 0 Then
-            ReDim .QuizaDropea(1 To .NumQuiza)
-            For LoopC = 1 To .NumQuiza
-                .QuizaDropea(LoopC) = LeerNPCs.GetValue(SectionName, "QuizaDropea" & LoopC)
-            Next LoopC
-        Else
-            Erase .QuizaDropea
-        End If
         aux = LeerNPCs.GetValue(SectionName, "NumQuest")
         If LenB(aux) = 0 Then
             .NumQuest = 0
@@ -1208,49 +1217,119 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "NPCs.LoadNpcInfoIntoCache", Erl)
 End Sub
-
-Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean = True, Optional ByVal Reload As Boolean = False) As Integer
+'==========================================================
+' OpenNPC: allocates an NPC slot and initializes it from cache
+'==========================================================
+Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean = True) As Integer
     On Error GoTo OpenNPC_Err
+
     Dim NpcIndex As Integer
     Dim Info As t_NpcInfoCache
-    Dim LoopC As Long
-    Dim cant As Long
+    Dim FailReason As String
 
+    ' Default return (failure)
+    OpenNPC = 0
+
+    '----------------------------
+    ' Ensure cache initialized
+    '----------------------------
     If Not NpcInfoCacheInitialized Then
         If LeerNPCs Is Nothing Then
-            OpenNPC = 0
-            Exit Function
+            FailReason = "NpcInfoCache not initialized and LeerNPCs is Nothing"
+            GoTo Fail
         End If
+
         Call BuildNpcInfoCache
+
         If Not NpcInfoCacheInitialized Then
-            OpenNPC = 0
-            Exit Function
+            FailReason = "NpcInfoCache failed to initialize after BuildNpcInfoCache"
+            GoTo Fail
         End If
     End If
 
+    '----------------------------
+    ' Validate NPC number bounds
+    '----------------------------
     If NpcNumber < LBound(NpcInfoCache) Or NpcNumber > UBound(NpcInfoCache) Then
-        OpenNPC = 0
-        Exit Function
+        FailReason = "NpcNumber out of bounds: " & NpcNumber
+        GoTo Fail
     End If
 
     Info = NpcInfoCache(NpcNumber)
 
     If Not Info.Exists Then
-        OpenNPC = 0
-        Exit Function
-    End If
-#If DEBUGGING = 0 Then
-    If Info.TestOnly > 0 Then Exit Function
-#End If
-    If Info.RequireToggle <> "" Then
-        If Not IsFeatureEnabled(Info.RequireToggle) Then Exit Function
+        FailReason = "NpcInfoCache entry does not exist: " & NpcNumber
+        GoTo Fail
     End If
 
+#If DEBUGGING = 0 Then
+    If Info.TestOnly > 0 Then
+        FailReason = "NPC is TestOnly in production: " & NpcNumber
+        GoTo Fail
+    End If
+#End If
+
+#If BATTLESERVER = 1 Then
+    If Info.DisabledInBattleServer > 0 Then
+        FailReason = "NPC disabled in battle server: " & NpcNumber
+        GoTo Fail
+    End If
+#End If
+
+#If BATTLESERVER = 0 Then
+    If Info.OnlyEnabledInBattleServer > 0 Then
+        FailReason = "NPC only enabled in battle server: " & NpcNumber
+        GoTo fail
+    End If
+#End If
+
+    If Info.RequireToggle <> "" Then
+        If Not IsFeatureEnabled(Info.RequireToggle) Then
+            FailReason = "Feature toggle disabled: " & Info.RequireToggle & " for NPC " & NpcNumber
+            GoTo Fail
+        End If
+    End If
+
+    '----------------------------
+    ' Allocate slot
+    '----------------------------
     NpcIndex = GetNextAvailableNpc
     If NpcIndex > MaxNPCs Then
-        OpenNPC = 0
-        Exit Function
+        FailReason = "No available NPC slots (MaxNPCs reached)"
+        GoTo Fail
     End If
+
+    '----------------------------
+    ' Initialize NPC instance
+    '----------------------------
+    Call InitializeNpcFromInfo(NpcIndex, NpcNumber, Info, Respawn)
+
+    ' Always update counters (Reload removed)
+    If NpcIndex > LastNPC Then LastNPC = NpcIndex
+    NumNPCs = NumNPCs + 1
+
+    OpenNPC = NpcIndex
+    Exit Function
+
+Fail:
+    LogInfoServidor "OpenNPC FAILED | NpcNumber=" & NpcNumber & " | Reason=" & FailReason
+    Exit Function
+
+OpenNPC_Err:
+    LogInfoServidor "OpenNPC ERROR | NpcNumber=" & NpcNumber & _
+                    " | Err=" & Err.Number & _
+                    " | Desc=" & Err.Description
+    Call TraceError(Err.Number, Err.Description, "NPCs.OpenNPC", Erl)
+End Function
+
+
+Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
+                                  ByVal NpcNumber As Integer, _
+                                  ByRef Info As t_NpcInfoCache, _
+                                  ByVal Respawn As Boolean)
+
+    Dim LoopC As Long
+    Dim cant As Long
 
     With NpcList(NpcIndex)
         .Numero = NpcNumber
@@ -1269,6 +1348,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         .Char.body = Info.Body
         .Char.head = Info.Head
         .Char.Heading = Info.Heading
+        .flags.MappedHeading = Info.Heading
         .Char.CastAnimation = Info.CastAnimation
         If Info.AnimacionesCount > 0 Then
             ReDim .Char.Animation(1 To Info.AnimacionesCount)
@@ -1315,10 +1395,22 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         .IntervaloLanzarHechizo = Info.IntervaloLanzarHechizo
         .Contadores.IntervaloRespawn = RandomNumber(Info.IntervaloRespawnMin, Info.IntervaloRespawnMax)
         .InformarRespawn = Info.InformarRespawn
-        .QuizaProb = Info.QuizaProb
+        .DropCount = Info.DropCount
+        If .DropCount > 0 Then
+            ReDim .Drop(1 To .DropCount)
+            Dim i As Byte
+            For i = 1 To .DropCount
+                .Drop(i) = Info.Drop(i)
+            Next i
+        Else
+            Erase .Drop
+        End If
+        
         .MinTameLevel = Info.MinTameLevel
         .OnlyForGuilds = Info.OnlyForGuilds
         .ShowKillerConsole = Info.ShowKillerConsole
+        .DisabledInBattleServer = Info.DisabledInBattleServer
+        .OnlyEnabledInBattleServer = Info.OnlyEnabledInBattleServer
         If .IntervaloMovimiento = 0 Then
             .IntervaloMovimiento = 380
             .Char.speeding = IntervaloNPCAI / 330
@@ -1438,15 +1530,6 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
         Else
             Erase .Expresiones
         End If
-        .NumQuiza = Info.NumQuiza
-        If .NumQuiza > 0 Then
-            ReDim .QuizaDropea(1 To .NumQuiza)
-            For LoopC = 1 To .NumQuiza
-                .QuizaDropea(LoopC) = Info.QuizaDropea(LoopC)
-            Next LoopC
-        Else
-            Erase .QuizaDropea
-        End If
         .NumQuest = Info.NumQuest
         If .NumQuest > 0 Then
             ReDim .QuestNumber(1 To .NumQuest)
@@ -1508,17 +1591,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn As Boolean =
             Erase .Caminata
         End If
     End With
-
-    If Reload = False Then
-        If NpcIndex > LastNPC Then LastNPC = NpcIndex
-        NumNPCs = NumNPCs + 1
-    End If
-
-    OpenNPC = NpcIndex
-    Exit Function
-OpenNPC_Err:
-    Call TraceError(Err.Number, Err.Description, "NPCs.OpenNPC", Erl)
-End Function
+End Sub
 
 Function NpcSellsItem(ByVal NpcNumber As Integer, ByVal NroObjeto As Integer) As Boolean
     On Error GoTo NpcSellsItem_Err
@@ -1673,22 +1746,35 @@ Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Byte, ByVal x As Integer
     End If
 End Sub
 
-' Autor: WyroX - 20/01/2021
-' Intenta moverlo hacia un "costado" según el heading indicado. Se usa para mover NPCs del camino de otro char.
-' Si no hay un lugar válido a los lados, lo mueve a la posición válida más cercana.
 Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As e_Heading)
     On Error GoTo Handler
     With NpcList(NpcIndex)
+        ' Validate heading parameter
+        If Heading < e_Heading.NORTH Or Heading > e_Heading.WEST Then
+            Call LogError("MoveNpcToSide: Invalid heading " & Heading & " for NPC " & NpcIndex)
+            Exit Sub
+        End If
+        
         ' Elegimos un lado al azar
         Dim r As Integer
         r = RandomNumber(0, 1) * 2 - 1 ' -1 o 1
+        
         ' Roto el heading original hacia ese lado
         Heading = Rotate_Heading(Heading, r)
+        
         ' Intento moverlo para ese lado
         If MoveNPCChar(NpcIndex, Heading) Then Exit Sub
+        
         ' Si falló, intento moverlo para el lado opuesto
         Heading = InvertHeading(Heading)
+        
+        ' Validate after invert
+        If Heading < e_Heading.NORTH Or Heading > e_Heading.WEST Then
+            Heading = e_Heading.NORTH ' Fallback to default
+        End If
+        
         If MoveNPCChar(NpcIndex, Heading) Then Exit Sub
+        
         ' Si ambos fallan, entonces lo dejo en la posición válida más cercana
         Dim NuevaPos As t_WorldPos
         Call ClosestLegalPos(.pos, NuevaPos, .flags.AguaValida, .flags.TierraInvalida = 0)
@@ -1696,7 +1782,7 @@ Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As e_Heading)
     End With
     Exit Sub
 Handler:
-    Call TraceError(Err.Number, Err.Description, "NPCs.MoveNpcToSide", Erl)
+    Call TraceError(Err.Number, Err.Description, "NPCs.MoveNpcToSide [Heading=" & Heading & "]", Erl)
 End Sub
 
 Public Sub DummyTargetAttacked(ByVal NpcIndex As Integer)
@@ -1776,7 +1862,7 @@ Public Function DoDamageOrHeal(ByVal NpcIndex As Integer, _
         If SourceType = eUser Then
             DamageStr = PonerPuntos(Math.Abs(amount))
             If UserList(SourceIndex).ChatCombate = 1 Then
-                Call WriteLocaleMsg(SourceIndex, 382, e_FontTypeNames.FONTTYPE_FIGHT, DamageStr)
+                Call WriteLocaleMsg(SourceIndex, MSG_DEALT_DAMAGE_TO_CREATURE, e_FontTypeNames.FONTTYPE_FIGHT, DamageStr)
             End If
         End If
         amount = EffectsOverTime.TargetApplyDamageReduction(NpcList(NpcIndex).EffectOverTime, amount, SourceIndex, SourceType, DamageSourceType)
@@ -2229,13 +2315,14 @@ Public Sub OnNpcKilledUpdateQuest(ByVal UserIndex As Integer, ByRef MiNPC As t_N
                         If QuestList(.QuestIndex).RequiredNPC(j).NpcIndex = MiNPC.Numero Then
                             If QuestList(.QuestIndex).RequiredNPC(j).Amount > .NPCsKilled(j) Then
                                 .NPCsKilled(j) = .NPCsKilled(j) + 1
+                                .Dirty = True ' Quest slot changed: NPC kill progress increased.
                             End If
                             chatColor = GetNPCProgressColor(.NPCsKilled(j), QuestList(.QuestIndex).RequiredNPC(j).Amount)
                             Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).Amount & " " & MiNPC.Name, _
                                     UserList(UserIndex).Char.charindex, chatColor)
                             If AllRequiredNPCsKilled(UserIndex, .QuestIndex, i) Then
                                 'Msg2160=Ya has matado todas las criaturas que la misión ¬1 requería.
-                                Call WriteLocaleMsg(UserIndex, 2160, e_FontTypeNames.FONTTYPE_INFOIAO, QuestList(.QuestIndex).nombre)
+                                Call WriteLocaleMsg(UserIndex, MSG_MATADO_TODAS_CRIATURAS_MISION_REQUERIA, e_FontTypeNames.FONTTYPE_INFOIAO, QuestList(.QuestIndex).nombre)
                             End If
                         End If
                     Next j

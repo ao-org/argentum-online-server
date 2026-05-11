@@ -24,11 +24,16 @@ Database.ini
 Database.db-shm
 Database.db-wal
 Logs/numusers.log
+Configuracion.ini
 feature_toggle.ini
 Logs/numusers.log
 Database.db
 AoServerTools.dll
 AOACServer.pdb
 .aider*
+.kiro/
+test_results.txt
+vb6build.log
 *.pdb
 /dumps
+_assets

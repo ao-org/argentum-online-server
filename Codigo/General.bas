@@ -1,7 +1,7 @@
 Attribute VB_Name = "General"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -32,7 +32,6 @@ Public Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
 Public Declare Sub OutputDebugString Lib "Kernel32" Alias "OutputDebugStringA" (ByVal lpOutputString As String)
 Global LeerNPCs As New clsIniManager
 
-Private Const TREE_GRAPHICS_FILE As String = "EsArbol.ini"
 Private TreeGraphicIds()         As Long
 Private TreeGraphicCount         As Long
 
@@ -283,115 +282,64 @@ End Function
 
 Public Sub LoadTreeGraphics()
     On Error GoTo LoadTreeGraphics_Err
-    Dim initTreeFile   As String
-    Dim legacyTreeFile As String
-
-    initTreeFile = GetTreeGraphicsInitPath()
-    legacyTreeFile = GetTreeGraphicsLegacyPath()
-
-    If LoadTreeGraphicsFromFile(initTreeFile) Then Exit Sub
-
-    If LoadTreeGraphicsFromFile(legacyTreeFile) Then Exit Sub
 
     Call LoadDefaultTreeGraphics
-
-    If EnsureDirectoryExists(GetDirectoryName(initTreeFile)) Then
-        Call SaveTreeGraphicsFile(initTreeFile)
-    ElseIf EnsureDirectoryExists(GetDirectoryName(legacyTreeFile)) Then
-        Call SaveTreeGraphicsFile(legacyTreeFile)
-    Else
-        Call SaveTreeGraphicsFile(initTreeFile)
-    End If
     Exit Sub
 LoadTreeGraphics_Err:
     Call TraceError(Err.Number, Err.Description, "General.LoadTreeGraphics", Erl)
 End Sub
 
-Private Function GetTreeGraphicsInitPath() As String
-    GetTreeGraphicsInitPath = App.Path & "\Recursos\init\" & TREE_GRAPHICS_FILE
-End Function
-
-Private Function GetTreeGraphicsLegacyPath() As String
-    GetTreeGraphicsLegacyPath = DatPath & TREE_GRAPHICS_FILE
-End Function
-
-
-Private Function LoadTreeGraphicsFromFile(ByVal FilePath As String) As Boolean
-    On Error GoTo LoadTreeGraphicsFromFile_Err
-
-    If Not FileExist(FilePath, vbArchive) Then Exit Function
-
-    Dim requestedCount As Long
-    Dim idx            As Long
-    Dim treeValue      As Long
-
-    requestedCount = val(GetVar(FilePath, "INIT", "Count"))
-
-    If requestedCount <= 0 Then Exit Function
-
-    ReDim TreeGraphicIds(1 To requestedCount) As Long
-    TreeGraphicCount = 0
-
-    For idx = 1 To requestedCount
-        treeValue = val(GetVar(FilePath, "TREES", "Tree" & idx))
-        If treeValue <> 0 Then
-            TreeGraphicCount = TreeGraphicCount + 1
-            TreeGraphicIds(TreeGraphicCount) = treeValue
-        End If
-    Next idx
-
-    If TreeGraphicCount = 0 Then
-        Erase TreeGraphicIds
-        Exit Function
-    End If
-
-    If TreeGraphicCount <> requestedCount Then
-        ReDim Preserve TreeGraphicIds(1 To TreeGraphicCount) As Long
-    End If
-
-    LoadTreeGraphicsFromFile = True
-    Exit Function
-LoadTreeGraphicsFromFile_Err:
-    Call TraceError(Err.Number, Err.Description, "General.LoadTreeGraphicsFromFile", Erl)
-End Function
-
 Private Sub LoadDefaultTreeGraphics()
     On Error GoTo LoadDefaultTreeGraphics_Err
 
-    Dim defaults As Variant
-    Dim idx      As Long
-    Dim dest     As Long
-
-    defaults = Array(11905&, 644&, 1880&, 11906&, 12160&, 6597&, 2548&, 2549&, 15110&, 15109&, 15108&, 11904&, 7220&, 50990&, 55626&, 55627&, 55630&, 55632&, 55633&, 55635&, 55638&, 12584&, 50985&, 15510&, 14775&, 14687&, 11903&, 735&, 15698&, 14504&, 15697&, 6598&, 1121&, 1878&, 9513&, 9514&, 9515&, 9518&, 9519&, 9520&, 9529&)
-
-    TreeGraphicCount = UBound(defaults) - LBound(defaults) + 1
+    ' Valores migrados desde EsArbol.ini ([TREES] Tree1..Tree41).
+    TreeGraphicCount = 41
     ReDim TreeGraphicIds(1 To TreeGraphicCount) As Long
 
-    dest = 1
-    For idx = LBound(defaults) To UBound(defaults)
-        TreeGraphicIds(dest) = CLng(defaults(idx))
-        dest = dest + 1
-    Next idx
+    TreeGraphicIds(1) = 11905
+    TreeGraphicIds(2) = 644
+    TreeGraphicIds(3) = 1880
+    TreeGraphicIds(4) = 11906
+    TreeGraphicIds(5) = 12160
+    TreeGraphicIds(6) = 6597
+    TreeGraphicIds(7) = 2548
+    TreeGraphicIds(8) = 2549
+    TreeGraphicIds(9) = 15110
+    TreeGraphicIds(10) = 15109
+    TreeGraphicIds(11) = 15108
+    TreeGraphicIds(12) = 11904
+    TreeGraphicIds(13) = 7220
+    TreeGraphicIds(14) = 50990
+    TreeGraphicIds(15) = 55626
+    TreeGraphicIds(16) = 55627
+    TreeGraphicIds(17) = 55630
+    TreeGraphicIds(18) = 55632
+    TreeGraphicIds(19) = 55633
+    TreeGraphicIds(20) = 55635
+    TreeGraphicIds(21) = 55638
+    TreeGraphicIds(22) = 12584
+    TreeGraphicIds(23) = 50985
+    TreeGraphicIds(24) = 15510
+    TreeGraphicIds(25) = 14775
+    TreeGraphicIds(26) = 14687
+    TreeGraphicIds(27) = 11903
+    TreeGraphicIds(28) = 735
+    TreeGraphicIds(29) = 15698
+    TreeGraphicIds(30) = 14504
+    TreeGraphicIds(31) = 15697
+    TreeGraphicIds(32) = 6598
+    TreeGraphicIds(33) = 1121
+    TreeGraphicIds(34) = 1878
+    TreeGraphicIds(35) = 9513
+    TreeGraphicIds(36) = 9514
+    TreeGraphicIds(37) = 9515
+    TreeGraphicIds(38) = 9518
+    TreeGraphicIds(39) = 9519
+    TreeGraphicIds(40) = 9520
+    TreeGraphicIds(41) = 9529
     Exit Sub
 LoadDefaultTreeGraphics_Err:
     Call TraceError(Err.Number, Err.Description, "General.LoadDefaultTreeGraphics", Erl)
-End Sub
-
-Private Sub SaveTreeGraphicsFile(ByVal FilePath As String)
-    On Error GoTo SaveTreeGraphicsFile_Err
-
-    Dim idx As Long
-
-    If TreeGraphicCount = 0 Then Exit Sub
-
-    Call WriteVar(FilePath, "INIT", "Count", CStr(TreeGraphicCount))
-
-    For idx = 1 To TreeGraphicCount
-        Call WriteVar(FilePath, "TREES", "Tree" & idx, CStr(TreeGraphicIds(idx)))
-    Next idx
-    Exit Sub
-SaveTreeGraphicsFile_Err:
-    Call TraceError(Err.Number, Err.Description, "General.SaveTreeGraphicsFile", Erl)
 End Sub
 
 Function EsArbol(ByVal GrhIndex As Long) As Boolean
@@ -410,66 +358,13 @@ EsArbol_Err:
     Call TraceError(Err.Number, Err.Description, "General.EsArbol", Erl)
 End Function
 
-Private Function EnsureDirectoryExists(ByVal DirectoryPath As String) As Boolean
-    On Error GoTo EnsureDirectoryExists_Err
-
-    Dim normalizedPath As String
-    Dim parentDirectory As String
-
-    normalizedPath = NormalizePath(DirectoryPath)
-
-    If LenB(normalizedPath) = 0 Then Exit Function
-
-    If Len(normalizedPath) = 2 And Mid$(normalizedPath, 2, 1) = ":" Then
-        EnsureDirectoryExists = True
-        Exit Function
-    End If
-
-    If FileExist(normalizedPath, vbDirectory) Then
-        EnsureDirectoryExists = True
-        Exit Function
-    End If
-
-    parentDirectory = GetDirectoryName(normalizedPath)
-    If LenB(parentDirectory) <> 0 Then
-        If Not EnsureDirectoryExists(parentDirectory) Then Exit Function
-    End If
-
-    MkDir normalizedPath
-    EnsureDirectoryExists = True
-    Exit Function
-EnsureDirectoryExists_Err:
-    EnsureDirectoryExists = False
-End Function
-
-Private Function GetDirectoryName(ByVal PathValue As String) As String
-    Dim normalizedPath As String
-    Dim separatorPos   As Long
-
-    normalizedPath = NormalizePath(PathValue)
-    separatorPos = InStrRev(normalizedPath, "\")
-
-    If separatorPos > 0 Then
-        GetDirectoryName = Left$(normalizedPath, separatorPos - 1)
-    End If
-End Function
-
-Private Function NormalizePath(ByVal PathValue As String) As String
-    Dim normalizedPath As String
-
-    normalizedPath = Replace$(PathValue, "/", "\")
-
-    Do While Len(normalizedPath) > 0 And Right$(normalizedPath, 1) = "\"
-        normalizedPath = Left$(normalizedPath, Len(normalizedPath) - 1)
-    Loop
-
-    NormalizePath = normalizedPath
-End Function
-
 Private Function HayLava(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     On Error GoTo HayLava_Err
     If Map > 0 And Map < NumMaps + 1 And x > 0 And x < 101 And y > 0 And y < 101 Then
-        If MapData(Map, x, y).Graphic(1) >= 5837 And MapData(Map, x, y).Graphic(1) <= 5852 Or MapData(Map, x, y).Graphic(1) >= 16101 And MapData(Map, x, y).Graphic(1) <= 16116 Then
+        If (MapData(Map, x, y).Graphic(1) >= 5837 And MapData(Map, x, y).Graphic(1) <= 5852) _
+        Or (MapData(Map, x, y).Graphic(1) >= 16101 And MapData(Map, x, y).Graphic(1) <= 16116) _
+        Or (MapData(Map, x, y).Graphic(1) >= 26767 And MapData(Map, x, y).Graphic(1) <= 26782) Then
+            
             HayLava = True
         Else
             HayLava = False
@@ -649,6 +544,7 @@ Sub Main()
     Call Database_Connect_Async
     ' Construimos las querys grandes
     Call Contruir_Querys
+    Call PreparePreparedCommands
     Call LoadDBMigrations
     ' ******************* FIN - Base de Datos ********************
     Call LoadGuildsDB
@@ -693,6 +589,8 @@ Sub Main()
     Call LoadMeditations
     frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
     Call CargarCiudades
+    frmCargando.Label1(2).Caption = "Cargando Fuentes"
+    Call InitFontTypeColors
     If BootDelBackUp Then
         frmCargando.Label1(2).Caption = "Cargando WorldBackup"
         Call CargarBackUp
@@ -756,19 +654,19 @@ Sub Main()
     Call InitializeAntiCheat
     tInicioServer = GetTickCountRaw()
     #If UNIT_TEST = 1 Then
+        On Error GoTo UnitTest_Err
         Call UnitTesting.Init
-        Debug.Print "AO20 Unit Testing"
         Dim suite_passed_ok As Boolean
         suite_passed_ok = UnitTesting.test_suite()
-        If (suite_passed_ok) Then
-            Debug.Print "suite_passed_ok!!!"
-        Else
-            Debug.Print "suite failed!!!"
-        End If
-        Debug.Assert (suite_passed_ok)
-        Debug.Print "Running proto suite, trying to connect to 127.0.0.1:7667"
-        Call UnitClient.Init
-        Call UnitClient.Connect("127.0.0.1", "7667")
+UnitTest_Done:
+        On Error GoTo Handler
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
+        frmMain.GuardarYCerrar = True
+        Unload frmMain
+        Exit Sub
+UnitTest_Err:
+        Call UnitTesting.RunTestError("FATAL", Err.Description)
+        Resume UnitTest_Done
     #End If
     While (True)
         GlobalFrameTime = GetTickCountRaw()
@@ -950,9 +848,9 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
         Else
             If MapInfo(.pos.Map).terrain = Nieve Then
                 'Msg2130=¡Tengo mucho frío!
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2130, UserList(UserIndex).Char.charindex, vbWhite))
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_TOO_COLD, UserList(UserIndex).Char.charindex, vbWhite))
                 ' Msg512=¡Estás muriendo de frío, abrígate o morirás!
-                Call WriteLocaleMsg(UserIndex, 512, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_MURIENDO_FRIO_ABRIGATE_MORIRAS, e_FontTypeNames.FONTTYPE_INFO)
                 '  Sin ropa perdés vida más rápido que con una ropa no-invernal
                 Dim MinDamage As Integer, MaxDamage As Integer
                 If .flags.Desnudo = 0 Then
@@ -967,7 +865,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
                 Damage = Porcentaje(.Stats.MaxHp, RandomNumber(MinDamage, MaxDamage))
                 If UserMod.ModifyHealth(UserIndex, -Damage, 0) Then
                     ' Msg513=¡Has muerto de frío!
-                    Call WriteLocaleMsg(UserIndex, 513, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO_FRIO, e_FontTypeNames.FONTTYPE_INFO)
                     Call UserMod.UserDie(UserIndex)
                 End If
             End If
@@ -1007,7 +905,7 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
             If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
                 Call WriteRestOK(UserIndex)
                 ' Msg514=Has terminado de descansar.
-                Call WriteLocaleMsg(UserIndex, 514, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_TERMINADO_DESCANSAR, e_FontTypeNames.FONTTYPE_INFO)
                 .flags.Descansar = False
             End If
         End If
@@ -1028,10 +926,10 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
         Else
             If HayLava(.pos.Map, .pos.x, .pos.y) Then
                 ' Msg515=¡Quítate de la lava, te estás quemando!
-                Call WriteLocaleMsg(UserIndex, 515, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_QUITATE_LAVA_QUEMANDO, e_FontTypeNames.FONTTYPE_INFO)
                 If UserMod.ModifyHealth(UserIndex, -Porcentaje(.Stats.MaxHp, 5)) Then
                     ' Msg516=¡Has muerto quemado!
-                    Call WriteLocaleMsg(UserIndex, 516, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO_QUEMADO, e_FontTypeNames.FONTTYPE_INFO)
                     Call CustomScenarios.UserDie(UserIndex)
                     Call UserMod.UserDie(UserIndex)
                 End If
@@ -1058,7 +956,7 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
         Else
             'restore old char
             ' Msg517=Recuperas tu apariencia normal.
-            Call WriteLocaleMsg(UserIndex, 517, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_RECUPERAS_APARIENCIA_NORMAL, e_FontTypeNames.FONTTYPE_INFO)
             If .flags.Navegando Then
                 Call EquiparBarco(UserIndex)
             Else
@@ -1100,7 +998,7 @@ Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
             .Counters.DisabledInvisibility = 0
             If .flags.Oculto = 0 Then
                 ' Msg307=Has vuelto a ser visible
-                Call WriteLocaleMsg(UserIndex, 307, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_VUELTO_VISIBLE, e_FontTypeNames.FONTTYPE_INFO)
                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, .pos.x, .pos.y))
                 Call WriteContadores(UserIndex)
             End If
@@ -1204,7 +1102,7 @@ Public Sub EfectoMaldicionUser(ByVal UserIndex As Integer)
     Else
         UserList(UserIndex).flags.Maldicion = 0
         ' Msg518=¡La magia perdió su efecto! Ya puedes atacar.
-        Call WriteLocaleMsg(UserIndex, 518, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+        Call WriteLocaleMsg(UserIndex, MSG_MAGIA_PERDIO_SU_EFECTO_PUEDES_ATACAR, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
     End If
     Exit Sub
 EfectoMaldicionUser_Err:
@@ -1323,7 +1221,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
         Call CancelExit(UserIndex)
         With UserList(UserIndex)
             'Msg47=Estás envenenado, si no te curas morirás.
-            Call WriteLocaleMsg(UserIndex, 47, e_FontTypeNames.FONTTYPE_VENENO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_ENVENENADO_SI_CURAS_MORIRAS, e_FontTypeNames.FONTTYPE_VENENO)
             UserList(UserIndex).Counters.timeFx = 3
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticleEffects.PoisonGas, 30, False, , UserList(UserIndex).pos.x, _
                     UserList(UserIndex).pos.y))
@@ -1333,7 +1231,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
             Damage = (1 + Damage * .Stats.MaxHp \ 100) ' Redondea para arriba
             If .ChatCombate = 1 Then
                 ' "El veneno te ha causado ¬1 puntos de daño."
-                Call WriteLocaleMsg(UserIndex, 390, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
+                Call WriteLocaleMsg(UserIndex, MSG_POISON_DEALT_DAMAGE, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
             End If
             If UserMod.ModifyHealth(UserIndex, -Damage) Then
                 Call CustomScenarios.UserDie(UserIndex)
@@ -1354,12 +1252,12 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
         ' 4 Mini intervalitos, dentro del intervalo total de incineracion
         If .Counters.Incineracion Mod (IntervaloIncineracion \ 4) = 0 Then
             ' "Te estás incinerando, si no te curas morirás.
-            Call WriteLocaleMsg(UserIndex, 392, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_YOU_ARE_BURNING_HEAL_OR_DIE, e_FontTypeNames.FONTTYPE_FIGHT)
             UserList(UserIndex).Counters.timeFx = 3
             Damage = RandomNumber(20, 30)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 73, 0, .pos.x, .pos.y))
             If .ChatCombate = 1 Then
-                Call WriteLocaleMsg(UserIndex, 391, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
+                Call WriteLocaleMsg(UserIndex, MSG_FIRE_DEALT_DAMAGE, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
             End If
             If UserMod.ModifyHealth(UserIndex, -Damage) Then
                 Call CustomScenarios.UserDie(UserIndex)
@@ -1452,7 +1350,8 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         UserList(UserIndex).Counters.HPCounter = 0
         Call UserMod.ModifyHealth(UserIndex, mashit)
         ' Msg519=Has sanado.
-        Call WriteLocaleMsg(UserIndex, 519, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_SANADO, e_FontTypeNames.FONTTYPE_INFO)
+        Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageTextOverChar(mashit, UserList(UserIndex).Char.charindex, vbGreen))
         EnviarStats = True
     End If
     Exit Sub
@@ -1473,7 +1372,7 @@ Public Sub CargaNpcsDat(Optional ByVal ActualizarNPCsExistentes As Boolean = Fal
         Dim i As Long
         For i = 1 To NumNPCs
             If NpcList(i).flags.NPCActive Then
-                Call OpenNPC(CInt(i), False, True)
+                Call OpenNPC(CInt(i), False)
             End If
             DoEvents
         Next i
@@ -1493,9 +1392,9 @@ Sub PasarSegundo()
     If TiempoPesca > 0 Then TiempoPesca = TiempoPesca + 1
     If CuentaRegresivaTimer > 0 Then
         If CuentaRegresivaTimer > 1 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1655, CuentaRegresivaTimer - 1, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1655=¬1 segundos...!
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SEGUNDOS, CuentaRegresivaTimer - 1, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1655=¬1 segundos...!
         Else
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1656, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1656=¡Ya!!
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_COUNTDOWN_GO, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1656=¡Ya!!
         End If
         CuentaRegresivaTimer = CuentaRegresivaTimer - 1
     End If
@@ -1550,18 +1449,7 @@ Sub PasarSegundo()
                 If .Counters.TimerBarra > 0 Then
                     .Counters.TimerBarra = .Counters.TimerBarra - 1
                     If .Counters.TimerBarra = 0 Then
-                        Select Case .Accion.TipoAccion
-                            Case e_AccionBarra.Hogar
-                                Call HomeArrival(i)
-                            Case e_AccionBarra.Runa
-                                Call CompletarAccionFin(i)
-                        End Select
-                        .Accion.Particula = 0
-                        .Accion.TipoAccion = e_AccionBarra.CancelarAccion
-                        .Accion.HechizoPendiente = 0
-                        .Accion.RunaObj = 0
-                        .Accion.ObjSlot = 0
-                        .Accion.AccionPendiente = False
+                        Call CompletePendingAction(i)
                     End If
                 End If
                 If .flags.UltimoMensaje > 0 Then
@@ -1627,9 +1515,7 @@ Sub PasarSegundo()
                 End If
                 'Cerrar usuario
                 If .Counters.Saliendo Then
-                    '  If .flags.Muerto = 1 Then .Counters.Salir = 0
                     .Counters.Salir = .Counters.Salir - 1
-                    ' Call WriteConsoleMsg(i, "Se saldrá del juego en " & .Counters.Salir & " segundos...", e_FontTypeNames.FONTTYPE_INFO)
                     Call WriteLocaleMsg(i, "203", e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
                     If .Counters.Salir <= 0 Then
                         'Msg1020= Gracias por jugar Argentum 20.
@@ -1673,7 +1559,7 @@ Sub GuardarUsuarios()
     On Error GoTo GuardarUsuarios_Err
     haciendoBK = True
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1657, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1657=Servidor » Grabando Personajes
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_GRABANDO_PERSONAJES, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1657=Servidor » Grabando Personajes
     Dim i As Long
     For i = 1 To LastUser
         If UserList(i).flags.UserLogged Then
@@ -1685,7 +1571,7 @@ Sub GuardarUsuarios()
             Call SaveUser(i)
         End If
     Next i
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(1658, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1658=Servidor » Personajes Grabados
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_PERSONAJES_GRABADOS, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1658=Servidor » Personajes Grabados
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
     haciendoBK = False
     Exit Sub
@@ -1994,38 +1880,82 @@ End Function
 'where the XX is the number of migrations generated the same day
 Public Sub LoadDBMigrations()
     On Error GoTo LoadDBMigrations_Err
+
+    Debug.Print "=== LoadDBMigrations start ==="
+
     'Consulto a la DB a ver si existe la tabla migrations
     Dim RS As Recordset
     Set RS = Query("select * from migrations")
-    Dim LastScript As String: LastScript = ""
+
+    Dim LastScript As String
+    LastScript = ""
+
     If RS Is Nothing Then
+        Debug.Print "migrations table does not exist, creating it"
+
         Call Query("CREATE TABLE ""migrations"" (    ""id"" INTEGER NOT NULL,    ""date"" VARCHAR(11) NOT NULL,    ""description"" VARCHAR(50) NULL,    Primary key(""id""));")
     Else
         Set RS = Query("select date from migrations order by id desc LIMIT 1;")
-        If RS.RecordCount > 0 Then LastScript = RS!Date
+
+        If RS.RecordCount > 0 Then
+            LastScript = RS!Date
+        End If
+
+        Debug.Print "Last migration: "; LastScript
     End If
+
     Dim sFilename As String
     sFilename = dir(App.Path & "/ScriptsDB/")
+
     Do While sFilename <> ""
+
+        Debug.Print "Found file: "; sFilename
+
         If Len(sFilename) > 11 Then
+
             Dim date_ As String
-            date_ = Left(sFilename, 11)
+            date_ = Left$(sFilename, 11)
+
+            Debug.Print "Migration key: "; date_
+
             If LastScript < date_ Then
-                'Leemos el archivo
-                Dim script      As String
+
+                Debug.Print "RUNNING migration: "; sFilename
+
                 Dim Description As String
-                Description = mid(sFilename, 13, Len(sFilename) - 16)
+                Description = mid$(sFilename, 13, Len(sFilename) - 16)
+
                 If RunScriptInFile(App.Path & "/ScriptsDB/" & sFilename) Then
+
+                    Debug.Print "SUCCESS migration: "; sFilename
+
                     Call Query("insert into migrations (date, description) values (?,?);", date_, Description)
+
                 Else
+
+                    Debug.Print "FAILED migration: "; sFilename
+
                     Call Err.raise(5, , "invalid - " & Description)
                 End If
+
+            Else
+
+                Debug.Print "SKIPPING migration: "; sFilename
+
             End If
         End If
+
         sFilename = dir()
     Loop
+
+    Debug.Print "=== LoadDBMigrations end ==="
+
     Exit Sub
+
 LoadDBMigrations_Err:
+
+    Debug.Print "ERROR LoadDBMigrations: "; Err.Number; Err.Description
+
     Call TraceError(Err.Number, Err.Description, "modGuilds.LoadDBMigrations", Erl)
     Call MsgBox(DBError & vbNewLine & "Script:" & Err.Description, vbCritical, "ERROR MIGRATIONS")
 End Sub
@@ -2044,3 +1974,4 @@ Public Function IsArrayInitialized(ByRef arr) As Boolean
     rv = UBound(arr)
     IsArrayInitialized = (Err.Number = 0) And rv >= 0
 End Function
+

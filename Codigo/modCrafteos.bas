@@ -1,7 +1,7 @@
 Attribute VB_Name = "modCrafteos"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -118,7 +118,7 @@ Public Sub DoCraftItem(ByVal UserIndex As Integer)
         If Not .CraftResult Is Nothing Then
             If .CraftResult.precio > .Stats.GLD Then
                 ' Msg588=No tienes el oro suficiente.
-                Call WriteLocaleMsg(UserIndex, 588, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_FontTypeNames.FONTTYPE_INFO)
                 ' TODO: Mensaje en la ventana de crafteo
                 Exit Sub
             End If
@@ -130,16 +130,16 @@ Public Sub DoCraftItem(ByVal UserIndex As Integer)
                 TmpObj.amount = 1
                 If Not MeterItemEnInventario(UserIndex, TmpObj) Then
                     ' Msg589=No tenés espacio suficiente en el inventario.
-                    Call WriteLocaleMsg(UserIndex, 589, e_FontTypeNames.FONTTYPE_WARNING)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_ESPACIO_SUFICIENTE_INVENTARIO, e_FontTypeNames.FONTTYPE_WARNING)
                     ' TODO: Mensaje en la ventana de crafteo
                     Exit Sub
                 End If
                 ' Msg590=La combinación ha sido exitosa.
-                Call WriteLocaleMsg(UserIndex, 590, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_COMBINACION_HA_SIDO_EXITOSA, e_FontTypeNames.FONTTYPE_INFO)
                 ' TODO: Mensaje en la ventana de crafteo y sonido (?
             Else
                 'Msg923= La combinación ha fallado.
-                Call WriteLocaleMsg(UserIndex, 923, e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteLocaleMsg(UserIndex, MSG_COMBINACION_HA_FALLADO, e_FontTypeNames.FONTTYPE_FIGHT)
                 ' TODO: Mensaje en la ventana de crafteo y sonido (?
             End If
             .Stats.GLD = .Stats.GLD - .CraftResult.precio

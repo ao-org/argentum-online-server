@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -63,7 +63,7 @@ Private p_RequiredExp           As Integer
 Private p_GuildNews             As String
 Private Const NEWSLENGTH        As Integer = 1024
 Private Const DESCLENGTH        As Integer = 256
-Private Const CODEXLENGTH       As Integer = 256
+
 Private MemberList()            As Long
 Private memberCount             As Integer
 Private MemberListLoaded        As Boolean
@@ -210,8 +210,10 @@ Private Sub ReloadMemberList()
             i = i + 1
             RS.MoveNext
         Wend
+        memberCount = UBound(MemberList) + 1
+    Else
+        memberCount = 0
     End If
-    memberCount = UBound(MemberList) + 1
     MemberListLoaded = True
     Exit Sub
 ReloadMemberList_Err:
@@ -221,6 +223,11 @@ End Sub
 Public Function GetMemberList() As Long()
     On Error GoTo GetMemberList_Err
     Call ReloadMemberList
+    If memberCount = 0 Then
+        Dim emptyArr() As Long
+        GetMemberList = emptyArr
+        Exit Function
+    End If
     If memberCount < (UBound(MemberList) + 1) Then
         Dim Members() As Long
         ReDim Members(memberCount - 1) As Long
@@ -293,17 +300,23 @@ End Sub
 Public Sub ExpulsarMiembro(ByVal CharId As Long)
     On Error GoTo ExpulsarMiembro_Err
     Call Execute("DELETE FROM guild_members WHERE user_id = ? AND guild_id = ?;", CharId, p_GuildId)
-    Dim i As Integer
-    For i = 0 To UBound(MemberList)
-        If MemberList(i) = CharId Then
-            MemberList(i) = 0
-            Exit For
+    If memberCount > 0 Then
+        Dim i As Integer
+        Dim found As Boolean
+        found = False
+        For i = 0 To UBound(MemberList)
+            If MemberList(i) = CharId Then
+                found = True
+                Exit For
+            End If
+        Next i
+        If found Then
+            For i = i To UBound(MemberList) - 1
+                MemberList(i) = MemberList(i + 1)
+            Next i
+            memberCount = memberCount - 1
         End If
-    Next i
-    For i = i To UBound(MemberList) - 1
-        MemberList(i) = MemberList(i + 1)
-    Next i
-    memberCount = memberCount - 1
+    End If
     Call SaveUserGuildMember(CharId, p_GuildName)
     Call SaveUserGuildIndex(CharId, 0)
     Exit Sub

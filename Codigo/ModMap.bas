@@ -1,7 +1,7 @@
 Attribute VB_Name = "ModMap"
 ' Argentum 20 Game Server
 '
-'    Copyright (C) 2023 Noland Studios LTD
+'    Copyright (C) 2023-2026 Noland Studios LTD
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU Affero General Public License as published by
@@ -47,3 +47,24 @@ Public Sub ActivateTrap(ByVal TargetIndex, ByVal TargetType As e_ReferenceType, 
     End If
     Call MapData(Map, PosX, PosY).Trap.trigger(TargetIndex, TargetType)
 End Sub
+
+Public Function IsValidMapIndex(ByVal mapIndex As Integer) As Boolean
+    On Error GoTo InvalidIndex
+    Dim LowerBound As Long
+    Dim UpperBound As Long
+    LowerBound = LBound(MapInfo)
+    UpperBound = UBound(MapInfo)
+    If mapIndex < LowerBound Or mapIndex > UpperBound Then Exit Function
+    IsValidMapIndex = True
+    Exit Function
+InvalidIndex:
+    Err.Clear
+    IsValidMapIndex = False
+End Function
+
+Public Function IsValidMapPosition(ByVal mapIndex As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    If Not IsValidMapIndex(mapIndex) Then Exit Function
+    If x < XMinMapSize Or x > XMaxMapSize Then Exit Function
+    If y < YMinMapSize Or y > YMaxMapSize Then Exit Function
+    IsValidMapPosition = True
+End Function

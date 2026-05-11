@@ -1,4 +1,21 @@
 Attribute VB_Name = "ModAutomatedActions"
+' Argentum 20 Game Server
+'
+'    Copyright (C) 2026 Noland Studios LTD
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
+'
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'
 Option Explicit
 Private m_LastAutomatedActionAttempt As Long
 Public Const MIN_STA_REQUIRED        As Integer = 5
@@ -61,9 +78,9 @@ Public Function DecreaseUserStamina(ByVal UserIndex As Integer, ByVal StaminaReq
             DecreaseUserStamina = True
         Else
             'Msg2129=¡No tengo energía!
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(2129, UserList(UserIndex).Char.charindex, vbWhite))
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
             'Msg93=Estás muy cansado
-            Call WriteLocaleMsg(UserIndex, 93, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUY_CANSADO, e_FontTypeNames.FONTTYPE_INFO)
             Call ResetUserAutomatedActions(UserIndex)
             DecreaseUserStamina = False
         End If
@@ -104,7 +121,7 @@ Public Function CanUserExtractResource(ByVal UserIndex As Integer, ByVal Resourc
         Exit Function
     End If
     If Not CheckResourceDistance(UserIndex, CLOSE_DISTANCE_EXTRACTION, TargetX, TargetY) Then
-        Call WriteLocaleMsg(UserIndex, 324, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_PORTAL_TO_DESTINATION, e_FontTypeNames.FONTTYPE_INFO)
         Exit Function
     End If
     CanUserExtractResource = True
