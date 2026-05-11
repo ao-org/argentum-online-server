@@ -1513,29 +1513,6 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         Call WriteLocaleMsg(sendIndex, "1300", e_FontTypeNames.FONTTYPE_INFO, .Stats.Creditos)
         'Msg2078 = Nivel de Jinete:¬1
         Call WriteLocaleMsg(sendIndex, MSG_RIDER_LEVEL_REQUIREMENT, e_FontTypeNames.FONTTYPE_INFO, .Stats.JineteLevel)
-    
-    ' ========================
-    ' Show current home
-    ' ========================
-    Dim char_home As String
-    Select Case .Hogar
-        Case e_Ciudad.cUllathorpe: char_home = CIUDAD_ULLATHORPE
-        Case e_Ciudad.cNix: char_home = CIUDAD_NIX
-        Case e_Ciudad.cBanderbill: char_home = CIUDAD_BANDERBILL
-        Case e_Ciudad.cLindos: char_home = CIUDAD_LINDOS
-        Case e_Ciudad.cArghal: char_home = CIUDAD_ARGHAL
-        Case e_Ciudad.cForgat: char_home = CIUDAD_FORGAT
-        Case e_Ciudad.cArkhein: char_home = CIUDAD_ARKHEIN
-        Case e_Ciudad.cEldoria: char_home = CIUDAD_ELDORIA
-        Case e_Ciudad.cPenthar: char_home = CIUDAD_PENTHAR
-        Case Else: char_home = CIUDAD_ULLATHORPE
-    End Select
-        Call WriteLocaleMsg(sendIndex, MSG_CHARACTER_HOME, e_FontTypeNames.FONTTYPE_INFO, char_home)
-End With
-    Else
-        'Msg1098= (CUERPO) Min Def/Max Def: 0
-        Call WriteLocaleMsg(sendIndex, "1098", e_FontTypeNames.FONTTYPE_INFO)
-    End If
     If UserList(UserIndex).invent.EquippedHelmetObjIndex > 0 Then
         Call WriteConsoleMsg(sendIndex, PrepareMessageLocaleMsg(MSG_USER_HEAD_DEFENSE, ObjData(UserList(UserIndex).invent.EquippedHelmetObjIndex).MinDef & "¬" & ObjData(UserList( _
                 UserIndex).invent.EquippedHelmetObjIndex).MaxDef, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1862=(CABEZA) Min Def/Max Def: ¬1/¬2
@@ -1564,20 +1541,17 @@ End With
     'Msg2078 = Nivel de Jinete:¬1
     Call WriteLocaleMsg(sendIndex, MSG_RIDER_LEVEL_REQUIREMENT, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.JineteLevel)
 
-' ========================
-' Show current home
-' ========================
-Dim char_home As String
-If IsValidCity(UserList(UserIndex).Hogar) Then
-    ' CityNames() centralizes city diagnostics/display names and removes duplicated mappings.
-    char_home = CityNames(UserList(UserIndex).Hogar)
-Else
-    Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & UserList(UserIndex).Hogar)
-    char_home = CityNames(e_City.cUllathorpe)
-End If
-    Call WriteLocaleMsg(sendIndex, MSG_CHARACTER_HOME, e_FontTypeNames.FONTTYPE_INFO, char_home)
+    Dim char_home As String
+    If IsValidCity(UserList(UserIndex).Hogar) Then
+        ' CityNames() centralizes city diagnostics/display names and removes duplicated mappings.
+        char_home = CityNames(UserList(UserIndex).Hogar)
+    Else
+        Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & UserList(UserIndex).Hogar)
+        char_home = CityNames(e_City.cUllathorpe)
+    End If
+        Call WriteLocaleMsg(sendIndex, MSG_CHARACTER_HOME, e_FontTypeNames.FONTTYPE_INFO, char_home)
 
-
+    End With
 
 Exit Sub
 SendUserStatsTxt_Err:
