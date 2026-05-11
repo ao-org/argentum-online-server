@@ -1470,7 +1470,7 @@ Public Const SND_IMPACTO         As Byte = 10
 Public Const SND_IMPACTO_APU     As Integer = 2187
 Public Const SND_IMPACTO_CRITICO As Integer = 2186
 Public Const SND_IMPACTO2        As Byte = 12
-
+Public Const SND_RESURRECCION    As Byte = 117
 
 
 Public Const SND_SACARARMA           As Byte = 25
