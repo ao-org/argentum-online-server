@@ -244,7 +244,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
         Case e_TrapTypes.eParalice
             If mDotInfo.TargetRef.RefType = eUser Then
                 If TargetType = eUser Then
-                    If UserMod.Inmovilize(mDotInfo.TargetRef.ArrayIndex, TargetIndex, NET_INMO_DURATION, EffectOverTime(mDotInfo.EotId).OnHitFx) Then
+                    If UserMod.Inmovilize(mDotInfo.TargetRef.ArrayIndex, TargetIndex, SvrConfig.GetValue("TrapParaliceDuration"), EffectOverTime(mDotInfo.EotId).OnHitFx) Then
                         If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList( _
                                 TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                         trigger = True
@@ -258,7 +258,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                     Exit Function
                 End If
                 If TargetType = eNpc Then
-                    Call NPCs.Paralice(mDotInfo.TargetRef.ArrayIndex, TargetIndex, NET_INMO_DURATION * 10, EffectOverTime(mDotInfo.EotId).OnHitFx)
+                    Call NPCs.Paralice(mDotInfo.TargetRef.ArrayIndex, TargetIndex, SvrConfig.GetValue("TrapParaliceDuration"), EffectOverTime(mDotInfo.EotId).OnHitFx)
                     If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(NpcList( _
                             TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                     trigger = True
