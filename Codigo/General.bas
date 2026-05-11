@@ -1880,38 +1880,82 @@ End Function
 'where the XX is the number of migrations generated the same day
 Public Sub LoadDBMigrations()
     On Error GoTo LoadDBMigrations_Err
+
+    Debug.Print "=== LoadDBMigrations start ==="
+
     'Consulto a la DB a ver si existe la tabla migrations
     Dim RS As Recordset
     Set RS = Query("select * from migrations")
-    Dim LastScript As String: LastScript = ""
+
+    Dim LastScript As String
+    LastScript = ""
+
     If RS Is Nothing Then
+        Debug.Print "migrations table does not exist, creating it"
+
         Call Query("CREATE TABLE ""migrations"" (    ""id"" INTEGER NOT NULL,    ""date"" VARCHAR(11) NOT NULL,    ""description"" VARCHAR(50) NULL,    Primary key(""id""));")
     Else
         Set RS = Query("select date from migrations order by id desc LIMIT 1;")
-        If RS.RecordCount > 0 Then LastScript = RS!Date
+
+        If RS.RecordCount > 0 Then
+            LastScript = RS!Date
+        End If
+
+        Debug.Print "Last migration: "; LastScript
     End If
+
     Dim sFilename As String
     sFilename = dir(App.Path & "/ScriptsDB/")
+
     Do While sFilename <> ""
+
+        Debug.Print "Found file: "; sFilename
+
         If Len(sFilename) > 11 Then
+
             Dim date_ As String
-            date_ = Left(sFilename, 11)
+            date_ = Left$(sFilename, 11)
+
+            Debug.Print "Migration key: "; date_
+
             If LastScript < date_ Then
-                'Leemos el archivo
-                Dim script      As String
+
+                Debug.Print "RUNNING migration: "; sFilename
+
                 Dim Description As String
-                Description = mid(sFilename, 13, Len(sFilename) - 16)
+                Description = mid$(sFilename, 13, Len(sFilename) - 16)
+
                 If RunScriptInFile(App.Path & "/ScriptsDB/" & sFilename) Then
+
+                    Debug.Print "SUCCESS migration: "; sFilename
+
                     Call Query("insert into migrations (date, description) values (?,?);", date_, Description)
+
                 Else
+
+                    Debug.Print "FAILED migration: "; sFilename
+
                     Call Err.raise(5, , "invalid - " & Description)
                 End If
+
+            Else
+
+                Debug.Print "SKIPPING migration: "; sFilename
+
             End If
         End If
+
         sFilename = dir()
     Loop
+
+    Debug.Print "=== LoadDBMigrations end ==="
+
     Exit Sub
+
 LoadDBMigrations_Err:
+
+    Debug.Print "ERROR LoadDBMigrations: "; Err.Number; Err.Description
+
     Call TraceError(Err.Number, Err.Description, "modGuilds.LoadDBMigrations", Erl)
     Call MsgBox(DBError & vbNewLine & "Script:" & Err.Description, vbCritical, "ERROR MIGRATIONS")
 End Sub
