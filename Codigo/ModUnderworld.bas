@@ -113,7 +113,10 @@ Public Sub DestroyUnderworldTp(ByRef Source As t_WorldPos, ByRef Dest As t_World
 End Sub
 
 Public Sub CreateUnderworldTp(ByRef Source As t_WorldPos, ByRef Dest As t_WorldPos)
-    If Not MapaValido(Source.Map) Or Not InMapBounds(Source.Map, Source.x, Source.y) Or Not InMapBounds(Source.Map, Source.x, Source.y - 4) Then Exit Sub
+    If Not MapaValido(Source.Map) Or Not InMapBounds(Source.Map, Source.x, Source.y) Or Not InMapBounds(Source.Map, Source.x, Source.y - 4) Then
+        Debug.Assert False
+        Exit Sub
+    End If
     If Not MapaValido(Dest.Map) Or Not InMapBounds(Dest.Map, Dest.x, Dest.y) Then Exit Sub
         If MapData(Source.Map, Source.x, Source.y).ObjInfo.ObjIndex = UNDERWORLD_PORTAL_OBJ_IDX Then Exit Sub
         If MapData(Source.Map, Source.x, Source.y).ObjInfo.ObjIndex > 0 Then
