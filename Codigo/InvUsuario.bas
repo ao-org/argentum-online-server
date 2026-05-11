@@ -2171,11 +2171,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Dim DeDonde As t_WorldPos
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
                         If IsValidCity(.Hogar) Then
-                            ' Ciudades() centralizes city Map/X/Y lookup; avoid duplicated enum mappings.
-                            DeDonde = Ciudades(.Hogar)
+                            ' Cities() centralizes city Map/X/Y lookup; avoid duplicated enum mappings.
+                            DeDonde = Cities(.Hogar)
                         Else
                             Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & .Hogar)
-                            DeDonde = Ciudades(e_Ciudad.cUllathorpe)
+                            DeDonde = Cities(e_City.cUllathorpe)
                         End If
                         Map = DeDonde.Map
                         x = DeDonde.x

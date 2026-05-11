@@ -1259,7 +1259,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
     Dim encrypted_username      As String
     Dim race                    As e_Raza
     Dim gender                  As e_Genero
-    Dim Hogar                   As e_Ciudad
+    Dim Hogar                   As e_City
     Dim Class                   As e_Class
     Dim head                    As Integer
 
@@ -1413,7 +1413,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         Dim name As String
         Dim race     As e_Raza
         Dim gender   As e_Genero
-        Dim Hogar    As e_Ciudad
+        Dim Hogar    As e_City
         Dim Class As e_Class
         Dim head        As Integer
 
@@ -6689,7 +6689,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         DeDonde = CityNames(UserList(UserIndex).Hogar)
                     Else
                         Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & UserList(UserIndex).Hogar)
-                        DeDonde = CityNames(e_Ciudad.cUllathorpe)
+                        DeDonde = CityNames(e_City.cUllathorpe)
                     End If
                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
                         Call WriteLocaleChatOverHead(UserIndex, 1421, GetUserDisplayName(UserIndex) & "¬" & DeDonde, NpcList(UserList( _
@@ -6778,7 +6778,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         DeDonde = CityNames(UserList(UserIndex).PosibleHogar)
                     Else
                         Call LogError("Invalid possible home city. UserIndex=" & UserIndex & " PosibleHogar=" & UserList(UserIndex).PosibleHogar)
-                        DeDonde = CityNames(e_Ciudad.cUllathorpe)
+                        DeDonde = CityNames(e_City.cUllathorpe)
                     End If
                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
                         Call WriteLocaleChatOverHead(UserIndex, 1423, GetUserDisplayName(UserIndex) & "¬" & DeDonde, NpcList(UserList( _
@@ -6995,7 +6995,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
                 DeDonde = CityData(Destino)
             Else
                 Call LogError("Invalid travel destination city. UserIndex=" & UserIndex & " Destino=" & Destino)
-                DeDonde = CityData(e_Ciudad.cUllathorpe)
+                DeDonde = CityData(e_City.cUllathorpe)
             End If
             If DeDonde.NecesitaNave > 0 Then
                 If UserList(UserIndex).Stats.UserSkills(e_Skill.Navegacion) < 80 Then
@@ -7481,14 +7481,14 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
             Exit Sub
         End If
         If .flags.Traveling = 0 Then
-            Dim HomeCityId As e_Ciudad
+            Dim HomeCityId As e_City
             HomeCityId = .Hogar
             If Not IsValidCity(HomeCityId) Then
                 Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & .Hogar)
-                HomeCityId = e_Ciudad.cUllathorpe
+                HomeCityId = e_City.cUllathorpe
             End If
 
-            If .pos.Map <> Ciudades(HomeCityId).Map Then
+            If .pos.Map <> Cities(HomeCityId).Map Then
                 
                 ' Costo en oro
                 Dim homeCostGLD As Long

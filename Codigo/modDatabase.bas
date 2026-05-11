@@ -48,6 +48,8 @@ Public Sub Database_Connect_Async()
         Connection_async(i).CursorLocation = adUseClient
         Connection_async(i).ConnectionString = ConnectionID
         Call Connection_async(i).Open
+        ' SQLite enforces foreign keys per connection, so enable cascades immediately after opening each ADO connection.
+        Call Connection_async(i).Execute("PRAGMA foreign_keys = ON")
     Next i
     Current_async = 1
     Set Builder = New cStringBuilder
@@ -71,6 +73,8 @@ Public Sub Database_Connect()
     Connection.ConnectionString = ConnectionID
     Set Builder = New cStringBuilder
     Call Connection.Open
+    ' SQLite enforces foreign keys per connection, so enable cascades immediately after opening the ADO connection.
+    Call Connection.Execute("PRAGMA foreign_keys = ON")
     Exit Sub
 Database_Connect_Err:
     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - Database_Connect")

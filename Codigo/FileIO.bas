@@ -589,6 +589,7 @@ Public Sub CargarHechizos()
         Hechizos(Hechizo).Duration = val(Leer.GetValue("Hechizo" & Hechizo, "Duration"))
         'Barrin 30/9/03
         Hechizos(Hechizo).StaRequerido = val(Leer.GetValue("Hechizo" & Hechizo, "StaRequerido"))
+        Hechizos(Hechizo).StaPercentRequired = val(Leer.GetValue("Hechizo" & Hechizo, "StaPercentRequired"))
         Hechizos(Hechizo).Target = val(Leer.GetValue("Hechizo" & Hechizo, "Target"))
         Hechizos(Hechizo).RequireTransform = val(Leer.GetValue("Hechizo" & Hechizo, "RequireTransform"))
         frmCargando.cargar.value = frmCargando.cargar.value + 1
@@ -1914,8 +1915,8 @@ LoadPacketRatePolicy_Err:
     Call TraceError(Err.Number, Err.Description, "ES.LoadPacketRatePolicy", Erl)
 End Sub
 
-' Centralizes city INI parsing and keeps Ciudades() synchronized for legacy callers.
-Private Sub LoadCityData(ByRef Lector As clsIniManager, ByVal CityId As e_Ciudad, ByVal SectionName As String)
+' Centralizes city INI parsing and keeps Cities() synchronized for legacy callers.
+Private Sub LoadCityData(ByRef Lector As clsIniManager, ByVal CityId As e_City, ByVal SectionName As String)
     Dim ErrorMessage As String
 
     With CityData(CityId)
@@ -1948,9 +1949,9 @@ Private Sub LoadCityData(ByRef Lector As clsIniManager, ByVal CityId As e_Ciudad
         End If
     End With
 
-    Ciudades(CityId).Map = CityData(CityId).Map
-    Ciudades(CityId).X = CityData(CityId).X
-    Ciudades(CityId).Y = CityData(CityId).Y
+    Cities(CityId).Map = CityData(CityId).Map
+    Cities(CityId).X = CityData(CityId).X
+    Cities(CityId).Y = CityData(CityId).Y
 End Sub
 
 Private Sub ValidateCities()
@@ -1961,7 +1962,7 @@ Private Sub ValidateCities()
     ' surfaced in the IDE via Debug.Assert instead of causing silent gameplay
     ' failures when new cities are added. Validation is intentionally non-fatal
     ' so startup/CI can continue and report all invalid city entries.
-    ' CITY_COUNT is derived from e_Ciudad, so every enum city must have a
+    ' CITY_COUNT is derived from e_City, so every enum city must have a
     ' synchronized CityData entry loaded with valid Map/X/Y coordinates.
     For CityIndex = 1 To CITY_COUNT
         If Not IsValidCity(CityIndex) Then
@@ -1985,16 +1986,16 @@ Sub CargarCiudades()
     Set Lector = New clsIniManager
     Call Lector.Initialize(DatPath & "Ciudades.dat")
     Dim MapasCiudades As String
-    Call LoadCityData(Lector, e_Ciudad.cUllathorpe, "Ullathorpe")
-    Call LoadCityData(Lector, e_Ciudad.cNix, "NIX")
-    Call LoadCityData(Lector, e_Ciudad.cBanderbill, "Banderbill")
-    Call LoadCityData(Lector, e_Ciudad.cLindos, "Lindos")
-    Call LoadCityData(Lector, e_Ciudad.cArghal, "Arghal")
-    Call LoadCityData(Lector, e_Ciudad.cArkhein, "Arkhein")
-    Call LoadCityData(Lector, e_Ciudad.cForgat, "Forgat")
-    Call LoadCityData(Lector, e_Ciudad.cEldoria, "Eldoria")
-    Call LoadCityData(Lector, e_Ciudad.cPenthar, "Penthar")
-    Call LoadCityData(Lector, e_Ciudad.cMorgrim, "Morgrim")
+    Call LoadCityData(Lector, e_City.cUllathorpe, "Ullathorpe")
+    Call LoadCityData(Lector, e_City.cNix, "NIX")
+    Call LoadCityData(Lector, e_City.cBanderbill, "Banderbill")
+    Call LoadCityData(Lector, e_City.cLindos, "Lindos")
+    Call LoadCityData(Lector, e_City.cArghal, "Arghal")
+    Call LoadCityData(Lector, e_City.cArkhein, "Arkhein")
+    Call LoadCityData(Lector, e_City.cForgat, "Forgat")
+    Call LoadCityData(Lector, e_City.cEldoria, "Eldoria")
+    Call LoadCityData(Lector, e_City.cPenthar, "Penthar")
+    Call LoadCityData(Lector, e_City.cMorgrim, "Morgrim")
 
     MapasCiudades = Lector.GetValue("NIX", "Mapas") & "," _
         & Lector.GetValue("Ullathorpe", "Mapas") & "," _
