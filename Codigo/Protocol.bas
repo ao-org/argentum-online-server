@@ -1259,7 +1259,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
     Dim encrypted_username      As String
     Dim race                    As e_Raza
     Dim gender                  As e_Genero
-    Dim Hogar                   As e_Ciudad
+    Dim Hogar                   As e_City
     Dim Class                   As e_Class
     Dim head                    As Integer
 
@@ -1413,7 +1413,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         Dim name As String
         Dim race     As e_Raza
         Dim gender   As e_Genero
-        Dim Hogar    As e_Ciudad
+        Dim Hogar    As e_City
         Dim Class As e_Class
         Dim head        As Integer
 
@@ -6684,30 +6684,13 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                 Case 3
                     Log = "Repuesta Afirmativa 3"
                     UserList(UserIndex).Hogar = UserList(UserIndex).PosibleHogar
-                    Select Case UserList(UserIndex).Hogar
-                        Case e_Ciudad.cUllathorpe
-                            DeDonde = "Ullathorpe"
-                        Case e_Ciudad.cNix
-                            DeDonde = "Nix"
-                        Case e_Ciudad.cBanderbill
-                            DeDonde = "Banderbill"
-                        Case e_Ciudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
-                            DeDonde = "Lindos"
-                        Case e_Ciudad.cArghal
-                            DeDonde = " Arghal"
-                        Case e_Ciudad.cForgat
-                            DeDonde = " Forgat"
-                        Case e_Ciudad.cArkhein
-                            DeDonde = " Arkhein"
-                        Case e_Ciudad.cEldoria
-                            DeDonde = " Eldoria"
-                        Case e_Ciudad.cPenthar
-                            DeDonde = " Penthar"
-                        Case e_Ciudad.cMorgrim
-                            DeDonde = " Morgrim"
-                        Case Else
-                            DeDonde = "Ullathorpe"
-                    End Select
+                    If IsValidCity(UserList(UserIndex).Hogar) Then
+                        ' CityNames() avoids duplicated enum-to-name mappings.
+                        DeDonde = CityNames(UserList(UserIndex).Hogar)
+                    Else
+                        Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & UserList(UserIndex).Hogar)
+                        DeDonde = CityNames(e_City.cUllathorpe)
+                    End If
                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
                         Call WriteLocaleChatOverHead(UserIndex, 1421, GetUserDisplayName(UserIndex) & "¬" & DeDonde, NpcList(UserList( _
                                 UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1421=¡Gracias ¬1! Ahora perteneces a la ciudad de ¬2.
@@ -6790,30 +6773,13 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     Call VolverCriminal(UserIndex)
                 Case 3
                     Log = "Repuesta negativa 3"
-                    Select Case UserList(UserIndex).PosibleHogar
-                        Case e_Ciudad.cUllathorpe
-                            DeDonde = "Ullathorpe"
-                        Case e_Ciudad.cNix
-                            DeDonde = "Nix"
-                        Case e_Ciudad.cBanderbill
-                            DeDonde = "Banderbill"
-                        Case e_Ciudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
-                            DeDonde = "Lindos"
-                        Case e_Ciudad.cArghal
-                            DeDonde = " Arghal"
-                        Case e_Ciudad.cForgat
-                            DeDonde = " Forgat"
-                        Case e_Ciudad.cArkhein
-                            DeDonde = " Arkhein"
-                        Case e_Ciudad.cEldoria
-                            DeDonde = " Eldoria"
-                        Case e_Ciudad.cPenthar
-                            DeDonde = " Penthar"
-                        Case e_Ciudad.cMorgrim
-                            DeDonde = " Morgrim"
-                        Case Else
-                            DeDonde = "Ullathorpe"
-                    End Select
+                    If IsValidCity(UserList(UserIndex).PosibleHogar) Then
+                        ' CityNames() avoids duplicated enum-to-name mappings.
+                        DeDonde = CityNames(UserList(UserIndex).PosibleHogar)
+                    Else
+                        Call LogError("Invalid possible home city. UserIndex=" & UserIndex & " PosibleHogar=" & UserList(UserIndex).PosibleHogar)
+                        DeDonde = CityNames(e_City.cUllathorpe)
+                    End If
                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
                         Call WriteLocaleChatOverHead(UserIndex, 1423, GetUserDisplayName(UserIndex) & "¬" & DeDonde, NpcList(UserList( _
                                 UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1423=¡No hay problema ¬1! Sos bienvenido en ¬2 cuando gustes.
@@ -7019,35 +6985,18 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
         '  WTF el costo lo decide el cliente... Desactivo....
         Exit Sub
         If costo <= 0 Then Exit Sub
-        Dim DeDonde As t_CityWorldPos
+        Dim DeDonde As t_CityData
         If UserList(UserIndex).Stats.GLD < costo Then
             'Msg1257= No tienes suficiente dinero.
             Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_DINERO_1257, e_FontTypeNames.FONTTYPE_INFO)
         Else
-            Select Case Destino
-                Case e_Ciudad.cUllathorpe
-                    DeDonde = CityUllathorpe
-                Case e_Ciudad.cNix
-                    DeDonde = CityNix
-                Case e_Ciudad.cBanderbill
-                    DeDonde = CityBanderbill
-                Case e_Ciudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
-                    DeDonde = CityLindos
-                Case e_Ciudad.cArghal
-                    DeDonde = CityArghal
-                Case e_Ciudad.cForgat
-                    DeDonde = CityForgat
-                Case e_Ciudad.cArkhein
-                    DeDonde = CityArkhein
-                Case e_Ciudad.cEldoria
-                    DeDonde = CityEldoria
-                Case e_Ciudad.cPenthar
-                    DeDonde = CityPenthar
-                Case e_Ciudad.cMorgrim
-                    DeDonde = CityMorgrim
-                Case Else
-                    DeDonde = CityUllathorpe
-            End Select
+            If IsValidCity(Destino) Then
+                ' CityData() is the canonical travel/resurrection lookup for cities.
+                DeDonde = CityData(Destino)
+            Else
+                Call LogError("Invalid travel destination city. UserIndex=" & UserIndex & " Destino=" & Destino)
+                DeDonde = CityData(e_City.cUllathorpe)
+            End If
             If DeDonde.NecesitaNave > 0 Then
                 If UserList(UserIndex).Stats.UserSkills(e_Skill.Navegacion) < 80 Then
                     'Msg1258= Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.
@@ -7532,7 +7481,14 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
             Exit Sub
         End If
         If .flags.Traveling = 0 Then
-            If .pos.Map <> Ciudades(.Hogar).Map Then
+            Dim HomeCityId As e_City
+            HomeCityId = .Hogar
+            If Not IsValidCity(HomeCityId) Then
+                Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & .Hogar)
+                HomeCityId = e_City.cUllathorpe
+            End If
+
+            If .pos.Map <> Cities(HomeCityId).Map Then
                 
                 ' Costo en oro
                 Dim homeCostGLD As Long

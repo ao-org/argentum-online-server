@@ -500,18 +500,25 @@ Dim tStr                        As String
         .flags.Inmunidad = 1
         .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
         .Counters.TiempoDeInmunidadParalisisNoMagicas = 0
+
+        Dim HomeCityId As e_City
+        HomeCityId = .Hogar
+        If Not IsValidCity(HomeCityId) Then
+            Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & .Hogar)
+            HomeCityId = e_City.cUllathorpe
+        End If
   
         If Not MapaValido(.pos.Map) Then
             Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
-            .pos.Map = Ciudades(.Hogar).Map
-            .pos.x = Ciudades(.Hogar).x
-            .pos.y = Ciudades(.Hogar).y
+            .pos.Map = Cities(HomeCityId).Map
+            .pos.x = Cities(HomeCityId).x
+            .pos.y = Cities(HomeCityId).y
         End If
         If MapInfo(.pos.Map).MapResource = 0 Then
             Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
-            .pos.Map = Ciudades(.Hogar).Map
-            .pos.x = Ciudades(.Hogar).x
-            .pos.y = Ciudades(.Hogar).y
+            .pos.Map = Cities(HomeCityId).Map
+            .pos.x = Cities(HomeCityId).x
+            .pos.y = Cities(HomeCityId).y
         End If
         If MapData(.pos.Map, .pos.x, .pos.y).UserIndex <> 0 Or MapData(.pos.Map, .pos.x, .pos.y).NpcIndex <> 0 Then
             Dim FoundPlace As Boolean
@@ -638,7 +645,7 @@ Dim tStr                        As String
                     Then
                 Call WarpToLegalPos(UserIndex, .flags.ReturnPos.Map, .flags.ReturnPos.x, .flags.ReturnPos.y, True)
             Else ' Lo mando a su hogar
-                Call WarpToLegalPos(UserIndex, Ciudades(.Hogar).Map, Ciudades(.Hogar).x, Ciudades(.Hogar).y, True)
+                Call WarpToLegalPos(UserIndex, Cities(HomeCityId).Map, Cities(HomeCityId).x, Cities(HomeCityId).y, True)
             End If
         End If
         .flags.UserLogged = True
@@ -1498,19 +1505,13 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 ' Show current home
 ' ========================
 Dim char_home As String
-Select Case UserList(UserIndex).Hogar
-    Case e_Ciudad.cUllathorpe: char_home = CIUDAD_ULLATHORPE
-    Case e_Ciudad.cNix: char_home = CIUDAD_NIX
-    Case e_Ciudad.cBanderbill: char_home = CIUDAD_BANDERBILL
-    Case e_Ciudad.cLindos: char_home = CIUDAD_LINDOS
-    Case e_Ciudad.cArghal: char_home = CIUDAD_ARGHAL
-    Case e_Ciudad.cForgat: char_home = CIUDAD_FORGAT
-    Case e_Ciudad.cArkhein: char_home = CIUDAD_ARKHEIN
-    Case e_Ciudad.cEldoria: char_home = CIUDAD_ELDORIA
-    Case e_Ciudad.cPenthar: char_home = CIUDAD_PENTHAR
-    Case e_Ciudad.cMorgrim: char_home = CIUDAD_MORGRIM
-    Case Else: char_home = CIUDAD_ULLATHORPE
-End Select
+If IsValidCity(UserList(UserIndex).Hogar) Then
+    ' CityNames() centralizes city diagnostics/display names and removes duplicated mappings.
+    char_home = CityNames(UserList(UserIndex).Hogar)
+Else
+    Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & UserList(UserIndex).Hogar)
+    char_home = CityNames(e_City.cUllathorpe)
+End If
     Call WriteLocaleMsg(sendIndex, MSG_CHARACTER_HOME, e_FontTypeNames.FONTTYPE_INFO, char_home)
 
 
@@ -3036,7 +3037,7 @@ Public Sub RemoveInvisibility(ByVal UserIndex As Integer)
     End With
 End Sub
 
-Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer, ByVal Time As Integer, ByVal FX As Integer) As Boolean
+Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer, ByVal Time As Long, ByVal FX As Integer) As Boolean
     Call UsuarioAtacadoPorUsuario(SourceIndex, TargetIndex)
     If IsSet(UserList(TargetIndex).flags.StatusMask, eCCInmunity) Then
         Call WriteLocaleMsg(SourceIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
