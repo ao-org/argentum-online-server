@@ -70,6 +70,7 @@ Public Sub KickUsersFromUnderworld()
     Dim y As Byte
     Dim LoopC     As Long
     Dim tempIndex As Integer
+    Dim HomeCityId As e_City
     For i = 1 To UBound(UnderworldMapPool)
         If Not MapaValido(UnderworldMapPool(i).Map) Then
             Debug.Assert False 'invalid map shouldn't happen
@@ -78,8 +79,9 @@ Public Sub KickUsersFromUnderworld()
         For LoopC = 1 To ConnGroups(UnderworldMapPool(i).Map).CountEntrys
             tempIndex = ConnGroups(UnderworldMapPool(i).Map).UserEntrys(LoopC)
             With UserList(tempIndex)
+                HomeCityId = .Hogar
                 If .ConnectionDetails.ConnIDValida Then
-                    Call WarpUserChar(tempIndex, Ciudades(.Hogar).Map, Ciudades(.Hogar).x, Ciudades(.Hogar).y, True)
+                    Call WarpUserChar(tempIndex, Cities(HomeCityId).Map, Cities(HomeCityId).x, Cities(HomeCityId).y, True)
                 End If
             End With
         Next LoopC
@@ -94,7 +96,8 @@ Public Sub KickUsersFromUnderworld()
         tempIndex = ConnGroups(UNDERWORLD_CENTER_MAP_NUMBER).UserEntrys(LoopC)
         With UserList(tempIndex)
             If .ConnectionDetails.ConnIDValida Then
-                Call WarpUserChar(tempIndex, Ciudades(.Hogar).Map, Ciudades(.Hogar).x, Ciudades(.Hogar).y, True)
+                HomeCityId = .Hogar
+                Call WarpUserChar(tempIndex, Cities(HomeCityId).Map, Cities(HomeCityId).x, Cities(HomeCityId).y, True)
             End If
         End With
     Next LoopC
