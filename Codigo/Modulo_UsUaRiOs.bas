@@ -1500,6 +1500,9 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     Call WriteLocaleMsg(sendIndex, "1300", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.Creditos)
     'Msg2078 = Nivel de Jinete:¬1
     Call WriteLocaleMsg(sendIndex, MSG_RIDER_LEVEL_REQUIREMENT, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.JineteLevel)
+    ' Mostramos el tiempo de cárcel restante (en memoria) para /info de usuarios online.
+    'Msg1307= Pena: ¬1
+    Call WriteLocaleMsg(sendIndex, "1307", e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Counters.Pena)
 
 ' ========================
 ' Show current home
