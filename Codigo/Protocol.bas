@@ -6598,7 +6598,7 @@ End Sub
 Private Sub HandleMarcaDeClan(ByVal UserIndex As Integer)
     On Error GoTo HandleMarcaDeClan_Err
     With UserList(UserIndex)
-        If UserList(UserIndex).GuildIndex = 0 Then Exit Sub
+        If .GuildIndex = 0 Then Exit Sub
         If .flags.Muerto = 1 Then
             Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
