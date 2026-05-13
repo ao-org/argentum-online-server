@@ -1027,8 +1027,10 @@ Public Sub initEventLobby(ByVal UserIndex As Integer, ByVal eventType As Integer
         End Select
     Else
         With UserList(UserIndex)
-            If .flags.Muerto = 0 Then
-                Call CreatePublicEvent(LobbySettings)
+            If IsValidNpcRef(.flags.TargetNPC) Then
+                If NpcList(.flags.TargetNPC.ArrayIndex).npcType = e_NPCType.EventMaster And .flags.Muerto = 0 Then
+                    Call CreatePublicEvent(LobbySettings)
+                End If
             End If
         End With
     End If
