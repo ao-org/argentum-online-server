@@ -1364,8 +1364,8 @@ Public Const NUMRAZAS       As Byte = 6
 Public Const MAXSKILLPOINTS As Byte = 100
 ''
 ' Cantidad maxima de mascotas
+'Debe ser 3 siempre, de lo contrario hay que cambiar la tabla de pets
 Public Const MAXMASCOTAS    As Byte = 3
-
 
 ''
 'Direccion

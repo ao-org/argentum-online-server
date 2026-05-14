@@ -225,6 +225,7 @@ Private Sub ConstruirQuery_CrearPersonaje()
     ' Limpio el constructor de querys
     Call QueryBuilder.Clear
     ' ************************** User pets **************************************
+    'MAXMASCOTAS SHOULD ALWAYS BE EQUAL TO 3
     QueryBuilder.Append "INSERT INTO pet (user_id, pet_id1, pet_id2, pet_id3) VALUES (?, ?, ?, ?)"
     ' Guardo la query ensamblada
     QUERY_SAVE_PETS = QueryBuilder.ToString
