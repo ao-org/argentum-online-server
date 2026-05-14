@@ -2911,19 +2911,10 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 
                 Dim NpcIndex As Integer
                 NpcIndex = .flags.TargetNPC.ArrayIndex
-                Dim i As Integer
-                For i = 1 To ConnGroups(NpcList(NpcIndex).pos.Map).CountEntrys
-                    Dim tempIndex As Integer
-                    tempIndex = ConnGroups(NpcList(NpcIndex).pos.Map).UserEntrys(i)
-                    If UserList(tempIndex).GuildIndex = UserList(UserIndex).GuildIndex Then
-                        Call SendData(sendTarget.ToIndex, tempIndex, PrepareMessageParticleFX( _
-                            NpcList(NpcIndex).Char.charindex, 210, 150, False, , _
-                            NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y))
-                    End If
-                Next i
-                Call SendData(sendTarget.ToGuildMembers, UserList(UserIndex).GuildIndex, PrepareMessageLocaleMsg( _
-                    MSG_CLAN_MARCA_NPC, GetUserDisplayName(UserIndex) & "¬" & NpcList(NpcIndex).name & "¬" & GetMapName(NpcList(NpcIndex).pos.Map) & "¬" & NpcList(NpcIndex).pos.x & "¬" & NpcList(NpcIndex).pos.y, _
-                    e_FontTypeNames.FONTTYPE_GUILD))
+
+                Call SendData(SendTarget.ToGuildArea, UserList(UserIndex).GuildIndex, PrepareMessageParticleFX(NpcList(NpcIndex).Char.charindex, 210, 150, False, , NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y))
+                Call SendData(SendTarget.ToGuildMembers, UserList(UserIndex).GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_MARCA_NPC, GetUserDisplayName(UserIndex) & "¬" & NpcList(NpcIndex).name & "¬" & GetMapName(NpcList(NpcIndex).pos.Map) & "¬" & NpcList(NpcIndex).pos.x & "¬" & NpcList(NpcIndex).pos.y, e_FontTypeNames.FONTTYPE_GUILD))
+                
             Case e_Skill.MarcaDeGM
                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, x, y)
                 tU = .flags.TargetUser.ArrayIndex
