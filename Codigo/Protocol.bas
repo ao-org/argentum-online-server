@@ -2905,7 +2905,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 End If
                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, x, y)
                 If Not IsValidNpcRef(.flags.TargetNPC) Then
-                    Call SendData(sendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("DEBUG: TargetNPC invalido", e_FontTypeNames.FONTTYPE_INFO))
+                    Call WriteLocaleMsg(UserIndex, MENSAJE_SELECCIONA_NPC_A_MARCAR, e_FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
                 End If
                 
