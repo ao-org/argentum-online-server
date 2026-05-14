@@ -2905,7 +2905,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 End If
                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, x, y)
                 If Not IsValidNpcRef(.flags.TargetNPC) Then
-                    Call WriteLocaleMsg(UserIndex, MENSAJE_SELECCIONA_NPC_A_MARCAR, e_FontTypeNames.FONTTYPE_INFOIAO)
+                    Call WriteLocaleMsg(UserIndex, MSG_SELECCIONA_NPC_A_MARCAR, e_FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
                 End If
                 
