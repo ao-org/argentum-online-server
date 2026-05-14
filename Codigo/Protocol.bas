@@ -2912,7 +2912,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 Dim NpcIndex As Integer
                 NpcIndex = .flags.TargetNPC.ArrayIndex
 
-                Call SendData(SendTarget.ToGuildArea, UserList(UserIndex).GuildIndex, PrepareMessageParticleFX(NpcList(NpcIndex).Char.charindex, 210, 150, False, , NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y))
+                Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageParticleFX(NpcList(NpcIndex).Char.charindex, 210, 150, False, , NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y))
                 Call SendData(SendTarget.ToGuildMembers, UserList(UserIndex).GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_MARCA_NPC, GetUserDisplayName(UserIndex) & "¬" & NpcList(NpcIndex).name & "¬" & GetMapName(NpcList(NpcIndex).pos.Map) & "¬" & NpcList(NpcIndex).pos.x & "¬" & NpcList(NpcIndex).pos.y, e_FontTypeNames.FONTTYPE_GUILD))
                 
             Case e_Skill.MarcaDeGM
