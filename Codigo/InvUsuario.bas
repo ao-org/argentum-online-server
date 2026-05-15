@@ -3038,7 +3038,11 @@ Public Sub ResurrectWithItem(ByVal UserIndex As Integer)
         If Not IsConsumableFreeZone(UserIndex) Then
             Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.UsingItemSlot)
         End If
-        Call ResurrectUser(TargetUser)
+        Call WriteLocaleMsg(targetUser, MSG_SIDO_RESUCITADO_585, e_FontTypeNames.FONTTYPE_INFO)
+        Call SendData(sendTarget.ToPCArea, targetUser, PrepareMessageParticleFX(UserList(targetUser).Char.charindex, e_ParticleEffects.Resucitar, 250, True))
+        Call SendData(SendTarget.ToPCArea, targetUser, PrepareMessagePlayWave(SND_RESURRECCION, UserList(targetUser).pos.x, UserList(targetUser).pos.y))
+        Call RevivirUsuario(targetUser, True, UserIndex)
+        Call WriteUpdateHungerAndThirst(targetUser)
         If IsFeatureEnabled("remove-inv-on-attack") Then
             Call RemoveUserInvisibility(UserIndex)
         End If
