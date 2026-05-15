@@ -432,6 +432,8 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
                         ByVal head As Integer, _
                         ByVal Hogar As e_City) As Boolean
     On Error GoTo ConnectNewUser_Err
+    Call ResetUserFlags(UserIndex)
+    
     With UserList(UserIndex)
         Dim LoopC As Long
         If .flags.UserLogged Then
@@ -1155,6 +1157,13 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
         .CurrentTeam = 0
         .jugando_captura_timer = 0
         .jugando_captura_muertes = 0
+        With .SolicitudReto
+            .Estado = e_SolicitudRetoEstado.Libre
+            .Apuesta = 0
+            .PocionesMaximas = -1   ' desactivado por defecto
+            .CaenItems = False
+            Erase .Jugadores
+        End With
     End With
     Exit Sub
 ResetUserFlags_Err:
