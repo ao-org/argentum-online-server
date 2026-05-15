@@ -5986,9 +5986,7 @@ Public Sub HandleDuel(ByVal UserIndex As Integer)
         Bet = reader.ReadInt32
         PocionesMaximas = reader.ReadInt16
         CaenItems = reader.ReadBool
-        'Msg1233= No puedes realizar un reto en este momento.
-        Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_REALIZAR_RETO_MOMENTO, e_FontTypeNames.FONTTYPE_INFO)
-        'Exit Sub
+        If Not PuedeRetoConMensaje(UserIndex) Then Exit Sub
         Call CrearReto(UserIndex, Players, Bet, PocionesMaximas, CaenItems)
     End With
     Exit Sub
