@@ -2893,50 +2893,28 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     Call WriteLocaleMsg(UserIndex, MSG_PICKUP_UNAVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Case e_Skill.MarcaDeClan
-                'Target whatever is in that tile
                 Dim clan_nivel As Byte
                 If UserList(UserIndex).GuildIndex = 0 Then
-                    ' Msg720=Servidor » No perteneces a ningún clan.
                     Call WriteLocaleMsg(UserIndex, MSG_NO_SERVIDOR_PERTENECES_NINGUN_CLAN, e_FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
                 End If
                 clan_nivel = modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex)
                 If clan_nivel < 3 Then
-                    ' Msg721=Servidor » El nivel de tu clan debe ser 3 para utilizar esta opción.
                     Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_NIVEL_CLAN_DEBE_UTILIZAR_OPCION, e_FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
                 End If
                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, x, y)
-                If Not IsValidUserRef(.flags.TargetUser) Then Exit Sub
-                tU = .flags.TargetUser.ArrayIndex
-                If UserList(UserIndex).GuildIndex = UserList(tU).GuildIndex Then
-                    'Msg1132= Servidor » No podes marcar a un miembro de tu clan.
-                    Call WriteLocaleMsg(UserIndex, MSG_NO_SERVIDOR_PODES_MARCAR_MIEMBRO_CLAN, e_FontTypeNames.FONTTYPE_INFO)
+                If Not IsValidNpcRef(.flags.TargetNPC) Then
+                    Call WriteLocaleMsg(UserIndex, MSG_SELECCIONA_NPC_A_MARCAR, e_FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
                 End If
-                If tU > 0 And tU <> UserIndex Then
-                    If UserList(tU).flags.AdminInvisible <> 0 Then Exit Sub
-                    'Can't steal administrative players
-                    If UserList(tU).flags.Muerto = 0 Then
-                        'call marcar
-                        If UserList(tU).flags.invisible = 1 Or UserList(tU).flags.Oculto = 1 Then
-                            UserList(UserIndex).Counters.timeFx = 3
-                            Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageParticleFX(UserList(tU).Char.charindex, 210, 50, False, , UserList(UserIndex).pos.x, _
-                                    UserList(UserIndex).pos.y))
-                        Else
-                            UserList(UserIndex).Counters.timeFx = 3
-                            Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageParticleFX(UserList(tU).Char.charindex, 210, 150, False, , UserList(UserIndex).pos.x, _
-                                    UserList(UserIndex).pos.y))
-                        End If
-                        Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageLocaleMsg(MSG_CLAN_MARCO, GetUserDisplayName(UserIndex) & "¬" & GetUserDisplayName(tU), _
-                                e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1798=Clan> [¬1] marcó a ¬2.
-                    Else
-                        Call WriteLocaleMsg(UserIndex, MSG_USER_IS_DEAD, e_FontTypeNames.FONTTYPE_INFO)
-                        Call WriteWorkRequestTarget(UserIndex, 0)
-                    End If
-                Else
-                    Call WriteLocaleMsg(UserIndex, MSG_PICKUP_UNAVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
-                End If
+                
+                Dim NpcIndex As Integer
+                NpcIndex = .flags.TargetNPC.ArrayIndex
+
+                Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageParticleFX(NpcList(NpcIndex).Char.charindex, 210, 150, False, , NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y))
+                Call SendData(SendTarget.ToGuildMembers, UserList(UserIndex).GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_MARCA_NPC, GetUserDisplayName(UserIndex) & "¬" & NpcList(NpcIndex).name & "¬" & GetMapName(NpcList(NpcIndex).pos.Map) & "¬" & NpcList(NpcIndex).pos.x & "¬" & NpcList(NpcIndex).pos.y, e_FontTypeNames.FONTTYPE_GUILD))
+                
             Case e_Skill.MarcaDeGM
                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, x, y)
                 tU = .flags.TargetUser.ArrayIndex
@@ -6609,23 +6587,16 @@ HandleInvitarGrupo_Err:
 End Sub
 
 Private Sub HandleMarcaDeClan(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
     On Error GoTo HandleMarcaDeClan_Err
     With UserList(UserIndex)
-        'Exit sub para anular marca de clan
-        Exit Sub
-        If UserList(UserIndex).GuildIndex = 0 Then
-            Exit Sub
-        End If
+        If .GuildIndex = 0 Then Exit Sub
         If .flags.Muerto = 1 Then
-            ''Msg77=¡¡Estás muerto!!.
             Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         Dim clan_nivel As Byte
         clan_nivel = modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex)
-        If clan_nivel > 20 Then
-            ' Msg721=Servidor » El nivel de tu clan debe ser 3 para utilizar esta opción.
+        If clan_nivel < 3 Then
             Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_NIVEL_CLAN_DEBE_UTILIZAR_OPCION, e_FontTypeNames.FONTTYPE_INFOIAO)
             Exit Sub
         End If
