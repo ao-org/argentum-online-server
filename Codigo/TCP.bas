@@ -432,8 +432,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
                         ByVal head As Integer, _
                         ByVal Hogar As e_City) As Boolean
     On Error GoTo ConnectNewUser_Err
-    Call ResetUserFlags(UserIndex)
-    
+
     With UserList(UserIndex)
         Dim LoopC As Long
         If .flags.UserLogged Then
@@ -442,6 +441,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
             Call Cerrar_Usuario(UserIndex)
             Exit Function
         End If
+        Call ResetUserFlags(UserIndex)
         
 #If LOGIN_STRESS_TEST = 0 Then
         ' Nombre válido
