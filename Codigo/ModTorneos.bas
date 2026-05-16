@@ -121,7 +121,7 @@ Public Sub ParticiparTorneo(ByVal UserIndex As Integer)
     
     ' Verificar que el jugador no esté inscripto
     If UserList(UserIndex).flags.EnTorneo Then
-        Call WriteLocaleMsg(UserIndex, MSG_ALREADY_REGISTERED_IN_TOURNAMENT, e_FontTypeNames.FONTTYPE_INFOIAO)
+        Call WriteLocaleMsg(UserIndex, MSG_REGISTERED_IN_TOURNAMENT, e_FontTypeNames.FONTTYPE_INFOIAO)
         Exit Sub
     End If
     
@@ -159,7 +159,7 @@ Public Sub ParticiparTorneo(ByVal UserIndex As Integer)
     Torneo.IndexParticipantes(IndexVacio) = UserIndex
     Torneo.participantes = Torneo.participantes + 1
     UserList(UserIndex).flags.EnTorneo = True
-    Call WriteLocaleMsg(UserIndex, MSG_ALREADY_REGISTERED_IN_TOURNAMENT, e_FontTypeNames.FONTTYPE_INFOIAO) ' Msg2067="¡Ya estas anotado! Solo debes aguardar hasta que seas enviado a la sala de espera."
+    Call WriteLocaleMsg(UserIndex, MSG_REGISTERED_IN_TOURNAMENT, e_FontTypeNames.FONTTYPE_INFOIAO)
     
     ' Si se llenó el cupo, arrancar el torneo
     If Torneo.participantes >= Torneo.cupos Then
@@ -237,6 +237,8 @@ Public Sub ComenzarTorneoOk()
         Torneo.LastPosX(i) = UserList(Torneo.IndexParticipantes(i)).pos.x
         Torneo.LastPosY(i) = UserList(Torneo.IndexParticipantes(i)).pos.y
         
+        ' TODO: En PRs posteriores generalizar posiciones para 4/8/16/32 cupos.
+        ' Por ahora solo soporta 1v1 (2 cupos): jugador 1 en 16,45 - jugador 2 en 32,56
         If i = 1 Then
             x = 16
             y = 45
@@ -257,7 +259,7 @@ ComenzarTorneoOk_Err:
     Call TraceError(Err.Number, Err.Description, "ModTorneos.ComenzarTorneoOk", Erl)
 End Sub
 
-Public Sub ResetearTorneo(ByVal UserIndex As Integer)
+Public Sub ResetearTorneo(ByVal UserIndex As Integer, Optional ByVal Reembolsar As Boolean = True)
     On Error GoTo ResetearTorneo_Err
     
     Dim i As Byte
@@ -265,9 +267,11 @@ Public Sub ResetearTorneo(ByVal UserIndex As Integer)
     ' Devolver jugadores a su posicion original
     For i = 1 To Torneo.participantes
         If Torneo.IndexParticipantes(i) > 0 Then
-            ' Devolver oro
-            UserList(Torneo.IndexParticipantes(i)).Stats.GLD = UserList(Torneo.IndexParticipantes(i)).Stats.GLD + Torneo.costo
-            Call WriteUpdateGold(Torneo.IndexParticipantes(i))
+            ' Devolver oro solo si se cancela el torneo
+            If Reembolsar Then
+                UserList(Torneo.IndexParticipantes(i)).Stats.GLD = UserList(Torneo.IndexParticipantes(i)).Stats.GLD + Torneo.costo
+                Call WriteUpdateGold(Torneo.IndexParticipantes(i))
+            End If
             ' Devolver posicion y limpiar flag
             UserList(Torneo.IndexParticipantes(i)).flags.EnTorneo = False
             Call WarpUserChar(Torneo.IndexParticipantes(i), Torneo.LastPosMap(i), Torneo.LastPosX(i), Torneo.LastPosY(i), True)
@@ -311,6 +315,9 @@ Public Sub ResetearTorneo(ByVal UserIndex As Integer)
     ReDim Torneo.LastPosY(1 To 1)
     
     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_FINALIZADO_1677, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN)) 'Msg1677=Eventos> Evento Finalizado.
+    If UserIndex > 0 Then
+        Call WriteConsoleMsg(UserIndex, "Torneo reseteado correctamente.", e_FontTypeNames.FONTTYPE_INFOIAO)
+    End If
     Exit Sub
     
 ResetearTorneo_Err:
