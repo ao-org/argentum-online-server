@@ -618,7 +618,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             Call WriteLocaleMsg(UserIndex, MSG_NOT_ENOUGH_MANA, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
-        If .Stats.MinSta < Hechizos(HechizoIndex).StaRequerido Then
+        If .Stats.MinSta < GetSpellStaminaCost(UserIndex, Hechizos(HechizoIndex)) Then
             'Msg93=Estás muy cansado
             Call WriteLocaleMsg(UserIndex, MSG_MUY_CANSADO, e_FontTypeNames.FONTTYPE_INFO)
             'Msg2129=¡No tengo energía!
@@ -1025,7 +1025,7 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
             End If
             .Stats.MinMAN = .Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
             If .Stats.MinMAN < 0 Then .Stats.MinMAN = 0
-            .Stats.MinSta = .Stats.MinSta - Hechizos(uh).StaRequerido
+            .Stats.MinSta = .Stats.MinSta - GetSpellStaminaCost(UserIndex, Hechizos(uh))
             If .Stats.MinSta < 0 Then .Stats.MinSta = 0
             Call WriteUpdateMana(UserIndex)
             Call WriteUpdateSta(UserIndex)
@@ -1068,7 +1068,7 @@ Function HandlePetSpell(ByVal UserIndex As Integer, ByVal uh As Integer) As Bool
         End If
         .Stats.MinMAN = .Stats.MinMAN - GetSpellManaCostModifierByClass(UserIndex, Hechizos(uh), uh)
         If .Stats.MinMAN < 0 Then .Stats.MinMAN = 0
-        .Stats.MinSta = .Stats.MinSta - Hechizos(uh).StaRequerido
+        .Stats.MinSta = .Stats.MinSta - GetSpellStaminaCost(UserIndex, Hechizos(uh))
         If .Stats.MinSta < 0 Then .Stats.MinSta = 0
         Call WriteUpdateMana(UserIndex)
         Call WriteUpdateSta(UserIndex)
@@ -1201,7 +1201,7 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
             If Hechizos(uh).RequiredHP > 0 Then
                 Call UserMod.ModifyHealth(UserIndex, -Hechizos(uh).RequiredHP, 1)
             End If
-            .Stats.MinSta = .Stats.MinSta - Hechizos(uh).StaRequerido
+            .Stats.MinSta = .Stats.MinSta - GetSpellStaminaCost(UserIndex, Hechizos(uh))
             If .Stats.MinSta < 0 Then .Stats.MinSta = 0
             If IsSet(Hechizos(uh).Effects, e_SpellEffects.Resurrect) Then
                 If Not PeleaSegura(UserIndex, .flags.TargetUser.ArrayIndex) Then
@@ -1242,6 +1242,17 @@ Public Function GetSpellManaCostModifierByClass(ByVal UserIndex As Integer, Hech
                 End If
         End Select
     End With
+End Function
+
+Public Function GetSpellStaminaCost(ByVal UserIndex As Integer, ByRef Hechizo As t_Hechizo) As Integer
+    Dim calculatedPercentCost As Integer
+
+    GetSpellStaminaCost = Hechizo.StaRequerido
+
+    If Hechizo.StaPercentRequired > 0 Then
+        calculatedPercentCost = MaximoInt(1, CInt(Ceil(Porcentaje(UserList(UserIndex).Stats.MaxSta, Hechizo.StaPercentRequired))))
+        GetSpellStaminaCost = MaximoInt(GetSpellStaminaCost, calculatedPercentCost)
+    End If
 End Function
 
 Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
@@ -1287,7 +1298,7 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
                 If .Stats.MinMAN < 0 Then .Stats.MinMAN = 0
                 Call UserMod.ModifyHealth(UserIndex, -Hechizos(uh).RequiredHP, 1)
             End If
-            .Stats.MinSta = .Stats.MinSta - Hechizos(uh).StaRequerido
+            .Stats.MinSta = .Stats.MinSta - GetSpellStaminaCost(UserIndex, Hechizos(uh))
             If .Stats.MinSta < 0 Then .Stats.MinSta = 0
             Call WriteUpdateMana(UserIndex)
             Call WriteUpdateSta(UserIndex)

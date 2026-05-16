@@ -27,12 +27,23 @@ Attribute VB_Name = "Hogar"
 '
 '
 Option Explicit
-' CITY_COUNT is derived from e_Ciudad; do not update manually.
+' CITY_COUNT is derived from e_City; do not update manually.
 Public Const CITY_COUNT As Byte = cCiudadCount - 1
-' CityData is the canonical storage for city configuration.
-' Ciudades() is kept for compatibility (Map/X/Y only).
+' CityData() is the canonical city configuration store.
+' Cities() is the compatibility projection for indexed Map/X/Y lookups.
+' CityNames() is populated from LoadCityData for diagnostics/display.
+' Per-city globals were intentionally removed to simplify adding new cities.
 Public CityData(1 To CITY_COUNT) As t_CityData
-Public Ciudades(1 To CITY_COUNT) As t_WorldPos
+Public CityNames(1 To CITY_COUNT) As String
+Public Cities(1 To CITY_COUNT) As t_WorldPos
+
+Public Function IsValidCity(ByVal CityId As e_City) As Boolean
+    If CityId < 1 Or CityId > CITY_COUNT Then Exit Function
+
+    With CityData(CityId)
+        IsValidCity = .Map > 0 And .X > 0 And .Y > 0
+    End With
+End Function
 
 Public Sub goHome(ByVal UserIndex As Integer)
     On Error GoTo goHome_Err
@@ -106,9 +117,17 @@ Public Sub HomeArrival(ByVal UserIndex As Integer)
             Call WriteNadarToggle(UserIndex, False)
             'Le sacamos el navegando, pero no le mostramos a los demas porque va a ser sumoneado hasta ulla.
         End If
-        tX = Ciudades(.Hogar).x
-        tY = Ciudades(.Hogar).y
-        tMap = Ciudades(.Hogar).Map
+        If IsValidCity(.Hogar) Then
+            ' Cities() centralizes home Map/X/Y lookup.
+            tX = Cities(.Hogar).x
+            tY = Cities(.Hogar).y
+            tMap = Cities(.Hogar).Map
+        Else
+            Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & .Hogar)
+            tX = Cities(e_City.cUllathorpe).x
+            tY = Cities(e_City.cUllathorpe).y
+            tMap = Cities(e_City.cUllathorpe).Map
+        End If
         Call FindLegalPos(UserIndex, tMap, CByte(tX), CByte(tY))
         Call WarpUserChar(UserIndex, tMap, tX, tY, True)
         Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_HAS_REGRESADO_CIUDAD_ORIGEN, vbNullString, e_FontTypeNames.FONTTYPE_WARNING)) ' Msg1996=Has regresado a tu ciudad de origen.

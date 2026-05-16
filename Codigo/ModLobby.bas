@@ -629,6 +629,7 @@ Public Sub UpdateWaitingForPlayers(ByVal frametime As Long, ByRef instance As t_
         End If
     Else
         If instance.RegisteredPlayers >= instance.MaxPlayers Then
+            Call SendData(sendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_LOBBY_CUPOS_COMPLETOS, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN))
             Call StartLobby(instance, -1)
         End If
     End If

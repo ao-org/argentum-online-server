@@ -1257,17 +1257,17 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
                 Arg1 = UCase$(Arg1)
                 Select Case Arg1
                     Case "NIX"
-                        UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cNix
+                        UserList(tUser.ArrayIndex).Hogar = e_City.cNix
                     Case "ULLA", "ULLATHORPE"
-                        UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cUllathorpe
+                        UserList(tUser.ArrayIndex).Hogar = e_City.cUllathorpe
                     Case "BANDER", "BANDERBILL"
-                        UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cBanderbill
+                        UserList(tUser.ArrayIndex).Hogar = e_City.cBanderbill
                     Case "LINDOS"
-                        UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cLindos
+                        UserList(tUser.ArrayIndex).Hogar = e_City.cLindos
                     Case "ARGHAL"
-                        UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cArghal
+                        UserList(tUser.ArrayIndex).Hogar = e_City.cArghal
                     Case "ARKHEIN"
-                        UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cArkhein
+                        UserList(tUser.ArrayIndex).Hogar = e_City.cArkhein
                 End Select
             Case e_EditOptions.eo_Alias
                 If Not IsUserAdmin(UserIndex) Then Exit Sub
