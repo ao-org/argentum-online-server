@@ -264,24 +264,21 @@ End Sub
 Sub ReSpawnNpcConTier(MiNPC As t_Npc, ByVal Tier As e_NpcEliteTier, Optional ByVal UserIndex As Integer = 0)
     On Error GoTo ReSpawnNpcConTier_Err
     Dim NpcIndex As Integer
-    NpcIndex = CrearNPC(MiNPC.Numero, MiNPC.pos.Map, MiNPC.Orig)
-
-    If NpcIndex > 0 Then
-        NpcList(NpcIndex).EliteTier = Tier
-        If Tier <> TierComun Then
-            NpcList(NpcIndex).GiveEXP = CLng(NpcList(NpcIndex).GiveEXP * EliteExpMult(Tier))
-            NpcList(NpcIndex).flags.ExpCount = NpcList(NpcIndex).GiveEXP
+    If MiNPC.flags.Respawn = 0 Then
+        NpcIndex = CrearNPC(MiNPC.Numero, MiNPC.pos.Map, MiNPC.Orig)
+        If NpcIndex > 0 Then
+            NpcList(NpcIndex).EliteTier = Tier
             If Tier <> TierComun Then
+                NpcList(NpcIndex).GiveEXP = CLng(NpcList(NpcIndex).GiveEXP * EliteExpMult(Tier))
+                NpcList(NpcIndex).flags.ExpCount = NpcList(NpcIndex).GiveEXP
                 Dim NombreTier As String
                 Select Case Tier
                     Case TierReforzado: NombreTier = "Reforzado"
                     Case TierElite:     NombreTier = "Elite"
                     Case TierSupremo:   NombreTier = "Supremo"
                 End Select
-                If UserIndex > 0 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_NPC_ELITE_SPAWN, e_FontTypeNames.FONTTYPE_DIOS, _
-                        NpcList(NpcIndex).name & "¬" & NombreTier & "¬" & GetMapName(NpcList(NpcIndex).pos.Map))
-                End If
+                Call WriteLocaleMsg(UserIndex, MSG_NPC_ELITE_SPAWN, e_FontTypeNames.FONTTYPE_DIOS, _
+                    NpcList(NpcIndex).name & "¬" & NombreTier & "¬" & GetMapName(NpcList(NpcIndex).pos.Map))
             End If
         End If
     End If
