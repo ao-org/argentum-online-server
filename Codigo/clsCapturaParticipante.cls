@@ -42,6 +42,7 @@ Public LastPosMap As Integer
 Public LastPosX   As Byte
 Public LastPosY   As Byte
 Public team       As Byte
+Public CachedPlayerIndex As Integer
 
 Public Sub SetPlayer(ByVal UserIndex As Integer)
     Call SetUserRef(UserRef, UserIndex)
