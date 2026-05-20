@@ -814,8 +814,6 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
     Dim HasRequest As Boolean
     Dim CharId     As Long
     CharId = GetCharacterIdWithName(Personaje)
-    
-    CharId = GetCharacterIdWithName(Personaje)
     If EsAspirante And CharId <= 0 Then
         WriteConsoleMsg UserIndex, PrepareMessageLocaleMsg( _
             MSG_ASPIRANTE_OFFLINE_SIN_CHARID, _
