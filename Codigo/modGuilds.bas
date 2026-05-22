@@ -811,13 +811,13 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
     If InStrB(Personaje, ".") <> 0 Then
         Personaje = Replace$(Personaje, ".", vbNullString)
     End If
+    
     Dim HasRequest As Boolean
     Dim CharId     As Long
+    
     CharId = GetCharacterIdWithName(Personaje)
-    If EsAspirante And CharId <= 0 Then
-        WriteConsoleMsg UserIndex, PrepareMessageLocaleMsg( _
-            MSG_ASPIRANTE_OFFLINE_SIN_CHARID, _
-            vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG)
+    If CharId <= 0 Then
+        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_ASPIRANTE_OFFLINE_SIN_CHARID, vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG))
         Exit Sub
     End If
     HasRequest = guilds(GI).HasGuildRequest(CharId)
