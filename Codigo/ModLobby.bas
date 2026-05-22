@@ -25,6 +25,7 @@ Attribute VB_Name = "ModLobby"
 '
 '
 Const WaitingForPlayersTime = 300000 '5 minutes
+Private Const DEFAULT_EVENT_NAME As String = "Evento"
 
 Public Type PlayerInLobby
     SummonedFrom As t_WorldPos
@@ -95,7 +96,7 @@ Type t_Lobby
     IsGlobal As Boolean
     MapOpenTime As Long
     BroadOpenEvent As t_Timer
-    RoundAmount As Byte
+    RoundCount As Byte ' Cantidad de rondas que tendrá el lobby/evento
 End Type
 
 Public Type t_response
@@ -218,7 +219,7 @@ Public Sub SetupLobby(ByRef instance As t_Lobby, ByRef LobbySettings As t_NewSce
     instance.Description = LobbySettings.Description
     instance.Password = LobbySettings.Password
     instance.InscriptionPrice = LobbySettings.InscriptionFee
-    instance.RoundAmount = LobbySettings.RoundNumber
+    instance.RoundCount = LobbySettings.RoundNumber
 End Sub
 
 Public Sub SetSummonCoordinates(ByRef instance As t_Lobby, ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
@@ -572,7 +573,7 @@ Public Function OpenLobby(ByRef instance As t_Lobby, ByVal IsPublic As Boolean) 
         ElseIf Not instance.Scenario Is Nothing Then
             EventName = instance.Scenario.GetScenarioName()
         Else
-            EventName = "Evento"
+            EventName = DEFAULT_EVENT_NAME
         End If
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgCreateEventRoom, EventName & "¬" & instance.MaxPlayers & "¬" & instance.MinLevel & "¬" & instance.MaxLevel _
                 & "¬" & instance.InscriptionPrice, e_FontTypeNames.FONTTYPE_GLOBAL))
@@ -1008,6 +1009,7 @@ Public Sub CreatePublicEvent(ByRef LobbySettings As t_NewScenearioSettings)
     End If
     GlobalLobbyIndex = GetAvailableLobby()
     If GlobalLobbyIndex < 0 Then
+        LogInfoServidor "CreatePublicEvent GlobalLobbyIndex < 0"
         Exit Sub
     End If
     Call InitializeLobby(LobbyList(GlobalLobbyIndex))
