@@ -7404,6 +7404,7 @@ End Sub
 Private Function IsUnassistedSpellAllowed(ByVal spellID As Integer) As Boolean
     Const CONFIG_SECTION As String = "CONFIGURACIONES"
     Const CONFIG_KEY As String = "UnassistedSpellsAllowed"
+    Const DEFAULT_UNASSISTED_SPELLS_ALLOWED As String = "1,5,348,52,349,61,62,63,64,65"
 
     Static allowedSpells As String
     Static isLoaded As Boolean
@@ -7415,14 +7416,14 @@ Private Function IsUnassistedSpellAllowed(ByVal spellID As Integer) As Boolean
         rawAllowedSpells = Replace$(rawAllowedSpells, " ", vbNullString)
 
         If LenB(rawAllowedSpells) = 0 Then
-            Call LogError("Falta configuracion [" & CONFIG_SECTION & "] " & CONFIG_KEY & " en Configuracion.ini")
-            allowedSpells = ","
-        Else
-            allowedSpells = "," & rawAllowedSpells & ","
-            Do While InStr(1, allowedSpells, ",,", vbBinaryCompare) > 0
-                allowedSpells = Replace$(allowedSpells, ",,", ",")
-            Loop
+            rawAllowedSpells = DEFAULT_UNASSISTED_SPELLS_ALLOWED
+            Call LogError("Falta configuracion [" & CONFIG_SECTION & "] " & CONFIG_KEY & " en Configuracion.ini. Usando lista por defecto: " & DEFAULT_UNASSISTED_SPELLS_ALLOWED)
         End If
+
+        allowedSpells = "," & rawAllowedSpells & ","
+        Do While InStr(1, allowedSpells, ",,", vbBinaryCompare) > 0
+            allowedSpells = Replace$(allowedSpells, ",,", ",")
+        Loop
 
         isLoaded = True
     End If
