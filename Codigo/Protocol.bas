@@ -5144,10 +5144,7 @@ Private Sub HandleAntiMacroMessage(ByVal UserIndex As Integer)
             Else
                 tUser = NameIndex(username)
                 If IsValidUserRef(tUser) Then
-                    'Msg2172=Control anti-macro: ¬1
-                    Call WriteLocaleMsg(tUser.ArrayIndex, MSG_ANTI_MACRO_CONTROL, e_FontTypeNames.FONTTYPE_New_DONADOR, mensaje)
-                    Call WriteShowMessageBox(tUser.ArrayIndex, MSG_ANTI_MACRO_CONTROL, mensaje)
-                    Call LogGM(GetUserRealName(UserIndex), "Envió mensaje anti-macro a " & username & ": " & mensaje)
+                    Call LogGM(GetUserRealName(UserIndex), "Registró control anti-macro a " & username & ": " & mensaje)
                 Else
                     Call LogGM(GetUserRealName(UserIndex), "Intentó enviar mensaje anti-macro a " & username & " pero el usuario no está conectado o no es válido. Mensaje: " & mensaje)
                 End If
