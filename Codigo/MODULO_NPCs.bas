@@ -247,7 +247,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             Exit Sub
         End If
         With RespawnList(Indice)
-            .Active = True
+            .Active = 1
             .InformarRespawn = MiNPC.InformarRespawn
             .RespawnFlag = MiNPC.flags.Respawn
             .NpcNumber = MiNPC.Numero
