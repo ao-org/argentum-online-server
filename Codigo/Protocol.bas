@@ -31,17 +31,6 @@ Option Explicit
 'having too many string lengths in the queue. Yes, each string is NULL-terminated :P
 
 Public Const SEPARATOR As String * 1 = vbNullChar
-Private Const SPELL_UNASSISTED_DARDO = 1
-Private Const SPELL_UNASSISTED_RUGIDO_SALVAJE = 5
-Private Const SPELL_UNASSISTED_RUGIDO_ARCANO = 348
-Private Const SPELL_UNASSISTED_FULGOR_IGNEO = 52
-Private Const SPELL_UNASSISTED_LATIDO_IGNEO = 349
-Private Const SPELL_UNASSISTED_ECO_IGNEO = 61
-Private Const SPELL_UNASSISTED_DESTELLO_MALVA = 62
-Private Const SPELL_UNASSISTED_FRACTURA_GLACIAL = 63
-Private Const SPELL_UNASSISTED_ALIENTO_CARMESI = 64
-Private Const SPELL_UNASSISTED_ENERGIA_ANCESTRAL = 65
-
 
 Public Enum e_EditOptions
     eo_Gold = 1
@@ -7410,12 +7399,33 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
 End Sub
 
 Private Function IsUnassistedSpellAllowed(ByVal spellID As Integer) As Boolean
-    Select Case spellID
-        Case SPELL_UNASSISTED_DARDO, SPELL_UNASSISTED_RUGIDO_SALVAJE, SPELL_UNASSISTED_RUGIDO_ARCANO, SPELL_UNASSISTED_FULGOR_IGNEO, SPELL_UNASSISTED_LATIDO_IGNEO, SPELL_UNASSISTED_ECO_IGNEO, SPELL_UNASSISTED_DESTELLO_MALVA, SPELL_UNASSISTED_FRACTURA_GLACIAL, SPELL_UNASSISTED_ALIENTO_CARMESI, SPELL_UNASSISTED_ENERGIA_ANCESTRAL
-            IsUnassistedSpellAllowed = True
-        Case Else
-            IsUnassistedSpellAllowed = False
-    End Select
+    Const CONFIG_SECTION As String = "CONFIGURACIONES"
+    Const CONFIG_KEY As String = "UnassistedSpellsAllowed"
+    Const DEFAULT_UNASSISTED_SPELLS_ALLOWED As String = "1,5,348,52,349,61,62,63,64,65"
+
+    Static allowedSpells As String
+    Static isLoaded As Boolean
+    Dim rawAllowedSpells As String
+
+    If Not isLoaded Then
+        rawAllowedSpells = Trim$(GetVar(IniPath & "Configuracion.ini", CONFIG_SECTION, CONFIG_KEY))
+        rawAllowedSpells = Replace$(rawAllowedSpells, ";", ",")
+        rawAllowedSpells = Replace$(rawAllowedSpells, " ", vbNullString)
+
+        If LenB(rawAllowedSpells) = 0 Then
+            rawAllowedSpells = DEFAULT_UNASSISTED_SPELLS_ALLOWED
+            Call LogError("Falta configuracion [" & CONFIG_SECTION & "] " & CONFIG_KEY & " en Configuracion.ini. Usando lista por defecto: " & DEFAULT_UNASSISTED_SPELLS_ALLOWED)
+        End If
+
+        allowedSpells = "," & rawAllowedSpells & ","
+        Do While InStr(1, allowedSpells, ",,", vbBinaryCompare) > 0
+            allowedSpells = Replace$(allowedSpells, ",,", ",")
+        Loop
+
+        isLoaded = True
+    End If
+
+    IsUnassistedSpellAllowed = InStr(1, allowedSpells, "," & CStr(spellID) & ",", vbBinaryCompare) > 0
 End Function
 
 Private Sub HandleHome(ByVal UserIndex As Integer)
