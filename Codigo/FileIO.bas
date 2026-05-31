@@ -1337,12 +1337,9 @@ Sub LoadOBJData()
             Dim n As Integer
             Dim s As String
             Dim ListaRazas(1 To NUMRAZAS) As String
-                ListaRazas(e_Raza.Humano) = "HUMANO"
-                ListaRazas(e_Raza.Elfo) = "ELFO"
-                ListaRazas(e_Raza.Drow) = "DROW"
-                ListaRazas(e_Raza.Gnomo) = "GNOMO"
-                ListaRazas(e_Raza.Enano) = "ENANO"
-                ListaRazas(e_Raza.Orco) = "ORCO"
+            For i = 1 To NUMRAZAS
+                ListaRazas(i) = RaceToString(i)
+            Next i
             For i = 1 To NUMCLASES
                 s = UCase$(Leer.GetValue(ObjKey, "CP" & i))
                 n = 1
