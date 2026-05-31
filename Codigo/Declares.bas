@@ -3103,7 +3103,7 @@ Public Type t_NPCFlags
     AttackedFirstBy As String
     backup As Byte
     RespawnOrigPos As Byte
-    Envenenado As Byte
+    Envenenado As Integer
     Paralizado As Byte
     Inmovilizado As Byte
     Incinerado As Byte

@@ -1231,6 +1231,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
             ' El veneno causa daño proporcional al poder del NPC que envenenó.
             Damage = RandomNumber(3, 5)
             Damage = (.flags.Envenenado * Damage) \ VENENO_DIVISOR
+            If Damage < 1 Then Damage = 1
             If .ChatCombate = 1 Then
                 ' "El veneno te ha causado ¬1 puntos de daño."
                 Call WriteLocaleMsg(UserIndex, MSG_POISON_DEALT_DAMAGE, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
