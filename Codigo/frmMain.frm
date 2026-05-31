@@ -1490,33 +1490,13 @@ End Sub
 
 Private Sub TimerRespawn_Timer()
     On Error GoTo ErrorHandler
-    Dim NpcIndex         As Long
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
-    'Update NPCs
-    For NpcIndex = 1 To MaxRespawn
-        'Debug.Print RespawnList(NpcIndex).name
-        If RespawnList(NpcIndex).flags.NPCActive Then  'Nos aseguramos que este muerto
-            If RespawnList(NpcIndex).Contadores.IntervaloRespawn > 0 Then
-                RespawnList(NpcIndex).Contadores.IntervaloRespawn = RespawnList(NpcIndex).Contadores.IntervaloRespawn - 1
-            Else
-                RespawnList(NpcIndex).flags.NPCActive = False
-                If RespawnList(NpcIndex).InformarRespawn = 1 Then
-                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_VUELTO_MUNDO, RespawnList(NpcIndex).Numero, e_FontTypeNames.FONTTYPE_EXP)) ' Msg1788=¬1 ha vuelto a este mundo.
-                    If RespawnList(NpcIndex).flags.SndRespawn > 0 Then
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(RespawnList(NpcIndex).flags.SndRespawn, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
-                    End If
-                End If
-                Call ReSpawnNpc(RespawnList(NpcIndex))
-            End If
-        End If
-    Next NpcIndex
+    Call ProcessRespawnQueue
     Call PerformTimeLimitCheck(PerformanceTimer, "TimerRespawn_Timer")
     Exit Sub
 ErrorHandler:
-    Call TraceError(Err.Number, Err.Description & vbNewLine & "NPC: " & NpcList(NpcIndex).name & " en la posicion: " & NpcList(NpcIndex).pos.Map & "-" & NpcList(NpcIndex).pos.x _
-            & "-" & NpcList(NpcIndex).pos.y, "frmMain.TimerRespawn_Timer", Erl)
-    Call MuereNpc(NpcIndex, 0)
+    Call TraceError(Err.Number, Err.Description, "frmMain.TimerRespawn_Timer", Erl)
 End Sub
 
 Private Sub tPiqueteC_Timer()
