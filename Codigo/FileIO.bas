@@ -1336,9 +1336,9 @@ Sub LoadOBJData()
             'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico  -  Nunca más papu
             Dim n As Integer
             Dim s As String
-            Dim ListaRazas(1 To NUMRAZAS) As String
+            Dim ListaRazasObjDat(1 To NUMRAZAS) As String
             For i = 1 To NUMRAZAS
-                ListaRazas(i) = RaceToString(i)
+                ListaRazasObjDat(i) = RaceToString(i)
             Next i
             For i = 1 To NUMCLASES
                 s = UCase$(Leer.GetValue(ObjKey, "CP" & i))
@@ -1351,7 +1351,8 @@ Sub LoadOBJData()
             For i = 1 To NUMRAZAS
                 s = UCase$(Leer.GetValue(ObjKey, "RP" & i))
                 n = 1
-                Do While LenB(s) > 0 And n <= NUMRAZAS And Tilde(ListaRazas(n)) <> Trim$(s)
+                Do While LenB(s) > 0 And N <= NUMRAZAS
+                    If Tilde(ListaRazasObjDat(N)) = Trim$(s) Then Exit Do
                     n = n + 1
                 Loop
                 .RazaProhibida(i) = IIf(LenB(s) > 0 And n <= NUMRAZAS, n, 0)
