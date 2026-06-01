@@ -49,15 +49,15 @@ Dim Logear     As String
 Public Sub IniciarSubasta(ByVal UserIndex As Integer)
     On Error GoTo IniciarSubasta_Err
     If UserList(UserIndex).flags.Subastando = True And Not Subasta.HaySubastaActiva Then
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1427, CStr(UserList(UserIndex).Counters.TiempoParaSubastar), e_FontTypeNames.FONTTYPE_SUBASTA))
+        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_SUBASTA_INGRESA_OFERTA_INICIAL, CStr(UserList(UserIndex).Counters.TiempoParaSubastar), e_FontTypeNames.FONTTYPE_SUBASTA))
         Exit Sub
     End If
     If Subasta.PreparandoSubasta Then
-        Call WriteLocaleMsg(UserIndex, 1428, e_FontTypeNames.FONTTYPE_SUBASTA, Subasta.Subastador)
+        Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_PREPARANDO_OTRO_USUARIO, e_FontTypeNames.FONTTYPE_SUBASTA, Subasta.Subastador)
         Exit Sub
     End If
     If Subasta.HaySubastaActiva = True Then
-        Call WriteLocaleMsg(UserIndex, 1428, e_FontTypeNames.FONTTYPE_SUBASTA, Subasta.Subastador)
+        Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_PREPARANDO_OTRO_USUARIO, e_FontTypeNames.FONTTYPE_SUBASTA, Subasta.Subastador)
         Exit Sub
     End If
     If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex <= 0 Then
@@ -65,11 +65,11 @@ Public Sub IniciarSubasta(ByVal UserIndex As Integer)
         Exit Sub
     End If
     If Not ObjData(MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex).Subastable = 1 Then
-        Call WriteLocaleChatOverHead(UserIndex, 1430, "", str$(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite)
+        Call WriteLocaleChatOverHead(UserIndex, MSG_SUBASTA_ITEM_NO_SUBASTABLE, "", str$(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite)
         Exit Sub
     End If
     If UserList(UserIndex).flags.Subastando = True Then 'Practicamente imposible que pase... pero por si las dudas
-        Call WriteLocaleChatOverHead(UserIndex, 1431, "", str$(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex), vbRed) ' Msg1431=Tu ya estas subastando! Esto a quedado logeado.
+        Call WriteLocaleChatOverHead(UserIndex, MSG_SUBASTA_USUARIO_YA_SUBASTANDO, "", str$(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex), vbRed)
         Logear = "El usuario que ya estaba subastando pudo subastar otro item" & Date & " - " & Time
         Call LogearEventoDeSubasta(Logear)
         Exit Sub
@@ -83,7 +83,7 @@ Public Sub IniciarSubasta(ByVal UserIndex As Integer)
             .flags.Subastando = True
             Subasta.SubastadorIndex = UserIndex
             Subasta.PreparandoSubasta = True
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1427, CStr(.Counters.TiempoParaSubastar), e_FontTypeNames.FONTTYPE_SUBASTA))
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_SUBASTA_INGRESA_OFERTA_INICIAL, CStr(.Counters.TiempoParaSubastar), e_FontTypeNames.FONTTYPE_SUBASTA))
             Call EraseObj(Subasta.ObjSubastadoCantidad, .pos.Map, .pos.x, .pos.y)
         End With
         Exit Sub
@@ -241,7 +241,7 @@ Public Sub DevolverItem()
         Call LogearEventoDeSubasta("Se entrego el item en mano del subastador.")
     End If
     If IsValidUserRef(tUser) Then
-        Call WriteLocaleMsg(tUser.ArrayIndex, 1432, e_FontTypeNames.FONTTYPE_SUBASTA, ObjData(Subasta.ObjSubastado).name)
+        Call WriteLocaleMsg(Subasta.SubastadorIndex, MSG_SUBASTA_ITEM_DEVUELTO_SIN_OFERTA, e_FontTypeNames.FONTTYPE_SUBASTA, ObjData(Subasta.ObjSubastado).name)
     End If
     Call ResetearSubasta
     Exit Sub
@@ -294,7 +294,7 @@ Public Sub CancelarSubasta()
             Call LogearEventoDeSubasta("Se tiro al piso el item.")
         End If
         Call LogearEventoDeSubasta("Se entrego el item en mano del subastador.")
-        Call WriteLocaleMsg(Subasta.SubastadorIndex, 1432, e_FontTypeNames.FONTTYPE_SUBASTA, ObjData(Subasta.ObjSubastado).name)
+        Call WriteLocaleMsg(Subasta.SubastadorIndex, MSG_SUBASTA_ITEM_DEVUELTO_SIN_OFERTA, e_FontTypeNames.FONTTYPE_SUBASTA, ObjData(Subasta.ObjSubastado).name)
         UserList(tUser.ArrayIndex).flags.Subastando = False
     End If
     Call ResetearSubasta
