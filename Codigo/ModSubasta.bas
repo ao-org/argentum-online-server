@@ -78,12 +78,14 @@ Public Sub IniciarSubasta(ByVal UserIndex As Integer)
         Subasta.ObjSubastado = MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex
         Subasta.ObjSubastadoCantidad = MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.amount
         Subasta.Subastador = UserList(UserIndex).name
-        Subasta.SubastadorIndex = UserIndex
-        UserList(UserIndex).Counters.TiempoParaSubastar = 20
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1427, CStr(UserList(UserIndex).Counters.TiempoParaSubastar), e_FontTypeNames.FONTTYPE_SUBASTA))
-        Call EraseObj(Subasta.ObjSubastadoCantidad, UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y)
-        UserList(UserIndex).flags.Subastando = True
-        Subasta.PreparandoSubasta = True
+        With UserList(UserIndex)
+            .Counters.TiempoParaSubastar = 20
+            .flags.Subastando = True
+            Subasta.SubastadorIndex = UserIndex
+            Subasta.PreparandoSubasta = True
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(1427, CStr(.Counters.TiempoParaSubastar), e_FontTypeNames.FONTTYPE_SUBASTA))
+            Call EraseObj(Subasta.ObjSubastadoCantidad, .pos.Map, .pos.x, .pos.y)
+        End With
         Exit Sub
     End If
     Exit Sub
