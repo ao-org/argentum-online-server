@@ -3406,3 +3406,14 @@ HandleUserPetsOnDeath_Err:
     Resume Next
 End Sub
 
+Public Function RaceToString(ByVal raza As e_Raza) As String
+    Select Case raza
+        Case e_Raza.Humano: RaceToString = "HUMANO"
+        Case e_Raza.Elfo:   RaceToString = "ELFO"
+        Case e_Raza.Drow:   RaceToString = "DROW"
+        Case e_Raza.Gnomo:  RaceToString = "GNOMO"
+        Case e_Raza.Enano:  RaceToString = "ENANO"
+        Case e_Raza.Orco:   RaceToString = "ORCO"
+        Case Else:          RaceToString = ""
+    End Select
+End Function
