@@ -5890,8 +5890,10 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTANDO_CANTIDAD_PRECIO_INICIAL_MONEDAS_ESCRIBE_OFERTAR, GetUserDisplayName(UserIndex) & "¬" & ObjData(Subasta.ObjSubastado).name & "¬" & Subasta.ObjSubastadoCantidad & "¬" & _
                     PonerPuntos(Subasta.OfertaInicial), e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1649=¬1 está subastando: ¬2 (Cantidad: ¬3 ) - con un precio inicial de ¬4 monedas. Escribe /OFERTAR (cantidad) para participar.
             .flags.Subastando = False
+            Subasta.PreparandoSubasta = False
             Subasta.HaySubastaActiva = True
             Subasta.Subastador = .name
+            Subasta.SubastadorIndex = UserIndex
             Subasta.MinutosDeSubasta = 5
             Subasta.TiempoRestanteSubasta = 300
             Call LogearEventoDeSubasta( _
