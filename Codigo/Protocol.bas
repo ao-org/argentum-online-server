@@ -5856,7 +5856,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim Oferta As Long
         Oferta = reader.ReadInt32()
-        If Oferta < 1 Or Oferta > 1999999 Then
+        If Oferta < 1 Or Oferta > SUBASTA_OFERTA_MAXIMA Then
             Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_OFERTA_INVALIDA, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
