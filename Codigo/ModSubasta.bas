@@ -74,11 +74,17 @@ Public Sub IniciarSubasta(ByVal UserIndex As Integer)
         Call LogearEventoDeSubasta(Logear)
         Exit Sub
     End If
+    If UserList(UserIndex).Stats.GLD < CLng(SvrConfig.GetValue("CostoPreSubasta")) Then
+        Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_ORO_INSUFICIENTE, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(CLng(SvrConfig.GetValue("CostoPreSubasta"))))
+        Exit Sub
+    End If
     If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex > 0 Then
         Subasta.ObjSubastado = MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex
         Subasta.ObjSubastadoCantidad = MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.amount
         Subasta.Subastador = UserList(UserIndex).name
         With UserList(UserIndex)
+            .Stats.GLD = .Stats.GLD - CLng(SvrConfig.GetValue("CostoPreSubasta"))
+            Call WriteUpdateGold(UserIndex)
             .Counters.TiempoParaSubastar = 20
             .flags.Subastando = True
             Subasta.SubastadorIndex = UserIndex
@@ -173,6 +179,7 @@ End Sub
 
 Public Sub ResetearSubasta()
     On Error GoTo ResetearSubasta_Err
+    frmMain.SubastaTimer.Enabled = False
     Subasta.HaySubastaActiva = False
     Subasta.PreparandoSubasta = False
     Subasta.ObjSubastado = 0

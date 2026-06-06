@@ -5856,6 +5856,10 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim Oferta As Long
         Oferta = reader.ReadInt32()
+        If Oferta < 1 Or Oferta > SUBASTA_OFERTA_MAXIMA Then
+            Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_OFERTA_INVALIDA, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
         If UserList(UserIndex).flags.Muerto = 1 Then
             Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
@@ -5902,8 +5906,6 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
             Call LogearEventoDeSubasta(GetUserRealName(UserIndex) & ": Esta subastando el item numero " & Subasta.ObjSubastado & " con una cantidad de " & Subasta.ObjSubastadoCantidad & _
                     " y con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas.")
             frmMain.SubastaTimer.Enabled = True
-            Call WarpUserChar(UserIndex, 14, 27, 64, True)
-            'lalala toda la bola de los timerrr
         End If
     End With
     Exit Sub
@@ -5922,9 +5924,11 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_NINGUNA_SUBASTA_CURSO_1229, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        If Oferta < Subasta.MejorOferta + 100 Then
-            'Msg1230= Debe haber almenos una diferencia de 100 monedas a la ultima oferta!
-            Call WriteLocaleMsg(UserIndex, MSG_DEBE_HABER_ALMENOS_DIFERENCIA_MONEDAS_ULTIMA_OFERTA, e_FontTypeNames.FONTTYPE_INFO)
+        Dim DiferenciaMinima As Long
+        DiferenciaMinima = CLng(Subasta.MejorOferta * 0.05)
+        If DiferenciaMinima < 100 Then DiferenciaMinima = 100
+        If Oferta < Subasta.MejorOferta + DiferenciaMinima Then
+            Call WriteLocaleMsg(UserIndex, MSG_DEBE_HABER_ALMENOS_DIFERENCIA_MONEDAS_ULTIMA_OFERTA, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(DiferenciaMinima))
             Exit Sub
         End If
         If .name = Subasta.Subastador Then
@@ -5952,6 +5956,8 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
                 Call LogearEventoDeSubasta(GetUserRealName(UserIndex) & ": Mejoro la oferta ofreciendo " & PonerPuntos(Oferta) & " monedas.")
                 Subasta.HuboOferta = True
                 Subasta.PosibleCancelo = False
+                Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_OFERTA_PROPIA, e_FontTypeNames.FONTTYPE_SUBASTA, PonerPuntos(Oferta) & "¬" & ObjData(Subasta.ObjSubastado).name)
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTA_OFERTA_GLOBAL, GetUserDisplayName(UserIndex) & "¬" & PonerPuntos(Oferta) & "¬" & ObjData(Subasta.ObjSubastado).name & "¬" & PonerPuntos(Subasta.MejorOferta + 100), e_FontTypeNames.FONTTYPE_SUBASTA))
             End If
         Else
             'Msg1232= No posees esa cantidad de oro.

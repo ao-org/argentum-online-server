@@ -2803,6 +2803,8 @@ Public Type t_QuestStats
     QuestsDone() As Integer
 End Type
 
+Public Const SUBASTA_OFERTA_MAXIMA As Long = 1999999
+
 ' ------------- FACCIONES -------------
 Public Type t_Facciones
     Status As Byte ' Esto deberia ser e_Facciones
