@@ -459,12 +459,12 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
         ' Decidimos el resultado del reto según el puntaje:
         Dim i                 As Integer, tUser As t_UserReference, Equipo1 As String, Equipo2 As String
         Dim eloTotalIzquierda As Long, eloTotalDerecha As Long, winsIzquierda As Long, winsDerecha As Long
-        Dim todosMayorA35     As Boolean
-        todosMayorA35 = True
+        Dim todosAptos     As Boolean
+        todosAptos = True
         For i = 0 To UBound(.Jugadores)
             tUser = .Jugadores(i)
             If tUser.ArrayIndex <> 0 Then
-                todosMayorA35 = todosMayorA35 And (UserList(tUser.ArrayIndex).Stats.ELV >= 35)
+                todosAptos = todosAptos And (UserList(tUser.ArrayIndex).Stats.ELV >= 33)
                 If i Mod 2 = 0 Then
                     eloTotalIzquierda = eloTotalIzquierda + UserList(tUser.ArrayIndex).Stats.ELO
                 Else
@@ -500,7 +500,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                         End If
                     Else
                         If LenB(Equipo1) > 0 Then
-                            Equipo1 = Equipo2 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tUser.ArrayIndex).name
+                            Equipo1 = Equipo1 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tUser.ArrayIndex).name
                         Else
                             Equipo1 = UserList(tUser.ArrayIndex).name
                         End If
@@ -591,7 +591,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
         For i = 0 To UBound(.Jugadores)
             tUser = .Jugadores(i)
             If IsValidUserRef(tUser) Then
-                If todosMayorA35 Then
+                If todosAptos Then
                     If i Mod 2 = 0 Then ' Jugadores en el equipo Izquierdo
                         eloDiff = winsIzquierda * (eloTotalDerecha * 0.1)
                     Else
@@ -606,7 +606,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                         Call SendData(SendTarget.ToIndex, tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_HAS_PERDIDO_PUNTOS_ELO, Abs(eloDiff), e_FontTypeNames.FONTTYPE_ROSA)) 'Msg1696=Has perdido ¬1 puntos de ELO!
                     End If
                     UserList(tUser.ArrayIndex).Stats.ELO = UserList(tUser.ArrayIndex).Stats.ELO + eloDiff
-                Else ' Alguno es menor a level 35
+                Else ' Alguno es menor a level 33
                     Call SendData(SendTarget.ToIndex, tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_PARTICIPANTE_RETO_TIENE_NIVEL_MENOR_ELO_PERMANECE, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) 'Msg1697=Al menos un participante del reto tiene nivel menor a 35, tu ELO permanece igual.
                 End If
             End If
