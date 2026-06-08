@@ -240,7 +240,7 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "ModRetos.CancelarSolicitudReto", Erl)
 End Sub
 
-Public Sub BuscarSala(ByVal Oferente As Integer)
+Public Sub FindRoom(ByVal Oferente As Integer)
     On Error GoTo ErrHandler
     With UserList(Oferente).flags.SolicitudReto
         If Retos.SalasLibres <= 0 Then
@@ -260,7 +260,7 @@ Public Sub BuscarSala(ByVal Oferente As Integer)
     End With
     Exit Sub
 ErrHandler:
-    Call TraceError(Err.Number, Err.Description, "ModRetos.BuscarSala", Erl)
+    Call TraceError(Err.Number, Err.Description, "ModRetos.FindRoom", Erl)
 End Sub
 
 Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
