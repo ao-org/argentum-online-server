@@ -1236,7 +1236,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         Else
             Erase .Caminata
         End If
-        If .npcType = e_NPCType.Transportista Then
+        If .npcType = e_NPCType.Transporter Then
             Dim cityCount As Integer
             cityCount = val(LeerNPCs.GetValue(SectionName, "CityCount", 0))
             .cityCount = cityCount
@@ -1529,7 +1529,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
             .NroCriaturas = 0
             Erase .Criaturas
         End If
-        If .npcType = e_NPCType.Transportista Then
+        If .npcType = e_NPCType.Transporter Then
             .TransportCityCount = Info.cityCount
             If .TransportCityCount > 0 Then
                 ReDim .TransportCityNames(1 To .TransportCityCount)

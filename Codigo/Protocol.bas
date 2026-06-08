@@ -6950,7 +6950,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, MSG_DEMASIADO_LEJOS_VENDEDOR_PASAJES, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        If NpcList(NpcIndex).npcType <> e_NPCType.Transportista And _
+        If NpcList(NpcIndex).npcType <> e_NPCType.Transporter And _
            NpcList(NpcIndex).npcType <> e_NPCType.Pirata Then
             Exit Sub
         End If

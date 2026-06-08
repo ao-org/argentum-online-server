@@ -1345,7 +1345,7 @@ Public Enum e_NPCType
     EventMaster = 23
     ArenaGuard = 24
     
-    Transportista = 26
+    Transporter = 26
 End Enum
 
 Public Const MIN_APUÑALAR As Byte = 10
