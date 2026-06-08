@@ -27,6 +27,13 @@ Attribute VB_Name = "ModTorneos"
 '
 '
 '
+
+Private Const TORNEO_MAPA As Integer = 272
+Private Const TORNEO_SLOT1_X As Byte = 16
+Private Const TORNEO_SLOT1_Y As Byte = 45
+Private Const TORNEO_SLOT2_X As Byte = 32
+Private Const TORNEO_SLOT2_Y As Byte = 56
+
 Public Type t_Torneo
     ' Estado
     HayTorneoActivo     As Boolean
@@ -240,13 +247,13 @@ Public Sub ComenzarTorneoOk()
         ' TODO: En PRs posteriores generalizar posiciones para 4/8/16/32 cupos.
         ' Por ahora solo soporta 1v1 (2 cupos): jugador 1 en 16,45 - jugador 2 en 32,56
         If i = 1 Then
-            x = 16
-            y = 45
+            x = TORNEO_SLOT1_X
+            y = TORNEO_SLOT1_Y
         Else
-            x = 32
-            y = 56
+            x = TORNEO_SLOT2_X
+            y = TORNEO_SLOT2_Y
         End If
-        Call WarpUserChar(Torneo.IndexParticipantes(i), 272, x, y, True)
+        Call WarpUserChar(Torneo.IndexParticipantes(i), TORNEO_MAPA, x, y, True)
     Next i
     
     If Len(nombres) > 0 Then
