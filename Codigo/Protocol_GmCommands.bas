@@ -3998,16 +3998,8 @@ Public Sub HandleFeatureToggle(ByVal UserIndex As Integer)
         Exit Sub
     End If
     If (UserList(UserIndex).flags.Privilegios And (e_PlayerType.Admin)) Then
-        If name = "SGRACEFULLY" Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_CERRANDO_AHORA, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1740=Servidor » cerrando ahora.
-            Call GuardarUsuarios
-            Call EcharPjsNoPrivilegiados
-            frmMain.GuardarYCerrar = True
-            Unload frmMain
-        Else
-            Call SetFeatureToggle(name, value > 0)
-            Call WriteLocaleMsg(UserIndex, MSG_VARIABLE_CONFIGURADA_CORRECTAMENTE, e_FontTypeNames.FONTTYPE_INFO) 'Msg1006= variable configurada correctamente.
-        End If
+        Call SetFeatureToggle(name, value > 0)
+        Call WriteLocaleMsg(UserIndex, MSG_VARIABLE_CONFIGURADA_CORRECTAMENTE, e_FontTypeNames.FONTTYPE_INFO) 'Msg1006= variable configurada correctamente.
     Else
         Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_PERMISOS_REALIZAR_ACCION, e_FontTypeNames.FONTTYPE_INFO) 'Msg1007= no tienes permisos para realizar esta accion.
     End If
