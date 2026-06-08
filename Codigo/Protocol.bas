@@ -31,17 +31,6 @@ Option Explicit
 'having too many string lengths in the queue. Yes, each string is NULL-terminated :P
 
 Public Const SEPARATOR As String * 1 = vbNullChar
-Private Const SPELL_UNASSISTED_DARDO = 1
-Private Const SPELL_UNASSISTED_RUGIDO_SALVAJE = 5
-Private Const SPELL_UNASSISTED_RUGIDO_ARCANO = 348
-Private Const SPELL_UNASSISTED_FULGOR_IGNEO = 52
-Private Const SPELL_UNASSISTED_LATIDO_IGNEO = 349
-Private Const SPELL_UNASSISTED_ECO_IGNEO = 61
-Private Const SPELL_UNASSISTED_DESTELLO_MALVA = 62
-Private Const SPELL_UNASSISTED_FRACTURA_GLACIAL = 63
-Private Const SPELL_UNASSISTED_ALIENTO_CARMESI = 64
-Private Const SPELL_UNASSISTED_ENERGIA_ANCESTRAL = 65
-
 
 Public Enum e_EditOptions
     eo_Gold = 1
@@ -5144,10 +5133,7 @@ Private Sub HandleAntiMacroMessage(ByVal UserIndex As Integer)
             Else
                 tUser = NameIndex(username)
                 If IsValidUserRef(tUser) Then
-                    'Msg2172=Control anti-macro: ¬1
-                    Call WriteLocaleMsg(tUser.ArrayIndex, MSG_ANTI_MACRO_CONTROL, e_FontTypeNames.FONTTYPE_New_DONADOR, mensaje)
-                    Call WriteShowMessageBox(tUser.ArrayIndex, MSG_ANTI_MACRO_CONTROL, mensaje)
-                    Call LogGM(GetUserRealName(UserIndex), "Envió mensaje anti-macro a " & username & ": " & mensaje)
+                    Call LogGM(GetUserRealName(UserIndex), "Registró control anti-macro a " & username & ": " & mensaje)
                 Else
                     Call LogGM(GetUserRealName(UserIndex), "Intentó enviar mensaje anti-macro a " & username & " pero el usuario no está conectado o no es válido. Mensaje: " & mensaje)
                 End If
@@ -5870,6 +5856,10 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim Oferta As Long
         Oferta = reader.ReadInt32()
+        If Oferta < 1 Or Oferta > SUBASTA_OFERTA_MAXIMA Then
+            Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_OFERTA_INVALIDA, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
         If UserList(UserIndex).flags.Muerto = 1 Then
             Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
@@ -5904,8 +5894,10 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTANDO_CANTIDAD_PRECIO_INICIAL_MONEDAS_ESCRIBE_OFERTAR, GetUserDisplayName(UserIndex) & "¬" & ObjData(Subasta.ObjSubastado).name & "¬" & Subasta.ObjSubastadoCantidad & "¬" & _
                     PonerPuntos(Subasta.OfertaInicial), e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1649=¬1 está subastando: ¬2 (Cantidad: ¬3 ) - con un precio inicial de ¬4 monedas. Escribe /OFERTAR (cantidad) para participar.
             .flags.Subastando = False
+            Subasta.PreparandoSubasta = False
             Subasta.HaySubastaActiva = True
             Subasta.Subastador = .name
+            Subasta.SubastadorIndex = UserIndex
             Subasta.MinutosDeSubasta = 5
             Subasta.TiempoRestanteSubasta = 300
             Call LogearEventoDeSubasta( _
@@ -5914,8 +5906,6 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
             Call LogearEventoDeSubasta(GetUserRealName(UserIndex) & ": Esta subastando el item numero " & Subasta.ObjSubastado & " con una cantidad de " & Subasta.ObjSubastadoCantidad & _
                     " y con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas.")
             frmMain.SubastaTimer.Enabled = True
-            Call WarpUserChar(UserIndex, 14, 27, 64, True)
-            'lalala toda la bola de los timerrr
         End If
     End With
     Exit Sub
@@ -5934,9 +5924,11 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_NINGUNA_SUBASTA_CURSO_1229, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        If Oferta < Subasta.MejorOferta + 100 Then
-            'Msg1230= Debe haber almenos una diferencia de 100 monedas a la ultima oferta!
-            Call WriteLocaleMsg(UserIndex, MSG_DEBE_HABER_ALMENOS_DIFERENCIA_MONEDAS_ULTIMA_OFERTA, e_FontTypeNames.FONTTYPE_INFO)
+        Dim DiferenciaMinima As Long
+        DiferenciaMinima = CLng(Subasta.MejorOferta * 0.05)
+        If DiferenciaMinima < 100 Then DiferenciaMinima = 100
+        If Oferta < Subasta.MejorOferta + DiferenciaMinima Then
+            Call WriteLocaleMsg(UserIndex, MSG_DEBE_HABER_ALMENOS_DIFERENCIA_MONEDAS_ULTIMA_OFERTA, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(DiferenciaMinima))
             Exit Sub
         End If
         If .name = Subasta.Subastador Then
@@ -5964,6 +5956,8 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
                 Call LogearEventoDeSubasta(GetUserRealName(UserIndex) & ": Mejoro la oferta ofreciendo " & PonerPuntos(Oferta) & " monedas.")
                 Subasta.HuboOferta = True
                 Subasta.PosibleCancelo = False
+                Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_OFERTA_PROPIA, e_FontTypeNames.FONTTYPE_SUBASTA, PonerPuntos(Oferta) & "¬" & ObjData(Subasta.ObjSubastado).name)
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTA_OFERTA_GLOBAL, GetUserDisplayName(UserIndex) & "¬" & PonerPuntos(Oferta) & "¬" & ObjData(Subasta.ObjSubastado).name & "¬" & PonerPuntos(Subasta.MejorOferta + 100), e_FontTypeNames.FONTTYPE_SUBASTA))
             End If
         Else
             'Msg1232= No posees esa cantidad de oro.
@@ -7411,12 +7405,33 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
 End Sub
 
 Private Function IsUnassistedSpellAllowed(ByVal spellID As Integer) As Boolean
-    Select Case spellID
-        Case SPELL_UNASSISTED_DARDO, SPELL_UNASSISTED_RUGIDO_SALVAJE, SPELL_UNASSISTED_RUGIDO_ARCANO, SPELL_UNASSISTED_FULGOR_IGNEO, SPELL_UNASSISTED_LATIDO_IGNEO, SPELL_UNASSISTED_ECO_IGNEO, SPELL_UNASSISTED_DESTELLO_MALVA, SPELL_UNASSISTED_FRACTURA_GLACIAL, SPELL_UNASSISTED_ALIENTO_CARMESI, SPELL_UNASSISTED_ENERGIA_ANCESTRAL
-            IsUnassistedSpellAllowed = True
-        Case Else
-            IsUnassistedSpellAllowed = False
-    End Select
+    Const CONFIG_SECTION As String = "CONFIGURACIONES"
+    Const CONFIG_KEY As String = "UnassistedSpellsAllowed"
+    Const DEFAULT_UNASSISTED_SPELLS_ALLOWED As String = "1,5,348,52,349,61,62,63,64,65"
+
+    Static allowedSpells As String
+    Static isLoaded As Boolean
+    Dim rawAllowedSpells As String
+
+    If Not isLoaded Then
+        rawAllowedSpells = Trim$(GetVar(IniPath & "Configuracion.ini", CONFIG_SECTION, CONFIG_KEY))
+        rawAllowedSpells = Replace$(rawAllowedSpells, ";", ",")
+        rawAllowedSpells = Replace$(rawAllowedSpells, " ", vbNullString)
+
+        If LenB(rawAllowedSpells) = 0 Then
+            rawAllowedSpells = DEFAULT_UNASSISTED_SPELLS_ALLOWED
+            Call LogError("Falta configuracion [" & CONFIG_SECTION & "] " & CONFIG_KEY & " en Configuracion.ini. Usando lista por defecto: " & DEFAULT_UNASSISTED_SPELLS_ALLOWED)
+        End If
+
+        allowedSpells = "," & rawAllowedSpells & ","
+        Do While InStr(1, allowedSpells, ",,", vbBinaryCompare) > 0
+            allowedSpells = Replace$(allowedSpells, ",,", ",")
+        Loop
+
+        isLoaded = True
+    End If
+
+    IsUnassistedSpellAllowed = InStr(1, allowedSpells, "," & CStr(spellID) & ",", vbBinaryCompare) > 0
 End Function
 
 Private Sub HandleHome(ByVal UserIndex As Integer)
