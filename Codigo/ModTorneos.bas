@@ -315,8 +315,9 @@ Public Sub ResetearTorneo(ByVal UserIndex As Integer, Optional ByVal Reembolsar 
     ReDim Torneo.LastPosY(1 To 1)
     
     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_FINALIZADO_1677, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN)) 'Msg1677=Eventos> Evento Finalizado.
+    
     If UserIndex > 0 Then
-        Call WriteConsoleMsg(UserIndex, "Torneo reseteado correctamente.", e_FontTypeNames.FONTTYPE_INFOIAO)
+        Call WriteLocaleMsg(UserIndex, MSG_TORNEO_RESETEADO_CORRECTAMENTE, e_FontTypeNames.FONTTYPE_INFOIAO)
     End If
     Exit Sub
     
