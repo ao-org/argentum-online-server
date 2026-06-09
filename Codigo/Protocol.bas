@@ -5980,8 +5980,8 @@ Public Sub HandleDuel(ByVal UserIndex As Integer)
         Bet = reader.ReadInt32
         PocionesMaximas = reader.ReadInt16
         CaenItems = reader.ReadBool
-        If Not PuedeRetoConMensaje(UserIndex) Then Exit Sub
-        Call CrearReto(UserIndex, Players, Bet, PocionesMaximas, CaenItems)
+        If Not CanChallengeWithMessage(UserIndex) Then Exit Sub
+        Call CreateChallenge(UserIndex, Players, Bet, PocionesMaximas, CaenItems)
     End With
     Exit Sub
 ErrHandler:
@@ -5993,7 +5993,7 @@ Private Sub HandleAcceptDuel(ByVal UserIndex As Integer)
     Dim Offerer As String
     With UserList(UserIndex)
         Offerer = reader.ReadString8
-        Call AceptarReto(UserIndex, Offerer)
+        Call AcceptChallenge(UserIndex, Offerer)
     End With
     Exit Sub
 ErrHandler:
@@ -6004,9 +6004,9 @@ Private Sub HandleCancelDuel(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         reader.ReadInt16
         If .flags.SolicitudReto.Estado <> e_SolicitudRetoEstado.Libre Then
-            Call CancelarSolicitudReto(UserIndex, GetUserDisplayName(UserIndex) & " ha cancelado la solicitud.")
+            Call CancelChallengeRequest(UserIndex, GetUserDisplayName(UserIndex) & " ha cancelado la solicitud.")
         ElseIf IsValidUserRef(.flags.AceptoReto) Then
-            Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, GetUserDisplayName(UserIndex) & " ha cancelado su admisión.")
+            Call CancelChallengeRequest(.flags.AceptoReto.ArrayIndex, GetUserDisplayName(UserIndex) & " ha cancelado su admisión.")
         End If
     End With
 End Sub
@@ -6014,7 +6014,7 @@ End Sub
 Private Sub HandleQuitDuel(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If .flags.EnReto Then
-            Call AbandonarReto(UserIndex)
+            Call AbandonChallenge(UserIndex)
         End If
     End With
 End Sub
