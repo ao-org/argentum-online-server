@@ -195,6 +195,13 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "ElseExp", CLng(val(reader.GetValue("JOBEXP", "ElseExp", 1)))
     mSettings.Add "SpecialFishGoldMultiplier", CLng(val(reader.GetValue("JOBEXP", "SpecialFishGoldMultiplier", 1.2)))
     mSettings.Add "SpecialFishExpMultiplier", CLng(val(reader.GetValue("JOBEXP", "SpecialFishExpMultiplier", 1)))
+    mSettings.Add "ChanceReforzado", CSng(val(reader.GetValue("ELITETIERS", "ChanceReforzado", "0.05")))
+    mSettings.Add "ChanceElite", CSng(val(reader.GetValue("ELITETIERS", "ChanceElite", "0.01")))
+    mSettings.Add "ChanceSupremo", CSng(val(reader.GetValue("ELITETIERS", "ChanceSupremo", "0.001")))
+    mSettings.Add "ExpMultComun", CSng(val(reader.GetValue("ELITETIERS", "ExpMultComun", "1.0")))
+    mSettings.Add "ExpMultReforzado", CSng(val(reader.GetValue("ELITETIERS", "ExpMultReforzado", "1.2")))
+    mSettings.Add "ExpMultElite", CSng(val(reader.GetValue("ELITETIERS", "ExpMultElite", "1.65")))
+    mSettings.Add "ExpMultSupremo", CSng(val(reader.GetValue("ELITETIERS", "ExpMultSupremo", "2.2")))
     Set reader = Nothing
     LoadSettings = 0
     DumpSettings

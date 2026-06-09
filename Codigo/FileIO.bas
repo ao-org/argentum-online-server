@@ -2201,6 +2201,18 @@ Sub LoadMainConfigFile()
     On Error GoTo LoadMainConfigFile_Err
     Set SvrConfig = New ServerConfig
     Call SvrConfig.LoadSettings(IniPath & "Configuracion.ini")
+    
+    ' Chances de tiers de NPC
+    ELITE_CHANCE_REFORZADO = SvrConfig.GetValue("ChanceReforzado")
+    ELITE_CHANCE_ELITE = SvrConfig.GetValue("ChanceElite")
+    ELITE_CHANCE_SUPREMO = SvrConfig.GetValue("ChanceSupremo")
+    
+    ' Multiplicadores de EXP por tier de NPC
+    EliteExpMult(TierComun) = SvrConfig.GetValue("ExpMultComun")
+    EliteExpMult(TierReforzado) = SvrConfig.GetValue("ExpMultReforzado")
+    EliteExpMult(TierElite) = SvrConfig.GetValue("ExpMultElite")
+    EliteExpMult(TierSupremo) = SvrConfig.GetValue("ExpMultSupremo")
+    
     Call CargarEventos
     Call CargarInfoRetos
     Call CargarInfoEventos

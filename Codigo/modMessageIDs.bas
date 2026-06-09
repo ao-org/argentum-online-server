@@ -110,8 +110,9 @@ Public Const MSG_EXPULSADO_ARMADA_REAL_GLOBAL As Integer = 2178
 Public Const MSG_EXPULSADO_LEGION_OSCURA_GLOBAL As Integer = 2179
 
 Public Const MSG_PERFORATED_ARMOR As Integer = 2161
-Public Const MSG_NPC_SPAWN_EVENT As Integer = 1548
-Public Const MSG_NPC_EVENT_KILLED As Integer = 1549
+Public Const MSG_NPC_ELITE_SPAWN  As Integer = 2195
+Public Const MSG_NPC_SPAWN_EVENT As Integer = 2196
+Public Const MSG_NPC_EVENT_KILLED As Integer = 2197
 Public Const MSG_ONLINE_RECORD_USERS As Integer = 1550
 Public Const MSG_SERVER_USER_CONNECTED As Integer = 1706
 Public Const MSG_USER_LEVEL_EXP As Integer = 1857

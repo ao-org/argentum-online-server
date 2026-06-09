@@ -240,6 +240,17 @@ Public TrashCollector As New Collection
 Public Const MAXSPAWNATTEMPS = 15
 Public Const INFINITE_LOOPS As Integer = -1
 Public Const FXSANGRE = 14
+
+' *** Sistema de NPC por tiers ***
+
+Public ELITE_CHANCE_REFORZADO  As Single
+Public ELITE_CHANCE_ELITE      As Single
+Public ELITE_CHANCE_SUPREMO    As Single
+
+' Multiplicador de EXP por tier (se inicializa en el arranque del servidor)
+Public EliteExpMult(0 To 3) As Single
+
+
 ''
 ' The color of chats over head of dead characters.
 Public Const CHAT_COLOR_DEAD_CHAR As Long = &HC0C0C0
@@ -3327,6 +3338,13 @@ Public Type t_NpcSpellEntry
     lastUse As Long
 End Type
 
+Public Enum e_NpcEliteTier
+    TierComun = 0
+    TierReforzado = 1
+    TierElite = 2
+    TierSupremo = 3
+End Enum
+
 Public Type t_Npc
     'Npc types are created at startup and reused every time,
     'the version id help to validate that a reference we stored is still valid,
@@ -3414,6 +3432,7 @@ Public Type t_Npc
     Humanoide As Boolean
     DisabledInBattleServer As Byte
     OnlyEnabledInBattleServer As Byte
+    EliteTier As e_NpcEliteTier
 End Type
 
 '**********************************************************
