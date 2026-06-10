@@ -515,7 +515,7 @@ Dim tStr                        As String
             .pos.y = Cities(HomeCityId).y
         End If
         
-        If IsFeatureEnabled("underworld") Then
+        If IsFeatureEnabled("underworld") And IsUnderworldInitialized Then
             If Not IsUnderworldOpen And IsUserIndexInsideTheUnderworld(UserIndex) Then
                 Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
                 .pos.Map = Cities(HomeCityId).Map

@@ -5,6 +5,7 @@ Public UnderworldMapPool() As t_WorldPos
 Public OverworldPortalPool() As t_WorldPos
 Public UnderworldLowerLimitOfTime As Byte
 Public UnderworldUpperLimitOfTime As Byte
+Public IsUnderworldInitialized As Boolean
 Private m_UnderworldLastSpawnTimestamp As Long
 Private Const UNDERWORLD_BROADCAST_MSG_ID As Integer = 2174
 Private Const UNDERWORLD_PORTAL_OBJ_IDX As Integer = 6355
@@ -161,9 +162,11 @@ Public Function IsUnderworldOpen() As Boolean
 End Function
 
 Public Sub LoadUnderworldModule()
+    IsUnderworldInitialized = True
     m_UnderworldLastSpawnTimestamp = GetTickCountRaw()
     If Not FileExist(DatPath & "UnderworldMapPool.dat", vbArchive) Then
         Debug.Assert False
+        IsUnderworldInitialized = False
         Call LogError("Missing file UnderworldMapPool.Dat")
         Exit Sub
     End If
@@ -177,15 +180,18 @@ Public Sub LoadUnderworldModule()
     If MaxUnderworldMaps <= 0 Then
         Debug.Assert False
         MaxUnderworldMaps = 0
+        IsUnderworldInitialized = False
         Exit Sub
     End If
     If UnderworldUpperLimitOfTime < DAY_START Or UnderworldUpperLimitOfTime > DAY_END Then
         Debug.Assert False
         UnderworldUpperLimitOfTime = DAY_MAX_OUT_OF_BOUNDS
+        IsUnderworldInitialized = False
     End If
     If UnderworldLowerLimitOfTime < DAY_START Or UnderworldLowerLimitOfTime > DAY_END Then
         Debug.Assert False
         UnderworldLowerLimitOfTime = DAY_MIN_OUT_OF_BOUNDS
+        IsUnderworldInitialized = False
     End If
     ReDim Preserve UnderworldMapPool(1 To MaxUnderworldMaps)
     ReDim Preserve OverworldPortalPool(1 To MaxUnderworldMaps)
