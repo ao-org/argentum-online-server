@@ -553,8 +553,9 @@ ConnectNewUser_Err:
     Call TraceError(Err.Number, Err.Description, "TCP.ConnectNewUser", Erl)
 End Function
 
-Sub CloseSocket(ByVal UserIndex As Integer)
+Sub CloseSocket(ByVal UserIndex As Integer, Optional ByVal Reason As String = vbNullString, Optional ByVal Source As String = "TCP.CloseSocket")
     On Error GoTo ErrHandler
+    Call LogDisconnectEvent(Source, "CloseSocket", UserIndex, UserList(UserIndex).ConnectionDetails.ConnID, Reason)
     If UserIndex = LastUser Then
         Do Until UserList(LastUser).flags.UserLogged
             LastUser = LastUser - 1
@@ -562,7 +563,7 @@ Sub CloseSocket(ByVal UserIndex As Integer)
         Loop
     End If
     With UserList(UserIndex)
-        If .ConnectionDetails.ConnIDValida Then Call CloseSocketSL(UserIndex)
+        If .ConnectionDetails.ConnIDValida Then Call CloseSocketSL(UserIndex, Reason, Source)
         'mato los comercios seguros
         If IsValidUserRef(.ComUsu.DestUsu) Then
             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
@@ -587,10 +588,11 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "TCP.CloseSocket", Erl)
 End Sub
 
-Sub CloseSocketSL(ByVal UserIndex As Integer)
+Sub CloseSocketSL(ByVal UserIndex As Integer, Optional ByVal Reason As String = vbNullString, Optional ByVal Source As String = "TCP.CloseSocketSL")
     On Error GoTo CloseSocketSL_Err
     If UserList(UserIndex).ConnectionDetails.ConnIDValida Then
-        Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID)
+        Call LogDisconnectEvent(Source, "CloseSocketSL", UserIndex, UserList(UserIndex).ConnectionDetails.ConnID, Reason)
+        Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID, Reason, Source)
         UserList(UserIndex).ConnectionDetails.ConnIDValida = False
     End If
     Exit Sub
