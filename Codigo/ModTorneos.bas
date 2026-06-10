@@ -104,6 +104,9 @@ Public Sub IniciarTorneo()
     
     If Not Torneo.HayTorneoActivo Then
         ReDim Torneo.IndexParticipantes(1 To Torneo.cupos)
+        ReDim Torneo.LastPosMap(1 To Torneo.cupos)
+        ReDim Torneo.LastPosX(1 To Torneo.cupos)
+        ReDim Torneo.LastPosY(1 To Torneo.cupos)
         Torneo.HayTorneoActivo = True
     Else
         For i = 1 To Torneo.cupos
@@ -166,10 +169,16 @@ Public Sub ParticiparTorneo(ByVal UserIndex As Integer)
     UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - Torneo.costo
     Call WriteUpdateGold(UserIndex)
     
-
+    ' Registrar participante
     Torneo.IndexParticipantes(IndexVacio) = UserIndex
     Torneo.participantes = Torneo.participantes + 1
     UserList(UserIndex).flags.EnTorneo = True
+    
+    ' Guardar posicion actual para poder devolver al jugador si se cancela
+    Torneo.LastPosMap(IndexVacio) = UserList(UserIndex).pos.Map
+    Torneo.LastPosX(IndexVacio) = UserList(UserIndex).pos.x
+    Torneo.LastPosY(IndexVacio) = UserList(UserIndex).pos.y
+    
     Call WriteLocaleMsg(UserIndex, MSG_REGISTERED_IN_TOURNAMENT, e_FontTypeNames.FONTTYPE_INFOIAO)
     
     ' Si se llenó el cupo, arrancar el torneo
@@ -237,11 +246,7 @@ Public Sub ComenzarTorneoOk()
     Dim nombres As String
     Dim x       As Byte
     Dim y       As Byte
-    
-    ReDim Torneo.LastPosMap(1 To Torneo.participantes)
-    ReDim Torneo.LastPosX(1 To Torneo.participantes)
-    ReDim Torneo.LastPosY(1 To Torneo.participantes)
-    
+        
     For i = 1 To Torneo.participantes
         nombres = nombres & UserList(Torneo.IndexParticipantes(i)).name & ", "
         Torneo.LastPosMap(i) = UserList(Torneo.IndexParticipantes(i)).pos.Map
