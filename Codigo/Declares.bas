@@ -1344,6 +1344,8 @@ Public Enum e_NPCType
     AO20ShopPjs = 22
     EventMaster = 23
     ArenaGuard = 24
+    
+    Transporter = 26
 End Enum
 
 Public Const MIN_APUÑALAR As Byte = 10
@@ -3292,6 +3294,12 @@ Public Type t_NpcInfoCache
     PuedeInvocar As Integer
     CaminataLen As Integer
     Caminata() As t_NpcCaminataCache
+    CityCount       As Integer
+    CityNames()     As String
+    CityMap()       As Integer
+    CityX()         As Integer
+    CityY()         As Integer
+    CityPrice()     As Long
 End Type
 
 Public Enum e_TipoAI
@@ -3414,6 +3422,12 @@ Public Type t_Npc
     Humanoide As Boolean
     DisabledInBattleServer As Byte
     OnlyEnabledInBattleServer As Byte
+    TransportCityCount  As Integer
+    TransportCityNames() As String
+    TransportCityMap()   As Integer
+    TransportCityX()     As Integer
+    TransportCityY()     As Integer
+    TransportCityPrice() As Long
 End Type
 
 '**********************************************************

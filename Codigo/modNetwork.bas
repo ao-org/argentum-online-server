@@ -97,7 +97,7 @@ Public Sub Flush(ByVal UserIndex As Long)
     Call Server.Flush(UserList(UserIndex).ConnectionDetails.ConnID)
 End Sub
 
-Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbNullString)
+Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbNullString, Optional ByVal Source As String = "modNetwork.Kick")
     On Error GoTo Kick_ErrHandler:
     If IsFeatureEnabled("debug_connections") Then
         If (Message <> vbNullString) Then
@@ -108,6 +108,11 @@ Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbN
     End If
     Dim UserRef As t_UserReference
     UserRef = Mapping(Connection).UserRef
+    If IsValidUserRef(UserRef) And UserList(UserRef.ArrayIndex).flags.UserLogged Then
+        Call LogDisconnectEvent(Source, "Kick", UserRef.ArrayIndex, Connection, Message)
+    Else
+        Call LogDisconnectEvent(Source, "Kick", 0, Connection, Message)
+    End If
     If (Message <> vbNullString) Then
         If UserRef.ArrayIndex > 0 Then
             Call Protocol_Writes.WriteErrorMsg(UserRef.ArrayIndex, Message)
@@ -142,7 +147,7 @@ Public Sub close_not_logged_sockets_if_timeout()
                 If IsValidUserRef(.UserRef) Then
                     LogError ("trying to kick an assigned connection: " & ConnectionID & " assigned to: " & .UserRef.ArrayIndex)
                 Else
-                    Call KickConnection(ConnectionID)
+                    Call KickConnection(ConnectionID, "pending_connection_timeout", "modNetwork.close_not_logged_sockets_if_timeout")
                 End If
             End If
         End With
@@ -182,11 +187,11 @@ Private Sub OnServerConnect(ByVal Connection As Long, ByVal Address As String)
         Call PendingConnections.Add(Connection, Connection)
         Call modSendData.SendToConnection(Connection, PrepareConnected())
     Else
-        Call Kick(Connection, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
+        Call Kick(Connection, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.", "modNetwork.OnServerConnect")
     End If
     Exit Sub
 OnServerConnect_Err:
-    Call Kick(Connection)
+    Call Kick(Connection, "server_connect_error err=" & CStr(Err.Number) & " desc=" & Err.Description, "modNetwork.OnServerConnect")
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerConnect", Erl)
 End Sub
 
@@ -194,6 +199,11 @@ Private Sub OnServerClose(ByVal Connection As Long)
     On Error GoTo OnServerClose_Err:
     Dim UserRef As t_UserReference
     UserRef = Mapping(Connection).UserRef
+    If IsValidUserRef(UserRef) Then
+        Call LogDisconnectEvent("modNetwork.OnServerClose", "remote_or_library_close", UserRef.ArrayIndex, Connection, "server_close_callback")
+    Else
+        Call LogDisconnectEvent("modNetwork.OnServerClose", "remote_or_library_close", 0, Connection, "server_close_callback")
+    End If
     If IsFeatureEnabled("debug_connections") Then
         If UserRef.ArrayIndex > 0 Then
             Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserRef.ArrayIndex & " With connection id: " & Connection & " with name: " & UserList( _
@@ -204,10 +214,10 @@ Private Sub OnServerClose(ByVal Connection As Long)
     End If
     If IsValidUserRef(UserRef) Then
         If UserList(UserRef.ArrayIndex).flags.UserLogged Then
-            Call CloseSocketSL(UserRef.ArrayIndex)
+            Call CloseSocketSL(UserRef.ArrayIndex, "server_close_callback", "modNetwork.OnServerClose")
             Call Cerrar_Usuario(UserRef.ArrayIndex)
         Else
-            Call CloseSocket(UserRef.ArrayIndex)
+            Call CloseSocket(UserRef.ArrayIndex, "server_close_callback", "modNetwork.OnServerClose")
         End If
         UserList(UserRef.ArrayIndex).ConnectionDetails.ConnIDValida = False
         UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID = 0
@@ -225,7 +235,7 @@ Private Sub OnServerSend(ByVal Connection As Long, ByVal Message As Network.read
     On Error GoTo OnServerSend_Err:
     Exit Sub
 OnServerSend_Err:
-    Call Kick(Connection)
+    Call Kick(Connection, "send_error err=" & CStr(Err.Number) & " desc=" & Err.Description, "modNetwork.OnServerSend")
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerSend", Erl)
 End Sub
 
@@ -245,7 +255,7 @@ Private Sub OnServerRecv(ByVal Connection As Long, ByVal Message As Network.read
     End If
     Exit Sub
 OnServerRecv_Err:
-    Call Kick(Connection)
+    Call Kick(Connection, "recv_error err=" & CStr(Err.Number) & " desc=" & Err.Description, "modNetwork.OnServerRecv")
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerRecv", Erl)
 End Sub
 
@@ -262,8 +272,15 @@ ForcedClose_Err:
     Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)
 End Sub
 
-Public Sub KickConnection(Connection As Long)
+Public Sub KickConnection(ByVal Connection As Long, Optional ByVal Reason As String = vbNullString, Optional ByVal Source As String = "modNetwork.KickConnection")
     On Error GoTo ForcedClose_Err:
+    Dim UserRef As t_UserReference
+    UserRef = Mapping(Connection).UserRef
+    If IsValidUserRef(UserRef) Then
+        Call LogDisconnectEvent(Source, "KickConnection", UserRef.ArrayIndex, Connection, Reason)
+    Else
+        Call LogDisconnectEvent(Source, "KickConnection", 0, Connection, Reason)
+    End If
     Call Server.Flush(Connection)
     Call Server.Kick(Connection, True)
     Call ClearConnection(Connection)
@@ -299,6 +316,7 @@ Public Sub CheckDisconnectedUsers()
                             End If
                             Call FinComerciarUsu(iUserIndex)
                         End If
+                        Call LogDisconnectEvent("modNetwork.CheckDisconnectedUsers", "Cerrar_Usuario", iUserIndex, .ConnectionDetails.ConnID, "disconnect_timeout")
                         Call Cerrar_Usuario(iUserIndex, True)
                     End If
                 End If
@@ -325,7 +343,7 @@ Public Function MapConnectionToUser(ByVal ConnectionID As Long) As Integer
         If IsFeatureEnabled("debug_connections") Then
             Call LogError("Failed to find slot for new user, connection: " & Connection & " LastUser: " & LastUser)
         End If
-        Call Kick(ConnectionID, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
+        Call Kick(ConnectionID, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.", "modNetwork.MapConnectionToUser")
         Exit Function
     End If
     If UserList(FreeUser).InUse Then
@@ -370,7 +388,7 @@ On Error GoTo CheckDisconnectedUsers_Err:
             If IsFeatureEnabled("debug_connections") Then
                 Call LogError("Failed to find slot for new user, connection: " & Connection & " LastUser: " & LastUser)
             End If
-            KickConnection (ConnectionID)
+            Call KickConnection(ConnectionID, "no_free_user_slot", "modNetwork.MapConnectionToUser")
             Exit Function
         End If
         
@@ -495,7 +513,7 @@ On Error GoTo create_player_err
         With Mapping.Item(lPlayerID)
           Call TraceError(Err.Number, Err.Description, "OnServerConnect Mapping(lPlayerID) > 0, connection: " & lPlayerID & " value: " & Mapping.Item(lPlayerID), Erl)
         End With
-        Call KickConnection(lPlayerID)
+        Call KickConnection(lPlayerID, "directplay_duplicate_mapping", "modNetwork.CreatePlayer")
         Exit Sub
     End If
        
@@ -508,7 +526,7 @@ create_player_err:
     If Err.Number <> 0 Then
         Call HandleDPlayError(Err.Number, Err.Description, "modnetwork.CreatePlayer", Erl)
     End If
-    Call KickConnection(lPlayerID)
+    Call KickConnection(lPlayerID, "directplay_create_player_error", "modNetwork.CreatePlayer")
 
 End Sub
 
@@ -519,11 +537,13 @@ On Error GoTo OnServerClose_Err:
     If Mapping.Exists(lPlayerID) Then
         Dim user_index As Integer
         user_index = Mapping.Item(lPlayerID)
+        Call LogDisconnectEvent("modNetwork.DestroyPlayer", "remote_or_library_close", user_index, lPlayerID, "server_close_callback")
         With UserList(user_index)
             ' With UPD there is no way to send a msg after DirectPlay8Event.DestroyPlayer has been called so
             ' we set ConnIDValida to false to prevent sending msg and getting errors
             .ConnectionDetails.ConnIDValida = False
             If .flags.UserLogged Then
+                Call LogDisconnectEvent("modNetwork.DestroyPlayer", "Cerrar_Usuario", user_index, lPlayerID, "server_close_callback")
                 Call Cerrar_Usuario(user_index)
             End If
         End With
@@ -587,8 +607,12 @@ Public Sub Flush(ByVal user_index As Long)
     'Nothing
 End Sub
 
-Public Sub KickConnection(ByVal Connection As Long)
+Public Sub KickConnection(ByVal Connection As Long, Optional ByVal Reason As String = vbNullString, Optional ByVal Source As String = "modNetwork.KickConnection")
 On Error GoTo KickConnection_err:
+    Dim user_index As Integer
+    user_index = 0
+    If Mapping.Exists(Connection) Then user_index = Mapping.Item(Connection)
+    Call LogDisconnectEvent(Source, "KickConnection", user_index, Connection, Reason)
     Err.Clear
     Call dps.DestroyClient(Connection, 0, 0, 0)
     Exit Sub
@@ -598,7 +622,7 @@ KickConnection_err:
     End If
 End Sub
 
-Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbNullString)
+Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbNullString, Optional ByVal Source As String = "modNetwork.Kick")
 On Error GoTo Kick_ErrHandler:
     If IsFeatureEnabled("debug_connections") Then
         If (Message <> vbNullString) Then
@@ -607,18 +631,23 @@ On Error GoTo Kick_ErrHandler:
             Call AddLogToCircularBuffer("Kick connection: " & Connection)
         End If
     End If
+    Dim user_index As Integer
+    user_index = 0
+    If Mapping.Exists(Connection) Then user_index = Mapping.Item(Connection)
+    If user_index > 0 And UserList(user_index).flags.UserLogged Then
+        Call LogDisconnectEvent(Source, "Kick", user_index, Connection, Message)
+    Else
+        Call LogDisconnectEvent(Source, "Kick", 0, Connection, Message)
+    End If
     If (Message <> vbNullString) Then
-        Dim user_index As Integer
-        
         If Mapping.Exists(Connection) Then
-            user_index = Mapping.Item(Connection)
             Call Protocol_Writes.WriteErrorMsg(user_index, Message)
             If UserList(user_index).flags.UserLogged Then
                 Call Cerrar_Usuario(user_index)
             End If
         End If
     End If
-    KickConnection Connection
+    KickConnection Connection, Message, Source
     Exit Sub
     
 Kick_ErrHandler:

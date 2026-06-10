@@ -186,6 +186,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         End If
         Mapping(ConnectionID).PacketCount = Mapping(ConnectionID).PacketCount + 1
         If Mapping(ConnectionID).PacketCount > 100 Then
+            Dim PacketCountAtOverflow As Long
+            PacketCountAtOverflow = Mapping(ConnectionID).PacketCount
             'Lo kickeo
             If UserIndex > 0 Then
                 If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
@@ -194,7 +196,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                 End If
                 Mapping(ConnectionID).PacketCount = 0
                 If IsFeatureEnabled("kick_packet_overflow") Then
-                    Call KickConnection(ConnectionID)
+                    Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", UserIndex, ConnectionID, "packet_overflow count=" & CStr(PacketCountAtOverflow) & " packet=" & CStr(PacketId), PacketId)
+                    Call KickConnection(ConnectionID, "packet_overflow count=" & CStr(PacketCountAtOverflow) & " packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                 End If
             Else
                 If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
@@ -203,7 +206,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                 End If
                 Mapping(ConnectionID).PacketCount = 0
                 If IsFeatureEnabled("kick_packet_overflow") Then
-                    Call KickConnection(ConnectionID)
+                    Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", 0, ConnectionID, "packet_overflow count=" & CStr(PacketCountAtOverflow) & " packet=" & CStr(PacketId), PacketId)
+                    Call KickConnection(ConnectionID, "packet_overflow count=" & CStr(PacketCountAtOverflow) & " packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                 End If
             End If
             Exit Function
@@ -215,7 +219,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & GetUserGMName(UserIndex) & " | IP: " & UserList( _
                     UserIndex).ConnectionDetails.IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
         End If
-        Call KickConnection(ConnectionID)
+        Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", UserIndex, ConnectionID, "invalid_packet packet=" & CStr(PacketId), PacketId)
+        Call KickConnection(ConnectionID, "invalid_packet packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
         Exit Function
     End If
     #If PYMMO = 1 Then
@@ -226,7 +231,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
                 'Is the user actually logged?
                 If Not UserList(UserIndex).flags.UserLogged Then
-                    Call CloseSocket(UserIndex)
+                    Call LogDisconnectEvent("Protocol.HandleIncomingData", "CloseSocket", UserIndex, ConnectionID, "packet_requires_logged_user_but_user_not_logged packet=" & CStr(PacketId), PacketId)
+                    Call CloseSocket(UserIndex, "packet_requires_logged_user_but_user_not_logged packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                     Exit Function
                     'He is logged. Reset idle counter if id is valid.
                 ElseIf PacketId <= ClientPacketID.[PacketCount] Then
@@ -234,7 +240,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                 End If
             Else
                 'If UserIndex is missing then kick out
-                Call KickConnection(ConnectionID)
+                Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", 0, ConnectionID, "packet_requires_logged_user_but_user_not_logged packet=" & CStr(PacketId), PacketId)
+                Call KickConnection(ConnectionID, "packet_requires_logged_user_but_user_not_logged packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                 Exit Function ' Don't process incoming data
             End If
         Else
@@ -242,7 +249,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Debug.Assert IsMissing(optional_user_index)
             If Not IsMissing(optional_user_index) Then
                 'If UserIndex is not missing then kick out
-                Call KickConnection(ConnectionID)
+                Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", UserIndex, ConnectionID, "unexpected_login_packet_with_user packet=" & CStr(PacketId), PacketId)
+                Call KickConnection(ConnectionID, "unexpected_login_packet_with_user packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                 Exit Function ' Don't process incoming data
             End If
         End If
@@ -251,13 +259,15 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         If Not (PacketId = ClientPacketID.eCreateAccount Or PacketId = ClientPacketID.eLoginAccount) Then
             'Is the account actually logged?
             If UserList(UserIndex).AccountID = 0 Then
-                Call CloseSocket(UserIndex)
+                Call LogDisconnectEvent("Protocol.HandleIncomingData", "CloseSocket", UserIndex, ConnectionID, "packet_requires_logged_account_but_account_not_logged packet=" & CStr(PacketId), PacketId)
+                Call CloseSocket(UserIndex, "packet_requires_logged_account_but_account_not_logged packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                 Exit Function
             End If
             If Not (PacketId = ClientPacketID.eLoginExistingChar Or PacketId = ClientPacketID.eLoginNewChar) Then
                 'Is the user actually logged?
                 If Not UserList(UserIndex).flags.UserLogged Then
-                    Call CloseSocket(UserIndex)
+                    Call LogDisconnectEvent("Protocol.HandleIncomingData", "CloseSocket", UserIndex, ConnectionID, "packet_requires_logged_user_but_user_not_logged packet=" & CStr(PacketId), PacketId)
+                    Call CloseSocket(UserIndex, "packet_requires_logged_user_but_user_not_logged packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                     Exit Function
                     'He is logged. Reset idle counter if id is valid.
                 ElseIf PacketId <= ClientPacketID.[PacketCount] Then
@@ -890,7 +900,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             If Not IsMissing(optional_user_index) Then
                 Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("[Error] Paquete desconocido: " & PacketId, e_FontTypeNames.FONTTYPE_GUILD))
             End If
-            Call KickConnection(ConnectionID)
+            Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", UserIndex, ConnectionID, "unhandled_packet packet=" & CStr(PacketId), PacketId)
+            Call KickConnection(ConnectionID, "unhandled_packet packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
             HandleIncomingData = False
             Exit Function
     End Select
@@ -904,7 +915,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         If Not IsMissing(optional_user_index) Then
             Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("[Warning] " & errMsg, e_FontTypeNames.FONTTYPE_GUILD))
         End If
-        Call KickConnection(ConnectionID)
+        Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", UserIndex, ConnectionID, "extra_bytes packet=" & CStr(PacketId) & " extra=" & CStr(reader.GetAvailable()), PacketId)
+        Call KickConnection(ConnectionID, "extra_bytes packet=" & CStr(PacketId) & " extra=" & CStr(reader.GetAvailable()), "Protocol.HandleIncomingData")
         HandleIncomingData = False
         Exit Function
     End If
@@ -6943,71 +6955,48 @@ ErrHandler:
 End Sub
 
 Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
     On Error GoTo ErrHandler
+    Dim Destino As Byte
+    Destino = reader.ReadInt8()
+    reader.ReadInt32
     With UserList(UserIndex)
-        Dim Destino As Byte
-        Dim costo   As Long
-        Destino = reader.ReadInt8()
-        costo = reader.ReadInt32()
-        '  WTF el costo lo decide el cliente... Desactivo....
-        Exit Sub
-        If costo <= 0 Then Exit Sub
-        Dim DeDonde As t_CityData
-        If UserList(UserIndex).Stats.GLD < costo Then
-            'Msg1257= No tienes suficiente dinero.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_DINERO_1257, e_FontTypeNames.FONTTYPE_INFO)
-        Else
-            If IsValidCity(Destino) Then
-                ' CityData() is the canonical travel/resurrection lookup for cities.
-                DeDonde = CityData(Destino)
-            Else
-                Call LogError("Invalid travel destination city. UserIndex=" & UserIndex & " Destino=" & Destino)
-                DeDonde = CityData(e_City.cUllathorpe)
-            End If
-            If DeDonde.NecesitaNave > 0 Then
-                If UserList(UserIndex).Stats.UserSkills(e_Skill.Navegacion) < 80 Then
-                    'Msg1258= Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.
-                    Call WriteLocaleMsg(UserIndex, MSG_NO_DEBIDO_PELIGROSIDAD_VIAJE_PUEDO_LLEVARTE_MENOS_NECESITAS_SABER, e_FontTypeNames.FONTTYPE_INFO)
-                    'Msg1259= Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.
-                    Call WriteLocaleMsg(UserIndex, MSG_NO_DEBIDO_PELIGROSIDAD_VIAJE_PUEDO_LLEVARTE_MENOS_NECESITAS_SABER_1259, e_FontTypeNames.FONTTYPE_INFO)
-                Else
-                    If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-                        If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose <> 0 Then
-                            Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND, , 1)
-                        End If
-                    End If
-                    Call WarpToLegalPos(UserIndex, DeDonde.MapaViaje, DeDonde.ViajeX, DeDonde.ViajeY, True)
-                    'Msg1260= Has viajado por varios días, te sientes exhausto!
-                    Call WriteLocaleMsg(UserIndex, MSG_VIAJADO_VARIOS_DIAS_SIENTES_EXHAUSTO_1260, e_FontTypeNames.FONTTYPE_INFO)
-                    UserList(UserIndex).Stats.MinAGU = 0
-                    UserList(UserIndex).Stats.MinHam = 0
-                    UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - costo
-                    Call WriteUpdateHungerAndThirst(UserIndex)
-                    Call WriteUpdateUserStats(UserIndex)
-                End If
-            Else
-                Dim Map As Integer
-                Dim x   As Byte
-                Dim y   As Byte
-                Map = DeDonde.MapaViaje
-                x = DeDonde.ViajeX
-                y = DeDonde.ViajeY
-                If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-                    If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose <> 0 Then
-                        Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND, , 1)
-                    End If
-                End If
-                Call WarpUserChar(UserIndex, Map, x, y, True)
-                'Msg1261= Has viajado por varios días, te sientes exhausto!
-                Call WriteLocaleMsg(UserIndex, MSG_VIAJADO_VARIOS_DIAS_SIENTES_EXHAUSTO_1261, e_FontTypeNames.FONTTYPE_INFO)
-                UserList(UserIndex).Stats.MinAGU = 0
-                UserList(UserIndex).Stats.MinHam = 0
-                UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - costo
-                Call WriteUpdateHungerAndThirst(UserIndex)
-                Call WriteUpdateUserStats(UserIndex)
-            End If
+        If .flags.Muerto = 1 Then
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
         End If
+        If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
+        Dim NpcIndex As Integer
+        NpcIndex = .flags.TargetNPC.ArrayIndex
+        If Distancia(NpcList(NpcIndex).pos, UserList(UserIndex).pos) > 4 Then
+            Call WriteLocaleMsg(UserIndex, MSG_DEMASIADO_LEJOS_VENDEDOR_PASAJES, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        If NpcList(NpcIndex).npcType <> e_NPCType.Transporter And _
+           NpcList(NpcIndex).npcType <> e_NPCType.Pirata Then
+            Exit Sub
+        End If
+        If Destino < 1 Or Destino > NpcList(NpcIndex).TransportCityCount Then
+            Exit Sub
+        End If
+        Dim precio As Long
+        precio = NpcList(NpcIndex).TransportCityPrice(Destino)
+        If .Stats.GLD < precio Then
+            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_DINERO_1257, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        Dim destMap As Integer
+        Dim destX   As Byte
+        Dim destY   As Byte
+        destMap = NpcList(NpcIndex).TransportCityMap(Destino)
+        destX = NpcList(NpcIndex).TransportCityX(Destino)
+        destY = NpcList(NpcIndex).TransportCityY(Destino)
+        If NpcList(NpcIndex).SoundClose <> 0 Then
+            Call WritePlayWave(UserIndex, NpcList(NpcIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND, , 1)
+        End If
+        .Stats.GLD = .Stats.GLD - precio
+        Call WriteUpdateUserStats(UserIndex)
+        Call WarpUserChar(UserIndex, destMap, destX, destY, True)
+        Call WriteLocaleMsg(UserIndex, MSG_VIAJADO_VARIOS_DIAS_SIENTES_EXHAUSTO_1261, e_FontTypeNames.FONTTYPE_INFO)
     End With
     Exit Sub
 ErrHandler:

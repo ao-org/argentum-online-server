@@ -1236,6 +1236,30 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         Else
             Erase .Caminata
         End If
+        If .npcType = e_NPCType.Transporter Then
+            Dim cityCount As Integer
+            cityCount = val(LeerNPCs.GetValue(SectionName, "CityCount", 0))
+            .cityCount = cityCount
+            If cityCount > 0 Then
+                ReDim .CityNames(1 To cityCount)
+                ReDim .CityMap(1 To cityCount)
+                ReDim .CityX(1 To cityCount)
+                ReDim .CityY(1 To cityCount)
+                ReDim .CityPrice(1 To cityCount)
+                Dim ci As Integer
+                For ci = 1 To cityCount
+                    Dim entry As String
+                    entry = LeerNPCs.GetValue(SectionName, "City" & ci)
+                    .CityNames(ci) = ReadField(1, entry, Asc("-"))
+                    .CityMap(ci) = val(ReadField(2, entry, Asc("-")))
+                    .CityX(ci) = val(ReadField(3, entry, Asc("-")))
+                    .CityY(ci) = val(ReadField(4, entry, Asc("-")))
+                    .CityPrice(ci) = val(ReadField(5, entry, Asc("-")))
+                Next ci
+            End If
+        Else
+            .cityCount = 0
+        End If
     End With
     Exit Sub
 ErrHandler:
@@ -1504,6 +1528,26 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         Else
             .NroCriaturas = 0
             Erase .Criaturas
+        End If
+        If .npcType = e_NPCType.Transporter Then
+            .TransportCityCount = Info.cityCount
+            If .TransportCityCount > 0 Then
+                ReDim .TransportCityNames(1 To .TransportCityCount)
+                ReDim .TransportCityMap(1 To .TransportCityCount)
+                ReDim .TransportCityX(1 To .TransportCityCount)
+                ReDim .TransportCityY(1 To .TransportCityCount)
+                ReDim .TransportCityPrice(1 To .TransportCityCount)
+                Dim tc As Integer
+                For tc = 1 To .TransportCityCount
+                    .TransportCityNames(tc) = Info.CityNames(tc)
+                    .TransportCityMap(tc) = Info.CityMap(tc)
+                    .TransportCityX(tc) = Info.CityX(tc)
+                    .TransportCityY(tc) = Info.CityY(tc)
+                    .TransportCityPrice(tc) = Info.CityPrice(tc)
+                Next tc
+            End If
+        Else
+            .TransportCityCount = 0
         End If
         Call ResetMask(.flags.StatusMask)
         .flags.NPCActive = True
