@@ -186,6 +186,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         End If
         Mapping(ConnectionID).PacketCount = Mapping(ConnectionID).PacketCount + 1
         If Mapping(ConnectionID).PacketCount > 100 Then
+            Dim PacketCountAtOverflow As Long
+            PacketCountAtOverflow = Mapping(ConnectionID).PacketCount
             'Lo kickeo
             If UserIndex > 0 Then
                 If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
@@ -194,7 +196,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                 End If
                 Mapping(ConnectionID).PacketCount = 0
                 If IsFeatureEnabled("kick_packet_overflow") Then
-                    Call KickConnection(ConnectionID)
+                    Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", UserIndex, ConnectionID, "packet_overflow count=" & CStr(PacketCountAtOverflow) & " packet=" & CStr(PacketId), PacketId)
+                    Call KickConnection(ConnectionID, "packet_overflow count=" & CStr(PacketCountAtOverflow) & " packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                 End If
             Else
                 If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
@@ -203,7 +206,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                 End If
                 Mapping(ConnectionID).PacketCount = 0
                 If IsFeatureEnabled("kick_packet_overflow") Then
-                    Call KickConnection(ConnectionID)
+                    Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", 0, ConnectionID, "packet_overflow count=" & CStr(PacketCountAtOverflow) & " packet=" & CStr(PacketId), PacketId)
+                    Call KickConnection(ConnectionID, "packet_overflow count=" & CStr(PacketCountAtOverflow) & " packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                 End If
             End If
             Exit Function
@@ -215,7 +219,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & GetUserGMName(UserIndex) & " | IP: " & UserList( _
                     UserIndex).ConnectionDetails.IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
         End If
-        Call KickConnection(ConnectionID)
+        Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", UserIndex, ConnectionID, "invalid_packet packet=" & CStr(PacketId), PacketId)
+        Call KickConnection(ConnectionID, "invalid_packet packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
         Exit Function
     End If
     #If PYMMO = 1 Then
@@ -226,7 +231,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
                 'Is the user actually logged?
                 If Not UserList(UserIndex).flags.UserLogged Then
-                    Call CloseSocket(UserIndex)
+                    Call LogDisconnectEvent("Protocol.HandleIncomingData", "CloseSocket", UserIndex, ConnectionID, "packet_requires_logged_user_but_user_not_logged packet=" & CStr(PacketId), PacketId)
+                    Call CloseSocket(UserIndex, "packet_requires_logged_user_but_user_not_logged packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                     Exit Function
                     'He is logged. Reset idle counter if id is valid.
                 ElseIf PacketId <= ClientPacketID.[PacketCount] Then
@@ -234,7 +240,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                 End If
             Else
                 'If UserIndex is missing then kick out
-                Call KickConnection(ConnectionID)
+                Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", 0, ConnectionID, "packet_requires_logged_user_but_user_not_logged packet=" & CStr(PacketId), PacketId)
+                Call KickConnection(ConnectionID, "packet_requires_logged_user_but_user_not_logged packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                 Exit Function ' Don't process incoming data
             End If
         Else
@@ -242,7 +249,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Debug.Assert IsMissing(optional_user_index)
             If Not IsMissing(optional_user_index) Then
                 'If UserIndex is not missing then kick out
-                Call KickConnection(ConnectionID)
+                Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", UserIndex, ConnectionID, "unexpected_login_packet_with_user packet=" & CStr(PacketId), PacketId)
+                Call KickConnection(ConnectionID, "unexpected_login_packet_with_user packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                 Exit Function ' Don't process incoming data
             End If
         End If
@@ -251,13 +259,15 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         If Not (PacketId = ClientPacketID.eCreateAccount Or PacketId = ClientPacketID.eLoginAccount) Then
             'Is the account actually logged?
             If UserList(UserIndex).AccountID = 0 Then
-                Call CloseSocket(UserIndex)
+                Call LogDisconnectEvent("Protocol.HandleIncomingData", "CloseSocket", UserIndex, ConnectionID, "packet_requires_logged_account_but_account_not_logged packet=" & CStr(PacketId), PacketId)
+                Call CloseSocket(UserIndex, "packet_requires_logged_account_but_account_not_logged packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                 Exit Function
             End If
             If Not (PacketId = ClientPacketID.eLoginExistingChar Or PacketId = ClientPacketID.eLoginNewChar) Then
                 'Is the user actually logged?
                 If Not UserList(UserIndex).flags.UserLogged Then
-                    Call CloseSocket(UserIndex)
+                    Call LogDisconnectEvent("Protocol.HandleIncomingData", "CloseSocket", UserIndex, ConnectionID, "packet_requires_logged_user_but_user_not_logged packet=" & CStr(PacketId), PacketId)
+                    Call CloseSocket(UserIndex, "packet_requires_logged_user_but_user_not_logged packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                     Exit Function
                     'He is logged. Reset idle counter if id is valid.
                 ElseIf PacketId <= ClientPacketID.[PacketCount] Then
@@ -890,7 +900,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             If Not IsMissing(optional_user_index) Then
                 Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("[Error] Paquete desconocido: " & PacketId, e_FontTypeNames.FONTTYPE_GUILD))
             End If
-            Call KickConnection(ConnectionID)
+            Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", UserIndex, ConnectionID, "unhandled_packet packet=" & CStr(PacketId), PacketId)
+            Call KickConnection(ConnectionID, "unhandled_packet packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
             HandleIncomingData = False
             Exit Function
     End Select
@@ -904,7 +915,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         If Not IsMissing(optional_user_index) Then
             Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("[Warning] " & errMsg, e_FontTypeNames.FONTTYPE_GUILD))
         End If
-        Call KickConnection(ConnectionID)
+        Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", UserIndex, ConnectionID, "extra_bytes packet=" & CStr(PacketId) & " extra=" & CStr(reader.GetAvailable()), PacketId)
+        Call KickConnection(ConnectionID, "extra_bytes packet=" & CStr(PacketId) & " extra=" & CStr(reader.GetAvailable()), "Protocol.HandleIncomingData")
         HandleIncomingData = False
         Exit Function
     End If
