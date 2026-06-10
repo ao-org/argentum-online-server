@@ -1377,6 +1377,9 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
         If .flags.Subastando = True Then
             Call CancelarSubasta
         End If
+        If Subasta.PreparandoSubasta Then
+            Call CancelarSubasta
+        End If
         errordesc = "ERROR AL BORRAR INDEX DE TORNEO"
         If .flags.EnTorneo = True Then
             Call BorrarIndexInTorneo(UserIndex)

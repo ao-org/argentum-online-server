@@ -1344,6 +1344,8 @@ Public Enum e_NPCType
     AO20ShopPjs = 22
     EventMaster = 23
     ArenaGuard = 24
+    
+    Transporter = 26
 End Enum
 
 Public Const MIN_APUÑALAR As Byte = 10
@@ -1470,7 +1472,7 @@ Public Const SND_IMPACTO         As Byte = 10
 Public Const SND_IMPACTO_APU     As Integer = 2187
 Public Const SND_IMPACTO_CRITICO As Integer = 2186
 Public Const SND_IMPACTO2        As Byte = 12
-
+Public Const SND_RESURRECCION    As Byte = 117
 
 
 Public Const SND_SACARARMA           As Byte = 25
@@ -2803,6 +2805,8 @@ Public Type t_QuestStats
     QuestsDone() As Integer
 End Type
 
+Public Const SUBASTA_OFERTA_MAXIMA As Long = 1999999
+
 ' ------------- FACCIONES -------------
 Public Type t_Facciones
     Status As Byte ' Esto deberia ser e_Facciones
@@ -3290,6 +3294,12 @@ Public Type t_NpcInfoCache
     PuedeInvocar As Integer
     CaminataLen As Integer
     Caminata() As t_NpcCaminataCache
+    CityCount       As Integer
+    CityNames()     As String
+    CityMap()       As Integer
+    CityX()         As Integer
+    CityY()         As Integer
+    CityPrice()     As Long
 End Type
 
 Public Enum e_TipoAI
@@ -3412,6 +3422,12 @@ Public Type t_Npc
     Humanoide As Boolean
     DisabledInBattleServer As Byte
     OnlyEnabledInBattleServer As Byte
+    TransportCityCount  As Integer
+    TransportCityNames() As String
+    TransportCityMap()   As Integer
+    TransportCityX()     As Integer
+    TransportCityY()     As Integer
+    TransportCityPrice() As Long
 End Type
 
 '**********************************************************
