@@ -37,6 +37,7 @@ Private Const TORNEO_SLOT2_Y As Byte = 56
 Public Type t_Torneo
     ' Estado
     HayTorneoActivo     As Boolean
+    Started             As Boolean
     nombre              As String
     reglas              As String
     
@@ -77,11 +78,13 @@ Public MensajeTorneo As String
 
 Public Sub IniciarTorneo()
     On Error GoTo IniciarTorneo_Err
+    If Torneo.Started Then Exit Sub  ' Evita doble ejecución
     
     Dim i          As Long
     Dim inscriptos As Byte
     
     inscriptos = 0
+    Torneo.ClasesTexto = ""  ' Inicializar para evitar acumulación
     If Torneo.mago > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Mago,"
     If Torneo.clerigo > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Clerigo,"
     If Torneo.guerrero > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Guerrero,"
@@ -109,9 +112,10 @@ Public Sub IniciarTorneo()
             End If
         Next i
     End If
+    Torneo.Started = True
     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTO_ABIERTAS_INSCRIPCIONES_CARACTERISTICAS_NIVEL_ENTRE_INSCRIPTOS, Torneo.nombre & "¬" & Torneo.NivelMinimo & "¬" & Torneo.NivelMaximo & "¬" & inscriptos & "¬" & Torneo.cupos _
-            & "¬" & PonerPuntos(Torneo.costo) & "¬" & Torneo.reglas, e_FontTypeNames.FONTTYPE_CITIZEN)) 'Msg1674=Evento> Están abiertas las inscripciones para: ¬1: características: Nivel entre: ¬2/¬3. Inscriptos: ¬4/¬5. Precio de inscripción: ¬6 monedas de oro. Reglas: ¬7.
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTO_CLASES_PARTICIPANTES_ESCRIBI_PARTICIPAR_INGRESAR_EVENTO, Torneo.ClasesTexto, e_FontTypeNames.FONTTYPE_CITIZEN)) 'Msg1675=Evento> Clases participantes: ¬1. Escribí /PARTICIPAR para ingresar al evento.
+            & "¬" & PonerPuntos(Torneo.costo) & "¬" & Torneo.reglas, e_FontTypeNames.FONTTYPE_CITIZEN))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTO_CLASES_PARTICIPANTES_ESCRIBI_PARTICIPAR_INGRESAR_EVENTO, Torneo.ClasesTexto, e_FontTypeNames.FONTTYPE_CITIZEN))
     Exit Sub
 IniciarTorneo_Err:
     Call TraceError(Err.Number, Err.Description, "ModTorneos.IniciarTorneo", Erl)
