@@ -65,36 +65,3 @@ Public Function GetPlayerIndexInPendingChallenge(ByVal UserIndex As Integer, ByV
         Next i
     End With
 End Function
-
-Public Sub SendMessageToAllInPendingChallenge(ByVal ChallengeIndex As Integer, ByVal Message As String, ByVal Font As e_FontTypeNames)
-    Dim i As Integer
-    Dim u As Integer
-    With PendingChallenges(ChallengeIndex)
-        For i = LBound(.Players) To UBound(.Players)
-            u = .Players(i)
-            If u > 0 And UserList(u).flags.UserLogged Then
-                Call WriteConsoleMsg(u, Message, Font)
-            End If
-        Next i
-        If IsValidUserRef(.Challenger) Then
-            Call WriteConsoleMsg(.Challenger.ArrayIndex, Message, Font)
-        End If
-    End With
-End Sub
-
-Public Sub FindRoomFromPendingChallenge(ByVal ChallengeIndex As Integer)
-    Dim i As Integer
-    Dim UserIdx As Integer
-    With PendingChallenges(ChallengeIndex)
-        For i = LBound(.Players) To UBound(.Players)
-            UserIdx = .Players(i)
-            If UserIdx > 0 And UserList(UserIdx).flags.UserLogged Then
-                UserList(UserIdx).flags.EnReto = True
-            End If
-        Next i
-        If IsValidUserRef(.Challenger) Then
-            UserList(.Challenger.ArrayIndex).flags.EnReto = True
-        End If
-        Call FindRoom(.Challenger.ArrayIndex)
-    End With
-End Sub
