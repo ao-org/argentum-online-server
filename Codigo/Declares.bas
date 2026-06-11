@@ -3300,6 +3300,7 @@ Public Type t_NpcInfoCache
     CityX()         As Integer
     CityY()         As Integer
     CityPrice()     As Long
+    TransporterLevel As Integer
 End Type
 
 Public Enum e_TipoAI
@@ -3428,6 +3429,7 @@ Public Type t_Npc
     TransportCityX()     As Integer
     TransportCityY()     As Integer
     TransportCityPrice() As Long
+    TransporterLevel As Integer
 End Type
 
 '**********************************************************

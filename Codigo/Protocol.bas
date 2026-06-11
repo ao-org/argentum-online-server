@@ -6981,6 +6981,12 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_DINERO_1257, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
+        If NpcList(NpcIndex).TransporterLevel > 0 Then
+            If UserList(UserIndex).Stats.ELV < NpcList(NpcIndex).TransporterLevel Then
+                Call WriteLocaleMsg(UserIndex, MSG_TRANSPORTER_LEVEL_TOO_LOW, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+        End If
         Dim destMap As Integer
         Dim destX   As Byte
         Dim destY   As Byte
