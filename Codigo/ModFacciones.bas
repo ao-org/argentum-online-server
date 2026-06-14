@@ -381,10 +381,12 @@ Public Sub NotifyConnectionToFaction(ByVal UserIndex As Integer)
             Case e_PlayerType.Admin, e_PlayerType.Dios, e_PlayerType.SemiDios, e_PlayerType.Consejero
                 Exit Sub
         End Select
-        
+
+        ' Solo notificar si está entre los 3 rangos más altos de su facción
+        If Not IsHighRank(.faccion) Then Exit Sub
+
         Dim msgId As Integer
         msgId = GetRandomFactionMsgId(.faccion.Status)
-
         Select Case .faccion.Status
             Case e_Facciones.Armada
                 If msgId > 0 Then
@@ -492,4 +494,51 @@ Public Function ForgiveUserFactionStats(ByVal UserIndex As Integer) As Boolean
     Exit Function
 ResetFacciones_Err:
     Call TraceError(Err.Number, Err.Description, "TCP.ResetFacciones", Erl)
+End Function
+
+' Devuelve True si el usuario tiene uno de los 3 rangos más altos de su facción.
+Private Function IsHighRank(ByRef faccion As t_Facciones) As Boolean
+    On Error GoTo IsHighRank_Err
+
+    IsHighRank = False
+    If MaxRangoFaccion < 1 Then Exit Function
+
+    Const HIGH_RANK_THRESHOLD As Byte = 3
+    Dim minRank As Byte
+    minRank = MaxRangoFaccion - HIGH_RANK_THRESHOLD + 1
+    If minRank < 1 Then minRank = 1
+
+    Dim score As Long
+    Dim baseIndex As Integer
+
+    Select Case faccion.Status
+        Case e_Facciones.Armada, e_Facciones.consejo
+            score = faccion.FactionScore
+            baseIndex = 1  ' índices impares: 2*i - 1
+        Case e_Facciones.Caos, e_Facciones.concilio
+            score = faccion.FactionScore
+            baseIndex = 2  ' índices pares: 2*i
+        Case Else
+            Exit Function
+    End Select
+
+    ' Buscar si el score alcanza alguno de los 3 rangos más altos
+    Dim i As Byte
+    For i = MaxRangoFaccion To minRank Step -1
+        Dim idx As Integer
+        If baseIndex = 1 Then
+            idx = 2 * i - 1  ' Armada: impar
+        Else
+            idx = 2 * i      ' Caos: par
+        End If
+
+        If score >= RangosFaccion(idx).RequiredScore Then
+            IsHighRank = True
+            Exit Function
+        End If
+    Next i
+
+    Exit Function
+IsHighRank_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.IsHighRank", Erl)
 End Function
