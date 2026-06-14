@@ -67,7 +67,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
         Dim primerRango As t_RangoFaccion
         primerRango = RangosFaccion(1)
         If .Faccion.FactionScore < primerRango.RequiredScore Then
-            Call WriteLocaleChatOverHead(UserIndex, 1378, primerRango.RequiredScore & "¬" & .Faccion.FactionScore, charindexstr, vbWhite) ' Msg1378=Para unirte a nuestras fuerzas debes tener al menos ¬1 puntos de faccion, solo tienes ¬2
+            Call WriteLocaleChatOverHead(UserIndex, 1378, primerRango.RequiredScore & "¬" & .Faccion.FactionScore, charindexstr, vbWhite)
             Exit Sub
         End If
         If .Stats.ELV < primerRango.NivelRequerido Then
@@ -195,7 +195,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
         Dim primerRango As t_RangoFaccion
         primerRango = RangosFaccion(2) ' 2 es el primer rango del caos
         If .Faccion.FactionScore < primerRango.RequiredScore Then
-            Call WriteLocaleChatOverHead(UserIndex, 1383, primerRango.RequiredScore & "," & .Faccion.FactionScore, charindexstr, vbWhite) ' Msg1383=Para unirte a nuestras fuerzas debes tener al menos ¬1 puntos de facción, solo tienes ¬2
+            Call WriteLocaleChatOverHead(UserIndex, 1383, primerRango.RequiredScore & "¬" & .Faccion.FactionScore, charindexstr, vbWhite)
             Exit Sub
         End If
         If .Stats.ELV < primerRango.NivelRequerido Then
