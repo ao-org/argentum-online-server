@@ -97,7 +97,7 @@ Public Sub Flush(ByVal UserIndex As Long)
     Call Server.Flush(UserList(UserIndex).ConnectionDetails.ConnID)
 End Sub
 
-Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbNullString, Optional ByVal Source As String = "modNetwork.Kick")
+Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbNullString, Optional ByVal Source As String = "modNetwork.Kick", Optional ByVal PacketId As Long = -1, Optional ByVal PacketName As String = vbNullString, Optional ByVal PacketCount As Long = -1, Optional ByVal Extra As String = vbNullString)
     On Error GoTo Kick_ErrHandler:
     If IsFeatureEnabled("debug_connections") Then
         If (Message <> vbNullString) Then
@@ -109,9 +109,9 @@ Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbN
     Dim UserRef As t_UserReference
     UserRef = Mapping(Connection).UserRef
     If IsValidUserRef(UserRef) And UserList(UserRef.ArrayIndex).flags.UserLogged Then
-        Call LogDisconnectEvent(Source, "Kick", UserRef.ArrayIndex, Connection, Message)
+        Call LogDisconnectDiag(Source, "Kick", UserRef.ArrayIndex, Connection, Message, PacketId, PacketName, PacketCount, Extra)
     Else
-        Call LogDisconnectEvent(Source, "Kick", 0, Connection, Message)
+        Call LogDisconnectDiag(Source, "Kick", 0, Connection, Message, PacketId, PacketName, PacketCount, Extra)
     End If
     If (Message <> vbNullString) Then
         If UserRef.ArrayIndex > 0 Then
@@ -200,9 +200,9 @@ Private Sub OnServerClose(ByVal Connection As Long)
     Dim UserRef As t_UserReference
     UserRef = Mapping(Connection).UserRef
     If IsValidUserRef(UserRef) Then
-        Call LogDisconnectEvent("modNetwork.OnServerClose", "remote_or_library_close", UserRef.ArrayIndex, Connection, "server_close_callback")
+        Call LogDisconnectDiag("modNetwork.OnServerClose", "remote_or_library_close", UserRef.ArrayIndex, Connection, "server_close_callback", -1, vbNullString, -1, "socket closed by remote peer, network layer or library callback")
     Else
-        Call LogDisconnectEvent("modNetwork.OnServerClose", "remote_or_library_close", 0, Connection, "server_close_callback")
+        Call LogDisconnectDiag("modNetwork.OnServerClose", "remote_or_library_close", 0, Connection, "server_close_callback", -1, vbNullString, -1, "socket closed by remote peer, network layer or library callback")
     End If
     If IsFeatureEnabled("debug_connections") Then
         If UserRef.ArrayIndex > 0 Then
@@ -235,7 +235,7 @@ Private Sub OnServerSend(ByVal Connection As Long, ByVal Message As Network.read
     On Error GoTo OnServerSend_Err:
     Exit Sub
 OnServerSend_Err:
-    Call Kick(Connection, "send_error err=" & CStr(Err.Number) & " desc=" & Err.Description, "modNetwork.OnServerSend")
+    Call Kick(Connection, "send_error", "modNetwork.OnServerSend_Err", -1, vbNullString, -1, "err=" & Err.Number & " desc=" & Err.Description)
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerSend", Erl)
 End Sub
 
@@ -255,7 +255,7 @@ Private Sub OnServerRecv(ByVal Connection As Long, ByVal Message As Network.read
     End If
     Exit Sub
 OnServerRecv_Err:
-    Call Kick(Connection, "recv_error err=" & CStr(Err.Number) & " desc=" & Err.Description, "modNetwork.OnServerRecv")
+    Call Kick(Connection, "recv_error", "modNetwork.OnServerRecv_Err", -1, vbNullString, -1, "err=" & Err.Number & " desc=" & Err.Description)
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerRecv", Erl)
 End Sub
 
@@ -272,14 +272,14 @@ ForcedClose_Err:
     Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)
 End Sub
 
-Public Sub KickConnection(ByVal Connection As Long, Optional ByVal Reason As String = vbNullString, Optional ByVal Source As String = "modNetwork.KickConnection")
+Public Sub KickConnection(ByVal Connection As Long, Optional ByVal Reason As String = vbNullString, Optional ByVal Source As String = "modNetwork.KickConnection", Optional ByVal PacketId As Long = -1, Optional ByVal PacketName As String = vbNullString, Optional ByVal PacketCount As Long = -1, Optional ByVal Extra As String = vbNullString)
     On Error GoTo ForcedClose_Err:
     Dim UserRef As t_UserReference
     UserRef = Mapping(Connection).UserRef
     If IsValidUserRef(UserRef) Then
-        Call LogDisconnectEvent(Source, "KickConnection", UserRef.ArrayIndex, Connection, Reason)
+        Call LogDisconnectDiag(Source, "KickConnection", UserRef.ArrayIndex, Connection, Reason, PacketId, PacketName, PacketCount, Extra)
     Else
-        Call LogDisconnectEvent(Source, "KickConnection", 0, Connection, Reason)
+        Call LogDisconnectDiag(Source, "KickConnection", 0, Connection, Reason, PacketId, PacketName, PacketCount, Extra)
     End If
     Call Server.Flush(Connection)
     Call Server.Kick(Connection, True)
@@ -607,12 +607,12 @@ Public Sub Flush(ByVal user_index As Long)
     'Nothing
 End Sub
 
-Public Sub KickConnection(ByVal Connection As Long, Optional ByVal Reason As String = vbNullString, Optional ByVal Source As String = "modNetwork.KickConnection")
+Public Sub KickConnection(ByVal Connection As Long, Optional ByVal Reason As String = vbNullString, Optional ByVal Source As String = "modNetwork.KickConnection", Optional ByVal PacketId As Long = -1, Optional ByVal PacketName As String = vbNullString, Optional ByVal PacketCount As Long = -1, Optional ByVal Extra As String = vbNullString)
 On Error GoTo KickConnection_err:
     Dim user_index As Integer
     user_index = 0
     If Mapping.Exists(Connection) Then user_index = Mapping.Item(Connection)
-    Call LogDisconnectEvent(Source, "KickConnection", user_index, Connection, Reason)
+    Call LogDisconnectDiag(Source, "KickConnection", user_index, Connection, Reason, PacketId, PacketName, PacketCount, Extra)
     Err.Clear
     Call dps.DestroyClient(Connection, 0, 0, 0)
     Exit Sub
@@ -622,7 +622,7 @@ KickConnection_err:
     End If
 End Sub
 
-Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbNullString, Optional ByVal Source As String = "modNetwork.Kick")
+Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbNullString, Optional ByVal Source As String = "modNetwork.Kick", Optional ByVal PacketId As Long = -1, Optional ByVal PacketName As String = vbNullString, Optional ByVal PacketCount As Long = -1, Optional ByVal Extra As String = vbNullString)
 On Error GoTo Kick_ErrHandler:
     If IsFeatureEnabled("debug_connections") Then
         If (Message <> vbNullString) Then
@@ -635,9 +635,9 @@ On Error GoTo Kick_ErrHandler:
     user_index = 0
     If Mapping.Exists(Connection) Then user_index = Mapping.Item(Connection)
     If user_index > 0 And UserList(user_index).flags.UserLogged Then
-        Call LogDisconnectEvent(Source, "Kick", user_index, Connection, Message)
+        Call LogDisconnectDiag(Source, "Kick", user_index, Connection, Message, PacketId, PacketName, PacketCount, Extra)
     Else
-        Call LogDisconnectEvent(Source, "Kick", 0, Connection, Message)
+        Call LogDisconnectDiag(Source, "Kick", 0, Connection, Message, PacketId, PacketName, PacketCount, Extra)
     End If
     If (Message <> vbNullString) Then
         If Mapping.Exists(Connection) Then
