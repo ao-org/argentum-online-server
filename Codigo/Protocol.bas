@@ -156,6 +156,30 @@ Public Sub InitializePacketList()
     Call Protocol_Writes.InitializeAuxiliaryBuffer
 End Sub
 
+Private Sub LogPacketOverflowKick(ByVal ConnectionID As Long, ByVal UserIndex As Integer, ByVal PacketCountAtOverflow As Long, ByVal PacketId As Long)
+    On Error Resume Next
+
+    If Not IsFeatureEnabled("debug_disconnects") Then Exit Sub
+
+    Dim UserName As String
+    If UserIndex > 0 Then
+        UserName = UserList(UserIndex).name
+    Else
+        UserName = vbNullString
+    End If
+
+    Dim PacketName As String
+    PacketName = PacketID_to_string(PacketId)
+    If PacketName = vbNullString Then PacketName = "Unknown"
+
+    Call LogInfoServidor("packet_overflow_kick userIndex=" & CStr(UserIndex) & _
+            " user=" & UserName & _
+            " conn=" & CStr(ConnectionID) & _
+            " packetCount=" & CStr(PacketCountAtOverflow) & _
+            " packetId=" & CStr(PacketId) & _
+            " packetName=" & PacketName)
+End Sub
+
 Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As Network.reader, Optional ByVal optional_user_index As Variant) As Boolean
 #Else
     Public reader As New clsNetReader
@@ -196,6 +220,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                 End If
                 Mapping(ConnectionID).PacketCount = 0
                 If IsFeatureEnabled("kick_packet_overflow") Then
+                    Call LogPacketOverflowKick(ConnectionID, UserIndex, PacketCountAtOverflow, PacketId)
                     Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", UserIndex, ConnectionID, "packet_overflow count=" & CStr(PacketCountAtOverflow) & " packet=" & CStr(PacketId), PacketId)
                     Call KickConnection(ConnectionID, "packet_overflow count=" & CStr(PacketCountAtOverflow) & " packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                 End If
@@ -206,6 +231,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                 End If
                 Mapping(ConnectionID).PacketCount = 0
                 If IsFeatureEnabled("kick_packet_overflow") Then
+                    Call LogPacketOverflowKick(ConnectionID, 0, PacketCountAtOverflow, PacketId)
                     Call LogDisconnectEvent("Protocol.HandleIncomingData", "KickConnection", 0, ConnectionID, "packet_overflow count=" & CStr(PacketCountAtOverflow) & " packet=" & CStr(PacketId), PacketId)
                     Call KickConnection(ConnectionID, "packet_overflow count=" & CStr(PacketCountAtOverflow) & " packet=" & CStr(PacketId), "Protocol.HandleIncomingData")
                 End If
