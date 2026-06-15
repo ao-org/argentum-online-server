@@ -196,19 +196,29 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                     Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & GetUserGMName(UserIndex) & _
                             " | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
                 End If
-                Mapping(ConnectionID).PacketCount = 0
-                If IsFeatureEnabled("kick_packet_overflow") Then
-                    Call KickConnection(ConnectionID, "packet_overflow", "Protocol.HandleIncomingData", PacketId, PacketName, PacketCountAtOverflow)
-                End If
             Else
                 If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
                     Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg( _
                             "Control Paquetes---> Usuario desconocido | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
                 End If
-                Mapping(ConnectionID).PacketCount = 0
-                If IsFeatureEnabled("kick_packet_overflow") Then
-                    Call KickConnection(ConnectionID, "packet_overflow", "Protocol.HandleIncomingData", PacketId, PacketName, PacketCountAtOverflow)
-                End If
+            End If
+            Mapping(ConnectionID).PacketCount = 0
+            ' Packet overflow before a user is fully logged in is treated as protocol/login abuse.
+            ' There is no legitimate gameplay traffic yet, so disconnect these connections
+            ' regardless of the kick_packet_overflow feature toggle.
+            '
+            ' For fully logged-in users we keep the existing feature-toggle behavior because
+            ' normal gameplay can legitimately create packet bursts, especially during combat
+            ' or after lag/TCP buffering.
+            '
+            ' IMPORTANT: VB6 does not short-circuit And/Or expressions. Keep the UserIndex
+            ' checks split and never access UserList(UserIndex) unless UserIndex > 0.
+            If UserIndex <= 0 Then
+                Call KickConnection(ConnectionID, "packet_overflow", "Protocol.HandleIncomingData", PacketId, PacketName, PacketCountAtOverflow)
+            ElseIf Not UserList(UserIndex).flags.UserLogged Then
+                Call KickConnection(ConnectionID, "packet_overflow", "Protocol.HandleIncomingData", PacketId, PacketName, PacketCountAtOverflow)
+            ElseIf IsFeatureEnabled("kick_packet_overflow") Then
+                Call KickConnection(ConnectionID, "packet_overflow", "Protocol.HandleIncomingData", PacketId, PacketName, PacketCountAtOverflow)
             End If
             Exit Function
         End If
