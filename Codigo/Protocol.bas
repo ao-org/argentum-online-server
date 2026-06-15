@@ -5869,34 +5869,31 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
         Dim Oferta As Long
         Oferta = reader.ReadInt32()
         If Oferta < 1 Or Oferta > SUBASTA_OFERTA_MAXIMA Then
-            Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_OFERTA_INVALIDA, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_OFERTA_INVALIDA, e_FontTypeNames.FONTTYPE_GUILD)
             Exit Sub
         End If
         If UserList(UserIndex).flags.Muerto = 1 Then
-            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_GUILD)
             Exit Sub
         End If
         If Not IsValidNpcRef(.flags.TargetNPC) Then
-            'Msg1226= Primero tenés que hacer click sobre el subastador.
-            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_HACER_CLICK_SOBRE_SUBASTADOR, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_HACER_CLICK_SOBRE_SUBASTADOR, e_FontTypeNames.FONTTYPE_GUILD)
             Exit Sub
         End If
         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Subastador Then
-            'Msg1227= Primero tenés que hacer click sobre el subastador.
-            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_HACER_CLICK_SOBRE_SUBASTADOR_1227, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_HACER_CLICK_SOBRE_SUBASTADOR_1227, e_FontTypeNames.FONTTYPE_GUILD)
             Exit Sub
         End If
         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).pos, .pos) > 2 Then
-            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_GUILD)
             Exit Sub
         End If
         If .flags.Subastando = False Then
-            Call WriteLocaleChatOverHead(UserIndex, 1407, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1407=Oye amigo, tu no podés decirme cual es la oferta inicial.
+            Call WriteLocaleChatOverHead(UserIndex, 1407, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
             Exit Sub
         End If
         If Subasta.HaySubastaActiva = False And .flags.Subastando = False Then
-            'Msg1228= No hay ninguna subasta en curso.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_NINGUNA_SUBASTA_CURSO, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_NINGUNA_SUBASTA_CURSO, e_FontTypeNames.FONTTYPE_GUILD)
             Exit Sub
         End If
         If .flags.Subastando = True Then
@@ -5904,7 +5901,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
             Subasta.OfertaInicial = Oferta
             Subasta.MejorOferta = 0
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTANDO_CANTIDAD_PRECIO_INICIAL_MONEDAS_ESCRIBE_OFERTAR, GetUserDisplayName(UserIndex) & "¬" & ObjData(Subasta.ObjSubastado).name & "¬" & Subasta.ObjSubastadoCantidad & "¬" & _
-                    PonerPuntos(Subasta.OfertaInicial), e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1649=¬1 está subastando: ¬2 (Cantidad: ¬3 ) - con un precio inicial de ¬4 monedas. Escribe /OFERTAR (cantidad) para participar.
+                    PonerPuntos(Subasta.OfertaInicial), e_FontTypeNames.FONTTYPE_SUBASTA))
             .flags.Subastando = False
             Subasta.PreparandoSubasta = False
             Subasta.HaySubastaActiva = True
@@ -5936,11 +5933,15 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_NINGUNA_SUBASTA_CURSO_1229, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
+        If MapInfo(.pos.Map).Seguro = 0 Then
+            Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_ZONA_INSEGURA, e_FontTypeNames.FONTTYPE_GUILD)
+            Exit Sub
+        End If
         Dim DiferenciaMinima As Long
         DiferenciaMinima = CLng(Subasta.MejorOferta * 0.05)
         If DiferenciaMinima < 100 Then DiferenciaMinima = 100
         If Oferta < Subasta.MejorOferta + DiferenciaMinima Then
-            Call WriteLocaleMsg(UserIndex, MSG_DEBE_HABER_ALMENOS_DIFERENCIA_MONEDAS_ULTIMA_OFERTA, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(DiferenciaMinima))
+            Call WriteLocaleMsg(UserIndex, MSG_DEBE_HABER_ALMENOS_DIFERENCIA_MONEDAS_ULTIMA_OFERTA, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Subasta.MejorOferta) & "¬" & PonerPuntos(DiferenciaMinima) & "¬" & PonerPuntos(Subasta.MejorOferta + DiferenciaMinima))
             Exit Sub
         End If
         If .name = Subasta.Subastador Then
@@ -5958,10 +5959,11 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
             End If
             Subasta.MejorOferta = Oferta
             Subasta.Comprador = .name
+            Subasta.OfertaLibre = False
             .Stats.GLD = .Stats.GLD - Oferta
             Call WriteUpdateGold(UserIndex)
             If Subasta.TiempoRestanteSubasta < 60 Then
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_OFERTA_MEJORADA_OFRECE_MONEDAS_ORO_TIEMPO_EXTENDIDO, GetUserDisplayName(UserIndex) & "¬" & PonerPuntos(Oferta) & "¬", e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1650=Oferta mejorada por: ¬1 (Ofrece ¬2 monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_OFERTA_MEJORADA_OFRECE_MONEDAS_ORO_TIEMPO_EXTENDIDO, GetUserDisplayName(UserIndex) & "¬" & PonerPuntos(Oferta) & "¬", e_FontTypeNames.FONTTYPE_SUBASTA))
                 Call LogearEventoDeSubasta(GetUserRealName(UserIndex) & ": Mejoro la oferta en el ultimo minuto ofreciendo " & PonerPuntos(Oferta) & " monedas.")
                 Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta + 30
             Else
@@ -6836,6 +6838,9 @@ Private Sub HandleSubastaInfo(ByVal UserIndex As Integer)
     On Error GoTo HandleSubastaInfo_Err
     With UserList(UserIndex)
         If Subasta.HaySubastaActiva Then
+            Dim DiferenciaMinima As Long
+            DiferenciaMinima = CLng(Subasta.MejorOferta * 0.05)
+            If DiferenciaMinima < 100 Then DiferenciaMinima = 100
             'Msg1249= Subastador: ¬1
             Call WriteLocaleMsg(UserIndex, MSG_SUBASTADOR, e_FontTypeNames.FONTTYPE_INFO, Subasta.Subastador)
             'Msg1250= Objeto: ¬1
@@ -6843,13 +6848,14 @@ Private Sub HandleSubastaInfo(ByVal UserIndex As Integer)
             If Subasta.HuboOferta Then
                 'Msg1251= Mejor oferta: ¬1
                 Call WriteLocaleMsg(UserIndex, MSG_MEJOR_OFERTA, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Subasta.MejorOferta))
+                Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_MEJOR_OFERTANTE, e_FontTypeNames.FONTTYPE_INFO, Subasta.Comprador)
                 'Msg1252= Podes realizar una oferta escribiendo /OFERTAR ¬1
-                Call WriteLocaleMsg(UserIndex, MSG_PODES_REALIZAR_OFERTA_ESCRIBIENDO_OFERTAR, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Subasta.MejorOferta + 100))
+                Call WriteLocaleMsg(UserIndex, MSG_PODES_REALIZAR_OFERTA_ESCRIBIENDO_OFERTAR, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Subasta.MejorOferta + DiferenciaMinima))
             Else
                 'Msg1253= Oferta inicial: ¬1
                 Call WriteLocaleMsg(UserIndex, MSG_OFERTA_INICIAL, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Subasta.OfertaInicial))
                 'Msg1254= Podes realizar una oferta escribiendo /OFERTAR ¬1
-                Call WriteLocaleMsg(UserIndex, MSG_PODES_REALIZAR_OFERTA_ESCRIBIENDO_OFERTAR_1254, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Subasta.OfertaInicial + 100))
+                Call WriteLocaleMsg(UserIndex, MSG_PODES_REALIZAR_OFERTA_ESCRIBIENDO_OFERTAR_1254, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Subasta.OfertaInicial + DiferenciaMinima))
             End If
             'Msg1255= Tiempo Restante de subasta:  ¬1
             Call WriteLocaleMsg(UserIndex, MSG_TIEMPO_RESTANTE_SUBASTA, e_FontTypeNames.FONTTYPE_INFO, SumarTiempo(Subasta.TiempoRestanteSubasta))

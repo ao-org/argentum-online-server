@@ -41,6 +41,7 @@ Public Type t_Subastas
     TiempoRestanteSubasta As Integer
     MinutosDeSubasta As Byte
     PosibleCancelo As Boolean
+    OfertaLibre As Boolean
 End Type
 
 Public Subasta As t_Subastas
@@ -189,10 +190,11 @@ Public Sub ResetearSubasta()
     Subasta.MejorOferta = 0
     Subasta.Comprador = ""
     Subasta.HuboOferta = False
+    Subasta.OfertaLibre = False
     Subasta.TiempoRestanteSubasta = 0
     Subasta.MinutosDeSubasta = 0
     Subasta.PosibleCancelo = False
-    Call LogearEventoDeSubasta("Subasta finalizada." & data & " a las " & Time)
+    Call LogearEventoDeSubasta("Subasta finalizada." & Date & " a las " & Time)
     Call LogearEventoDeSubasta( _
             "#################################################################################################################################################################################################")
     Exit Sub

@@ -1437,6 +1437,19 @@ Sub CloseUser(ByVal UserIndex As Integer)
         errordesc = "ERROR AL RESETSLOT Name:" & .name & " cuenta:" & .Cuenta
         .flags.UserLogged = False
         .Counters.Saliendo = False
+        
+        If Subasta.HaySubastaActiva = True And Subasta.Comprador = .name Then
+            UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco + Subasta.MejorOferta
+            Call WriteUpdateBankGld(UserIndex)
+            Subasta.Comprador = ""
+            Subasta.OfertaLibre = True
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTA_OFERTA_CANCELADA_DESCONEXION, PonerPuntos(Subasta.MejorOferta) & "¬" & PonerPuntos(Subasta.MejorOferta + 100), e_FontTypeNames.FONTTYPE_SUBASTA))
+        End If
+        
+        If Subasta.HaySubastaActiva = True And Subasta.Subastador = .name Then
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTA_SUBASTADOR_DESCONECTADO, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA))
+        End If
+        
         Call ResetUserSlot(UserIndex)
     End With
     Exit Sub
