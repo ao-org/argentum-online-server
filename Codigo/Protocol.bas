@@ -190,18 +190,25 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         If Mapping(ConnectionID).PacketCount > 100 Then
             Dim PacketCountAtOverflow As Long
             PacketCountAtOverflow = Mapping(ConnectionID).PacketCount
-            'Lo kickeo
-            If UserIndex > 0 Then
-                If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
-                    Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & GetUserGMName(UserIndex) & _
-                            " | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
+
+            If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
+                Dim OverflowUserName As String
+
+                If UserIndex > 0 Then
+                    OverflowUserName = GetUserGMName(UserIndex)
+                Else
+                    OverflowUserName = "DESCONOCIDO"
                 End If
-            Else
-                If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
-                    Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg( _
-                            "Control Paquetes---> Usuario desconocido | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
-                End If
+        
+                Call SendData(SendTarget.ToAdminsYDioses, UserIndex, _
+                    PrepareMessageConsoleMsg( _
+                        "Packet overflow detectado. Usuario=" & OverflowUserName & _
+                        " Count=" & CStr(PacketCountAtOverflow) & _
+                        " Paquete=" & PacketName & _
+                        " (" & CStr(PacketId) & ")", _
+                        e_FontTypeNames.FONTTYPE_FIGHT))
             End If
+            
             Mapping(ConnectionID).PacketCount = 0
             ' Packet overflow before a user is fully logged in is treated as protocol/login abuse.
             ' There is no legitimate gameplay traffic yet, so disconnect these connections
@@ -217,8 +224,17 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                 Call KickConnection(ConnectionID, "packet_overflow", "Protocol.HandleIncomingData", PacketId, PacketName, PacketCountAtOverflow)
             ElseIf Not UserList(UserIndex).flags.UserLogged Then
                 Call KickConnection(ConnectionID, "packet_overflow", "Protocol.HandleIncomingData", PacketId, PacketName, PacketCountAtOverflow)
-            ElseIf IsFeatureEnabled("kick_packet_overflow") Then
-                Call KickConnection(ConnectionID, "packet_overflow", "Protocol.HandleIncomingData", PacketId, PacketName, PacketCountAtOverflow)
+            Else
+                Call LogInfoServidor("packet_overflow_logged_user user=" & UserList(UserIndex).Name & _
+                            " userIndex=" & CStr(UserIndex) & _
+                            " packetCount=" & CStr(PacketCountAtOverflow) & _
+                            " packetId=" & CStr(PacketId) & _
+                            " packetName=" & PacketName)
+                
+                If IsFeatureEnabled("kick_packet_overflow") Then
+                    Call KickConnection(ConnectionID, "packet_overflow", "Protocol.HandleIncomingData", PacketId, PacketName, PacketCountAtOverflow)
+                End If
+                
             End If
             Exit Function
         End If
