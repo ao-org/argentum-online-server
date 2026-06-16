@@ -609,6 +609,7 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Quests"
     Call LoadQuests
     Call LoadPhoenixModule
+    Call LoadUnderworldModule
     'Comentado porque hay worldsave en ese mapa!
     Dim LoopC As Integer
     'Resetea las conexiones de los usuarios
@@ -692,6 +693,7 @@ UnitTest_Err:
         Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeChangeGlobalQuestsState")
         Call MaybeChangeGlobalQuestsState
         Call MaybeSpawnFenix
+        Call MaybeSpawnUnderworldPortals
         DoEvents
         Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
         Call AntiCheatUpdate
