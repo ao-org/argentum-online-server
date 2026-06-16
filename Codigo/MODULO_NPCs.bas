@@ -1239,6 +1239,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         If .npcType = e_NPCType.Transporter Then
             Dim cityCount As Integer
             cityCount = val(LeerNPCs.GetValue(SectionName, "CityCount", 0))
+            .TransporterLevel = val(LeerNPCs.GetValue(SectionName, "TransporterLevel", 0))
             .cityCount = cityCount
             If cityCount > 0 Then
                 ReDim .CityNames(1 To cityCount)
@@ -1531,6 +1532,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         End If
         If .npcType = e_NPCType.Transporter Then
             .TransportCityCount = Info.cityCount
+            .TransporterLevel = Info.TransporterLevel
             If .TransportCityCount > 0 Then
                 ReDim .TransportCityNames(1 To .TransportCityCount)
                 ReDim .TransportCityMap(1 To .TransportCityCount)

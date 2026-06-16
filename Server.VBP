@@ -83,6 +83,7 @@ Module=basCryptoSys; Codigo\basCryptoSys.bas
 Module=ModShopAO20; Codigo\ModShopAO20.bas
 Module=UnitTesting; Codigo\UnitTesting.bas
 Module=Logging; Codigo\Logging.bas
+Module=DisconnectDiagnostics; Codigo\DisconnectDiagnostics.bas
 Class=Instruments; Codigo\Instrumentation.cls
 Module=modTime; Codigo\modTime.bas
 Module=UnitClient; Codigo\Tests\UnitClient.bas
