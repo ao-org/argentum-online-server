@@ -553,9 +553,9 @@ ConnectNewUser_Err:
     Call TraceError(Err.Number, Err.Description, "TCP.ConnectNewUser", Erl)
 End Function
 
-Sub CloseSocket(ByVal UserIndex As Integer, Optional ByVal Reason As String = vbNullString, Optional ByVal Source As String = "TCP.CloseSocket")
+Sub CloseSocket(ByVal UserIndex As Integer, Optional ByVal Reason As String = vbNullString, Optional ByVal Source As String = "TCP.CloseSocket", Optional ByVal PacketId As Long = -1, Optional ByVal PacketName As String = vbNullString, Optional ByVal PacketCount As Long = -1, Optional ByVal Extra As String = vbNullString)
     On Error GoTo ErrHandler
-    Call LogDisconnectEvent(Source, "CloseSocket", UserIndex, UserList(UserIndex).ConnectionDetails.ConnID, Reason)
+    Call LogDisconnectDiag(Source, "CloseSocket", UserIndex, UserList(UserIndex).ConnectionDetails.ConnID, Reason, PacketId, PacketName, PacketCount, Extra)
     If UserIndex = LastUser Then
         Do Until UserList(LastUser).flags.UserLogged
             LastUser = LastUser - 1
@@ -563,7 +563,7 @@ Sub CloseSocket(ByVal UserIndex As Integer, Optional ByVal Reason As String = vb
         Loop
     End If
     With UserList(UserIndex)
-        If .ConnectionDetails.ConnIDValida Then Call CloseSocketSL(UserIndex, Reason, Source)
+        If .ConnectionDetails.ConnIDValida Then Call CloseSocketSL(UserIndex, Reason, Source, PacketId, PacketName, PacketCount, Extra)
         'mato los comercios seguros
         If IsValidUserRef(.ComUsu.DestUsu) Then
             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
@@ -588,11 +588,11 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "TCP.CloseSocket", Erl)
 End Sub
 
-Sub CloseSocketSL(ByVal UserIndex As Integer, Optional ByVal Reason As String = vbNullString, Optional ByVal Source As String = "TCP.CloseSocketSL")
+Sub CloseSocketSL(ByVal UserIndex As Integer, Optional ByVal Reason As String = vbNullString, Optional ByVal Source As String = "TCP.CloseSocketSL", Optional ByVal PacketId As Long = -1, Optional ByVal PacketName As String = vbNullString, Optional ByVal PacketCount As Long = -1, Optional ByVal Extra As String = vbNullString)
     On Error GoTo CloseSocketSL_Err
     If UserList(UserIndex).ConnectionDetails.ConnIDValida Then
-        Call LogDisconnectEvent(Source, "CloseSocketSL", UserIndex, UserList(UserIndex).ConnectionDetails.ConnID, Reason)
-        Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID, Reason, Source)
+        Call LogDisconnectDiag(Source, "CloseSocketSL", UserIndex, UserList(UserIndex).ConnectionDetails.ConnID, Reason, PacketId, PacketName, PacketCount, Extra)
+        Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID, Reason, Source, PacketId, PacketName, PacketCount, Extra)
         UserList(UserIndex).ConnectionDetails.ConnIDValida = False
     End If
     Exit Sub
