@@ -78,7 +78,11 @@ Public MensajeTorneo As String
 
 Public Sub IniciarTorneo()
     On Error GoTo IniciarTorneo_Err
-    If Torneo.Started Then Exit Sub  ' Evita doble ejecución
+    If Torneo.Started Then
+        LogInfoServidor "Invalid call IniciarTorneo for a Torneo that already started"
+        Debug.Assert False
+        Exit Sub
+    End If
     
     Dim i          As Long
     Dim inscriptos As Byte
