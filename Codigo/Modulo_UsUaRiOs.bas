@@ -509,16 +509,26 @@ Dim tStr                        As String
         End If
   
         If Not MapaValido(.pos.Map) Then
-            Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
             .pos.Map = Cities(HomeCityId).Map
             .pos.x = Cities(HomeCityId).x
             .pos.y = Cities(HomeCityId).y
+            Call WriteLocaleMsg(UserIndex, MSG_CHARACTER_FOUND_ON_ILLEGAL_POSITION, FONTTYPE_INFOBOLD)
         End If
+        
+        If IsFeatureEnabled("underworld") And IsUnderworldInitialized Then
+            If Not IsUnderworldOpen And IsUserIndexInsideTheUnderworld(UserIndex) Then
+                .pos.Map = Cities(HomeCityId).Map
+                .pos.x = Cities(HomeCityId).x
+                .pos.y = Cities(HomeCityId).y
+                Call WriteLocaleMsg(UserIndex, MSG_CHARACTER_FOUND_ON_ILLEGAL_POSITION, FONTTYPE_INFOBOLD)
+            End If
+        End If
+        
         If MapInfo(.pos.Map).MapResource = 0 Then
-            Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
             .pos.Map = Cities(HomeCityId).Map
             .pos.x = Cities(HomeCityId).x
             .pos.y = Cities(HomeCityId).y
+            Call WriteLocaleMsg(UserIndex, MSG_CHARACTER_FOUND_ON_ILLEGAL_POSITION, FONTTYPE_INFOBOLD)
         End If
         If MapData(.pos.Map, .pos.x, .pos.y).UserIndex <> 0 Or MapData(.pos.Map, .pos.x, .pos.y).NpcIndex <> 0 Then
             Dim FoundPlace As Boolean
