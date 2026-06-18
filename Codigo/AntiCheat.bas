@@ -131,8 +131,7 @@ Public Sub KickUnregisteredPlayers()
         If Result > 0 And IsValidUserRef(UserRef) Then
             If Not IsUserAdmin(UserRef.ArrayIndex) Then
                 With UserList(UserRef.ArrayIndex)
-                    Call LogDisconnectEvent("AntiCheat.KickUnregisteredPlayers", "Kick", UserRef.ArrayIndex, .ConnectionDetails.ConnID, "anticheat_register_timeout user=" & .name)
-                    Call modNetwork.Kick(.ConnectionDetails.ConnID, "Anticheat detection timeout for Username: " & .name, "AntiCheat.KickUnregisteredPlayers")
+                    Call modNetwork.Kick(.ConnectionDetails.ConnID, "anticheat_register_timeout", "AntiCheat.KickUnregisteredPlayers", -1, vbNullString, -1, "user=" & .name)
                 End With
             End If
         End If
@@ -211,7 +210,6 @@ Public Sub ClientActionRequired(ByRef UserRef As t_UserReference, ByVal Action A
         ReasonStr = GetStringFromPtr(ReasonString.Ptr, ReasonString.Len)
     End If
     If Action = eEOS_ACCCA_RemovePlayer And IsValidUserRef(UserRef) Then
-        Call LogDisconnectEvent("AntiCheat.ClientActionRequired", "Kick", UserRef.ArrayIndex, UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID, ReasonStr)
         Call modNetwork.Kick(UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID, ReasonStr, "AntiCheat.ClientActionRequired")
     End If
     Exit Sub
