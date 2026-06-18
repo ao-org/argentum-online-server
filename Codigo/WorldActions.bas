@@ -192,7 +192,7 @@ Public Function IsNpcWorldInteractable(ByVal NpcIndex As Integer) As Boolean
         End If
 
         Select Case .npcType
-            Case e_NPCType.Banquero, e_NPCType.Pirata, e_NPCType.Revividor, e_NPCType.ResucitadorNewbie, e_NPCType.Subastador, e_NPCType.Quest, e_NPCType.Enlistador, e_NPCType.Gobernador, e_NPCType.EntregaPesca, e_NPCType.AO20Shop, e_NPCType.AO20ShopPjs, e_NPCType.EventMaster
+            Case e_NPCType.Banquero, e_NPCType.Pirata, e_NPCType.Revividor, e_NPCType.ResucitadorNewbie, e_NPCType.Subastador, e_NPCType.Quest, e_NPCType.Enlistador, e_NPCType.Gobernador, e_NPCType.EntregaPesca, e_NPCType.AO20Shop, e_NPCType.AO20ShopPjs, e_NPCType.EventMaster, e_NPCType.Transporter
                 IsNpcWorldInteractable = True
         End Select
     End With
@@ -461,6 +461,14 @@ Private Sub HandleNpcInteractionByType(ByVal UserIndex As Integer, ByVal NpcInde
                 If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 3, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
                 UserList(UserIndex).flags.Crafteando = NpcList(NpcIndex).Craftea
                 Call WriteOpenCrafting(UserIndex, NpcList(NpcIndex).Craftea)
+            ElseIf NpcList(NpcIndex).npcType = e_NPCType.Transporter Then
+                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
+                If Not EnsureUserNotTrading(UserIndex) Then Exit Sub
+                If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 4, MSG_DEMASIADO_LEJOS_VENDEDOR_PASAJES, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
+                If NpcList(NpcIndex).SoundOpen <> 0 Then
+                    Call WritePlayWave(UserIndex, NpcList(NpcIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND, , 1)
+                End If
+                Call WriteViajarForm(UserIndex, NpcIndex)
             End If
 End Sub
 
