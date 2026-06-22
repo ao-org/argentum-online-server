@@ -5977,7 +5977,6 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
             End If
             Subasta.MejorOferta = Oferta
             Subasta.Comprador = .name
-            Subasta.OfertaLibre = False
             .Stats.GLD = .Stats.GLD - Oferta
             Call WriteUpdateGold(UserIndex)
             If Subasta.TiempoRestanteSubasta < 60 Then

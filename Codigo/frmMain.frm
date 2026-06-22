@@ -1364,14 +1364,16 @@ Private Sub SubastaTimer_Timer()
     If Subasta.TiempoRestanteSubasta Mod 5 = 0 And Subasta.SubastadorIndex > 0 Then
         Call WriteConsoleMsg(Subasta.SubastadorIndex, PrepareMessageLocaleMsg(MSG_SUBASTA_SEGUNDOS_RESTANTES, CStr(Subasta.TiempoRestanteSubasta), e_FontTypeNames.FONTTYPE_SUBASTA))
     End If
+    
     'Si ya paso un minuto y todavia no hubo oferta, avisamos que se cancela en un minuto
-    If Subasta.TiempoRestanteSubasta = 240 And Subasta.HuboOferta = False Then
+    If Subasta.TiempoRestanteSubasta = 240 And Subasta.HuboOferta = False And Subasta.MejorOferta = 0 Then
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1662=¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información. La subasta será cancelada si no hay ofertas en el próximo minuto.
         Subasta.MinutosDeSubasta = 4
         Subasta.PosibleCancelo = True
     End If
+    
     'Si ya pasaron dos minutos y no hubo ofertas, cancelamos la subasta
-    If Subasta.TiempoRestanteSubasta = 180 And Subasta.HuboOferta = False Then
+    If Subasta.TiempoRestanteSubasta = 180 And Subasta.HuboOferta = False And Subasta.MejorOferta = 0 Then
         Subasta.HaySubastaActiva = False
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTA_CANCELADA_FALTA_OFERTAS, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1663=Subasta cancelada por falta de ofertas.
         frmMain.SubastaTimer.Enabled = False
