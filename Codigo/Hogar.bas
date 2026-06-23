@@ -57,7 +57,7 @@ Public Sub goHome(ByVal UserIndex As Integer)
                         .Counters.TimerBarra = HomeTimerAdventurer
                     Case e_TipoUsuario.tHeroe
                         .Counters.TimerBarra = HomeTimerHero
-                    Case e_TipoUsuario.tLeyenda
+                    Case e_TipoUsuario.tLeyenda, e_TipoUsuario.tNoble, e_TipoUsuario.tEmperador
                         .Counters.TimerBarra = HomeTimerLegend
                     Case Else
                         .Counters.TimerBarra = HomeTimer

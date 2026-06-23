@@ -2451,9 +2451,11 @@ Public Const patron_tier_emperador  As Long = 28929365
 
 Public Enum e_TipoUsuario
     tNormal = 0
-    tAventurero
-    tHeroe
-    tLeyenda
+    tAventurero = 1
+    tHeroe = 2
+    tLeyenda = 3
+    tNoble = 4
+    tEmperador = 5
 End Enum
 
 Public Const MaxRecentKillToStore = 5
