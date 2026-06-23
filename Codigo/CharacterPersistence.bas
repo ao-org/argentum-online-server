@@ -520,7 +520,7 @@ Public Function GetPatronTierFromAccountID(ByVal account_id) As e_TipoUsuario
                 GetPatronTierFromAccountID = e_TipoUsuario.tAventurero
             Case patron_tier_heroe
                 GetPatronTierFromAccountID = e_TipoUsuario.tHeroe
-            Case patron_tier_leyenda
+            Case patron_tier_leyenda, patron_tier_noble, patron_tier_emperador
                 GetPatronTierFromAccountID = e_TipoUsuario.tLeyenda
             Case Else
                 GetPatronTierFromAccountID = e_TipoUsuario.tNormal
