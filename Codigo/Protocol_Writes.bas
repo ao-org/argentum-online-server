@@ -1411,7 +1411,7 @@ Public Sub WriteInventoryUnlockSlots(ByVal UserIndex As Integer)
         If .Stats.tipoUsuario <> tNormal Then
             Call Writer.WriteInt16(ServerPacketID.eInventoryUnlockSlots)
             Select Case .Stats.tipoUsuario
-                Case tLeyenda
+                Case tLeyenda, tNoble, tEmperador
                     Call Writer.WriteInt8(3)
                 Case tHeroe
                     Call Writer.WriteInt8(2)
