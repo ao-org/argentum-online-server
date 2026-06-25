@@ -272,7 +272,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
             End If
             Exit Function
         End If
-        If MapInfo(Map).OnlyPatreon And Not (.Stats.tipoUsuario = tAventurero Or .Stats.tipoUsuario = tHeroe Or .Stats.tipoUsuario = tLeyenda) Then
+        If MapInfo(Map).OnlyPatreon And Not IsPatreon(UserIndex) Then
             If .flags.UltimoMensaje <> MSG_MAP_REQUIRES_PATREON Then
                 ' Msg776=Necesitas ser Patreon para entrar a este mapa.
                 Call WriteLocaleMsg(UserIndex, MSG_MAP_REQUIRES_PATREON, e_FontTypeNames.FONTTYPE_INFO)
