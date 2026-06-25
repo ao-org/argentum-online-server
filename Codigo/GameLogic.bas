@@ -324,8 +324,10 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
         'Controla las salidas
         If InMapBounds(Map, x, y) Then
         
-            If MapData(Map, x, y).trigger >= EMPEROR_CASTLE_ENTRY_1 And MapData(Map, x, y).trigger <= EMPEROR_CASTLE_ENTRY_20 Then
-                If Not CheckCastleEntryWhiteList(UserIndex, MapData(Map, x, y).trigger) Then Exit Sub
+            If MapData(Map, x, y).trigger >= EMPEROR_CASTLE_ENTRY_1 Then
+                If MapData(Map, x, y).trigger <= EMPEROR_CASTLE_ENTRY_20 Then
+                    If Not CheckCastleEntryWhiteList(UserIndex, MapData(Map, x, y).trigger) Then Exit Sub
+                End If
             End If
             
             If MapData(Map, x, y).trigger = e_Trigger.TRANSFER_ONLY_DEAD Then
