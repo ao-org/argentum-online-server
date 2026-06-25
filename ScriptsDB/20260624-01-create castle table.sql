@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS "castle" (
 	"outside_x" integer DEFAULT 0,
 	"outside_y" integer DEFAULT 0,
 	"inside_map" integer NOT NULL UNIQUE,
-	"inside_x" integer NOT NULL UNIQUE,
-	"inside_y" integer NOT NULL UNIQUE,
+	"inside_x" integer NOT NULL,
+	"inside_y" integer NOT NULL,
 	FOREIGN KEY (owner_account_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
