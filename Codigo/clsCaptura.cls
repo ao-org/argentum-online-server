@@ -57,7 +57,7 @@ Private Enum estadoCaptura
 End Enum
 
 Private Enum e_CancelarCaptura
-    CanceladoAbruto = -1
+    CancelaGM = -1
     FaltaJugadoresInscripcion = -2
 End Enum
 
@@ -89,16 +89,18 @@ Public Function GetPlayer(ByVal UserIndex As Integer) As clsCapturaParticipante
 End Function
 
 Public Sub eliminarParticipante(ByRef player As clsCapturaParticipante)
-    If player Is Nothing Then
-        Exit Sub
+    If player Is Nothing Then Exit Sub
+    Dim idx As Integer
+    idx = player.CachedPlayerIndex
+    If idx > 0 And idx <= UBound(UserList) Then
+        Call tirarBandera(idx)
+        UserList(idx).flags.jugando_captura = 0
+        UserList(idx).flags.CurrentTeam = 0
+        If player.LastPosMap > 0 Then
+            Call WarpUserChar(idx, player.LastPosMap, player.LastPosX, player.LastPosY)
+        End If
     End If
-    If player.IsValid Then
-        Call tirarBandera(player.PlayerIndex)
-        UserList(player.PlayerIndex).flags.jugando_captura = 0
-        UserList(player.PlayerIndex).flags.CurrentTeam = 0
-        Call WarpUserChar(player.PlayerIndex, player.LastPosMap, player.LastPosX, player.LastPosY)
-    End If
-    Call participantes.Remove(CStr(player.PlayerIndex))
+    Call participantes.Remove(CStr(player.CachedPlayerIndex))
 End Sub
 
 Public Sub PasarSegundo()
@@ -413,12 +415,21 @@ Private Sub restaurarBandera(ByVal team As Byte)
     End If
 End Sub
 
-Public Sub finalizarCaptura(Optional team As Integer = e_CancelarCaptura.CanceladoAbruto)
+Public Sub finalizarCaptura(Optional team As Integer = e_CancelarCaptura.CancelaGM)
     Dim participante As clsCapturaParticipante
     Estado = Finalizado
     If team = e_CancelarCaptura.FaltaJugadoresInscripcion Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_CANCELADO_EVENTO_CAPTURA_BANDERA_FALTA_PARTICIPANTES, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1684=Eventos» Se ha cancelado el evento de captura la bandera por falta de participantes.
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_CAPTURA_BANDERA_SIDO_CANCELADO_DEVUELTO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1685=Eventos» El evento de captura la bandera ha sido cancelado. Se te ha devuelto el precio de inscripción.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_CANCELADO_EVENTO_CAPTURA_BANDERA_FALTA_PARTICIPANTES, vbNullString, e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_CAPTURA_BANDERA_SIDO_CANCELADO_DEVUELTO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD))
+        For Each participante In participantes
+            If participante.IsValid Then
+                UserList(participante.PlayerIndex).Stats.GLD = UserList(participante.PlayerIndex).Stats.GLD + precio
+                Call WriteUpdateGold(participante.PlayerIndex)
+            End If
+        Next participante
+    ElseIf team = e_CancelarCaptura.CancelaGM Then
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_SIDO_CANCELADO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_CAPTURA_BANDERA_SIDO_CANCELADO_DEVUELTO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD))
         For Each participante In participantes
             If participante.IsValid Then
                 UserList(participante.PlayerIndex).Stats.GLD = UserList(participante.PlayerIndex).Stats.GLD + precio
@@ -426,27 +437,43 @@ Public Sub finalizarCaptura(Optional team As Integer = e_CancelarCaptura.Cancela
             End If
         Next participante
     ElseIf team = 0 Then 'Hubo empate
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_CAPTURA_BANDERA_TERMINADO_EMPATE, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1686=Eventos» ¡El evento de captura la bandera ha terminado en empate!
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_CAPTURA_BANDERA_TERMINADO_EMPATE, vbNullString, e_FontTypeNames.FONTTYPE_GUILD))
     Else
-        ' La recompensa para cada ganador será su inscripción de vuelta + el precio de inscripción de un perdedor
         Dim recompensa As Long
-        recompensa = precio * 2  ' Tu inscripción + la inscripción de un perdedor
-        ' Entregamos premio al equipo ganador
+        recompensa = precio * 2
         For Each participante In participantes
             If participante.IsValid Then
                 If participante.team = team Then
                     UserList(participante.PlayerIndex).Stats.GLD = UserList(participante.PlayerIndex).Stats.GLD + recompensa
                     Call WriteUpdateGold(participante.PlayerIndex)
-                    Call WriteConsoleMsg(participante.PlayerIndex, PrepareMessageLocaleMsg(MSG_HAS_RECUPERADO_INSCRIPCION_GANADO_MONEDAS_ORO_ADICIONALES, PonerPuntos(precio), e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1847=¡Has recuperado tu inscripción y ganado ¬1 monedas de oro adicionales por ganar el evento!
+                    Call WriteConsoleMsg(participante.PlayerIndex, PrepareMessageLocaleMsg(MSG_HAS_RECUPERADO_INSCRIPCION_GANADO_MONEDAS_ORO_ADICIONALES, PonerPuntos(precio), e_FontTypeNames.FONTTYPE_GUILD))
                 End If
             End If
         Next participante
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_CAPTURA_BANDERA_TERMINADO_GANADOR_EQUIPO, colorEquipo(team), e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1687=Eventos> ¡El evento de captura la bandera ha terminado! Ganador el equipo ¬1.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_CAPTURA_BANDERA_TERMINADO_GANADOR_EQUIPO, colorEquipo(team), e_FontTypeNames.FONTTYPE_GUILD))
     End If
+    Dim copiaParticipantes() As clsCapturaParticipante
+    Dim i As Integer
+    
+    If participantes.count = 0 Then
+        Call TraceError(0, "finalizarCaptura: no hay participantes", "clsCaptura.finalizarCaptura", 0)
+        CurrentActiveEventType = e_EventType.Generic
+        Set InstanciaCaptura = Nothing
+        Exit Sub
+    End If
+    
+    ReDim copiaParticipantes(1 To participantes.count)
+    i = 1
     For Each participante In participantes
-        Call eliminarParticipante(participante)
+        Set copiaParticipantes(i) = participante
+        i = i + 1
     Next participante
-    'Destruyo la instancia
+    
+    For i = 1 To UBound(copiaParticipantes)
+        Call eliminarParticipante(copiaParticipantes(i))
+    Next i
+    
+    CurrentActiveEventType = e_EventType.Generic
     Set InstanciaCaptura = Nothing
 End Sub
 
@@ -549,6 +576,7 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
         Dim participante As clsCapturaParticipante
         Set participante = New clsCapturaParticipante
         Call participante.SetPlayer(UserIndex)
+        participante.CachedPlayerIndex = UserIndex
         participante.LastPosMap = UserList(UserIndex).pos.Map
         participante.LastPosX = UserList(UserIndex).pos.x
         participante.LastPosY = UserList(UserIndex).pos.y

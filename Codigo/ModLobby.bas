@@ -812,6 +812,13 @@ Public Function HandleRemoteLobbyCommand(ByVal Command, ByVal Params As String, 
     Dim tUser       As t_UserReference
     Arguments = Split(Params, " ")
     HandleRemoteLobbyCommand = True
+    
+    ' Validar que LobbyIndex sea válido antes de operar
+    If LobbyIndex < 0 Or LobbyIndex > UBound(LobbyList) Then
+        HandleRemoteLobbyCommand = False
+        Exit Function
+    End If
+    
     With UserList(UserIndex)
         Select Case Command
             Case e_LobbyCommandId.eSetSpawnPos

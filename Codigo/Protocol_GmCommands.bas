@@ -4034,6 +4034,7 @@ Public Sub HandleIniciarCaptura(EventSettings As t_NewScenearioSettings)
             Exit Sub
         End If
         Set InstanciaCaptura = New clsCaptura
+        CurrentActiveEventType = e_EventType.CaptureTheFlag
         Call InstanciaCaptura.inicializar(EventSettings.MaxPlayers, EventSettings.RoundNumber, EventSettings.MinLevel, EventSettings.MaxLevel, EventSettings.InscriptionFee)
     End If
     Exit Sub
