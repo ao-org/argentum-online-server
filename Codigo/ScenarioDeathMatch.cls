@@ -380,6 +380,7 @@ Public Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef 
         Exit Sub
     End If
     If NewState = InProgress Then
+        Call ModLobby.SummonAll(LobbyList(LobbyIndex))
         Call SetTimer(CountdownTimer, 1000)
     End If
     If NewState = Closed Then

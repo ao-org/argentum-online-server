@@ -45,6 +45,8 @@ Const TopMapNumber = 0
 Const CargoMapNumber = 1
 Const CannonSpell = 256
 Const ShieldEffectIndex = 60
+Const TOTAL_COUNTDOWN_SECONDS = 10
+Const FULL_LOBBY_COUNTDOWN_SECONDS = 5
 
 Private Type t_Waypoint
     PosX As Byte
@@ -470,6 +472,9 @@ Public Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef 
     If NewState = InProgress Then
         Call ModLobby.SummonAll(LobbyList(LobbyIndex))
         Call SetTimer(CountdownTimer, 1000)
+        If LobbyList(LobbyIndex).FullLobby Then
+            CountdownTimer.Occurrences = TOTAL_COUNTDOWN_SECONDS - FULL_LOBBY_COUNTDOWN_SECONDS
+        End If
     End If
     If NewState = Closed Then
         Call MatchCompleted
@@ -712,7 +717,7 @@ End Sub
 
 Private Sub ConfigMapLobby()
     Dim i As Integer
-    Call ModLobby.SetTeamCount(LobbyList(LobbyIndex), 2, LobbyList(LobbyIndex).TeamType)
+    Call ModLobby.SetTeamCount(LobbyList(LobbyIndex), 2, eRandom)
     For i = 0 To UBound(MapNumbers)
         MapInfo(MapNumbers(i)).Seguro = 1
         MapInfo(MapNumbers(i)).SinInviOcul = True
