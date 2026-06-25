@@ -2772,7 +2772,7 @@ Public Function IsConsumableFreeZone(ByVal UserIndex As Integer) As Boolean
     ' Verificar si está en zona con trigger activo
     isTriggerZone = (triggerStatus = e_Trigger6.TRIGGER6_PERMITE)
     ' Verificar si es un usuario con tier de suscripción
-    isTierUser = (UserList(UserIndex).Stats.tipoUsuario = tAventurero Or UserList(UserIndex).Stats.tipoUsuario = tHeroe Or UserList(UserIndex).Stats.tipoUsuario = tLeyenda)
+    isTierUser = IsPatreon(UserIndex)
     ' Zona de casas/sotanos arenas: mapas del 600 al 749 con trigger activo
     isHouseZone = (currentMap >= 600 And currentMap <= 749 And isTriggerZone)
     ' Zonas especiales fijas donde no se consumen pociones

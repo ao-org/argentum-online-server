@@ -2446,12 +2446,16 @@ End Type
 Public Const patron_tier_aventurero As Long = 6057393
 Public Const patron_tier_heroe      As Long = 6057394
 Public Const patron_tier_leyenda    As Long = 6057395
+Public Const patron_tier_noble      As Long = 28929328
+Public Const patron_tier_emperador  As Long = 28929365
 
 Public Enum e_TipoUsuario
     tNormal = 0
-    tAventurero
-    tHeroe
-    tLeyenda
+    tAventurero = 1
+    tHeroe = 2
+    tLeyenda = 3
+    tNoble = 4
+    tEmperador = 5
 End Enum
 
 Public Const MaxRecentKillToStore = 5
