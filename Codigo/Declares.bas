@@ -2695,6 +2695,7 @@ Public Type t_UserFlags
     EquipoReto As e_EquipoReto
     AceptoReto As t_UserReference
     SolicitudReto As t_SolicitudReto
+    RetoPendienteIndex As Integer
     LastPos As t_WorldPos
     ReturnPos As t_WorldPos
     YaGuardo As Boolean
