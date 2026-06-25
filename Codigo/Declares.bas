@@ -2336,6 +2336,7 @@ Public Type t_ObjData
     WeaponAnim As Integer ' Apunta a una anim de armas
     ShieldAnim As Integer ' Apunta a una anim de escudo
     CascoAnim As Integer
+    AssignedCastleIndex As Integer
     BackpackAnim As Integer
     Valor As Long     ' Precio
     Cerrada As Integer

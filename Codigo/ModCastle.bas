@@ -35,12 +35,13 @@ Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer) As Boolean
     IsEmperorCastleCreated = True
 End Function
 
-Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer)
+Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As Integer)
     On Error GoTo CreateEmperorCastle_Err
     If IsEmperorCastleCreated(UserIndex) Then Exit Sub
     Dim RS As ADODB.Recordset
     With UserList(UserIndex)
         Set RS = Query(ADD_NEW_EMPEROR_CASTLE, .AccountID, .Name, SQLiteToDate(DateTime.Now), 1, .flags.TargetMap, .flags.TargetX, .flags.TargetY)
+        Call CreateCastleInMap(.flags.TargetMap, .flags.TargetX, .flags.TargetY, ObjData(ObjIndex).AssignedCastleIndex)
     End With
     Exit Sub
 CreateEmperorCastle_Err:
@@ -52,6 +53,14 @@ Public Sub LoadCastleModule()
     Set CastleWhiteList = New Dictionary
     Call LoadCastleData
     Call LoadCastleWhitelists
+    Dim i As Integer
+    
+    For i = LBound(CastleData) To UBound(CastleData)
+        With CastleData(i)
+            Call CreateCastleInMap(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, i)
+        End With
+    Next i
+    
     Exit Sub
 LoadCastleModule_Err:
 Call TraceError(Err.Number, Err.Description, "ModCastle.LoadCastleModule", Erl)
@@ -212,113 +221,113 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
     CastleObj.ObjIndex = CASTLE_OBJ
     Call MakeObj(CastleObj, map, x, y)
     
-    'first layer from the bottom
-    MapData(map, x - 3, y).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 4, y).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 5, y).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 6, y).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 1, y).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 2, y).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 3, y).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 1, y).trigger = CastleData(CastleIndex).trigger
-    MapData(map, x - 2, y).trigger = CastleData(CastleIndex).trigger
-    MapData(map, x - 1, y + 1).trigger = CastleData(CastleIndex).trigger
-    MapData(map, x - 2, y + 1).trigger = CastleData(CastleIndex).trigger
     
+    With CastleData(CastleIndex)
+        'first layer from the bottom
+        MapData(map, x - 3, y).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 4, y).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 5, y).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 6, y).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 1, y).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 2, y).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 3, y).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 1, y).trigger = .trigger
+        MapData(map, x - 2, y).trigger = .trigger
+        MapData(map, x - 1, y + 1).trigger = .trigger
+        MapData(map, x - 2, y + 1).trigger = .trigger
+        
+        
+        'second layer form the bottom
+        MapData(map, x, y - 1).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 3, y - 1).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 4, y - 1).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 5, y - 1).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 6, y - 1).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 1, y - 1).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 2, y - 1).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 3, y - 1).Blocked = e_Block.ALL_SIDES
+        
+        MapData(map, x - 1, y - 1).TileExit.map = .castle_coordinates.inside.map
+        MapData(map, x - 1, y - 1).TileExit.x = .castle_coordinates.inside.x
+        MapData(map, x - 1, y - 1).TileExit.y = .castle_coordinates.inside.y
+        
+        MapData(map, x - 2, y - 1).TileExit.map = .castle_coordinates.inside.map
+        MapData(map, x - 2, y - 1).TileExit.x = .castle_coordinates.inside.x
+        MapData(map, x - 2, y - 1).TileExit.y = .castle_coordinates.inside.y
+        
+        'third layer form the bottom
+        MapData(map, x, y - 2).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 1, y - 2).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 2, y - 2).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 3, y - 2).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 4, y - 2).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 5, y - 2).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 6, y - 2).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 1, y - 2).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 2, y - 2).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 3, y - 2).Blocked = e_Block.ALL_SIDES
+        
+         'fourth layer form the bottom
+        MapData(map, x, y - 3).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 1, y - 3).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 2, y - 3).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 3, y - 3).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 4, y - 3).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 5, y - 3).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 6, y - 3).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 1, y - 3).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 2, y - 3).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 3, y - 3).Blocked = e_Block.ALL_SIDES
+        
+         'fifth layer form the bottom
+        MapData(map, x, y - 4).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 1, y - 4).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 2, y - 4).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 3, y - 4).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 4, y - 4).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 5, y - 4).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 6, y - 4).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 1, y - 4).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 2, y - 4).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 3, y - 4).Blocked = e_Block.ALL_SIDES
+        
+         'sixth layer form the bottom
+        MapData(map, x, y - 5).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 1, y - 5).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 2, y - 5).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 3, y - 5).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 4, y - 5).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 5, y - 5).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 6, y - 5).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 1, y - 5).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 2, y - 5).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 3, y - 5).Blocked = e_Block.ALL_SIDES
+        
+         'seventh layer form the bottom
+        MapData(map, x, y - 6).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 1, y - 6).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 2, y - 6).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 3, y - 6).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 4, y - 6).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 5, y - 6).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 6, y - 6).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 1, y - 6).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 2, y - 6).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 3, y - 6).Blocked = e_Block.ALL_SIDES
+        
+         'eighth layer form the bottom
+        MapData(map, x, y - 7).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 1, y - 7).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 2, y - 7).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 3, y - 7).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 4, y - 7).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 5, y - 7).Blocked = e_Block.ALL_SIDES
+        MapData(map, x - 6, y - 7).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 1, y - 7).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 2, y - 7).Blocked = e_Block.ALL_SIDES
+        MapData(map, x + 3, y - 7).Blocked = e_Block.ALL_SIDES
     
-    'second layer form the bottom
-    MapData(map, x, y - 1).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 3, y - 1).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 4, y - 1).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 5, y - 1).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 6, y - 1).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 1, y - 1).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 2, y - 1).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 3, y - 1).Blocked = e_Block.ALL_SIDES
-    
-    MapData(map, x - 1, y - 1).TileExit.map = CastleData(CastleIndex).castle_coordinates.inside.map
-    MapData(map, x - 1, y - 1).TileExit.x = CastleData(CastleIndex).castle_coordinates.inside.x
-    MapData(map, x - 1, y - 1).TileExit.y = CastleData(CastleIndex).castle_coordinates.inside.y
-    
-    MapData(map, x - 2, y - 1).TileExit.map = CastleData(CastleIndex).castle_coordinates.inside.map
-    MapData(map, x - 2, y - 1).TileExit.x = CastleData(CastleIndex).castle_coordinates.inside.x
-    MapData(map, x - 2, y - 1).TileExit.y = CastleData(CastleIndex).castle_coordinates.inside.y
-    
-    
-    
-    
-    
-    'third layer form the bottom
-    MapData(map, x, y - 2).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 1, y - 2).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 2, y - 2).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 3, y - 2).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 4, y - 2).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 5, y - 2).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 6, y - 2).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 1, y - 2).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 2, y - 2).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 3, y - 2).Blocked = e_Block.ALL_SIDES
-    
-     'fourth layer form the bottom
-    MapData(map, x, y - 3).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 1, y - 3).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 2, y - 3).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 3, y - 3).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 4, y - 3).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 5, y - 3).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 6, y - 3).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 1, y - 3).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 2, y - 3).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 3, y - 3).Blocked = e_Block.ALL_SIDES
-    
-     'fifth layer form the bottom
-    MapData(map, x, y - 4).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 1, y - 4).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 2, y - 4).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 3, y - 4).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 4, y - 4).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 5, y - 4).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 6, y - 4).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 1, y - 4).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 2, y - 4).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 3, y - 4).Blocked = e_Block.ALL_SIDES
-    
-     'sixth layer form the bottom
-    MapData(map, x, y - 5).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 1, y - 5).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 2, y - 5).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 3, y - 5).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 4, y - 5).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 5, y - 5).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 6, y - 5).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 1, y - 5).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 2, y - 5).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 3, y - 5).Blocked = e_Block.ALL_SIDES
-    
-     'seventh layer form the bottom
-    MapData(map, x, y - 6).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 1, y - 6).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 2, y - 6).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 3, y - 6).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 4, y - 6).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 5, y - 6).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 6, y - 6).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 1, y - 6).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 2, y - 6).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 3, y - 6).Blocked = e_Block.ALL_SIDES
-    
-     'eighth layer form the bottom
-    MapData(map, x, y - 7).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 1, y - 7).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 2, y - 7).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 3, y - 7).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 4, y - 7).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 5, y - 7).Blocked = e_Block.ALL_SIDES
-    MapData(map, x - 6, y - 7).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 1, y - 7).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 2, y - 7).Blocked = e_Block.ALL_SIDES
-    MapData(map, x + 3, y - 7).Blocked = e_Block.ALL_SIDES
+    End With
     
 End Sub
 
