@@ -4,10 +4,12 @@ CREATE TABLE IF NOT EXISTS "castle" (
 	"owner_account_id"  integer NULL UNIQUE,
 	"owner_character_id" integer NULL UNIQUE,
 	"obj_id" integer NOT NULL UNIQUE,
-	"white_list" varchar(400) DEFAULT NULL,
 	"foundation_date" timestamp DEFAULT NULL,
 	"end_date" timestamp DEFAULT NULL,
 	"is_active" integer DEFAULT 0,
+	"map" integer DEFAULT 0,
+	"x" integer DEFAULT 0,
+	"y" integer DEFAULT 0,
 	FOREIGN KEY (owner_account_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
