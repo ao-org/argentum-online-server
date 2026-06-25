@@ -3675,11 +3675,11 @@ Public Sub HandleCrearTorneo(ByVal UserIndex As Integer)
         Dim cupos       As Byte
         Dim costo       As Long
         Dim mago        As Byte
-        Dim clerico     As Byte
+        Dim clerigo     As Byte
         Dim guerrero    As Byte
         Dim asesino     As Byte
         Dim bardo       As Byte
-        Dim druido      As Byte
+        Dim druida      As Byte
         Dim Paladin     As Byte
         Dim cazador     As Byte
         Dim Trabajador  As Byte
@@ -3696,11 +3696,11 @@ Public Sub HandleCrearTorneo(ByVal UserIndex As Integer)
         cupos = reader.ReadInt8
         costo = reader.ReadInt32
         mago = reader.ReadInt8
-        clerico = reader.ReadInt8
+        clerigo = reader.ReadInt8
         guerrero = reader.ReadInt8
         asesino = reader.ReadInt8
         bardo = reader.ReadInt8
-        druido = reader.ReadInt8
+        druida = reader.ReadInt8
         Paladin = reader.ReadInt8
         cazador = reader.ReadInt8
         Trabajador = reader.ReadInt8
@@ -3718,11 +3718,11 @@ Public Sub HandleCrearTorneo(ByVal UserIndex As Integer)
             Torneo.cupos = cupos
             Torneo.costo = costo
             Torneo.mago = mago
-            Torneo.clerico = clerico
+            Torneo.clerigo = clerigo
             Torneo.guerrero = guerrero
             Torneo.asesino = asesino
             Torneo.bardo = bardo
-            Torneo.druido = druido
+            Torneo.druida = druida
             Torneo.Paladin = Paladin
             Torneo.cazador = cazador
             Torneo.Trabajador = Trabajador
@@ -3758,7 +3758,7 @@ Public Sub HandleCancelarTorneo(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
         If EsGM(UserIndex) Then
-            Call ResetearTorneo
+            Call ResetearTorneo(UserIndex)
         End If
     End With
     Exit Sub
