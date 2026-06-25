@@ -21,32 +21,28 @@ Private Const CHECK_EMPEROR_CASTLE As String = "Select 1 FROM castle WHERE owner
 Private Const SELECT_ALL_CASTLES As String = "SELECT * FROM castle;"
 Private Const ADD_NEW_EMPEROR_CASTLE As String = "INSERT INTO castle (owner_account_id,owner_character_id, foundation_date, is_active,map,x,y) VALUES (?,?,?,?,?,?,?);"
 Private Const SELECT_ALL_CASTLE_WHITELISTS As String = "Select * FROM castle_whitelist"
+Private Const CASTLE_OBJ = 6382
 
 Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer) As Boolean
-
     IsEmperorCastleCreated = False
     Dim RS As ADODB.Recordset
     Set RS = Query(CHECK_EMPEROR_CASTLE)
     If RS Is Nothing Or RS.RecordCount = 0 Then Exit Function
     IsEmperorCastleCreated = True
-    
 End Function
 
-Public Sub CreateEmperorCastle(ByVal UserIndex As Integer)
+Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer)
     On Error GoTo CreateEmperorCastle_Err
     If IsEmperorCastleCreated(UserIndex) Then Exit Sub
     Dim RS As ADODB.Recordset
+    Dim CastleObj As t_Obj
+    CastleObj.Amount = 1
+    CastleObj.ObjIndex = CASTLE_OBJ
     With UserList(UserIndex)
         Set RS = Query(ADD_NEW_EMPEROR_CASTLE, .AccountID, .Name, SQLiteToDate(DateTime.Now), 1, .flags.TargetMap, .flags.TargetX, .flags.TargetY)
+        Call MakeObj(CastleObj, .flags.TargetMap, .flags.TargetX, .flags.TargetY)
     End With
-    
-    
-    
-    
-    
-    
     Exit Sub
-    
 CreateEmperorCastle_Err:
 Call TraceError(Err.Number, Err.Description, "ModCastle.CreateEmperorCastle", Erl)
 End Sub
@@ -77,7 +73,6 @@ Function CheckCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal trigger As 
    If CastleWhiteList.Item(UserList(UserIndex).Name) = trigger Then
         CheckCastleEntryWhiteList = True
    End If
-   
 End Function
 
 
@@ -147,44 +142,58 @@ Call TraceError(Err.Number, Err.Description, "ModCastle.LoadCastleData", Erl)
 End Sub
 
 
-Public Function IsValidCastlePosition(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal UserIndex As Integer) As Boolean
+Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
     IsValidCastlePosition = False
 
-    Dim CastleTopLeftCorner As t_Position
-    Dim CastleBottomRightCorner As t_Position
+    Dim CastleTopLeftCorner As t_WorldPos
+    Dim CastleBottomRightCorner As t_WorldPos
     
-    CastleTopLeftCorner.x = x
-    CastleTopLeftCorner.y = y
-    CastleBottomRightCorner = x
-    CastleBottomRightCorner = y
+    Dim UserTargetX As Integer
+    Dim UserTargetY As Integer
+    Dim UserTargetMap As Integer
     
-    If MapData(map, x, y).trigger <> e_Trigger.CASTLE_FOUNDATION_POSITION Then
-        'not valid clastle foundation position errormsg
+    With UserList(UserIndex)
+        CastleTopLeftCorner.x = .flags.TargetX
+        CastleTopLeftCorner.y = .flags.TargetY
+        CastleTopLeftCorner.map = .flags.TargetMap
+        
+        CastleBottomRightCorner.x = .flags.TargetX
+        CastleBottomRightCorner.y = .flags.TargetY
+        CastleBottomRightCorner.map = .flags.TargetMap
+        
+        UserTargetX = .flags.TargetX
+        UserTargetY = .flags.TargetY
+        UserTargetMap = .flags.TargetMap
+    End With
+    
+    
+    If MapData(UserTargetMap, UserTargetX, UserTargetY).trigger <> e_Trigger.CASTLE_FOUNDATION_POSITION Then
+        'TODO not valid clastle foundation position errormsg
         Exit Function
     End If
     
-    If UserList(UserIndex).pos.map <> map Then
-        'user not in map errormsg
+    If UserList(UserIndex).pos.map <> UserTargetMap Then
+        'TODO user not in map errormsg
         Exit Function
     End If
     
-    If Not IsValidMapIndex(map) Then
-        'map is not valid errormsg
+    If Not IsValidMapIndex(UserTargetMap) Then
+        'TODO map is not valid errormsg
         Exit Function
     End If
     
     Dim i As Integer
-    Dim y As Integer
+    Dim j As Integer
     For i = CastleTopLeftCorner.x To CastleBottomRightCorner.x
-        For y = CastleTopLeftCorner.y To CastleBottomRightCorner.y
-            If Not InMapBounds(map, x, y) Then
-                'castle wont be in map bounds errormsg
+        For j = CastleTopLeftCorner.y To CastleBottomRightCorner.y
+        
+            If Not InMapBounds(UserTargetMap, i, j) Then
+                'TODO castle wont be in map bounds errormsg
                 Exit Function
             End If
-        Next y
+            
+        Next j
     Next i
-    
-
     IsValidCastlePosition = True
-    
 End Function
+

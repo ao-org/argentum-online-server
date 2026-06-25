@@ -2740,10 +2740,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Call UpdateUserInv(False, UserIndex, Slot)
                 End If
             Case e_OBJType.otCastleSpawner
-                Call CreateEmperorCastle(UserIndex)
-                Call QuitarUserInvItem(UserIndex, Slot, 1)
-                Call UpdateUserInv(False, UserIndex, Slot)
-                
+                If IsValidCastlePosition(UserIndex) Then
+                    Call CreateNewEmperorCastle(UserIndex)
+                    Call QuitarUserInvItem(UserIndex, Slot, 1)
+                    Call UpdateUserInv(False, UserIndex, Slot)
+                End If
         End Select
     End With
     Exit Sub
