@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS "castle" (
 	"foundation_date" timestamp DEFAULT NULL,
 	"end_date" timestamp DEFAULT NULL,
 	"is_active" integer DEFAULT 0,
-	FOREIGN KEY (owner_account_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (owner_account_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX idx_owner_account_id ON castle(owner_account_id);
