@@ -2203,7 +2203,7 @@ Sub LoadMainConfigFile()
     Set SvrConfig = New ServerConfig
     Call SvrConfig.LoadSettings(IniPath & "Configuracion.ini")
     Call CargarEventos
-    Call CargarInfoRetos
+    Call LoadChallengeInfo
     Call CargarInfoEventos
     Call CargarMapasEspeciales
     Exit Sub
