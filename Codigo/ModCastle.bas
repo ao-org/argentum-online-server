@@ -13,19 +13,13 @@ Private Type t_CastleInfo
     y As Integer
 End Type
 
-Private Type t_WhiteListEntry
-    character_name As String
-    castle_id As Integer
-End Type
-
-
 Public CastleData() As t_CastleInfo
 Public CastleWhiteList As Dictionary
 
-Private Const COUNT_ALL_ACTIVE_CASTLES As String = "SELECT COUNT(*) FROM castle;"
+Private Const COUNT_ALL_CASTLES As String = "SELECT COUNT(*) FROM castle;"
 Private Const CHECK_EMPEROR_CASTLE As String = "Select 1 FROM castle WHERE owner_account_id = ?;"
-Private Const SELECT_ALL_CASTLES As String = "SELECT * FROM castle WHERE id = ?;"
-Private Const ADD_NEW_EMPEROR_CASTLE As String = "INSERT INTO castle (owner_account_id,owner_character_id, foundation_date, is_active) VALUES (?,?,?,?);"
+Private Const SELECT_ALL_CASTLES As String = "SELECT * FROM castle;"
+Private Const ADD_NEW_EMPEROR_CASTLE As String = "INSERT INTO castle (owner_account_id,owner_character_id, foundation_date, is_active,map,x,y) VALUES (?,?,?,?,?,?,?);"
 Private Const SELECT_ALL_CASTLE_WHITELISTS As String = "Select * FROM castle_whitelist"
 
 Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer) As Boolean
@@ -42,7 +36,15 @@ Public Sub CreateEmperorCastle(ByVal UserIndex As Integer)
     On Error GoTo CreateEmperorCastle_Err
     If IsEmperorCastleCreated(UserIndex) Then Exit Sub
     Dim RS As ADODB.Recordset
-    Set RS = Query(ADD_NEW_EMPEROR_CASTLE, UserList(UserIndex).AccountID, UserList(UserIndex).Name, SQLiteToDate(DateTime.Now), 1)
+    With UserList(UserIndex)
+        Set RS = Query(ADD_NEW_EMPEROR_CASTLE, .AccountID, .Name, SQLiteToDate(DateTime.Now), 1, .flags.TargetMap, .flags.TargetX, .flags.TargetY)
+    End With
+    
+    
+    
+    
+    
+    
     Exit Sub
     
 CreateEmperorCastle_Err:
@@ -52,21 +54,9 @@ End Sub
 Public Sub LoadCastleModule()
     On Error GoTo LoadCastleModule_Err
     Set CastleWhiteList = New Dictionary
-    Dim RS As ADODB.Recordset
-    Set RS = Query(COUNT_ALL_ACTIVE_CASTLES)
-    If RS Is Nothing Or RS.RecordCount = 0 Then
-        Debug.Assert False
-        Exit Sub
-    End If
-    ReDim CastleData(1 To RS.Fields(0).value)
-    
-
-    
+    Call LoadCastleData
     Call LoadCastleWhitelists
-    
-    
     Exit Sub
-    
 LoadCastleModule_Err:
 Call TraceError(Err.Number, Err.Description, "ModCastle.LoadCastleModule", Erl)
 End Sub
@@ -96,13 +86,12 @@ Public Sub LoadCastleWhitelists()
     Dim RS As ADODB.Recordset
     Set RS = Query(SELECT_ALL_CASTLE_WHITELISTS)
     If RS Is Nothing Or RS.RecordCount = 0 Then Exit Sub
-    Dim i As Long
-    
-    For i = 0 To RS.RecordCount
-        
-        
-    Next i
-    
+
+    Do While Not RS.EOF
+        Call CastleWhiteList.Add((RS!character_name), CastleData(RS!Castle_Id).trigger)
+        RS.MoveNext
+    Loop
+    Exit Sub
 
 
 LoadCastleWhitelists_Err:
@@ -112,24 +101,90 @@ End Sub
 Public Sub LoadCastleData()
     On Error GoTo LoadCastleData_Err
     Dim RS As ADODB.Recordset
-    
+    Set RS = Query(COUNT_ALL_CASTLES)
+    If RS Is Nothing Then
+        Debug.Assert False
+        Exit Sub
+    End If
+    ReDim CastleData(1 To RS.Fields(0).value)
     
     Dim i As Long
-    Dim y As Long
-    For i = LBound(CastleData) To UBound(CastleData)
-        Set RS = Query(SELECT_ALL_CASTLES, i)
-        If RS Is Nothing Or RS.RecordCount = 0 Then Exit Sub
+    i = 1
+    Set RS = Query(SELECT_ALL_CASTLES)
+    If RS Is Nothing Or RS.RecordCount = 0 Then Exit Sub
+    If RS.RecordCount <> UBound(CastleData) Then
+        Debug.Assert False
+        Exit Sub
+    End If
+
+    Do While Not RS.EOF
+            If Not IsNull(RS!owner_account_id) Then
+                CastleData(i).owner_account_id = (RS!owner_account_id)
+            End If
+            
+            If Not IsNull(RS!owner_character_id) = Null Then
+                CastleData(i).owner_char_id = (RS!owner_character_id)
+                
+            End If
+            
             CastleData(i).trigger = (RS!trigger)
-            CastleData(i).owner_account_id = (RS!owner_account_id)
-            CastleData(i).owner_char_id = (RS!owner_char_id)
             CastleData(i).is_active = (RS!is_active)
             CastleData(i).obj_id = (RS!obj_id)
             CastleData(i).map = (RS!map)
             CastleData(i).x = (RS!x)
             CastleData(i).y = (RS!y)
-            Call CastleWhiteList.Add(CastleData(i).owner_account_id, CastleData(i).trigger) 'add castle owner to the whitelist
+            
+            If CastleData(i).owner_account_id <> 0 Then
+                Call CastleWhiteList.Add(CastleData(i).owner_account_id, CastleData(i).trigger) 'add castle owner to the whitelist
+            End If
+        
+            i = i + 1
+            RS.MoveNext
+    Loop
+    Exit Sub
+LoadCastleData_Err:
+Call TraceError(Err.Number, Err.Description, "ModCastle.LoadCastleData", Erl)
+End Sub
+
+
+Public Function IsValidCastlePosition(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal UserIndex As Integer) As Boolean
+    IsValidCastlePosition = False
+
+    Dim CastleTopLeftCorner As t_Position
+    Dim CastleBottomRightCorner As t_Position
+    
+    CastleTopLeftCorner.x = x
+    CastleTopLeftCorner.y = y
+    CastleBottomRightCorner = x
+    CastleBottomRightCorner = y
+    
+    If MapData(map, x, y).trigger <> e_Trigger.CASTLE_FOUNDATION_POSITION Then
+        'not valid clastle foundation position errormsg
+        Exit Function
+    End If
+    
+    If UserList(UserIndex).pos.map <> map Then
+        'user not in map errormsg
+        Exit Function
+    End If
+    
+    If Not IsValidMapIndex(map) Then
+        'map is not valid errormsg
+        Exit Function
+    End If
+    
+    Dim i As Integer
+    Dim y As Integer
+    For i = CastleTopLeftCorner.x To CastleBottomRightCorner.x
+        For y = CastleTopLeftCorner.y To CastleBottomRightCorner.y
+            If Not InMapBounds(map, x, y) Then
+                'castle wont be in map bounds errormsg
+                Exit Function
+            End If
+        Next y
     Next i
     
-LoadCastleData_Err:
-Call TraceError(Err.Number, Err.Description, "ModCastle.LoadCastleWhitelists", Erl)
-End Sub
+
+    IsValidCastlePosition = True
+    
+End Function
