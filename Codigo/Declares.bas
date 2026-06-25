@@ -1533,7 +1533,7 @@ Public Enum e_OBJType
     otBackpack = 7
     otSignBoards = 8
     otKeys = 9
-    'otLibre = 10
+    otCastleSpawner = 10
     otPotions = 11
     'otLibre = 12
     otDrinks = 13
