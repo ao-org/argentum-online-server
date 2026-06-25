@@ -118,10 +118,10 @@ Public Sub LoadCastleData()
                 CastleData(i).owner_account_id = (RS!owner_account_id)
             End If
             
-            If Not IsNull(RS!owner_character_id) = Null Then
+            If Not IsNull(RS!owner_character_id) Then
                 CastleData(i).owner_char_id = (RS!owner_character_id)
-                
             End If
+            
             CastleData(i).spawner_obj_id = (RS!spawner_obj_id)
             CastleData(i).portal_obj_id = (RS!portal_obj_id)
             
