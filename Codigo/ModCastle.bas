@@ -39,6 +39,7 @@ End Sub
 
 Public Sub LoadCastleModule()
     On Error GoTo LoadCastleModule_Err
+    Set CastleWhiteList = New Dictionary
     Dim RS As ADODB.Recordset
     Set RS = Query(SELECT_ALL_CASTLE)
     If RS Is Nothing Or RS.RecordCount = 0 Then Exit Sub
@@ -50,15 +51,19 @@ Public Sub LoadCastleModule()
         CastleData(i).is_active = (RS!is_active)
         CastleData(i).owner_account_id = (RS!owner_account_id)
         CastleData(i).trigger = (RS!trigger)
-        CastleData(i).white_list = (RS!white_list)
-        Call CastleWhiteList.Add(CastleData(i).owner_account_id, CastleData(i).trigger) 'add castle owner to the whitelist
         
-        str = Split(CastleData(i).white_list, ";")
-        If UBound(str) > 0 Then
-            For y = 0 To UBound(str)
-                Call CastleWhiteList.Add(str(y), CastleData(i).trigger) 'add each memeber in the list to the whitelist
-            Next y
+        If Not RS!white_list = Null Then
+            CastleData(i).white_list = (RS!white_list)
+            str = Split(CastleData(i).white_list, ";")
+            If UBound(str) > 0 Then
+                For y = 0 To UBound(str)
+                    Call CastleWhiteList.Add(str(y), CastleData(i).trigger) 'add each memeber in the list to the whitelist
+                Next y
+            End If
         End If
+        
+        Call CastleWhiteList.Add(CastleData(i).owner_account_id, CastleData(i).trigger) 'add castle owner to the whitelist
+    
     Next i
     Exit Sub
     
