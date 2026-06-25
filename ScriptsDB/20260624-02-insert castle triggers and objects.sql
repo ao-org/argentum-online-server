@@ -1,4 +1,4 @@
-INSERT INTO castle_whitelist (trigger, obj_id) VALUES
+INSERT INTO castle (trigger, obj_id) VALUES
 (21,6362),
 (22,6363),
 (23,6364),
