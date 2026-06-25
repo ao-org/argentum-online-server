@@ -1617,35 +1617,35 @@ Public Function TestRequiredEquipedItem(ByRef inventory As t_Inventario, ByVal R
     TestRequiredEquipedItem = e_SpellRequirementMask.eNone
 End Function
 
-Public Sub SendrequiredItemMessage(ByVal UserIndex As Integer, ByVal itemMask As e_SpellRequirementMask, ByVal Message As String)
+Public Sub SendrequiredItemMessage(ByVal UserIndex As Integer, ByVal itemMask As e_SpellRequirementMask)
     Select Case itemMask
         Case e_SpellRequirementMask.eArmor
             ' Msg497=Necesitás una armadura
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ARMADURA, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ARMADURA, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eHelm
             ' Msg564=Necesitás un casco
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_CASCO, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_CASCO, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eKnucle
             ' Msg565=Necesitás unos nudillos
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_NUDILLOS, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_NUDILLOS, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eMagicItem
             ' Msg566=Necesitás un objeto magico
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_OBJETO_MAGICO, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_OBJETO_MAGICO, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eProjectile
             ' Msg567=Necesitás municiones
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_MUNICIONES, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_MUNICIONES, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eShield
             ' Msg568=Necesitás un escudo
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ESCUDO, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ESCUDO, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eShip
             ' Msg569=Necesitás un barco
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_BARCO, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_BARCO, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eTool
             ' Msg570=Necesitás una herramienta
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_HERRAMIENTA, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_HERRAMIENTA, e_FontTypeNames.FONTTYPE_INFO)
         Case e_SpellRequirementMask.eWeapon
             ' Msg571=Necesitás un arma
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ARMA, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ARMA, e_FontTypeNames.FONTTYPE_INFO)
     End Select
 End Sub
 

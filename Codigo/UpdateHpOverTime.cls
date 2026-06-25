@@ -254,7 +254,7 @@ Public Sub PerformAction()
         End If
         If IsValidRef(Source) Then
             If IsFeatureEnabled("healers_and_tanks") And Source.RefType = eUser Then
-                If UserList(Source.ArrayIndex).flags.DivineBlood > 0 Then
+                If UserList(Source.ArrayIndex).flags.DivineBlood Then
                     TickHP = TickHP * DivineBloodHealingMultiplierBonus
                 End If
             End If
