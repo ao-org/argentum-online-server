@@ -21,7 +21,7 @@ Public CastleWhiteList As Dictionary
 
 Private Const COUNT_ALL_CASTLES As String = "SELECT COUNT(*) FROM castle;"
 
-Private Const UPDATE_NEW_EMPEROR_CASTLE As String = "INSERT INTO castle (owner_account_id,owner_character_id, foundation_date, is_active) VALUES (?,?,?,?,?,?,?);"
+Private Const UPDATE_NEW_EMPEROR_CASTLE As String = "INSERT INTO castle (owner_account_id,owner_character_id, foundation_date, is_active) VALUES (?,?,?,?);"
 Private Const UPDATE_OUTSIDE_CASTLE_LOCATION As String = "INSERT INTO castle_coordinates (outside_map,outside_x,outside_y) VALUES (?,?,?)"
 
 
@@ -40,7 +40,7 @@ Public Sub LoadCastleModule()
     Set CastleWhiteList = New Dictionary
     Call LoadCastleData
     Call LoadCastleCoordinates
-    Call LoadCastleWhitelists
+    Call LoadCastleWhiteLists
     Dim i As Integer
     
     For i = LBound(CastleData) To UBound(CastleData)
@@ -56,14 +56,14 @@ LoadCastleModule_Err:
 Call TraceError(Err.Number, Err.Description, "ModCastle.LoadCastleModule", Erl)
 End Sub
 
-Public Sub LoadCastleWhitelists()
+Public Sub LoadCastleWhiteLists()
     On Error GoTo LoadCastleWhitelists_Err
     Dim RS As ADODB.Recordset
     Set RS = Query(SELECT_ALL_CASTLE_WHITELISTS)
     If RS Is Nothing Or RS.RecordCount = 0 Then Exit Sub
 
     Do While Not RS.EOF
-        Call CastleWhiteList.Add((RS!character_name), CastleData(RS!Castle_Id).trigger)
+        Call CastleWhiteList.Add((RS!character_name), CastleData(RS!castle_id).trigger)
         RS.MoveNext
     Loop
     Exit Sub
@@ -213,7 +213,7 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
             .foundation_date = DateTime.Now
             .is_active = 1
             .owner_account_id = UserList(UserIndex).AccountID
-            .owner_char_id = UserList(UserIndex).Name
+            .owner_char_id = UserList(UserIndex).Id
         End If
 
         'first layer from the bottom
