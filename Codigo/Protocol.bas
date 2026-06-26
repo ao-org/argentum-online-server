@@ -5416,7 +5416,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
                     'Msg1201= Usuario offline, echando de los consejos
                     Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_ECHANDO_CONSEJOS, e_FontTypeNames.FONTTYPE_INFO)
                     Dim Status As Integer
-                    Status = GetDBValue("user", "status", "name", username)
+                    Status = GetDBValue("user", "status", "name", LCase$(username))
                     Call EcharConsejoDatabase(username, IIf(Status = 4, 2, 3))
                     'Msg1202= Usuario ¬1
                     Call WriteLocaleMsg(UserIndex, MSG_USUARIO, e_FontTypeNames.FONTTYPE_INFO, username)
@@ -5529,7 +5529,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                     'Msg1208= Usuario offline, echando de la facción
                     Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_ECHANDO_FACCION, e_FontTypeNames.FONTTYPE_INFO)
                     Dim Status As Integer
-                    Status = GetDBValue("user", "status", "name", username)
+                    Status = GetDBValue("user", "status", "name", LCase$(username))
                     If Status = e_Facciones.Caos Then
                         Call EcharLegionDatabase(username)
                         'Msg1209= Usuario ¬1
@@ -5584,7 +5584,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                     'Msg1213= Usuario offline, echando de la facción
                     Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_ECHANDO_FACCION_1213, e_FontTypeNames.FONTTYPE_INFO)
                     Dim Status As Integer
-                    Status = GetDBValue("user", "status", "name", username)
+                    Status = GetDBValue("user", "status", "name", LCase$(username))
                     If Status = e_Facciones.Armada Then
                         Call EcharArmadaDatabase(username)
                         'Msg1214= Usuario ¬1
