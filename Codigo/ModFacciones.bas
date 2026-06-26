@@ -517,6 +517,11 @@ Private Function IsHighRank(ByRef faccion As t_Facciones) As Boolean
             Exit Function
     End Select
 
+    ' Validar que el índice está dentro de los límites del array
+    If thresholdIdx < LBound(RangosFaccion) Or thresholdIdx > UBound(RangosFaccion) Then
+        Exit Function
+    End If
+    
     IsHighRank = faccion.FactionScore >= RangosFaccion(thresholdIdx).RequiredScore
 
     Exit Function
