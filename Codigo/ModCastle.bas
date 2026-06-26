@@ -22,20 +22,28 @@ Public CastleWhiteList As Dictionary
 Private Const COUNT_ALL_CASTLES As String = "SELECT COUNT(*) FROM castle;"
 Private Const CHECK_EMPEROR_CASTLE As String = "SELECT * FROM castle WHERE owner_account_id = ?;"
 Private Const SELECT_ALL_CASTLES As String = "SELECT * FROM castle;"
-Private Const ADD_NEW_EMPEROR_CASTLE As String = "INSERT INTO castle (owner_account_id,owner_character_id, foundation_date, is_active,outside_map,outside_x,outside_y) VALUES (?,?,?,?,?,?,?);"
+Private Const ADD_NEW_EMPEROR_CASTLE As String = "INSERT INTO castle (owner_account_id,owner_character_id, foundation_date, is_active) VALUES (?,?,?,?,?,?,?);"
+Private Const UPDATE_OUTSIDE_CASTLE_LOCATION As String = "INSERT INTO castle_coordinates (outside_map,outside_x,outside_y) VALUES (?,?,?)"
 Private Const SELECT_ALL_CASTLE_WHITELISTS As String = "Select * FROM castle_whitelist"
 Private Const CASTLE_OBJ = 6382
 
 Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer) As Boolean
     IsEmperorCastleCreated = False
+    
     Dim RS As ADODB.Recordset
     Set RS = Query(CHECK_EMPEROR_CASTLE, UserList(UserIndex).AccountID)
     If RS Is Nothing Then
         Exit Function
     End If
     
+    Dim f_date As Date
+    
     If Not IsNull(RS!foundation_date) Then
-        IsEmperorCastleCreated = True
+        f_date = SQLiteToDate(RS!foundation_date)
+        If DateDiff("d", f_date, DateTime.Now) < 7 Then
+            'cant relocate castle before 7 days have passed errormsg
+            IsEmperorCastleCreated = True
+        End If
     End If
         
 End Function
@@ -45,7 +53,10 @@ Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As 
     If IsEmperorCastleCreated(UserIndex) Then Exit Sub
     Dim RS As ADODB.Recordset
     With UserList(UserIndex)
-        Set RS = Query(ADD_NEW_EMPEROR_CASTLE, .AccountID, .Name, DateToSQLite(DateTime.Now), 1, .flags.TargetMap, .flags.TargetX, .flags.TargetY)
+        'update castle data in db
+        Set RS = Query(ADD_NEW_EMPEROR_CASTLE, .AccountID, .Name, DateToSQLite(DateTime.Now), 1)
+        'update castle coordinates in db
+        Set RS = Query(UPDATE_OUTSIDE_CASTLE_LOCATION, .flags.TargetMap, .flags.TargetX, .flags.TargetY)
         Call CreateCastleInMap(.flags.TargetMap, .flags.TargetX, .flags.TargetY, ObjData(ObjIndex).AssignedCastleIndex)
     End With
     Exit Sub
