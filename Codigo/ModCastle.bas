@@ -32,10 +32,6 @@ Private Const CASTLE_OBJ = 6382
 Public Const EMPEROR_RELIC_OBJ_INDEX_1 = 6362
 Public Const EMPEROR_RELIC_OBJ_INDEX_20 = 6381
 
-Public Const MSG_INVALID_CASTLE_POSITION = 2211
-Public Const MSG_CASTLE_RELOCATION_ON_COOLDOWN = 2212
-Public Const MSG_BROADCAST_CASTLE_LOCATION = 2113
-Public Const MSG_BROADCAST_CASTLE_DESTROYED = 2114
 
 
 
@@ -495,7 +491,7 @@ Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As 
             End If
             With CastleData(ObjData(ObjIndex).AssignedCastleIndex)
                 Call DestroyCastleInMap(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, ObjData(ObjIndex).AssignedCastleIndex)
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_CASTLE_DESTROYED, ObjData(ObjIndex).AssignedCastleIndex & "¬" & GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_GUILD))
+                Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_CASTLE_DESTROYED, ObjData(ObjIndex).AssignedCastleIndex & "¬" & GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_GUILD))
             End With
         End If
     
@@ -505,7 +501,7 @@ Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As 
         Set RS = Query(UPDATE_OUTSIDE_CASTLE_LOCATION, .flags.TargetMap, .flags.TargetX, .flags.TargetY, ObjData(ObjIndex).AssignedCastleIndex)
 
         Call CreateCastleInMap(.flags.TargetMap, .flags.TargetX, .flags.TargetY, ObjData(ObjIndex).AssignedCastleIndex, UserIndex)
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_CASTLE_LOCATION, ObjData(ObjIndex).AssignedCastleIndex & "¬" & GetUserDisplayName(UserIndex) & "¬" & .flags.TargetMap & "¬" & .flags.TargetX & "¬" & .flags.TargetY, e_FontTypeNames.FONTTYPE_GUILD))
+        Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_CASTLE_LOCATION, ObjData(ObjIndex).AssignedCastleIndex & "¬" & GetUserDisplayName(UserIndex) & "¬" & .flags.TargetMap & "¬" & .flags.TargetX & "¬" & .flags.TargetY, e_FontTypeNames.FONTTYPE_GUILD))
         Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.OldClanHorn, 50, 50))
     End With
     Exit Sub
