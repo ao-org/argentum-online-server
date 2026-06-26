@@ -48,7 +48,7 @@ Public Sub LoadCastleModule()
     
     For i = LBound(CastleData) To UBound(CastleData)
         With CastleData(i)
-            If InMapBounds(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y) And MapaValido(.castle_coordinates.outside.map) Then
+            If .is_active Then
                 Call CreateCastleInMap(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, i)
             End If
         End With
@@ -147,6 +147,7 @@ End Sub
 
 Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
     IsValidCastlePosition = False
+
 
     Dim CastleTopLeftCorner As t_WorldPos
     Dim CastleBottomRightCorner As t_WorldPos
