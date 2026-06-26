@@ -2944,6 +2944,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     Call WriteLocaleMsg(UserIndex, MSG_PICKUP_UNAVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Case e_Skill.TargetableItem
+            
                 If .Stats.MinSta < ObjData(.invent.Object(.flags.TargetObjInvSlot).ObjIndex).MinSta Then
                     Call WriteLocaleMsg(UserIndex, MsgNotEnoughtStamina, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg2129=¡No tengo energía!
@@ -2952,9 +2953,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 End If
                 
                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, x, y)
-                If ObjData(.invent.Object(.flags.TargetObjInvSlot).ObjIndex).OBJType <> otCastleSpawner Then
-                    Call UserTargetableItem(UserIndex, x, y)
-                End If
+                Call UserTargetableItem(UserIndex, x, y)
         End Select
     End With
     Exit Sub
