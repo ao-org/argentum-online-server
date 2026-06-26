@@ -7918,7 +7918,7 @@ Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     isSkin = reader.ReadBool
     Slot = reader.ReadInt8()
     
-    Call WriteLocaleMsg(UserIndex, "Funcion deshabilitada momentaneamente / Function disabled temporarily.", e_FontTypeNames.FONTTYPE_INFO)
+    Call WriteConsoleMsg(UserIndex, "Funcion deshabilitada momentaneamente / Function disabled temporarily.", e_FontTypeNames.FONTTYPE_INFO)
     Exit Sub
     
 HandleDeleteItem_Err:
