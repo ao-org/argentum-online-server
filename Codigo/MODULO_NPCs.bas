@@ -787,6 +787,7 @@ End Function
 Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     On Error GoTo NpcEnvenenarUser_Err
     Dim n As Integer
+    Dim PoisonPower As Long
     n = RandomNumber(1, 100)
     If n < 30 Then
         PoisonPower = (CLng(NpcList(NpcIndex).Stats.MinHit) + CLng(NpcList(NpcIndex).Stats.MaxHit)) \ 2

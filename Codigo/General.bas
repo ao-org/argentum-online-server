@@ -1230,7 +1230,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticleEffects.PoisonGas, 30, False, , UserList(UserIndex).pos.x, _
                     UserList(UserIndex).pos.y))
             .Counters.Veneno = 0
-            ' El veneno causa daño proporcional al poder del NPC que envenenó.
+            ' El veneno causa daño proporcional al valor almacenado en flags.Envenenado.
             Damage = RandomNumber(3, 5)
             Damage = (CLng(.flags.Envenenado) * CLng(Damage)) \ VENENO_DIVISOR
             If Damage < 1 Then Damage = 1
