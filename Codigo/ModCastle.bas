@@ -21,12 +21,8 @@ Public CastleWhiteList As Dictionary
 
 Private Const COUNT_ALL_CASTLES As String = "SELECT COUNT(*) FROM castle;"
 
-
 Private Const UPDATE_EMPEROR_CASTLE As String = "UPDATE castle SET owner_account_id = ?, owner_character_id = ?, foundation_date = ?, is_active = ?  WHERE id = ?;"
-
 Private Const UPDATE_OUTSIDE_CASTLE_LOCATION As String = "UPDATE castle_coordinates SET outside_map = ?, outside_x = ?, outside_y = ? WHERE id = ?;"
-
-
 
 Private Const SELECT_ALL_CASTLE_WHITELISTS As String = "Select * FROM castle_whitelist"
 Private Const SELECT_ALL_CASTLES As String = "SELECT * FROM castle;"
@@ -35,6 +31,12 @@ Private Const SELECT_ALL_CASTLE_COORDINATES = "SELECT * FROM castle_coordinates;
 Private Const CASTLE_OBJ = 6382
 Public Const EMPEROR_RELIC_OBJ_INDEX_1 = 6362
 Public Const EMPEROR_RELIC_OBJ_INDEX_20 = 6381
+
+Public Const MSG_INVALID_CASTLE_POSITION = 2211
+Public Const MSG_CASTLE_RELOCATION_ON_COOLDOWN = 2212
+Public Const MSG_BROADCAST_CASTLE_LOCATION = 2113
+Public Const MSG_BROADCAST_CASTLE_DESTROYED = 2114
+
 
 
 
@@ -163,7 +165,7 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
     With UserList(UserIndex)
     
         If .flags.TargetX = 0 Or .flags.TargetY = 0 Or .flags.TargetMap = 0 Then
-        'invalid target position errormsg
+            Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
             Exit Function
         End If
     
@@ -183,17 +185,17 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
     
     
     If MapData(UserTargetMap, UserTargetX, UserTargetY).trigger <> e_Trigger.CASTLE_FOUNDATION_POSITION Then
-        'TODO not valid clastle foundation position errormsg
+        Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
         Exit Function
     End If
     
     If UserList(UserIndex).pos.map <> UserTargetMap Then
-        'TODO user not in map errormsg
+        Call LogError("Usuario " & UserList(UserIndex).Name & "Interactuando con un mapa fuera de su rango, revisar")
         Exit Function
     End If
     
     If Not IsValidMapIndex(UserTargetMap) Then
-        'TODO map is not valid errormsg
+        Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
         Exit Function
     End If
     
@@ -203,7 +205,7 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
         For j = CastleTopLeftCorner.y To CastleBottomRightCorner.y
         
             If Not InMapBounds(UserTargetMap, i, j) Then
-                'TODO castle wont be in map bounds errormsg
+                Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
                 Exit Function
             End If
             
@@ -459,10 +461,7 @@ End Sub
 
 Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer) As Boolean
     IsEmperorCastleCreated = False
-    
     Dim i As Integer
-    
-    
     For i = 1 To UBound(CastleData)
         If CastleData(i).owner_account_id = UserList(UserIndex).AccountID Then
             
@@ -473,7 +472,6 @@ Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer) As Boolean
             Exit For
         End If
     Next i
-        
 End Function
 
 Public Function HasCastleRelocationCooldownPassed(ByVal CastleIndex As Integer) As Boolean
@@ -492,12 +490,12 @@ Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As 
         
         If IsEmperorCastleCreated(UserIndex) Then
             If Not HasCastleRelocationCooldownPassed(ObjData(ObjIndex).AssignedCastleIndex) Then
-                'castle reasignment on cooldown errormsg
+                Call WriteLocaleMsg(UserIndex, MSG_CASTLE_RELOCATION_ON_COOLDOWN, FONTTYPE_INFOBOLD)
                 Exit Sub
             End If
             With CastleData(ObjData(ObjIndex).AssignedCastleIndex)
                 Call DestroyCastleInMap(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, ObjData(ObjIndex).AssignedCastleIndex)
-                'old castle location complete msg
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_CASTLE_DESTROYED, ObjData(ObjIndex).AssignedCastleIndex & "¬" & GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_GUILD))
             End With
         End If
     
@@ -507,6 +505,8 @@ Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As 
         Set RS = Query(UPDATE_OUTSIDE_CASTLE_LOCATION, .flags.TargetMap, .flags.TargetX, .flags.TargetY, ObjData(ObjIndex).AssignedCastleIndex)
 
         Call CreateCastleInMap(.flags.TargetMap, .flags.TargetX, .flags.TargetY, ObjData(ObjIndex).AssignedCastleIndex, UserIndex)
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_CASTLE_LOCATION, ObjData(ObjIndex).AssignedCastleIndex & "¬" & GetUserDisplayName(UserIndex) & "¬" & .flags.TargetMap & "¬" & .flags.TargetX & "¬" & .flags.TargetY, e_FontTypeNames.FONTTYPE_GUILD))
+        Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.OldClanHorn, 50, 50))
     End With
     Exit Sub
 CreateEmperorCastle_Err:
