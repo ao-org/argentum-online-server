@@ -10,4 +10,4 @@ CREATE TABLE IF NOT EXISTS "castle_coordinates" (
 	FOREIGN KEY (castle_id) REFERENCES castle(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE INDEX idx_castle_id ON castle_coordinates(castle_id);
+CREATE INDEX idx_castle_coordinates_castle_id ON castle_coordinates(castle_id);

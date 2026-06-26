@@ -10,4 +10,4 @@ CREATE TABLE IF NOT EXISTS "castle" (
 	FOREIGN KEY (owner_account_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE INDEX idx_owner_account_id ON castle(owner_account_id);
+CREATE INDEX idx_castle_owner_account_id ON castle(owner_account_id);

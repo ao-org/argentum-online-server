@@ -20,54 +20,26 @@ Public CastleData() As t_CastleInfo
 Public CastleWhiteList As Dictionary
 
 Private Const COUNT_ALL_CASTLES As String = "SELECT COUNT(*) FROM castle;"
-Private Const CHECK_EMPEROR_CASTLE As String = "SELECT * FROM castle WHERE owner_account_id = ?;"
-Private Const SELECT_ALL_CASTLES As String = "SELECT * FROM castle;"
-Private Const ADD_NEW_EMPEROR_CASTLE As String = "INSERT INTO castle (owner_account_id,owner_character_id, foundation_date, is_active) VALUES (?,?,?,?,?,?,?);"
+
+Private Const UPDATE_NEW_EMPEROR_CASTLE As String = "INSERT INTO castle (owner_account_id,owner_character_id, foundation_date, is_active) VALUES (?,?,?,?,?,?,?);"
 Private Const UPDATE_OUTSIDE_CASTLE_LOCATION As String = "INSERT INTO castle_coordinates (outside_map,outside_x,outside_y) VALUES (?,?,?)"
+
+
 Private Const SELECT_ALL_CASTLE_WHITELISTS As String = "Select * FROM castle_whitelist"
+Private Const SELECT_ALL_CASTLES As String = "SELECT * FROM castle;"
+Private Const SELECT_ALL_CASTLE_COORDINATES = "SELECT * FROM castle_coordinates;"
+
 Private Const CASTLE_OBJ = 6382
+Public Const EMPEROR_RELIC_OBJ_INDEX_1 = 6362
+Public Const EMPEROR_RELIC_OBJ_INDEX_20 = 6381
 
-Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer) As Boolean
-    IsEmperorCastleCreated = False
-    
-    Dim RS As ADODB.Recordset
-    Set RS = Query(CHECK_EMPEROR_CASTLE, UserList(UserIndex).AccountID)
-    If RS Is Nothing Then
-        Exit Function
-    End If
-    
-    Dim f_date As Date
-    
-    If Not IsNull(RS!foundation_date) Then
-        f_date = SQLiteToDate(RS!foundation_date)
-        If DateDiff("d", f_date, DateTime.Now) < 7 Then
-            'cant relocate castle before 7 days have passed errormsg
-            IsEmperorCastleCreated = True
-        End If
-    End If
-        
-End Function
 
-Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As Integer)
-    On Error GoTo CreateEmperorCastle_Err
-    If IsEmperorCastleCreated(UserIndex) Then Exit Sub
-    Dim RS As ADODB.Recordset
-    With UserList(UserIndex)
-        'update castle data in db
-        Set RS = Query(ADD_NEW_EMPEROR_CASTLE, .AccountID, .Name, DateToSQLite(DateTime.Now), 1)
-        'update castle coordinates in db
-        Set RS = Query(UPDATE_OUTSIDE_CASTLE_LOCATION, .flags.TargetMap, .flags.TargetX, .flags.TargetY)
-        Call CreateCastleInMap(.flags.TargetMap, .flags.TargetX, .flags.TargetY, ObjData(ObjIndex).AssignedCastleIndex)
-    End With
-    Exit Sub
-CreateEmperorCastle_Err:
-Call TraceError(Err.Number, Err.Description, "ModCastle.CreateEmperorCastle", Erl)
-End Sub
 
 Public Sub LoadCastleModule()
     On Error GoTo LoadCastleModule_Err
     Set CastleWhiteList = New Dictionary
     Call LoadCastleData
+    Call LoadCastleCoordinates
     Call LoadCastleWhitelists
     Dim i As Integer
     
@@ -83,25 +55,6 @@ Public Sub LoadCastleModule()
 LoadCastleModule_Err:
 Call TraceError(Err.Number, Err.Description, "ModCastle.LoadCastleModule", Erl)
 End Sub
-
-Function CheckCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal trigger As Integer) As Boolean
-   CheckCastleEntryWhiteList = False
-   
-   'exception for castle owner
-   If CastleWhiteList.Item(UserList(UserIndex).AccountID) = trigger Then
-        CheckCastleEntryWhiteList = True
-        Exit Function
-   End If
-   
-   If Not CastleWhiteList.Exists(UserList(UserIndex).Name) Then
-        Exit Function
-   End If
-   
-   If CastleWhiteList.Item(UserList(UserIndex).Name) = trigger Then
-        CheckCastleEntryWhiteList = True
-   End If
-End Function
-
 
 Public Sub LoadCastleWhitelists()
     On Error GoTo LoadCastleWhitelists_Err
@@ -138,42 +91,54 @@ Public Sub LoadCastleData()
     End If
 
     Do While Not RS.EOF
-    
-            CastleData(i).trigger = (RS!trigger)
+        CastleData(i).trigger = (RS!trigger)
             
-            If Not IsNull(RS!owner_account_id) Then
-                CastleData(i).owner_account_id = (RS!owner_account_id)
-            End If
+        If Not IsNull(RS!owner_account_id) Then
+            CastleData(i).owner_account_id = (RS!owner_account_id)
+        End If
             
-            If Not IsNull(RS!owner_character_id) Then
-                CastleData(i).owner_char_id = (RS!owner_character_id)
-            End If
+        If Not IsNull(RS!owner_character_id) Then
+            CastleData(i).owner_char_id = (RS!owner_character_id)
+        End If
             
-            CastleData(i).spawner_obj_id = (RS!spawner_obj_id)
-            CastleData(i).portal_obj_id = (RS!portal_obj_id)
-            
-            CastleData(i).castle_coordinates.outside.map = (RS!outside_map)
-            CastleData(i).castle_coordinates.outside.x = (RS!outside_x)
-            CastleData(i).castle_coordinates.outside.y = (RS!outside_y)
-            
-            CastleData(i).castle_coordinates.inside.map = (RS!inside_map)
-            CastleData(i).castle_coordinates.inside.x = (RS!inside_x)
-            CastleData(i).castle_coordinates.inside.y = (RS!inside_y)
-            
-            
-            CastleData(i).is_active = (RS!is_active)
-            
-            
-            If CastleData(i).owner_account_id <> 0 Then
-                Call CastleWhiteList.Add(CastleData(i).owner_account_id, CastleData(i).trigger) 'add castle owner to the whitelist
-            End If
-        
-            i = i + 1
-            RS.MoveNext
+        CastleData(i).spawner_obj_id = (RS!spawner_obj_id)
+        CastleData(i).portal_obj_id = (RS!portal_obj_id)
+        CastleData(i).is_active = (RS!is_active)
+        If CastleData(i).owner_account_id <> 0 Then
+            Call CastleWhiteList.Add(CastleData(i).owner_account_id, CastleData(i).trigger) 'add castle owner to the whitelist
+        End If
+        i = i + 1
+        RS.MoveNext
     Loop
     Exit Sub
 LoadCastleData_Err:
 Call TraceError(Err.Number, Err.Description, "ModCastle.LoadCastleData", Erl)
+End Sub
+
+
+Public Sub LoadCastleCoordinates()
+    On Error GoTo LoadCastleCoordinates_Err
+    Dim i As Integer
+    Dim RS As ADODB.Recordset
+    Set RS = Query(SELECT_ALL_CASTLE_COORDINATES)
+    If RS Is Nothing Or RS.RecordCount = 0 Then Exit Sub
+    i = 1
+    Do While Not RS.EOF
+        If i <> (RS!castle_id) Then
+            Debug.Assert False
+        End If
+        CastleData(i).castle_coordinates.outside.map = (RS!outside_map)
+        CastleData(i).castle_coordinates.outside.x = (RS!outside_x)
+        CastleData(i).castle_coordinates.outside.y = (RS!outside_y)
+        CastleData(i).castle_coordinates.inside.map = (RS!inside_map)
+        CastleData(i).castle_coordinates.inside.x = (RS!inside_x)
+        CastleData(i).castle_coordinates.inside.y = (RS!inside_y)
+        i = i + 1
+        RS.MoveNext
+    Loop
+Exit Sub
+LoadCastleCoordinates_Err:
+Call TraceError(Err.Number, Err.Description, "ModCastle.LoadCastleCoordinates", Erl)
 End Sub
 
 
@@ -233,14 +198,24 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
 End Function
 
 
-Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal CastleIndex As Integer)
+Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal CastleIndex As Integer, Optional ByVal UserIndex As Integer = 0)
     Dim CastleObj As t_Obj
     CastleObj.Amount = 1
     CastleObj.ObjIndex = CASTLE_OBJ
     Call MakeObj(CastleObj, map, x, y)
     
-    
     With CastleData(CastleIndex)
+    
+         If UserIndex > 0 Then
+            .castle_coordinates.outside.map = map
+            .castle_coordinates.outside.x = x
+            .castle_coordinates.outside.y = y
+            .foundation_date = DateTime.Now
+            .is_active = 1
+            .owner_account_id = UserList(UserIndex).AccountID
+            .owner_char_id = UserList(UserIndex).Name
+        End If
+
         'first layer from the bottom
         MapData(map, x - 3, y).Blocked = e_Block.ALL_SIDES
         MapData(map, x - 4, y).Blocked = e_Block.ALL_SIDES
@@ -349,3 +324,191 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
     
 End Sub
 
+
+Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal CastleIndex As Integer)
+    Call EraseObj(MapData(map, x, y).ObjInfo.Amount, map, x, y)
+    
+    With CastleData(CastleIndex)
+        'first layer from the bottom
+        MapData(map, x - 3, y).Blocked = 0
+        MapData(map, x - 4, y).Blocked = 0
+        MapData(map, x - 5, y).Blocked = 0
+        MapData(map, x - 6, y).Blocked = 0
+        MapData(map, x + 1, y).Blocked = 0
+        MapData(map, x + 2, y).Blocked = 0
+        MapData(map, x + 3, y).Blocked = 0
+        MapData(map, x - 1, y).trigger = e_Trigger.nada
+        MapData(map, x - 2, y).trigger = e_Trigger.nada
+        MapData(map, x - 1, y + 1).trigger = e_Trigger.nada
+        MapData(map, x - 2, y + 1).trigger = e_Trigger.nada
+        
+        
+        'second layer form the bottom
+        MapData(map, x, y - 1).Blocked = 0
+        MapData(map, x - 3, y - 1).Blocked = 0
+        MapData(map, x - 4, y - 1).Blocked = 0
+        MapData(map, x - 5, y - 1).Blocked = 0
+        MapData(map, x - 6, y - 1).Blocked = 0
+        MapData(map, x + 1, y - 1).Blocked = 0
+        MapData(map, x + 2, y - 1).Blocked = 0
+        MapData(map, x + 3, y - 1).Blocked = 0
+        
+        
+        MapData(map, x - 1, y - 1).TileExit.map = 0
+        MapData(map, x - 1, y - 1).TileExit.x = 0
+        MapData(map, x - 1, y - 1).TileExit.y = 0
+        
+        MapData(map, x - 2, y - 1).TileExit.map = 0
+        MapData(map, x - 2, y - 1).TileExit.x = 0
+        MapData(map, x - 2, y - 1).TileExit.y = 0
+        
+        'third layer form the bottom
+        MapData(map, x, y - 2).Blocked = 0
+        MapData(map, x - 1, y - 2).Blocked = 0
+        MapData(map, x - 2, y - 2).Blocked = 0
+        MapData(map, x - 3, y - 2).Blocked = 0
+        MapData(map, x - 4, y - 2).Blocked = 0
+        MapData(map, x - 5, y - 2).Blocked = 0
+        MapData(map, x - 6, y - 2).Blocked = 0
+        MapData(map, x + 1, y - 2).Blocked = 0
+        MapData(map, x + 2, y - 2).Blocked = 0
+        MapData(map, x + 3, y - 2).Blocked = 0
+        
+         'fourth layer form the bottom
+        MapData(map, x, y - 3).Blocked = 0
+        MapData(map, x - 1, y - 3).Blocked = 0
+        MapData(map, x - 2, y - 3).Blocked = 0
+        MapData(map, x - 3, y - 3).Blocked = 0
+        MapData(map, x - 4, y - 3).Blocked = 0
+        MapData(map, x - 5, y - 3).Blocked = 0
+        MapData(map, x - 6, y - 3).Blocked = 0
+        MapData(map, x + 1, y - 3).Blocked = 0
+        MapData(map, x + 2, y - 3).Blocked = 0
+        MapData(map, x + 3, y - 3).Blocked = 0
+        
+         'fifth layer form the bottom
+        MapData(map, x, y - 4).Blocked = 0
+        MapData(map, x - 1, y - 4).Blocked = 0
+        MapData(map, x - 2, y - 4).Blocked = 0
+        MapData(map, x - 3, y - 4).Blocked = 0
+        MapData(map, x - 4, y - 4).Blocked = 0
+        MapData(map, x - 5, y - 4).Blocked = 0
+        MapData(map, x - 6, y - 4).Blocked = 0
+        MapData(map, x + 1, y - 4).Blocked = 0
+        MapData(map, x + 2, y - 4).Blocked = 0
+        MapData(map, x + 3, y - 4).Blocked = 0
+        
+         'sixth layer form the bottom
+        MapData(map, x, y - 5).Blocked = 0
+        MapData(map, x - 1, y - 5).Blocked = 0
+        MapData(map, x - 2, y - 5).Blocked = 0
+        MapData(map, x - 3, y - 5).Blocked = 0
+        MapData(map, x - 4, y - 5).Blocked = 0
+        MapData(map, x - 5, y - 5).Blocked = 0
+        MapData(map, x - 6, y - 5).Blocked = 0
+        MapData(map, x + 1, y - 5).Blocked = 0
+        MapData(map, x + 2, y - 5).Blocked = 0
+        MapData(map, x + 3, y - 5).Blocked = 0
+        
+         'seventh layer form the bottom
+        MapData(map, x, y - 6).Blocked = 0
+        MapData(map, x - 1, y - 6).Blocked = 0
+        MapData(map, x - 2, y - 6).Blocked = 0
+        MapData(map, x - 3, y - 6).Blocked = 0
+        MapData(map, x - 4, y - 6).Blocked = 0
+        MapData(map, x - 5, y - 6).Blocked = 0
+        MapData(map, x - 6, y - 6).Blocked = 0
+        MapData(map, x + 1, y - 6).Blocked = 0
+        MapData(map, x + 2, y - 6).Blocked = 0
+        MapData(map, x + 3, y - 6).Blocked = 0
+        
+         'eighth layer form the bottom
+        MapData(map, x, y - 7).Blocked = 0
+        MapData(map, x - 1, y - 7).Blocked = 0
+        MapData(map, x - 2, y - 7).Blocked = 0
+        MapData(map, x - 3, y - 7).Blocked = 0
+        MapData(map, x - 4, y - 7).Blocked = 0
+        MapData(map, x - 5, y - 7).Blocked = 0
+        MapData(map, x - 6, y - 7).Blocked = 0
+        MapData(map, x + 1, y - 7).Blocked = 0
+        MapData(map, x + 2, y - 7).Blocked = 0
+        MapData(map, x + 3, y - 7).Blocked = 0
+    
+    End With
+End Sub
+
+Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer) As Boolean
+    IsEmperorCastleCreated = False
+    
+    Dim i As Integer
+    
+    
+    For i = 1 To UBound(CastleData)
+        If CastleData(i).owner_account_id = UserList(UserIndex).AccountID Then
+            
+            If (MapData(CastleData(i).castle_coordinates.outside.map, CastleData(i).castle_coordinates.outside.x, CastleData(i).castle_coordinates.outside.y).ObjInfo.ObjIndex = CASTLE_OBJ) Then
+                IsEmperorCastleCreated = True
+            End If
+            
+            Exit For
+        End If
+    Next i
+        
+End Function
+
+Public Function HasCastleRelocationCooldownPassed(ByVal CastleIndex As Integer) As Boolean
+HasCastleRelocationCooldownPassed = False
+    If DateDiff("d", CastleData(CastleIndex).foundation_date, DateTime.Now) >= 7 Then
+        HasCastleRelocationCooldownPassed = True
+    End If
+End Function
+
+
+
+Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As Integer)
+    On Error GoTo CreateEmperorCastle_Err
+    If IsEmperorCastleCreated(UserIndex) Then Exit Sub
+    Dim RS As ADODB.Recordset
+    With UserList(UserIndex)
+        
+        If IsEmperorCastleCreated(UserIndex) Then
+            If Not HasCastleRelocationCooldownPassed(ObjData(ObjIndex).AssignedCastleIndex) Then
+                'castle reasignment on cooldown errormsg
+                Exit Sub
+            End If
+            With CastleData(ObjData(ObjIndex).AssignedCastleIndex)
+                Call DestroyCastleInMap(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, ObjData(ObjIndex).AssignedCastleIndex)
+                'old castle location complete msg
+            End With
+        End If
+    
+        'update castle data in db
+        Set RS = Query(UPDATE_NEW_EMPEROR_CASTLE, .AccountID, .Name, DateToSQLite(DateTime.Now), 1)
+        'update castle coordinates in db
+        Set RS = Query(UPDATE_OUTSIDE_CASTLE_LOCATION, .flags.TargetMap, .flags.TargetX, .flags.TargetY)
+
+        Call CreateCastleInMap(.flags.TargetMap, .flags.TargetX, .flags.TargetY, ObjData(ObjIndex).AssignedCastleIndex, UserIndex)
+    End With
+    Exit Sub
+CreateEmperorCastle_Err:
+Call TraceError(Err.Number, Err.Description, "ModCastle.CreateEmperorCastle", Erl)
+End Sub
+
+
+Function CheckCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal trigger As Integer) As Boolean
+   CheckCastleEntryWhiteList = False
+   
+   'exception for castle owner
+   If CastleWhiteList.Item(UserList(UserIndex).AccountID) = trigger Then
+        CheckCastleEntryWhiteList = True
+        Exit Function
+   End If
+   
+   If Not CastleWhiteList.Exists(UserList(UserIndex).Name) Then
+        Exit Function
+   End If
+   
+   If CastleWhiteList.Item(UserList(UserIndex).Name) = trigger Then
+        CheckCastleEntryWhiteList = True
+   End If
+End Function
