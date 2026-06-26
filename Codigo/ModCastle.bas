@@ -235,6 +235,7 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
         MapData(map, x - 4, y).Blocked = e_Block.ALL_SIDES
         MapData(map, x - 5, y).Blocked = e_Block.ALL_SIDES
         MapData(map, x - 6, y).Blocked = e_Block.ALL_SIDES
+        MapData(map, x, y).Blocked = e_Block.ALL_SIDES
         MapData(map, x + 1, y).Blocked = e_Block.ALL_SIDES
         MapData(map, x + 2, y).Blocked = e_Block.ALL_SIDES
         MapData(map, x + 3, y).Blocked = e_Block.ALL_SIDES
