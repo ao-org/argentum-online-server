@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS "castle" (
 	"id" INTEGER PRIMARY KEY AUTOINCREMENT,
-	"trigger" integer NOT NULL UNIQUE,
+	"trigger" integer NOT NULL,
 	"owner_account_id"  integer NULL UNIQUE,
 	"owner_character_id" integer NULL UNIQUE,
 	"spawner_obj_id" integer NOT NULL UNIQUE,

@@ -16,14 +16,13 @@ Private Type t_CastleInfo
     is_active As Boolean
     castle_coordinates As t_CastleCoordinates
 End Type
-
 Public CastleData() As t_CastleInfo
 Public CastleWhiteList As Dictionary
 
 Private Const COUNT_ALL_CASTLES As String = "SELECT COUNT(*) FROM castle;"
-Private Const CHECK_EMPEROR_CASTLE As String = "SELECT 1 FROM castle WHERE owner_account_id = ?;"
+Private Const CHECK_EMPEROR_CASTLE As String = "SELECT * FROM castle WHERE owner_account_id = ?;"
 Private Const SELECT_ALL_CASTLES As String = "SELECT * FROM castle;"
-Private Const ADD_NEW_EMPEROR_CASTLE As String = "INSERT INTO castle (owner_account_id,owner_character_id, foundation_date, is_active,map,x,y) VALUES (?,?,?,?,?,?,?);"
+Private Const ADD_NEW_EMPEROR_CASTLE As String = "INSERT INTO castle (owner_account_id,owner_character_id, foundation_date, is_active,outside_map,outside_x,outside_y) VALUES (?,?,?,?,?,?,?);"
 Private Const SELECT_ALL_CASTLE_WHITELISTS As String = "Select * FROM castle_whitelist"
 Private Const CASTLE_OBJ = 6382
 
@@ -31,8 +30,14 @@ Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer) As Boolean
     IsEmperorCastleCreated = False
     Dim RS As ADODB.Recordset
     Set RS = Query(CHECK_EMPEROR_CASTLE, UserList(UserIndex).AccountID)
-    If RS Is Nothing Or RS.RecordCount = 0 Then Exit Function
-    IsEmperorCastleCreated = True
+    If RS Is Nothing Then
+        Exit Function
+    End If
+    
+    If Not IsNull(RS!foundation_date) Then
+        IsEmperorCastleCreated = True
+    End If
+        
 End Function
 
 Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As Integer)
@@ -40,7 +45,7 @@ Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As 
     If IsEmperorCastleCreated(UserIndex) Then Exit Sub
     Dim RS As ADODB.Recordset
     With UserList(UserIndex)
-        Set RS = Query(ADD_NEW_EMPEROR_CASTLE, .AccountID, .Name, SQLiteToDate(DateTime.Now), 1, .flags.TargetMap, .flags.TargetX, .flags.TargetY)
+        Set RS = Query(ADD_NEW_EMPEROR_CASTLE, .AccountID, .Name, DateToSQLite(DateTime.Now), 1, .flags.TargetMap, .flags.TargetX, .flags.TargetY)
         Call CreateCastleInMap(.flags.TargetMap, .flags.TargetX, .flags.TargetY, ObjData(ObjIndex).AssignedCastleIndex)
     End With
     Exit Sub
@@ -57,7 +62,9 @@ Public Sub LoadCastleModule()
     
     For i = LBound(CastleData) To UBound(CastleData)
         With CastleData(i)
-            Call CreateCastleInMap(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, i)
+            If InMapBounds(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y) And MapaValido(.castle_coordinates.outside.map) Then
+                Call CreateCastleInMap(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, i)
+            End If
         End With
     Next i
     

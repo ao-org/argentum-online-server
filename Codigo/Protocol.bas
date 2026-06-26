@@ -2950,8 +2950,11 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
                     Exit Sub
                 End If
+                
                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, x, y)
-                Call UserTargetableItem(UserIndex, x, y)
+                If ObjData(.invent.Object(.flags.TargetObjInvSlot).ObjIndex).OBJType <> otCastleSpawner Then
+                    Call UserTargetableItem(UserIndex, x, y)
+                End If
         End Select
     End With
     Exit Sub
