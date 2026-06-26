@@ -104,6 +104,10 @@ Public Sub LoadCastleData()
             CastleData(i).owner_char_id = (RS!owner_character_id)
         End If
             
+        If Not IsNull(RS!foundation_date) Then
+            CastleData(i).foundation_date = (RS!foundation_date)
+        End If
+        
         CastleData(i).spawner_obj_id = (RS!spawner_obj_id)
         CastleData(i).portal_obj_id = (RS!portal_obj_id)
         CastleData(i).is_active = (RS!is_active)
@@ -474,7 +478,7 @@ End Function
 
 Public Function HasCastleRelocationCooldownPassed(ByVal CastleIndex As Integer) As Boolean
 HasCastleRelocationCooldownPassed = False
-    If DateDiff("d", CastleData(CastleIndex).foundation_date, DateTime.Now) >= 7 Then
+    If CastleData(CastleIndex).foundation_date - DateTime.Now >= 7 Then
         HasCastleRelocationCooldownPassed = True
     End If
 End Function
@@ -483,7 +487,6 @@ End Function
 
 Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As Integer)
     On Error GoTo CreateEmperorCastle_Err
-    If IsEmperorCastleCreated(UserIndex) Then Exit Sub
     Dim RS As ADODB.Recordset
     With UserList(UserIndex)
         
