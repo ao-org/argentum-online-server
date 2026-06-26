@@ -21,8 +21,11 @@ Public CastleWhiteList As Dictionary
 
 Private Const COUNT_ALL_CASTLES As String = "SELECT COUNT(*) FROM castle;"
 
-Private Const UPDATE_NEW_EMPEROR_CASTLE As String = "INSERT INTO castle (owner_account_id,owner_character_id, foundation_date, is_active) VALUES (?,?,?,?);"
-Private Const UPDATE_OUTSIDE_CASTLE_LOCATION As String = "INSERT INTO castle_coordinates (outside_map,outside_x,outside_y) VALUES (?,?,?)"
+
+Private Const UPDATE_EMPEROR_CASTLE As String = "UPDATE castle SET owner_account_id = ?, owner_character_id = ?, foundation_date = ?, is_active = ?  WHERE id = ?;"
+
+Private Const UPDATE_OUTSIDE_CASTLE_LOCATION As String = "UPDATE castle_coordinates SET outside_map = ?, outside_x = ?, outside_y = ? WHERE id = ?;"
+
 
 
 Private Const SELECT_ALL_CASTLE_WHITELISTS As String = "Select * FROM castle_whitelist"
@@ -153,6 +156,13 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
     Dim UserTargetMap As Integer
     
     With UserList(UserIndex)
+    
+        If .flags.TargetX = 0 Or .flags.TargetY = 0 Or .flags.TargetMap = 0 Then
+        'invalid target position errormsg
+            Exit Function
+        End If
+    
+    
         CastleTopLeftCorner.x = .flags.TargetX - 6
         CastleTopLeftCorner.y = .flags.TargetY - 7
         CastleTopLeftCorner.map = .flags.TargetMap
@@ -486,9 +496,9 @@ Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As 
         End If
     
         'update castle data in db
-        Set RS = Query(UPDATE_NEW_EMPEROR_CASTLE, .AccountID, .Name, DateToSQLite(DateTime.Now), 1)
+        Set RS = Query(UPDATE_EMPEROR_CASTLE, .AccountID, .Id, DateToSQLite(DateTime.Now), 1, ObjData(ObjIndex).AssignedCastleIndex)
         'update castle coordinates in db
-        Set RS = Query(UPDATE_OUTSIDE_CASTLE_LOCATION, .flags.TargetMap, .flags.TargetX, .flags.TargetY)
+        Set RS = Query(UPDATE_OUTSIDE_CASTLE_LOCATION, .flags.TargetMap, .flags.TargetX, .flags.TargetY, ObjData(ObjIndex).AssignedCastleIndex)
 
         Call CreateCastleInMap(.flags.TargetMap, .flags.TargetX, .flags.TargetY, ObjData(ObjIndex).AssignedCastleIndex, UserIndex)
     End With
