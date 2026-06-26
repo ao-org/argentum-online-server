@@ -199,6 +199,9 @@ End Function
 
 
 Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal CastleIndex As Integer, Optional ByVal UserIndex As Integer = 0)
+    'preemptively erase any object in the same tile of the foundation trigger
+    Call EraseObj(MapData(map, x, y).ObjInfo.Amount, map, x, y)
+    
     Dim CastleObj As t_Obj
     CastleObj.Amount = 1
     CastleObj.ObjIndex = CASTLE_OBJ
