@@ -610,6 +610,7 @@ Sub Main()
     Call LoadQuests
     Call LoadPhoenixModule
     Call LoadUnderworldModule
+    Call LoadCastleModule
     'Comentado porque hay worldsave en ese mapa!
     Dim LoopC As Integer
     'Resetea las conexiones de los usuarios
