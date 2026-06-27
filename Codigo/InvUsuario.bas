@@ -2739,6 +2739,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Call QuitarUserInvItem(UserIndex, Slot, 1)
                     Call UpdateUserInv(False, UserIndex, Slot)
                 End If
+            Case e_OBJType.otCastleSpawner
+                .flags.UsingItemSlot = .flags.TargetObjInvSlot
+                Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
         End Select
     End With
     Exit Sub
@@ -2964,12 +2967,16 @@ End Function
 Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
     On Error GoTo UserTargetableItem_Err
     With UserList(UserIndex)
+    
+    
+        If .flags.UsingItemSlot = 0 Then Exit Sub
+
+        Dim ObjIndex As Integer
+        ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
         If IsItemInCooldown(UserList(UserIndex), .invent.Object(.flags.UsingItemSlot)) Then
             Exit Sub
         End If
-        If .flags.UsingItemSlot = 0 Then Exit Sub
-        Dim ObjIndex As Integer
-        ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
+        
         With ObjData(ObjIndex)
             If .MinHp > UserList(UserIndex).Stats.MinHp Then
                 Call WriteLocaleMsg(UserIndex, MsgRequiresMoreHealth, e_FontTypeNames.FONTTYPE_INFO)
@@ -2982,15 +2989,23 @@ Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer
                 Call WriteLocaleMsg(UserIndex, MsgTiredToPerformAction, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-            Select Case .Subtipo
-                Case e_UssableOnTarget.eRessurectionItem
-                    Call ResurrectWithItem(UserIndex)
-                Case e_UssableOnTarget.eTrap
-                    Call PlaceTrap(UserIndex, TileX, TileY)
-                Case e_UssableOnTarget.eArpon
-                    Call UseArpon(UserIndex)
-                Case e_UssableOnTarget.eHandCannon
-                    Call UseHandCannon(UserIndex, TileX, TileY)
+            
+            Select Case .OBJType
+                Case e_OBJType.otCastleSpawner
+                    If IsValidCastlePosition(UserIndex) Then
+                        Call CreateNewEmperorCastle(UserIndex, ObjIndex)
+                    End If
+                Case Else
+                    Select Case .Subtipo
+                        Case e_UssableOnTarget.eRessurectionItem
+                            Call ResurrectWithItem(UserIndex)
+                        Case e_UssableOnTarget.eTrap
+                            Call PlaceTrap(UserIndex, TileX, TileY)
+                        Case e_UssableOnTarget.eArpon
+                            Call UseArpon(UserIndex)
+                        Case e_UssableOnTarget.eHandCannon
+                            Call UseHandCannon(UserIndex, TileX, TileY)
+                    End Select
             End Select
         End With
         .flags.UsingItemSlot = 0

@@ -323,6 +323,16 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
     With UserList(UserIndex)
         'Controla las salidas
         If InMapBounds(Map, x, y) Then
+        
+            If MapData(Map, x, y).trigger >= EMPEROR_CASTLE_ENTRY_1 Then
+                If MapData(Map, x, y).trigger <= EMPEROR_CASTLE_ENTRY_20 Then
+                    If Not CheckCastleEntryWhiteList(UserIndex, MapData(map, x, y).trigger) Then
+                        Call WriteLocaleMsg(UserIndex, MSG_NOT_IN_THE_CASTLE_WHITELIST, FONTTYPE_INFOBOLD)
+                        Exit Sub
+                    End If
+                End If
+            End If
+            
             If MapData(Map, x, y).trigger = e_Trigger.TRANSFER_ONLY_DEAD Then
                 If .flags.Muerto <> 1 Then Exit Sub  ' si está vivo, no teletransportar
             End If
