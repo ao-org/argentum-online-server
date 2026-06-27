@@ -1503,34 +1503,76 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
     If MapInfo(UserList(VictimIndex).pos.Map).Seguro = 1 Then
         If esArmada(attackerIndex) Then
             If UserList(attackerIndex).Faccion.RecompensasReal >= 3 Then
-                If UserList(VictimIndex).pos.Map = 58 Or UserList(VictimIndex).pos.Map = 59 Or UserList(VictimIndex).pos.Map = 60 Then
-                    'Msg1060= Huye de la ciudad! estas siendo atacado y no podrás defenderte.
-                    Call WriteLocaleMsg(VictimIndex, "1060", e_FontTypeNames.FONTTYPE_WARNING)
-                    PuedeAtacar = True 'Beneficio de Armadas que atacan en su ciudad.
-                    Exit Function
-                End If
+                Select Case UserList(VictimIndex).pos.map
+                    Case 58, 59, 60, 61, 66, 159, 294, 319, 338, 339, 346
+                        PuedeAtacar = True
+                        Exit Function
+                End Select
             End If
         End If
         If esCaos(attackerIndex) Then
             If UserList(attackerIndex).Faccion.RecompensasCaos >= 3 Then
-                If UserList(VictimIndex).pos.Map = 195 Or UserList(VictimIndex).pos.Map = 196 Then
-                    'Msg1061= Huye de la ciudad! estas siendo atacado y no podrás defenderte.
-                    Call WriteLocaleMsg(VictimIndex, "1061", e_FontTypeNames.FONTTYPE_WARNING)
-                    PuedeAtacar = True 'Beneficio de Caos que atacan en su ciudad.
-                    Exit Function
-                End If
+                Select Case UserList(VictimIndex).pos.map
+                    Case 93, 195, 196, 197, 219, 220, 286, 295
+                        PuedeAtacar = True
+                        Exit Function
+                End Select
             End If
         End If
-        'Msg1062= Esta es una zona segura, aqui no podes atacar otros usuarios.
-        Call WriteLocaleMsg(attackerIndex, "1062", e_FontTypeNames.FONTTYPE_WARNING)
+        ' Invasor puede contraatacar a cualquier defensor que lo atacó primero
+        Dim i As Integer
+        For i = 0 To 9
+            If UserList(attackerIndex).flags.LastCityAttackers(i).ArrayIndex = VictimIndex Then
+                If UserList(attackerIndex).flags.LastCityAttackers(i).VersionId = UserList(VictimIndex).VersionId Then
+                    If UserList(VictimIndex).pos.map = UserList(attackerIndex).pos.map Then
+                        If (GlobalFrameTime - UserList(attackerIndex).flags.LastCityAttackTime) <= 30000 Then
+                            PuedeAtacar = True
+                            Exit Function
+                        Else
+                            Call WriteLocaleMsg(attackerIndex, MSG_TIEMPO_CONTRAATAQUE_EXPIRADO, e_FontTypeNames.FONTTYPE_WARNING)
+                            Dim j As Integer
+                            For j = 0 To 9
+                                UserList(attackerIndex).flags.LastCityAttackers(j).ArrayIndex = 0
+                                UserList(attackerIndex).flags.LastCityAttackers(j).VersionId = 0
+                            Next j
+                            UserList(attackerIndex).flags.LastCityAttackTime = 0
+                            Exit For
+                        End If
+                    End If
+                End If
+            End If
+        Next i
+        Call WriteLocaleMsg(attackerIndex, MSG_ZONA_SEGURA, e_FontTypeNames.FONTTYPE_WARNING)
         PuedeAtacar = False
         Exit Function
     End If
     'Estas atacando desde un trigger seguro? o tu victima esta en uno asi?
     If MapData(UserList(VictimIndex).pos.Map, UserList(VictimIndex).pos.x, UserList(VictimIndex).pos.y).trigger = e_Trigger.ZonaSegura Or MapData(UserList( _
             attackerIndex).pos.Map, UserList(attackerIndex).pos.x, UserList(attackerIndex).pos.y).trigger = e_Trigger.ZonaSegura Then
-        'Msg1063= No podes pelear aqui.
-        Call WriteLocaleMsg(attackerIndex, "1063", e_FontTypeNames.FONTTYPE_WARNING)
+        ' Invasor puede contraatacar a cualquier defensor que lo atacó primero
+        Dim k As Integer
+        For k = 0 To 9
+            If UserList(attackerIndex).flags.LastCityAttackers(k).ArrayIndex = VictimIndex Then
+                If UserList(attackerIndex).flags.LastCityAttackers(k).VersionId = UserList(VictimIndex).VersionId Then
+                    If UserList(VictimIndex).pos.map = UserList(attackerIndex).pos.map Then
+                        If (GlobalFrameTime - UserList(attackerIndex).flags.LastCityAttackTime) <= 30000 Then
+                            PuedeAtacar = True
+                            Exit Function
+                        Else
+                            Call WriteLocaleMsg(attackerIndex, MSG_TIEMPO_CONTRAATAQUE_EXPIRADO, e_FontTypeNames.FONTTYPE_WARNING)
+                            Dim l As Integer
+                            For l = 0 To 9
+                                UserList(attackerIndex).flags.LastCityAttackers(l).ArrayIndex = 0
+                                UserList(attackerIndex).flags.LastCityAttackers(l).VersionId = 0
+                            Next l
+                            UserList(attackerIndex).flags.LastCityAttackTime = 0
+                            Exit For
+                        End If
+                    End If
+                End If
+            End If
+        Next k
+        Call WriteLocaleMsg(attackerIndex, MSG_NO_PELEAR_AQUI, e_FontTypeNames.FONTTYPE_WARNING)
         PuedeAtacar = False
         Exit Function
     End If

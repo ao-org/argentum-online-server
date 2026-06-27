@@ -1379,7 +1379,10 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
         End If
         If Hechizos(uh).TargetEffectType = e_TargetEffectType.eNegative Then
             If IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then
-                Call RegisterNewAttack(UserList(UserIndex).flags.TargetUser.ArrayIndex, UserIndex)
+                Dim targetIdx As Integer
+                targetIdx = UserList(UserIndex).flags.targetUser.ArrayIndex
+                Call RegisterNewAttack(targetIdx, UserIndex)
+                Call RegisterCityAttack(targetIdx, UserIndex)
                 If IsFeatureEnabled("remove-inv-on-attack") Then
                     Call RemoveUserInvisibility(UserIndex)
                 End If
@@ -4198,4 +4201,26 @@ Public Sub UseSpellSlot(ByVal UserIndex As Integer, ByVal spellSlot As Integer)
     Exit Sub
 UseSpellSlot_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.UseSpellSlot", Erl)
+End Sub
+
+Public Sub RegisterCityAttack(ByVal targetUser As Integer, ByVal attackerIndex As Integer)
+    If MapInfo(UserList(targetUser).pos.map).Seguro = 1 Then
+        Dim i As Integer
+        For i = 0 To 9
+            If UserList(targetUser).flags.LastCityAttackers(i).ArrayIndex = attackerIndex Then
+                UserList(targetUser).flags.LastCityAttackTime = GlobalFrameTime
+                Exit Sub
+            End If
+        Next i
+        For i = 0 To 9
+            If UserList(targetUser).flags.LastCityAttackers(i).ArrayIndex = 0 Then
+                Call SetUserRef(UserList(targetUser).flags.LastCityAttackers(i), attackerIndex)
+                UserList(targetUser).flags.LastCityAttackTime = GlobalFrameTime
+                Exit Sub
+            End If
+        Next i
+        ' Sin slot libre, sobreescribir el primero
+        Call SetUserRef(UserList(targetUser).flags.LastCityAttackers(0), attackerIndex)
+        UserList(targetUser).flags.LastCityAttackTime = GlobalFrameTime
+    End If
 End Sub
