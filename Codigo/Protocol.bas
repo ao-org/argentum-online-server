@@ -2944,12 +2944,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     Call WriteLocaleMsg(UserIndex, MSG_PICKUP_UNAVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Case e_Skill.TargetableItem
+            
                 If .Stats.MinSta < ObjData(.invent.Object(.flags.TargetObjInvSlot).ObjIndex).MinSta Then
                     Call WriteLocaleMsg(UserIndex, MsgNotEnoughtStamina, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg2129=¡No tengo energía!
                     Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
                     Exit Sub
                 End If
+                
                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, x, y)
                 Call UserTargetableItem(UserIndex, x, y)
         End Select
@@ -5416,7 +5418,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
                     'Msg1201= Usuario offline, echando de los consejos
                     Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_ECHANDO_CONSEJOS, e_FontTypeNames.FONTTYPE_INFO)
                     Dim Status As Integer
-                    Status = GetDBValue("user", "status", "name", username)
+                    Status = GetDBValue("user", "status", "name", LCase$(username))
                     Call EcharConsejoDatabase(username, IIf(Status = 4, 2, 3))
                     'Msg1202= Usuario ¬1
                     Call WriteLocaleMsg(UserIndex, MSG_USUARIO, e_FontTypeNames.FONTTYPE_INFO, username)
@@ -5529,7 +5531,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                     'Msg1208= Usuario offline, echando de la facción
                     Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_ECHANDO_FACCION, e_FontTypeNames.FONTTYPE_INFO)
                     Dim Status As Integer
-                    Status = GetDBValue("user", "status", "name", username)
+                    Status = GetDBValue("user", "status", "name", LCase$(username))
                     If Status = e_Facciones.Caos Then
                         Call EcharLegionDatabase(username)
                         'Msg1209= Usuario ¬1
@@ -5584,7 +5586,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                     'Msg1213= Usuario offline, echando de la facción
                     Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_ECHANDO_FACCION_1213, e_FontTypeNames.FONTTYPE_INFO)
                     Dim Status As Integer
-                    Status = GetDBValue("user", "status", "name", username)
+                    Status = GetDBValue("user", "status", "name", LCase$(username))
                     If Status = e_Facciones.Armada Then
                         Call EcharArmadaDatabase(username)
                         'Msg1214= Usuario ¬1
@@ -7911,91 +7913,16 @@ HandlePublicarPersonajeMAO_Err:
 End Sub
 
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
-    
-Dim isSkin As Boolean
-Dim Slot As Byte
-
     On Error GoTo HandleDeleteItem_Err:
     
+    Dim isSkin As Boolean
+    Dim Slot As Byte
     isSkin = reader.ReadBool
     Slot = reader.ReadInt8()
     
-    With UserList(UserIndex)
-        
-        If Not isSkin Then
-            If Slot > getMaxInventorySlots(UserIndex) Or Slot <= 0 Then Exit Sub
-            If MapInfo(.pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
-                'Msg1285= Solo puedes eliminar items en zona segura.
-                Call WriteLocaleMsg(UserIndex, MSG_SOLO_PUEDES_ELIMINAR_ITEMS_ZONA_SEGURA, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            If .flags.Muerto = 1 Then
-                'Msg1286= No puede eliminar items cuando estas muerto.
-                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDE_ELIMINAR_ITEMS_CUANDO_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            If .invent.Object(Slot).Equipped = 0 Then
-                .invent.Object(Slot).amount = 0
-                .invent.Object(Slot).Equipped = 0
-                .invent.Object(Slot).ObjIndex = 0
-                Call UpdateUserInv(False, UserIndex, Slot)
-                'Msg1287= Objeto eliminado correctamente.
-                Call WriteLocaleMsg(UserIndex, MSG_OBJETO_ELIMINADO_CORRECTAMENTE, e_FontTypeNames.FONTTYPE_INFO)
-            Else
-                'Msg1288= No puedes eliminar un objeto estando equipado.
-                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_ELIMINAR_OBJETO_ESTANDO_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-        Else
-            If Slot > MAX_SKINSINVENTORY_SLOTS Or Slot <= 0 Then Exit Sub
-            Dim SkinObj As t_Obj
-            SkinObj.ObjIndex = .Invent_Skins.Object(Slot).ObjIndex
-            SkinObj.Amount = 1
-            SkinObj.ElementalTags = 0
-
-            If MapInfo(.pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
-                Call WriteLocaleMsg(UserIndex, MSG_SOLO_PUEDES_ELIMINAR_ITEMS_ZONA_SEGURA, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
-            If .flags.Muerto = 1 Then
-                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDE_ELIMINAR_ITEMS_CUANDO_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
-            If Not IsPatreon(UserIndex) Then
-                Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_MEJORAR_CUENTA_PODER_AGREGAR_SKINS_MAS_INFORMACION, FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
-            If .Stats.Creditos < 50 Then
-                Call WriteLocaleMsg(UserIndex, MSG_INSUFICIENT_PATREON_CREDITS, FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
-            If ObjData(SkinObj.ObjIndex).Instransferible > 0 Then
-                Call WriteLocaleMsg(UserIndex, MSG_NO_OBJETO_INTRANSFERIBLE_PODES_VENDERLO, FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
-            If .Invent_Skins.Object(Slot).Equipped = 0 Then
-                If Not MeterItemEnInventario(UserIndex, SkinObj) Then
-                    Exit Sub
-                End If
-                .Stats.Creditos = .Stats.Creditos - 50
-                Call LogShopTransactions("PJ ID: " & .Id & " Nick: " & GetUserRealName(UserIndex) & " -> Borró el Skin: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Name & " Tipo: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType & " Valor: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Valor)
-                Call DesequiparSkin(UserIndex, Slot)
-                .Invent_Skins.Object(Slot).Deleted = True
-                Call WriteChangeSkinSlot(UserIndex, 0, Slot)
-                Call WriteLocaleMsg(UserIndex, MSG_OBJETO_ELIMINADO_CORRECTAMENTE, e_FontTypeNames.FONTTYPE_INFO)
-            Else
-                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_ELIMINAR_OBJETO_ESTANDO_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-        End If
-    End With
-    
+    Call WriteConsoleMsg(UserIndex, "Funcion deshabilitada momentaneamente / Function disabled temporarily.", e_FontTypeNames.FONTTYPE_INFO)
     Exit Sub
+    
 HandleDeleteItem_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteItem", Erl)
 End Sub

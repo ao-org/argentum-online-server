@@ -1198,6 +1198,8 @@ Sub LoadOBJData()
                     .Cooldown = val(Leer.GetValue(ObjKey, "Cooldown"))
                 Case e_OBJType.otTeleport
                     .Radio = val(Leer.GetValue(ObjKey, "Radio"))
+                Case e_OBJType.otCastleSpawner
+                    .AssignedCastleIndex = val(Leer.GetValue(ObjKey, "AssignedCastleIndex"))
                 Case e_OBJType.otChest
                     .CantItem = val(Leer.GetValue(ObjKey, "CantItem"))
                     Select Case .Subtipo
