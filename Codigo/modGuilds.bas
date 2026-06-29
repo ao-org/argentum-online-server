@@ -32,7 +32,8 @@ Public CANTIDADDECLANES           As Integer 'cantidad actual de clanes en el se
 Private guilds(1 To MAX_GUILDS)   As clsClan 'array global de guilds, se indexa por userlist().guildindex
 Private Const CANTIDADMAXIMACODEX As Byte = 8 'cantidad maxima de codecs que se pueden definir
 Public Const MAXASPIRANTES        As Byte = 10 'cantidad maxima de aspirantes que puede tener un clan acumulados a la vez
-
+Private Const COOLDOWN_ABANDON_HORAS   As Integer = 24
+Private Const COOLDOWN_EXPULSION_HORAS As Integer = 48
 
 'alineaciones permitidas
 Public Enum e_ALINEACION_GUILD
@@ -145,6 +146,7 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal ExpellUs
                 If m_EsGuildLeader(ExpellUserId, GI) Then guilds(GI).SetLeader (guilds(GI).Fundador)
                 Call guilds(GI).DesConectarMiembro(UserReference.ArrayIndex)
                 Call guilds(GI).ExpulsarMiembro(ExpellUserId)
+                Call AplicarCooldownClan(ExpellUserId, UserList(Expulsador).Id <> ExpellUserId)
                 Call LogClanes(ExpelledName & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
                 UserList(UserReference.ArrayIndex).GuildIndex = 0
                 Map = UserList(UserReference.ArrayIndex).pos.Map
@@ -168,6 +170,7 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal ExpellUs
             If m_PuedeSalirDeClan(ExpellUserId, GI, Expulsador) Then
                 If m_EsGuildLeader(ExpellUserId, GI) Then guilds(GI).SetLeader (guilds(GI).Fundador)
                 Call guilds(GI).ExpulsarMiembro(ExpellUserId)
+                Call AplicarCooldownClan(ExpellUserId, UserList(Expulsador).Id <> ExpellUserId)
                 Call LogClanes(ExpelledName & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
                 Map = GetMapDatabase(ExpelledName)
                 If MapInfo(Map).SoloClanes And MapInfo(Map).Salida.Map <> 0 Then
@@ -854,6 +857,10 @@ Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As Strin
         refError = 2010 'Ya perteneces a un clan, debes salir del mismo antes de solicitar ingresar a otro.
         Exit Function
     End If
+    If TieneCooldownClan(UserList(UserIndex).Id) Then
+        refError = "No puedes unirte a un clan por " & TiempoRestanteCooldown(UserList(UserIndex).Id) & " más."
+        Exit Function
+    End If
     If EsNewbie(UserIndex) Then
         refError = 2005 'Los newbies no tienen derecho a entrar a un clan.
         Exit Function
@@ -1187,3 +1194,64 @@ Public Function GetGuildMemberList(ByVal GuildName As String) As Long()
 GetGuildMemberList_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.GetGuildMemberList", Erl)
 End Function
+
+Private Sub AplicarCooldownClan(ByVal UserId As Long, ByVal EsExpulsion As Boolean)
+    On Error GoTo AplicarCooldownClan_Err
+    Dim horas     As Integer
+    Dim expiresAt As Long
+    horas = IIf(EsExpulsion, COOLDOWN_EXPULSION_HORAS, COOLDOWN_ABANDON_HORAS)
+    expiresAt = CLng(DateDiff("s", #1/1/1970#, DateAdd("h", horas, Now())))
+    Call Execute( _
+        "INSERT INTO guild_cooldowns (user_id, expires_at, reason) VALUES (?,?,?) " & _
+        "ON CONFLICT(user_id) DO UPDATE SET expires_at = excluded.expires_at, reason = excluded.reason;", _
+        UserId, expiresAt, IIf(EsExpulsion, 2, 1))
+    Exit Sub
+AplicarCooldownClan_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.AplicarCooldownClan", Erl)
+End Sub
+
+Private Function TieneCooldownClan(ByVal UserId As Long) As Boolean
+    On Error GoTo TieneCooldownClan_Err
+    Dim RS      As ADODB.Recordset
+    Dim ahoraTs As Long
+    ahoraTs = CLng(DateDiff("s", #1/1/1970#, Now()))
+    Set RS = Query( _
+        "SELECT 1 FROM guild_cooldowns WHERE user_id = ? AND expires_at > ? LIMIT 1;", _
+        UserId, ahoraTs)
+    TieneCooldownClan = (Not RS Is Nothing) And (RS.RecordCount > 0)
+    Exit Function
+TieneCooldownClan_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.TieneCooldownClan", Erl)
+End Function
+
+Private Function TiempoRestanteCooldown(ByVal UserId As Long) As String
+    On Error GoTo TiempoRestanteCooldown_Err
+    Dim RS        As ADODB.Recordset
+    Dim ahoraTs   As Long
+    Dim diffSeg   As Long
+    Dim horas     As Long
+    Dim minutos   As Long
+    Dim resultado As String
+    ahoraTs = CLng(DateDiff("s", #1/1/1970#, Now()))
+    Set RS = Query( _
+        "SELECT expires_at FROM guild_cooldowns WHERE user_id = ? AND expires_at > ? LIMIT 1;", _
+        UserId, ahoraTs)
+    If RS Is Nothing Or RS.RecordCount = 0 Then
+        TiempoRestanteCooldown = ""
+        Exit Function
+    End If
+    diffSeg = RS.Fields("expires_at").value - ahoraTs
+    horas = diffSeg \ 3600
+    minutos = (diffSeg Mod 3600) \ 60
+    If horas > 0 Then
+        resultado = horas & " hora" & IIf(horas <> 1, "s", "")
+        If minutos > 0 Then resultado = resultado & " y " & minutos & " minuto" & IIf(minutos <> 1, "s", "")
+    Else
+        resultado = minutos & " minuto" & IIf(minutos <> 1, "s", "")
+    End If
+    TiempoRestanteCooldown = resultado
+    Exit Function
+TiempoRestanteCooldown_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.TiempoRestanteCooldown", Erl)
+End Function
+
