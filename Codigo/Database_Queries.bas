@@ -303,6 +303,7 @@ Private Sub ConstruirQuery_GuardarPersonaje()
     QueryBuilder.Append "return_y = ?, "
     QueryBuilder.Append "jinete_level = ?, "
     QueryBuilder.Append "backpack_id = ? "
+    QueryBuilder.Append "last_guild_leave = ?"
     QueryBuilder.Append "WHERE id = ?"
     ' Guardo la query ensamblada
     QUERY_UPDATE_MAINPJ = QueryBuilder.ToString

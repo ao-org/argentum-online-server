@@ -1224,7 +1224,7 @@ Public Function GetLastGuildLeaveFromDb(ByRef CharacterName As String) As String
             Exit Function
             'character doesnt exist in db?
         End If
-        GetLastGuildLeaveFromDb = (RS!last_guild_leave_timestamp)
+        GetLastGuildLeaveFromDb = (RS!last_guild_leave)
 GetLastGuildLeaveFromDb_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.GetLastGuildLeaveFromDb", Erl)
 End Function
