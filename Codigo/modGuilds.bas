@@ -32,8 +32,8 @@ Public CANTIDADDECLANES           As Integer 'cantidad actual de clanes en el se
 Private guilds(1 To MAX_GUILDS)   As clsClan 'array global de guilds, se indexa por userlist().guildindex
 Private Const CANTIDADMAXIMACODEX As Byte = 8 'cantidad maxima de codecs que se pueden definir
 Public Const MAXASPIRANTES        As Byte = 10 'cantidad maxima de aspirantes que puede tener un clan acumulados a la vez
-Private Const GET_CHARACTER_LAST_GUILD_JOIN As String = "SELECT last_guild_leave_timestamp FROM user WHERE name = ?"
-Private Const UPDATE_CHARACTER_LAST_GUILD_JOIN As String = "UPDATE user SET last_guild_leave_timestamp = ? WHERE name = ?"
+Private Const GET_CHARACTER_LAST_GUILD_JOIN As String = "SELECT last_guild_leave FROM user WHERE name = ?"
+Private Const UPDATE_CHARACTER_LAST_GUILD_JOIN As String = "UPDATE user SET last_guild_leave = ? WHERE name = ?"
 
 
 
@@ -150,7 +150,7 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal ExpellUs
                 Call guilds(GI).ExpulsarMiembro(ExpellUserId)
                 Call LogClanes(ExpelledName & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
                 UserList(UserReference.ArrayIndex).GuildIndex = 0
-                UserList(UserReference.ArrayIndex).LastGuildLeaveTimestamp = DateTime.Now
+                UserList(UserReference.ArrayIndex).LastGuildLeave = DateTime.Now
                 Map = UserList(UserReference.ArrayIndex).pos.Map
                 If MapInfo(Map).SoloClanes And MapInfo(Map).Salida.Map <> 0 Then
                     Call WarpUserChar(UserReference.ArrayIndex, MapInfo(Map).Salida.Map, MapInfo(Map).Salida.x, MapInfo(Map).Salida.y, True)
@@ -896,7 +896,7 @@ Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As Strin
             Call guilds(ViejoGuildINdex).RetirarAspirante(UserList(UserIndex).name)
         End If
     End If
-    Call SendData(SendTarget.ToDiosesYclan, NuevoGuildIndex, PrepareMessageGuildChat("Msg2039¬" & UserList(UserIndex).name, 7))  'Msg2039=Clan: [¬1] ha enviado solicitud para unirse al clan.
+    Call SendData(SendTarget.ToDiosesYclan, NuevoGuildIndex, PrepareMessageGuildChat("Msg2039¬" & UserList(UserIndex).Name, 7))  'Msg2039=Clan: [¬1] ha enviado solicitud para unirse al clan.
     Call guilds(NuevoGuildIndex).NuevoAspirante(UserList(UserIndex).name, Solicitud)
     a_NuevoAspirante = True
     Exit Function
@@ -1203,12 +1203,11 @@ Public Function IsAspirantOnGuildJoinCooldown(ByVal UserIndex As Integer, Option
     GuildLeaveCooldownInDays = SvrConfig.GetValue("GuildLeaveCooldownInDays")
     With UserList(UserIndex)
         If .flags.UserLogged Then
-            CharacterLastLeave = .LastGuildLeaveTimestamp
+            CharacterLastLeave = .LastGuildLeave
         Else
-            CharacterLastLeave = GetLastGuildLeaveFromDb()
-            End If
+            CharacterLastLeave = GetLastGuildLeaveFromDb(CharacterName)
         End If
-        If .LastGuildLeaveTimestamp - DateTime.Now <= GuildLeaveCooldownInDays Then
+        If .LastGuildLeave - DateTime.Now <= GuildLeaveCooldownInDays Then
                 'cant rejoin errormsg
             Exit Function
         End If
@@ -1216,7 +1215,7 @@ Public Function IsAspirantOnGuildJoinCooldown(ByVal UserIndex As Integer, Option
     End With
 End Function
 
-Public Function GetLastGuildLeaveFromDb() As String
+Public Function GetLastGuildLeaveFromDb(ByRef CharacterName As String) As String
     On Error GoTo GetLastGuildLeaveFromDb_Err
         Dim RS As ADODB.Recordset
         Set RS = Query(GET_CHARACTER_LAST_GUILD_JOIN, LCase(CharacterName))
@@ -1236,7 +1235,7 @@ Public Sub UpdateLastGuildLeaveToDb(ByRef CharacterName As String)
     Set RS = Query(UPDATE_CHARACTER_LAST_GUILD_JOIN, DateTime.Now, CharacterName)
     If RS Is Nothing Or RS.RecordCount = 0 Then
         Debug.Assert False
-        Exit Function
+        Exit Sub
             'character doesnt exist in db?
     End If
 UpdateLastGuildLeaveToDb_Err:
