@@ -878,6 +878,7 @@ Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As Strin
     End If
     If IsAspirantOnGuildJoinCooldown(UserIndex) Then
         refError = 2225
+        Exit Function
     End If
     Dim NuevoGuildAspirantes() As String
     NuevoGuildAspirantes = guilds(NuevoGuildIndex).GetAspirantes()
@@ -1201,7 +1202,7 @@ Public Function IsAspirantOnGuildJoinCooldown(ByVal UserIndex As Integer) As Boo
     Dim GuildLeaveCooldownInDays As Long
     GuildLeaveCooldownInDays = SvrConfig.GetValue("GuildLeaveCooldownInDays")
     With UserList(UserIndex)
-        If CLng(.LastGuildLeave - DateTime.Now) <= GuildLeaveCooldownInDays Then
+        If CLng(DateTime.Now - .LastGuildLeave) <= GuildLeaveCooldownInDays Then
                 'cant rejoin errormsg
             Exit Function
         End If
@@ -1213,7 +1214,7 @@ End Function
 Public Sub UpdateLastGuildLeaveToDb(ByRef CharacterName As String)
     On Error GoTo UpdateLastGuildLeaveToDb_Err
     Dim RS As ADODB.Recordset
-    Set RS = Query(UPDATE_CHARACTER_LAST_GUILD_JOIN, DateTime.Now, CharacterName)
+    Set RS = Query(UPDATE_CHARACTER_LAST_GUILD_JOIN, DateToSQLite(DateTime.Now), CharacterName)
     If RS Is Nothing Or RS.RecordCount = 0 Then
         Debug.Assert False
         Exit Sub
