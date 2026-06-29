@@ -320,7 +320,7 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .Stats.Advertencias = RS!warnings
         .GuildIndex = SanitizeNullValue(RS!Guild_Index, 0)
         .LastGuildRejection = SanitizeNullValue(RS!guild_rejected_because, vbNullString)
-        .LastGuildLeave = RS!last_guild_leave
+        .LastGuildLeave = SanitizeNullValue(RS!last_guild_leave, -657434)
     End With
 End Sub
 

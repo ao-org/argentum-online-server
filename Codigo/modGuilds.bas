@@ -859,9 +859,6 @@ Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As Strin
         refError = 2010 'Ya perteneces a un clan, debes salir del mismo antes de solicitar ingresar a otro.
         Exit Function
     End If
-    If IsAspirantOnGuildJoinCooldown(UserIndex) Then
-        Exit Function
-    End If
     If EsNewbie(UserIndex) Then
         refError = 2005 'Los newbies no tienen derecho a entrar a un clan.
         Exit Function
@@ -878,6 +875,9 @@ Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As Strin
     If guilds(NuevoGuildIndex).CantidadAspirantes >= MAXASPIRANTES Then
         refError = 2008 'El clan tiene demasiados aspirantes. Contáctate con un miembro para que procese las solicitudes.
         Exit Function
+    End If
+    If IsAspirantOnGuildJoinCooldown(UserIndex) Then
+        refError = 2225
     End If
     Dim NuevoGuildAspirantes() As String
     NuevoGuildAspirantes = guilds(NuevoGuildIndex).GetAspirantes()
@@ -1196,18 +1196,12 @@ GetGuildMemberList_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.GetGuildMemberList", Erl)
 End Function
 
-Public Function IsAspirantOnGuildJoinCooldown(ByVal UserIndex As Integer, Optional ByRef CharacterName As String) As Boolean
+Public Function IsAspirantOnGuildJoinCooldown(ByVal UserIndex As Integer) As Boolean
     IsAspirantOnGuildJoinCooldown = True
     Dim GuildLeaveCooldownInDays As Long
-    Dim CharacterLastLeave As Date
     GuildLeaveCooldownInDays = SvrConfig.GetValue("GuildLeaveCooldownInDays")
     With UserList(UserIndex)
-        If .flags.UserLogged Then
-            CharacterLastLeave = .LastGuildLeave
-        Else
-            CharacterLastLeave = GetLastGuildLeaveFromDb(CharacterName)
-        End If
-        If .LastGuildLeave - DateTime.Now <= GuildLeaveCooldownInDays Then
+        If CLng(.LastGuildLeave - DateTime.Now) <= GuildLeaveCooldownInDays Then
                 'cant rejoin errormsg
             Exit Function
         End If
@@ -1215,19 +1209,6 @@ Public Function IsAspirantOnGuildJoinCooldown(ByVal UserIndex As Integer, Option
     End With
 End Function
 
-Public Function GetLastGuildLeaveFromDb(ByRef CharacterName As String) As String
-    On Error GoTo GetLastGuildLeaveFromDb_Err
-        Dim RS As ADODB.Recordset
-        Set RS = Query(GET_CHARACTER_LAST_GUILD_JOIN, LCase(CharacterName))
-        If RS Is Nothing Or RS.RecordCount = 0 Then
-            Debug.Assert False
-            Exit Function
-            'character doesnt exist in db?
-        End If
-        GetLastGuildLeaveFromDb = (RS!last_guild_leave)
-GetLastGuildLeaveFromDb_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.GetLastGuildLeaveFromDb", Erl)
-End Function
 
 Public Sub UpdateLastGuildLeaveToDb(ByRef CharacterName As String)
     On Error GoTo UpdateLastGuildLeaveToDb_Err
