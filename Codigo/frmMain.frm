@@ -864,9 +864,9 @@ Private Sub TiempoRetos_Timer()
                 .TiempoRestante = .TiempoRestante - IntervaloTimerRetosEnSegundos
                 If .TiempoItems > 0 Then
                     .TiempoItems = .TiempoItems - IntervaloTimerRetosEnSegundos
-                    If .TiempoItems <= 0 Then Call TerminarTiempoAgarrarItems(Sala)
+                    If .TiempoItems <= 0 Then Call EndItemPickupTime(Sala)
                 ElseIf .TiempoRestante <= 0 Then
-                    Call FinalizarReto(Sala, True)
+                    Call FinalizeChallenge(Sala, True)
                 End If
             End If
         End With

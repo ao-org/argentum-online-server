@@ -1822,7 +1822,7 @@ Sub UserDie(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, MSG_ESCRIBE_HOGAR_SI_DESEAS_REGRESAR_RAPIDO_HOGAR, e_FontTypeNames.FONTTYPE_New_Naranja)
         End If
         If .flags.EnReto Then
-            Call MuereEnReto(UserIndex)
+            Call DiesInChallenge(UserIndex)
         End If
         If .flags.jugando_captura = 1 Then
             If Not InstanciaCaptura Is Nothing Then
