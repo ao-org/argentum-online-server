@@ -129,6 +129,7 @@ Private Sub ConstruirQuery_CargarPersonaje()
     QueryBuilder.Append "is_locked_in_mao,"
     QueryBuilder.Append "jinete_level,"
     QueryBuilder.Append "backpack_id"
+    QueryBuilder.Append "last_guild_leave"
     QueryBuilder.Append " FROM user WHERE id= ?"
     ' Guardo la query ensamblada
     QUERY_LOAD_MAINPJ = QueryBuilder.ToString
