@@ -219,6 +219,7 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
     Dim CastleObj As t_Obj
     CastleObj.Amount = 1
     CastleObj.ObjIndex = CASTLE_OBJ
+    
     Call MakeObj(CastleObj, map, x, y)
     
     With CastleData(CastleIndex)
@@ -472,7 +473,9 @@ End Function
 
 Public Function HasCastleRelocationCooldownPassed(ByVal CastleIndex As Integer) As Boolean
 HasCastleRelocationCooldownPassed = False
-    If CastleData(CastleIndex).foundation_date - DateTime.Now >= 7 Then
+    Dim Acumulator As Long
+    Acumulator = DateTime.Now - CastleData(CastleIndex).foundation_date
+    If Acumulator >= 7 Then
         HasCastleRelocationCooldownPassed = True
     End If
 End Function
