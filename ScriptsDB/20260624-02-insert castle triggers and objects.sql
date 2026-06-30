@@ -1,4 +1,4 @@
-INSERT INTO castle (trigger, spawner_obj_id,portal_obj_id) VALUES
+INSERT INTO castle (trigger, spawner_obj_id,inside_key_obj_id) VALUES
 (21,6362,6383),
 (22,6363,6384),
 (23,6364,6385),
