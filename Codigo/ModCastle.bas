@@ -11,7 +11,7 @@ Private Type t_CastleInfo
     owner_account_id As Integer
     owner_char_id As Integer
     spawner_obj_id As Integer
-    portal_obj_id As Integer
+    inside_key_obj_id As Integer
     foundation_date As Date
     is_active As Boolean
     castle_coordinates As t_CastleCoordinates
@@ -107,7 +107,7 @@ Public Sub LoadCastleData()
         End If
         
         CastleData(i).spawner_obj_id = (RS!spawner_obj_id)
-        CastleData(i).portal_obj_id = (RS!portal_obj_id)
+        CastleData(i).inside_key_obj_id = (RS!inside_key_obj_id)
         CastleData(i).is_active = (RS!is_active)
         If CastleData(i).owner_account_id <> 0 Then
             Call CastleWhiteList.Add(CastleData(i).owner_account_id, CastleData(i).trigger) 'add castle owner to the whitelist
@@ -219,6 +219,7 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
     Dim CastleObj As t_Obj
     CastleObj.Amount = 1
     CastleObj.ObjIndex = CASTLE_OBJ
+    
     Call MakeObj(CastleObj, map, x, y)
     
     With CastleData(CastleIndex)
@@ -472,7 +473,9 @@ End Function
 
 Public Function HasCastleRelocationCooldownPassed(ByVal CastleIndex As Integer) As Boolean
 HasCastleRelocationCooldownPassed = False
-    If CastleData(CastleIndex).foundation_date - DateTime.Now >= 7 Then
+    Dim Acumulator As Long
+    Acumulator = DateTime.Now - CastleData(CastleIndex).foundation_date
+    If Acumulator >= 7 Then
         HasCastleRelocationCooldownPassed = True
     End If
 End Function
