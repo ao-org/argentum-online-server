@@ -5815,6 +5815,9 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
                     Call InstanciaCaptura.inscribirse(UserIndex)
                     Exit Sub
                 End If
+            ElseIf Torneo.HayTorneoActivo Then
+                Call ParticiparTorneo(UserIndex)
+                Exit Sub
             Else
                 RoomId = GlobalLobbyIndex
             End If
