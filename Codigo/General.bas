@@ -35,6 +35,8 @@ Global LeerNPCs As New clsIniManager
 Private TreeGraphicIds()         As Long
 Private TreeGraphicCount         As Long
 
+Public Const VENENO_DIVISOR As Integer = 12
+
 Sub SetNakedBody(ByRef User As t_User)
     Const man_human_naked_body   As Integer = 3000
     Const man_drow_naked_body    As Integer = 3001
@@ -1230,9 +1232,10 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticleEffects.PoisonGas, 30, False, , UserList(UserIndex).pos.x, _
                     UserList(UserIndex).pos.y))
             .Counters.Veneno = 0
-            ' El veneno saca un porcentaje de vida random.
+            ' El veneno causa daño proporcional al valor almacenado en flags.Envenenado.
             Damage = RandomNumber(3, 5)
-            Damage = (1 + Damage * .Stats.MaxHp \ 100) ' Redondea para arriba
+            Damage = (CLng(.flags.Envenenado) * CLng(Damage)) \ VENENO_DIVISOR
+            If Damage < 1 Then Damage = 1
             If .ChatCombate = 1 Then
                 ' "El veneno te ha causado ¬1 puntos de daño."
                 Call WriteLocaleMsg(UserIndex, MSG_POISON_DEALT_DAMAGE, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))

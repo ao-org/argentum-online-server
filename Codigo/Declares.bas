@@ -2651,7 +2651,7 @@ Public Type t_UserFlags
     PuedeMoverse As Byte
     TimerLanzarSpell As Long
     PuedeTrabajar As Byte
-    Envenenado As Byte
+    Envenenado As Integer
     Paralizado As Byte
     Estupidez As Byte
     Ceguera As Byte
@@ -3133,7 +3133,7 @@ Public Type t_NPCFlags
     AttackedFirstBy As String
     backup As Byte
     RespawnOrigPos As Byte
-    Envenenado As Byte
+    Envenenado As Integer
     Paralizado As Byte
     Inmovilizado As Byte
     Incinerado As Byte

@@ -784,12 +784,15 @@ errh:
     LogError ("Error en move npc " & NpcIndex & ". Error: " & Err.Number & " - " & Err.Description)
 End Function
 
-Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
+Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     On Error GoTo NpcEnvenenarUser_Err
     Dim n As Integer
+    Dim PoisonPower As Long
     n = RandomNumber(1, 100)
     If n < 30 Then
-        UserList(UserIndex).flags.Envenenado = VenenoNivel
+        PoisonPower = (CLng(NpcList(NpcIndex).Stats.MinHit) + CLng(NpcList(NpcIndex).Stats.MaxHit)) \ 2
+        If PoisonPower < 1 Then PoisonPower = 1
+        UserList(UserIndex).flags.Envenenado = PoisonPower
         'Msg182=¡¡La criatura te ha envenenado!!
         If UserList(UserIndex).ChatCombate = 1 Then
             Call WriteLocaleMsg(UserIndex, MSG_CRIATURA_HA_ENVENENADO, e_FontTypeNames.FONTTYPE_FIGHT)
