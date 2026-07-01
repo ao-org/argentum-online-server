@@ -2777,6 +2777,26 @@ WriteUbicacion_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUbicacion", Erl)
 End Sub
 
+Public Sub WriteUbicacionFaccion(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal GPS As Integer)
+    On Error GoTo WriteUbicacionFaccion_Err
+    Call Writer.WriteInt16(ServerPacketID.eUbicacionFaccion)
+    Call Writer.WriteInt8(Slot)
+    If GPS > 0 Then
+        Call Writer.WriteInt8(UserList(GPS).pos.x)
+        Call Writer.WriteInt8(UserList(GPS).pos.y)
+        Call Writer.WriteInt16(UserList(GPS).pos.map)
+    Else
+        Call Writer.WriteInt8(0)
+        Call Writer.WriteInt8(0)
+        Call Writer.WriteInt16(0)
+    End If
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteUbicacionFaccion_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUbicacionFaccion", Erl)
+End Sub
+
 Public Sub WriteViajarForm(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     On Error GoTo WriteViajarForm_Err
     Call Writer.WriteInt16(ServerPacketID.eViajarForm)
@@ -4696,4 +4716,15 @@ Public Sub WriteShowPickUpObj(ByVal UserIndex As Integer, ByVal ObjIndex As Inte
 WriteShowPickUpObj_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowPickUpObj", Erl)
+End Sub
+
+Public Sub WriteUserFaccion(ByVal UserIndex As Integer)
+    On Error GoTo WriteUserFaccion_Err
+    Call Writer.WriteInt16(ServerPacketID.eUserFaccion)
+    Call Writer.WriteInt8(UserList(UserIndex).faccion.Status)
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteUserFaccion_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Protocol_Writes.WriteUserFaccion", Erl)
 End Sub

@@ -1524,6 +1524,7 @@ Sub PasarSegundo()
                     If .Counters.Salir <= 0 Then
                         'Msg1020= Gracias por jugar Argentum 20.
                         Call WriteLocaleMsg(i, "1020", e_FontTypeNames.FONTTYPE_INFO)
+                        Call NotificarDesconexionFaccion(i)
                         Call WriteDisconnect(i)
                         Call CloseSocket(i)
                     End If
