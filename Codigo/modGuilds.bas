@@ -412,9 +412,9 @@ Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal Guil
             Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
                 m_EstadoPermiteEntrarChar = (Status = e_Facciones.Caos Or Status = e_Facciones.concilio)
             Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
-                m_EstadoPermiteEntrarChar = (Status = e_Facciones.Ciudadano Or Status = e_Facciones.Armada Or Status = e_Facciones.consejo)
+                m_EstadoPermiteEntrarChar = (Status = e_Facciones.Ciudadano Or Status = e_Facciones.Armada)
             Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
-                m_EstadoPermiteEntrarChar = (Status = e_Facciones.Criminal Or Status = e_Facciones.Caos Or Status = e_Facciones.concilio)
+                m_EstadoPermiteEntrarChar = (Status = e_Facciones.Criminal Or Status = e_Facciones.Caos)
         End Select
     End If
     Exit Function
@@ -432,9 +432,9 @@ Private Function m_EstadoPermiteEntrar(ByVal UserIndex As Integer, ByVal GuildIn
         Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
             m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio
         Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
-            m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Ciudadano Or Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo
+            m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Ciudadano Or Status(UserIndex) = e_Facciones.Armada
         Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
-            m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Criminal Or Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio
+            m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Criminal Or Status(UserIndex) = e_Facciones.Caos
     End Select
     Exit Function
 m_EstadoPermiteEntrar_Err:
@@ -811,10 +811,17 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
     If InStrB(Personaje, ".") <> 0 Then
         Personaje = Replace$(Personaje, ".", vbNullString)
     End If
+    
     Dim HasRequest As Boolean
     Dim CharId     As Long
+    
     CharId = GetCharacterIdWithName(Personaje)
+    If CharId <= 0 Then
+        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_ASPIRANTE_OFFLINE_SIN_CHARID, vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG))
+        Exit Sub
+    End If
     HasRequest = guilds(GI).HasGuildRequest(CharId)
+    
     If Not HasRequest Then
         list = guilds(GI).GetMemberList()
         For i = 0 To UBound(list())
