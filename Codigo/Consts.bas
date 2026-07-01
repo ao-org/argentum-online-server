@@ -45,6 +45,7 @@ Public Const DEFAULT_NPC_STRAFE_DURATION_MS         As Long = 900
 'General consts
 Public Const MAX_INTEGER                            As Integer = 32767
 Public Const MAX_LONG                               As Long = 2147483647
+Public Const MIN_DATE_AS_LONG                       As Long = -657434
 
 
 'FX

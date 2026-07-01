@@ -320,6 +320,7 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .Stats.Advertencias = RS!warnings
         .GuildIndex = SanitizeNullValue(RS!Guild_Index, 0)
         .LastGuildRejection = SanitizeNullValue(RS!guild_rejected_because, vbNullString)
+        .LastGuildLeave = SanitizeNullValue(RS!last_guild_leave, MIN_DATE_AS_LONG)
     End With
 End Sub
 
@@ -585,7 +586,7 @@ End Sub
 Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As String)
     Dim QueryTimer As Long
     Dim Params() As Variant
-    ReDim Params(61)
+    ReDim Params(62)
     Dim i As Integer
     Params(post_increment(i)) = U.Stats.ELV
     Params(post_increment(i)) = U.Stats.Exp
@@ -648,6 +649,7 @@ Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As Strin
     Params(post_increment(i)) = U.flags.ReturnPos.y
     Params(post_increment(i)) = U.Stats.JineteLevel
     Params(post_increment(i)) = U.Char.BackpackAnim
+    Params(post_increment(i)) = DateToSQLite(U.LastGuildLeave)
     ' WHERE block
     Params(post_increment(i)) = U.Id
     Debug.Assert i = UBound(Params) + 1
