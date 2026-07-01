@@ -1437,6 +1437,13 @@ Sub CloseUser(ByVal UserIndex As Integer)
         errordesc = "ERROR AL RESETSLOT Name:" & .name & " cuenta:" & .Cuenta
         .flags.UserLogged = False
         .Counters.Saliendo = False
+        
+        If Subasta.HaySubastaActiva = True And Subasta.Comprador = .name Then
+            UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco + Subasta.MejorOferta
+            Call WriteUpdateBankGld(UserIndex)
+            Subasta.Comprador = ""
+        End If
+        
         Call ResetUserSlot(UserIndex)
     End With
     Exit Sub
