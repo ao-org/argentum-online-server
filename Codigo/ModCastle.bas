@@ -34,13 +34,9 @@ Private Const CastleXPositiveOffset As Integer = 6
 Private Const CastleYPositiveOffset As Integer = 2
 
 Private Const CASTLE_MOCKUP_OBJ_INDEX = 6382
-Private Const CASTLE_SIGN_POST_OBJ_INDEX = 63419
+Private Const CASTLE_SIGN_POST_OBJ_INDEX = 6419
 Public Const EMPEROR_RELIC_OBJ_INDEX_1 = 6362
 Public Const EMPEROR_RELIC_OBJ_INDEX_20 = 6381
-
-
-
-
 
 Public Sub LoadCastleModule()
     On Error GoTo LoadCastleModule_Err
@@ -170,8 +166,7 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
             Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
             Exit Function
         End If
-    
-    
+        
         CastleTopLeftCorner.x = .flags.TargetX - CastleXNegativeOffstet
         CastleTopLeftCorner.y = .flags.TargetY - CastleYNegativeOffset
         CastleTopLeftCorner.map = .flags.TargetMap
@@ -183,8 +178,8 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
         UserTargetX = .flags.TargetX
         UserTargetY = .flags.TargetY
         UserTargetMap = .flags.TargetMap
+        
     End With
-    
     
     If MapData(UserTargetMap, UserTargetX, UserTargetY).trigger <> e_Trigger.CASTLE_FOUNDATION_POSITION Then
         Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
@@ -201,6 +196,16 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
         Exit Function
     End If
     
+    If MapData(UserTargetMap, UserTargetX, UserTargetY).ObjInfo.ObjIndex = CASTLE_MOCKUP_OBJ_INDEX Then
+        'castle already in position, cant delete another emperor castle errormsg TODO
+        Exit Function
+    End If
+    
+    If MapData(UserTargetMap, UserTargetX, UserTargetY).ObjInfo.ObjIndex <> CASTLE_SIGN_POST_OBJ_INDEX Then
+        'sign post not in position, call an admin errormsg TODO
+        Exit Function
+    End If
+    
     Dim i As Integer
     Dim j As Integer
     For i = CastleTopLeftCorner.x To CastleBottomRightCorner.x
@@ -213,6 +218,7 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
             
         Next j
     Next i
+    
     IsValidCastlePosition = True
 End Function
 
@@ -457,14 +463,16 @@ Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer) As Boolean
     IsEmperorCastleCreated = False
     Dim i As Integer
     For i = 1 To UBound(CastleData)
-        If CastleData(i).owner_account_id = UserList(UserIndex).AccountID Then
-            
-            If (MapData(CastleData(i).castle_coordinates.outside.map, CastleData(i).castle_coordinates.outside.x, CastleData(i).castle_coordinates.outside.y).ObjInfo.ObjIndex = CASTLE_MOCKUP_OBJ_INDEX) Then
-                IsEmperorCastleCreated = True
+        With CastleData(i)
+            If .owner_account_id = UserList(UserIndex).AccountID Then
+                
+                If (MapData(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y).ObjInfo.ObjIndex = CASTLE_MOCKUP_OBJ_INDEX) Then
+                    IsEmperorCastleCreated = True
+                End If
+                
+                Exit For
             End If
-            
-            Exit For
-        End If
+        End With
     Next i
 End Function
 
@@ -476,8 +484,6 @@ HasCastleRelocationCooldownPassed = False
         HasCastleRelocationCooldownPassed = True
     End If
 End Function
-
-
 
 Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As Integer)
     On Error GoTo CreateEmperorCastle_Err
@@ -508,7 +514,6 @@ Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As 
 CreateEmperorCastle_Err:
 Call TraceError(Err.Number, Err.Description, "ModCastle.CreateEmperorCastle", Erl)
 End Sub
-
 
 Function CheckCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal trigger As Integer) As Boolean
    CheckCastleEntryWhiteList = False
