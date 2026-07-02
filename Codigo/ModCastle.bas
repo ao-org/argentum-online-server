@@ -28,7 +28,8 @@ Private Const SELECT_ALL_CASTLE_WHITELISTS As String = "Select * FROM castle_whi
 Private Const SELECT_ALL_CASTLES As String = "SELECT * FROM castle;"
 Private Const SELECT_ALL_CASTLE_COORDINATES = "SELECT * FROM castle_coordinates;"
 
-Private Const CASTLE_OBJ = 6382
+Private Const CASTLE_MOCKUP_OBJ_INDEX = 6382
+Private Const CASTLE_SIGN_POST_OBJ_INDEX = 63419
 Public Const EMPEROR_RELIC_OBJ_INDEX_1 = 6362
 Public Const EMPEROR_RELIC_OBJ_INDEX_20 = 6381
 
@@ -366,7 +367,7 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
         'create castle visual mockup
         Dim CastleObj As t_Obj
         CastleObj.Amount = 1
-        CastleObj.ObjIndex = CASTLE_OBJ
+        CastleObj.ObjIndex = CASTLE_MOCKUP_OBJ_INDEX
         
         Call MakeObj(CastleObj, map, x, y)
     
@@ -406,7 +407,6 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
     MapData(map, x - 2, y - 1).TileExit.x = 0
     MapData(map, x - 2, y - 1).TileExit.y = 0
     
-    
      'restore castle foundation trigger
     MapData(map, x, y).trigger = e_Trigger.CASTLE_FOUNDATION_POSITION
         
@@ -419,6 +419,11 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
         MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1).TileExit.x = 0
         MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1).TileExit.y = 0
     End With
+    
+    'create castle sign post
+    Dim CastleSignObj As t_Obj
+    CastleSignObj.Amount = 1
+    CastleSignObj.ObjIndex = CASTLE_SIGN_POST_OBJ_INDEX
 End Sub
 
 Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer) As Boolean
@@ -427,7 +432,7 @@ Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer) As Boolean
     For i = 1 To UBound(CastleData)
         If CastleData(i).owner_account_id = UserList(UserIndex).AccountID Then
             
-            If (MapData(CastleData(i).castle_coordinates.outside.map, CastleData(i).castle_coordinates.outside.x, CastleData(i).castle_coordinates.outside.y).ObjInfo.ObjIndex = CASTLE_OBJ) Then
+            If (MapData(CastleData(i).castle_coordinates.outside.map, CastleData(i).castle_coordinates.outside.x, CastleData(i).castle_coordinates.outside.y).ObjInfo.ObjIndex = CASTLE_MOCKUP_OBJ_INDEX) Then
                 IsEmperorCastleCreated = True
             End If
             
