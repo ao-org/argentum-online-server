@@ -28,7 +28,7 @@ Private Const SELECT_ALL_CASTLE_WHITELISTS As String = "Select * FROM castle_whi
 Private Const SELECT_ALL_CASTLES As String = "SELECT * FROM castle;"
 Private Const SELECT_ALL_CASTLE_COORDINATES = "SELECT * FROM castle_coordinates;"
 
-Private Const CastleXNegativeOffstet As Integer = 8
+Private Const CastleXNegativeOffset As Integer = 8
 Private Const CastleYNegativeOffset As Integer = 8
 Private Const CastleXPositiveOffset As Integer = 6
 Private Const CastleYPositiveOffset As Integer = 2
@@ -37,6 +37,15 @@ Private Const CASTLE_MOCKUP_OBJ_INDEX = 6382
 Private Const CASTLE_SIGN_POST_OBJ_INDEX = 6419
 Public Const EMPEROR_RELIC_OBJ_INDEX_1 = 6362
 Public Const EMPEROR_RELIC_OBJ_INDEX_20 = 6381
+
+Private Function IsCastleFootprintInMapBounds(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    IsCastleFootprintInMapBounds = False
+
+    If Not InMapBounds(map, x - CastleXNegativeOffset, y - CastleYNegativeOffset) Then Exit Function
+    If Not InMapBounds(map, x + CastleXPositiveOffset, y + CastleYPositiveOffset) Then Exit Function
+
+    IsCastleFootprintInMapBounds = True
+End Function
 
 Public Sub LoadCastleModule()
     On Error GoTo LoadCastleModule_Err
@@ -167,7 +176,7 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
             Exit Function
         End If
         
-        CastleTopLeftCorner.x = .flags.TargetX - CastleXNegativeOffstet
+        CastleTopLeftCorner.x = .flags.TargetX - CastleXNegativeOffset
         CastleTopLeftCorner.y = .flags.TargetY - CastleYNegativeOffset
         CastleTopLeftCorner.map = .flags.TargetMap
         
@@ -181,17 +190,22 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
         
     End With
     
-    If MapData(UserTargetMap, UserTargetX, UserTargetY).trigger <> e_Trigger.CASTLE_FOUNDATION_POSITION Then
-        Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
-        Exit Function
-    End If
-    
     If UserList(UserIndex).pos.map <> UserTargetMap Then
         Call LogError("Usuario " & UserList(UserIndex).Name & "Interactuando con un mapa fuera de su rango, revisar")
         Exit Function
     End If
-    
+
     If Not IsValidMapIndex(UserTargetMap) Then
+        Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
+        Exit Function
+    End If
+    
+    If Not IsCastleFootprintInMapBounds(UserTargetMap, UserTargetX, UserTargetY) Then
+        Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
+        Exit Function
+    End If
+    
+    If MapData(UserTargetMap, UserTargetX, UserTargetY).trigger <> e_Trigger.CASTLE_FOUNDATION_POSITION Then
         Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
         Exit Function
     End If
@@ -224,6 +238,14 @@ End Function
 
 
 Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal CastleIndex As Integer, Optional ByVal UserIndex As Integer = 0)
+    If Not IsCastleFootprintInMapBounds(map, x, y) Then
+        Call LogInfoServidor("CreateCastleInMap outside map bounds. map=" & CStr(map) & _
+            " x=" & CStr(x) & _
+            " y=" & CStr(y) & _
+            " CastleIndex=" & CStr(CastleIndex) & _
+            " UserIndex=" & CStr(UserIndex))
+        Exit Sub
+    End If
     
     With CastleData(CastleIndex)
 
@@ -241,7 +263,7 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
         
         Dim CastleTopLeftCorner As t_WorldPos
         Dim CastleBottomRightCorner As t_WorldPos
-        CastleTopLeftCorner.x = x - CastleXNegativeOffstet
+        CastleTopLeftCorner.x = x - CastleXNegativeOffset
         CastleTopLeftCorner.y = y - CastleYNegativeOffset
         CastleTopLeftCorner.map = map
         
@@ -377,6 +399,22 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
         MapData(map, x + 3, y - 7).Blocked = e_Block.ALL_SIDES
         
         'create castle inside tile exits to the outside part
+        If Not InMapBounds(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1) Then
+            Call LogInfoServidor("CreateCastleInMap invalid inside exit 1. map=" & CStr(.castle_coordinates.inside.map) & _
+                " x=" & CStr(.castle_coordinates.inside.x) & _
+                " y=" & CStr(.castle_coordinates.inside.y + 1) & _
+                " CastleIndex=" & CStr(CastleIndex))
+            Exit Sub
+        End If
+
+        If Not InMapBounds(.castle_coordinates.inside.map, .castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1) Then
+            Call LogInfoServidor("CreateCastleInMap invalid inside exit 2. map=" & CStr(.castle_coordinates.inside.map) & _
+                " x=" & CStr(.castle_coordinates.inside.x + 1) & _
+                " y=" & CStr(.castle_coordinates.inside.y + 1) & _
+                " CastleIndex=" & CStr(CastleIndex))
+            Exit Sub
+        End If
+
         MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1).TileExit.map = .castle_coordinates.outside.map
         MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1).TileExit.x = .castle_coordinates.outside.x - 2
         MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1).TileExit.y = .castle_coordinates.outside.y + 1
@@ -398,12 +436,22 @@ End Sub
 
 
 Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal CastleIndex As Integer)
-    Call EraseObj(MapData(map, x, y).ObjInfo.Amount, map, x, y)
+    If Not IsCastleFootprintInMapBounds(map, x, y) Then
+        Call LogInfoServidor("DestroyCastleInMap outside map bounds. map=" & CStr(map) & _
+            " x=" & CStr(x) & _
+            " y=" & CStr(y) & _
+            " CastleIndex=" & CStr(CastleIndex))
+        Exit Sub
+    End If
+
+    If MapData(map, x, y).ObjInfo.Amount > 0 Then
+        Call EraseObj(MapData(map, x, y).ObjInfo.Amount, map, x, y)
+    End If
     
      'remove everything
     Dim CastleTopLeftCorner As t_WorldPos
     Dim CastleBottomRightCorner As t_WorldPos
-    CastleTopLeftCorner.x = x - CastleXNegativeOffstet
+    CastleTopLeftCorner.x = x - CastleXNegativeOffset
     CastleTopLeftCorner.y = y - CastleYNegativeOffset
     CastleTopLeftCorner.map = map
     
@@ -443,6 +491,22 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
     MapData(map, x, y).trigger = e_Trigger.CASTLE_FOUNDATION_POSITION
         
      With CastleData(CastleIndex)
+        If Not InMapBounds(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1) Then
+            Call LogInfoServidor("DestroyCastleInMap invalid inside exit 1. map=" & CStr(.castle_coordinates.inside.map) & _
+                " x=" & CStr(.castle_coordinates.inside.x) & _
+                " y=" & CStr(.castle_coordinates.inside.y + 1) & _
+                " CastleIndex=" & CStr(CastleIndex))
+            Exit Sub
+        End If
+
+        If Not InMapBounds(.castle_coordinates.inside.map, .castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1) Then
+            Call LogInfoServidor("DestroyCastleInMap invalid inside exit 2. map=" & CStr(.castle_coordinates.inside.map) & _
+                " x=" & CStr(.castle_coordinates.inside.x + 1) & _
+                " y=" & CStr(.castle_coordinates.inside.y + 1) & _
+                " CastleIndex=" & CStr(CastleIndex))
+            Exit Sub
+        End If
+
         MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1).TileExit.map = 0
         MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1).TileExit.x = 0
         MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1).TileExit.y = 0
@@ -465,6 +529,13 @@ Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer) As Boolean
     For i = 1 To UBound(CastleData)
         With CastleData(i)
             If .owner_account_id = UserList(UserIndex).AccountID Then
+                If Not InMapBounds(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y) Then
+                    Call LogInfoServidor("IsEmperorCastleCreated outside map bounds. map=" & CStr(.castle_coordinates.outside.map) & _
+                        " x=" & CStr(.castle_coordinates.outside.x) & _
+                        " y=" & CStr(.castle_coordinates.outside.y) & _
+                        " CastleIndex=" & CStr(i))
+                    Exit For
+                End If
                 
                 If (MapData(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y).ObjInfo.ObjIndex = CASTLE_MOCKUP_OBJ_INDEX) Then
                     IsEmperorCastleCreated = True
