@@ -28,6 +28,11 @@ Private Const SELECT_ALL_CASTLE_WHITELISTS As String = "Select * FROM castle_whi
 Private Const SELECT_ALL_CASTLES As String = "SELECT * FROM castle;"
 Private Const SELECT_ALL_CASTLE_COORDINATES = "SELECT * FROM castle_coordinates;"
 
+Private Const CastleXNegativeOffstet As Integer = 8
+Private Const CastleYNegativeOffset As Integer = 8
+Private Const CastleXPositiveOffset As Integer = 6
+Private Const CastleYPositiveOffset As Integer = 2
+
 Private Const CASTLE_MOCKUP_OBJ_INDEX = 6382
 Private Const CASTLE_SIGN_POST_OBJ_INDEX = 63419
 Public Const EMPEROR_RELIC_OBJ_INDEX_1 = 6362
@@ -167,12 +172,12 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
         End If
     
     
-        CastleTopLeftCorner.x = .flags.TargetX - 6
-        CastleTopLeftCorner.y = .flags.TargetY - 7
+        CastleTopLeftCorner.x = .flags.TargetX - CastleXNegativeOffstet
+        CastleTopLeftCorner.y = .flags.TargetY - CastleYNegativeOffset
         CastleTopLeftCorner.map = .flags.TargetMap
         
-        CastleBottomRightCorner.x = .flags.TargetX + 3
-        CastleBottomRightCorner.y = .flags.TargetY
+        CastleBottomRightCorner.x = .flags.TargetX + CastleXPositiveOffset
+        CastleBottomRightCorner.y = .flags.TargetY + CastleYPositiveOffset
         CastleBottomRightCorner.map = .flags.TargetMap
         
         UserTargetX = .flags.TargetX
@@ -213,9 +218,9 @@ End Function
 
 
 Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal CastleIndex As Integer, Optional ByVal UserIndex As Integer = 0)
-
-    With CastleData(CastleIndex)
     
+    With CastleData(CastleIndex)
+
         'if not during server start...(player clicking the board)
          If UserIndex > 0 Then
             .castle_coordinates.outside.map = map
@@ -228,11 +233,21 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
             Call CastleWhiteList.Add(.owner_account_id, .trigger)
         End If
         
+        Dim CastleTopLeftCorner As t_WorldPos
+        Dim CastleBottomRightCorner As t_WorldPos
+        CastleTopLeftCorner.x = x - CastleXNegativeOffstet
+        CastleTopLeftCorner.y = y - CastleYNegativeOffset
+        CastleTopLeftCorner.map = map
+        
+        CastleBottomRightCorner.x = x + CastleXPositiveOffset
+        CastleBottomRightCorner.y = y + CastleYPositiveOffset
+        CastleBottomRightCorner.map = map
+        
         'erase preemptively all blocks, triggers, objects and npcs in the zone
         Dim i As Integer
         Dim j As Integer
-        For i = x - 8 To x + 6
-            For j = y - 8 To y + 2
+        For i = CastleTopLeftCorner.x To CastleBottomRightCorner.x
+            For j = CastleTopLeftCorner.y To CastleBottomRightCorner.y
             
             MapData(map, i, j).Blocked = 0
             MapData(map, i, j).trigger = e_Trigger.nada
@@ -380,10 +395,21 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
     Call EraseObj(MapData(map, x, y).ObjInfo.Amount, map, x, y)
     
      'remove everything
+    Dim CastleTopLeftCorner As t_WorldPos
+    Dim CastleBottomRightCorner As t_WorldPos
+    CastleTopLeftCorner.x = x - CastleXNegativeOffstet
+    CastleTopLeftCorner.y = y - CastleYNegativeOffset
+    CastleTopLeftCorner.map = map
+    
+    CastleBottomRightCorner.x = x + CastleXPositiveOffset
+    CastleBottomRightCorner.y = y + CastleYPositiveOffset
+    CastleBottomRightCorner.map = map
+    
+    'erase preemptively all blocks, triggers, objects and npcs in the zone
     Dim i As Integer
     Dim j As Integer
-    For i = x - 8 To x + 6
-        For j = y - 8 To y + 2
+    For i = CastleTopLeftCorner.x To CastleBottomRightCorner.x
+        For j = CastleTopLeftCorner.y To CastleBottomRightCorner.y
         
         MapData(map, i, j).Blocked = 0
         MapData(map, i, j).trigger = e_Trigger.nada
