@@ -451,10 +451,10 @@ DropObj_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.DropObj", Erl)
 End Sub
 
-Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
+Sub EraseObj(ByVal amount As Integer, ByVal map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo EraseObj_Err
     Dim Rango As Byte
-    MapData(Map, x, y).ObjInfo.amount = MapData(Map, x, y).ObjInfo.amount - num
+    MapData(map, x, y).ObjInfo.amount = MapData(map, x, y).ObjInfo.amount - amount
     If MapData(Map, x, y).ObjInfo.amount <= 0 Then
         MapData(Map, x, y).ObjInfo.ObjIndex = 0
         MapData(Map, x, y).ObjInfo.amount = 0
