@@ -654,6 +654,7 @@ Public Enum e_SoundEffects
     NewLevelUp = 554
     FlareActivation = 555
     'Repetido = 1152
+    NewCastleRPGVoice = 1600
     SnowStorm = 2000
     'Imperium 2028 - 2186
     FailToExtractOre = 2185
