@@ -212,16 +212,7 @@ End Function
 
 
 Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal CastleIndex As Integer, Optional ByVal UserIndex As Integer = 0)
-    'preemptively erase any object in the same tile of the foundation trigger
-    If MapData(map, x, y).ObjInfo.Amount > 0 Then
-        Call EraseObj(MapData(map, x, y).ObjInfo.Amount, map, x, y)
-    End If
-    Dim CastleObj As t_Obj
-    CastleObj.Amount = 1
-    CastleObj.ObjIndex = CASTLE_OBJ
-    
-    Call MakeObj(CastleObj, map, x, y)
-    
+
     With CastleData(CastleIndex)
     
         'if not during server start...(player clicking the board)
@@ -233,7 +224,7 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
             .is_active = 1
             .owner_account_id = UserList(UserIndex).AccountID
             .owner_char_id = UserList(UserIndex).Id
-            Call CastleWhiteList.Add(CastleData(CastleIndex).owner_account_id, CastleData(CastleIndex).trigger)
+            Call CastleWhiteList.Add(.owner_account_id, .trigger)
         End If
         
         'erase preemptively all blocks, triggers, objects and npcs in the zone
@@ -372,6 +363,13 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
         MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1).TileExit.x = .castle_coordinates.outside.x - 1
         MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1).TileExit.y = .castle_coordinates.outside.y + 1
         
+        'create castle visual mockup
+        Dim CastleObj As t_Obj
+        CastleObj.Amount = 1
+        CastleObj.ObjIndex = CASTLE_OBJ
+        
+        Call MakeObj(CastleObj, map, x, y)
+    
     End With
     
 End Sub
