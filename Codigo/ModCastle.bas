@@ -450,6 +450,7 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
     Dim CastleSignObj As t_Obj
     CastleSignObj.Amount = 1
     CastleSignObj.ObjIndex = CASTLE_SIGN_POST_OBJ_INDEX
+    Call MakeObj(CastleSignObj, map, x, y)
 End Sub
 
 Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer) As Boolean
