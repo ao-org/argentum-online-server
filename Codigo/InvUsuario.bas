@@ -481,6 +481,7 @@ Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal x As Integer, ByVal 
             Else
                 MapData(Map, x, y).ObjInfo.amount = obj.amount
             End If
+            MapData(map, x, y).ObjInfo.CastleSlot = Obj.CastleSlot
         End If
         Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(obj.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y, MapData(Map, x, y).ObjInfo.ElementalTags))
     End If

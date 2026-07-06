@@ -1041,7 +1041,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
         End If
         If FoundSomething = 1 Then
             UserList(UserIndex).flags.TargetObj = MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex
-            If MostrarCantidad(UserList(UserIndex).flags.TargetObj) Then
+            If ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otCastleSpawner Then
+                Call SendCastleInfo(UserIndex, MapData(UserList(UserIndex).flags.TargetMap, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).ObjInfo.CastleSlot)
+            ElseIf MostrarCantidad(UserList(UserIndex).flags.TargetObj) Then
                 Call WriteConsoleMsg(UserIndex, "O*" & UserList(UserIndex).flags.TargetObj & "* - " & MapData(UserList(UserIndex).flags.TargetObjMap, UserList( _
                         UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount & " *" & (MapData(Map, x, y).ObjInfo.ElementalTags Or ObjData(MapData( _
                         Map, x, y).ObjInfo.ObjIndex).ElementalTags) & "*" & "", e_FontTypeNames.FONTTYPE_INFO)
