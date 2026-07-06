@@ -2088,6 +2088,7 @@ Public Type t_Obj
     ElementalTags As Long
     amount As Long
     data As Double
+    CastleSlot As Integer
 End Type
 
 Public Type t_QuestNpc
