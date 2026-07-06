@@ -654,6 +654,7 @@ Public Enum e_SoundEffects
     NewLevelUp = 554
     FlareActivation = 555
     'Repetido = 1152
+    NewCastleRPGVoice = 1600
     SnowStorm = 2000
     'Imperium 2028 - 2186
     FailToExtractOre = 2185
@@ -1143,6 +1144,27 @@ Public Enum e_Trigger
     NADOCOMBINADO = 18
     CARCEL = 19
     ONLY_PATREON_TILE = 20
+    EMPEROR_CASTLE_ENTRY_1 = 21
+    EMPEROR_CASTLE_ENTRY_2 = 22
+    EMPEROR_CASTLE_ENTRY_3 = 23
+    EMPEROR_CASTLE_ENTRY_4 = 24
+    EMPEROR_CASTLE_ENTRY_5 = 25
+    EMPEROR_CASTLE_ENTRY_6 = 26
+    EMPEROR_CASTLE_ENTRY_7 = 27
+    EMPEROR_CASTLE_ENTRY_8 = 28
+    EMPEROR_CASTLE_ENTRY_9 = 29
+    EMPEROR_CASTLE_ENTRY_10 = 30
+    EMPEROR_CASTLE_ENTRY_11 = 31
+    EMPEROR_CASTLE_ENTRY_12 = 32
+    EMPEROR_CASTLE_ENTRY_13 = 33
+    EMPEROR_CASTLE_ENTRY_14 = 34
+    EMPEROR_CASTLE_ENTRY_15 = 35
+    EMPEROR_CASTLE_ENTRY_16 = 36
+    EMPEROR_CASTLE_ENTRY_17 = 37
+    EMPEROR_CASTLE_ENTRY_18 = 38
+    EMPEROR_CASTLE_ENTRY_19 = 39
+    EMPEROR_CASTLE_ENTRY_20 = 40
+    CASTLE_FOUNDATION_POSITION = 41
 End Enum
 
 Public Enum e_NpcInfoMask
@@ -1344,6 +1366,8 @@ Public Enum e_NPCType
     AO20ShopPjs = 22
     EventMaster = 23
     ArenaGuard = 24
+    
+    Transporter = 26
 End Enum
 
 Public Const MIN_APUÑALAR As Byte = 10
@@ -1512,7 +1536,7 @@ Public Enum e_OBJType
     otBackpack = 7
     otSignBoards = 8
     otKeys = 9
-    'otLibre = 10
+    otCastleSpawner = 10
     otPotions = 11
     'otLibre = 12
     otDrinks = 13
@@ -2315,6 +2339,7 @@ Public Type t_ObjData
     WeaponAnim As Integer ' Apunta a una anim de armas
     ShieldAnim As Integer ' Apunta a una anim de escudo
     CascoAnim As Integer
+    AssignedCastleIndex As Integer
     BackpackAnim As Integer
     Valor As Long     ' Precio
     Cerrada As Integer
@@ -2447,12 +2472,16 @@ End Type
 Public Const patron_tier_aventurero As Long = 6057393
 Public Const patron_tier_heroe      As Long = 6057394
 Public Const patron_tier_leyenda    As Long = 6057395
+Public Const patron_tier_noble      As Long = 28929328
+Public Const patron_tier_emperador  As Long = 28929365
 
 Public Enum e_TipoUsuario
     tNormal = 0
-    tAventurero
-    tHeroe
-    tLeyenda
+    tAventurero = 1
+    tHeroe = 2
+    tLeyenda = 3
+    tNoble = 4
+    tEmperador = 5
 End Enum
 
 Public Const MaxRecentKillToStore = 5
@@ -2805,6 +2834,8 @@ Public Type t_QuestStats
     NumQuestsDone As Integer
     QuestsDone() As Integer
 End Type
+
+Public Const SUBASTA_OFERTA_MAXIMA As Long = 1999999
 
 ' ------------- FACCIONES -------------
 Public Type t_Facciones
@@ -3294,6 +3325,13 @@ Public Type t_NpcInfoCache
     PuedeInvocar As Integer
     CaminataLen As Integer
     Caminata() As t_NpcCaminataCache
+    CityCount       As Integer
+    CityNames()     As String
+    CityMap()       As Integer
+    CityX()         As Integer
+    CityY()         As Integer
+    CityPrice()     As Long
+    TransporterLevel As Integer
 End Type
 
 Public Enum e_TipoAI
@@ -3416,6 +3454,13 @@ Public Type t_Npc
     Humanoide As Boolean
     DisabledInBattleServer As Byte
     OnlyEnabledInBattleServer As Byte
+    TransportCityCount  As Integer
+    TransportCityNames() As String
+    TransportCityMap()   As Integer
+    TransportCityX()     As Integer
+    TransportCityY()     As Integer
+    TransportCityPrice() As Long
+    TransporterLevel As Integer
 End Type
 
 '**********************************************************

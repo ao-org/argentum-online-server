@@ -78,7 +78,7 @@ Public Function IsPatreon(ByVal UserIndex As Integer) As Boolean
    On Error GoTo IsPatreon_Error
 
     With UserList(UserIndex).Stats
-        IsPatreon = .tipoUsuario = e_TipoUsuario.tAventurero Or .tipoUsuario = e_TipoUsuario.tHeroe Or .tipoUsuario = e_TipoUsuario.tLeyenda
+        IsPatreon = .tipoUsuario >= e_TipoUsuario.tAventurero And .tipoUsuario <= e_TipoUsuario.tEmperador
     End With
 
    On Error GoTo 0
@@ -509,16 +509,26 @@ Dim tStr                        As String
         End If
   
         If Not MapaValido(.pos.Map) Then
-            Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
             .pos.Map = Cities(HomeCityId).Map
             .pos.x = Cities(HomeCityId).x
             .pos.y = Cities(HomeCityId).y
+            Call WriteLocaleMsg(UserIndex, MSG_CHARACTER_FOUND_ON_ILLEGAL_POSITION, FONTTYPE_INFOBOLD)
         End If
+        
+        If IsFeatureEnabled("underworld") And IsUnderworldInitialized Then
+            If Not IsUnderworldOpen And IsUserIndexInsideTheUnderworld(UserIndex) Then
+                .pos.Map = Cities(HomeCityId).Map
+                .pos.x = Cities(HomeCityId).x
+                .pos.y = Cities(HomeCityId).y
+                Call WriteLocaleMsg(UserIndex, MSG_CHARACTER_FOUND_ON_ILLEGAL_POSITION, FONTTYPE_INFOBOLD)
+            End If
+        End If
+        
         If MapInfo(.pos.Map).MapResource = 0 Then
-            Call WriteErrorMsg(UserIndex, "Your character was found on an illegal map, it has been teleported to the corresponding home")
             .pos.Map = Cities(HomeCityId).Map
             .pos.x = Cities(HomeCityId).x
             .pos.y = Cities(HomeCityId).y
+            Call WriteLocaleMsg(UserIndex, MSG_CHARACTER_FOUND_ON_ILLEGAL_POSITION, FONTTYPE_INFOBOLD)
         End If
         If MapData(.pos.Map, .pos.x, .pos.y).UserIndex <> 0 Or MapData(.pos.Map, .pos.x, .pos.y).NpcIndex <> 0 Then
             Dim FoundPlace As Boolean
@@ -3406,3 +3416,14 @@ HandleUserPetsOnDeath_Err:
     Resume Next
 End Sub
 
+Public Function RaceToString(ByVal raza As e_Raza) As String
+    Select Case raza
+        Case e_Raza.Humano: RaceToString = "HUMANO"
+        Case e_Raza.Elfo:   RaceToString = "ELFO"
+        Case e_Raza.Drow:   RaceToString = "DROW"
+        Case e_Raza.Gnomo:  RaceToString = "GNOMO"
+        Case e_Raza.Enano:  RaceToString = "ENANO"
+        Case e_Raza.Orco:   RaceToString = "ORCO"
+        Case Else:          RaceToString = ""
+    End Select
+End Function
