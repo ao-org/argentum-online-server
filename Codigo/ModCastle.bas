@@ -748,9 +748,9 @@ Public Sub ModifyCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal Characte
         End If
     
         If .Stats.tipoUsuario < e_TipoUsuario.tNoble Then
-            #If DEBUGGING = 0 Then
                 Call WriteLocaleMsg(UserIndex, MSG_AT_LEAST_NOBLE_TO_FOUND_CASTLE, FONTTYPE_INFOBOLD)
                 Call LogInfoServidor("User with low patreon status trying to set a whitelist for a castle, name: " & .name)
+            #If DEBUGGING = 0 Then
                 Exit Sub
             #End If
         End If
@@ -771,10 +771,12 @@ Public Sub ModifyCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal Characte
             Case eCastleWhitelistOperation.Add
                 If AddUserNameToWhiteListByCastleSlot(CastleIndex, CharacterName) Then
                     CastleData(CastleIndex).dirtyWhiteList = True
+                    Call WriteLocaleMsg(UserIndex, MSG_CHARNAME_ADDED_TO_WHITELIST, FONTTYPE_INFOBOLD, CharacterName)
                 End If
             Case eCastleWhitelistOperation.Remove
                 If RemoveUserNameToWhiteListByCastleSlot(CastleIndex, CharacterName) Then
                     CastleData(CastleIndex).dirtyWhiteList = True
+                    Call WriteLocaleMsg(UserIndex, MSG_CHARNAME_REMOVED_FROM_WHITELIST, FONTTYPE_INFOBOLD, CharacterName)
                 End If
             Case Else
                 Call LogInfoServidor("User: " & .name & " used an invalid operation for modify castle white list")
@@ -833,7 +835,7 @@ Public Sub SaveCastleDataToDb()
                 Set RS = Query(UPDATE_EMPEROR_CASTLE, .owner_account_id, .id, DateToSQLite(.foundation_date), 1, .name, i)
                 'update castle coordinates in db
                 Set RS = Query(UPDATE_OUTSIDE_CASTLE_LOCATION, .castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, i)
-                Call LogInfoServidor("Persisted castle number: " & i & " name: " & .name)
+                Call LogInfoServidor("Persisted new data for castle number: " & i & " name: " & .name)
             End If
             
         End With
