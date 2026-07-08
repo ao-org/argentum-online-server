@@ -327,6 +327,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
             If MapData(Map, x, y).trigger >= EMPEROR_CASTLE_ENTRY_1 Then
                 If MapData(Map, x, y).trigger <= EMPEROR_CASTLE_ENTRY_20 Then
                     If Not CheckCastleEntryWhiteList(UserIndex, MapData(map, x, y).trigger) Then
+                        Call WarpUserChar(UserIndex, map, x, y - 1, False)
                         Call WriteLocaleMsg(UserIndex, MSG_NOT_IN_THE_CASTLE_WHITELIST, FONTTYPE_INFOBOLD)
                         Exit Sub
                     End If

@@ -23,6 +23,11 @@ Private Type t_CastleInfo
     name As String
 End Type
 
+Public Enum eCastleWhitelistOperation
+    Add = 0
+    Remove = 1
+End Enum
+
 Public CastleData() As t_CastleInfo
 
 
@@ -31,16 +36,22 @@ Private Const COUNT_ALL_CASTLES As String = "SELECT COUNT(*) FROM castle;"
 Private Const UPDATE_EMPEROR_CASTLE As String = "UPDATE castle SET owner_account_id = ?, owner_character_id = ?, foundation_date = ?, is_active = ?, name = ? WHERE id = ?;"
 Private Const UPDATE_OUTSIDE_CASTLE_LOCATION As String = "UPDATE castle_coordinates SET outside_map = ?, outside_x = ?, outside_y = ? WHERE id = ?;"
 
-Private Const UPDATE_OR_INSERT_NEW_CASTLE_WHITELIST As String = "INSERT INTO"
+Private Const INSERT_OR_IGNORE_NEW_CHAR_IN_CASTLE_WHITELIST As String = "INSERT OR IGNORE INTO castle_whitelist (character_name, castle_id) VALUES (?,?)"
+Private Const DELETE_CHAR_IN_CASTLE_WHITELIST As String = "DELETE FROM castle_whitelist WHERE id = ?"
+
+
 
 Private Const SELECT_ALL_CASTLE_WHITELISTS As String = "Select * FROM castle_whitelist"
 Private Const SELECT_ALL_CASTLES As String = "SELECT * FROM castle;"
 Private Const SELECT_ALL_CASTLE_COORDINATES = "SELECT * FROM castle_coordinates;"
 
+Private Const SELECT_SPECIFIC_CASTLE_WHITELIST As String = "Select * FROM castle_whitelist WHERE castle_id = ?;"
+
 Private Const CastleXNegativeOffset As Integer = 8
 Private Const CastleYNegativeOffset As Integer = 8
 Private Const CastleXPositiveOffset As Integer = 6
 Private Const CastleYPositiveOffset As Integer = 2
+Private Const CASTLE_REPOSITION_COOLDOWN_IN_DAYS As Integer = 7
 
 Private Const CASTLE_MOCKUP_OBJ_INDEX = 6382
 
@@ -120,7 +131,7 @@ Public Sub LoadCastleWhiteLists()
         CastleSlot = GetCastleSlotById(RS!castle_id)
         Debug.Assert CastleSlot > 0
         Dim CharacterName As String
-        CharacterName = RS!character_name
+        CharacterName = LCase$(CStr(RS!character_name))
         Call AddUserNameToWhiteListByCastleSlot(CastleSlot, CharacterName)
         RS.MoveNext
     Loop
@@ -133,6 +144,7 @@ End Sub
 
 Public Function AddUserNameToWhiteListByCastleSlot(ByVal CastleSlot As Integer, ByVal CharacterName As String) As Boolean
     AddUserNameToWhiteListByCastleSlot = False
+    CharacterName = LCase$(CharacterName)
     With CastleData(CastleSlot)
         'duplicated entry somewhere
         Debug.Assert Not .castleWhiteList.Exists(CharacterName)
@@ -145,6 +157,24 @@ Public Function AddUserNameToWhiteListByCastleSlot(ByVal CastleSlot As Integer, 
         AddUserNameToWhiteListByCastleSlot = True
     End With
 End Function
+
+Public Function RemoveUserNameToWhiteListByCastleSlot(ByVal CastleSlot As Integer, ByVal CharacterName As String) As Boolean
+    RemoveUserNameToWhiteListByCastleSlot = False
+    CharacterName = LCase$(CharacterName)
+    With CastleData(CastleSlot)
+        'duplicated entry somewhere
+        Debug.Assert .castleWhiteList.Exists(CharacterName)
+        If Not .castleWhiteList.Exists(CharacterName) Then
+            Call LogInfoServidor("Tried to remove from whitelist " & CharacterName & " but was already removed ")
+            Exit Function
+        End If
+        Call .castleWhiteList.Remove(CharacterName)
+        Call LogInfoServidor("Username:" & CharacterName & " was removed to the whitelist of castle: " & .name)
+        RemoveUserNameToWhiteListByCastleSlot = True
+    End With
+End Function
+
+
 
 Public Function GetCastleSlotById(ByVal id As Integer) As Integer
     GetCastleSlotById = -1
@@ -194,7 +224,7 @@ Public Sub LoadCastleData()
     
             If Not IsNull(RS!owner_character_id) Then
                 .owner_char_id = (RS!owner_character_id)
-                .owner_char_name = GetCharacterNameByUserId(RS!owner_character_id)
+                .owner_char_name = LCase$(GetCharacterNameByUserId(RS!owner_character_id))
             End If
             
             If Not IsNull(RS!foundation_date) Then
@@ -206,9 +236,6 @@ Public Sub LoadCastleData()
             .spawner_obj_id = (RS!spawner_obj_id)
             .inside_key_obj_id = (RS!inside_key_obj_id)
             .is_active = (RS!is_active)
-            If .owner_account_id <> 0 Then
-                Call .castleWhiteList.Add(.owner_account_id, .trigger) 'add castle owner to the whitelist
-            End If
             i = i + 1
             RS.MoveNext
         
@@ -280,7 +307,7 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
     End With
 
     If UserList(UserIndex).pos.map <> UserTargetMap Then
-        Call LogError("Usuario " & UserList(UserIndex).Name & "Interactuando con un mapa fuera de su rango, revisar")
+        Call LogError("Usuario " & UserList(UserIndex).name & "Interactuando con un mapa fuera de su rango, revisar")
         Exit Function
     End If
 
@@ -346,7 +373,7 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
             .foundation_date = DateTime.Now
             .is_active = True
             .owner_account_id = UserList(UserIndex).AccountID
-            .owner_char_id = UserList(UserIndex).Id
+            .owner_char_id = UserList(UserIndex).id
             .owner_char_name = UserList(UserIndex).name
             .dirtyCastleData = True
             .name = GenerateRandomCastleName
@@ -620,12 +647,12 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
     Call MakeObj(CastleSignObj, map, x, y)
 End Sub
 
-Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer, Optional ByRef CastleIndex As Integer = -1) As Boolean
+Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer, Optional ByVal trigger As Integer = 0, Optional ByRef CastleIndex As Integer = -1) As Boolean
     IsEmperorCastleCreated = False
     Dim i As Integer
     For i = 1 To UBound(CastleData)
         With CastleData(i)
-            If .owner_account_id = UserList(UserIndex).AccountID Then
+            If .owner_account_id = UserList(UserIndex).AccountID Or trigger = .trigger Then
                 If Not IsCastleFootprintInMapBounds(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y) Then
                     Call LogInfoServidor("IsEmperorCastleCreated outside map bounds. map=" & CStr(.castle_coordinates.outside.map) & _
                         " x=" & CStr(.castle_coordinates.outside.x) & _
@@ -648,9 +675,14 @@ Public Function HasCastleRelocationCooldownPassed(ByVal CastleIndex As Integer) 
 HasCastleRelocationCooldownPassed = False
     Dim Acumulator As Long
     Acumulator = DateTime.Now - CastleData(CastleIndex).foundation_date
-    If Acumulator >= 7 Then
+    If Acumulator >= CASTLE_REPOSITION_COOLDOWN_IN_DAYS Then
         HasCastleRelocationCooldownPassed = True
     End If
+        
+    #If DEBUGGING = 1 Then
+        HasCastleRelocationCooldownPassed = True
+    #End If
+    
 End Function
 
 Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As Integer)
@@ -684,7 +716,7 @@ Function CheckCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal trigger As 
    CheckCastleEntryWhiteList = False
 
     Dim CastleIndex As Integer
-    If Not IsEmperorCastleCreated(UserIndex, CastleIndex) Then
+    If Not IsEmperorCastleCreated(UserIndex, trigger, CastleIndex) Then
         Exit Function
     End If
 
@@ -696,11 +728,11 @@ Function CheckCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal trigger As 
             Exit Function
        End If
     
-       If Not .castleWhiteList.Exists(UserList(UserIndex).name) Then
+       If Not .castleWhiteList.Exists(LCase$(UserList(UserIndex).name)) Then
             Exit Function
        End If
     
-       If .castleWhiteList.Item(UserList(UserIndex).name) = trigger Then
+       If .castleWhiteList.Item(LCase$(UserList(UserIndex).name)) = trigger Then
             CheckCastleEntryWhiteList = True
        End If
    
@@ -708,16 +740,24 @@ Function CheckCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal trigger As 
    
 End Function
 
-Public Sub AddToCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal CharacterName As String)
+Public Sub ModifyCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal CharacterName As String, ByVal operation As eCastleWhitelistOperation)
+    CharacterName = LCase$(CharacterName)
     With UserList(UserIndex)
-        If .Stats.tipoUsuario < e_TipoUsuario.tNoble Then
-            Call WriteLocaleMsg(UserIndex, MSG_AT_LEAST_NOBLE_TO_FOUND_CASTLE, FONTTYPE_INFOBOLD)
-            Call LogInfoServidor("User with low patreon status trying to set a whitelist for a castle, name: " & .name)
+        If Not ValidarNombre(CharacterName) Then
+            Call LogInfoServidor("User: " & .name & " Tried to input an invalid charactername while modifying castle whitelist")
             Exit Sub
+        End If
+    
+        If .Stats.tipoUsuario < e_TipoUsuario.tNoble Then
+                Call WriteLocaleMsg(UserIndex, MSG_AT_LEAST_NOBLE_TO_FOUND_CASTLE, FONTTYPE_INFOBOLD)
+                Call LogInfoServidor("User with low patreon status trying to set a whitelist for a castle, name: " & .name)
+            #If DEBUGGING = 0 Then
+                Exit Sub
+            #End If
         End If
         
         Dim CastleIndex As Integer
-        If Not IsEmperorCastleCreated(UserIndex, CastleIndex) Then
+        If Not IsEmperorCastleCreated(UserIndex, 0, CastleIndex) Then
             Call LogError("Couldn't find the castle for user: " & .name)
             Debug.Assert False
             Exit Sub
@@ -728,20 +768,58 @@ Public Sub AddToCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal Character
             Debug.Assert False
         End If
         
-        If AddUserNameToWhiteListByCastleSlot(CastleIndex, CharacterName) Then
-            CastleData(CastleIndex).dirtyWhiteList = True
-        End If
-        
+        Select Case operation
+            Case eCastleWhitelistOperation.Add
+                If AddUserNameToWhiteListByCastleSlot(CastleIndex, CharacterName) Then
+                    CastleData(CastleIndex).dirtyWhiteList = True
+                    Call WriteLocaleMsg(UserIndex, MSG_CHARNAME_ADDED_TO_WHITELIST, FONTTYPE_INFOBOLD, CharacterName)
+                End If
+            Case eCastleWhitelistOperation.Remove
+                If RemoveUserNameToWhiteListByCastleSlot(CastleIndex, CharacterName) Then
+                    CastleData(CastleIndex).dirtyWhiteList = True
+                    Call WriteLocaleMsg(UserIndex, MSG_CHARNAME_REMOVED_FROM_WHITELIST, FONTTYPE_INFOBOLD, CharacterName)
+                End If
+            Case Else
+                Call LogInfoServidor("User: " & .name & " used an invalid operation for modify castle white list")
+        End Select
+
     End With
 End Sub
 
 Public Sub SaveCastleWhiteListToDb()
     Dim i As Integer
     Dim RS As ADODB.Recordset
+    Dim RS2 As ADODB.Recordset
     For i = LBound(CastleData) To UBound(CastleData)
         With (CastleData(i))
             If .dirtyWhiteList Then
+                Set RS = Query(SELECT_SPECIFIC_CASTLE_WHITELIST, i)
+                If RS Is Nothing Then Exit Sub
                 
+                'table is new or first entry on that whitelist
+                If RS.RecordCount = 0 Then
+                    Dim keyName As Variant 'only way to catch dict keys
+                    For Each keyName In .castleWhiteList
+                        Set RS2 = Query(INSERT_OR_IGNORE_NEW_CHAR_IN_CASTLE_WHITELIST, keyName, i)
+                    Next keyName
+                End If
+                
+                Do While Not RS.EOF
+                    'if charname is no longer in the whitelist dictionary
+                    If Not .castleWhiteList.Exists(LCase$(CStr(RS!character_name))) Then
+                        'Delete char from db
+                        Set RS2 = Query(DELETE_CHAR_IN_CASTLE_WHITELIST, RS!id)
+                        If RS2 Is Nothing Then
+                            Debug.Assert False
+                            Call LogInfoServidor("Error while deleting whitelisted character in db charname: " & RS!character_name & " for castle: " & RS!castle_id)
+                        End If
+                    'if he is, check if he is saved in db
+                    Else
+                        'insert if doesn't exist, ignore if he does (logic inside the query)
+                        Set RS2 = Query(INSERT_OR_IGNORE_NEW_CHAR_IN_CASTLE_WHITELIST, RS!character_name, RS!castle_id)
+                    End If
+                    RS.MoveNext
+                Loop
             End If
         End With
     Next i
@@ -758,7 +836,7 @@ Public Sub SaveCastleDataToDb()
                 Set RS = Query(UPDATE_EMPEROR_CASTLE, .owner_account_id, .id, DateToSQLite(.foundation_date), 1, .name, i)
                 'update castle coordinates in db
                 Set RS = Query(UPDATE_OUTSIDE_CASTLE_LOCATION, .castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, i)
-                Call LogInfoServidor("Persisted castle number: " & i & " name: " & .name)
+                Call LogInfoServidor("Persisted new data for castle number: " & i & " name: " & .name)
             End If
             
         End With
@@ -767,6 +845,7 @@ End Sub
 
 Public Sub SaveCastlesToDb()
     Call SaveCastleDataToDb
+    Call SaveCastleWhiteListToDb
 End Sub
 
 Public Sub SendCastleInfo(ByVal UserIndex As Integer, ByVal CastleSlot As Integer)
