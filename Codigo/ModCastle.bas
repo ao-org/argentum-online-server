@@ -8,7 +8,7 @@ End Type
 
 Private Type t_CastleInfo
     id As Long
-    Trigger As Integer
+    trigger As Integer
     owner_account_id As Integer
     owner_char_id As Integer
     owner_char_name As String
@@ -152,7 +152,7 @@ Public Function AddUserNameToWhiteListByCastleSlot(ByVal CastleSlot As Integer, 
             Call LogInfoServidor("Duplicated username: " & CharacterName & " in whitelist for castle " & .name)
             Exit Function
         End If
-        Call .castleWhiteList.Add(CharacterName, .Trigger)
+        Call .castleWhiteList.Add(CharacterName, .trigger)
         Call LogInfoServidor("Username:" & CharacterName & " was added to the whitelist of castle: " & .name)
         AddUserNameToWhiteListByCastleSlot = True
     End With
@@ -212,7 +212,7 @@ Public Sub LoadCastleData()
     
         With CastleData(i)
             .id = (RS!id)
-            .Trigger = (RS!Trigger)
+            .trigger = (RS!trigger)
             
             
             If Not IsNull(RS!name) Then
@@ -321,7 +321,7 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
         Exit Function
     End If
 
-    If MapData(UserTargetMap, UserTargetX, UserTargetY).Trigger <> e_Trigger.CASTLE_FOUNDATION_POSITION Then
+    If MapData(UserTargetMap, UserTargetX, UserTargetY).trigger <> e_Trigger.CASTLE_FOUNDATION_POSITION Then
         Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
         Exit Function
     End If
@@ -396,7 +396,7 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
             For j = CastleTopLeftCorner.y To CastleBottomRightCorner.y
 
             MapData(map, i, j).Blocked = 0
-            MapData(map, i, j).Trigger = e_Trigger.nada
+            MapData(map, i, j).trigger = e_Trigger.nada
 
             If MapData(map, i, j).ObjInfo.ObjIndex > 0 Then
                 Call EraseObj(MapData(map, i, j).ObjInfo.Amount, map, i, j)
@@ -419,11 +419,11 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
         MapData(map, x + 1, y).Blocked = e_Block.ALL_SIDES
         MapData(map, x + 2, y).Blocked = e_Block.ALL_SIDES
         MapData(map, x + 3, y).Blocked = e_Block.ALL_SIDES
-        MapData(map, x, y).Trigger = e_Trigger.CASTLE_FOUNDATION_POSITION
-        MapData(map, x - 1, y).Trigger = .Trigger
-        MapData(map, x - 2, y).Trigger = .Trigger
-        MapData(map, x - 1, y + 1).Trigger = .Trigger
-        MapData(map, x - 2, y + 1).Trigger = .Trigger
+        MapData(map, x, y).trigger = e_Trigger.CASTLE_FOUNDATION_POSITION
+        MapData(map, x - 1, y).trigger = .trigger
+        MapData(map, x - 2, y).trigger = .trigger
+        MapData(map, x - 1, y + 1).trigger = .trigger
+        MapData(map, x - 2, y + 1).trigger = .trigger
 
 
         'second layer form the bottom
@@ -590,7 +590,7 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
         For j = CastleTopLeftCorner.y To CastleBottomRightCorner.y
 
         MapData(map, i, j).Blocked = 0
-        MapData(map, i, j).Trigger = e_Trigger.nada
+        MapData(map, i, j).trigger = e_Trigger.nada
 
         If MapData(map, i, j).ObjInfo.ObjIndex > 0 Then
             Call EraseObj(MapData(map, i, j).ObjInfo.Amount, map, i, j)
@@ -612,7 +612,7 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
     MapData(map, x - 2, y - 1).TileExit.y = 0
 
      'restore castle foundation trigger
-    MapData(map, x, y).Trigger = e_Trigger.CASTLE_FOUNDATION_POSITION
+    MapData(map, x, y).trigger = e_Trigger.CASTLE_FOUNDATION_POSITION
 
      With CastleData(CastleIndex)
         If Not InMapBounds(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1) Then
@@ -647,12 +647,12 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
     Call MakeObj(CastleSignObj, map, x, y)
 End Sub
 
-Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer, Optional ByVal Trigger As Integer = 0, Optional ByRef CastleIndex As Integer = -1) As Boolean
+Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer, Optional ByVal trigger As Integer = 0, Optional ByRef CastleIndex As Integer = -1) As Boolean
     IsEmperorCastleCreated = False
     Dim i As Integer
     For i = 1 To UBound(CastleData)
         With CastleData(i)
-            If .owner_account_id = UserList(UserIndex).AccountID Or Trigger = .Trigger Then
+            If .owner_account_id = UserList(UserIndex).AccountID Or trigger = .trigger Then
                 If Not IsCastleFootprintInMapBounds(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y) Then
                     Call LogInfoServidor("IsEmperorCastleCreated outside map bounds. map=" & CStr(.castle_coordinates.outside.map) & _
                         " x=" & CStr(.castle_coordinates.outside.x) & _
@@ -712,11 +712,11 @@ CreateEmperorCastle_Err:
 Call TraceError(Err.Number, Err.Description, "ModCastle.CreateEmperorCastle", Erl)
 End Sub
 
-Function CheckCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal Trigger As Integer) As Boolean
+Function CheckCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal trigger As Integer) As Boolean
    CheckCastleEntryWhiteList = False
 
     Dim CastleIndex As Integer
-    If Not IsEmperorCastleCreated(UserIndex, Trigger, CastleIndex) Then
+    If Not IsEmperorCastleCreated(UserIndex, trigger, CastleIndex) Then
         Exit Function
     End If
 
@@ -732,7 +732,7 @@ Function CheckCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal Trigger As 
             Exit Function
        End If
     
-       If .castleWhiteList.Item(LCase$(UserList(UserIndex).name)) = Trigger Then
+       If .castleWhiteList.Item(LCase$(UserList(UserIndex).name)) = trigger Then
             CheckCastleEntryWhiteList = True
        End If
    
