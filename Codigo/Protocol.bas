@@ -907,6 +907,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleFactionMessage(UserIndex)
         Case ClientPacketID.eAntiMacroMessage
             Call HandleAntiMacroMessage(UserIndex)
+        Case ClientPacketID.eModifyCastleWhiteList
+            Call HandleModifyCastleWhiteList(UserIndex)
             #If PYMMO = 0 Then
             Case ClientPacketID.eCreateAccount
                 Call HandleCreateAccount(ConnectionID)
@@ -8091,3 +8093,43 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
 HandleStartAutomatedAction_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartAutomatedAction", Erl)
 End Function
+
+Public Function HandleModifyCastleWhiteList(ByVal UserIndex As Integer)
+    Dim text As String
+    text = reader.ReadString8()
+    
+    If LenB(text) < 0 And LenB(text) > 100 Then
+        Call LogInfoServidor("user: " & UserList(UserIndex).name & " Tried to input a wrong string with /castle")
+    End If
+    
+    Dim splitText() As String
+    splitText = Split(LCase$(text), " ", -1, vbBinaryCompare)
+    
+    
+    Dim res As Integer
+    Dim res2 As Integer
+    res = StrComp(splitText(0), "add", vbBinaryCompare)
+    res2 = StrComp(splitText(0), "remove", vbBinaryCompare)
+    
+    If res <> 0 And res2 <> 0 Then
+        Call LogInfoServidor("user: " & UserList(UserIndex).name & " used an invalid word for castle whitelist command")
+    End If
+    
+    Dim CharacterName As String
+    CharacterName = splitText(1)
+    
+    Dim operation As eCastleWhitelistOperation
+    
+    If res = 0 Then
+        operation = eCastleWhitelistOperation.Add
+    End If
+    
+    If res2 = 0 Then
+        operation = eCastleWhitelistOperation.Remove
+    End If
+    
+    Call ModifyCastleEntryWhiteList(UserIndex, CharacterName, operation)
+
+End Function
+
+
