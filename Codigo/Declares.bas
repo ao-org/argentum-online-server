@@ -654,6 +654,7 @@ Public Enum e_SoundEffects
     NewLevelUp = 554
     FlareActivation = 555
     'Repetido = 1152
+    NewCastleRPGVoice = 1600
     SnowStorm = 2000
     'Imperium 2028 - 2186
     FailToExtractOre = 2185
@@ -2087,6 +2088,7 @@ Public Type t_Obj
     ElementalTags As Long
     amount As Long
     data As Double
+    CastleSlot As Integer
 End Type
 
 Public Type t_QuestNpc
@@ -2209,6 +2211,7 @@ End Type
 Public Enum e_ObjFlags
     e_Bindable = 1
     e_UseOnSafeAreaOnly = 2
+    e_JailObject = 4
 End Enum
 
 

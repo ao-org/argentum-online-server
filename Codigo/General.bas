@@ -610,7 +610,6 @@ Sub Main()
     Call LoadQuests
     Call LoadPhoenixModule
     Call LoadUnderworldModule
-    Call LoadCastleModule
     'Comentado porque hay worldsave en ese mapa!
     Dim LoopC As Integer
     'Resetea las conexiones de los usuarios
@@ -642,6 +641,8 @@ Sub Main()
     #If DIRECT_PLAY = 0 Then
         Call Protocol_Writes.InitializeAuxiliaryBuffer
     #End If
+    'castle module needs writer initialized
+    Call LoadCastleModule
     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
     ' ----------------------------------------------------
@@ -1694,6 +1695,7 @@ Tilde_Err:
 End Function
 
 Public Sub CerrarServidor()
+    Call SaveCastlesToDb
     'Save stats!!!
     Call frmMain.QuitarIconoSystray
     ' Limpieza del socket del servidor.
