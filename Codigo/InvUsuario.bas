@@ -1131,6 +1131,13 @@ Dim Ropaje                      As Integer
             If CanUseObject(UserIndex, ObjIndex, True) > 0 Then
                 Exit Sub
             End If
+            
+            If IsSet(obj.ObjFlags, e_ObjFlags.e_JailObject) Then
+                If Not IsInMapCarcelRestrictedArea(.pos) Then
+                    Call WriteLocaleMsg(UserIndex, MSG_JAIL_OBJECT_ONLY_IN_JAIL, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+            End If
 
             Select Case obj.OBJType
                 Case e_OBJType.otWeapon
