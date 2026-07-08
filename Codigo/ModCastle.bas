@@ -51,6 +51,7 @@ Private Const CastleXNegativeOffset As Integer = 8
 Private Const CastleYNegativeOffset As Integer = 8
 Private Const CastleXPositiveOffset As Integer = 6
 Private Const CastleYPositiveOffset As Integer = 2
+Private Const CASTLE_REPOSITION_COOLDOWN_IN_DAYS As Integer = 7
 
 Private Const CASTLE_MOCKUP_OBJ_INDEX = 6382
 
@@ -674,7 +675,7 @@ Public Function HasCastleRelocationCooldownPassed(ByVal CastleIndex As Integer) 
 HasCastleRelocationCooldownPassed = False
     Dim Acumulator As Long
     Acumulator = DateTime.Now - CastleData(CastleIndex).foundation_date
-    If Acumulator >= 7 Then
+    If Acumulator >= CASTLE_REPOSITION_COOLDOWN_IN_DAYS Then
         HasCastleRelocationCooldownPassed = True
     End If
         
