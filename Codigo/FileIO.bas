@@ -1049,6 +1049,7 @@ Sub LoadOBJData()
             .RepairTo = val(Leer.GetValue(ObjKey, "RepairTo"))
             If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
             If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
+            If val(Leer.GetValue(ObjKey, "JailObject")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_JailObject)
             Dim i As Integer
             Select Case .OBJType
                 Case e_OBJType.otWorkingTools
