@@ -2090,6 +2090,7 @@ Public Type t_Obj
     ElementalTags As Long
     amount As Long
     data As Double
+    CastleSlot As Integer
 End Type
 
 Public Type t_QuestNpc
@@ -2212,6 +2213,7 @@ End Type
 Public Enum e_ObjFlags
     e_Bindable = 1
     e_UseOnSafeAreaOnly = 2
+    e_JailObject = 4
 End Enum
 
 

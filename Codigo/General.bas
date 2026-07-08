@@ -1695,6 +1695,7 @@ Tilde_Err:
 End Function
 
 Public Sub CerrarServidor()
+    Call SaveCastlesToDb
     'Save stats!!!
     Call frmMain.QuitarIconoSystray
     ' Limpieza del socket del servidor.
