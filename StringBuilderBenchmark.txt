@@ -1,0 +1,86 @@
+String Builder Benchmark
+
+Build: compiled EXE or VB6 IDE process
+Date/time: 2026-07-09 13:28:32
+Machine: NIX
+Command: --benchmark-string-builders
+Output file: C:\Users\pablo\GitHub\argentum20-server\StringBuilderBenchmark.txt
+Iteration counts: small SQL=20000, character save=5000, reused Clear=2000, JSON=3000, many small appends=20000, fewer large appends=10000
+Second-stage counts: real save dynamic strings=10000, simulated full save prep=10000, growth clear=200, growth-copy comparison=100
+
+API review:
+cStringBuilder has Append, AppendNL, Clear, ToString, Length, Capacity, plus ByteLength, ChunkSize, TheString, AppendByVal, Insert, InsertByVal, Remove, Find, and HeapMinimize.
+clsFastString only implements Append, AppendNL, Clear, ToString, Length, and Capacity in this benchmark, so it is not a full drop-in replacement.
+Existing production procedures such as CharacterPersistence quest-save helpers type parameters as cStringBuilder, so replacing callers with clsFastString would not compile without signature changes or an adapter.
+clsFastString.Clear keeps the allocated buffer; cStringBuilder.Clear releases it.
+clsFastString growth copies Len(sTemp), which is the full allocated buffer, not only the used length. That can copy large unused space after growth.
+Full DB save path: not run. This benchmark does not mutate the existing Database.db; full DB timings need a disposable fixture DB with schema and test character rows.
+
+Case: Small SQL query, 20000 iterations
+cStringBuilder: 1359 ms
+clsFastString:  1125 ms
+Plain &:        719 ms
+Impact: clsFastString is 17.2% faster than cStringBuilder
+
+Case: Character save query, 5000 iterations
+cStringBuilder: 672 ms
+clsFastString:  422 ms
+Plain &:        265 ms
+Impact: clsFastString is 37.2% faster than cStringBuilder
+
+Case: Reused builder with Clear, 2000 iterations
+cStringBuilder: 3547 ms
+clsFastString:  2188 ms
+Plain &:        2062 ms
+Impact: clsFastString is 38.3% faster than cStringBuilder
+
+Case: JSON encoding and records, 3000 iterations
+cStringBuilder: 9500 ms
+clsFastString:  8187 ms
+Plain &:        6532 ms
+Impact: clsFastString is 13.8% faster than cStringBuilder
+
+Case: Many small appends, 20000 iterations
+cStringBuilder: 6109 ms
+clsFastString:  4078 ms
+Plain &:        2094 ms
+Impact: clsFastString is 33.2% faster than cStringBuilder
+
+Case: Fewer large appends, 10000 iterations
+cStringBuilder: 312 ms
+clsFastString:  157 ms
+Plain &:        15 ms
+Impact: clsFastString is 49.7% faster than cStringBuilder
+
+Case: Real save dynamic SQL strings, 10000 iterations
+cStringBuilder: 1953 ms
+clsFastString:  1360 ms
+Plain &:        812 ms
+Impact: clsFastString is 30.4% faster than cStringBuilder
+
+Case: Simulated SaveChangesInUser split, 10000 iterations
+cStringBuilder string construction: 1969 ms
+cStringBuilder full save prep:      2218 ms
+cStringBuilder string share:        88.8%
+clsFastString string construction:  1344 ms
+clsFastString full save prep:       1547 ms
+clsFastString string share:         86.9%
+Plain & string construction:        797 ms
+Plain & full save prep:             985 ms
+Plain & string share:               80.9%
+Full DB save path: not run against Database.db; no database rows were inserted, updated, or deleted.
+
+Case: Growth beyond 50000 then Clear, 200 iterations
+cStringBuilder: 937 ms
+clsFastString:  78 ms
+Plain &:        16 ms
+clsFastString retained capacity after Clear: 110000 chars
+clsFastString length after final small append: 17 chars
+Impact: clsFastString is 91.7% faster than cStringBuilder
+
+Case: clsFastString growth copy strategy, 100 iterations
+Full-buffer copy: 1750 ms, retained capacity 1275039 chars
+Used-length copy: 1766 ms, retained capacity 1275039 chars
+Impact: used-length copy is -0.9% faster than full-buffer copy
+
+Correctness: all compared outputs matched.
