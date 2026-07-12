@@ -1700,6 +1700,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 If UserList(UserIndex).Grupo.EnGrupo Then
                     Call CompartirUbicacion(UserIndex)
                 End If
+                Call CompartirUbicacionFaccion(UserIndex)
                 'Stop resting if needed
                 If .flags.Descansar Then
                     .flags.Descansar = False

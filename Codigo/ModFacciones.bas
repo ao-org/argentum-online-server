@@ -528,3 +528,279 @@ Private Function IsHighRank(ByRef faccion As t_Facciones) As Boolean
 IsHighRank_Err:
     Call TraceError(Err.Number, Err.Description, "ModFacciones.IsHighRank", Erl)
 End Function
+
+Public Sub CompartirUbicacionFaccion(ByVal UserIndex As Integer)
+    On Error GoTo CompartirUbicacionFaccion_Err
+
+    Dim misFaccion As e_Facciones
+    misFaccion = UserList(UserIndex).faccion.Status
+
+    If misFaccion <> e_Facciones.Armada And _
+       misFaccion <> e_Facciones.consejo And _
+       misFaccion <> e_Facciones.Caos And _
+       misFaccion <> e_Facciones.concilio Then
+        Exit Sub
+    End If
+
+    Dim esArmada As Boolean
+    esArmada = (misFaccion = e_Facciones.Armada Or misFaccion = e_Facciones.consejo)
+
+    ' --- PASO 1: Actualizar lo que YO veo ---
+    ' Solo si YO soy HighRank
+    If IsHighRank(UserList(UserIndex).faccion) Then
+        Dim s As Byte
+        For s = 0 To 19
+            Call WriteUbicacionFaccion(UserIndex, s, 0)
+        Next s
+
+        Dim Slot As Byte
+        Dim i    As Long
+        Slot = 0
+        For i = 1 To LastUser
+            If i = UserIndex Then GoTo SiguienteUser
+            If Not UserList(i).flags.UserLogged Then GoTo SiguienteUser
+            If Not UserList(i).ConnectionDetails.ConnIDValida Then GoTo SiguienteUser
+            If UserList(i).pos.map <> UserList(UserIndex).pos.map Then GoTo SiguienteUser
+
+            Dim suFaccion As e_Facciones
+            suFaccion = UserList(i).faccion.Status
+
+            Dim esAliado As Boolean
+            If esArmada Then
+                esAliado = (suFaccion = e_Facciones.Armada Or suFaccion = e_Facciones.consejo)
+            Else
+                esAliado = (suFaccion = e_Facciones.Caos Or suFaccion = e_Facciones.concilio)
+            End If
+            If Not esAliado Then GoTo SiguienteUser
+
+            Call WriteUbicacionFaccion(UserIndex, Slot, i)
+            Slot = Slot + 1
+            If Slot > 19 Then GoTo TerminarPaso1
+
+SiguienteUser:
+        Next i
+    End If
+TerminarPaso1:
+
+    ' --- PASO 2: Actualizar lo que los ALIADOS HighRank ven de mí ---
+    Dim i2 As Long
+    For i2 = 1 To LastUser
+        If i2 = UserIndex Then GoTo SiguienteAliado
+        If Not UserList(i2).flags.UserLogged Then GoTo SiguienteAliado
+        If Not UserList(i2).ConnectionDetails.ConnIDValida Then GoTo SiguienteAliado
+        If UserList(i2).pos.map <> UserList(UserIndex).pos.map Then GoTo SiguienteAliado
+
+        Dim faccionAliado As e_Facciones
+        faccionAliado = UserList(i2).faccion.Status
+
+        Dim somosFaccion As Boolean
+        If esArmada Then
+            somosFaccion = (faccionAliado = e_Facciones.Armada Or faccionAliado = e_Facciones.consejo)
+        Else
+            somosFaccion = (faccionAliado = e_Facciones.Caos Or faccionAliado = e_Facciones.concilio)
+        End If
+        If Not somosFaccion Then GoTo SiguienteAliado
+
+        ' Solo actualizar si el aliado es HighRank
+        If Not IsHighRank(UserList(i2).faccion) Then GoTo SiguienteAliado
+
+        Dim slotAliado As Byte
+        Dim j          As Long
+        slotAliado = 0
+
+        Dim t As Byte
+        For t = 0 To 19
+            Call WriteUbicacionFaccion(i2, t, 0)
+        Next t
+
+        For j = 1 To LastUser
+            If j = i2 Then GoTo SiguienteParaAliado
+            If Not UserList(j).flags.UserLogged Then GoTo SiguienteParaAliado
+            If Not UserList(j).ConnectionDetails.ConnIDValida Then GoTo SiguienteParaAliado
+            If UserList(j).pos.map <> UserList(i2).pos.map Then GoTo SiguienteParaAliado
+
+            Dim faccionJ As e_Facciones
+            faccionJ = UserList(j).faccion.Status
+
+            Dim esAliadoJ As Boolean
+            If esArmada Then
+                esAliadoJ = (faccionJ = e_Facciones.Armada Or faccionJ = e_Facciones.consejo)
+            Else
+                esAliadoJ = (faccionJ = e_Facciones.Caos Or faccionJ = e_Facciones.concilio)
+            End If
+            If Not esAliadoJ Then GoTo SiguienteParaAliado
+
+            Call WriteUbicacionFaccion(i2, slotAliado, j)
+            slotAliado = slotAliado + 1
+            If slotAliado > 19 Then GoTo TerminarAliado
+
+SiguienteParaAliado:
+        Next j
+TerminarAliado:
+
+SiguienteAliado:
+    Next i2
+
+    Exit Sub
+CompartirUbicacionFaccion_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.CompartirUbicacionFaccion", Erl)
+End Sub
+
+Public Sub NotificarDesconexionFaccion(ByVal UserIndex As Integer)
+    On Error GoTo NotificarDesconexionFaccion_Err
+
+    Dim misFaccion As e_Facciones
+    misFaccion = UserList(UserIndex).faccion.Status
+
+    If misFaccion <> e_Facciones.Armada And _
+       misFaccion <> e_Facciones.consejo And _
+       misFaccion <> e_Facciones.Caos And _
+       misFaccion <> e_Facciones.concilio Then
+        Exit Sub
+    End If
+
+    Dim esArmada As Boolean
+    esArmada = (misFaccion = e_Facciones.Armada Or misFaccion = e_Facciones.consejo)
+
+    Dim i As Long
+    For i = 1 To LastUser
+        If i = UserIndex Then GoTo SiguienteAliado
+        If Not UserList(i).flags.UserLogged Then GoTo SiguienteAliado
+        If Not UserList(i).ConnectionDetails.ConnIDValida Then GoTo SiguienteAliado
+        If UserList(i).pos.map <> UserList(UserIndex).pos.map Then GoTo SiguienteAliado
+
+        Dim faccionAliado As e_Facciones
+        faccionAliado = UserList(i).faccion.Status
+
+        Dim esAliado As Boolean
+        If esArmada Then
+            esAliado = (faccionAliado = e_Facciones.Armada Or faccionAliado = e_Facciones.consejo)
+        Else
+            esAliado = (faccionAliado = e_Facciones.Caos Or faccionAliado = e_Facciones.concilio)
+        End If
+        If Not esAliado Then GoTo SiguienteAliado
+
+        ' Solo actualizar si el aliado es HighRank
+        If Not IsHighRank(UserList(i).faccion) Then GoTo SiguienteAliado
+
+        Dim t As Byte
+        For t = 0 To 19
+            Call WriteUbicacionFaccion(i, t, 0)
+        Next t
+
+        Dim Slot As Byte
+        Dim j    As Long
+        Slot = 0
+        For j = 1 To LastUser
+            If j = i Then GoTo SiguienteJ
+            If j = UserIndex Then GoTo SiguienteJ
+            If Not UserList(j).flags.UserLogged Then GoTo SiguienteJ
+            If Not UserList(j).ConnectionDetails.ConnIDValida Then GoTo SiguienteJ
+            If UserList(j).pos.map <> UserList(i).pos.map Then GoTo SiguienteJ
+
+            Dim faccionJ As e_Facciones
+            faccionJ = UserList(j).faccion.Status
+
+            Dim esAliadoJ As Boolean
+            If esArmada Then
+                esAliadoJ = (faccionJ = e_Facciones.Armada Or faccionJ = e_Facciones.consejo)
+            Else
+                esAliadoJ = (faccionJ = e_Facciones.Caos Or faccionJ = e_Facciones.concilio)
+            End If
+            If Not esAliadoJ Then GoTo SiguienteJ
+
+            Call WriteUbicacionFaccion(i, Slot, j)
+            Slot = Slot + 1
+            If Slot > 19 Then GoTo TerminarAliado
+
+SiguienteJ:
+        Next j
+TerminarAliado:
+
+SiguienteAliado:
+    Next i
+
+    Exit Sub
+NotificarDesconexionFaccion_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.NotificarDesconexionFaccion", Erl)
+End Sub
+
+Public Sub NotificarSalidaMapaFaccion(ByVal UserIndex As Integer, ByVal oldMap As Integer)
+    On Error GoTo NotificarSalidaMapaFaccion_Err
+
+    Dim misFaccion As e_Facciones
+    misFaccion = UserList(UserIndex).faccion.Status
+
+    If misFaccion <> e_Facciones.Armada And _
+       misFaccion <> e_Facciones.consejo And _
+       misFaccion <> e_Facciones.Caos And _
+       misFaccion <> e_Facciones.concilio Then
+        Exit Sub
+    End If
+
+    Dim esArmada As Boolean
+    esArmada = (misFaccion = e_Facciones.Armada Or misFaccion = e_Facciones.consejo)
+
+    Dim i As Long
+    For i = 1 To LastUser
+        If i = UserIndex Then GoTo SiguienteAliado
+        If Not UserList(i).flags.UserLogged Then GoTo SiguienteAliado
+        If Not UserList(i).ConnectionDetails.ConnIDValida Then GoTo SiguienteAliado
+        If UserList(i).pos.map <> oldMap Then GoTo SiguienteAliado
+
+        Dim faccionAliado As e_Facciones
+        faccionAliado = UserList(i).faccion.Status
+
+        Dim esAliado As Boolean
+        If esArmada Then
+            esAliado = (faccionAliado = e_Facciones.Armada Or faccionAliado = e_Facciones.consejo)
+        Else
+            esAliado = (faccionAliado = e_Facciones.Caos Or faccionAliado = e_Facciones.concilio)
+        End If
+        If Not esAliado Then GoTo SiguienteAliado
+
+        ' Solo actualizar si el aliado es HighRank
+        If Not IsHighRank(UserList(i).faccion) Then GoTo SiguienteAliado
+
+        Dim t As Byte
+        For t = 0 To 19
+            Call WriteUbicacionFaccion(i, t, 0)
+        Next t
+
+        Dim Slot As Byte
+        Dim j    As Long
+        Slot = 0
+        For j = 1 To LastUser
+            If j = i Then GoTo SiguienteJ
+            If j = UserIndex Then GoTo SiguienteJ
+            If Not UserList(j).flags.UserLogged Then GoTo SiguienteJ
+            If Not UserList(j).ConnectionDetails.ConnIDValida Then GoTo SiguienteJ
+            If UserList(j).pos.map <> oldMap Then GoTo SiguienteJ
+
+            Dim faccionJ As e_Facciones
+            faccionJ = UserList(j).faccion.Status
+
+            Dim esAliadoJ As Boolean
+            If esArmada Then
+                esAliadoJ = (faccionJ = e_Facciones.Armada Or faccionJ = e_Facciones.consejo)
+            Else
+                esAliadoJ = (faccionJ = e_Facciones.Caos Or faccionJ = e_Facciones.concilio)
+            End If
+            If Not esAliadoJ Then GoTo SiguienteJ
+
+            Call WriteUbicacionFaccion(i, Slot, j)
+            Slot = Slot + 1
+            If Slot > 19 Then GoTo TerminarAliado
+
+SiguienteJ:
+        Next j
+TerminarAliado:
+
+SiguienteAliado:
+    Next i
+
+    Exit Sub
+NotificarSalidaMapaFaccion_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.NotificarSalidaMapaFaccion", Erl)
+End Sub
+

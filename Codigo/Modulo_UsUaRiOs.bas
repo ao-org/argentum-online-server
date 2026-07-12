@@ -720,6 +720,7 @@ Dim tStr                        As String
         If Lloviendo Then Call WriteRainToggle(UserIndex)
         If ServidorNublado Then Call WriteNubesToggle(UserIndex)
         Call WriteLoggedMessage(UserIndex, newUser)
+        Call WriteUserFaccion(UserIndex)
         If .Stats.ELV = 1 Then
             Call WriteLocaleMsg(UserIndex, MSG_BIENVENIDO_TIERRAS_ARGENTUM_ONLINE_NOMBRE_TENGAS_BUEN_VIAJE, e_FontTypeNames.FONTTYPE_GUILD, GetUserDisplayName(UserIndex)) ' Msg522=¡Bienvenido a las tierras de Argentum Online! ¡<nombre> que tengas buen viaje y mucha suerte!
         Else
@@ -2182,10 +2183,14 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
         End If
         .pos.x = x
         .pos.y = y
+        Dim oldMapForFaction As Integer
+        oldMapForFaction = .pos.map
         .pos.Map = Map
         If .Grupo.EnGrupo = True Then
             Call CompartirUbicacion(UserIndex)
         End If
+        Call NotificarSalidaMapaFaccion(UserIndex, oldMapForFaction)
+        Call CompartirUbicacionFaccion(UserIndex)
         If FX Then
             Call MakeUserChar(True, Map, UserIndex, Map, x, y, 1)
         Else

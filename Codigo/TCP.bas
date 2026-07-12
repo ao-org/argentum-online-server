@@ -592,6 +592,9 @@ Sub CloseSocketSL(ByVal UserIndex As Integer, Optional ByVal Reason As String = 
     On Error GoTo CloseSocketSL_Err
     If UserList(UserIndex).ConnectionDetails.ConnIDValida Then
         Call LogDisconnectDiag(Source, "CloseSocketSL", UserIndex, UserList(UserIndex).ConnectionDetails.ConnID, Reason, PacketId, PacketName, PacketCount, Extra)
+        If UserList(UserIndex).flags.UserLogged Then
+            Call NotificarDesconexionFaccion(UserIndex)
+        End If
         Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID, Reason, Source, PacketId, PacketName, PacketCount, Extra)
         UserList(UserIndex).ConnectionDetails.ConnIDValida = False
     End If
