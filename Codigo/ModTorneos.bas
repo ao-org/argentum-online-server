@@ -268,6 +268,12 @@ End Sub
 Public Sub ResetearTorneo(ByVal UserIndex As Integer, Optional ByVal Reembolsar As Boolean = True)
     On Error GoTo ResetearTorneo_Err
     
+    Debug.Assert Torneo.Started
+    If Not Torneo.Started Then
+        LogInfoServidor "Invalid call ResetearTorneo for a Torneo that has not started yet"
+        Exit Sub
+    End If
+    
     Dim i As Byte
     
     ' Devolver jugadores a su posicion original
