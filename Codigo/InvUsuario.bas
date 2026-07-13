@@ -451,10 +451,10 @@ DropObj_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.DropObj", Erl)
 End Sub
 
-Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
+Sub EraseObj(ByVal amount As Integer, ByVal map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo EraseObj_Err
     Dim Rango As Byte
-    MapData(Map, x, y).ObjInfo.amount = MapData(Map, x, y).ObjInfo.amount - num
+    MapData(map, x, y).ObjInfo.amount = MapData(map, x, y).ObjInfo.amount - amount
     If MapData(Map, x, y).ObjInfo.amount <= 0 Then
         MapData(Map, x, y).ObjInfo.ObjIndex = 0
         MapData(Map, x, y).ObjInfo.amount = 0
@@ -481,6 +481,7 @@ Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal x As Integer, ByVal 
             Else
                 MapData(Map, x, y).ObjInfo.amount = obj.amount
             End If
+            MapData(map, x, y).ObjInfo.CastleSlot = Obj.CastleSlot
         End If
         Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(obj.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y, MapData(Map, x, y).ObjInfo.ElementalTags))
     End If
@@ -1129,6 +1130,13 @@ Dim Ropaje                      As Integer
 
             If CanUseObject(UserIndex, ObjIndex, True) > 0 Then
                 Exit Sub
+            End If
+            
+            If IsSet(obj.ObjFlags, e_ObjFlags.e_JailObject) Then
+                If Not IsInMapCarcelRestrictedArea(.pos) Then
+                    Call WriteLocaleMsg(UserIndex, MSG_JAIL_OBJECT_ONLY_IN_JAIL, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
             End If
 
             Select Case obj.OBJType
@@ -2739,6 +2747,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Call QuitarUserInvItem(UserIndex, Slot, 1)
                     Call UpdateUserInv(False, UserIndex, Slot)
                 End If
+            Case e_OBJType.otCastleSpawner
+                .flags.UsingItemSlot = .flags.TargetObjInvSlot
+                Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
         End Select
     End With
     Exit Sub
@@ -2772,7 +2783,7 @@ Public Function IsConsumableFreeZone(ByVal UserIndex As Integer) As Boolean
     ' Verificar si está en zona con trigger activo
     isTriggerZone = (triggerStatus = e_Trigger6.TRIGGER6_PERMITE)
     ' Verificar si es un usuario con tier de suscripción
-    isTierUser = (UserList(UserIndex).Stats.tipoUsuario = tAventurero Or UserList(UserIndex).Stats.tipoUsuario = tHeroe Or UserList(UserIndex).Stats.tipoUsuario = tLeyenda)
+    isTierUser = IsPatreon(UserIndex)
     ' Zona de casas/sotanos arenas: mapas del 600 al 749 con trigger activo
     isHouseZone = (currentMap >= 600 And currentMap <= 749 And isTriggerZone)
     ' Zonas especiales fijas donde no se consumen pociones
@@ -2964,12 +2975,16 @@ End Function
 Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
     On Error GoTo UserTargetableItem_Err
     With UserList(UserIndex)
+    
+    
+        If .flags.UsingItemSlot = 0 Then Exit Sub
+
+        Dim ObjIndex As Integer
+        ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
         If IsItemInCooldown(UserList(UserIndex), .invent.Object(.flags.UsingItemSlot)) Then
             Exit Sub
         End If
-        If .flags.UsingItemSlot = 0 Then Exit Sub
-        Dim ObjIndex As Integer
-        ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
+        
         With ObjData(ObjIndex)
             If .MinHp > UserList(UserIndex).Stats.MinHp Then
                 Call WriteLocaleMsg(UserIndex, MsgRequiresMoreHealth, e_FontTypeNames.FONTTYPE_INFO)
@@ -2982,15 +2997,23 @@ Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer
                 Call WriteLocaleMsg(UserIndex, MsgTiredToPerformAction, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-            Select Case .Subtipo
-                Case e_UssableOnTarget.eRessurectionItem
-                    Call ResurrectWithItem(UserIndex)
-                Case e_UssableOnTarget.eTrap
-                    Call PlaceTrap(UserIndex, TileX, TileY)
-                Case e_UssableOnTarget.eArpon
-                    Call UseArpon(UserIndex)
-                Case e_UssableOnTarget.eHandCannon
-                    Call UseHandCannon(UserIndex, TileX, TileY)
+            
+            Select Case .OBJType
+                Case e_OBJType.otCastleSpawner
+                    If IsValidCastlePosition(UserIndex) Then
+                        Call CreateNewEmperorCastle(UserIndex, ObjIndex)
+                    End If
+                Case Else
+                    Select Case .Subtipo
+                        Case e_UssableOnTarget.eRessurectionItem
+                            Call ResurrectWithItem(UserIndex)
+                        Case e_UssableOnTarget.eTrap
+                            Call PlaceTrap(UserIndex, TileX, TileY)
+                        Case e_UssableOnTarget.eArpon
+                            Call UseArpon(UserIndex)
+                        Case e_UssableOnTarget.eHandCannon
+                            Call UseHandCannon(UserIndex, TileX, TileY)
+                    End Select
             End Select
         End With
         .flags.UsingItemSlot = 0

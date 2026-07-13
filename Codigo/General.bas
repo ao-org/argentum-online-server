@@ -485,6 +485,11 @@ End Sub
 
 Sub Main()
     On Error GoTo Handler
+
+    If LCase$(Trim$(Command$)) = "--benchmark-string-builders" Then
+        Call RunStringBuilderBenchmark
+        End
+    End If
         
     Call TryInitShard
     
@@ -641,6 +646,8 @@ Sub Main()
     #If DIRECT_PLAY = 0 Then
         Call Protocol_Writes.InitializeAuxiliaryBuffer
     #End If
+    'castle module needs writer initialized
+    Call LoadCastleModule
     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
     ' ----------------------------------------------------
@@ -1693,6 +1700,7 @@ Tilde_Err:
 End Function
 
 Public Sub CerrarServidor()
+    Call SaveCastlesToDb
     'Save stats!!!
     Call frmMain.QuitarIconoSystray
     ' Limpieza del socket del servidor.
