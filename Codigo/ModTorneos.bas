@@ -50,20 +50,9 @@ Public Type t_Torneo
     x                   As Byte
     y                   As Byte
     
-    ' Clases permitidas
-    mago                As Byte
-    clerigo             As Byte
-    guerrero            As Byte
-    asesino             As Byte
-    bardo               As Byte
-    druida              As Byte
-    Paladin             As Byte
-    cazador             As Byte
-    Trabajador          As Byte
-    Pirata              As Byte
-    Ladron              As Byte
-    Bandido             As Byte
-    ClasesTexto         As String
+    ' Clases permitidas (indexado por e_Class, 0 a 11)
+    ClasesPermitidas(11) As Boolean
+    ClasesTexto          As String
     
     ' Participantes
     participantes       As Byte
@@ -86,22 +75,15 @@ Public Sub IniciarTorneo()
     
     Dim i          As Long
     Dim inscriptos As Byte
+    Dim clase      As e_Class
     
     inscriptos = 0
-    Torneo.ClasesTexto = ""  ' Inicializar para evitar acumulación
-    If Torneo.mago > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Mago,"
-    If Torneo.clerigo > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Clerigo,"
-    If Torneo.guerrero > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Guerrero,"
-    If Torneo.asesino > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Asesino,"
-    If Torneo.bardo > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Bardo,"
-    If Torneo.druida > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Druida,"
-    If Torneo.Paladin > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Paladin,"
-    If Torneo.cazador > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Cazador,"
-    If Torneo.Trabajador > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Trabajador,"
-    If Torneo.Pirata > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Pirata,"
-    If Torneo.Ladron > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Ladron,"
-    If Torneo.Bandido > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Bandido,"
-    
+    Torneo.ClasesTexto = ""
+    For clase = 0 To 11
+        If Torneo.ClasesPermitidas(clase) Then
+            Torneo.ClasesTexto = Torneo.ClasesTexto & ClaseToString(clase) & ","
+        End If
+    Next clase
     If Len(Torneo.ClasesTexto) > 0 Then
         Torneo.ClasesTexto = Left$(Torneo.ClasesTexto, Len(Torneo.ClasesTexto) - 1)
     End If
@@ -196,20 +178,24 @@ ParticiparTorneo_Err:
 End Sub
 
 Private Function ClasePermitidaEnTorneo(ByVal clase As e_Class) As Boolean
+    ClasePermitidaEnTorneo = Torneo.ClasesPermitidas(clase)
+End Function
+
+Private Function ClaseToString(ByVal clase As e_Class) As String
     Select Case clase
-        Case e_Class.Mage:       ClasePermitidaEnTorneo = (Torneo.mago > 0)
-        Case e_Class.Cleric:     ClasePermitidaEnTorneo = (Torneo.clerigo > 0)
-        Case e_Class.Warrior:    ClasePermitidaEnTorneo = (Torneo.guerrero > 0)
-        Case e_Class.Assasin:    ClasePermitidaEnTorneo = (Torneo.asesino > 0)
-        Case e_Class.Bard:       ClasePermitidaEnTorneo = (Torneo.bardo > 0)
-        Case e_Class.Druid:      ClasePermitidaEnTorneo = (Torneo.druida > 0)
-        Case e_Class.Paladin:    ClasePermitidaEnTorneo = (Torneo.Paladin > 0)
-        Case e_Class.Hunter:     ClasePermitidaEnTorneo = (Torneo.cazador > 0)
-        Case e_Class.Trabajador: ClasePermitidaEnTorneo = (Torneo.Trabajador > 0)
-        Case e_Class.Pirat:      ClasePermitidaEnTorneo = (Torneo.Pirata > 0)
-        Case e_Class.Thief:      ClasePermitidaEnTorneo = (Torneo.Ladron > 0)
-        Case e_Class.Bandit:     ClasePermitidaEnTorneo = (Torneo.Bandido > 0)
-        Case Else:               ClasePermitidaEnTorneo = False
+        Case e_Class.Mage:       ClaseToString = "Mago"
+        Case e_Class.Cleric:     ClaseToString = "Clerigo"
+        Case e_Class.Warrior:    ClaseToString = "Guerrero"
+        Case e_Class.Assasin:    ClaseToString = "Asesino"
+        Case e_Class.Bard:       ClaseToString = "Bardo"
+        Case e_Class.Druid:      ClaseToString = "Druida"
+        Case e_Class.Paladin:    ClaseToString = "Paladin"
+        Case e_Class.Hunter:     ClaseToString = "Cazador"
+        Case e_Class.Trabajador: ClaseToString = "Trabajador"
+        Case e_Class.Pirat:      ClaseToString = "Pirata"
+        Case e_Class.Thief:      ClaseToString = "Ladron"
+        Case e_Class.Bandit:     ClaseToString = "Bandido"
+        Case Else:               ClaseToString = ""
     End Select
 End Function
 
@@ -300,6 +286,7 @@ Public Sub ResetearTorneo(ByVal UserIndex As Integer, Optional ByVal Reembolsar 
     
     ' Limpiar estado
     Torneo.HayTorneoActivo = False
+    Torneo.Started = False
     Torneo.nombre = ""
     Torneo.reglas = ""
     
@@ -313,18 +300,10 @@ Public Sub ResetearTorneo(ByVal UserIndex As Integer, Optional ByVal Reembolsar 
     Torneo.y = 0
     
     ' Limpiar clases
-    Torneo.mago = 0
-    Torneo.clerigo = 0
-    Torneo.guerrero = 0
-    Torneo.asesino = 0
-    Torneo.bardo = 0
-    Torneo.druida = 0
-    Torneo.Paladin = 0
-    Torneo.cazador = 0
-    Torneo.Trabajador = 0
-    Torneo.Pirata = 0
-    Torneo.Ladron = 0
-    Torneo.Bandido = 0
+    Dim clase As e_Class
+    For clase = 0 To 11
+        Torneo.ClasesPermitidas(clase) = False
+    Next clase
     Torneo.ClasesTexto = ""
     
     ' Limpiar participantes
@@ -334,7 +313,7 @@ Public Sub ResetearTorneo(ByVal UserIndex As Integer, Optional ByVal Reembolsar 
     ReDim Torneo.LastPosX(1 To 1)
     ReDim Torneo.LastPosY(1 To 1)
     
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_FINALIZADO_1677, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN)) 'Msg1677=Eventos> Evento Finalizado.
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EVENTOS_EVENTO_FINALIZADO_1677, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN))
     
     If UserIndex > 0 Then
         Call WriteLocaleMsg(UserIndex, MSG_TORNEO_RESETEADO_CORRECTAMENTE, e_FontTypeNames.FONTTYPE_INFOIAO)

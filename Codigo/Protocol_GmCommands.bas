@@ -3677,61 +3677,35 @@ Public Sub HandleCrearTorneo(ByVal UserIndex As Integer)
         Dim NivelMaximo As Byte
         Dim cupos       As Byte
         Dim costo       As Long
-        Dim mago        As Byte
-        Dim clerigo     As Byte
-        Dim guerrero    As Byte
-        Dim asesino     As Byte
-        Dim bardo       As Byte
-        Dim druida      As Byte
-        Dim Paladin     As Byte
-        Dim cazador     As Byte
-        Dim Trabajador  As Byte
-        Dim Pirata      As Byte
-        Dim Ladron      As Byte
-        Dim Bandido     As Byte
         Dim Mapa        As Integer
         Dim x           As Byte
         Dim y           As Byte
         Dim nombre      As String
         Dim reglas      As String
+        Dim clase       As e_Class
+        Dim clasesData(11) As Byte
+        
         NivelMinimo = reader.ReadInt8
         NivelMaximo = reader.ReadInt8
         cupos = reader.ReadInt8
         costo = reader.ReadInt32
-        mago = reader.ReadInt8
-        clerigo = reader.ReadInt8
-        guerrero = reader.ReadInt8
-        asesino = reader.ReadInt8
-        bardo = reader.ReadInt8
-        druida = reader.ReadInt8
-        Paladin = reader.ReadInt8
-        cazador = reader.ReadInt8
-        Trabajador = reader.ReadInt8
-        Pirata = reader.ReadInt8
-        Ladron = reader.ReadInt8
-        Bandido = reader.ReadInt8
+        For clase = 0 To 11
+            clasesData(clase) = reader.ReadInt8
+        Next clase
         Mapa = reader.ReadInt16
         x = reader.ReadInt8
         y = reader.ReadInt8
         nombre = reader.ReadString8
         reglas = reader.ReadString8
+        
         If EsGM(UserIndex) And ((.flags.Privilegios And e_PlayerType.Consejero) = 0) Then
             Torneo.NivelMinimo = NivelMinimo
             Torneo.NivelMaximo = NivelMaximo
             Torneo.cupos = cupos
             Torneo.costo = costo
-            Torneo.mago = mago
-            Torneo.clerigo = clerigo
-            Torneo.guerrero = guerrero
-            Torneo.asesino = asesino
-            Torneo.bardo = bardo
-            Torneo.druida = druida
-            Torneo.Paladin = Paladin
-            Torneo.cazador = cazador
-            Torneo.Trabajador = Trabajador
-            Torneo.Pirata = Pirata
-            Torneo.Ladron = Ladron
-            Torneo.Bandido = Bandido
+            For clase = 0 To 11
+                Torneo.ClasesPermitidas(clase) = (clasesData(clase) > 0)
+            Next clase
             Torneo.Mapa = Mapa
             Torneo.x = x
             Torneo.y = y
