@@ -1049,6 +1049,7 @@ Sub LoadOBJData()
             .RepairTo = val(Leer.GetValue(ObjKey, "RepairTo"))
             If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
             If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
+            If val(Leer.GetValue(ObjKey, "JailObject")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_JailObject)
             Dim i As Integer
             Select Case .OBJType
                 Case e_OBJType.otWorkingTools
@@ -1198,6 +1199,8 @@ Sub LoadOBJData()
                     .Cooldown = val(Leer.GetValue(ObjKey, "Cooldown"))
                 Case e_OBJType.otTeleport
                     .Radio = val(Leer.GetValue(ObjKey, "Radio"))
+                Case e_OBJType.otCastleSpawner
+                    .AssignedCastleIndex = val(Leer.GetValue(ObjKey, "AssignedCastleIndex"))
                 Case e_OBJType.otChest
                     .CantItem = val(Leer.GetValue(ObjKey, "CantItem"))
                     Select Case .Subtipo
