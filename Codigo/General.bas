@@ -485,6 +485,11 @@ End Sub
 
 Sub Main()
     On Error GoTo Handler
+
+    If LCase$(Trim$(Command$)) = "--benchmark-string-builders" Then
+        Call RunStringBuilderBenchmark
+        End
+    End If
         
     Call TryInitShard
     
@@ -609,6 +614,7 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Quests"
     Call LoadQuests
     Call LoadPhoenixModule
+    Call LoadUnderworldModule
     'Comentado porque hay worldsave en ese mapa!
     Dim LoopC As Integer
     'Resetea las conexiones de los usuarios
@@ -640,6 +646,8 @@ Sub Main()
     #If DIRECT_PLAY = 0 Then
         Call Protocol_Writes.InitializeAuxiliaryBuffer
     #End If
+    'castle module needs writer initialized
+    Call LoadCastleModule
     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
     ' ----------------------------------------------------
@@ -692,6 +700,7 @@ UnitTest_Err:
         Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeChangeGlobalQuestsState")
         Call MaybeChangeGlobalQuestsState
         Call MaybeSpawnFenix
+        Call MaybeSpawnUnderworldPortals
         DoEvents
         Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
         Call AntiCheatUpdate
@@ -1691,6 +1700,7 @@ Tilde_Err:
 End Function
 
 Public Sub CerrarServidor()
+    Call SaveCastlesToDb
     'Save stats!!!
     Call frmMain.QuitarIconoSystray
     ' Limpieza del socket del servidor.
