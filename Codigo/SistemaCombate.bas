@@ -748,8 +748,17 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
         End If
     End If
     If cambiarMovimiento Then
-        Call SetNpcRef(NpcList(Victima).TargetNPC, Atacante)
-        Call SetMovement(Victima, e_TipoAI.NpcAtacaNpc)
+        Dim DebeCambiarTarget As Boolean
+        DebeCambiarTarget = Not IsValidNpcRef(NpcList(Victima).TargetNPC)
+        If Not DebeCambiarTarget Then
+            If NpcList(Atacante).Stats.MaxHp > NpcList(NpcList(Victima).TargetNPC.ArrayIndex).Stats.MaxHp Then
+                DebeCambiarTarget = True
+            End If
+        End If
+        If DebeCambiarTarget Then
+            Call SetNpcRef(NpcList(Victima).TargetNPC, Atacante)
+            Call SetMovement(Victima, e_TipoAI.NpcAtacaNpc)
+        End If
     End If
     If NpcList(Atacante).flags.Snd1 > 0 Then
         Call SendData(SendTarget.ToNPCAliveArea, Atacante, PrepareMessagePlayWave(NpcList(Atacante).flags.Snd1, NpcList(Atacante).pos.x, NpcList(Atacante).pos.y))
