@@ -175,6 +175,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
     #End If
     Dim PacketId As Long
     PacketId = reader.ReadInt16
+    Dim PacketName As String
+    PacketName = GetClientPacketName(PacketId)
     Dim actual_time       As Long
     Dim performance_timer As Long
     actual_time = GetTickCountRaw()
@@ -186,25 +188,53 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         End If
         Mapping(ConnectionID).PacketCount = Mapping(ConnectionID).PacketCount + 1
         If Mapping(ConnectionID).PacketCount > 100 Then
-            'Lo kickeo
-            If UserIndex > 0 Then
-                If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
-                    Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & GetUserGMName(UserIndex) & _
-                            " | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
+            Dim PacketCountAtOverflow As Long
+            PacketCountAtOverflow = Mapping(ConnectionID).PacketCount
+
+            If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
+                Dim OverflowUserName As String
+
+                If UserIndex > 0 Then
+                    OverflowUserName = GetUserGMName(UserIndex)
+                Else
+                    OverflowUserName = "DESCONOCIDO"
                 End If
-                Mapping(ConnectionID).PacketCount = 0
-                If IsFeatureEnabled("kick_packet_overflow") Then
-                    Call KickConnection(ConnectionID)
-                End If
+        
+                Call SendData(SendTarget.ToAdminsYDioses, UserIndex, _
+                    PrepareMessageConsoleMsg( _
+                        "Packet overflow detectado. Usuario=" & OverflowUserName & _
+                        " Count=" & CStr(PacketCountAtOverflow) & _
+                        " Paquete=" & PacketName & _
+                        " (" & CStr(PacketId) & ")", _
+                        e_FontTypeNames.FONTTYPE_FIGHT))
+            End If
+            
+            Mapping(ConnectionID).PacketCount = 0
+            ' Packet overflow before a user is fully logged in is treated as protocol/login abuse.
+            ' There is no legitimate gameplay traffic yet, so disconnect these connections
+            ' regardless of the kick_packet_overflow feature toggle.
+            '
+            ' For fully logged-in users we keep the existing feature-toggle behavior because
+            ' normal gameplay can legitimately create packet bursts, especially during combat
+            ' or after lag/TCP buffering.
+            '
+            ' IMPORTANT: VB6 does not short-circuit And/Or expressions. Keep the UserIndex
+            ' checks split and never access UserList(UserIndex) unless UserIndex > 0.
+            If UserIndex <= 0 Then
+                Call KickConnection(ConnectionID, "packet_overflow", "Protocol.HandleIncomingData", PacketId, PacketName, PacketCountAtOverflow)
+            ElseIf Not UserList(UserIndex).flags.UserLogged Then
+                Call KickConnection(ConnectionID, "packet_overflow", "Protocol.HandleIncomingData", PacketId, PacketName, PacketCountAtOverflow)
             Else
-                If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
-                    Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg( _
-                            "Control Paquetes---> Usuario desconocido | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
-                End If
-                Mapping(ConnectionID).PacketCount = 0
+                Call LogInfoServidor("packet_overflow_logged_user user=" & UserList(UserIndex).Name & _
+                            " userIndex=" & CStr(UserIndex) & _
+                            " packetCount=" & CStr(PacketCountAtOverflow) & _
+                            " packetId=" & CStr(PacketId) & _
+                            " packetName=" & PacketName)
+                
                 If IsFeatureEnabled("kick_packet_overflow") Then
-                    Call KickConnection(ConnectionID)
+                    Call KickConnection(ConnectionID, "packet_overflow", "Protocol.HandleIncomingData", PacketId, PacketName, PacketCountAtOverflow)
                 End If
+                
             End If
             Exit Function
         End If
@@ -215,7 +245,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & GetUserGMName(UserIndex) & " | IP: " & UserList( _
                     UserIndex).ConnectionDetails.IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
         End If
-        Call KickConnection(ConnectionID)
+        Call KickConnection(ConnectionID, "invalid_packet", "Protocol.HandleIncomingData", PacketId, PacketName, Mapping(ConnectionID).PacketCount)
         Exit Function
     End If
     #If PYMMO = 1 Then
@@ -226,7 +256,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
                 'Is the user actually logged?
                 If Not UserList(UserIndex).flags.UserLogged Then
-                    Call CloseSocket(UserIndex)
+                    Call CloseSocket(UserIndex, "packet_requires_logged_user_but_user_not_logged", "Protocol.HandleIncomingData", PacketId, PacketName, Mapping(ConnectionID).PacketCount)
                     Exit Function
                     'He is logged. Reset idle counter if id is valid.
                 ElseIf PacketId <= ClientPacketID.[PacketCount] Then
@@ -234,7 +264,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                 End If
             Else
                 'If UserIndex is missing then kick out
-                Call KickConnection(ConnectionID)
+                Call KickConnection(ConnectionID, "packet_requires_logged_user_but_user_not_logged", "Protocol.HandleIncomingData", PacketId, PacketName, Mapping(ConnectionID).PacketCount)
                 Exit Function ' Don't process incoming data
             End If
         Else
@@ -242,7 +272,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Debug.Assert IsMissing(optional_user_index)
             If Not IsMissing(optional_user_index) Then
                 'If UserIndex is not missing then kick out
-                Call KickConnection(ConnectionID)
+                Call KickConnection(ConnectionID, "unexpected_login_packet_with_user", "Protocol.HandleIncomingData", PacketId, PacketName, Mapping(ConnectionID).PacketCount)
                 Exit Function ' Don't process incoming data
             End If
         End If
@@ -251,13 +281,13 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         If Not (PacketId = ClientPacketID.eCreateAccount Or PacketId = ClientPacketID.eLoginAccount) Then
             'Is the account actually logged?
             If UserList(UserIndex).AccountID = 0 Then
-                Call CloseSocket(UserIndex)
+                Call CloseSocket(UserIndex, "packet_requires_logged_account_but_account_not_logged", "Protocol.HandleIncomingData", PacketId, PacketName, Mapping(ConnectionID).PacketCount)
                 Exit Function
             End If
             If Not (PacketId = ClientPacketID.eLoginExistingChar Or PacketId = ClientPacketID.eLoginNewChar) Then
                 'Is the user actually logged?
                 If Not UserList(UserIndex).flags.UserLogged Then
-                    Call CloseSocket(UserIndex)
+                    Call CloseSocket(UserIndex, "packet_requires_logged_user_but_user_not_logged", "Protocol.HandleIncomingData", PacketId, PacketName, Mapping(ConnectionID).PacketCount)
                     Exit Function
                     'He is logged. Reset idle counter if id is valid.
                 ElseIf PacketId <= ClientPacketID.[PacketCount] Then
@@ -877,6 +907,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleFactionMessage(UserIndex)
         Case ClientPacketID.eAntiMacroMessage
             Call HandleAntiMacroMessage(UserIndex)
+        Case ClientPacketID.eModifyCastleWhiteList
+            Call HandleModifyCastleWhiteList(UserIndex)
             #If PYMMO = 0 Then
             Case ClientPacketID.eCreateAccount
                 Call HandleCreateAccount(ConnectionID)
@@ -890,7 +922,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             If Not IsMissing(optional_user_index) Then
                 Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("[Error] Paquete desconocido: " & PacketId, e_FontTypeNames.FONTTYPE_GUILD))
             End If
-            Call KickConnection(ConnectionID)
+            Call KickConnection(ConnectionID, "unhandled_packet", "Protocol.HandleIncomingData", PacketId, PacketName, Mapping(ConnectionID).PacketCount)
             HandleIncomingData = False
             Exit Function
     End Select
@@ -904,7 +936,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         If Not IsMissing(optional_user_index) Then
             Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("[Warning] " & errMsg, e_FontTypeNames.FONTTYPE_GUILD))
         End If
-        Call KickConnection(ConnectionID)
+        Call KickConnection(ConnectionID, "extra_bytes", "Protocol.HandleIncomingData", PacketId, PacketName, Mapping(ConnectionID).PacketCount, "extraBytes=" & CStr(reader.GetAvailable()))
         HandleIncomingData = False
         Exit Function
     End If
@@ -2914,12 +2946,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     Call WriteLocaleMsg(UserIndex, MSG_PICKUP_UNAVAILABLE, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Case e_Skill.TargetableItem
+            
                 If .Stats.MinSta < ObjData(.invent.Object(.flags.TargetObjInvSlot).ObjIndex).MinSta Then
                     Call WriteLocaleMsg(UserIndex, MsgNotEnoughtStamina, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg2129=¡No tengo energía!
                     Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
                     Exit Sub
                 End If
+                
                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, x, y)
                 Call UserTargetableItem(UserIndex, x, y)
         End Select
@@ -5386,7 +5420,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
                     'Msg1201= Usuario offline, echando de los consejos
                     Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_ECHANDO_CONSEJOS, e_FontTypeNames.FONTTYPE_INFO)
                     Dim Status As Integer
-                    Status = GetDBValue("user", "status", "name", username)
+                    Status = GetDBValue("user", "status", "name", LCase$(username))
                     Call EcharConsejoDatabase(username, IIf(Status = 4, 2, 3))
                     'Msg1202= Usuario ¬1
                     Call WriteLocaleMsg(UserIndex, MSG_USUARIO, e_FontTypeNames.FONTTYPE_INFO, username)
@@ -5499,7 +5533,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                     'Msg1208= Usuario offline, echando de la facción
                     Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_ECHANDO_FACCION, e_FontTypeNames.FONTTYPE_INFO)
                     Dim Status As Integer
-                    Status = GetDBValue("user", "status", "name", username)
+                    Status = GetDBValue("user", "status", "name", LCase$(username))
                     If Status = e_Facciones.Caos Then
                         Call EcharLegionDatabase(username)
                         'Msg1209= Usuario ¬1
@@ -5554,7 +5588,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                     'Msg1213= Usuario offline, echando de la facción
                     Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_ECHANDO_FACCION_1213, e_FontTypeNames.FONTTYPE_INFO)
                     Dim Status As Integer
-                    Status = GetDBValue("user", "status", "name", username)
+                    Status = GetDBValue("user", "status", "name", LCase$(username))
                     If Status = e_Facciones.Armada Then
                         Call EcharArmadaDatabase(username)
                         'Msg1214= Usuario ¬1
@@ -6938,71 +6972,54 @@ ErrHandler:
 End Sub
 
 Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
     On Error GoTo ErrHandler
+    Dim Destino As Byte
+    Destino = reader.ReadInt8()
+    reader.ReadInt32
     With UserList(UserIndex)
-        Dim Destino As Byte
-        Dim costo   As Long
-        Destino = reader.ReadInt8()
-        costo = reader.ReadInt32()
-        '  WTF el costo lo decide el cliente... Desactivo....
-        Exit Sub
-        If costo <= 0 Then Exit Sub
-        Dim DeDonde As t_CityData
-        If UserList(UserIndex).Stats.GLD < costo Then
-            'Msg1257= No tienes suficiente dinero.
+        If .flags.Muerto = 1 Then
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
+        Dim NpcIndex As Integer
+        NpcIndex = .flags.TargetNPC.ArrayIndex
+        If Distancia(NpcList(NpcIndex).pos, UserList(UserIndex).pos) > 4 Then
+            Call WriteLocaleMsg(UserIndex, MSG_DEMASIADO_LEJOS_VENDEDOR_PASAJES, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        If NpcList(NpcIndex).npcType <> e_NPCType.Transporter And _
+           NpcList(NpcIndex).npcType <> e_NPCType.Pirata Then
+            Exit Sub
+        End If
+        If Destino < 1 Or Destino > NpcList(NpcIndex).TransportCityCount Then
+            Exit Sub
+        End If
+        Dim precio As Long
+        precio = NpcList(NpcIndex).TransportCityPrice(Destino)
+        If .Stats.GLD < precio Then
             Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_DINERO_1257, e_FontTypeNames.FONTTYPE_INFO)
-        Else
-            If IsValidCity(Destino) Then
-                ' CityData() is the canonical travel/resurrection lookup for cities.
-                DeDonde = CityData(Destino)
-            Else
-                Call LogError("Invalid travel destination city. UserIndex=" & UserIndex & " Destino=" & Destino)
-                DeDonde = CityData(e_City.cUllathorpe)
-            End If
-            If DeDonde.NecesitaNave > 0 Then
-                If UserList(UserIndex).Stats.UserSkills(e_Skill.Navegacion) < 80 Then
-                    'Msg1258= Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.
-                    Call WriteLocaleMsg(UserIndex, MSG_NO_DEBIDO_PELIGROSIDAD_VIAJE_PUEDO_LLEVARTE_MENOS_NECESITAS_SABER, e_FontTypeNames.FONTTYPE_INFO)
-                    'Msg1259= Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.
-                    Call WriteLocaleMsg(UserIndex, MSG_NO_DEBIDO_PELIGROSIDAD_VIAJE_PUEDO_LLEVARTE_MENOS_NECESITAS_SABER_1259, e_FontTypeNames.FONTTYPE_INFO)
-                Else
-                    If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-                        If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose <> 0 Then
-                            Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND, , 1)
-                        End If
-                    End If
-                    Call WarpToLegalPos(UserIndex, DeDonde.MapaViaje, DeDonde.ViajeX, DeDonde.ViajeY, True)
-                    'Msg1260= Has viajado por varios días, te sientes exhausto!
-                    Call WriteLocaleMsg(UserIndex, MSG_VIAJADO_VARIOS_DIAS_SIENTES_EXHAUSTO_1260, e_FontTypeNames.FONTTYPE_INFO)
-                    UserList(UserIndex).Stats.MinAGU = 0
-                    UserList(UserIndex).Stats.MinHam = 0
-                    UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - costo
-                    Call WriteUpdateHungerAndThirst(UserIndex)
-                    Call WriteUpdateUserStats(UserIndex)
-                End If
-            Else
-                Dim Map As Integer
-                Dim x   As Byte
-                Dim y   As Byte
-                Map = DeDonde.MapaViaje
-                x = DeDonde.ViajeX
-                y = DeDonde.ViajeY
-                If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-                    If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose <> 0 Then
-                        Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND, , 1)
-                    End If
-                End If
-                Call WarpUserChar(UserIndex, Map, x, y, True)
-                'Msg1261= Has viajado por varios días, te sientes exhausto!
-                Call WriteLocaleMsg(UserIndex, MSG_VIAJADO_VARIOS_DIAS_SIENTES_EXHAUSTO_1261, e_FontTypeNames.FONTTYPE_INFO)
-                UserList(UserIndex).Stats.MinAGU = 0
-                UserList(UserIndex).Stats.MinHam = 0
-                UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - costo
-                Call WriteUpdateHungerAndThirst(UserIndex)
-                Call WriteUpdateUserStats(UserIndex)
+            Exit Sub
+        End If
+        If NpcList(NpcIndex).TransporterLevel > 0 Then
+            If UserList(UserIndex).Stats.ELV < NpcList(NpcIndex).TransporterLevel Then
+                Call WriteLocaleMsg(UserIndex, MSG_TRANSPORTER_LEVEL_TOO_LOW, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
             End If
         End If
+        Dim destMap As Integer
+        Dim destX   As Byte
+        Dim destY   As Byte
+        destMap = NpcList(NpcIndex).TransportCityMap(Destino)
+        destX = NpcList(NpcIndex).TransportCityX(Destino)
+        destY = NpcList(NpcIndex).TransportCityY(Destino)
+        If NpcList(NpcIndex).SoundClose <> 0 Then
+            Call WritePlayWave(UserIndex, NpcList(NpcIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND, , 1)
+        End If
+        .Stats.GLD = .Stats.GLD - precio
+        Call WriteUpdateUserStats(UserIndex)
+        Call WarpUserChar(UserIndex, destMap, destX, destY, True)
+        Call WriteLocaleMsg(UserIndex, MSG_VIAJADO_VARIOS_DIAS_SIENTES_EXHAUSTO_1261, e_FontTypeNames.FONTTYPE_INFO)
     End With
     Exit Sub
 ErrHandler:
@@ -7893,91 +7910,16 @@ HandlePublicarPersonajeMAO_Err:
 End Sub
 
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
-    
-Dim isSkin As Boolean
-Dim Slot As Byte
-
     On Error GoTo HandleDeleteItem_Err:
     
+    Dim isSkin As Boolean
+    Dim Slot As Byte
     isSkin = reader.ReadBool
     Slot = reader.ReadInt8()
     
-    With UserList(UserIndex)
-        
-        If Not isSkin Then
-            If Slot > getMaxInventorySlots(UserIndex) Or Slot <= 0 Then Exit Sub
-            If MapInfo(.pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
-                'Msg1285= Solo puedes eliminar items en zona segura.
-                Call WriteLocaleMsg(UserIndex, MSG_SOLO_PUEDES_ELIMINAR_ITEMS_ZONA_SEGURA, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            If .flags.Muerto = 1 Then
-                'Msg1286= No puede eliminar items cuando estas muerto.
-                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDE_ELIMINAR_ITEMS_CUANDO_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            If .invent.Object(Slot).Equipped = 0 Then
-                .invent.Object(Slot).amount = 0
-                .invent.Object(Slot).Equipped = 0
-                .invent.Object(Slot).ObjIndex = 0
-                Call UpdateUserInv(False, UserIndex, Slot)
-                'Msg1287= Objeto eliminado correctamente.
-                Call WriteLocaleMsg(UserIndex, MSG_OBJETO_ELIMINADO_CORRECTAMENTE, e_FontTypeNames.FONTTYPE_INFO)
-            Else
-                'Msg1288= No puedes eliminar un objeto estando equipado.
-                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_ELIMINAR_OBJETO_ESTANDO_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-        Else
-            If Slot > MAX_SKINSINVENTORY_SLOTS Or Slot <= 0 Then Exit Sub
-            Dim SkinObj As t_Obj
-            SkinObj.ObjIndex = .Invent_Skins.Object(Slot).ObjIndex
-            SkinObj.Amount = 1
-            SkinObj.ElementalTags = 0
-
-            If MapInfo(.pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
-                Call WriteLocaleMsg(UserIndex, MSG_SOLO_PUEDES_ELIMINAR_ITEMS_ZONA_SEGURA, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
-            If .flags.Muerto = 1 Then
-                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDE_ELIMINAR_ITEMS_CUANDO_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
-            If Not IsPatreon(UserIndex) Then
-                Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_MEJORAR_CUENTA_PODER_AGREGAR_SKINS_MAS_INFORMACION, FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
-            If .Stats.Creditos < 50 Then
-                Call WriteLocaleMsg(UserIndex, MSG_INSUFICIENT_PATREON_CREDITS, FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
-            If ObjData(SkinObj.ObjIndex).Instransferible > 0 Then
-                Call WriteLocaleMsg(UserIndex, MSG_NO_OBJETO_INTRANSFERIBLE_PODES_VENDERLO, FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
-            If .Invent_Skins.Object(Slot).Equipped = 0 Then
-                If Not MeterItemEnInventario(UserIndex, SkinObj) Then
-                    Exit Sub
-                End If
-                .Stats.Creditos = .Stats.Creditos - 50
-                Call LogShopTransactions("PJ ID: " & .Id & " Nick: " & GetUserRealName(UserIndex) & " -> Borró el Skin: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Name & " Tipo: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).OBJType & " Valor: " & ObjData(.Invent_Skins.Object(Slot).ObjIndex).Valor)
-                Call DesequiparSkin(UserIndex, Slot)
-                .Invent_Skins.Object(Slot).Deleted = True
-                Call WriteChangeSkinSlot(UserIndex, 0, Slot)
-                Call WriteLocaleMsg(UserIndex, MSG_OBJETO_ELIMINADO_CORRECTAMENTE, e_FontTypeNames.FONTTYPE_INFO)
-            Else
-                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_ELIMINAR_OBJETO_ESTANDO_EQUIPADO, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-        End If
-    End With
-    
+    Call WriteConsoleMsg(UserIndex, "Funcion deshabilitada momentaneamente / Function disabled temporarily.", e_FontTypeNames.FONTTYPE_INFO)
     Exit Sub
+    
 HandleDeleteItem_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteItem", Erl)
 End Sub
@@ -8149,3 +8091,43 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
 HandleStartAutomatedAction_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartAutomatedAction", Erl)
 End Function
+
+Public Function HandleModifyCastleWhiteList(ByVal UserIndex As Integer)
+    Dim text As String
+    text = reader.ReadString8()
+    
+    If LenB(text) < 0 And LenB(text) > 100 Then
+        Call LogInfoServidor("user: " & UserList(UserIndex).name & " Tried to input a wrong string with /castle")
+    End If
+    
+    Dim splitText() As String
+    splitText = Split(LCase$(text), " ", -1, vbBinaryCompare)
+    
+    
+    Dim res As Integer
+    Dim res2 As Integer
+    res = StrComp(splitText(0), "add", vbBinaryCompare)
+    res2 = StrComp(splitText(0), "remove", vbBinaryCompare)
+    
+    If res <> 0 And res2 <> 0 Then
+        Call LogInfoServidor("user: " & UserList(UserIndex).name & " used an invalid word for castle whitelist command")
+    End If
+    
+    Dim CharacterName As String
+    CharacterName = splitText(1)
+    
+    Dim operation As eCastleWhitelistOperation
+    
+    If res = 0 Then
+        operation = eCastleWhitelistOperation.Add
+    End If
+    
+    If res2 = 0 Then
+        operation = eCastleWhitelistOperation.Remove
+    End If
+    
+    Call ModifyCastleEntryWhiteList(UserIndex, CharacterName, operation)
+
+End Function
+
+

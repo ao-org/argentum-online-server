@@ -1411,7 +1411,7 @@ Public Sub WriteInventoryUnlockSlots(ByVal UserIndex As Integer)
         If .Stats.tipoUsuario <> tNormal Then
             Call Writer.WriteInt16(ServerPacketID.eInventoryUnlockSlots)
             Select Case .Stats.tipoUsuario
-                Case tLeyenda
+                Case tLeyenda, tNoble, tEmperador
                     Call Writer.WriteInt8(3)
                 Case tHeroe
                     Call Writer.WriteInt8(2)
@@ -2782,10 +2782,10 @@ Public Sub WriteViajarForm(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
     Call Writer.WriteInt16(ServerPacketID.eViajarForm)
     Dim destinos As Byte
     Dim i        As Byte
-    destinos = NpcList(NpcIndex).NumDestinos
+    destinos = NpcList(NpcIndex).TransportCityCount
     Call Writer.WriteInt8(destinos)
     For i = 1 To destinos
-        Call Writer.WriteString8(NpcList(NpcIndex).dest(i))
+        Call Writer.WriteString8(NpcList(NpcIndex).TransportCityNames(i) & "-" & NpcList(NpcIndex).TransportCityPrice(i))
     Next i
     Call Writer.WriteInt8(NpcList(NpcIndex).Interface)
     Call modSendData.SendData(ToIndex, UserIndex)
