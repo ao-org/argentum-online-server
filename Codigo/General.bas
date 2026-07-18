@@ -516,6 +516,12 @@ Sub Main()
     Call ChDir(App.Path)
     Call ChDrive(App.Path)
     Call InicializarConstantes
+    
+    ' Resetear estado de eventos
+    Set InstanciaCaptura = Nothing
+    CurrentActiveEventType = e_EventType.Generic
+    GlobalLobbyIndex = -1
+    
     frmCargando.Show
     
     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
