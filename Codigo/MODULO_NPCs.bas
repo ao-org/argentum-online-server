@@ -269,6 +269,7 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
         .AfectaParalisis = 0
         .ImmuneToSpells = 0
         .AguaValida = 0
+        .PuedeLava = 0
         .AttackedBy = vbNullString
         .AttackedTime = 0
         .AttackedFirstBy = vbNullString
@@ -494,7 +495,8 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
         PuedeAgua = .flags.AguaValida = 1
         PuedeTierra = .flags.TierraInvalida = 0
         'Necesita ser respawned en un lugar especifico
-        If .flags.RespawnOrigPos And InMapBounds(OrigPos.Map, OrigPos.x, OrigPos.y) Then
+        If .flags.RespawnOrigPos And InMapBounds(OrigPos.Map, OrigPos.x, OrigPos.y) _
+                And (.flags.PuedeLava = 0 Or HayLava(OrigPos.Map, OrigPos.x, OrigPos.y)) Then
             Map = OrigPos.Map
             x = OrigPos.x
             y = OrigPos.y
@@ -1005,6 +1007,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Movement = Val(LeerNPCs.GetValue(SectionName, "Movement"))
         .AguaValida = Val(LeerNPCs.GetValue(SectionName, "AguaValida"))
         .TierraInvalida = Val(LeerNPCs.GetValue(SectionName, "TierraInValida"))
+        .PuedeLava = Val(LeerNPCs.GetValue(SectionName, "PuedeLava"))
         .Faccion = Val(LeerNPCs.GetValue(SectionName, "Faccion"))
         .ElementalTags = Val(LeerNPCs.GetValue(SectionName, "ElementalTags"))
         .GlobalQuestBossIndex = val(LeerNPCs.GetValue(SectionName, "GlobalQuestBossIndex"))
@@ -1391,6 +1394,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .flags.AguaValida = Info.AguaValida
         .flags.GlobalQuestBossIndex = Info.GlobalQuestBossIndex
         .flags.TierraInvalida = Info.TierraInvalida
+        .flags.PuedeLava = Info.PuedeLava
         .flags.Faccion = Info.Faccion
         .flags.ElementalTags = Info.ElementalTags
         .npcType = Info.npcType
