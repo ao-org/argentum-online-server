@@ -49,6 +49,14 @@ Public Sub AddCollectibleCardToUser(ByVal UserIndex As Integer, ByRef ObjCard As
     If ObjCard.ObjIndex = 0 Then Exit Sub
     With UserList(UserIndex)
         .flags.DirtyCollectibleCardBitArray = True
-        .AccountCollectibleCardBitArray(ObjData(ObjCard.ObjIndex).CollectibleCardSlot) = .AccountCollectibleCardBitArray(ObjData(ObjCard.ObjIndex).CollectibleCardSlot) & .AccountCollectibleCardBitArray(ObjData(ObjCard.ObjIndex).CollectibleCardValue)
+        .AccountCollectibleCardBitArray(ObjData(ObjCard.ObjIndex).CollectibleCardSlot) = .AccountCollectibleCardBitArray(ObjData(ObjCard.ObjIndex).CollectibleCardSlot) Or ObjData(ObjCard.ObjIndex).CollectibleCardValue
     End With
 End Sub
+
+Public Function HasUserCollectedNpcCard(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+    With UserList(UserIndex)
+        If .AccountCollectibleCardBitArray(NpcList(NpcIndex).CollectibleCardSlot) And NpcList(NpcIndex).CollectibleCardValue = NpcList(NpcIndex).CollectibleCardValue Then
+        
+        End If
+    End With
+End Function

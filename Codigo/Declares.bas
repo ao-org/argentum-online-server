@@ -3336,6 +3336,8 @@ Public Type t_NpcInfoCache
     CityY()         As Integer
     CityPrice()     As Long
     TransporterLevel As Integer
+    CollectibleCardSlot As Integer
+    CollectibleCardValue As Byte
 End Type
 
 Public Enum e_TipoAI
@@ -3465,6 +3467,8 @@ Public Type t_Npc
     TransportCityY()     As Integer
     TransportCityPrice() As Long
     TransporterLevel As Integer
+    CollectibleCardSlot As Integer
+    CollectibleCardValue As Byte
 End Type
 
 '**********************************************************
