@@ -251,7 +251,7 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
         Call SetupUserSkills(UserList(UserIndex))
         Call SetupUserQuests(UserList(UserIndex))
         Call SetupUserQuestsDone(UserList(UserIndex))
-        Call SetupUserAccountCollectibleCardAchievements(UserList(UserIndex))
+        Call SetupUserAccountAccountCollectibleCardBitArray(UserList(UserIndex))
         ' Load additional inventories.
         If Not LoadCharacterInventory(UserIndex) Then Exit Function
         If Not LoadCharacterBank(UserIndex) Then Exit Function

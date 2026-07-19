@@ -1,1 +1,0 @@
-INSERT INTO "account_collectible_cards" ("account_id", "card_bit_array") VALUES (1, x'00012050');

@@ -2386,7 +2386,6 @@ Public Type t_ObjData
     PielTigreBengala As Integer
     SkSastreria As Byte
     Radio As Byte
-    CollectibleCardId As Integer
     SkHerreria As Integer
     SkCarpinteria As Integer
     texto As String
@@ -2429,6 +2428,8 @@ Public Type t_ObjData
     BowCategory As Byte
     ArrowCategory As Byte
     RepairTo As Integer ' ObjIndex of the item granted when this object is repaired.
+    CollectibleCardSlot As Integer
+    CollectibleCardValue As Byte
 End Type
 
 '[Pablo ToxicWaste]
@@ -2737,6 +2738,7 @@ Public Type t_UserFlags
     QuestNumber As Integer
     QuestItemSlot As Integer
     RespondiendoPregunta As Boolean
+    DirtyCollectibleCardBitArray As Boolean
     CurrentTeam As Byte
     'Captura de bandera
     jugando_captura As Byte
@@ -2983,7 +2985,7 @@ Public Type t_User
     InUse As Boolean 'Mark if the slot is un use, should be set when players connect and clear on dc, used for debug and error handling
     Id As Long
     Trabajo As t_UserTrabajo
-    CollectibleCardAchievements(1 To 4) As Long
+    AccountCollectibleCardBitArray(1 To 128) As Byte
     AccountID As Long
     Grupo As Tgrupo
     showName As Boolean 'Permite que los GMs oculten su nick con el comando /SHOWNAME
