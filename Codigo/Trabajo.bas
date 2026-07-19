@@ -240,7 +240,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
             .invent.EquippedShipObjIndex = .invent.Object(Slot).ObjIndex
             .invent.EquippedShipSlot = Slot
             If .flags.Montado > 0 Then
-                Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
+                Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot, True)
             End If
             If .flags.Mimetizado <> e_EstadoMimetismo.Desactivado Then
                 'Msg1027= Pierdes el efecto del mimetismo.
@@ -1528,27 +1528,30 @@ DoMeditar_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.DoMeditar", Erl)
 End Sub
 
-Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVal Slot As Integer)
+Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVal Slot As Integer, Optional ByVal Forzado As Boolean = False)
     On Error GoTo DoMontar_Err
     With UserList(UserIndex)
-        If CanUseObject(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
-            Exit Sub
+        If Not Forzado Then
+            If CanUseObject(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
+                Exit Sub
+            End If
+            If .flags.Montado = 0 And .Counters.EnCombate > 0 Then
+                Call WriteLocaleMsg(UserIndex, MSG_COMBATE_DEBES_AGUARDAR_SEGUNDO_MONTAR, e_FontTypeNames.FONTTYPE_INFOBOLD, .Counters.EnCombate)  ' Msg1466=Estás en combate, debes aguardar ¬1 segundo(s) para montar...
+                Exit Sub
+            End If
+            If .flags.EnReto Then
+                ' Msg652=No podés montar en un reto.
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_RETO, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            If .flags.Montado = 0 And (MapData(.pos.map, .pos.x, .pos.y).trigger > e_Trigger.PESCAINVALIDA) _
+               And MapData(.pos.map, .pos.x, .pos.y).trigger <> e_Trigger.ONLY_PATREON_TILE Then
+                ' Msg653=No podés montar aquí.
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_AQUI, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
         End If
-        If .flags.Montado = 0 And .Counters.EnCombate > 0 Then
-            Call WriteLocaleMsg(UserIndex, MSG_COMBATE_DEBES_AGUARDAR_SEGUNDO_MONTAR, e_FontTypeNames.FONTTYPE_INFOBOLD, .Counters.EnCombate)  ' Msg1466=Estás en combate, debes aguardar ¬1 segundo(s) para montar...
-            Exit Sub
-        End If
-        If .flags.EnReto Then
-            ' Msg652=No podés montar en un reto.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_RETO, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        If .flags.Montado = 0 And (MapData(.pos.Map, .pos.x, .pos.y).trigger > e_Trigger.PESCAINVALIDA) _
-           And MapData(.pos.Map, .pos.x, .pos.y).trigger <> e_Trigger.ONLY_PATREON_TILE Then
-            ' Msg653=No podés montar aquí.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_AQUI, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
+
         If .flags.Mimetizado <> e_EstadoMimetismo.Desactivado Then
             ' Msg654=Pierdes el efecto del mimetismo.
             Call WriteLocaleMsg(UserIndex, MSG_PIERDES_EFECTO_MIMETISMO, e_FontTypeNames.FONTTYPE_INFO)
