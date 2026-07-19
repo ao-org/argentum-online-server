@@ -485,6 +485,11 @@ End Sub
 
 Sub Main()
     On Error GoTo Handler
+
+    If LCase$(Trim$(Command$)) = "--benchmark-string-builders" Then
+        Call RunStringBuilderBenchmark
+        End
+    End If
         
     Call TryInitShard
     
