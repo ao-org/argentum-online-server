@@ -1147,7 +1147,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             .ChatHistory(i) = vbNullString
         Next
         .EnReto = False
-        .SolicitudReto.Estado = e_SolicitudRetoEstado.Libre
         Call SetUserRef(.AceptoReto, 0)
         .LastPos.Map = 0
         .ReturnPos.Map = 0
@@ -1344,11 +1343,11 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
         End If
         errordesc = "ERROR AL CANCELAR SOLICITUD DE RETO"
         If .flags.EnReto Then
-            Call AbandonarReto(UserIndex, True)
+            Call AbandonChallenge(UserIndex, True)
         ElseIf .flags.SolicitudReto.Estado <> e_SolicitudRetoEstado.Libre Then
-            Call CancelarSolicitudReto(UserIndex, .name & " se ha desconectado.")
+            Call CancelChallengeRequest(UserIndex, .name & " se ha desconectado.")
         ElseIf IsValidUserRef(.flags.AceptoReto) Then
-            Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .name & " se ha desconectado.")
+            Call CancelChallengeRequest(.flags.AceptoReto.ArrayIndex, .name & " se ha desconectado.")
         End If
         errordesc = "ERROR AL SACAR MIMETISMO"
         If .flags.Mimetizado > 0 Then

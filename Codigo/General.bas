@@ -606,7 +606,7 @@ Sub Main()
     Call CargarDonadores
     Call InitPathFinding
     frmCargando.Label1(2).Caption = "Cargando informacion de eventos"
-    Call CargarInfoRetos
+    Call LoadChallengeInfo
     Call CargarInfoEventos
     frmCargando.Label1(2).Caption = "Cargando Baneos Temporales"
     Call LoadBans
