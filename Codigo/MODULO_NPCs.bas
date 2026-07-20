@@ -2466,12 +2466,14 @@ Public Function CanAttackNotOwner(ByVal NpcIndex As Integer, ByVal UserIndex As 
         CanAttackNotOwner = AttackResult.Result = eMounted Or AttackResult.Result = eOutOfRange
     End If
 End Function
+
 Public Sub OnNpcKilledUpdateQuest(ByVal UserIndex As Integer, ByRef MiNPC As t_Npc)
     On Error GoTo OnNpcKilledUpdateQuest_Err
     Dim i As Integer
     Dim j As Integer
     Dim chatColor As Long
-        
+    Dim DisplayKilled As Integer
+
     For i = 1 To MAXUSERQUESTS
         With UserList(UserIndex).QuestStats.Quests(i)
             If .QuestIndex Then
@@ -2482,8 +2484,15 @@ Public Sub OnNpcKilledUpdateQuest(ByVal UserIndex As Integer, ByRef MiNPC As t_N
                                 .NPCsKilled(j) = .NPCsKilled(j) + 1
                                 .Dirty = True ' Quest slot changed: NPC kill progress increased.
                             End If
-                            chatColor = GetNPCProgressColor(.NPCsKilled(j), QuestList(.QuestIndex).RequiredNPC(j).Amount)
-                            Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).Amount & " " & MiNPC.Name, _
+
+                            ' Defensa contra valores ya corruptos/heredados que superan el tope
+                            DisplayKilled = .NPCsKilled(j)
+                            If DisplayKilled > QuestList(.QuestIndex).RequiredNPC(j).amount Then
+                                DisplayKilled = QuestList(.QuestIndex).RequiredNPC(j).amount
+                            End If
+
+                            chatColor = GetNPCProgressColor(DisplayKilled, QuestList(.QuestIndex).RequiredNPC(j).amount)
+                            Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & DisplayKilled & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.name, _
                                     UserList(UserIndex).Char.charindex, chatColor)
                             If AllRequiredNPCsKilled(UserIndex, .QuestIndex, i) Then
                                 'Msg2160=Ya has matado todas las criaturas que la misión ¬1 requería.

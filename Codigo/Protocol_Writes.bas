@@ -2798,6 +2798,7 @@ End Sub
 Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, Optional QuestSlot As Byte = 0)
     On Error GoTo WriteQuestDetails_Err
     Dim i As Integer
+    Dim KilledCount As Integer
     'ID del paquete
     Call Writer.WriteInt16(ServerPacketID.eQuestDetails)
     Call Writer.WriteInt16(QuestIndex)
@@ -2820,7 +2821,12 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
             Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(i).NpcIndex)
             'Si es una quest ya empezada, entonces mandamos los NPCs que matí.
             If QuestSlot Then
-                Call Writer.WriteInt16(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i))
+                KilledCount = UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i)
+                ' Defensa contra valores ya corruptos/heredados que superan el tope
+                If KilledCount > QuestList(QuestIndex).RequiredNPC(i).amount Then
+                    KilledCount = QuestList(QuestIndex).RequiredNPC(i).amount
+                End If
+                Call Writer.WriteInt16(KilledCount)
             End If
         Next i
     End If
