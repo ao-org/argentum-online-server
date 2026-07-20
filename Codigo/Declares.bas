@@ -3129,6 +3129,7 @@ Public Type t_NPCFlags
     OldHostil As Byte
     AguaValida As Byte
     TierraInvalida As Byte
+    LavaValida As Byte
     ' UseAINow As Boolean No se usa, borrar de la DB!!!!
     Sound As Integer
     AttackedBy As String
@@ -3223,6 +3224,7 @@ Public Type t_NpcInfoCache
     AguaValida As Integer
     GlobalQuestBossIndex As Integer
     TierraInvalida As Integer
+    LavaValida As Integer
     Faccion As Integer
     ElementalTags As Long
     npcType As Integer
