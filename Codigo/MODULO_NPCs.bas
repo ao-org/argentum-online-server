@@ -269,6 +269,7 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
         .AfectaParalisis = 0
         .ImmuneToSpells = 0
         .AguaValida = 0
+        .LavaValida = 0
         .AttackedBy = vbNullString
         .AttackedTime = 0
         .AttackedFirstBy = vbNullString
@@ -494,7 +495,8 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
         PuedeAgua = .flags.AguaValida = 1
         PuedeTierra = .flags.TierraInvalida = 0
         'Necesita ser respawned en un lugar especifico
-        If .flags.RespawnOrigPos And InMapBounds(OrigPos.Map, OrigPos.x, OrigPos.y) Then
+        If .flags.RespawnOrigPos And InMapBounds(OrigPos.Map, OrigPos.x, OrigPos.y) _
+                And (HayLava(OrigPos.Map, OrigPos.x, OrigPos.y) = (.flags.LavaValida = 1)) Then
             Map = OrigPos.Map
             x = OrigPos.x
             y = OrigPos.y
@@ -503,9 +505,13 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
         Else
             ' Primera búsqueda: buscamos una posición ideal hasta llegar al máximo de iteraciones
             Do
-                .pos.Map = Mapa
-                .pos.x = RandomNumber(MinXBorder + 2, MaxXBorder - 2) 'Obtenemos posicion al azar en x
-                .pos.y = RandomNumber(MinYBorder + 2, MaxYBorder - 2) 'Obtenemos posicion al azar en y
+                If Iteraciones = 0 And .flags.LavaValida = 1 And InMapBounds(OrigPos.Map, OrigPos.x, OrigPos.y) Then
+                    .pos = OrigPos
+                Else
+                    .pos.Map = Mapa
+                    .pos.x = RandomNumber(MinXBorder + 2, MaxXBorder - 2) 'Obtenemos posicion al azar en x
+                    .pos.y = RandomNumber(MinYBorder + 2, MaxYBorder - 2) 'Obtenemos posicion al azar en y
+                End If
                 .pos = ClosestLegalPosNPC(NpcIndex, 10, , True)     'Nos devuelve la posicion valida mas cercana
                 Iteraciones = Iteraciones + 1
             Loop While .pos.x = 0 And .pos.y = 0 And Iteraciones < MAXSPAWNATTEMPS
@@ -735,6 +741,7 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
         nPos = .pos
         Call HeadtoPos(nHeading, nPos)
         esGuardia = .npcType = e_NPCType.GuardiaReal Or .npcType = e_NPCType.GuardiasCaos
+        If .flags.LavaValida = 1 And Not HayLava(nPos.Map, nPos.x, nPos.y) Then Exit Function
         ' es una posicion legal
         If LegalWalkNPC(nPos.Map, nPos.x, nPos.y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IsValidUserRef(.MaestroUser), , esGuardia) Then
             UserIndex = MapData(.pos.Map, nPos.x, nPos.y).UserIndex
@@ -1005,6 +1012,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Movement = Val(LeerNPCs.GetValue(SectionName, "Movement"))
         .AguaValida = Val(LeerNPCs.GetValue(SectionName, "AguaValida"))
         .TierraInvalida = Val(LeerNPCs.GetValue(SectionName, "TierraInValida"))
+        .LavaValida = Val(LeerNPCs.GetValue(SectionName, "LavaValida"))
         .Faccion = Val(LeerNPCs.GetValue(SectionName, "Faccion"))
         .ElementalTags = Val(LeerNPCs.GetValue(SectionName, "ElementalTags"))
         .GlobalQuestBossIndex = val(LeerNPCs.GetValue(SectionName, "GlobalQuestBossIndex"))
@@ -1391,6 +1399,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .flags.AguaValida = Info.AguaValida
         .flags.GlobalQuestBossIndex = Info.GlobalQuestBossIndex
         .flags.TierraInvalida = Info.TierraInvalida
+        .flags.LavaValida = Info.LavaValida
         .flags.Faccion = Info.Faccion
         .flags.ElementalTags = Info.ElementalTags
         .npcType = Info.npcType
