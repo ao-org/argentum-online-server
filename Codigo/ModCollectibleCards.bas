@@ -1,6 +1,17 @@
 Attribute VB_Name = "ModCollectibleCards"
 Option Explicit
 
+'Cards And Npcs should be saved as the following
+'If i have a scorpion npc and his card is the objIndex 32
+'both the scorpion npc and the objindex32 should have matching properties
+'CollectibleCardSlot
+'CollectibleCardValue
+'CollectibleCardSlot indicates in what fraction of a byte it's located, if the card
+'visually says that the scorpion is the 234 then 234/8 -> 29
+'that means that in memory the value will be stored in AccountCollectibleCardBitArray(29)
+'and the CollectibleCardValue works as a MASK of bits
+'Then the game compares the npc value with the value that the player has in his account whenever the bussiness logic sees fit (eg: combat, finance, etc)
+
 Private Const MAX_COLLECTIBLE_CARDS_ARR = 128
 
 Private Const UPSERT_NEW_COLLECTIBLE_CARDS As String = _
@@ -83,3 +94,4 @@ Public Function HasUserCollectedNpcCard(ByVal UserIndex As Integer, ByVal NpcInd
         End If
     End With
 End Function
+
