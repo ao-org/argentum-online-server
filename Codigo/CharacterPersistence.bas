@@ -576,6 +576,7 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
         Call SaveCharacterQuestsDoneDB(UserList(UserIndex), QueryBreakdown, Builder)
         Call SaveCharacterInventorySkinsDB(UserIndex, QueryBreakdown)
         Call InitUserPersistSnapshot(UserIndex)
+        Call SaveUserAccountCollectibleCards(UserIndex, QueryBreakDown)
         Call LogSaveCharacterDuration(PerformanceTimer, QueryBreakdown, .name, .Id)
     End With
     Exit Sub

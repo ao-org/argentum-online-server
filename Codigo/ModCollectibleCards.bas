@@ -1,6 +1,8 @@
 Attribute VB_Name = "ModCollectibleCards"
 Option Explicit
 
+Private Const MAX_COLLECTIBLE_CARDS_ARR = 128
+
 Private Const UPSERT_NEW_COLLECTIBLE_CARDS As String = _
     "INSERT INTO account_collectible_cards (account_id, card_bit_array) " & _
     "VALUES (?, ?) " & _
@@ -12,38 +14,59 @@ Private Const GET_ACCOUNT_COLLECTIBLE_CARDS As String = "SELECT card_bit_array F
 Public Function SetupUserAccountAccountCollectibleCardBitArray(ByRef User As t_User)
     On Error GoTo GetUserCollectibleCards_Err
     Dim RS As ADODB.Recordset
-    Dim mStream As ADODB.Stream
-    Dim TempBuffer() As Byte
+    Dim HexString As String
     Dim i As Integer
+    Dim ByteValue As String
+    Dim TempValue As Long
     
     Set RS = Query(GET_ACCOUNT_COLLECTIBLE_CARDS, User.AccountID)
     
     If Not RS.EOF Then
-        ' 1. Configurar y cargar el Stream con el BLOB
-        Set mStream = New ADODB.Stream
-        mStream.Type = adTypeBinary
-        mStream.Open
-        mStream.Write RS("card_bit_array").value
-        
-        ' 2. Rebobinar el stream
-        mStream.Position = 0
-        
-        ' 3. LEER TODO DE UNA SOLA VEZ (Recomendado por rendimiento)
-        ' MAX_CARD_BIT_ARRAY debe ser la cantidad de BYTES (ej. 128 bytes para 1024 bits)
-        TempBuffer = mStream.Read(128)
-        
-        ' 4. Copiar los datos al array de tu estructura
-        ' Nota: Los arrays devueltos por Stream.Read siempre empiezan en el índice 0
-        For i = 1 To 128
-            ' Usamos (i - 1) porque TempBuffer es de base 0 (0 a MAX_CARD_BIT_ARRAY - 1)
-            User.AccountCollectibleCardBitArray(i) = TempBuffer(i - 1)
-        Next i
-        mStream.Close
+        If Not IsNull(RS("card_bit_array").value) Then
+            HexString = Trim$(RS("card_bit_array").value)
+            
+            ' Convert hex string back to byte array (256 chars = 128 bytes)
+            For i = 1 To MAX_COLLECTIBLE_CARDS_ARR
+                ByteValue = mid$(HexString, (i - 1) * 2 + 1, 2)
+                
+                If Len(ByteValue) = 2 Then
+                    ' Use Val() to convert hex string other casts resulted in TypeMismatch Cbyte CInt Clng
+                    TempValue = val("&H" & ByteValue)
+                    User.AccountCollectibleCardBitArray(i) = TempValue
+                End If
+            Next i
+            
+            Call LogError("Successfully loaded " & MAX_COLLECTIBLE_CARDS_ARR & " bytes")
+        End If
     End If
     Exit Function
+
 GetUserCollectibleCards_Err:
-    Call TraceError(Err.Number, Err.Description, "ModCollectibleCards.GetUserCollectibleCards", Erl)
+    Call TraceError(Err.Number, Err.Description, "ModCollectibleCards.SetupUserAccountAccountCollectibleCardBitArray", Erl)
 End Function
+
+
+Public Function SaveUserAccountCollectibleCards(ByVal UserIndex As Integer, ByVal QueryBreakDown As String)
+    Dim RS As ADODB.Recordset
+    Dim HexString As String
+    Dim i As Integer
+    With UserList(UserIndex)
+        If .flags.DirtyCollectibleCardBitArray Then
+            
+            HexString = ""  ' Explicitly initialize
+            
+            For i = 1 To MAX_COLLECTIBLE_CARDS_ARR
+                ' Convierte cada byte a 2 caracteres hexadecimales (ej. 3 -> "03")
+                HexString = HexString & Right$("0" & Hex(.AccountCollectibleCardBitArray(i)), 2)
+            Next i
+            
+            Set RS = Query(UPSERT_NEW_COLLECTIBLE_CARDS, .AccountID, HexString)
+
+            .flags.DirtyCollectibleCardBitArray = False
+        End If
+    End With
+End Function
+
 
 Public Sub AddCollectibleCardToUser(ByVal UserIndex As Integer, ByRef ObjCard As t_Obj)
     If ObjCard.ObjIndex = 0 Then Exit Sub
@@ -53,10 +76,10 @@ Public Sub AddCollectibleCardToUser(ByVal UserIndex As Integer, ByRef ObjCard As
     End With
 End Sub
 
-Public Function HasUserCollectedNpcCard(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+Public Function HasUserCollectedNpcCard(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Boolean
     With UserList(UserIndex)
         If .AccountCollectibleCardBitArray(NpcList(NpcIndex).CollectibleCardSlot) And NpcList(NpcIndex).CollectibleCardValue = NpcList(NpcIndex).CollectibleCardValue Then
-        
+            HasUserCollectedNpcCard = True
         End If
     End With
 End Function
