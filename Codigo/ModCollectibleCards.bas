@@ -12,7 +12,7 @@ Option Explicit
 'and the CollectibleCardValue works as a MASK of bits
 'Then the game compares the npc value with the value that the player has in his account whenever the bussiness logic sees fit (eg: combat, finance, etc)
 
-Private Const MAX_COLLECTIBLE_CARDS_ARR = 128
+Private Const MAX_COLLECTIBLE_CARDS_ARR_SIZE = 128
 
 Private Const UPSERT_NEW_COLLECTIBLE_CARDS As String = _
     "INSERT INTO account_collectible_cards (account_id, card_bit_array) " & _
@@ -30,7 +30,7 @@ Public Function SetupUserAccountAccountCollectibleCardBitArray(ByRef User As t_U
     Dim BlobData() As Byte
     
     ' Initialize the array with zeros
-    For i = 1 To 128
+    For i = 1 To MAX_COLLECTIBLE_CARDS_ARR_SIZE
         User.AccountCollectibleCardBitArray(i) = 0
     Next i
     
@@ -44,7 +44,7 @@ Public Function SetupUserAccountAccountCollectibleCardBitArray(ByRef User As t_U
         ' Add parameter for account_id
         .Parameters.Append .CreateParameter("@AccountID", adInteger, adParamInput, , User.AccountID)
         
-        ' Execute and get recordset
+        ' Execute and get recordset -> .Execute is asynchronous
         Set RS = .Execute
     End With
     
@@ -55,7 +55,7 @@ Public Function SetupUserAccountAccountCollectibleCardBitArray(ByRef User As t_U
                 BlobData = RS!card_bit_array
                 
                 ' Copy blob data into the user's byte array
-                For i = 1 To 128
+                For i = 1 To MAX_COLLECTIBLE_CARDS_ARR_SIZE
                     If i <= UBound(BlobData) + 1 Then
                         User.AccountCollectibleCardBitArray(i) = BlobData(i - 1) ' Arrays are 0-based from DB
                     Else
@@ -84,7 +84,7 @@ Public Function SaveUserAccountCollectibleCards(ByVal UserIndex As Integer, ByVa
     Dim i As Integer
     
     ' Copy user's byte array to 0-based array for database
-    For i = 1 To 128
+    For i = 1 To MAX_COLLECTIBLE_CARDS_ARR_SIZE
         BlobData(i - 1) = UserList(UserIndex).AccountCollectibleCardBitArray(i)
     Next i
     
@@ -99,9 +99,9 @@ Public Function SaveUserAccountCollectibleCards(ByVal UserIndex As Integer, ByVa
         .Parameters.Append .CreateParameter("@AccountID", adInteger, adParamInput, , UserList(UserIndex).AccountID)
         
         ' Add blob parameter (128 bytes)
-        .Parameters.Append .CreateParameter("@BlobData", adVarBinary, adParamInput, 128, BlobData)
+        .Parameters.Append .CreateParameter("@BlobData", adVarBinary, adParamInput, MAX_COLLECTIBLE_CARDS_ARR_SIZE, BlobData)
         
-        ' Execute the upsert
+        ' Execute the upsert -> .Execute is asyncronous
         .Execute
     End With
     
