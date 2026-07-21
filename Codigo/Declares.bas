@@ -2430,6 +2430,7 @@ Public Type t_ObjData
     RepairTo As Integer ' ObjIndex of the item granted when this object is repaired.
     CollectibleCardSlot As Integer
     CollectibleCardValue As Byte
+    CollectibleCardIndex As Integer
 End Type
 
 '[Pablo ToxicWaste]
@@ -2986,6 +2987,7 @@ Public Type t_User
     Id As Long
     Trabajo As t_UserTrabajo
     AccountCollectibleCardBitArray(1 To 128) As Byte
+    AccountCollectibleCardQuantities(1 To 1024) As Byte
     AccountID As Long
     Grupo As Tgrupo
     showName As Boolean 'Permite que los GMs oculten su nick con el comando /SHOWNAME
@@ -3338,6 +3340,7 @@ Public Type t_NpcInfoCache
     TransporterLevel As Integer
     CollectibleCardSlot As Integer
     CollectibleCardValue As Byte
+    CollectibleCardIndex As Integer
 End Type
 
 Public Enum e_TipoAI
@@ -3469,6 +3472,7 @@ Public Type t_Npc
     TransporterLevel As Integer
     CollectibleCardSlot As Integer
     CollectibleCardValue As Byte
+    CollectibleCardIndex As Integer
 End Type
 
 '**********************************************************

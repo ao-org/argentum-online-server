@@ -1228,6 +1228,7 @@ Sub LoadOBJData()
                 Case e_OBJType.otCollectibleCard
                     .CollectibleCardSlot = val(Leer.GetValue(ObjKey, "CollectibleCardSlot"))
                     .CollectibleCardValue = val(Leer.GetValue(ObjKey, "CollectibleCardValue"))
+                    .CollectibleCardIndex = val(Leer.GetValue(ObjKey, "CollectibleCardIndex"))
                 Case e_OBJType.otOreDeposit
                     .MineralIndex = val(Leer.GetValue(ObjKey, "MineralIndex"))
                     ' Drop gemas yacimientos
