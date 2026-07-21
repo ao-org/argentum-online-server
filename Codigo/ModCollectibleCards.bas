@@ -25,57 +25,92 @@ Private Const GET_ACCOUNT_COLLECTIBLE_CARDS As String = "SELECT card_bit_array F
 Public Function SetupUserAccountAccountCollectibleCardBitArray(ByRef User As t_User)
     On Error GoTo GetUserCollectibleCards_Err
     Dim RS As ADODB.Recordset
-    Dim HexString As String
+    Dim Cmd As ADODB.Command
     Dim i As Integer
-    Dim ByteValue As String
-    Dim TempValue As Long
+    Dim BlobData() As Byte
     
-    Set RS = Query(GET_ACCOUNT_COLLECTIBLE_CARDS, User.AccountID)
+    ' Initialize the array with zeros
+    For i = 1 To 128
+        User.AccountCollectibleCardBitArray(i) = 0
+    Next i
     
-    If Not RS.EOF Then
-        If Not IsNull(RS("card_bit_array").value) Then
-            HexString = Trim$(RS("card_bit_array").value)
-            
-            ' Convert hex string back to byte array (256 chars = 128 bytes)
-            For i = 1 To MAX_COLLECTIBLE_CARDS_ARR
-                ByteValue = mid$(HexString, (i - 1) * 2 + 1, 2)
+    ' Create command to fetch the collectible card blob
+    Set Cmd = New ADODB.Command
+    With Cmd
+        .ActiveConnection = Connection ' Your SQLite connection object
+        .CommandText = GET_ACCOUNT_COLLECTIBLE_CARDS
+        .CommandType = adCmdText
+        
+        ' Add parameter for account_id
+        .Parameters.Append .CreateParameter("@AccountID", adInteger, adParamInput, , User.AccountID)
+        
+        ' Execute and get recordset
+        Set RS = .Execute
+    End With
+    
+    If Not RS Is Nothing Then
+        If Not RS.EOF And Not RS.BOF Then
+            If Not IsNull(RS!card_bit_array) Then
+                ' Get the blob data
+                BlobData = RS!card_bit_array
                 
-                If Len(ByteValue) = 2 Then
-                    ' Use Val() to convert hex string other casts resulted in TypeMismatch Cbyte CInt Clng
-                    TempValue = val("&H" & ByteValue)
-                    User.AccountCollectibleCardBitArray(i) = TempValue
-                End If
-            Next i
-            
-            Call LogError("Successfully loaded " & MAX_COLLECTIBLE_CARDS_ARR & " bytes")
+                ' Copy blob data into the user's byte array
+                For i = 1 To 128
+                    If i <= UBound(BlobData) + 1 Then
+                        User.AccountCollectibleCardBitArray(i) = BlobData(i - 1) ' Arrays are 0-based from DB
+                    Else
+                        User.AccountCollectibleCardBitArray(i) = 0
+                    End If
+                Next i
+            End If
         End If
+        RS.Close
     End If
+    
+    Set RS = Nothing
+    Set Cmd = Nothing
     Exit Function
 
 GetUserCollectibleCards_Err:
     Call TraceError(Err.Number, Err.Description, "ModCollectibleCards.SetupUserAccountAccountCollectibleCardBitArray", Erl)
+    Set RS = Nothing
+    Set Cmd = Nothing
 End Function
 
-
 Public Function SaveUserAccountCollectibleCards(ByVal UserIndex As Integer, ByVal QueryBreakDown As String)
-    Dim RS As ADODB.Recordset
-    Dim HexString As String
+    On Error GoTo SaveUserAccountCollectibleCards_Err
+    Dim Cmd As ADODB.Command
+    Dim BlobData(0 To 127) As Byte
     Dim i As Integer
-    With UserList(UserIndex)
-        If .flags.DirtyCollectibleCardBitArray Then
-            
-            HexString = ""  ' Explicitly initialize
-            
-            For i = 1 To MAX_COLLECTIBLE_CARDS_ARR
-                ' Convierte cada byte a 2 caracteres hexadecimales (ej. 3 -> "03")
-                HexString = HexString & Right$("0" & Hex(.AccountCollectibleCardBitArray(i)), 2)
-            Next i
-            
-            Set RS = Query(UPSERT_NEW_COLLECTIBLE_CARDS, .AccountID, HexString)
-
-            .flags.DirtyCollectibleCardBitArray = False
-        End If
+    
+    ' Copy user's byte array to 0-based array for database
+    For i = 1 To 128
+        BlobData(i - 1) = UserList(UserIndex).AccountCollectibleCardBitArray(i)
+    Next i
+    
+    ' Create command to upsert the blob
+    Set Cmd = New ADODB.Command
+    With Cmd
+        .ActiveConnection = Connection ' Your SQLite connection object
+        .CommandText = UPSERT_NEW_COLLECTIBLE_CARDS
+        .CommandType = adCmdText
+        
+        ' Add account_id parameter
+        .Parameters.Append .CreateParameter("@AccountID", adInteger, adParamInput, , UserList(UserIndex).AccountID)
+        
+        ' Add blob parameter (128 bytes)
+        .Parameters.Append .CreateParameter("@BlobData", adVarBinary, adParamInput, 128, BlobData)
+        
+        ' Execute the upsert
+        .Execute
     End With
+    
+    Set Cmd = Nothing
+    Exit Function
+
+SaveUserAccountCollectibleCards_Err:
+    Call TraceError(Err.Number, Err.Description, "ModCollectibleCards.SaveUserAccountCollectibleCards", Erl)
+    Set Cmd = Nothing
 End Function
 
 
