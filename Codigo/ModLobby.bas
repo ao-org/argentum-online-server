@@ -96,7 +96,7 @@ Type t_Lobby
     IsGlobal As Boolean
     MapOpenTime As Long
     BroadOpenEvent As t_Timer
-    RoundCount As Byte ' Cantidad de rondas que tendrá el lobby/evento
+    FullLobby As Boolean
 End Type
 
 Public Type t_response
@@ -665,6 +665,7 @@ Public Sub ForceReset(ByRef instance As t_Lobby)
     instance.State = UnInitilized
     instance.SummonCoordinates.Map = -1
     instance.ClassFilter = -1
+    instance.FullLobby = False
     If Not Scenario Is Nothing Then
         Call Scenario.Reset
     End If
@@ -798,7 +799,7 @@ Public Sub StartLobby(ByRef instance As t_Lobby, ByVal UserIndex As Integer)
         Call WriteLocaleMsg(UserIndex, MSG_EVENT_ALREADY_STARTED, e_FontTypeNames.FONTTYPE_INFO) 'Msg1605= El evento ya fue iniciado.
         Exit Sub
     End If
-    If (instance.TeamSize > 1 Or instance.TeamType = eFixedTeamCount) And instance.TeamType = eRandom Then
+    If instance.SortType = eFixedTeamCount Or instance.TeamType = eRandom Then
         Call SortTeams(instance)
     End If
     Call ModLobby.UpdateLobbyState(instance, e_LobbyState.InProgress)
