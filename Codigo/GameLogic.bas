@@ -327,7 +327,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
             If MapData(Map, x, y).trigger >= EMPEROR_CASTLE_ENTRY_1 Then
                 If MapData(Map, x, y).trigger <= EMPEROR_CASTLE_ENTRY_20 Then
                     If Not CheckCastleEntryWhiteList(UserIndex, MapData(map, x, y).trigger) Then
-                        Call WarpUserChar(UserIndex, map, x, y - 1, False)
+                        Call WarpUserChar(UserIndex, map, x, y + 1, False)
                         Call WriteLocaleMsg(UserIndex, MSG_NOT_IN_THE_CASTLE_WHITELIST, FONTTYPE_INFOBOLD)
                         Exit Sub
                     End If
@@ -509,25 +509,25 @@ Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, ByVal MaxRange As Integer
         Do
             tY = .pos.y - LoopC
             For tX = .pos.x - LoopC To .pos.x + LoopC
-                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
+                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .flags.LavaValida = 1, IgnoreUsers, IgnoreDeadUsers) Then
                     Exit Function
                 End If
             Next
             tX = .pos.x - LoopC
             For tY = .pos.y - LoopC + 1 To .pos.y + LoopC - 1
-                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
+                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .flags.LavaValida = 1, IgnoreUsers, IgnoreDeadUsers) Then
                     Exit Function
                 End If
             Next
             tX = .pos.x + LoopC
             For tY = .pos.y - LoopC + 1 To .pos.y + LoopC - 1
-                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
+                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .flags.LavaValida = 1, IgnoreUsers, IgnoreDeadUsers) Then
                     Exit Function
                 End If
             Next
             tY = .pos.y + LoopC
             For tX = .pos.x - LoopC To .pos.x + LoopC
-                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
+                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .flags.LavaValida = 1, IgnoreUsers, IgnoreDeadUsers) Then
                     Exit Function
                 End If
             Next
@@ -545,9 +545,11 @@ Private Function ValidNPCSpawnPos(OutPos As t_WorldPos, _
                                   ByVal y As Integer, _
                                   ByVal AguaValida As Boolean, _
                                   ByVal TierraValida As Boolean, _
+                                  ByVal LavaValida As Boolean, _
                                   ByVal IgnoreUsers As Boolean, _
                                   ByVal IgnoreDeadUsers As Boolean) As Boolean
     If LegalPos(Map, x, y, AguaValida, TierraValida, , False) Then
+        If HayLava(Map, x, y) <> LavaValida Then Exit Function
         If TestSpawnTrigger(Map, x, y) Then
             If Not HayPCarea(Map, x, y, IgnoreDeadUsers) Or IgnoreUsers Then
                 ValidNPCSpawnPos = True
