@@ -2754,28 +2754,28 @@ Sub LoadGuildsConfig()
     
     Dim i As Long
 
+    'Cantidad máxima de niveles de clan (debe leerse antes que todo lo demás)
+    MAX_LEVEL_GUILD = CByte(val(GuildsIni.GetValue("GUILDLEVELS", "MaxGuildLevel", "7")))
+    ReDim ExpLevelUpGuild(1 To MAX_LEVEL_GUILD)
+    ReDim MembersByLevel(1 To MAX_LEVEL_GUILD)
+    ReDim PriceAcceptMemberGuild(1 To MAX_LEVEL_GUILD)
+
     'Experiencia de niveles de clan
     For i = 1 To MAX_LEVEL_GUILD
         ExpLevelUpGuild(i) = CLng(val(GuildsIni.GetValue("GUILDEXP", "GuildExpLevel" & CStr(i), "0")))
     Next i
-    
     'Miembros máximos por nivel de clan
     For i = 1 To MAX_LEVEL_GUILD
         MembersByLevel(i) = CByte(val(GuildsIni.GetValue("MEMBERSBYLEVEL", "GuildMembersLevel" & CStr(i), "0")))
     Next i
-    
     'Requisito para usar llamada de clan
     RequiredGuildLevelCallSupport = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "CallSupportRequiredLevel", "4")))
-    
     'Requisito para ver miembros invisibles/ocultos
     RequiredGuildLevelSeeInvisible = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "SeeInvisibleRequiredLevel", "6")))
-    
     'Requisito para seguro de clan
     RequiredGuildLevelSafe = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "SafeGuildRequiredLevel", "5")))
-    
     'Requisito para ver barra de vida
     RequiredGuildLevelShowHPBar = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "ShowHPBarRequiredLevel", "6")))
-    
     'Precio para aceptar un nuevo miembro según el nivel del clan
     For i = 1 To MAX_LEVEL_GUILD
         PriceAcceptMemberGuild(i) = CInt(val(GuildsIni.GetValue("GUILDPRICEACCEPTMEMBER", "PriceAcceptMemberGuildLevel" & CStr(i), "0")))

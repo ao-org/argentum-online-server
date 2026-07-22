@@ -57,14 +57,14 @@ Public Enum e_RELACIONES_GUILD
     ALIADOS = 1
 End Enum
 
-Public Const MAX_LEVEL_GUILD As Byte = 7
-Public ExpLevelUpGuild(1 To MAX_LEVEL_GUILD) As Long
-Public MembersByLevel(1 To MAX_LEVEL_GUILD) As Byte
+Public MAX_LEVEL_GUILD As Byte
+Public ExpLevelUpGuild() As Long
+Public MembersByLevel() As Byte
 Public RequiredGuildLevelCallSupport As Byte
 Public RequiredGuildLevelSeeInvisible As Byte
 Public RequiredGuildLevelSafe As Byte
 Public RequiredGuildLevelShowHPBar As Byte
-Public PriceAcceptMemberGuild(1 To MAX_LEVEL_GUILD) As Integer
+Public PriceAcceptMemberGuild() As Integer
 Public Sub LoadGuildsDB()
     On Error GoTo LoadGuildsDB_Err
     Dim CantClanes As String
@@ -281,8 +281,8 @@ Public Sub SendGuildNews(ByVal UserIndex As Integer, ByRef guildList() As String
     Dim i          As Integer
     Dim go         As Integer
     Dim ClanNivel  As Byte
-    Dim ExpAcu     As Integer
-    Dim ExpNe      As Integer
+    Dim ExpAcu     As Long
+    Dim ExpNe      As Long
     GuildIndex = UserList(UserIndex).GuildIndex
     If GuildIndex = 0 Then Exit Sub
     Dim MemberList() As Long
