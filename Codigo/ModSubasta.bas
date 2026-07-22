@@ -192,7 +192,7 @@ Public Sub ResetearSubasta()
     Subasta.TiempoRestanteSubasta = 0
     Subasta.MinutosDeSubasta = 0
     Subasta.PosibleCancelo = False
-    Call LogearEventoDeSubasta("Subasta finalizada." & data & " a las " & Time)
+    Call LogearEventoDeSubasta("Subasta finalizada." & Date & " a las " & Time)
     Call LogearEventoDeSubasta( _
             "#################################################################################################################################################################################################")
     Exit Sub
