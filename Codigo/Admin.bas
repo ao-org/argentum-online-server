@@ -129,6 +129,7 @@ Public GenericStabbingChance                As Single
 Public BanditCriticalHitChance           As Single
 Public MinutosWs                         As Long
 Public PlayerStunTime                    As Long
+Public GuildCallCooldown                 As Long
 Public NpcStunTime                       As Long
 Public PlayerInmuneTime                  As Long
 Public MultiShotReduction                As Single
