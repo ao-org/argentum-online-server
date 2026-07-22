@@ -2428,8 +2428,6 @@ Public Type t_ObjData
     BowCategory As Byte
     ArrowCategory As Byte
     RepairTo As Integer ' ObjIndex of the item granted when this object is repaired.
-    CollectibleCardSlot As Integer
-    CollectibleCardValue As Byte
     CollectibleCardIndex As Integer
 End Type
 
@@ -3338,8 +3336,6 @@ Public Type t_NpcInfoCache
     CityY()         As Integer
     CityPrice()     As Long
     TransporterLevel As Integer
-    CollectibleCardSlot As Integer
-    CollectibleCardValue As Byte
     CollectibleCardIndex As Integer
 End Type
 
@@ -3470,8 +3466,6 @@ Public Type t_Npc
     TransportCityY()     As Integer
     TransportCityPrice() As Long
     TransporterLevel As Integer
-    CollectibleCardSlot As Integer
-    CollectibleCardValue As Byte
     CollectibleCardIndex As Integer
 End Type
 
