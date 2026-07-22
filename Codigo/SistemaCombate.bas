@@ -280,7 +280,7 @@ Private Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Intege
                     Rechazo = (RandomNumber(1, 100) <= ProbRechazo)
                     If Rechazo = True Then
                         'Se rechazo el ataque con el escudo
-                        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_ESCUDO, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+                        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(GetShieldBlockSound(UserList(UserIndex).invent.EquippedShieldObjIndex), UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
                         If UserList(UserIndex).ChatCombate = 1 Then
                             Call Write_BlockedWithShieldUser(UserIndex)
                         End If
@@ -1011,7 +1011,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
     Else ' Falló
         If RandomNumber(1, 100) <= ProbRechazo Then
             'Se rechazo el ataque con el escudo
-            Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessagePlayWave(SND_ESCUDO, UserList(VictimaIndex).pos.x, UserList(VictimaIndex).pos.y))
+            Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessagePlayWave(GetShieldBlockSound(UserList(VictimaIndex).invent.EquippedShieldObjIndex), UserList(VictimaIndex).pos.x, UserList(VictimaIndex).pos.y))
             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageEscudoMov(UserList(VictimaIndex).Char.charindex))
             If UserList(AtacanteIndex).ChatCombate = 1 Then
                 Call Write_BlockedWithShieldOther(AtacanteIndex)
@@ -2432,4 +2432,16 @@ Private Function NormalizeTargetType(ByVal TargetType As e_ReferenceType) As e_R
     Exit Function
 NormalizeTargetType_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NormalizeTargetType", Erl)
+End Function
+
+Private Function GetShieldBlockSound(ByVal ShieldObjIndex As Integer) As Long
+    If ShieldObjIndex <= 0 Then
+        GetShieldBlockSound = SND_ESCUDO
+        Exit Function
+    End If
+    If ObjData(ShieldObjIndex).SkCarpinteria > 0 Then
+        GetShieldBlockSound = SND_ESCUDO_MADERA
+    Else
+        GetShieldBlockSound = SND_ESCUDO
+    End If
 End Function
