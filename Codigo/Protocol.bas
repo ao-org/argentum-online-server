@@ -6393,19 +6393,23 @@ End Sub
 Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
-        Dim refError   As String
         Dim clan_nivel As Byte
         If .GuildIndex <> 0 Then
+            If TicksElapsed(.Counters.LastGuildCallTime, GetTickCountRaw()) < GuildCallCooldown Then
+                Exit Sub
+            End If
             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
             If clan_nivel >= RequiredGuildLevelCallSupport Then
-                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_SOLICITA_APOYO_CLAN_PUEDES_VER_UBICACION, GetUserDisplayName(UserIndex) & "¬" & GetMapName(.pos.Map) & "¬" & .pos.Map & "¬" & .pos.x & "¬" & _
-                        .pos.y, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1818=Clan> [¬1] solicita apoyo de su clan en ¬2 (¬3-¬4-¬5). Puedes ver su ubicación en el mapa del mundo.
+                .Counters.LastGuildCallTime = GetTickCountRaw()
+                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_SOLICITA_APOYO_CLAN_PUEDES_VER_UBICACION, GetUserDisplayName(UserIndex) & "¬" & GetMapName(.pos.map) & "¬" & .pos.map & "¬" & .pos.x & "¬" & _
+                        .pos.y, e_FontTypeNames.FONTTYPE_GUILD))
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.pos.Map, .pos.x, .pos.y))
             Else
-                'Msg1240= Servidor » El nivel de tu clan debe ser ¬ o mayor para utilizar esta opción.
                 Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_NIVEL_CLAN_DEBE_MAYOR_UTILIZAR_OPCION, e_FontTypeNames.FONTTYPE_INFO, RequiredGuildLevelCallSupport)
             End If
+        Else
+            Call WriteLocaleMsg(UserIndex, MSG_NOT_IN_A_GUILD, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     Exit Sub
