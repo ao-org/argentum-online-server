@@ -2791,6 +2791,7 @@ Public Type t_UserCounters
     DisabledInvisibility As Integer
     TiempoOculto As Integer
     LastAttackTime As Long
+    LastGuildCallTime As Long
     PiqueteC As Long
     Pena As Long
     SendMapCounter As t_WorldPos
