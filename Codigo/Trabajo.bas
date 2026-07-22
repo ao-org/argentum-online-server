@@ -213,13 +213,11 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
                 Select Case Barco.Subtipo
                     Case 2  'Galera
                         If .clase <> e_Class.Trabajador And .clase <> e_Class.Pirat Then
-                            'Msg1025= ¡Solo Piratas y trabajadores pueden usar galera!
                             Call WriteLocaleMsg(UserIndex, MSG_SOLO_PIRATAS_TRABAJADORES_PUEDEN_USAR_GALERA, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                     Case 3  'Galeón
                         If .clase <> e_Class.Pirat Then
-                            'Msg1026= Solo los Piratas pueden usar Galeón!!
                             Call WriteLocaleMsg(UserIndex, MSG_SOLO_PIRATAS_PUEDEN_USAR_GALEON, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
@@ -227,9 +225,8 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
             End If
             Dim SkillNecesario As Byte
             SkillNecesario = IIf(.clase = e_Class.Trabajador Or .clase = e_Class.Pirat, Barco.MinSkill \ 2, Barco.MinSkill)
-            ' Tiene el skill necesario?
             If .Stats.UserSkills(e_Skill.Navegacion) < SkillNecesario Then
-                Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_MENOS_PUNTOS_NAVEGACION_PODER_USAR, e_FontTypeNames.FONTTYPE_INFO, SkillNecesario & "¬" & IIf(Barco.Subtipo = 0, "traje", "barco"))  ' Msg1448=Necesitas al menos ¬1 puntos en navegación para poder usar este ¬2
+                Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_MENOS_PUNTOS_NAVEGACION_PODER_USAR, e_FontTypeNames.FONTTYPE_INFO, SkillNecesario & "¬" & IIf(Barco.Subtipo = 0, "traje", "barco"))
                 Exit Sub
             End If
             If .invent.EquippedShipObjIndex = 0 Then
@@ -240,10 +237,9 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
             .invent.EquippedShipObjIndex = .invent.Object(Slot).ObjIndex
             .invent.EquippedShipSlot = Slot
             If .flags.Montado > 0 Then
-                Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
+                Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot, True)
             End If
             If .flags.Mimetizado <> e_EstadoMimetismo.Desactivado Then
-                'Msg1027= Pierdes el efecto del mimetismo.
                 Call WriteLocaleMsg(UserIndex, MSG_PIERDES_EFECTO_MIMETISMO_1027, e_FontTypeNames.FONTTYPE_INFO)
                 .Counters.Mimetismo = 0
                 .flags.Mimetizado = e_EstadoMimetismo.Desactivado
@@ -258,48 +254,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
             .invent.EquippedShipObjIndex = 0
             .invent.EquippedShipSlot = 0
             If .flags.Muerto = 0 Then
-                .Char.head = .OrigChar.head
-                If .invent.EquippedArmorObjIndex > 0 Then
-                    .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
-                    If .Invent_Skins.ObjIndexArmourEquipped > 0 Then
-                        .Char.body = ObtenerRopaje(UserIndex, ObjData(.Invent_Skins.ObjIndexArmourEquipped))
-                    End If
-                Else
-                    Call SetNakedBody(UserList(UserIndex))
-                End If
-                If .invent.EquippedHelmetObjIndex > 0 Then
-                    .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
-                    If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
-                        If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
-                            .Char.head = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
-                            .Char.CascoAnim = NingunCasco
-                        End If
-                        If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 1 Then
-                            .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
-                        End If
-                    End If
-                Else
-                    .Char.CascoAnim = NingunCasco
-                End If
-                If .invent.EquippedShieldObjIndex > 0 Then
-                    .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
-                    If .Invent_Skins.ObjIndexShieldEquipped > 0 Then
-                        .Char.ShieldAnim = ObjData(.Invent_Skins.ObjIndexShieldEquipped).ShieldAnim
-                    End If
-                Else
-                    .Char.ShieldAnim = NingunEscudo
-                End If
-                If .invent.EquippedWeaponObjIndex > 0 Then
-                    .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
-                    If .Invent_Skins.ObjIndexWeaponEquipped > 0 Then
-                        .Char.WeaponAnim = ObjData(.Invent_Skins.ObjIndexWeaponEquipped).WeaponAnim
-                    End If
-                Else
-                    .Char.WeaponAnim = NingunArma
-                End If
-                If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
-                    If ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
-                End If
+                Call AplicarEstadoNoNavegando(UserIndex)
             Else
                 .Char.body = iCuerpoMuerto
                 .Char.head = 0
@@ -307,11 +262,9 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
             End If
             Call ActualizarVelocidadDeUsuario(UserIndex)
         End If
-        ' Volver visible
         If .flags.Oculto = 1 And .flags.AdminInvisible = 0 And .flags.invisible = 0 Then
             .flags.Oculto = 0
             .Counters.TiempoOculto = 0
-            'MSG307=Has vuelto a ser visible.
             Call WriteLocaleMsg(UserIndex, MSG_VUELTO_VISIBLE, e_FontTypeNames.FONTTYPE_INFO)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         End If
@@ -1528,35 +1481,34 @@ DoMeditar_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.DoMeditar", Erl)
 End Sub
 
-Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVal Slot As Integer)
+Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVal Slot As Integer, Optional ByVal Forzado As Boolean = False)
     On Error GoTo DoMontar_Err
     With UserList(UserIndex)
-        If CanUseObject(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
-            Exit Sub
+        If Not Forzado Then
+            If CanUseObject(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
+                Exit Sub
+            End If
+            If .flags.Montado = 0 And .Counters.EnCombate > 0 Then
+                Call WriteLocaleMsg(UserIndex, MSG_COMBATE_DEBES_AGUARDAR_SEGUNDO_MONTAR, e_FontTypeNames.FONTTYPE_INFOBOLD, .Counters.EnCombate)
+                Exit Sub
+            End If
+            If .flags.EnReto Then
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_RETO, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            If .flags.Montado = 0 And (MapData(.pos.map, .pos.x, .pos.y).trigger > e_Trigger.PESCAINVALIDA) _
+               And MapData(.pos.map, .pos.x, .pos.y).trigger <> e_Trigger.ONLY_PATREON_TILE Then
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_AQUI, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
         End If
-        If .flags.Montado = 0 And .Counters.EnCombate > 0 Then
-            Call WriteLocaleMsg(UserIndex, MSG_COMBATE_DEBES_AGUARDAR_SEGUNDO_MONTAR, e_FontTypeNames.FONTTYPE_INFOBOLD, .Counters.EnCombate)  ' Msg1466=Estás en combate, debes aguardar ¬1 segundo(s) para montar...
-            Exit Sub
-        End If
-        If .flags.EnReto Then
-            ' Msg652=No podés montar en un reto.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_RETO, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        If .flags.Montado = 0 And (MapData(.pos.Map, .pos.x, .pos.y).trigger > e_Trigger.PESCAINVALIDA) _
-           And MapData(.pos.Map, .pos.x, .pos.y).trigger <> e_Trigger.ONLY_PATREON_TILE Then
-            ' Msg653=No podés montar aquí.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_AQUI, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
+
         If .flags.Mimetizado <> e_EstadoMimetismo.Desactivado Then
-            ' Msg654=Pierdes el efecto del mimetismo.
             Call WriteLocaleMsg(UserIndex, MSG_PIERDES_EFECTO_MIMETISMO, e_FontTypeNames.FONTTYPE_INFO)
             .Counters.Mimetismo = 0
             .flags.Mimetizado = e_EstadoMimetismo.Desactivado
             Call RefreshCharStatus(UserIndex)
         End If
-        ' Si está oculto o invisible, hago que pueda montar pero se haga visible
         If (.flags.Oculto = 1 Or .flags.invisible = 1) And .flags.AdminInvisible = 0 Then
             .flags.Oculto = 0
             .flags.invisible = 0
@@ -1599,60 +1551,118 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
             .Char.CartAnim = NoCart
             .flags.Montado = 1
             Call TargetUpdateTerrain(.EffectOverTime)
+            Call ActualizarVelocidadDeUsuario(UserIndex)
+            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+            Call WriteEquiteToggle(UserIndex)
         Else
-            .flags.Montado = 0
-            .Char.head = .OrigChar.head
-            Call TargetUpdateTerrain(.EffectOverTime)
-            If .invent.EquippedArmorObjIndex > 0 Then
-                .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
-                If .Invent_Skins.ObjIndexArmourEquipped > 0 Then
-                    .Char.body = ObtenerRopaje(UserIndex, ObjData(.Invent_Skins.ObjIndexArmourEquipped))
-                End If
-            Else
-                Call SetNakedBody(UserList(UserIndex))
-            End If
-            If .invent.EquippedHelmetObjIndex > 0 Then
-                .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
-                If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
-                    If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
-                        .Char.head = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
-                        .Char.CascoAnim = NingunCasco
-                    End If
-                    If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 1 Then
-                        .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
-                    End If
-                End If
-            Else
-                .Char.CascoAnim = NingunCasco
-            End If
-            If .invent.EquippedShieldObjIndex > 0 Then
-                .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
-                If .Invent_Skins.ObjIndexShieldEquipped > 0 Then
-                    .Char.ShieldAnim = ObjData(.Invent_Skins.ObjIndexShieldEquipped).ShieldAnim
-                End If
-            Else
-                .Char.ShieldAnim = NingunEscudo
-            End If
-            If .invent.EquippedWeaponObjIndex > 0 Then
-                .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
-                If .Invent_Skins.ObjIndexWeaponEquipped > 0 Then
-                    .Char.WeaponAnim = ObjData(.Invent_Skins.ObjIndexWeaponEquipped).WeaponAnim
-                End If
-            Else
-                .Char.WeaponAnim = NingunArma
-            End If
-            If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
-                If ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
+            Call AplicarEstadoDesmontado(UserIndex)
+            If Not Forzado Then
+                Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
             End If
         End If
-        Call ActualizarVelocidadDeUsuario(UserIndex)
-        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
         Call UpdateUserInv(False, UserIndex, Slot)
-        Call WriteEquiteToggle(UserIndex)
     End With
     Exit Sub
 DoMontar_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.DoMontar", Erl)
+End Sub
+
+Private Sub AplicarEstadoDesmontado(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+        .flags.Montado = 0
+        .Char.head = .OrigChar.head
+        Call TargetUpdateTerrain(.EffectOverTime)
+        If .invent.EquippedArmorObjIndex > 0 Then
+            .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
+            If .Invent_Skins.ObjIndexArmourEquipped > 0 Then
+                .Char.body = ObtenerRopaje(UserIndex, ObjData(.Invent_Skins.ObjIndexArmourEquipped))
+            End If
+        Else
+            Call SetNakedBody(UserList(UserIndex))
+        End If
+        If .invent.EquippedHelmetObjIndex > 0 Then
+            .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+            If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
+                If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
+                    .Char.head = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                    .Char.CascoAnim = NingunCasco
+                End If
+                If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 1 Then
+                    .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                End If
+            End If
+        Else
+            .Char.CascoAnim = NingunCasco
+        End If
+        If .invent.EquippedShieldObjIndex > 0 Then
+            .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
+            If .Invent_Skins.ObjIndexShieldEquipped > 0 Then
+                .Char.ShieldAnim = ObjData(.Invent_Skins.ObjIndexShieldEquipped).ShieldAnim
+            End If
+        Else
+            .Char.ShieldAnim = NingunEscudo
+        End If
+        If .invent.EquippedWeaponObjIndex > 0 Then
+            .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
+            If .Invent_Skins.ObjIndexWeaponEquipped > 0 Then
+                .Char.WeaponAnim = ObjData(.Invent_Skins.ObjIndexWeaponEquipped).WeaponAnim
+            End If
+        Else
+            .Char.WeaponAnim = NingunArma
+        End If
+        If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
+            If ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
+        End If
+        Call ActualizarVelocidadDeUsuario(UserIndex)
+        Call WriteEquiteToggle(UserIndex)
+    End With
+End Sub
+
+Private Sub AplicarEstadoNoNavegando(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+        .Char.head = .OrigChar.head
+        If .invent.EquippedArmorObjIndex > 0 Then
+            .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
+            If .Invent_Skins.ObjIndexArmourEquipped > 0 Then
+                .Char.body = ObtenerRopaje(UserIndex, ObjData(.Invent_Skins.ObjIndexArmourEquipped))
+            End If
+        Else
+            Call SetNakedBody(UserList(UserIndex))
+        End If
+        If .invent.EquippedHelmetObjIndex > 0 Then
+            .Char.CascoAnim = ObjData(.invent.EquippedHelmetObjIndex).CascoAnim
+            If .Invent_Skins.ObjIndexHelmetEquipped > 0 Then
+                If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 2 Then
+                    .Char.head = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                    .Char.CascoAnim = NingunCasco
+                End If
+                If ObjData(.Invent_Skins.ObjIndexHelmetEquipped).Subtipo = 1 Then
+                    .Char.CascoAnim = ObjData(.Invent_Skins.ObjIndexHelmetEquipped).CascoAnim
+                End If
+            End If
+        Else
+            .Char.CascoAnim = NingunCasco
+        End If
+        If .invent.EquippedShieldObjIndex > 0 Then
+            .Char.ShieldAnim = ObjData(.invent.EquippedShieldObjIndex).ShieldAnim
+            If .Invent_Skins.ObjIndexShieldEquipped > 0 Then
+                .Char.ShieldAnim = ObjData(.Invent_Skins.ObjIndexShieldEquipped).ShieldAnim
+            End If
+        Else
+            .Char.ShieldAnim = NingunEscudo
+        End If
+        If .invent.EquippedWeaponObjIndex > 0 Then
+            .Char.WeaponAnim = ObjData(.invent.EquippedWeaponObjIndex).WeaponAnim
+            If .Invent_Skins.ObjIndexWeaponEquipped > 0 Then
+                .Char.WeaponAnim = ObjData(.Invent_Skins.ObjIndexWeaponEquipped).WeaponAnim
+            End If
+        Else
+            .Char.WeaponAnim = NingunArma
+        End If
+        If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
+            If ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
+        End If
+    End With
 End Sub
 
 Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
