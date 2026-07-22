@@ -123,7 +123,7 @@ Public Sub AddCollectibleCardToUser(ByVal UserIndex As Integer, ByRef ObjCard As
     If CardIndex < 1 Or CardIndex > MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE Then Exit Sub
     
     With UserList(UserIndex)
-        .flags.DirtyCollectibleCardBitArray = True
+        .flags.DirtyCollectibleCardCollection = True
         
         ' Increment the quantity for this specific card (max 255 per byte)
         If .AccountCollectibleCardQuantities(CardIndex) < 255 Then
