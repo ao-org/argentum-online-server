@@ -31,15 +31,6 @@ Public Function SetupUserAccountAccountCollectibleCardBitArray(ByRef User As t_U
     Dim BlobData() As Byte
     Dim QuantityData() As Byte
     
-    ' Initialize the arrays with zeros
-    For i = 1 To MAX_COLLECTIBLE_CARDS_ARR_SIZE
-        User.AccountCollectibleCardBitArray(i) = 0
-    Next i
-    
-    For i = 1 To MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE
-        User.AccountCollectibleCardQuantities(i) = 0
-    Next i
-    
     ' Create command to fetch the collectible card blob
     Set Cmd = New ADODB.Command
     With Cmd
