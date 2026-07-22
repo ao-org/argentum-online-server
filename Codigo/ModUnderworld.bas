@@ -154,10 +154,13 @@ End Function
 Public Function IsUnderworldOpen() As Boolean
     Dim currentHour As Integer
     currentHour = Hour(Now)
-    If currentHour >= UnderworldLowerLimitOfTime And currentHour < UnderworldUpperLimitOfTime Then
-        IsUnderworldOpen = True
+    ' Check if the range wraps around midnight
+    If UnderworldLowerLimitOfTime > UnderworldUpperLimitOfTime Then
+        ' Wraps midnight: e.g., 18 to 1 means 6pm to 1am
+        IsUnderworldOpen = (currentHour >= UnderworldLowerLimitOfTime Or currentHour < UnderworldUpperLimitOfTime)
     Else
-        IsUnderworldOpen = False
+        ' Normal range: e.g., 9 to 17 means 9am to 5pm
+        IsUnderworldOpen = (currentHour >= UnderworldLowerLimitOfTime And currentHour < UnderworldUpperLimitOfTime)
     End If
 End Function
 

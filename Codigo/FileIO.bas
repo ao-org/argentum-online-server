@@ -896,6 +896,7 @@ Sub LoadBalance()
     PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
     NpcStunTime = val(BalanceIni.GetValue("STUN", "NpcStunTime"))
     PlayerInmuneTime = val(BalanceIni.GetValue("STUN", "PlayerInmuneTime"))
+    GuildCallCooldown = val(BalanceIni.GetValue("GUILD", "GuildCallCooldown"))
     ' Exp
     For i = 1 To STAT_MAXELV
         ExpLevelUp(i) = val(BalanceIni.GetValue("EXP", i))
