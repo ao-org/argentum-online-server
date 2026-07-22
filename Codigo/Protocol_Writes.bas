@@ -2194,8 +2194,8 @@ Public Sub WriteGuildNews(ByVal UserIndex As Integer, _
                           ByRef guildList() As String, _
                           ByRef MemberList() As Long, _
                           ByVal ClanNivel As Byte, _
-                          ByVal ExpAcu As Integer, _
-                          ByVal ExpNe As Integer)
+                          ByVal ExpAcu As Long, _
+                          ByVal ExpNe As Long)
     On Error GoTo WriteGuildNews_Err
     Dim i   As Long
     Dim Tmp As String
@@ -2215,8 +2215,8 @@ Public Sub WriteGuildNews(ByVal UserIndex As Integer, _
     If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
     Call Writer.WriteString8(Tmp)
     Call Writer.WriteInt8(ClanNivel)
-    Call Writer.WriteInt16(ExpAcu)
-    Call Writer.WriteInt16(ExpNe)
+    Call Writer.WriteInt32(ExpAcu)
+    Call Writer.WriteInt32(ExpNe)
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
 WriteGuildNews_Err:
@@ -2349,8 +2349,8 @@ Public Sub WriteGuildLeaderInfo(ByVal UserIndex As Integer, _
                                 ByVal guildNews As String, _
                                 ByRef joinRequests() As String, _
                                 ByVal NivelDeClan As Byte, _
-                                ByVal ExpActual As Integer, _
-                                ByVal ExpNecesaria As Integer)
+                                ByVal ExpActual As Long, _
+                                ByVal ExpNecesaria As Long)
     On Error GoTo WriteGuildLeaderInfo_Err
     Dim i   As Long
     Dim Tmp As String
@@ -2378,8 +2378,8 @@ Public Sub WriteGuildLeaderInfo(ByVal UserIndex As Integer, _
     If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
     Call Writer.WriteString8(Tmp)
     Call Writer.WriteInt8(NivelDeClan)
-    Call Writer.WriteInt16(ExpActual)
-    Call Writer.WriteInt16(ExpNecesaria)
+    Call Writer.WriteInt32(ExpActual)
+    Call Writer.WriteInt32(ExpNecesaria)
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
 WriteGuildLeaderInfo_Err:
