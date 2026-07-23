@@ -41,6 +41,17 @@ End Type
 Private RespawnList(1 To MaxNPCs)   As t_NpcRespawnQueueEntry
 Private RespawnQueueLastUsedIndex   As Integer
 Private IdNpcLibres                 As t_IndexHeap
+
+Public Type t_DropQuestSource
+    NpcNumber As Integer
+    Probabilidad As Integer
+End Type
+
+Public Type t_DropQuestSourceList
+    count As Integer
+    Sources() As t_DropQuestSource
+End Type
+
 Option Explicit
 
 Public Sub InitializeNpcIndexHeap(Optional ByVal Size As Integer = NpcIndexHeapSize)
@@ -2500,3 +2511,44 @@ Public Sub OnNpcKilledUpdateQuest(ByVal UserIndex As Integer, ByRef MiNPC As t_N
 OnNpcKilledUpdateQuest_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.OnNpcKilledUpdateQuest_Err", Erl)
 End Sub
+
+
+' Devuelve la lista de NPCs (y su % de drop) que otorgan ObjIndex como parte de QuestIndex.
+' Si no hay coincidencias, devuelve Count = 0.
+Public Function GetDropQuestSources(ByVal QuestIndex As Integer, ByVal ObjIndex As Integer) As t_DropQuestSourceList
+    On Error GoTo ErrHandler
+    Dim i As Long
+    Dim j As Integer
+    Dim result As t_DropQuestSourceList
+    result.count = 0
+
+    If Not NpcInfoCacheInitialized Then
+        GetDropQuestSources = result
+        Exit Function
+    End If
+
+    For i = LBound(NpcInfoCache) To UBound(NpcInfoCache)
+        With NpcInfoCache(i)
+            If .Exists And .NumDropQuest > 0 Then
+                For j = 1 To .NumDropQuest
+                    If .DropQuest(j).QuestIndex = QuestIndex And .DropQuest(j).ObjIndex = ObjIndex Then
+                        result.count = result.count + 1
+                        If result.count = 1 Then
+                            ReDim result.Sources(1 To 1)
+                        Else
+                            ReDim Preserve result.Sources(1 To result.count)
+                        End If
+                        result.Sources(result.count).NpcNumber = CInt(i)
+                        result.Sources(result.count).Probabilidad = .DropQuest(j).Probabilidad
+                    End If
+                Next j
+            End If
+        End With
+    Next i
+
+    GetDropQuestSources = result
+    Exit Function
+ErrHandler:
+    GetDropQuestSources.count = 0
+    Call TraceError(Err.Number, Err.Description, "NPCs.GetDropQuestSources", Erl)
+End Function
