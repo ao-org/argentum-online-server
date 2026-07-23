@@ -1682,7 +1682,18 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
     If Aumenta >= cutoff Then Exit Sub
     UserList(UserIndex).Stats.UserSkills(Skill) = UserList(UserIndex).Stats.UserSkills(Skill) + 1
     UserList(UserIndex).Stats.SkillDirty(Skill) = True
-    Call WriteLocaleMsg(UserIndex, MSG_SKILL_IMPROVED_BY_ONE_POINT, e_FontTypeNames.FONTTYPE_INFO, SkillsNames(Skill) & "¬" & UserList(UserIndex).Stats.UserSkills(Skill))
+    Call WriteLocaleMsg(UserIndex, MSG_SKILL_IMPROVED_BY_ONE_POINT, e_FontTypeNames.FONTTYPE_INFO, SkillsNames(skill) & Chr$(172) & UserList(UserIndex).Stats.UserSkills(skill))
+
+    With UserList(UserIndex)
+        If .Char.charindex > 0 Then
+            If IsVisible(UserList(UserIndex)) Then
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextOverChar("+1 " & SkillsNames(skill), .Char.charindex, vbGreen))
+            Else
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageTextOverChar("+1 " & SkillsNames(skill), .Char.charindex, vbGreen))
+            End If
+        End If
+    End With
+
     Dim BonusExp As Long
     BonusExp = 5& * SvrConfig.GetValue("ExpMult")
     If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
