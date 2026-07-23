@@ -2798,6 +2798,8 @@ End Sub
 Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, Optional QuestSlot As Byte = 0)
     On Error GoTo WriteQuestDetails_Err
     Dim i As Integer
+    Dim DropSources As t_DropQuestSourceList
+    Dim k As Integer
     'ID del paquete
     Call Writer.WriteInt16(ServerPacketID.eQuestDetails)
     Call Writer.WriteInt16(QuestIndex)
@@ -2834,6 +2836,14 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
             'escribe si tiene ese objeto en el inventario y que cantidad
             Call Writer.WriteInt16(get_object_amount_from_inventory(UserIndex, QuestList(QuestIndex).RequiredOBJ(i).ObjIndex))
             ' Call Writer.WriteInt16(0)
+
+            ' Fuentes de drop (NPC + % de probabilidad) para este objetivo de tipo item
+            DropSources = NPCs.GetDropQuestSources(QuestIndex, QuestList(QuestIndex).RequiredOBJ(i).ObjIndex)
+            Call Writer.WriteInt8(DropSources.count)
+            For k = 1 To DropSources.count
+                Call Writer.WriteInt16(DropSources.Sources(k).NpcNumber)
+                Call Writer.WriteInt16(DropSources.Sources(k).Probabilidad)
+            Next k
         Next i
     End If
     'Enviamos la cantidad de spells requeridos
@@ -2944,6 +2954,8 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
     Dim QuestIndex As Integer
     Dim validQuestCount As Integer
     Dim validQuestIndexes() As Integer
+    Dim DropSources As t_DropQuestSourceList
+    Dim k As Integer
 
     Dim safeClasses() As Byte
     Dim safeClassesCount As Byte
@@ -3010,6 +3022,14 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
             For i = 1 To QuestList(QuestIndex).RequiredOBJs
                 Call Writer.WriteInt16(QuestList(QuestIndex).RequiredOBJ(i).amount)
                 Call Writer.WriteInt16(QuestList(QuestIndex).RequiredOBJ(i).ObjIndex)
+
+                ' Fuentes de drop (NPC + % de probabilidad) para este objetivo de tipo item
+                DropSources = NPCs.GetDropQuestSources(QuestIndex, QuestList(QuestIndex).RequiredOBJ(i).ObjIndex)
+                Call Writer.WriteInt8(DropSources.count)
+                For k = 1 To DropSources.count
+                    Call Writer.WriteInt16(DropSources.Sources(k).NpcNumber)
+                    Call Writer.WriteInt16(DropSources.Sources(k).Probabilidad)
+                Next k
             Next i
         End If
 
@@ -4429,8 +4449,10 @@ WriteSendSkillCdUpdate_Err:
 End Sub
 
 Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal Slot As Byte)
-    On Error GoTo WriteNpcQuestListSend_Err
+    On Error GoTo WriteObjQuestSend_Err
     Dim i As Integer
+    Dim DropSources As t_DropQuestSourceList
+    Dim k As Integer
     Call Writer.WriteInt16(ServerPacketID.eObjQuestListSend)
     Call Writer.WriteInt16(QuestIndex) 'Escribimos primero cuantas quest tiene el NPC
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
@@ -4451,6 +4473,14 @@ Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Int
         For i = 1 To QuestList(QuestIndex).RequiredOBJs
             Call Writer.WriteInt16(QuestList(QuestIndex).RequiredOBJ(i).amount)
             Call Writer.WriteInt16(QuestList(QuestIndex).RequiredOBJ(i).ObjIndex)
+
+            ' Fuentes de drop (NPC + % de probabilidad) para este objetivo de tipo item
+            DropSources = NPCs.GetDropQuestSources(QuestIndex, QuestList(QuestIndex).RequiredOBJ(i).ObjIndex)
+            Call Writer.WriteInt8(DropSources.count)
+            For k = 1 To DropSources.count
+                Call Writer.WriteInt16(DropSources.Sources(k).NpcNumber)
+                Call Writer.WriteInt16(DropSources.Sources(k).Probabilidad)
+            Next k
         Next i
     End If
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSpellCount)
@@ -4507,9 +4537,9 @@ Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Int
     UserList(UserIndex).flags.QuestOpenByObj = True
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
-WriteNpcQuestListSend_Err:
+WriteObjQuestSend_Err:
     Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcQuestListSend for quest: " & QuestIndex, Erl)
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteObjQuestSend for quest: " & QuestIndex, Erl)
 End Sub
 
 Public Sub WriteDebugLogResponse(ByVal UserIndex As Integer, ByVal debugType, ByRef Args() As String, ByVal argc As Integer)
