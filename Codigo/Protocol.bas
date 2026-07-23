@@ -2219,6 +2219,9 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
     PacketCounter = reader.ReadInt32
     Dim Packet_ID As Long
     Packet_ID = PacketNames.CastSpell
+    With UserList(UserIndex)
+        If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "CastSpell", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+    End With
     Call UseSpellSlot(UserIndex, Spell)
     Exit Sub
 HandleCastSpell_Err:
