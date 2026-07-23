@@ -251,6 +251,9 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
         Call SetupUserSkills(UserList(UserIndex))
         Call SetupUserQuests(UserList(UserIndex))
         Call SetupUserQuestsDone(UserList(UserIndex))
+        If IsFeatureEnabled("collectible_cards") Then
+            Call SetupUserAccountAccountCollectibleCardBitArray(UserList(UserIndex))
+        End If
         ' Load additional inventories.
         If Not LoadCharacterInventory(UserIndex) Then Exit Function
         If Not LoadCharacterBank(UserIndex) Then Exit Function
@@ -575,6 +578,9 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
         Call SaveCharacterQuestsDoneDB(UserList(UserIndex), QueryBreakdown, Builder)
         Call SaveCharacterInventorySkinsDB(UserIndex, QueryBreakdown)
         Call InitUserPersistSnapshot(UserIndex)
+        If IsFeatureEnabled("collectible_cards") Then
+            Call SaveUserAccountCollectibleCards(UserIndex, QueryBreakDown)
+        End If
         Call LogSaveCharacterDuration(PerformanceTimer, QueryBreakdown, .name, .Id)
     End With
     Exit Sub

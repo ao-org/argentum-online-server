@@ -370,7 +370,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
     On Error GoTo UserDamageNpc_Err
     With UserList(UserIndex)
         Dim Damage As Long, DamageBase As Long, DamageExtra As Long, Color As Long, DamageStr As String
-        If .invent.EquippedWeaponObjIndex = EspadaMataDragonesIndex And NpcList(NpcIndex).npcType = DRAGON Then
+        If .invent.EquippedWeaponObjIndex = EspadaMataDragonesIndex And NpcList(NpcIndex).npcType = e_NPCType.Dragon Then
             ' Espada MataDragones
             DamageBase = NpcList(NpcIndex).Stats.MinHp + NpcList(NpcIndex).Stats.def
             ' La pierde una vez usada

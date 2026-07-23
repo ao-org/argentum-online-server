@@ -1391,6 +1391,7 @@ Public Const MAXSKILLPOINTS As Byte = 100
 ' Cantidad maxima de mascotas
 Public Const MAXMASCOTAS    As Byte = 3
 
+Public Const MAXCOLLECTIBLECARDS As Integer = 1000
 
 ''
 'Direccion
@@ -1582,6 +1583,7 @@ Public Enum e_OBJType
     otPlants = 54
     otElementalRune = 55
     otFactionForgiveness = 56
+    otCollectibleCard = 57
     otElse = 100
 End Enum
 
@@ -2427,6 +2429,7 @@ Public Type t_ObjData
     BowCategory As Byte
     ArrowCategory As Byte
     RepairTo As Integer ' ObjIndex of the item granted when this object is repaired.
+    CollectibleCardIndex As Integer
 End Type
 
 '[Pablo ToxicWaste]
@@ -2735,6 +2738,7 @@ Public Type t_UserFlags
     QuestNumber As Integer
     QuestItemSlot As Integer
     RespondiendoPregunta As Boolean
+    DirtyCollectibleCardCollection As Boolean
     CurrentTeam As Byte
     'Captura de bandera
     jugando_captura As Byte
@@ -2982,6 +2986,8 @@ Public Type t_User
     InUse As Boolean 'Mark if the slot is un use, should be set when players connect and clear on dc, used for debug and error handling
     Id As Long
     Trabajo As t_UserTrabajo
+    AccountCollectibleCardBitArray(1 To 128) As Byte
+    AccountCollectibleCardQuantities(1 To 1024) As Byte
     AccountID As Long
     Grupo As Tgrupo
     showName As Boolean 'Permite que los GMs oculten su nick con el comando /SHOWNAME
@@ -3334,6 +3340,7 @@ Public Type t_NpcInfoCache
     CityY()         As Integer
     CityPrice()     As Long
     TransporterLevel As Integer
+    CollectibleCardIndex As Integer
 End Type
 
 Public Enum e_TipoAI
@@ -3463,6 +3470,7 @@ Public Type t_Npc
     TransportCityY()     As Integer
     TransportCityPrice() As Long
     TransporterLevel As Integer
+    CollectibleCardIndex As Integer
 End Type
 
 '**********************************************************
