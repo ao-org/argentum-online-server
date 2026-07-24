@@ -824,7 +824,7 @@ Public Sub SaveCastleDataToDb()
             
             If .dirtyCastleData Then
                 'update castle data in db
-                Set RS = Query(UPDATE_EMPEROR_CASTLE, .owner_account_id, .id, DateToSQLite(.foundation_date), 1, .name, i)
+                Set RS = Query(UPDATE_EMPEROR_CASTLE, .owner_account_id, .owner_char_id, DateToSQLite(.foundation_date), 1, .name, i)
                 'update castle coordinates in db
                 Set RS = Query(UPDATE_OUTSIDE_CASTLE_LOCATION, .castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, i)
                 Call LogInfoServidor("Persisted new data for castle number: " & i & " name: " & .name)
