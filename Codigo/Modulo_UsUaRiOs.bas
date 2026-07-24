@@ -1687,9 +1687,9 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
     With UserList(UserIndex)
         If .Char.charindex > 0 Then
             If IsVisible(UserList(UserIndex)) Then
-                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextOverChar("+1 " & SkillsNames(skill), .Char.charindex, vbGreen))
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextOverChar("+1 " & SkillsNames(skill), .Char.charindex, vbYellow))
             Else
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageTextOverChar("+1 " & SkillsNames(skill), .Char.charindex, vbGreen))
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageTextOverChar("+1 " & SkillsNames(skill), .Char.charindex, vbYellow))
             End If
         End If
     End With
