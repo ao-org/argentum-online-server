@@ -52,7 +52,7 @@ Private Enum e_TrapTypes
     ePoison
 End Enum
 
-Const ACTIVATE_TRAOP_WAW_FILE = 210
+Const ACTIVATE_TRAP_WAW_FILE = 210
 
 Public Sub Setup(ByVal SourceIndex As Integer, _
                  ByVal SourceType As e_ReferenceType, _
@@ -229,7 +229,7 @@ End Function
 
 Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
     trigger = False
-    Call modSendData.SendToAreaByPos(mWorldPosition.Map, mWorldPosition.x, mWorldPosition.y, PrepareMessagePlayWave(ACTIVATE_TRAOP_WAW_FILE, mWorldPosition.x, mWorldPosition.y, _
+    Call modSendData.SendToAreaByPos(mWorldPosition.map, mWorldPosition.x, mWorldPosition.y, PrepareMessagePlayWave(ACTIVATE_TRAP_WAW_FILE, mWorldPosition.x, mWorldPosition.y, _
             False))
     If EffectOverTime(mDotInfo.EotId).OnHitWav > 0 Then Call modSendData.SendToAreaByPos(mWorldPosition.Map, mWorldPosition.x, mWorldPosition.y, PrepareMessagePlayWave( _
             EffectOverTime(mDotInfo.EotId).OnHitWav, mWorldPosition.x, mWorldPosition.y, False))
@@ -258,7 +258,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                     Exit Function
                 End If
                 If TargetType = eNpc Then
-                    Call NPCs.Paralice(mDotInfo.TargetRef.ArrayIndex, TargetIndex, SvrConfig.GetValue("TrapParaliceDuration"), EffectOverTime(mDotInfo.EotId).OnHitFx)
+                    Call NPCs.Paralice(mDotInfo.TargetRef.ArrayIndex, TargetIndex, SvrConfig.GetValue("TrapParaliceDuration") * 6.5, EffectOverTime(mDotInfo.EotId).OnHitFx)
                     If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(NpcList( _
                             TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                     trigger = True
