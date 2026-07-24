@@ -676,11 +676,6 @@ HasCastleRelocationCooldownPassed = False
     If Acumulator >= CASTLE_REPOSITION_COOLDOWN_IN_DAYS Then
         HasCastleRelocationCooldownPassed = True
     End If
-        
-    #If DEBUGGING = 1 Then
-        HasCastleRelocationCooldownPassed = True
-    #End If
-    
 End Function
 
 Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As Integer)
@@ -749,9 +744,7 @@ Public Sub ModifyCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal Characte
         If .Stats.tipoUsuario < e_TipoUsuario.tNoble Then
                 Call WriteLocaleMsg(UserIndex, MSG_AT_LEAST_NOBLE_TO_FOUND_CASTLE, FONTTYPE_INFOBOLD)
                 Call LogInfoServidor("User with low patreon status trying to set a whitelist for a castle, name: " & .name)
-            #If DEBUGGING = 0 Then
                 Exit Sub
-            #End If
         End If
         
         Dim CastleIndex As Integer
