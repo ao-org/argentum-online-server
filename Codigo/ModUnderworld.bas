@@ -3,8 +3,6 @@ Option Explicit
 
 Public UnderworldMapPool() As t_WorldPos
 Public OverworldPortalPool() As t_WorldPos
-Public UnderworldLowerLimitOfTime As Byte
-Public UnderworldUpperLimitOfTime As Byte
 Public IsUnderworldInitialized As Boolean
 Private m_UnderworldLastSpawnTimestamp As Long
 Private Const UNDERWORLD_BROADCAST_MSG_ID As Integer = 2174
@@ -16,9 +14,18 @@ Private Const DAY_MAX_OUT_OF_BOUNDS As Integer = -1
 Private Const DAY_START As Byte = 0
 Private Const DAY_END As Byte = 23
 
+Private Type t_TimeWindow
+    Lower As Byte
+    Upper As Byte
+End Type
+
+Public UnderworldTimeWindows() As t_TimeWindow
+Public UnderworldWindowCount As Integer
+
 Public Sub MaybeSpawnUnderworldPortals()
     On Error GoTo MaybeSpawnUnderworldPortals_Err
     If Not IsFeatureEnabled("underworld") Then Exit Sub
+    If Not IsUnderworldInitialized Then Exit Sub
     If UBound(UnderworldMapPool) < 1 Then Exit Sub
     Dim nowRaw As Long
     nowRaw = GetTickCountRaw()
@@ -67,17 +74,16 @@ End Sub
 
 Public Sub KickUsersFromUnderworld()
     Dim i As Integer
-    Dim x As Byte
-    Dim y As Byte
-    Dim LoopC     As Long
+    Dim LoopC As Long
     Dim tempIndex As Integer
     Dim HomeCityId As e_City
+    
     For i = 1 To UBound(UnderworldMapPool)
         If Not MapaValido(UnderworldMapPool(i).Map) Then
             Debug.Assert False 'invalid map shouldn't happen
             Exit Sub
         End If
-        For LoopC = 1 To ConnGroups(UnderworldMapPool(i).Map).CountEntrys
+        For LoopC = ConnGroups(UnderworldMapPool(i).map).CountEntrys To 1 Step -1
             tempIndex = ConnGroups(UnderworldMapPool(i).Map).UserEntrys(LoopC)
             With UserList(tempIndex)
                 HomeCityId = .Hogar
@@ -93,7 +99,7 @@ Public Sub KickUsersFromUnderworld()
         Exit Sub
     End If
     
-    For LoopC = 1 To ConnGroups(UNDERWORLD_CENTER_MAP_NUMBER).CountEntrys
+    For LoopC = ConnGroups(UNDERWORLD_CENTER_MAP_NUMBER).CountEntrys To 1 Step -1
         tempIndex = ConnGroups(UNDERWORLD_CENTER_MAP_NUMBER).UserEntrys(LoopC)
         With UserList(tempIndex)
             If .ConnectionDetails.ConnIDValida Then
@@ -153,15 +159,28 @@ End Function
 
 Public Function IsUnderworldOpen() As Boolean
     Dim currentHour As Integer
+    Dim i As Integer
     currentHour = Hour(Now)
-    ' Check if the range wraps around midnight
-    If UnderworldLowerLimitOfTime > UnderworldUpperLimitOfTime Then
-        ' Wraps midnight: e.g., 18 to 1 means 6pm to 1am
-        IsUnderworldOpen = (currentHour >= UnderworldLowerLimitOfTime Or currentHour < UnderworldUpperLimitOfTime)
-    Else
-        ' Normal range: e.g., 9 to 17 means 9am to 5pm
-        IsUnderworldOpen = (currentHour >= UnderworldLowerLimitOfTime And currentHour < UnderworldUpperLimitOfTime)
-    End If
+
+    For i = 1 To UnderworldWindowCount
+        With UnderworldTimeWindows(i)
+            If .Lower > .Upper Then
+                ' Wraps midnight
+                If currentHour >= .Lower Or currentHour < .Upper Then
+                    IsUnderworldOpen = True
+                    Exit Function
+                End If
+            ElseIf .Lower < .Upper Then
+                ' Normal range
+                If currentHour >= .Lower And currentHour < .Upper Then
+                    IsUnderworldOpen = True
+                    Exit Function
+                End If
+            End If
+            ' .Lower = .Upper => franja inválida/deshabilitada, se ignora
+        End With
+    Next i
+    IsUnderworldOpen = False
 End Function
 
 Public Sub LoadUnderworldModule()
@@ -173,32 +192,47 @@ Public Sub LoadUnderworldModule()
         Call LogError("Missing file UnderworldMapPool.Dat")
         Exit Sub
     End If
-    Dim IniFile     As clsIniManager
+
+    Dim IniFile As clsIniManager
     Set IniFile = New clsIniManager
     Call IniFile.Initialize(DatPath & "UnderworldMapPool.dat")
-    Dim MaxUnderworldMaps
+
+    Dim MaxUnderworldMaps As Integer
     MaxUnderworldMaps = val(IniFile.GetValue("INIT", "UnderworldMapPool"))
-    UnderworldUpperLimitOfTime = val(IniFile.GetValue("INIT", "UnderworldUpperLimitOfTime"))
-    UnderworldLowerLimitOfTime = val(IniFile.GetValue("INIT", "UnderworldLowerLimitOfTime"))
     If MaxUnderworldMaps <= 0 Then
         Debug.Assert False
         MaxUnderworldMaps = 0
         IsUnderworldInitialized = False
         Exit Sub
     End If
-    If UnderworldUpperLimitOfTime < DAY_START Or UnderworldUpperLimitOfTime > DAY_END Then
+
+    UnderworldWindowCount = val(IniFile.GetValue("INIT", "UnderworldWindowCount"))
+    If UnderworldWindowCount <= 0 Then
         Debug.Assert False
-        UnderworldUpperLimitOfTime = DAY_MAX_OUT_OF_BOUNDS
+        Call LogError("UnderworldMapPool.dat: UnderworldWindowCount inválido")
         IsUnderworldInitialized = False
+        Exit Sub
     End If
-    If UnderworldLowerLimitOfTime < DAY_START Or UnderworldLowerLimitOfTime > DAY_END Then
-        Debug.Assert False
-        UnderworldLowerLimitOfTime = DAY_MIN_OUT_OF_BOUNDS
-        IsUnderworldInitialized = False
-    End If
+
+    ReDim UnderworldTimeWindows(1 To UnderworldWindowCount)
+    Dim i As Integer
+    Dim SectionName As String
+    For i = 1 To UnderworldWindowCount
+        SectionName = "Window" & i
+        UnderworldTimeWindows(i).Lower = val(IniFile.GetValue(SectionName, "LowerLimitOfTime"))
+        UnderworldTimeWindows(i).Upper = val(IniFile.GetValue(SectionName, "UpperLimitOfTime"))
+
+        If UnderworldTimeWindows(i).Lower < DAY_START Or UnderworldTimeWindows(i).Lower > DAY_END _
+        Or UnderworldTimeWindows(i).Upper < DAY_START Or UnderworldTimeWindows(i).Upper > DAY_END Then
+            Debug.Assert False
+            Call LogError("UnderworldMapPool.dat: " & SectionName & " fuera de rango")
+            IsUnderworldInitialized = False
+            Exit Sub
+        End If
+    Next i
+
     ReDim Preserve UnderworldMapPool(1 To MaxUnderworldMaps)
     ReDim Preserve OverworldPortalPool(1 To MaxUnderworldMaps)
-    Dim i As Integer
     For i = 1 To MaxUnderworldMaps
         UnderworldMapPool(i).Map = CInt(val(IniFile.GetValue("Portal" & i, "DestinationMap")))
         UnderworldMapPool(i).x = CInt(val(IniFile.GetValue("Portal" & i, "DestinationX")))
