@@ -364,6 +364,11 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
     End If
 
     With CastleData(CastleIndex)
+    
+        If x = 0 Or y = 0 Or map = 0 Then
+            Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
+            Exit Sub
+        End If
 
         'if not during server start...(player clicking the board)
          If UserIndex > 0 Then
@@ -683,6 +688,11 @@ Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As 
     Dim RS As ADODB.Recordset
     With UserList(UserIndex)
 
+        If .flags.TargetX = 0 Or .flags.TargetY = 0 Or .flags.TargetMap = 0 Then
+            Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
+            Exit Sub
+        End If
+    
         If IsEmperorCastleCreated(UserIndex) Then
             If Not HasCastleRelocationCooldownPassed(ObjData(ObjIndex).AssignedCastleIndex) Then
                 Call WriteLocaleMsg(UserIndex, MSG_CASTLE_RELOCATION_ON_COOLDOWN, FONTTYPE_INFOBOLD)
