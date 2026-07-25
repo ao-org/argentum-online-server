@@ -34,7 +34,7 @@ Public CastleData() As t_CastleInfo
 Private Const COUNT_ALL_CASTLES As String = "SELECT COUNT(*) FROM castle;"
 
 Private Const UPDATE_EMPEROR_CASTLE As String = "UPDATE castle SET owner_account_id = ?, owner_character_id = ?, foundation_date = ?, is_active = ?, name = ? WHERE id = ?;"
-Private Const UPDATE_OUTSIDE_CASTLE_LOCATION As String = "UPDATE castle_coordinates SET outside_map = ?, outside_x = ?, outside_y = ? WHERE castle_id = ?;"
+Private Const UPDATE_OUTSIDE_CASTLE_LOCATION As String = "UPDATE castle_coordinates SET outside_map = ?, outside_x = ?, outside_y = ? WHERE id = ?;"
 
 Private Const INSERT_OR_IGNORE_NEW_CHAR_IN_CASTLE_WHITELIST As String = "INSERT OR IGNORE INTO castle_whitelist (character_name, castle_id) VALUES (?,?)"
 Private Const DELETE_CHAR_IN_CASTLE_WHITELIST As String = "DELETE FROM castle_whitelist WHERE id = ?"
