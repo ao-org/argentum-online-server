@@ -489,6 +489,12 @@ Public Sub IBaseScenario_Update()
     Dim nowRaw    As Long
     Dim frametime As Long
     nowRaw = GetTickCountRaw()
+
+    If LastFrameTime = 0 Then
+        LastFrameTime = nowRaw
+        Exit Sub
+    End If
+
     frametime = CLng(TicksElapsed(LastFrameTime, nowRaw))
     LastFrameTime = nowRaw
     If LobbyList(LobbyIndex).State = e_LobbyState.InProgress Then
