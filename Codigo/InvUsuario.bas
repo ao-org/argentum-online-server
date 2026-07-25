@@ -3002,6 +3002,9 @@ Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer
                 Case e_OBJType.otCastleSpawner
                     If UserList(UserIndex).Stats.tipoUsuario >= e_TipoUsuario.tNoble Then
                         If IsValidCastlePosition(UserIndex) Then
+                            UserList(UserIndex).flags.TargetMap = UserList(UserIndex).pos.map
+                            UserList(UserIndex).flags.TargetX = TileX
+                            UserList(UserIndex).flags.TargetY = TileY
                             Call CreateNewEmperorCastle(UserIndex, ObjIndex)
                         End If
                     Else
