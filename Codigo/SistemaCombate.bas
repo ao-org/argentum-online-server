@@ -1612,113 +1612,157 @@ End Sub
 Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
     On Error GoTo CalcularDarExpGrupal_Err
     Dim ExpaDar                 As Long
-    Dim BonificacionGrupo       As Single
+    Dim ExpGenerada              As Long
+    Dim ExpaDarConBono          As Long
     Dim CantidadMiembrosValidos As Integer
     Dim i                       As Long
     Dim Index                   As Integer
-    'If UserList(UserIndex).Grupo.EnGrupo Then
-    'Chekeamos que las variables sean validas para las operaciones
+    Dim LiderIndex              As Integer
+    Dim AtacoElLider            As Boolean
+    Dim LiderTieneLiderazgo     As Boolean
+    Dim MultiplicadorGrupo      As Single
+    Dim Receptores(1 To 6)      As Integer ' lider + hasta 5 miembros (grupo max = 6 en total)
+    Dim CantidadReceptores      As Integer
+
     If NpcIndex = 0 Then Exit Sub
     If UserIndex = 0 Then Exit Sub
     If ElDaño <= 0 Then ElDaño = 0
     If NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
     If ElDaño > NpcList(NpcIndex).Stats.MinHp Then ElDaño = NpcList(NpcIndex).Stats.MinHp
-    'La experiencia a dar es la porcion de vida quitada * toda la experiencia
     ExpaDar = CLng((ElDaño) * (NpcList(NpcIndex).GiveEXP / NpcList(NpcIndex).Stats.MaxHp))
     If ExpaDar <= 0 Then Exit Sub
-    'Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
-    'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
-    'Podria dar un numero fraccionario, esas fracciones se acumulan hasta formar enteros ;P
     If ExpaDar > NpcList(NpcIndex).flags.ExpCount Then
         ExpaDar = NpcList(NpcIndex).flags.ExpCount
         NpcList(NpcIndex).flags.ExpCount = 0
     Else
         NpcList(NpcIndex).flags.ExpCount = NpcList(NpcIndex).flags.ExpCount - ExpaDar
     End If
+
     With UserList(UserIndex)
-        If Not IsValidUserRef(.Grupo.Lider) Then Exit Sub
-        Dim LiderIndex As Integer
-        LiderIndex = .Grupo.Lider.ArrayIndex
+        ' Resolucion robusta del lider: si la referencia propia no es valida, quien ataco ES el lider
+        If IsValidUserRef(.Grupo.Lider) Then
+            LiderIndex = .Grupo.Lider.ArrayIndex
+        Else
+            LiderIndex = UserIndex
+        End If
+        AtacoElLider = (UserIndex = LiderIndex)
+
+        ' Armamos la lista unica de receptores: el lider + los miembros del array (sin duplicar)
+        CantidadReceptores = 1
+        Receptores(1) = LiderIndex
         For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
             If IsValidUserRef(UserList(LiderIndex).Grupo.Miembros(i)) Then
                 Index = UserList(LiderIndex).Grupo.Miembros(i).ArrayIndex
-                If UserList(Index).flags.Muerto = 0 Then
-                    If .pos.Map = UserList(Index).pos.Map Then
-                        If Distancia(.pos, UserList(Index).pos) < 20 Then
-                            CantidadMiembrosValidos = CantidadMiembrosValidos + 1
-                        End If
+                If Index <> LiderIndex Then
+                    CantidadReceptores = CantidadReceptores + 1
+                    Receptores(CantidadReceptores) = Index
+                End If
+            End If
+        Next i
+
+        ' Contamos cuantos receptores son validos: vivos, mismo mapa, en rango (<20) del atacante
+        For i = 1 To CantidadReceptores
+            Index = Receptores(i)
+            If UserList(Index).flags.Muerto = 0 Then
+                If .pos.Map = UserList(Index).pos.Map Then
+                    If Distancia(.pos, UserList(Index).pos) < 20 Then
+                        CantidadMiembrosValidos = CantidadMiembrosValidos + 1
                     End If
                 End If
             End If
-        Next
-        ' Verificar si el líder está en otro mapa
+        Next i
+
+        ' Si el lider esta en otro mapa, igual se cuenta para dividir, y avisamos a los presentes
         If UserList(LiderIndex).pos.Map <> .pos.Map Then
-            CantidadMiembrosValidos = CantidadMiembrosValidos + 1 ' Se cuenta como un miembro más para dividir la exp
-            ' Avisamos a los miembros del grupo
-            For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
-                If IsValidUserRef(UserList(LiderIndex).Grupo.Miembros(i)) Then
-                    Index = UserList(LiderIndex).Grupo.Miembros(i).ArrayIndex
-                    ' Enviar el mensaje solo si el miembro no está muerto y tiene el chat de combate activado
+            CantidadMiembrosValidos = CantidadMiembrosValidos + 1
+            For i = 1 To CantidadReceptores
+                Index = Receptores(i)
+                If Index <> LiderIndex Then
                     If UserList(Index).flags.Muerto = 0 And UserList(Index).ChatCombate = 1 Then
-                        'Msg1437=El líder del grupo está demasiado lejos, su experiencia se pierde.
                         Call WriteLocaleMsg(Index, "1437", e_FontTypeNames.FONTTYPE_EXP)
                     End If
                 End If
             Next i
         End If
+
         If CantidadMiembrosValidos = 0 Then Exit Sub
         If SvrConfig.GetValue("ExpMult") > 0 Then
             ExpaDar = ExpaDar * SvrConfig.GetValue("ExpMult")
         End If
-        ExpaDar = ExpaDar / CantidadMiembrosValidos
-        Dim ExpUser As Long, DeltaLevel As Integer, ExpBonusForUser As Double
+
+        ' Monto real generado por el golpe (sin el bono de tamaño de grupo).
+        ' Este es el numero que se muestra como "ha generado", no el pool con bono ya aplicado.
+        ExpGenerada = ExpaDar
+
+        ' Bono por tamaño de grupo: gatillado UNICAMENTE por el liderazgo de quien CREO la party,
+        ' y UNICAMENTE cuando es el propio lider quien esta golpeando al NPC.
+        LiderTieneLiderazgo = (UserList(LiderIndex).Stats.UserSkills(e_Skill.liderazgo) >= (15 - UserList(LiderIndex).Stats.UserAtributos(e_Atributos.Carisma) / 2))
+        MultiplicadorGrupo = 1
+        If AtacoElLider And LiderTieneLiderazgo Then
+            MultiplicadorGrupo = GetGroupSizeExpBonusMultiplier(CantidadMiembrosValidos)
+        End If
+        ExpaDarConBono = ExpGenerada * MultiplicadorGrupo
+        ExpaDar = ExpaDarConBono / CantidadMiembrosValidos
+
+        Dim ExpUser As Long, DeltaLevel As Integer, ExpBase As Long, ExpBonusLiderazgo As Long
         If ExpaDar > 0 Then
-            For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
-                If IsValidUserRef(UserList(LiderIndex).Grupo.Miembros(i)) Then
-                    Index = UserList(LiderIndex).Grupo.Miembros(i).ArrayIndex
-                    If UserList(Index).flags.Muerto = 0 Then
-                        If Distancia(.pos, UserList(Index).pos) < 20 Then
-                            ExpUser = ExpaDar
-                            If UserList(Index).Stats.ELV < STAT_MAXELV Then
-                                If NpcList(NpcIndex).nivel Then
-                                    DeltaLevel = UserList(Index).Stats.ELV - NpcList(NpcIndex).nivel
-                                    If DeltaLevel > CInt(SvrConfig.GetValue("NpcDeltaLevelPenalties")) Then
-                                        Dim Penalty As Single
-                                        Penalty = GetExpPenalty(Index, NpcIndex, DeltaLevel)
-                                        ExpUser = ExpUser * Penalty
-                                        ' Si tiene el chat activado, enviamos el mensaje
-                                        If UserList(Index).ChatCombate = 1 Then
-                                            ' Mostrar porcentaje final de experiencia como número entero
-                                            Dim PorcentajeFinal As Integer
-                                            PorcentajeFinal = Penalty * 100
-                                            'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
-                                            Call WriteLocaleMsg(Index, "1467", e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
-                                        End If
+            For i = 1 To CantidadReceptores
+                Index = Receptores(i)
+                If UserList(Index).flags.Muerto = 0 Then
+                    If Distancia(.pos, UserList(Index).pos) < 20 Then
+                        ExpUser = ExpaDar
+                        If UserList(Index).Stats.ELV < STAT_MAXELV Then
+                            If NpcList(NpcIndex).nivel Then
+                                DeltaLevel = UserList(Index).Stats.ELV - NpcList(NpcIndex).nivel
+                                If DeltaLevel > CInt(SvrConfig.GetValue("NpcDeltaLevelPenalties")) Then
+                                    Dim Penalty As Single
+                                    Penalty = GetExpPenalty(Index, NpcIndex, DeltaLevel)
+                                    ExpUser = ExpUser * Penalty
+                                    If UserList(Index).ChatCombate = 1 Then
+                                        Dim PorcentajeFinal As Integer
+                                        PorcentajeFinal = Penalty * 100
+                                        Call WriteLocaleMsg(Index, "1467", e_FontTypeNames.FONTTYPE_WARNING, PorcentajeFinal)
                                     End If
                                 End If
-                                If (UserList(Index).Stats.UserSkills(e_Skill.liderazgo) >= (15 - UserList(Index).Stats.UserAtributos(e_Atributos.Carisma) / 2)) Then
-                                    ExpBonusForUser = ExpUser * SvrConfig.GetValue("LeadershipExpPartyBonus")
-                                    UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpBonusForUser
-                                Else
-                                    UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
-                                End If
-                                If UserList(Index).Stats.Exp > MAXEXP Then UserList(Index).Stats.Exp = MAXEXP
-                                If UserList(Index).ChatCombate = 1 Then
-                                    Call WriteLocaleMsg(Index, "141", e_FontTypeNames.FONTTYPE_EXP, ExpUser)
-                                End If
-                                Call WriteUpdateExp(Index)
-                                Call CheckUserLevel(Index)
                             End If
-                        Else
+                            ExpBase = ExpUser
+                            ExpBonusLiderazgo = 0
+                            If AtacoElLider And LiderTieneLiderazgo And MultiplicadorGrupo > 0 Then
+                                ExpBase = ExpUser / MultiplicadorGrupo
+                                ExpBonusLiderazgo = ExpUser - ExpBase
+                            End If
+                            UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
+                            If UserList(Index).Stats.Exp > MAXEXP Then UserList(Index).Stats.Exp = MAXEXP
                             If UserList(Index).ChatCombate = 1 Then
-                                Call WriteLocaleMsg(Index, "69", e_FontTypeNames.FONTTYPE_New_GRUPO)
+                                If Index = UserIndex Then
+                                    If ExpBonusLiderazgo > 0 Then
+                                        Call WriteLocaleMsg(Index, "2231", e_FontTypeNames.FONTTYPE_EXP, _
+                                            PonerPuntos(ExpGenerada) & "¬" & PonerPuntos(ExpBase) & "¬" & PonerPuntos(ExpBonusLiderazgo))
+                                    Else
+                                        Call WriteLocaleMsg(Index, "2230", e_FontTypeNames.FONTTYPE_EXP, _
+                                            PonerPuntos(ExpGenerada) & "¬" & PonerPuntos(ExpaDar))
+                                    End If
+                                Else
+                                    If ExpBonusLiderazgo > 0 Then
+                                        Call WriteLocaleMsg(Index, "2229", e_FontTypeNames.FONTTYPE_EXP, _
+                                            UserList(UserIndex).name & "¬" & PonerPuntos(ExpGenerada) & "¬" & PonerPuntos(ExpBase) & "¬" & PonerPuntos(ExpBonusLiderazgo))
+                                    Else
+                                        Call WriteLocaleMsg(Index, "2228", e_FontTypeNames.FONTTYPE_EXP, _
+                                            UserList(UserIndex).name & "¬" & PonerPuntos(ExpGenerada) & "¬" & PonerPuntos(ExpUser))
+                                    End If
+                                End If
                             End If
+                            Call WriteUpdateExp(Index)
+                            Call CheckUserLevel(Index)
                         End If
                     Else
                         If UserList(Index).ChatCombate = 1 Then
-                            'Msg1064= Estás muerto, no has ganado experencia del grupo.
-                            Call WriteLocaleMsg(Index, "1064", e_FontTypeNames.FONTTYPE_New_GRUPO)
+                            Call WriteLocaleMsg(Index, "69", e_FontTypeNames.FONTTYPE_New_GRUPO)
                         End If
+                    End If
+                Else
+                    If UserList(Index).ChatCombate = 1 Then
+                        Call WriteLocaleMsg(Index, "1064", e_FontTypeNames.FONTTYPE_New_GRUPO)
                     End If
                 End If
             Next i
@@ -1728,6 +1772,21 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 CalcularDarExpGrupal_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExpGrupal", Erl)
 End Sub
+
+Private Function GetGroupSizeExpBonusMultiplier(ByVal CantidadMiembrosValidos As Integer) As Single
+    On Error GoTo GetGroupSizeExpBonusMultiplier_Err
+    Dim BonusPorMiembro As Single
+    If CantidadMiembrosValidos <= 1 Then
+        GetGroupSizeExpBonusMultiplier = 1
+        Exit Function
+    End If
+    BonusPorMiembro = CSng(SvrConfig.GetValue("GroupSizeExpBonusPerMember"))
+    GetGroupSizeExpBonusMultiplier = 1 + ((CantidadMiembrosValidos - 1) * BonusPorMiembro)
+    Exit Function
+GetGroupSizeExpBonusMultiplier_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetGroupSizeExpBonusMultiplier", Erl)
+    GetGroupSizeExpBonusMultiplier = 1
+End Function
 
 Function GetExpPenalty(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, DeltaLevel As Integer) As Single
     On Error GoTo GetExpPenalty_Err

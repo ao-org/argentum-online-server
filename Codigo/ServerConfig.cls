@@ -97,7 +97,7 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "PenaltyExpUserPerLevel", CSng(val(reader.GetValue("CONFIGURACIONES", "PenaltyExpUserPerLevel", "0.05")))
     mSettings.Add "NpcDeltaLevelPenalties", CInt(val(reader.GetValue("CONFIGURACIONES", "NpcDeltaLevelPenalties", "4")))
     mSettings.Add "NpcDeltaLevelCloseRange", CInt(val(reader.GetValue("CONFIGURACIONES", "NpcDeltaLevelCloseRange", "3")))
-    mSettings.Add "LeadershipExpPartyBonus", CDbl(val(reader.GetValue("CONFIGURACIONES", "LeadershipExpPartyBonus", "1.01")))
+    mSettings.Add "GroupSizeExpBonusPerMember", CSng(val(reader.GetValue("CONFIGURACIONES", "GroupSizeExpBonusPerMember", "0.025")))
     mSettings.Add "JineteLevel1Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel1Speed", "1.05")))
     mSettings.Add "JineteLevel2Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel2Speed", "1.07")))
     mSettings.Add "JineteLevel3Speed", CSng(val(reader.GetValue("CONFIGURACIONES", "JineteLevel3Speed", "1.10")))
