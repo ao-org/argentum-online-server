@@ -560,6 +560,17 @@ Private Function NpcDamage(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
     Damage = Damage - absorbido - defbarco - defMontura - UserMod.GetDefenseBonus(UserIndex)
     Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(NpcIndex))
     Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(UserIndex))
+    
+    ' ===== APLICAR REDUCCIÓN DE DAÑO POR CARTA =====
+    If IsFeatureEnabled("collectible_cards") Then
+        Dim CardDamageReduction As Single
+        CardDamageReduction = GetCardDamageReductionForNpc(UserIndex, NpcIndex)
+        If CardDamageReduction < 1# Then
+            Damage = CInt(Damage * CardDamageReduction)
+        End If
+    End If
+    ' ===========================================
+    
     If Damage < 0 Then Damage = 0
     If UserList(UserIndex).ChatCombate = 1 Then
         Call WriteNPCHitUser(UserIndex, Lugar, Damage)

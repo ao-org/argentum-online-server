@@ -243,3 +243,36 @@ Public Function GetCardDamageBonusForNpc(ByVal UserIndex As Integer, ByVal NpcIn
             GetCardDamageBonusForNpc = 1.5      ' Lv10+ = +50% damage (cap)
     End Select
 End Function
+
+Public Function GetCardDamageReductionForNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Single
+    ' Returns the damage reduction multiplier based on the card level for THIS specific NPC
+    ' Returns 1.0 if no reduction applies (full damage)
+    ' Returns values < 1.0 for damage reduction (e.g., 0.8 = 80% damage = 20% reduction)
+    Dim CardIndex As Integer
+    Dim CardQuantity As Byte
+    
+    ' Get the card index for this NPC
+    CardIndex = NpcList(NpcIndex).CollectibleCardIndex
+    
+    ' Validate card index
+    If CardIndex < 1 Or CardIndex > MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE Then
+        GetCardDamageReductionForNpc = 1#
+        Exit Function
+    End If
+    
+    ' Get the quantity of this specific card the user has
+    CardQuantity = UserList(UserIndex).AccountCollectibleCardQuantities(CardIndex)
+    
+    ' Apply damage reduction based on card level (quantity)
+    ' Lower values = more reduction (we multiply the incoming damage by this)
+    Select Case CardQuantity
+        Case 0, 1, 2
+            GetCardDamageReductionForNpc = 1#      ' Lv0-2 = no damage reduction
+        Case 3, 4, 5, 6
+            GetCardDamageReductionForNpc = 0.8     ' Lv3-6 = -20% damage (take 80% damage)
+        Case 7, 8, 9
+            GetCardDamageReductionForNpc = 0.5     ' Lv7-9 = -50% damage (take 50% damage)
+        Case Is >= 10
+            GetCardDamageReductionForNpc = 0.5     ' Lv10+ = -50% damage (cap)
+    End Select
+End Function
