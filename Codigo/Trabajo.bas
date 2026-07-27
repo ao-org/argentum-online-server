@@ -1613,6 +1613,8 @@ Private Sub AplicarEstadoDesmontado(ByVal UserIndex As Integer)
         If .invent.EquippedAmuletAccesoryObjIndex > 0 Then
             If ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.EquippedAmuletAccesoryObjIndex).Ropaje
         End If
+        .invent.EquippedSaddleObjIndex = 0
+        .invent.EquippedSaddleSlot = 0
         Call ActualizarVelocidadDeUsuario(UserIndex)
         Call WriteEquiteToggle(UserIndex)
     End With

@@ -513,6 +513,11 @@ Private Function NpcDamage(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
     If UserList(UserIndex).flags.Montado = 1 And UserList(UserIndex).invent.EquippedSaddleObjIndex > 0 Then
         obj = ObjData(UserList(UserIndex).invent.EquippedSaddleObjIndex)
         defMontura = RandomNumber(obj.MinDef, obj.MaxDef)
+        ' El golpe recibido lo baja de la montura (ya se aprovecho su defensa en este calculo)
+        Call DoMontar(UserIndex, obj, UserList(UserIndex).invent.EquippedSaddleSlot, True)
+        With UserList(UserIndex)
+            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+        End With
     End If
     Lugar = RandomNumber(1, 6)
     Select Case Lugar
@@ -1137,16 +1142,19 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                     Defensa = Defensa + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
                 End If
         End Select
-        ' Defensa del barco de la víctima
+        ' Defensa del barco de la victima
         If .invent.EquippedShipObjIndex > 0 Then
             Dim Barco As t_ObjData
             Barco = ObjData(.invent.EquippedShipObjIndex)
             Defensa = Defensa + RandomNumber(Barco.MinDef, Barco.MaxDef)
-            ' Defensa de la montura de la víctima
-        ElseIf .invent.EquippedSaddleObjIndex > 0 Then
+            ' Defensa de la montura de la victima
+        ElseIf .flags.Montado = 1 And .invent.EquippedSaddleObjIndex > 0 Then
             Dim Montura As t_ObjData
             Montura = ObjData(.invent.EquippedSaddleObjIndex)
             Defensa = Defensa + RandomNumber(Montura.MinDef, Montura.MaxDef)
+            ' El golpe recibido lo baja de la montura (ya se aprovecho su defensa en este calculo)
+            Call DoMontar(VictimaIndex, Montura, .invent.EquippedSaddleSlot, True)
+            Call ChangeUserChar(VictimaIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
         End If
         Defensa = Defensa + UserMod.GetDefenseBonus(VictimaIndex)
         Dim ArmorPen As Integer
