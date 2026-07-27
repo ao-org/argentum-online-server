@@ -1595,6 +1595,17 @@ Private Sub GetExpForUser(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
                     End If
                 End If
             End If
+            
+            If IsFeatureEnabled("collectible_cards") Then
+                ' Apply card collection bonus for THIS specific NPC
+                Dim CardBonus As Single
+                CardBonus = GetCardExpBonusForNpc(UserIndex, NpcIndex)
+                
+                If CardBonus > 1# Then
+                    ExpaDar = ExpaDar * CardBonus
+                End If
+            End If
+            
             If .Stats.ELV < STAT_MAXELV Then
                 .Stats.Exp = .Stats.Exp + ExpaDar
                 If .Stats.Exp > MAXEXP Then .Stats.Exp = MAXEXP
