@@ -125,16 +125,24 @@ Public Sub AddCollectibleCardToUser(ByVal UserIndex As Integer, ByRef ObjCard As
     
     With UserList(UserIndex)
         .flags.DirtyCollectibleCardCollection = True
-        ' Increment the quantity for this specific card (max 255 per byte)
-        If .AccountCollectibleCardQuantities(CardIndex) < 255 Then
-            Select Case ObjData(ObjCard.ObjIndex).CollectibleCardRarity
-                Case e_CardRarity.Bronce
-                    .AccountCollectibleCardQuantities(CardIndex) = .AccountCollectibleCardQuantities(CardIndex) + 1
-                Case e_CardRarity.Silver
-                    .AccountCollectibleCardQuantities(CardIndex) = .AccountCollectibleCardQuantities(CardIndex) + 3
-                Case e_CardRarity.gold
-                    .AccountCollectibleCardQuantities(CardIndex) = .AccountCollectibleCardQuantities(CardIndex) + 5
-            End Select
+        ' Increment the quantity for this specific card (cap at 255 per byte)
+        Dim Inc As Integer
+        Select Case ObjData(ObjCard.ObjIndex).CollectibleCardRarity
+            Case e_CardRarity.Bronce
+                Inc = 1
+            Case e_CardRarity.Silver
+                Inc = 3
+            Case e_CardRarity.gold
+                Inc = 5
+            Case Else
+                Inc = 0
+        End Select
+
+        If Inc > 0 Then
+            Dim NewQty As Integer
+            NewQty = .AccountCollectibleCardQuantities(CardIndex) + Inc
+            If NewQty > 255 Then NewQty = 255
+            .AccountCollectibleCardQuantities(CardIndex) = CByte(NewQty)
         End If
     End With
 End Sub

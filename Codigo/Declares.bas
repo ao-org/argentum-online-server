@@ -1391,7 +1391,7 @@ Public Const MAXSKILLPOINTS As Byte = 100
 ' Cantidad maxima de mascotas
 Public Const MAXMASCOTAS    As Byte = 3
 
-Public Const MAXCOLLECTIBLECARDS As Integer = 1000
+Public Const MAXCOLLECTIBLECARDS As Integer = 1024
 
 ''
 'Direccion

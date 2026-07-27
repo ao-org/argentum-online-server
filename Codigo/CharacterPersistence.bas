@@ -579,7 +579,13 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
         Call SaveCharacterInventorySkinsDB(UserIndex, QueryBreakdown)
         Call InitUserPersistSnapshot(UserIndex)
         If IsFeatureEnabled("collectible_cards") Then
-            Call SaveUserAccountCollectibleCards(UserIndex, QueryBreakDown)
+            If .flags.DirtyCollectibleCardCollection Then
+                Call SaveUserAccountCollectibleCards(UserIndex, QueryBreakDown)
+                .flags.DirtyCollectibleCardCollection = False
+            Else
+                If LenB(QueryBreakdown) <> 0 Then QueryBreakdown = QueryBreakdown & "; "
+                QueryBreakdown = QueryBreakdown & "save collectible cards: skipped"
+            End If
         End If
         Call LogSaveCharacterDuration(PerformanceTimer, QueryBreakdown, .name, .Id)
     End With
