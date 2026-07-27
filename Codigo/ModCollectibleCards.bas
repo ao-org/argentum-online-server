@@ -276,3 +276,27 @@ Public Function GetCardDamageReductionForNpc(ByVal UserIndex As Integer, ByVal N
             GetCardDamageReductionForNpc = 0.5     ' Lv10+ = -50% damage (cap)
     End Select
 End Function
+
+
+Public Function GetCardDropBonusForNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Single
+    Dim CardIndex As Integer
+    Dim CardQuantity As Byte
+    
+    CardIndex = NpcList(NpcIndex).CollectibleCardIndex
+    
+    If CardIndex < 1 Or CardIndex > MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE Then
+        GetCardDropBonusForNpc = 1#
+        Exit Function
+    End If
+    
+    CardQuantity = UserList(UserIndex).AccountCollectibleCardQuantities(CardIndex)
+    
+    Select Case CardQuantity
+        Case 0, 1, 2, 3
+            GetCardDropBonusForNpc = 1#        ' Lv0-3 = no drop bonus
+        Case 4, 5, 6, 7, 8, 9
+            GetCardDropBonusForNpc = 1.5       ' Lv4-9 = +50% drop
+        Case Is >= 10
+            GetCardDropBonusForNpc = 2#        ' Lv10+ = +100% drop (double)
+    End Select
+End Function
