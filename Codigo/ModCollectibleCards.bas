@@ -211,3 +211,35 @@ Public Function GetCardExpBonusForNpc(ByVal UserIndex As Integer, ByVal NpcIndex
             GetCardExpBonusForNpc = 1.8     ' Max level cap
     End Select
 End Function
+
+Public Function GetCardDamageBonusForNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Single
+    ' Returns the damage multiplier based on the card level for THIS specific NPC
+    ' Returns 1.0 if no bonus applies
+    Dim CardIndex As Integer
+    Dim CardQuantity As Byte
+    
+    ' Get the card index for this NPC
+    CardIndex = NpcList(NpcIndex).CollectibleCardIndex
+    
+    ' Validate card index
+    If CardIndex < 1 Or CardIndex > MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE Then
+        GetCardDamageBonusForNpc = 1#
+        Exit Function
+    End If
+    
+    ' Get the quantity of this specific card the user has
+    CardQuantity = UserList(UserIndex).AccountCollectibleCardQuantities(CardIndex)
+    
+    ' Apply damage bonus based on card level (quantity)
+    ' Accumulative bonuses as the player levels up their card
+    Select Case CardQuantity
+        Case 0, 1
+            GetCardDamageBonusForNpc = 1#       ' Lv0-1 = no damage bonus
+        Case 2, 3, 4, 5
+            GetCardDamageBonusForNpc = 1.2      ' Lv2-5 = +20% damage
+        Case 6, 7, 8, 9
+            GetCardDamageBonusForNpc = 1.5      ' Lv6-9 = +50% damage (replaces previous)
+        Case Is >= 10
+            GetCardDamageBonusForNpc = 1.5      ' Lv10+ = +50% damage (cap)
+    End Select
+End Function
