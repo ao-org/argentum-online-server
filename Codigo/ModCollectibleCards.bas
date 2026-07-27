@@ -13,6 +13,12 @@ Option Explicit
 
 Private Const MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE = 1024
 
+Public Enum e_CardRarity
+    Bronce = 1
+    Silver = 2
+    gold = 3
+End Enum
+
 Private Const UPSERT_NEW_COLLECTIBLE_CARDS As String = _
     "INSERT INTO account_collectible_cards (account_id, card_quantities) " & _
     "VALUES (?, ?) " & _
@@ -119,10 +125,16 @@ Public Sub AddCollectibleCardToUser(ByVal UserIndex As Integer, ByRef ObjCard As
     
     With UserList(UserIndex)
         .flags.DirtyCollectibleCardCollection = True
-        
         ' Increment the quantity for this specific card (max 255 per byte)
         If .AccountCollectibleCardQuantities(CardIndex) < 255 Then
-            .AccountCollectibleCardQuantities(CardIndex) = .AccountCollectibleCardQuantities(CardIndex) + 1
+            Select Case ObjData(ObjCard.ObjIndex).CollectibleCardRarity
+                Case e_CardRarity.Bronce
+                    .AccountCollectibleCardQuantities(CardIndex) = .AccountCollectibleCardQuantities(CardIndex) + 1
+                Case e_CardRarity.Silver
+                    .AccountCollectibleCardQuantities(CardIndex) = .AccountCollectibleCardQuantities(CardIndex) + 3
+                Case e_CardRarity.gold
+                    .AccountCollectibleCardQuantities(CardIndex) = .AccountCollectibleCardQuantities(CardIndex) + 5
+            End Select
         End If
     End With
 End Sub
@@ -156,4 +168,46 @@ Public Function GetUserCardQuantity(ByVal UserIndex As Integer, ByVal CardIndex 
     Else
         GetUserCardQuantity = UserList(UserIndex).AccountCollectibleCardQuantities(CardIndex)
     End If
+End Function
+
+Public Function GetCardExpBonusForNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Single
+    ' Returns the EXP multiplier based on the card level for THIS specific NPC
+    ' Returns 1.0 if no bonus applies
+    Dim CardIndex As Integer
+    Dim CardQuantity As Byte
+    
+    ' Get the card index for this NPC
+    CardIndex = NpcList(NpcIndex).CollectibleCardIndex
+    
+    ' Validate card index
+    If CardIndex < 1 Or CardIndex > MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE Then
+        GetCardExpBonusForNpc = 1#
+        Exit Function
+    End If
+    
+    ' Get the quantity of this specific card the user has
+    CardQuantity = UserList(UserIndex).AccountCollectibleCardQuantities(CardIndex)
+    
+    ' Apply EXP bonus based on card level (quantity)
+    ' Accumulative bonuses as the player levels up their card
+    Select Case CardQuantity
+        Case 0
+            GetCardExpBonusForNpc = 1#      ' No card = no bonus
+        Case 1
+            GetCardExpBonusForNpc = 1.1     ' Lv1 = +10% EXP
+        Case 2, 3, 4
+            GetCardExpBonusForNpc = 1.1     ' Lv2-4 = same +10% EXP (other bonuses apply elsewhere)
+        Case 5
+            GetCardExpBonusForNpc = 1.2     ' Lv5 = +20% EXP (replaces previous)
+        Case 6, 7
+            GetCardExpBonusForNpc = 1.2     ' Lv6-7 = same +20% EXP (other bonuses apply elsewhere)
+        Case 8
+            GetCardExpBonusForNpc = 1.4     ' Lv8 = +40% EXP (replaces previous)
+        Case 9
+            GetCardExpBonusForNpc = 1.4     ' Lv9 = same +40% EXP (other bonuses apply elsewhere)
+        Case 10
+            GetCardExpBonusForNpc = 1.8     ' Lv10 = +80% EXP (replaces previous)
+        Case Is > 10
+            GetCardExpBonusForNpc = 1.8     ' Max level cap
+    End Select
 End Function

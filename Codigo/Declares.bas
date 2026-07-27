@@ -2430,6 +2430,7 @@ Public Type t_ObjData
     ArrowCategory As Byte
     RepairTo As Integer ' ObjIndex of the item granted when this object is repaired.
     CollectibleCardIndex As Integer
+    CollectibleCardRarity As Byte
 End Type
 
 '[Pablo ToxicWaste]

@@ -1696,6 +1696,17 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                                         End If
                                     End If
                                 End If
+                                
+                                If IsFeatureEnabled("collectible_cards") Then
+                                    ' Apply card collection bonus for THIS specific NPC
+                                    Dim CardBonus As Single
+                                    CardBonus = GetCardExpBonusForNpc(Index, NpcIndex)
+                                    
+                                    If CardBonus > 1# Then
+                                        ExpUser = ExpUser * CardBonus
+                                    End If
+                                End If
+                                
                                 If (UserList(Index).Stats.UserSkills(e_Skill.liderazgo) >= (15 - UserList(Index).Stats.UserAtributos(e_Atributos.Carisma) / 2)) Then
                                     ExpBonusForUser = ExpUser * SvrConfig.GetValue("LeadershipExpPartyBonus")
                                     UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpBonusForUser
