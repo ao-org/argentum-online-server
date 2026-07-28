@@ -50,9 +50,9 @@ Public Type t_Torneo
     x                   As Byte
     y                   As Byte
     
-    ' Clases permitidas (indexado por e_Class, 0 a 11)
-    ClasesPermitidas(11) As Boolean
-    ClasesTexto          As String
+    ' Clases permitidas (indexado por e_Class, 1 a 12)
+    ClasesPermitidas(1 To 12) As Boolean
+    ClasesTexto               As String
     
     ' Participantes
     participantes       As Byte
@@ -79,7 +79,7 @@ Public Sub IniciarTorneo()
     
     inscriptos = 0
     Torneo.ClasesTexto = ""
-    For clase = 0 To 11
+    For clase = 1 To 12
         If Torneo.ClasesPermitidas(clase) Then
             Torneo.ClasesTexto = Torneo.ClasesTexto & ClaseToString(clase) & ","
         End If
@@ -121,7 +121,7 @@ Public Sub ParticiparTorneo(ByVal UserIndex As Integer)
     
     ' Verificar que el jugador no esté inscripto
     If UserList(UserIndex).flags.EnTorneo Then
-        Call WriteLocaleMsg(UserIndex, MSG_REGISTERED_IN_TOURNAMENT, e_FontTypeNames.FONTTYPE_INFOIAO)
+        Call WriteLocaleMsg(UserIndex, MSG_INSCRIPCION_TORNEO_EXITOSA, e_FontTypeNames.FONTTYPE_INFOIAO)
         Exit Sub
     End If
     
@@ -265,6 +265,8 @@ ComenzarTorneoOk_Err:
     Call TraceError(Err.Number, Err.Description, "ModTorneos.ComenzarTorneoOk", Erl)
 End Sub
 
+' NOTA: Reembolsar=True por default es correcto para cancelación (único caller hoy: HandleCancelarTorneo).
+' Cuando se agregue el cierre normal del torneo (con ganador), llamar con Reembolsar:=False.
 Public Sub ResetearTorneo(ByVal UserIndex As Integer, Optional ByVal Reembolsar As Boolean = True)
     On Error GoTo ResetearTorneo_Err
     
@@ -307,7 +309,7 @@ Public Sub ResetearTorneo(ByVal UserIndex As Integer, Optional ByVal Reembolsar 
     
     ' Limpiar clases
     Dim clase As e_Class
-    For clase = 0 To 11
+    For clase = 1 To 12
         Torneo.ClasesPermitidas(clase) = False
     Next clase
     Torneo.ClasesTexto = ""

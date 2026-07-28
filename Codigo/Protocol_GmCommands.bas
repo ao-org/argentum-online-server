@@ -3683,13 +3683,13 @@ Public Sub HandleCrearTorneo(ByVal UserIndex As Integer)
         Dim nombre      As String
         Dim reglas      As String
         Dim clase       As e_Class
-        Dim clasesData(11) As Byte
+        Dim clasesData(1 To 12) As Byte
         
         NivelMinimo = reader.ReadInt8
         NivelMaximo = reader.ReadInt8
         cupos = reader.ReadInt8
         costo = reader.ReadInt32
-        For clase = 0 To 11
+        For clase = 1 To 12
             clasesData(clase) = reader.ReadInt8
         Next clase
         Mapa = reader.ReadInt16
@@ -3698,12 +3698,15 @@ Public Sub HandleCrearTorneo(ByVal UserIndex As Integer)
         nombre = reader.ReadString8
         reglas = reader.ReadString8
         
+        ' TODO: quitar este clamp cuando se generalicen las posiciones para más de 2 cupos (ver ComenzarTorneoOk).
+        If cupos > 2 Then cupos = 2
+        
         If EsGM(UserIndex) And ((.flags.Privilegios And e_PlayerType.Consejero) = 0) Then
             Torneo.NivelMinimo = NivelMinimo
             Torneo.NivelMaximo = NivelMaximo
             Torneo.cupos = cupos
             Torneo.costo = costo
-            For clase = 0 To 11
+            For clase = 1 To 12
                 Torneo.ClasesPermitidas(clase) = (clasesData(clase) > 0)
             Next clase
             Torneo.Mapa = Mapa
