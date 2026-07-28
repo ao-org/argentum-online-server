@@ -1520,28 +1520,10 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
             End If
         End If
         ' Invasor puede contraatacar a cualquier defensor que lo atacó primero
-        Dim i As Integer
-        For i = 0 To 9
-            If UserList(attackerIndex).flags.LastCityAttackers(i).ArrayIndex = VictimIndex Then
-                If UserList(attackerIndex).flags.LastCityAttackers(i).VersionId = UserList(VictimIndex).VersionId Then
-                    If UserList(VictimIndex).pos.map = UserList(attackerIndex).pos.map Then
-                        If (GlobalFrameTime - UserList(attackerIndex).flags.LastCityAttackTime) <= 30000 Then
-                            PuedeAtacar = True
-                            Exit Function
-                        Else
-                            Call WriteLocaleMsg(attackerIndex, MSG_TIEMPO_CONTRAATAQUE_EXPIRADO, e_FontTypeNames.FONTTYPE_WARNING)
-                            Dim j As Integer
-                            For j = 0 To 9
-                                UserList(attackerIndex).flags.LastCityAttackers(j).ArrayIndex = 0
-                                UserList(attackerIndex).flags.LastCityAttackers(j).VersionId = 0
-                            Next j
-                            UserList(attackerIndex).flags.LastCityAttackTime = 0
-                            Exit For
-                        End If
-                    End If
-                End If
-            End If
-        Next i
+        If CanCounterAttack(attackerIndex, VictimIndex, UserList(VictimIndex).VersionId, True) Then
+            PuedeAtacar = True
+            Exit Function
+        End If
         Call WriteLocaleMsg(attackerIndex, MSG_ZONA_SEGURA, e_FontTypeNames.FONTTYPE_WARNING)
         PuedeAtacar = False
         Exit Function
@@ -1550,28 +1532,10 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
     If MapData(UserList(VictimIndex).pos.Map, UserList(VictimIndex).pos.x, UserList(VictimIndex).pos.y).trigger = e_Trigger.ZonaSegura Or MapData(UserList( _
             attackerIndex).pos.Map, UserList(attackerIndex).pos.x, UserList(attackerIndex).pos.y).trigger = e_Trigger.ZonaSegura Then
         ' Invasor puede contraatacar a cualquier defensor que lo atacó primero
-        Dim k As Integer
-        For k = 0 To 9
-            If UserList(attackerIndex).flags.LastCityAttackers(k).ArrayIndex = VictimIndex Then
-                If UserList(attackerIndex).flags.LastCityAttackers(k).VersionId = UserList(VictimIndex).VersionId Then
-                    If UserList(VictimIndex).pos.map = UserList(attackerIndex).pos.map Then
-                        If (GlobalFrameTime - UserList(attackerIndex).flags.LastCityAttackTime) <= 30000 Then
-                            PuedeAtacar = True
-                            Exit Function
-                        Else
-                            Call WriteLocaleMsg(attackerIndex, MSG_TIEMPO_CONTRAATAQUE_EXPIRADO, e_FontTypeNames.FONTTYPE_WARNING)
-                            Dim l As Integer
-                            For l = 0 To 9
-                                UserList(attackerIndex).flags.LastCityAttackers(l).ArrayIndex = 0
-                                UserList(attackerIndex).flags.LastCityAttackers(l).VersionId = 0
-                            Next l
-                            UserList(attackerIndex).flags.LastCityAttackTime = 0
-                            Exit For
-                        End If
-                    End If
-                End If
-            End If
-        Next k
+        If CanCounterAttack(attackerIndex, VictimIndex, UserList(VictimIndex).VersionId, True) Then
+            PuedeAtacar = True
+            Exit Function
+        End If
         Call WriteLocaleMsg(attackerIndex, MSG_NO_PELEAR_AQUI, e_FontTypeNames.FONTTYPE_WARNING)
         PuedeAtacar = False
         Exit Function
@@ -1580,6 +1544,63 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
     Exit Function
 PuedeAtacar_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacar", Erl)
+End Function
+
+Public Sub RegisterCityAttack(ByVal targetUser As Integer, ByVal attackerIndex As Integer)
+    Dim IsSafeMap     As Boolean
+    Dim IsSafeTrigger As Boolean
+    IsSafeMap = (MapInfo(UserList(targetUser).pos.Map).Seguro = 1)
+    IsSafeTrigger = (MapData(UserList(targetUser).pos.Map, UserList(targetUser).pos.x, UserList(targetUser).pos.y).trigger = e_Trigger.ZonaSegura) Or _
+                    (MapData(UserList(attackerIndex).pos.Map, UserList(attackerIndex).pos.x, UserList(attackerIndex).pos.y).trigger = e_Trigger.ZonaSegura)
+    If IsSafeMap Or IsSafeTrigger Then
+        Dim i As Integer
+        For i = 0 To 9
+            If UserList(targetUser).flags.LastCityAttackers(i).ArrayIndex = attackerIndex Then
+                Call SetUserRef(UserList(targetUser).flags.LastCityAttackers(i), attackerIndex)
+                UserList(targetUser).flags.LastCityAttackTimes(i) = GlobalFrameTime
+                Exit Sub
+            End If
+        Next i
+        For i = 0 To 9
+            If UserList(targetUser).flags.LastCityAttackers(i).ArrayIndex = 0 Then
+                Call SetUserRef(UserList(targetUser).flags.LastCityAttackers(i), attackerIndex)
+                UserList(targetUser).flags.LastCityAttackTimes(i) = GlobalFrameTime
+                Exit Sub
+            End If
+        Next i
+        ' Sin slot libre, sobreescribir el primero
+        Call SetUserRef(UserList(targetUser).flags.LastCityAttackers(0), attackerIndex)
+        UserList(targetUser).flags.LastCityAttackTimes(0) = GlobalFrameTime
+    End If
+End Sub
+
+Public Function CanCounterAttack(ByVal attackerIndex As Integer, ByVal VictimIndex As Integer, ByVal VictimVersionId As Integer, Optional ByVal NotifyExpiration As Boolean = False) As Boolean
+    On Error GoTo CanCounterAttack_Err
+    Dim i As Integer
+    CanCounterAttack = False
+    For i = 0 To 9
+        If UserList(attackerIndex).flags.LastCityAttackers(i).ArrayIndex = VictimIndex Then
+            If UserList(attackerIndex).flags.LastCityAttackers(i).VersionId = VictimVersionId Then
+                If UserList(VictimIndex).pos.Map = UserList(attackerIndex).pos.Map Then
+                    If TicksElapsed(UserList(attackerIndex).flags.LastCityAttackTimes(i), GlobalFrameTime) <= 30000 Then
+                        CanCounterAttack = True
+                        Exit Function
+                    Else
+                        If NotifyExpiration Then
+                            Call WriteLocaleMsg(attackerIndex, MSG_TIEMPO_CONTRAATAQUE_EXPIRADO, e_FontTypeNames.FONTTYPE_WARNING)
+                        End If
+                        UserList(attackerIndex).flags.LastCityAttackers(i).ArrayIndex = 0
+                        UserList(attackerIndex).flags.LastCityAttackers(i).VersionId = 0
+                        UserList(attackerIndex).flags.LastCityAttackTimes(i) = 0
+                        Exit For
+                    End If
+                End If
+            End If
+        End If
+    Next i
+    Exit Function
+CanCounterAttack_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.CanCounterAttack", Erl)
 End Function
 
 Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)

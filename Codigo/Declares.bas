@@ -2625,7 +2625,7 @@ Public Type t_UserFlags
     LastAttackedByUserTime As Long
     LastAttacker As t_UserReference
     LastCityAttackers(9) As t_UserReference
-    LastCityAttackTime As Long
+    LastCityAttackTimes(9) As Long
     LastHelpByTime As Long
     LastHelpUser As t_UserReference
     'Hechizo de Transportacion

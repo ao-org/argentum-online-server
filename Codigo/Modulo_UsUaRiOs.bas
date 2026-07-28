@@ -2881,27 +2881,10 @@ Public Function CanAttackUser(ByVal attackerIndex As Integer, _
             End If
         End If
         ' Invasor puede contraatacar a cualquier defensor que lo atacó primero
-        Dim i As Integer
-        For i = 0 To 9
-            If UserList(attackerIndex).flags.LastCityAttackers(i).ArrayIndex = TargetIndex Then
-                If UserList(attackerIndex).flags.LastCityAttackers(i).VersionId = TargetVersionID Then
-                    If UserList(TargetIndex).pos.map = UserList(attackerIndex).pos.map Then
-                        If (GlobalFrameTime - UserList(attackerIndex).flags.LastCityAttackTime) <= 30000 Then
-                            CanAttackUser = eCanAttack
-                            Exit Function
-                        Else
-                            Dim j As Integer
-                            For j = 0 To 9
-                                UserList(attackerIndex).flags.LastCityAttackers(j).ArrayIndex = 0
-                                UserList(attackerIndex).flags.LastCityAttackers(j).VersionId = 0
-                            Next j
-                            UserList(attackerIndex).flags.LastCityAttackTime = 0
-                            Exit For
-                        End If
-                    End If
-                End If
-            End If
-        Next i
+        If CanCounterAttack(attackerIndex, TargetIndex, TargetVersionID) Then
+            CanAttackUser = eCanAttack
+            Exit Function
+        End If
         CanAttackUser = eSafeArea
         Exit Function
     End If
@@ -2909,27 +2892,10 @@ Public Function CanAttackUser(ByVal attackerIndex As Integer, _
     If MapData(UserList(TargetIndex).pos.Map, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y).trigger = e_Trigger.ZonaSegura Or MapData(UserList( _
         attackerIndex).pos.map, UserList(attackerIndex).pos.x, UserList(attackerIndex).pos.y).trigger = e_Trigger.ZonaSegura Then
         ' Invasor puede contraatacar a cualquier defensor que lo atacó primero
-        Dim k As Integer
-        For k = 0 To 9
-            If UserList(attackerIndex).flags.LastCityAttackers(k).ArrayIndex = TargetIndex Then
-                If UserList(attackerIndex).flags.LastCityAttackers(k).VersionId = TargetVersionID Then
-                    If UserList(TargetIndex).pos.map = UserList(attackerIndex).pos.map Then
-                        If (GlobalFrameTime - UserList(attackerIndex).flags.LastCityAttackTime) <= 30000 Then
-                            CanAttackUser = eCanAttack
-                            Exit Function
-                        Else
-                            Dim l As Integer
-                            For l = 0 To 9
-                                UserList(attackerIndex).flags.LastCityAttackers(l).ArrayIndex = 0
-                                UserList(attackerIndex).flags.LastCityAttackers(l).VersionId = 0
-                            Next l
-                            UserList(attackerIndex).flags.LastCityAttackTime = 0
-                            Exit For
-                        End If
-                    End If
-                End If
-            End If
-        Next k
+        If CanCounterAttack(attackerIndex, TargetIndex, TargetVersionID) Then
+            CanAttackUser = eCanAttack
+            Exit Function
+        End If
         CanAttackUser = eSafeArea
         Exit Function
     End If
