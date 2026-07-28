@@ -5530,7 +5530,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                         Call EcharLegionDatabase(username)
                         Call WriteLocaleMsg(UserIndex, MSG_USUARIO_1209, e_FontTypeNames.FONTTYPE_INFO, username)
                     ElseIf Status = e_Facciones.concilio Then
-                        Call KickCouncilOfShadowsDatabase(username)
+                        Call EcharLegionDatabase(username)
                         Call WriteLocaleMsg(UserIndex, MSG_USUARIO_1209, e_FontTypeNames.FONTTYPE_INFO, username)
                     Else
                         Call WriteLocaleMsg(UserIndex, MSG_NO_PERSONAJE_PERTENECE_LEGION, e_FontTypeNames.FONTTYPE_INFO)
@@ -5583,7 +5583,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                         Call EcharArmadaDatabase(username)
                         Call WriteLocaleMsg(UserIndex, MSG_USUARIO_1214, e_FontTypeNames.FONTTYPE_INFO, username)
                     ElseIf Status = e_Facciones.consejo Then
-                        Call KickRoyalCouncilDatabase(username)
+                        Call EcharArmadaDatabase(username)
                         Call WriteLocaleMsg(UserIndex, MSG_USUARIO_1214, e_FontTypeNames.FONTTYPE_INFO, username)
                     Else
                         Call WriteLocaleMsg(UserIndex, MSG_NO_PERSONAJE_PERTENECE_ARMADA, e_FontTypeNames.FONTTYPE_INFO)
