@@ -381,10 +381,12 @@ Public Sub NotifyConnectionToFaction(ByVal UserIndex As Integer)
             Case e_PlayerType.Admin, e_PlayerType.Dios, e_PlayerType.SemiDios, e_PlayerType.Consejero
                 Exit Sub
         End Select
-        
+
+        ' Solo notificar si está entre los 3 rangos más altos de su facción
+        If Not IsHighRank(.faccion) Then Exit Sub
+
         Dim msgId As Integer
         msgId = GetRandomFactionMsgId(.faccion.Status)
-
         Select Case .faccion.Status
             Case e_Facciones.Armada
                 If msgId > 0 Then
@@ -492,4 +494,37 @@ Public Function ForgiveUserFactionStats(ByVal UserIndex As Integer) As Boolean
     Exit Function
 ResetFacciones_Err:
     Call TraceError(Err.Number, Err.Description, "TCP.ResetFacciones", Erl)
+End Function
+
+Private Function IsHighRank(ByRef faccion As t_Facciones) As Boolean
+    On Error GoTo IsHighRank_Err
+
+    IsHighRank = False
+    If MaxRangoFaccion < 1 Then Exit Function
+
+    Const HIGH_RANK_THRESHOLD As Byte = 3
+    Dim minRank As Byte
+    minRank = MaxRangoFaccion - HIGH_RANK_THRESHOLD + 1
+    If minRank < 1 Then minRank = 1
+
+    Dim thresholdIdx As Integer
+    Select Case faccion.Status
+        Case e_Facciones.Armada, e_Facciones.consejo
+            thresholdIdx = 2 * minRank - 1  ' índice impar
+        Case e_Facciones.Caos, e_Facciones.concilio
+            thresholdIdx = 2 * minRank      ' índice par
+        Case Else
+            Exit Function
+    End Select
+
+    ' Validar que el índice está dentro de los límites del array
+    If thresholdIdx < LBound(RangosFaccion) Or thresholdIdx > UBound(RangosFaccion) Then
+        Exit Function
+    End If
+    
+    IsHighRank = faccion.FactionScore >= RangosFaccion(thresholdIdx).RequiredScore
+
+    Exit Function
+IsHighRank_Err:
+    Call TraceError(Err.Number, Err.Description, "ModFacciones.IsHighRank", Erl)
 End Function

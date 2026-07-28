@@ -1,0 +1,1 @@
+ALTER TABLE castle RENAME COLUMN portal_obj_id TO inside_key_obj_id;

@@ -48,30 +48,26 @@ Public Function FontTypeToColor(ByVal fontType As e_FontTypeNames) As Long
 FontTypeToColor_Err:
     Call TraceError(Err.Number, Err.Description, "modFontManager.FontTypeToColor", Erl)
 End Function
+
 Public Sub InitFontTypeColors()
     On Error GoTo InitFontTypeColors_Err
     With FontTypeColors(e_FontTypeNames.FONTTYPE_CITIZEN)
-        .r = 6: .g = 128: .b = 255
+        .r = 0: .g = 130: .b = 255
     End With
-
     With FontTypeColors(e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA)
-        .r = 60: .g = 163: .b = 255
+        .r = 0: .g = 100: .b = 255
     End With
-
+    With FontTypeColors(e_FontTypeNames.FONTTYPE_CONSEJO)
+        .r = 120: .g = 220: .b = 255
+    End With
     With FontTypeColors(e_FontTypeNames.FONTTYPE_CRIMINAL)
+        .r = 240: .g = 75: .b = 70
+    End With
+    With FontTypeColors(e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS)
         .r = 255: .g = 0: .b = 0
     End With
-
-    With FontTypeColors(e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS)
-        .r = 255: .g = 51: .b = 51
-    End With
-
-    With FontTypeColors(e_FontTypeNames.FONTTYPE_CONSEJO)
-        .r = 66: .g = 201: .b = 255
-    End With
-
     With FontTypeColors(e_FontTypeNames.FONTTYPE_CONSEJOCAOS)
-        .r = 255: .g = 102: .b = 102
+        .r = 160: .g = 15: .b = 0
     End With
     Exit Sub
 InitFontTypeColors_Err:
