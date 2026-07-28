@@ -2850,6 +2850,24 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
     End If
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.SkillType)
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.RequiredValue)
+    'Enviamos la cantidad de kills requeridos por estado (ciuda/crimi/armada/caos/lideres)
+    Call Writer.WriteInt8(QuestList(QuestIndex).RequiredKills)
+    If QuestList(QuestIndex).RequiredKills Then
+        For i = 1 To QuestList(QuestIndex).RequiredKills
+            Call Writer.WriteInt8(QuestList(QuestIndex).RequiredKill(i).TargetType)
+            Call Writer.WriteInt16(QuestList(QuestIndex).RequiredKill(i).amount)
+            'Si es una quest ya empezada, entonces mandamos los kills que llevo de este tipo.
+            If QuestSlot Then
+                Call Writer.WriteInt16(UserList(UserIndex).QuestStats.Quests(QuestSlot).KillsByType(i))
+            End If
+        Next i
+    End If
+    'Enviamos el puntaje de facción requerido
+    Call Writer.WriteInt32(QuestList(QuestIndex).RequiredFactionScore)
+    If QuestList(QuestIndex).RequiredFactionScore > 0 And QuestSlot Then
+        'Delta ya calculado: puntaje actual menos el que tenía al aceptar la quest.
+        Call Writer.WriteInt32(UserList(UserIndex).faccion.FactionScore - UserList(UserIndex).QuestStats.Quests(QuestSlot).FactionScoreAtAccept)
+    End If
     'Enviamos la recompensa de oro y experiencia.
     Call Writer.WriteInt32((QuestList(QuestIndex).RewardGLD * SvrConfig.GetValue("GoldMult")))
     Call Writer.WriteInt32((QuestList(QuestIndex).RewardEXP * SvrConfig.GetValue("ExpMult")))
@@ -3024,6 +3042,18 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
         ' ===== Required Skill =====
         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.SkillType)
         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.RequiredValue)
+
+        ' ===== Required Kills (por estado: ciuda/crimi/armada/caos/lideres) =====
+        Call Writer.WriteInt8(QuestList(QuestIndex).RequiredKills)
+        If QuestList(QuestIndex).RequiredKills > 0 Then
+            For i = 1 To QuestList(QuestIndex).RequiredKills
+                Call Writer.WriteInt8(QuestList(QuestIndex).RequiredKill(i).TargetType)
+                Call Writer.WriteInt16(QuestList(QuestIndex).RequiredKill(i).amount)
+            Next i
+        End If
+
+        ' ===== Required Faction Score =====
+        Call Writer.WriteInt32(QuestList(QuestIndex).RequiredFactionScore)
 
         ' ===== Rewards =====
         Call Writer.WriteInt32(QuestList(QuestIndex).RewardGLD * SvrConfig.GetValue("GoldMult"))

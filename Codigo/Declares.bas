@@ -145,6 +145,16 @@ Public Enum e_Facciones
     consejo = 5
 End Enum
 
+Public Enum e_QuestKillTarget
+    eKillCiudadano = 1
+    eKillCriminal = 2
+    eKillArmada = 3
+    eKillCaos = 4
+    eKillLiderArmada = 5    ' Status = e_Facciones.consejo
+    eKillLiderCaos = 6      ' Status = e_Facciones.concilio
+End Enum
+
+
 Public Enum e_InteractionResult
     eInteractionOk
     eOposingFaction
@@ -2097,6 +2107,11 @@ Public Type t_QuestNpc
     amount As Integer
 End Type
 
+Public Type t_QuestKillReq
+    TargetType As e_QuestKillTarget
+    amount As Integer
+End Type
+
 Public Type t_QuestObj
     QuestIndex As Integer
     ObjIndex As Integer
@@ -2107,6 +2122,8 @@ End Type
 Public Type t_UserQuest
     NPCsTarget() As Integer
     NPCsKilled() As Integer
+    KillsByType() As Integer
+    FactionScoreAtAccept As Long
     QuestIndex As Integer
     Dirty As Boolean
 End Type
@@ -2139,6 +2156,9 @@ Public Type t_Quest
     RequiredSkill As t_QuestSkill
     RequiredTargetNPCs As Byte
     RequiredTargetNPC() As t_QuestNpc
+    RequiredKills As Byte
+    RequiredKill() As t_QuestKillReq
+    RequiredFactionScore As Long
     RewardGLD As Long
     RewardEXP As Long
     RewardOBJs As Byte
@@ -2890,6 +2910,8 @@ Public Type t_UserPersistQuestSnapshot
     QuestIndex As Integer
     NPCsKilled() As Integer
     NPCsTarget() As Integer
+    KillsByType() As Integer
+    FactionScoreAtAccept As Long
 End Type
 
 Public Type t_UserPersistSnapshot

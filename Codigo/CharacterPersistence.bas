@@ -437,12 +437,13 @@ Private Sub SetupUserQuests(ByRef User As t_User)
     For SlotC = 1 To MAXUSERQUESTS
         User.QuestStats.Quests(SlotC).Dirty = False ' Loaded state starts clean.
     Next SlotC
-    Set RS = Query("SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = ?;", User.Id)
+    Set RS = Query("SELECT number, quest_id, npcs, npcstarget, killsbytype, factionscore FROM quest WHERE user_id = ?;", User.Id)
     If Not RS Is Nothing Then
         While Not RS.EOF
             If Not IsNull(RS!Number) Then
                 User.QuestStats.Quests(RS!Number).QuestIndex = RS!quest_id
                 User.QuestStats.Quests(RS!Number).Dirty = False ' Loaded from DB.
+                User.QuestStats.Quests(RS!Number).FactionScoreAtAccept = SanitizeNullValue(RS!FactionScore, 0)
                 If User.QuestStats.Quests(RS!Number).QuestIndex > 0 Then
                     If QuestList(User.QuestStats.Quests(RS!Number).QuestIndex).RequiredNPCs Then
                         Dim NPCs() As String
@@ -458,6 +459,16 @@ Private Sub SetupUserQuests(ByRef User As t_User)
                         ReDim User.QuestStats.Quests(RS!Number).NPCsTarget(1 To QuestList(User.QuestStats.Quests(RS!Number).QuestIndex).RequiredTargetNPCs)
                         For LoopC = 1 To QuestList(User.QuestStats.Quests(RS!Number).QuestIndex).RequiredTargetNPCs
                             User.QuestStats.Quests(RS!Number).NPCsTarget(LoopC) = val(NPCsTarget(LoopC - 1))
+                        Next LoopC
+                    End If
+                    If QuestList(User.QuestStats.Quests(RS!Number).QuestIndex).RequiredKills Then
+                        Dim KillsByType() As String
+                        KillsByType = Split(SanitizeNullValue(RS!KillsByType, vbNullString), "-")
+                        ReDim User.QuestStats.Quests(RS!Number).KillsByType(1 To QuestList(User.QuestStats.Quests(RS!Number).QuestIndex).RequiredKills)
+                        For LoopC = 1 To QuestList(User.QuestStats.Quests(RS!Number).QuestIndex).RequiredKills
+                            If LoopC - 1 <= UBound(KillsByType) Then
+                                User.QuestStats.Quests(RS!Number).KillsByType(LoopC) = val(KillsByType(LoopC - 1))
+                            End If
                         Next LoopC
                     End If
                 End If
@@ -909,9 +920,9 @@ Private Sub SaveCharacterQuestsDB(ByRef User As t_User, ByRef QueryBreakdown As 
     DirtyQuestSlotsTotal = DirtyQuestSlotsSaved + DirtyQuestSlotsDeleted
 
     ' Persist only dirty active quest slots, keeping existing dash-separated
-    ' serialization for NPC kill and target progress columns.
+    ' serialization for NPC kill, target progress, and kill-by-faction columns.
     If DirtyQuestSlotsSaved > 0 Then
-        SqlBuilder.Append "REPLACE INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
+        SqlBuilder.Append "REPLACE INTO quest (user_id, number, quest_id, npcs, npcstarget, killsbytype, factionscore) VALUES "
         For LoopC = 1 To DirtyQuestSlotsSaved
             QuestSlotToSave = DirtyQuestSaveSlots(LoopC)
 
@@ -936,7 +947,19 @@ Private Sub SaveCharacterQuestsDB(ByRef User As t_User, ByRef QueryBreakdown As 
                     SqlBuilder.Append "-"
                 End If
             Next LoopK
-            SqlBuilder.Append "')"
+            SqlBuilder.Append "', '"
+            Tmp = QuestList(User.QuestStats.Quests(QuestSlotToSave).QuestIndex).RequiredKills
+            If Tmp Then
+                For LoopK = 1 To Tmp
+                    SqlBuilder.Append CStr(User.QuestStats.Quests(QuestSlotToSave).KillsByType(LoopK))
+                    If LoopK < Tmp Then
+                        SqlBuilder.Append "-"
+                    End If
+                Next LoopK
+            End If
+            SqlBuilder.Append "', "
+            SqlBuilder.Append CStr(User.QuestStats.Quests(QuestSlotToSave).FactionScoreAtAccept)
+            SqlBuilder.Append ")"
             If LoopC < DirtyQuestSlotsSaved Then
                 SqlBuilder.Append ", "
             End If
@@ -1019,6 +1042,23 @@ Private Sub SaveCharacterQuestsDB(ByRef User As t_User, ByRef QueryBreakdown As 
         Else
             ReDim User.Persist.LastQuests(LoopC).NPCsTarget(0)
         End If
+
+        If User.QuestStats.Quests(LoopC).QuestIndex > 0 Then
+            Tmp = QuestList(User.QuestStats.Quests(LoopC).QuestIndex).RequiredKills
+        Else
+            Tmp = 0
+        End If
+
+        If Tmp > 0 Then
+            ReDim User.Persist.LastQuests(LoopC).KillsByType(1 To Tmp)
+            For LoopK = 1 To Tmp
+                User.Persist.LastQuests(LoopC).KillsByType(LoopK) = GetIntegerArrayValue(User.QuestStats.Quests(LoopC).KillsByType, LoopK)
+            Next LoopK
+        Else
+            ReDim User.Persist.LastQuests(LoopC).KillsByType(0)
+        End If
+
+        User.Persist.LastQuests(LoopC).FactionScoreAtAccept = User.QuestStats.Quests(LoopC).FactionScoreAtAccept
     Next LoopC
 End Sub
 
@@ -1244,13 +1284,33 @@ Public Function HaveQuestsChanged(ByVal UserIndex As Integer) As Boolean
                 HaveQuestsChanged = True
                 Exit Function
             End If
-
             For k = 1 To required
                 If GetIntegerArrayValue(.QuestStats.Quests(i).NPCsTarget, k) <> GetIntegerArrayValue(.Persist.LastQuests(i).NPCsTarget, k) Then
                     HaveQuestsChanged = True
                     Exit Function
                 End If
             Next k
+            ' --- Kills por estado (ciuda/crimi/armada/caos/lideres) ---
+            If .QuestStats.Quests(i).QuestIndex > 0 Then
+                required = QuestList(.QuestStats.Quests(i).QuestIndex).RequiredKills
+            Else
+                required = 0
+            End If
+            If required <> GetIntegerArrayLength(.Persist.LastQuests(i).KillsByType) Then
+                HaveQuestsChanged = True
+                Exit Function
+            End If
+            For k = 1 To required
+                If GetIntegerArrayValue(.QuestStats.Quests(i).KillsByType, k) <> GetIntegerArrayValue(.Persist.LastQuests(i).KillsByType, k) Then
+                    HaveQuestsChanged = True
+                    Exit Function
+                End If
+            Next k
+            ' --- Puntaje de facción al aceptar (baseline) ---
+            If .QuestStats.Quests(i).FactionScoreAtAccept <> .Persist.LastQuests(i).FactionScoreAtAccept Then
+                HaveQuestsChanged = True
+                Exit Function
+            End If
         Next i
     End With
 End Function
@@ -1292,6 +1352,23 @@ Public Sub UpdateSavedQuests(ByVal UserIndex As Integer)
             Else
                 ReDim .Persist.LastQuests(i).NPCsTarget(0)
             End If
+
+            If .QuestStats.Quests(i).QuestIndex > 0 Then
+                required = QuestList(.QuestStats.Quests(i).QuestIndex).RequiredKills
+            Else
+                required = 0
+            End If
+
+            If required > 0 Then
+                ReDim .Persist.LastQuests(i).KillsByType(1 To required)
+                For k = 1 To required
+                    .Persist.LastQuests(i).KillsByType(k) = GetIntegerArrayValue(.QuestStats.Quests(i).KillsByType, k)
+                Next k
+            Else
+                ReDim .Persist.LastQuests(i).KillsByType(0)
+            End If
+
+            .Persist.LastQuests(i).FactionScoreAtAccept = .QuestStats.Quests(i).FactionScoreAtAccept
         Next i
     End With
 End Sub

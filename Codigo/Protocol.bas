@@ -7099,6 +7099,16 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
             ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
             .Dirty = True ' Quest slot changed: target progress array resized for assigned quest.
         End If
+        If QuestList(.QuestIndex).RequiredKills Then
+            ReDim .KillsByType(1 To QuestList(.QuestIndex).RequiredKills)
+            .Dirty = True ' Quest slot changed: kill-by-status progress array resized for assigned quest.
+        End If
+        If QuestList(.QuestIndex).RequiredFactionScore > 0 Then
+            ' Baseline: se descuenta este valor del FactionScore actual al chequear el objetivo,
+            ' para no completar instantáneamente con puntaje ya acumulado antes de aceptar.
+            .FactionScoreAtAccept = UserList(UserIndex).faccion.FactionScore
+            .Dirty = True ' Quest slot changed: faction score baseline set for assigned quest.
+        End If
         UserList(UserIndex).flags.ModificoQuests = True
         'Msg1264= Has aceptado la misión ¬1
         Call WriteLocaleMsg(UserIndex, MSG_ACEPTADO_MISION, e_FontTypeNames.FONTTYPE_INFOIAO, .QuestIndex)

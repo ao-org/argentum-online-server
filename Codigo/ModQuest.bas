@@ -107,6 +107,33 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                 End If
             Next i
         End If
+
+        'Comprobamos que haya matado la cantidad requerida de cada estado (ciuda/crimi/armada/caos/lideres).
+        If .RequiredKills > 0 Then
+            Dim lastReqKillF As Long, lastKillProgressF As Long
+            lastReqKillF = -1: lastKillProgressF = -1
+            On Error Resume Next
+            lastReqKillF = UBound(.RequiredKill)
+            lastKillProgressF = UBound(UserList(UserIndex).QuestStats.Quests(QuestSlot).KillsByType)
+            On Error GoTo FinishQuest_Err
+            If lastReqKillF < 1 Or lastKillProgressF < 1 Then Exit Sub
+            For i = 1 To .RequiredKills
+                If i > lastReqKillF Or i > lastKillProgressF Then Exit For
+                If .RequiredKill(i).amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).KillsByType(i) Then
+                    Call WriteLocaleChatOverHead(UserIndex, MSG_REQUIRED_KILLS_BY_FACTION, "", NpcList(NpcIndex).Char.charindex, vbYellow)
+                    Exit Sub
+                End If
+            Next i
+        End If
+
+        'Comprobamos que haya alcanzado el puntaje de facción requerido (delta desde que aceptó).
+        If .RequiredFactionScore > 0 Then
+            If UserList(UserIndex).faccion.FactionScore - UserList(UserIndex).QuestStats.Quests(QuestSlot).FactionScoreAtAccept < .RequiredFactionScore Then
+                Call WriteLocaleChatOverHead(UserIndex, MSG_REQUIRED_FACTION_SCORE, "", NpcList(NpcIndex).Char.charindex, vbYellow)
+                Exit Sub
+            End If
+        End If
+
         If .RequiredSpellCount > 0 Then
             For i = 1 To .RequiredSpellCount
                 If Not UserHasSpell(UserIndex, .RequiredSpellList(i)) Then
@@ -427,6 +454,18 @@ Public Sub LoadQuests()
                     .RequiredTargetNPC(j).amount = 1
                 Next j
             End If
+            'CARGAMOS KILLS REQUERIDOS (matar N de cada estado: ciuda/crimi/armada/caos/lideres)
+            .RequiredKills = val(reader.GetValue("QUEST" & i, "RequiredKills"))
+            If .RequiredKills > 0 Then
+                ReDim .RequiredKill(1 To .RequiredKills)
+                For j = 1 To .RequiredKills
+                    tmpStr = reader.GetValue("QUEST" & i, "RequiredKill" & j)
+                    .RequiredKill(j).TargetType = val(ReadField(1, tmpStr, 45))
+                    .RequiredKill(j).amount = val(ReadField(2, tmpStr, 45))
+                Next j
+            End If
+            'CARGAMOS PUNTAJE DE FACCION REQUERIDO
+            .RequiredFactionScore = val(reader.GetValue("QUEST" & i, "RequiredFactionScore"))
             .RewardGLD = val(reader.GetValue("QUEST" & i, "RewardGLD"))
             .RewardEXP = val(reader.GetValue("QUEST" & i, "RewardEXP"))
             .Repetible = val(reader.GetValue("QUEST" & i, "Repetible"))
@@ -574,6 +613,28 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
                 If i > lastReqNPC Or i > lastKilled Then Exit For
                 If .RequiredNPC(i).amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i) Then Exit Function
             Next i
+        End If
+
+        ' --- Required kills by faction status ---
+        If .RequiredKills > 0 Then
+            Dim lastReqKill As Long, lastKillProgress As Long
+            lastReqKill = -1: lastKillProgress = -1
+            On Error Resume Next
+            lastReqKill = UBound(.RequiredKill)
+            lastKillProgress = UBound(UserList(UserIndex).QuestStats.Quests(QuestSlot).KillsByType)
+            On Error GoTo FinishQuestCheck_Err
+            If lastReqKill < 1 Or lastKillProgress < 1 Then Exit Function
+            For i = 1 To .RequiredKills
+                If i > lastReqKill Or i > lastKillProgress Then Exit For
+                If .RequiredKill(i).amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).KillsByType(i) Then Exit Function
+            Next i
+        End If
+
+        ' --- Required faction score (delta desde que se aceptó la quest) ---
+        If .RequiredFactionScore > 0 Then
+            If UserList(UserIndex).faccion.FactionScore - UserList(UserIndex).QuestStats.Quests(QuestSlot).FactionScoreAtAccept < .RequiredFactionScore Then
+                Exit Function
+            End If
         End If
 
         ' --- Required spells ---

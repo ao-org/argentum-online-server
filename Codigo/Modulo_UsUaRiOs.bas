@@ -1907,6 +1907,7 @@ Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
         End If
         If Not AlreadyKilledBy(Muerto, Atacante) Then
             Call RegisterRecentKiller(Muerto, Atacante)
+            Call QuestKillUpdate(Muerto, Atacante)
             If UserList(Atacante).Faccion.CriminalesMatados < MAXUSERMATADOS Then
                 UserList(Atacante).Faccion.CriminalesMatados = UserList(Atacante).Faccion.CriminalesMatados + 1
             End If
@@ -1917,6 +1918,7 @@ Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
     ElseIf Status(Muerto) = e_Facciones.Ciudadano Or Status(Muerto) = e_Facciones.Armada Or Status(Muerto) = e_Facciones.consejo Then
         If Not AlreadyKilledBy(Muerto, Atacante) Then
             Call RegisterRecentKiller(Muerto, Atacante)
+            Call QuestKillUpdate(Muerto, Atacante)
             If UserList(Atacante).Faccion.ciudadanosMatados < MAXUSERMATADOS Then
                 UserList(Atacante).Faccion.ciudadanosMatados = UserList(Atacante).Faccion.ciudadanosMatados + 1
             End If
@@ -1928,6 +1930,63 @@ Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
     Exit Sub
 ContarMuerte_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ContarMuerte", Erl)
+End Sub
+
+Private Function GetQuestKillTargetForStatus(ByVal TargetStatus As e_Facciones) As e_QuestKillTarget
+    Select Case TargetStatus
+        Case e_Facciones.Ciudadano
+            GetQuestKillTargetForStatus = e_QuestKillTarget.eKillCiudadano
+        Case e_Facciones.Criminal
+            GetQuestKillTargetForStatus = e_QuestKillTarget.eKillCriminal
+        Case e_Facciones.Armada
+            GetQuestKillTargetForStatus = e_QuestKillTarget.eKillArmada
+        Case e_Facciones.Caos
+            GetQuestKillTargetForStatus = e_QuestKillTarget.eKillCaos
+        Case e_Facciones.consejo
+            GetQuestKillTargetForStatus = e_QuestKillTarget.eKillLiderArmada
+        Case e_Facciones.concilio
+            GetQuestKillTargetForStatus = e_QuestKillTarget.eKillLiderCaos
+    End Select
+End Function
+
+''
+' Actualiza el progreso de objetivos de quest tipo "matar N de estado X" para el atacante.
+' Se llama exclusivamente desde ContarMuerte, heredando sus guardas anti-farm
+' (newbie, diferencia de nivel, PeleaSegura, dedup de rekill reciente).
+'
+Public Sub QuestKillUpdate(ByVal Muerto As Integer, ByVal Atacante As Integer)
+    On Error GoTo QuestKillUpdate_Err
+    Dim KillTarget As e_QuestKillTarget
+    KillTarget = GetQuestKillTargetForStatus(Status(Muerto))
+    Dim i As Integer, j As Integer
+    Dim lastReq As Long, lastProgress As Long
+    With UserList(Atacante).QuestStats
+        For i = 1 To MAXUSERQUESTS
+            If .Quests(i).QuestIndex > 0 Then
+                If QuestList(.Quests(i).QuestIndex).RequiredKills > 0 Then
+                    lastReq = -1: lastProgress = -1
+                    On Error Resume Next
+                    lastReq = UBound(QuestList(.Quests(i).QuestIndex).RequiredKill)
+                    lastProgress = UBound(.Quests(i).KillsByType)
+                    On Error GoTo QuestKillUpdate_Err
+                    If lastReq >= 1 And lastProgress >= 1 Then
+                        For j = 1 To QuestList(.Quests(i).QuestIndex).RequiredKills
+                            If j > lastReq Or j > lastProgress Then Exit For
+                            If QuestList(.Quests(i).QuestIndex).RequiredKill(j).TargetType = KillTarget Then
+                                If .Quests(i).KillsByType(j) < QuestList(.Quests(i).QuestIndex).RequiredKill(j).amount Then
+                                    .Quests(i).KillsByType(j) = .Quests(i).KillsByType(j) + 1
+                                    .Quests(i).Dirty = True ' Quest slot changed: kill-by-status progress incremented.
+                                End If
+                            End If
+                        Next j
+                    End If
+                End If
+            End If
+        Next i
+    End With
+    Exit Sub
+QuestKillUpdate_Err:
+    Call TraceError(Err.Number, Err.Description, "UserMod.QuestKillUpdate", Erl)
 End Sub
 
 Private Function ShouldApplyFactionBonus(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer) As Boolean
