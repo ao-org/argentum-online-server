@@ -412,9 +412,9 @@ Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal Guil
             Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
                 m_EstadoPermiteEntrarChar = (Status = e_Facciones.Caos Or Status = e_Facciones.concilio)
             Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
-                m_EstadoPermiteEntrarChar = (Status = e_Facciones.Ciudadano Or Status = e_Facciones.Armada Or Status = e_Facciones.consejo)
+                m_EstadoPermiteEntrarChar = (Status = e_Facciones.Ciudadano Or Status = e_Facciones.Armada)
             Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
-                m_EstadoPermiteEntrarChar = (Status = e_Facciones.Criminal Or Status = e_Facciones.Caos Or Status = e_Facciones.concilio)
+                m_EstadoPermiteEntrarChar = (Status = e_Facciones.Criminal Or Status = e_Facciones.Caos)
         End Select
     End If
     Exit Function
@@ -432,9 +432,9 @@ Private Function m_EstadoPermiteEntrar(ByVal UserIndex As Integer, ByVal GuildIn
         Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
             m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio
         Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
-            m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Ciudadano Or Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo
+            m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Ciudadano Or Status(UserIndex) = e_Facciones.Armada
         Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
-            m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Criminal Or Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio
+            m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Criminal Or Status(UserIndex) = e_Facciones.Caos
     End Select
     Exit Function
 m_EstadoPermiteEntrar_Err:
@@ -902,14 +902,14 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
     Dim tGI          As Integer
     Dim priceAcceptMember As Integer
     Dim AspiranteRef As t_UserReference
-    'un pj ingresa al clan :D
+    
     a_AceptarAspirante = False
     GI = UserList(UserIndex).GuildIndex
-    priceAcceptMember = PriceAcceptMemberGuild(guilds(GI).GetNivelDeClan)
     If GI <= 0 Or GI > CANTIDADDECLANES Then
         refError = 2011 'No perteneces a ningún clan.
         Exit Function
     End If
+    priceAcceptMember = PriceAcceptMemberGuild(guilds(GI).GetNivelDeClan)
     If Not m_EsGuildLeader(UserList(UserIndex).Id, GI) Then
         refError = 2012 'No eres el líder de tu clan.
         Exit Function
@@ -1033,10 +1033,10 @@ Alineacion_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.Alineacion", Erl)
 End Function
 
-Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
+Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Long)
     On Error GoTo CheckClanExp_Err
-    Dim ExpActual    As Integer
-    Dim ExpNecesaria As Integer
+    Dim ExpActual    As Long
+    Dim ExpNecesaria As Long
     Dim GI           As Integer
     Dim nivel        As Byte
     With UserList(UserIndex)
@@ -1092,10 +1092,9 @@ End Function
 
 Public Function MiembrosPermite(ByVal GI As Integer) As Byte
     On Error GoTo MiembrosPermite_Err
-
+    If GI <= 0 Or GI > CANTIDADDECLANES Then Exit Function
     Dim nivel As Byte
     nivel = guilds(GI).GetNivelDeClan
-    
     If nivel >= 1 And nivel <= MAX_LEVEL_GUILD Then
         MiembrosPermite = MembersByLevel(nivel)
     Else

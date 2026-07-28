@@ -8,7 +8,7 @@ Public UnderworldUpperLimitOfTime As Byte
 Public IsUnderworldInitialized As Boolean
 Private m_UnderworldLastSpawnTimestamp As Long
 Private Const UNDERWORLD_BROADCAST_MSG_ID As Integer = 2174
-Private Const UNDERWORLD_PORTAL_OBJ_IDX As Integer = 6355
+Private Const UNDERWORLD_PORTAL_OBJ_IDX As Integer = 6357
 Private ALREADY_OPENED_PORTALS As Boolean
 Private Const UNDERWORLD_CENTER_MAP_NUMBER As Integer = 127
 Private Const DAY_MIN_OUT_OF_BOUNDS As Integer = 24
@@ -154,10 +154,13 @@ End Function
 Public Function IsUnderworldOpen() As Boolean
     Dim currentHour As Integer
     currentHour = Hour(Now)
-    If currentHour >= UnderworldLowerLimitOfTime And currentHour < UnderworldUpperLimitOfTime Then
-        IsUnderworldOpen = True
+    ' Check if the range wraps around midnight
+    If UnderworldLowerLimitOfTime > UnderworldUpperLimitOfTime Then
+        ' Wraps midnight: e.g., 18 to 1 means 6pm to 1am
+        IsUnderworldOpen = (currentHour >= UnderworldLowerLimitOfTime Or currentHour < UnderworldUpperLimitOfTime)
     Else
-        IsUnderworldOpen = False
+        ' Normal range: e.g., 9 to 17 means 9am to 5pm
+        IsUnderworldOpen = (currentHour >= UnderworldLowerLimitOfTime And currentHour < UnderworldUpperLimitOfTime)
     End If
 End Function
 

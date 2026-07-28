@@ -451,10 +451,10 @@ DropObj_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.DropObj", Erl)
 End Sub
 
-Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
+Sub EraseObj(ByVal amount As Integer, ByVal map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo EraseObj_Err
     Dim Rango As Byte
-    MapData(Map, x, y).ObjInfo.amount = MapData(Map, x, y).ObjInfo.amount - num
+    MapData(map, x, y).ObjInfo.amount = MapData(map, x, y).ObjInfo.amount - amount
     If MapData(Map, x, y).ObjInfo.amount <= 0 Then
         MapData(Map, x, y).ObjInfo.ObjIndex = 0
         MapData(Map, x, y).ObjInfo.amount = 0
@@ -481,6 +481,7 @@ Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal x As Integer, ByVal 
             Else
                 MapData(Map, x, y).ObjInfo.amount = obj.amount
             End If
+            MapData(map, x, y).ObjInfo.CastleSlot = Obj.CastleSlot
         End If
         Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(obj.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y, MapData(Map, x, y).ObjInfo.ElementalTags))
     End If
@@ -1129,6 +1130,13 @@ Dim Ropaje                      As Integer
 
             If CanUseObject(UserIndex, ObjIndex, True) > 0 Then
                 Exit Sub
+            End If
+            
+            If IsSet(obj.ObjFlags, e_ObjFlags.e_JailObject) Then
+                If Not IsInMapCarcelRestrictedArea(.pos) Then
+                    Call WriteLocaleMsg(UserIndex, MSG_JAIL_OBJECT_ONLY_IN_JAIL, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
             End If
 
             Select Case obj.OBJType
@@ -2992,8 +3000,13 @@ Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer
             
             Select Case .OBJType
                 Case e_OBJType.otCastleSpawner
-                    If IsValidCastlePosition(UserIndex) Then
-                        Call CreateNewEmperorCastle(UserIndex, ObjIndex)
+                    If UserList(UserIndex).Stats.tipoUsuario >= e_TipoUsuario.tNoble Then
+                        If IsValidCastlePosition(UserIndex) Then
+                            Call CreateNewEmperorCastle(UserIndex, ObjIndex)
+                        End If
+                    Else
+                        Call WriteLocaleMsg(UserIndex, MSG_AT_LEAST_NOBLE_TO_FOUND_CASTLE, FONTTYPE_INFOBOLD)
+                        Call LogInfoServidor("User with low patreon status trying to set a whitelist for a castle, name: " & .name)
                     End If
                 Case Else
                     Select Case .Subtipo
