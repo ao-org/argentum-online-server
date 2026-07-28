@@ -95,9 +95,11 @@ Dim RingLimiterBRItemID        As Long
 Dim RingLimiterBLItemID        As Long
 Dim MinArenaSize               As Integer
 Dim LobbyIndex                 As Integer
+Dim m_Closed                   As Boolean
 
 Private Sub Class_Initialize()
     On Error GoTo DeathMatch_Initialize_Err:
+    m_Closed = False
     Debug.Assert FileExist(DatPath & configPath)
     Dim ScenarioIni As clsIniManager
     Dim OriginalMap As Integer
@@ -254,6 +256,11 @@ End Sub
 
 Private Sub CloseScenario()
     On Error GoTo CloseScenario_Err:
+    If m_Closed Then
+        Call LogInfoServidor("Calling CloseScenario() but the Scenario was already closed")
+        Exit Sub
+    End If
+    m_Closed = True
     Call ModLobby.ReturnAllPlayers(LobbyList(LobbyIndex))
     Set LobbyList(LobbyIndex).Scenario = Nothing
     Call ModLobby.UpdateLobbyState(LobbyList(LobbyIndex), e_LobbyState.UnInitilized)
