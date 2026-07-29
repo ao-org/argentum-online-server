@@ -112,8 +112,14 @@ Public Sub CompletePendingAction(ByVal UserIndex As Integer)
                             Call ResetPendingAction(UserIndex)
                             Exit Sub
                         End If
-                        Call QuitarUserInvItem(UserIndex, Slot, 1)
-                        Call UpdateUserInv(False, UserIndex, Slot)
+                        If .Stats.GLD < obj.Valor Then
+                            ' Msg588=No tienes el oro suficiente.
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_FontTypeNames.FONTTYPE_INFO)
+                            Call ResetPendingAction(UserIndex)
+                            Exit Sub
+                        End If
+                        .Stats.GLD = .Stats.GLD - obj.Valor
+                        Call WriteUpdateGold(UserIndex)
                         Call HomeArrival(UserIndex)
                     Case e_RuneType.MesonSafePassage
                         If .pos.Map = MAP_MESON_HOSTIGADO Or .pos.Map = MAP_MESON_HOSTIGADO_TRADING_ZONE Then

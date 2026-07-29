@@ -2697,9 +2697,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
-                If MapInfo(.pos.Map).Seguro = 0 And .flags.Muerto = 0 Then
-                    ' Msg692=Solo podes usar tu runa en zonas seguras.
-                    Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_FontTypeNames.FONTTYPE_INFO)
+                If Not CanUseRuneNow(UserIndex, obj.TipoRuna) Then
+                    Exit Sub
+                End If
+                If obj.TipoRuna = e_RuneType.ReturnHome And .Stats.GLD < obj.Valor Then
+                    ' Msg588=No tienes el oro suficiente.
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 If .Accion.AccionPendiente Then
