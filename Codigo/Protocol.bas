@@ -1716,6 +1716,23 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                     'Msg1122= Has cancelado el viaje a casa.
                     Call WriteLocaleMsg(UserIndex, MSG_CANCELADO_VIAJE_CASA, e_FontTypeNames.FONTTYPE_INFO)
                 End If
+                'Esta canalizando una runa u otra acción con barra: se cancela al moverse.
+                If .Accion.AccionPendiente = True Then
+                    Dim CanceledActionType As e_AccionBarra
+                    CanceledActionType = .Accion.TipoAccion
+                    .Accion.AccionPendiente = False
+                    .Accion.TipoAccion = e_AccionBarra.CancelarAccion
+                    .Accion.Particula = 0
+                    .Accion.RunaObj = 0
+                    .Accion.ObjSlot = 0
+                    .Accion.HechizoPendiente = 0
+                    .Accion.Deadline = 0
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 0, e_AccionBarra.CancelarAccion))
+                    If CanceledActionType = e_AccionBarra.Runa Then
+                        ' Msg____=Has cancelado el uso de la runa.
+                        Call WriteLocaleMsg(UserIndex, MSG_CANCELADO_USO_RUNA, e_FontTypeNames.FONTTYPE_INFO)
+                    End If
+                End If
                 ' Si no pudo moverse
             Else
                 .Counters.LastStep = 0
@@ -6584,7 +6601,11 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
         Accion = reader.ReadInt8()
         If .Accion.AccionPendiente = True Then
             If .Accion.TipoAccion = Accion Then
-                Call CompletePendingAction(UserIndex)
+                If DeadlinePassed(GetTickCountRaw(), .Accion.Deadline) Then
+                    Call CompletePendingAction(UserIndex)
+                Else
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_SERVIDOR_ACCION_TODAVIA_COMPLETADA, e_FontTypeNames.FONTTYPE_SERVER)
+                End If
             Else
                 ' Msg749=Servidor » La acción que solicitas no se corresponde.
                 Call WriteLocaleMsg(UserIndex, MSG_NO_SERVIDOR_ACCION_SOLICITAS_CORRESPONDE, e_FontTypeNames.FONTTYPE_SERVER)
@@ -6596,7 +6617,7 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
     End With
     Exit Sub
 ErrHandler:
-    Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCompletarAccion", Erl)
 End Sub
 
 Private Sub HandleInvitarGrupo(ByVal UserIndex As Integer)

@@ -2710,18 +2710,23 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 Else
                     .Counters.TimerBarra = CInt(obj.Cooldown)
                 End If
-                If Not EsGM(UserIndex) Then
-                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, 400, False))
-                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 350, e_AccionBarra.Runa))
-                Else
-                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, 50, False))
-                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 100, e_AccionBarra.Runa))
+                If obj.TipoRuna = e_RuneType.FastTravel And .Counters.TimerBarra < MinFastTravelRuneTime Then
+                    .Counters.TimerBarra = CInt(MinFastTravelRuneTime)
                 End If
+                If Not EsGM(UserIndex) Then
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, .Counters.TimerBarra * 100, False))
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, .Counters.TimerBarra, e_AccionBarra.Runa))
+                Else
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, 500, False))
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 5, e_AccionBarra.Runa))
+                End If
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_VOLVERAS_HOGAR_SEGUNDOS, .Counters.TimerBarra, e_FontTypeNames.FONTTYPE_New_Gris))
                 .Accion.Particula = e_GraphicEffects.Runa
                 .Accion.AccionPendiente = True
                 .Accion.TipoAccion = e_AccionBarra.Runa
                 .Accion.RunaObj = ObjIndex
                 .Accion.ObjSlot = Slot
+                .Accion.Deadline = AddMod32(GetTickCountRaw(), CLng(.Counters.TimerBarra) * 1000)
             Case e_OBJType.otMap
                 Call WriteShowFrmMapa(UserIndex)
             Case e_OBJType.OtQuest

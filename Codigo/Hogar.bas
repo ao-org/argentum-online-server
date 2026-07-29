@@ -69,6 +69,7 @@ Public Sub goHome(ByVal UserIndex As Integer)
             .Accion.Particula = e_GraphicEffects.Runa
             .Accion.AccionPendiente = True
             .Accion.TipoAccion = e_AccionBarra.Hogar
+            .Accion.Deadline = AddMod32(GetTickCountRaw(), CLng(.Counters.TimerBarra) * 1000)
         Else
             Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_DEBES_ESTAR_MUERTO_PODER_UTILIZAR_COMANDO, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1995=Debes estar muerto para poder utilizar este comando.
         End If

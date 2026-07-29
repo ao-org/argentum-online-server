@@ -112,41 +112,43 @@ Public Sub CompletePendingAction(ByVal UserIndex As Integer)
                     Case e_RuneType.MesonSafePassage
                         If .pos.Map = MAP_MESON_HOSTIGADO Or .pos.Map = MAP_MESON_HOSTIGADO_TRADING_ZONE Then
                             Call WriteLocaleMsg(UserIndex, MSG_NOT_USABLE_INSIDE_MESON, e_FontTypeNames.FONTTYPE_INFO)
-                            Exit Sub
+                            GoTo CleanupAction
                         End If
                         If obj.HastaMap <> MAP_MESON_HOSTIGADO Then
                             Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_FontTypeNames.FONTTYPE_INFO)
-                            Exit Sub
+                            GoTo CleanupAction
                         End If
                         If Not IsValidMapPosition(obj.HastaMap, obj.HastaX, obj.HastaY) Then
                             Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_FontTypeNames.FONTTYPE_INFO)
-                            Exit Sub
+                            GoTo CleanupAction
                         End If
                         .flags.ReturnPos = .pos
                         Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
                         Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_FontTypeNames.FONTTYPE_WARNING)
                     Case e_RuneType.FastTravel
-                        If .pos.Map <> obj.DesdeMap Then
+                        If .flags.Muerto = 1 Then
+                            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
+                            GoTo CleanupAction
+                        End If
+                        If MapInfo(.pos.Map).Seguro = 0 Then
                             Call WriteLocaleMsg(UserIndex, MSG_INVALID_FAST_TRAVEL_MAP_ORIGIN, e_FontTypeNames.FONTTYPE_WARNING)
+                            GoTo CleanupAction
                         End If
-                        If Not IsValidMapPosition(obj.HastaMap, obj.HastaX, obj.HastaY) Then
-                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_FontTypeNames.FONTTYPE_INFO)
-                            Exit Sub
-                        End If
-                        Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
-                        Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_FontTypeNames.FONTTYPE_WARNING)
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
                         Call UpdateUserInv(False, UserIndex, Slot)
+                        Call HomeArrival(UserIndex)
                 End Select
             Case e_AccionBarra.Hogar
                 Call HomeArrival(UserIndex)
         End Select
+CleanupAction:
         .Accion.Particula = 0
         .Accion.TipoAccion = e_AccionBarra.CancelarAccion
         .Accion.HechizoPendiente = 0
         .Accion.RunaObj = 0
         .Accion.ObjSlot = 0
         .Accion.AccionPendiente = False
+        .Accion.Deadline = 0
     End With
     Exit Sub
 EndProgrammedAction_Err:

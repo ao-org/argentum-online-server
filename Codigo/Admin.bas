@@ -133,6 +133,7 @@ Public GuildCallCooldown                 As Long
 Public NpcStunTime                       As Long
 Public PlayerInmuneTime                  As Long
 Public MultiShotReduction                As Single
+Public MinFastTravelRuneTime             As Long
 Public HomeTimer                         As Integer
 Public HomeTimerAdventurer               As Integer
 Public HomeTimerHero                     As Integer

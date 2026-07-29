@@ -2560,6 +2560,7 @@ Public Type t_AccionPendiente
     ObjSlot As Byte
     Particula As Byte
     HechizoPendiente As Integer
+    Deadline As Long
 End Type
 
 Public Enum e_StatusMask
