@@ -58,7 +58,7 @@ Private p_IteradorOnlineGMs     As Integer
 Private p_GuildNumber           As Integer      'Numero de guild en el mundo
 Private p_GuildId               As Long
 Private p_GuildLevel            As Integer
-Private p_CurrentExp            As Integer
+Private p_CurrentExp            As Long
 Private p_RequiredExp           As Integer
 Private p_GuildNews             As String
 Private Const NEWSLENGTH        As Integer = 1024
@@ -477,7 +477,7 @@ GetNivelDeClan_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.GetNivelDeClan", Erl)
 End Function
 
-Public Sub SetExpActual(ByRef Exp As Integer)
+Public Sub SetExpActual(ByRef Exp As Long)
     On Error GoTo SetExpActual_Err
     Call UpdateGuildValue("current_exp", Exp)
     p_CurrentExp = Exp
@@ -486,7 +486,7 @@ SetExpActual_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.SetExpActual", Erl)
 End Sub
 
-Public Function GetExpActual() As Integer
+Public Function GetExpActual() As Long
     On Error GoTo GetExpActual_Err
     If p_CurrentExp = 0 Then
         Dim RS As ADODB.Recordset

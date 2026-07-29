@@ -1499,6 +1499,7 @@ Public Const SND_RESURRECCION    As Byte = 117
 
 Public Const SND_SACARARMA           As Byte = 25
 Public Const SND_ESCUDO              As Byte = 37
+Public Const SND_ESCUDO_MADERA       As Integer = 2053
 Public Const MARTILLOHERRERO         As Byte = 41
 Public Const LABUROCARPINTERO        As Byte = 42
 Public Const SND_BEBER               As Byte = 135
@@ -2790,6 +2791,7 @@ Public Type t_UserCounters
     DisabledInvisibility As Integer
     TiempoOculto As Integer
     LastAttackTime As Long
+    LastGuildCallTime As Long
     PiqueteC As Long
     Pena As Long
     SendMapCounter As t_WorldPos
@@ -3129,6 +3131,7 @@ Public Type t_NPCFlags
     OldHostil As Byte
     AguaValida As Byte
     TierraInvalida As Byte
+    LavaValida As Byte
     ' UseAINow As Boolean No se usa, borrar de la DB!!!!
     Sound As Integer
     AttackedBy As String
@@ -3223,6 +3226,7 @@ Public Type t_NpcInfoCache
     AguaValida As Integer
     GlobalQuestBossIndex As Integer
     TierraInvalida As Integer
+    LavaValida As Integer
     Faccion As Integer
     ElementalTags As Long
     npcType As Integer

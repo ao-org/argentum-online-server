@@ -509,25 +509,25 @@ Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, ByVal MaxRange As Integer
         Do
             tY = .pos.y - LoopC
             For tX = .pos.x - LoopC To .pos.x + LoopC
-                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
+                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .flags.LavaValida = 1, IgnoreUsers, IgnoreDeadUsers) Then
                     Exit Function
                 End If
             Next
             tX = .pos.x - LoopC
             For tY = .pos.y - LoopC + 1 To .pos.y + LoopC - 1
-                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
+                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .flags.LavaValida = 1, IgnoreUsers, IgnoreDeadUsers) Then
                     Exit Function
                 End If
             Next
             tX = .pos.x + LoopC
             For tY = .pos.y - LoopC + 1 To .pos.y + LoopC - 1
-                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
+                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .flags.LavaValida = 1, IgnoreUsers, IgnoreDeadUsers) Then
                     Exit Function
                 End If
             Next
             tY = .pos.y + LoopC
             For tX = .pos.x - LoopC To .pos.x + LoopC
-                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
+                If ValidNPCSpawnPos(ClosestLegalPosNPC, .pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .flags.LavaValida = 1, IgnoreUsers, IgnoreDeadUsers) Then
                     Exit Function
                 End If
             Next
@@ -545,9 +545,11 @@ Private Function ValidNPCSpawnPos(OutPos As t_WorldPos, _
                                   ByVal y As Integer, _
                                   ByVal AguaValida As Boolean, _
                                   ByVal TierraValida As Boolean, _
+                                  ByVal LavaValida As Boolean, _
                                   ByVal IgnoreUsers As Boolean, _
                                   ByVal IgnoreDeadUsers As Boolean) As Boolean
     If LegalPos(Map, x, y, AguaValida, TierraValida, , False) Then
+        If HayLava(Map, x, y) <> LavaValida Then Exit Function
         If TestSpawnTrigger(Map, x, y) Then
             If Not HayPCarea(Map, x, y, IgnoreDeadUsers) Or IgnoreUsers Then
                 ValidNPCSpawnPos = True
@@ -1155,14 +1157,14 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             ElseIf IsValidUserRef(NpcList(TempCharIndex).MaestroUser) Then
                 If UserList(UserIndex).flags.Muerto = 0 Then
                     estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex, NpcStatusMask)
-                    Call WriteLocaleMsg(UserIndex, MSG_NPC_MASCOTA, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
-                            estatus & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).name)  'Msg1621=NPC ¬1 ¬2 es mascota de ¬3
+                    Call WriteLocaleMsg(UserIndex, MSG_NPC_MASCOTA, e_FontTypeNames.FONTTYPE_New_Blanco, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
+                        estatus & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).name)  'Msg1621=NPC ¬1 ¬2 es mascota de ¬3
                 End If
             Else
                 If UserList(UserIndex).flags.Muerto = 0 Then
                     estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex, NpcStatusMask)
-                    Call WriteLocaleMsg(UserIndex, MSG_NPC, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
-                            estatus)  'Msg1622=NPC ¬1 ¬2
+                    Call WriteLocaleMsg(UserIndex, MSG_NPC, e_FontTypeNames.FONTTYPE_New_Blanco, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
+                        estatus)  'Msg1622=NPC ¬1 ¬2
                 End If
             End If
             ' End If
